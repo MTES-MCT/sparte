@@ -8,12 +8,20 @@ authors = ["Swann <swann.bouviermuller@gmail.com>"]
 python = "3.9.6"
 Django = "3.2.5"
 psycopg2 = "2.9.1"
+django-environ = "^0.4.5"
 
 [tool.poetry.dev-dependencies]
 flake8 = "^3.9.2"
 pytest = "^6.2.4"
 pre-commit = "^2.13.0"
+coverage = {extras = ["toml"], version = "^5.5"}
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.coverage.run]
+omit = [".*", "*/site-packages/*"]
+
+[tool.coverage.report]
+fail_under = 100
