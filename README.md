@@ -28,5 +28,16 @@ Done :
 
 # Useful links
 
+About pytest:
+
 - https://pytest-django.readthedocs.io
 - https://docs.pytest.org/en/6.2.x/reference.html
+
+About customUser:
+
+- https://testdriven.io/blog/django-custom-user-model/
+
+Django settings:
+
+- https://djangostars.com/blog/configuring-django-settings-best-practices/
+- https://django-environ.readthedocs.io

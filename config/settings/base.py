@@ -17,21 +17,17 @@ root = environ.Path(__file__) - 3  # get root of the project
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(root())
 
-
 env = environ.Env()
-environ.Env.read_env(str(BASE_DIR / '.env'))  # reading .env file
-
-
-
+environ.Env.read_env(str(BASE_DIR / ".env"))  # reading .env file
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = env.str('SECRET')
+SECRET_KEY = env.str("SECRET")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env.bool('DEBUG')
+DEBUG = env.bool("DEBUG")
 
 ALLOWED_HOSTS = []
 
@@ -49,7 +45,7 @@ INSTALLED_APPS = [
 ]
 
 # Surcharge de l'utilisateur par défaut pour ajouter des propriétés (exemple: téléphone...)
-AUTH_USER_MODEL = 'users.User'
+AUTH_USER_MODEL = "users.User"
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -86,7 +82,7 @@ WSGI_APPLICATION = "config.wsgi.application"
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 # require DATABASE_URL in .env file
 DATABASES = {
-    'default': env.db(),
+    "default": env.db(),
 }
 
 
