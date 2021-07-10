@@ -1,6 +1,6 @@
-# SPARTE
+# **SPARTE** - **S**ervice de **P**ortrait de l’**AR**tificialisation des **TE**rritoires
 
-SPARTE est une plateforme qui aide les collectivité à mesurer l'artificialisation de leurs sols et ainsi se conformer aux nouvelles lois.
+Le Service de Portrait de l’ARtificialisation des TErritoires (ou SPARTE) est une plateforme qui aide les collectivité à mesurer l'artificialisation de leurs sols et ainsi se conformer aux nouvelles lois.
 
 ## Installation
 
@@ -13,6 +13,12 @@ git clone ...
 poetry install
 poetry run pre-commit install
 ```
+
+## before commiting
+
+Check unit test coverage: `coverage run -m pytest && coverage report -m`
+
+Check flake8 linting: `flake8`
 
 # TODO List
 
@@ -37,7 +43,12 @@ About customUser:
 
 - https://testdriven.io/blog/django-custom-user-model/
 
-Django settings:
+Django settings & installation:
 
 - https://djangostars.com/blog/configuring-django-settings-best-practices/
 - https://django-environ.readthedocs.io
+- https://python-poetry.org/docs/cli/#add
+
+Flake8 linting:
+
+- https://flake8.pycqa.org/en/3.1.1/user/options.html#cmdoption-flake8--exclude
