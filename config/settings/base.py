@@ -41,12 +41,10 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "users.apps.UsersConfig",
-    "crispy_forms",
 ]
 
 # Surcharge de l'utilisateur par défaut pour ajouter des propriétés (exemple: téléphone...)
-AUTH_USER_MODEL = "users.User"
+
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",

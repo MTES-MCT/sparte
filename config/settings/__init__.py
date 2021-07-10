@@ -3,5 +3,5 @@
 from .base import *
 
 # ignore particular errors:
-from .third_party import *  # noqa: F401,F403
-from .project import *
+from .crispy import *  # noqa: F401,F403
+from .customUser import *
