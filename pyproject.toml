@@ -9,6 +9,7 @@ python = "3.9.6"
 Django = "3.2.5"
 psycopg2 = "2.9.1"
 django-environ = "^0.4.5"
+django-crispy-forms = "^1.12.0"
 
 [tool.poetry.dev-dependencies]
 flake8 = "^3.9.2"
@@ -28,3 +29,20 @@ omit = [".*", "*/site-packages/*"]
 
 [tool.coverage.report]
 fail_under = 100
+
+[tool.black]
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+  | .+\.html
+)/
+'''
