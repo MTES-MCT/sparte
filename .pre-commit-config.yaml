@@ -4,14 +4,19 @@ repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
   rev: v3.2.0
   hooks:
-  - id: trailing-whitespace
-  - id: end-of-file-fixer
-  - id: check-yaml
-  - id: check-added-large-files
-  - id: check-merge-conflict
-  - id: check-toml
+    - id: trailing-whitespace
+    - id: end-of-file-fixer
+    - id: check-yaml
+    - id: check-added-large-files
+    - id: check-merge-conflict
+    - id: check-toml
 - repo: https://github.com/ambv/black
   rev: stable
   hooks:
-  - id: black
-    language_version: python3
+    - id: black
+      language_version: python3
+- repo: https://github.com/pycqa/bandit
+  rev: 1.7.0
+  hooks:
+    - id: bandit
+      args: ['-iii', '-ll']
