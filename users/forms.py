@@ -28,12 +28,25 @@ class SignupForm(forms.ModelForm):
     class Meta:
         model = User
         fields = (
-            "first_name",
-            "last_name",
             "email",
-            "phone",
-            "postal_address",
+            "password1",
+            "password2",
         )
 
-    def clean_password2(self):
-        pass
+    def clean(self):
+        """
+        Verify both passwords match.
+        """
+        cleaned_data = super().clean()
+        password1 = cleaned_data.get("password1")
+        password2 = cleaned_data.get("password2")
+        if password1 is not None and password1 != password2:
+            self.add_error("password2", _("Your passwords must match"))
+        return cleaned_data
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.set_password(self.cleaned_data.get("password1"))
+        if commit:
+            user.save()
+        return user

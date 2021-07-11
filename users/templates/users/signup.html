@@ -13,9 +13,14 @@
     <h1 class="mb-3 fw-bold text-center">Sign up</h1>
 
 
-    {% crispy form %}
+    {% load crispy_forms_tags %}
+    <form action="{% url 'users:signup' %}" method="post">
+      {% csrf_token %}
+      {{ form|crispy }}
+      <button class="btn w-100 btn-primary mt-2" type="submit">Sign up</button>
+    </form>
 
-    <button class="btn w-100 btn-primary mt-2" type="submit">Sign up</button>
+
 
     <!-- Text -->
     <p class="mb-0 fs-sm text-center text-muted">

@@ -18,6 +18,7 @@ class CustomUserAdmin(UserAdmin):
         "is_staff",
         "is_active",
     )
+    readonly_fields = ("creation_date",)
     fieldsets = (
         (None, {"fields": ("email", "password")}),
         (
@@ -29,6 +30,10 @@ class CustomUserAdmin(UserAdmin):
                     "is_superuser",
                 )
             },
+        ),
+        (
+            "Audit",
+            {"fields": ("creation_date",)},
         ),
     )
     add_fieldsets = (
