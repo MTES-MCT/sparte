@@ -6,7 +6,7 @@
   align-items-center = aligner le contenu verticalement
 -->
 
-<div class="row align-items-center justify-content-center">
+<div class="row align-items-center justify-content-center h-100">
 
   <div class="col-12 col-md-5 col-lg-4">
     <!-- Heading -->
@@ -24,7 +24,7 @@
 
     <!-- Text -->
     <p class="mb-0 fs-sm text-center text-muted">
-      Already have an account? <a href="signin.html">Log in</a>.
+      Already have an account? <a href="{% url 'users:signin' %}">Log in</a>.
     </p>
   </div>
 </div>

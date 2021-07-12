@@ -8,8 +8,20 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
   </head>
   <body>
-    <div class="container">
-      {% block content %} {% endblock %}
+    <div class="container vh-100 d-flex flex-column">
+      <div class="row justify-content-between pb-1 mt-1 bg-light" style="border-bottom: 1px solid #ccc;">
+        <div class="col-4">
+            <b><a href="{% url 'home' %}">SPARTE</a></b>
+        </div>
+        <div class="col-4 float-right text-right">
+            <a href="{% url 'users:signup' %}" class="btn btn-outline-primary btn-sm">Sign up</a>
+            <a href="{% url 'users:signin' %}" class="btn btn-outline-primary btn-sm">Connexion</a>
+        </div>
+      </div>
+
+      <div class="flex-grow-1">
+        {% block content %} {% endblock %}
+      </div>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
