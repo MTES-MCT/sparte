@@ -1,9 +1,15 @@
 from django.views.generic import DetailView, ListView
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormView
 from django.urls import reverse_lazy
 
 from .models import User
-from .forms import SignupForm
+from .forms import SignupForm, SigninForm
+
+
+class SigninView(FormView):
+    template_name = "users/signin.html"
+    form_class = SigninForm
+    success_url = "/thanks/"
 
 
 class UserDetailView(DetailView):

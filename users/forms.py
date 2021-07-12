@@ -1,4 +1,6 @@
 from django import forms
+from django.contrib.auth import authenticate
+from django.core.exceptions import ValidationError
 from django.contrib.auth.forms import UserChangeForm, UserCreationForm
 from django.utils.translation import gettext_lazy as _
 
@@ -50,3 +52,23 @@ class SignupForm(forms.ModelForm):
         if commit:
             user.save()
         return user
+
+
+class SigninForm(forms.Form):
+    email = forms.EmailField(label=_("email"))
+    password = forms.CharField(
+        label=_("password"), widget=forms.PasswordInput(), max_length=50
+    )
+
+    def clean(self):
+        # check user exists
+        cleaned_email = self.cleaned_data["email"]
+        try:
+            self.user = User.objects.get(email=cleaned_email)
+        except User.DoesNotExist:
+            raise ValidationError(_("No user match this email."))
+        # check password is correct
+        cleaned_pw = self.cleaned_data["password"]
+        user = authenticate(email=cleaned_email, password=cleaned_pw)
+        if user is None:
+            raise ValidationError(_("Wrong password."))
