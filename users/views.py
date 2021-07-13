@@ -9,7 +9,7 @@ from .forms import SignupForm, SigninForm
 class SigninView(FormView):
     template_name = "users/signin.html"
     form_class = SigninForm
-    success_url = "/thanks/"
+    success_url = reverse_lazy("connected")
 
 
 class UserDetailView(DetailView):
