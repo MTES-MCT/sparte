@@ -134,3 +134,8 @@ $.getJSON("static/geojson/departements.geojson", function(data) {
         {
             style: style,
             onEachFeature: onEachFeature
+        }
+    )
+    //show or id departement
+    LayerControl.addOverlay(GeoJsonLayer, "Départements")
+})
