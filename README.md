@@ -52,3 +52,7 @@ Django settings & installation:
 Flake8 linting:
 
 - https://flake8.pycqa.org/en/3.1.1/user/options.html#cmdoption-flake8--exclude
+
+Dashboard layout (for inspiration):
+
+- https://appstack.bootlab.io/dashboard-default.html
