@@ -56,3 +56,5 @@ Flake8 linting:
 Dashboard layout (for inspiration):
 
 - https://appstack.bootlab.io/dashboard-default.html
+
+Test deploy on scalingo
