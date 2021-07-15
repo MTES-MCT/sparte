@@ -5,7 +5,7 @@ description = "SPARTE est un projet open source qui vise à accompagner les coll
 authors = ["Swann <swann.bouviermuller@gmail.com>"]
 
 [tool.poetry.dependencies]
-python = "3.9.6"
+python = "3.9.2"
 Django = "3.2.5"
 psycopg2 = "2.9.1"
 django-environ = "^0.4.5"
