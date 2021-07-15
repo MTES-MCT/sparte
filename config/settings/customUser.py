@@ -1,5 +1,5 @@
 """
-Parameter for Crispy lib
+Parameter for custom User
 """
 from .base import INSTALLED_APPS, TEMPLATES
 

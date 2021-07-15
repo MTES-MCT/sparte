@@ -37,3 +37,8 @@ Tâches envisagées :
 
 - Envoyer un e-mail lorsqu'un user s'inscri pour confirmer son inscription
 - optin pour être contacté en direct
+
+## Interesting links
+
+- [Geodjango Tuto](https://docs.djangoproject.com/en/3.2/ref/contrib/gis/tutorial/)
+- [GeoDjango Serialization](https://docs.djangoproject.com/fr/3.2/ref/contrib/gis/serializers/)
