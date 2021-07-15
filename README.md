@@ -1,26 +1,27 @@
-# **SPARTE** - **S**ervice de **P**ortrait de l’**AR**tificialisation des **TE**rritoires
+**S**ervice de **P**ortrait de l’**AR**tificialisation des **TE**rritoires
+==========================================================================
+
+# SPARTE
 
 Le Service de Portrait de l’ARtificialisation des TErritoires (ou SPARTE) est une plateforme qui aide les collectivité à mesurer l'artificialisation de leurs sols et ainsi se conformer aux nouvelles lois.
 
 ## Installation
 
 1. Cloner le répository git
-2. Installer les dépendances avec Poetry
-3. Installer le hook des pré-comit
+2. Installer les dépendances avec pipenv (Poetry n'étant pas supporté par Scalingo)
 
 ```
-git clone ...
-poetry install
-poetry run pre-commit install
+git clone git@github.com:MTES-MCT/sparte.git
+pipenv install --dev
 ```
 
-## before commiting
+## Before commiting
 
 Check unit test coverage: `coverage run -m pytest && coverage report -m`
 
 Check flake8 linting: `flake8`
 
-# TODO List
+## TODO List
 
 - Connecté à un git remote et mettre en place les branches
 - Déployer en DEV, STAGING et PROD
@@ -32,7 +33,7 @@ Done :
 
 - Custom user pour associer des données telles que téléphone, date de naissance, etc...
 
-# Useful links
+## Useful links
 
 About pytest:
 
