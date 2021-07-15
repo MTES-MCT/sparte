@@ -1,0 +1,49 @@
+[tool.poetry]
+name = "SPARTE"
+version = "0.1.0"
+description = "SPARTE est un projet open source qui vise à accompagner les collectivités à réduire l'artificialisation de leur sol"
+authors = ["Swann <swann.bouviermuller@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "3.9.6"
+Django = "3.2.5"
+psycopg2 = "2.9.1"
+django-environ = "^0.4.5"
+django-crispy-forms = "^1.12.0"
+
+[tool.poetry.dev-dependencies]
+flake8 = "^3.9.2"
+pytest = "^6.2.4"
+pre-commit = "^2.13.0"
+coverage = {extras = ["toml"], version = "^5.5"}
+pytest-django = "^4.4.0"
+black = {version = "^21.6b0", allow-prereleases = true}
+flake8-bugbear = "^21.4.3"
+django-debug-toolbar = "^3.2.1"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.coverage.run]
+omit = [".*", "*/site-packages/*"]
+
+[tool.coverage.report]
+fail_under = 100
+
+[tool.black]
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+  | .+\.html
+)/
+'''
