@@ -32,8 +32,13 @@ urlpatterns = [
 ]
 
 if settings.DEBUG:
-    import debug_toolbar  # noqa: E402
+    try:
+        # try except required to activate debug in staging server
+        # where we do not install dev dependencies
+        import debug_toolbar  # noqa: E402
 
-    urlpatterns += [
-        path("__debug__/", include(debug_toolbar.urls)),
-    ]
+        urlpatterns += [
+            path("__debug__/", include(debug_toolbar.urls)),
+        ]
+    except ImportError:
+        pass
