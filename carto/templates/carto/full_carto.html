@@ -51,7 +51,7 @@
 <script language="javascript">
     initialisation([{{ center_lat }}, {{ center_lng }}], {{ default_zoom }})
     {% if layer_url %}
-        add_layer("{{ layer_url }}", "{{ layer_name }}")
+        add_layer("{{ layer_url }}", "{{ layer_name }}", true)
     {% endif %}
 
     // current_carto = new Carto([{{ center_lat }}, {{ center_lng }}], {{ default_zoom }}, "{{ carto_name }}")
