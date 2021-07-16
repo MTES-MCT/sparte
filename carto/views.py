@@ -21,17 +21,13 @@ def render_map():
 
 
 def arcachon(request):
-    """Display a map with departements 44.6586, -1.164 10"""
-    url = reverse_lazy("carto:data_worldborder")
+    """Center the map on Arcachon"""
     context = {
         # center map on France
         "carto_name": "Arcachon",
-        "center_lat": 46.7111,
-        "center_lng": 1.7191,
-        "default_zoom": 2,
-        # load departements layer
-        "layer_url": f"{request.scheme}://{request.get_host()}{url}",
-        "layer_name": "Pays",
+        "center_lat": 44.6586,
+        "center_lng": -1.164,
+        "default_zoom": 10,
     }
     return render(request, "carto/full_carto.html", context=context)
 
