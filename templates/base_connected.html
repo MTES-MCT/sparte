@@ -17,8 +17,11 @@
   </head>
   <body>
     <div class="container-fluid vh-100 d-flex pl-0 pr-0">
-            <div class="bg-dark" id="sidebar" style="flex: 0 0 200px;">
 
+        <!-- Barre de gauche -->
+        <div class="bg-dark" id="sidebar" style="flex: 0 0 200px;">
+
+            <!-- MENY USER ET TITRE -->
             <div class='d-flex w-100 mb-4 mt-1 align-items-center'>
 
                 <div class='flex-shrink-1'>
@@ -40,41 +43,36 @@
                     </div>
                 </div>
 
-
-
             </div>
 
+            <!-- MENU DES CARTES -->
+            <ul class="nav flex-column sticky-top">
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{% url 'carto:departement' %}">Pays et départements</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{% url 'carto:worldborder' %}">Pays</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="{% url 'carto:arcachon' %}">Centrée sur Arcachon</a>
+                </li>
+            </ul>
 
+        </div>
 
+        <!-- ZONE PRINCIPALE -->
+        <div class="d-flex flex-fill flex-grow-1 h-100">
+            {% block content %}{% endblock %}
+        </div>
 
-
-
-                <!-- LEFT MENU -->
-                <ul class="nav flex-column sticky-top">
-                    <li class="nav-item">
-                        <a class="nav-link text-white" href="{% url 'carto:departement' %}">Départements</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-white" href="{% url 'carto:worldborder' %}">World borders</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-white" href="{% url 'carto:arcachon' %}">Arcachon</a>
-                    </li>
-                </ul>
-                <!-- END LEFT MENU -->
-
-            </div>
-
-            <!-- TOP MENU -->
-            <div class="d-flex flex-fill flex-grow-1 h-100">
-                {% block content %}{% endblock %}
-            </div>
     </div>
+
     <script>
         feather.replace()
     </script>
     <script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns" crossorigin="anonymous"></script>
     {% block bodyend %}{% endblock %}
+
   </body>
 </html>
