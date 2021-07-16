@@ -9,7 +9,7 @@ from .forms import SignupForm, SigninForm
 class SigninView(FormView):
     template_name = "users/signin.html"
     form_class = SigninForm
-    success_url = reverse_lazy("connected")
+    success_url = reverse_lazy("carto:home_connected")
 
 
 class UserDetailView(DetailView):
@@ -25,7 +25,7 @@ class UserCreateView(CreateView):
     template_name = "users/signup.html"
     form_class = SignupForm
     # fields = ['email', 'password']
-    success_url = reverse_lazy("users:login")
+    success_url = reverse_lazy("users:signin")
 
 
 class UserUpdateView(UpdateView):
