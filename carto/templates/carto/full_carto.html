@@ -49,12 +49,12 @@
 {% block bodyend %}
 <script src="{% static 'carto/js/map.js' %}"></script>
 <script language="javascript">
-    // map.initialisation([{{ center_lat }}, {{ center_lng }}], {{ default_zoom }})
-    // map.add_layer("{{ layer_url }}", "{{ layer_name }}")
+    initialisation([{{ center_lat }}, {{ center_lng }}], {{ default_zoom }})
+    add_layer("{{ layer_url }}", "{{ layer_name }}")
 
-    current_carto = new Carto([{{ center_lat }}, {{ center_lng }}], {{ default_zoom }}, "{{ carto_name }}")
-    current_carto.init()
-    dep_layer = new Layer("{{ layer_name }}", "{{ layer_url }}")
-    dep_layer.init(current_carto.add_layer)
+    // current_carto = new Carto([{{ center_lat }}, {{ center_lng }}], {{ default_zoom }}, "{{ carto_name }}")
+    // current_carto.init()
+    // dep_layer = new Layer("{{ layer_name }}", "{{ layer_url }}")
+    // dep_layer.init(current_carto.add_layer)
 </script>
 {% endblock %}
