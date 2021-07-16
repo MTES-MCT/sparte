@@ -6,25 +6,25 @@
   align-items-center = aligner le contenu verticalement
 -->
 
-<div class="row align-items-center justify-content-center h-100">
+<div class="row align-items-center justify-content-center h-100 mr-0 ml-0">
 
   <div class="col-12 col-md-5 col-lg-4">
     <!-- Heading -->
-    <h1 class="mb-3 fw-bold text-center">Sign up</h1>
+    <h1 class="mb-3 fw-bold text-center">Inscription</h1>
 
 
     {% load crispy_forms_tags %}
     <form action="{% url 'users:signup' %}" method="post">
       {% csrf_token %}
       {{ form|crispy }}
-      <button class="btn w-100 btn-primary mt-2" type="submit">Sign up</button>
+      <button class="btn w-100 btn-primary mt-2" type="submit">S'inscrire</button>
     </form>
 
 
 
     <!-- Text -->
     <p class="mb-0 fs-sm text-center text-muted">
-      Already have an account? <a href="{% url 'users:signin' %}">Log in</a>.
+      Vous avez déjà un compte ? <a href="{% url 'users:signin' %}">connectez-vous</a>.
     </p>
   </div>
 </div>
