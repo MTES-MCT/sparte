@@ -217,7 +217,7 @@ function initialisation (map_center, default_zoom) {
 
 // }
 
-function add_layer (data_url, name)
+function add_layer (data_url, name, display)
 {
     // GeoJsonLayer.addData(geojsonFeature);
     $.getJSON(data_url, function(data) {
@@ -230,5 +230,8 @@ function add_layer (data_url, name)
         )
         //show new layer in control layer div
         layerControl.addOverlay(GeoJsonLayer, name)
+        if (display){
+            GeoJsonLayer.addTo(map)
+        }
     })
 }
