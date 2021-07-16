@@ -50,7 +50,9 @@
 <script src="{% static 'carto/js/map.js' %}"></script>
 <script language="javascript">
     initialisation([{{ center_lat }}, {{ center_lng }}], {{ default_zoom }})
-    add_layer("{{ layer_url }}", "{{ layer_name }}")
+    {% if layer_url %}
+        add_layer("{{ layer_url }}", "{{ layer_name }}")
+    {% endif %}
 
     // current_carto = new Carto([{{ center_lat }}, {{ center_lng }}], {{ default_zoom }}, "{{ carto_name }}")
     // current_carto.init()

@@ -16,9 +16,5 @@ urlpatterns = [
     path("data/departements/", views.data_departements, name="data_departement"),
     path("worldborders/", views.worldborder, name="worldborder"),
     path("data/worldborders/", views.data_worldborder, name="data_worldborder"),
-    path(
-        "arcachon/",
-        TemplateView.as_view(template_name="base_connected.html"),
-        name="arcachon",
-    ),
+    path("arcachon/", views.arcachon, name="arcachon"),
 ]
