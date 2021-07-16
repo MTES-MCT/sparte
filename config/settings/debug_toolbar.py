@@ -1,16 +1,26 @@
-""" Activate debug toolbar if DEBUG=True"""
+""" Activate debug toolbar only if package available"""
 from .base import INSTALLED_APPS, DEBUG, MIDDLEWARE
 
+
+# activate only if debug is True
 if DEBUG:
-    INSTALLED_APPS += ["debug_toolbar"]
-    MIDDLEWARE += [
-        "debug_toolbar.middleware.DebugToolbarMiddleware",
-    ]
+    try:
+        # only if debug_toolbar is available, else it will fire exception
+        # useful to turn debug mode on staging without installing dev dependencies
+        import debug_toolbar  # noqa: F401
 
-    # bypass check of internal IPs
-    def show_toolbar(request):
-        return True
+        INSTALLED_APPS += ["debug_toolbar"]
+        MIDDLEWARE += [
+            "debug_toolbar.middleware.DebugToolbarMiddleware",
+        ]
 
-    DEBUG_TOOLBAR_CONFIG = {
-        "SHOW_TOOLBAR_CALLBACK": show_toolbar,
-    }
+        # bypass check of internal IPs
+        def show_toolbar(request):
+            return True
+
+        DEBUG_TOOLBAR_CONFIG = {
+            "SHOW_TOOLBAR_CALLBACK": show_toolbar,
+        }
+
+    except ImportError:
+        pass
