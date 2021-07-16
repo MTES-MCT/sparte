@@ -1,7 +1,7 @@
-// var map
-// var GeoJsonLayer
+var map = L.map('mapid')
+var GeoJsonLayer
 var info = L.control()
-// var LayerControl = L.control.layers(null, null)
+var layerControl = L.control.layers(null, null)
 var legend = L.control({position: 'bottomright'});
 
 /////////////////////////////////////////////////
@@ -34,10 +34,10 @@ function style(feature) {
 //  INTERACTION
 ///////////////////////////////////
 
-function layer (name, url) {
-    this.name = name;
-    this.url = url;
-}
+// function layer (name, url) {
+//     this.name = name;
+//     this.url = url;
+// }
 
 // Highlight on mouse hover
 function highlightFeature(e) {
@@ -118,126 +118,117 @@ legend.onAdd = function (map) {
 // INITIALISATION
 /////////////////////////
 
-function Carto (center, zoom, name){
+// function Carto (center, zoom, name){
 
-    this.center = center;
-    this.zoom = zoom;
-    this.name = name;
+//     this.center = center;
+//     this.zoom = zoom;
+//     this.name = name;
 
-    this.map = L.map('mapid');
-    this.info = L.control()
-    this.layerControl = L.control.layers(null, null)
-    this.legend = L.control({position: 'bottomright'});
+//     this.map = L.map('mapid');
+//     this.info = L.control()
+//     this.layerControl = L.control.layers(null, null)
+//     this.legend = L.control({position: 'bottomright'});
 
-    this.init = function () {
-        this.map.setView(this.center, this.zoom)
-        // Choix du fond de carte
-        L.tileLayer( 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>- Beta Gouv.',
-            subdomains: ['a','b','c']
-        }).addTo( this.map )
-        // add info div
-        // this.info.addTo(this.map);
-        // this.info.update()
-        // Add layer control div
-        this.layerControl.addTo(this.map)
-        // add legend div
-        // this.legend.addTo(this.map)
-    }
+//     this.init = function () {
+//         this.map.setView(this.center, this.zoom)
+//         // Choix du fond de carte
+//         L.tileLayer( 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+//             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>- Beta Gouv.',
+//             subdomains: ['a','b','c']
+//         }).addTo( this.map )
+//         // add info div
+//         // this.info.addTo(this.map);
+//         // this.info.update()
+//         // Add layer control div
+//         this.layerControl.addTo(this.map)
+//         // add legend div
+//         // this.legend.addTo(this.map)
+//     }
 
-    this.add_layer = function (layer, name, display) {
-        this.layerControl.addOverlay(layer, name);
-        if (display) {
-            this.layer.layer.addTo( this.map )
-        }
-    }
+//     this.add_layer = function (layer, name, display) {
+//         this.layerControl.addOverlay(layer, name);
+//         if (display) {
+//             this.layer.layer.addTo( this.map )
+//         }
+//     }
 
-    // this.info est une référence à un autre objet
-    // à l'intérieur de onAdd this fait donc référence à info
-    // on ajoute donc une référence vers le parent
-    this.info.carto = this
-    this.info.onAdd = function (map) {
-        this._div = L.DomUtil.create('div', 'info'); // create a div with a class "info"
-        return this._div;
-    };
+//     // this.info est une référence à un autre objet
+//     // à l'intérieur de onAdd this fait donc référence à info
+//     // on ajoute donc une référence vers le parent
+//     this.info.carto = this
+//     this.info.onAdd = function (map) {
+//         this._div = L.DomUtil.create('div', 'info'); // create a div with a class "info"
+//         return this._div;
+//     };
 
-    // method that we will use to update the control based on feature properties passed
-    this.info.update = function (props) {
-        if (props) {
-            this._div.innerHTML = '<h4>'+ this.carto.name + '</h4><b>' + props.nom + '</b><br />' + props.code
-        }else{
-            this._div.innerHTML = '<h4>'+ this.carto.name + '</h4>'
-        }
-    }
-}
+//     // method that we will use to update the control based on feature properties passed
+//     this.info.update = function (props) {
+//         if (props) {
+//             this._div.innerHTML = '<h4>'+ this.carto.name + '</h4><b>' + props.nom + '</b><br />' + props.code
+//         }else{
+//             this._div.innerHTML = '<h4>'+ this.carto.name + '</h4>'
+//         }
+//     }
+// }
 
 // var map = L.map('mapid')
 
-// map.initialisation = function (map_center, default_zoom) {
-//     // Initialize map
-//     map.setView(map_center, default_zoom)
-//     // Choix du fond de carte
-//     L.tileLayer( 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-//         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>- Beta Gouv.',
-//         subdomains: ['a','b','c']
-//     }).addTo( map )
-//     // add info div
-//     info.addTo(map);
-//     // Add layer control div
-//     LayerControl.addTo(map)
-//     // add legend div
-//     legend.addTo(map)
-// }
+function initialisation (map_center, default_zoom) {
+    // Initialize map
+    map.setView(map_center, default_zoom)
+    // Choix du fond de carte
+    L.tileLayer( 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>- Beta Gouv.',
+        subdomains: ['a','b','c']
+    }).addTo( map )
+    // add info div
+    info.addTo(map);
+    // Add layer control div
+    layerControl.addTo(map)
+    // add legend div
+    legend.addTo(map)
+}
 
 
 /////////////////////////////////
 //  Add layer
 /////////////////////////////////
 
-function Layer (name, url) {
-    this.name = name;
-    this.url = url;
-    this.data = null;
-    this.layer = null;
+// function Layer (name, url) {
+//     this.name = name;
+//     this.url = url;
+//     this.data = null;
+//     this.layer = null;
 
-    this.init = function (callback) {
-        // GeoJsonLayer.addData(geojsonFeature);
-        $.getJSON(this.url, function(data) {
-            this.data = data
-            this.layer = L.geoJson(
-                data,
-                {
-                    style: style,
-                    onEachFeature: onEachFeature
-                }
-            )
-        })
-        callback(this.layer, this.name, false);
-    }
+//     this.init = function (callback) {
+//         // GeoJsonLayer.addData(geojsonFeature);
+//         $.getJSON(this.url, function(data) {
+//             this.data = data
+//             this.layer = L.geoJson(
+//                 data,
+//                 {
+//                     style: style,
+//                     onEachFeature: onEachFeature
+//                 }
+//             )
+//         })
+//         callback(this.layer, this.name, false);
+//     }
 
-}
-
-// map.add_layer = function (data_url, name)
-// {
-//     // GeoJsonLayer.addData(geojsonFeature);
-//     $.getJSON(data_url, function(data) {
-//         GeoJsonLayer = L.geoJson(
-//             data,
-//             {
-//                 style: function (feature) {
-//                     return {
-//                         fillColor: getColor(feature.properties.code),
-//                         weight: 2,
-//                         opacity: 1,
-//                         color: 'white',
-//                         dashArray: '3',
-//                         fillOpacity: 0.7
-//                     }
-//                 },
-//                 onEachFeature: onEachFeature
-//             }
-//         )
-//         //show new layer in control layer div
-//         LayerControl.addOverlay(GeoJsonLayer, name)
-//     })
 // }
+
+function add_layer (data_url, name)
+{
+    // GeoJsonLayer.addData(geojsonFeature);
+    $.getJSON(data_url, function(data) {
+        GeoJsonLayer = L.geoJson(
+            data,
+            {
+                style: style,
+                onEachFeature: onEachFeature
+            }
+        )
+        //show new layer in control layer div
+        layerControl.addOverlay(GeoJsonLayer, name)
+    })
+}
