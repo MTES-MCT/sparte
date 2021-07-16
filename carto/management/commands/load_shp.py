@@ -2,7 +2,7 @@ from django.contrib.gis.utils import LayerMapping
 from django.core.management.base import BaseCommand
 from pathlib import Path
 
-from .models import WorldBorder
+from carto.models import WorldBorder
 
 
 class Command(BaseCommand):
@@ -25,7 +25,9 @@ class Command(BaseCommand):
         }
 
         world_shp = (
-            Path(__file__).resolve().parent / "media" / "TM_WORLD_BORDERS-0.3.shp"
+            Path(__file__).resolve().parent.parent.parent
+            / "media"
+            / "TM_WORLD_BORDERS-0.3.shp"
         )
 
         lm = LayerMapping(WorldBorder, world_shp, world_mapping, transform=False)
