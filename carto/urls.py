@@ -7,7 +7,11 @@ from . import views
 app_name = "carto"
 
 urlpatterns = [
-    path("", TemplateView.as_view(template_name="base_connected.html"), name="home"),
+    path(
+        "",
+        TemplateView.as_view(template_name="base_connected.html"),
+        name="home_connected",
+    ),
     path("departements/", views.departements, name="departement"),
     path("data/departements/", views.data_departements, name="data_departement"),
     path("worldborders/", views.worldborder, name="worldborder"),
