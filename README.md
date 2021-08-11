@@ -58,4 +58,8 @@ Dashboard layout (for inspiration):
 
 - https://appstack.bootlab.io/dashboard-default.html
 
-Test deploy on scalingo
+About colours and gradient :
+
+- https://github.com/vaab/colour/
+- https://medium.com/the-mvp/finally-a-definitive-way-to-make-gradients-beautiful-6b27af88f5f
+- https://hslpicker.com/#c0f/#e6ff00
