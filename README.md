@@ -21,6 +21,11 @@ Check unit test coverage: `coverage run -m pytest && coverage report -m`
 
 Check flake8 linting: `flake8`
 
+Si vous souhaitez bypasser pre-commit hook (usefull pour ajouter des fichiers shapes sans les modifiers):
+```
+git commit --no-verify
+```
+
 ## TODO List
 
 - Connecté à un git remote et mettre en place les branches
