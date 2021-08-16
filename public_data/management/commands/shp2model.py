@@ -67,26 +67,29 @@ class Command(BaseCommand):
 
         path = options["shape_path"]
         logging.info("Given file: %s", path)
-        datasource = self.open_shape_file(options["shape_path"])
+        datasource = self.open_shape_file(path)
 
         layer = datasource[0]
 
         class_name = to_camel_case(layer)
-        print(f"class {class_name}(models.Model):")
+        print(f"class {class_name}(AutoLoad):")
 
         mapping = dict()
         for i, field_name in enumerate(layer.fields):
             field_type = get_django_type(layer.field_types[i])
             mapping[field_name] = field_name.lower()
             print(
-                " " * 4,
+                " " * 3,
                 '{0} = models.{1}(_("{0}"), max_length={2})'.format(
                     field_name.lower(), field_type, layer.field_widths[i]
                 ),
             )
         print("")
-        print(" " * 4, 'shape_file_path = Path("")')
-        print(" " * 4, "mapping = {")
+        print(" " * 3, "mpoly = models.MultiPolygonField()")
+        print("")
+        print(" " * 3, f'shape_file_path = Path("{path}")')
+        print(" " * 3, "mapping = {")
         for key, value in mapping.items():
-            print(" " * 8, f'"{value}": "{key}",')
-        print(" " * 4, "}")
+            print(" " * 7, f'"{value}": "{key}",')
+        print(" " * 7, '"mpoly": "MULTIPOLYGON",')
+        print(" " * 3, "}")
