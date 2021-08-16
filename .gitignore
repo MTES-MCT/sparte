@@ -141,11 +141,11 @@ cython_debug/
 .vscode/*
 
 # data provided by philippe
-carto/media/a_b_2015_2018/*
-carto/media/a_b_2018_2015/*
-carto/media/A_Brute_2018/*
-carto/media/communes_sybarval/*
-carto/media/Enveloppe_urbaine/*
-carto/media/Sybarval/*
-carto/media/Voirire_2018/*
-carto/media/zones_baties_2018/*
+public_data/media/a_b_2015_2018/*
+public_data/media/a_b_2018_2015/*
+public_data/media/A_Brute_2018/*
+public_data/media/communes_sybarval/*
+public_data/media/Enveloppe_urbaine/*
+public_data/media/Sybarval/*
+public_data/media/Voirire_2018/*
+public_data/media/zones_baties_2018/*
