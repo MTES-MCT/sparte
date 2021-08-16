@@ -139,13 +139,3 @@ cython_debug/
 
 # configuration of visual studio code
 .vscode/*
-
-# data provided by philippe
-public_data/media/a_b_2015_2018/*
-public_data/media/a_b_2018_2015/*
-public_data/media/A_Brute_2018/*
-public_data/media/communes_sybarval/*
-public_data/media/Enveloppe_urbaine/*
-public_data/media/Sybarval/*
-public_data/media/Voirire_2018/*
-public_data/media/zones_baties_2018/*
