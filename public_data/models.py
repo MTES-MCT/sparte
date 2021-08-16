@@ -12,8 +12,9 @@ class AutoLoad(models.Model):
     * mapping - between feature name and database field name
     Those two needs to be overloaded.
 
-    Inheritance:
-        django.contrib.gis.db.models.Model
+    SeeAlso::
+    - public_data.management.commands.shp2model
+    - public_data.management.commands.load_data
     """
 
     shape_file_path = Path()
@@ -27,7 +28,6 @@ class AutoLoad(models.Model):
         Args:
             cls (undefined): default class calling
             verbose=True (undefined): define level of verbosity
-
         """
         cls.objects.all().delete()
         lm = LayerMapping(cls, cls.shape_file_path, cls.mapping, transform=False)
@@ -39,11 +39,8 @@ class AutoLoad(models.Model):
 
 class CommunesSybarval(AutoLoad):
     """
-    Description of CommunesSybarval
-
-    Inheritance:
-        AutoLoad: load data from shape_file
-
+    Communes_SYBARVAL : les communes avec les même attributs
+    Données produites par Philippe
     """
 
     id_source = models.CharField(_("id"), max_length=24)
@@ -69,9 +66,9 @@ class CommunesSybarval(AutoLoad):
     z_baties_2 = models.IntegerField(_("z_baties_2"))
     voirie_201 = models.IntegerField(_("voirie_201"))
     tache_2018 = models.IntegerField(_("tache_2018"))
-    d_brute_20 = models.FloatField(_("d_brute_20"), max_length=24)
-    d_batie_20 = models.FloatField(_("d_batie_20"), max_length=24)
-    d_voirie_2 = models.FloatField(_("d_voirie_2"), max_length=24)
+    d_brute_20 = models.FloatField(_("d_brute_20"))
+    d_batie_20 = models.FloatField(_("d_batie_20"))
+    d_voirie_2 = models.FloatField(_("d_voirie_2"))
 
     # GeoDjango-specific: a geometry field (MultiPolygonField)
     mpoly = models.MultiPolygonField()
@@ -110,3 +107,184 @@ class CommunesSybarval(AutoLoad):
     # Returns the string representation of the model.
     def __str__(self):
         return self.nom
+
+
+class Artificialisee2015to2018(AutoLoad):
+    """
+    A_B_2015_2018 : la surface (en hectares) artificialisée entre 2015 et 2018
+    Données construites par Philippe
+    """
+
+    surface = models.IntegerField(_("surface"))
+    cs_2018 = models.CharField(_("cs_2018"), max_length=254, null=True)
+    us_2018 = models.CharField(_("us_2018"), max_length=254, null=True)
+    cs_2015 = models.CharField(_("cs_2015"), max_length=254, null=True)
+    us_2015 = models.CharField(_("us_2015"), max_length=254, null=True)
+
+    mpoly = models.MultiPolygonField()
+
+    shape_file_path = Path("public_data/media/a_b_2015_2018/A_B_2015_2018.shp")
+    mapping = {
+        "surface": "Surface",
+        "cs_2018": "cs_2018",
+        "us_2018": "us_2018",
+        "cs_2015": "cs_2015",
+        "us_2015": "us_2015",
+        "mpoly": "MULTIPOLYGON",
+    }
+
+
+class Renaturee2018to2015(AutoLoad):
+    """
+    A_B_2018_2015 : la surface (en hectares) re-naturée entre 2018 et 2015
+    Données produites par Philippe
+    """
+
+    surface = models.IntegerField(_("surface"))
+    cs_2018 = models.CharField(_("cs_2018"), max_length=254, null=True)
+    us_2018 = models.CharField(_("us_2018"), max_length=254, null=True)
+    cs_2015 = models.CharField(_("cs_2015"), max_length=254, null=True)
+    us_2015 = models.CharField(_("us_2015"), max_length=254, null=True)
+
+    mpoly = models.MultiPolygonField()
+
+    shape_file_path = Path("public_data/media/a_b_2018_2015/A_B_2018_2015.shp")
+    mapping = {
+        "surface": "Surface",
+        "cs_2018": "cs_2018",
+        "us_2018": "us_2018",
+        "cs_2015": "cs_2015",
+        "us_2015": "us_2015",
+        "mpoly": "MULTIPOLYGON",
+    }
+
+
+class Artificielle2018(AutoLoad):
+    """
+    A_Brute_2018 : la surface artificialisée en hectare
+    Données produites par Philippe
+    """
+
+    couverture = models.CharField(_("couverture"), max_length=254)
+    surface = models.IntegerField(_("surface"))
+
+    mpoly = models.MultiPolygonField()
+
+    shape_file_path = Path("public_data/media/A_Brute_2018/A_Brute_2018.shp")
+    mapping = {
+        "couverture": "couverture",
+        "surface": "Surface",
+        "mpoly": "MULTIPOLYGON",
+    }
+
+
+class EnveloppeUrbaine2018(AutoLoad):
+    """
+    Enveloppe_Urbaine_2018 : enveloppe urbaine sans la voirie avec moins d'attributs
+    """
+
+    couverture = models.CharField(_("couverture"), max_length=254, null=True)
+    surface = models.IntegerField(_("surface"))
+    a_brute_20 = models.IntegerField(_("a_brute_20"), null=True)
+    z_batie_20 = models.IntegerField(_("z_batie_20"), null=True)
+    d_brute_20 = models.FloatField(_("d_brute_20"), null=True)
+    d_batie_20 = models.FloatField(_("d_batie_20"), null=True)
+
+    mpoly = models.MultiPolygonField()
+
+    shape_file_path = Path(
+        "public_data/media/Enveloppe_urbaine/Enveloppe_Urbaine_2018.shp"
+    )
+    mapping = {
+        "couverture": "couverture",
+        "surface": "Surface",
+        "a_brute_20": "A_Brute_20",
+        "z_batie_20": "Z_Batie_20",
+        "d_brute_20": "D_Brute_20",
+        "d_batie_20": "D_Batie_20",
+        "mpoly": "MULTIPOLYGON",
+    }
+
+
+class Voirie2018(AutoLoad):
+    """
+    Voirie_2018 : les objets avec leur surface
+    """
+
+    couverture = models.CharField(_("couverture"), max_length=254, null=True)
+    usage = models.CharField(_("usage"), max_length=254, null=True)
+    surface = models.IntegerField(_("surface"))
+
+    mpoly = models.MultiPolygonField()
+
+    shape_file_path = Path("public_data/media/Voirire_2018/Voirie_2018.shp")
+    mapping = {
+        "couverture": "couverture",
+        "usage": "usage",
+        "surface": "Surface",
+        "mpoly": "MULTIPOLYGON",
+    }
+
+
+class ZonesBaties2018(AutoLoad):
+    """
+    Zones_Baties_2018 : les objets avec leur surface
+    Données produites par Philippe
+    """
+
+    couverture = models.CharField(_("couverture"), max_length=254, null=True)
+    usage = models.CharField(_("usage"), max_length=254, null=True)
+    surface = models.IntegerField(_("surface"))
+
+    mpoly = models.MultiPolygonField()
+
+    shape_file_path = Path("public_data/media/zones_baties_2018/Zones_Baties_2018.shp")
+    mapping = {
+        "couverture": "couverture",
+        "usage": "usage",
+        "surface": "Surface",
+        "mpoly": "MULTIPOLYGON",
+    }
+
+
+class Sybarval(AutoLoad):
+    """
+    SYBARVAL : les contours et les attributs utiles (seulement pour 2018) :
+        - Surface en hectare
+        - A_Brute_2018 : la surface artificialisée en hectare
+        - A_B_2015_2018 : la surface (en hectares) artificialisée entre 2015 et 2018
+        - A_B_2018_2015 : la surface (en hectares) re-naturée entre 2018 et 2015
+        - Z_Baties_2018 : la surface bâtie en hectares
+        - Voirie_2018 : la surface de voirie en hectares
+        - Tache_2018 : la surface en hectares de l'enveloppe urbaine 2018
+        - D_Brute_2018, D_Batie_2018 et D_Voirie_2018 : les densités
+    Données produites par Philippe
+    """
+
+    surface = models.IntegerField(_("surface"))
+    a_brute_20 = models.IntegerField(_("a_brute_20"), null=True)
+    a_b_2015_2 = models.IntegerField(_("a_b_2015_2"), null=True)
+    a_b_2018_2 = models.IntegerField(_("a_b_2018_2"), null=True)
+    z_baties_2 = models.IntegerField(_("z_baties_2"), null=True)
+    voirie_201 = models.IntegerField(_("voirie_201"), null=True)
+    tache_2018 = models.IntegerField(_("tache_2018"), null=True)
+    d_brute_20 = models.FloatField(_("d_brute_20"), null=True)
+    d_batie_20 = models.FloatField(_("d_batie_20"), null=True)
+    d_voirie_2 = models.FloatField(_("d_voirie_2"), null=True)
+
+    mpoly = models.MultiPolygonField()
+
+    shape_file_path = Path("public_data/media/Sybarval/SYBARVAL.shp")
+    mapping = {
+        "surface": "Surface",
+        "a_brute_20": "A_Brute_20",
+        "a_b_2015_2": "A_B_2015_2",
+        "a_b_2018_2": "A_B_2018_2",
+        "z_baties_2": "Z_Baties_2",
+        "voirie_201": "Voirie_201",
+        "tache_2018": "Tache_2018",
+        "d_brute_20": "D_Brute_20",
+        "d_batie_20": "D_Batie_20",
+        "d_voirie_2": "D_voirie_2",
+        "mpoly": "MULTIPOLYGON",
+    }
