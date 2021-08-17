@@ -35,7 +35,18 @@ class CommunesSybarvalAdmin(admin.GeoModelAdmin):
     ordering = ("nom",)
 
 
-admin.site.register(Artificialisee2015to2018, DefaultAdmin)
+@admin.register(Artificialisee2015to2018)
+class Artificialisee2015to2018Admin(admin.GeoModelAdmin):
+    model = Artificialisee2015to2018
+    list_display = (
+        "surface",
+        "cs_2018",
+        "us_2018",
+        "cs_2015",
+        "us_2015",
+    )
+
+
 admin.site.register(Artificielle2018, DefaultAdmin)
 admin.site.register(EnveloppeUrbaine2018, DefaultAdmin)
 admin.site.register(Renaturee2018to2015, DefaultAdmin)
