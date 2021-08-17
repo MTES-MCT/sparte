@@ -30,7 +30,7 @@ class AutoLoad(models.Model):
             verbose=True (undefined): define level of verbosity
         """
         cls.objects.all().delete()
-        lm = LayerMapping(cls, cls.shape_file_path, cls.mapping, transform=False)
+        lm = LayerMapping(cls, cls.shape_file_path, cls.mapping)
         lm.save(strict=True, verbose=verbose)
 
     class Meta:
