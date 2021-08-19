@@ -31,10 +31,7 @@ class Artificielle2018Serializer(serializers.GeoFeatureModelSerializer):
         fields = (
             "id",
             "surface",
-            "cs_2018",
-            "us_2018",
-            "cs_2015",
-            "us_2015",
+            "couverture",
         )
         geo_field = "mpoly"
         model = Artificielle2018
