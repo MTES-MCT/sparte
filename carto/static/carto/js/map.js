@@ -17,21 +17,6 @@ function getColor(d) {
                     '#FFEDA0'
 }
 
-/////////////////////////
-// ADD INFO DIV
-/////////////////////////
-
-
-
-///////////////////////////////
-// LEGEND
-////////////////////////////////
-
-
-
-
-
-
 
 /////////////////////////
 // INITIALISATION
@@ -91,9 +76,6 @@ function Carto (map_center, default_zoom)
 }
 
 
-
-
-
 /////////////////////////////////
 //  Add layer
 /////////////////////////////////
@@ -112,6 +94,13 @@ function GeoLayer (name, url) {
 
     // define if the layer is to be displayed as soon data are retrieved
     this.immediate_display = true
+
+    // reférence à l'objet carto qui contient map
+    this.carto = null
+
+    // indicates if all the data have to be loaded at once or if we reload data on each user map movement
+    // when loading the data we will use bbox information to get data only on visible part of the map
+    this.load_full_data = true
 
     // a surcharger pour changer la façon dont la couleur est choisie
     this.get_color = (feature) => {
@@ -161,6 +150,8 @@ function GeoLayer (name, url) {
     // set the layer appearance, fetch the data and display it on the map
     this.add_to_map = (carto) => {
 
+        this.carto = carto
+
         // define appearance
         this.geojsonlayer = L.geoJson(
             null,
@@ -190,16 +181,38 @@ function GeoLayer (name, url) {
             }
         )
 
-        // get the data and display the layer
-        $.getJSON(this.url, (data) => {
-            this.data = data
-            this.geojsonlayer.addData(this.data)
-            //show new layer in control layer div
-            carto.layerControl.addOverlay(this.geojsonlayer, this.name)
+        this.refresh_data()
 
-            if (this.immediate_display){
-                this.geojsonlayer.addTo(carto.map)
-            }
+        if (this.immediate_display){
+            this.geojsonlayer.addTo(carto.map)
+        }
+
+        // Add this layer into the layercontrol div (checkbox to display it)
+        carto.layerControl.addOverlay(this.geojsonlayer, this.name)
+
+        if (this.load_full_data == false)
+            // add an eventlistner on user moving the map
+            carto.map.on('moveend', this.refresh_data)
+    }
+
+    this.refresh_data = () => {
+        // full: indicate if we have to load everything (true) or if we have to get only data visible on the map (false)
+
+        let url = this.url
+        if (this.load_full_data == false)
+        {
+            url = url + `?in_bbox=${this.carto.map.getBounds().toBBoxString()}`
+        }
+
+        // get the data and display the layer
+        $.getJSON(url, (data) => {
+            /* best solution to add new data to a geojson layer would be to filter new data to remove data already
+            loaded before (those in this.data). I choose to clear completly the data to avoid getting caught on
+            difficult js stuff but this is definitely need to be improved. Current tactic create a flicker UI very
+            displeasant. */
+            this.data = data
+            this.geojsonlayer.clearLayers()
+            this.geojsonlayer.addData(data)
         })
     }
 

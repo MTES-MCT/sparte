@@ -21,6 +21,11 @@ Check unit test coverage: `coverage run -m pytest && coverage report -m`
 
 Check flake8 linting: `flake8`
 
+Si vous souhaitez bypasser pre-commit hook (usefull pour ajouter des fichiers shapes sans les modifiers):
+```
+git commit --no-verify
+```
+
 ## TODO List
 
 - Connecté à un git remote et mettre en place les branches
@@ -49,6 +54,7 @@ Django settings & installation:
 - https://djangostars.com/blog/configuring-django-settings-best-practices/
 - https://django-environ.readthedocs.io
 - https://python-poetry.org/docs/cli/#add
+- https://github.com/makinacorpus/docker-geodjango
 
 Flake8 linting:
 
@@ -63,3 +69,7 @@ About colours and gradient :
 - https://github.com/vaab/colour/
 - https://medium.com/the-mvp/finally-a-definitive-way-to-make-gradients-beautiful-6b27af88f5f
 - https://hslpicker.com/#c0f/#e6ff00
+
+Tuto GeoDjango
+
+- https://www.paulox.net/2021/07/19/maps-with-django-part-2-geodjango-postgis-and-leaflet/

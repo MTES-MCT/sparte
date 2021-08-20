@@ -29,6 +29,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("users/", include("users.urls")),
     path("carto/", include("carto.urls")),
+    path("public/", include("public_data.urls")),
 ]
 
 if settings.DEBUG:
