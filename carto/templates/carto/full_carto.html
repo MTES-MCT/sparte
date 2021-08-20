@@ -1,6 +1,7 @@
 {% extends 'base_connected.html' %}
 
 {% load static %}
+{% load map_tags %}
 
 {% block pagetitle %}
  - map
@@ -53,12 +54,10 @@
     let carto = new Carto ([{{ center_lat }}, {{ center_lng }}], {{ default_zoom }})
     carto.init()
 
-    {% if layer_url %}
-        // add_layer("{{ layer_url }}", "{{ layer_name }}", true)
-        dep_layer = new GeoLayer("{{ layer_name }}", "{{ layer_url }}")
-        dep_layer.add_to_map(carto)
-    {% endif %}
-
+    {% for layer in layer_list %}
+        {{ layer|geolayer }}
+    {% endfor %}
+/*
     let world_layer = new GeoLayer("World borders", "{% url 'carto:data_worldborder' %}")
     world_layer.get_color = function (feature) {
         // get the property that will decide the color
@@ -78,5 +77,6 @@
         return '<h4>World borders</h4><b>' + properties.name + '</b><br/>' + properties.pop2005
     }
     world_layer.add_to_map(carto)
+    */
 </script>
 {% endblock %}

@@ -1,5 +1,7 @@
 """Public data API views."""
 from rest_framework import viewsets
+from rest_framework.decorators import action
+from rest_framework.response import Response
 from rest_framework_gis import filters
 
 from .models import (
@@ -24,67 +26,63 @@ from .serializers import (
 )
 
 
-class Artificialisee2015to2018ViewSet(viewsets.ReadOnlyModelViewSet):
+class DataViewSet(viewsets.ReadOnlyModelViewSet):
     bbox_filter_field = "mpoly"
     bbox_filter_include_overlapping = True
     filter_backends = (filters.InBBoxFilter,)
+
+    @action(detail=False, methods=["get"])
+    def gradient(self, request):
+        property_name = color_name = None
+        if "property_name" in request.query_params:
+            property_name = str(request.query_params["property_name"])
+        if "color_name" in request.query_params:
+            color_name = str(request.query_params["color_name"])
+        gradient = self.queryset.model.get_gradient(
+            property_name=property_name,
+            color_name=color_name,
+        )
+        gradient = {str(k): v.hex_l for k, v in gradient.items()}
+        return Response(gradient)
+
+
+class Artificialisee2015to2018ViewSet(DataViewSet):
     queryset = Artificialisee2015to2018.objects.all()
     serializer_class = Artificialisee2015to2018Serializer
 
 
-class Artificielle2018ViewSet(viewsets.ReadOnlyModelViewSet):
-    bbox_filter_field = "mpoly"
-    bbox_filter_include_overlapping = True
-    filter_backends = (filters.InBBoxFilter,)
+class Artificielle2018ViewSet(DataViewSet):
     queryset = Artificielle2018.objects.all()
     serializer_class = Artificielle2018Serializer
 
 
-class CommunesSybarvalViewSet(viewsets.ReadOnlyModelViewSet):
+class CommunesSybarvalViewSet(DataViewSet):
     """CommunesSybarval view set."""
 
-    bbox_filter_field = "mpoly"
-    bbox_filter_include_overlapping = True
-    filter_backends = (filters.InBBoxFilter,)
     queryset = CommunesSybarval.objects.all()
     serializer_class = CommunesSybarvalSerializer
 
 
-class EnveloppeUrbaine2018ViewSet(viewsets.ReadOnlyModelViewSet):
-    bbox_filter_field = "mpoly"
-    bbox_filter_include_overlapping = True
-    filter_backends = (filters.InBBoxFilter,)
+class EnveloppeUrbaine2018ViewSet(DataViewSet):
     queryset = EnveloppeUrbaine2018.objects.all()
     serializer_class = EnveloppeUrbaine2018Serializer
 
 
-class Renaturee2018to2015ViewSet(viewsets.ReadOnlyModelViewSet):
-    bbox_filter_field = "mpoly"
-    bbox_filter_include_overlapping = True
-    filter_backends = (filters.InBBoxFilter,)
+class Renaturee2018to2015ViewSet(DataViewSet):
     queryset = Renaturee2018to2015.objects.all()
     serializer_class = Renaturee2018to2015Serializer
 
 
-class SybarvalViewSet(viewsets.ReadOnlyModelViewSet):
-    bbox_filter_field = "mpoly"
-    bbox_filter_include_overlapping = True
-    filter_backends = (filters.InBBoxFilter,)
+class SybarvalViewSet(DataViewSet):
     queryset = Sybarval.objects.all()
     serializer_class = SybarvalSerializer
 
 
-class Voirie2018ViewSet(viewsets.ReadOnlyModelViewSet):
-    bbox_filter_field = "mpoly"
-    bbox_filter_include_overlapping = True
-    filter_backends = (filters.InBBoxFilter,)
+class Voirie2018ViewSet(DataViewSet):
     queryset = Voirie2018.objects.all()
     serializer_class = Voirie2018Serializer
 
 
-class ZonesBaties2018ViewSet(viewsets.ReadOnlyModelViewSet):
-    bbox_filter_field = "mpoly"
-    bbox_filter_include_overlapping = True
-    filter_backends = (filters.InBBoxFilter,)
+class ZonesBaties2018ViewSet(DataViewSet):
     queryset = ZonesBaties2018.objects.all()
     serializer_class = ZonesBaties2018Serializer

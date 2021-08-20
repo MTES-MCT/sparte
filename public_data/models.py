@@ -1,22 +1,56 @@
+from colour import Color, RGB_TO_COLOR_NAMES
 from pathlib import Path
+from random import choice
+import numpy as np
 
 from django.contrib.gis.db import models
 from django.contrib.gis.utils import LayerMapping
+from django.core.exceptions import FieldDoesNotExist
+from django.db import connection
 from django.utils.translation import gettext_lazy as _
 
 
-class AutoLoad(models.Model):
+def get_color_gradient(color_name=None, scale=10):
+    """
+    Return a list of a color's gradient
+    Example:
+    > get_color_gradient(color_name="orange", scale=9)
+    [<Color orange>, <Color #ffaf1d>, <Color #ffba39>, <Color #ffc456>,
+    <Color #ffce72>, <Color #ffd88f>, <Color #ffe2ac>, <Color #ffecc8>,
+    <Color #fff6e5>]
+
+    Args:
+        color_name=None (undefined): name available in colour.Colour
+        scale=9 (undefined): number of colors require to fill the gradien
+    """
+    try:
+        c1 = Color(color_name)
+    except (
+        ValueError,
+        NameError,
+    ):
+        # Question: crash violent au lieu de couleur aléatoire ?
+        all_available_colors = [_ for t in RGB_TO_COLOR_NAMES.items() for _ in t[1]]
+        color_name = choice(all_available_colors)
+        c1 = Color(color_name)
+    c2 = Color(c1.web)
+    c2.set_luminance(0.95)
+    return list(c1.range_to(c2, scale))
+
+
+class AutoLoadMixin:
     """
     Enable auto loading of data into database according to
-    * file_path - usually shape file is in media directory
+    * shape_file_path - usually shape file is in media directory
     * mapping - between feature name and database field name
-    Those two needs to be overloaded.
+    Those two needs to be set in child class.
 
     SeeAlso::
     - public_data.management.commands.shp2model
     - public_data.management.commands.load_data
     """
 
+    # properties that need to be set when heritating
     shape_file_path = Path()
     mapping = dict()
 
@@ -33,11 +67,64 @@ class AutoLoad(models.Model):
         lm = LayerMapping(cls, cls.shape_file_path, cls.mapping)
         lm.save(strict=True, verbose=verbose)
 
-    class Meta:
-        abstract = True
+
+class DataColorationMixin:
+    """DataColorationMixin add class' methods:
+    - get_property_percentile: return percentiles of a property's distribution
+    - get_gradient: evaluate percentiles and associate a color gradient
+
+    ..seealso::
+    - https://numpy.org/doc/stable/reference/generated/numpy.percentile.html
+    """
+
+    # properties that need to be set when heritating
+    default_property = "surface"
+
+    @classmethod
+    def get_gradient(cls, color_name=None, property_name=None):
+        percentiles = cls.get_percentile(property_name=property_name)
+        nb_colors = len(percentiles) + 1
+        colours = get_color_gradient(color_name=color_name, scale=nb_colors)[::-1]
+        gradient = {
+            0: colours.pop(0),
+        }
+        for percentile in percentiles:
+            gradient[percentile] = colours.pop(0)
+        return gradient
+
+    @classmethod
+    def get_percentile(cls, property_name=None, percentiles=None):
+        """
+        Return decile scale of the specified property
+        Deciles are the 9 values that divide  distribution in 10 equal parts
+
+        Args:
+            property_name=self.default_property: a name of a field of the model
+            if not provided, uses self.default_property
+            percentiles=boundaries (between 0 - 100) to compute
+        """
+        try:
+            # will raise an exception if field does not exist or is None
+            cls._meta.get_field(property_name)
+        except FieldDoesNotExist:
+            # Question: ne faudrait-il pas plutôt crasher
+            # violement si le field n'existe pas ?
+            property_name = cls.default_property
+
+        if not percentiles:
+            percentiles = range(10, 100, 10)
+
+        with connection.cursor() as cursor:
+            query = (
+                f"SELECT {property_name} FROM {cls._meta.db_table}"
+                f" ORDER BY {property_name} ASC;"
+            )
+            cursor.execute(query)
+            rows = cursor.fetchall()
+        return np.percentile(rows, percentiles, interpolation="lower")
 
 
-class CommunesSybarval(AutoLoad):
+class CommunesSybarval(models.Model, AutoLoadMixin, DataColorationMixin):
     """
     Communes_SYBARVAL : les communes avec les même attributs
     Données produites par Philippe
@@ -74,6 +161,7 @@ class CommunesSybarval(AutoLoad):
     mpoly = models.MultiPolygonField()
 
     shape_file_path = Path("public_data/media/communes_sybarval/Communes_SYBARVAL.shp")
+    default_property = "surface"
     mapping = {
         "id_source": "ID",
         "prec_plani": "PREC_PLANI",
@@ -109,7 +197,7 @@ class CommunesSybarval(AutoLoad):
         return self.nom
 
 
-class Artificialisee2015to2018(AutoLoad):
+class Artificialisee2015to2018(models.Model, AutoLoadMixin, DataColorationMixin):
     """
     A_B_2015_2018 : la surface (en hectares) artificialisée entre 2015 et 2018
     Données construites par Philippe
@@ -124,6 +212,7 @@ class Artificialisee2015to2018(AutoLoad):
     mpoly = models.MultiPolygonField()
 
     shape_file_path = Path("public_data/media/a_b_2015_2018/A_B_2015_2018.shp")
+    default_property = "surface"
     mapping = {
         "surface": "Surface",
         "cs_2018": "cs_2018",
@@ -134,7 +223,7 @@ class Artificialisee2015to2018(AutoLoad):
     }
 
 
-class Renaturee2018to2015(AutoLoad):
+class Renaturee2018to2015(models.Model, AutoLoadMixin, DataColorationMixin):
     """
     A_B_2018_2015 : la surface (en hectares) re-naturée entre 2018 et 2015
     Données produites par Philippe
@@ -149,6 +238,7 @@ class Renaturee2018to2015(AutoLoad):
     mpoly = models.MultiPolygonField()
 
     shape_file_path = Path("public_data/media/a_b_2018_2015/A_B_2018_2015.shp")
+    default_property = "surface"
     mapping = {
         "surface": "Surface",
         "cs_2018": "cs_2018",
@@ -159,7 +249,7 @@ class Renaturee2018to2015(AutoLoad):
     }
 
 
-class Artificielle2018(AutoLoad):
+class Artificielle2018(models.Model, AutoLoadMixin, DataColorationMixin):
     """
     A_Brute_2018 : la surface artificialisée en hectare
     Données produites par Philippe
@@ -171,6 +261,7 @@ class Artificielle2018(AutoLoad):
     mpoly = models.MultiPolygonField()
 
     shape_file_path = Path("public_data/media/A_Brute_2018/A_Brute_2018.shp")
+    default_property = "surface"
     mapping = {
         "couverture": "couverture",
         "surface": "Surface",
@@ -178,7 +269,7 @@ class Artificielle2018(AutoLoad):
     }
 
 
-class EnveloppeUrbaine2018(AutoLoad):
+class EnveloppeUrbaine2018(models.Model, AutoLoadMixin, DataColorationMixin):
     """
     Enveloppe_Urbaine_2018 : enveloppe urbaine sans la voirie avec moins d'attributs
     """
@@ -195,6 +286,7 @@ class EnveloppeUrbaine2018(AutoLoad):
     shape_file_path = Path(
         "public_data/media/Enveloppe_urbaine/Enveloppe_Urbaine_2018.shp"
     )
+    default_property = "surface"
     mapping = {
         "couverture": "couverture",
         "surface": "Surface",
@@ -206,7 +298,7 @@ class EnveloppeUrbaine2018(AutoLoad):
     }
 
 
-class Voirie2018(AutoLoad):
+class Voirie2018(models.Model, AutoLoadMixin, DataColorationMixin):
     """
     Voirie_2018 : les objets avec leur surface
     """
@@ -218,6 +310,7 @@ class Voirie2018(AutoLoad):
     mpoly = models.MultiPolygonField()
 
     shape_file_path = Path("public_data/media/Voirire_2018/Voirie_2018.shp")
+    default_property = "surface"
     mapping = {
         "couverture": "couverture",
         "usage": "usage",
@@ -226,7 +319,7 @@ class Voirie2018(AutoLoad):
     }
 
 
-class ZonesBaties2018(AutoLoad):
+class ZonesBaties2018(models.Model, AutoLoadMixin, DataColorationMixin):
     """
     Zones_Baties_2018 : les objets avec leur surface
     Données produites par Philippe
@@ -239,6 +332,7 @@ class ZonesBaties2018(AutoLoad):
     mpoly = models.MultiPolygonField()
 
     shape_file_path = Path("public_data/media/zones_baties_2018/Zones_Baties_2018.shp")
+    default_property = "surface"
     mapping = {
         "couverture": "couverture",
         "usage": "usage",
@@ -247,7 +341,7 @@ class ZonesBaties2018(AutoLoad):
     }
 
 
-class Sybarval(AutoLoad):
+class Sybarval(models.Model, AutoLoadMixin, DataColorationMixin):
     """
     SYBARVAL : les contours et les attributs utiles (seulement pour 2018) :
         - Surface en hectare
@@ -275,6 +369,7 @@ class Sybarval(AutoLoad):
     mpoly = models.MultiPolygonField()
 
     shape_file_path = Path("public_data/media/Sybarval/SYBARVAL.shp")
+    default_property = "surface"
     mapping = {
         "surface": "Surface",
         "a_brute_20": "A_Brute_20",
