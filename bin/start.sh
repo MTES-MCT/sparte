@@ -5,4 +5,7 @@ python manage.py migrate users
 python manage.py migrate
 
 # launch webserver
-gunicorn config.wsgi --log-file -
+gunicorn config.wsgi \
+--workers 9 \
+--timeout 180 \
+--log-file -
