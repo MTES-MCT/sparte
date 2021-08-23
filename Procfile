@@ -1,2 +1,2 @@
 web: bash bin/start.sh
-celery-worker: celery -A config worker --loglevel=info
+celery-worker: celery --app=config.celery.app worker
