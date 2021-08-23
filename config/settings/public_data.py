@@ -1,5 +1,5 @@
 """
-Settings for app "carto"
+Settings for app "public_data" app
 """
 from .base import INSTALLED_APPS
 
