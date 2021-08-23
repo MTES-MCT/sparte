@@ -15,6 +15,20 @@ git clone git@github.com:MTES-MCT/sparte.git
 pipenv install --dev
 ```
 
+### Variables d'environnement
+
+Pour une installation locale, ces valeurs doivent être dans le fichier .env à la racine du projet. Pour le déploiement sur scalingo, ces variables sont à ajouter dans la section "Environnement" du container.
+
+| Nom | description | valeur locale |
+|-----|-------------|---------------|
+| SECRET | salt pour django | N/A |
+| DEBUG | salt pour django | true |
+| DATABASE_URL | chaîne pour se connecter à la base de données Postgresql + gis | postgis://sparte_user:1234@localhost:5432/sparte |
+| ALLOWED_HOSTS | urls qui peuvent se connecter au site web | 127.0.0.1,localhost |
+| CELERY_BROKER_URL | chaîne pour se connecter à redis | redis://localhost:6379/0 |
+| CELERY_RESULT_BACKEND | chaîne pour se connecter à redis | redis://localhost:6379/0 |
+
+
 ## Before commiting
 
 Check unit test coverage: `coverage run -m pytest && coverage report -m`
