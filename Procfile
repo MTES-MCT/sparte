@@ -1,2 +1,2 @@
 web: bash bin/start.sh
-celery-worker: celery --app=config.celery.app worker
+celery-worker: celery worker --app=config.celery.app
