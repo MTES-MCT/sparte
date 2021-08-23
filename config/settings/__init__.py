@@ -9,3 +9,4 @@ from .carto import *
 from .public_data import *
 from .debug_toolbar import *
 from .restframework import *
+from .project import *
