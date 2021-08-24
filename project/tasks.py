@@ -71,6 +71,7 @@ def import_shp(project_id):
         save_feature(shp_file_path, project)
         # save project with successful import
         project.import_status = Project.IMPORT_SUCCESS
+        project.import_error = None
         project.save()
     except Exception:
         project.import_status = Project.IMPORT_FAILED
