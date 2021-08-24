@@ -10,3 +10,4 @@ from .public_data import *
 from .debug_toolbar import *
 from .restframework import *
 from .project import *
+from .bucket_s3 import *
