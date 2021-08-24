@@ -42,15 +42,30 @@ git commit --no-verify
 
 ## TODO List
 
-- Connecté à un git remote et mettre en place les branches
-- Déployer en DEV, STAGING et PROD
-- Plug Sentry
-- Ajouter les TU et flake8 dans le PRE-COMMIT
-- Home page avec connexion
+- [ ] Connecté à un git remote et mettre en place les branches
+- [ ] Déployer en DEV, PROD
+- [ ] Plug Sentry
+- [ ] Ajouter les TU et flake8 dans le PRE-COMMIT
+
 
 Done :
+- [x] deploy on staging
+- [x] add celery asynchrone tasking
+- [x] Home page avec connexion
+- [x] Custom user pour associer des données telles que téléphone, date de naissance, etc...
+- [x] storage on S3 bucket
 
-- Custom user pour associer des données telles que téléphone, date de naissance, etc...
+## The rocky river pattern
+
+In this project, we try to follow the rocky river pattern. Find below the order of our apps. Top app can't call below app (they don't know them)
+
+```mermaid
+graph TD;
+  users-->public_data;
+  public_data-->Carto;
+  Carto-->project;
+```
+
 
 ## Useful links
 
