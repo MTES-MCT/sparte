@@ -40,7 +40,7 @@ class Project(models.Model):
     )
     import_date = models.DateTimeField(_("import date & time"), null=True, blank=True)
     import_status = models.CharField(
-        _(""),
+        _("import status"),
         max_length=10,
         choices=IMPORT_STATUS_CHOICES,
         default=IMPORT_PENDING,
