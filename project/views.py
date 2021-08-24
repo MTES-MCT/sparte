@@ -4,6 +4,7 @@ from django.views.generic import ListView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
 from .models import Project
+from .tasks import import_shp
 
 
 class ProjectListView(LoginRequiredMixin, ListView):
@@ -22,16 +23,12 @@ class ProjectCreateView(LoginRequiredMixin, CreateView):
     fields = ["name", "shape_file", "analyse_start_date", "analyse_end_date"]
 
     def form_valid(self, form):
+        # required to set the user who is logged as creator
         form.instance.user = self.request.user
-        return super().form_valid(form)
-
-    # def form_valid(self, form):
-    #     project = form.save(commit=False)
-    #     shp_file = form.cleaned_data['shape_file']
-    #     obj.user = self.request.user
-    #     profile.save()
-
-    #     return HttpResponseRedirect(self.get_success_url())
+        response = super().form_valid(form)  # save the data in db
+        # add asynchronous task to load emprise
+        import_shp.delay(form.instance.id)
+        return response
 
 
 class ProjectUpdateView(LoginRequiredMixin, UpdateView):
