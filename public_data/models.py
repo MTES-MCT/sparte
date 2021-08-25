@@ -1,9 +1,51 @@
 from pathlib import Path
 
 from django.contrib.gis.db import models
+from django.db import models as classic_models
 from django.utils.translation import gettext_lazy as _
 
 from .behaviors import AutoLoadMixin, DataColorationMixin
+
+
+class ArtifCommune(classic_models.Model):
+    name = classic_models.CharField(_("Name"), max_length=250)
+    insee = classic_models.CharField(_("code INSEE"), max_length=10)
+    surface = classic_models.DecimalField(
+        _("surface (ha)"), max_digits=8, decimal_places=2
+    )
+    artif_before_2009 = classic_models.DecimalField(
+        _("Artificial before 2009 (ha)"), max_digits=8, decimal_places=2
+    )
+    artif_2009 = classic_models.DecimalField(
+        _("New artificial 2009 (ha)"), max_digits=8, decimal_places=2
+    )
+    artif_2010 = classic_models.DecimalField(
+        _("New artificial 2010 (ha)"), max_digits=8, decimal_places=2
+    )
+    artif_2011 = classic_models.DecimalField(
+        _("New artificial 2011 (ha)"), max_digits=8, decimal_places=2
+    )
+    artif_2012 = classic_models.DecimalField(
+        _("New artificial 2012 (ha)"), max_digits=8, decimal_places=2
+    )
+    artif_2013 = classic_models.DecimalField(
+        _("New artificial 2013 (ha)"), max_digits=8, decimal_places=2
+    )
+    artif_2014 = classic_models.DecimalField(
+        _("New artificial 2014 (ha)"), max_digits=8, decimal_places=2
+    )
+    artif_2015 = classic_models.DecimalField(
+        _("New artificial 2015 (ha)"), max_digits=8, decimal_places=2
+    )
+    artif_2016 = classic_models.DecimalField(
+        _("New artificial 2016 (ha)"), max_digits=8, decimal_places=2
+    )
+    artif_2017 = classic_models.DecimalField(
+        _("New artificial 2017 (ha)"), max_digits=8, decimal_places=2
+    )
+    artif_2018 = classic_models.DecimalField(
+        _("New artificial 2018 (ha)"), max_digits=8, decimal_places=2
+    )
 
 
 class CommunesSybarval(models.Model, AutoLoadMixin, DataColorationMixin):
