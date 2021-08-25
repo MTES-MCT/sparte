@@ -49,34 +49,14 @@
 
 {% block bodyend %}
 <script src="{% static 'carto/js/map.js' %}"></script>
+
 <script language="javascript">
 
-    let carto = new Carto ([{{ center_lat }}, {{ center_lng }}], {{ default_zoom }})
-    carto.init()
+let carto = new Carto ([{{ center_lat }}, {{ center_lng }}], {{ default_zoom }})
+carto.init()
 
-    {% for layer in layer_list %}
-        {{ layer|geolayer }}
-    {% endfor %}
-/*
-    let world_layer = new GeoLayer("World borders", "{% url 'carto:data_worldborder' %}")
-    world_layer.get_color = function (feature) {
-        // get the property that will decide the color
-        d = feature.properties.pop2005
-        // set the color according to the property's value
-        return d > 1312978855 ? '#00441b' :
-               d > 1134403141 ? '#006d2c' :
-               d > 299846449 ? '#238b45' :
-               d > 186830759 ? '#41ae76' :
-               d > 127896740 ? '#66c2a4' :
-               d > 69420607 ? '#99d8c9' :
-               d > 38195558 ? '#ccece6' :
-               d > 17795149 ? '#e5f5f9' :
-               '#f7fcfd'
-    }
-    world_layer.info_txt = (properties) => {
-        return '<h4>World borders</h4><b>' + properties.name + '</b><br/>' + properties.pop2005
-    }
-    world_layer.add_to_map(carto)
-    */
+{% for layer in layer_list %}
+    {% geolayer layer %}
+{% endfor %}
 </script>
 {% endblock %}

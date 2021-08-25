@@ -12,12 +12,13 @@
 
 {% block content %}
     <div class="d-flex flex-column h-100 w-100 align-items-center justify-content-center">
-        <h2 class="mb-5">Mettre à jour</h2>
 
-        <form action="{% url 'project:add' %}" method="post" enctype="multipart/form-data">
-            {% csrf_token %}
-            {{ form|crispy }}
-            <button class="btn w-100 btn-primary mt-4" type="submit">Mettre à jour</button>
-        </form>
+        <div class="mb-5">
+            <h2>{{ project.name }}</h2>
+            <p>
+                <a href="{% url 'project:update' project.pk %}"><i data-feather="edit" stroke-width="2" width="16px" color="#0000dd"></i></a>
+                <a href="{% url 'project:map' project.pk %}"><i data-feather="map" stroke-width="2" width="16px" color="#0000dd"></i></a>
+            </p>
+        </div>
     </div>
 {% endblock %}

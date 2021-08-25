@@ -42,7 +42,7 @@ class DataViewSet(viewsets.ReadOnlyModelViewSet):
             property_name=property_name,
             color_name=color_name,
         )
-        gradient = {str(k): v.hex_l for k, v in gradient.items()}
+        gradient = [{"value": int(k), "color": v.hex_l} for k, v in gradient.items()]
         return Response(gradient)
 
 
