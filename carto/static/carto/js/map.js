@@ -102,24 +102,45 @@ function GeoLayer (name, url) {
     // when loading the data we will use bbox information to get data only on visible part of the map
     this.load_full_data = true
 
+    // Initialiser avec un objet permettant une colorisation personnalisée
+    // this.scale = [
+    //     {value: 100, color: '#ff0000'},  //   0 -> 100
+    //     {value: 150, color: '#ff3300'},  // 101 -> 150
+    //     {value: 230, color: '#ff6600'},  // 151 -> 230
+    // ]
+    this.scale = null
+
+    this.add_to_map_with_custom_scale = (scale_url, carto) =>{
+        $.getJSON(
+            scale_url,
+            (data) => {
+                this.scale = data
+                this.add_to_map(carto)
+            }
+        )
+    }
+
     // a surcharger pour changer la façon dont la couleur est choisie
     this.get_color = (feature) => {
         // get the property that will decide the color
-        d = this.get_color_property(feature)
-        // set the color according to the property's value
-        return d > 90 ? '#800026' :
-               d > 70 ? '#BD0026' :
-               d > 50 ? '#E31A1C' :
-               d > 40 ? '#FC4E2A' :
-               d > 30 ? '#FD8D3C' :
-               d > 20 ? '#FEB24C' :
-               d > 10 ? '#FED976' :
-                        '#FFEDA0'
+        property_value = this.get_color_property(feature)
+
+        // default color if scale is not set
+        if (this.scale == null){
+            return '#FFEDA0'
+        }
+        else
+        {
+            // use provided scale and color
+            // return gray in case of unset
+            let item = this.scale.find((item) => property_value < item.value)
+            return item ? item.color :'#aaaaaa'
+        }
     }
 
     // set which property must be used to set the color
     this.get_color_property = (feature) => {
-        return feature.properties.code
+        return feature.properties.surface
     }
 
     // A surcharger pour changer le styling par défault d'une feature

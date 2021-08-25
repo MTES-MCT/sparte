@@ -1,0 +1,9 @@
+///////// {{ name }} /////////
+// init
+geo_layer = new GeoLayer("{{ name }}", "{{ url }}")
+// options
+{% if load_full_data %}geo_layer.load_full_data = false{% endif %}
+{% if load_full_data %}geo_layer.immediate_display = false{% endif %}
+// scale and init
+{% if color_url %}geo_layer.add_to_map_with_custom_scale("{{ color_url }}", carto)
+{% else %}geo_layer.add_to_map(carto){% endif %}
