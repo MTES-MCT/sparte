@@ -1,3 +1,4 @@
+from decimal import Decimal
 from pathlib import Path
 
 from django.contrib.gis.db import models
@@ -46,6 +47,40 @@ class ArtifCommune(classic_models.Model):
     artif_2018 = classic_models.DecimalField(
         _("New artificial 2018 (ha)"), max_digits=8, decimal_places=2
     )
+
+    def list_artif(self):
+        val = [
+            self.artif_before_2009,
+        ]
+        val += [getattr(self, f"artif_{y}", 0.0) for y in range(2009, 2019)]
+        return val
+
+    def total_artif(self):
+        return sum(self.list_artif())
+
+    def total_percent(self, decimal=False):
+        val = self.total_artif() / self.surface
+        if not decimal:
+            return val
+        else:
+            return Decimal(val)
+
+    def percent(self, name, decimal=False):
+        val = getattr(self, name, 0.0) / self.surface
+        if not decimal:
+            return val
+        else:
+            return Decimal(val)
+
+    def list_percent(self, decimal=False):
+        val = (_ / self.surface for _ in self.list_artif())
+        if not decimal:
+            return val
+        else:
+            return map(Decimal, val)
+
+    def __str__(self):
+        return f"{self.name} - {self.insee}"
 
 
 class CommunesSybarval(models.Model, AutoLoadMixin, DataColorationMixin):
