@@ -74,3 +74,31 @@ Cette méthode permettra au développeur de facilement mettre à jour la base qu
 Améliorations:
 - Déclencher le load() depuis l'admin django
 - uploader les fichiers depuis l'admin django
+
+## Notes à propos de l'import du fichier d'artificialisation des communes
+
+Pour que tout fonctionne bien, il faut fournir un fichier avec les entêtes suivantes:
+* name
+* insee
+* surface
+* artif_before_2009
+* artif_2009
+* artif_2010
+* artif_2011
+* artif_2012
+* artif_2013
+* artif_2014
+* artif_2015
+* artif_2016
+* artif_2017
+* artif_2018
+
+Le format du fichier :
+* CSV avec séparateur virgule ","
+* l'encodage doit être utf-8 **sans bom**
+
+Les informations numériques doivent être fourni au format US (pas d'espace pour les milliers et un point pour le séparateur des décimales)
+
+La déduplication sera réalisée sur la colonne INSEE.
+
+Voir le fichier exemple : example_import_artif_commune.csv
