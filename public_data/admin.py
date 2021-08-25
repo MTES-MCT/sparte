@@ -1,7 +1,10 @@
 from django.contrib.gis import admin
 
+from import_export import resources
+from import_export.admin import ImportMixin
 
 from .models import (
+    ArtifCommune,
     Artificialisee2015to2018,
     Artificielle2018,
     CommunesSybarval,
@@ -53,3 +56,30 @@ admin.site.register(Renaturee2018to2015, DefaultAdmin)
 admin.site.register(Sybarval, DefaultAdmin)
 admin.site.register(Voirie2018, DefaultAdmin)
 admin.site.register(ZonesBaties2018, DefaultAdmin)
+
+
+class ArtifCommuneResource(resources.ModelResource):
+    class Meta:
+        model = ArtifCommune
+        import_id_fields = ("insee",)
+        exclude = ("id",)
+
+
+@admin.register(ArtifCommune)
+class ArtifCommuneAdmin(ImportMixin, admin.GeoModelAdmin):
+    model = ArtifCommune
+    list_display = (
+        "name",
+        "insee",
+        "surface",
+        "artif_before_2009",
+        "artif_2009",
+        "artif_2010",
+    )
+    search_fields = (
+        "name",
+        "insee",
+    )
+    ordering = ("name",)
+    # for importation
+    resource_class = ArtifCommuneResource
