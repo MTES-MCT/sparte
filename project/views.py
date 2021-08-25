@@ -26,7 +26,51 @@ class ProjectDetailView(LoginRequiredMixin, DetailView):
     def get_queryset(self):
         # UPDATE: utiliser les permissions classiques de Django !!
         user = self.request.user
+        # prefetch cities ?
         return Project.objects.filter(user=user)
+
+    def get_context_data(self, **kwargs):
+        super_context = super().get_context_data(**kwargs)
+        table_artif = []
+        table_percent = []
+        pki_2009_ha = pki_2018_ha = 0
+        total_surface = 0
+        for city in self.object.cities.all():
+            pki_2009_ha += city.artif_before_2009
+            pki_2018_ha += city.total_artif()
+            total_surface += city.surface
+
+            items = list(city.list_artif())
+            table_artif.append(
+                {
+                    "name": city.name,
+                    "before": items.pop(0),
+                    "items": items,
+                    "total": city.total_artif(),
+                    "surface": city.surface,
+                }
+            )
+            items = list(city.list_percent())
+            table_percent.append(
+                {
+                    "name": city.name,
+                    "before": items.pop(0),
+                    "items": items,
+                    "total": f"{city.total_percent():.2%}",
+                    "surface": city.surface,
+                }
+            )
+
+        return {
+            **super_context,
+            "table_artif": table_artif,
+            "table_percent": table_percent,
+            "2009_ha": pki_2009_ha,
+            "2009_percent": f"{pki_2009_ha / total_surface:.2%}",
+            "2018_ha": pki_2018_ha,
+            "2018_percent": f"{pki_2018_ha / total_surface:.2%}",
+            "total_surface": total_surface,
+        }
 
 
 class ProjectMapView(LoginRequiredMixin, DetailView):
