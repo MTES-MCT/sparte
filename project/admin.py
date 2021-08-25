@@ -21,6 +21,7 @@ class ProjectAdmin(admin.GeoModelAdmin):
         "user",
     )
     ordering = ("name",)
+    filter_horizontal = ("cities",)
 
 
 @admin.register(Emprise)

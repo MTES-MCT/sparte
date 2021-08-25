@@ -1,9 +1,86 @@
+from decimal import Decimal
 from pathlib import Path
 
 from django.contrib.gis.db import models
+from django.db import models as classic_models
 from django.utils.translation import gettext_lazy as _
 
 from .behaviors import AutoLoadMixin, DataColorationMixin
+
+
+class ArtifCommune(classic_models.Model):
+    name = classic_models.CharField(_("Name"), max_length=250)
+    insee = classic_models.CharField(_("code INSEE"), max_length=10)
+    surface = classic_models.DecimalField(
+        _("surface (ha)"), max_digits=8, decimal_places=2
+    )
+    artif_before_2009 = classic_models.DecimalField(
+        _("Artificial before 2009 (ha)"), max_digits=8, decimal_places=2
+    )
+    artif_2009 = classic_models.DecimalField(
+        _("New artificial 2009 (ha)"), max_digits=8, decimal_places=2
+    )
+    artif_2010 = classic_models.DecimalField(
+        _("New artificial 2010 (ha)"), max_digits=8, decimal_places=2
+    )
+    artif_2011 = classic_models.DecimalField(
+        _("New artificial 2011 (ha)"), max_digits=8, decimal_places=2
+    )
+    artif_2012 = classic_models.DecimalField(
+        _("New artificial 2012 (ha)"), max_digits=8, decimal_places=2
+    )
+    artif_2013 = classic_models.DecimalField(
+        _("New artificial 2013 (ha)"), max_digits=8, decimal_places=2
+    )
+    artif_2014 = classic_models.DecimalField(
+        _("New artificial 2014 (ha)"), max_digits=8, decimal_places=2
+    )
+    artif_2015 = classic_models.DecimalField(
+        _("New artificial 2015 (ha)"), max_digits=8, decimal_places=2
+    )
+    artif_2016 = classic_models.DecimalField(
+        _("New artificial 2016 (ha)"), max_digits=8, decimal_places=2
+    )
+    artif_2017 = classic_models.DecimalField(
+        _("New artificial 2017 (ha)"), max_digits=8, decimal_places=2
+    )
+    artif_2018 = classic_models.DecimalField(
+        _("New artificial 2018 (ha)"), max_digits=8, decimal_places=2
+    )
+
+    def list_artif(self):
+        val = [
+            self.artif_before_2009,
+        ]
+        val += [getattr(self, f"artif_{y}", 0.0) for y in range(2009, 2019)]
+        return val
+
+    def total_artif(self):
+        return sum(self.list_artif())
+
+    def total_percent(self, decimal=False):
+        val = self.total_artif() / self.surface
+        if not decimal:
+            return val
+        else:
+            return Decimal(val)
+
+    def percent(self, name, decimal=False):
+        val = getattr(self, name, 0.0) / self.surface
+        if not decimal:
+            return val
+        else:
+            return Decimal(val)
+
+    def list_percent(self, decimal=False):
+        val = (_ / self.surface for _ in self.list_artif())
+        if not decimal:
+            return val
+        else:
+            return map(Decimal, val)
+
+    def __str__(self):
+        return f"{self.name} - {self.insee}"
 
 
 class CommunesSybarval(models.Model, AutoLoadMixin, DataColorationMixin):
