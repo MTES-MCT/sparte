@@ -17,7 +17,7 @@
 
         <ul>
             {% for project in projects %}
-                <li><a href="{% url 'project:update' project.id %}">{{ project.name }}</a></li>
+                <li><a href="{% url 'project:detail' project.id %}">{{ project.name }}</a></li>
             {% endfor %}
         </ul>
 
