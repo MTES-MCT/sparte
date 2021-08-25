@@ -37,7 +37,7 @@ class Project(models.Model):
     analyse_start_date = models.DateField()
     analyse_end_date = models.DateField()
 
-    # field to track the shape files importation into the database
+    # fields to track the shape files importation into the database
     import_error = models.TextField(
         _("shp file import error message"), null=True, blank=True
     )
@@ -47,6 +47,14 @@ class Project(models.Model):
         max_length=10,
         choices=IMPORT_STATUS_CHOICES,
         default=IMPORT_PENDING,
+    )
+
+    # fields to linked project to particular city
+    is_manually_linked = models.BooleanField(
+        _("Is manually linked to cities"), default=False
+    )
+    cities = models.ManyToManyField(
+        "public_data.CommunesSybarval", verbose_name=_("cities")
     )
 
     def get_absolute_url(self):
