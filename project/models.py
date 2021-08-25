@@ -7,6 +7,9 @@ from django.utils.translation import gettext_lazy as _
 from django.contrib.gis.db import models as gis_models
 
 
+from public_data.behaviors import DataColorationMixin
+
+
 def user_directory_path(instance, filename):
     year = timezone.now().year
     month = timezone.now().month
@@ -56,7 +59,11 @@ class Project(models.Model):
         ordering = ["name"]
 
 
-class Emprise(gis_models.Model):
+class Emprise(gis_models.Model, DataColorationMixin):
+
+    # DataColorationMixin properties that need to be set when heritating
+    default_property = "id"
+    default_color = "blue"
 
     project = gis_models.ForeignKey(
         Project, on_delete=models.PROTECT, verbose_name=_("project")
