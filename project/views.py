@@ -60,15 +60,16 @@ class ProjectDetailView(LoginRequiredMixin, DetailView):
                     "surface": city.surface,
                 }
             )
-
+        pki_2009_percent = pki_2009_ha / total_surface if total_surface else 0
+        pki_2018_percent = pki_2018_ha / total_surface if total_surface else 0
         return {
             **super_context,
             "table_artif": table_artif,
             "table_percent": table_percent,
             "2009_ha": pki_2009_ha,
-            "2009_percent": f"{pki_2009_ha / total_surface:.2%}",
+            "2009_percent": f"{pki_2009_percent:.2%}",
             "2018_ha": pki_2018_ha,
-            "2018_percent": f"{pki_2018_ha / total_surface:.2%}",
+            "2018_percent": f"{pki_2018_percent:.2%}",
             "total_surface": total_surface,
         }
 
