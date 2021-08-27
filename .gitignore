@@ -139,3 +139,5 @@ cython_debug/
 
 # configuration of visual studio code
 .vscode/*
+test.py
+media/*

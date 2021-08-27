@@ -1,38 +1,73 @@
-# **SPARTE** - **S**ervice de **P**ortrait de l’**AR**tificialisation des **TE**rritoires
+**S**ervice de **P**ortrait de l’**AR**tificialisation des **TE**rritoires
+==========================================================================
+
+# SPARTE
 
 Le Service de Portrait de l’ARtificialisation des TErritoires (ou SPARTE) est une plateforme qui aide les collectivité à mesurer l'artificialisation de leurs sols et ainsi se conformer aux nouvelles lois.
 
 ## Installation
 
 1. Cloner le répository git
-2. Installer les dépendances avec Poetry
-3. Installer le hook des pré-comit
+2. Installer les dépendances avec pipenv (Poetry n'étant pas supporté par Scalingo)
 
 ```
-git clone ...
-poetry install
-poetry run pre-commit install
+git clone git@github.com:MTES-MCT/sparte.git
+pipenv install --dev
 ```
 
-## before commiting
+### Variables d'environnement
+
+Pour une installation locale, ces valeurs doivent être dans le fichier .env à la racine du projet. Pour le déploiement sur scalingo, ces variables sont à ajouter dans la section "Environnement" du container.
+
+| Nom | description | valeur locale |
+|-----|-------------|---------------|
+| SECRET | salt pour django | N/A |
+| DEBUG | salt pour django | true |
+| DATABASE_URL | chaîne pour se connecter à la base de données Postgresql + gis | postgis://sparte_user:1234@localhost:5432/sparte |
+| ALLOWED_HOSTS | urls qui peuvent se connecter au site web | 127.0.0.1,localhost |
+| CELERY_BROKER_URL | chaîne pour se connecter à redis | redis://localhost:6379/0 |
+| CELERY_RESULT_BACKEND | chaîne pour se connecter à redis | redis://localhost:6379/0 |
+
+
+## Before commiting
 
 Check unit test coverage: `coverage run -m pytest && coverage report -m`
 
 Check flake8 linting: `flake8`
 
-# TODO List
+Si vous souhaitez bypasser pre-commit hook (usefull pour ajouter des fichiers shapes sans les modifiers):
+```
+git commit --no-verify
+```
 
-- Connecté à un git remote et mettre en place les branches
-- Déployer en DEV, STAGING et PROD
-- Plug Sentry
-- Ajouter les TU et flake8 dans le PRE-COMMIT
-- Home page avec connexion
+## TODO List
+
+- [ ] Connecté à un git remote et mettre en place les branches
+- [ ] Déployer en DEV, PROD
+- [ ] Plug Sentry
+- [ ] Ajouter les TU et flake8 dans le PRE-COMMIT
+
 
 Done :
+- [x] deploy on staging
+- [x] add celery asynchrone tasking
+- [x] Home page avec connexion
+- [x] Custom user pour associer des données telles que téléphone, date de naissance, etc...
+- [x] storage on S3 bucket
 
-- Custom user pour associer des données telles que téléphone, date de naissance, etc...
+## The rocky river pattern
 
-# Useful links
+In this project, we try to follow the rocky river pattern. Find below the order of our apps. Top app can't call below app (they don't know them)
+
+```mermaid
+graph TD;
+  users-->public_data;
+  public_data-->Carto;
+  Carto-->project;
+```
+
+
+## Useful links
 
 About pytest:
 
@@ -48,6 +83,7 @@ Django settings & installation:
 - https://djangostars.com/blog/configuring-django-settings-best-practices/
 - https://django-environ.readthedocs.io
 - https://python-poetry.org/docs/cli/#add
+- https://github.com/makinacorpus/docker-geodjango
 
 Flake8 linting:
 
@@ -56,3 +92,13 @@ Flake8 linting:
 Dashboard layout (for inspiration):
 
 - https://appstack.bootlab.io/dashboard-default.html
+
+About colours and gradient :
+
+- https://github.com/vaab/colour/
+- https://medium.com/the-mvp/finally-a-definitive-way-to-make-gradients-beautiful-6b27af88f5f
+- https://hslpicker.com/#c0f/#e6ff00
+
+Tuto GeoDjango
+
+- https://www.paulox.net/2021/07/19/maps-with-django-part-2-geodjango-postgis-and-leaflet/

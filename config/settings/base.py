@@ -18,7 +18,12 @@ root = environ.Path(__file__) - 3  # get root of the project
 BASE_DIR = Path(root())
 
 env = environ.Env()
-environ.Env.read_env(str(BASE_DIR / ".env"))  # reading .env file
+
+env_path = BASE_DIR / ".env"
+if env_path.is_file():
+    environ.Env.read_env(str(env_path))  # reading .env file
+else:
+    environ.Env.read_env()
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
@@ -29,8 +34,7 @@ SECRET_KEY = env.str("SECRET")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env.bool("DEBUG")
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = env.list("ALLOWED_HOSTS")
 
 # Application definition
 
@@ -124,9 +128,15 @@ USE_TZ = True
 
 STATIC_URL = "/static/"
 
+STATIC_ROOT = BASE_DIR / "staticroot"
+
 STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
+
+# same goes for media
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field

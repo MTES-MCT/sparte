@@ -1,0 +1,30 @@
+[requires]
+python_version = "3.9"
+
+[dev-packages]
+pytest = "==6.2.4"
+flake8 = "==3.9.2"
+pre-commit = "==2.13.0"
+pytest-django = "==4.4.0"
+flake8-bugbear = "==21.4.3"
+django-debug-toolbar = "==3.2.1"
+black = "==21.7b0"
+
+[packages]
+django = "==3.2.5"
+psycopg2 = "==2.9.1"
+django-environ = "==0.4.5"
+django-crispy-forms = "==1.12.0"
+gunicorn = "*"
+dj-static = "*"
+django-filter = "==2.4.0"
+djangorestframework = "==3.12.4"
+djangorestframework-gis = "==0.17"
+colour = "*"
+numpy = "*"
+celery = "==5.1.2"
+redis = "==3.5.3"
+django-storages = "*"
+boto3 = "*"
+django-import-export = "*"
+django-anymail = {extras = ["mailjet"], version = "*"}
