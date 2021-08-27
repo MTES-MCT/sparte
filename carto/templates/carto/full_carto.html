@@ -1,6 +1,7 @@
 {% extends 'base_connected.html' %}
 
 {% load static %}
+{% load map_tags %}
 
 {% block pagetitle %}
  - map
@@ -48,13 +49,14 @@
 
 {% block bodyend %}
 <script src="{% static 'carto/js/map.js' %}"></script>
-<script language="javascript">
-    // map.initialisation([{{ center_lat }}, {{ center_lng }}], {{ default_zoom }})
-    // map.add_layer("{{ layer_url }}", "{{ layer_name }}")
 
-    current_carto = new Carto([{{ center_lat }}, {{ center_lng }}], {{ default_zoom }}, "{{ carto_name }}")
-    current_carto.init()
-    dep_layer = new Layer("{{ layer_name }}", "{{ layer_url }}")
-    dep_layer.init(current_carto.add_layer)
+<script language="javascript">
+
+let carto = new Carto ([{{ center_lat }}, {{ center_lng }}], {{ default_zoom }})
+carto.init()
+
+{% for layer in layer_list %}
+    {% geolayer layer %}
+{% endfor %}
 </script>
 {% endblock %}

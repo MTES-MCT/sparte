@@ -1,7 +1,11 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <title>{% block pagetitle %} {% endblock %}</title>
+
+    <link rel="icon"href="{% static 'favicon.ico' %}">
+
     <!-- Required meta tags -->
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -14,17 +18,16 @@
             <b><a href="{% url 'home' %}">SPARTE</a></b>
         </div>
         <div class="col-4 float-right text-right mr-2">
-            <a href="{% url 'users:signup' %}" class="btn btn-outline-primary btn-sm">Sign up</a>
-            <a href="{% url 'users:signin' %}" class="btn btn-outline-primary btn-sm">Connexion</a>
+            <a href="{% url 'users:signup' %}" class="btn btn-outline-primary btn-sm">S'inscrire</a>
+            <a href="{% url 'users:signin' %}" class="btn btn-outline-primary btn-sm">Se connecter</a>
         </div>
       </div>
 
       <div class="flex-grow-1">
         {% block content %} {% endblock %}
       </div>
-      <div class="">
-        All rights reserved.
-      </div>
+
+      <div class="text-right pr-2"><small><b>SPARTE</b> est une startup incubée chez <b>Betagouv</b></small></div>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
