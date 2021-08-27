@@ -13,5 +13,5 @@ TEMPLATES[0]["OPTIONS"]["context_processors"] += [
     "users.context_processors.add_connected_user_to_context",
 ]
 
-LOGIN_REDIRECT_URL = "connected"
+LOGIN_REDIRECT_URL = "carto:home_connected"
 LOGIN_URL = "users:signin"
