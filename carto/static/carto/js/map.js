@@ -165,7 +165,15 @@ function GeoLayer (name, url) {
 
     // surcharge to update content of info div (return empty string to not show info)
     this.info_txt = (properties) => {
-        return '<h4>' + this.name + '</h4><b>' + properties.nom + '</b><br/>' + properties.code
+        let info = '<h4>' + this.name + '</h4>'
+        let properties_names = Object.getOwnPropertyNames(properties)
+        for (i=0; i<properties_names.length; i++)
+        {
+            let property_name = properties_names[i]
+            let property_value = properties[property_name]
+            info = info + `<b>${property_name}</b>: ${property_value}<br/>`
+        }
+        return info
     }
 
     // set the layer appearance, fetch the data and display it on the map
