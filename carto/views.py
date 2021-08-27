@@ -1,11 +1,19 @@
 import json
 
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.decorators import login_required
 from django.core.serializers import serialize
 from django.http import JsonResponse  # , HttpResponse
 from django.shortcuts import render
 from django.urls import reverse_lazy
+from django.views.generic import TemplateView
+
 
 from .models import WorldBorder
+
+
+class HomeConnected(LoginRequiredMixin, TemplateView):
+    template_name = "base_connected.html"
 
 
 def render_file_to_json(path):
@@ -16,10 +24,7 @@ def render_file_to_json(path):
     return JsonResponse(content)
 
 
-def render_map():
-    pass
-
-
+@login_required
 def arcachon(request):
     """Center the map on Arcachon"""
     context = {
@@ -73,6 +78,7 @@ def arcachon(request):
     return render(request, "carto/full_carto.html", context=context)
 
 
+@login_required
 def worldborder(request):
     """Display a map with departements"""
     url = reverse_lazy("carto:data_worldborder")
@@ -88,6 +94,7 @@ def worldborder(request):
     return render(request, "carto/full_carto.html", context=context)
 
 
+@login_required
 def data_worldborder(request):
     """Return the geojson departement list used to populate a map"""
     geojson = serialize("geojson", WorldBorder.objects.all())
@@ -95,6 +102,7 @@ def data_worldborder(request):
     return JsonResponse(content)
 
 
+@login_required
 def departements(request):
     """Display a map with departements"""
     url = reverse_lazy("carto:data_departement")
@@ -111,6 +119,7 @@ def departements(request):
     return render(request, "carto/full_carto.html", context=context)
 
 
+@login_required
 def data_departements(request):
     """Return the geojson departement list used to populate a map"""
     return render_file_to_json("carto/static/carto/geojson/departements.geojson")

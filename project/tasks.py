@@ -21,10 +21,10 @@ def mul(x, y):
     return x * y
 
 
-def get_shp_file_from_zip(zip_path):
+def get_shp_file_from_zip(file_stream):
     """Extract all zip files in temporary dir and return .shp file"""
     temp_dir_path = Path(tempfile.TemporaryDirectory().name)
-    with ZipFile(zip_path) as zip_file:
+    with ZipFile(file_stream) as zip_file:
         zip_file.extractall(temp_dir_path)  # extract files to dir
     try:
         files_path = [_ for _ in temp_dir_path.iterdir() if _.suffix == ".shp"]
@@ -66,14 +66,14 @@ def import_shp(project_id):
         # set importation datetime
         project.import_date = timezone.now()
         # extract files from zip and get .shp one
-        shp_file_path = get_shp_file_from_zip(project.shape_file.path)
+        shp_file_path = get_shp_file_from_zip(project.shape_file.open())
         # use .shp to save in the database all the feature
         save_feature(shp_file_path, project)
         # save project with successful import
         project.import_status = Project.IMPORT_SUCCESS
         project.import_error = None
         project.save()
-    except Exception:
+    except Exception as e:  # noqa: F841
         project.import_status = Project.IMPORT_FAILED
         project.import_error = traceback.format_exc()
         project.save()
