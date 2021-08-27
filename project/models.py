@@ -54,7 +54,7 @@ class Project(models.Model):
         _("Is manually linked to cities"), default=False
     )
     cities = models.ManyToManyField(
-        "public_data.ArtifCommune", verbose_name=_("cities")
+        "public_data.ArtifCommune", verbose_name=_("cities"), blank=True
     )
 
     def get_absolute_url(self):
