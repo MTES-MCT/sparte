@@ -66,7 +66,7 @@ def import_shp(project_id):
         # set importation datetime
         project.import_date = timezone.now()
         # extract files from zip and get .shp one
-        shp_file_path = get_shp_file_from_zip(project.shape_file.path)
+        shp_file_path = get_shp_file_from_zip(project.shape_file.name)
         # use .shp to save in the database all the feature
         save_feature(shp_file_path, project)
         # save project with successful import
