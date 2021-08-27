@@ -110,6 +110,9 @@ function GeoLayer (name, url) {
     // ]
     this.scale = null
 
+    // A utiliser quand on va chercher une échelle de customisation définie
+    // par la back. Permet de s'assurer que l'échelle est initialisée avant
+    // que les données du back soient chargées
     this.add_to_map_with_custom_scale = (scale_url, carto) =>{
         $.getJSON(
             scale_url,
@@ -134,7 +137,12 @@ function GeoLayer (name, url) {
             // use provided scale and color
             // return gray in case of unset
             let item = this.scale.find((item) => property_value < item.value)
-            return item ? item.color :'#aaaaaa'
+            // si on a pas trouvé, on doit être sur la dernière valeur de scale
+            // donc le find n'est jamais vrai, on va donc récupérer la dernière
+            // valeur pour initialiser item
+            item = item ? item : this.scale[this.scale.length - 1]
+            // finalement, on renvoit la couleur
+            return item.color
         }
     }
 
