@@ -1,5 +1,4 @@
 from django.contrib.auth import logout
-from django.views import View
 from django.views.generic import DetailView, ListView, RedirectView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormView
 from django.urls import reverse_lazy
