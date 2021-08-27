@@ -28,7 +28,7 @@ function Carto (map_center, default_zoom)
     this.default_zoom = default_zoom
 
     this.layerControl = L.control.layers(null, null)
-    this.info = L.control()
+    this.info = L.control({position: 'bottomleft'})
     this.legend = L.control({position: 'bottomright'});
     this.map = L.map('mapid')
 
@@ -45,33 +45,28 @@ function Carto (map_center, default_zoom)
         // Add layer control div
         this.layerControl.addTo(this.map)
         // add legend div
-        // this.legend.addTo(this.map)
+        this.legend.addTo(this.map)
     }
 
-    this.info.onAdd = function (map) {
-        this._div = L.DomUtil.create('div', 'info'); // create a div with a class "info"
-        return this._div;
+    this.info.onAdd = (map) => {
+        // create a div with a class "info"
+        this._info_div = L.DomUtil.create('div', 'info');
+        return this._info_div;
     }
 
-    // method that we will use to update the control based on feature properties passed
-    this.info.update = function (html_content) {
-        this._div.innerHTML = html_content
+    // method that we will use to update the control
+    this.info.update = (html_content) => {
+        this._info_div.innerHTML = html_content
     }
 
-    this.legend.onAdd = function (map) {
+    this.legend.onAdd = (map) => {
+        // create a div with a class "legend"
+        this._info_legend = L.DomUtil.create('div', 'info legend');
+        return this._info_legend;
+    }
 
-        var div = L.DomUtil.create('div', 'info legend'),
-            grades = [0, 10, 20, 30, 40, 50, 70, 90],
-            labels = []
-
-        // loop through our density intervals and generate a label with a colored square for each interval
-        for (var i = 0; i < grades.length; i++) {
-            div.innerHTML +=
-                '<i style="background:' + getColor(grades[i] + 1) + '"></i> ' +
-                grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '+')
-        }
-
-        return div
+    this.legend.update = (html_content) => {
+        this._info_legend.innerHTML = html_content
     }
 }
 
@@ -126,7 +121,7 @@ function GeoLayer (name, url) {
     // a surcharger pour changer la façon dont la couleur est choisie
     this.get_color = (feature) => {
         // get the property that will decide the color
-        property_value = this.get_color_property(feature)
+        property_value = this.get_color_property_value(feature)
 
         // default color if scale is not set
         if (this.scale == null){
@@ -147,8 +142,13 @@ function GeoLayer (name, url) {
     }
 
     // set which property must be used to set the color
-    this.get_color_property = (feature) => {
-        return feature.properties.surface
+    this.get_color_property_name = (feature) => {
+        return 'surface'
+    }
+
+    this.get_color_property_value = (feature) => {
+        property_name = this.get_color_property_name(feature)
+        return feature.properties[property_name]
     }
 
     // A surcharger pour changer le styling par défault d'une feature
@@ -184,6 +184,29 @@ function GeoLayer (name, url) {
         return info
     }
 
+    // surcharge to update content of legend div (return empty string to not show info)
+    this.legend_txt = (feature) => {
+        let property = this.get_color_property_name(feature)
+        let property_value = this.get_color_property_value(feature)
+        let legend = '<h4>' + this.name + '</h4>'
+        let bold = false
+        legend = legend + `Property used: ${property} (${property_value})<br\>`
+
+        for (i=0; i<this.scale.length; i++)
+        {
+            let color = this.scale[i].color
+            let value = this.scale[i].value
+            let next_value = i+1 < this.scale.length ? this.scale[i+1].value : '+'
+            if ((bold == false) && (i+1 == this.scale.length || property_value < next_value)){
+                legend = legend + `<i style="background:${color}"></i> <b>${value} &ndash; ${next_value}</b></br>`
+                bold = true
+            }else{
+                legend = legend + `<i style="background:${color}"></i> ${value} &ndash; ${next_value}</br>`
+            }
+        }
+        return legend
+    }
+
     // set the layer appearance, fetch the data and display it on the map
     this.add_to_map = (carto) => {
 
@@ -206,6 +229,7 @@ function GeoLayer (name, url) {
 
                             // mets à jour le div d'information
                             carto.info.update(this.info_txt(feature.properties))
+                            carto.legend.update(this.legend_txt(feature))
                         },
                         // on mousse out
                         mouseout: (e) => {
