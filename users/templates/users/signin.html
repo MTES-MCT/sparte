@@ -5,22 +5,33 @@
 {% block pagetitle %}Connexion{% endblock %}
 
 {% block content %}
-    <div class="row align-items-center justify-content-center h-100 mr-0 ml-0">
 
-        <div class="col-12 col-md-5 col-lg-4">
+{% if next %}
+    {% if user.is_authenticated %}
+    <p>Your account doesn't have access to this page. To proceed,
+    please login with an account that has access.</p>
+    {% else %}
+    <p>Please login to see this page.</p>
+    {% endif %}
+{% endif %}
 
-            <h1 class="mb-3 fw-bold text-center">Connexion</h1>
+<div class="row align-items-center justify-content-center h-100 mr-0 ml-0">
 
-            <form action="{% url 'users:signin' %}" method="post">
-                {% csrf_token %}
-                {{ form|crispy }}
-                <button class="btn w-100 btn-primary mt-2" type="submit">Se connecter</button>
-            </form>
+    <div class="col-12 col-md-5 col-lg-4">
 
-            <p class="mb-0 fs-sm text-center text-muted">
-                Pas encore de compte ? <a href="{% url 'users:signup' %}">Inscrivez-vous</a>.
-            </p>
-        </div>
+        <h1 class="mb-3 fw-bold text-center">Connexion</h1>
+
+        <form action="{% url 'users:signin' %}" method="post">
+            {% csrf_token %}
+            {{ form|crispy }}
+            <button class="btn w-100 btn-primary mt-2" type="submit">Se connecter</button>
+        </form>
+
+        <p class="mb-0 fs-sm text-center text-muted">
+            Mot de pass oublié ? <a href="{% url 'password_reset' %}">Réinitialisez le</a>.
+            <br/>Pas encore de compte ? <a href="{% url 'users:signup' %}">Inscrivez-vous</a>.
+        </p>
     </div>
+</div>
 
 {% endblock %}

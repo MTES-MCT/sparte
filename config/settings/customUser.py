@@ -14,3 +14,4 @@ TEMPLATES[0]["OPTIONS"]["context_processors"] += [
 ]
 
 LOGIN_REDIRECT_URL = "connected"
+LOGIN_URL = "users:signin"
