@@ -37,3 +37,5 @@ elif EMAIL_ENGINE == "mailjet":
         "MAILJET_API_KEY": env("MAILJET_ID"),
         "MAILJET_SECRET_KEY": env("MAILJET_SECRET"),
     }
+
+DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL")

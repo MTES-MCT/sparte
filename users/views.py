@@ -1,3 +1,5 @@
+from django.contrib.auth import logout
+from django.views import View
 from django.views.generic import DetailView, ListView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormView
 from django.urls import reverse_lazy
@@ -12,6 +14,14 @@ class SigninView(FormView):
     success_url = reverse_lazy("carto:home_connected")
 
 
+class SignoutView(View):
+    url = reverse_lazy("users:signin")
+
+    def get_redirect_url(self, *args, **kwargs):
+        logout(self.request)
+        return super().get_redirect_url(*args, **kwargs)
+
+
 class UserDetailView(DetailView):
     model = User
 
@@ -24,7 +34,6 @@ class UserCreateView(CreateView):
     model = User
     template_name = "users/signup.html"
     form_class = SignupForm
-    # fields = ['email', 'password']
     success_url = reverse_lazy("users:signin")
 
 
