@@ -12,3 +12,4 @@ from .restframework import *
 from .project import *
 from .bucket_s3 import *
 from .django_import_export import *
+from .email import *

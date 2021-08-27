@@ -27,3 +27,4 @@ redis = "==3.5.3"
 django-storages = "*"
 boto3 = "*"
 django-import-export = "*"
+django-anymail = {extras = ["mailjet"], version = "*"}
