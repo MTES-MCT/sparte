@@ -17,13 +17,14 @@ root = environ.Path(__file__) - 3  # get root of the project
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(root())
 
+# initialize env with environment variable
+# it can contains DEBUG (in production env it shall)
+# so we could explore how to load file only on local execution
 env = environ.Env()
 
 env_path = BASE_DIR / ".env"
 if env_path.is_file():
     environ.Env.read_env(str(env_path))  # reading .env file
-else:
-    environ.Env.read_env()
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
