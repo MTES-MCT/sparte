@@ -19,7 +19,7 @@
     <div class="container-fluid vh-100 d-flex pl-0 pr-0">
 
         <!-- Barre de gauche -->
-        <div class="bg-dark" id="sidebar" style="flex: 0 0 200px;">
+        <aside class="bg-dark" id="sidebar" style="flex: 0 0 200px;">
 
             <!-- MENY USER ET TITRE -->
             <div class='d-flex w-100 mb-4 mt-1 align-items-center'>
@@ -63,12 +63,12 @@
             </ul>
             {% endif %}
 
-        </div>
+        </aside>
 
         <!-- ZONE PRINCIPALE -->
-        <div class="d-flex flex-fill flex-grow-1 h-100">
+        <main class="d-flex flex-fill h-100" style="overflow:auto;">
             {% block content %}{% endblock %}
-        </div>
+        </main>
 
     </div>
 
