@@ -1,11 +1,116 @@
 {% extends 'base.html' %}
 
+{% load static %}
+
 {% block pagetitle %}Home{% endblock %}
 
 {% block content %}
 <div class="d-flex h-100 align-items-center justify-content-center">
-    <div>
-        <img width="450px" src="https://www.palermo.edu/Archivos_content/2019/cursos/ingenieria/datascience/programa-fundamentos-data-science-up.jpg"/>
+    <div class="" style="width:750px; overflow:auto;">
+        <p class="w-100"><img src="{% static 'header.png' %}"  class="w-100" /></p>
+
+        <h1>SPARTE</h1>
+
+        Le <strong>S</strong>ervice de <strong>P</strong>ortrait de l’<strong>AR</strong>tificialisation des <strong>TE</strong>rritoires (ou SPARTE) est une plateforme qui aide les collectivité à mesurer l'artificialisation de leurs sols et ainsi se conformer aux nouvelles lois.
+
+        <h2 class="mt-5">Proposition de valeur</h2>
+
+        <p>Le Service de Portraits de l’Artificialisation des Territoires.</p>
+
+        <p>En aval de l’Observatoire National, SPARTE vous aide à mesurer et suivre l’artificialisation des sols sur votre territoire afin de prendre des décisions d’aménagement optimales.
+        Votre territoire peut-il bénéficier de SPARTE pour analyser l’artificialisation des sols? Renseignez ci-dessous le département dont dépend votre territoire </p>
+
+        <hr/>
+
+        <h2 class="mt-5">User stories</h2>
+
+        <p><strong>Comment ça marche ?</strong></p>
+        <div class="container">
+        <div class="row">
+            <div class="col-3 d-flex align-items-stretch">
+                <div class="card">
+                    <img class="card-img-top" src="{% static 'pictoRelation.png' %}" alt="Pictogramme">
+                    <div class="card-body">
+                        <p class="card-text">
+                            Réalisez le bilan de l’artificialisation des sols de votre territoire
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-3 d-flex align-items-stretch">
+                <div class="card">
+                    <img class="card-img-top" src="{% static 'pictoCopro.png' %}" alt="Pictogramme">
+                    <div class="card-body">
+                        <p class="card-text">
+                            Analysez l’évolution de l’artificialisation dans le temps selon les indicateurs
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-3 d-flex align-items-stretch">
+                <div class="card">
+                    <img class="card-img-top" src="{% static 'pictoMap.png' %}" alt="Pictogramme">
+                    <div class="card-body">
+                        <p class="card-text">
+                            Estimez l’impact de vos projets d'urbanisme sur l’artificialisation des sols
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-3 d-flex align-items-stretch">
+                <div class="card">
+                    <img class="card-img-top" src="{% static 'pictoResource.png' %}" alt="Pictogramme">
+                    <div class="card-body">
+                        <p class="card-text">
+                            Exportez les cartographies et tableaux de bord pour vos projets
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <hr/>
+
+        <h2 class="mt-5">Eléments de différenciation</h2>
+
+        <p>
+            <strong>Les atouts de SPARTE</strong>
+            <br/>D’ici 2050, l’objectif de la Loi Climat est d’atteindre le Zéro Artificialisation Nette.
+            Soit un équilibre entre l’artificialisation et la renaturation du territoire.
+        </p>
+
+        <p>
+            Au delà de la consommation d’espace, l’artificialisation des sols est le résultat du croisement entre l’usage des sols (ex : réseaux de transports) et la couverture des sols (ex : degré d'imperméabilité).
+        </p>
+
+        <p>Plus précisément, l'article 192 de la loi indique : <i>«Une surface dont les sols sont soit imperméabilisés en raison du bâti ou d'un revêtement, soit stabilisés et compactés, soit constitués de matériaux composites»</i></p>
+
+        <p>
+            <strong>Conforme</strong>
+            <br/>La mesure de l’artificialisation sera basée sur la définition et la méthode de calcul préconisées dans le décret “Zéro Artificialisation Nette” de la Loi Climat et Résilience.
+        </p>
+
+        <p>
+            <strong>Actualisé / à jour</strong>
+            <br/>Les données mobilisées, en particulier celles de l’OCSGE, permettent d’analyser les sols jusqu’à l’échelle infra-communale et, ceux, pour plusieurs millésimes.
+        </p>
+
+        <p>
+            <strong>Stratégique / décisif / prospectif / simulation </strong>
+            <br/>Les cartographies, tableaux de bord et l’outil d’estimation de l’impact d’artificialisation des projets d’urbanisme aident à construire vos politiques urbaines et prendre des décisions avec une connaissance précise de l’état des sols.
+        </p>
+
+        <p>Accédez à la version beta de SPARTE pour calculer et suivre l’état d’artificialisation des sols de votre territoire. </p>
+
+        <p>Pour commencer à utilisez l'outil, <a href="{% url 'users:signup' %}">inscrivez-vous</a> !</p>
+
+        <hr/>
+
+        <p>SPARTE est un projet d'innovation pour faciliter le calcul et le suivi de l’artificialisation en vue de l'atteinte de l’objectif Zéro Artificialisation Nette acté par la Loi Climat et Résilience.</p>
+
+        <p>Faites nous part de vos propositions pour améliorer ce service : sparte@beta.gouv.fr</p>
+
+        <p><img src="{% static 'logo_france.png' %}" width="100"/></p>
     </div>
 </div>
 {% endblock %}
