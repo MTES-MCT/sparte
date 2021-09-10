@@ -14,13 +14,13 @@ from .api_views import (
 app_name = "public_data"
 
 router = routers.DefaultRouter()
-router.register(r"sybarvale/artificialisee/2015to2018", Artificialisee2015to2018ViewSet)
-router.register(r"sybarvale/artificielle/2018", Artificielle2018ViewSet)
-router.register(r"sybarvale/communes", CommunesSybarvalViewSet)
-router.register(r"sybarvale/urbain/2018", EnveloppeUrbaine2018ViewSet)
-router.register(r"sybarvale/renaturee/2018to2015", Renaturee2018to2015ViewSet)
-router.register(r"sybarvale/global", SybarvalViewSet)
-router.register(r"sybarvale/voirie/2018", Voirie2018ViewSet)
-router.register(r"sybarvale/batie/2018", ZonesBaties2018ViewSet)
+router.register(r"sybarval/artificialisee/2015to2018", Artificialisee2015to2018ViewSet)
+router.register(r"sybarval/artificielle/2018", Artificielle2018ViewSet)
+router.register(r"sybarval/communes", CommunesSybarvalViewSet)
+router.register(r"sybarval/urbain/2018", EnveloppeUrbaine2018ViewSet)
+router.register(r"sybarval/renaturee/2018to2015", Renaturee2018to2015ViewSet)
+router.register(r"sybarval/global", SybarvalViewSet)
+router.register(r"sybarval/voirie/2018", Voirie2018ViewSet)
+router.register(r"sybarval/batie/2018", ZonesBaties2018ViewSet)
 
 urlpatterns = router.urls
