@@ -9,7 +9,8 @@ class User(AbstractUser):
     username = None
     email = models.EmailField(_("email address"), unique=True)
     email_checked = models.DateTimeField(_("email checked"), blank=True, null=True)
-    creation_date = models.DateTimeField(_("creation date"), auto_now_add=True)
+    organism = models.CharField(_("Organism"), max_length=250)
+    function = models.CharField(_("Function"), max_length=250)
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
