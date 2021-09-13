@@ -30,6 +30,22 @@ class ProjectDetailView(LoginRequiredMixin, DetailView):
         return Project.objects.filter(user=user)
 
     def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context
+
+
+class ProjectReportView(LoginRequiredMixin, DetailView):
+    queryset = Project.objects.all()
+    template_name = "project/rapport.html"
+    context_object_name = "project"
+
+    def get_queryset(self):
+        # UPDATE: utiliser les permissions classiques de Django !!
+        user = self.request.user
+        # prefetch cities ?
+        return Project.objects.filter(user=user)
+
+    def get_context_data(self, **kwargs):
         super_context = super().get_context_data(**kwargs)
         table_artif = []
         table_percent = []
