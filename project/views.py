@@ -7,7 +7,18 @@ from .models import Project
 from .tasks import import_shp
 
 
-class ProjectListView(LoginRequiredMixin, ListView):
+class UserProjectOnlyMixin:
+    def get_queryset(self):
+        user = self.request.user
+        # prefetch cities ?
+        return Project.objects.filter(user=user)
+
+
+class GroupMixin(LoginRequiredMixin, UserProjectOnlyMixin):
+    pass
+
+
+class ProjectListView(GroupMixin, ListView):
     queryset = Project.objects.all()
     template_name = "project/list.html"
     context_object_name = "projects"
@@ -18,32 +29,20 @@ class ProjectListView(LoginRequiredMixin, ListView):
         return Project.objects.filter(user=user)
 
 
-class ProjectDetailView(LoginRequiredMixin, DetailView):
+class ProjectDetailView(GroupMixin, DetailView):
     queryset = Project.objects.all()
     template_name = "project/detail.html"
     context_object_name = "project"
 
-    def get_queryset(self):
-        # UPDATE: utiliser les permissions classiques de Django !!
-        user = self.request.user
-        # prefetch cities ?
-        return Project.objects.filter(user=user)
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        return context
+    # def get_context_data(self, **kwargs):
+    #     context = super().get_context_data(**kwargs)
+    #     return context
 
 
-class ProjectReportView(LoginRequiredMixin, DetailView):
+class ProjectReportView(GroupMixin, DetailView):
     queryset = Project.objects.all()
     template_name = "project/rapport.html"
     context_object_name = "project"
-
-    def get_queryset(self):
-        # UPDATE: utiliser les permissions classiques de Django !!
-        user = self.request.user
-        # prefetch cities ?
-        return Project.objects.filter(user=user)
 
     def get_context_data(self, **kwargs):
         super_context = super().get_context_data(**kwargs)
@@ -90,15 +89,10 @@ class ProjectReportView(LoginRequiredMixin, DetailView):
         }
 
 
-class ProjectMapView(LoginRequiredMixin, DetailView):
+class ProjectMapView(GroupMixin, DetailView):
     queryset = Project.objects.all()
     template_name = "carto/full_carto.html"
     context_object_name = "project"
-
-    def get_queryset(self):
-        # UPDATE: utiliser les permissions classiques de Django !!
-        user = self.request.user
-        return Project.objects.filter(user=user)
 
     def get_context_data(self, **kwargs):
         context1 = super().get_context_data(**kwargs)
@@ -154,7 +148,7 @@ class ProjectMapView(LoginRequiredMixin, DetailView):
         return {**context1, **context2}
 
 
-class ProjectCreateView(LoginRequiredMixin, CreateView):
+class ProjectCreateView(GroupMixin, CreateView):
     model = Project
     template_name = "project/create.html"
     fields = ["name", "shape_file", "analyse_start_date", "analyse_end_date"]
@@ -171,7 +165,7 @@ class ProjectCreateView(LoginRequiredMixin, CreateView):
         return reverse_lazy("project:detail", kwargs={"pk": self.object.id})
 
 
-class ProjectUpdateView(LoginRequiredMixin, UpdateView):
+class ProjectUpdateView(GroupMixin, UpdateView):
     model = Project
     template_name = "project/update.html"
     fields = ["name", "shape_file", "analyse_start_date", "analyse_end_date"]
@@ -181,6 +175,6 @@ class ProjectUpdateView(LoginRequiredMixin, UpdateView):
         return reverse_lazy("project:detail", kwargs=self.kwargs)
 
 
-class ProjectDeleteView(LoginRequiredMixin, DeleteView):
+class ProjectDeleteView(GroupMixin, DeleteView):
     model = Project
     success_url = reverse_lazy("project:list")
