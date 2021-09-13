@@ -22,9 +22,9 @@ En cours de traitement
     <p>Détail du problème rencontré:</p>
     <p>
         Nom du fichier : {{ project.shape_file.name }}
-        <br/>Date import : {{ project.import_datedate:"d.m.Y H:i:s" }}
+        <br/>Date import : {{ project.import_date|date:"d.m.Y_H:i:s" }}
         <br/>Stack trace:
-        <br/><code>{{ project.import_error }}</code>
+        <br/><pre>{{ project.import_error }}</pre>
     </p>
 </div>
 {% endblock %}
