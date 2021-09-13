@@ -1,0 +1,24 @@
+{% extends 'base_connected.html' %}
+
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block pagetitle %}
+Réinitialiser l'emprise
+{% endblock %}
+
+{% block headers %}
+{% endblock %}
+
+{% block content %}
+    <div class="d-flex flex-column h-100 w-100 align-items-center justify-content-center">
+        <h2 class="mb-5">Réinitialiser <strong>{{ project.name }}</strong></h2>
+
+        <p>Si vous souhaitez réinitialiser l'emprise territoriale, veuillez le confirmer en cliquant sur le bouton ci-dessous.</p>
+
+        <form action="" method="post">
+            {% csrf_token %}
+            <button class="btn w-100 btn-warning mt-4" type="submit">Confirmer la réinitialisation</button>
+        </form>
+    </div>
+{% endblock %}
