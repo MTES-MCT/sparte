@@ -31,6 +31,10 @@ class SignupForm(forms.ModelForm):
     class Meta:
         model = User
         fields = (
+            "organism",
+            "function",
+            "first_name",
+            "last_name",
             "email",
             "password1",
             "password2",

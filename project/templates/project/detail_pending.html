@@ -1,0 +1,26 @@
+{% extends 'project/base_detail.html' %}
+
+{% load static %}
+{% load crispy_forms_tags %}
+{% load project_tags %}
+
+{% block pagetitle %}
+En cours de traitement
+{% endblock %}
+
+{% block headers %}
+<meta http-equiv="refresh" content="30">
+{% endblock %}
+
+{% block detail_content %}
+<div style="width:750px;">
+    <h3>En cours de traitement</h3>
+
+    <p>Le fichier Shape contenant l'emprise est en cours de traitement</p>
+
+    <p>Cela ne devrait pas prendre plus d'une minute ou deux, cette page va se rafraîchir toutes les 30 secondes.</p>
+</div>
+{% endblock %}
+
+{% block bodyend %}
+{% endblock %}
