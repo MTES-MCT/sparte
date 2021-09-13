@@ -18,43 +18,61 @@ def user_directory_path(instance, filename):
 
 
 class Project(models.Model):
-    IMPORT_PENDING = "PENDING"
-    IMPORT_SUCCESS = "SUCCESS"
-    IMPORT_FAILED = "FAILED"
-    IMPORT_STATUS_CHOICES = [
-        (IMPORT_PENDING, "Import pending to be processed"),
-        (IMPORT_SUCCESS, "Import successfuly processed"),
-        (IMPORT_FAILED, "Import failed, see import message"),
-    ]
+
+    ANALYZE_YEARS = (
+        ("2015", "2015"),
+        ("2018", "2018"),
+    )
+
+    class Status(models.TextChoices):
+        MISSING = "MISSING", "Emprise à renseigner"
+        PENDING = "PENDING", "Traitement du fichier Shape en cours"
+        SUCCESS = "SUCCESS", "Emprise renseignée"
+        FAILED = "FAILED", "Création de l'emprise échouée"
 
     user = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.PROTECT, verbose_name=_("owner")
+        settings.AUTH_USER_MODEL,
+        on_delete=models.PROTECT,
+        verbose_name="propriétaire",
     )
-    name = models.CharField(_("project name"), max_length=100)
+    name = models.CharField("Nom", max_length=100)
+    description = models.TextField("Description", blank=True)
     shape_file = models.FileField(
-        _("shape files"), upload_to=user_directory_path, max_length=100
+        "Fichier .shp",
+        upload_to=user_directory_path,
+        max_length=100,
+        blank=True,
+        null=True,
     )
-    analyse_start_date = models.DateField()
-    analyse_end_date = models.DateField()
-
-    # fields to track the shape files importation into the database
-    import_error = models.TextField(
-        _("shp file import error message"), null=True, blank=True
+    analyse_start_date = models.CharField(
+        "Date de début",
+        choices=ANALYZE_YEARS,
+        default="2015",
+        max_length=4,
     )
-    import_date = models.DateTimeField(_("import date & time"), null=True, blank=True)
-    import_status = models.CharField(
-        _("import status"),
-        max_length=10,
-        choices=IMPORT_STATUS_CHOICES,
-        default=IMPORT_PENDING,
-    )
-
-    # fields to linked project to particular city
-    is_manually_linked = models.BooleanField(
-        _("Is manually linked to cities"), default=False
+    analyse_end_date = models.CharField(
+        "Date de fin",
+        choices=ANALYZE_YEARS,
+        default="2018",
+        max_length=4,
     )
     cities = models.ManyToManyField(
-        "public_data.ArtifCommune", verbose_name=_("cities"), blank=True
+        "public_data.ArtifCommune",
+        verbose_name="Communes",
+        blank=True,
+    )
+    # fields to track the shape files importation into the database
+    import_error = models.TextField(
+        "Message d'erreur traitement emprise",
+        null=True,
+        blank=True,
+    )
+    import_date = models.DateTimeField("Date et heure d'import", null=True, blank=True)
+    import_status = models.CharField(
+        "Statut import",
+        max_length=10,
+        choices=Status.choices,
+        default=Status.MISSING,
     )
 
     def get_absolute_url(self):
@@ -74,7 +92,7 @@ class Emprise(gis_models.Model, DataColorationMixin):
     default_color = "blue"
 
     project = gis_models.ForeignKey(
-        Project, on_delete=models.PROTECT, verbose_name=_("project")
+        Project, on_delete=models.CASCADE, verbose_name=_("project")
     )
     mpoly = gis_models.MultiPolygonField()
 

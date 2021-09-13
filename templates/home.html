@@ -6,7 +6,7 @@
 
 {% block content %}
 <div class="d-flex h-100 align-items-center justify-content-center">
-    <div class="" style="width:750px; overflow:auto;">
+    <div class="" style="width:750px;">
         <p class="w-100"><img src="{% static 'header.png' %}"  class="w-100" /></p>
 
         <h1>SPARTE</h1>
@@ -25,46 +25,42 @@
         <h2 class="mt-5">User stories</h2>
 
         <p><strong>Comment ça marche ?</strong></p>
-        <div class="container">
-        <div class="row">
-            <div class="col-3 d-flex align-items-stretch">
-                <div class="card">
-                    <img class="card-img-top" src="{% static 'pictoRelation.png' %}" alt="Pictogramme">
-                    <div class="card-body">
-                        <p class="card-text">
-                            Réalisez le bilan de l’artificialisation des sols de votre territoire
-                        </p>
-                    </div>
+
+        <div class="card-deck">
+
+            <div class="card">
+                <img class="card-img-top" src="{% static 'pictoRelation.png' %}" alt="Pictogramme">
+                <div class="card-body">
+                    <p class="card-text">
+                        Réalisez le bilan de l’artificialisation des sols de votre territoire
+                    </p>
                 </div>
             </div>
-            <div class="col-3 d-flex align-items-stretch">
-                <div class="card">
-                    <img class="card-img-top" src="{% static 'pictoCopro.png' %}" alt="Pictogramme">
-                    <div class="card-body">
-                        <p class="card-text">
-                            Analysez l’évolution de l’artificialisation dans le temps selon les indicateurs
-                        </p>
-                    </div>
+
+            <div class="card">
+                <img class="card-img-top" src="{% static 'pictoCopro.png' %}" alt="Pictogramme">
+                <div class="card-body">
+                    <p class="card-text">
+                        Analysez l’évolution de l’artificialisation dans le temps selon les indicateurs
+                    </p>
                 </div>
             </div>
-            <div class="col-3 d-flex align-items-stretch">
-                <div class="card">
-                    <img class="card-img-top" src="{% static 'pictoMap.png' %}" alt="Pictogramme">
-                    <div class="card-body">
-                        <p class="card-text">
-                            Estimez l’impact de vos projets d'urbanisme sur l’artificialisation des sols
-                        </p>
-                    </div>
+
+            <div class="card">
+                <img class="card-img-top" src="{% static 'pictoMap.png' %}" alt="Pictogramme">
+                <div class="card-body">
+                    <p class="card-text">
+                        Estimez l’impact de vos projets d'urbanisme sur l’artificialisation des sols
+                    </p>
                 </div>
             </div>
-            <div class="col-3 d-flex align-items-stretch">
-                <div class="card">
-                    <img class="card-img-top" src="{% static 'pictoResource.png' %}" alt="Pictogramme">
-                    <div class="card-body">
-                        <p class="card-text">
-                            Exportez les cartographies et tableaux de bord pour vos projets
-                        </p>
-                    </div>
+
+            <div class="card">
+                <img class="card-img-top" src="{% static 'pictoResource.png' %}" alt="Pictogramme">
+                <div class="card-body">
+                    <p class="card-text">
+                        Exportez les cartographies et tableaux de bord pour vos projets
+                    </p>
                 </div>
             </div>
         </div>
