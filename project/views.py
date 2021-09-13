@@ -4,9 +4,9 @@ from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
+from .forms import SelectCitiesForm, SelectPluForm, UploadShpForm
 from .models import Project
 from .tasks import import_shp
-from .forms import SelectCitiesForm, SelectPluForm, UploadShpForm
 
 
 class UserProjectOnlyMixin:
@@ -69,11 +69,11 @@ class ProjectDetailView(GroupMixin, DetailView):
         if project.import_status == Project.Status.MISSING:
             view = ProjectNoShpView.as_view()
         elif project.import_status == Project.Status.PENDING:
-            pass
+            view = ProjectPendingView.as_view()
         elif project.import_status == Project.Status.SUCCESS:
-            pass
+            view = ProjectSuccessView.as_view()
         elif project.import_status == Project.Status.FAILED:
-            pass
+            view = ProjectFailedView.as_view()
 
         # step 3. error management
         if not view:
@@ -117,36 +117,25 @@ class ProjectNoShpView(GroupMixin, DetailView):
         return super().get_context_data(**context)
 
     def post(self, request, *args, **kwargs):
-        forms = self.get_forms()
-        if forms["city_form"].is_valid():
-            # TODO : move below to form.save() in order to have exactly same API
-            # for all 3 forms
-            # cities contains public_data.models.ArtifCommune instances
-            cities = forms["city_form"].cleaned_data["cities"]
-            self.set_city(cities=cities)
-        elif forms["plu_form"].is_valid():
-            cities = forms["plu_form"].cleaned_data["cities"]
-            self.set_city(cities=cities)
-        elif forms["shp_form"].is_valid():
-            project = self.get_object()
-            project.shape_file = forms["shp_form"].cleaned_data["shape_zip"]
-            project.import_status = Project.Status.PENDING
-            import_shp.delay(project.id)
-            project.save()
-        else:
-            # no forms are valid, display them again
-            return self.get(request, *args, **kwargs)
-        # one form was valid, let's got to success url
-        return self.form_valid()
+        for form in self.get_forms().values():
+            if form.is_valid():
+                form.save(project=self.get_object())
+                # one form was valid, let's got to success url
+                return self.form_valid()
+        # no forms are valid, display them again
+        return self.get(request, *args, **kwargs)
 
-    def set_city(self, cities=None, insee=None):
-        project = self.get_object()
-        project.cities.clear()
-        if cities:
-            for city in cities:
-                project.cities.add(city)
-            project.import_status = Project.Status.SUCCESS
-            project.save()
+
+class ProjectPendingView(GroupMixin, DetailView):
+    template_name = "project/detail_pending.html"
+
+
+class ProjectSuccessView(GroupMixin, DetailView):
+    template_name = "project/detail_success.html"
+
+
+class ProjectFailedView(GroupMixin, DetailView):
+    template_name = "project/detail_failed.html"
 
 
 class ProjectReportView(GroupMixin, DetailView):
@@ -261,7 +250,7 @@ class ProjectMapView(GroupMixin, DetailView):
 class ProjectCreateView(GroupMixin, CreateView):
     model = Project
     template_name = "project/create.html"
-    fields = ["name", "shape_file", "analyse_start_date", "analyse_end_date"]
+    fields = ["name", "description", "analyse_start_date", "analyse_end_date"]
 
     def form_valid(self, form):
         # required to set the user who is logged as creator
@@ -278,7 +267,7 @@ class ProjectCreateView(GroupMixin, CreateView):
 class ProjectUpdateView(GroupMixin, UpdateView):
     model = Project
     template_name = "project/update.html"
-    fields = ["name", "shape_file", "analyse_start_date", "analyse_end_date"]
+    fields = ["name", "description", "analyse_start_date", "analyse_end_date"]
     context_object_name = "project"
 
     def get_success_url(self):
@@ -287,4 +276,21 @@ class ProjectUpdateView(GroupMixin, UpdateView):
 
 class ProjectDeleteView(GroupMixin, DeleteView):
     model = Project
+    template_name = "project/delete.html"
     success_url = reverse_lazy("project:list")
+
+
+class ProjectReinitView(GroupMixin, DeleteView):
+    model = Project
+    template_name = "project/reinit.html"
+    success_url = reverse_lazy("project:list")
+
+    def post(self, request, *args, **kwargs):
+        project = self.get_object()
+        project.import_status = Project.Status.MISSING
+        project.save()
+        success_url = self.get_success_url()
+        return HttpResponseRedirect(success_url)
+
+    def get_success_url(self):
+        return reverse_lazy("project:detail", kwargs=self.kwargs)

@@ -1,4 +1,4 @@
-{% extends 'base_connected.html' %}
+{% extends 'project/base_detail.html' %}
 
 {% load static %}
 {% load project_tags %}
@@ -10,112 +10,101 @@
 {% block headers %}
 {% endblock %}
 
-{% block content %}
-    <div class="d-flex flex-column w-100 align-items-center">
-        <div>
-        <div class="mb-5">
-            <h2>{{ project.name }}</h2>
-            <p>
-                <a href="{% url 'project:update' project.pk %}"><i data-feather="edit" stroke-width="2" width="16px" color="#0000dd"></i></a>
-                <a href="{% url 'project:map' project.pk %}"><i data-feather="map" stroke-width="2" width="16px" color="#0000dd"></i></a>
-            </p>
-        </div>
-        <div>
-            <h3>Chiffres clés:</h3>
-            <div class="d-flex">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Territoire total</h5>
-                    <p>{{ total_surface }} ha</p>
-                    <p>100%</p>
-                </div>
+{% block detail_content %}
+    <div>
+        <h3>Chiffres clés:</h3>
+        <div class="d-flex">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Territoire total</h5>
+                <p>{{ total_surface }} ha</p>
+                <p>100%</p>
             </div>
+        </div>
 
-            <div class="card ml-3">
-                <div class="card-body">
-                    <h5 class="card-title">Artificielle avant 2009</h5>
-                    <p>{{ 2009_ha }} ha</p>
-                    <p>{{ 2009_percent }}</p>
-                </div>
+        <div class="card ml-3">
+            <div class="card-body">
+                <h5 class="card-title">Artificielle avant 2009</h5>
+                <p>{{ 2009_ha }} ha</p>
+                <p>{{ 2009_percent }}</p>
             </div>
+        </div>
 
-            <div class="card ml-3">
-                <div class="card-body">
-                    <h5 class="card-title">Artificielle en 2018</h5>
-                    <p>{{ 2018_ha }} ha</p>
-                    <p>{{ 2018_percent }}</p>
-                </div>
-            </div>
+        <div class="card ml-3">
+            <div class="card-body">
+                <h5 class="card-title">Artificielle en 2018</h5>
+                <p>{{ 2018_ha }} ha</p>
+                <p>{{ 2018_percent }}</p>
             </div>
         </div>
-        <div class="w-100 mt-5">
-            <div id="chart" class="flex-fill"></div>
-        </div>
-        <div class="mt-5">
-            <h3>Taux d'artificialisation (en %):</h3>
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th scope="col">Commune</th>
-                        <th scope="col">Avant 2009</th>
-                        <th scope="col">2009</th>
-                        <th scope="col">2010</th>
-                        <th scope="col">2011</th>
-                        <th scope="col">2012</th>
-                        <th scope="col">2013</th>
-                        <th scope="col">2014</th>
-                        <th scope="col">2015</th>
-                        <th scope="col">2016</th>
-                        <th scope="col">2017</th>
-                        <th scope="col">2018</th>
-                        <th scope="col">Total</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for city in table_percent %}
-                    <tr>
-                        <th scope="row">{{ city.name }}</th>
-                        {{ city.before|td:"%"  }}
-                        {{ city.items|td:"%" }}
-                        <th  scope="row">{{ city.total }}</th>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-        <div class="mt-5">
-            <h3>Artificialisation (en ha):</h3>
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th scope="col">Commune</th>
-                        <th scope="col">Avant 2009</th>
-                        <th scope="col">2009</th>
-                        <th scope="col">2010</th>
-                        <th scope="col">2011</th>
-                        <th scope="col">2012</th>
-                        <th scope="col">2013</th>
-                        <th scope="col">2014</th>
-                        <th scope="col">2015</th>
-                        <th scope="col">2016</th>
-                        <th scope="col">2017</th>
-                        <th scope="col">2018</th>
-                        <th scope="col">Total</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for city in table_artif %}
-                    <tr>
-                        <th scope="row">{{ city.name }}</th>
-                        {{ city.before|td }}
-                        {{ city.items|td }}
-                        <th  scope="row">{{ city.total }}</th>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
         </div>
     </div>
+    <div class="w-100 mt-5">
+        <div id="chart" class="flex-fill"></div>
+    </div>
+    <div class="mt-5">
+        <h3>Taux d'artificialisation (en %):</h3>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Commune</th>
+                    <th scope="col">Avant 2009</th>
+                    <th scope="col">2009</th>
+                    <th scope="col">2010</th>
+                    <th scope="col">2011</th>
+                    <th scope="col">2012</th>
+                    <th scope="col">2013</th>
+                    <th scope="col">2014</th>
+                    <th scope="col">2015</th>
+                    <th scope="col">2016</th>
+                    <th scope="col">2017</th>
+                    <th scope="col">2018</th>
+                    <th scope="col">Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for city in table_percent %}
+                <tr>
+                    <th scope="row">{{ city.name }}</th>
+                    {{ city.before|td:"%"  }}
+                    {{ city.items|td:"%" }}
+                    <th  scope="row">{{ city.total }}</th>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="mt-5">
+        <h3>Artificialisation (en ha):</h3>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Commune</th>
+                    <th scope="col">Avant 2009</th>
+                    <th scope="col">2009</th>
+                    <th scope="col">2010</th>
+                    <th scope="col">2011</th>
+                    <th scope="col">2012</th>
+                    <th scope="col">2013</th>
+                    <th scope="col">2014</th>
+                    <th scope="col">2015</th>
+                    <th scope="col">2016</th>
+                    <th scope="col">2017</th>
+                    <th scope="col">2018</th>
+                    <th scope="col">Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for city in table_artif %}
+                <tr>
+                    <th scope="row">{{ city.name }}</th>
+                    {{ city.before|td }}
+                    {{ city.items|td }}
+                    <th  scope="row">{{ city.total }}</th>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 {% endblock %}
 
