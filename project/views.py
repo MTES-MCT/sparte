@@ -34,7 +34,7 @@ class ProjectListView(GroupMixin, ListView):
 class ProjectDetailView(GroupMixin, DetailView):
     def dispatch(self, request, *args, **kwargs):
         """
-        Use the correct view according to Project status
+        Use the correct view according to Project status (kind of router)
         * MISSING => display a page to get the emprise from the user
         * PENDING => display a waiting message, calculation in progress
         * SUCCESS => display available option (report, pdf, carto...)
@@ -74,7 +74,7 @@ class ProjectDetailView(GroupMixin, DetailView):
             view = ProjectNoShpView.as_view()
 
         # step 4. render correct view according to import_status
-        return view.dispatch(request)
+        return view(request, *args, **kwargs)
 
 
 class ProjectNoShpView(GroupMixin, DetailView):
