@@ -17,9 +17,9 @@ Project detail
             <h2><a href="{% url 'project:detail' project.pk %}">{{ project.name }}</a></h2>
             {% if project.import_status == "SUCCESS" %}
             <p>
-                <a href="{% url 'project:update' project.pk %}"><i data-feather="edit" stroke-width="2" width="16px" color="#0000dd"></i></a>
-                <a href="{% url 'project:report' project.pk %}"><i data-feather="pie-chart" stroke-width="2" width="16px" color="#0000dd"></i></a>
-                <a href="{% url 'project:map' project.pk %}"><i data-feather="map" stroke-width="2" width="16px" color="#0000dd"></i></a>
+                <a href="{% url 'project:update' project.pk %}" data-toggle="tooltip" title="Edition"><i data-feather="edit" stroke-width="2" width="16px" color="#0000dd"></i></a>
+                <a href="{% url 'project:report' project.pk %}" data-toggle="tooltip" title="Dashboard"><i data-feather="pie-chart" stroke-width="2" width="16px" color="#0000dd"></i></a>
+                <a href="{% url 'project:map' project.pk %}" data-toggle="tooltip" title="Carte intéractive"><i data-feather="map" stroke-width="2" width="16px" color="#0000dd"></i></a>
             </p>
             {% endif %}
         </div>
