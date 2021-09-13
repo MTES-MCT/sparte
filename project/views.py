@@ -1,6 +1,6 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
-from django.views.generic import ListView, DetailView
+from django.views.generic import ListView, DetailView, View
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
 from .models import Project
@@ -8,35 +8,77 @@ from .tasks import import_shp
 
 
 class UserProjectOnlyMixin:
+    queryset = Project.objects.all()
+
     def get_queryset(self):
+        # get queryset from class queryset var
+        qs = self.queryset
+        # apply filter on user owned project only
         user = self.request.user
-        # prefetch cities ?
-        return Project.objects.filter(user=user)
+        qs = qs.filter(user=user)
+        # TODO prefetch cities ?
+        return qs
 
 
 class GroupMixin(LoginRequiredMixin, UserProjectOnlyMixin):
-    pass
+    """Simple trick to not repeat myself. Pertinence to be evaluated."""
+
+    context_object_name = "project"
 
 
 class ProjectListView(GroupMixin, ListView):
-    queryset = Project.objects.all()
     template_name = "project/list.html"
-    context_object_name = "projects"
-
-    def get_queryset(self):
-        # UPDATE: utiliser les permissions classiques de Django !!
-        user = self.request.user
-        return Project.objects.filter(user=user)
+    context_object_name = "projects"  # override to add an "s"
 
 
 class ProjectDetailView(GroupMixin, DetailView):
-    queryset = Project.objects.all()
-    template_name = "project/detail.html"
-    context_object_name = "project"
+    def dispatch(self, request, *args, **kwargs):
+        """
+        Use the correct view according to Project status
+        * MISSING => display a page to get the emprise from the user
+        * PENDING => display a waiting message, calculation in progress
+        * SUCCESS => display available option (report, pdf, carto...)
+        * FAILED => display error message and advize to reload the emprise
 
-    # def get_context_data(self, **kwargs):
-    #     context = super().get_context_data(**kwargs)
-    #     return context
+        1. fetch project instance from DB
+        2. according to import_status value build view callable
+        3. error cases check (view is still None)
+        4. call view rendering with request object
+
+        RQ: this seems to be subefficient because object will be loaded several
+        time, two views have to be initialized.... Probably a better pattern
+        exists.
+        """
+        view = None
+        project = self.get_object()  # step 1
+
+        # step 2. normal cases
+        if project.import_status == Project.Status.MISSING:
+            view = ProjectNoShpView.as_view()
+        elif project.import_status == Project.Status.PENDING:
+            pass
+        elif project.import_status == Project.Status.SUCCESS:
+            pass
+        elif project.import_status == Project.Status.FAILED:
+            pass
+
+        # step 3. error management
+        if not view:
+            if not project.import_status:
+                # TODO add message that status is Null
+                pass
+            else:
+                # TODO add a message with unkown status
+                pass
+            # send on missing emprise
+            view = ProjectNoShpView.as_view()
+
+        # step 4. render correct view according to import_status
+        return view.dispatch(request)
+
+
+class ProjectNoShpView(GroupMixin, DetailView):
+    template_name = "project/detail_add_shp.html"
 
 
 class ProjectReportView(GroupMixin, DetailView):
