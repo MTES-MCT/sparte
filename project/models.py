@@ -18,14 +18,11 @@ def user_directory_path(instance, filename):
 
 
 class Project(models.Model):
-    IMPORT_PENDING = "PENDING"
-    IMPORT_SUCCESS = "SUCCESS"
-    IMPORT_FAILED = "FAILED"
-    IMPORT_STATUS_CHOICES = [
-        (IMPORT_PENDING, "Import pending to be processed"),
-        (IMPORT_SUCCESS, "Import successfuly processed"),
-        (IMPORT_FAILED, "Import failed, see import message"),
-    ]
+    class Status(models.TextChoices):
+        MISSING = "MISSING", _("Waiting file or manual selection")
+        PENDING = "PENDING", _("Import pending to be processed")
+        SUCCESS = "SUCCESS", _("Import successfuly processed")
+        FAILED = "FAILED", _("Import failed, see import message")
 
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.PROTECT, verbose_name=_("owner")
@@ -45,8 +42,8 @@ class Project(models.Model):
     import_status = models.CharField(
         _("import status"),
         max_length=10,
-        choices=IMPORT_STATUS_CHOICES,
-        default=IMPORT_PENDING,
+        choices=Status.choices,
+        default=Status.PENDING,
     )
 
     # fields to linked project to particular city
