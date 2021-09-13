@@ -77,3 +77,9 @@ def import_shp(project_id):
         project.import_status = Project.IMPORT_FAILED
         project.import_error = traceback.format_exc()
         project.save()
+
+
+def get_cityes_from_emprise(project_id):
+    """Analyse emprise to find which CommuneSybarval is include inside and make
+    a relation between the project and ArtifCommunes"""
+    pass
