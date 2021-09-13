@@ -6,8 +6,9 @@ from celery import shared_task
 from zipfile import ZipFile
 
 from django.contrib.gis.utils import LayerMapping
-from django.shortcuts import get_object_or_404
 from django.utils import timezone
+
+from public_data.models import CommunesSybarval, ArtifCommune
 
 from .models import Project, Emprise
 
@@ -21,10 +22,10 @@ def mul(x, y):
     return x * y
 
 
-def get_shp_file_from_zip(zip_path):
+def get_shp_file_from_zip(file_stream):
     """Extract all zip files in temporary dir and return .shp file"""
     temp_dir_path = Path(tempfile.TemporaryDirectory().name)
-    with ZipFile(zip_path) as zip_file:
+    with ZipFile(file_stream) as zip_file:
         zip_file.extractall(temp_dir_path)  # extract files to dir
     try:
         files_path = [_ for _ in temp_dir_path.iterdir() if _.suffix == ".shp"]
@@ -62,18 +63,39 @@ def save_feature(shp_file_path, project):
 def import_shp(project_id):
     try:
         # get project instance
-        project = get_object_or_404(Project, pk=project_id)
+        project = Project.objects.get(pk=project_id)
         # set importation datetime
         project.import_date = timezone.now()
         # extract files from zip and get .shp one
-        shp_file_path = get_shp_file_from_zip(project.shape_file.path)
+        shp_file_path = get_shp_file_from_zip(project.shape_file.open())
         # use .shp to save in the database all the feature
         save_feature(shp_file_path, project)
         # save project with successful import
-        project.import_status = Project.IMPORT_SUCCESS
+        project.import_status = Project.Status.SUCCESS
         project.import_error = None
         project.save()
-    except Exception:
+        # queue task that will find all communes from emprise
+        get_cityes_from_emprise.delay(project_id)
+    except Exception as e:  # noqa: F841
+        project.import_status = Project.Status.FAILED
+        project.import_error = traceback.format_exc()
+        project.save()
+
+
+@shared_task
+def get_cityes_from_emprise(project_id):
+    """Analyse emprise to find which CommuneSybarval is include inside and make
+    a relation between the project and ArtifCommunes"""
+    try:
+        project = Project.objects.get(pk=project_id)
+        project.cities.clear()
+        for emprise in project.emprise_set.all():
+            geom = emprise.mpoly
+            qs_insee = CommunesSybarval.objects.filter(mpoly__intersects=geom)
+            qs_insee = qs_insee.values_list("code_insee", flat=True).distinct()
+            for city in ArtifCommune.objects.filter(insee__in=qs_insee):
+                project.cities.add(city)
+    except Exception as e:  # noqa: F841
         project.import_status = Project.IMPORT_FAILED
         project.import_error = traceback.format_exc()
         project.save()

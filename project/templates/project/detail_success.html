@@ -1,0 +1,36 @@
+{% extends 'project/base_detail.html' %}
+
+{% load static %}
+{% load crispy_forms_tags %}
+{% load project_tags %}
+
+{% block pagetitle %}
+En cours de traitement
+{% endblock %}
+
+{% block headers %}
+{% endblock %}
+
+{% block detail_content %}
+<div style="width:750px;">
+    <p>SPARTE vous propose les fonctionnalités suivantes pour explorer votre projet et comprendre votre artificialisation.</p>
+
+    <p>Vous trouverez les îcones en haut de la page, sous le nom de votre projet.</p>
+
+    <ul>
+        <li><i data-feather="pie-chart" width="48px"></i> <strong>Dashboard</strong> : synthèse des territoires artificialisés, leur destination...</li>
+        <li><i data-feather="map" width="48px"></i> <strong>Carte interactive</strong> : visiter les zones artificielles et celles renaturées.</li>
+        <li><i data-feather="edit" width="48px"></i> <strong>Editer</strong> : pour modifier le nom, la description, etc.</li>
+    </ul>
+
+    <p>Vous pouvez également réinitialiser l'emprise, voire supprimer le projet :</p>
+
+    <ul>
+        <li><a href="{% url 'project:reinit' project.pk %}"><i data-feather="refresh-cw" width="16px"></i> réinitialiser l'emprise</a></li>
+        <li><a href="{% url 'project:delete' project.pk %}"><i data-feather="trash" width="16px"></i> Supprimer le projet</a></li>
+    </ul>
+</div>
+{% endblock %}
+
+{% block bodyend %}
+{% endblock %}

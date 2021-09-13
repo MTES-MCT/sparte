@@ -18,9 +18,19 @@ class CustomUserAdmin(UserAdmin):
         "is_staff",
         "is_active",
     )
-    readonly_fields = ("creation_date",)
+    readonly_fields = (
+        "date_joined",
+        "last_login",
+    )
     fieldsets = (
-        (None, {"fields": ("email", "password")}),
+        (
+            None,
+            {"fields": ("first_name", "last_name", "email", "organism", "function")},
+        ),
+        (
+            "Password",
+            {"fields": ("password",)},
+        ),
         (
             "Permissions",
             {
@@ -33,7 +43,12 @@ class CustomUserAdmin(UserAdmin):
         ),
         (
             "Audit",
-            {"fields": ("creation_date",)},
+            {
+                "fields": (
+                    "date_joined",
+                    "last_login",
+                )
+            },
         ),
     )
     add_fieldsets = (
@@ -41,7 +56,17 @@ class CustomUserAdmin(UserAdmin):
             None,
             {
                 "classes": ("wide",),
-                "fields": ("email", "password1", "password2", "is_staff", "is_active"),
+                "fields": (
+                    "first_name",
+                    "last_name",
+                    "email",
+                    "password1",
+                    "password2",
+                    "is_staff",
+                    "is_active",
+                    "organism",
+                    "function",
+                ),
             },
         ),
     )

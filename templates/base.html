@@ -14,10 +14,13 @@
   <body>
     <div class="container-fluid vh-100 d-flex flex-column pr-0 pl-0">
       <div class="d-flex align-items-center justify-content-between pb-1 pt-1" style="border-bottom: 0px solid #ccc;">
-        <div class="col-4">
+        <div class="p-2">
+          <img src="{% static 'logo_france.png' %}" width="100"/>
+        </div>
+        <div class="p-2">
             <b><a href="{% url 'home' %}">SPARTE</a></b>
         </div>
-        <div class="col-4 float-right text-right mr-2">
+        <div class="ml-auto p-2">
             <a href="{% url 'users:signup' %}" class="btn btn-outline-primary btn-sm">S'inscrire</a>
             <a href="{% url 'users:signin' %}" class="btn btn-outline-primary btn-sm">Se connecter</a>
         </div>

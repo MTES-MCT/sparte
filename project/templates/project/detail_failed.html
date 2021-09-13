@@ -1,0 +1,34 @@
+{% extends 'project/base_detail.html' %}
+
+{% load static %}
+{% load crispy_forms_tags %}
+{% load project_tags %}
+
+{% block pagetitle %}
+En cours de traitement
+{% endblock %}
+
+{% block headers %}
+{% endblock %}
+
+{% block detail_content %}
+<div style="width:750px;">
+    <h3>L'importation de l'emprise a échouée</h3>
+
+    <form action="{% url 'project:reinit' project.pk %}" method="post">
+        {% csrf_token %}
+        <button class="btn w-100 btn-warning mt-4" type="submit">Paramétrer une nouvelle emprise</button>
+    </form>
+
+    <p>Détail du problème rencontré:</p>
+    <p>
+        Nom du fichier : {{ project.shape_file.name }}
+        <br/>Date import : {{ project.import_date|date:"d.m.Y_H:i:s" }}
+        <br/>Stack trace:
+        <br/><pre>{{ project.import_error }}</pre>
+    </p>
+</div>
+{% endblock %}
+
+{% block bodyend %}
+{% endblock %}

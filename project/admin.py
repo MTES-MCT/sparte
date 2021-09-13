@@ -1,6 +1,8 @@
 from django.contrib.gis import admin
+from django.http import HttpResponseRedirect
 
 from .models import Project, Emprise
+from .tasks import import_shp
 
 
 @admin.register(Project)
@@ -22,6 +24,14 @@ class ProjectAdmin(admin.GeoModelAdmin):
     )
     ordering = ("name",)
     filter_horizontal = ("cities",)
+    change_form_template = "project/admin_detail.html"
+
+    def response_change(self, request, obj):
+        if "_reload-emprise-action" in request.POST:
+            # Trigger asynch task to reload emprise file
+            import_shp.delay(obj.id)
+            return HttpResponseRedirect(".")  # stay on the same detail page
+        return super().response_change(request, obj)
 
 
 @admin.register(Emprise)
