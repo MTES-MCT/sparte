@@ -1,10 +1,12 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
 from .models import Project
 from .tasks import import_shp
+from .forms import SelectCitiesForm, SelectPluForm, UploadShpForm
 
 
 class UserProjectOnlyMixin:
@@ -20,7 +22,18 @@ class UserProjectOnlyMixin:
         return qs
 
 
-class GroupMixin(LoginRequiredMixin, UserProjectOnlyMixin):
+class GetObjectMixin:
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.object = None
+
+    def get_object(self, queryset=None):
+        if not self.object:
+            self.object = super().get_object(queryset)
+        return self.object
+
+
+class GroupMixin(GetObjectMixin, LoginRequiredMixin, UserProjectOnlyMixin):
     """Simple trick to not repeat myself. Pertinence to be evaluated."""
 
     context_object_name = "project"
@@ -79,6 +92,61 @@ class ProjectDetailView(GroupMixin, DetailView):
 
 class ProjectNoShpView(GroupMixin, DetailView):
     template_name = "project/detail_add_shp.html"
+
+    def form_valid(self):
+        id = self.get_object().id
+        url = reverse_lazy("project:detail", kwargs={"pk": id})
+        return HttpResponseRedirect(url)
+
+    def get_forms(self):
+        if self.request.method in ("POST", "PUT"):
+            return {
+                "city_form": SelectCitiesForm(self.request.POST),
+                "plu_form": SelectPluForm(self.request.POST),
+                "shp_form": UploadShpForm(self.request.POST, self.request.FILES),
+            }
+        else:
+            return {
+                "city_form": SelectCitiesForm(),
+                "plu_form": SelectPluForm(),
+                "shp_form": UploadShpForm(),
+            }
+
+    def get_context_data(self, **kwargs):
+        context = self.get_forms()
+        return super().get_context_data(**context)
+
+    def post(self, request, *args, **kwargs):
+        forms = self.get_forms()
+        if forms["city_form"].is_valid():
+            # TODO : move below to form.save() in order to have exactly same API
+            # for all 3 forms
+            # cities contains public_data.models.ArtifCommune instances
+            cities = forms["city_form"].cleaned_data["cities"]
+            self.set_city(cities=cities)
+        elif forms["plu_form"].is_valid():
+            cities = forms["plu_form"].cleaned_data["cities"]
+            self.set_city(cities=cities)
+        elif forms["shp_form"].is_valid():
+            project = self.get_object()
+            project.shape_file = forms["shp_form"].cleaned_data["shape_zip"]
+            project.import_status = Project.Status.PENDING
+            import_shp.delay(project.id)
+            project.save()
+        else:
+            # no forms are valid, display them again
+            return self.get(request, *args, **kwargs)
+        # one form was valid, let's got to success url
+        return self.form_valid()
+
+    def set_city(self, cities=None, insee=None):
+        project = self.get_object()
+        project.cities.clear()
+        if cities:
+            for city in cities:
+                project.cities.add(city)
+            project.import_status = Project.Status.SUCCESS
+            project.save()
 
 
 class ProjectReportView(GroupMixin, DetailView):

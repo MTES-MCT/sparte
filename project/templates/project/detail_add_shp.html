@@ -1,6 +1,7 @@
 {% extends 'project/base_detail.html' %}
 
 {% load static %}
+{% load crispy_forms_tags %}
 {% load project_tags %}
 
 {% block pagetitle %}
@@ -8,10 +9,70 @@ Project detail
 {% endblock %}
 
 {% block headers %}
+{{ city_form.media }}
 {% endblock %}
 
 {% block detail_content %}
-Add shp
+<div style="width:750px;">
+    <h3>Sélectionnez une emprise territoriale</h3>
+
+    <p>Votre projet est correctement créé, vous devez maintenant définir une emprise
+    terrirtoriale</p>
+
+    <p>L'emprise indique à l'application quel est le périmètre de votre projet
+    d'aménagement, ce qui lui permet d'aller chercher les informations
+    correspondantes. Par exemple toutes les zones artificialisées depuis 2009 ainsi
+    que toutes les zones renaturalisées. Ainsi nous pouvons vous proposer un
+    rapport avec le bilan de l'artificialisation de votre territoire.</p>
+
+    <p>
+        Pour indiquer l'emprise de votre projet, vous avez 3 méthodes :
+        <ul>
+            <li>Sélectionnez une ou plusieurs villes dans la liste des communes.</li>
+            <li>Sélectionnez un projet d'amménagement connu (ex : un scot, un epci, etc).</li>
+            <li>Uploader un zip contenant le fichier Shape (.shp) ainsi que lesfichiers dépendants.</li>
+        </ul>
+    </p>
+</div>
+
+
+<div class="container">
+    <ul class="nav nav-tabs">
+        <li class="nav-item">
+            <a href="#city" class="nav-link active" data-toggle="tab">Par communes</a>
+        </li>
+        <li class="nav-item">
+            <a href="#profile" class="nav-link" data-toggle="tab">Par aménagement connu</a>
+        </li>
+        <li class="nav-item">
+            <a href="#messages" class="nav-link" data-toggle="tab">Avec un fichier shape</a>
+        </li>
+    </ul>
+    <div class="tab-content">
+        <div class="tab-pane fade show active" id="city">
+            <form action="" method="post">
+                {% csrf_token %}
+                {{ city_form|crispy }}
+                <button class="btn w-100 btn-primary mt-4" type="submit">Sélectionner</button>
+            </form>
+        </div>
+        <div class="tab-pane fade" id="profile">
+            <form action="" method="post">
+                {% csrf_token %}
+                {{ plu_form|crispy }}
+                <button class="btn w-100 btn-primary mt-4" type="submit">Sélectionner</button>
+            </form>
+        </div>
+        <div class="tab-pane fade" id="messages">
+            <form action="" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ shp_form|crispy }}
+                <button class="btn w-100 btn-primary mt-4" type="submit">Envoyer</button>
+            </form>
+        </div>
+    </div>
+
+</div>
 {% endblock %}
 
 {% block bodyend %}
