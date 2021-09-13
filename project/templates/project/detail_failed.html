@@ -15,8 +15,9 @@ En cours de traitement
 <div style="width:750px;">
     <h3>L'importation de l'emprise a échouée</h3>
 
-    <form action="" method="post">
-        <button class="btn w-100 btn-primary mt-4" type="submit">Paramétrer une nouvelle emprise</button>
+    <form action="{% url 'project:reinit' project.pk %}" method="post">
+        {% csrf_token %}
+        <button class="btn w-100 btn-warning mt-4" type="submit">Paramétrer une nouvelle emprise</button>
     </form>
 
     <p>Détail du problème rencontré:</p>
