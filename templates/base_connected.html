@@ -67,7 +67,16 @@
 
         <!-- ZONE PRINCIPALE -->
         <main class="d-flex flex-fill h-100" style="overflow:auto;">
-            {% block content %}{% endblock %}
+            {% block content %}
+
+            <div class="row align-items-center justify-content-center h-100 w-100 mr-0 ml-0">
+                <div class="col-12 col-md-5 col-lg-4" style="width:450px;">
+                    <h2 class="mb-5">Bonjour {{ user.greetings }} !</h2>
+                    <p>La première étape pour utiliser SPARTE est de créer un PROJET :
+                    <br/><a class="btn btn-primary" href="{% url 'project:add' %}" role="button">Créer un projet</a></p>
+                </div>
+            </div>
+            {% endblock %}
         </main>
 
     </div>

@@ -18,6 +18,8 @@
         <ul>
             {% for project in projects %}
                 <li><a href="{% url 'project:detail' project.id %}">{{ project.name }}</a></li>
+            {% empty %}
+            Pour commencer à utiliser SPARTE, veuillez créer un projet.
             {% endfor %}
         </ul>
 

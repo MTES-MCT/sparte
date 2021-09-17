@@ -66,6 +66,23 @@ graph TD;
   Carto-->project;
 ```
 
+## Folder /scripts
+
+This folder contains several Sclingo CLI wrappers to update servers. It uses Click framework.
+
+There are two commandes:
+- upload-public-data: that upload data on public_data models using files available on remote /media folder.
+- migrate: execute database migration begining by users
+
+Commands:
+```
+python -m cmd migrate --env prod
+python -m cmd upload-public-data --env staging
+```
+
+env option is used to indicate which scalingo app to update.
+
+variables.py file containes required information to pass to scalingo CLI to contact correct app (sparte-staging for staging or sparte for production)
 
 ## Useful links
 

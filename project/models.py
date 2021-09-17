@@ -2,10 +2,10 @@ from django.conf import settings
 from django.db import models
 from django.urls import reverse
 from django.utils import timezone
-from django.utils.translation import gettext_lazy as _
+from django.utils.functional import cached_property
 
 from django.contrib.gis.db import models as gis_models
-
+from django.contrib.gis.db.models import Union
 
 from public_data.behaviors import DataColorationMixin
 
@@ -75,6 +75,15 @@ class Project(models.Model):
         default=Status.MISSING,
     )
 
+    @cached_property
+    def combined_emprise(self):
+        """Return a combined MultiPolygon of all emprises."""
+        combined = self.emprise_set.aggregate(Union("mpoly"))
+        if "mpoly__union" in combined:
+            return combined["mpoly__union"]
+        else:
+            return None
+
     def get_absolute_url(self):
         return reverse("project:detail", kwargs={"pk": self.pk})
 
@@ -92,7 +101,9 @@ class Emprise(gis_models.Model, DataColorationMixin):
     default_color = "blue"
 
     project = gis_models.ForeignKey(
-        Project, on_delete=models.CASCADE, verbose_name=_("project")
+        Project,
+        on_delete=models.CASCADE,
+        verbose_name="Projet",
     )
     mpoly = gis_models.MultiPolygonField()
 
