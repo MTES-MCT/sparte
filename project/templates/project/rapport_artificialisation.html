@@ -43,12 +43,11 @@ Rapport artificialisation
                 </tr>
             </thead>
             <tbody>
-                {% for city in table_percent %}
+                {% for data in data_covers %}
                 <tr>
-                    <th scope="row">{{ city.name }}</th>
-                    {{ city.before|td:"%"  }}
-                    {{ city.items|td:"%" }}
-                    <th  scope="row">{{ city.total }}</th>
+                    <th scope="row">{{ data.code }}</th>
+                    <td>{{ data.label }}</td>
+                    <td>{{ data.total_surface }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
