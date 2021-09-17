@@ -47,7 +47,7 @@ Rapport artificialisation
                 <tr>
                     <th scope="row">{{ data.code }}</th>
                     <td>{{ data.label }}</td>
-                    <td>{{ data.total_surface }}</td>
+                    <td>{{ data.total_surface|hectar }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -57,48 +57,65 @@ Rapport artificialisation
 
 {% block bodyend %}
 <script src="https://code.highcharts.com/highcharts.js"></script>
-
+<script src="https://code.highcharts.com/modules/data.js"></script>
+<script src="https://code.highcharts.com/modules/heatmap.js"></script>
+<script src="https://code.highcharts.com/modules/treemap.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
 <script language="javascript">
-Highcharts.chart('chart', {
-
-    title:{
-        text:''
-    },
-
-    yAxis: {
-        title: {
-            text: 'Artificialisation (en ha)'
-        }
-    },
-
-    xAxis: {
-    },
-
-    legend: {
-        layout: 'horizontal',
-        align: 'center',
-        verticalAlign: 'top'
-    },
-
-    pane: {
-        size: 400
-    },
-
-    plotOptions: {
-        series: {
-            label: {
-                connectorAllowed: false
-            },
-            pointStart: 2009
-        }
-    },
-
-    series: [{% for city in table_artif %}
+points = [
+    {% for data in data_covers %}
     {
-        name: '{{ city.name }}',
-        data: [{% for v in city.items %}{{ v }}, {% endfor %}]
+        id: "{{ data.code }}",
+        {% if data.parent %}
+        parent: "{{ data.parent.code }}",
+        {% endif %}
+        name: "CS{{ data.code }} {{ data.label }}",
+        value: {{ data.total_surface }},
     },
-    {% endfor %}],
+    {% endfor %}
+]
+
+index_color = 0
+for(i=0; i<points.length; i++){
+    if (Object.hasOwnProperty.call(points[i], "parent"))
+    {
+        points[i].color = Highcharts.getOptions().colors[index_color]
+        index_color++
+    }
+}
+
+Highcharts.chart('chart', {
+    series: [{
+        type: 'treemap',
+        layoutAlgorithm: 'squarified',
+        allowDrillToNode: true,
+        animationLimit: 1000,
+        dataLabels: {
+            enabled: true
+        },
+        levels: [{
+            level: 1,
+            dataLabels: {
+                enabled: true
+            },
+            borderWidth: 3,
+            levelIsConstant: false
+        }, {
+            level: 1,
+            dataLabels: {
+                style: {
+                    fontSize: '14px'
+                }
+            }
+        }],
+        data: points
+    }],
+    subtitle: {
+        text: 'Cliquer pour drill down'
+    },
+    title: {
+        text: 'Répartition de la surface du territoire en fonction de la couverture.'
+    }
 });
 </script>
 {% endblock %}
