@@ -4,6 +4,7 @@ from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
+from .domains import get_couverture_sol
 from .forms import SelectCitiesForm, SelectPluForm, UploadShpForm
 from .models import Project
 
@@ -139,7 +140,7 @@ class ProjectFailedView(GroupMixin, DetailView):
 
 class ProjectReportView(GroupMixin, DetailView):
     queryset = Project.objects.all()
-    template_name = "project/rapport.html"
+    template_name = "project/rapport_consommation.html"
     context_object_name = "project"
 
     def get_context_data(self, **kwargs):
@@ -184,6 +185,20 @@ class ProjectReportView(GroupMixin, DetailView):
             "2018_ha": pki_2018_ha,
             "2018_percent": f"{pki_2018_percent:.2%}",
             "total_surface": total_surface,
+        }
+
+
+class ProjectReportArtifView(GroupMixin, DetailView):
+    queryset = Project.objects.all()
+    template_name = "project/rapport_artificialisation.html"
+    context_object_name = "project"
+
+    def get_context_data(self, **kwargs):
+        super_context = super().get_context_data(**kwargs)
+        data_covers = get_couverture_sol(self.get_object())
+        return {
+            **super_context,
+            "data_covers": data_covers,
         }
 
 
