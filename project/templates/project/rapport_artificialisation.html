@@ -1,0 +1,105 @@
+{% extends 'project/base_detail.html' %}
+
+{% load static %}
+{% load project_tags %}
+
+{% block pagetitle %}
+Rapport artificialisation
+{% endblock %}
+
+{% block headers %}
+{% endblock %}
+
+{% block detail_content %}
+    <ul class="nav nav-tabs mb-5 mt-0">
+        <li class="nav-item">
+            <a class="nav-link active" href="#">Artificialisation</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'project:report' project.pk %}">Consommation</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link disabled" href="#">Graphique 1</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link disabled" href="#">Autre</a>
+        </li>
+    </ul>
+
+
+
+
+    <div class="w-100 mt-5">
+        <div id="chart" class="flex-fill"></div>
+    </div>
+    <div class="mt-5">
+        <h3>Artificialisation :</h3>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Code</th>
+                    <th scope="col">Libellé</th>
+                    <th scope="col">Surface</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for city in table_percent %}
+                <tr>
+                    <th scope="row">{{ city.name }}</th>
+                    {{ city.before|td:"%"  }}
+                    {{ city.items|td:"%" }}
+                    <th  scope="row">{{ city.total }}</th>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
+
+{% block bodyend %}
+<script src="https://code.highcharts.com/highcharts.js"></script>
+
+<script language="javascript">
+Highcharts.chart('chart', {
+
+    title:{
+        text:''
+    },
+
+    yAxis: {
+        title: {
+            text: 'Artificialisation (en ha)'
+        }
+    },
+
+    xAxis: {
+    },
+
+    legend: {
+        layout: 'horizontal',
+        align: 'center',
+        verticalAlign: 'top'
+    },
+
+    pane: {
+        size: 400
+    },
+
+    plotOptions: {
+        series: {
+            label: {
+                connectorAllowed: false
+            },
+            pointStart: 2009
+        }
+    },
+
+    series: [{% for city in table_artif %}
+    {
+        name: '{{ city.name }}',
+        data: [{% for v in city.items %}{{ v }}, {% endfor %}]
+    },
+    {% endfor %}],
+});
+</script>
+{% endblock %}
