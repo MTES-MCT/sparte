@@ -350,3 +350,26 @@ class Sybarval(models.Model, AutoLoadMixin, DataColorationMixin):
         "d_voirie_2": "D_voirie_2",
         "mpoly": "MULTIPOLYGON",
     }
+
+
+class UsageSol(classic_models.Model):
+    parent = classic_models.ForeignKey(
+        "UsageSol", blank=True, null=True, on_delete=classic_models.PROTECT
+    )
+    code = classic_models.CharField("Nomenclature", max_length=8, unique=True)
+    label = classic_models.CharField("Libellé", max_length=250)
+
+    def __str__(self):
+        return f"US{self.code} {self.label}"
+
+
+class CouvertureSol(classic_models.Model):
+    parent = classic_models.ForeignKey(
+        "CouvertureSol", blank=True, null=True, on_delete=classic_models.PROTECT
+    )
+    code = classic_models.CharField("Nomenclature", max_length=8, unique=True)
+    label = classic_models.CharField("Libellé", max_length=250)
+    is_artificial = classic_models.BooleanField("Est artificielle", default=False)
+
+    def __str__(self):
+        return f"CS{self.code} {self.label}"

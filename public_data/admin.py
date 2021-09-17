@@ -8,9 +8,11 @@ from .models import (
     Artificialisee2015to2018,
     Artificielle2018,
     CommunesSybarval,
+    CouvertureSol,
     EnveloppeUrbaine2018,
     Renaturee2018to2015,
     Sybarval,
+    UsageSol,
     Voirie2018,
     ZonesBaties2018,
 )
@@ -83,3 +85,60 @@ class ArtifCommuneAdmin(ImportMixin, admin.GeoModelAdmin):
     ordering = ("name",)
     # for importation
     resource_class = ArtifCommuneResource
+
+
+class UsageSolResource(resources.ModelResource):
+    class Meta:
+        model = UsageSol
+        import_id_fields = ("code",)
+        exclude = ("id", "parent")
+
+
+@admin.register(UsageSol)
+class UsageSolAdmin(ImportMixin, admin.GeoModelAdmin):
+    model = UsageSol
+    list_display = (
+        "code",
+        "label",
+        "parent",
+    )
+    list_filter = ("parent",)
+    search_fields = (
+        "code",
+        "label",
+    )
+    ordering = ("code",)
+    # for importation
+    resource_class = UsageSolResource
+
+
+class CouvertureSolImportResource(resources.ModelResource):
+    class Meta:
+        model = CouvertureSol
+        import_id_fields = ("code",)
+        exclude = ("id", "parent")
+
+    def before_import(self, *args, **kwargs):
+        return super().before_import(*args, **kwargs)
+
+
+@admin.register(CouvertureSol)
+class CouvertureSolAdmin(ImportMixin, admin.GeoModelAdmin):
+    model = CouvertureSol
+    list_display = (
+        "code",
+        "label",
+        "is_artificial",
+        "parent",
+    )
+    list_filter = (
+        "is_artificial",
+        "parent",
+    )
+    search_fields = (
+        "code",
+        "label",
+    )
+    ordering = ("code",)
+    # for importation
+    resource_class = CouvertureSolImportResource

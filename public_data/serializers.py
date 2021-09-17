@@ -4,11 +4,13 @@ from .models import (
     Artificialisee2015to2018,
     Artificielle2018,
     CommunesSybarval,
+    CouvertureSol,
     EnveloppeUrbaine2018,
     Renaturee2018to2015,
     Sybarval,
     Voirie2018,
     ZonesBaties2018,
+    UsageSol,
 )
 
 
@@ -146,3 +148,26 @@ class ZonesBaties2018Serializer(serializers.GeoFeatureModelSerializer):
         )
         geo_field = "mpoly"
         model = ZonesBaties2018
+
+
+class CouvertureSolSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields = (
+            "id",
+            "parent",
+            "code",
+            "label",
+            "is_artificial",
+        )
+        model = CouvertureSol
+
+
+class UsageSolSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields = (
+            "id",
+            "parent",
+            "code",
+            "label",
+        )
+        model = UsageSol
