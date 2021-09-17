@@ -38,5 +38,11 @@ class User(AbstractUser):
 
     objects = UserManager()
 
+    @property
+    def greetings(self):
+        if self.first_name:
+            return self.first_name
+        return self.email
+
     def __str__(self):
         return self.email
