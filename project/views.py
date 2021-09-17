@@ -256,8 +256,6 @@ class ProjectCreateView(GroupMixin, CreateView):
         # required to set the user who is logged as creator
         form.instance.user = self.request.user
         response = super().form_valid(form)  # save the data in db
-        # add asynchronous task to load emprise
-        import_shp.delay(form.instance.id)
         return response
 
     def get_success_url(self):
