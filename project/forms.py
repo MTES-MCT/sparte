@@ -4,7 +4,7 @@ from django.db.models import Q
 from public_data.models import ArtifCommune, CommunesSybarval
 
 from .models import Project
-from .tasks import import_shp
+from .tasks import import_shp, build_emprise_from_city
 
 
 class SetEmpriseForm(forms.Form):
@@ -12,7 +12,8 @@ class SetEmpriseForm(forms.Form):
         project.cities.clear()
         for city in self.cleaned_data["cities"]:
             project.cities.add(city)
-        project.import_status = Project.Status.SUCCESS
+        project.import_status = Project.Status.PENDING
+        build_emprise_from_city.delay(project.id)
         project.save()
 
 

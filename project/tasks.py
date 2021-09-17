@@ -1,16 +1,21 @@
 import traceback
 import tempfile
+import logging
 
 from pathlib import Path
 from celery import shared_task
 from zipfile import ZipFile
 
+from django.contrib.gis.geos import MultiPolygon, Polygon
 from django.contrib.gis.utils import LayerMapping
 from django.utils import timezone
 
 from public_data.models import CommunesSybarval, ArtifCommune
 
 from .models import Project, Emprise
+
+
+logger = logging.getLogger(__name__)
 
 
 class MissingShpException(Exception):
@@ -96,6 +101,35 @@ def get_cityes_from_emprise(project_id):
             for city in ArtifCommune.objects.filter(insee__in=qs_insee):
                 project.cities.add(city)
     except Exception as e:  # noqa: F841
-        project.import_status = Project.IMPORT_FAILED
+        project.import_status = Project.Status.FAILED
+        project.import_error = traceback.format_exc()
+        project.save()
+
+
+@shared_task
+def build_emprise_from_city(project_id):
+    try:
+        project = Project.objects.get(pk=project_id)
+    except Project.DoesNotExist as e:  # noqa: F841
+        logger.error(f"project_id={project_id} does not exist")
+
+    try:
+        qs_insee = project.cities.all()
+        qs_insee = qs_insee.values_list("insee", flat=True).distinct()
+        qs = CommunesSybarval.objects.filter(code_insee__in=qs_insee)
+        qs = qs.values_list("mpoly", flat=True).distinct()
+        combined = None
+        for mpoly in qs:
+            if not combined:
+                combined = mpoly
+            else:
+                combined = combined.union(mpoly)
+        if isinstance(combined, Polygon):
+            combined = MultiPolygon(combined)
+        Emprise.objects.create(project=project, mpoly=combined)
+        project.import_status = Project.Status.SUCCESS
+        project.save()
+    except Exception as e:  # noqa: F841
+        project.import_status = Project.Status.FAILED
         project.import_error = traceback.format_exc()
         project.save()
