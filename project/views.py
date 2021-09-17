@@ -139,7 +139,7 @@ class ProjectFailedView(GroupMixin, DetailView):
 
 class ProjectReportView(GroupMixin, DetailView):
     queryset = Project.objects.all()
-    template_name = "project/rapport.html"
+    template_name = "project/rapport_consommation.html"
     context_object_name = "project"
 
     def get_context_data(self, **kwargs):
@@ -185,6 +185,16 @@ class ProjectReportView(GroupMixin, DetailView):
             "2018_percent": f"{pki_2018_percent:.2%}",
             "total_surface": total_surface,
         }
+
+
+class ProjectReportArtifView(GroupMixin, DetailView):
+    queryset = Project.objects.all()
+    template_name = "project/rapport_artificialisation.html"
+    context_object_name = "project"
+
+    def get_context_data(self, **kwargs):
+        super_context = super().get_context_data(**kwargs)
+        return {**super_context, "table_artif": ""}
 
 
 class ProjectMapView(GroupMixin, DetailView):
