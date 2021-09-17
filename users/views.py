@@ -1,16 +1,17 @@
 from django.contrib.auth import logout
+from django.contrib.auth.views import LoginView
 from django.views.generic import DetailView, ListView, RedirectView
-from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormView
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 
 from .models import User
 from .forms import SignupForm, SigninForm
 
 
-class SigninView(FormView):
+class SigninView(LoginView):
+    redirect_authenticated_user = True
     template_name = "users/signin.html"
-    form_class = SigninForm
-    success_url = reverse_lazy("carto:home_connected")
+    authentication_form = SigninForm
 
 
 class SignoutView(RedirectView):

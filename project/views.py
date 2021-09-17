@@ -4,9 +4,9 @@ from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
+from .domains import get_couverture_sol
 from .forms import SelectCitiesForm, SelectPluForm, UploadShpForm
 from .models import Project
-from .tasks import import_shp
 
 
 class UserProjectOnlyMixin:
@@ -140,7 +140,7 @@ class ProjectFailedView(GroupMixin, DetailView):
 
 class ProjectReportView(GroupMixin, DetailView):
     queryset = Project.objects.all()
-    template_name = "project/rapport.html"
+    template_name = "project/rapport_consommation.html"
     context_object_name = "project"
 
     def get_context_data(self, **kwargs):
@@ -188,6 +188,20 @@ class ProjectReportView(GroupMixin, DetailView):
         }
 
 
+class ProjectReportArtifView(GroupMixin, DetailView):
+    queryset = Project.objects.all()
+    template_name = "project/rapport_artificialisation.html"
+    context_object_name = "project"
+
+    def get_context_data(self, **kwargs):
+        super_context = super().get_context_data(**kwargs)
+        data_covers = get_couverture_sol(self.get_object())
+        return {
+            **super_context,
+            "data_covers": data_covers,
+        }
+
+
 class ProjectMapView(GroupMixin, DetailView):
     queryset = Project.objects.all()
     template_name = "carto/full_carto.html"
@@ -205,7 +219,7 @@ class ProjectMapView(GroupMixin, DetailView):
             "default_zoom": 12,
             "layer_list": [
                 {
-                    "name": "Communes SYBARVALE",
+                    "name": "Communes SYBARVAL",
                     "url": reverse_lazy("public_data:communessybarval-list"),
                     "immediate_display": False,
                     "gradient_url": reverse_lazy(
@@ -234,12 +248,20 @@ class ProjectMapView(GroupMixin, DetailView):
                         "public_data:renaturee2018to2015-gradient"
                     ),
                 },
+                # {
+                #     "name": "Zones Baties 2018",
+                #     "url": reverse_lazy("public_data:zonesbaties2018-list"),
+                #     "immediate_display": False,
+                #     "gradient_url": reverse_lazy(
+                #         "public_data:zonesbaties2018-gradient"
+                #     ),
+                # },
                 {
-                    "name": "Zones Baties 2018",
-                    "url": reverse_lazy("public_data:zonesbaties2018-list"),
+                    "name": "Zones artificielles",
+                    "url": reverse_lazy("public_data:artificielle2018-list"),
                     "immediate_display": False,
                     "gradient_url": reverse_lazy(
-                        "public_data:zonesbaties2018-gradient"
+                        "public_data:artificielle2018-gradient"
                     ),
                 },
             ],
@@ -256,8 +278,6 @@ class ProjectCreateView(GroupMixin, CreateView):
         # required to set the user who is logged as creator
         form.instance.user = self.request.user
         response = super().form_valid(form)  # save the data in db
-        # add asynchronous task to load emprise
-        import_shp.delay(form.instance.id)
         return response
 
     def get_success_url(self):

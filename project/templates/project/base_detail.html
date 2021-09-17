@@ -12,7 +12,6 @@ Project detail
 
 {% block content %}
     <div class="d-flex flex-column w-100 align-items-center">
-        <div>
         <div class="mb-5">
             <h2><a href="{% url 'project:detail' project.pk %}">{{ project.name }}</a></h2>
             {% if project.import_status == "SUCCESS" %}
@@ -28,7 +27,6 @@ Project detail
             {% block detail_content %}
             {% endblock %}
         </div>
-    </div>
     </div>
 {% endblock %}
 
