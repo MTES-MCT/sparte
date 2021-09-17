@@ -8,9 +8,11 @@ from .models import (
     Artificialisee2015to2018,
     Artificielle2018,
     CommunesSybarval,
+    CouvertureSol,
     EnveloppeUrbaine2018,
     Renaturee2018to2015,
     Sybarval,
+    UsageSol,
     Voirie2018,
     ZonesBaties2018,
 )
@@ -18,9 +20,11 @@ from .serializers import (
     Artificialisee2015to2018Serializer,
     Artificielle2018Serializer,
     CommunesSybarvalSerializer,
+    CouvertureSolSerializer,
     EnveloppeUrbaine2018Serializer,
     Renaturee2018to2015Serializer,
     SybarvalSerializer,
+    UsageSolSerializer,
     Voirie2018Serializer,
     ZonesBaties2018Serializer,
 )
@@ -86,3 +90,13 @@ class Voirie2018ViewSet(DataViewSet):
 class ZonesBaties2018ViewSet(DataViewSet):
     queryset = ZonesBaties2018.objects.all()
     serializer_class = ZonesBaties2018Serializer
+
+
+class CouvertureSolViewset(viewsets.ReadOnlyModelViewSet):
+    queryset = CouvertureSol.objects.all()
+    serializer_class = CouvertureSolSerializer
+
+
+class UsageSolViewset(viewsets.ReadOnlyModelViewSet):
+    queryset = UsageSol.objects.all()
+    serializer_class = UsageSolSerializer
