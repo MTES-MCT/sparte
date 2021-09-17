@@ -39,4 +39,5 @@ def get_couverture_sol(project: Project) -> dict():
         raw_cover[item["couverture"]] = item["total_surface"]
 
     data = CouvertureSol.get_aggregated_cover(raw_cover)
+    data.sort(key=lambda x: x.code)
     return data
