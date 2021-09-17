@@ -248,12 +248,20 @@ class ProjectMapView(GroupMixin, DetailView):
                         "public_data:renaturee2018to2015-gradient"
                     ),
                 },
+                # {
+                #     "name": "Zones Baties 2018",
+                #     "url": reverse_lazy("public_data:zonesbaties2018-list"),
+                #     "immediate_display": False,
+                #     "gradient_url": reverse_lazy(
+                #         "public_data:zonesbaties2018-gradient"
+                #     ),
+                # },
                 {
-                    "name": "Zones Baties 2018",
-                    "url": reverse_lazy("public_data:zonesbaties2018-list"),
+                    "name": "Zones artificielles",
+                    "url": reverse_lazy("public_data:artificielle2018-list"),
                     "immediate_display": False,
                     "gradient_url": reverse_lazy(
-                        "public_data:zonesbaties2018-gradient"
+                        "public_data:artificielle2018-gradient"
                     ),
                 },
             ],
