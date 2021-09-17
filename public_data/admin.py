@@ -1,7 +1,7 @@
 from django.contrib.gis import admin
 
 from import_export import resources
-from import_export.admin import ImportMixin
+from import_export.admin import ImportMixin, ImportExportMixin
 
 from .models import (
     ArtifCommune,
@@ -95,7 +95,7 @@ class UsageSolResource(resources.ModelResource):
 
 
 @admin.register(UsageSol)
-class UsageSolAdmin(ImportMixin, admin.GeoModelAdmin):
+class UsageSolAdmin(ImportExportMixin, admin.GeoModelAdmin):
     model = UsageSol
     list_display = (
         "code",
@@ -123,7 +123,7 @@ class CouvertureSolImportResource(resources.ModelResource):
 
 
 @admin.register(CouvertureSol)
-class CouvertureSolAdmin(ImportMixin, admin.GeoModelAdmin):
+class CouvertureSolAdmin(ImportExportMixin, admin.GeoModelAdmin):
     model = CouvertureSol
     list_display = (
         "code",
