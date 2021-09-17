@@ -205,7 +205,7 @@ class ProjectMapView(GroupMixin, DetailView):
             "default_zoom": 12,
             "layer_list": [
                 {
-                    "name": "Communes SYBARVALE",
+                    "name": "Communes SYBARVAL",
                     "url": reverse_lazy("public_data:communessybarval-list"),
                     "immediate_display": False,
                     "gradient_url": reverse_lazy(

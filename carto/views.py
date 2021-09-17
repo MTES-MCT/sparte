@@ -45,7 +45,7 @@ def arcachon(request):
                 "immediate_display": False,
             },
             {
-                "name": "Communes SYBARVALE",
+                "name": "Communes SYBARVAL",
                 "url": reverse_lazy("public_data:communessybarval-list"),
                 "immediate_display": False,
             },
