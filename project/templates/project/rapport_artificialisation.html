@@ -11,6 +11,7 @@ Rapport artificialisation
 {% endblock %}
 
 {% block detail_content %}
+
     <ul class="nav nav-tabs mb-5 mt-0">
         <li class="nav-item">
             <a class="nav-link active" href="#">Artificialisation</a>
@@ -26,7 +27,7 @@ Rapport artificialisation
         </li>
     </ul>
 
-
+    <div class="alert alert-warning" role="alert">Cette page est fournie à titre d'exemple, nos données sources ne sont pas encore correctes.</div>
 
 
     <div class="w-100 mt-5">
@@ -52,6 +53,14 @@ Rapport artificialisation
                 {% endfor %}
             </tbody>
         </table>
+    </div>
+    <div>
+    <p>Les sources ne sont pas encore correctes et les chiffres ci-dessus sont "farfelues". Nous allons travailler à obtenir les bonnes sources.
+    <br/>Sources:</p>
+    <ul>
+        <li>Les données anthropisées (1.*) viennent des données "<a href="{% url 'public_data:artificielle2018-list' %}">Artificielle2018"</a></li>
+        <li>Les données des surfaces naturelles (2.*) viennent des données "<a href="{% url 'public_data:renaturee2018to2015-list' %}">Renaturalisée 2015 à 2018"</a></li>
+    </ul>
     </div>
 {% endblock %}
 
