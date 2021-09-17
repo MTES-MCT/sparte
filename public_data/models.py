@@ -3,49 +3,48 @@ from pathlib import Path
 
 from django.contrib.gis.db import models
 from django.db import models as classic_models
-from django.utils.translation import gettext_lazy as _
 
 from .behaviors import AutoLoadMixin, DataColorationMixin
 
 
 class ArtifCommune(classic_models.Model):
-    name = classic_models.CharField(_("Name"), max_length=250)
-    insee = classic_models.CharField(_("code INSEE"), max_length=10)
+    name = classic_models.CharField("Nom", max_length=250)
+    insee = classic_models.CharField("Code INSEE", max_length=10)
     surface = classic_models.DecimalField(
-        _("surface (ha)"), max_digits=8, decimal_places=2
+        "surface (ha)", max_digits=8, decimal_places=2
     )
     artif_before_2009 = classic_models.DecimalField(
-        _("Artificial before 2009 (ha)"), max_digits=8, decimal_places=2
+        "Artificial before 2009 (ha)", max_digits=8, decimal_places=2
     )
     artif_2009 = classic_models.DecimalField(
-        _("New artificial 2009 (ha)"), max_digits=8, decimal_places=2
+        "New artificial 2009 (ha)", max_digits=8, decimal_places=2
     )
     artif_2010 = classic_models.DecimalField(
-        _("New artificial 2010 (ha)"), max_digits=8, decimal_places=2
+        "New artificial 2010 (ha)", max_digits=8, decimal_places=2
     )
     artif_2011 = classic_models.DecimalField(
-        _("New artificial 2011 (ha)"), max_digits=8, decimal_places=2
+        "New artificial 2011 (ha)", max_digits=8, decimal_places=2
     )
     artif_2012 = classic_models.DecimalField(
-        _("New artificial 2012 (ha)"), max_digits=8, decimal_places=2
+        "New artificial 2012 (ha)", max_digits=8, decimal_places=2
     )
     artif_2013 = classic_models.DecimalField(
-        _("New artificial 2013 (ha)"), max_digits=8, decimal_places=2
+        "New artificial 2013 (ha)", max_digits=8, decimal_places=2
     )
     artif_2014 = classic_models.DecimalField(
-        _("New artificial 2014 (ha)"), max_digits=8, decimal_places=2
+        "New artificial 2014 (ha)", max_digits=8, decimal_places=2
     )
     artif_2015 = classic_models.DecimalField(
-        _("New artificial 2015 (ha)"), max_digits=8, decimal_places=2
+        "New artificial 2015 (ha)", max_digits=8, decimal_places=2
     )
     artif_2016 = classic_models.DecimalField(
-        _("New artificial 2016 (ha)"), max_digits=8, decimal_places=2
+        "New artificial 2016 (ha)", max_digits=8, decimal_places=2
     )
     artif_2017 = classic_models.DecimalField(
-        _("New artificial 2017 (ha)"), max_digits=8, decimal_places=2
+        "New artificial 2017 (ha)", max_digits=8, decimal_places=2
     )
     artif_2018 = classic_models.DecimalField(
-        _("New artificial 2018 (ha)"), max_digits=8, decimal_places=2
+        "New artificial 2018 (ha)", max_digits=8, decimal_places=2
     )
 
     def list_artif(self):
@@ -89,32 +88,32 @@ class CommunesSybarval(models.Model, AutoLoadMixin, DataColorationMixin):
     Données produites par Philippe
     """
 
-    id_source = models.CharField(_("id"), max_length=24)
-    prec_plani = models.FloatField(_("prec_plani"), max_length=6)
-    nom = models.CharField(_("nom"), max_length=45)
-    code_insee = models.CharField(_("code_insee"), max_length=5)
-    statut = models.CharField(_("statut"), max_length=22)
-    arrondisst = models.CharField(_("arrondisst"), max_length=45)
-    depart = models.CharField(_("depart"), max_length=30)
-    region = models.CharField(_("region"), max_length=35)
-    pop_2014 = models.IntegerField(_("pop_2014"))
-    pop_2015 = models.IntegerField(_("pop_2015"))
-    _commune = models.CharField(_("_commune"), max_length=254)
-    _n_arrdt = models.IntegerField(_("_n_arrdt"))
-    _n_canton = models.IntegerField(_("_n_canton"))
-    _nom_epci = models.CharField(_("_nom_epci"), max_length=254)
-    _siren_epc = models.IntegerField(_("_siren_epc"))
-    _nom_scot = models.CharField(_("_nom_scot"), max_length=254)
-    surface = models.IntegerField(_("surface"))
-    a_brute_20 = models.IntegerField(_("a_brute_20"))
-    a_b_2015_2 = models.IntegerField(_("a_b_2015_2"))
-    a_b_2018_2 = models.IntegerField(_("a_b_2018_2"))
-    z_baties_2 = models.IntegerField(_("z_baties_2"))
-    voirie_201 = models.IntegerField(_("voirie_201"))
-    tache_2018 = models.IntegerField(_("tache_2018"))
-    d_brute_20 = models.FloatField(_("d_brute_20"))
-    d_batie_20 = models.FloatField(_("d_batie_20"))
-    d_voirie_2 = models.FloatField(_("d_voirie_2"))
+    id_source = models.CharField("id", max_length=24)
+    prec_plani = models.FloatField("prec_plani", max_length=6)
+    nom = models.CharField("Nom", max_length=45)
+    code_insee = models.CharField("Code INSEE", max_length=5)
+    statut = models.CharField("statut", max_length=22)
+    arrondisst = models.CharField("arrondisst", max_length=45)
+    depart = models.CharField("departement", max_length=30)
+    region = models.CharField("region", max_length=35)
+    pop_2014 = models.IntegerField("Population 2014")
+    pop_2015 = models.IntegerField("Population 2015")
+    _commune = models.CharField("Commune", max_length=254)
+    _n_arrdt = models.IntegerField("nb arrdt")
+    _n_canton = models.IntegerField("nb cantons")
+    _nom_epci = models.CharField("Nom EPCI", max_length=254)
+    _siren_epc = models.IntegerField("siren epc")
+    _nom_scot = models.CharField("Nom SCOT", max_length=254)
+    surface = models.IntegerField("Surface")
+    a_brute_20 = models.IntegerField("a_brute_20")
+    a_b_2015_2 = models.IntegerField("a_b_2015_2")
+    a_b_2018_2 = models.IntegerField("a_b_2018_2")
+    z_baties_2 = models.IntegerField("z_baties_2")
+    voirie_201 = models.IntegerField("voirie_201")
+    tache_2018 = models.IntegerField("tache_2018")
+    d_brute_20 = models.FloatField("d_brute_20")
+    d_batie_20 = models.FloatField("d_batie_20")
+    d_voirie_2 = models.FloatField("d_voirie_2")
 
     # GeoDjango-specific: a geometry field (MultiPolygonField)
     mpoly = models.MultiPolygonField()
@@ -163,11 +162,11 @@ class Artificialisee2015to2018(models.Model, AutoLoadMixin, DataColorationMixin)
     Données construites par Philippe
     """
 
-    surface = models.IntegerField(_("surface"))
-    cs_2018 = models.CharField(_("cs_2018"), max_length=254, null=True)
-    us_2018 = models.CharField(_("us_2018"), max_length=254, null=True)
-    cs_2015 = models.CharField(_("cs_2015"), max_length=254, null=True)
-    us_2015 = models.CharField(_("us_2015"), max_length=254, null=True)
+    surface = models.IntegerField("surface")
+    cs_2018 = models.CharField("Couverture 2018", max_length=254, null=True)
+    us_2018 = models.CharField("Usage 2018", max_length=254, null=True)
+    cs_2015 = models.CharField("Couverture 2015", max_length=254, null=True)
+    us_2015 = models.CharField("Usage 2015", max_length=254, null=True)
 
     mpoly = models.MultiPolygonField()
 
@@ -190,11 +189,11 @@ class Renaturee2018to2015(models.Model, AutoLoadMixin, DataColorationMixin):
     Données produites par Philippe
     """
 
-    surface = models.IntegerField(_("surface"))
-    cs_2018 = models.CharField(_("cs_2018"), max_length=254, null=True)
-    us_2018 = models.CharField(_("us_2018"), max_length=254, null=True)
-    cs_2015 = models.CharField(_("cs_2015"), max_length=254, null=True)
-    us_2015 = models.CharField(_("us_2015"), max_length=254, null=True)
+    surface = models.IntegerField("Surface")
+    cs_2018 = models.CharField("Couverture 2018", max_length=254, null=True)
+    us_2018 = models.CharField("Usage 2018", max_length=254, null=True)
+    cs_2015 = models.CharField("Couverture 2015", max_length=254, null=True)
+    us_2015 = models.CharField("Usage 2015", max_length=254, null=True)
 
     mpoly = models.MultiPolygonField()
 
@@ -210,6 +209,27 @@ class Renaturee2018to2015(models.Model, AutoLoadMixin, DataColorationMixin):
         "mpoly": "MULTIPOLYGON",
     }
 
+    @classmethod
+    def get_coveredby(cls, geom):
+        """Return all objects coveredby geom."""
+        return cls.objects.filter(mpoly__coveredby=geom)
+
+    @classmethod
+    def get_groupby_couverture(cls, geom):
+        """Return SUM(surface) GROUP BY couverture if coveredby geom.
+        Return [
+            {
+                "couverture": "1.1.1",
+                "total_surface": 678,
+            },
+        ]
+        """
+        qs = cls.get_coveredby(geom)
+        qs = qs.annotate(couverture=classic_models.F("cs_2018"))
+        qs = qs.values("couverture").order_by("couverture")
+        qs = qs.annotate(total_surface=classic_models.Sum("surface"))
+        return qs
+
 
 class Artificielle2018(models.Model, AutoLoadMixin, DataColorationMixin):
     """
@@ -217,8 +237,8 @@ class Artificielle2018(models.Model, AutoLoadMixin, DataColorationMixin):
     Données produites par Philippe
     """
 
-    couverture = models.CharField(_("couverture"), max_length=254)
-    surface = models.IntegerField(_("surface"))
+    couverture = models.CharField("Couverture", max_length=254)
+    surface = models.IntegerField("Surface")
 
     mpoly = models.MultiPolygonField()
 
@@ -231,18 +251,38 @@ class Artificielle2018(models.Model, AutoLoadMixin, DataColorationMixin):
         "mpoly": "MULTIPOLYGON",
     }
 
+    @classmethod
+    def get_coveredby(cls, geom):
+        """Return all objects coveredby geom."""
+        return cls.objects.filter(mpoly__coveredby=geom)
+
+    @classmethod
+    def get_groupby_couverture(cls, geom):
+        """Return SUM(surface) GROUP BY couverture if coveredby geom.
+        Return [
+            {
+                "couverture": "1.1.1",
+                "total_surface": 678,
+            },
+        ]
+        """
+        qs = cls.get_coveredby(geom)
+        qs = qs.values("couverture").order_by("couverture")
+        qs = qs.annotate(total_surface=classic_models.Sum("surface"))
+        return qs
+
 
 class EnveloppeUrbaine2018(models.Model, AutoLoadMixin, DataColorationMixin):
     """
     Enveloppe_Urbaine_2018 : enveloppe urbaine sans la voirie avec moins d'attributs
     """
 
-    couverture = models.CharField(_("couverture"), max_length=254, null=True)
-    surface = models.IntegerField(_("surface"))
-    a_brute_20 = models.IntegerField(_("a_brute_20"), null=True)
-    z_batie_20 = models.IntegerField(_("z_batie_20"), null=True)
-    d_brute_20 = models.FloatField(_("d_brute_20"), null=True)
-    d_batie_20 = models.FloatField(_("d_batie_20"), null=True)
+    couverture = models.CharField("Couverture", max_length=254, null=True)
+    surface = models.IntegerField("Surface")
+    a_brute_20 = models.IntegerField("a_brute_20", null=True)
+    z_batie_20 = models.IntegerField("z_batie_20", null=True)
+    d_brute_20 = models.FloatField("d_brute_20", null=True)
+    d_batie_20 = models.FloatField("d_batie_20", null=True)
 
     mpoly = models.MultiPolygonField()
 
@@ -267,9 +307,9 @@ class Voirie2018(models.Model, AutoLoadMixin, DataColorationMixin):
     Voirie_2018 : les objets avec leur surface
     """
 
-    couverture = models.CharField(_("couverture"), max_length=254, null=True)
-    usage = models.CharField(_("usage"), max_length=254, null=True)
-    surface = models.IntegerField(_("surface"))
+    couverture = models.CharField("Couverture", max_length=254, null=True)
+    usage = models.CharField("Usage", max_length=254, null=True)
+    surface = models.IntegerField("Surface")
 
     mpoly = models.MultiPolygonField()
 
@@ -290,9 +330,9 @@ class ZonesBaties2018(models.Model, AutoLoadMixin, DataColorationMixin):
     Données produites par Philippe
     """
 
-    couverture = models.CharField(_("couverture"), max_length=254, null=True)
-    usage = models.CharField(_("usage"), max_length=254, null=True)
-    surface = models.IntegerField(_("surface"))
+    couverture = models.CharField("Couverture", max_length=254, null=True)
+    usage = models.CharField("Usage", max_length=254, null=True)
+    surface = models.IntegerField("Surface")
 
     mpoly = models.MultiPolygonField()
 
@@ -321,16 +361,16 @@ class Sybarval(models.Model, AutoLoadMixin, DataColorationMixin):
     Données produites par Philippe
     """
 
-    surface = models.IntegerField(_("surface"))
-    a_brute_20 = models.IntegerField(_("a_brute_20"), null=True)
-    a_b_2015_2 = models.IntegerField(_("a_b_2015_2"), null=True)
-    a_b_2018_2 = models.IntegerField(_("a_b_2018_2"), null=True)
-    z_baties_2 = models.IntegerField(_("z_baties_2"), null=True)
-    voirie_201 = models.IntegerField(_("voirie_201"), null=True)
-    tache_2018 = models.IntegerField(_("tache_2018"), null=True)
-    d_brute_20 = models.FloatField(_("d_brute_20"), null=True)
-    d_batie_20 = models.FloatField(_("d_batie_20"), null=True)
-    d_voirie_2 = models.FloatField(_("d_voirie_2"), null=True)
+    surface = models.IntegerField("Surface")
+    a_brute_20 = models.IntegerField("a_brute_20", null=True)
+    a_b_2015_2 = models.IntegerField("a_b_2015_2", null=True)
+    a_b_2018_2 = models.IntegerField("a_b_2018_2", null=True)
+    z_baties_2 = models.IntegerField("z_baties_2", null=True)
+    voirie_201 = models.IntegerField("voirie_201", null=True)
+    tache_2018 = models.IntegerField("tache_2018", null=True)
+    d_brute_20 = models.FloatField("d_brute_20", null=True)
+    d_batie_20 = models.FloatField("d_batie_20", null=True)
+    d_voirie_2 = models.FloatField("d_voirie_2", null=True)
 
     mpoly = models.MultiPolygonField()
 
@@ -371,5 +411,54 @@ class CouvertureSol(classic_models.Model):
     label = classic_models.CharField("Libellé", max_length=250)
     is_artificial = classic_models.BooleanField("Est artificielle", default=False)
 
+    @property
+    def children(self):
+        return self.couverturesol_set.all()
+
+    @property
+    def index(self):
+        return f"CS{self.code}"
+
+    def accumulate_children(self, raw_covers):
+        """Recursive that call children and evaluate total_surface."""
+        results = []
+        self.total_surface = 0
+
+        # pop values frow raw_covers if any
+        index = f"CS{self.code}"
+        if index in raw_covers:
+            self.total_surface = raw_covers.pop(index)
+
+        for child in self.children:
+            results += child.accumulate_children(raw_covers)
+            self.total_surface += child.total_surface
+
+        results.append(self)
+        return results
+
     def __str__(self):
         return f"CS{self.code} {self.label}"
+
+    @classmethod
+    def get_aggregated_cover(cls, raw_covers):
+        """Return a list of objects, each with total_surface evaluated.
+
+        raw_covers = {
+            "CS1": 100,
+            "CS1.1": 78,
+            "CS1.2": 45,
+            "CS1.1.1": 65,
+        }
+
+        Return [
+            <CouvertureSol 1>,  # item.total_surface = 288 = 100 + 78 + 45 + 65
+            <CouvertureSol 1.1>,  # item.total_surface = 143 = 78 + 65
+            <CouvertureSol 1.1.1>,  # item.total_surface = 65
+            <CouvertureSol 1.2>,  # item.total_surface = 45
+        ]
+        """
+        results = []
+        parents = cls.objects.filter(parent__isnull=True)
+        for parent in parents:
+            results += parent.accumulate_children(raw_covers)
+        return results
