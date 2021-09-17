@@ -2,7 +2,6 @@ from django.conf import settings
 from django.db import models
 from django.urls import reverse
 from django.utils import timezone
-from django.utils.translation import gettext_lazy as _
 
 from django.contrib.gis.db import models as gis_models
 
@@ -92,7 +91,9 @@ class Emprise(gis_models.Model, DataColorationMixin):
     default_color = "blue"
 
     project = gis_models.ForeignKey(
-        Project, on_delete=models.CASCADE, verbose_name=_("project")
+        Project,
+        on_delete=models.CASCADE,
+        verbose_name="Projet",
     )
     mpoly = gis_models.MultiPolygonField()
 
