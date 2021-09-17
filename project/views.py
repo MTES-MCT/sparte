@@ -6,7 +6,6 @@ from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
 from .forms import SelectCitiesForm, SelectPluForm, UploadShpForm
 from .models import Project
-from .tasks import import_shp
 
 
 class UserProjectOnlyMixin:
