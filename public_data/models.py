@@ -413,7 +413,7 @@ class CouvertureSol(classic_models.Model):
 
     @property
     def children(self):
-        return self.parent_set.all()
+        return self.couverturesol_set.all()
 
     @property
     def index(self):
@@ -427,7 +427,7 @@ class CouvertureSol(classic_models.Model):
         # pop values frow raw_covers if any
         index = f"CS{self.code}"
         if index in raw_covers:
-            self.total_surface = raw_covers.pop(id)
+            self.total_surface = raw_covers.pop(index)
 
         for child in self.children:
             results += child.accumulate_children(raw_covers)
@@ -460,5 +460,5 @@ class CouvertureSol(classic_models.Model):
         results = []
         parents = cls.objects.filter(parent__isnull=True)
         for parent in parents:
-            results += parent.accumulate_children()
+            results += parent.accumulate_children(raw_covers)
         return results

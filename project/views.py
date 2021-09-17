@@ -4,6 +4,7 @@ from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
+from .domains import get_couverture_sol
 from .forms import SelectCitiesForm, SelectPluForm, UploadShpForm
 from .models import Project
 
@@ -194,7 +195,11 @@ class ProjectReportArtifView(GroupMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         super_context = super().get_context_data(**kwargs)
-        return {**super_context, "table_artif": ""}
+        data_covers = get_couverture_sol(self.get_object())
+        return {
+            **super_context,
+            "data_covers": data_covers,
+        }
 
 
 class ProjectMapView(GroupMixin, DetailView):
