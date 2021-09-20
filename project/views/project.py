@@ -4,38 +4,17 @@ from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
-from .domains import get_couverture_sol
-from .forms import SelectCitiesForm, SelectPluForm, UploadShpForm
-from .models import Project
+from project.domains import get_couverture_sol
+from project.forms import SelectCitiesForm, SelectPluForm, UploadShpForm
+from project.models import Project
+
+from .mixins import GetObjectMixin, UserQuerysetOnlyMixin
 
 
-class UserProjectOnlyMixin:
-    queryset = Project.objects.all()
-
-    def get_queryset(self):
-        # get queryset from class queryset var
-        qs = self.queryset
-        # apply filter on user owned project only
-        user = self.request.user
-        qs = qs.filter(user=user)
-        # TODO prefetch cities ?
-        return qs
-
-
-class GetObjectMixin:
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.object = None
-
-    def get_object(self, queryset=None):
-        if not self.object:
-            self.object = super().get_object(queryset)
-        return self.object
-
-
-class GroupMixin(GetObjectMixin, LoginRequiredMixin, UserProjectOnlyMixin):
+class GroupMixin(GetObjectMixin, LoginRequiredMixin, UserQuerysetOnlyMixin):
     """Simple trick to not repeat myself. Pertinence to be evaluated."""
 
+    queryset = Project.objects.all()
     context_object_name = "project"
 
 
