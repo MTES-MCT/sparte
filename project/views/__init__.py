@@ -14,3 +14,11 @@ from .project import (
     ProjectSuccessView,
     ProjectUpdateView,
 )
+
+from .plan import (
+    PlanCreateView,
+    PlanDeleteView,
+    PlanDetailView,
+    PlanListView,
+    PlanUpdateView,
+)
