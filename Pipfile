@@ -28,3 +28,4 @@ django-storages = "*"
 boto3 = "*"
 django-import-export = "*"
 django-anymail = {extras = ["mailjet"], version = "*"}
+openpyxl = "==3.0.8"

@@ -1,0 +1,78 @@
+version: "3.7"
+
+services:
+  db:
+    image: kartoza/postgis:13-3.1--v2021.09.08
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    networks:
+      - app-network
+
+  redis:
+    image: "redis:alpine"
+    ports:
+      - "6379:6379"
+    networks:
+      - app-network
+    restart: on-failure
+
+  app:
+    build: .
+    command: "python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - .:/app
+    env_file: .env
+    # override a few environment variables to ensure it works with other containers
+    environment:
+      - DATABASE_URL=postgis://postgres:postgres@db/postgres
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+      - redis
+    networks:
+      - app-network
+
+  worker:
+    build: .
+    working_dir: /app
+    command: celery -A config.celery worker --loglevel=info
+    env_file: .env
+    environment:
+      - DATABASE_URL=postgis://postgres:postgres@db/postgres
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    depends_on:
+      - db
+      - redis
+    networks:
+      - app-network
+    restart: on-failure
+
+  worker-beat:
+    build: .
+    working_dir: /app
+    command: celery -A config.celery beat --loglevel=info
+    env_file: .env
+    environment:
+      - DATABASE_URL=postgis://postgres:postgres@db/postgres
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    depends_on:
+      - redis
+    networks:
+      - app-network
+    restart: on-failure
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  db_data:
