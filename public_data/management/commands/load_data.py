@@ -13,14 +13,34 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument(
-            "class_name", type=str, help="class name that need to be reloaded"
+            "--class",
+            type=str,
+            help="class name that need to be reloaded",
         )
 
     def handle(self, *args, **options):
         logging.info("Load data for a model")
-        class_name = options["class_name"]
-        logging.info("class=%s", class_name)
-        my_class = locate(class_name)
-        if not my_class:
-            raise CommandError("Unknown class")
-        my_class.load()
+        if "class" in options and options["class"]:
+            class_names = [
+                options["class"],
+            ]
+        else:
+            class_names = [
+                f"public_data.models.{x}"
+                for x in [
+                    "CommunesSybarval",
+                    "Artificialisee2015to2018",
+                    "Renaturee2018to2015",
+                    "Artificielle2018",
+                    "EnveloppeUrbaine2018",
+                    "Voirie2018",
+                    "ZonesBaties2018",
+                    "Sybarval",
+                ]
+            ]
+        for class_name in class_names:
+            logging.info("class=%s", class_name)
+            my_class = locate(class_name)
+            if not my_class:
+                raise CommandError("Unknown class")
+            my_class.load(verbose=False)

@@ -1,7 +1,7 @@
 from django.contrib.gis import admin
 
 from import_export import resources
-from import_export.admin import ImportMixin, ImportExportMixin
+from import_export.admin import ImportExportMixin
 
 from .models import (
     ArtifCommune,
@@ -68,7 +68,7 @@ class ArtifCommuneResource(resources.ModelResource):
 
 
 @admin.register(ArtifCommune)
-class ArtifCommuneAdmin(ImportMixin, admin.GeoModelAdmin):
+class ArtifCommuneAdmin(ImportExportMixin, admin.GeoModelAdmin):
     model = ArtifCommune
     list_display = (
         "name",
