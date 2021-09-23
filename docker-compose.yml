@@ -22,15 +22,13 @@ services:
 
   app:
     build: .
-    command: "python manage.py runserver 0.0.0.0:8000"
+    # command: python manage.py runserver 0.0.0.0:8000
+    # required to attach vsc to the container and run debug
+    command: tail -F anything
     volumes:
       - .:/app
     env_file: .env
     # override a few environment variables to ensure it works with other containers
-    environment:
-      - DATABASE_URL=postgis://postgres:postgres@db/postgres
-      - CELERY_BROKER_URL=redis://redis:6379/0
-      - CELERY_RESULT_BACKEND=redis://redis:6379/0
     ports:
       - "8000:8000"
     depends_on:
@@ -42,12 +40,11 @@ services:
   worker:
     build: .
     working_dir: /app
-    command: celery -A config.celery worker --loglevel=info
+    volumes:
+      - .:/app
+    # command: celery -A config.celery worker --loglevel=info
+    command: tail -F anything
     env_file: .env
-    environment:
-      - DATABASE_URL=postgis://postgres:postgres@db/postgres
-      - CELERY_BROKER_URL=redis://redis:6379/0
-      - CELERY_RESULT_BACKEND=redis://redis:6379/0
     depends_on:
       - db
       - redis
@@ -60,14 +57,28 @@ services:
     working_dir: /app
     command: celery -A config.celery beat --loglevel=info
     env_file: .env
-    environment:
-      - DATABASE_URL=postgis://postgres:postgres@db/postgres
-      - CELERY_BROKER_URL=redis://redis:6379/0
-      - CELERY_RESULT_BACKEND=redis://redis:6379/0
     depends_on:
       - redis
     networks:
       - app-network
+    restart: on-failure
+
+  jupyter:
+    build: .
+    working_dir: /app
+    command: python manage.py shell_plus --notebook
+    env_file: .env
+    volumes:
+      - .:/app
+    environment:
+      - DJANGO_ALLOW_ASYNC_UNSAFE=true
+      - JUPYTER_CONFIG_DIR=/app/config/
+    depends_on:
+      - db
+    networks:
+      - app-network
+    ports:
+      - "8888:8888"
     restart: on-failure
 
 networks:
