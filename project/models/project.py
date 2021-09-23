@@ -1,3 +1,5 @@
+import traceback
+
 from django.conf import settings
 from django.db import models
 from django.urls import reverse
@@ -58,6 +60,21 @@ class BaseProject(models.Model):
     def __str__(self):
         return self.name
 
+    def set_success(self, save=True):
+        self.import_status = self.Status.SUCCESS
+        self.import_error = None
+        if save:
+            self.save()
+
+    def set_fail(self, save=True, trace=None):
+        self.import_status = self.Status.FAILED
+        if trace:
+            self.import_error = trace
+        else:
+            self.import_error = traceback.format_exc()
+        if save:
+            self.save()
+
     class Meta:
         ordering = ["name"]
         abstract = True
@@ -105,5 +122,14 @@ class Emprise(DataColorationMixin, gis_models.Model):
     )
     mpoly = gis_models.MultiPolygonField()
 
+    # mapping for LayerMapping (from GeoDjango)
+    mapping = {
+        "mpoly": "MULTIPOLYGON",
+    }
+
     class Meta:
         ordering = ["project"]
+
+    def set_parent(self, project: Project):
+        """Identical to Project"""
+        self.project = project

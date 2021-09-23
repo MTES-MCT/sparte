@@ -21,7 +21,11 @@ class PlanEmprise(DataColorationMixin, gis_models.Model):
     default_property = "surface"
     default_color = "violet"
 
-    plan = gis_models.ForeignKey(Plan, on_delete=models.CASCADE)
+    # related_name is set to be identical as project
+    plan = gis_models.ForeignKey(
+        Plan, on_delete=models.CASCADE, related_name="emprise_set"
+    )
+
     mpoly = gis_models.MultiPolygonField()
 
     name = gis_models.CharField("Nom", max_length=100)
@@ -43,5 +47,20 @@ class PlanEmprise(DataColorationMixin, gis_models.Model):
         "Nouvelle surface naturelle (ha)", blank=True, null=True
     )
 
+    # mapping for LayerMapping (from GeoDjango)
+    mapping = {
+        "mpoly": "MULTIPOLYGON",
+        "name": "NAME",
+        "description": "DESCRIPTION",
+        "lot": "LOT",
+        "surface": "SURFACE",
+        "us_code": "US_CODE",
+        "cs_code": "CS_CODE",
+    }
+
     class Meta:
         ordering = ["plan", "name"]
+
+    def set_parent(self, plan: Plan):
+        """Identical to Project's Emprise"""
+        self.plan = plan
