@@ -396,8 +396,21 @@ class UsageSol(classic_models.Model):
     parent = classic_models.ForeignKey(
         "UsageSol", blank=True, null=True, on_delete=classic_models.PROTECT
     )
+    code_prefix = classic_models.CharField(
+        "Nomenclature préfixée", max_length=10, unique=True
+    )
     code = classic_models.CharField("Nomenclature", max_length=8, unique=True)
     label = classic_models.CharField("Libellé", max_length=250)
+
+    @classmethod
+    def get_dict_label(cls, prefix=False):
+        results = dict()
+        for item in cls.objects.all().values("code", "label"):
+            key = item["code"]
+            if prefix:
+                key = f"US{key}"
+            results[key] = item["label"]
+        return results
 
     def __str__(self):
         return f"US{self.code} {self.label}"
@@ -406,6 +419,9 @@ class UsageSol(classic_models.Model):
 class CouvertureSol(classic_models.Model):
     parent = classic_models.ForeignKey(
         "CouvertureSol", blank=True, null=True, on_delete=classic_models.PROTECT
+    )
+    code_prefix = classic_models.CharField(
+        "Nomenclature préfixée", max_length=10, unique=True
     )
     code = classic_models.CharField("Nomenclature", max_length=8, unique=True)
     label = classic_models.CharField("Libellé", max_length=250)
@@ -418,6 +434,16 @@ class CouvertureSol(classic_models.Model):
     @property
     def index(self):
         return f"CS{self.code}"
+
+    @classmethod
+    def get_dict_label(cls, prefix=False):
+        results = dict()
+        for item in cls.objects.all().values("code", "label"):
+            key = item["code"]
+            if prefix:
+                key = f"CS{key}"
+            results[key] = item["label"]
+        return results
 
     def accumulate_children(self, raw_covers):
         """Recursive that call children and evaluate total_surface."""
@@ -462,3 +488,67 @@ class CouvertureSol(classic_models.Model):
         for parent in parents:
             results += parent.accumulate_children(raw_covers)
         return results
+
+
+class Ocsge2015(models.Model, AutoLoadMixin, DataColorationMixin):
+    """
+    Données de l'OCSGE pour l'année 2015
+    Données fournies par Philippe 09/2021
+    python manage.py load_data --class public_data.models.Ocsge2015
+    """
+
+    couverture = models.CharField(
+        "Couverture du sol", max_length=254, blank=True, null=True
+    )
+
+    usage = models.CharField("Usage du sol", max_length=254, blank=True, null=True)
+    millesime = models.DateField("Millésime", blank=True, null=True)
+    source = models.CharField("Source", max_length=254, blank=True, null=True)
+    origine = models.CharField("Origine", max_length=254, blank=True, null=True)
+    origine2 = models.CharField("Origine1", max_length=254, blank=True, null=True)
+    ossature = models.IntegerField("Ossature", blank=True, null=True)
+    commentaire = models.CharField("Commentaire", max_length=254, blank=True, null=True)
+
+    # calculated fields
+    couverture_label = models.CharField(
+        "Libellé couverture du sol", max_length=254, blank=True, null=True
+    )
+    usage_label = models.CharField(
+        "Libellé usage du sol", max_length=254, blank=True, null=True
+    )
+    map_color = models.CharField("Couleur", max_length=8, blank=True, null=True)
+
+    mpoly = models.MultiPolygonField()
+
+    shape_file_path = Path(
+        "public_data/media/OCSGE 2015/OCS_GE_ARCACHON_2015_20201117.shp"
+    )
+    default_property = "id"
+    default_color = "Chocolate"
+    mapping = {
+        "couverture": "couverture",
+        "usage": "usage",
+        "millesime": "millesime",
+        "source": "source",
+        "origine": "origine",
+        "origine2": "origine2",
+        "ossature": "ossature",
+        "commentaire": "commentair",
+        "mpoly": "MULTIPOLYGON",
+    }
+
+    @classmethod
+    def calculate_fields(cls):
+        cls.calculate_label()
+
+    @classmethod
+    def calculate_label(cls):
+        couvetures = CouvertureSol.get_dict_label(prefix=True)
+        usages = UsageSol.get_dict_label(prefix=True)
+        for item in cls.objects.all().order_by("id"):
+            key = item.couverture
+            if key in couvetures:
+                item.couverture_label = couvetures[key]
+            if item.usage in usages:
+                item.usage_label = usages[item.usage]
+            item.save(update_fields=["couverture_label", "usage_label"])

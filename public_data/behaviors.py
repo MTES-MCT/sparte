@@ -1,3 +1,5 @@
+import logging
+
 from colour import Color, RGB_TO_COLOR_NAMES
 from pathlib import Path
 from random import choice
@@ -6,6 +8,9 @@ import numpy as np
 from django.contrib.gis.utils import LayerMapping
 from django.core.exceptions import FieldDoesNotExist
 from django.db import connection
+
+
+logger = logging.getLogger(__name__)
 
 
 def get_color_gradient(color_name=None, scale=10):
@@ -50,15 +55,37 @@ class AutoLoadMixin:
     @classmethod
     def load(cls, verbose=True):
         """
-        Populate table with data from shapefile
+        Populate table with data from shapefile then calculate all fields
 
         Args:
             cls (undefined): default class calling
             verbose=True (undefined): define level of verbosity
         """
+        logger.info("Load data of %s", cls)
         cls.objects.all().delete()
         lm = LayerMapping(cls, cls.shape_file_path, cls.mapping)
         lm.save(strict=True, verbose=verbose)
+        logger.info("Data loaded, calculate fields")
+        cls.calculate_fields()
+        logger.info("End")
+
+    @classmethod
+    def calculate_fields(cls):
+        """Override if you need to calculate some fields after loading data"""
+        pass
+
+    @classmethod
+    def calculate_label(cls):
+        """Add couverture and usage label."""
+        couvetures = CouvertureSol.get_dict_label(prefix=True)
+        usages = UsageSol.get_dict_label(prefix=True)
+        for item in cls.objects.all().order_by("id"):
+            key = item.couverture
+            if key in couvetures:
+                item.couverture_label = couvetures[key]
+            if item.usage in usages:
+                item.usage_label = usages[item.usage]
+            item.save(update_fields=["couverture_label", "usage_label"])
 
 
 class DataColorationMixin:
