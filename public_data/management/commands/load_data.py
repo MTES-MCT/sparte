@@ -17,6 +17,11 @@ class Command(BaseCommand):
             type=str,
             help="class name that need to be reloaded",
         )
+        parser.add_argument(
+            "--verbose",
+            action="store_true",
+            help="To actrivate verbose mode of LayerMapping",
+        )
 
     def handle(self, *args, **options):
         logging.info("Load data for a model")
@@ -43,4 +48,4 @@ class Command(BaseCommand):
             my_class = locate(class_name)
             if not my_class:
                 raise CommandError("Unknown class")
-            my_class.load(verbose=False)
+            my_class.load(verbose=options["verbose"])
