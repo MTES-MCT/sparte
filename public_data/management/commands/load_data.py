@@ -1,8 +1,8 @@
 import logging
 
-from pydoc import locate
+from django.core.management.base import BaseCommand
 
-from django.core.management.base import BaseCommand, CommandError
+from public_data.tasks import load_data
 
 
 logging.basicConfig(level=logging.INFO)
@@ -26,26 +26,22 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         logging.info("Load data for a model")
         if "class" in options and options["class"]:
-            class_names = [
-                options["class"],
-            ]
+            class_names = [options["class"]]
         else:
             class_names = [
                 f"public_data.models.{x}"
                 for x in [
-                    "CommunesSybarval",
                     "Artificialisee2015to2018",
-                    "Renaturee2018to2015",
                     "Artificielle2018",
+                    "CommunesSybarval",
                     "EnveloppeUrbaine2018",
+                    "Ocsge2015",
+                    "Renaturee2018to2015",
+                    "Sybarval",
                     "Voirie2018",
                     "ZonesBaties2018",
-                    "Sybarval",
                 ]
             ]
         for class_name in class_names:
-            logging.info("class=%s", class_name)
-            my_class = locate(class_name)
-            if not my_class:
-                raise CommandError("Unknown class")
-            my_class.load(verbose=options["verbose"])
+            logging.info("Management command load_data with class=%s", class_name)
+            load_data.delay(class_name, verbose=options["verbose"])

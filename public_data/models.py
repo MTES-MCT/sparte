@@ -3,6 +3,7 @@ from pathlib import Path
 
 from django.contrib.gis.db import models
 from django.db import models as classic_models
+from django.db.models import OuterRef, Subquery
 
 from .behaviors import AutoLoadMixin, DataColorationMixin
 
@@ -118,7 +119,7 @@ class CommunesSybarval(models.Model, AutoLoadMixin, DataColorationMixin):
     # GeoDjango-specific: a geometry field (MultiPolygonField)
     mpoly = models.MultiPolygonField()
 
-    shape_file_path = Path("public_data/media/communes_sybarval/Communes_SYBARVAL.shp")
+    shape_file_path = "communes_sybarval.zip"
     default_property = "surface"
     default_color = "Yellow"
     mapping = {
@@ -170,7 +171,7 @@ class Artificialisee2015to2018(models.Model, AutoLoadMixin, DataColorationMixin)
 
     mpoly = models.MultiPolygonField()
 
-    shape_file_path = Path("public_data/media/a_b_2015_2018/A_B_2015_2018.shp")
+    shape_file_path = "a_b_2015_2018.zip"
     default_property = "surface"
     default_color = "Red"
     mapping = {
@@ -197,7 +198,7 @@ class Renaturee2018to2015(models.Model, AutoLoadMixin, DataColorationMixin):
 
     mpoly = models.MultiPolygonField()
 
-    shape_file_path = Path("public_data/media/a_b_2018_2015/A_B_2018_2015.shp")
+    shape_file_path = "a_b_2018_2015.zip"
     default_property = "surface"
     default_color = "Lime"
     mapping = {
@@ -239,10 +240,16 @@ class Artificielle2018(models.Model, AutoLoadMixin, DataColorationMixin):
 
     couverture = models.CharField("Couverture", max_length=254)
     surface = models.IntegerField("Surface")
+    couverture_label = models.CharField(
+        "Libellé couverture du sol", max_length=254, blank=True, null=True
+    )
+    usage_label = models.CharField(
+        "Libellé usage du sol", max_length=254, blank=True, null=True
+    )
 
     mpoly = models.MultiPolygonField()
 
-    shape_file_path = Path("public_data/media/A_Brute_2018/A_Brute_2018.shp")
+    shape_file_path = "A_Brute_2018.zip"
     default_property = "surface"
     default_color = "Orange"
     mapping = {
@@ -286,9 +293,7 @@ class EnveloppeUrbaine2018(models.Model, AutoLoadMixin, DataColorationMixin):
 
     mpoly = models.MultiPolygonField()
 
-    shape_file_path = Path(
-        "public_data/media/Enveloppe_urbaine/Enveloppe_Urbaine_2018.shp"
-    )
+    shape_file_path = "Enveloppe_urbaine.zip"
     default_property = "surface"
     default_color = "Coraile"
     mapping = {
@@ -313,7 +318,7 @@ class Voirie2018(models.Model, AutoLoadMixin, DataColorationMixin):
 
     mpoly = models.MultiPolygonField()
 
-    shape_file_path = Path("public_data/media/Voirire_2018/Voirie_2018.shp")
+    shape_file_path = "Voirire_2018.zip"
     default_property = "surface"
     default_color = "Black"
     mapping = {
@@ -336,7 +341,7 @@ class ZonesBaties2018(models.Model, AutoLoadMixin, DataColorationMixin):
 
     mpoly = models.MultiPolygonField()
 
-    shape_file_path = Path("public_data/media/zones_baties_2018/Zones_Baties_2018.shp")
+    shape_file_path = "zones_baties_2018.zip"
     default_property = "surface"
     default_color = "Pink"
     mapping = {
@@ -374,7 +379,7 @@ class Sybarval(models.Model, AutoLoadMixin, DataColorationMixin):
 
     mpoly = models.MultiPolygonField()
 
-    shape_file_path = Path("public_data/media/Sybarval/SYBARVAL.shp")
+    shape_file_path = "Sybarval.zip"
     default_property = "surface"
     default_color = None
     mapping = {
@@ -420,9 +425,11 @@ class CouvertureSol(classic_models.Model):
     parent = classic_models.ForeignKey(
         "CouvertureSol", blank=True, null=True, on_delete=classic_models.PROTECT
     )
+    # contains CS1.1.1
     code_prefix = classic_models.CharField(
         "Nomenclature préfixée", max_length=10, unique=True
     )
+    # contains 1.1.1
     code = classic_models.CharField("Nomenclature", max_length=8, unique=True)
     label = classic_models.CharField("Libellé", max_length=250)
     is_artificial = classic_models.BooleanField("Est artificielle", default=False)
@@ -438,7 +445,7 @@ class CouvertureSol(classic_models.Model):
     @classmethod
     def get_dict_label(cls, prefix=False):
         results = dict()
-        for item in cls.objects.all().values("code", "label"):
+        for item in cls.objects.all().values("code", "code_prefix", "label"):
             key = item["code"]
             if prefix:
                 key = f"CS{key}"
@@ -520,11 +527,11 @@ class Ocsge2015(models.Model, AutoLoadMixin, DataColorationMixin):
 
     mpoly = models.MultiPolygonField()
 
-    shape_file_path = Path(
-        "public_data/media/OCSGE 2015/OCS_GE_ARCACHON_2015_20201117.shp"
-    )
+    shape_file_path = "OCSGE_2015.zip"
     default_property = "id"
     default_color = "Chocolate"
+    couverture_field = "couverture"
+    usage_field = "usage"
     mapping = {
         "couverture": "couverture",
         "usage": "usage",
@@ -543,12 +550,20 @@ class Ocsge2015(models.Model, AutoLoadMixin, DataColorationMixin):
 
     @classmethod
     def calculate_label(cls):
-        couvetures = CouvertureSol.get_dict_label(prefix=True)
-        usages = UsageSol.get_dict_label(prefix=True)
-        for item in cls.objects.all().order_by("id"):
-            key = item.couverture
-            if key in couvetures:
-                item.couverture_label = couvetures[key]
-            if item.usage in usages:
-                item.usage_label = usages[item.usage]
-            item.save(update_fields=["couverture_label", "usage_label"])
+        """Add couverture and usage label in: couverture_label and usage_label
+        To indicate which field contain codes, use class properties :
+        * couverture_field = "couverture_code"
+        * usage_field = None
+        Leave it at None if you don't want to retrieve labels
+        """
+        if cls.couverture_field:
+            label_couv = CouvertureSol.objects.filter(
+                code_prefix=OuterRef(cls.couverture_field)
+            )
+            label_couv = label_couv.values("label")[:1]
+            cls.objects.all().update(couverture_label=Subquery(label_couv))
+
+        if cls.usage_field:
+            label_us = UsageSol.objects.filter(code_prefix=OuterRef(cls.usage_field))
+            label_us = label_us.values("label")[:1]
+            cls.objects.all().update(usage_label=Subquery(label_us))
