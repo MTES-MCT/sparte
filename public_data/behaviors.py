@@ -1,13 +1,16 @@
-import logging
-
 from colour import Color, RGB_TO_COLOR_NAMES
+import logging
+import numpy as np
 from pathlib import Path
 from random import choice
-import numpy as np
+from tempfile import TemporaryDirectory
+from zipfile import ZipFile
 
 from django.contrib.gis.utils import LayerMapping
 from django.core.exceptions import FieldDoesNotExist
 from django.db import connection
+
+from .storages import DataStorage
 
 
 logger = logging.getLogger(__name__)
@@ -49,8 +52,34 @@ class AutoLoadMixin:
     """
 
     # properties that need to be set when heritating
+    couverture_field = None
+    usage_field = None
     shape_file_path = Path()
     mapping = dict()
+
+    @classmethod
+    def get_shape_file(cls):
+        # use special storage class to access files in s3://xxx/data directory
+        storage = DataStorage()
+        if not storage.exists(cls.shape_file_path):
+            raise FileNotFoundError(f"s3://xxx/data/{cls.shape_file_path}")
+        file_stream = storage.open(cls.shape_file_path)
+
+        # retrieve Zipfile and extract in temporary directory
+        temp_dir_path = Path(TemporaryDirectory().name)
+        logger.info("Use temp directory %s", temp_dir_path)
+
+        with ZipFile(file_stream) as zip_file:
+            zip_file.extractall(temp_dir_path)  # extract files to dir
+        logger.info("File copied from bucket and extracted in temp dir")
+
+        # get shape file
+        for tempfile in temp_dir_path.iterdir():
+            if tempfile.is_file() and tempfile.suffix == ".shp":
+                return tempfile
+
+        # no shape file found
+        raise FileNotFoundError("No file with .shp suffix")
 
     @classmethod
     def load(cls, verbose=True):
@@ -62,10 +91,14 @@ class AutoLoadMixin:
             verbose=True (undefined): define level of verbosity
         """
         logger.info("Load data of %s", cls)
+        shp_file = cls.get_shape_file()
+        logger.info("Shape file found: %s", shp_file)
+        # delete previous data
         cls.objects.all().delete()
-        lm = LayerMapping(cls, cls.shape_file_path, cls.mapping)
-        lm.save(strict=True, verbose=verbose)
-        logger.info("Data loaded, calculate fields")
+        # load files
+        lm = LayerMapping(cls, shp_file, cls.mapping)
+        lm.save(strict=True, verbose=False)
+        logger.info("Data loaded, now calculate fields")
         cls.calculate_fields()
         logger.info("End")
 
@@ -73,19 +106,6 @@ class AutoLoadMixin:
     def calculate_fields(cls):
         """Override if you need to calculate some fields after loading data"""
         pass
-
-    @classmethod
-    def calculate_label(cls):
-        """Add couverture and usage label."""
-        couvetures = CouvertureSol.get_dict_label(prefix=True)
-        usages = UsageSol.get_dict_label(prefix=True)
-        for item in cls.objects.all().order_by("id"):
-            key = item.couverture
-            if key in couvetures:
-                item.couverture_label = couvetures[key]
-            if item.usage in usages:
-                item.usage_label = usages[item.usage]
-            item.save(update_fields=["couverture_label", "usage_label"])
 
 
 class DataColorationMixin:
