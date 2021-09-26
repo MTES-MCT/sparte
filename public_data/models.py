@@ -584,7 +584,6 @@ class Ocsge2015(models.Model, AutoLoadMixin, DataColorationMixin):
     couverture = models.CharField(
         "Couverture du sol", max_length=254, blank=True, null=True
     )
-
     usage = models.CharField("Usage du sol", max_length=254, blank=True, null=True)
     millesime = models.DateField("Millésime", blank=True, null=True)
     source = models.CharField("Source", max_length=254, blank=True, null=True)
