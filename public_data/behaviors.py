@@ -9,6 +9,7 @@ from zipfile import ZipFile
 from django.contrib.gis.utils import LayerMapping
 from django.core.exceptions import FieldDoesNotExist
 from django.db import connection
+from django.db.models import OuterRef, Subquery
 
 from .storages import DataStorage
 
@@ -104,8 +105,34 @@ class AutoLoadMixin:
 
     @classmethod
     def calculate_fields(cls):
-        """Override if you need to calculate some fields after loading data"""
-        pass
+        """Override if you need to calculate some fields after loading data.
+        By default, it will calculate label for couverture and usage if couverture_field
+        and usage_field are set with the name of the field containing code (cs.2.1.3)
+        """
+        if cls.couverture_field:
+            from public_data.models import CouvertureSol
+
+            cls.set_label(CouvertureSol, cls.couverture_field, "couverture_label")
+
+        if cls.usage_field:
+            from public_data.models import UsageSol
+
+            cls.set_label(UsageSol, cls.usage_field, "usage_label")
+
+    @classmethod
+    def set_label(cls, klass, field_code, field_label):
+        """Set label field using CouvertureSol or UsageSol référentiel.
+
+        Parameters:
+        ===========
+        * klass: CouvertureSol or UsageSol
+        * field_code: name of the field containing the code (eg. us1.1.1)
+        * field_label: name of the field where to save the label
+        """
+        label = klass.objects.filter(code_prefix=OuterRef(field_code))
+        label = label.values("label")[:1]
+        kwargs = {field_label: Subquery(label)}
+        cls.objects.all().update(**kwargs)
 
 
 class DataColorationMixin:

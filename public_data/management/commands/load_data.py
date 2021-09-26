@@ -1,4 +1,5 @@
 import logging
+import time
 
 from django.core.management.base import BaseCommand
 
@@ -42,6 +43,17 @@ class Command(BaseCommand):
                     "ZonesBaties2018",
                 ]
             ]
+        tasks = dict()
         for class_name in class_names:
             logging.info("Management command load_data with class=%s", class_name)
-            load_data.delay(class_name, verbose=options["verbose"])
+            tasks[class_name] = load_data.delay(class_name, verbose=options["verbose"])
+            time.sleep(5)
+
+        while len(tasks) > 0:
+            logging.info("Update on remaining tasks %d", len(tasks))
+            for key, task in tasks.items():
+                logging.info("%s is %s", key, task.status)
+                if task.status == "FAILURE":
+                    logging.info(task.info.__repr__())
+            time.sleep(60)
+            tasks = {k: t for k, t in tasks.items() if t.status == "PENDING"}
