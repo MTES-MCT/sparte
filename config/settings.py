@@ -284,9 +284,17 @@ elif EMAIL_ENGINE == "mailjet":
 
 DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL")
 
+# used by ./manage.py shell_plus --notebook
 NOTEBOOK_ARGUMENTS = [
     "--ip",
     "0.0.0.0",
     "--allow-root",
     '--notebook-dir="/app/notebooks/"',
 ]
+
+# RESTRAMEWORK parameters
+# https://www.django-rest-framework.org
+
+REST_FRAMEWORK = {
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination"
+}
