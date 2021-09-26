@@ -81,6 +81,17 @@ services:
       - "8888:8888"
     restart: on-failure
 
+  flower:
+    image: mher/flower
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - FLOWER_PORT=8887
+    networks:
+      - app-network
+    ports:
+      - 8887:8887
+    restart: on-failure
+
 networks:
   app-network:
     driver: bridge
