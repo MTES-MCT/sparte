@@ -574,13 +574,7 @@ class CouvertureSol(classic_models.Model):
         return results
 
 
-class Ocsge2015(models.Model, AutoLoadMixin, DataColorationMixin):
-    """
-    Données de l'OCSGE pour l'année 2015
-    Données fournies par Philippe 09/2021
-    python manage.py load_data --class public_data.models.Ocsge2015
-    """
-
+class BaseOcsge(models.Model, AutoLoadMixin, DataColorationMixin):
     couverture = models.CharField(
         "Couverture du sol", max_length=254, blank=True, null=True
     )
@@ -603,9 +597,7 @@ class Ocsge2015(models.Model, AutoLoadMixin, DataColorationMixin):
 
     mpoly = models.MultiPolygonField()
 
-    shape_file_path = "OCSGE_2015.zip"
     default_property = "id"
-    default_color = "Chocolate"
     couverture_field = "couverture"
     usage_field = "usage"
     mapping = {
@@ -619,3 +611,30 @@ class Ocsge2015(models.Model, AutoLoadMixin, DataColorationMixin):
         "commentaire": "commentair",
         "mpoly": "MULTIPOLYGON",
     }
+
+    class Meta:
+        abstract = True
+
+
+class Ocsge2015(BaseOcsge):
+    """
+    Données de l'OCSGE pour l'année 2015
+    Données fournies par Philippe 09/2021
+    python manage.py load_data --class public_data.models.Ocsge2015
+    """
+
+    shape_file_path = "OCSGE_2015.zip"
+    default_color = "Chocolate"
+
+
+class Ocsge2018(BaseOcsge):
+    """
+    Données de l'OCSGE pour l'année 2018
+    Données fournies par Philippe 09/2021
+    Les données sont stockés zippés dans s3://{bucket_name}/data
+    Pour les charger dans la base, exécuter la commande suivante:
+    python manage.py load_data --class public_data.models.Ocsge2015
+    """
+
+    shape_file_path = "OCSGE_2018.zip"
+    default_color = "DarkSeaGreen"

@@ -11,6 +11,7 @@ from .models import (
     CouvertureSol,
     EnveloppeUrbaine2018,
     Ocsge2015,
+    Ocsge2018,
     Renaturee2018to2015,
     Sybarval,
     UsageSol,
@@ -148,6 +149,23 @@ class CouvertureSolAdmin(ImportExportMixin, admin.GeoModelAdmin):
 @admin.register(Ocsge2015)
 class Ocsge2015Admin(admin.GeoModelAdmin):
     model = Ocsge2015
+    list_display = (
+        "id",
+        "couverture",
+        "couverture_label",
+        "usage",
+        "usage_label",
+    )
+    list_filter = ("couverture", "usage")
+    search_fields = (
+        "couverture",
+        "usage",
+    )
+
+
+@admin.register(Ocsge2018)
+class Ocsge2018Admin(admin.GeoModelAdmin):
+    model = Ocsge2018
     list_display = (
         "id",
         "couverture",
