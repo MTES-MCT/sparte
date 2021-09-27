@@ -9,7 +9,8 @@ import os
 
 from celery import Celery
 from celery.utils.log import get_task_logger
-from django.conf import settings
+
+from django.apps import apps
 
 
 logger = get_task_logger(__name__)
@@ -26,7 +27,7 @@ app = Celery("config")
 app.config_from_object("django.conf:settings", namespace="CELERY")
 
 # load tasks.py in django apps
-app.autodiscover_tasks(lambda: settings.INSTALLED_APPS)
+app.autodiscover_tasks(lambda: [n.name for n in apps.get_app_configs()])
 
 
 app.conf.timezone = "UTC"

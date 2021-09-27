@@ -26,4 +26,25 @@ urlpatterns = [
     ),
     path("<int:pk>/map", views.ProjectMapView.as_view(), name="map"),
     path("<int:pk>/delete/", views.ProjectDeleteView.as_view(), name="delete"),
+    path(
+        "<int:project_id>/plan/create/",
+        views.PlanCreateView.as_view(),
+        name="plan-create",
+    ),
+    path("<int:project_id>/plan/", views.PlanListView.as_view(), name="plan-list"),
+    path(
+        "<int:project_id>/plan/<int:pk>",
+        views.PlanDetailView.as_view(),
+        name="plan-detail",
+    ),
+    path(
+        "<int:project_id>/plan/<int:pk>/delete",
+        views.PlanDeleteView.as_view(),
+        name="plan-delete",
+    ),
+    path(
+        "<int:project_id>/plan/<int:pk>/update",
+        views.PlanUpdateView.as_view(),
+        name="plan-update",
+    ),
 ] + router.urls

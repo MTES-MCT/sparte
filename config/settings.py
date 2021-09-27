@@ -8,6 +8,7 @@ https://docs.djangoproject.com/en/3.2/topics/settings/
 
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
+hello world
 """
 import environ
 from pathlib import Path
@@ -59,6 +60,7 @@ RESTFRAMEWORK_APPS = [
 THIRD_APPS = [
     "import_export",
     "crispy_forms",
+    "django_extensions",
 ]
 
 # upper app should not communicate with lower ones
@@ -281,3 +283,18 @@ elif EMAIL_ENGINE == "mailjet":
     }
 
 DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL")
+
+# used by ./manage.py shell_plus --notebook
+NOTEBOOK_ARGUMENTS = [
+    "--ip",
+    "0.0.0.0",
+    "--allow-root",
+    '--notebook-dir="/app/notebooks/"',
+]
+
+# RESTRAMEWORK parameters
+# https://www.django-rest-framework.org
+
+REST_FRAMEWORK = {
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination"
+}
