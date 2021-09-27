@@ -61,7 +61,6 @@ RESTFRAMEWORK_APPS = [
 THIRD_APPS = [
     "import_export",
     "crispy_forms",
-    "django_extensions",
 ]
 
 # upper app should not communicate with lower ones
