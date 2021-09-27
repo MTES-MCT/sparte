@@ -1,8 +1,8 @@
 from decimal import Decimal
-from pathlib import Path
 
 from django.contrib.gis.db import models
 from django.db import models as classic_models
+
 
 from .behaviors import AutoLoadMixin, DataColorationMixin
 
@@ -118,7 +118,7 @@ class CommunesSybarval(models.Model, AutoLoadMixin, DataColorationMixin):
     # GeoDjango-specific: a geometry field (MultiPolygonField)
     mpoly = models.MultiPolygonField()
 
-    shape_file_path = Path("public_data/media/communes_sybarval/Communes_SYBARVAL.shp")
+    shape_file_path = "communes_sybarval.zip"
     default_property = "surface"
     default_color = "Yellow"
     mapping = {
@@ -168,9 +168,23 @@ class Artificialisee2015to2018(models.Model, AutoLoadMixin, DataColorationMixin)
     cs_2015 = models.CharField("Couverture 2015", max_length=254, null=True)
     us_2015 = models.CharField("Usage 2015", max_length=254, null=True)
 
+    # calculated fields
+    cs_2018_label = models.CharField(
+        "Couverture 2018", max_length=254, blank=True, null=True
+    )
+    us_2018_label = models.CharField(
+        "Usage 2018", max_length=254, blank=True, null=True
+    )
+    cs_2015_label = models.CharField(
+        "Couverture 2015", max_length=254, blank=True, null=True
+    )
+    us_2015_label = models.CharField(
+        "Usage 2015", max_length=254, blank=True, null=True
+    )
+
     mpoly = models.MultiPolygonField()
 
-    shape_file_path = Path("public_data/media/a_b_2015_2018/A_B_2015_2018.shp")
+    shape_file_path = "a_b_2015_2018.zip"
     default_property = "surface"
     default_color = "Red"
     mapping = {
@@ -181,6 +195,20 @@ class Artificialisee2015to2018(models.Model, AutoLoadMixin, DataColorationMixin)
         "us_2015": "us_2015",
         "mpoly": "MULTIPOLYGON",
     }
+
+    @classmethod
+    def calculate_fields(cls):
+        """override to hook specific label setting."""
+        cls.set_labels()
+
+    @classmethod
+    def set_labels(cls):
+        """Set label for cs and us fields."""
+        for fieldname in ["cs_2018", "us_2018", "cs_2015", "us_2015"]:
+            if fieldname.startswith("cs"):
+                cls.set_label(CouvertureSol, fieldname, f"{fieldname}_label")
+            else:
+                cls.set_label(UsageSol, fieldname, f"{fieldname}_label")
 
 
 class Renaturee2018to2015(models.Model, AutoLoadMixin, DataColorationMixin):
@@ -195,9 +223,23 @@ class Renaturee2018to2015(models.Model, AutoLoadMixin, DataColorationMixin):
     cs_2015 = models.CharField("Couverture 2015", max_length=254, null=True)
     us_2015 = models.CharField("Usage 2015", max_length=254, null=True)
 
+    # calculated fields
+    cs_2018_label = models.CharField(
+        "Couverture 2018", max_length=254, blank=True, null=True
+    )
+    us_2018_label = models.CharField(
+        "Usage 2018", max_length=254, blank=True, null=True
+    )
+    cs_2015_label = models.CharField(
+        "Couverture 2015", max_length=254, blank=True, null=True
+    )
+    us_2015_label = models.CharField(
+        "Usage 2015", max_length=254, blank=True, null=True
+    )
+
     mpoly = models.MultiPolygonField()
 
-    shape_file_path = Path("public_data/media/a_b_2018_2015/A_B_2018_2015.shp")
+    shape_file_path = "a_b_2018_2015.zip"
     default_property = "surface"
     default_color = "Lime"
     mapping = {
@@ -208,6 +250,20 @@ class Renaturee2018to2015(models.Model, AutoLoadMixin, DataColorationMixin):
         "us_2015": "us_2015",
         "mpoly": "MULTIPOLYGON",
     }
+
+    @classmethod
+    def calculate_fields(cls):
+        """override to hook specific label setting."""
+        cls.set_labels()
+
+    @classmethod
+    def set_labels(cls):
+        """Set label for cs and us fields."""
+        for fieldname in ["cs_2018", "us_2018", "cs_2015", "us_2015"]:
+            if fieldname.startswith("cs"):
+                cls.set_label(CouvertureSol, fieldname, f"{fieldname}_label")
+            else:
+                cls.set_label(UsageSol, fieldname, f"{fieldname}_label")
 
     @classmethod
     def get_coveredby(cls, geom):
@@ -240,11 +296,17 @@ class Artificielle2018(models.Model, AutoLoadMixin, DataColorationMixin):
     couverture = models.CharField("Couverture", max_length=254)
     surface = models.IntegerField("Surface")
 
+    # Calculated fields
+    couverture_label = models.CharField(
+        "Libellé couverture du sol", max_length=254, blank=True, null=True
+    )
+
     mpoly = models.MultiPolygonField()
 
-    shape_file_path = Path("public_data/media/A_Brute_2018/A_Brute_2018.shp")
+    shape_file_path = "A_Brute_2018.zip"
     default_property = "surface"
     default_color = "Orange"
+    couverture_field = "couverture"
     mapping = {
         "couverture": "couverture",
         "surface": "Surface",
@@ -286,11 +348,15 @@ class EnveloppeUrbaine2018(models.Model, AutoLoadMixin, DataColorationMixin):
 
     mpoly = models.MultiPolygonField()
 
-    shape_file_path = Path(
-        "public_data/media/Enveloppe_urbaine/Enveloppe_Urbaine_2018.shp"
+    # calculated fields
+    couverture_label = models.CharField(
+        "Libellé couverture du sol", max_length=254, blank=True, null=True
     )
+
+    shape_file_path = "Enveloppe_urbaine.zip"
     default_property = "surface"
     default_color = "Coraile"
+    couverture_field = "couverture"
     mapping = {
         "couverture": "couverture",
         "surface": "Surface",
@@ -313,9 +379,15 @@ class Voirie2018(models.Model, AutoLoadMixin, DataColorationMixin):
 
     mpoly = models.MultiPolygonField()
 
-    shape_file_path = Path("public_data/media/Voirire_2018/Voirie_2018.shp")
+    # calculated fields
+    couverture_label = models.CharField(
+        "Libellé couverture du sol", max_length=254, blank=True, null=True
+    )
+
+    shape_file_path = "Voirire_2018.zip"
     default_property = "surface"
     default_color = "Black"
+    couverture_field = "couverture"
     mapping = {
         "couverture": "couverture",
         "usage": "usage",
@@ -336,9 +408,19 @@ class ZonesBaties2018(models.Model, AutoLoadMixin, DataColorationMixin):
 
     mpoly = models.MultiPolygonField()
 
-    shape_file_path = Path("public_data/media/zones_baties_2018/Zones_Baties_2018.shp")
+    # calculated fields
+    couverture_label = models.CharField(
+        "Libellé couverture du sol", max_length=254, blank=True, null=True
+    )
+    usage_label = models.CharField(
+        "Libellé usage du sol", max_length=254, blank=True, null=True
+    )
+
+    shape_file_path = "zones_baties_2018.zip"
     default_property = "surface"
     default_color = "Pink"
+    couverture_field = "couverture"
+    usage_field = "usage"
     mapping = {
         "couverture": "couverture",
         "usage": "usage",
@@ -374,7 +456,7 @@ class Sybarval(models.Model, AutoLoadMixin, DataColorationMixin):
 
     mpoly = models.MultiPolygonField()
 
-    shape_file_path = Path("public_data/media/Sybarval/SYBARVAL.shp")
+    shape_file_path = "Sybarval.zip"
     default_property = "surface"
     default_color = None
     mapping = {
@@ -396,8 +478,21 @@ class UsageSol(classic_models.Model):
     parent = classic_models.ForeignKey(
         "UsageSol", blank=True, null=True, on_delete=classic_models.PROTECT
     )
+    code_prefix = classic_models.CharField(
+        "Nomenclature préfixée", max_length=10, unique=True
+    )
     code = classic_models.CharField("Nomenclature", max_length=8, unique=True)
     label = classic_models.CharField("Libellé", max_length=250)
+
+    @classmethod
+    def get_dict_label(cls, prefix=False):
+        results = dict()
+        for item in cls.objects.all().values("code", "label"):
+            key = item["code"]
+            if prefix:
+                key = f"US{key}"
+            results[key] = item["label"]
+        return results
 
     def __str__(self):
         return f"US{self.code} {self.label}"
@@ -407,6 +502,11 @@ class CouvertureSol(classic_models.Model):
     parent = classic_models.ForeignKey(
         "CouvertureSol", blank=True, null=True, on_delete=classic_models.PROTECT
     )
+    # contains CS1.1.1
+    code_prefix = classic_models.CharField(
+        "Nomenclature préfixée", max_length=10, unique=True
+    )
+    # contains 1.1.1
     code = classic_models.CharField("Nomenclature", max_length=8, unique=True)
     label = classic_models.CharField("Libellé", max_length=250)
     is_artificial = classic_models.BooleanField("Est artificielle", default=False)
@@ -418,6 +518,16 @@ class CouvertureSol(classic_models.Model):
     @property
     def index(self):
         return f"CS{self.code}"
+
+    @classmethod
+    def get_dict_label(cls, prefix=False):
+        results = dict()
+        for item in cls.objects.all().values("code", "code_prefix", "label"):
+            key = item["code"]
+            if prefix:
+                key = f"CS{key}"
+            results[key] = item["label"]
+        return results
 
     def accumulate_children(self, raw_covers):
         """Recursive that call children and evaluate total_surface."""
@@ -462,3 +572,69 @@ class CouvertureSol(classic_models.Model):
         for parent in parents:
             results += parent.accumulate_children(raw_covers)
         return results
+
+
+class BaseOcsge(models.Model, AutoLoadMixin, DataColorationMixin):
+    couverture = models.CharField(
+        "Couverture du sol", max_length=254, blank=True, null=True
+    )
+    usage = models.CharField("Usage du sol", max_length=254, blank=True, null=True)
+    millesime = models.DateField("Millésime", blank=True, null=True)
+    source = models.CharField("Source", max_length=254, blank=True, null=True)
+    origine = models.CharField("Origine", max_length=254, blank=True, null=True)
+    origine2 = models.CharField("Origine1", max_length=254, blank=True, null=True)
+    ossature = models.IntegerField("Ossature", blank=True, null=True)
+    commentaire = models.CharField("Commentaire", max_length=254, blank=True, null=True)
+
+    # calculated fields
+    couverture_label = models.CharField(
+        "Libellé couverture du sol", max_length=254, blank=True, null=True
+    )
+    usage_label = models.CharField(
+        "Libellé usage du sol", max_length=254, blank=True, null=True
+    )
+    map_color = models.CharField("Couleur", max_length=8, blank=True, null=True)
+
+    mpoly = models.MultiPolygonField()
+
+    default_property = "id"
+    couverture_field = "couverture"
+    usage_field = "usage"
+    mapping = {
+        "couverture": "couverture",
+        "usage": "usage",
+        "millesime": "millesime",
+        "source": "source",
+        "origine": "origine",
+        "origine2": "origine2",
+        "ossature": "ossature",
+        "commentaire": "commentair",
+        "mpoly": "MULTIPOLYGON",
+    }
+
+    class Meta:
+        abstract = True
+
+
+class Ocsge2015(BaseOcsge):
+    """
+    Données de l'OCSGE pour l'année 2015
+    Données fournies par Philippe 09/2021
+    python manage.py load_data --class public_data.models.Ocsge2015
+    """
+
+    shape_file_path = "OCSGE_2015.zip"
+    default_color = "Chocolate"
+
+
+class Ocsge2018(BaseOcsge):
+    """
+    Données de l'OCSGE pour l'année 2018
+    Données fournies par Philippe 09/2021
+    Les données sont stockés zippés dans s3://{bucket_name}/data
+    Pour les charger dans la base, exécuter la commande suivante:
+    python manage.py load_data --class public_data.models.Ocsge2015
+    """
+
+    shape_file_path = "OCSGE_2018.zip"
+    default_color = "DarkSeaGreen"

@@ -141,3 +141,4 @@ cython_debug/
 .vscode/*
 test.py
 media/*
+public_data/local_data/*
