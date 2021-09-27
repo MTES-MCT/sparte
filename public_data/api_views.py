@@ -11,6 +11,7 @@ from .models import (
     CouvertureSol,
     EnveloppeUrbaine2018,
     Ocsge2015,
+    Ocsge2018,
     Renaturee2018to2015,
     Sybarval,
     UsageSol,
@@ -24,6 +25,7 @@ from .serializers import (
     CouvertureSolSerializer,
     EnveloppeUrbaine2018Serializer,
     Ocsge2015Serializer,
+    Ocsge2018Serializer,
     Renaturee2018to2015Serializer,
     SybarvalSerializer,
     UsageSolSerializer,
@@ -82,6 +84,11 @@ class CouvertureSolViewset(viewsets.ReadOnlyModelViewSet):
 class Ocsge2015ViewSet(DataViewSet):
     queryset = Ocsge2015.objects.all()
     serializer_class = Ocsge2015Serializer
+
+
+class Ocsge2018ViewSet(DataViewSet):
+    queryset = Ocsge2018.objects.all()
+    serializer_class = Ocsge2018Serializer
 
 
 class Renaturee2018to2015ViewSet(DataViewSet):

@@ -7,6 +7,7 @@ from .models import (
     CouvertureSol,
     EnveloppeUrbaine2018,
     Ocsge2015,
+    Ocsge2018,
     Renaturee2018to2015,
     Sybarval,
     Voirie2018,
@@ -107,6 +108,21 @@ class Ocsge2015Serializer(serializers.GeoFeatureModelSerializer):
         )
         geo_field = "mpoly"
         model = Ocsge2015
+
+
+class Ocsge2018Serializer(serializers.GeoFeatureModelSerializer):
+    class Meta:
+        fields = (
+            "id",
+            "couverture",
+            "usage",
+            "millesime",
+            "couverture_label",
+            "usage_label",
+            "map_color",
+        )
+        geo_field = "mpoly"
+        model = Ocsge2018
 
 
 class Renaturee2018to2015Serializer(serializers.GeoFeatureModelSerializer):
