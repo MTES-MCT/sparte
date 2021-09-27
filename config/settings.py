@@ -12,6 +12,7 @@ hello world
 """
 import environ
 from pathlib import Path
+import pkg_resources
 
 from django.core.exceptions import ImproperlyConfigured
 
@@ -285,12 +286,16 @@ elif EMAIL_ENGINE == "mailjet":
 DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL")
 
 # used by ./manage.py shell_plus --notebook
-NOTEBOOK_ARGUMENTS = [
-    "--ip",
-    "0.0.0.0",
-    "--allow-root",
-    '--notebook-dir="/app/notebooks/"',
-]
+if "django-extensions" in {pkg.key for pkg in pkg_resources.working_set}:
+    INSTALLED_APPS += [
+        "django_extensions",
+    ]
+    NOTEBOOK_ARGUMENTS = [
+        "--ip",
+        "0.0.0.0",
+        "--allow-root",
+        '--notebook-dir="/app/notebooks/"',
+    ]
 
 # RESTRAMEWORK parameters
 # https://www.django-rest-framework.org
