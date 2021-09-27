@@ -214,7 +214,7 @@ CRISPY_TEMPLATE_PACK = "bootstrap4"
 # Celery configuration
 CELERY_BROKER_URL = env("CELERY_BROKER_URL")
 CELERY_RESULT_BACKEND = env("CELERY_RESULT_BACKEND")
-
+CELERY_ACKS_LATE = True
 
 # django-debug-toolbar configuration
 
