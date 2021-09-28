@@ -1,6 +1,7 @@
 from decimal import Decimal
 
 from django.contrib.gis.db import models
+from django.contrib.gis.db.models.functions import Area, Transform
 from django.db import models as classic_models
 
 
@@ -266,11 +267,6 @@ class Renaturee2018to2015(models.Model, AutoLoadMixin, DataColorationMixin):
                 cls.set_label(UsageSol, fieldname, f"{fieldname}_label")
 
     @classmethod
-    def get_coveredby(cls, geom):
-        """Return all objects coveredby geom."""
-        return cls.objects.filter(mpoly__coveredby=geom)
-
-    @classmethod
     def get_groupby_couverture(cls, geom):
         """Return SUM(surface) GROUP BY couverture if coveredby geom.
         Return [
@@ -280,7 +276,7 @@ class Renaturee2018to2015(models.Model, AutoLoadMixin, DataColorationMixin):
             },
         ]
         """
-        qs = cls.get_coveredby(geom)
+        qs = cls.objects.filter(mpoly__coveredby=geom)
         qs = qs.annotate(couverture=classic_models.F("cs_2018"))
         qs = qs.values("couverture").order_by("couverture")
         qs = qs.annotate(total_surface=classic_models.Sum("surface"))
@@ -314,11 +310,6 @@ class Artificielle2018(models.Model, AutoLoadMixin, DataColorationMixin):
     }
 
     @classmethod
-    def get_coveredby(cls, geom):
-        """Return all objects coveredby geom."""
-        return cls.objects.filter(mpoly__coveredby=geom)
-
-    @classmethod
     def get_groupby_couverture(cls, geom):
         """Return SUM(surface) GROUP BY couverture if coveredby geom.
         Return [
@@ -328,7 +319,7 @@ class Artificielle2018(models.Model, AutoLoadMixin, DataColorationMixin):
             },
         ]
         """
-        qs = cls.get_coveredby(geom)
+        qs = cls.objects.filter(mpoly__coveredby=geom)
         qs = qs.values("couverture").order_by("couverture")
         qs = qs.annotate(total_surface=classic_models.Sum("surface"))
         return qs
@@ -474,104 +465,165 @@ class Sybarval(models.Model, AutoLoadMixin, DataColorationMixin):
     }
 
 
-class UsageSol(classic_models.Model):
-    parent = classic_models.ForeignKey(
-        "UsageSol", blank=True, null=True, on_delete=classic_models.PROTECT
-    )
+class BaseSol(classic_models.Model):
+    class Meta:
+        abstract = True
+
     code_prefix = classic_models.CharField(
         "Nomenclature préfixée", max_length=10, unique=True
     )
     code = classic_models.CharField("Nomenclature", max_length=8, unique=True)
     label = classic_models.CharField("Libellé", max_length=250)
 
-    @classmethod
-    def get_dict_label(cls, prefix=False):
-        results = dict()
-        for item in cls.objects.all().values("code", "label"):
-            key = item["code"]
-            if prefix:
-                key = f"US{key}"
-            results[key] = item["label"]
-        return results
+    @property
+    def level(self) -> int:
+        """Return the level of the instance in the tree
+        CS1 => 1
+        CS1.1 => 2
+        CS1.1.1.1 => 4
+        """
+        return len(self.code.split("."))
 
-    def __str__(self):
-        return f"US{self.code} {self.label}"
-
-
-class CouvertureSol(classic_models.Model):
-    parent = classic_models.ForeignKey(
-        "CouvertureSol", blank=True, null=True, on_delete=classic_models.PROTECT
-    )
-    # contains CS1.1.1
-    code_prefix = classic_models.CharField(
-        "Nomenclature préfixée", max_length=10, unique=True
-    )
-    # contains 1.1.1
-    code = classic_models.CharField("Nomenclature", max_length=8, unique=True)
-    label = classic_models.CharField("Libellé", max_length=250)
-    is_artificial = classic_models.BooleanField("Est artificielle", default=False)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.cached_children = None
+        self.cached_parent = None
+        self.total_surface = dict()
 
     @property
     def children(self):
-        return self.couverturesol_set.all()
+        raise NotImplementedError("Needs to be overrided")
+
+    def get_children(self):
+        """Ensure Django does not reload data from databases, therefore we can
+        add some calculated data on the fly."""
+        if not self.cached_children:
+            self.cached_children = self.children.all()
+        return self.cached_children
 
     @property
-    def index(self):
-        return f"CS{self.code}"
+    def parent(self):
+        raise NotImplementedError("Needs to be overrided")
+
+    def get_parent(self):
+        """Same as get_children, cache the parent to ensure django don't reload it"""
+        if not self.cached_parent:
+            self.cached_parent = self.parent
+        return self.cached_parent
+
+    def set_parent(self):
+        """Probably useless now, calculate the parent of it.
+        Example: return 'us1.2' for 'us1.2.2'
+        """
+        if len(self.code) < 3:
+            return
+        try:
+            self.parent = self.__class__.objects.get(code=self.code[:-2])
+            self.save()
+        except self.DoesNotExist:
+            return
+
+    def __str__(self):
+        return f"{self.code_prefix} {self.label}"
 
     @classmethod
     def get_dict_label(cls, prefix=False):
+        """Return a dict() of all labels.
+        Example:
+        {
+            'CS1.1': 'awesome label',
+            'CS2.3': 'more awesome label',
+        }
+        """
         results = dict()
         for item in cls.objects.all().values("code", "code_prefix", "label"):
-            key = item["code"]
-            if prefix:
-                key = f"CS{key}"
+            key = item["code_prefix" if prefix else "code"]
             results[key] = item["label"]
         return results
 
-    def accumulate_children(self, raw_covers):
-        """Recursive that call children and evaluate total_surface."""
-        results = []
-        self.total_surface = 0
+    def set_total_surface(self, raw_data):
+        """Set the total_surface for each millésime
+        * step 1: search raw_data for each millesime
+        * step 2: search rax_data for specific area associated to its basesol
+        * step 3: retrieve total surface from children and add it
 
-        # pop values frow raw_covers if any
-        index = f"CS{self.code}"
-        if index in raw_covers:
-            self.total_surface = raw_covers.pop(index)
+        Parameters:
+        ===========
+        * raw_data : a table with the following format:
+        {
+            '2015': {  # millesime
+                'couverture': { # data_name
+                    'cs1.1': 123.87, # surface for a specific basesol
+                    'cs1.2': 15.12,
+                },
+                'usage': { ... }
+            },
+            '2018': { ... },
+        }
+        """
+        if isinstance(self, UsageSol):
+            data_name = "usage"
+        elif isinstance(self, CouvertureSol):
+            data_name = "couverture"
+        else:
+            raise KeyError("Unknown child class, please check the code.")
 
-        for child in self.children:
-            results += child.accumulate_children(raw_covers)
-            self.total_surface += child.total_surface
+        # step 1: initialize millesime
+        self.total_surface = dict()
+        for millesime, data in raw_data.items():
+            self.total_surface[millesime] = 0
 
-        results.append(self)
-        return results
+            # step 2: get specific area for self
+            surface = data[data_name].get(self.code_prefix, 0)
+            self.total_surface[millesime] += surface
 
-    def __str__(self):
-        return f"CS{self.code} {self.label}"
+        # step 3: add children surface to itself
+        for child in self.get_children():
+            total_surface = child.set_total_surface(raw_data)
+            for millesime, surface in total_surface.items():
+                self.total_surface[millesime] += surface
+
+        return self.total_surface
+
+    def to_list(self):
+        """iterator to get all the nodes"""
+        yield self
+        for child in self.get_children():
+            for child in child.to_list():
+                yield child
 
     @classmethod
-    def get_aggregated_cover(cls, raw_covers):
-        """Return a list of objects, each with total_surface evaluated.
-
-        raw_covers = {
-            "CS1": 100,
-            "CS1.1": 78,
-            "CS1.2": 45,
-            "CS1.1.1": 65,
-        }
-
-        Return [
-            <CouvertureSol 1>,  # item.total_surface = 288 = 100 + 78 + 45 + 65
-            <CouvertureSol 1.1>,  # item.total_surface = 143 = 78 + 65
-            <CouvertureSol 1.1.1>,  # item.total_surface = 65
-            <CouvertureSol 1.2>,  # item.total_surface = 45
-        ]
+    def iter_total_surface(cls, raw_data):
+        """Initialize recursive set of total surface from top parents.
+        Return an iterator going through all the instance of the class
+        Return example:
         """
-        results = []
         parents = cls.objects.filter(parent__isnull=True)
         for parent in parents:
-            results += parent.accumulate_children(raw_covers)
-        return results
+            parent.set_total_surface(raw_data)
+            for child in parent.to_list():
+                yield child
+
+
+class UsageSol(BaseSol):
+    parent = classic_models.ForeignKey(
+        "UsageSol",
+        blank=True,
+        null=True,
+        on_delete=classic_models.PROTECT,
+        related_name="children",
+    )
+
+
+class CouvertureSol(BaseSol):
+    parent = classic_models.ForeignKey(
+        "CouvertureSol",
+        blank=True,
+        null=True,
+        on_delete=classic_models.PROTECT,
+        related_name="children",
+    )
+    is_artificial = classic_models.BooleanField("Est artificielle", default=False)
 
 
 class BaseOcsge(models.Model, AutoLoadMixin, DataColorationMixin):
@@ -614,6 +666,30 @@ class BaseOcsge(models.Model, AutoLoadMixin, DataColorationMixin):
 
     class Meta:
         abstract = True
+        indexes = [
+            models.Index(fields=["couverture"]),
+            models.Index(fields=["usage"]),
+        ]
+
+    @classmethod
+    def get_groupby(cls, field_group_by, coveredby):
+        """Return SUM(surface) GROUP BY couverture if coveredby geom.
+        Return {
+            "CS1.1.1": 678,
+            "CS1.1.2": 419,
+        }
+
+        Parameters:
+        ==========
+        * field_group_by: 'couverture' or 'usage'
+        * coveredby: polynome of the perimeter in which Ocsge items mut be
+        """
+        qs = cls.objects.filter(mpoly__coveredby=coveredby)
+        qs = qs.annotate(surface=Area(Transform("mpoly", 2154)))
+        qs = qs.values(field_group_by).order_by(field_group_by)
+        qs = qs.annotate(total_surface=classic_models.Sum("surface"))
+        data = {_[field_group_by]: _["total_surface"].sq_km for _ in qs}
+        return data
 
 
 class Ocsge2015(BaseOcsge):

@@ -18,12 +18,14 @@ def get_queryset(klass, geom):
 def get_couverture_sol(project: Project) -> dict():
     """Pour un projet donné, renvoi la surface occupé en fonction de la CS
 
-    Return [
-            <CouvertureSol 1>,  # item.total_surface = 288 = 100 + 78 + 45 + 65
+    Return (
+            <CouvertureSol 1>,  # item.total_surface['2015'] = 288 = 100 + 78 + 45 + 65
             <CouvertureSol 1.1>,  # item.total_surface = 143 = 78 + 65
             <CouvertureSol 1.1.1>,  # item.total_surface = 65
             <CouvertureSol 1.2>,  # item.total_surface = 45
-        ]
+        )
+    each item has a "total_surface" property which is a dict() with millesime as
+    key (eg. 2015, 2018...)
     """
 
     geom = project.combined_emprise

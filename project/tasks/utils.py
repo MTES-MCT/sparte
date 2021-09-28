@@ -61,8 +61,6 @@ def import_shp(base_project):
     shp_file_path = get_shp_file_from_zip(base_project.shape_file.open())
     # use .shp to save in the database all the feature
     save_feature(shp_file_path, base_project)
-    # queue task that will find all communes from emprise
-    get_cities_from_emprise(base_project)
 
 
 def get_cities_from_emprise(base_project):
