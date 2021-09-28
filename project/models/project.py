@@ -57,6 +57,10 @@ class BaseProject(models.Model):
         else:
             return None
 
+    @cached_property
+    def area(self):
+        return self.combined_emprise.transform(2154, clone=True).area / 1000 ** 2
+
     def __str__(self):
         return self.name
 
@@ -105,8 +109,31 @@ class Project(BaseProject):
         blank=True,
     )
 
+    # calculated fields
+    # Following field contains calculated dict :
+    # {
+    #     '2015': {  # millésime
+    #         'couverture': {  # covering type
+    #             'cs1.1.1': 123,  # code and area in km square
+    #             'cs1.1.2': 23,
+    #         },
+    #         'usage': { ... },  # same as couverture
+    #     },
+    #     '2018': { ... },  # same as 2015
+    # }
+    couverture_usage = models.JSONField(blank=True, null=True)
+
     def get_absolute_url(self):
         return reverse("project:detail", kwargs={"pk": self.pk})
+
+    def reset(self, save=False):
+        self.emprise_set.all().delete()
+        self.import_status = BaseProject.Status.MISSING
+        self.import_date = None
+        self.couverture_usage = None
+        self.shape_file.delete(save=False)
+        if save:
+            self.save()
 
 
 class Emprise(DataColorationMixin, gis_models.Model):
