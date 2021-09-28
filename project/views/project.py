@@ -4,7 +4,8 @@ from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
-from project.domains import get_couverture_sol
+from public_data.models import CouvertureSol
+
 from project.forms import SelectCitiesForm, SelectPluForm, UploadShpForm
 from project.models import Project
 
@@ -173,11 +174,37 @@ class ProjectReportArtifView(GroupMixin, DetailView):
     context_object_name = "project"
 
     def get_context_data(self, **kwargs):
-        super_context = super().get_context_data(**kwargs)
-        data_covers = get_couverture_sol(self.get_object())
+        project = self.get_object()
+        raw_data = project.couverture_usage
+        millesimes = raw_data.keys()
+        data_covers = []
+        for couv in CouvertureSol.iter_total_surface(raw_data):
+            data_covers.append(
+                {
+                    "code": couv.code,
+                    "level": couv.level,
+                    "parent": couv.get_parent(),
+                    "label_short": couv.label[:50],
+                    "label": couv.label,
+                    "color": None,
+                    # Remarque du développeur:
+                    # j'ai mis 2 moyens d'accéder à la données ci-dessous
+                    # on verra ce qui est le plus facile dans le template
+                    **{
+                        f"total_surface_{year}": couv.total_surface[year]
+                        for year in millesimes
+                    },
+                    "total_surface": {
+                        year: couv.total_surface[year] for year in millesimes
+                    },
+                }
+            )
+
         return {
-            **super_context,
+            **super().get_context_data(),
             "data_covers": data_covers,
+            "millesimes": millesimes,
+            "surface_territoire": project.area,
         }
 
 
@@ -282,12 +309,11 @@ class ProjectDeleteView(GroupMixin, DeleteView):
 class ProjectReinitView(GroupMixin, DeleteView):
     model = Project
     template_name = "project/reinit.html"
-    success_url = reverse_lazy("project:list")
 
     def post(self, request, *args, **kwargs):
-        project = self.get_object()
-        project.import_status = Project.Status.MISSING
-        project.save()
+        # reset project
+        self.get_object().reset(save=True)
+        # redirect
         success_url = self.get_success_url()
         return HttpResponseRedirect(success_url)
 
