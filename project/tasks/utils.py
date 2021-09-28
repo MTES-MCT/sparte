@@ -20,11 +20,14 @@ class MissingShpException(Exception):
 
 def get_shp_file_from_zip(file_stream):
     """Extract all zip files in temporary dir and return .shp file"""
+    logger.info("get_shp_file_from_zip")
     temp_dir_path = Path(tempfile.TemporaryDirectory().name)
+    logger.info("Use temp dir=%s", temp_dir_path)
     with ZipFile(file_stream) as zip_file:
         zip_file.extractall(temp_dir_path)  # extract files to dir
     try:
         files_path = [_ for _ in temp_dir_path.iterdir() if _.suffix == ".shp"]
+        logger.info("Found shape file=%s", files_path[0])
         return files_path[0]
     except IndexError as e:
         logger.exception(f"Exception in get_shp_file_from_zip: {e}")
@@ -35,6 +38,7 @@ def save_feature(shp_file_path, base_project):
     """save all the feature in Emprise, linked to the current project
     base_project: Project or Plan instance
     """
+    logger.info("Save features in database")
     # load new features
     mapping = base_project.emprise_set.model.mapping
 
@@ -66,6 +70,7 @@ def import_shp(base_project):
 def get_cities_from_emprise(base_project):
     """Analyse emprise to find which CommuneSybarval is include inside and make
     a relation between the project and ArtifCommunes"""
+    logger.info("Get cities from emprise")
     base_project.cities.clear()
     geom = base_project.combined_emprise
     # get all communes intersecting the emprise

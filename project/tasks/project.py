@@ -33,11 +33,13 @@ def process_new_project(project_id: int):
     2. Set linked cities
     3. Evaluate floor's 'Usage' and 'Couverture'
     """
+    logger.info("Start process_new_project with id=%d", project_id)
     # get project instance
     project = get_project(project_id)
     try:
         # step 1 : evaluate emprise
         # choose between shape file or list of city to build emprise
+        logger.info("Shape file=%s", project.shape_file)
         if project.shape_file is not None:
             import_shp(project)
             # step 2 - only for shape file built emprise
@@ -91,6 +93,7 @@ def evaluate_couverture_and_usage(project: Project):
         '2018': { ... },  # same as 2015
     }
     """
+    logger.info("Calculate couverture and usage")
     if isinstance(project, int):  # debug only
         project = get_project(project)
     geom = project.combined_emprise
