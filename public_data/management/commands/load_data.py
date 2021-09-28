@@ -37,6 +37,7 @@ class Command(BaseCommand):
                     "CommunesSybarval",
                     "EnveloppeUrbaine2018",
                     "Ocsge2015",
+                    "Ocsge2018",
                     "Renaturee2018to2015",
                     "Sybarval",
                     "Voirie2018",
