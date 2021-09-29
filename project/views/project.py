@@ -237,7 +237,7 @@ class ProjectMapView(GroupMixin, DetailView):
                     "url": reverse_lazy("project:emprise-list")
                     + f"?project_id={self.object.pk}",
                     "immediate_display": True,
-                    "gradient_url": reverse_lazy("project:emprise-gradient"),
+                    "use_emprise_style": True,
                 },
                 {
                     "name": "Artificialisation 2015 à 2018",

@@ -17,6 +17,19 @@ function getColor(d) {
                     '#FFEDA0'
 }
 
+function emprise_style(feature) {
+    return {
+        // background options
+        fill: false,
+        // border (or stoke) options
+        weight: 2,
+        opacity: 1,
+        color: 'red',
+        dashArray: '10',
+
+        fillOpacity: 0
+    }
+}
 
 /////////////////////////
 // INITIALISATION
