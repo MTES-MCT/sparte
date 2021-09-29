@@ -1,7 +1,5 @@
 from django import forms
-from django.contrib.auth import authenticate, login
 from django.contrib.auth.forms import AuthenticationForm
-from django.core.exceptions import ValidationError
 from django.contrib.auth.forms import UserChangeForm, UserCreationForm
 from django.utils.translation import gettext_lazy as _
 
@@ -22,10 +20,12 @@ class CustomUserChangeForm(UserChangeForm):
 
 class SignupForm(forms.ModelForm):
     password1 = forms.CharField(
-        label=_("password"), widget=forms.PasswordInput(), max_length=50
+        label=_("Mot de passe"), widget=forms.PasswordInput(), max_length=50
     )
     password2 = forms.CharField(
-        label=_("password confirmation"), widget=forms.PasswordInput(), max_length=50
+        label=_("Confirmer le mot de passe"),
+        widget=forms.PasswordInput(),
+        max_length=50,
     )
 
     class Meta:
