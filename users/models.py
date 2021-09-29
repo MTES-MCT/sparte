@@ -23,6 +23,8 @@ class User(AbstractUser):
         AUTRE = "AUTRE", "Autre"
 
     username = None
+    first_name = models.CharField("Prénom", max_length=150, blank=True)
+    last_name = models.CharField("Nom", max_length=150, blank=True)
     email = models.EmailField("E-mail", unique=True)
     email_checked = models.DateTimeField("E-mail vérifie", blank=True, null=True)
     organism = models.CharField(
@@ -44,5 +46,11 @@ class User(AbstractUser):
             return self.first_name
         return self.email
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
     def __str__(self):
         return self.email
+
+    class Meta:
+        verbose_name = "Utilisateurs"
