@@ -21,4 +21,5 @@ def geolayer(layer):  # Only one argument.
         "url": layer["url"],
         "color_url": color_url,
         "use_emprise_style": use_emprise_style,
+        "fit_map": layer.get("fit_map", False),
     }

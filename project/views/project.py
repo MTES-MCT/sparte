@@ -219,7 +219,7 @@ class ProjectMapView(GroupMixin, DetailView):
         # values would be infered when emprise is loaded
         context2 = {
             # center map on France
-            "carto_name": "Arcachon",
+            "carto_name": "Project",
             "center_lat": 44.6586,
             "center_lng": -1.164,
             "default_zoom": 12,
@@ -238,6 +238,7 @@ class ProjectMapView(GroupMixin, DetailView):
                     + f"?project_id={self.object.pk}",
                     "immediate_display": True,
                     "use_emprise_style": True,
+                    "fit_map": True,
                 },
                 {
                     "name": "Artificialisation 2015 à 2018",
@@ -254,14 +255,6 @@ class ProjectMapView(GroupMixin, DetailView):
                         "public_data:renaturee2018to2015-gradient"
                     ),
                 },
-                # {
-                #     "name": "Zones Baties 2018",
-                #     "url": reverse_lazy("public_data:zonesbaties2018-list"),
-                #     "immediate_display": False,
-                #     "gradient_url": reverse_lazy(
-                #         "public_data:zonesbaties2018-gradient"
-                #     ),
-                # },
                 {
                     "name": "Zones artificielles",
                     "url": reverse_lazy("public_data:artificielle2018-list"),

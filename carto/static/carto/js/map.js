@@ -118,6 +118,9 @@ function GeoLayer (name, url) {
     // ]
     this.scale = null
 
+    // Set to true to center the map on layer after data has been loaded
+    this.fit_map = false
+
     // A utiliser quand on va chercher une échelle de customisation définie
     // par la back. Permet de s'assurer que l'échelle est initialisée avant
     // que les données du back soient chargées
@@ -287,6 +290,15 @@ function GeoLayer (name, url) {
             this.data = data
             this.geojsonlayer.clearLayers()
             this.geojsonlayer.addData(data)
+
+            if (this.fit_map){
+                // TODO : move this in carto object
+                // center the layer on the center of the map
+                this.fit_map = false  // do not recenter after first loading
+                bounds = this.geojsonlayer.getBounds()
+                console.log(bounds)
+                carto.map.fitBounds(bounds);
+            }
         })
     }
 
