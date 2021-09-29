@@ -374,11 +374,15 @@ class Voirie2018(models.Model, AutoLoadMixin, DataColorationMixin):
     couverture_label = models.CharField(
         "Libellé couverture du sol", max_length=254, blank=True, null=True
     )
+    usage_label = models.CharField(
+        "Libellé usage du sol", max_length=254, blank=True, null=True
+    )
 
     shape_file_path = "Voirire_2018.zip"
     default_property = "surface"
     default_color = "Black"
     couverture_field = "couverture"
+    usage_field = "usage"
     mapping = {
         "couverture": "couverture",
         "usage": "usage",

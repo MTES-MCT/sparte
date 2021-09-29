@@ -8,7 +8,6 @@ from zipfile import ZipFile
 
 from django.contrib.gis.utils import LayerMapping
 from django.core.exceptions import FieldDoesNotExist
-from django.db import connection
 from django.db.models import OuterRef, Subquery
 
 from .storages import DataStorage
@@ -185,15 +184,10 @@ class DataColorationMixin:
 
     @classmethod
     def get_property_data(cls, property_name=None):
-        # UPDATE replace use of raw sql by simple django queryset
-        with connection.cursor() as cursor:
-            query = (
-                f"SELECT {property_name} FROM {cls._meta.db_table}"
-                f" ORDER BY {property_name} ASC;"
-            )
-            cursor.execute(query)
-            rows = cursor.fetchall()
-        return rows
+        qs = cls.objects.all()
+        qs = qs.values_list(property_name)
+        qs = qs.order_by(property_name)
+        return list(qs)
 
     @classmethod
     def get_percentile(cls, property_name=None, percentiles=None):
@@ -217,4 +211,7 @@ class DataColorationMixin:
         if not percentiles:
             percentiles = range(10, 100, 10)
         rows = cls.get_property_data(property_name=property_name)
-        return np.percentile(rows, percentiles, interpolation="lower")
+        if not rows:
+            return None
+        else:
+            return np.percentile(rows, percentiles, interpolation="lower")
