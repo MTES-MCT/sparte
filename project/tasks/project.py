@@ -15,6 +15,7 @@ from celery import shared_task
 import logging
 
 from django.contrib.gis.db.models import Union
+from django.contrib.gis.geos.collections import MultiPolygon
 
 from public_data.models import CommunesSybarval, Ocsge2015, Ocsge2018
 
@@ -40,7 +41,7 @@ def process_new_project(project_id: int):
         # step 1 : evaluate emprise
         # choose between shape file or list of city to build emprise
         logger.info("Shape file=%s", project.shape_file)
-        if project.shape_file is not None:
+        if project.shape_file.name != "":
             import_shp(project)
             # step 2 - only for shape file built emprise
             get_cities_from_emprise(project)
