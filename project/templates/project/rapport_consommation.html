@@ -11,20 +11,7 @@ Rapport consommation
 {% endblock %}
 
 {% block detail_content %}
-    <ul class="nav nav-tabs mb-5 mt-0">
-        <li class="nav-item">
-            <a class="nav-link" href="{% url 'project:report_artif' project.pk %}">Couverture du sol</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link active" href="#">Consommation</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link disabled" href="#">Graphique 1</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link disabled" href="#">Autre</a>
-        </li>
-    </ul>
+    {% include "project/detail_menu.html" %}
 
     <div class="alert alert-warning" role="alert">
         La consommation d'espace est mesurée avec les fichiers fonciers qui font une description cadastrale du territoire.
