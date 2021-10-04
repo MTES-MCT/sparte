@@ -51,6 +51,7 @@ def sq_km(value):
 @register.filter
 def remove(value, arg=0):
     result = value - arg
+    result = int(100 * result) / 100
     if result > 0:
         return f"+{sq_km(result)}"
     elif result < 0:
