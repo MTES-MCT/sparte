@@ -135,27 +135,23 @@ class ProjectReportView(GroupMixin, DetailView):
             total_surface += city.surface
 
             items = list(city.list_artif())
+            before = items.pop(0)
+            total = city.total_artif()
+            progression = int(((total - before) / before) * 100)
             table_artif.append(
                 {
                     "name": city.name,
-                    "before": items.pop(0),
+                    "before": before,
                     "items": items,
-                    "total": city.total_artif(),
+                    "total": total,
                     "surface": city.surface,
-                }
-            )
-            items = list(city.list_percent())
-            table_percent.append(
-                {
-                    "name": city.name,
-                    "before": items.pop(0),
-                    "items": items,
-                    "total": f"{city.total_percent():.2%}",
-                    "surface": city.surface,
+                    "progression": f"{progression}%",
                 }
             )
         pki_2009_percent = pki_2009_ha / total_surface if total_surface else 0
         pki_2018_percent = pki_2018_ha / total_surface if total_surface else 0
+        pki_progression = pki_2018_ha - pki_2009_ha
+        pki_progression_percent = int(100 * pki_progression / pki_2009_ha)
         return {
             **super_context,
             "table_artif": table_artif,
@@ -165,6 +161,8 @@ class ProjectReportView(GroupMixin, DetailView):
             "2018_ha": pki_2018_ha,
             "2018_percent": f"{pki_2018_percent:.2%}",
             "total_surface": total_surface,
+            "pki_progression": pki_progression,
+            "pki_progression_percent": pki_progression_percent,
         }
 
 
