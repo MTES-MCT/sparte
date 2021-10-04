@@ -20,9 +20,14 @@ urlpatterns = [
     path("<int:pk>/reinitialize", views.ProjectReinitView.as_view(), name="reinit"),
     path("<int:pk>/report", views.ProjectReportView.as_view(), name="report"),
     path(
-        "<int:pk>/report/artificialisation",
+        "<int:pk>/report/couverture",
         views.ProjectReportArtifView.as_view(),
         name="report_artif",
+    ),
+    path(
+        "<int:pk>/report/usage",
+        views.ProjectReportUsageView.as_view(),
+        name="report_usage",
     ),
     path("<int:pk>/map", views.ProjectMapView.as_view(), name="map"),
     path("<int:pk>/delete/", views.ProjectDeleteView.as_view(), name="delete"),

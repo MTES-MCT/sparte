@@ -4,7 +4,7 @@ from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
-from public_data.models import CouvertureSol
+from public_data.models import CouvertureSol, UsageSol
 
 from project.forms import SelectCitiesForm, SelectPluForm, UploadShpForm
 from project.models import Project
@@ -151,7 +151,10 @@ class ProjectReportView(GroupMixin, DetailView):
         pki_2009_percent = pki_2009_ha / total_surface if total_surface else 0
         pki_2018_percent = pki_2018_ha / total_surface if total_surface else 0
         pki_progression = pki_2018_ha - pki_2009_ha
-        pki_progression_percent = int(100 * pki_progression / pki_2009_ha)
+        try:
+            pki_progression_percent = int(100 * pki_progression / pki_2009_ha)
+        except ZeroDivisionError:
+            pki_progression_percent = 0
         return {
             **super_context,
             "table_artif": table_artif,
@@ -163,12 +166,13 @@ class ProjectReportView(GroupMixin, DetailView):
             "total_surface": total_surface,
             "pki_progression": pki_progression,
             "pki_progression_percent": pki_progression_percent,
+            "active_page": "consommation",
         }
 
 
 class ProjectReportArtifView(GroupMixin, DetailView):
     queryset = Project.objects.all()
-    template_name = "project/rapport_artificialisation.html"
+    template_name = "project/rapport_couverture.html"
     context_object_name = "project"
 
     def get_context_data(self, **kwargs):
@@ -203,6 +207,48 @@ class ProjectReportArtifView(GroupMixin, DetailView):
             "data_covers": data_covers,
             "millesimes": millesimes,
             "surface_territoire": project.area,
+            "active_page": "couverture",
+        }
+
+
+class ProjectReportUsageView(GroupMixin, DetailView):
+    queryset = Project.objects.all()
+    template_name = "project/rapport_usage.html"
+    context_object_name = "project"
+
+    def get_context_data(self, **kwargs):
+        project = self.get_object()
+        raw_data = project.couverture_usage
+        millesimes = raw_data.keys()
+        data_covers = []
+        for usage in UsageSol.objects.all().order_by("code"):
+            data_covers.append(
+                {
+                    "code": usage.code,
+                    "code_prefix": usage.code_prefix,
+                    "level": usage.level,
+                    "parent": usage.get_parent(),
+                    "label_short": usage.label[:50],
+                    "label": usage.label,
+                    "color": None,
+                    "total_surface": dict(),
+                }
+            )
+        for year in millesimes:
+            data = raw_data[year]["usage"]
+            for i in range(len(data_covers)):
+                key = f"total_surface_{year}"
+                label = data_covers[i]["code_prefix"]
+                value = sum([v for k, v in data.items() if k.startswith(label)])
+                data_covers[i][key] = value
+                data_covers[i]["total_surface"][year] = value
+
+        return {
+            **super().get_context_data(),
+            "data_covers": data_covers,
+            "millesimes": millesimes,
+            "surface_territoire": project.area,
+            "active_page": "usage",
         }
 
 

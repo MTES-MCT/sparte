@@ -1,0 +1,153 @@
+{% extends 'project/base_detail.html' %}
+
+{% load static %}
+{% load project_tags %}
+
+{% block pagetitle %}
+Rapport artificialisation
+{% endblock %}
+
+{% block headers %}
+{% endblock %}
+
+{% block detail_content %}
+
+    {% include "project/detail_menu.html" %}
+
+    <div class="w-100 mt-5">
+        <div id="chart" class="flex-fill"></div>
+    </div>
+
+    <div class="w-100 mt-5">
+        <div id="chart_2" class="flex-fill"></div>
+    </div>
+
+    <div class="mt-5 w-70">
+        <h3>Progression de la couverture du sol de 2015 à 2018 :</h3>
+        <table class="table table-sm">
+            <thead>
+                <tr>
+                    <th scope="col">Code</th>
+                    <th scope="col">Libellé</th>
+                    <th scope="col">Surface 2015 (km²)</th>
+                    <th scope="col">Progression</th>
+                    <th scope="col">Surface 2018 (km²)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for data in data_covers %}
+                <tr>
+                    <th scope="row">{{ data.level|space }} {{ data.code }}</th>
+                    <td>{{ data.label_short }}</td>
+                    <td>{{ data.total_surface.2015|sq_km }}</td>
+                    <td>
+                        {{ data.total_surface.2018|remove:data.total_surface.2015 }}
+                    </td>
+                    <td>{{ data.total_surface.2018|sq_km }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="mt-5 table-sm">
+        <h3>Répartition de la couverture du sol en 2018 :</h3>
+        <p>Surface du territoire considéré: {{ surface_territoire|sq_km }} km²</p>
+        <table class="table w-80">
+            <thead>
+                <tr>
+                    <th scope="col">Code</th>
+                    <th scope="col">Libellé</th>
+                    <th scope="col">Surface 2018 (km²)</th>
+                    <th scope="col">Pourcentage</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for data in data_covers %}
+                <tr>
+                    <th scope="row">{{ data.level|space }} {{ data.code }}</th>
+                    <td>{{ data.label_short }}</td>
+                    <td>{{ data.total_surface.2018|sq_km }}</td>
+                    <td>
+                        {{ data.total_surface.2018|percent:surface_territoire }}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+
+    <div>
+    Sources:</p>
+    <ul>
+        <li><a href="{% url 'public_data:ocsge2015-list' %}?limit=2"></a>Données OCS GE 2015</a></li>
+        <li><a href="{% url 'public_data:ocsge2018-list' %}?limit=2"></a>Données OCS GE 2018</a></li>
+    </ul>
+    </div>
+{% endblock %}
+
+{% block bodyend %}
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/data.js"></script>
+<script src="https://code.highcharts.com/modules/heatmap.js"></script>
+<script src="https://code.highcharts.com/modules/treemap.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script language="javascript">
+points_2015 = [
+    {% for data in data_covers %}
+    {
+        id: "{{ data.code }}",
+        {% if data.parent %}
+        parent: "{{ data.parent.code }}",
+        {% endif %}
+        name: "CS{{ data.code }} {{ data.label }}",
+        value: {{ data.total_surface.2015 }},
+    },
+    {% endfor %}
+]
+
+index_color = 0
+for(i=0; i<points_2015.length; i++){
+    if (Object.hasOwnProperty.call(points_2015[i], "parent"))
+    {
+        points_2015[i].color = Highcharts.getOptions().colors[index_color]
+        index_color++
+    }
+}
+
+Highcharts.chart('chart', {
+    series: [{
+        type: 'treemap',
+        layoutAlgorithm: 'squarified',
+        allowDrillToNode: true,
+        animationLimit: 1000,
+        dataLabels: {
+            enabled: true
+        },
+        levels: [{
+            level: 1,
+            dataLabels: {
+                enabled: true
+            },
+            borderWidth: 3,
+            levelIsConstant: false
+        }, {
+            level: 1,
+            dataLabels: {
+                style: {
+                    fontSize: '14px'
+                }
+            }
+        }],
+        data: points_2015
+    }],
+    subtitle: {
+        text: 'Cliquer pour voir le détail'
+    },
+    title: {
+        text: 'Surface du territoire en fonction de la couverture 2015.'
+    }
+});
+</script>
+{% endblock %}
