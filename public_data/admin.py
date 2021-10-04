@@ -93,7 +93,10 @@ class UsageSolResource(resources.ModelResource):
     class Meta:
         model = UsageSol
         import_id_fields = ("code",)
-        exclude = "id"
+        exclude = (
+            "id",
+            "parent",
+        )
 
 
 @admin.register(UsageSol)
@@ -118,7 +121,10 @@ class CouvertureSolImportResource(resources.ModelResource):
     class Meta:
         model = CouvertureSol
         import_id_fields = ("code",)
-        exclude = "id"
+        exclude = (
+            "id",
+            "parent",
+        )
 
     def before_import(self, *args, **kwargs):
         return super().before_import(*args, **kwargs)
