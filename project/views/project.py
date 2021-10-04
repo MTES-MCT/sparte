@@ -135,27 +135,23 @@ class ProjectReportView(GroupMixin, DetailView):
             total_surface += city.surface
 
             items = list(city.list_artif())
+            before = items.pop(0)
+            total = city.total_artif()
+            progression = int(((total - before) / before) * 100)
             table_artif.append(
                 {
                     "name": city.name,
-                    "before": items.pop(0),
+                    "before": before,
                     "items": items,
-                    "total": city.total_artif(),
+                    "total": total,
                     "surface": city.surface,
-                }
-            )
-            items = list(city.list_percent())
-            table_percent.append(
-                {
-                    "name": city.name,
-                    "before": items.pop(0),
-                    "items": items,
-                    "total": f"{city.total_percent():.2%}",
-                    "surface": city.surface,
+                    "progression": f"{progression}%",
                 }
             )
         pki_2009_percent = pki_2009_ha / total_surface if total_surface else 0
         pki_2018_percent = pki_2018_ha / total_surface if total_surface else 0
+        pki_progression = pki_2018_ha - pki_2009_ha
+        pki_progression_percent = int(100 * pki_progression / pki_2009_ha)
         return {
             **super_context,
             "table_artif": table_artif,
@@ -165,6 +161,8 @@ class ProjectReportView(GroupMixin, DetailView):
             "2018_ha": pki_2018_ha,
             "2018_percent": f"{pki_2018_percent:.2%}",
             "total_surface": total_surface,
+            "pki_progression": pki_progression,
+            "pki_progression_percent": pki_progression_percent,
         }
 
 
@@ -178,27 +176,27 @@ class ProjectReportArtifView(GroupMixin, DetailView):
         raw_data = project.couverture_usage
         millesimes = raw_data.keys()
         data_covers = []
-        for couv in CouvertureSol.iter_total_surface(raw_data):
+        for couv in CouvertureSol.objects.all().order_by("code"):
             data_covers.append(
                 {
                     "code": couv.code,
+                    "code_prefix": couv.code_prefix,
                     "level": couv.level,
                     "parent": couv.get_parent(),
                     "label_short": couv.label[:50],
                     "label": couv.label,
                     "color": None,
-                    # Remarque du développeur:
-                    # j'ai mis 2 moyens d'accéder à la données ci-dessous
-                    # on verra ce qui est le plus facile dans le template
-                    **{
-                        f"total_surface_{year}": couv.total_surface[year]
-                        for year in millesimes
-                    },
-                    "total_surface": {
-                        year: couv.total_surface[year] for year in millesimes
-                    },
+                    "total_surface": dict(),
                 }
             )
+        for year in millesimes:
+            data = raw_data[year]["couverture"]
+            for i in range(len(data_covers)):
+                key = f"total_surface_{year}"
+                label = data_covers[i]["code_prefix"]
+                value = sum([v for k, v in data.items() if k.startswith(label)])
+                data_covers[i][key] = value
+                data_covers[i]["total_surface"][year] = value
 
         return {
             **super().get_context_data(),

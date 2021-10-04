@@ -13,7 +13,7 @@ Rapport consommation
 {% block detail_content %}
     <ul class="nav nav-tabs mb-5 mt-0">
         <li class="nav-item">
-            <a class="nav-link" href="{% url 'project:report_artif' project.pk %}">Artificialisation</a>
+            <a class="nav-link" href="{% url 'project:report_artif' project.pk %}">Couverture du sol</a>
         </li>
         <li class="nav-item">
             <a class="nav-link active" href="#">Consommation</a>
@@ -26,7 +26,9 @@ Rapport consommation
         </li>
     </ul>
 
-
+    <div class="alert alert-warning" role="alert">
+        La consommation d'espace est mesurée avec les fichiers fonciers qui font une description cadastrale du territoire.
+    </div>
 
     <div>
         <h3>Chiffres clés:</h3>
@@ -41,7 +43,7 @@ Rapport consommation
 
         <div class="card ml-3">
             <div class="card-body">
-                <h5 class="card-title">Utilisé avant 2009</h5>
+                <h5 class="card-title">Consommé avant 2009</h5>
                 <p>{{ 2009_ha }} ha</p>
                 <p>{{ 2009_percent }}</p>
             </div>
@@ -49,48 +51,25 @@ Rapport consommation
 
         <div class="card ml-3">
             <div class="card-body">
-                <h5 class="card-title">Utilisé en 2018</h5>
+                <h5 class="card-title">Consommé en 2018</h5>
                 <p>{{ 2018_ha }} ha</p>
                 <p>{{ 2018_percent }}</p>
             </div>
         </div>
+
+        <div class="card ml-3">
+            <div class="card-body">
+                <h5 class="card-title">Progression 2009 à 2018</h5>
+                <p>+{{ pki_progression }} ha</p>
+                <p>+{{ pki_progression_percent }}%</p>
+            </div>
         </div>
     </div>
+
     <div class="w-100 mt-5">
         <div id="chart" class="flex-fill"></div>
     </div>
-    <div class="mt-5">
-        <h3>Taux d'utilisation (en %):</h3>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th scope="col">Commune</th>
-                    <th scope="col">Avant 2009</th>
-                    <th scope="col">2009</th>
-                    <th scope="col">2010</th>
-                    <th scope="col">2011</th>
-                    <th scope="col">2012</th>
-                    <th scope="col">2013</th>
-                    <th scope="col">2014</th>
-                    <th scope="col">2015</th>
-                    <th scope="col">2016</th>
-                    <th scope="col">2017</th>
-                    <th scope="col">2018</th>
-                    <th scope="col">Total</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for city in table_percent %}
-                <tr>
-                    <th scope="row">{{ city.name }}</th>
-                    {{ city.before|td:"%"  }}
-                    {{ city.items|td:"%" }}
-                    <th  scope="row">{{ city.total }}</th>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+
     <div class="mt-5">
         <h3>Consommé (en ha):</h3>
         <table class="table">
@@ -109,6 +88,7 @@ Rapport consommation
                     <th scope="col">2017</th>
                     <th scope="col">2018</th>
                     <th scope="col">Total</th>
+                    <th scope="col"><span data-toggle="tooltip" title="Progression de la surface consommée entre 2009 et 2018">Progression</span></th>
                 </tr>
             </thead>
             <tbody>
@@ -118,6 +98,7 @@ Rapport consommation
                     {{ city.before|td }}
                     {{ city.items|td }}
                     <th  scope="row">{{ city.total }}</th>
+                    <td>{{ city.progression }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
