@@ -74,7 +74,11 @@ def build_emprise_from_city(project: Project):
     # make postgis create the union
     qs = qs.aggregate(mpoly=Union("mpoly"))
     # link project and its emprise
-    project.emprise_set.create(mpoly=qs["mpoly"])
+    poly = qs["mpoly"]
+    try:
+        project.emprise_set.create(mpoly=poly)
+    except TypeError:
+        project.emprise_set.create(mpoly=MultiPolygon(poly))
 
 
 def evaluate_couverture_and_usage(project: Project):
