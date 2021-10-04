@@ -70,7 +70,7 @@ class BaseProject(models.Model):
         if save:
             self.save()
 
-    def set_fail(self, save=True, trace=None):
+    def set_failed(self, save=True, trace=None):
         self.import_status = self.Status.FAILED
         if trace:
             self.import_error = trace
