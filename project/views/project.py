@@ -176,27 +176,27 @@ class ProjectReportArtifView(GroupMixin, DetailView):
         raw_data = project.couverture_usage
         millesimes = raw_data.keys()
         data_covers = []
-        for couv in CouvertureSol.iter_total_surface(raw_data):
+        for couv in CouvertureSol.objects.all().order_by("code"):
             data_covers.append(
                 {
                     "code": couv.code,
+                    "code_prefix": couv.code_prefix,
                     "level": couv.level,
                     "parent": couv.get_parent(),
                     "label_short": couv.label[:50],
                     "label": couv.label,
                     "color": None,
-                    # Remarque du développeur:
-                    # j'ai mis 2 moyens d'accéder à la données ci-dessous
-                    # on verra ce qui est le plus facile dans le template
-                    **{
-                        f"total_surface_{year}": couv.total_surface[year]
-                        for year in millesimes
-                    },
-                    "total_surface": {
-                        year: couv.total_surface[year] for year in millesimes
-                    },
+                    "total_surface": dict(),
                 }
             )
+        for year in millesimes:
+            data = raw_data[year]["couverture"]
+            for i in range(len(data_covers)):
+                key = f"total_surface_{year}"
+                label = data_covers[i]["code_prefix"]
+                value = sum([v for k, v in data.items() if k.startswith(label)])
+                data_covers[i][key] = value
+                data_covers[i]["total_surface"][year] = value
 
         return {
             **super().get_context_data(),
