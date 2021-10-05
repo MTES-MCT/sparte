@@ -30,25 +30,25 @@ Rapport consommation
 
         <div class="card ml-3">
             <div class="card-body">
-                <h5 class="card-title">Consommé avant 2009</h5>
-                <p>{{ 2009_ha }} ha</p>
-                <p>{{ 2009_percent }}</p>
+                <h5 class="card-title">Consommé avant {{ start_year }}</h5>
+                <p>{{ initial_surface }} ha</p>
+                <p>{{ initial_percent }}</p>
             </div>
         </div>
 
         <div class="card ml-3">
             <div class="card-body">
-                <h5 class="card-title">Consommé en 2018</h5>
-                <p>{{ 2018_ha }} ha</p>
-                <p>{{ 2018_percent }}</p>
+                <h5 class="card-title">Consommé en {{ end_year }}</h5>
+                <p>{{ final_surface }} ha</p>
+                <p>{{ final_percent }}</p>
             </div>
         </div>
 
         <div class="card ml-3">
             <div class="card-body">
-                <h5 class="card-title">Progression 2009 à 2018</h5>
+                <h5 class="card-title">Progression {{ start_year }} à {{ end_year }}</h5>
                 <p>+{{ pki_progression }} ha</p>
-                <p>+{{ pki_progression_percent }}%</p>
+                <p>+{{ pki_progression_percent }}</p>
             </div>
         </div>
     </div>
@@ -62,20 +62,15 @@ Rapport consommation
         <table class="table">
             <thead>
                 <tr>
-                    <th scope="col">Commune</th>
-                    <th scope="col">Avant 2009</th>
-                    <th scope="col">2009</th>
-                    <th scope="col">2010</th>
-                    <th scope="col">2011</th>
-                    <th scope="col">2012</th>
-                    <th scope="col">2013</th>
-                    <th scope="col">2014</th>
-                    <th scope="col">2015</th>
-                    <th scope="col">2016</th>
-                    <th scope="col">2017</th>
-                    <th scope="col">2018</th>
-                    <th scope="col">Total</th>
-                    <th scope="col"><span data-toggle="tooltip" title="Progression de la surface consommée entre 2009 et 2018">Progression</span></th>
+                {% for col_name in headers %}
+                    <th scope="col">
+                        {% if col_name == "Progression" %}
+                            <span data-toggle="tooltip" title="Progression de la surface consommée entre 2009 et 2018">Progression</span>
+                        {% else %}
+                            {{ col_name }}
+                        {% endif %}
+                    </th>
+                {% endfor %}
                 </tr>
             </thead>
             <tbody>
