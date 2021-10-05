@@ -17,6 +17,19 @@ function getColor(d) {
                     '#FFEDA0'
 }
 
+function emprise_style(feature) {
+    return {
+        // background options
+        fill: false,
+        // border (or stoke) options
+        weight: 2,
+        opacity: 1,
+        color: 'red',
+        dashArray: '10',
+
+        fillOpacity: 0
+    }
+}
 
 /////////////////////////
 // INITIALISATION
@@ -104,6 +117,9 @@ function GeoLayer (name, url) {
     //     {value: 230, color: '#ff6600'},  // 151 -> 230
     // ]
     this.scale = null
+
+    // Set to true to center the map on layer after data has been loaded
+    this.fit_map = false
 
     // A utiliser quand on va chercher une échelle de customisation définie
     // par la back. Permet de s'assurer que l'échelle est initialisée avant
@@ -274,6 +290,15 @@ function GeoLayer (name, url) {
             this.data = data
             this.geojsonlayer.clearLayers()
             this.geojsonlayer.addData(data)
+
+            if (this.fit_map){
+                // TODO : move this in carto object
+                // center the layer on the center of the map
+                this.fit_map = false  // do not recenter after first loading
+                bounds = this.geojsonlayer.getBounds()
+                console.log(bounds)
+                carto.map.fitBounds(bounds);
+            }
         })
     }
 

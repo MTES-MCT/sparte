@@ -1,4 +1,5 @@
 from rest_framework_gis import serializers
+from rest_framework import serializers as s
 
 from .models import (
     Artificialisee2015to2018,
@@ -6,6 +7,8 @@ from .models import (
     CommunesSybarval,
     CouvertureSol,
     EnveloppeUrbaine2018,
+    Ocsge2015,
+    Ocsge2018,
     Renaturee2018to2015,
     Sybarval,
     Voirie2018,
@@ -14,21 +17,51 @@ from .models import (
 )
 
 
+def get_label(code="", label=""):
+    if code is None:
+        code = "-"
+    if label is None:
+        label = "inconnu"
+    return f"{code} {label[:30]}"
+
+
 class Artificialisee2015to2018Serializer(serializers.GeoFeatureModelSerializer):
+    usage_2015 = s.SerializerMethodField()
+    usage_2018 = s.SerializerMethodField()
+    couverture_2015 = s.SerializerMethodField()
+    couverture_2018 = s.SerializerMethodField()
+
+    def get_usage_2015(self, obj):
+        return get_label(code=obj.us_2015, label=obj.us_2015_label)
+
+    def get_usage_2018(self, obj):
+        return get_label(code=obj.us_2018, label=obj.us_2018_label)
+
+    def get_couverture_2015(self, obj):
+        return get_label(code=obj.cs_2015, label=obj.cs_2015_label)
+
+    def get_couverture_2018(self, obj):
+        return get_label(code=obj.cs_2018, label=obj.cs_2018_label)
+
     class Meta:
         fields = (
             "id",
             "surface",
-            "cs_2018",
-            "us_2018",
-            "cs_2015",
-            "us_2015",
+            "usage_2015",
+            "usage_2018",
+            "couverture_2015",
+            "couverture_2018",
         )
         geo_field = "mpoly"
         model = Artificialisee2015to2018
 
 
 class Artificielle2018Serializer(serializers.GeoFeatureModelSerializer):
+    couverture = s.SerializerMethodField()
+
+    def get_couverture(self, obj):
+        return get_label(code=obj.couverture, label=obj.couverture_label)
+
     class Meta:
         fields = (
             "id",
@@ -46,62 +79,100 @@ class CommunesSybarvalSerializer(serializers.GeoFeatureModelSerializer):
         """Marker serializer meta class."""
 
         fields = (
-            "id",
-            "id_source",
-            "prec_plani",
             "nom",
             "code_insee",
-            "statut",
-            "arrondisst",
-            "depart",
-            "region",
-            "pop_2014",
-            "pop_2015",
-            "_commune",
-            "_n_arrdt",
-            "_n_canton",
-            "_nom_epci",
-            "_siren_epc",
-            "_nom_scot",
             "surface",
-            "a_brute_20",
-            "a_b_2015_2",
-            "a_b_2018_2",
-            "z_baties_2",
-            "voirie_201",
-            "tache_2018",
-            "d_brute_20",
-            "d_batie_20",
-            "d_voirie_2",
         )
         geo_field = "mpoly"
         model = CommunesSybarval
 
 
 class EnveloppeUrbaine2018Serializer(serializers.GeoFeatureModelSerializer):
+    couverture = s.SerializerMethodField()
+
+    def get_couverture(self, obj):
+        return get_label(code=obj.couverture, label=obj.couverture_label)
+
     class Meta:
         fields = (
             "id",
             "couverture",
             "surface",
-            "a_brute_20",
-            "z_batie_20",
-            "d_brute_20",
-            "d_batie_20",
         )
         geo_field = "mpoly"
         model = EnveloppeUrbaine2018
 
 
+class Ocsge2015Serializer(serializers.GeoFeatureModelSerializer):
+    couverture = s.SerializerMethodField()
+    usage = s.SerializerMethodField()
+
+    def get_couverture(self, obj):
+        return get_label(code=obj.couverture, label=obj.couverture_label)
+
+    def get_usage(self, obj):
+        return get_label(code=obj.usage, label=obj.usage_label)
+
+    class Meta:
+        fields = (
+            "id",
+            "couverture",
+            "usage",
+            "millesime",
+            "map_color",
+        )
+        geo_field = "mpoly"
+        model = Ocsge2015
+
+
+class Ocsge2018Serializer(serializers.GeoFeatureModelSerializer):
+    couverture = s.SerializerMethodField()
+    usage = s.SerializerMethodField()
+
+    def get_couverture(self, obj):
+        return get_label(code=obj.couverture, label=obj.couverture_label)
+
+    def get_usage(self, obj):
+        return get_label(code=obj.usage, label=obj.usage_label)
+
+    class Meta:
+        fields = (
+            "id",
+            "couverture",
+            "usage",
+            "millesime",
+            "map_color",
+        )
+        geo_field = "mpoly"
+        model = Ocsge2018
+
+
 class Renaturee2018to2015Serializer(serializers.GeoFeatureModelSerializer):
+    usage_2015 = s.SerializerMethodField()
+    usage_2018 = s.SerializerMethodField()
+    couverture_2015 = s.SerializerMethodField()
+    couverture_2018 = s.SerializerMethodField()
+
+    def get_usage_2015(self, obj):
+        return get_label(code=obj.us_2015, label=obj.us_2015_label)
+
+    def get_usage_2018(self, obj):
+        return get_label(code=obj.us_2018, label=obj.us_2018_label)
+
+    def get_couverture_2015(self, obj):
+        return get_label(code=obj.cs_2015, label=obj.cs_2015_label)
+
+    def get_couverture_2018(self, obj):
+        return get_label(code=obj.cs_2018, label=obj.cs_2018_label)
+
     class Meta:
         fields = (
             "id",
             "surface",
-            "cs_2018",
-            "us_2018",
-            "cs_2015",
-            "us_2015",
+            "usage_2015",
+            "usage_2018",
+            "couverture_2015",
+            "couverture_2018",
         )
         geo_field = "mpoly"
         model = Renaturee2018to2015
@@ -112,33 +183,42 @@ class SybarvalSerializer(serializers.GeoFeatureModelSerializer):
         fields = (
             "id",
             "surface",
-            "a_brute_20",
-            "a_b_2015_2",
-            "a_b_2018_2",
-            "z_baties_2",
-            "voirie_201",
-            "tache_2018",
-            "d_brute_20",
-            "d_batie_20",
-            "d_voirie_2",
         )
         geo_field = "mpoly"
         model = Sybarval
 
 
 class Voirie2018Serializer(serializers.GeoFeatureModelSerializer):
+    couverture = s.SerializerMethodField()
+    usage = s.SerializerMethodField()
+
+    def get_couverture(self, obj):
+        return get_label(code=obj.couverture, label=obj.couverture_label)
+
+    def get_usage(self, obj):
+        return get_label(code=obj.usage, label=obj.usage_label)
+
     class Meta:
         fields = (
             "id",
+            "surface",
             "couverture",
             "usage",
-            "surface",
         )
         geo_field = "mpoly"
         model = Voirie2018
 
 
 class ZonesBaties2018Serializer(serializers.GeoFeatureModelSerializer):
+    couverture = s.SerializerMethodField()
+    usage = s.SerializerMethodField()
+
+    def get_couverture(self, obj):
+        return get_label(code=obj.couverture, label=obj.couverture_label)
+
+    def get_usage(self, obj):
+        return get_label(code=obj.usage, label=obj.usage_label)
+
     class Meta:
         fields = (
             "id",

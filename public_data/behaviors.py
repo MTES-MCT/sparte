@@ -1,11 +1,19 @@
 from colour import Color, RGB_TO_COLOR_NAMES
+import logging
+import numpy as np
 from pathlib import Path
 from random import choice
-import numpy as np
+from tempfile import TemporaryDirectory
+from zipfile import ZipFile
 
 from django.contrib.gis.utils import LayerMapping
 from django.core.exceptions import FieldDoesNotExist
-from django.db import connection
+from django.db.models import OuterRef, Subquery
+
+from .storages import DataStorage
+
+
+logger = logging.getLogger(__name__)
 
 
 def get_color_gradient(color_name=None, scale=10):
@@ -44,21 +52,86 @@ class AutoLoadMixin:
     """
 
     # properties that need to be set when heritating
+    couverture_field = None
+    usage_field = None
     shape_file_path = Path()
     mapping = dict()
 
     @classmethod
+    def get_shape_file(cls):
+        # use special storage class to access files in s3://xxx/data directory
+        storage = DataStorage()
+        if not storage.exists(cls.shape_file_path):
+            raise FileNotFoundError(f"s3://xxx/data/{cls.shape_file_path}")
+        file_stream = storage.open(cls.shape_file_path)
+
+        # retrieve Zipfile and extract in temporary directory
+        temp_dir_path = Path(TemporaryDirectory().name)
+        logger.info("Use temp directory %s", temp_dir_path)
+
+        with ZipFile(file_stream) as zip_file:
+            zip_file.extractall(temp_dir_path)  # extract files to dir
+        logger.info("File copied from bucket and extracted in temp dir")
+
+        # get shape file
+        for tempfile in temp_dir_path.iterdir():
+            if tempfile.is_file() and tempfile.suffix == ".shp":
+                return tempfile
+
+        # no shape file found
+        raise FileNotFoundError("No file with .shp suffix")
+
+    @classmethod
     def load(cls, verbose=True):
         """
-        Populate table with data from shapefile
+        Populate table with data from shapefile then calculate all fields
 
         Args:
             cls (undefined): default class calling
             verbose=True (undefined): define level of verbosity
         """
+        logger.info("Load data of %s", cls)
+        shp_file = cls.get_shape_file()
+        logger.info("Shape file found: %s", shp_file)
+        # delete previous data
         cls.objects.all().delete()
-        lm = LayerMapping(cls, cls.shape_file_path, cls.mapping)
-        lm.save(strict=True, verbose=verbose)
+        # load files
+        lm = LayerMapping(cls, shp_file, cls.mapping)
+        lm.save(strict=True, verbose=False)
+        logger.info("Data loaded, now calculate fields")
+        cls.calculate_fields()
+        logger.info("End")
+
+    @classmethod
+    def calculate_fields(cls):
+        """Override if you need to calculate some fields after loading data.
+        By default, it will calculate label for couverture and usage if couverture_field
+        and usage_field are set with the name of the field containing code (cs.2.1.3)
+        """
+        if cls.couverture_field:
+            from public_data.models import CouvertureSol
+
+            cls.set_label(CouvertureSol, cls.couverture_field, "couverture_label")
+
+        if cls.usage_field:
+            from public_data.models import UsageSol
+
+            cls.set_label(UsageSol, cls.usage_field, "usage_label")
+
+    @classmethod
+    def set_label(cls, klass, field_code, field_label):
+        """Set label field using CouvertureSol or UsageSol référentiel.
+
+        Parameters:
+        ===========
+        * klass: CouvertureSol or UsageSol
+        * field_code: name of the field containing the code (eg. us1.1.1)
+        * field_label: name of the field where to save the label
+        """
+        label = klass.objects.filter(code_prefix=OuterRef(field_code))
+        label = label.values("label")[:1]
+        kwargs = {field_label: Subquery(label)}
+        cls.objects.all().update(**kwargs)
 
 
 class DataColorationMixin:
@@ -111,15 +184,10 @@ class DataColorationMixin:
 
     @classmethod
     def get_property_data(cls, property_name=None):
-        # UPDATE replace use of raw sql by simple django queryset
-        with connection.cursor() as cursor:
-            query = (
-                f"SELECT {property_name} FROM {cls._meta.db_table}"
-                f" ORDER BY {property_name} ASC;"
-            )
-            cursor.execute(query)
-            rows = cursor.fetchall()
-        return rows
+        qs = cls.objects.all()
+        qs = qs.values_list(property_name)
+        qs = qs.order_by(property_name)
+        return list(qs)
 
     @classmethod
     def get_percentile(cls, property_name=None, percentiles=None):
@@ -143,4 +211,7 @@ class DataColorationMixin:
         if not percentiles:
             percentiles = range(10, 100, 10)
         rows = cls.get_property_data(property_name=property_name)
-        return np.percentile(rows, percentiles, interpolation="lower")
+        if not rows:
+            return None
+        else:
+            return np.percentile(rows, percentiles, interpolation="lower")

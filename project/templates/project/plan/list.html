@@ -1,0 +1,30 @@
+{% extends 'base_connected.html' %}
+
+{% load static %}
+
+{% block pagetitle %}
+ - Mes projets
+{% endblock %}
+
+{% block headers %}
+{% endblock %}
+
+{% block content %}
+
+
+    <div class="d-flex flex-column h-100 w-100 align-items-center justify-content-center">
+        <h2 class="mb-5">Mes projets</h2>
+
+        <ul>
+            {% for project in projects %}
+                <li><a href="{% url 'project:detail' project.id %}">{{ project.name }}</a></li>
+            {% empty %}
+            Pour commencer à utiliser SPARTE, veuillez créer un projet.
+            {% endfor %}
+        </ul>
+
+        <div>
+            <a class="btn btn-primary mt-5" href="{% url 'project:add' %}" role="button">Nouveau</a>
+        </div>
+    </div>
+{% endblock %}

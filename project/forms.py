@@ -4,7 +4,7 @@ from django.db.models import Q
 from public_data.models import ArtifCommune, CommunesSybarval
 
 from .models import Project
-from .tasks import import_shp, build_emprise_from_city
+from .tasks import process_new_project
 
 
 class SetEmpriseForm(forms.Form):
@@ -13,7 +13,7 @@ class SetEmpriseForm(forms.Form):
         for city in self.cleaned_data["cities"]:
             project.cities.add(city)
         project.import_status = Project.Status.PENDING
-        build_emprise_from_city.delay(project.id)
+        process_new_project.delay(project.id)
         project.save()
 
 
@@ -55,4 +55,4 @@ class UploadShpForm(forms.Form):
         project.shape_file = self.cleaned_data["shape_zip"]
         project.import_status = Project.Status.PENDING
         project.save()
-        import_shp.delay(project.id)
+        process_new_project.delay(project.id)

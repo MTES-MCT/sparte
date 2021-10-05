@@ -8,9 +8,11 @@ https://docs.djangoproject.com/en/3.2/topics/settings/
 
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
+hello world
 """
 import environ
 from pathlib import Path
+import pkg_resources
 
 from django.core.exceptions import ImproperlyConfigured
 
@@ -212,7 +214,7 @@ CRISPY_TEMPLATE_PACK = "bootstrap4"
 # Celery configuration
 CELERY_BROKER_URL = env("CELERY_BROKER_URL")
 CELERY_RESULT_BACKEND = env("CELERY_RESULT_BACKEND")
-
+CELERY_ACKS_LATE = True
 
 # django-debug-toolbar configuration
 
@@ -281,3 +283,22 @@ elif EMAIL_ENGINE == "mailjet":
     }
 
 DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL")
+
+# used by ./manage.py shell_plus --notebook
+if "django-extensions" in {pkg.key for pkg in pkg_resources.working_set}:
+    INSTALLED_APPS += [
+        "django_extensions",
+    ]
+    NOTEBOOK_ARGUMENTS = [
+        "--ip",
+        "0.0.0.0",
+        "--allow-root",
+        '--notebook-dir="/app/notebooks/"',
+    ]
+
+# RESTRAMEWORK parameters
+# https://www.django-rest-framework.org
+
+REST_FRAMEWORK = {
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination"
+}
