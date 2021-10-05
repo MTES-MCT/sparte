@@ -8,6 +8,7 @@ from public_data.models import CouvertureSol, UsageSol
 
 from project.forms import SelectCitiesForm, SelectPluForm, UploadShpForm
 from project.models import Project
+from project.domains import ConsommationDataframe
 
 from .mixins import GetObjectMixin, UserQuerysetOnlyMixin
 
@@ -124,48 +125,52 @@ class ProjectReportView(GroupMixin, DetailView):
     context_object_name = "project"
 
     def get_context_data(self, **kwargs):
-        super_context = super().get_context_data(**kwargs)
-        table_artif = []
-        table_percent = []
-        pki_2009_ha = pki_2018_ha = 0
-        total_surface = 0
-        for city in self.object.cities.all():
-            pki_2009_ha += city.artif_before_2009
-            pki_2018_ha += city.total_artif()
-            total_surface += city.surface
+        project = self.get_object()
 
-            items = list(city.list_artif())
-            before = items.pop(0)
-            total = city.total_artif()
-            progression = int(((total - before) / before) * 100)
+        builder = ConsommationDataframe(project)
+        df = builder.build()
+
+        # table headers
+        headers = [
+            "Commune",
+        ]
+        for col in df.columns:
+            if col.startswith("artif"):
+                col = col.split("_")[-1]
+            headers.append(col)
+
+        # table content
+        table_artif = []
+        for city, row in df.iterrows():
             table_artif.append(
                 {
-                    "name": city.name,
-                    "before": before,
-                    "items": items,
-                    "total": total,
-                    "surface": city.surface,
-                    "progression": f"{progression}%",
+                    "name": city,
+                    "before": row[0],
+                    "items": list(row[1:-2]),
+                    "total": row[-2],
+                    "progression": f"{row[-1]*100:.2}%",
                 }
             )
-        pki_2009_percent = pki_2009_ha / total_surface if total_surface else 0
-        pki_2018_percent = pki_2018_ha / total_surface if total_surface else 0
-        pki_progression = pki_2018_ha - pki_2009_ha
-        try:
-            pki_progression_percent = int(100 * pki_progression / pki_2009_ha)
-        except ZeroDivisionError:
-            pki_progression_percent = 0
+
+        total_surface = int(project.area * 100)
+        pki_inital_surface = int(builder.get_global_intial())
+        pki_final_surface = int(builder.get_global_final())
+        pki_progression = int(builder.get_global_progression())
+        pki_progression_percent = builder.get_global_progression_percent() * 100
+
         return {
-            **super_context,
+            **super().get_context_data(**kwargs),
+            "start_year": project.analyse_start_date,
+            "end_year": project.analyse_end_date,
+            "headers": headers,
             "table_artif": table_artif,
-            "table_percent": table_percent,
-            "2009_ha": pki_2009_ha,
-            "2009_percent": f"{pki_2009_percent:.2%}",
-            "2018_ha": pki_2018_ha,
-            "2018_percent": f"{pki_2018_percent:.2%}",
+            "initial_surface": pki_inital_surface,
+            "initial_percent": f"{pki_inital_surface / total_surface:.2%}",
+            "final_surface": pki_final_surface,
+            "final_percent": f"{pki_final_surface / total_surface:.2%}",
             "total_surface": total_surface,
             "pki_progression": pki_progression,
-            "pki_progression_percent": pki_progression_percent,
+            "pki_progression_percent": f"{pki_progression_percent:.2}%",
             "active_page": "consommation",
         }
 

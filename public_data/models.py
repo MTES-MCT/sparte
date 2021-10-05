@@ -48,11 +48,14 @@ class ArtifCommune(classic_models.Model):
         "New artificial 2018 (ha)", max_digits=8, decimal_places=2
     )
 
-    def list_artif(self):
-        val = [
-            self.artif_before_2009,
-        ]
-        val += [getattr(self, f"artif_{y}", 0.0) for y in range(2009, 2019)]
+    @classmethod
+    def list_attr(cls):
+        return ["artif_before_2009"] + [f"artif_{y}" for y in range(2009, 2019)]
+
+    def list_artif(self, flat=True):
+        val = {f: getattr(self, f, 0.0) for f in self.__class__.list_attr()}
+        if flat:
+            return val.values()
         return val
 
     def total_artif(self):
