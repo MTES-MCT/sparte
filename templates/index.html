@@ -27,6 +27,7 @@
                     {% if user.is_authenticated %}
                     <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'project:list' %}">Mes projets</a>
                         {% if is_staff %}
+                        <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'project:plan-list' %}">Mes plans (beta)</a>
                         <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'admin:index' %}">Espace administrateur</a>
                         {% endif %}
                     {% endif %}

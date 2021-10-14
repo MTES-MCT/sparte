@@ -284,7 +284,7 @@ class ProjectMapView(GroupMixin, DetailView):
                 {
                     "name": "Emprise du projet",
                     "url": reverse_lazy("project:emprise-list")
-                    + f"?project_id={self.object.pk}",
+                    + f"?id={self.object.pk}",
                     "immediate_display": True,
                     "use_emprise_style": True,
                     "fit_map": True,

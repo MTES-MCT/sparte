@@ -11,12 +11,14 @@
 {% endblock %}
 
 {% block content %}
-    <h3 class="mb-5">Mettre à jour</h3>
+<div class="d-flex flex-column h-100 w-100 align-items-center justify-content-center">
+    <h3 class="mb-5">Mettre à jour le plan</h3>
 
     <form action="" method="post">
         {% csrf_token %}
         {{ form|crispy }}
         <button class="btn w-100 btn-primary mt-4" type="submit">Mettre à jour</button>
-        <a href="{% url 'project:detail' project.pk %}" class="btn w-100 btn-secondary mt-1">Annuler</a>
+        <a href="{% url 'project:plan-detail' plan.pk %}" class="btn w-100 btn-secondary mt-1">Annuler</a>
     </form>
+</div>
 {% endblock %}
