@@ -142,3 +142,4 @@ cython_debug/
 test.py
 media/*
 public_data/local_data/*
+config/migrated
