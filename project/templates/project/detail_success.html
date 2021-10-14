@@ -41,11 +41,17 @@ Home projet
             <li><i class="bi bi-trash"></i> <a href="{% url 'project:delete' project.pk %}">Supprimer le projet</a></li>
         </ul>
 
-        <p>Fonctionnalités en beta-test:</p>
-        <ul>
-            <li><i class="bi bi-bounding-box-circles"></i> <a href="{% url 'project:project-plan-list' project.pk %}">Liste des plans</a></li>
-            <li><i class="bi bi-bounding-box-circles"></i> <a href="{% url 'project:project-plan-create' project.pk %}">Ajouter un plan</a></li>
-        </ul>
+        <p>
+            Plans associés : <a href="{% url 'project:project-plan-create' project.pk %}" class="btn btn-outline-success btn-sm" data-toggle="tooltip" title="Ajouter un plan"><i class="bi bi-plus-square-dotted"></i></a>
+            <ul>
+                {% for plan in project.plan_set.all %}
+                <li><i class="bi bi-bounding-box-circles"></i> <a href="{% url 'project:plan-detail' plan.pk %}">{{ plan.name }}</a></li>
+                {% empty %}
+                <li>Vide</li>
+                {% endfor %}
+            </ul>
+
+        </p>
     </div>
 </div>
 {% endblock %}
