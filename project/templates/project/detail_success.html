@@ -40,6 +40,12 @@ Home projet
             <li><i class="bi bi-recycle"></i> <a href="{% url 'project:reinit' project.pk %}">réinitialiser l'emprise</a></li>
             <li><i class="bi bi-trash"></i> <a href="{% url 'project:delete' project.pk %}">Supprimer le projet</a></li>
         </ul>
+
+        <p>Fonctionnalités en beta-test:</p>
+        <ul>
+            <li><i class="bi bi-bounding-box-circles"></i> <a href="{% url 'project:project-plan-list' project.pk %}">Liste des plans</a></li>
+            <li><i class="bi bi-bounding-box-circles"></i> <a href="{% url 'project:project-plan-create' project.pk %}">Ajouter un plan</a></li>
+        </ul>
     </div>
 </div>
 {% endblock %}
