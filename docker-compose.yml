@@ -27,8 +27,6 @@ services:
     command: tail -F anything
     volumes:
       - .:/app
-      # required to push on git:
-      - /home/swann/.ssh:/root/.ssh
     env_file: .env
     # override a few environment variables to ensure it works with other containers
     ports:
