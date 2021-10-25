@@ -280,6 +280,7 @@ class ProjectMapView(GroupMixin, DetailView):
                     "gradient_url": reverse_lazy(
                         "public_data:communessybarval-gradient"
                     ),
+                    "level": "1",
                 },
                 {
                     "name": "Emprise du projet",
@@ -288,6 +289,7 @@ class ProjectMapView(GroupMixin, DetailView):
                     "immediate_display": True,
                     "use_emprise_style": True,
                     "fit_map": True,
+                    "level": "5",
                 },
                 {
                     "name": "Artificialisation 2015 à 2018",
@@ -296,6 +298,7 @@ class ProjectMapView(GroupMixin, DetailView):
                     "gradient_url": reverse_lazy(
                         "public_data:artificialisee2015to2018-gradient"
                     ),
+                    "level": "7",
                 },
                 {
                     "name": "Renaturation de 2018 à 2015",
@@ -303,6 +306,7 @@ class ProjectMapView(GroupMixin, DetailView):
                     "gradient_url": reverse_lazy(
                         "public_data:renaturee2018to2015-gradient"
                     ),
+                    "level": "7",
                 },
                 {
                     "name": "Zones artificielles",
@@ -311,6 +315,7 @@ class ProjectMapView(GroupMixin, DetailView):
                     "gradient_url": reverse_lazy(
                         "public_data:artificielle2018-gradient"
                     ),
+                    "level": "3",
                 },
             ],
         }
