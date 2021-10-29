@@ -57,7 +57,7 @@ geolayers = [
 {% for layer in layer_list %}
     {
         {% for k, v in layer.items %}
-        {{ k }}: "{{ v }}",
+        {{ k }}: "{{ v|safe }}",
         {% endfor %}
     },
 {% endfor %}
