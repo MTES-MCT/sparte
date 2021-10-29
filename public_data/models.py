@@ -2,8 +2,8 @@ from decimal import Decimal
 
 from django.contrib.gis.db import models
 from django.contrib.gis.db.models.functions import Area, Transform
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models as classic_models
-
 
 from .behaviors import AutoLoadMixin, DataColorationMixin
 
@@ -481,6 +481,7 @@ class BaseSol(classic_models.Model):
     )
     code = classic_models.CharField("Nomenclature", max_length=8, unique=True)
     label = classic_models.CharField("Libellé", max_length=250)
+    map_color = models.CharField("Couleur", max_length=8, blank=True, null=True)
 
     @property
     def level(self) -> int:
@@ -552,10 +553,54 @@ class CouvertureSol(BaseSol):
         on_delete=classic_models.PROTECT,
         related_name="children",
     )
-    is_artificial = classic_models.BooleanField("Est artificielle", default=False)
 
 
-class BaseOcsge(models.Model, AutoLoadMixin, DataColorationMixin):
+class CouvertureUsageMatrix(classic_models.Model):
+    class LabelChoices(classic_models.TextChoices):
+        ARTIFICIAL = "ARTIF", "Artificiel"
+        CONSUMED = "CONSU", "Consommé"
+        NAF = "NAF", "NAF"
+        ARTIF_NOT_CONSUMED = "ARTIF_NOT_CONSU", "Artificiel non consommé"
+        NONE = "NONE", "Non renseigné"
+
+    couverture = classic_models.ForeignKey(
+        "CouvertureSol", on_delete=classic_models.PROTECT
+    )
+    usage = classic_models.ForeignKey("UsageSol", on_delete=classic_models.PROTECT)
+    is_artificial = classic_models.BooleanField("Artificiel", default=False)
+    is_consumed = classic_models.BooleanField("Consommé", default=False)
+    is_natural = classic_models.BooleanField("Naturel", default=False)
+    label = classic_models.CharField(
+        "Libellé",
+        max_length=20,
+        choices=LabelChoices.choices,
+        default=LabelChoices.NONE,
+    )
+
+    def compute(self):
+        """Set is_field to correct boolean value according to label"""
+        self.is_artificial = self.is_consumed = self.is_natural = False
+        if self.label == self.LabelChoices.ARTIFICIAL:
+            self.is_artificial = True
+            self.is_consumed = True
+        elif self.label == self.LabelChoices.ARTIF_NOT_CONSUMED:
+            self.is_artificial = True
+        elif self.label == self.LabelChoices.CONSUMED:
+            self.is_consumed = True
+            self.is_natural = True
+        elif self.label == self.LabelChoices.NAF:
+            self.is_natural = True
+
+    def __str__(self):
+        us = self.usage.code_prefix
+        cs = self.couverture.code_prefix
+        a = "a" if self.is_artificial else ""
+        c = "c" if self.is_consumed else ""
+        n = "n" if self.is_natural else ""
+        return f"{cs}-{us}:{a}{c}{n}"
+
+
+class Ocsge(AutoLoadMixin, DataColorationMixin, models.Model):
     couverture = models.CharField(
         "Couverture du sol", max_length=254, blank=True, null=True
     )
@@ -566,6 +611,9 @@ class BaseOcsge(models.Model, AutoLoadMixin, DataColorationMixin):
     origine2 = models.CharField("Origine1", max_length=254, blank=True, null=True)
     ossature = models.IntegerField("Ossature", blank=True, null=True)
     commentaire = models.CharField("Commentaire", max_length=254, blank=True, null=True)
+    year = models.IntegerField(
+        "Année", validators=[MinValueValidator(2000), MaxValueValidator(2050)]
+    )
 
     # calculated fields
     couverture_label = models.CharField(
@@ -594,14 +642,13 @@ class BaseOcsge(models.Model, AutoLoadMixin, DataColorationMixin):
     }
 
     class Meta:
-        abstract = True
         indexes = [
             models.Index(fields=["couverture"]),
             models.Index(fields=["usage"]),
         ]
 
     @classmethod
-    def get_groupby(cls, field_group_by, coveredby):
+    def get_groupby(cls, field_group_by, coveredby, year):
         """Return SUM(surface) GROUP BY couverture if coveredby geom.
         Return {
             "CS1.1.1": 678,
@@ -613,15 +660,20 @@ class BaseOcsge(models.Model, AutoLoadMixin, DataColorationMixin):
         * field_group_by: 'couverture' or 'usage'
         * coveredby: polynome of the perimeter in which Ocsge items mut be
         """
-        qs = cls.objects.filter(mpoly__coveredby=coveredby)
+        qs = cls.objects.filter(year=year)
+        qs = qs.filter(mpoly__coveredby=coveredby)
         qs = qs.annotate(surface=Area(Transform("mpoly", 2154)))
         qs = qs.values(field_group_by).order_by(field_group_by)
         qs = qs.annotate(total_surface=classic_models.Sum("surface"))
         data = {_[field_group_by]: _["total_surface"].sq_km for _ in qs}
         return data
 
+    @classmethod
+    def get_year(cls):
+        raise NotImplementedError("Need to be overrided to return a year")
 
-class Ocsge2015(BaseOcsge):
+
+class Ocsge2015(Ocsge):
     """
     Données de l'OCSGE pour l'année 2015
     Données fournies par Philippe 09/2021
@@ -630,16 +682,33 @@ class Ocsge2015(BaseOcsge):
 
     shape_file_path = "OCSGE_2015.zip"
     default_color = "Chocolate"
+    year = 2015
+
+    @classmethod
+    def clean_data(cls):
+        """Delete only data with year=2015"""
+        cls.objects.filter(year=cls.year).delete()
+
+    def save(self, *args, **kwargs):
+        self.year = self.__class__.year
+        return super().save(*args, **kwargs)
+
+    class Meta:
+        proxy = True
 
 
-class Ocsge2018(BaseOcsge):
+class Ocsge2018(Ocsge2015):
     """
     Données de l'OCSGE pour l'année 2018
     Données fournies par Philippe 09/2021
     Les données sont stockés zippés dans s3://{bucket_name}/data
     Pour les charger dans la base, exécuter la commande suivante:
-    python manage.py load_data --class public_data.models.Ocsge2015
+    python manage.py load_data --class public_data.models.Ocsge2018
     """
 
     shape_file_path = "OCSGE_2018.zip"
     default_color = "DarkSeaGreen"
+    year = 2018
+
+    class Meta:
+        proxy = True
