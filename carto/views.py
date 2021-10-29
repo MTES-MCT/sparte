@@ -61,3 +61,30 @@ def arcachon(request):
         ],
     }
     return render(request, "carto/full_carto.html", context=context)
+
+
+class Ocsge2015MapView(LoginRequiredMixin, TemplateView):
+    template_name = "carto/full_carto.html"
+
+    def get_context_data(self, **kwargs):
+        context1 = super().get_context_data(**kwargs)
+        url = (
+            reverse_lazy("public_data:communessybarval-ocsge", kwargs={"pk": 127})
+            + "?year=2015"
+        )
+        context2 = {
+            # center map on France
+            "carto_name": "OCSGE 2015",
+            "center_lat": 44.6586,
+            "center_lng": -1.164,
+            "default_zoom": 10,
+            "layer_list": [
+                {
+                    "name": "OCSGE 2015",
+                    "url": url,
+                    "immediate_display": True,
+                    "level": "1",
+                },
+            ],
+        }
+        return {**context1, **context2}

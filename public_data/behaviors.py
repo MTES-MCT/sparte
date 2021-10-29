@@ -82,6 +82,12 @@ class AutoLoadMixin:
         raise FileNotFoundError("No file with .shp suffix")
 
     @classmethod
+    def clean_data(cls):
+        """Delete all previous data. Can be overrided, usefull if data are in
+        several files"""
+        cls.objects.all().delete()
+
+    @classmethod
     def load(cls, verbose=True):
         """
         Populate table with data from shapefile then calculate all fields
@@ -94,7 +100,7 @@ class AutoLoadMixin:
         shp_file = cls.get_shape_file()
         logger.info("Shape file found: %s", shp_file)
         # delete previous data
-        cls.objects.all().delete()
+        cls.clean_data()
         # load files
         lm = LayerMapping(cls, shp_file, cls.mapping)
         lm.save(strict=True, verbose=False)

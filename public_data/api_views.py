@@ -1,4 +1,8 @@
 """Public data API views."""
+import json
+
+from django.db import connection
+
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -10,8 +14,7 @@ from .models import (
     CommunesSybarval,
     CouvertureSol,
     EnveloppeUrbaine2018,
-    Ocsge2015,
-    Ocsge2018,
+    Ocsge,
     Renaturee2018to2015,
     Sybarval,
     UsageSol,
@@ -24,8 +27,7 @@ from .serializers import (
     CommunesSybarvalSerializer,
     CouvertureSolSerializer,
     EnveloppeUrbaine2018Serializer,
-    Ocsge2015Serializer,
-    Ocsge2018Serializer,
+    OcsgeSerializer,
     Renaturee2018to2015Serializer,
     SybarvalSerializer,
     UsageSolSerializer,
@@ -75,20 +77,62 @@ class CommunesSybarvalViewSet(DataViewSet):
     queryset = CommunesSybarval.objects.all()
     serializer_class = CommunesSybarvalSerializer
 
+    @action(detail=True)
+    def ocsge(self, request, pk):
+        year = request.query_params["year"]
+        commune = self.get_object()
+        params = list(commune.mpoly.extent)
+        params.append(year)
+        query = (
+            "SELECT id, couverture_label, usage_label, millesime, map_color, "
+            "year, st_AsGeoJSON(mpoly, 4) AS geojson "
+            f"FROM {Ocsge._meta.db_table} "
+            "WHERE mpoly && ST_MakeEnvelope(%s, %s, %s, %s, 4326) "
+            "AND year = %s"
+        )
+        features = []
+        with connection.cursor() as cursor:
+            cursor.execute(query, params)
+            for row in cursor.fetchall():
+                feature = {
+                    "type": "Feature",
+                    "properties": {
+                        "id": row[0],
+                        "couverture_label": row[1],
+                        "usage_label": row[2],
+                        "millesime": row[3].strftime("%Y-%m-%d"),
+                        "map_color": row[4],
+                        "year": row[5],
+                    },
+                    "geometry": json.loads(row[6]),
+                }
+                features.append(feature)
+        geojson = {
+            "type": "FeatureCollection",
+            "crs": {"type": "name", "properties": {"name": "EPSG:4326"}},
+            "features": features,
+        }
+        return Response(geojson)
+
 
 class CouvertureSolViewset(viewsets.ReadOnlyModelViewSet):
     queryset = CouvertureSol.objects.all()
     serializer_class = CouvertureSolSerializer
 
 
-class Ocsge2015ViewSet(DataViewSet):
-    queryset = Ocsge2015.objects.all()
-    serializer_class = Ocsge2015Serializer
+class OcsgeViewSet(DataViewSet):
+    queryset = Ocsge.objects.all()
+    serializer_class = OcsgeSerializer
 
-
-class Ocsge2018ViewSet(DataViewSet):
-    queryset = Ocsge2018.objects.all()
-    serializer_class = Ocsge2018Serializer
+    def get_queryset(self):
+        """
+        Optionally restricts the returned polygon to those of a specific year
+        """
+        qs = self.queryset
+        year = self.request.query_params.get("year")
+        if year:
+            qs = qs.filter(year=year)
+        return qs
 
 
 class Renaturee2018to2015ViewSet(DataViewSet):
