@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.contrib.auth import logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
@@ -52,7 +53,11 @@ class ProfilFormView(LoginRequiredMixin, UpdateView):
     template_name = "users/profile.html"
     success_url = reverse_lazy("users:profile")
     model = User
-    fields = ["email", "first_name", "last_name", "organism", "function"]
+    fields = ["first_name", "last_name", "organism", "function"]
 
     def get_object(self, queryset=None):
         return self.request.user
+
+    def form_valid(self, form):
+        messages.success(self.request, "Votre profil a été mis à jour avec succès.")
+        return super().form_valid(form)
