@@ -22,12 +22,6 @@
             {{ form|crispy }}
             <button class="btn w-100 btn-primary mt-2" type="submit">{{ label_validate_btn }}</button>
         </form>
-
-        <p class="mt-3">Autres actions :</p>
-        <ul>
-            <li><i class="bi bi-key"></i> <a href="{% url 'users:password' %}">Modifier votre mot de passe</a></li>
-            <li><i class="bi bi-x-circle-fill"></i> <a href="{% url 'users:unsubscribe' %}">Vous désinscrire</a></li>
-        </ul>
     </div>
 </div>
 
