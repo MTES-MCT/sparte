@@ -45,8 +45,18 @@ class UserUpdateView(UpdateView):
 
 
 class UserDeleteView(DeleteView):
+    template_name = "users/form.html"
+    extra_context = {
+        "label_validate_btn": "Confirmer",
+        "page_title": "Désinscription",
+        "title": "Désinscription",
+    }
     model = User
     success_url = reverse_lazy("home")
+
+    def get_object(self, queryset=None):
+        """Return connected user."""
+        return self.request.user
 
 
 class ProfilFormView(LoginRequiredMixin, UpdateView):
@@ -69,7 +79,7 @@ class ProfilFormView(LoginRequiredMixin, UpdateView):
 
 
 class UpdatePwFormView(LoginRequiredMixin, FormView):
-    template_name = "users/profile.html"
+    template_name = "users/form.html"
     form_class = UpdatePasswordForm
     success_url = reverse_lazy("users:profile")
     extra_context = {
