@@ -12,6 +12,10 @@ Ce changelog suit la méthode "keep a changelog" disponible ici: [https://keepac
   * Publication de la route API pour obtenir les emprises d'un plan
   * Ecrans de manipulation des plans (CRUD) et traitement différé de l'import du fichier shape
   * Afficher la liste des plans dans la page de détail d'un projet
+- US 5.3 - Ajouter les cartes de couverture des sols 2015 et 2018
+- US 11.2 - ajouter une matrice de passage entre US x CS => consommation, est artificielle...
+- US 2.1 - Afficher une page "profil" pour mettre à jour ses informations personnelles
+- US 2.2 - Pouvoir se désinscrire
 
 ### Modifié
 - US 7.8 - Carte interactive: forte atténuation des bordures des polygons
@@ -21,10 +25,12 @@ Ce changelog suit la méthode "keep a changelog" disponible ici: [https://keepac
   * Ajout du projet ouvert dans la top barre
   * Affichage de la page d'accueil même en mode connecté
   * Possibilité de masquer le menu latéralle
+- US 7.9 - Afficher les layers dans un ordre déterminé pour faciliter la lecture
+- US 10.1 - restructurer les données OCSGE pour inclure les millésimes 2013, 2016 et 2019
 
 ### Corrigé
 - Affectation de la date & heure lors de l'import d'une emprise
-- Affichage des layers lors de l'ouverture de la carte
+- Masquer des layers lors de l'ouverture de la carte interactive
 
 ## [0.1.0] - 2017-06-20
 
