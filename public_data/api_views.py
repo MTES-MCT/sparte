@@ -144,7 +144,7 @@ class OcsgeViewSet(DataViewSet):
             field = "couverture"
         query = (
             "SELECT o.id, o.couverture_label, o.usage_label, o.millesime, t.map_color, "
-            "o.year, st_AsGeoJSON(o.mpoly, 4) AS geojson "
+            "o.year, st_AsGeoJSON(o.mpoly, 8) AS geojson "
             f"FROM {Ocsge._meta.db_table} o "
             f"INNER JOIN {table_name} t ON t.code_prefix = o.{field} "
             "WHERE o. mpoly && ST_MakeEnvelope(%s, %s, %s, %s, 4326) "
