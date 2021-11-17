@@ -27,4 +27,4 @@ jobs:
         python -m pipenv install --system --deploy --ignore-pipfile --dev
     - name: Run tests
       run: |
-        pipenv run test -v
+        pytest -vv
