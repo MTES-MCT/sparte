@@ -24,6 +24,9 @@ jobs:
     - uses: actions/setup-python@v2
       with:
         python-version: 3.9
+    - name: Install GDAL and co
+      run: |
+        apt install -y binutils libproj-dev gdal-bin
     - name: Install pipenv
       run: |
         python -m pip install --upgrade pipenv wheel
