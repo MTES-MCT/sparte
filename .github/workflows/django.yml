@@ -41,7 +41,7 @@ jobs:
         python -m pipenv install --system --deploy --ignore-pipfile --dev
     - name: Run tests
       env:
-        DATABASE_URL: postgis://postgres:postgres@db/postgres
+        DATABASE_URL: postgis://postgres:postgres@127.0.0.1:5432/postgres
         SECRET: publicbadsecretthatshouldnotbeusedelsewhere_wink_
       run: |
         pytest -vv
