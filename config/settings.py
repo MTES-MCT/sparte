@@ -186,15 +186,15 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
 
 # credentials
-AWS_ACCESS_KEY_ID = env("AWS_ACCESS_KEY_ID")
-AWS_SECRET_ACCESS_KEY = env("AWS_SECRET_ACCESS_KEY")
+AWS_ACCESS_KEY_ID = env.str("AWS_ACCESS_KEY_ID", default="")
+AWS_SECRET_ACCESS_KEY = env.str("AWS_SECRET_ACCESS_KEY", default="")
 
 # bucket name and region
-AWS_STORAGE_BUCKET_NAME = env("AWS_STORAGE_BUCKET_NAME")
-AWS_S3_REGION_NAME = env("AWS_S3_REGION_NAME")
+AWS_STORAGE_BUCKET_NAME = env.str("AWS_STORAGE_BUCKET_NAME", default="")
+AWS_S3_REGION_NAME = env.str("AWS_S3_REGION_NAME", default="eu-west-3")
 
 # append a prefix to all uploaded file (useful to not mix local, staging...)
-AWS_LOCATION = env("AWS_LOCATION")
+AWS_LOCATION = env.str("AWS_LOCATION", default="local")
 # avoid overriding a file if same key is provided
 AWS_S3_FILE_OVERWRITE = False
 # allow signed url to be accessed from all regions
@@ -213,8 +213,9 @@ CRISPY_TEMPLATE_PACK = "bootstrap4"
 
 
 # Celery configuration
-CELERY_BROKER_URL = env("CELERY_BROKER_URL")
-CELERY_RESULT_BACKEND = env("CELERY_RESULT_BACKEND")
+default_redis = "redis://redis:6379/0"
+CELERY_BROKER_URL = env.str("CELERY_BROKER_URL", default=default_redis)
+CELERY_RESULT_BACKEND = env.str("CELERY_RESULT_BACKEND", default=default_redis)
 CELERY_ACKS_LATE = True
 
 # django-debug-toolbar configuration
@@ -280,11 +281,11 @@ elif EMAIL_ENGINE == "mailjet":
     ]
     EMAIL_BACKEND = "anymail.backends.mailjet.EmailBackend"
     ANYMAIL = {
-        "MAILJET_API_KEY": env("MAILJET_ID"),
-        "MAILJET_SECRET_KEY": env("MAILJET_SECRET"),
+        "MAILJET_API_KEY": env.str("MAILJET_ID"),
+        "MAILJET_SECRET_KEY": env.str("MAILJET_SECRET"),
     }
 
-DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="johndoe@email.com")
+DEFAULT_FROM_EMAIL = env.str("DEFAULT_FROM_EMAIL", default="johndoe@email.com")
 
 # used by ./manage.py shell_plus --notebook
 if "django-extensions" in {pkg.key for pkg in pkg_resources.working_set}:
