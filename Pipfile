@@ -35,3 +35,6 @@ openpyxl = "==3.0.9"
 psycopg2 = "==2.9.1"
 redis = "==3.5.3"
 pandas = "*"
+
+[scripts]
+test = "pytest"
