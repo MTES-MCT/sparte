@@ -37,9 +37,9 @@ if env_path.is_file():
 SECRET_KEY = env.str("SECRET")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env.bool("DEBUG")
+DEBUG = env.bool("DEBUG", default=False)
 
-ALLOWED_HOSTS = env.list("ALLOWED_HOSTS")
+ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["127.0.0.1", "localhost"])
 
 # Application definition
 
@@ -166,6 +166,7 @@ STATIC_ROOT = str(BASE_DIR / "staticroot")
 
 STATICFILES_DIRS = [
     BASE_DIR / "static",
+    # BASE_DIR / "htmlcov",
 ]
 
 # same goes for media
@@ -261,7 +262,7 @@ To set MailJet configuration, please add environment variables:
 - MAILJET_ID & MAILJET_SECRET, see https://app.mailjet.com/account/api_keys
 """
 
-EMAIL_ENGINE = env("EMAIL_ENGINE")
+EMAIL_ENGINE = env.str("EMAIL_ENGINE", default="local")
 
 available_engines = ["local", "mailjet"]
 if EMAIL_ENGINE not in available_engines:
@@ -270,7 +271,8 @@ if EMAIL_ENGINE not in available_engines:
 
 if EMAIL_ENGINE == "local":
     EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
-    EMAIL_FILE_PATH = env.str("EMAIL_FILE_PATH")
+    emails_dirpath = BASE_DIR / "emails"
+    EMAIL_FILE_PATH = env.str("EMAIL_FILE_PATH", default=emails_dirpath)
 
 elif EMAIL_ENGINE == "mailjet":
     INSTALLED_APPS += [
@@ -282,7 +284,7 @@ elif EMAIL_ENGINE == "mailjet":
         "MAILJET_SECRET_KEY": env("MAILJET_SECRET"),
     }
 
-DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL")
+DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="johndoe@email.com")
 
 # used by ./manage.py shell_plus --notebook
 if "django-extensions" in {pkg.key for pkg in pkg_resources.working_set}:
