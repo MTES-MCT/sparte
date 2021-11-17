@@ -8,6 +8,17 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
+    services:
+      db:
+        image: kartoza/postgis:13-3.1--v2021.09.08
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
+
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-python@v2
@@ -26,5 +37,8 @@ jobs:
       run: |
         python -m pipenv install --system --deploy --ignore-pipfile --dev
     - name: Run tests
+      env:
+        DATABASE_URL: postgis://postgres:postgres@db/postgres
+        SECRET: publicbadsecretthatshouldnotbeusedelsewhere_wink_
       run: |
         pytest -vv
