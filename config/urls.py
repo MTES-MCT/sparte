@@ -48,7 +48,9 @@ urlpatterns = [
         auth_views.PasswordResetCompleteView.as_view(),
         name="password_reset_complete",
     ),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+]
+
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 
 if settings.DEBUG:
@@ -62,3 +64,6 @@ if settings.DEBUG:
         ]
     except ImportError:
         pass
+
+    path = settings.BASE_DIR / "htmlcov"
+    urlpatterns += static("/cov/", document_root=path)
