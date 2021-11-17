@@ -67,3 +67,6 @@ python-docx = "==0.8.11"
 redis = "~=4.5"
 sentry-sdk = "*"
 setuptools = "*"
+
+[scripts]
+test = "pytest"
