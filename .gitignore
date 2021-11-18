@@ -139,8 +139,15 @@ cython_debug/
 
 # configuration of visual studio code
 .vscode/*
+
+# file to test stuff
 test.py
+
 media/*
 public_data/local_data/*
-id_rsa
+
+# specific file for jupyter
 config/migrated
+
+# private RSA keys
+id_rsa
