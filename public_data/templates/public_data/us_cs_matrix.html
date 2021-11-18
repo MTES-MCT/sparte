@@ -1,0 +1,18 @@
+{% extends 'index.html' %}
+
+{% load static %}
+
+{% block pagetitle %}Matrice de compréhension des sols{% endblock %}
+
+{% block content %}
+<div class="h-100 justify-content-center p-3">
+    <h2>Matrice de qualification des sols</h2>
+
+    <p>Cette matrice croise les référentiels Couverture Des Sol et Usage Des
+    Sols. Chaque intersection indique si le sol est artificiel (A), consommé
+    (C) et / ou naturel (N). Lorsque le croisement entre une couverture et un
+    usage est improbable, l'intersection est vide.</p>
+
+    <p>{{ matrix|safe }}</p>
+</div>
+{% endblock %}
