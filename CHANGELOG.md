@@ -16,6 +16,10 @@ Ce changelog suit la méthode "keep a changelog" disponible ici: [https://keepac
 - US 11.2 - ajouter une matrice de passage entre US x CS => consommation, est artificielle...
 - US 2.1 - Afficher une page "profil" pour mettre à jour ses informations personnelles
 - US 2.2 - Pouvoir se désinscrire
+- Tests unitaires:
+  * Projet
+  * Utilisateur
+  * Communes artificielles
 
 ### Modifié
 - US 7.8 - Carte interactive: forte atténuation des bordures des polygons
