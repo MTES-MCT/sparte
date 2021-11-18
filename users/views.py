@@ -3,11 +3,11 @@ from django.contrib.auth import logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
 from django.views.generic import DetailView, ListView, RedirectView
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormView
 from django.urls import reverse_lazy
 
 from .models import User
-from .forms import SignupForm, SigninForm
+from .forms import SignupForm, SigninForm, UpdatePasswordForm
 
 
 class SigninView(LoginView):
@@ -65,4 +65,25 @@ class ProfilFormView(LoginRequiredMixin, UpdateView):
 
     def form_valid(self, form):
         messages.success(self.request, "Votre profil a été mis à jour avec succès.")
+        return super().form_valid(form)
+
+
+class UpdatePwFormView(LoginRequiredMixin, FormView):
+    template_name = "users/profile.html"
+    form_class = UpdatePasswordForm
+    success_url = reverse_lazy("users:profile")
+    extra_context = {
+        "label_validate_btn": "Changer",
+        "page_title": "Changer de mot de passe",
+        "title": "Changer de mot de passe",
+    }
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs.update({"user": self.request.user})
+        return kwargs
+
+    def form_valid(self, form):
+        messages.success(self.request, "Votre mot de passe a été changé.")
+        form.save()
         return super().form_valid(form)
