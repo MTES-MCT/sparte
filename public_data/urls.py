@@ -1,3 +1,4 @@
+from django.urls import path
 from rest_framework import routers
 
 from .api_views import (
@@ -15,7 +16,16 @@ from .api_views import (
     ZonesBaties2018ViewSet,
 )
 
+from .views import DisplayMatrix
+
+
 app_name = "public_data"
+
+
+urlpatterns = [
+    path("matrix", DisplayMatrix.as_view(), name="matrix"),
+]
+
 
 router = routers.DefaultRouter()
 router.register(r"sybarval/artificialisee/2015to2018", Artificialisee2015to2018ViewSet)
@@ -31,4 +41,4 @@ router.register(r"referentiel/usage-sol", UsageSolViewset)
 router.register(r"sybarval/ocsge/2015", Ocsge2015ViewSet)
 router.register(r"sybarval/ocsge/2018", Ocsge2018ViewSet)
 
-urlpatterns = router.urls
+urlpatterns += router.urls

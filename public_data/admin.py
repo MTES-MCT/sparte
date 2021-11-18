@@ -9,6 +9,7 @@ from .models import (
     Artificielle2018,
     CommunesSybarval,
     CouvertureSol,
+    CouvertureUsageMatrix,
     EnveloppeUrbaine2018,
     Ocsge2015,
     Ocsge2018,
@@ -169,18 +170,22 @@ class Ocsge2015Admin(admin.GeoModelAdmin):
     )
 
 
-@admin.register(Ocsge2018)
-class Ocsge2018Admin(admin.GeoModelAdmin):
-    model = Ocsge2018
+class CouvertureUsageMatrixImportResource(resources.ModelResource):
+    class Meta:
+        model = CouvertureUsageMatrix
+        import_id_fields = ("id",)
+
+
+@admin.register(CouvertureUsageMatrix)
+class CouvertureUsageMatrixAdmin(ImportExportMixin, admin.GeoModelAdmin):
+    model = CouvertureUsageMatrix
     list_display = (
         "id",
         "couverture",
-        "couverture_label",
         "usage",
-        "usage_label",
+        "is_artificial",
+        "is_consumed",
     )
-    list_filter = ("couverture", "usage")
-    search_fields = (
-        "couverture",
-        "usage",
-    )
+    list_filter = ("is_artificial", "is_consumed", "is_natural")
+    search_fields = ("couverture", "usage")
+    resource_class = CouvertureUsageMatrixImportResource
