@@ -318,17 +318,17 @@ LOGGING = {
         "just_message": {
             "format": "[{asctime}] {message}",
             "style": "{",
-            "datefmt": "%Y/%b/%d %H:%M:%S",
+            "datefmt": "%d/%b/%Y %H:%M:%S",
         },
         "verbose": {
             "format": "[{asctime}]{levelname:<7} {module} {process:d} {thread:d} {message}",
             "style": "{",
-            "datefmt": "%Y/%b/%d %H:%M:%S",
+            "datefmt": "%d/%b/%Y %H:%M:%S",
         },
         "simple": {
             "format": "[{asctime}]{levelname:<7} {message}",
             "style": "{",
-            "datefmt": "%Y/%b/%d %H:%M:%S",
+            "datefmt": "%d/%b/%Y %H:%M:%S",
         },
     },
     "handlers": {
@@ -347,6 +347,11 @@ LOGGING = {
     },
     "loggers": {
         "config": {
+            "handlers": ["console_just_message"],
+            "level": LOGGING_LEVEL,
+            "propagate": False,
+        },
+        "public_data": {
             "handlers": ["console_just_message"],
             "level": LOGGING_LEVEL,
             "propagate": False,
