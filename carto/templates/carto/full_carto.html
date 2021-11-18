@@ -53,12 +53,17 @@
 <script src="{% static 'carto/js/map.js' %}"></script>
 
 <script language="javascript">
+geolayers = [
+{% for layer in layer_list %}
+    {
+        {% for k, v in layer.items %}
+        {{ k }}: "{{ v }}",
+        {% endfor %}
+    },
+{% endfor %}
+]
 
 let carto = new Carto ([{{ center_lat }}, {{ center_lng }}], {{ default_zoom }})
-carto.init()
-
-{% for layer in layer_list %}
-    {% geolayer layer %}
-{% endfor %}
+carto.init(geolayers)
 </script>
 {% endblock %}

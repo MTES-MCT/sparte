@@ -1,6 +1,24 @@
 var info = L.control()
 var legend = L.control({position: 'bottomright'});
 
+///// HELPER FUNCTIONS
+
+// cast "True" or "False" to true or false
+function cast(value){
+    return (value == "True")  ? true  :
+           (value == "False") ? false :
+                                value
+}
+
+// equivalent of dict().get(field, default_value) from python
+function get(object, key, default_value) {
+    let result = object[key]
+    if (typeof result !== "undefined")
+        return cast(result)
+    else
+        return default_value
+}
+
 /////////////////////////////////////////////////
 // Styling function according to properties
 /////////////////////////////////////////////////
@@ -45,7 +63,10 @@ function Carto (map_center, default_zoom)
     this.legend = L.control({position: 'bottomright'});
     this.map = L.map('mapid')
 
-    this.init = () => {
+    // contains all added geolayer (see add_geolayer function)
+    this.geolayers = []
+
+    this.init = (geolayers) => {
         // Initialize map
         this.map.setView(this.map_center, this.default_zoom)
         // Choix du fond de carte
@@ -59,6 +80,36 @@ function Carto (map_center, default_zoom)
         this.layerControl.addTo(this.map)
         // add legend div
         this.legend.addTo(this.map)
+
+        geolayers.forEach(element => this.add_geolayer(element))
+    }
+
+    this.add_geolayer = (geolayer) => {
+        let layer = new GeoLayer(geolayer.name, geolayer.url)
+
+        // set an eventlistner to load only visible data if we don't load
+        // everything upfront (which is better)
+        layer.load_full_data = get(geolayer, "load_full_data", false)
+
+        // displayer the layer immediatly after data loading or wait the user
+        // to make it visible
+        layer.immediate_display = get(geolayer, "immediate_display", false)
+
+        // center the map on this layer
+        // todo : check that there is only one layer with this activated
+        layer.fit_map = get(geolayer, "fit_map", false)
+
+        // Change layer style to use one specific for project emprise
+        if (get(geolayer, "use_emprise_style", false))
+            layer.style = emprise_style
+
+        gradient_url = get(geolayer, "gradient_url", null)
+        if (gradient_url !== null)
+            layer.add_to_map_with_custom_scale(gradient_url, this)
+        else
+            layer.add_to_map(this)
+
+        this.geolayers.push(layer)
     }
 
     this.info.onAdd = (map) => {
@@ -171,11 +222,10 @@ function GeoLayer (name, url) {
     this.style = (feature) => {
         return {
             fillColor: this.get_color(feature),
-            weight: 2,
-            opacity: 1,
+            fillOpacity: 0.7,
+            weight: 1,
+            opacity: 0.1,
             color: 'white',
-            dashArray: '3',
-            fillOpacity: 0.7
         }
     }
 
@@ -202,6 +252,8 @@ function GeoLayer (name, url) {
 
     // surcharge to update content of legend div (return empty string to not show info)
     this.legend_txt = (feature) => {
+        if (this.scale == null)
+            return null
         let property = this.get_color_property_name(feature)
         let property_value = this.get_color_property_value(feature)
         let legend = '<h4>' + this.name + '</h4>'
@@ -278,7 +330,11 @@ function GeoLayer (name, url) {
         let url = this.url
         if (this.load_full_data == false)
         {
-            url = url + `?in_bbox=${this.carto.map.getBounds().toBBoxString()}`
+            if (url.includes("?"))
+                url = url + '&'
+            else
+                url = url + '?'
+            url = url + `in_bbox=${this.carto.map.getBounds().toBBoxString()}`
         }
 
         // get the data and display the layer
