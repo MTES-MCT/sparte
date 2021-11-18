@@ -92,11 +92,6 @@ class ArtifCommuneAdmin(ImportExportMixin, admin.GeoModelAdmin):
 class UsageSolResource(resources.ModelResource):
     class Meta:
         model = UsageSol
-        import_id_fields = ("code",)
-        exclude = (
-            "id",
-            "parent",
-        )
 
 
 @admin.register(UsageSol)
@@ -120,11 +115,6 @@ class UsageSolAdmin(ImportExportMixin, admin.GeoModelAdmin):
 class CouvertureSolImportResource(resources.ModelResource):
     class Meta:
         model = CouvertureSol
-        import_id_fields = ("code",)
-        exclude = (
-            "id",
-            "parent",
-        )
 
     def before_import(self, *args, **kwargs):
         return super().before_import(*args, **kwargs)
@@ -166,6 +156,7 @@ class CouvertureUsageMatrixImportResource(resources.ModelResource):
     class Meta:
         model = CouvertureUsageMatrix
         import_id_fields = ("id",)
+        skip_unchanged = True
 
 
 @admin.register(CouvertureUsageMatrix)
