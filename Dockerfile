@@ -26,6 +26,11 @@ RUN pip install pipenv
 # install project dependencies
 RUN pipenv install $(test "$STAGE" == production || echo "--dev") --deploy --system --ignore-pipfile
 
+# setup ssh for git
+RUN mkdir ~/.ssh
+COPY ~/.ssh/id_rsa /home/id_rsa
+RUN ssh-keyscan -t rsa github.com > ~/.ssh/known_hosts
+
 EXPOSE 8000
 
 CMD [ "python", "manage.py", "runserver", "0.0.0.0:8000" ]
