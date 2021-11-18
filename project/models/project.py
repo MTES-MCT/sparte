@@ -130,8 +130,9 @@ class Project(BaseProject):
         self.emprise_set.all().delete()
         self.import_status = BaseProject.Status.MISSING
         self.import_date = None
+        self.import_error = None
         self.couverture_usage = None
-        self.shape_file.delete(save=False)
+        self.shape_file.delete(save=save)
         if save:
             self.save()
 
