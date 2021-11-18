@@ -54,6 +54,11 @@ class ProfilFormView(LoginRequiredMixin, UpdateView):
     success_url = reverse_lazy("users:profile")
     model = User
     fields = ["first_name", "last_name", "organism", "function"]
+    extra_context = {
+        "label_validate_btn": "Mettre à jour",
+        "page_title": "Profil",
+        "title": "Votre profil",
+    }
 
     def get_object(self, queryset=None):
         return self.request.user
