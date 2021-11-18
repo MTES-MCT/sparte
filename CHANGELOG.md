@@ -6,6 +6,7 @@ Ce changelog suit la méthode "keep a changelog" disponible ici: [https://keepac
 ## [Unreleased]
 
 ### Ajouté
+- Log des requêtes entrantes pour s'assurer qu'elles sont en cours de traitement
 
 ### Modifié
 - US7.2 - Afin de faciliter la navigation mettre le projet "ouvert" dans la barre latéralle
