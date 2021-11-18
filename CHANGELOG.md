@@ -7,13 +7,15 @@ Ce changelog suit la méthode "keep a changelog" disponible ici: [https://keepac
 
 ### Ajouté
 - Log des requêtes entrantes pour s'assurer qu'elles sont en cours de traitement
-- Fonction "Plan" :
+- US 1.1 - Fonction "Plan" :
   * Ecrans d'administration pour les plans (inc. les emprises)
   * Publication de la route API pour obtenir les emprises d'un plan
   * Ecrans de manipulation des plans (CRUD) et traitement différé de l'import du fichier shape
   * Afficher la liste des plans dans la page de détail d'un projet
 
 ### Modifié
+- US 7.8 - Carte interactive: forte atténuation des bordures des polygons
+- Bascule de la logique de chargement des geolayers vers javascript, suppression des templatetags
 - US7.2 - Afin de faciliter la navigation mettre le projet "ouvert" dans la barre latéralle
   * Modification du thème
   * Ajout du projet ouvert dans la top barre
@@ -22,6 +24,7 @@ Ce changelog suit la méthode "keep a changelog" disponible ici: [https://keepac
 
 ### Corrigé
 - Affectation de la date & heure lors de l'import d'une emprise
+- Affichage des layers lors de l'ouverture de la carte
 
 ## [0.1.0] - 2017-06-20
 
