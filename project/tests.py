@@ -9,22 +9,18 @@ from .models import Project, Emprise, user_directory_path
 
 
 BIG_SQUARE = MultiPolygon(
-    [
-        Polygon.from_bbox((43, -1, 44, 0)),
-    ],
+    [Polygon.from_bbox((43, -1, 44, 0))],
     srid=4326,
 )
 
 INNER_SQUARE = MultiPolygon(
-    [
-        Polygon.from_bbox((43.25, -0.75, 43.75, -0.25)),
-    ]
+    [Polygon.from_bbox((43.25, -0.75, 43.75, -0.25))],
+    srid=4326,
 )
 
 SMALL_SQUARE = MultiPolygon(
-    [
-        Polygon.from_bbox((43.4, -0.6, 43.6, -0.4)),
-    ]
+    [Polygon.from_bbox((43.4, -0.6, 43.6, -0.4))],
+    srid=4326,
 )
 
 
