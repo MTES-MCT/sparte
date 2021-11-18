@@ -143,3 +143,4 @@ test.py
 media/*
 public_data/local_data/*
 id_rsa
+config/migrated
