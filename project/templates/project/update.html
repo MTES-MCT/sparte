@@ -11,7 +11,8 @@
 {% endblock %}
 
 {% block content %}
-    <h3 class="mb-5">Mettre à jour</h3>
+<div class="d-flex flex-column h-100 w-100 align-items-center justify-content-center">
+    <h2>Mettre à jour</h2>
 
     <form action="" method="post">
         {% csrf_token %}
@@ -19,4 +20,6 @@
         <button class="btn w-100 btn-primary mt-4" type="submit">Mettre à jour</button>
         <a href="{% url 'project:detail' project.pk %}" class="btn w-100 btn-secondary mt-1">Annuler</a>
     </form>
+
+</div>
 {% endblock %}

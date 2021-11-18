@@ -11,80 +11,81 @@ Rapport consommation
 {% endblock %}
 
 {% block content %}
-    {% include "project/detail_menu.html" %}
+    <div class="pe-4 ps-4">
+        {% include "project/detail_menu.html" %}
 
-    <div class="alert alert-warning" role="alert">
-        La consommation d'espace est mesurée avec les fichiers fonciers qui font une description cadastrale du territoire.
-    </div>
+        <div class="alert alert-warning" role="alert">
+            La consommation d'espace est mesurée avec les fichiers fonciers qui font une description cadastrale du territoire.
+        </div>
 
-    <div>
         <h3>Chiffres clés:</h3>
         <div class="d-flex">
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">Territoire total</h5>
-                <p>{{ total_surface }} ha</p>
-                <p>100 %</p>
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Territoire total</h5>
+                    <p>{{ total_surface }} ha</p>
+                    <p>100 %</p>
+                </div>
+            </div>
+
+            <div class="card ms-3">
+                <div class="card-body">
+                    <h5 class="card-title">Consommé avant {{ start_year }}</h5>
+                    <p>{{ initial_surface }} ha</p>
+                    <p>{{ initial_percent }}</p>
+                </div>
+            </div>
+
+            <div class="card ms-3">
+                <div class="card-body">
+                    <h5 class="card-title">Consommé en {{ end_year }}</h5>
+                    <p>{{ final_surface }} ha</p>
+                    <p>{{ final_percent }}</p>
+                </div>
+            </div>
+
+            <div class="card ms-3">
+                <div class="card-body">
+                    <h5 class="card-title">Progression {{ start_year }} à {{ end_year }}</h5>
+                    <p>+{{ pki_progression }} ha</p>
+                    <p>+{{ pki_progression_percent }}</p>
+                </div>
             </div>
         </div>
 
-        <div class="card ml-3">
-            <div class="card-body">
-                <h5 class="card-title">Consommé avant {{ start_year }}</h5>
-                <p>{{ initial_surface }} ha</p>
-                <p>{{ initial_percent }}</p>
-            </div>
+        <div class="w-100 mt-5">
+            <div id="chart" class="flex-fill"></div>
         </div>
 
-        <div class="card ml-3">
-            <div class="card-body">
-                <h5 class="card-title">Consommé en {{ end_year }}</h5>
-                <p>{{ final_surface }} ha</p>
-                <p>{{ final_percent }}</p>
-            </div>
+        <div class="mt-5">
+            <h3>Consommé (en ha):</h3>
+            <table class="table">
+                <thead>
+                    <tr>
+                    {% for col_name in headers %}
+                        <th scope="col">
+                            {% if col_name == "Progression" %}
+                                <span data-toggle="tooltip" title="Progression de la surface consommée entre 2009 et 2018">Progression</span>
+                            {% else %}
+                                {{ col_name }}
+                            {% endif %}
+                        </th>
+                    {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for city in table_artif %}
+                    <tr>
+                        <th scope="row">{{ city.name }}</th>
+                        {{ city.before|td }}
+                        {{ city.items|td }}
+                        <th  scope="row">{{ city.total }}</th>
+                        <td>{{ city.progression }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
-
-        <div class="card ml-3">
-            <div class="card-body">
-                <h5 class="card-title">Progression {{ start_year }} à {{ end_year }}</h5>
-                <p>+{{ pki_progression }} ha</p>
-                <p>+{{ pki_progression_percent }}</p>
-            </div>
-        </div>
-    </div>
-
-    <div class="w-100 mt-5">
-        <div id="chart" class="flex-fill"></div>
-    </div>
-
-    <div class="mt-5">
-        <h3>Consommé (en ha):</h3>
-        <table class="table">
-            <thead>
-                <tr>
-                {% for col_name in headers %}
-                    <th scope="col">
-                        {% if col_name == "Progression" %}
-                            <span data-toggle="tooltip" title="Progression de la surface consommée entre 2009 et 2018">Progression</span>
-                        {% else %}
-                            {{ col_name }}
-                        {% endif %}
-                    </th>
-                {% endfor %}
-                </tr>
-            </thead>
-            <tbody>
-                {% for city in table_artif %}
-                <tr>
-                    <th scope="row">{{ city.name }}</th>
-                    {{ city.before|td }}
-                    {{ city.items|td }}
-                    <th  scope="row">{{ city.total }}</th>
-                    <td>{{ city.progression }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
     </div>
 {% endblock %}
 
