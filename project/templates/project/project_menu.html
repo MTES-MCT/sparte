@@ -1,0 +1,10 @@
+{% if project %}
+    <a href="{% url 'project:detail' project.pk %}" class="text-decoration-none" style="font-size:16pt;" class="me-2">
+        {{ project.name }}
+    </a>
+    {% if project.import_status == "SUCCESS" %}
+    <a href="{% url 'project:update' project.pk %}" data-toggle="tooltip" title="Edition" class="me-1"><i data-feather="edit" stroke-width="2" height="100%" color="#0000dd"></i></a>
+    <a href="{% url 'project:report' project.pk %}" data-toggle="tooltip" title="Rapports" class="me-1"><i data-feather="pie-chart" stroke-width="2" height="100%" color="#0000dd"></i></a>
+    <a href="{% url 'project:map' project.pk %}" data-toggle="tooltip" title="Carte intéractive"><i data-feather="map" stroke-width="2" height="100%" color="#0000dd"></i></a>
+    {% endif %}
+{% endif %}

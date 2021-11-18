@@ -1,4 +1,4 @@
-{% extends 'project/base_detail.html' %}
+{% extends 'index.html' %}
 
 {% load static %}
 {% load crispy_forms_tags %}
@@ -12,7 +12,7 @@ Project detail
 {{ city_form.media }}
 {% endblock %}
 
-{% block detail_content %}
+{% block content %}
 <div style="width:750px;">
     <h3>Sélectionnez une emprise territoriale</h3>
 
