@@ -50,37 +50,46 @@ class ArtifCommune(classic_models.Model):
 
     @classmethod
     def list_attr(cls):
+        """Return all field names with a artif numerical values
+        Usefull to get an easy way to change available data withou changing the
+        code"""
         return ["artif_before_2009"] + [f"artif_{y}" for y in range(2009, 2019)]
 
     def list_artif(self, flat=True):
+        """Return a list of all artif numerical values : `[123.45, 456.78,]`
+        if flat is set to False (default is True), return a dict:
+        ```
+        {
+            "artif_2013": 123.45,
+            "artif_2014": 456.78,
+        }
+        ```
+        """
         val = {f: getattr(self, f, 0.0) for f in self.__class__.list_attr()}
         if flat:
             return val.values()
         return val
 
     def total_artif(self):
+        """Return the sum of all artif fields"""
         return sum(self.list_artif())
 
-    def total_percent(self, decimal=False):
-        val = self.total_artif() / self.surface
-        if not decimal:
-            return val
-        else:
-            return Decimal(val)
+    def total_percent(self) -> Decimal:
+        """Return the percent of the surface that is artificial"""
+        return self.total_artif() / self.surface
 
-    def percent(self, name, decimal=False):
-        val = getattr(self, name, 0.0) / self.surface
-        if not decimal:
-            return val
-        else:
-            return Decimal(val)
+    def percent(self, name):
+        """Return the percent of the surface of the specified field
 
-    def list_percent(self, decimal=False):
-        val = (_ / self.surface for _ in self.list_artif())
-        if not decimal:
-            return val
-        else:
-            return map(Decimal, val)
+        Params:
+            name: string, name of the field.
+        """
+        return getattr(self, name, 0.0) / self.surface
+
+    def list_percent(self):
+        """Return a list of all percent values in float.
+        Can be casted to Decimal if parameter decimal=True"""
+        return [_ / self.surface for _ in self.list_artif()]
 
     def __str__(self):
         return f"{self.name} - {self.insee}"
