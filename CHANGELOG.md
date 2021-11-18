@@ -9,6 +9,7 @@ Ce changelog suit la méthode "keep a changelog" disponible ici: [https://keepac
 - Log des requêtes entrantes pour s'assurer qu'elles sont en cours de traitement
 - Ecrans d'administration pour les plans (inc. les emprises)
 - Publication de la route API pour obtenir les emprises d'un plan
+- Ecrans de manipulation des plans (CRUD)
 
 ### Modifié
 - US7.2 - Afin de faciliter la navigation mettre le projet "ouvert" dans la barre latéralle
@@ -18,6 +19,7 @@ Ce changelog suit la méthode "keep a changelog" disponible ici: [https://keepac
   * Possibilité de masquer le menu latéralle
 
 ### Corrigé
+- Affectation de la date & heure lors de l'import d'une emprise
 
 ## [0.1.0] - 2017-06-20
 

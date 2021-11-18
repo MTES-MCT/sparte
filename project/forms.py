@@ -3,8 +3,8 @@ from django.db.models import Q
 
 from public_data.models import ArtifCommune, CommunesSybarval
 
-from .models import Project
-from .tasks import process_new_project
+from .models import Project, Plan
+from .tasks import process_new_project, process_new_plan
 
 
 class SetEmpriseForm(forms.Form):
@@ -13,8 +13,8 @@ class SetEmpriseForm(forms.Form):
         for city in self.cleaned_data["cities"]:
             project.cities.add(city)
         project.import_status = Project.Status.PENDING
-        process_new_project.delay(project.id)
         project.save()
+        process_new_project.delay(project.id)
 
 
 class SelectCitiesForm(SetEmpriseForm):
@@ -56,3 +56,33 @@ class UploadShpForm(forms.Form):
         project.import_status = Project.Status.PENDING
         project.save()
         process_new_project.delay(project.id)
+
+
+class PlanForm(forms.ModelForm):
+    class Meta:
+        model = Plan
+        fields = [
+            "name",
+            "description",
+            "shape_file",
+            "supplier_email",
+            "project",
+        ]
+
+    def __init__(self, *args, **kwargs):
+        """Hide project field if a value is provided"""
+        self.project = kwargs.pop("project")
+        super().__init__(*args, **kwargs)
+        if self.project:
+            # we keep it in our form but we force the value later on
+            # self.fields["project"].widget = forms.widgets.HiddenInput()
+            # self.fields["project"].initial = self.project
+            del self.fields["project"]
+
+    def save(self, *args, **kwargs):
+        self.instance.import_status = Project.Status.PENDING
+        if self.project:
+            self.instance.project = self.project
+        super().save(*args, **kwargs)
+        process_new_plan.delay(self.instance.id)
+        return self.instance
