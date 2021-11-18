@@ -77,6 +77,7 @@ INSTALLED_APPS = DJANGO_APPS + RESTFRAMEWORK_APPS + THIRD_APPS + PROJECT_APPS
 
 
 MIDDLEWARE = [
+    "config.middlewares.LogIncomingRequest",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -304,4 +305,51 @@ if "django-extensions" in {pkg.key for pkg in pkg_resources.working_set}:
 
 REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination"
+}
+
+# LOGGING SETTINGS
+
+LOGGING_LEVEL = env.str("LOGGING_LEVEL", default="INFO")
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "just_message": {
+            "format": "[{asctime}] {message}",
+            "style": "{",
+            "datefmt": "%Y/%b/%d %H:%M:%S",
+        },
+        "verbose": {
+            "format": "[{asctime}]{levelname:<7} {module} {process:d} {thread:d} {message}",
+            "style": "{",
+            "datefmt": "%Y/%b/%d %H:%M:%S",
+        },
+        "simple": {
+            "format": "[{asctime}]{levelname:<7} {message}",
+            "style": "{",
+            "datefmt": "%Y/%b/%d %H:%M:%S",
+        },
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "simple",
+        },
+        "console_just_message": {
+            "class": "logging.StreamHandler",
+            "formatter": "just_message",
+        },
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "WARNING",
+    },
+    "loggers": {
+        "config": {
+            "handlers": ["console_just_message"],
+            "level": LOGGING_LEVEL,
+            "propagate": False,
+        },
+    },
 }
