@@ -36,9 +36,13 @@ def get_shp_file_from_zip(file_stream):
 
 
 def get_available_mapping(layer_fields: list(), model_mapping: dict()) -> dict():
+    # make a set of the field available in the layer
     layer_fields_set = set(layer_fields)
+    # make a set of the excpected mapping (from the model)
     model_mapping_set = set(model_mapping.values())
+    # get the intersection, the field in common
     fields = layer_fields_set.intersection(model_mapping_set)
+    # add required polygon field to save the polygon
     fields = fields.union(set(["MULTIPOLYGON"]))
     mapping = {k: v for k, v in model_mapping.items() if v in fields}
     return mapping
