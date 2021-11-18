@@ -1,4 +1,4 @@
-{% extends 'base_connected.html' %}
+{% extends 'index.html' %}
 
 {% load static %}
 {% load map_tags %}
@@ -44,7 +44,9 @@
 {% endblock %}
 
 {% block content %}
+<div class="d-flex flex-fill h-100" style="overflow:auto;">
     <div id="mapid" class="flex-grow-1"></div>
+</div>
 {% endblock %}
 
 {% block bodyend %}

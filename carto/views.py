@@ -6,7 +6,7 @@ from django.views.generic import TemplateView
 
 
 class HomeConnected(LoginRequiredMixin, TemplateView):
-    template_name = "base_connected.html"
+    template_name = "index.html"
 
 
 @login_required
