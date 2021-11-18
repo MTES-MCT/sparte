@@ -6,7 +6,7 @@ from django.core.management.base import BaseCommand
 from public_data.tasks import load_data
 
 
-logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):
@@ -25,7 +25,7 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-        logging.info("Load data for a model")
+        logger.info("Load data for a model")
         if "class" in options and options["class"]:
             class_names = [options["class"]]
         else:
@@ -46,15 +46,15 @@ class Command(BaseCommand):
             ]
         tasks = dict()
         for class_name in class_names:
-            logging.info("Management command load_data with class=%s", class_name)
+            logger.info("Management command load_data with class=%s", class_name)
             tasks[class_name] = load_data.delay(class_name, verbose=options["verbose"])
             time.sleep(5)
 
         while len(tasks) > 0:
             time.sleep(60)
-            logging.info("Update on remaining tasks %d", len(tasks))
+            logger.info("Update on remaining tasks %d", len(tasks))
             for key, task in tasks.items():
-                logging.info("%s is %s", key, task.status)
+                logger.info("%s is %s", key, task.status)
                 if task.status == "FAILURE":
-                    logging.info(task.info.__repr__())
+                    logger.info(task.info.__repr__())
             tasks = {k: t for k, t in tasks.items() if t.status == "PENDING"}
