@@ -1,4 +1,5 @@
 from django.contrib.auth import logout
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
 from django.views.generic import DetailView, ListView, RedirectView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
@@ -45,3 +46,13 @@ class UserUpdateView(UpdateView):
 class UserDeleteView(DeleteView):
     model = User
     success_url = reverse_lazy("home")
+
+
+class ProfilFormView(LoginRequiredMixin, UpdateView):
+    template_name = "users/profile.html"
+    success_url = reverse_lazy("users:profile")
+    model = User
+    fields = ["email", "first_name", "last_name", "organism", "function"]
+
+    def get_object(self, queryset=None):
+        return self.request.user
