@@ -3,8 +3,8 @@ from rest_framework.exceptions import ParseError
 
 from public_data.api_views import DataViewSet
 
-from .models import Emprise
-from .serializers import EmpriseSerializer
+from .models import Emprise, PlanEmprise
+from .serializers import EmpriseSerializer, PlanEmpriseSerializer
 
 
 class EmpriseViewSet(DataViewSet):
@@ -12,14 +12,21 @@ class EmpriseViewSet(DataViewSet):
 
     queryset = Emprise.objects.all()
     serializer_class = EmpriseSerializer
+    filter_field = "project_id"
 
     def get_queryset(self):
-        """Check project_id is provided and return linked Emprises"""
+        """Check if an id is provided and return linked Emprises"""
         try:
-            project_id = int(self.request.query_params["project_id"])
+            id = int(self.request.query_params["id"])
         except KeyError:
-            raise ParseError("project_id is required in query parameter.")
+            raise ParseError("id parameter is required in query parameter.")
         except ValueError:
-            raise ParseError("project_id must be an int.")
+            raise ParseError("id parameter must be an int.")
 
-        return Emprise.objects.filter(project_id=project_id)
+        return self.queryset.filter(**{self.filter_field: id})
+
+
+class PlanEmpriseViewSet(EmpriseViewSet):
+    queryset = PlanEmprise.objects.all()
+    serializer_class = PlanEmpriseSerializer
+    filter_field = "plan_id"
