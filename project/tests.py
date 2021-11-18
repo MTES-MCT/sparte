@@ -1,10 +1,11 @@
 import pytest
+import re
 
 from django.contrib.gis.geos import Polygon, MultiPolygon
 
 from users.tests import users  # noqa: F401
 
-from .models import Project, Emprise
+from .models import Project, Emprise, user_directory_path
 
 
 BIG_SQUARE = MultiPolygon(
@@ -91,3 +92,11 @@ class TestProject:
         assert project.import_status == Project.Status.MISSING
         assert project.import_error is None
         assert project.import_date is None
+
+
+class TestModelUtils:
+    def test_user_directory_path(self, projects):
+        filename = "file.txt"
+        path_re = re.compile(r"(user_[0-9]{4,4}\/)?[\w]{6,6}\/(.+)")
+        assert path_re.match(user_directory_path(projects["cobas"], filename))
+        assert path_re.match(user_directory_path(None, filename))
