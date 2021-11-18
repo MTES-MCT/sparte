@@ -11,8 +11,7 @@ from .models import (
     CouvertureSol,
     CouvertureUsageMatrix,
     EnveloppeUrbaine2018,
-    Ocsge2015,
-    Ocsge2018,
+    Ocsge,
     Renaturee2018to2015,
     Sybarval,
     UsageSol,
@@ -134,39 +133,32 @@ class CouvertureSolImportResource(resources.ModelResource):
 @admin.register(CouvertureSol)
 class CouvertureSolAdmin(ImportExportMixin, admin.GeoModelAdmin):
     model = CouvertureSol
-    list_display = (
-        "code",
-        "label",
-        "is_artificial",
-        "parent",
-    )
-    list_filter = (
-        "is_artificial",
-        "parent",
-    )
-    search_fields = (
-        "code",
-        "label",
-    )
+    list_display = ("code", "label", "parent", "map_color")
+    list_filter = ("parent",)
+    search_fields = ("code", "label", "map_color")
     ordering = ("code",)
     # for importation
     resource_class = CouvertureSolImportResource
 
 
-@admin.register(Ocsge2015)
-class Ocsge2015Admin(admin.GeoModelAdmin):
-    model = Ocsge2015
+@admin.register(Ocsge)
+class OcsgeAdmin(admin.GeoModelAdmin):
+    model = Ocsge
     list_display = (
         "id",
         "couverture",
         "couverture_label",
         "usage",
         "usage_label",
+        "year",
     )
-    list_filter = ("couverture", "usage")
+    list_filter = ("year", "couverture", "usage")
     search_fields = (
         "couverture",
+        "couverture_label",
         "usage",
+        "usage_label",
+        "year",
     )
 
 
