@@ -66,9 +66,23 @@ function Carto (map_center, default_zoom)
     // contains all added geolayer (see add_geolayer function)
     this.geolayers = []
 
+    // contains all panes. Usefull to ordering the geolayer
+    // Each panes has a specific z-index
+    this.panes = []
+
     this.init = (geolayers) => {
         // Initialize map
         this.map.setView(this.map_center, this.default_zoom)
+
+        z_index = 510
+        for (i=0; i<10; i++)
+        {
+            let pane_name = `level_${i}`
+            let pane = this.map.createPane(pane_name)
+            pane.style.zIndex = 505 + 10 * i
+            this.panes.push(pane_name)
+        }
+
         // Choix du fond de carte
         L.tileLayer( 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>- Beta Gouv.',
@@ -102,6 +116,13 @@ function Carto (map_center, default_zoom)
         // Change layer style to use one specific for project emprise
         if (get(geolayer, "use_emprise_style", false))
             layer.style = emprise_style
+
+        // set the correct panes according to required level
+        // level can be set from 0 to 9
+        // 9 is on top, 0 is the most lowest
+        let pane = `level_${get(geolayer, "level", "5")}`
+        if (this.panes.includes(pane))  // check the layer is known
+            layer.pane = pane
 
         gradient_url = get(geolayer, "gradient_url", null)
         if (gradient_url !== null)
@@ -160,6 +181,10 @@ function GeoLayer (name, url) {
     // indicates if all the data have to be loaded at once or if we reload data on each user map movement
     // when loading the data we will use bbox information to get data only on visible part of the map
     this.load_full_data = true
+
+    // contains the name of the pane in which add this layer
+    // by default, we add the layer in pane level_5
+    this.pane = 'level_5'
 
     // Initialiser avec un objet permettant une colorisation personnalisée
     // this.scale = [
@@ -306,7 +331,8 @@ function GeoLayer (name, url) {
                         }
 
                     })
-                }
+                },
+                pane: this.pane,
             }
         )
 
