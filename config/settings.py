@@ -71,6 +71,7 @@ PROJECT_APPS = [
     "public_data.apps.PublicDataConfig",
     "project.apps.ProjectConfig",
     "home.apps.HomeConfig",
+    "dbbackup.apps.DbbackupConfig",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + RESTFRAMEWORK_APPS + THIRD_APPS + PROJECT_APPS
