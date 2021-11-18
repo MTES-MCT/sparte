@@ -4,9 +4,10 @@ import tempfile
 from pathlib import Path
 from zipfile import ZipFile
 
-from django.db.models import F
-from django.contrib.gis.utils import LayerMapping
 from django.contrib.gis.db.models.functions import Intersection, Area, Transform
+from django.contrib.gis.gdal import DataSource
+from django.contrib.gis.utils import LayerMapping
+from django.db.models import F
 
 from public_data.models import CommunesSybarval, ArtifCommune
 
@@ -34,13 +35,27 @@ def get_shp_file_from_zip(file_stream):
         raise MissingShpException("No file with extension .shp found")
 
 
+def get_available_mapping(layer_fields: list(), model_mapping: dict()) -> dict():
+    layer_fields_set = set(layer_fields)
+    model_mapping_set = set(model_mapping.values())
+    fields = layer_fields_set.intersection(model_mapping_set)
+    fields = fields.union(set(["MULTIPOLYGON"]))
+    mapping = {k: v for k, v in model_mapping.items() if v in fields}
+    return mapping
+
+
 def save_feature(shp_file_path, base_project):
     """save all the feature in Emprise, linked to the current project
     base_project: Project or Plan instance
     """
     logger.info("Save features in database")
+
+    # open datasource and fetch available fields
+    ds = DataSource(shp_file_path)
+
     # load new features
     mapping = base_project.emprise_set.model.mapping
+    mapping = get_available_mapping(ds[0].fields, mapping)
 
     class ProxyEmprise(base_project.emprise_set.model):
         """Proxy Emprise to set the project foreignkey"""
@@ -53,7 +68,7 @@ def save_feature(shp_file_path, base_project):
         class Meta:
             proxy = True
 
-    lm = LayerMapping(ProxyEmprise, shp_file_path, mapping)
+    lm = LayerMapping(ProxyEmprise, ds, mapping)
     lm.save(strict=True)
 
 
