@@ -7,6 +7,11 @@ Ce changelog suit la méthode "keep a changelog" disponible ici: [https://keepac
 
 ### Ajouté
 ### Modifié
+- US7.2 - Afin de faciliter la navigation mettre le projet "ouvert" dans la barre latéralle
+  * Modification du thème
+  * Ajout du projet ouvert dans la top barre
+  * Affichage de la page d'accueil même en mode connecté
+  * Possibilité de masquer le menu latéralle
 ### Corrigé
 
 ## [0.1.0] - 2017-06-20
