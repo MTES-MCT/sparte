@@ -2,7 +2,7 @@
 
 {% load crispy_forms_tags %}
 
-{% block pagetitle %}Profile{% endblock %}
+{% block pagetitle %}{{ page_title }}{% endblock %}
 
 {% block content %}
 
@@ -17,12 +17,12 @@
         </div>
         {% endfor %}
 
-        <h1 class="mb-3 fw-bold text-center">Votre profil</h1>
+        <h1 class="mb-3 fw-bold text-center">{{ title }}</h1>
 
         <form action="" method="post">
             {% csrf_token %}
             {{ form|crispy }}
-            <button class="btn w-100 btn-primary mt-2" type="submit">Mettre à jour</button>
+            <button class="btn w-100 btn-primary mt-2" type="submit">{{ label_validate_btn }}</button>
         </form>
     </div>
 </div>
