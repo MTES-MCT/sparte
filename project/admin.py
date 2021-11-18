@@ -56,7 +56,8 @@ class PlanAdmin(admin.GeoModelAdmin):
     )
     list_filter = ("import_status",)
     search_fields = (
-        "project" "name",
+        "project",
+        "name",
         "import_error",
         "user",
     )
