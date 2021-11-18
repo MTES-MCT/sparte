@@ -263,10 +263,9 @@ class ProjectMapView(GroupMixin, DetailView):
     context_object_name = "project"
 
     def get_context_data(self, **kwargs):
-        context1 = super().get_context_data(**kwargs)
         # UPGRADE: add center and zoom fields on project model
         # values would be infered when emprise is loaded
-        context2 = {
+        context = {
             # center map on France
             "carto_name": "Project",
             "center_lat": 44.6586,
@@ -317,9 +316,13 @@ class ProjectMapView(GroupMixin, DetailView):
                     ),
                     "level": "3",
                 },
+                {},
             ],
         }
-        return {**context1, **context2}
+        return {
+            **super().get_context_data(**kwargs),
+            **context,
+        }
 
 
 class ProjectCreateView(GroupMixin, CreateView):
