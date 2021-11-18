@@ -101,6 +101,10 @@ function Carto (map_center, default_zoom)
     this.add_geolayer = (geolayer) => {
         let layer = new GeoLayer(geolayer.name, geolayer.url)
 
+        // set the property containing the information to choose the color
+        // could be the color itself
+        layer.color_property_name = get(geolayer, "color_property_name", "surface")
+
         // set an eventlistner to load only visible data if we don't load
         // everything upfront (which is better)
         layer.load_full_data = get(geolayer, "load_full_data", false)
@@ -197,6 +201,9 @@ function GeoLayer (name, url) {
     // Set to true to center the map on layer after data has been loaded
     this.fit_map = false
 
+    // Define which property to use to set color of a feature
+    this.color_property_name = "surface"
+
     // A utiliser quand on va chercher une échelle de customisation définie
     // par la back. Permet de s'assurer que l'échelle est initialisée avant
     // que les données du back soient chargées
@@ -211,13 +218,16 @@ function GeoLayer (name, url) {
     }
 
     // a surcharger pour changer la façon dont la couleur est choisie
+    // if this.scale is defined, it will use a property value (like surface) to
+    // match against a scale to find the value
+    // il no scale are defined, it will look in a property to find a color
     this.get_color = (feature) => {
         // get the property that will decide the color
         property_value = this.get_color_property_value(feature)
 
         // default color if scale is not set
         if (this.scale == null){
-            return '#FFEDA0'
+            return property_value
         }
         else
         {
@@ -235,12 +245,23 @@ function GeoLayer (name, url) {
 
     // set which property must be used to set the color
     this.get_color_property_name = (feature) => {
-        return 'surface'
+        return this.color_property_name
     }
 
+    // return the value of the feature's property defined in function
+    // this.get_color_property_name
+    // this could return any value to use with a scale
+    // or directly a color like #ff0055
     this.get_color_property_value = (feature) => {
         property_name = this.get_color_property_name(feature)
-        return feature.properties[property_name]
+        if (property_name == null)
+        {
+            return '#FFEDA0'
+        }
+        else
+        {
+            return feature.properties[property_name]
+        }
     }
 
     // A surcharger pour changer le styling par défault d'une feature
