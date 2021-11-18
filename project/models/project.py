@@ -23,7 +23,7 @@ class BaseProject(models.Model):
 
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
         verbose_name="propriétaire",
     )
     name = models.CharField("Nom", max_length=100)
