@@ -1,10 +1,18 @@
 {% if project %}
-    <a href="{% url 'project:detail' project.pk %}" class="text-decoration-none" style="font-size:16pt;" class="me-2">
-        {{ project.name }}
-    </a>
-    {% if project.import_status == "SUCCESS" %}
-    <!--<a href="{% url 'project:update' project.pk %}" data-toggle="tooltip" title="Edition" class="me-1"><i data-feather="edit" stroke-width="2" height="100%" color="#0000dd"></i></a>-->
-    <a href="{% url 'project:report' project.pk %}" data-toggle="tooltip" title="Rapports" class="me-1"><i data-feather="pie-chart" height="20"></i></a>
-    <a href="{% url 'project:map' project.pk %}" data-toggle="tooltip" title="Carte intéractive"><i data-feather="map" height="20"></i></a>
-    {% endif %}
+    <table class="h-100">
+        <tr>
+            <td class="align-middle">
+                <a href="{% url 'project:detail' project.pk %}" class="text-decoration-none" style="font-size:16pt;" class="me-2">
+                    {{ project.name }}
+                </a>
+            </td>
+            <td class="align-middle">
+                {% if project.import_status == "SUCCESS" %}
+                <!--<a href="{% url 'project:update' project.pk %}" data-toggle="tooltip" title="Edition" class="me-1"><i class="bi bi-pencil"></i></a>-->
+                <a href="{% url 'project:report' project.pk %}" data-toggle="tooltip" title="Rapports" class="ms-3 me-1"><i class="bi bi-graph-down"></i></a>
+                <a href="{% url 'project:map' project.pk %}" data-toggle="tooltip" title="Carte intéractive"><i class="bi bi-map"></i></a>
+                {% endif %}
+            </td>
+        </tr>
+    </table>
 {% endif %}
