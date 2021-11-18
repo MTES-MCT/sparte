@@ -11,79 +11,80 @@ Rapport artificialisation
 {% endblock %}
 
 {% block content %}
+    <div class="pe-4 ps-4">
+        {% include "project/detail_menu.html" %}
 
-    {% include "project/detail_menu.html" %}
+        <div class="w-100 mt-5">
+            <div id="chart" class="flex-fill"></div>
+        </div>
 
-    <div class="w-100 mt-5">
-        <div id="chart" class="flex-fill"></div>
-    </div>
+        <div class="w-100 mt-5">
+            <div id="chart_2" class="flex-fill"></div>
+        </div>
 
-    <div class="w-100 mt-5">
-        <div id="chart_2" class="flex-fill"></div>
-    </div>
+        <div class="mt-5 w-70">
+            <h3>Progression de la couverture du sol de 2015 à 2018 :</h3>
+            <table class="table table-sm">
+                <thead>
+                    <tr>
+                        <th scope="col">Code</th>
+                        <th scope="col">Libellé</th>
+                        <th scope="col">Surface 2015 (km²)</th>
+                        <th scope="col">Progression</th>
+                        <th scope="col">Surface 2018 (km²)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for data in data_covers %}
+                    <tr>
+                        <th scope="row">{{ data.level|space }} {{ data.code }}</th>
+                        <td>{{ data.label_short }}</td>
+                        <td>{{ data.total_surface.2015|sq_km }}</td>
+                        <td>
+                            {{ data.total_surface.2018|remove:data.total_surface.2015 }}
+                        </td>
+                        <td>{{ data.total_surface.2018|sq_km }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
 
-    <div class="mt-5 w-70">
-        <h3>Progression de la couverture du sol de 2015 à 2018 :</h3>
-        <table class="table table-sm">
-            <thead>
-                <tr>
-                    <th scope="col">Code</th>
-                    <th scope="col">Libellé</th>
-                    <th scope="col">Surface 2015 (km²)</th>
-                    <th scope="col">Progression</th>
-                    <th scope="col">Surface 2018 (km²)</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for data in data_covers %}
-                <tr>
-                    <th scope="row">{{ data.level|space }} {{ data.code }}</th>
-                    <td>{{ data.label_short }}</td>
-                    <td>{{ data.total_surface.2015|sq_km }}</td>
-                    <td>
-                        {{ data.total_surface.2018|remove:data.total_surface.2015 }}
-                    </td>
-                    <td>{{ data.total_surface.2018|sq_km }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-
-    <div class="mt-5 table-sm">
-        <h3>Répartition de la couverture du sol en 2018 :</h3>
-        <p>Surface du territoire considéré: {{ surface_territoire|sq_km }} km²</p>
-        <table class="table w-80">
-            <thead>
-                <tr>
-                    <th scope="col">Code</th>
-                    <th scope="col">Libellé</th>
-                    <th scope="col">Surface 2018 (km²)</th>
-                    <th scope="col">Pourcentage</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for data in data_covers %}
-                <tr>
-                    <th scope="row">{{ data.level|space }} {{ data.code }}</th>
-                    <td>{{ data.label_short }}</td>
-                    <td>{{ data.total_surface.2018|sq_km }}</td>
-                    <td>
-                        {{ data.total_surface.2018|percent:surface_territoire }}
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+        <div class="mt-5 table-sm">
+            <h3>Répartition de la couverture du sol en 2018 :</h3>
+            <p>Surface du territoire considéré: {{ surface_territoire|sq_km }} km²</p>
+            <table class="table w-80">
+                <thead>
+                    <tr>
+                        <th scope="col">Code</th>
+                        <th scope="col">Libellé</th>
+                        <th scope="col">Surface 2018 (km²)</th>
+                        <th scope="col">Pourcentage</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for data in data_covers %}
+                    <tr>
+                        <th scope="row">{{ data.level|space }} {{ data.code }}</th>
+                        <td>{{ data.label_short }}</td>
+                        <td>{{ data.total_surface.2018|sq_km }}</td>
+                        <td>
+                            {{ data.total_surface.2018|percent:surface_territoire }}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
 
 
-    <div>
-    Sources:</p>
-    <ul>
-        <li><a href="{% url 'public_data:ocsge2015-list' %}?limit=2"></a>Données OCS GE 2015</a></li>
-        <li><a href="{% url 'public_data:ocsge2018-list' %}?limit=2"></a>Données OCS GE 2018</a></li>
-    </ul>
+        <div>
+            Sources:</p>
+            <ul>
+                <li><a href="{% url 'public_data:ocsge2015-list' %}?limit=2"></a>Données OCS GE 2015</a></li>
+                <li><a href="{% url 'public_data:ocsge2018-list' %}?limit=2"></a>Données OCS GE 2018</a></li>
+            </ul>
+        </div>
     </div>
 {% endblock %}
 
