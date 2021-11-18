@@ -24,13 +24,15 @@ RUN pip install --upgrade pip
 # install pipenv
 RUN pip install pipenv
 # install project dependencies
-RUN pipenv install $(test "$STAGE" == production || echo "--dev") --deploy --system --ignore-pipfile
+# RUN pipenv install $(test "$STAGE" == production || echo "--dev") --deploy --system --ignore-pipfile
+RUN pipenv install --dev --deploy --system --ignore-pipfile
 
 # setup ssh for git
-RUN mkdir ~/.ssh
-COPY ~/.ssh/id_rsa /home/id_rsa
+RUN mkdir -p /root/.ssh
+COPY id_rsa /root/.ssh/id_rsa
+RUN chmod 700 /root/.ssh/id_rsa
 RUN ssh-keyscan -t rsa github.com > ~/.ssh/known_hosts
 
-EXPOSE 8000
+EXPOSE 8080
 
 CMD [ "python", "manage.py", "runserver", "0.0.0.0:8000" ]
