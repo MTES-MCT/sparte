@@ -7,6 +7,7 @@ from django.utils.functional import cached_property
 
 from django.contrib.gis.db import models as gis_models
 from django.contrib.gis.db.models import Union
+from django.utils import timezone
 
 from public_data.behaviors import DataColorationMixin
 
@@ -66,12 +67,14 @@ class BaseProject(models.Model):
 
     def set_success(self, save=True):
         self.import_status = self.Status.SUCCESS
+        self.import_date = timezone.now()
         self.import_error = None
         if save:
             self.save()
 
     def set_failed(self, save=True, trace=None):
         self.import_status = self.Status.FAILED
+        self.import_date = timezone.now()
         if trace:
             self.import_error = trace
         else:
