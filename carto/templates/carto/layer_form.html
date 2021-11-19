@@ -1,0 +1,73 @@
+<p class="mb-0">
+    <button class="btn btn-primary" type="button"
+            data-bs-toggle="collapse" data-bs-target="#layer_form"
+            aria-expanded="true" aria-controls="collapseExample">
+    Données
+    </button>
+</p>
+
+
+<div class="collapse" id="layer_form">
+  <div class="card card-body" id="ze_target">
+  </div>
+</div>
+
+<script language="javascript">
+layers = [
+{% for layer in layer_list %}
+    {
+        {% for k, v in layer.items %}
+        {{ k }}: "{{ v|safe }}",
+        {% endfor %}
+    },
+{% endfor %}
+]
+
+
+var ze_target = document.getElementById("ze_target")
+
+/*
+<div class="form-check form-switch">
+  <input class="form-check-input" type="checkbox" id="layer_form_switch_1">
+  <label class="form-check-label" for="layer_form_switch_1">Layer 1</label>
+</div>
+*/
+function create_switch(index){
+  // create wrapper div
+  let layer = layers[index]
+  let outer_div = document.createElement("div")
+  outer_div.setAttribute("class", "form-check form-switch")
+  ze_target.appendChild(outer_div)
+  // add switch
+  let input = document.createElement("input")
+  input.setAttribute("class", "form-check-input")
+  input.setAttribute("type", "checkbox")
+  input.setAttribute("index", index)
+  input.checked = layer.immediate_display == "True" ? true : false
+  let id = `${layer.name}_switch`
+  input.setAttribute("id", id)
+  outer_div.appendChild(input);
+  // add label
+  let label = document.createElement("label")
+  label.setAttribute("class", "form-check-label")
+  label.setAttribute("for", id)
+  label.innerHTML = layer.name
+  outer_div.appendChild(label);
+
+  return input
+}
+
+
+layers.forEach((layer, index) => {
+  input = create_switch(index)
+  input.addEventListener('click', (event, state) => {
+    let input = event.target
+    let checked = input.checked
+    let layer = layers[input.getAttribute('index')]
+    console.log(`${layer.name} is ${checked}`)
+  })
+})
+
+
+function activate_layer(layer)
+</script>

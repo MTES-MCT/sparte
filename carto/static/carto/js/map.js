@@ -74,7 +74,6 @@ function Carto (map_center, default_zoom)
         // Initialize map
         this.map.setView(this.map_center, this.default_zoom)
 
-        z_index = 510
         for (i=0; i<10; i++)
         {
             let pane_name = `level_${i}`
