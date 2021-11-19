@@ -262,6 +262,44 @@ class ProjectMapView(GroupMixin, DetailView):
     template_name = "carto/full_carto.html"
     context_object_name = "project"
 
+    def get_ocsgez_context(self):
+        url = reverse_lazy("public_data:ocsge-optimized")
+        context = super().get_context_data(**kwargs)
+        context.update(
+            {
+                "layer_list": [
+                    {
+                        "name": "OCSGE 2015 - Usage du sol",
+                        "url": url + "?year=2015&color=usage",
+                        "immediate_display": False,
+                        "level": "1",
+                        "color_property_name": "map_color",
+                    },
+                    {
+                        "name": "OCSGE 2015 - Couverture du sol",
+                        "url": url + "?year=2015&color=couverture",
+                        "immediate_display": False,
+                        "level": "1",
+                        "color_property_name": "map_color",
+                    },
+                    {
+                        "name": "OCSGE 2018 - Usage du sol",
+                        "url": url + "?year=2018&color=usage",
+                        "immediate_display": False,
+                        "level": "1",
+                        "color_property_name": "map_color",
+                    },
+                    {
+                        "name": "OCSGE 2018 - Couverture du sol",
+                        "url": url + "?year=2018&color=couverture",
+                        "immediate_display": False,
+                        "level": "1",
+                        "color_property_name": "map_color",
+                    },
+                ],
+            }
+        )
+
     def get_context_data(self, **kwargs):
         # UPGRADE: add center and zoom fields on project model
         # values would be infered when emprise is loaded
@@ -279,7 +317,7 @@ class ProjectMapView(GroupMixin, DetailView):
                     "gradient_url": reverse_lazy(
                         "public_data:communessybarval-gradient"
                     ),
-                    "level": "1",
+                    "level": "2",
                 },
                 {
                     "name": "Emprise du projet",

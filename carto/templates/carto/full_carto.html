@@ -44,7 +44,9 @@
 {% endblock %}
 
 {% block content %}
-<div class="d-flex flex-fill h-100" style="overflow:auto;">
+<div class="d-flex flex-column flex-fill h-100" style="overflow:auto;">
+    <div>{% include "carto/layer_form.html" %}</div>
+
     <div id="mapid" class="flex-grow-1"></div>
 </div>
 {% endblock %}
@@ -64,6 +66,6 @@ geolayers = [
 ]
 
 let carto = new Carto ([{{ center_lat }}, {{ center_lng }}], {{ default_zoom }})
-carto.init(geolayers)
+//carto.init(geolayers)
 </script>
 {% endblock %}
