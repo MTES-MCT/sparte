@@ -206,6 +206,9 @@ function GeoLayer (name, url) {
     // Define which property to use to set color of a feature
     this.color_property_name = "surface"
 
+    // DOM element containing the loading image for the filter widget
+    this.loading_img = undefined
+
     // a surcharger pour changer la façon dont la couleur est choisie
     // if this.scale is defined, it will use a property value (like surface) to
     // match against a scale to find the value
@@ -381,6 +384,9 @@ function GeoLayer (name, url) {
         if (this.display == false)
             return
 
+        //display loading image
+        this.loading_img.setAttribute("style", "display: inline;")
+
         // full: indicate if we have to load everything (true) or if we have to get only data visible on the map (false)
 
         let url = this.get_url()
@@ -411,6 +417,9 @@ function GeoLayer (name, url) {
                 console.log(bounds)
                 carto.map.fitBounds(bounds);
             }
+
+            // hide loading image
+            this.loading_img.setAttribute("style", "display: none;")
         })
     }
 
@@ -433,7 +442,9 @@ function GeoLayer (name, url) {
         label.setAttribute("class", "form-check-label")
         label.setAttribute("for", id)
         label.innerHTML = this.name
-        outer_div.appendChild(label);
+        outer_div.appendChild(label)
+
+        this.create_loading_image(label)
 
         input.addEventListener('click', (event, state) => {
             let checked = event.target.checked
@@ -443,6 +454,17 @@ function GeoLayer (name, url) {
                 this.deactivate_layer()
             }
         })
+    }
+
+    this.create_loading_image = (container) => {
+        let img = document.createElement("img")
+        img.setAttribute("src", "/static/carto/img/loading-buffering.gif")
+        img.setAttribute("class", "ms-1")
+        img.setAttribute("style", "display: none;")
+        img.setAttribute("width", "12")
+        img.setAttribute("height", "12")
+        this.loading_img = img
+        container.appendChild(this.loading_img)
     }
 
     this.activate_layer = () => {
@@ -501,6 +523,8 @@ function GeoLayer (name, url) {
         select_sol.addEventListener('click', (e, s) => this.click(input))
         input_div.appendChild(select_sol)
 
+        this.create_loading_image(label)
+
         this.get_url = () => {
             let url = this.url
             if (url.includes("?"))
@@ -538,4 +562,12 @@ function get_select(id, options){
         select.appendChild(option)
     }
     return select
+}
+
+function get_loading_gif(id){
+    let img = document.createElement("img")
+    img.setAttribute("src", "/static/carto/img/loading-buffering.gif")
+    img.setAttribute("id", id)
+    img.setAttribute("width", "12")
+    img.setAttribute("height", "12")
 }
