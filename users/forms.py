@@ -78,3 +78,38 @@ class SigninForm(AuthenticationForm):
         ),
         max_length=50,
     )
+
+
+class UpdatePasswordForm(forms.Form):
+    old_password = forms.CharField(
+        label="Ancien mot de passe", widget=forms.PasswordInput()
+    )
+    new_password = forms.CharField(
+        label="Nouveau mot de passe", widget=forms.PasswordInput()
+    )
+    new_password2 = forms.CharField(
+        label="Répétez votre nouveau mot de passe", widget=forms.PasswordInput()
+    )
+
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop("user")
+        super().__init__(*args, **kwargs)
+
+    def clean(self):
+        cleaned_data = super().clean()
+        old_password = cleaned_data.get("old_password")
+        new_password = cleaned_data.get("new_password")
+        new_password2 = cleaned_data.get("new_password2")
+        if not self.user.check_password(old_password):
+            self.add_error("old_password", "Ancien mot de passe incorrecte.")
+        if new_password is None:
+            self.add_error("new_password", "Votre mot de passe ne doit pas être vide.")
+        if new_password != new_password2:
+            self.add_error("new_password2", "Les mots de passe ne sont pas identiques")
+        return cleaned_data
+
+    def save(self):
+        passwrd = self.cleaned_data.get("new_password")
+        self.user.set_password(passwrd)
+        self.user.save()
+        return self.user
