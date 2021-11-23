@@ -7,6 +7,7 @@ from django.utils.functional import cached_property
 
 from django.contrib.gis.db import models as gis_models
 from django.contrib.gis.db.models import Union
+from django.utils import timezone
 
 from public_data.behaviors import DataColorationMixin
 
@@ -22,7 +23,7 @@ class BaseProject(models.Model):
 
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
         verbose_name="propriétaire",
     )
     name = models.CharField("Nom", max_length=100)
@@ -66,12 +67,14 @@ class BaseProject(models.Model):
 
     def set_success(self, save=True):
         self.import_status = self.Status.SUCCESS
+        self.import_date = timezone.now()
         self.import_error = None
         if save:
             self.save()
 
     def set_failed(self, save=True, trace=None):
         self.import_status = self.Status.FAILED
+        self.import_date = timezone.now()
         if trace:
             self.import_error = trace
         else:
@@ -127,8 +130,9 @@ class Project(BaseProject):
         self.emprise_set.all().delete()
         self.import_status = BaseProject.Status.MISSING
         self.import_date = None
+        self.import_error = None
         self.couverture_usage = None
-        self.shape_file.delete(save=False)
+        self.shape_file.delete(save=save)
         if save:
             self.save()
 

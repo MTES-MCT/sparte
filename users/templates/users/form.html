@@ -1,0 +1,28 @@
+{% extends 'index.html' %}
+
+{% load crispy_forms_tags %}
+
+{% block pagetitle %}{{ page_title }}{% endblock %}
+
+{% block content %}
+
+<div class="row align-items-center justify-content-center h-100 mr-0 ml-0">
+    <div class="col-12 col-md-5 col-lg-4">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+
+        <h1 class="mb-3 fw-bold text-center">{{ title }}</h1>
+
+        <form action="" method="post">
+            {% csrf_token %}
+            {{ form|crispy }}
+            <button class="btn w-100 btn-primary mt-2" type="submit">{{ label_validate_btn }}</button>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

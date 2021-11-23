@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'index.html' %}
 
 {% load crispy_forms_tags %}
 
@@ -11,13 +11,22 @@
     <div class="col-12 col-md-5 col-lg-4">
 
         {% if next %}
-            {% if user.is_authenticated %}
-            <p>Your account doesn't have access to this page. To proceed,
-            please login with an account that has access.</p>
-            {% else %}
-            <p>Please login to see this page.</p>
-            {% endif %}
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                {% if user.is_authenticated %}
+                Vous n'avez pas accès à cette page, vos droits sont insuffisants.
+                {% else %}
+                Merci de vous connecter pour voir cette page.
+                {% endif %}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
         {% endif %}
+
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
 
         <h1 class="mb-3 fw-bold text-center">Connexion</h1>
 

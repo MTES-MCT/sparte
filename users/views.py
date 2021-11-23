@@ -1,11 +1,13 @@
+from django.contrib import messages
 from django.contrib.auth import logout
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
 from django.views.generic import DetailView, ListView, RedirectView
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormView
 from django.urls import reverse_lazy
 
 from .models import User
-from .forms import SignupForm, SigninForm
+from .forms import SignupForm, SigninForm, UpdatePasswordForm
 
 
 class SigninView(LoginView):
@@ -43,5 +45,55 @@ class UserUpdateView(UpdateView):
 
 
 class UserDeleteView(DeleteView):
+    template_name = "users/form.html"
+    extra_context = {
+        "label_validate_btn": "Confirmer",
+        "page_title": "Désinscription",
+        "title": "Désinscription",
+    }
     model = User
     success_url = reverse_lazy("home")
+
+    def get_object(self, queryset=None):
+        """Return connected user."""
+        return self.request.user
+
+
+class ProfilFormView(LoginRequiredMixin, UpdateView):
+    template_name = "users/profile.html"
+    success_url = reverse_lazy("users:profile")
+    model = User
+    fields = ["first_name", "last_name", "organism", "function"]
+    extra_context = {
+        "label_validate_btn": "Mettre à jour",
+        "page_title": "Profil",
+        "title": "Votre profil",
+    }
+
+    def get_object(self, queryset=None):
+        return self.request.user
+
+    def form_valid(self, form):
+        messages.success(self.request, "Votre profil a été mis à jour avec succès.")
+        return super().form_valid(form)
+
+
+class UpdatePwFormView(LoginRequiredMixin, FormView):
+    template_name = "users/form.html"
+    form_class = UpdatePasswordForm
+    success_url = reverse_lazy("users:profile")
+    extra_context = {
+        "label_validate_btn": "Changer",
+        "page_title": "Changer de mot de passe",
+        "title": "Changer de mot de passe",
+    }
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs.update({"user": self.request.user})
+        return kwargs
+
+    def form_valid(self, form):
+        messages.success(self.request, "Votre mot de passe a été changé.")
+        form.save()
+        return super().form_valid(form)

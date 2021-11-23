@@ -1,4 +1,4 @@
-{% extends 'project/base_detail.html' %}
+{% extends 'carto/full_carto.html' %}
 
 {% load static %}
 {% load project_tags %}
@@ -7,12 +7,20 @@
 Project detail
 {% endblock %}
 
-{% block headers %}
-{% endblock %}
-
-{% block detail_content %}
-Hello the world
-{% endblock %}
-
-{% block bodyend %}
+{% block content %}
+<div class="d-flex flex-column h-100 w-100">
+    <div class="row w-100 h-100">
+        <div class="col-4 align-self-center p-5">
+            <h2 class="mb-5">{{ plan.name }}</h2>
+            <p>{{ plan.description }}</p>
+            <ul>
+                <li><i class="bi bi-pencil"></i> <a href="{% url 'project:plan-update' plan.pk %}">Editer</a></li>
+                <li><i class="bi bi-trash"></i> <a href="{% url 'project:plan-delete' plan.pk %}">Effacer</a></li>
+            </ul>
+        </div>
+        <div class="col-8 h-100">
+            <div id="mapid" class="w-100 h-100"></div>
+        </div>
+    </div>
+</div>
 {% endblock %}

@@ -1,0 +1,26 @@
+{% extends 'index.html' %}
+
+{% load static %}
+
+{% block pagetitle %}Matrice de compréhension des sols{% endblock %}
+
+{% block content %}
+<div class="h-100 justify-content-center p-3">
+    <h2>Matrice de qualification des sols</h2>
+
+    <p>Cette matrice croise les référentiels Couverture Des Sol et Usage Des
+    Sols. Chaque intersection indique si le sol est artificiel, consommé
+    ou naturel. Lorsque le croisement entre une couverture et un
+    usage est improbable, l'intersection est vide (les lignes et colonnes vides
+    ont été masquées).</p>
+
+    <p class="alert alert-warning" role="alert">Avertissement: ceci n'est pas un
+    document officiel, les groupes de travail n'ont pas encore rendu leurs
+    résultats et aucun texte de loi ne précise exactement ce qui est consommé,
+    artificialisé, etc. Cette matrice a été mise au point par nos soins dans le
+    but de démontrer la pertinence de SPARTE. La matrice sera mise à jour dès
+    qu'une information officielle sera publiée.</p>
+
+    <p>{{ matrix|safe }}</p>
+</div>
+{% endblock %}

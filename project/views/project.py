@@ -263,58 +263,75 @@ class ProjectMapView(GroupMixin, DetailView):
     context_object_name = "project"
 
     def get_context_data(self, **kwargs):
-        context1 = super().get_context_data(**kwargs)
         # UPGRADE: add center and zoom fields on project model
         # values would be infered when emprise is loaded
-        context2 = {
-            # center map on France
-            "carto_name": "Project",
-            "center_lat": 44.6586,
-            "center_lng": -1.164,
-            "default_zoom": 12,
-            "layer_list": [
-                {
-                    "name": "Communes SYBARVAL",
-                    "url": reverse_lazy("public_data:communessybarval-list"),
-                    "immediate_display": False,
-                    "gradient_url": reverse_lazy(
-                        "public_data:communessybarval-gradient"
-                    ),
-                },
-                {
-                    "name": "Emprise du projet",
-                    "url": reverse_lazy("project:emprise-list")
-                    + f"?project_id={self.object.pk}",
-                    "immediate_display": True,
-                    "use_emprise_style": True,
-                    "fit_map": True,
-                },
-                {
-                    "name": "Artificialisation 2015 à 2018",
-                    "url": reverse_lazy("public_data:artificialisee2015to2018-list"),
-                    "immediate_display": True,
-                    "gradient_url": reverse_lazy(
-                        "public_data:artificialisee2015to2018-gradient"
-                    ),
-                },
-                {
-                    "name": "Renaturation de 2018 à 2015",
-                    "url": reverse_lazy("public_data:renaturee2018to2015-list"),
-                    "gradient_url": reverse_lazy(
-                        "public_data:renaturee2018to2015-gradient"
-                    ),
-                },
-                {
-                    "name": "Zones artificielles",
-                    "url": reverse_lazy("public_data:artificielle2018-list"),
-                    "immediate_display": False,
-                    "gradient_url": reverse_lazy(
-                        "public_data:artificielle2018-gradient"
-                    ),
-                },
-            ],
-        }
-        return {**context1, **context2}
+        context = super().get_context_data(**kwargs)
+        context.update(
+            {
+                # center map on France
+                "carto_name": "Project",
+                "center_lat": 44.6586,
+                "center_lng": -1.164,
+                "default_zoom": 12,
+                "layer_list": [
+                    {
+                        "name": "Communes SYBARVAL",
+                        "url": reverse_lazy("public_data:communessybarval-list"),
+                        "display": False,
+                        "gradient_url": reverse_lazy(
+                            "public_data:communessybarval-gradient"
+                        ),
+                        "level": "2",
+                    },
+                    {
+                        "name": "Emprise du projet",
+                        "url": reverse_lazy("project:emprise-list")
+                        + f"?id={self.object.pk}",
+                        "display": True,
+                        "use_emprise_style": True,
+                        "fit_map": True,
+                        "level": "5",
+                    },
+                    {
+                        "name": "Artificialisation 2015 à 2018",
+                        "url": reverse_lazy(
+                            "public_data:artificialisee2015to2018-list"
+                        ),
+                        "display": False,
+                        "gradient_url": reverse_lazy(
+                            "public_data:artificialisee2015to2018-gradient"
+                        ),
+                        "level": "7",
+                    },
+                    {
+                        "name": "Renaturation de 2018 à 2015",
+                        "url": reverse_lazy("public_data:renaturee2018to2015-list"),
+                        "gradient_url": reverse_lazy(
+                            "public_data:renaturee2018to2015-gradient"
+                        ),
+                        "level": "7",
+                    },
+                    {
+                        "name": "Zones artificielles",
+                        "url": reverse_lazy("public_data:artificielle2018-list"),
+                        "display": False,
+                        "gradient_url": reverse_lazy(
+                            "public_data:artificielle2018-gradient"
+                        ),
+                        "level": "3",
+                    },
+                    {
+                        "name": "OCSGE",
+                        "url": reverse_lazy("public_data:ocsge-optimized"),
+                        "display": False,
+                        "color_property_name": "map_color",
+                        "level": "1",
+                        "switch": "ocsge",
+                    },
+                ],
+            }
+        )
+        return context
 
 
 class ProjectCreateView(GroupMixin, CreateView):

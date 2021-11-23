@@ -1,4 +1,4 @@
-{% extends 'project/base_detail.html' %}
+{% extends 'index.html' %}
 
 {% load static %}
 {% load crispy_forms_tags %}
@@ -12,66 +12,70 @@ Project detail
 {{ city_form.media }}
 {% endblock %}
 
-{% block detail_content %}
-<div style="width:750px;">
-    <h3>Sélectionnez une emprise territoriale</h3>
+{% block content %}
+<div class="d-flex flex-column h-100 w-100 align-items-center justify-content-center">
+    <div class="col-12 col-md-8 col-lg-8">
+        <h3>Sélectionnez une emprise territoriale</h3>
 
-    <p>Votre projet est correctement créé, vous devez maintenant définir une emprise
-    terrirtoriale</p>
+        <p>Votre projet est correctement créé, vous devez maintenant définir une emprise
+        terrirtoriale</p>
 
-    <p>L'emprise indique à l'application quel est le périmètre de votre projet
-    d'aménagement, ce qui lui permet d'aller chercher les informations
-    correspondantes. Par exemple toutes les zones artificialisées depuis 2009 ainsi
-    que toutes les zones renaturalisées. Ainsi nous pouvons vous proposer un
-    rapport avec le bilan de l'artificialisation de votre territoire.</p>
+        <p>L'emprise indique à l'application quel est le périmètre de votre projet
+        d'aménagement, ce qui lui permet d'aller chercher les informations
+        correspondantes. Par exemple toutes les zones artificialisées depuis 2009 ainsi
+        que toutes les zones renaturalisées. Ainsi nous pouvons vous proposer un
+        rapport avec le bilan de l'artificialisation de votre territoire.</p>
 
-    <p>
-        Pour indiquer l'emprise de votre projet, vous avez 3 méthodes :
-        <ul>
-            <li>Sélectionnez une ou plusieurs villes dans la liste des communes.</li>
-            <li>Sélectionnez un projet d'amménagement connu (ex : un scot, un epci, etc).</li>
-            <li>Uploader un zip contenant le fichier Shape (.shp) ainsi que lesfichiers dépendants.</li>
-        </ul>
-    </p>
-</div>
+        <p>
+            Pour indiquer l'emprise de votre projet, vous avez 3 méthodes :
+            <ul>
+                <li>Sélectionnez une ou plusieurs villes dans la liste des communes.</li>
+                <li>Sélectionnez un projet d'amménagement connu (ex : un scot, un epci, etc).</li>
+                <li>Uploader un zip contenant le fichier Shape (.shp) ainsi que lesfichiers dépendants.</li>
+            </ul>
+        </p>
 
-
-<div class="container">
-    <ul class="nav nav-tabs">
-        <li class="nav-item">
-            <a href="#city" class="nav-link active" data-toggle="tab">Par communes</a>
-        </li>
-        <li class="nav-item">
-            <a href="#profile" class="nav-link" data-toggle="tab">Par aménagement connu</a>
-        </li>
-        <li class="nav-item">
-            <a href="#messages" class="nav-link" data-toggle="tab">Avec un fichier shape</a>
-        </li>
-    </ul>
-    <div class="tab-content">
-        <div class="tab-pane fade show active" id="city">
-            <form action="" method="post">
-                {% csrf_token %}
-                {{ city_form|crispy }}
-                <button class="btn w-100 btn-primary mt-4" type="submit">Sélectionner</button>
-            </form>
-        </div>
-        <div class="tab-pane fade" id="profile">
-            <form action="" method="post">
-                {% csrf_token %}
-                {{ plu_form|crispy }}
-                <button class="btn w-100 btn-primary mt-4" type="submit">Sélectionner</button>
-            </form>
-        </div>
-        <div class="tab-pane fade" id="messages">
-            <form action="" method="post" enctype="multipart/form-data">
-                {% csrf_token %}
-                {{ shp_form|crispy }}
-                <button class="btn w-100 btn-primary mt-4" type="submit">Envoyer</button>
-            </form>
-        </div>
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="city-tab" data-bs-toggle="tab" data-bs-target="#city" type="button" role="tab" aria-controls="city" aria-selected="true">
+                    Par communes
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="amenagement-tab" data-bs-toggle="tab" data-bs-target="#amenagement" type="button" role="tab" aria-controls="amenagement" aria-selected="false">
+                    Par aménagement connu
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="fichier-tab" data-bs-toggle="tab" data-bs-target="#fichier" type="button" role="tab" aria-controls="fichier" aria-selected="false">
+                    Avec un fichier shape
+                </button>
+            </li>
+          </ul>
+          <div class="tab-content" id="myTabContent">
+            <div class="tab-pane fade show active" id="city" role="tabpanel" aria-labelledby="city-tab">
+                <form action="" method="post">
+                    {% csrf_token %}
+                    {{ city_form|crispy }}
+                    <button class="btn w-100 btn-primary mt-4" type="submit">Sélectionner</button>
+                </form>
+            </div>
+            <div class="tab-pane fade" id="amenagement" role="tabpanel" aria-labelledby="amenagement-tab">
+                <form action="" method="post">
+                    {% csrf_token %}
+                    {{ plu_form|crispy }}
+                    <button class="btn w-100 btn-primary mt-4" type="submit">Sélectionner</button>
+                </form>
+            </div>
+            <div class="tab-pane fade" id="fichier" role="tabpanel" aria-labelledby="fichier-tab">
+                <form action="" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {{ shp_form|crispy }}
+                    <button class="btn w-100 btn-primary mt-4" type="submit">Envoyer</button>
+                </form>
+            </div>
+          </div>
     </div>
-
 </div>
 {% endblock %}
 

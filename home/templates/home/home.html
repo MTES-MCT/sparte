@@ -1,11 +1,11 @@
-{% extends 'base.html' %}
+{% extends 'index.html' %}
 
 {% load static %}
 
-{% block pagetitle %}Home{% endblock %}
+{% block pagetitle %}Accueil{% endblock %}
 
 {% block content %}
-<div class="d-flex h-100 align-items-center justify-content-center">
+<div class="d-flex h-100 justify-content-center">
     <div class="" style="width:750px;">
         <p class="w-100"><img src="{% static 'header.png' %}"  class="w-100" /></p>
 
@@ -27,10 +27,10 @@
 
         <h2 class="mt-5">Comment ça marche ?</h2>
 
-        <div class="card-deck">
+        <div class="card-deck row">
 
-            <div class="card">
-                <img class="card-img-top" src="{% static 'picto_home_1.svg' %}" alt="Pictogramme">
+            <div class="col card ms-1 me-1">
+                <img class="card-img-top" src="{% static 'picto_home_1.svg' %}" alt="Pictogramme" style="height: 110px">
                 <div class="card-body">
                     <p class="card-text">
                         Réalisez le bilan de l’artificialisation des sols de votre territoire
@@ -38,8 +38,8 @@
                 </div>
             </div>
 
-            <div class="card">
-                <img class="card-img-top" src="{% static 'picto_home_2.png' %}" alt="Pictogramme">
+            <div class="col card ms-1 me-1">
+                <img class="card-img-top" src="{% static 'picto_home_2.png' %}" alt="Pictogramme" style="height: 110px">
                 <div class="card-body">
                     <p class="card-text">
                         Analysez l’évolution de l’artificialisation dans le temps selon les indicateurs
@@ -47,8 +47,8 @@
                 </div>
             </div>
 
-            <div class="card">
-                <img class="card-img-top" src="{% static 'picto_home_3.svg' %}" alt="Pictogramme">
+            <div class="col card ms-1 me-1">
+                <img class="card-img-top" src="{% static 'picto_home_3.svg' %}" alt="Pictogramme" style="height: 110px">
                 <div class="card-body">
                     <p class="card-text">
                         Estimez l’impact de vos projets d'urbanisme sur l’artificialisation des sols
@@ -56,17 +56,20 @@
                 </div>
             </div>
 
-            <div class="card">
-                <img class="card-img-top" src="{% static 'picto_home_4.png' %}" alt="Pictogramme">
+            <div class="col card ms-1 me-1">
+                <img class="card-img-top" src="{% static 'picto_home_4.png' %}" alt="Pictogramme" style="height: 110px">
                 <div class="card-body">
                     <p class="card-text">
                         Exportez les cartographies et tableaux de bord pour vos projets
                     </p>
                 </div>
             </div>
+
         </div>
 
         <hr/>
+
+
 
         <h2 class="mt-5">Consommation d’espace ou artificialisation ?</h2>
 
