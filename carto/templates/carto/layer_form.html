@@ -13,17 +13,6 @@
 </div>
 
 <script language="javascript">
-layers = [
-{% for layer in layer_list %}
-    {
-        {% for k, v in layer.items %}
-        {{ k }}: "{{ v|safe }}",
-        {% endfor %}
-    },
-{% endfor %}
-]
-
-
 var ze_target = document.getElementById("ze_target")
 
 /*
@@ -32,7 +21,7 @@ var ze_target = document.getElementById("ze_target")
   <label class="form-check-label" for="layer_form_switch_1">Layer 1</label>
 </div>
 */
-function create_switch(index){
+{% comment %} function create_switch(index){
   // create wrapper div
   let layer = layers[index]
   let outer_div = document.createElement("div")
@@ -43,7 +32,7 @@ function create_switch(index){
   input.setAttribute("class", "form-check-input")
   input.setAttribute("type", "checkbox")
   input.setAttribute("index", index)
-  input.checked = layer.immediate_display == "True" ? true : false
+  input.checked = layer.display == "True" ? true : false
   let id = `${layer.name}_switch`
   input.setAttribute("id", id)
   outer_div.appendChild(input);
@@ -55,6 +44,16 @@ function create_switch(index){
   outer_div.appendChild(label);
 
   return input
+} {% endcomment %}
+
+{% comment %} function activate_layer(layer)
+{
+    console.log(`Activate ${layer.name}`)
+}
+
+function deactivate_layer(layer)
+{
+    console.log(`Deactivate ${layer.name}`)
 }
 
 
@@ -64,10 +63,14 @@ layers.forEach((layer, index) => {
     let input = event.target
     let checked = input.checked
     let layer = layers[input.getAttribute('index')]
-    console.log(`${layer.name} is ${checked}`)
+    if (checked){
+        activate_layer(layer)
+    }else{
+        deactivate_layer(layer)
+    }
   })
-})
+}) {% endcomment %}
 
 
-function activate_layer(layer)
+
 </script>
