@@ -45,17 +45,12 @@
 
                         <div class="collapse navbar-collapse" id="navbarSupportedContent">
 
-                            <div class="mx-auto">
+                            <ul class="navbar-nav mx-auto mt-2 mt-lg-0">
                                 {% block top_bar_title %}
                                 {% include "project/project_menu.html" %}
                                 {% endblock %}
-                            </div>
-
+                            </ul>
                             <ul class="navbar-nav ms-auto mt-2 mt-lg-0">
-                                <!-- Page content wrapper
-                                <li class="nav-item active"><a class="nav-link" href="#!">Home</a></li>
-                                <li class="nav-item"><a class="nav-link" href="#!">Link</a></li>
-                                -->
                                 {% if user.is_authenticated %}
                                 <li class="nav-item dropdown">
                                     <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="bi bi-person-fill"></i> {{ user.email }}</a>
