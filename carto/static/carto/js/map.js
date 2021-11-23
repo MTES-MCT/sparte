@@ -44,7 +44,6 @@ function emprise_style(feature) {
         opacity: 1,
         color: 'red',
         dashArray: '10',
-
         fillOpacity: 0
     }
 }
@@ -58,7 +57,7 @@ function Carto (map_center, default_zoom)
     this.map_center = map_center
     this.default_zoom = default_zoom
 
-    this.layerControl = L.control.layers(null, null)
+    //this.layerControl = L.control.layers(null, null)
     this.info = L.control({position: 'bottomleft'})
     this.legend = L.control({position: 'bottomright'});
     this.map = L.map('mapid')
@@ -90,11 +89,11 @@ function Carto (map_center, default_zoom)
         // add info div
         this.info.addTo(this.map);
         // Add layer control div
-        this.layerControl.addTo(this.map)
+        //this.layerControl.addTo(this.map)
         // add legend div
         this.legend.addTo(this.map)
 
-        geolayers.forEach(element => this.add_geolayer(element))
+        geolayers.forEach(layer => this.add_geolayer(layer))
     }
 
     this.add_geolayer = (geolayer) => {
@@ -110,7 +109,7 @@ function Carto (map_center, default_zoom)
 
         // displayer the layer immediatly after data loading or wait the user
         // to make it visible
-        layer.immediate_display = get(geolayer, "immediate_display", false)
+        layer.display = get(geolayer, "display", false)
 
         // center the map on this layer
         // todo : check that there is only one layer with this activated
@@ -127,13 +126,15 @@ function Carto (map_center, default_zoom)
         if (this.panes.includes(pane))  // check the layer is known
             layer.pane = pane
 
-        gradient_url = get(geolayer, "gradient_url", null)
-        if (gradient_url !== null)
-            layer.add_to_map_with_custom_scale(gradient_url, this)
-        else
-            layer.add_to_map(this)
+        // set the url to retrieve the scale
+        layer.scale_url = get(geolayer, "gradient_url", undefined)
 
-        this.geolayers.push(layer)
+        // if switch is OCSGE, replace building form function
+        is_ocsge_switch = get(geolayer, "switch", undefined)
+        if (is_ocsge_switch == "ocsge")
+            layer.create_switch = layer.create_switch_for_ocsge
+
+        layer.add_to_map(this)
     }
 
     this.info.onAdd = (map) => {
@@ -176,7 +177,7 @@ function GeoLayer (name, url) {
     this.info_txt = null
 
     // define if the layer is to be displayed as soon data are retrieved
-    this.immediate_display = true
+    this.display = true
 
     // reférence à l'objet carto qui contient map
     this.carto = null
@@ -196,25 +197,14 @@ function GeoLayer (name, url) {
     //     {value: 230, color: '#ff6600'},  // 151 -> 230
     // ]
     this.scale = null
+    // Define the url to get data for initialise the scale
+    this.scale_url = undefined
 
     // Set to true to center the map on layer after data has been loaded
     this.fit_map = false
 
     // Define which property to use to set color of a feature
     this.color_property_name = "surface"
-
-    // A utiliser quand on va chercher une échelle de customisation définie
-    // par la back. Permet de s'assurer que l'échelle est initialisée avant
-    // que les données du back soient chargées
-    this.add_to_map_with_custom_scale = (scale_url, carto) =>{
-        $.getJSON(
-            scale_url,
-            (data) => {
-                this.scale = data
-                this.add_to_map(carto)
-            }
-        )
-    }
 
     // a surcharger pour changer la façon dont la couleur est choisie
     // if this.scale is defined, it will use a property value (like surface) to
@@ -324,6 +314,7 @@ function GeoLayer (name, url) {
     this.add_to_map = (carto) => {
 
         this.carto = carto
+        this.create_switch()
 
         // define appearance
         this.geojsonlayer = L.geoJson(
@@ -356,24 +347,43 @@ function GeoLayer (name, url) {
             }
         )
 
+        this.geojsonlayer.addTo(carto.map)
+
+        // if a scale_url is defined, we retrieve the scale data before
+        // retrieving the layer data
+        if (this.scale_url != undefined)
+            $.getJSON(this.scale_url, (data) => {
+                this.scale = data
+                this._add_to_map_step_2()
+            })  // TODO faire un point d'arrêt pour récupérer les données
+        else
+            this._add_to_map_step_2()
+    }
+
+    this._add_to_map_step_2 = () => {
         this.refresh_data()
 
-        if (this.immediate_display){
-            this.geojsonlayer.addTo(carto.map)
-        }
-
         // Add this layer into the layercontrol div (checkbox to display it)
-        carto.layerControl.addOverlay(this.geojsonlayer, this.name)
+        // carto.layerControl.addOverlay(this.geojsonlayer, this.name)
 
         if (this.load_full_data == false)
             // add an eventlistner on user moving the map
             carto.map.on('moveend', this.refresh_data)
     }
 
+    this.get_url = () => {
+        return this.url
+    }
+
     this.refresh_data = () => {
+
+        // if the layer is not displayed, we do not refresh it
+        if (this.display == false)
+            return
+
         // full: indicate if we have to load everything (true) or if we have to get only data visible on the map (false)
 
-        let url = this.url
+        let url = this.get_url()
         if (this.load_full_data == false)
         {
             if (url.includes("?"))
@@ -404,4 +414,128 @@ function GeoLayer (name, url) {
         })
     }
 
+    this.create_switch = () => {
+        // create wrapper div
+        let outer_div = document.createElement("div")
+        outer_div.setAttribute("class", "form-check form-switch")
+        document.getElementById("layer_list").appendChild(outer_div)
+        // add switch
+        let input = document.createElement("input")
+        input.setAttribute("class", "form-check-input")
+        input.setAttribute("type", "checkbox")
+        // input.setAttribute("index", index)
+        input.checked = this.display // == "True" ? true : false
+        let id = `${this.name}_switch`
+        input.setAttribute("id", id)
+        outer_div.appendChild(input);
+        // add label
+        let label = document.createElement("label")
+        label.setAttribute("class", "form-check-label")
+        label.setAttribute("for", id)
+        label.innerHTML = this.name
+        outer_div.appendChild(label);
+
+        input.addEventListener('click', (event, state) => {
+            let checked = event.target.checked
+            if (checked){
+                this.activate_layer()
+            }else{
+                this.deactivate_layer()
+            }
+        })
+    }
+
+    this.activate_layer = () => {
+        console.log(`Activate ${this.name}`)
+        this.display = true
+        this.refresh_data()
+    }
+
+    this.deactivate_layer = () => {
+        console.log(`Deactivate ${this.name}`)
+        this.display = false
+        this.geojsonlayer.clearLayers()
+    }
+
+    this.create_switch_for_ocsge = () => {
+        // create wrapper div
+        let outer_div = document.createElement("div")
+        outer_div.setAttribute("class", "form-check form-switch")
+        document.getElementById("layer_list").appendChild(outer_div)
+        //document.getElementById("layer_ocsge").appendChild(outer_div)
+        // add input button
+        let input = document.createElement("input")
+        input.setAttribute("class", "form-check-input")
+        input.setAttribute("type", "checkbox")
+        // input.setAttribute("index", index)
+        input.checked = this.display // == "True" ? true : false
+        let id = `${this.name}_switch`
+        input.setAttribute("id", id)
+        outer_div.appendChild(input);
+        // add label
+        let label = document.createElement("label")
+        label.setAttribute("class", "form-check-label")
+        label.setAttribute("for", id)
+        //label.innerHTML = this.name
+        outer_div.appendChild(label)
+
+        // <div class="input-group">
+        let input_div = document.createElement("div")
+        input_div.setAttribute("class", "input-group")
+        label.appendChild(input_div)
+
+        // <div class="input-group-text">@</div>
+        let text_div = document.createElement("div")
+        text_div.setAttribute("class", "input-group-text")
+        text_div.innerHTML = "OCSGE : "
+        input_div.appendChild(text_div)
+
+        let select_year = get_select("ocsge_years", {"2015": "2015", "2018": "2018"})
+        select_year.addEventListener('click', (e, s) => this.click(input))
+        input_div.appendChild(select_year)
+
+        let select_sol = get_select("ocsge_sol", {
+            "usage": "Usage du sol",
+            "couverture": "Couverture du sol"
+        })
+        select_sol.addEventListener('click', (e, s) => this.click(input))
+        input_div.appendChild(select_sol)
+
+        this.get_url = () => {
+            let url = this.url
+            if (url.includes("?"))
+                url = url + '&'
+            else
+                url = url + '?'
+            //?year=2015&color=couverture
+            url = url + `year=${document.getElementById("ocsge_years").value}`
+            url = url + `&color=${document.getElementById("ocsge_sol").value}`
+            return url
+        }
+
+        input.addEventListener('click', (e, s) => this.click(e.target))
+    }
+
+    this.click = (target) => {
+        if (target.checked){
+            this.activate_layer()
+        }else{
+            this.deactivate_layer()
+        }
+    }
+
+}
+
+function get_select(id, options){
+    let select = document.createElement("select")
+    select.setAttribute("class", "form-select form-select-sm")
+    select.setAttribute("aria-label", "form-select")
+    select.setAttribute("id", id)
+    for (const [key, value] of Object.entries(options)) {
+        let option = document.createElement("option")
+        option.setAttribute("value", key)
+        option.innerHTML = value
+        select.appendChild(option)
+    }
+    return select
 }
