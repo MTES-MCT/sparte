@@ -1,20 +1,16 @@
-{% extends 'base_connected.html' %}
+{% extends 'index.html' %}
 
 {% load static %}
 {% load map_tags %}
 
 {% block pagetitle %}
- - map
+Carte intéractive
 {% endblock %}
 
 {% block headers %}
     <!-- leaflet -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
-        integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
-        crossorigin=""/>
-    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
-        integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
-        crossorigin=""></script>
+    <link rel="stylesheet" href="{% static 'carto/css/leaflet.css' %}"/>
+    <script src="{% static 'carto/js/leaflet.js' %}"></script>
     <style>
         .info {
             padding: 6px 8px;
@@ -44,7 +40,21 @@
 {% endblock %}
 
 {% block content %}
+<div class="d-flex flex-column flex-fill h-100" style="overflow:auto;">
     <div id="mapid" class="flex-grow-1"></div>
+</div>
+{% endblock %}
+
+{% block top_bar_title %}
+    {{ block.super }}
+    <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="dropdownMenuButton1" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Calques
+        </a>
+        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+            <form class="px-4 py-3" id="layer_list" style="width:350px;"></form>
+        </ul>
+    </li>
 {% endblock %}
 
 {% block bodyend %}
@@ -52,11 +62,17 @@
 
 <script language="javascript">
 
-let carto = new Carto ([{{ center_lat }}, {{ center_lng }}], {{ default_zoom }})
-carto.init()
-
+geolayers = [
 {% for layer in layer_list %}
-    {% geolayer layer %}
+    {
+        {% for k, v in layer.items %}
+        {{ k }}: "{{ v|safe }}",
+        {% endfor %}
+    },
 {% endfor %}
+]
+
+let carto = new Carto ([{{ center_lat }}, {{ center_lng }}], {{ default_zoom }})
+carto.init(geolayers)
 </script>
 {% endblock %}

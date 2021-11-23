@@ -9,9 +9,9 @@ from .models import (
     Artificielle2018,
     CommunesSybarval,
     CouvertureSol,
+    CouvertureUsageMatrix,
     EnveloppeUrbaine2018,
-    Ocsge2015,
-    Ocsge2018,
+    Ocsge,
     Renaturee2018to2015,
     Sybarval,
     UsageSol,
@@ -92,11 +92,6 @@ class ArtifCommuneAdmin(ImportExportMixin, admin.GeoModelAdmin):
 class UsageSolResource(resources.ModelResource):
     class Meta:
         model = UsageSol
-        import_id_fields = ("code",)
-        exclude = (
-            "id",
-            "parent",
-        )
 
 
 @admin.register(UsageSol)
@@ -120,11 +115,6 @@ class UsageSolAdmin(ImportExportMixin, admin.GeoModelAdmin):
 class CouvertureSolImportResource(resources.ModelResource):
     class Meta:
         model = CouvertureSol
-        import_id_fields = ("code",)
-        exclude = (
-            "id",
-            "parent",
-        )
 
     def before_import(self, *args, **kwargs):
         return super().before_import(*args, **kwargs)
@@ -133,54 +123,52 @@ class CouvertureSolImportResource(resources.ModelResource):
 @admin.register(CouvertureSol)
 class CouvertureSolAdmin(ImportExportMixin, admin.GeoModelAdmin):
     model = CouvertureSol
-    list_display = (
-        "code",
-        "label",
-        "is_artificial",
-        "parent",
-    )
-    list_filter = (
-        "is_artificial",
-        "parent",
-    )
-    search_fields = (
-        "code",
-        "label",
-    )
+    list_display = ("code", "label", "parent", "map_color")
+    list_filter = ("parent",)
+    search_fields = ("code", "label", "map_color")
     ordering = ("code",)
     # for importation
     resource_class = CouvertureSolImportResource
 
 
-@admin.register(Ocsge2015)
-class Ocsge2015Admin(admin.GeoModelAdmin):
-    model = Ocsge2015
+@admin.register(Ocsge)
+class OcsgeAdmin(admin.GeoModelAdmin):
+    model = Ocsge
     list_display = (
         "id",
         "couverture",
         "couverture_label",
         "usage",
         "usage_label",
+        "year",
     )
-    list_filter = ("couverture", "usage")
+    list_filter = ("year", "couverture", "usage")
     search_fields = (
-        "couverture",
-        "usage",
-    )
-
-
-@admin.register(Ocsge2018)
-class Ocsge2018Admin(admin.GeoModelAdmin):
-    model = Ocsge2018
-    list_display = (
-        "id",
         "couverture",
         "couverture_label",
         "usage",
         "usage_label",
+        "year",
     )
-    list_filter = ("couverture", "usage")
-    search_fields = (
+
+
+class CouvertureUsageMatrixImportResource(resources.ModelResource):
+    class Meta:
+        model = CouvertureUsageMatrix
+        import_id_fields = ("id",)
+        skip_unchanged = True
+
+
+@admin.register(CouvertureUsageMatrix)
+class CouvertureUsageMatrixAdmin(ImportExportMixin, admin.GeoModelAdmin):
+    model = CouvertureUsageMatrix
+    list_display = (
+        "id",
         "couverture",
         "usage",
+        "is_artificial",
+        "is_consumed",
     )
+    list_filter = ("is_artificial", "is_consumed", "is_natural")
+    search_fields = ("couverture", "usage")
+    resource_class = CouvertureUsageMatrixImportResource

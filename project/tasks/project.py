@@ -17,7 +17,7 @@ import logging
 from django.contrib.gis.db.models import Union
 from django.contrib.gis.geos.collections import MultiPolygon
 
-from public_data.models import CommunesSybarval, Ocsge2015, Ocsge2018
+from public_data.models import CommunesSybarval, Ocsge
 
 from project.models import Project
 
@@ -104,12 +104,12 @@ def evaluate_couverture_and_usage(project: Project):
     geom = project.combined_emprise
     data = {
         "2015": {
-            "couverture": Ocsge2015.get_groupby("couverture", coveredby=geom),
-            "usage": Ocsge2015.get_groupby("usage", coveredby=geom),
+            "couverture": Ocsge.get_groupby("couverture", coveredby=geom, year=2015),
+            "usage": Ocsge.get_groupby("usage", coveredby=geom, year=2015),
         },
         "2018": {
-            "couverture": Ocsge2018.get_groupby("couverture", coveredby=geom),
-            "usage": Ocsge2018.get_groupby("usage", coveredby=geom),
+            "couverture": Ocsge.get_groupby("couverture", coveredby=geom, year=2018),
+            "usage": Ocsge.get_groupby("usage", coveredby=geom, year=2018),
         },
     }
     project.couverture_usage = data

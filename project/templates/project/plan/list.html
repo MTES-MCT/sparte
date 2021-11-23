@@ -1,4 +1,4 @@
-{% extends 'base_connected.html' %}
+{% extends 'index.html' %}
 
 {% load static %}
 
@@ -10,21 +10,25 @@
 {% endblock %}
 
 {% block content %}
+<div class="d-flex flex-column h-100 w-100 align-items-center justify-content-center">
+    <h2 class="mb-5">Mes plans</h2>
 
+    <ul>
+        {% for project_name, plans in projects.items %}
+        <li>{{ project_name }} :
+            <ul>
+                {% for plan in plans %}
+                <li><a href="{% url 'project:plan-detail' plan.id %}">{{ plan.name }}</a></li>
+                {% empty %}
+                Vous n'avez pas encore de plan.
+                {% endfor %}
+            </ul>
+        </li>
+        {% endfor %}
+    </ul>
 
-    <div class="d-flex flex-column h-100 w-100 align-items-center justify-content-center">
-        <h2 class="mb-5">Mes projets</h2>
-
-        <ul>
-            {% for project in projects %}
-                <li><a href="{% url 'project:detail' project.id %}">{{ project.name }}</a></li>
-            {% empty %}
-            Pour commencer à utiliser SPARTE, veuillez créer un projet.
-            {% endfor %}
-        </ul>
-
-        <div>
-            <a class="btn btn-primary mt-5" href="{% url 'project:add' %}" role="button">Nouveau</a>
-        </div>
+    <div>
+        <a class="btn btn-primary mt-5" href="{% url 'project:plan-create' %}" role="button">Ajouter un plan</a>
     </div>
-{% endblock %}
+</div>
+{% endblock content %}
