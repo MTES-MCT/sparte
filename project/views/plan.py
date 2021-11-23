@@ -102,12 +102,22 @@ class PlanDetailView(GroupMixin, DetailView):
                     "url": plan_url,
                     "display": True,
                     "fit_map": True,
+                    "level": "3",
                 },
                 {
                     "name": "Emprise du projet",
                     "url": project_url,
                     "display": True,
                     "use_emprise_style": True,
+                    "level": "5",
+                },
+                {
+                    "name": "OCSGE",
+                    "url": reverse_lazy("public_data:ocsge-optimized"),
+                    "display": False,
+                    "color_property_name": "map_color",
+                    "level": "1",
+                    "switch": "ocsge",
                 },
             ],
         }
