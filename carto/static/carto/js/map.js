@@ -468,13 +468,11 @@ function GeoLayer (name, url) {
     }
 
     this.activate_layer = () => {
-        console.log(`Activate ${this.name}`)
         this.display = true
         this.refresh_data()
     }
 
     this.deactivate_layer = () => {
-        console.log(`Deactivate ${this.name}`)
         this.display = false
         this.geojsonlayer.clearLayers()
     }
