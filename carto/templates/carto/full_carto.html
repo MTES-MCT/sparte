@@ -41,16 +41,27 @@ Carte intéractive
 
 {% block content %}
 <div class="d-flex flex-column flex-fill h-100" style="overflow:auto;">
-    <div>{% include "carto/layer_form.html" %}</div>
-
     <div id="mapid" class="flex-grow-1"></div>
 </div>
+{% endblock %}
+
+{% block top_bar_title %}
+    {{ block.super }}
+    <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="dropdownMenuButton1" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Calques
+        </a>
+        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+            <form class="px-4 py-3" id="layer_list" style="width:350px;"></form>
+        </ul>
+    </li>
 {% endblock %}
 
 {% block bodyend %}
 <script src="{% static 'carto/js/map.js' %}"></script>
 
 <script language="javascript">
+
 geolayers = [
 {% for layer in layer_list %}
     {
@@ -62,6 +73,6 @@ geolayers = [
 ]
 
 let carto = new Carto ([{{ center_lat }}, {{ center_lng }}], {{ default_zoom }})
-//carto.init(geolayers)
+carto.init(geolayers)
 </script>
 {% endblock %}

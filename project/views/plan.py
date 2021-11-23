@@ -100,13 +100,13 @@ class PlanDetailView(GroupMixin, DetailView):
                 {
                     "name": f"Plan {plan.name}",
                     "url": plan_url,
-                    "immediate_display": True,
+                    "display": True,
                     "fit_map": True,
                 },
                 {
                     "name": "Emprise du projet",
                     "url": project_url,
-                    "immediate_display": True,
+                    "display": True,
                     "use_emprise_style": True,
                 },
             ],
