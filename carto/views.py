@@ -24,22 +24,22 @@ def arcachon(request):
             {
                 "name": "Artificialisation 2015 à 2018",
                 "url": reverse_lazy("public_data:artificialisee2015to2018-list"),
-                "immediate_display": True,
+                "display": True,
             },
             {
                 "name": "Zones artificielles",
                 "url": reverse_lazy("public_data:artificielle2018-list"),
-                "immediate_display": False,
+                "display": False,
             },
             {
                 "name": "Communes SYBARVAL",
                 "url": reverse_lazy("public_data:communessybarval-list"),
-                "immediate_display": False,
+                "display": False,
             },
             {
                 "name": "Enveloppes urbaines",
                 "url": reverse_lazy("public_data:enveloppeurbaine2018-list"),
-                "immediate_display": False,
+                "display": False,
             },
             {
                 "name": "Renaturation de 2018 à 2015",
@@ -48,17 +48,17 @@ def arcachon(request):
             {
                 "name": "Emprise Sybarval",
                 "url": reverse_lazy("public_data:sybarval-list"),
-                "immediate_display": False,
+                "display": False,
             },
             {
                 "name": "Voirie 2018",
                 "url": reverse_lazy("public_data:voirie2018-list"),
-                "immediate_display": False,
+                "display": False,
             },
             {
                 "name": "Zones Baties 2018",
                 "url": reverse_lazy("public_data:zonesbaties2018-list"),
-                "immediate_display": False,
+                "display": False,
             },
         ],
     }
@@ -82,7 +82,7 @@ class Ocsge2015MapView(LoginRequiredMixin, TemplateView):
                     {
                         "name": "OCSGE 2015 - Usage du sol",
                         "url": url,
-                        "immediate_display": True,
+                        "display": True,
                         "level": "1",
                         "color_property_name": "map_color",
                     },
@@ -122,7 +122,7 @@ class OcsgeMapViewSet(LoginRequiredMixin, FormView):
                 {
                     "name": "OCSGE 2015 - Usage du sol",
                     "url": url,
-                    "immediate_display": True,
+                    "display": True,
                     "level": "1",
                     "color_property_name": "map_color",
                 },

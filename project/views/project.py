@@ -262,105 +262,76 @@ class ProjectMapView(GroupMixin, DetailView):
     template_name = "carto/full_carto.html"
     context_object_name = "project"
 
-    def get_ocsgez_context(self):
-        url = reverse_lazy("public_data:ocsge-optimized")
+    def get_context_data(self, **kwargs):
+        # UPGRADE: add center and zoom fields on project model
+        # values would be infered when emprise is loaded
         context = super().get_context_data(**kwargs)
         context.update(
             {
+                # center map on France
+                "carto_name": "Project",
+                "center_lat": 44.6586,
+                "center_lng": -1.164,
+                "default_zoom": 12,
                 "layer_list": [
                     {
-                        "name": "OCSGE 2015 - Usage du sol",
-                        "url": url + "?year=2015&color=usage",
-                        "immediate_display": False,
-                        "level": "1",
-                        "color_property_name": "map_color",
+                        "name": "Communes SYBARVAL",
+                        "url": reverse_lazy("public_data:communessybarval-list"),
+                        "display": False,
+                        "gradient_url": reverse_lazy(
+                            "public_data:communessybarval-gradient"
+                        ),
+                        "level": "2",
                     },
                     {
-                        "name": "OCSGE 2015 - Couverture du sol",
-                        "url": url + "?year=2015&color=couverture",
-                        "immediate_display": False,
-                        "level": "1",
-                        "color_property_name": "map_color",
+                        "name": "Emprise du projet",
+                        "url": reverse_lazy("project:emprise-list")
+                        + f"?id={self.object.pk}",
+                        "display": True,
+                        "use_emprise_style": True,
+                        "fit_map": True,
+                        "level": "5",
                     },
                     {
-                        "name": "OCSGE 2018 - Usage du sol",
-                        "url": url + "?year=2018&color=usage",
-                        "immediate_display": False,
-                        "level": "1",
-                        "color_property_name": "map_color",
+                        "name": "Artificialisation 2015 à 2018",
+                        "url": reverse_lazy(
+                            "public_data:artificialisee2015to2018-list"
+                        ),
+                        "display": False,
+                        "gradient_url": reverse_lazy(
+                            "public_data:artificialisee2015to2018-gradient"
+                        ),
+                        "level": "7",
                     },
                     {
-                        "name": "OCSGE 2018 - Couverture du sol",
-                        "url": url + "?year=2018&color=couverture",
-                        "immediate_display": False,
-                        "level": "1",
+                        "name": "Renaturation de 2018 à 2015",
+                        "url": reverse_lazy("public_data:renaturee2018to2015-list"),
+                        "gradient_url": reverse_lazy(
+                            "public_data:renaturee2018to2015-gradient"
+                        ),
+                        "level": "7",
+                    },
+                    {
+                        "name": "Zones artificielles",
+                        "url": reverse_lazy("public_data:artificielle2018-list"),
+                        "display": False,
+                        "gradient_url": reverse_lazy(
+                            "public_data:artificielle2018-gradient"
+                        ),
+                        "level": "3",
+                    },
+                    {
+                        "name": "OCSGE",
+                        "url": reverse_lazy("public_data:ocsge-optimized"),
+                        "display": False,
                         "color_property_name": "map_color",
+                        "level": "1",
+                        "switch": "ocsge",
                     },
                 ],
             }
         )
-
-    def get_context_data(self, **kwargs):
-        # UPGRADE: add center and zoom fields on project model
-        # values would be infered when emprise is loaded
-        context = {
-            # center map on France
-            "carto_name": "Project",
-            "center_lat": 44.6586,
-            "center_lng": -1.164,
-            "default_zoom": 12,
-            "layer_list": [
-                {
-                    "name": "Communes SYBARVAL",
-                    "url": reverse_lazy("public_data:communessybarval-list"),
-                    "immediate_display": False,
-                    "gradient_url": reverse_lazy(
-                        "public_data:communessybarval-gradient"
-                    ),
-                    "level": "2",
-                },
-                {
-                    "name": "Emprise du projet",
-                    "url": reverse_lazy("project:emprise-list")
-                    + f"?id={self.object.pk}",
-                    "immediate_display": True,
-                    "use_emprise_style": True,
-                    "fit_map": True,
-                    "level": "5",
-                },
-                {
-                    "name": "Artificialisation 2015 à 2018",
-                    "url": reverse_lazy("public_data:artificialisee2015to2018-list"),
-                    "immediate_display": True,
-                    "gradient_url": reverse_lazy(
-                        "public_data:artificialisee2015to2018-gradient"
-                    ),
-                    "level": "7",
-                },
-                {
-                    "name": "Renaturation de 2018 à 2015",
-                    "url": reverse_lazy("public_data:renaturee2018to2015-list"),
-                    "gradient_url": reverse_lazy(
-                        "public_data:renaturee2018to2015-gradient"
-                    ),
-                    "level": "7",
-                },
-                {
-                    "name": "Zones artificielles",
-                    "url": reverse_lazy("public_data:artificielle2018-list"),
-                    "immediate_display": False,
-                    "gradient_url": reverse_lazy(
-                        "public_data:artificielle2018-gradient"
-                    ),
-                    "level": "3",
-                },
-                {},
-            ],
-        }
-        return {
-            **super().get_context_data(**kwargs),
-            **context,
-        }
+        return context
 
 
 class ProjectCreateView(GroupMixin, CreateView):
