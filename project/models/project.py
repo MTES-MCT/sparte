@@ -92,13 +92,13 @@ class Project(BaseProject):
     ANALYZE_YEARS = [(str(y), str(y)) for y in range(2009, 2019)]
 
     analyse_start_date = models.CharField(
-        "Date de début",
+        "Date de début de période d'analyse",
         choices=ANALYZE_YEARS,
         default="2015",
         max_length=4,
     )
     analyse_end_date = models.CharField(
-        "Date de fin",
+        "Date de fin de période d'analyse",
         choices=ANALYZE_YEARS,
         default="2018",
         max_length=4,
