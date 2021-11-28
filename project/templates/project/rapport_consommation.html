@@ -15,7 +15,7 @@ Rapport consommation
         {% include "project/detail_menu.html" %}
 
         <div class="alert alert-warning" role="alert">
-            La consommation d'espace est mesurée avec les fichiers fonciers qui font une description cadastrale du territoire.
+            La consommation d’espace est aujourd’hui mesurée avec les fichiers fonciers qui font une description cadastrale du territoire.
         </div>
 
         <h3>Chiffres clés:</h3>
@@ -24,7 +24,6 @@ Rapport consommation
                 <div class="card-body">
                     <h5 class="card-title">Territoire total</h5>
                     <p>{{ total_surface }} ha</p>
-                    <p>100 %</p>
                 </div>
             </div>
 
@@ -32,7 +31,7 @@ Rapport consommation
                 <div class="card-body">
                     <h5 class="card-title">Consommé avant {{ start_year }}</h5>
                     <p>{{ initial_surface }} ha</p>
-                    <p>{{ initial_percent }}</p>
+                    <p>{{ initial_percent }} de la surface du territoire </p>
                 </div>
             </div>
 
@@ -40,7 +39,7 @@ Rapport consommation
                 <div class="card-body">
                     <h5 class="card-title">Consommé en {{ end_year }}</h5>
                     <p>{{ final_surface }} ha</p>
-                    <p>{{ final_percent }}</p>
+                    <p>{{ final_percent }} de la surface du territoire </p>
                 </div>
             </div>
 
@@ -48,7 +47,7 @@ Rapport consommation
                 <div class="card-body">
                     <h5 class="card-title">Progression {{ start_year }} à {{ end_year }}</h5>
                     <p>+{{ pki_progression }} ha</p>
-                    <p>+{{ pki_progression_percent }}</p>
+                    <p>+{{ pki_progression_percent }} de la surface du territoire </p>
                 </div>
             </div>
         </div>
@@ -58,7 +57,7 @@ Rapport consommation
         </div>
 
         <div class="mt-5">
-            <h3>Consommé (en ha):</h3>
+            <h3>Surface consommée (en ha):</h3>
             <table class="table">
                 <thead>
                     <tr>
