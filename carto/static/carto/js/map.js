@@ -23,18 +23,6 @@ function get(object, key, default_value) {
 // Styling function according to properties
 /////////////////////////////////////////////////
 
-// used by legend
-function getColor(d) {
-    return d > 90 ? '#800026' :
-           d > 70 ? '#BD0026' :
-           d > 50 ? '#E31A1C' :
-           d > 40 ? '#FC4E2A' :
-           d > 30 ? '#FD8D3C' :
-           d > 20 ? '#FEB24C' :
-           d > 10 ? '#FED976' :
-                    '#FFEDA0'
-}
-
 function emprise_style(feature) {
     return {
         // background options
@@ -47,6 +35,23 @@ function emprise_style(feature) {
         fillOpacity: 0
     }
 }
+
+function style_zone_artificielle(feature) {
+    return {
+        fillColor: '#FFEDA0',
+        fillOpacity: 0.7,
+        weight: 3,
+        opacity: 1,
+        color: '#ffffff',
+        dashArray: '10',
+    }
+}
+
+// Styling :
+// 1. valeur identique pour toutes les features (zone artificielle, emprise)
+// 2. basée sur une échélle et la valeur d'une propriété (exemple surface pour
+//    renaturation ou densité pour les communes)
+// 3. la couleur est dans la base de données (OCSGE)
 
 /////////////////////////
 // INITIALISATION
@@ -88,8 +93,7 @@ function Carto (map_center, default_zoom)
         }).addTo( this.map )
         // add info div
         this.info.addTo(this.map);
-        // Add layer control div
-        //this.layerControl.addTo(this.map)
+
         // add legend div
         this.legend.addTo(this.map)
 
@@ -114,6 +118,12 @@ function Carto (map_center, default_zoom)
         // center the map on this layer
         // todo : check that there is only one layer with this activated
         layer.fit_map = get(geolayer, "fit_map", false)
+
+        // change style function if style is set
+        let style = get(geolayer, "style", undefined)
+        if (style == 'style_zone_artificielle') {
+            layer.style = style_zone_artificielle
+        }
 
         // Change layer style to use one specific for project emprise
         if (get(geolayer, "use_emprise_style", false))
@@ -296,7 +306,8 @@ function GeoLayer (name, url) {
         let property_value = this.get_color_property_value(feature)
         let legend = '<h4>' + this.name + '</h4>'
         let bold = false
-        legend = legend + `Property used: ${property} (${property_value})<br\>`
+        let val = new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 1 }).format(property_value)
+        legend = legend + `Propriété utilisée: ${property} (${val})<br\>`
 
         for (i=0; i<this.scale.length; i++)
         {
