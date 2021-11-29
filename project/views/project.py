@@ -275,13 +275,14 @@ class ProjectMapView(GroupMixin, DetailView):
                 "default_zoom": 12,
                 "layer_list": [
                     {
-                        "name": "Communes SYBARVAL",
+                        "name": "Communes",
                         "url": reverse_lazy("public_data:communessybarval-list"),
                         "display": False,
                         "gradient_url": reverse_lazy(
                             "public_data:communessybarval-gradient"
                         ),
                         "level": "2",
+                        "color_property_name": "d_brute_20",
                     },
                     {
                         "name": "Emprise du projet",
@@ -297,7 +298,7 @@ class ProjectMapView(GroupMixin, DetailView):
                         "url": reverse_lazy(
                             "public_data:artificialisee2015to2018-list"
                         ),
-                        "display": False,
+                        "display": True,
                         "gradient_url": reverse_lazy(
                             "public_data:artificialisee2015to2018-gradient"
                         ),
@@ -310,6 +311,7 @@ class ProjectMapView(GroupMixin, DetailView):
                             "public_data:renaturee2018to2015-gradient"
                         ),
                         "level": "7",
+                        "display": True,
                     },
                     {
                         "name": "Zones artificielles",
@@ -319,6 +321,7 @@ class ProjectMapView(GroupMixin, DetailView):
                             "public_data:artificielle2018-gradient"
                         ),
                         "level": "3",
+                        "style": "style_zone_artificielle",
                     },
                     {
                         "name": "OCSGE",

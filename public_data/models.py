@@ -132,7 +132,7 @@ class CommunesSybarval(models.Model, AutoLoadMixin, DataColorationMixin):
     mpoly = models.MultiPolygonField()
 
     shape_file_path = "communes_sybarval.zip"
-    default_property = "surface"
+    default_property = "d_brute_20"
     default_color = "Yellow"
     mapping = {
         "id_source": "ID",
