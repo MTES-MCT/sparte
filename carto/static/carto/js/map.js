@@ -87,10 +87,20 @@ function Carto (map_center, default_zoom)
         }
 
         // Choix du fond de carte
-        L.tileLayer( 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>- Beta Gouv.',
-            subdomains: ['a','b','c']
-        }).addTo( this.map )
+        let ortho = L.tileLayer(
+            'https://wxs.ign.fr/{ignApiKey}/geoportail/wmts?'+
+            '&REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0&TILEMATRIXSET=PM'+
+            '&LAYER={ignLayer}&STYLE={style}&FORMAT={format}'+
+            '&TILECOL={x}&TILEROW={y}&TILEMATRIX={z}',
+            {
+                attribution: '<a target="_blank" href="https://www.geoportail.gouv.fr/">Geoportail France</a>',
+                ignApiKey: 'ortho',
+                ignLayer: 'ORTHOIMAGERY.ORTHOPHOTOS',
+                style: 'normal',
+                format: 'image/jpeg',
+                service: 'WMTS'
+            }
+        ).addTo( this.map )
         // add info div
         this.info.addTo(this.map);
 

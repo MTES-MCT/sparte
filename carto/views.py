@@ -65,6 +65,10 @@ def arcachon(request):
     return render(request, "carto/full_carto.html", context=context)
 
 
+class OrthoMapView(LoginRequiredMixin, TemplateView):
+    template_name = "carto/ortho.html"
+
+
 class Ocsge2015MapView(LoginRequiredMixin, TemplateView):
     template_name = "carto/full_carto.html"
 
