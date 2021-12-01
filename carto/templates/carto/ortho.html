@@ -1,0 +1,86 @@
+{% extends 'index.html' %}
+
+{% load static %}
+{% load map_tags %}
+
+{% block pagetitle %}
+Test affichage ortho
+{% endblock %}
+
+{% block headers %}
+    <!-- leaflet -->
+    <link rel="stylesheet" href="{% static 'carto/css/leaflet.css' %}"/>
+    <script src="{% static 'carto/js/leaflet.js' %}"></script>
+    <style>
+        .info {
+            padding: 6px 8px;
+            font: 14px/16px Arial, Helvetica, sans-serif;
+            background: white;
+            background: rgba(255,255,255,0.8);
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+            border-radius: 5px;
+        }
+        .info h4 {
+            margin: 0 0 5px;
+            color: #777;
+        }
+
+        .legend {
+            line-height: 18px;
+            color: #555;
+        }
+        .legend i {
+            width: 18px;
+            height: 18px;
+            float: left;
+            margin-right: 8px;
+            opacity: 0.7;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-column flex-fill h-100" style="overflow:auto;">
+    <div id="mapid" class="flex-grow-1"></div>
+</div>
+{% endblock %}
+
+{% block top_bar_title %}
+    {{ block.super }}
+    <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="dropdownMenuButton1" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Calques
+        </a>
+        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+            <form class="px-4 py-3" id="layer_list" style="width:350px;"></form>
+        </ul>
+    </li>
+{% endblock %}
+
+{% block bodyend %}
+<script src="{% static 'carto/js/map.js' %}"></script>
+
+<script language="javascript">
+
+map = L.map('mapid')
+
+map.setView([44.6586, -1.164], 12)
+
+var GeoportailFrance_orthos = L.tileLayer(
+    'https://wxs.ign.fr/{ignApiKey}/geoportail/wmts?'+
+    '&REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0&TILEMATRIXSET=PM'+
+    '&LAYER={ignLayer}&STYLE={style}&FORMAT={format}'+
+    '&TILECOL={x}&TILEROW={y}&TILEMATRIX={z}',
+    {
+        attribution: '<a target="_blank" href="https://www.geoportail.gouv.fr/">Geoportail France</a>',
+        ignApiKey: 'ortho',
+        ignLayer: 'ORTHOIMAGERY.ORTHOPHOTOS',
+        style: 'normal',
+        format: 'image/jpeg',
+        service: 'WMTS'
+    }
+).addTo( map )
+
+
+</script>
+{% endblock %}
