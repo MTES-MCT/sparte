@@ -5,7 +5,7 @@
 {% load project_tags %}
 
 {% block pagetitle %}
-Home projet
+SPARTE
 {% endblock %}
 
 {% block headers %}
@@ -33,26 +33,6 @@ Home projet
             </li>
         </ul>
 
-        <p>Vous pouvez également réinitialiser l'emprise, voire supprimer le projet :</p>
-
-        <ul>
-            <li>
-                <a href="{% url 'project:update' project.pk %}">
-                    <i class="bi bi-pencil"></i> Editer la description, les dates d'analyse...
-                </a>
-            </li>
-            <li>
-                <a href="{% url 'project:reinit' project.pk %}">
-                    <i class="bi bi-recycle"></i> réinitialiser l'emprise
-                </a>
-            </li>
-            <li>
-                <a href="{% url 'project:delete' project.pk %}">
-                    <i class="bi bi-trash"></i> Supprimer le projet
-                </a>
-            </li>
-        </ul>
-
         <p>
             Plans associés : <a href="{% url 'project:project-plan-create' project.pk %}" class="btn btn-outline-success btn-sm" data-toggle="tooltip" title="Ajouter un plan"><i class="bi bi-plus-square-dotted"></i></a>
             <ul>
@@ -66,6 +46,24 @@ Home projet
         </p>
     </div>
 </div>
+{% endblock %}
+
+{% block sub_bar_actions %}
+<li class="nav-item ms-1">
+    <a class="btn btn-sm btn-outline-primary" href="{% url 'project:update' project.pk %}">
+        <i class="bi bi-pencil"></i> Editer
+    </a>
+</li>
+<li class="nav-item ms-1">
+    <a class="btn btn-sm btn-outline-warning" href="{% url 'project:reinit' project.pk %}">
+        <i class="bi bi-recycle"></i> Ré-initialiser
+    </a>
+</li>
+<li class="nav-item ms-1">
+    <a class="btn btn-sm btn-outline-danger" href="{% url 'project:delete' project.pk %}">
+        <i class="bi bi-trash"></i> Supprimer
+    </a>
+</li>
 {% endblock %}
 
 {% block bodyend %}
