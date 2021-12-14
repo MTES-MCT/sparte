@@ -1,17 +1,14 @@
-<ul class="nav nav-tabs mb-3 mt-3">
+<ul class="nav nav-tabs mb-0 mt-3 justify-content-center">
     <li class="nav-item">
-        <a class="nav-link{% if active_page == 'couverture' %} active{% endif %}"
+        <a class="nav-link{% if active_page == 'couverture' %} active bg-light{% endif %}"
         href="{% url 'project:report_artif' project.pk %}">couverture du sol-artificialisation </a>
     </li>
     <li class="nav-item">
-        <a class="nav-link{% if active_page == 'usage' %} active{% endif %}"
+        <a class="nav-link{% if active_page == 'usage' %} active bg-light{% endif %}"
         href="{% url 'project:report_usage' project.pk %}">Usage du sol</a>
     </li>
     <li class="nav-item">
-        <a class="nav-link{% if active_page == 'consommation' %} active{% endif %}"
+        <a class="nav-link{% if active_page == 'consommation' %} active bg-light{% endif %}"
         href="{% url 'project:report' project.pk %}">Consommation</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link disabled" href="#">Autre</a>
     </li>
 </ul>
