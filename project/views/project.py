@@ -13,11 +13,47 @@ from project.domains import ConsommationDataframe
 from .mixins import GetObjectMixin, UserQuerysetOnlyMixin
 
 
-class GroupMixin(GetObjectMixin, LoginRequiredMixin, UserQuerysetOnlyMixin):
+class BreadCrumbMixin:
+    context_breadcrumbs = []
+
+    def get_context_breadcrumbs(self):
+        breadcrumbs = [
+            {"href": reverse_lazy("home"), "title": "Accueil"},
+        ]
+        return breadcrumbs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        breadcrumbs = self.get_context_breadcrumbs()
+        breadcrumbs[-1]["is_active"] = True
+        context.update({"breadcrumbs": breadcrumbs})
+        return context
+
+
+class GroupMixin(
+    GetObjectMixin, LoginRequiredMixin, UserQuerysetOnlyMixin, BreadCrumbMixin
+):
     """Simple trick to not repeat myself. Pertinence to be evaluated."""
 
     queryset = Project.objects.all()
     context_object_name = "project"
+
+    def get_context_breadcrumbs(self):
+        breadcrumbs = super().get_context_breadcrumbs()
+        breadcrumbs.append(
+            {"href": reverse_lazy("project:list"), "title": "Mes projets"},
+        )
+        try:
+            project = self.get_object()
+            breadcrumbs.append(
+                {
+                    "href": reverse_lazy("project:detail", kwargs={"pk": project.id}),
+                    "title": project.name,
+                }
+            )
+        except AttributeError:
+            pass
+        return breadcrumbs
 
 
 class ProjectListView(GroupMixin, ListView):
@@ -124,6 +160,11 @@ class ProjectReportView(GroupMixin, DetailView):
     template_name = "project/rapport_consommation.html"
     context_object_name = "project"
 
+    def get_context_breadcrumbs(self):
+        breadcrumbs = super().get_context_breadcrumbs()
+        breadcrumbs.append({"href": None, "title": "Rapport consommation"})
+        return breadcrumbs
+
     def get_context_data(self, **kwargs):
         project = self.get_object()
 
@@ -148,7 +189,7 @@ class ProjectReportView(GroupMixin, DetailView):
                     "before": row[0],
                     "items": list(row[1:-2]),
                     "total": row[-2],
-                    "progression": f"{row[-1]*100:.2}%",
+                    "progression": row[-1] * 100,
                 }
             )
 
@@ -165,12 +206,12 @@ class ProjectReportView(GroupMixin, DetailView):
             "headers": headers,
             "table_artif": table_artif,
             "initial_surface": pki_inital_surface,
-            "initial_percent": f"{pki_inital_surface / total_surface:.2%}",
+            "initial_percent": 100 * pki_inital_surface / total_surface,
             "final_surface": pki_final_surface,
-            "final_percent": f"{pki_final_surface / total_surface:.2%}",
+            "final_percent": 100 * pki_final_surface / total_surface,
             "total_surface": total_surface,
             "pki_progression": pki_progression,
-            "pki_progression_percent": f"{pki_progression_percent:.2}%",
+            "pki_progression_percent": pki_progression_percent,
             "active_page": "consommation",
         }
 
@@ -179,6 +220,11 @@ class ProjectReportArtifView(GroupMixin, DetailView):
     queryset = Project.objects.all()
     template_name = "project/rapport_couverture.html"
     context_object_name = "project"
+
+    def get_context_breadcrumbs(self):
+        breadcrumbs = super().get_context_breadcrumbs()
+        breadcrumbs.append({"href": None, "title": "Rapport artificialisation"})
+        return breadcrumbs
 
     def get_context_data(self, **kwargs):
         project = self.get_object()
@@ -221,6 +267,11 @@ class ProjectReportUsageView(GroupMixin, DetailView):
     template_name = "project/rapport_usage.html"
     context_object_name = "project"
 
+    def get_context_breadcrumbs(self):
+        breadcrumbs = super().get_context_breadcrumbs()
+        breadcrumbs.append({"href": None, "title": "Rapport usage"})
+        return breadcrumbs
+
     def get_context_data(self, **kwargs):
         project = self.get_object()
         raw_data = project.couverture_usage
@@ -262,10 +313,31 @@ class ProjectMapView(GroupMixin, DetailView):
     template_name = "carto/full_carto.html"
     context_object_name = "project"
 
+    def get_context_breadcrumbs(self):
+        breadcrumbs = super().get_context_breadcrumbs()
+        breadcrumbs.append({"href": None, "title": "Carte intéractive"})
+        return breadcrumbs
+
     def get_context_data(self, **kwargs):
         # UPGRADE: add center and zoom fields on project model
         # values would be infered when emprise is loaded
         context = super().get_context_data(**kwargs)
+        context.update(
+            {
+                "breadcrumb": [
+                    {"href": reverse_lazy("project:list"), "title": "Mes projets"},
+                    {
+                        "href": reverse_lazy(
+                            "project:detail",
+                            kwargs={
+                                "pk": self.object.pk,
+                            },
+                        ),
+                        "title": self.object.name,
+                    },
+                ]
+            }
+        )
         context.update(
             {
                 # center map on France
@@ -342,6 +414,11 @@ class ProjectCreateView(GroupMixin, CreateView):
     template_name = "project/create.html"
     fields = ["name", "description", "analyse_start_date", "analyse_end_date"]
 
+    def get_context_breadcrumbs(self):
+        breadcrumbs = super().get_context_breadcrumbs()
+        breadcrumbs.append({"href": None, "title": "Nouveau"})
+        return breadcrumbs
+
     def form_valid(self, form):
         # required to set the user who is logged as creator
         form.instance.user = self.request.user
@@ -358,6 +435,11 @@ class ProjectUpdateView(GroupMixin, UpdateView):
     fields = ["name", "description", "analyse_start_date", "analyse_end_date"]
     context_object_name = "project"
 
+    def get_context_breadcrumbs(self):
+        breadcrumbs = super().get_context_breadcrumbs()
+        breadcrumbs.append({"href": None, "title": "Editer"})
+        return breadcrumbs
+
     def get_success_url(self):
         return reverse_lazy("project:detail", kwargs=self.kwargs)
 
@@ -367,10 +449,20 @@ class ProjectDeleteView(GroupMixin, DeleteView):
     template_name = "project/delete.html"
     success_url = reverse_lazy("project:list")
 
+    def get_context_breadcrumbs(self):
+        breadcrumbs = super().get_context_breadcrumbs()
+        breadcrumbs.append({"href": None, "title": "Supprimer"})
+        return breadcrumbs
+
 
 class ProjectReinitView(GroupMixin, DeleteView):
     model = Project
     template_name = "project/reinit.html"
+
+    def get_context_breadcrumbs(self):
+        breadcrumbs = super().get_context_breadcrumbs()
+        breadcrumbs.append({"href": None, "title": "Réinitialiser"})
+        return breadcrumbs
 
     def post(self, request, *args, **kwargs):
         # reset project

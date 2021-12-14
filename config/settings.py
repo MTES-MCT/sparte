@@ -51,6 +51,7 @@ DJANGO_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django.contrib.gis",
+    "django.contrib.humanize",
 ]
 
 RESTFRAMEWORK_APPS = [
@@ -307,6 +308,15 @@ if "django-extensions" in {pkg.key for pkg in pkg_resources.working_set}:
 REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination"
 }
+
+# FORMAT SETTINGS
+
+USE_L10N = True
+LANGUAGE_CODE = "fr"
+USE_THOUSAND_SEPARATOR = True
+DECIMAL_SEPARATOR = ","
+THOUSAND_SEPARATOR = " "
+NUMBER_GROUPING = 3
 
 # LOGGING SETTINGS
 

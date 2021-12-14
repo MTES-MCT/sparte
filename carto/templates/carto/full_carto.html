@@ -45,13 +45,13 @@ Carte intéractive
 </div>
 {% endblock %}
 
-{% block top_bar_title %}
+{% block sub_bar_actions %}
     {{ block.super }}
     <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="dropdownMenuButton1" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+        <a class="dropdown-toggle btn btn-sm btn-outline-primary" href="#" id="dropdownMenuButton1" role="button" data-bs-toggle="dropdown" aria-expanded="false">
             Calques
         </a>
-        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton1">
             <form class="px-4 py-3" id="layer_list" style="width:350px;"></form>
         </ul>
     </li>
