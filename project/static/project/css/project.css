@@ -1,0 +1,54 @@
+@charset "UTF-8";
+
+.key-figure {
+    background-color: rgb(241, 250, 255);
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    width: 230px;
+}
+
+.key-figure-green {
+    background-color: rgb(228, 255, 244);
+}
+
+.key-figure-yellow {
+    background-color: rgb(255, 248, 221);
+}
+
+.key-figure-red {
+    background-color: rgb(255, 239, 243);
+}
+
+.key-figure .card-header {
+    font-weight: normal;
+}
+
+.key-figure .figure {
+    font-size: 2.5em;
+}
+
+.box {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    border-radius: 0.5rem;
+    background-color: rgb(255, 255, 255);
+    margin-top: 4rem;
+}
+
+.box .table {
+    width: 98%;
+}
+
+.scrollme-x {
+    overflow-x: auto;
+}
+
+.box h3 {
+    margin-top: 1rem;
+    margin-left: 1rem;
+    font-size: 1.35em;
+    font-weight: 700;
+}
+
+.box tr:hover {
+    background-color: rgb(241, 250, 255);
+    color: rgb(0, 59, 117) !important;
+}
