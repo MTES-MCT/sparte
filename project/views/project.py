@@ -189,7 +189,7 @@ class ProjectReportView(GroupMixin, DetailView):
                     "before": row[0],
                     "items": list(row[1:-2]),
                     "total": row[-2],
-                    "progression": f"{row[-1]*100:.2}%",
+                    "progression": row[-1] * 100,
                 }
             )
 
@@ -206,12 +206,12 @@ class ProjectReportView(GroupMixin, DetailView):
             "headers": headers,
             "table_artif": table_artif,
             "initial_surface": pki_inital_surface,
-            "initial_percent": f"{pki_inital_surface / total_surface:.2%}",
+            "initial_percent": 100 * pki_inital_surface / total_surface,
             "final_surface": pki_final_surface,
-            "final_percent": f"{pki_final_surface / total_surface:.2%}",
+            "final_percent": 100 * pki_final_surface / total_surface,
             "total_surface": total_surface,
             "pki_progression": pki_progression,
-            "pki_progression_percent": f"{pki_progression_percent:.2}%",
+            "pki_progression_percent": pki_progression_percent,
             "active_page": "consommation",
         }
 
