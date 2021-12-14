@@ -1,4 +1,4 @@
-<ul class="nav nav-tabs mb-3 mt-3">
+<ul class="nav nav-tabs mb-3 mt-3 justify-content-center">
     <li class="nav-item">
         <a class="nav-link{% if active_page == 'couverture' %} active{% endif %}"
         href="{% url 'project:report_artif' project.pk %}">couverture du sol-artificialisation </a>
@@ -10,8 +10,5 @@
     <li class="nav-item">
         <a class="nav-link{% if active_page == 'consommation' %} active{% endif %}"
         href="{% url 'project:report' project.pk %}">Consommation</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link disabled" href="#">Autre</a>
     </li>
 </ul>
