@@ -151,3 +151,5 @@ config/migrated
 
 # private RSA keys
 id_rsa
+carto/media/conso_cerema/
+carto/media/ref_plan/
