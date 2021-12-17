@@ -33,14 +33,9 @@
 
 .box {
     box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-    border-radius: 0.5rem;
+    border-radius: 0.5rem !important;
     background-color: rgb(255, 255, 255);
     margin-top: 4rem;
-}
-
-
-.box .table {
-    width: 99%;
 }
 
 .scrollme-x {
@@ -49,7 +44,6 @@
 
 .box h3 {
     margin-top: 1rem;
-    margin-left: 1rem;
     font-size: 1.35em;
     font-weight: 700;
 }
