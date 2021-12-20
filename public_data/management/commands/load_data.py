@@ -38,6 +38,7 @@ class Command(BaseCommand):
                     "EnveloppeUrbaine2018",
                     "Ocsge2015",
                     "Ocsge2018",
+                    "RefPlan",
                     "Renaturee2018to2015",
                     "Sybarval",
                     "Voirie2018",
