@@ -19,7 +19,7 @@ Rapport consommation
     <div class="pe-4 ps-4">
         {% include "project/detail_menu.html" %}
 
-        <div class="bg-light p-5">
+        <div class="bg-light p-5 rounded-5 border">
 
             <div class="pt-2">&nbsp;</div>
 
@@ -33,7 +33,7 @@ Rapport consommation
                     </div>
                 </div>
 
-                <div class="card key-figure">
+                <div class="card key-figure key-figure-yellow">
                     <div class="card-header">
                         Consommé avant {{ start_year }}
                     </div>
@@ -45,7 +45,7 @@ Rapport consommation
                     </div>
                 </div>
 
-                <div class="card key-figure">
+                <div class="card key-figure key-figure-green">
                     <div class="card-header">
                         Consommé en {{ end_year }}
                     </div>
@@ -70,13 +70,13 @@ Rapport consommation
                 </div>
             </div>
 
-            <div class="w-100 box">
+            <div class="w-100 box p-4">
                 <div id="chart" class="flex-fill"></div>
             </div>
 
-            <div class="box scrollme-x">
+            <div class="box scrollme-x p-4">
                 <h3 class="mb-3">SURFACE CONSOMMEE (en ha) :</h3>
-                <table class="table table-striped table-sm table-borderless mx-1">
+                <table class="table table-striped table-sm table-borderless">
                     <thead>
                         <tr>
                         {% for col_name in headers %}
@@ -106,8 +106,9 @@ Rapport consommation
                 </table>
             </div>
 
-            <div class="box alert alert-warning" role="alert">
-                La consommation d’espace est mesurée avec les fichiers fonciers qui font une description cadastrale du territoire.
+            <div class="box alert">
+                <h3>Provenance des données</h3>
+                La consommation d’espace est mesurée avgrâce aux fichiers fonciers qui font une description cadastrale du territoire.
             </div>
         </div>
     </div>
