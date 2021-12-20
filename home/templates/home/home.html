@@ -7,145 +7,180 @@
 {% block content %}
 <div class="d-flex h-100 justify-content-center">
     <div class="" style="width:750px;">
-        <p class="w-100"><img src="{% static 'header.png' %}"  class="w-100" /></p>
-
-        <h1>SPARTE</h1>
-
-        <p>En aval de l’Observatoire National, le <strong>S</strong>ervice de <strong>P</strong>ortrait de l’<strong>AR</strong>tificialisation des <strong>TE</strong>rritoires (ou SPARTE) est la plateforme
-        qui accompagne les acteurs de l’aménagement dans l'analyse de la consommation d’espace et de l’artificialisation du territoire et dans le suivi de l’impact des projets d’aménagement.</p>
-
-        <hr/>
-
-        <p>Pour commencer à utiliser la version bêta du service, rien de plus simple.</p>
-
-        <p><a href="{% url 'users:signup' %}" class="btn btn-primary w-100">Inscrivez-vous !</a></p>
-
-        <hr/>
+        <p class="w-100 my-5"><img src="{% static 'home/img/header.png' %}"  class="w-100" alt="Aperçu de la carte OCSGE"/></p>
 
 
-
-        <h2 class="mt-5">Que vous permet SPARTE ?</h2>
-
-        <div class="card-deck row">
-
-            <div class="col card ms-1 me-1">
-                <img class="card-img-top" src="{% static 'picto_home_1.svg' %}" alt="Pictogramme" style="height: 110px">
-                <div class="card-body">
-                    <p class="card-text">
-                        Réalisez le bilan de l’artificialisation des sols de votre territoire
-                    </p>
+        <div class="card my-5 border-0">
+            <div class="row g-0">
+                <div class="col-md-8">
+                    <div class="card-body">
+                        <h4 class="card-title">
+                            Analyser la consommation d’espaces et l’artificialisation de mon territoire
+                        </h4>
+                        <p class="card-text">
+                            La Loi "Climat et Résilience" vise à lutter contre l’artificialisation des sols à travers une trajectoire Zéro Artificialisation Nette (ZAN).
+                        </p>
+                        <p class="text-center">
+                            <a href="{% url 'project:add' %}" target="_blank" class="btn btn-primary">
+                                Mon diagnostic
+                                <i class="bi bi-binoculars ms-2"></i>
+                            </a>
+                        </p>
+                    </div>
                 </div>
-            </div>
-
-            <div class="col card ms-1 me-1">
-                <img class="card-img-top" src="{% static 'picto_home_2.png' %}" alt="Pictogramme" style="height: 110px">
-                <div class="card-body">
-                    <p class="card-text">
-                        Analysez l’évolution de l’artificialisation dans le temps
-                    </p>
+                <div class="col-md-4">
+                    <img class="img-fluid rounded-start" src="{% static 'picto_home_2.png' %}" alt="Pictogramme">
                 </div>
-            </div>
-
-            <div class="col card ms-1 me-1">
-                <img class="card-img-top" src="{% static 'picto_home_3.svg' %}" alt="Pictogramme" style="height: 110px">
-                <div class="card-body">
-                    <p class="card-text">
-                        Estimez l’impact de vos projets d’aménagement sur l’artificialisation des sols
-                    </p>
-                </div>
-            </div>
-
-            <div class="col card ms-1 me-1">
-                <img class="card-img-top" src="{% static 'picto_home_4.png' %}" alt="Pictogramme" style="height: 110px">
-                <div class="card-body">
-                    <p class="card-text">
-                        Exportez les cartographies et tableaux de bord pour vos projets
-                    </p>
-                </div>
-            </div>
-
-        </div>
-
-        <hr/>
-
-        <h2 class="mt-5">Qui peut utiliser SPARTE ?</h2>
-
-        <p>Responsables d’urbanisme en EPCI, services de l’État, agences d’urbanismes, bureaux d’études, aménageurs, associations, particuliers… chacun peut utiliser SPARTE et ainsi avoir une vision partagée de l’évolution d’un territoire.</p>
-
-        <hr/>
-
-        <h2 class="mt-5">Consommation d’espace ou artificialisation ?</h2>
-
-        <strong>A quoi correspond l’artificialisation des sols ?</strong>
-
-        <p>L’article 192 de la Loi Climat & Résilience votée en août 2021 la définit comme
-        « une surface dont les sols sont :</p>
-        <ul>
-            <li>soit imperméabilisés en raison du bâti ou d'un revêtement,</li>
-            <li>soit stabilisés et compactés,</li>
-            <li>soit constitués de matériaux composites »</li>
-        </ul>
-
-        <strong>Quelle est la différence avec la consommation d’espace ?</strong>
-
-        <p>La mesure de la consommation d’espace prend en compte l’usage des sols alors que l’artificialisation des sols traduit la couverture des sols.</p>
-
-        <strong>Pourquoi mesurer et suivre l’artificialisation des sols ?</strong>
-
-        <p>D’ici 2050, l’objectif de la Loi Climat est d’atteindre le “Zéro Artificialisation Nette”,
-        soit un équilibre entre l’artificialisation des sols et la renaturation du territoire. Un
-        suivi régulier facilite cette transition.</p>
-
-        <p>Dès 2021, les collectivités devront faire un bilan tri-annuel de l’artificialisation des sols.</p>
-
-        <strong>Comment SPARTE calcule l’artificialisation des sols ?</strong>
-
-        <p>L’artificialisation des sols est mesurée à partir de l’OCcupation des Sols à Grande Échelle (OCSGE) nationale et directement issue des objets définis dans la loi “climat et résilience”.</p>
-
-        <p>La consommation des espaces NAF sera mesurée à partir des objets de l’OCSGE tels que définis dans le décret d'application de la loi.</p>
-
-
-        <h2 class="mt-5">Les atouts de SPARTE</h2>
-
-        <div class="d-flex flex-row">
-            <div class="flex-fill">
-                <br/><strong>Un calcul conforme </strong>
-                <br/>La mesure de l’artificialisation est basée sur la définition de l’article 192 de la Loi Climat et Résilience.
-            </div>
-            <div><img src="{% static 'picto_home_5.svg' %}" alt="Femme vérifie la conformité" style="width: 133px;"></div>
-        </div>
-
-        <div class="d-flex flex-row">
-            <div><img src="{% static 'picto_home_6.svg' %}" alt="Ordinateur avec boutton de téléchargement" style="width: 133px;"></div>
-            <div class="flex-fill pl-2">
-                <p>
-                    <strong>Les données nationales les plus récentes</strong>
-                    <br/>Les données les plus précises possibles pour analyser les sols jusqu’à l’échelle infra-communale : l’OCSGE dès qu’elle est disponible et les millésimes annuels des fichiers fonciers depuis 2009.
-                </p>
             </div>
         </div>
 
-        <div class="d-flex flex-row">
-            <div class="flex-fill">
-                <strong>Un outil d’aide à la décision au service de la sobriété foncière </strong>
-                <br/>Les cartes interactives, les tableaux de bord et l’outil d’estimation de l'impact des projets d’aménagement sur la consommation d’espaces et l’artificialisation des sols vous aident à optimiser vos projets.
+        <div class="card my-5">
+            <div class="row g-0">
+                <div class="col-md-4">
+                    <img class="card-img-top" src="{% static 'home/img/couverture_france.png' %}" alt="Territoire couvert par SPARTE" style="max-width: 350px;">
+                </div>
+                <div class="col-md-8 d-flex align-items-center">
+                    <div class="card-body">
+                        <h4 class="card-title">
+                            Est-ce que mon territoire est couvert par SPARTE ?
+                        </h4>
+                        <p class="card-text">
+                            Indicateurs disponibles pour chaque département :
+                            <br/>En bleu : Consommation d’espaces
+                            <br/>En jaune : Artificialisation des sols et renaturation
+                        </p>
+                    </div>
+                </div>
             </div>
-            <div><img src="{% static 'picto_home_7.png' %}" alt="Homme regarde un dessin mathématique" width="133"></div>
         </div>
 
-        <h2 class="mt-5">Comment accéder à SPARTE ?</h2>
 
-        <p>Accédez à la version beta de SPARTE pour calculer et suivre l’état de la consommation d’espaces et de l’artificialisation des sols d’un territoire.</p>
+        <div class="card my-5 border-0">
+            <div class="row g-0">
+                <div class="col-md-8">
+                    <div class="card-body">
+                        <h4 class="card-title">
+                            Pourquoi faire confiance à SPARTE ?
+                        </h4>
+                        <p class="card-text">
+                            Les calculs sont basés sur la définition et données d’observation préconisées dans l’article 192 de la Loi Climat et Résilience et ses décrets d'application.
+                        </p>
+                        <p class="text-center">
+                            <a href="https://artificialisation.biodiversitetousvivants.fr/bases-donnees/ocs-ge" target="_blank" class="btn btn-secondary">
+                                Plus d'infos sur les données utilisées
+                                <i class="bi bi-box-arrow-up-right ms-2"></i>
+                            </a>
+                        </p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <img class="img-fluid rounded-start" src="{% static 'picto_home_3.svg' %}" alt="Pictogramme">
+                </div>
+            </div>
+        </div>
 
-        <p><a href="{% url 'users:signup' %}" class="btn btn-primary w-100">Pour commencer à utilisez l'outil, inscrivez-vous !</a></p>
+        <div class="card my-5">
+            <div class="row g-0">
+                <div class="col-md-4">
+                    <img class="card-img-top" src="{% static 'home/img/loi_climat_vertical.png' %}" alt="Photo de couverture de la loi Climat et Résilience" style="height: 100%;">
+                </div>
+                <div class="col-md-8 d-flex align-items-center">
+                    <div class="card-body">
+                        <h4 class="card-title pb-3">
+                            Les objectifs Zéro Artificialisation Nette
+                        </h4>
+                        <p class="card-text pt-3">
+                            <strong>2030</strong> :
+                            <br/>diminution par deux de la consommation d’espaces, par rapport au bilan 2010-2020
+                        </p>
+                        <p class="card-text">
+                            <strong>2050</strong> :
+                            <br/>équilibre entre le total des surfaces artificialisées et renaturées
+                        </p>
+                        <p class="text-center">
+                            <a href="#" target="_blank" class="btn btn-warning">
+                                Foire pédagogique
+                                <i class="bi bi-question-circle-fill"></i>
+                            </a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-        <hr/>
 
-        <p>SPARTE est un projet d'innovation pour faciliter le calcul et le suivi de la consommation des espaces et de l’artificialisation en vue de l'atteinte de l’objectif Zéro Artificialisation Nette acté par la Loi Climat et Résilience.</p>
+        <div class="card my-5 border-0">
+            <div class="row g-0">
+                <div class="col-md-8">
+                    <div class="card-body">
+                        <h4 class="card-title">
+                            Que continent mon diagnostic ?
+                        </h4>
+                        <p class="card-text">
+                            Pour la consommation d'espaces, et selon les territoires l'artificialisation des sols :
+                            <ul>
+                                <li>Trajectoire ZAN en 2030 et 2050</li>
+                                <li>Bilan sur la période sélectionnée</li>
+                                <li>Évolution sur la période sélectionnée</li>
+                                <li>Comparaison au territoire supérieur</li>
+                                <li>Déterminants (Habitat, activité...)</li>
+                            </ul>
+                        </p>
+                        <p class="text-center">
+                            <a href="{% url 'project:add' %}" target="_blank" class="btn btn-primary">
+                                Mon diagnostic
+                                <i class="bi bi-binoculars ms-2"></i>
+                            </a>
+                        </p>
+                    </div>
+                </div>
+                <div class="col-md-4 d-flex">
+                    <img class="img-fluid rounded-start my-auto" src="{% static 'picto_home_5.svg' %}" alt="Pictogramme">
+                </div>
+            </div>
+        </div>
 
-        <p><strong>Faites nous part de vos propositions pour améliorer ce service : <a href="mailto:sparte@beta.gouv.fr">sparte@beta.gouv.fr</a></strong></p>
+        <div id="carouselExampleCaptions" class="carousel carousel-dark slide my-5" data-bs-ride="carousel">
+            <div class="carousel-indicators">
+              <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+              <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="1" aria-label="Slide 2"></button>
+              <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="2" aria-label="Slide 3"></button>
+            </div>
+            <div class="carousel-inner">
+              <div class="carousel-item active">
+                <img src="{% static 'home/img/usage_grand.png' %}" class="d-block w-100" alt="Usage du sol" style="max-width:750px; max-height: 430px;">
+                <div class="carousel-caption d-none d-md-block">
+                  <h5>Usage du sol</h5>
+                  <p>Une carte interactive pour comprendre l’artificialisation
+                  </p>
+                </div>
+              </div>
+              <div class="carousel-item">
+                <img src="{% static 'home/img/rapport.png' %}" class="d-block w-100" alt="..." style="max-width:750px; max-height: 430px;">
+                <div class="carousel-caption d-none d-md-block">
+                  <h5>Des Tableaux de bord</h5>
+                  <p>Obtenez en quelques clics les chiffres clés sur votre territoire ainsi que la trajectoire 2031</p>
+                </div>
+              </div>
+              <div class="carousel-item">
+                <img src="{% static 'home/img/couverture_grand.png' %}" class="d-block w-100" alt="..." style="max-width:750px; max-height: 430px;">
+                <div class="carousel-caption d-none d-md-block">
+                  <h5>La couverture du sol selon l'OCSGE</h5>
+                  <p>Indicateurs et données</p>
+                </div>
+              </div>
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="prev">
+              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="next">
+              <span class="carousel-control-next-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Next</span>
+            </button>
+          </div>
 
-        <p><img src="{% static 'logo_france.png' %}" width="100"/></p>
+        <p class="mt-5"><strong>Faites nous part de vos propositions pour améliorer ce service : <a href="mailto:sparte@beta.gouv.fr">sparte@beta.gouv.fr</a></strong></p>
     </div>
 </div>
 {% endblock %}
