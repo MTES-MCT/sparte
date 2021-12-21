@@ -106,6 +106,7 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 "users.context_processors.add_connected_user_to_context",
+                "home.context_processors.add_faq_to_context",
             ],
         },
     },
