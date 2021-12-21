@@ -913,3 +913,32 @@ class RefPlan(AutoLoadMixin, DataColorationMixin, models.Model):
         "surfcom20": "SURFCOM20",
         "mpoly": "MULTIPOLYGON",
     }
+
+
+class Region(models.Model):
+    source_id = models.CharField("Identifiant source", max_length=2)
+    name = models.CharField("Nom", max_length=27)
+    mpoly = models.MultiPolygonField()
+
+    def __str__(self):
+        return self.name
+
+
+class Departement(models.Model):
+    source_id = models.CharField("Identifiant source", max_length=3)
+    region = models.ForeignKey(Region, on_delete=models.PROTECT)
+    is_artif_ready = models.BooleanField("Données artif disponibles", default=False)
+    name = models.CharField("Nom", max_length=23)
+    mpoly = models.MultiPolygonField()
+
+    def __str__(self):
+        return self.name
+
+
+class Epci(models.Model):
+    source_id = models.CharField("Identifiant source", max_length=9)
+    name = models.CharField("Nom", max_length=64)
+    mpoly = models.MultiPolygonField()
+
+    def __str__(self):
+        return self.name
