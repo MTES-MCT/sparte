@@ -1,0 +1,36 @@
+{% extends 'index.html' %}
+
+{% load static %}
+
+{% block pagetitle %}Questions fréquentes{% endblock %}
+
+{% block headers %}
+<link rel="stylesheet" href="{% static 'home/css/faq.css' %}" />
+{% endblock headers %}
+
+{% block sub_bar_actions %}
+    {% if is_staff %}
+    <li class="nav-item ms-1">
+        <a class="btn btn-sm btn-outline-primary" href="{% url 'admin:home_frequentlyaskedquestion_change' faq.id %}">
+            <i class="bi bi-pencil"></i> Editer
+        </a>
+    </li>
+    {% endif %}
+
+{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-center">
+    <div class="col-lg-8 col-md-10 col-12">
+        <h1 class="my-5">
+            <small class="text-muted">
+                {{ faq.title }}
+            </small>
+        </h1>
+
+        <div id="faq" class="mt-3">
+            {{ faq.get_html|safe }}
+        </div>
+    </div>
+</div>
+{% endblock content %}
