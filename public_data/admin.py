@@ -10,8 +10,11 @@ from .models import (
     CommunesSybarval,
     CouvertureSol,
     CouvertureUsageMatrix,
+    Departement,
     EnveloppeUrbaine2018,
+    Epci,
     Ocsge,
+    Region,
     Renaturee2018to2015,
     Sybarval,
     UsageSol,
@@ -172,3 +175,64 @@ class CouvertureUsageMatrixAdmin(ImportExportMixin, admin.GeoModelAdmin):
     list_filter = ("is_artificial", "is_consumed", "is_natural")
     search_fields = ("couverture", "usage")
     resource_class = CouvertureUsageMatrixImportResource
+
+
+class RegionResource(resources.ModelResource):
+    class Meta:
+        model = Region
+        import_id_fields = ("id",)
+        skip_unchanged = True
+
+
+@admin.register(Region)
+class RegionAdmin(ImportExportMixin, admin.GeoModelAdmin):
+    model = Region
+    list_display = (
+        "id",
+        "name",
+        "source_id",
+    )
+    search_fields = ("name", "source_id")
+    ordering = ("name",)
+    resource_class = RegionResource
+
+
+class DepartementResource(resources.ModelResource):
+    class Meta:
+        model = Departement
+        import_id_fields = ("id",)
+        skip_unchanged = True
+
+
+@admin.register(Departement)
+class DepartementAdmin(ImportExportMixin, admin.GeoModelAdmin):
+    model = Departement
+    list_display = (
+        "id",
+        "name",
+        "source_id",
+        "region",
+    )
+    search_fields = ("name", "source_id")
+    ordering = ("name",)
+    resource_class = DepartementResource
+
+
+class EpciResource(resources.ModelResource):
+    class Meta:
+        model = Epci
+        import_id_fields = ("id",)
+        skip_unchanged = True
+
+
+@admin.register(Epci)
+class EpciAdmin(ImportExportMixin, admin.GeoModelAdmin):
+    model = Epci
+    list_display = (
+        "id",
+        "name",
+        "source_id",
+    )
+    search_fields = ("name", "source_id")
+    ordering = ("name",)
+    resource_class = EpciResource
