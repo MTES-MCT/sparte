@@ -18,7 +18,7 @@ class BreadCrumbMixin:
 
     def get_context_breadcrumbs(self):
         breadcrumbs = [
-            {"href": reverse_lazy("home"), "title": "Accueil"},
+            {"href": reverse_lazy("home:home"), "title": "Accueil"},
         ]
         return breadcrumbs
 

@@ -52,7 +52,7 @@ class UserDeleteView(DeleteView):
         "title": "Désinscription",
     }
     model = User
-    success_url = reverse_lazy("home")
+    success_url = reverse_lazy("home:home")
 
     def get_object(self, queryset=None):
         """Return connected user."""
