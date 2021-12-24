@@ -361,7 +361,7 @@ class ProjectMapView(GroupMixin, DetailView):
                         "url": reverse_lazy("project:emprise-list")
                         + f"?id={self.object.pk}",
                         "display": True,
-                        "use_emprise_style": True,
+                        "style": "style_emprise",
                         "fit_map": True,
                         "level": "5",
                     },
