@@ -939,6 +939,7 @@ class Epci(models.Model):
     source_id = models.CharField("Identifiant source", max_length=9)
     name = models.CharField("Nom", max_length=64)
     mpoly = models.MultiPolygonField()
+    departement = models.ManyToManyField(Departement)
 
     def __str__(self):
         return self.name
