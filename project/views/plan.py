@@ -108,7 +108,7 @@ class PlanDetailView(GroupMixin, DetailView):
                     "name": "Emprise du projet",
                     "url": project_url,
                     "display": True,
-                    "use_emprise_style": True,
+                    "style": "style_emprise",
                     "level": "5",
                 },
                 {
