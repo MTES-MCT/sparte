@@ -131,12 +131,9 @@ function Carto (map_center, default_zoom)
 
         // change style function if style is set
         let style = get(geolayer, "style", undefined)
-        if (style == 'style_zone_artificielle') {
+        if (style == 'style_zone_artificielle')
             layer.style = style_zone_artificielle
-        }
-
-        // Change layer style to use one specific for project emprise
-        if (get(geolayer, "use_emprise_style", false))
+        if (style == 'style_emprise')
             layer.style = emprise_style
 
         // set the correct panes according to required level
@@ -148,6 +145,10 @@ function Carto (map_center, default_zoom)
 
         // set the url to retrieve the scale
         layer.scale_url = get(geolayer, "gradient_url", undefined)
+        // change how the get_color works to use the scale
+        if (layer.scale_url != undefined){
+            layer.get_color = layer.get_color_from_scale
+        }
 
         // if switch is OCSGE, replace building form function
         is_ocsge_switch = get(geolayer, "switch", undefined)
@@ -230,50 +231,34 @@ function GeoLayer (name, url) {
     this.loading_img = undefined
 
     // a surcharger pour changer la façon dont la couleur est choisie
-    // if this.scale is defined, it will use a property value (like surface) to
-    // match against a scale to find the value
-    // il no scale are defined, it will look in a property to find a color
+    // par exemple : this.get_color = this.get_color_from_property
     this.get_color = (feature) => {
+        let letters = '0123456789ABCDEF'
+        let color = '#'
+        for (let i = 0; i < 6; i++)
+            color += letters[Math.floor(Math.random() * 16)]
+        return color
+    }
+
+    // utilise this.scale pour afficher la couleur
+    // match against a scale to find the value
+    this.get_color_from_scale = (feature) => {
         // get the property that will decide the color
-        property_value = this.get_color_property_value(feature)
-
-        // default color if scale is not set
-        if (this.scale == null){
-            return property_value
-        }
-        else
-        {
-            // use provided scale and color
-            // return gray in case of unset
-            let item = this.scale.find((item) => property_value < item.value)
-            // si on a pas trouvé, on doit être sur la dernière valeur de scale
-            // donc le find n'est jamais vrai, on va donc récupérer la dernière
-            // valeur pour initialiser item
-            item = item ? item : this.scale[this.scale.length - 1]
-            // finalement, on renvoit la couleur
-            return item.color
-        }
+        property_value = feature.properties[this.color_property_name]
+        // use provided scale and color
+        // return gray in case of unset
+        let item = this.scale.find((item) => property_value < item.value)
+        // si on a pas trouvé, on doit être sur la dernière valeur de scale
+        // donc le find n'est jamais vrai, on va donc récupérer la dernière
+        // valeur pour initialiser item
+        item = item ? item : this.scale[this.scale.length - 1]
+        // finalement, on renvoit la couleur
+        return item.color
     }
 
-    // set which property must be used to set the color
-    this.get_color_property_name = (feature) => {
-        return this.color_property_name
-    }
-
-    // return the value of the feature's property defined in function
-    // this.get_color_property_name
-    // this could return any value to use with a scale
-    // or directly a color like #ff0055
-    this.get_color_property_value = (feature) => {
-        property_name = this.get_color_property_name(feature)
-        if (property_name == null)
-        {
-            return '#FFEDA0'
-        }
-        else
-        {
-            return feature.properties[property_name]
-        }
+    // return a color defined in the property of each feature
+    this.get_color_from_property = (feature) => {
+        return feature.properties[this.color_property_name]
     }
 
     // A surcharger pour changer le styling par défault d'une feature
@@ -312,8 +297,8 @@ function GeoLayer (name, url) {
     this.legend_txt = (feature) => {
         if (this.scale == null)
             return null
-        let property = this.get_color_property_name(feature)
-        let property_value = this.get_color_property_value(feature)
+        let property = this.color_property_name
+        let property_value = feature.properties[property]
         let legend = '<h4>' + this.name + '</h4>'
         let bold = false
         let val = new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 1 }).format(property_value)
