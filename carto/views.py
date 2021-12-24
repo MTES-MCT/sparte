@@ -7,6 +7,32 @@ from django.views.generic import TemplateView, FormView
 from .forms import DisplayOcsgeForm
 
 
+class SelectTerritory(TemplateView):
+    template_name = "carto/select.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update(
+            {
+                # center map on France
+                "carto_name": "OCSGE 2015",
+                "center_lat": 46.227638,
+                "center_lng": 2.213749,
+                "default_zoom": 6,
+                "layer_list": [
+                    {
+                        "name": "Region",
+                        "url": reverse_lazy("public_data:region-list"),
+                        "display": True,
+                        "level": "4",
+                        "fit_map": True,
+                    },
+                ],
+            }
+        )
+        return context
+
+
 class HomeConnected(LoginRequiredMixin, TemplateView):
     template_name = "index.html"
 
