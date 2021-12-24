@@ -27,6 +27,7 @@ class Command(BaseCommand):
         self.load_region()
         self.load_departement()
         self.load_epci()
+        self.link_epci_with_dept()
 
     def load_region(self):
         logger.info("Loading regions")
@@ -81,3 +82,15 @@ class Command(BaseCommand):
         ]
         Epci.objects.bulk_create(items)
         logger.info("Done loading EPCI")
+
+    def link_epci_with_dept(self):
+        logger.info("Link EPCI <-> département")
+        depts = {d.source_id: d for d in Departement.objects.all()}
+        epcis = {e.source_id: e for e in Epci.objects.all()}
+        for epci in epcis.values():
+            epci.departement.remove()
+        links = RefPlan.objects.values_list("epci_id", "dept_id").distinct()
+        logger.info("%d links found", links.count())
+        for epci_id, dept_id in links:
+            epcis[epci_id].departement.add(depts[dept_id])
+        logger.info("Done linking")
