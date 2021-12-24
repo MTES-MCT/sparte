@@ -6,8 +6,12 @@ from .models import (
     Artificielle2018,
     CommunesSybarval,
     CouvertureSol,
+    Departement,
     EnveloppeUrbaine2018,
+    Epci,
     Ocsge,
+    # RefPlan,
+    Region,
     Renaturee2018to2015,
     Sybarval,
     Voirie2018,
@@ -227,3 +231,37 @@ class UsageSolSerializer(serializers.ModelSerializer):
             "label",
         )
         model = UsageSol
+
+
+class RegionSerializer(serializers.GeoFeatureModelSerializer):
+    class Meta:
+        fields = (
+            "id",
+            "source_id",
+            "name",
+        )
+        model = Region
+        geo_field = "mpoly"
+
+
+class DepartementSerializer(serializers.GeoFeatureModelSerializer):
+    class Meta:
+        fields = (
+            "id",
+            "source_id",
+            "name",
+            "region_id",
+        )
+        model = Departement
+        geo_field = "mpoly"
+
+
+class EpciSerializer(serializers.GeoFeatureModelSerializer):
+    class Meta:
+        fields = (
+            "id",
+            "source_id",
+            "name",
+        )
+        model = Epci
+        geo_field = "mpoly"
