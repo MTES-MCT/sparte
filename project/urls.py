@@ -45,6 +45,7 @@ urlpatterns = [
     path(
         "<int:project_id>/plan/", views.PlanListView.as_view(), name="project-plan-list"
     ),
+    path("select/", views.SelectPublicProjects.as_view(), name="select"),
 ]
 
 
