@@ -91,6 +91,8 @@ class Project(BaseProject):
 
     ANALYZE_YEARS = [(str(y), str(y)) for y in range(2009, 2021)]
 
+    is_public = models.BooleanField("Public", default=False)
+
     analyse_start_date = models.CharField(
         "Date de début de période d'analyse",
         choices=ANALYZE_YEARS,

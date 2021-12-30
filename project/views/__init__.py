@@ -23,3 +23,7 @@ from .plan import (
     PlanListView,
     PlanUpdateView,
 )
+
+from .public import (
+    SelectPublicProjects,
+)

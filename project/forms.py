@@ -2,6 +2,7 @@ from django import forms
 from django.db.models import Q
 
 from public_data.models import ArtifCommune, CommunesSybarval
+from public_data.models import Region, Departement, Epci
 
 from .models import Project, Plan
 from .tasks import process_new_project, process_new_plan
@@ -86,3 +87,46 @@ class PlanForm(forms.ModelForm):
         super().save(*args, **kwargs)
         process_new_plan.delay(self.instance.id)
         return self.instance
+
+
+class RegionForm(forms.Form):
+    region = forms.ModelChoiceField(
+        queryset=Region.objects.all().order_by("name"),
+        label="Sélectionnez une région",
+    )
+
+    def __init__(self, *args, **kwargs):
+        regions = kwargs.pop("regions", None)
+        super().__init__(*args, **kwargs)
+        if regions:
+            qs = Region.objects.filter(id__in=regions)
+            self.fields["region"].queryset = qs
+
+
+class DepartementForm(forms.Form):
+    departement = forms.ModelChoiceField(
+        queryset=Departement.objects.all(),
+        label="Sélectionnez un département",
+    )
+
+    def __init__(self, *args, **kwargs):
+        self.region_id = kwargs.pop("region_id")
+        super().__init__(*args, **kwargs)
+        qs = Departement.objects.filter(region_id=self.region_id)
+        self.fields["departement"].queryset = qs
+
+
+class EpciForm(forms.Form):
+    departement = forms.CharField(widget=forms.HiddenInput())
+    epci = forms.ModelChoiceField(
+        queryset=Epci.objects.all(),
+        label="Sélectionnez un EPCI",
+    )
+
+    def __init__(self, *args, **kwargs):
+        self.departement_id = kwargs.pop("departement_id")
+        super().__init__(*args, **kwargs)
+        qs = Epci.objects.filter(departements__id=self.departement_id)
+        self.fields["epci"].queryset = qs
+        # dep = Departement.objects.get(pk=self.departement_id)
+        self.fields["departement"].initial = self.departement_id
