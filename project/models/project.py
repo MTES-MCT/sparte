@@ -93,6 +93,16 @@ class Project(BaseProject):
 
     is_public = models.BooleanField("Public", default=False)
 
+    help_text = (
+        "We need a way to find Project related to Region, Departement or EPCI\n"
+        "this is the purpose of below field which has a very specific rule of\n"
+        "construction, it's like a slug\n"
+        "epci : EPCI_[ID]\n"
+        "departement : DEPART_[ID]\n"
+        "region : REGION_[ID]"
+    )
+    public_key = models.SlugField(unique=True, null=True, help_text=help_text)
+
     analyse_start_date = models.CharField(
         "Date de début de période d'analyse",
         choices=ANALYZE_YEARS,
