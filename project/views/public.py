@@ -9,7 +9,6 @@ from public_data.models import Epci, Departement, Region
 
 class SelectPublicProjects(TemplateView):
     template_name = "project/select.html"
-    http_method_names = ["get", "post"]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -57,23 +56,16 @@ class SelectPublicProjects(TemplateView):
             )
         return context
 
-    def post(self, request, *args, **kwargs):
-        self.button_type = request.POST.get("button_type", None)
-        self.region_id = request.POST.get("region", None)
-        self.departement_id = request.POST.get("departement", None)
-        self.epci_id = request.POST.get("epci", None)
-        return self.get(request, *args, **kwargs)
-
     def get(self, request, *args, **kwargs):
         public_key = None
         if not self.region_id:
-            self.region_id = request.GET.get("region_id", None)
+            self.region_id = request.GET.get("region", None)
             public_key = f"REGION_{self.region_id}"
         if not self.departement_id:
-            self.departement_id = request.GET.get("departement_id", None)
+            self.departement_id = request.GET.get("departement", None)
             public_key = f"DEPART_{self.departement_id}"
         if not self.epci_id:
-            self.epci_id = request.GET.get("epci_id", None)
+            self.epci_id = request.GET.get("epci", None)
             public_key = f"EPCI_{self.epci_id}"
         if request.GET.get("see_diagnostic", None):
             try:
