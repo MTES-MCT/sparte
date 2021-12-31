@@ -11,6 +11,7 @@ Sélectionner un plan
 {% endblock %}
 
 {% block content %}
+{% localize off %}
 <div class="d-flex justify-content-center mt-5">
     <div class="col-lg-6 col-md-8 col-12">
         <h1 class="mb-5">Diagnostiquer mon territoire</h1>
@@ -47,16 +48,22 @@ Sélectionner un plan
                     {% endif %}
                 {% endif %}
             </p>
-
-            <p>
-                {% if region or departement or epci %}
-                    <a href="#" class="btn btn-primary w-100">Voir le diagnostic</a>
-                {% endif %}
-            </p>
             </form>
+            {% if region or departement or epci %}
+                {% for message in messages %}
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+                <p>
+                    <a href="{% url 'project:select' %}?see_diagnostic=True&departement_id={{ departement.id }}&region_id={{ region.id }}&epci_id={{ epci.id }}" class="btn btn-primary w-100">Voir le diagnostic</a>
+                </p>
+            {% endif %}
         </div>
     </div>
 </div>
+{% endlocalize %}
 {% endblock %}
 
 {% block bodyend %}
