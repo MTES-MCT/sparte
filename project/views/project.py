@@ -403,6 +403,7 @@ class ProjectMapView(GroupMixin, DetailView):
                         "url": reverse_lazy("public_data:ocsge-optimized"),
                         "display": False,
                         "color_property_name": "map_color",
+                        "style": "get_color_from_property",
                         "level": "1",
                         "switch": "ocsge",
                     },

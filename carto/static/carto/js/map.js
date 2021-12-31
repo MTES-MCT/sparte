@@ -135,6 +135,8 @@ function Carto (map_center, default_zoom)
             layer.style = style_zone_artificielle
         if (style == 'style_emprise')
             layer.style = emprise_style
+        if (style == 'get_color_from_property')
+            layer.get_color = layer.get_color_from_property
 
         // set the correct panes according to required level
         // level can be set from 0 to 9
