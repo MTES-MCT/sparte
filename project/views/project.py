@@ -10,7 +10,7 @@ from project.forms import SelectCitiesForm, SelectPluForm, UploadShpForm
 from project.models import Project
 from project.domains import ConsommationDataframe
 
-from .mixins import GetObjectMixin, UserQuerysetOnlyMixin
+from .mixins import GetObjectMixin, UserQuerysetOrPublicMixin
 
 
 class BreadCrumbMixin:
@@ -30,9 +30,7 @@ class BreadCrumbMixin:
         return context
 
 
-class GroupMixin(
-    GetObjectMixin, LoginRequiredMixin, UserQuerysetOnlyMixin, BreadCrumbMixin
-):
+class GroupMixin(GetObjectMixin, UserQuerysetOrPublicMixin, BreadCrumbMixin):
     """Simple trick to not repeat myself. Pertinence to be evaluated."""
 
     queryset = Project.objects.all()
@@ -56,9 +54,14 @@ class GroupMixin(
         return breadcrumbs
 
 
-class ProjectListView(GroupMixin, ListView):
+class ProjectListView(GroupMixin, LoginRequiredMixin, ListView):
     template_name = "project/list.html"
     context_object_name = "projects"  # override to add an "s"
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        qs = qs.filter(is_public=False)
+        return qs
 
 
 class ProjectDetailView(GroupMixin, DetailView):
@@ -409,7 +412,7 @@ class ProjectMapView(GroupMixin, DetailView):
         return context
 
 
-class ProjectCreateView(GroupMixin, CreateView):
+class ProjectCreateView(GroupMixin, LoginRequiredMixin, CreateView):
     model = Project
     template_name = "project/create.html"
     fields = ["name", "description", "analyse_start_date", "analyse_end_date"]
@@ -429,7 +432,7 @@ class ProjectCreateView(GroupMixin, CreateView):
         return reverse_lazy("project:detail", kwargs={"pk": self.object.id})
 
 
-class ProjectUpdateView(GroupMixin, UpdateView):
+class ProjectUpdateView(GroupMixin, LoginRequiredMixin, UpdateView):
     model = Project
     template_name = "project/update.html"
     fields = ["name", "description", "analyse_start_date", "analyse_end_date"]
@@ -444,7 +447,7 @@ class ProjectUpdateView(GroupMixin, UpdateView):
         return reverse_lazy("project:detail", kwargs=self.kwargs)
 
 
-class ProjectDeleteView(GroupMixin, DeleteView):
+class ProjectDeleteView(GroupMixin, LoginRequiredMixin, DeleteView):
     model = Project
     template_name = "project/delete.html"
     success_url = reverse_lazy("project:list")
@@ -455,7 +458,7 @@ class ProjectDeleteView(GroupMixin, DeleteView):
         return breadcrumbs
 
 
-class ProjectReinitView(GroupMixin, DeleteView):
+class ProjectReinitView(GroupMixin, LoginRequiredMixin, DeleteView):
     model = Project
     template_name = "project/reinit.html"
 
