@@ -2,7 +2,7 @@ from django.contrib import messages
 from django.contrib.auth import logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
-from django.views.generic import DetailView, ListView, RedirectView
+from django.views.generic import RedirectView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormView
 from django.urls import reverse_lazy
 
@@ -32,14 +32,6 @@ class SignoutView(RedirectView):
         return super().get_redirect_url(*args, **kwargs)
 
 
-class UserDetailView(DetailView):
-    model = User
-
-
-class UserListView(ListView):
-    model = User
-
-
 class UserCreateView(BreadCrumbMixin, CreateView):
     model = User
     template_name = "users/signup.html"
@@ -51,11 +43,6 @@ class UserCreateView(BreadCrumbMixin, CreateView):
             {"href": reverse_lazy("home:home"), "title": "Accueil"},
             {"href": reverse_lazy("users:signup"), "title": "Inscription"},
         ]
-
-
-class UserUpdateView(UpdateView):
-    model = User
-    fields = ["email", "first_name", "last_name"]
 
 
 class UserDeleteView(BreadCrumbMixin, DeleteView):
