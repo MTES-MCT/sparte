@@ -10,24 +10,9 @@ from project.forms import SelectCitiesForm, SelectPluForm, UploadShpForm
 from project.models import Project
 from project.domains import ConsommationDataframe
 
-from .mixins import GetObjectMixin, UserQuerysetOrPublicMixin
+from utils.views_mixins import BreadCrumbMixin, GetObjectMixin
 
-
-class BreadCrumbMixin:
-    context_breadcrumbs = []
-
-    def get_context_breadcrumbs(self):
-        breadcrumbs = [
-            {"href": reverse_lazy("home:home"), "title": "Accueil"},
-        ]
-        return breadcrumbs
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        breadcrumbs = self.get_context_breadcrumbs()
-        breadcrumbs[-1]["is_active"] = True
-        context.update({"breadcrumbs": breadcrumbs})
-        return context
+from .mixins import UserQuerysetOrPublicMixin
 
 
 class GroupMixin(GetObjectMixin, UserQuerysetOrPublicMixin, BreadCrumbMixin):

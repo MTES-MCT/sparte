@@ -66,6 +66,7 @@ THIRD_APPS = [
 
 # upper app should not communicate with lower ones
 PROJECT_APPS = [
+    "utils.apps.UtilsConfig",
     "app_parameter.apps.AppParameterConfig",
     "users.apps.UsersConfig",
     "carto.apps.CartoConfig",
@@ -330,12 +331,12 @@ LOGGING = {
         "just_message": {
             "format": "[{asctime}] {message}",
             "style": "{",
-            "datefmt": "%d%b%Y %H%M%S",
+            "datefmt": "%d%m%Y %H%M%S",
         },
         "verbose": {
             "format": "[{asctime}]{levelname:<7} {module} {process:d} {thread:d} {message}",
             "style": "{",
-            "datefmt": "%d%b%Y %H%M%S",
+            "datefmt": "%d%m%Y %H%M%S",
         },
         "simple": {
             "format": "[{asctime}]{levelname:<7} {message}",

@@ -4,6 +4,8 @@ from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView, FormView
 
+from utils.views_mixins import BreadCrumbMixin
+
 from .forms import DisplayOcsgeForm
 
 
@@ -33,8 +35,14 @@ class SelectTerritory(TemplateView):
         return context
 
 
-class HomeConnected(LoginRequiredMixin, TemplateView):
+class HomeConnected(BreadCrumbMixin, LoginRequiredMixin, TemplateView):
     template_name = "index.html"
+
+    def get_context_breadcrumbs(self):
+        return [
+            {"href": reverse_lazy("home:home"), "title": "Accueil"},
+            {"href": reverse_lazy("carto:home_connected"), "title": "connecté"},
+        ]
 
 
 @login_required

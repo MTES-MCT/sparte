@@ -96,11 +96,11 @@
                             <ul class="navbar-nav ms-0 mt-2 mt-lg-0 ps-2">
                                 <nav aria-label="breadcrumb">
                                     <ol class="breadcrumb mb-0">
-                                    {% for item in breadcrumbs %}
-                                        {% if item.is_active %}
-                                        <li class="breadcrumb-item active" aria-current="page">{{ item.title}}</li>
+                                    {% for bread in breadcrumbs %}
+                                        {% if bread.is_active %}
+                                        <li class="breadcrumb-item active" aria-current="page">{{ bread.title}}</li>
                                         {% else %}
-                                        <li class="breadcrumb-item"><a href="{{ item.href }}">{{ item.title}}</a></li>
+                                        <li class="breadcrumb-item"><a href="{{ bread.href }}">{{ bread.title}}</a></li>
                                         {% endif %}
                                     {% endfor %}
                                     </ol>
