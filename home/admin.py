@@ -6,12 +6,12 @@ from .models import FrequentlyAskedQuestion
 @admin.register(FrequentlyAskedQuestion)
 class FrequentlyAskedQuestionAdmin(admin.ModelAdmin):
     model = FrequentlyAskedQuestion
-    list_display = ("title",)
+    list_display = ("title", "order")
     search_fields = (
         "title",
         "menu_entry",
         "md_content",
         "slug",
     )
-    ordering = ("title",)
+    # ordering = ("title",)
     readonly_fields = ("slug",)
