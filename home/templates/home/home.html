@@ -4,6 +4,10 @@
 
 {% block pagetitle %}Accueil{% endblock %}
 
+{% block headers %}
+<link rel="stylesheet" href="{% static 'home/css/home.css' %}" />
+{% endblock headers %}
+
 {% block content %}
 <div class="d-flex h-100 justify-content-center">
     <div class="" style="width:750px;">
@@ -21,7 +25,7 @@
                             La Loi "Climat et Résilience" vise à lutter contre l’artificialisation des sols à travers une trajectoire Zéro Artificialisation Nette (ZAN).
                         </p>
                         <p class="text-center">
-                            <a href="{% url 'project:select' %}" class="btn btn-primary">
+                            <a href="{% url 'project:select' %}" class="btn btn-lg btn-primary w-100">
                                 Mon diagnostic
                                 <i class="bi bi-binoculars ms-2"></i>
                             </a>
@@ -127,7 +131,7 @@
                             </ul>
                         </p>
                         <p class="text-center">
-                            <a href="{% url 'project:select' %}" target="_blank" class="btn btn-primary">
+                            <a href="{% url 'project:select' %}" target="_blank" class="btn btn-lg btn-primary w-100">
                                 Mon diagnostic
                                 <i class="bi bi-binoculars ms-2"></i>
                             </a>
@@ -148,7 +152,7 @@
             </div>
             <div class="carousel-inner">
               <div class="carousel-item active">
-                <img src="{% static 'home/img/usage_grand.png' %}" class="d-block w-100" alt="Usage du sol" style="max-width:750px; max-height: 430px;">
+                <img src="{% static 'home/img/usage_grand.png' %}" class="d-block w-100" alt="Usage du sol" style="height: 400px;">
                 <div class="carousel-caption d-none d-md-block">
                   <h5>Usage du sol</h5>
                   <p>Une carte interactive pour comprendre l’artificialisation
@@ -156,14 +160,14 @@
                 </div>
               </div>
               <div class="carousel-item">
-                <img src="{% static 'home/img/rapport.png' %}" class="d-block w-100" alt="..." style="max-width:750px; max-height: 430px;">
+                <img src="{% static 'home/img/rapport.png' %}" class="d-block w-100" alt="..." style="height: 400px;">
                 <div class="carousel-caption d-none d-md-block">
                   <h5>Des Tableaux de bord</h5>
                   <p>Obtenez en quelques clics les chiffres clés sur votre territoire ainsi que la trajectoire 2031</p>
                 </div>
               </div>
               <div class="carousel-item">
-                <img src="{% static 'home/img/couverture_grand.png' %}" class="d-block w-100" alt="..." style="max-width:750px; max-height: 430px;">
+                <img src="{% static 'home/img/couverture_grand.png' %}" class="d-block w-100" alt="..." style="height: 400px;">
                 <div class="carousel-caption d-none d-md-block">
                   <h5>La couverture du sol selon l'OCSGE</h5>
                   <p>Indicateurs et données</p>
@@ -179,6 +183,8 @@
               <span class="visually-hidden">Next</span>
             </button>
           </div>
+
+        <p class="mt-5">SPARTE est un projet d'innovation pour faciliter le calcul et le  suivi de l’artificialisation en vue de l'atteinte de l’objectif Zéro  Artificialisation Nette acté par la Loi Climat et Résilience.</p>
 
         <p class="mt-5"><strong>Faites nous part de vos propositions pour améliorer ce service : <a href="mailto:sparte@beta.gouv.fr">sparte@beta.gouv.fr</a></strong></p>
     </div>
