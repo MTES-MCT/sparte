@@ -926,7 +926,7 @@ class Region(models.Model):
 
 class Departement(models.Model):
     source_id = models.CharField("Identifiant source", max_length=3)
-    region = models.ForeignKey(Region, on_delete=models.PROTECT)
+    region = models.ForeignKey(Region, on_delete=models.CASCADE)
     is_artif_ready = models.BooleanField("Données artif disponibles", default=False)
     name = models.CharField("Nom", max_length=23)
     mpoly = models.MultiPolygonField()
