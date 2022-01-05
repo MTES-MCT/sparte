@@ -7,7 +7,7 @@ from django.core.management.base import BaseCommand
 from public_data.models import RefPlan, Region, Departement, Epci
 
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("management.commands")
 
 
 def fix_poly(field):
@@ -88,9 +88,9 @@ class Command(BaseCommand):
         depts = {d.source_id: d for d in Departement.objects.all()}
         epcis = {e.source_id: e for e in Epci.objects.all()}
         for epci in epcis.values():
-            epci.departement.remove()
+            epci.departements.remove()
         links = RefPlan.objects.values_list("epci_id", "dept_id").distinct()
         logger.info("%d links found", links.count())
         for epci_id, dept_id in links:
-            epcis[epci_id].departement.add(depts[dept_id])
+            epcis[epci_id].departements.add(depts[dept_id])
         logger.info("Done linking")
