@@ -340,7 +340,7 @@ LOGGING = {
         "simple": {
             "format": "[{asctime}]{levelname:<7} {message}",
             "style": "{",
-            "datefmt": "%d/%b/%Y %H:%M:%S",
+            "datefmt": "%d%m%Y %H%M%S",
         },
     },
     "handlers": {
