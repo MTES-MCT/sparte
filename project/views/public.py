@@ -1,14 +1,23 @@
 from django.contrib import messages
 from django.shortcuts import redirect
+from django.urls import reverse_lazy
 from django.views.generic import TemplateView
 
 from project.forms import EpciForm, DepartementForm, RegionForm
 from project.models import Project
 from public_data.models import Epci, Departement, Region
+from utils.views_mixins import BreadCrumbMixin
 
 
-class SelectPublicProjects(TemplateView):
+class SelectPublicProjects(BreadCrumbMixin, TemplateView):
     template_name = "project/select.html"
+
+    def get_context_breadcrumbs(self):
+        breadcrumbs = super().get_context_breadcrumbs()
+        breadcrumbs.append(
+            {"href": reverse_lazy("project:select"), "title": "Mon diagnostic"},
+        )
+        return breadcrumbs
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
