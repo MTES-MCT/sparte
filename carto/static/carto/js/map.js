@@ -105,7 +105,7 @@ function Carto (map_center, default_zoom)
         this.info.addTo(this.map);
 
         // add legend div
-        this.legend.addTo(this.map)
+        // this.legend.addTo(this.map)
 
         geolayers.forEach(layer => this.add_geolayer(layer))
     }
