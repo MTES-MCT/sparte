@@ -2,6 +2,9 @@
 
 {% load static %}
 {% load project_tags %}
+{% load humanize %}
+{% load i18n %}
+{% load l10n %}
 
 {% block pagetitle %}
 Rapport artificialisation
@@ -100,6 +103,7 @@ Rapport artificialisation
 {% endblock %}
 
 {% block bodyend %}
+{% localize off %}
 <script src="https://code.highcharts.com/highcharts.js"></script>
 <script src="https://code.highcharts.com/modules/data.js"></script>
 <script src="https://code.highcharts.com/modules/heatmap.js"></script>
@@ -162,4 +166,5 @@ Highcharts.chart('chart', {
     }
 });
 </script>
+{% endlocalize %}
 {% endblock %}
