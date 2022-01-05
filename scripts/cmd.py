@@ -41,15 +41,10 @@ async def async_remote_run(env_name, user_cmd):
     )
 
     while True:
-        buf = await proc.stdout.read()
+        buf = await proc.stdout.read(1024)
         if not buf:
             break
-        print(f"stdout: { buf.decode() }")
-
-    if proc.returncode == 0:
-        click.secho("exited with 0", fg="green")
-    else:
-        click.secho(f"exited with {proc.returncode}", fg="red")
+        print(buf.decode(), end="")
 
 
 def manage_py(env_name, management_command_name, **options):
@@ -96,6 +91,13 @@ def upload_public_data(ctx, klass=None):
 def migrate(ctx):
     """Trigger migrate command to update database"""
     manage_py(ctx.obj["ENV_NAME"], "migrate")
+
+
+@cli.command()
+@click.pass_context
+def create_public_project(ctx):
+    """Trigger create_public_project command"""
+    manage_py(ctx.obj["ENV_NAME"], "create_public_project")
 
 
 if __name__ == "__main__":
