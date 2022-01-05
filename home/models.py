@@ -13,6 +13,10 @@ class FrequentlyAskedQuestion(models.Model):
     menu_entry = models.CharField("Titre dans le menu", max_length=100)
     md_content = models.TextField("Contenu en markdown")
     is_published = models.BooleanField("Rendre public", default=False)
+    order = models.IntegerField("Order d'affichage", default=0)
+
+    class Meta:
+        ordering = ["order"]
 
     @property
     def get_html(self):
