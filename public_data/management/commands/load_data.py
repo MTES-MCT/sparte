@@ -6,7 +6,7 @@ from django.core.management.base import BaseCommand
 from public_data.tasks import load_data
 
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("management.commands")
 
 
 class Command(BaseCommand):

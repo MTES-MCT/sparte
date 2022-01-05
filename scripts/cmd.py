@@ -32,12 +32,12 @@ def cli(ctx, env):
 async def async_remote_run(env_name, user_cmd):
     env = ENVS[env_name]
     cmd = f"scalingo --app {env['app']} --region {env['region']} run {user_cmd}"
-    print(f"Execute: {cmd}", end="...")
+    print(f"Execute: {cmd}")
 
     proc = await asyncio.create_subprocess_shell(
         cmd,
         stdout=asyncio.subprocess.PIPE,
-        stderr=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.STDOUT,
     )
 
     while True:
@@ -46,20 +46,10 @@ async def async_remote_run(env_name, user_cmd):
             break
         print(f"stdout: { buf.decode() }")
 
-    # stdout, stderr = await proc.communicate()
-
     if proc.returncode == 0:
         click.secho("exited with 0", fg="green")
     else:
         click.secho(f"exited with {proc.returncode}", fg="red")
-
-    # if stdout:
-    #     click.secho("[stdout]", fg="green")
-    #     print(stdout.decode())
-
-    # if stderr:
-    #     click.secho("[stderr]", fg="red")
-    #     print(stderr.decode())
 
 
 def manage_py(env_name, management_command_name, **options):
