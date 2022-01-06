@@ -17,7 +17,7 @@ import logging
 from django.contrib.gis.db.models import Union
 from django.contrib.gis.geos.collections import MultiPolygon
 
-from public_data.models import Ocsge, Commune
+from public_data.models import Ocsge
 
 from project.models import Project
 
@@ -70,9 +70,10 @@ def build_emprise_from_city(project: Project):
     """Triggered if no shape file has been provided"""
     # clean previous emprise if any
     project.emprise_set.all().delete()
-    # get all INSEE codes to find according CommunesSybarval
-    qs_insee = project.cities.all().values_list("insee", flat=True)
-    qs = Commune.objects.filter(insee__in=qs_insee)
+    qs = project.cities.all()
+    if qs.count() == 0:
+        # no city available to build emprise
+        raise Exception("No city from which to build emprise")
     # make postgis create the union
     qs = qs.aggregate(mpoly=Union("mpoly"))
     # link project and its emprise
