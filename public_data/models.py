@@ -4,6 +4,7 @@ from django.contrib.gis.db import models
 from django.contrib.gis.db.models.functions import Area, Transform
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models as classic_models
+from django.db.models import F
 
 from .behaviors import AutoLoadMixin, DataColorationMixin
 
@@ -914,6 +915,19 @@ class RefPlan(AutoLoadMixin, DataColorationMixin, models.Model):
         "mpoly": "MULTIPOLYGON",
     }
 
+    naf11art20 = models.FloatField(null=True)
+
+    def __str__(self):
+        return self.city_insee
+
+    @classmethod
+    def calculate_fields(cls):
+        """
+        Calculate fields to speedup user consultation
+        """
+        kwargs = {"naf11art20": sum([F(f"naf{i}art{i+1}") for i in range(11, 20)])}
+        cls.objects.update(**kwargs)
+
 
 class Region(models.Model):
     source_id = models.CharField("Identifiant source", max_length=2)
@@ -943,3 +957,14 @@ class Epci(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Commune(models.Model):
+    insee = models.CharField("Code INSEE", max_length=5)
+    name = models.CharField("Nom", max_length=45)
+    departement = models.ForeignKey(Departement, on_delete=models.CASCADE)
+    epci = models.ForeignKey(Epci, on_delete=models.CASCADE)
+    mpoly = models.MultiPolygonField()
+
+    def __str__(self):
+        return f"{self.name} ({self.insee})"
