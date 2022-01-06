@@ -34,7 +34,7 @@ class DisplayMatrix(BreadCrumbMixin, TemplateView):
         df = pd.DataFrame(list(qs))
         df = df.pivot(index="usage_code", columns="couverture_code", values="label")
         # make html repr
-        html = df.to_html(na_rep="", classes="table table-sm")
+        html = df.to_html(na_rep="", classes="table table-sm table-striped table-hover")
         html = html.replace(
             "<td>ARTIF_NOT_CONSU</td>",
             "<td style='background-color:#fc6e9e !important'>Artif non consommé</td>",
