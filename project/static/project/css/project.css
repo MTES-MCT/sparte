@@ -4,6 +4,9 @@
     background-color: rgb(241, 250, 255);
     box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
     width: 230px;
+    height: 150px;
+    float: left !important;
+    margin: 15px;
 }
 
 .key-figure-green {
@@ -24,6 +27,12 @@
 
 .key-figure .figure {
     font-size: 2.5em;
+    margin-bottom: 0px;
+}
+
+.key-figure .card-body {
+    padding-top: 0px;
+    padding-bottom: 0px;
 }
 
 .rounded-5 {

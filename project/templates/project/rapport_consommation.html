@@ -23,7 +23,7 @@ Rapport consommation
 
             <div class="pt-2">&nbsp;</div>
 
-            <div class="d-flex justify-content-between">
+            <div class="clearfix">
                 <div class="card key-figure">
                     <div class="card-header">
                         Territoire total
@@ -45,7 +45,7 @@ Rapport consommation
                     </div>
                 </div>
 
-                <div class="card key-figure key-figure-green">
+                <div class="card key-figure key-figure-yellow">
                     <div class="card-header">
                         Consommé en {{ end_year }}
                     </div>
@@ -57,7 +57,7 @@ Rapport consommation
                     </div>
                 </div>
 
-                <div class="card key-figure key-figure-red">
+                <div class="card key-figure key-figure-yellow">
                     <div class="card-header">
                         Progression {{ start_year }} à {{ end_year }}
                     </div>
@@ -66,6 +66,36 @@ Rapport consommation
                         <p class="card-text"><small class="text-muted">
                             +{{ pki_progression_percent|floatformat:0 }}% du Territoire
                         </small></p>
+                    </div>
+                </div>
+
+                <div class="card key-figure key-figure-green">
+                    <div class="card-header">
+                        Consommation 2011-2020
+                    </div>
+                    <div class="card-body">
+                        <p class="figure">TODO ha</p>
+                    </div>
+                </div>
+
+                <div class="card key-figure key-figure-green">
+                    <div class="card-header">
+                        Trajectoire 2021-2030
+                    </div>
+                    <div class="card-body">
+                        <p class="figure">TODO ha</p>
+                        <p class="card-text"><small class="text-muted">
+                            Réduction de 50% par rapport à la décennie précédente
+                        </small></p>
+                    </div>
+                </div>
+
+                <div class="card key-figure key-figure-green">
+                    <div class="card-header">
+                        Trajectoire annuelle
+                    </div>
+                    <div class="card-body">
+                        <p class="figure">TODO ha</p>
                     </div>
                 </div>
             </div>
@@ -108,7 +138,7 @@ Rapport consommation
 
             <div class="box alert">
                 <h3>Provenance des données</h3>
-                La consommation d’espace est mesurée avgrâce aux fichiers fonciers qui font une description cadastrale du territoire.
+                La consommation d’espace est mesurée avec les fichiers fonciers qui font une description cadastrale du territoire.
             </div>
         </div>
     </div>
