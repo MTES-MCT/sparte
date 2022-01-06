@@ -17,7 +17,7 @@ import logging
 from django.contrib.gis.db.models import Union
 from django.contrib.gis.geos.collections import MultiPolygon
 
-from public_data.models import CommunesSybarval, Ocsge
+from public_data.models import Ocsge, Commune
 
 from project.models import Project
 
@@ -67,11 +67,12 @@ def get_project(project_id: int) -> Project:
 
 
 def build_emprise_from_city(project: Project):
+    """Triggered if no shape file has been provided"""
     # clean previous emprise if any
     project.emprise_set.all().delete()
     # get all INSEE codes to find according CommunesSybarval
     qs_insee = project.cities.all().values_list("insee", flat=True)
-    qs = CommunesSybarval.objects.filter(code_insee__in=qs_insee)
+    qs = Commune.objects.filter(insee__in=qs_insee)
     # make postgis create the union
     qs = qs.aggregate(mpoly=Union("mpoly"))
     # link project and its emprise
@@ -99,7 +100,7 @@ def evaluate_couverture_and_usage(project: Project):
     }
     """
     logger.info("Calculate couverture and usage")
-    if isinstance(project, int):  # debug only
+    if isinstance(project, int):
         project = get_project(project)
     geom = project.combined_emprise
     data = {

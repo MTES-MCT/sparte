@@ -9,7 +9,7 @@ from django.contrib.gis.gdal import DataSource
 from django.contrib.gis.utils import LayerMapping
 from django.db.models import F
 
-from public_data.models import CommunesSybarval, ArtifCommune
+from public_data.models import Commune
 
 
 logger = logging.getLogger(__name__)
@@ -96,11 +96,12 @@ def get_cities_from_emprise(base_project):
     # but intersect will get commune sharing only very little with emprise
     # therefor we will filter to keep only commune with more than 95% of
     # its surface in the emprise
-    qs = CommunesSybarval.objects.filter(mpoly__intersects=geom)
+    qs = Commune.objects.filter(mpoly__intersects=geom)
     qs = qs.annotate(intersection=Transform(Intersection("mpoly", geom), 2154))
     qs = qs.annotate(intersection_area=Area("intersection"))
     qs = qs.annotate(area=Area(Transform("mpoly", 2154)))
+    # keep only city that are covered at 95% or higher
     qs = qs.filter(intersection_area__gt=F("area") * 0.95)
-    code_insee = qs.values_list("code_insee", flat=True).distinct()
-    cities = ArtifCommune.objects.filter(insee__in=code_insee)
-    base_project.cities.add(*cities)
+    # code_insee = qs.values_list("code_insee", flat=True).distinct()
+    # cities = Commune.objects.filter(insee__in=code_insee)
+    base_project.cities.add(*qs)

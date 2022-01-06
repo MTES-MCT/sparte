@@ -23,11 +23,11 @@ class Command(BaseCommand):
     help = "Will load data into Region, Departement and Epci from RefPlan data"
 
     def handle(self, *args, **options):
-        logger.info("Recreate region, departement and EPCI referentials")
-        # self.load_region()
-        # self.load_departement()
-        # self.load_epci()
-        # self.link_epci_with_dept()
+        logger.info("Recreate region, departement, EPCI and communes referentials")
+        self.load_region()
+        self.load_departement()
+        self.load_epci()
+        self.link_epci_with_dept()
         self.load_communes()
 
     def load_region(self):

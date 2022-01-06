@@ -116,7 +116,7 @@ class Project(BaseProject):
         max_length=4,
     )
     cities = models.ManyToManyField(
-        "public_data.ArtifCommune",
+        "public_data.Commune",
         verbose_name="Communes",
         blank=True,
     )
