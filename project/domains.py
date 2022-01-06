@@ -67,7 +67,8 @@ class ConsommationDataframe:
         index = ArtifCommune.list_attr()
         # do not use self.indexes that does not conserve order
         self.raw_df = DataFrame(0, index=index, columns=list())
-        for city in self.project.cities.all():
+        code_insee = self.project.cities.all().values_list("insee", flat=True)
+        for city in ArtifCommune.objects.filter(insee__in=code_insee):
             self.raw_df[city.name] = city.list_artif()
 
     def add_previous_years_sum_row(self, df: DataFrame) -> DataFrame:
