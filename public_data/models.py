@@ -1,7 +1,7 @@
 from decimal import Decimal
 
 from django.contrib.gis.db import models
-from django.contrib.gis.db.models.functions import Area, Transform
+from django.contrib.gis.db.models.functions import Intersection, Area, Transform
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models as classic_models
 from django.db.models import F
@@ -671,8 +671,9 @@ class Ocsge(AutoLoadMixin, DataColorationMixin, models.Model):
         * coveredby: polynome of the perimeter in which Ocsge items mut be
         """
         qs = cls.objects.filter(year=year)
-        qs = qs.filter(mpoly__coveredby=coveredby)
-        qs = qs.annotate(surface=Area(Transform("mpoly", 2154)))
+        qs = qs.filter(mpoly__intersects=coveredby)
+        qs = qs.annotate(intersection=Intersection("mpoly", coveredby))
+        qs = qs.annotate(surface=Area(Transform("intersection", 2154)))
         qs = qs.values(field_group_by).order_by(field_group_by)
         qs = qs.annotate(total_surface=classic_models.Sum("surface"))
         data = {_[field_group_by]: _["total_surface"].sq_km for _ in qs}
