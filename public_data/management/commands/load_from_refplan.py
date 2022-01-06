@@ -4,7 +4,7 @@ from django.contrib.gis.db.models import Union
 from django.contrib.gis.geos import Polygon, MultiPolygon
 from django.core.management.base import BaseCommand
 
-from public_data.models import RefPlan, Region, Departement, Epci
+from public_data.models import RefPlan, Region, Departement, Epci, Commune
 
 
 logger = logging.getLogger("management.commands")
@@ -24,10 +24,11 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         logger.info("Recreate region, departement and EPCI referentials")
-        self.load_region()
-        self.load_departement()
-        self.load_epci()
-        self.link_epci_with_dept()
+        # self.load_region()
+        # self.load_departement()
+        # self.load_epci()
+        # self.link_epci_with_dept()
+        self.load_communes()
 
     def load_region(self):
         logger.info("Loading regions")
@@ -66,7 +67,7 @@ class Command(BaseCommand):
         Departement.objects.bulk_create(items)
         logger.info("Done loading departements")
 
-    def load_epci(cls):
+    def load_epci(self):
         logger.info("Loading EPCI")
         Epci.objects.all().delete()
         qs = RefPlan.objects.values("epci_id", "epci_name")
@@ -94,3 +95,24 @@ class Command(BaseCommand):
         for epci_id, dept_id in links:
             epcis[epci_id].departements.add(depts[dept_id])
         logger.info("Done linking")
+
+    def load_communes(self):
+        logger.info("Loading Communes")
+        Commune.objects.all().delete()
+        depts = {d.source_id: d for d in Departement.objects.all()}
+        epcis = {e.source_id: e for e in Epci.objects.all()}
+        qs = RefPlan.objects.all().order_by("city_insee")
+        logger.info("%d Communes found", qs.count())
+        Commune.objects.bulk_create(
+            (
+                Commune(
+                    insee=refplan.city_insee,
+                    name=refplan.city_name,
+                    departement=depts[refplan.dept_id],
+                    epci=epcis[refplan.epci_id],
+                    mpoly=fix_poly(refplan.mpoly),
+                )
+                for refplan in qs
+            )
+        )
+        logger.info("Done loading Communes")
