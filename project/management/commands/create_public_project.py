@@ -1,14 +1,12 @@
 import logging
 import string
 import random
-import time
 
 from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
 
 from public_data.models import Epci
 from project.models import Project
-from project.tasks import process_new_project
 
 
 logger = logging.getLogger("management.commands")
