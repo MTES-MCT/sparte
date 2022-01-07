@@ -20,7 +20,7 @@ class ProjectAdmin(admin.GeoModelAdmin):
     search_fields = (
         "name",
         "import_error",
-        "user",
+        "user__email",
     )
     ordering = ("name",)
     filter_horizontal = ("cities",)
