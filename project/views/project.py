@@ -187,6 +187,8 @@ class ProjectReportView(GroupMixin, DetailView):
         pki_progression = int(builder.get_global_progression())
         pki_progression_percent = builder.get_global_progression_percent() * 100
 
+        conso_10_years = project.get_bilan_conso()
+
         return {
             **super().get_context_data(**kwargs),
             "start_year": project.analyse_start_date,
@@ -201,6 +203,9 @@ class ProjectReportView(GroupMixin, DetailView):
             "pki_progression": pki_progression,
             "pki_progression_percent": pki_progression_percent,
             "active_page": "consommation",
+            "conso_10_years": conso_10_years,
+            "trajectoire_2030": conso_10_years / 2,
+            "trajectoire_year": conso_10_years / 20,
         }
 
 
