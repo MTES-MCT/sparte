@@ -68,13 +68,15 @@ Rapport consommation
                         </small></p>
                     </div>
                 </div>
+            </div>
 
+            <div class="clearfix">
                 <div class="card key-figure key-figure-green">
                     <div class="card-header">
                         Consommation 2011-2020
                     </div>
                     <div class="card-body">
-                        <p class="figure">TODO ha</p>
+                        <p class="figure">+{{ conso_10_years|floatformat:1 }} ha</p>
                     </div>
                 </div>
 
@@ -83,7 +85,7 @@ Rapport consommation
                         Trajectoire 2021-2030
                     </div>
                     <div class="card-body">
-                        <p class="figure">TODO ha</p>
+                        <p class="figure">+{{ trajectoire_2030|floatformat:1 }} ha</p>
                         <p class="card-text"><small class="text-muted">
                             Réduction de 50% par rapport à la décennie précédente
                         </small></p>
@@ -95,7 +97,7 @@ Rapport consommation
                         Trajectoire annuelle
                     </div>
                     <div class="card-body">
-                        <p class="figure">TODO ha</p>
+                        <p class="figure">+{{ trajectoire_year|floatformat:0 }} ha/an</p>
                     </div>
                 </div>
             </div>
