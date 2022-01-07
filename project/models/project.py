@@ -2,6 +2,7 @@ import traceback
 
 from django.conf import settings
 from django.db import models
+from django.db.models import Sum
 from django.urls import reverse
 from django.utils.functional import cached_property
 
@@ -10,6 +11,7 @@ from django.contrib.gis.db.models import Union
 from django.utils import timezone
 
 from public_data.behaviors import DataColorationMixin
+from public_data.models import RefPlan
 
 from .utils import user_directory_path
 
@@ -134,6 +136,13 @@ class Project(BaseProject):
     #     '2018': { ... },  # same as 2015
     # }
     couverture_usage = models.JSONField(blank=True, null=True)
+
+    def get_bilan_conso(self):
+        """Return the space consummed between 2011 and 2020 in hectare"""
+        code_insee = self.cities.all().values_list("insee", flat=True)
+        qs = RefPlan.objects.filter(city_insee__in=code_insee)
+        aggregation = qs.aggregate(bilan=Sum("naf11art20"))
+        return aggregation["bilan"] / 10000
 
     def get_absolute_url(self):
         return reverse("project:detail", kwargs={"pk": self.pk})
