@@ -615,6 +615,7 @@ class Ocsge(AutoLoadMixin, DataColorationMixin, models.Model):
         "Couverture du sol", max_length=254, blank=True, null=True
     )
     usage = models.CharField("Usage du sol", max_length=254, blank=True, null=True)
+    # TODO is_artificial = models.IntegerField("Sureface artificialisée", null=True)
     millesime = models.DateField("Millésime", blank=True, null=True)
     source = models.CharField("Source", max_length=254, blank=True, null=True)
     origine = models.CharField("Origine", max_length=254, blank=True, null=True)

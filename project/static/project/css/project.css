@@ -39,12 +39,16 @@
     border-radius: 0.5rem;
 }
 
-
 .box {
     box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
     border-radius: 0.5rem !important;
     background-color: rgb(255, 255, 255);
     margin-top: 4rem;
+}
+
+.box-alert {
+    background-color: rgb(255, 243, 205);
+    color: rgb(102, 77, 3);
 }
 
 .scrollme-x {
@@ -55,6 +59,7 @@
     margin-top: 1rem;
     font-size: 1.35em;
     font-weight: 700;
+    margin-bottom: 2rem;
 }
 
 .box tr:hover {
