@@ -20,7 +20,7 @@ urlpatterns = [
     path("<int:pk>/report", views.ProjectReportView.as_view(), name="report"),
     path(
         "<int:pk>/report/couverture",
-        views.ProjectReportArtifView.as_view(),
+        views.ProjectReportCouvertureView.as_view(),
         name="report_artif",
     ),
     path(

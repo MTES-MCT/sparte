@@ -14,12 +14,11 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         logger.info("Reset all project")
+        qs_to_delete = Project.objects.filter(shape_file="")
+        logger.info("%d to be deleted", qs_to_delete.count())
+        qs_to_delete.delete()
         qs = Project.objects.all()
-        logger.info("%d projects found", qs.count())
+        logger.info("%d projects to be reseted", qs.count())
         for project in qs:
-            try:
-                project.import_status = Project.Status.PENDING
-                project.save()
-                process_new_project(project.id)
-            except Exception:  # noqa: E722
-                pass
+            project.reset(save=True)
+            process_new_project(project.id)
