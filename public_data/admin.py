@@ -101,11 +101,7 @@ class UsageSolResource(resources.ModelResource):
 @admin.register(UsageSol)
 class UsageSolAdmin(ImportExportMixin, admin.GeoModelAdmin):
     model = UsageSol
-    list_display = (
-        "code",
-        "label",
-        "parent",
-    )
+    list_display = ("code", "label", "parent", "map_color")
     list_filter = ("parent",)
     search_fields = (
         "code",

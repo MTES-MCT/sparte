@@ -342,6 +342,7 @@ class ProjectReportUsageView(GroupMixin, DetailView):
                     "label": usage.label,
                     "color": None,
                     "total_surface": dict(),
+                    "map_color": usage.map_color,
                 }
             )
         for year in millesimes:

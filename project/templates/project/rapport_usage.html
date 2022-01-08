@@ -7,34 +7,62 @@
 {% load l10n %}
 
 {% block pagetitle %}
-Rapport artificialisation
+Rapport usage du sol
 {% endblock %}
 
 {% block headers %}
+<link href="{% static 'project/css/project.css' %}" rel="stylesheet" />
 {% endblock %}
 
 {% block content %}
-    <div class="pe-4 ps-4">
-        {% include "project/detail_menu.html" %}
+<div class="px-4">
+    {% include "project/detail_menu.html" %}
 
-        <div class="w-100 mt-5">
-            <div id="chart" class="flex-fill"></div>
+    <div class="bg-light p-5 rounded-5 border">
+
+        <div class="box box-alert px-4 py-2 mb-4 mt-0">
+            <p>Préambule : travail en cours.</p>
         </div>
 
-        <div class="w-100 mt-5">
-            <div id="chart_2" class="flex-fill"></div>
+        <div class="clearfix">
+            <div class="card key-figure">
+                <div class="card-header">
+                    Indicateurs clés
+                </div>
+                <div class="card-body">
+                    <p class="figure">xxx ha</p>
+                </div>
+            </div>
+
+            <div class="card key-figure key-figure-yellow">
+                <div class="card-header">
+                    Progression
+                </div>
+                <div class="card-body">
+                    <p class="figure">xxx ha</p>
+                    <p class="card-text"><small class="text-muted">
+                        xx% du territoire
+                    </small></p>
+                </div>
+            </div>
         </div>
 
-        <div class="mt-5 w-70">
+        <div class="box p-4 w-100 mt-5">
+            <h3>Surface du territoire en fonction de l'usage du sol 2015</h3>
+            <div id="chart"></div>
+        </div>
+
+
+        <div class="box scrollme-x p-4 table table-responsive">
             <h3>Progression de l'usage du sol de 2015 à 2018 :</h3>
-            <table class="table table-sm">
+            <table class="table table-striped table-sm">
                 <thead>
                     <tr>
                         <th scope="col">Code</th>
                         <th scope="col">Libellé</th>
-                        <th scope="col">Surface 2015 (km²)</th>
-                        <th scope="col">Progression</th>
-                        <th scope="col">Surface 2018 (km²)</th>
+                        <th scope="col" style="text-align: right">Surface 2015 (km²)</th>
+                        <th scope="col" style="text-align: right">Progression</th>
+                        <th scope="col" style="text-align: right">Surface 2018 (km²)</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -42,27 +70,27 @@ Rapport artificialisation
                     <tr>
                         <th scope="row">{{ data.level|space }} {{ data.code }}</th>
                         <td>{{ data.label_short }}</td>
-                        <td>{{ data.total_surface.2015|sq_km }}</td>
-                        <td>
+                        <td align="right">{{ data.total_surface.2015|sq_km }}</td>
+                        <td align="right">
                             {{ data.total_surface.2018|remove:data.total_surface.2015 }}
                         </td>
-                        <td>{{ data.total_surface.2018|sq_km }}</td>
+                        <td align="right">{{ data.total_surface.2018|sq_km }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
 
-        <div class="mt-5 table-sm">
+        <div class="box scrollme-x p-4 table table-responsive">
             <h3>Répartition de l'usage du sol en 2018 :</h3>
             <p>Surface du territoire considéré: {{ surface_territoire|sq_km }} km²</p>
-            <table class="table w-80">
+            <table class="table table-striped table-sm">
                 <thead>
                     <tr>
                         <th scope="col">Code</th>
                         <th scope="col">Libellé</th>
-                        <th scope="col">Surface 2018 (km²)</th>
-                        <th scope="col">Pourcentage</th>
+                        <th scope="col" style="text-align: right">Surface 2018 (km²)</th>
+                        <th scope="col" style="text-align: right">Pourcentage</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -70,8 +98,8 @@ Rapport artificialisation
                     <tr>
                         <th scope="row">{{ data.level|space }} {{ data.code }}</th>
                         <td>{{ data.label_short }}</td>
-                        <td>{{ data.total_surface.2018|sq_km }}</td>
-                        <td>
+                        <td align="right">{{ data.total_surface.2018|sq_km }}</td>
+                        <td align="right">
                             {{ data.total_surface.2018|percent:surface_territoire }}
                         </td>
                     </tr>
@@ -81,13 +109,14 @@ Rapport artificialisation
         </div>
 
 
-        <div>
-            Sources:</p>
+        <div class="box px-4 py-2">
+            <p>Sources:</p>
             <ul>
                 <li><a href="{% url 'public_data:ocsge-list' %}?limit=2"></a>Données OCS GE</a></li>
             </ul>
         </div>
     </div>
+</div>
 {% endblock %}
 
 {% block bodyend %}
@@ -107,18 +136,10 @@ points_2015 = [
         {% endif %}
         name: "CS{{ data.code }} {{ data.label }}",
         value: {{ data.total_surface.2015 }},
+        color: "{{ data.map_color }}",
     },
     {% endfor %}
 ]
-
-index_color = 0
-for(i=0; i<points_2015.length; i++){
-    if (Object.hasOwnProperty.call(points_2015[i], "parent"))
-    {
-        points_2015[i].color = Highcharts.getOptions().colors[index_color]
-        index_color++
-    }
-}
 
 Highcharts.chart('chart', {
     series: [{
@@ -150,8 +171,17 @@ Highcharts.chart('chart', {
         text: 'Cliquer pour voir le détail'
     },
     title: {
-        text: "Surface du territoire en fonction de l'usage du sol 2015."
-    }
+        text: "",
+        floating: true,
+    },
+    plotOptions: {
+        treemap: {
+            tooltip:{
+                valueSuffix: ' Ha',
+                valueDecimals: 0
+            },
+        },
+    },
 });
 </script>
 {% endlocalize %}
