@@ -9,7 +9,7 @@ from .project import (
     ProjectNoShpView,
     ProjectPendingView,
     ProjectReinitView,
-    ProjectReportArtifView,
+    ProjectReportCouvertureView,
     ProjectReportUsageView,
     ProjectReportView,
     ProjectSuccessView,

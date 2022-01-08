@@ -209,7 +209,54 @@ class ProjectReportView(GroupMixin, DetailView):
         }
 
 
-class ProjectReportArtifView(GroupMixin, DetailView):
+class RefCouverture:
+    def __init__(self, couv, data, millesimes):
+        self.couv = couv
+        self.parent = couv.get_parent()
+        self.name = f"{couv.code} {couv.label}"
+        self.label_short = couv.label[:50]
+        # see all the available millesime
+        self.millesimes = millesimes
+        # surface contains one entry per year (millesime)
+        self.surface = dict()
+        for year in self.millesimes:
+            self.surface[year] = sum(
+                [
+                    v
+                    for k, v in data[year]["couverture"].items()
+                    if k.startswith(self.code_prefix)
+                ]
+            )
+
+    @property
+    def code(self):
+        return self.couv.code
+
+    @property
+    def map_color(self):
+        return self.couv.map_color
+
+    @property
+    def code_prefix(self):
+        return self.couv.code_prefix
+
+    @property
+    def level(self):
+        return self.couv.level
+
+    @property
+    def label(self):
+        return self.couv.label
+
+    def __getattr__(self, name):
+        if name.startswith("get_surface_"):
+            year = name.split("_")[-1]
+            return self.surface[year]
+        else:
+            return getattr(self, name)
+
+
+class ProjectReportCouvertureView(GroupMixin, DetailView):
     queryset = Project.objects.all()
     template_name = "project/rapport_couverture.html"
     context_object_name = "project"
@@ -226,25 +273,38 @@ class ProjectReportArtifView(GroupMixin, DetailView):
         data_covers = []
         for couv in CouvertureSol.objects.all().order_by("code"):
             data_covers.append(
+                RefCouverture(
+                    couv,
+                    raw_data,
+                    millesimes,
+                )
+            )
+
+        # PREP DATA FOR DRILL DOWN CHART
+        # column_drill_down = {
+        #     "top": [
+        #         {"name": "CS1", "y": 10},
+        #         {"name": "CS2", "y": 5},
+        #     ],
+        #     "CS1" : [
+        #         {"name": "CS1.1", "y": 8},
+        #         {"name": "CS1.2", "y": 2},
+        #     ],
+        # }
+        column_drill_down = dict()
+        for dc in data_covers:
+            key = "top" if dc.parent is None else dc.parent.code
+            if key not in column_drill_down:
+                column_drill_down[key] = []
+            column_drill_down[key].append(
                 {
-                    "code": couv.code,
-                    "code_prefix": couv.code_prefix,
-                    "level": couv.level,
-                    "parent": couv.get_parent(),
-                    "label_short": couv.label[:50],
-                    "label": couv.label,
-                    "color": None,
-                    "total_surface": dict(),
+                    "name": dc.name,
+                    "y_2015": dc.get_surface_2015,
+                    "y_2018": dc.get_surface_2018,
+                    "drilldown": dc.code,
+                    "map_color": dc.map_color,
                 }
             )
-        for year in millesimes:
-            data = raw_data[year]["couverture"]
-            for i in range(len(data_covers)):
-                key = f"total_surface_{year}"
-                label = data_covers[i]["code_prefix"]
-                value = sum([v for k, v in data.items() if k.startswith(label)])
-                data_covers[i][key] = value
-                data_covers[i]["total_surface"][year] = value
 
         return {
             **super().get_context_data(),
@@ -252,6 +312,7 @@ class ProjectReportArtifView(GroupMixin, DetailView):
             "millesimes": millesimes,
             "surface_territoire": project.area,
             "active_page": "couverture",
+            "column_drill_down": column_drill_down,
         }
 
 
