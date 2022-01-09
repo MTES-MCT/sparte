@@ -363,6 +363,33 @@ class ProjectReportUsageView(GroupMixin, DetailView):
         }
 
 
+class ProjectReportSynthesisView(GroupMixin, DetailView):
+    queryset = Project.objects.all()
+    template_name = "project/rapport_synthesis.html"
+    context_object_name = "project"
+
+    def get_context_breadcrumbs(self):
+        breadcrumbs = super().get_context_breadcrumbs()
+        breadcrumbs.append({"href": None, "title": "Rapport synthèse"})
+        return breadcrumbs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data()
+        project = self.get_object()
+        total_surface = int(project.area * 100)
+        conso_10_years = project.get_bilan_conso()
+        context.update(
+            {
+                "active_page": "synthesis",
+                "conso_10_years": conso_10_years,
+                "trajectoire_2030": conso_10_years / 2,
+                "total_surface": total_surface,
+            }
+        )
+        # project = self.get_object()
+        return context
+
+
 class ProjectMapView(GroupMixin, DetailView):
     queryset = Project.objects.all()
     template_name = "carto/full_carto.html"
