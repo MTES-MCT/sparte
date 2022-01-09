@@ -143,7 +143,7 @@ class ProjectFailedView(GroupMixin, DetailView):
     template_name = "project/detail_failed.html"
 
 
-class ProjectReportView(GroupMixin, DetailView):
+class ProjectReportConsoView(GroupMixin, DetailView):
     queryset = Project.objects.all()
     template_name = "project/rapport_consommation.html"
     context_object_name = "project"
@@ -370,7 +370,12 @@ class ProjectReportSynthesisView(GroupMixin, DetailView):
 
     def get_context_breadcrumbs(self):
         breadcrumbs = super().get_context_breadcrumbs()
-        breadcrumbs.append({"href": None, "title": "Rapport synthèse"})
+        breadcrumbs.append(
+            {
+                "href": None,
+                "title": "Synthèse consommation d'espace et artificialisation",
+            }
+        )
         return breadcrumbs
 
     def get_context_data(self, **kwargs):

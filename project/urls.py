@@ -17,7 +17,11 @@ urlpatterns = [
     path("<int:pk>/", views.ProjectDetailView.as_view(), name="detail"),
     path("<int:pk>/edit", views.ProjectUpdateView.as_view(), name="update"),
     path("<int:pk>/reinitialize", views.ProjectReinitView.as_view(), name="reinit"),
-    path("<int:pk>/report", views.ProjectReportView.as_view(), name="report"),
+    path(
+        "<int:pk>/report/consommation",
+        views.ProjectReportConsoView.as_view(),
+        name="report",
+    ),
     path(
         "<int:pk>/report/synthesis",
         views.ProjectReportSynthesisView.as_view(),

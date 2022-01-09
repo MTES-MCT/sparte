@@ -111,13 +111,18 @@ Rapport consommation
                     <thead>
                         <tr>
                         {% for col_name in headers %}
-                            <th scope="col">
+
+                            {% if col_name == "Commune" %}
+                            <th scope="col">{{ col_name }}</th>
+                            {% else %}
+                            <th scope="col" style="text-align: right">
                                 {% if col_name == "Progression" %}
-                                    <span data-toggle="tooltip" title="Progression de la surface consommée entre 2009 et 2018">Progression</span>
+                                <span data-toggle="tooltip" title="Progression de la surface consommée entre 2009 et 2018">Progression</span></th>
                                 {% else %}
-                                    {{ col_name }}
+                                {{ col_name }}
                                 {% endif %}
                             </th>
+                            {% endif %}
                         {% endfor %}
                         </tr>
                     </thead>
