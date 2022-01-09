@@ -19,6 +19,11 @@ urlpatterns = [
     path("<int:pk>/reinitialize", views.ProjectReinitView.as_view(), name="reinit"),
     path("<int:pk>/report", views.ProjectReportView.as_view(), name="report"),
     path(
+        "<int:pk>/report/synthesis",
+        views.ProjectReportSynthesisView.as_view(),
+        name="report_synthesis",
+    ),
+    path(
         "<int:pk>/report/couverture",
         views.ProjectReportCouvertureView.as_view(),
         name="report_artif",
