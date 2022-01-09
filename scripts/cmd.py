@@ -100,5 +100,12 @@ def create_public_project(ctx):
     manage_py(ctx.obj["ENV_NAME"], "create_public_project")
 
 
+@cli.command()
+@click.pass_context
+def reset_project(ctx):
+    """Trigger create_public_project command"""
+    manage_py(ctx.obj["ENV_NAME"], "reset_project")
+
+
 if __name__ == "__main__":
     cli(obj={})

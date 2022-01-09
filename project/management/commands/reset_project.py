@@ -21,4 +21,7 @@ class Command(BaseCommand):
         logger.info("%d projects to be reseted", qs.count())
         for project in qs:
             project.reset(save=True)
-            process_new_project(project.id)
+            try:
+                process_new_project(project.id)
+            except Exception:
+                project.delete()
