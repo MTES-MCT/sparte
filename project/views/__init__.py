@@ -10,6 +10,7 @@ from .project import (
     ProjectPendingView,
     ProjectReinitView,
     ProjectReportCouvertureView,
+    ProjectReportSynthesisView,
     ProjectReportUsageView,
     ProjectReportView,
     ProjectSuccessView,
