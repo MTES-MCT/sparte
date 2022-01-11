@@ -1,4 +1,5 @@
 from django import forms
+from django.core.exceptions import ValidationError
 from django.db.models import Q
 
 from public_data.models import CommunesSybarval
@@ -134,3 +135,16 @@ class EpciForm(forms.Form):
         self.fields["epci"].queryset = qs
         # dep = Departement.objects.get(pk=self.departement_id)
         self.fields["departement"].initial = self.departement_id
+
+
+class OptionsForm(forms.Form):
+    YEAR_CHOICES = [(i, str(i)) for i in range(2009, 2021)]
+    analysis_start = forms.ChoiceField(label="Début d'analyse", choices=YEAR_CHOICES)
+    analysis_end = forms.ChoiceField(label="Fin d'analyse", choices=YEAR_CHOICES)
+
+    def clean(self):
+        cleaned_data = super().clean()
+        if cleaned_data["analysis_start"] >= cleaned_data["analysis_end"]:
+            raise ValidationError(
+                "L'année de début d'analyse doit être inférieur à l'année de fin"
+            )

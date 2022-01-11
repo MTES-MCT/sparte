@@ -1,4 +1,5 @@
 from decimal import Decimal
+import re
 
 from django.contrib.gis.db import models
 from django.contrib.gis.db.models.functions import Intersection, Area, Transform
@@ -936,6 +937,12 @@ class Region(models.Model):
     name = models.CharField("Nom", max_length=27)
     mpoly = models.MultiPolygonField()
 
+    def is_artif_ready(self):
+        is_artif_ready = True
+        for dept in self.departement_set.all():
+            is_artif_ready &= dept.is_artif_ready
+        return is_artif_ready
+
     def __str__(self):
         return self.name
 
@@ -944,8 +951,18 @@ class Departement(models.Model):
     source_id = models.CharField("Identifiant source", max_length=3)
     region = models.ForeignKey(Region, on_delete=models.CASCADE)
     is_artif_ready = models.BooleanField("Données artif disponibles", default=False)
+    ocsge_millesimes = models.CharField(
+        "Millesimes OCSGE dispo", max_length=100, null=True
+    )
     name = models.CharField("Nom", max_length=23)
     mpoly = models.MultiPolygonField()
+
+    @property
+    def millesimes(self):
+        if not self.ocsge_millesimes:
+            return list()
+        matches = re.finditer(r"([\d]{4,4})", self.ocsge_millesimes)
+        return [int(m.group(0)) for m in matches]
 
     def __str__(self):
         return self.name
@@ -956,6 +973,13 @@ class Epci(models.Model):
     name = models.CharField("Nom", max_length=64)
     mpoly = models.MultiPolygonField()
     departements = models.ManyToManyField(Departement)
+
+    @property
+    def is_artif_ready(self):
+        is_artif_ready = True
+        for dept in self.departements.all():
+            is_artif_ready &= dept.is_artif_ready
+        return is_artif_ready
 
     def __str__(self):
         return self.name
