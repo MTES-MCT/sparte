@@ -1,8 +1,8 @@
 from django import forms
 from django.db.models import Q
 
-from public_data.models import ArtifCommune, CommunesSybarval
-from public_data.models import Region, Departement, Epci
+from public_data.models import CommunesSybarval
+from public_data.models import Region, Departement, Epci, Commune
 
 from .models import Project, Plan
 from .tasks import process_new_project, process_new_plan
@@ -20,7 +20,7 @@ class SetEmpriseForm(forms.Form):
 
 class SelectCitiesForm(SetEmpriseForm):
     cities = forms.ModelMultipleChoiceField(
-        queryset=ArtifCommune.objects.all().order_by("name"),
+        queryset=Commune.objects.all().order_by("name"),
     )
 
 
@@ -30,9 +30,9 @@ class SelectPluForm(SetEmpriseForm):
     def __init__(self, *args, **kwargs):
         """set choices dynamicaly"""
         super().__init__(*args, **kwargs)
-        qs_epci = CommunesSybarval.objects.values("_nom_epci").distinct()
+        qs_epci = Epci.objects.all()
         qs_scot = CommunesSybarval.objects.values("_nom_scot").distinct()
-        choices_plu = [x["_nom_epci"] for x in qs_epci]
+        choices_plu = [x.name for x in qs_epci]
         choices_plu += [x["_nom_scot"] for x in qs_scot]
         self.fields["plu"].choices = [(x, x) for x in choices_plu]
 
@@ -41,10 +41,14 @@ class SelectPluForm(SetEmpriseForm):
         super().clean()
         if "plu" in self.cleaned_data:
             name = self.cleaned_data["plu"]
-            q_part = Q(_nom_epci=name) | Q(_nom_scot=name)
-            qs_insee = CommunesSybarval.objects.filter(q_part)
+            # 1/ get all the insee code from a SCOT
+            qs_insee = CommunesSybarval.objects.filter(_nom_scot=name)
             qs_insee = qs_insee.values_list("code_insee", flat=True).distinct()
-            qs = ArtifCommune.objects.filter(insee__in=qs_insee)
+            # 2/ find the EPCI selected
+            qs_epci = Epci.objects.filter(name=name)
+            # 3/ retrieve all Commune from scot and epci
+            q_part = Q(insee__in=qs_insee) | Q(epci__in=qs_epci)
+            qs = Commune.objects.filter(q_part)
             self.cleaned_data["cities"] = qs
         return self.cleaned_data
 

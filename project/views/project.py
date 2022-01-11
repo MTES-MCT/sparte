@@ -6,7 +6,7 @@ from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
 from public_data.models import CouvertureSol, UsageSol
 
-from project.forms import SelectCitiesForm, SelectPluForm, UploadShpForm
+from project.forms import UploadShpForm
 from project.models import Project
 from project.domains import ConsommationDataframe
 
@@ -106,14 +106,10 @@ class ProjectNoShpView(GroupMixin, DetailView):
     def get_forms(self):
         if self.request.method in ("POST", "PUT"):
             return {
-                "city_form": SelectCitiesForm(self.request.POST),
-                "plu_form": SelectPluForm(self.request.POST),
                 "shp_form": UploadShpForm(self.request.POST, self.request.FILES),
             }
         else:
             return {
-                "city_form": SelectCitiesForm(),
-                "plu_form": SelectPluForm(),
                 "shp_form": UploadShpForm(),
             }
 
