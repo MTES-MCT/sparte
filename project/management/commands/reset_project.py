@@ -3,7 +3,7 @@ import logging
 from django.core.management.base import BaseCommand
 
 from project.models import Project
-from project.tasks import process_new_project
+from project.tasks import process_project
 
 
 logger = logging.getLogger("management.commands")
@@ -22,6 +22,6 @@ class Command(BaseCommand):
         for project in qs:
             project.reset(save=True)
             try:
-                process_new_project(project.id)
+                process_project(project.id)
             except Exception:
                 project.delete()

@@ -18,6 +18,6 @@ def process_new_plan(plan_id):
         plan.set_success()
         logger.info("Success ending process_new_plan with id=%d", plan_id)
     except Exception as e:
-        logger.exception(f"Unknow exception occured in process_new_project: {e}")
+        logger.exception(f"Unknow exception occured in process_new_plan: {e}")
         plan.set_failed()
         raise e
