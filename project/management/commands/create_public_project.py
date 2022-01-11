@@ -63,6 +63,5 @@ class Command(BaseCommand):
         # add emprise
         project.emprise_set.create(mpoly=land.mpoly)
         # update precalculated data
-        # process_new_project.delay(project.id)
         # time.sleep(5)
         return project
