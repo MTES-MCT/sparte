@@ -13,40 +13,24 @@ Project detail
 {% endblock %}
 
 {% block content %}
-<div class="d-flex flex-column h-100 w-100 align-items-center justify-content-center">
+<div class="row w-100 justify-content-center">
     <div class="col-12 col-md-8 col-lg-8">
-        <h3>Sélectionnez une emprise territoriale</h3>
+        <h1 class="my-5">Sélectionnez une emprise territoriale</h1>
 
-        <p>Votre projet est correctement créé, vous devez maintenant définir une emprise
-        terrirtoriale</p>
+        <p>L'emprise indique à l'application quel est le périmètre territorial de votre projet
+        d'aménagement. L'application identifie les zones artificialisées depuis 2009 ainsi
+        que toutes les zones renaturalisées et construit les
+        rapports avec le bilan de l'artificialisation, de la consommation... de votre territoire.</p>
 
-        <p>L'emprise indique à l'application quel est le périmètre de votre projet
-        d'aménagement, ce qui lui permet d'aller chercher les informations
-        correspondantes. Par exemple toutes les zones artificialisées depuis 2009 ainsi
-        que toutes les zones renaturalisées. Ainsi nous pouvons vous proposer un
-        rapport avec le bilan de l'artificialisation de votre territoire.</p>
+        <p>L'emprise se définit via un fichier Shape. Vous pouvez aussi créer un projet à partir d'un territoire existant (EPCI, commune...) <a href="{% url 'project:select' %}">par ici</a>.</p>
 
-        <p>
-            Pour indiquer l'emprise de votre projet, vous avez 3 méthodes :
-            <ul>
-                <li>Sélectionnez une ou plusieurs villes dans la liste des communes.</li>
-                <li>Sélectionnez un projet d'amménagement connu (ex : un scot, un epci, etc).</li>
-                <li>Uploader un zip contenant le fichier Shape (.shp) ainsi que lesfichiers dépendants.</li>
-            </ul>
-        </p>
-
-        <h2>Téléverser un fichier Shape</h2>
+        <p class="fw-bold mt-5">Téléverser un fichier Shape</p>
 
         <form action="" method="post" enctype="multipart/form-data">
             {% csrf_token %}
             {{ shp_form|crispy }}
             <button class="btn w-100 btn-primary mt-4" type="submit">Envoyer</button>
         </form>
-
-        <p>
-            Vous pouvez aussi créer un projet à partir d'un EPCI, d'une commune...
-            <a href="{% url 'project:select' %}">par ici</a>.
-        </p>
     </div>
 </div>
 {% endblock %}
