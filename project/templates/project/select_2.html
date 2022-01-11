@@ -1,0 +1,53 @@
+{% extends 'index.html' %}
+
+{% load static %}
+{% load humanize %}
+{% load i18n %}
+{% load l10n %}
+{% load crispy_forms_tags %}
+
+{% block pagetitle %}
+Sélectionner un plan
+{% endblock %}
+
+{% block content %}
+{% localize off %}
+<div class="d-flex justify-content-center mt-5">
+    <div class="col-lg-6 col-md-8 col-12">
+        <h1 class="mb-5">Diagnostiquer mon territoire 2/2</h1>
+
+        <p class="mb-5">
+            Territoire sélectionné : {{ land.name }}
+        </p>
+
+        <p class="mb-5">
+            <span  class="fw-bold">Analyses disponibles sur ce territoire :</span>
+            <br/><i class="bi bi-check-circle text-success"></i> Consomation d'espace
+            <br/>
+            {% if analysis_artif %}
+                <i class="bi bi-check-circle text-success"></i>
+            {% else %}
+                <i class="bi bi-x-circle text-danger"></i>
+            {% endif %}
+            Artificialisation
+        </p>
+
+        <p class="fw-bold">Options disponibles :</p>
+
+        <form action="" method="post">
+            {% csrf_token %}
+            {{ form|crispy }}
+            <button class="btn w-100 btn-primary mt-4" type="submit">Voir mon diagnostic</button>
+        </form>
+    </div>
+</div>
+{% endlocalize %}
+{% endblock %}
+
+{% block bodyend %}
+<script language="javascript">
+$('#id_region').on('change', function(){ $(this).closest('form').submit() })
+$('#id_departement').on('change', function(){ $(this).closest('form').submit() })
+$('#id_epci').on('change', function(){ $(this).closest('form').submit() })
+</script>
+{% endblock %}

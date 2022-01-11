@@ -4,15 +4,15 @@
 {% load crispy_forms_tags %}
 
 {% block pagetitle %}
- - nouveau projet
+Créer une emprise
 {% endblock %}
 
 {% block headers %}
 {% endblock %}
 
 {% block content %}
-    <div class="d-flex flex-column h-100 w-100 align-items-center justify-content-center">
-        <h2 class="mb-5">Nouveau projet</h2>
+    <div class="w-100 align-items-center">
+        <h2 class="my-5">Nouveau projet</h2>
 
         <form action="{% url 'project:add' %}" method="post" enctype="multipart/form-data">
             {% csrf_token %}

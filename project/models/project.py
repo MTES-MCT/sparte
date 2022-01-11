@@ -27,6 +27,8 @@ class BaseProject(models.Model):
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         verbose_name="propriétaire",
+        blank=True,
+        null=True,
     )
     name = models.CharField("Nom", max_length=100)
     description = models.TextField("Description", blank=True)
@@ -95,6 +97,7 @@ class Project(BaseProject):
 
     is_public = models.BooleanField("Public", default=False)
 
+    # DEPRECATED : to be removed
     help_text = (
         "We need a way to find Project related to Region, Departement or EPCI\n"
         "this is the purpose of below field which has a very specific rule of\n"
@@ -141,6 +144,8 @@ class Project(BaseProject):
         """Return the space consummed between 2011 and 2020 in hectare"""
         code_insee = self.cities.all().values_list("insee", flat=True)
         qs = RefPlan.objects.filter(city_insee__in=code_insee)
+        if not qs.exists():
+            return 0
         aggregation = qs.aggregate(bilan=Sum("naf11art20"))
         return aggregation["bilan"] / 10000
 
