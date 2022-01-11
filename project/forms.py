@@ -12,6 +12,7 @@ from .tasks import process_project_with_shape, process_new_plan, build_emprise_f
 class SetEmpriseForm(forms.Form):
     def save(self, project):
         project.cities.clear()
+        project.emprise_origin = Project.EmpriseOrigin.FROM_CITIES
         for city in self.cleaned_data["cities"]:
             project.cities.add(city)
         project.import_status = Project.Status.PENDING
@@ -60,6 +61,7 @@ class UploadShpForm(forms.Form):
     def save(self, project):
         project.shape_file = self.cleaned_data["shape_zip"]
         project.import_status = Project.Status.PENDING
+        project.emprise_origin = Project.EmpriseOrigin.FROM_SHP
         project.save()
         process_project_with_shape.delay(project.id)
 
