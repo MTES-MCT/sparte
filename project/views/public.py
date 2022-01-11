@@ -8,7 +8,7 @@ from utils.views_mixins import BreadCrumbMixin
 
 from project.forms import EpciForm, DepartementForm, RegionForm, OptionsForm
 from project.models import Project
-from project.tasks import process_new_project
+from project.tasks import process_project
 
 
 class SelectPublicProjects(BreadCrumbMixin, TemplateView):
@@ -132,8 +132,9 @@ class SetProjectOptions(BreadCrumbMixin, FormView):
             analyse_start_date=str(form.cleaned_data["analysis_start"]),
             analyse_end_date=str(form.cleaned_data["analysis_end"]),
             import_status=Project.Status.PENDING,
+            emprise_origin=Project.EmpriseOrigin.WITH_EMPRISE,
         )
         project.save()
         project.emprise_set.create(mpoly=land.mpoly)
-        process_new_project.delay(project.id)
+        process_project.delay(project.id)
         return redirect(project)

@@ -6,7 +6,7 @@ from public_data.models import CommunesSybarval
 from public_data.models import Region, Departement, Epci, Commune
 
 from .models import Project, Plan
-from .tasks import process_new_project, process_new_plan
+from .tasks import process_project_with_shape, process_new_plan, build_emprise_from_city
 
 
 class SetEmpriseForm(forms.Form):
@@ -16,7 +16,7 @@ class SetEmpriseForm(forms.Form):
             project.cities.add(city)
         project.import_status = Project.Status.PENDING
         project.save()
-        process_new_project.delay(project.id)
+        build_emprise_from_city.delay(project.id)
 
 
 class SelectCitiesForm(SetEmpriseForm):
@@ -61,7 +61,7 @@ class UploadShpForm(forms.Form):
         project.shape_file = self.cleaned_data["shape_zip"]
         project.import_status = Project.Status.PENDING
         project.save()
-        process_new_project.delay(project.id)
+        process_project_with_shape.delay(project.id)
 
 
 class PlanForm(forms.ModelForm):

@@ -17,11 +17,23 @@ from .utils import user_directory_path
 
 
 class BaseProject(models.Model):
+    class EmpriseOrigin(models.TextChoices):
+        FROM_SHP = "FROM_SHP", "Construit depuis un fichier shape"
+        FROM_CITIES = "FROM_CITIES", "Construit depuis une liste de villes"
+        WITH_EMPRISE = "WITH_EMPRISE", "Emprise déjà fournie"
+
     class Status(models.TextChoices):
         MISSING = "MISSING", "Emprise à renseigner"
         PENDING = "PENDING", "Traitement du fichier Shape en cours"
         SUCCESS = "SUCCESS", "Emprise renseignée"
         FAILED = "FAILED", "Création de l'emprise échouée"
+
+    emprise_origin = models.CharField(
+        "Origine de l'emprise",
+        max_length=20,
+        choices=EmpriseOrigin.choices,
+        default=EmpriseOrigin.FROM_SHP,
+    )
 
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
