@@ -72,11 +72,15 @@ Rapport consommation
             <div class="clearfix">
                 <div class="card key-figure key-figure-green">
                     <div class="card-header">
-                        Consommation 2011-2020
+                        Consommation 2011-2019
                     </div>
                     <div class="card-body">
                         <p class="figure">+{{ conso_10_years|floatformat:1 }} ha</p>
+                        <p class="card-text"><small class="text-danger">
+                            <i class="bi bi-exclamation-diamond-fill"></i> Données 2020 non encore disponibles
+                        </small></p>
                     </div>
+
                 </div>
 
                 <div class="card key-figure key-figure-green">
@@ -169,6 +173,12 @@ Highcharts.chart('chart', {
     },
 
     xAxis: {
+        categories: [
+            {% for x_axis in graph_x_axis %}
+            "{{ x_axis }}",
+            {% endfor %}
+        ],
+        max: {{ graph_max }},
     },
 
     legend: {
@@ -179,15 +189,6 @@ Highcharts.chart('chart', {
 
     pane: {
         size: 400
-    },
-
-    plotOptions: {
-        series: {
-            label: {
-                connectorAllowed: false
-            },
-            pointStart: {{ start_year }}
-        }
     },
 
     series: [{% for city in table_artif %}

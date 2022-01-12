@@ -156,9 +156,7 @@ class ProjectReportConsoView(GroupMixin, DetailView):
         df = builder.build()
 
         # table headers
-        headers = [
-            "Commune",
-        ]
+        headers = ["Commune"]
         for col in df.columns:
             if col.startswith("artif"):
                 col = col.split("_")[-1]
@@ -202,6 +200,14 @@ class ProjectReportConsoView(GroupMixin, DetailView):
             "conso_10_years": conso_10_years,
             "trajectoire_2030": conso_10_years / 2,
             "trajectoire_year": conso_10_years / 20,
+            "graph_x_axis": [
+                str(i)
+                for i in range(
+                    int(project.analyse_start_date), int(project.analyse_end_date) + 1
+                )
+            ],
+            "graph_max": int(project.analyse_end_date)
+            - int(project.analyse_start_date),
         }
 
 
