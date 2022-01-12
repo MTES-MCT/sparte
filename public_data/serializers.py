@@ -10,7 +10,6 @@ from .models import (
     EnveloppeUrbaine2018,
     Epci,
     Ocsge,
-    # RefPlan,
     Region,
     Renaturee2018to2015,
     Sybarval,
