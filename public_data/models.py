@@ -727,7 +727,7 @@ class Ocsge2018(Ocsge2015):
         proxy = True
 
 
-class RefPlan(AutoLoadMixin, DataColorationMixin, models.Model):
+class Cerema(AutoLoadMixin, DataColorationMixin, models.Model):
     """
     Récupérée le 16/12/2021
     https://cerema.app.box.com/v/pnb-action7-indicateurs-ff/folder/149684581362
@@ -841,17 +841,17 @@ class RefPlan(AutoLoadMixin, DataColorationMixin, models.Model):
         "aav2020": "AAV2020",
         "libaav2020": "LIBAAV2020",
         "cateaav202": "CATEAAV202",
-        "naf09art10": "NAF09ART10",
+        "naf09art10": "NAF09ART10",  # 2009
         "art09act10": "ART09ACT10",
         "art09hab10": "ART09HAB10",
         "art09mix10": "ART09MIX10",
         "art09inc10": "ART09INC10",
-        "naf10art11": "NAF10ART11",
+        "naf10art11": "NAF10ART11",  # 2011
         "art10act11": "ART10ACT11",
         "art10hab11": "ART10HAB11",
         "art10mix11": "ART10MIX11",
         "art10inc11": "ART10INC11",
-        "naf11art12": "NAF11ART12",
+        "naf11art12": "NAF11ART12",  # 2012
         "art11act12": "ART11ACT12",
         "art11hab12": "ART11HAB12",
         "art11mix12": "ART11MIX12",
@@ -891,7 +891,7 @@ class RefPlan(AutoLoadMixin, DataColorationMixin, models.Model):
         "art18hab19": "ART18HAB19",
         "art18mix19": "ART18MIX19",
         "art18inc19": "ART18INC19",
-        "naf19art20": "NAF19ART20",
+        "naf19art20": "NAF19ART20",  # 2019
         "art19act20": "ART19ACT20",
         "art19hab20": "ART19HAB20",
         "art19mix20": "ART19MIX20",
@@ -918,7 +918,7 @@ class RefPlan(AutoLoadMixin, DataColorationMixin, models.Model):
         "mpoly": "MULTIPOLYGON",
     }
 
-    naf11art20 = models.FloatField(null=True)
+    naf11art21 = models.FloatField(null=True)
 
     def __str__(self):
         return self.city_insee
@@ -927,9 +927,30 @@ class RefPlan(AutoLoadMixin, DataColorationMixin, models.Model):
     def calculate_fields(cls):
         """
         Calculate fields to speedup user consultation
+        ..warning:: 2021 is missing in the sum because data are missing.
+        ..TODO:: update data to get 2021 and change sum.
         """
-        kwargs = {"naf11art20": sum([F(f"naf{i}art{i+1}") for i in range(11, 20)])}
+        kwargs = {"naf11art21": sum([F(f"naf{i}art{i+1}") for i in range(11, 20)])}
         cls.objects.update(**kwargs)
+
+    @classmethod
+    def list_attr(cls):
+        """Return all field names with a artif numerical values
+        Usefull to get an easy way to change available data withou changing the
+        code
+        From : naf09art10 (year 2009) to naf19art20 (year 2020)
+        """
+        return [f"naf{y:0>2}art{y+1:0>2}" for y in range(9, 19)]
+
+
+class RefPlan(Cerema):
+    """
+    !!! DEPRECATED !!!
+    Available for compatibility
+    """
+
+    class Meta:
+        proxy = True
 
 
 class Region(models.Model):

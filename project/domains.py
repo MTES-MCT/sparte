@@ -39,6 +39,8 @@ class ConsommationDataframe:
         self.df_final = self.add_progression_columns(self.df_final)
         # reorder index and columns
         self.df_final = self.reorder_index(self.df_final)
+        # replace np.nan by "" (empty)
+        self.df_final = self.df_final.fillna("")
 
         return self.df_final.T
 

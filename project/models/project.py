@@ -158,7 +158,7 @@ class Project(BaseProject):
         qs = RefPlan.objects.filter(city_insee__in=code_insee)
         if not qs.exists():
             return 0
-        aggregation = qs.aggregate(bilan=Sum("naf11art20"))
+        aggregation = qs.aggregate(bilan=Sum("naf11art21"))
         return aggregation["bilan"] / 10000
 
     def get_absolute_url(self):
