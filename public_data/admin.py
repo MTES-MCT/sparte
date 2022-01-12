@@ -14,7 +14,7 @@ from .models import (
     EnveloppeUrbaine2018,
     Epci,
     Ocsge,
-    RefPlan,
+    Cerema,
     Region,
     Renaturee2018to2015,
     Sybarval,
@@ -235,16 +235,9 @@ class EpciAdmin(ImportExportMixin, admin.GeoModelAdmin):
     resource_class = EpciResource
 
 
-class RefPlanResource(resources.ModelResource):
-    class Meta:
-        model = RefPlan
-        import_id_fields = ("id",)
-        skip_unchanged = True
-
-
-@admin.register(RefPlan)
-class RefPlanAdmin(ImportExportMixin, admin.GeoModelAdmin):
-    model = RefPlan
+@admin.register(Cerema)
+class CeremaAdmin(admin.GeoModelAdmin):
+    model = Cerema
     list_display = (
         "city_insee",
         "city_name",
@@ -257,4 +250,3 @@ class RefPlanAdmin(ImportExportMixin, admin.GeoModelAdmin):
     )
     search_fields = ("city_insee", "city_name", "region_name", "dept_name", "epci_name")
     ordering = ("city_insee",)
-    resource_class = EpciResource

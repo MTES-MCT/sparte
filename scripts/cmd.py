@@ -68,8 +68,8 @@ def run(ctx, user_cmd):
 @cli.command()
 @click.pass_context
 def build_region_and_co(ctx):
-    """Trigger management command load_from_refplan"""
-    manage_py(ctx.obj["ENV_NAME"], "load_from_refplan")
+    """Trigger management command load_from_cerema"""
+    manage_py(ctx.obj["ENV_NAME"], "load_from_cerema")
 
 
 @cli.command()
