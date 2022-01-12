@@ -736,6 +736,10 @@ class Cerema(AutoLoadMixin, DataColorationMixin, models.Model):
     Voir PDF dans lien ci-dessus
     """
 
+    class Meta:
+        # TODO : migration to plan to public_data_cerema
+        db_table = "public_data_refplan"
+
     city_insee = models.CharField(max_length=5)
     city_name = models.CharField(max_length=45)
     region_id = models.CharField(max_length=2)

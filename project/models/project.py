@@ -11,7 +11,7 @@ from django.contrib.gis.db.models import Union
 from django.utils import timezone
 
 from public_data.behaviors import DataColorationMixin
-from public_data.models import RefPlan
+from public_data.models import Cerema
 
 from .utils import user_directory_path
 
@@ -155,7 +155,7 @@ class Project(BaseProject):
     def get_bilan_conso(self):
         """Return the space consummed between 2011 and 2020 in hectare"""
         code_insee = self.cities.all().values_list("insee", flat=True)
-        qs = RefPlan.objects.filter(city_insee__in=code_insee)
+        qs = Cerema.objects.filter(city_insee__in=code_insee)
         if not qs.exists():
             return 0
         aggregation = qs.aggregate(bilan=Sum("naf11art21"))
