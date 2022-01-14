@@ -1040,6 +1040,10 @@ class Region(GetDataFromCeremaMixin, models.Model):
     mpoly = models.MultiPolygonField()
 
     @property
+    def public_key(self):
+        return f"REGION_{self.id}"
+
+    @property
     def is_artif_ready(self):
         is_artif_ready = True
         for dept in self.departement_set.all():
@@ -1064,6 +1068,10 @@ class Departement(GetDataFromCeremaMixin, models.Model):
     mpoly = models.MultiPolygonField()
 
     @property
+    def public_key(self):
+        return f"DEPART_{self.id}"
+
+    @property
     def millesimes(self):
         if not self.ocsge_millesimes:
             return list()
@@ -1082,6 +1090,10 @@ class Epci(GetDataFromCeremaMixin, models.Model):
     name = models.CharField("Nom", max_length=64)
     mpoly = models.MultiPolygonField()
     departements = models.ManyToManyField(Departement)
+
+    @property
+    def public_key(self):
+        return f"EPCI_{self.id}"
 
     @property
     def is_artif_ready(self):
@@ -1103,6 +1115,10 @@ class Commune(GetDataFromCeremaMixin, models.Model):
     departement = models.ForeignKey(Departement, on_delete=models.CASCADE)
     epci = models.ForeignKey(Epci, on_delete=models.CASCADE)
     mpoly = models.MultiPolygonField()
+
+    @property
+    def public_key(self):
+        return f"COMMUNE_{self.id}"
 
     def get_qs_cerema(self):
         return Cerema.objects.filter(city_insee=self.insee)
