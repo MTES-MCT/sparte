@@ -7,6 +7,7 @@ from .models import (
     ArtifCommune,
     Artificialisee2015to2018,
     Artificielle2018,
+    Commune,
     CommunesSybarval,
     CouvertureSol,
     CouvertureUsageMatrix,
@@ -174,15 +175,8 @@ class CouvertureUsageMatrixAdmin(ImportExportMixin, admin.GeoModelAdmin):
     resource_class = CouvertureUsageMatrixImportResource
 
 
-class RegionResource(resources.ModelResource):
-    class Meta:
-        model = Region
-        import_id_fields = ("id",)
-        skip_unchanged = True
-
-
 @admin.register(Region)
-class RegionAdmin(ImportExportMixin, admin.GeoModelAdmin):
+class RegionAdmin(admin.GeoModelAdmin):
     model = Region
     list_display = (
         "id",
@@ -191,18 +185,10 @@ class RegionAdmin(ImportExportMixin, admin.GeoModelAdmin):
     )
     search_fields = ("name", "source_id")
     ordering = ("name",)
-    resource_class = RegionResource
-
-
-class DepartementResource(resources.ModelResource):
-    class Meta:
-        model = Departement
-        import_id_fields = ("id",)
-        skip_unchanged = True
 
 
 @admin.register(Departement)
-class DepartementAdmin(ImportExportMixin, admin.GeoModelAdmin):
+class DepartementAdmin(admin.GeoModelAdmin):
     model = Departement
     list_display = (
         "id",
@@ -212,18 +198,10 @@ class DepartementAdmin(ImportExportMixin, admin.GeoModelAdmin):
     )
     search_fields = ("name", "source_id")
     ordering = ("name",)
-    resource_class = DepartementResource
-
-
-class EpciResource(resources.ModelResource):
-    class Meta:
-        model = Epci
-        import_id_fields = ("id",)
-        skip_unchanged = True
 
 
 @admin.register(Epci)
-class EpciAdmin(ImportExportMixin, admin.GeoModelAdmin):
+class EpciAdmin(admin.GeoModelAdmin):
     model = Epci
     list_display = (
         "id",
@@ -232,7 +210,17 @@ class EpciAdmin(ImportExportMixin, admin.GeoModelAdmin):
     )
     search_fields = ("name", "source_id")
     ordering = ("name",)
-    resource_class = EpciResource
+
+
+@admin.register(Commune)
+class CommuneAdmin(admin.GeoModelAdmin):
+    model = Commune
+    list_display = (
+        "insee",
+        "name",
+    )
+    search_fields = ("name", "insee")
+    ordering = ("insee",)
 
 
 @admin.register(Cerema)
