@@ -187,7 +187,7 @@ class ProjectReportConsoView(GroupMixin, DetailView):
 
         # build data for comparison graph with all look a like and the project itself
         comparison_data_graph = project.get_look_a_like_conso_per_year()
-        comparison_data_graph[project.name] = project.get_conso_per_year()
+        project_data_graph = project.get_conso_per_year()
 
         return {
             **super().get_context_data(**kwargs),
@@ -204,6 +204,7 @@ class ProjectReportConsoView(GroupMixin, DetailView):
             "pki_progression_percent": pki_progression_percent,
             "active_page": "consommation",
             "comparison_data_graph": comparison_data_graph,
+            "project_data_graph": project_data_graph,
             "target_2031": {
                 "consummed": target_2031_consumption,
                 "annual_avg": target_2031_consumption / 10,
