@@ -136,7 +136,7 @@ Rapport consommation
             </div>
 
             <div class="w-100 box p-4">
-                <h3>Consommation annuelle du territoire et de ses voisins</h3>
+                <h3>Comparaison avec les territoires voisins</h3>
                 <div id="chart_2" class="flex-fill"></div>
             </div>
 
@@ -195,17 +195,17 @@ Rapport consommation
 // CONSOMMATION DES COMMUNES
 ///////////////////////////////
 Highcharts.chart('chart', {
-
+    chart: {
+        type: 'area'
+    },
     title:{
         text:''
     },
-
     yAxis: {
         title: {
             text: 'Consommé (en ha)'
         }
     },
-
     xAxis: {
         categories: [
             {% for x_axis in graph_x_axis %}
@@ -214,17 +214,22 @@ Highcharts.chart('chart', {
         ],
         max: {{ graph_max }},
     },
-
     legend: {
         layout: 'horizontal',
         align: 'center',
         verticalAlign: 'top'
     },
-
-    pane: {
-        size: 400
+    plotOptions: {
+        area: {
+            stacking: 'normal',
+            lineColor: '#666666',
+            lineWidth: 1,
+            marker: {
+                lineWidth: 1,
+                lineColor: '#666666'
+            }
+        }
     },
-
     series: [{% for city in table_artif %}
     {
         name: '{{ city.name }}',
@@ -272,6 +277,15 @@ Highcharts.chart('chart_2', {
             ],
         },
         {% endfor %}
+        {
+            name: '{{ project.name }}',
+            data: [
+                {% for y, v in project_data_graph.items %}{ name: "{{y}}", y: {{ v }} },
+                {% endfor %}
+            ],
+            color: '#ff0000',
+            dashStyle: 'ShortDash',
+        }
     ],
 });
 </script>
