@@ -150,3 +150,7 @@ class OptionsForm(forms.Form):
             raise ValidationError(
                 "L'année de début d'analyse doit être inférieur à l'année de fin"
             )
+
+
+class KeywordForm(forms.Form):
+    keyword = forms.CharField(label="Mot clé")

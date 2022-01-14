@@ -18,6 +18,11 @@ urlpatterns = [
     path("<int:pk>/edit", views.ProjectUpdateView.as_view(), name="update"),
     path("<int:pk>/reinitialize", views.ProjectReinitView.as_view(), name="reinit"),
     path(
+        "<int:pk>/ajouter/voisins",
+        views.ProjectAddLookALike.as_view(),
+        name="lookalike",
+    ),
+    path(
         "<int:pk>/report/consommation",
         views.ProjectReportConsoView.as_view(),
         name="report",
