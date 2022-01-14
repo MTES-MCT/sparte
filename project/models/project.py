@@ -1,17 +1,16 @@
 import traceback
 
 from django.conf import settings
-from django.db import models
-from django.db.models import Sum
-from django.urls import reverse
-from django.utils.functional import cached_property
-
 from django.contrib.gis.db import models as gis_models
 from django.contrib.gis.db.models import Union
+from django.db import models
+from django.db.models import Sum, F
+from django.urls import reverse
 from django.utils import timezone
+from django.utils.functional import cached_property
 
 from public_data.behaviors import DataColorationMixin
-from public_data.models import Cerema
+from public_data.models import Cerema, Land
 
 from .utils import user_directory_path
 
@@ -109,17 +108,6 @@ class Project(BaseProject):
 
     is_public = models.BooleanField("Public", default=False)
 
-    # DEPRECATED : to be removed
-    help_text = (
-        "We need a way to find Project related to Region, Departement or EPCI\n"
-        "this is the purpose of below field which has a very specific rule of\n"
-        "construction, it's like a slug\n"
-        "epci : EPCI_[ID]\n"
-        "departement : DEPART_[ID]\n"
-        "region : REGION_[ID]"
-    )
-    public_key = models.SlugField(unique=True, null=True, help_text=help_text)
-
     analyse_start_date = models.CharField(
         "Date de début de période d'analyse",
         choices=ANALYZE_YEARS,
@@ -138,6 +126,27 @@ class Project(BaseProject):
         blank=True,
     )
 
+    look_a_like = models.CharField(
+        "Territoire pour se comparer",
+        max_length=250,
+        help_text=(
+            "We need a way to find Project related within Cerema's data. "
+            "this is the purpose of this field which has a very specific rule of "
+            "construction, it's like a slug: EPCI_[ID], DEPART_[ID] (département), "
+            "REGION_[ID], COMMUNE_[ID]. "
+            "field can contain several public key separate by ;"
+        ),
+        null=True,
+    )
+
+    @property
+    def nb_years(self):
+        return int(self.analyse_end_date) - int(self.analyse_start_date)
+
+    @property
+    def nb_years_before_2031(self):
+        return 2031 - int(self.analyse_end_date)
+
     # calculated fields
     # Following field contains calculated dict :
     # {
@@ -152,19 +161,58 @@ class Project(BaseProject):
     # }
     couverture_usage = models.JSONField(blank=True, null=True)
 
-    def get_bilan_conso(self):
-        """Return the space consummed between 2011 and 2020 in hectare"""
+    def get_cerema_cities(self):
         code_insee = self.cities.all().values_list("insee", flat=True)
         qs = Cerema.objects.filter(city_insee__in=code_insee)
+        return qs
+
+    def get_bilan_conso(self):
+        """Return the space consummed between 2011 and 2020 in hectare"""
+        qs = self.get_cerema_cities()
         if not qs.exists():
             return 0
         aggregation = qs.aggregate(bilan=Sum("naf11art21"))
         return aggregation["bilan"] / 10000
 
+    def get_bilan_conso_time_scoped(self):
+        """Return land consummed during the project time scope (between
+        analyze_start_data and analyze_end_date)
+        Evaluation is based on city consumption, not geo work."""
+        qs = self.get_cerema_cities()
+        if not qs.exists():
+            return 0
+        fields = Cerema.get_art_field(self.analyse_start_date, self.analyse_end_date)
+        sum_function = sum([F(f) for f in fields])
+        qs = qs.annotate(line_sum=sum_function)
+        aggregation = qs.aggregate(bilan=Sum("line_sum"))
+        return aggregation["bilan"] / 10000
+
+    def get_conso_per_year(self):
+        """Return Cerema data for the project, transposed and named after year"""
+        fields = Cerema.get_art_field(self.analyse_start_date, self.analyse_end_date)
+        qs = self.get_cerema_cities()
+        args = (Sum(field) for field in fields)
+        qs = qs.aggregate(*args)
+        return {f"20{key[8:10]}": val for key, val in qs.items()}
+
+    def get_look_a_like_conso_per_year(self):
+        """Return same data as get_conso_per_year but for land listed in
+        look_a_like property"""
+        datas = dict()
+        for public_key in self.look_a_like.split(";"):
+            land = Land(public_key)
+            datas[land.name] = land.get_conso_per_year(
+                self.analyse_start_date,
+                self.analyse_end_date,
+            )
+        return datas
+
     def get_absolute_url(self):
         return reverse("project:detail", kwargs={"pk": self.pk})
 
     def reset(self, save=False):
+        """Remove everything from project dependencies
+        ..TODO:: overload delete to remove files"""
         self.emprise_set.all().delete()
         self.import_status = BaseProject.Status.MISSING
         self.import_date = None
