@@ -5,7 +5,7 @@ from django.contrib.gis.db import models
 from django.contrib.gis.db.models.functions import Intersection, Area, Transform
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models as classic_models
-from django.db.models import F, Sum
+from django.db.models import F, Sum, Q
 
 from .behaviors import AutoLoadMixin, DataColorationMixin
 
@@ -991,36 +991,6 @@ COMMUNE_[ID]
 """
 
 
-class Land:
-    """It's a generic class to work with Epci, Departement, Region or Commune.
-    Like a proxy."""
-
-    def __init__(self, public_key):
-        self.public_key = public_key
-        land_type, id = public_key.strip().split("_")
-        klass = self.get_land_class(land_type)
-        self.land = klass.objects.get(pk=int(id))
-
-    def get_conso_per_year(self, start="2010", end="2020"):
-        return self.land.get_conso_per_year(start, end)
-
-    def __getattr__(self, name):
-        return getattr(self.land, name)
-
-    def __str__(self):
-        return f"Land({str(self.land)})"
-
-    @classmethod
-    def get_land_class(cls, land_type):
-        transco = {
-            "COMMUNE": Commune,
-            "EPCI": Epci,
-            "DEPART": Departement,
-            "REGION": Region,
-        }
-        return transco[land_type.upper()]
-
-
 class GetDataFromCeremaMixin:
     def get_qs_cerema(self):
         raise NotImplementedError("Need to be specified in child")
@@ -1034,7 +1004,14 @@ class GetDataFromCeremaMixin:
         return {f"20{key[8:10]}": val for key, val in qs.items()}
 
 
-class Region(GetDataFromCeremaMixin, models.Model):
+class LandMixin:
+    @classmethod
+    def search(cls, needle):
+        qs = cls.objects.filter(name__icontains=needle)
+        return qs
+
+
+class Region(LandMixin, GetDataFromCeremaMixin, models.Model):
     source_id = models.CharField("Identifiant source", max_length=2)
     name = models.CharField("Nom", max_length=27)
     mpoly = models.MultiPolygonField()
@@ -1057,7 +1034,7 @@ class Region(GetDataFromCeremaMixin, models.Model):
         return self.name
 
 
-class Departement(GetDataFromCeremaMixin, models.Model):
+class Departement(LandMixin, GetDataFromCeremaMixin, models.Model):
     source_id = models.CharField("Identifiant source", max_length=3)
     region = models.ForeignKey(Region, on_delete=models.CASCADE)
     is_artif_ready = models.BooleanField("Données artif disponibles", default=False)
@@ -1085,7 +1062,7 @@ class Departement(GetDataFromCeremaMixin, models.Model):
         return self.name
 
 
-class Epci(GetDataFromCeremaMixin, models.Model):
+class Epci(LandMixin, GetDataFromCeremaMixin, models.Model):
     source_id = models.CharField("Identifiant source", max_length=9)
     name = models.CharField("Nom", max_length=64)
     mpoly = models.MultiPolygonField()
@@ -1109,7 +1086,7 @@ class Epci(GetDataFromCeremaMixin, models.Model):
         return self.name
 
 
-class Commune(GetDataFromCeremaMixin, models.Model):
+class Commune(LandMixin, GetDataFromCeremaMixin, models.Model):
     insee = models.CharField("Code INSEE", max_length=5)
     name = models.CharField("Nom", max_length=45)
     departement = models.ForeignKey(Departement, on_delete=models.CASCADE)
@@ -1125,3 +1102,51 @@ class Commune(GetDataFromCeremaMixin, models.Model):
 
     def __str__(self):
         return f"{self.name} ({self.insee})"
+
+    @classmethod
+    def search(cls, needle):
+        qs = cls.objects.filter(Q(name__icontains=needle) | Q(insee__icontains=needle))
+        return qs
+
+
+class Land:
+    """It's a generic class to work with Epci, Departement, Region or Commune.
+    Like a proxy."""
+
+    class Meta:
+        subclasses = {
+            "COMMUNE": Commune,
+            "EPCI": Epci,
+            "DEPART": Departement,
+            "REGION": Region,
+        }
+
+    def __init__(self, public_key):
+        self.public_key = public_key
+        land_type, id = public_key.strip().split("_")
+        klass = self.get_land_class(land_type)
+        try:
+            self.land = klass.objects.get(pk=int(id))
+        except klass.DoesNotExists as e:
+            raise Exception("Public key unknown") from e
+
+    def get_conso_per_year(self, start="2010", end="2020"):
+        return self.land.get_conso_per_year(start, end)
+
+    def __getattr__(self, name):
+        return getattr(self.land, name)
+
+    def __str__(self):
+        return f"Land({str(self.land)})"
+
+    @classmethod
+    def get_land_class(cls, land_type):
+        return cls.Meta.subclasses[land_type.upper()]
+
+    @classmethod
+    def search(cls, needle):
+        """Search for a keyword on all land subclasses"""
+        result = list()
+        for subclass in cls.Meta.subclasses.values():
+            result.extend(list(subclass.search(needle)))
+        return result
