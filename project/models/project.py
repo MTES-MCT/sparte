@@ -147,6 +147,24 @@ class Project(BaseProject):
     def nb_years_before_2031(self):
         return 2031 - int(self.analyse_end_date)
 
+    def add_look_a_like(self, public_key):
+        """Add a public_key to look a like keeping the field formated
+        and avoiding duplicate"""
+        keys = self.look_a_like.split(";")
+        if public_key not in keys:
+            keys.append(public_key)
+            self.look_a_like = ";".join(keys)
+
+    def remove_look_a_like(self, public_key):
+        """Remove a public_key from look_a_like property keeping it formated"""
+        keys = self.look_a_like.split(";")
+        if public_key in keys:
+            keys.pop(keys.index(public_key))
+            self.look_a_like = ";".join(keys)
+
+    def get_look_a_like(self):
+        return [Land(key) for key in self.look_a_like.split(";")]
+
     # calculated fields
     # Following field contains calculated dict :
     # {

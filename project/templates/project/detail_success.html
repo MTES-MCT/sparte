@@ -9,43 +9,73 @@ SPARTE
 {% endblock %}
 
 {% block headers %}
+<link href="{% static 'project/css/project.css' %}" rel="stylesheet" />
 {% endblock %}
+
 
 {% block content %}
 <div class="row w-100 justify-content-center">
-    <div class="col-12 col-md-8 col-lg-6">
-        <h1 class="my-5">{{ project.name }}</h1>
 
-        <p>SPARTE vous propose les fonctionnalités suivantes pour explorer votre projet.</p>
+    <div class="col-12 col-md-8 col-lg-6 bg-light p-5 rounded-5 border mt-1">
+        <h1 class="mb-5">{{ project.name }}</h1>
 
-        <p>Vous trouverez les îcones en haut de la page, sous le nom de votre projet.</p>
+        <div class="row gx-2">
+            <div class="col">
+                <div class="box mt-0 p-4 text-center">
+                    <a href="{% url 'project:report' project.pk %}" data-toggle="tooltip" title="Rapports" class="me-1">
+                        <i class="bi bi-graph-down"></i>
+                        <br/><strong>Tableau de bord</strong>
+                    </a>
+                    <br/>Synthèse de la consommation, de l'artificialisation...
+                </div>
+            </div>
+            <div class="col">
+                <div class="box mt-0 p-4 text-center">
+                    <a href="{% url 'project:map' project.pk %}" data-toggle="tooltip" title="Carte intéractive">
+                        <i class="bi bi-map"></i>
+                        <br/><strong>Carte interactive</strong>
+                    </a>
+                    <br/>Explorer les zones artificielles et celles renaturées...
+                </div>
+            </div>
+        </div>
 
-        <ul>
-            <li>
-                <a href="{% url 'project:report' project.pk %}" data-toggle="tooltip" title="Rapports" class="me-1">
-                    <i class="bi bi-graph-down"></i> <strong>Rapports</strong>
-                </a>
-                : synthèse des territoires artificialisés, leur destination...
-            </li>
-            <li>
-                <a href="{% url 'project:map' project.pk %}" data-toggle="tooltip" title="Carte intéractive">
-                    <i class="bi bi-map"></i> <strong>Carte interactive</strong>
-                </a>
-                : visiter les zones artificielles et celles renaturées.
-            </li>
-        </ul>
+        <div class="box p-4  mt-2">
+            <a class="float-end" href="{% url 'project:update' project.pk %}">
+                <i class="bi bi-pencil"></i>
+            </a>
+            <h3 class="mb-2">Période d'analyse</h3>
+            <p>De {{ project.analyse_start_date }} à {{ project.analyse_end_date }}</p>
+        </div>
 
-        <p>
-            Plans associés : <a href="{% url 'project:project-plan-create' project.pk %}" class="btn btn-outline-success btn-sm" data-toggle="tooltip" title="Ajouter un plan"><i class="bi bi-plus-square-dotted"></i></a>
-            <ul>
-                {% for plan in project.plan_set.all %}
-                <li><i class="bi bi-bounding-box-circles"></i> <a href="{% url 'project:plan-detail' plan.pk %}">{{ plan.name }}</a></li>
-                {% empty %}
-                <li>Vide</li>
+        <div class="box p-4 mt-2">
+            <a class="float-end" href="{% url 'project:update' project.pk %}">
+                <i class="bi bi-pencil"></i>
+            </a>
+            <h3 class="mb-2">Description</h3>
+            {% if project.description %}
+                <p>{{ project.description }}</p>
+            {% else %}
+                <p class="text-muted">Aucune description.</p>
+            {% endif %}
+        </div>
+
+
+        <div class="box p-4  mt-2">
+            <a class="float-end" href="{% url 'project:lookalike' project.id %}">
+                <i class="bi bi-plus-circle"></i>
+            </a>
+            <h3 class="mb-2">Territoires de comparaison</h3>
+            {% if project.look_a_like %}
+                <ul>
+                {% for land in project.get_look_a_like %}
+                    <li><a href="{% url 'project:lookalike' project.id %}?remove={{ land.public_key }}"><i class="bi bi-trash text-danger"></i></a> {{ land.name }}</li>
                 {% endfor %}
-            </ul>
-
-        </p>
+                </ul>
+            {% else %}
+            <p class="text-muted">Aucun territoire.</p>
+            {% endif %}
+        </div>
     </div>
 </div>
 {% endblock %}

@@ -1,12 +1,13 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
+from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
-from public_data.models import CouvertureSol, UsageSol
+from public_data.models import CouvertureSol, UsageSol, Land
 
-from project.forms import UploadShpForm
+from project.forms import UploadShpForm, KeywordForm
 from project.models import Project
 from project.domains import ConsommationDataframe
 
@@ -579,3 +580,59 @@ class ProjectReinitView(GroupMixin, LoginRequiredMixin, DeleteView):
 
     def get_success_url(self):
         return reverse_lazy("project:detail", kwargs=self.kwargs)
+
+
+class ProjectAddLookALike(GroupMixin, DetailView):
+    model = Project
+    template_name = "project/add_look_a_like.html"
+    context_object_name = "project"
+
+    def get_context_breadcrumbs(self):
+        breadcrumbs = super().get_context_breadcrumbs()
+        breadcrumbs.append(
+            {"href": None, "title": "Ajouter un territoire de comparaison"}
+        )
+        return breadcrumbs
+
+    def get_form(self):
+        if self.request.method in ("POST", "PUT"):
+            return KeywordForm(data=self.request.POST)
+        else:
+            return KeywordForm()
+
+    def get_context_data(self, **kwargs):
+        if "form" not in kwargs:
+            kwargs["form"] = self.get_form()
+        return super().get_context_data(**kwargs)
+
+    def get(self, request, *args, **kwargs):
+        add_public_key = request.GET.get("add", None)
+        project = self.get_object()
+        if add_public_key:
+            try:
+                # if public_key does not exist should raise an exception
+                land = Land(add_public_key)
+                # use land.public_key to avoid injection
+                project.add_look_a_like(land.public_key)
+                project.save()
+                return redirect(project)
+            except Exception:
+                return super().get(request, *args, **kwargs)
+        rm_public_key = request.GET.get("remove", None)
+        if rm_public_key:
+            project.remove_look_a_like(rm_public_key)
+            project.save()
+            return redirect(project)
+        return super().get(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        """
+        Handle POST requests: instantiate a form instance with the passed
+        POST variables and then check if it's valid.
+        """
+        form = self.get_form()
+        context = self.get_context_data(form=form)
+        if form.is_valid():
+            needle = form.cleaned_data["keyword"]
+            context["results"] = Land.search(needle)
+        return self.render_to_response(context)

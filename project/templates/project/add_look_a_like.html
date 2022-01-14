@@ -1,0 +1,47 @@
+{% extends 'index.html' %}
+
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block pagetitle %}
+Ajouter un territoire de comparaison
+{% endblock %}
+
+{% block headers %}
+{% endblock %}
+
+{% block content %}
+<div class="row w-100 justify-content-center">
+    <div class="col-12 col-md-8 col-lg-6">
+        <h2 class="my-5">Ajouter un territoire de comparaison</h2>
+
+        <form class="row g-3 align-items-center" action="" method="post">
+            {% csrf_token %}
+            <div class="col-10">
+                <label class="visually-hidden" for="inlineFormInputGroupUsername">Mot clé</label>
+                <div class="input-group">
+                    <div class="input-group-text"><i class="bi bi-search"></i></div>
+                    <input type="text" name="keyword" class="form-control" id="id_keyword" value="{{ form.cleaned_data.keyword }}">
+                </div>
+            </div>
+            <div class="col-2">
+                <button type="submit" class="btn btn-primary">Chercher</button>
+            </div>
+        </form>
+
+
+        <div class="b-1 d-flex flex-column mt-5">
+            {% if results %}
+                <h3 class="mb-2">Résultats</h3>
+                <ul>
+                {% for result in results %}
+                    <li><a href="?add={{ result.public_key }}"><i class="bi bi-plus-circle"></i></a> {{ result.name }}</li>
+                {% endfor %}
+                </ul>
+            {% else %}
+            <p class="text-muted">Renseigner le début du nom du territoire rechercher.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
