@@ -75,7 +75,7 @@ Rapport consommation
                         Consommation 2011-2019
                     </div>
                     <div class="card-body">
-                        <p class="figure">+{{ conso_10_years|floatformat:1 }} ha</p>
+                        <p class="figure">+{{ target_2031.consummed|floatformat:1 }} ha</p>
                         <p class="card-text"><small class="text-danger">
                             <i class="bi bi-exclamation-diamond-fill"></i> Données 2020 non encore disponibles
                         </small></p>
@@ -88,7 +88,7 @@ Rapport consommation
                         Trajectoire 2021-2030
                     </div>
                     <div class="card-body">
-                        <p class="figure">+{{ trajectoire_2030|floatformat:1 }} ha</p>
+                        <p class="figure">+{{ target_2031.target|floatformat:1 }} ha</p>
                         <p class="card-text"><small class="text-muted">
                             Réduction de 50% par rapport à la décennie précédente
                         </small></p>
@@ -100,13 +100,44 @@ Rapport consommation
                         Trajectoire annuelle
                     </div>
                     <div class="card-body">
-                        <p class="figure">+{{ trajectoire_year|floatformat:0 }} ha/an</p>
+                        <p class="figure">+{{ target_2031.annual_forecast|floatformat:0 }} ha/an</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-6">
+                    <div class="w-100 box p-4">
+                        <h3>Analyse 2011 à 2020 (vision légale)</h3>
+                        <p>
+                            <strong>Consommé sur la période</strong> : +{{ target_2031.consummed|floatformat:1 }} ha
+                            <br/><strong>Conso. annuelle moyenne</strong> : +{{ target_2031.annual_avg|floatformat:1 }} Ha
+                            <br/><strong>Projection 2031 à ce rythme</strong> : +{{ target_2031.consummed|floatformat:1 }} Ha
+                            <br/><strong>Projection 2031 souhaitée (-50%)</strong> : +{{ target_2031.target|floatformat:1 }} ha
+                        </p>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="w-100 box p-4">
+                        <h3>Analyse {{ start_year }} à {{ end_year }}</h3>
+                        <p>
+                            <strong>Consommé sur la période</strong> : +{{ project_scope.consummed|floatformat:1 }} ha
+                            <br/><strong>Conso. annuelle moyenne</strong> : +{{ project_scope.annual_avg|floatformat:1 }} Ha
+                            <br/><strong>Projection 2031 à ce rythme</strong> : +{{ project_scope.forecast_2031|floatformat:1 }} Ha
+                            <br/>&nbsp;
+                        </p>
                     </div>
                 </div>
             </div>
 
             <div class="w-100 box p-4">
+                <h3>Consommation annuelle des communes du territoire</h3>
                 <div id="chart" class="flex-fill"></div>
+            </div>
+
+            <div class="w-100 box p-4">
+                <h3>Consommation annuelle du territoire et de ses voisins</h3>
+                <div id="chart_2" class="flex-fill"></div>
             </div>
 
             <div class="box scrollme-x p-4">
@@ -160,6 +191,9 @@ Rapport consommation
 <script src="https://code.highcharts.com/highcharts.js"></script>
 <script src="https://code.highcharts.com/modules/exporting.js"></script>
 <script language="javascript">
+///////////////////////////////
+// CONSOMMATION DES COMMUNES
+///////////////////////////////
 Highcharts.chart('chart', {
 
     title:{
@@ -198,6 +232,63 @@ Highcharts.chart('chart', {
     },
     {% endfor %}],
 });
+
+
+///////////////////////////////
+// CONSOMMATION DU TERRITOIRE ET DE SES VOISINS
+///////////////////////////////
+Highcharts.chart('chart_2', {
+    title:{
+        text:''
+    },
+    yAxis: {
+        title: {
+            text: 'Consommé (en ha)'
+        }
+    },
+    xAxis: {
+        categories: [
+            {% for x_axis in graph_x_axis %}
+            "{{ x_axis }}",
+            {% endfor %}
+        ],
+        max: {{ graph_max }},
+    },
+    legend: {
+        layout: 'horizontal',
+        align: 'center',
+        verticalAlign: 'top'
+    },
+    pane: {
+        size: 400
+    },
+    series: [
+        {% for land_name, data in comparison_data_graph.items %}
+        {
+            name: '{{ land_name }}',
+            data: [
+                {% for y, v in data.items %}{ name: "{{y}}", y: {{ v }} },
+                {% endfor %}
+            ],
+        },
+        {% endfor %}
+    ],
+});
 </script>
+<pre>
+<code>
+series: [
+    {% for land_name, data in comparison_data_graph.items %}
+    {
+        name: '{{ land_name }}',
+        data: [
+            {% for y, v in data.items %}{ name: "{{y}}", y: {{ v }} },
+            {% endfor %}
+        ],
+    },
+    {% endfor %}
+],
+</code>
+</pre>
 {% endlocalize %}
 {% endblock %}

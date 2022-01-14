@@ -181,7 +181,12 @@ class ProjectReportConsoView(GroupMixin, DetailView):
         pki_progression = int(builder.get_global_progression())
         pki_progression_percent = builder.get_global_progression_percent() * 100
 
-        conso_10_years = project.get_bilan_conso()
+        target_2031_consumption = project.get_bilan_conso()
+        current_conso = project.get_bilan_conso_time_scoped()
+
+        # build data for comparison graph with all look a like and the project itself
+        comparison_data_graph = project.get_look_a_like_conso_per_year()
+        comparison_data_graph[project.name] = project.get_conso_per_year()
 
         return {
             **super().get_context_data(**kwargs),
@@ -197,9 +202,20 @@ class ProjectReportConsoView(GroupMixin, DetailView):
             "pki_progression": pki_progression,
             "pki_progression_percent": pki_progression_percent,
             "active_page": "consommation",
-            "conso_10_years": conso_10_years,
-            "trajectoire_2030": conso_10_years / 2,
-            "trajectoire_year": conso_10_years / 20,
+            "comparison_data_graph": comparison_data_graph,
+            "target_2031": {
+                "consummed": target_2031_consumption,
+                "annual_avg": target_2031_consumption / 10,
+                "target": target_2031_consumption / 2,
+                "annual_forecast": target_2031_consumption / 20,
+            },
+            "project_scope": {
+                "consummed": current_conso,
+                "annual_avg": current_conso / project.nb_years,
+                "forecast_2031": project.nb_years_before_2031
+                * current_conso
+                / project.nb_years,
+            },
             "graph_x_axis": [
                 str(i)
                 for i in range(
