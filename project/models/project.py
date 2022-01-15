@@ -150,17 +150,21 @@ class Project(BaseProject):
     def add_look_a_like(self, public_key):
         """Add a public_key to look a like keeping the field formated
         and avoiding duplicate"""
-        keys = self.look_a_like.split(";")
-        if public_key not in keys:
-            keys.append(public_key)
-            self.look_a_like = ";".join(keys)
+        if self.look_a_like:
+            keys = self.look_a_like.split(";")
+            if public_key not in keys:
+                keys.append(public_key)
+                self.look_a_like = ";".join(keys)
+        else:
+            self.look_a_like = public_key
 
     def remove_look_a_like(self, public_key):
         """Remove a public_key from look_a_like property keeping it formated"""
-        keys = self.look_a_like.split(";")
-        if public_key in keys:
-            keys.pop(keys.index(public_key))
-            self.look_a_like = ";".join(keys)
+        if self.look_a_like:
+            keys = self.look_a_like.split(";")
+            if public_key in keys:
+                keys.pop(keys.index(public_key))
+                self.look_a_like = ";".join(keys)
 
     def get_look_a_like(self):
         return [Land(key) for key in self.look_a_like.split(";")]
@@ -217,6 +221,8 @@ class Project(BaseProject):
         """Return same data as get_conso_per_year but for land listed in
         look_a_like property"""
         datas = dict()
+        if not self.look_a_like:
+            return datas
         for public_key in self.look_a_like.split(";"):
             land = Land(public_key)
             datas[land.name] = land.get_conso_per_year(
