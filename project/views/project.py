@@ -537,7 +537,7 @@ class ProjectCreateView(GroupMixin, LoginRequiredMixin, CreateView):
         return reverse_lazy("project:detail", kwargs={"pk": self.object.id})
 
 
-class ProjectUpdateView(GroupMixin, LoginRequiredMixin, UpdateView):
+class ProjectUpdateView(GroupMixin, UpdateView):
     model = Project
     template_name = "project/update.html"
     fields = ["name", "description", "analyse_start_date", "analyse_end_date"]
