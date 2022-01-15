@@ -60,7 +60,6 @@ SPARTE
             {% endif %}
         </div>
 
-
         <div class="box p-4  mt-2">
             <a class="float-end" href="{% url 'project:lookalike' project.id %}">
                 <i class="bi bi-plus-circle"></i>
@@ -81,11 +80,13 @@ SPARTE
 {% endblock %}
 
 {% block sub_bar_actions %}
+
 <li class="nav-item ms-1">
     <a class="btn btn-sm btn-outline-primary" href="{% url 'project:update' project.pk %}">
         <i class="bi bi-pencil"></i> Editer
     </a>
 </li>
+{% if user.is_authenticated %}
 <li class="nav-item ms-1">
     <a class="btn btn-sm btn-outline-warning" href="{% url 'project:reinit' project.pk %}">
         <i class="bi bi-recycle"></i> Ré-initialiser
@@ -96,6 +97,7 @@ SPARTE
         <i class="bi bi-trash"></i> Supprimer
     </a>
 </li>
+{% endif %}
 {% endblock %}
 
 {% block bodyend %}
