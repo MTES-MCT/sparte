@@ -2,8 +2,6 @@
 from rest_framework.exceptions import ParseError
 from rest_framework import viewsets
 
-from public_data.api_views import DataViewSet
-
 from .models import Emprise, PlanEmprise
 from .serializers import EmpriseSerializer, PlanEmpriseSerializer
 
