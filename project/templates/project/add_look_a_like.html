@@ -13,7 +13,10 @@ Ajouter un territoire de comparaison
 {% block content %}
 <div class="row w-100 justify-content-center">
     <div class="col-12 col-md-8 col-lg-6">
-        <h2 class="my-5">Ajouter un territoire de comparaison</h2>
+
+        <h2 class="my-5">Ajouter un territoire de comparaison
+            <a href="{% url 'project:detail' project.id %}" class="float-end text-danger"><i class="bi bi-x-circle"></i></a>
+        </h2>
 
         <form class="row g-3 align-items-center" action="" method="post">
             {% csrf_token %}
@@ -31,17 +34,37 @@ Ajouter un territoire de comparaison
 
 
         <div class="b-1 d-flex flex-column mt-5">
-            {% if results %}
-                <h3 class="mb-2">Résultats</h3>
-                <ul>
-                {% for result in results %}
-                    <li><a href="?add={{ result.public_key }}"><i class="bi bi-plus-circle"></i></a> {{ result.name }}</li>
-                {% endfor %}
-                </ul>
-            {% else %}
+        {% if results %}
+            <h3 class="mb-2">Résultats</h3>
+
+            {% for land, data in results.items %}
+                {% if data %}
+                <div class="card">
+                    <h5 class="card-header">
+                        {{ land }} <span class="badge bg-primary">{{ data|length }}</span>
+                        <a data-bs-toggle="collapse" href="#collapse-{{ land }}" role="button" aria-expanded="false" aria-controls="collapse-{{ land }}" class="float-end">
+                            <i class="bi bi-chevron-bar-expand"></i>
+                        </a>
+
+                    </h5>
+                    <div id="collapse-{{ land }}" class="collapse" aria-labelledby="heading-example">
+                        <div class="card-body d-flex flex-column">
+                            {% for result in data %}
+                                <div>
+                                    <a href="?add={{ result.public_key }}"><i class="bi bi-plus-circle"></i></a>
+                                    {{ result.name }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            {% endfor %}
+        {% else %}
             <p class="text-muted">Renseigner le début du nom du territoire rechercher.</p>
-            {% endif %}
+        {% endif %}
         </div>
+
     </div>
 </div>
 {% endblock %}

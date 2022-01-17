@@ -631,6 +631,7 @@ class ProjectAddLookALike(GroupMixin, DetailView):
         Handle POST requests: instantiate a form instance with the passed
         POST variables and then check if it's valid.
         """
+        self.object = self.get_object()
         form = self.get_form()
         context = self.get_context_data(form=form)
         if form.is_valid():
