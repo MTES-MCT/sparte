@@ -188,6 +188,10 @@ class ProjectReportConsoView(GroupMixin, DetailView):
         # build data for comparison graph with all look a like and the project itself
         comparison_data_graph = project.get_look_a_like_conso_per_year()
         project_data_graph = project.get_conso_per_year()
+        data_determinant = project.get_determinants()
+        pie_data_determinant = {
+            det: sum(vals.values()) for det, vals in data_determinant.items()
+        }
 
         return {
             **super().get_context_data(**kwargs),
@@ -226,6 +230,8 @@ class ProjectReportConsoView(GroupMixin, DetailView):
             ],
             "graph_max": int(project.analyse_end_date)
             - int(project.analyse_start_date),
+            "data_determinant": data_determinant,
+            "pie_data_determinant": pie_data_determinant,
         }
 
 
