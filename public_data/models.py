@@ -1146,7 +1146,7 @@ class Land:
     @classmethod
     def search(cls, needle):
         """Search for a keyword on all land subclasses"""
-        result = list()
-        for subclass in cls.Meta.subclasses.values():
-            result.extend(list(subclass.search(needle)))
-        return result
+        return {
+            name: subclass.search(needle)
+            for name, subclass in cls.Meta.subclasses.items()
+        }
