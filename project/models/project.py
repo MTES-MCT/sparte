@@ -141,7 +141,7 @@ class Project(BaseProject):
 
     @property
     def nb_years(self):
-        return int(self.analyse_end_date) - int(self.analyse_start_date)
+        return int(self.analyse_end_date) - int(self.analyse_start_date) + 1
 
     @property
     def nb_years_before_2031(self):
@@ -188,6 +188,43 @@ class Project(BaseProject):
         qs = Cerema.objects.filter(city_insee__in=code_insee)
         return qs
 
+    def get_determinants(self):
+        """Return determinant for project's periode
+        {
+            "house"
+            {
+                "2015": 10,
+                "2016": 3,
+                "2018": 1,
+            },
+            "activity": {...},
+            "both": {...},
+            "unknown": {...},
+        }
+        """
+        years = list(
+            range(int(self.analyse_start_date), int(self.analyse_end_date) + 1)
+        )
+        determinants = {
+            "hab": "Habitat",
+            "act": "Acitvité",
+            "mix": "Mixte",
+            "inc": "Inconnu",
+        }
+        results = {f: dict() for f in determinants.values()}
+        args = []
+        for year in years:
+            start = str(year - 1)[-2:]
+            end = str(year)[-2:]
+            for det in determinants.keys():
+                args.append(Sum(f"art{start}{det}{end}"))
+        qs = self.get_cerema_cities().aggregate(*args)
+        for key, val in qs.items():
+            year = f"20{key[3:5]}"
+            det = determinants[key[5:8]]
+            results[det][year] = val / 10000
+        return results
+
     def get_bilan_conso(self):
         """Return the space consummed between 2011 and 2020 in hectare"""
         qs = self.get_cerema_cities()
@@ -215,7 +252,7 @@ class Project(BaseProject):
         qs = self.get_cerema_cities()
         args = (Sum(field) for field in fields)
         qs = qs.aggregate(*args)
-        return {f"20{key[8:10]}": val for key, val in qs.items()}
+        return {f"20{key[3:5]}": val / 10000 for key, val in qs.items()}
 
     def get_look_a_like_conso_per_year(self):
         """Return same data as get_conso_per_year but for land listed in
