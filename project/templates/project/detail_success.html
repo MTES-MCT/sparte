@@ -16,65 +16,123 @@ SPARTE
 {% block content %}
 <div class="row w-100 justify-content-center">
 
-    <div class="col-12 col-md-8 col-lg-6 bg-light p-5 rounded-5 border mt-1">
+    <div class="col-8 bg-light p-3 rounded-5 border mt-1">
         <h1 class="mb-5">{{ project.name }}</h1>
 
         <div class="row gx-2">
             <div class="col">
-                <div class="box mt-0 p-4 text-center">
-                    <a href="{% url 'project:report' project.pk %}" data-toggle="tooltip" title="Rapports" class="me-1">
-                        <i class="bi bi-graph-down"></i>
-                        <br/><strong>Tableau de bord</strong>
-                    </a>
-                    <br/>Synthèse de la consommation, de l'artificialisation...
+                <div class="d-flex flex-column box mt-0 p-4 justify-content-center h-100">
+                    <div class="text-center">
+                        <a href="{% url 'project:report' project.pk %}" data-toggle="tooltip" title="Rapports" class="me-1">
+                            <i class="bi bi-graph-down"></i>
+                            <br/><strong>Tableau de bord</strong>
+                        </a>
+                    </div>
+                    <div class="mt-2">
+                        <ul class="list-unstyled">
+                            <li><i class="bi bi-arrow-right-short"></i>Trajectoire ZAN en 2031 et 2050</li>
+                            <li><i class="bi bi-arrow-right-short"></i>Bilan sur la période sélectionnée</li>
+                            <li><i class="bi bi-arrow-right-short"></i>Évolution sur la période sélectionnée</li>
+                            <li><i class="bi bi-arrow-right-short"></i>Comparaison au territoire supérieur</li>
+                            <li><i class="bi bi-arrow-right-short"></i>Déterminants (Habitat, activité...)</li>
+                        </ul>
+                    </div>
                 </div>
             </div>
             <div class="col">
-                <div class="box mt-0 p-4 text-center">
-                    <a href="{% url 'project:map' project.pk %}" data-toggle="tooltip" title="Carte intéractive">
-                        <i class="bi bi-map"></i>
-                        <br/><strong>Carte interactive</strong>
-                    </a>
-                    <br/>Explorer les zones artificielles et celles renaturées...
+                <div class="d-flex flex-column box mt-0 p-4 justify-content-center h-100">
+                    <div class="text-center">
+                        <a href="{% url 'project:map' project.pk %}" data-toggle="tooltip" title="Carte intéractive">
+                            <i class="bi bi-map"></i>
+                            <br/><strong>Carte interactive</strong>
+                        </a>
+                    </div>
+                    <div class="mt-2">
+                        <ul class="list-unstyled">
+                            <li><i class="bi bi-arrow-right-short"></i>Zones artificielles</li>
+                            <li><i class="bi bi-arrow-right-short"></i>Zones artificialisées et renaturées sur la période</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="d-flex flex-column box mt-0 p-4 justify-content-center h-100">
+                    <div class="text-center">
+                        <a href="{% url 'project:map' project.pk %}" data-toggle="tooltip" title="Carte intéractive">
+                            <i class="bi bi-download"></i>
+                            <br/><strong>Bilan téléchargeable</strong>
+                        </a>
+                    </div>
+                    <div class="mt-2">
+                        <ul class="list-unstyled">
+                            <li><i class="bi bi-arrow-right-short"></i>synthèse du diagnostic de votre territoire</li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="box p-4  mt-2">
-            <a class="float-end" href="{% url 'project:update' project.pk %}">
-                <i class="bi bi-pencil"></i>
-            </a>
-            <h3 class="mb-2">Période d'analyse</h3>
-            <p>De {{ project.analyse_start_date }} à {{ project.analyse_end_date }}</p>
+
+        <div class="row gx-1">
+            <div class="col-5 d-flex flex-column">
+
+                <div class="box p-4">
+                    <a class="float-end" href="{% url 'project:update' project.pk %}">
+                        <i class="bi bi-pencil"></i>
+                    </a>
+                    <span  class="fw-bold">Période d'analyse</span>
+                    <p>De {{ project.analyse_start_date }} à {{ project.analyse_end_date }}</p>
+                </div>
+
+                <div class="box p-4 mt-1">
+                    <span  class="fw-bold">Analyses disponibles</span>
+                    <br/><i class="bi bi-check-circle text-success"></i> Consomation d'espace
+                    <br/>
+                    {% if analysis_artif %}
+                        <i class="bi bi-check-circle text-success"></i>
+                    {% else %}
+                        <i class="bi bi-x-circle text-danger"></i>
+                    {% endif %}
+                    Artificialisation
+                </div>
+
+                <div class="box p-4 mt-1 flex-grow-1">
+                    <a class="float-end" href="{% url 'project:lookalike' project.id %}">
+                        <i class="bi bi-plus-circle"></i>
+                    </a>
+                    <span  class="fw-bold">Territoires de comparaison</span>
+                    {% if project.look_a_like %}
+                        <div class="d-flex flex-column mt-2">
+                        {% for land in project.get_look_a_like %}
+                            <div class="w100">
+                                {{ land.name }}
+                                <a href="{% url 'project:lookalike' project.id %}?remove={{ land.public_key }}" class="float-end"><i class="bi bi-trash text-danger"></i></a>
+                            </div>
+                        {% endfor %}
+                        </div>
+                    {% else %}
+                    <p class="text-muted">Aucun territoire.</p>
+                    {% endif %}
+                </div>
+
+            </div>
+            <div class="col-7 d-flex">
+
+                <div class="box p-4 flex-grow-1">
+                    <a class="float-end" href="{% url 'project:update' project.pk %}">
+                        <i class="bi bi-pencil"></i>
+                    </a>
+                    <span  class="fw-bold">Description</span>
+                    {% if project.description %}
+                        <p>{{ project.description }}</p>
+                    {% else %}
+                        <p class="text-muted">Aucune description.</p>
+                    {% endif %}
+                </div>
+
+            </div>
         </div>
 
-        <div class="box p-4 mt-2">
-            <a class="float-end" href="{% url 'project:update' project.pk %}">
-                <i class="bi bi-pencil"></i>
-            </a>
-            <h3 class="mb-2">Description</h3>
-            {% if project.description %}
-                <p>{{ project.description }}</p>
-            {% else %}
-                <p class="text-muted">Aucune description.</p>
-            {% endif %}
-        </div>
-
-        <div class="box p-4  mt-2">
-            <a class="float-end" href="{% url 'project:lookalike' project.id %}">
-                <i class="bi bi-plus-circle"></i>
-            </a>
-            <h3 class="mb-2">Territoires de comparaison</h3>
-            {% if project.look_a_like %}
-                <ul>
-                {% for land in project.get_look_a_like %}
-                    <li><a href="{% url 'project:lookalike' project.id %}?remove={{ land.public_key }}"><i class="bi bi-trash text-danger"></i></a> {{ land.name }}</li>
-                {% endfor %}
-                </ul>
-            {% else %}
-            <p class="text-muted">Aucun territoire.</p>
-            {% endif %}
-        </div>
     </div>
 </div>
 {% endblock %}
