@@ -966,7 +966,7 @@ class Cerema(AutoLoadMixin, DataColorationMixin, models.Model):
         code
         From : naf09art10 (year 2009) to naf19art20 (year 2020)
         """
-        return [f"naf{y:0>2}art{y+1:0>2}" for y in range(9, 19)]
+        return [f"naf{y:0>2}art{y+1:0>2}" for y in range(9, 19 + 1)]
 
 
 class RefPlan(Cerema):
@@ -1001,13 +1001,14 @@ class GetDataFromCeremaMixin:
         qs = self.get_qs_cerema()
         args = (Sum(field) for field in fields)
         qs = qs.aggregate(*args)
-        return {f"20{key[8:10]}": val for key, val in qs.items()}
+        return {f"20{key[3:5]}": val / 10000 for key, val in qs.items()}
 
 
 class LandMixin:
     @classmethod
     def search(cls, needle):
         qs = cls.objects.filter(name__icontains=needle)
+        qs = qs.order_by("name")
         return qs
 
 
@@ -1106,6 +1107,7 @@ class Commune(LandMixin, GetDataFromCeremaMixin, models.Model):
     @classmethod
     def search(cls, needle):
         qs = cls.objects.filter(Q(name__icontains=needle) | Q(insee__icontains=needle))
+        qs = qs.order_by("name")
         return qs
 
 

@@ -177,6 +177,12 @@ Rapport consommation
                 </table>
             </div>
 
+
+            <div class="w-100 box p-4">
+                <h3>Déterminants de la consommation</h3>
+                <div id="chart_determinant" class="flex-fill"></div>
+            </div>
+
             <div class="box alert">
                 <h3>Provenance des données</h3>
                 La consommation d’espace est mesurée avec les fichiers fonciers qui font une description cadastrale du territoire.
@@ -252,20 +258,12 @@ Highcharts.chart('chart_2', {
         }
     },
     xAxis: {
-        categories: [
-            {% for x_axis in graph_x_axis %}
-            "{{ x_axis }}",
-            {% endfor %}
-        ],
-        max: {{ graph_max }},
+        type: "category",
     },
     legend: {
         layout: 'horizontal',
         align: 'center',
         verticalAlign: 'top'
-    },
-    pane: {
-        size: 400
     },
     series: [
         {% for land_name, data in comparison_data_graph.items %}
@@ -286,6 +284,86 @@ Highcharts.chart('chart_2', {
             color: '#ff0000',
             dashStyle: 'ShortDash',
         }
+    ],
+});
+
+
+///////////////////////////////
+// DETERMINANT
+///////////////////////////////
+Highcharts.chart('chart_determinant', {
+    chart: {
+        type: 'column'
+    },
+    title:{
+        text:''
+    },
+    yAxis: {
+        title: {
+            text: 'Consommé (en ha)'
+        },
+        stackLabels: {
+            enabled: true,
+            format: '{total:,.1f}',
+        },
+    },
+    tooltip: {
+        headerFormat: '<b>{point.x}</b><br/>',
+        pointFormat: '{series.name}: {point.y}',
+        valueSuffix: ' Ha',
+        valueDecimals: 1,
+    },
+    xAxis: {
+        categories: [
+            {% for x_axis in graph_x_axis %}
+            "{{ x_axis }}",
+            {% endfor %}
+        ],
+        max: {{ graph_max }},
+    },
+    legend: {
+        layout: 'horizontal',
+        align: 'center',
+        verticalAlign: 'top'
+    },
+    plotOptions: {
+        column: {
+            stacking: 'normal',
+            dataLabels: {
+                enabled: true,
+                format: '{point.y:,.1f}',
+            }
+        },
+
+    },
+    series: [
+        {% for determinant_name, data in data_determinant.items %}
+        {
+            name: '{{ determinant_name }}',
+            data: [
+                {% for y, v in data.items %}{ name: "{{y}}", y: {{ v }} },
+                {% endfor %}
+            ],
+        },
+        {% endfor %}
+        {
+            type: 'pie',
+            name: 'Total',
+            data: [
+            {% for name, y in pie_data_determinant.items %}
+            {
+                name: '{{ name }}',
+                y: {{ y }},
+
+            },
+            {% endfor %}
+            ],
+            center: [55, 55],
+            size: 100,
+            dataLabels: {
+                enabled: false
+            },
+        },
     ],
 });
 </script>
