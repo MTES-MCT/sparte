@@ -3,6 +3,7 @@ import logging
 from django.contrib.gis.db.models import Union
 from django.contrib.gis.geos import Polygon, MultiPolygon
 from django.core.management.base import BaseCommand
+from django.core.paginator import Paginator
 
 from public_data.models import Cerema, Region, Departement, Epci, Commune
 
@@ -24,10 +25,10 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         logger.info("Recreate region, departement, EPCI and communes referentials")
-        self.load_region()
-        self.load_departement()
-        self.load_epci()
-        self.link_epci_with_dept()
+        # self.load_region()
+        # self.load_departement()
+        # self.load_epci()
+        # self.link_epci_with_dept()
         self.load_communes()
 
     def load_region(self):
@@ -102,17 +103,22 @@ class Command(BaseCommand):
         depts = {d.source_id: d for d in Departement.objects.all()}
         epcis = {e.source_id: e for e in Epci.objects.all()}
         qs = Cerema.objects.all().order_by("city_insee")
-        logger.info("%d Communes found", qs.count())
-        Commune.objects.bulk_create(
-            (
-                Commune(
-                    insee=data.city_insee,
-                    name=data.city_name,
-                    departement=depts[data.dept_id],
-                    epci=epcis[data.epci_id],
-                    mpoly=fix_poly(data.mpoly),
-                )
-                for data in qs
-            )
+        paginator = Paginator(qs, 1000)
+        logger.info(
+            "%d Communes found in %d pages", paginator.count, paginator.num_pages
         )
+        for page in paginator.page_range:
+            Commune.objects.bulk_create(
+                (
+                    Commune(
+                        insee=data.city_insee,
+                        name=data.city_name,
+                        departement=depts[data.dept_id],
+                        epci=epcis[data.epci_id],
+                        mpoly=fix_poly(data.mpoly),
+                    )
+                    for data in paginator.page(page)
+                )
+            )
+            logger.info("Page %d/%d done", page, paginator.num_pages)
         logger.info("Done loading Communes")
