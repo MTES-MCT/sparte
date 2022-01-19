@@ -193,12 +193,20 @@ class ProjectReportConsoView(GroupMixin, DetailView):
             det: sum(vals.values()) for det, vals in data_determinant.items()
         }
 
+        # communes_data_graph
+        communes_data_graph = project.get_city_conso_per_year()
+        communes_data_table = dict()
+        for city, data in communes_data_graph.items():
+            communes_data_table[city] = data.copy()
+            communes_data_table[city]["total"] = sum(data.values())
+
         return {
             **super().get_context_data(**kwargs),
             "start_year": project.analyse_start_date,
             "end_year": project.analyse_end_date,
+            "years": project.years,
             "headers": headers,
-            "table_artif": table_artif,
+            # "table_artif": table_artif,
             "initial_surface": pki_inital_surface,
             "initial_percent": 100 * pki_inital_surface / total_surface,
             "final_surface": pki_final_surface,
@@ -207,6 +215,8 @@ class ProjectReportConsoView(GroupMixin, DetailView):
             "pki_progression": pki_progression,
             "pki_progression_percent": pki_progression_percent,
             "active_page": "consommation",
+            "communes_data_graph": communes_data_graph,
+            "communes_data_table": communes_data_table,
             "comparison_data_graph": comparison_data_graph,
             "project_data_graph": project_data_graph,
             "target_2031": {
