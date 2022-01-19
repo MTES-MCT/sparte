@@ -167,7 +167,20 @@ class Project(BaseProject):
                 self.look_a_like = ";".join(keys)
 
     def get_look_a_like(self):
-        return [Land(key) for key in self.look_a_like.split(";")]
+        """If a public_key is corrupted it removes it and hide the error"""
+        lands = list()
+        to_remove = list()
+        public_keys = self.look_a_like.split(";")
+        for public_key in public_keys:
+            try:
+                lands.append(Land(public_key))
+            except Exception:
+                to_remove.append(public_key)
+        if to_remove:
+            for public_key in to_remove:
+                self.remove_look_a_like(public_key)
+            self.save()
+        return lands
 
     # calculated fields
     # Following field contains calculated dict :
@@ -220,9 +233,10 @@ class Project(BaseProject):
                 args.append(Sum(f"art{start}{det}{end}"))
         qs = self.get_cerema_cities().aggregate(*args)
         for key, val in qs.items():
-            year = f"20{key[3:5]}"
-            det = determinants[key[5:8]]
-            results[det][year] = val / 10000
+            if val:
+                year = f"20{key[3:5]}"
+                det = determinants[key[5:8]]
+                results[det][year] = val / 10000
         return results
 
     def get_bilan_conso(self):
@@ -248,11 +262,11 @@ class Project(BaseProject):
 
     def get_conso_per_year(self):
         """Return Cerema data for the project, transposed and named after year"""
-        fields = Cerema.get_art_field(self.analyse_start_date, self.analyse_end_date)
         qs = self.get_cerema_cities()
+        fields = Cerema.get_art_field(self.analyse_start_date, self.analyse_end_date)
         args = (Sum(field) for field in fields)
         qs = qs.aggregate(*args)
-        return {f"20{key[3:5]}": val / 10000 for key, val in qs.items()}
+        return {f"20{key[3:5]}": val / 10000 for key, val in qs.items() if val}
 
     def get_look_a_like_conso_per_year(self):
         """Return same data as get_conso_per_year but for land listed in
