@@ -41,8 +41,8 @@ Carte intéractive
     </style>
 {% endblock %}
 
-{% block content %}
-<div class="d-flex flex-column flex-fill h-100" style="overflow:auto;">
+{% block carto %}
+<div class="d-flex h-100" style="overflow:auto;">
     <div id="mapid" class="flex-grow-1"></div>
 </div>
 {% endblock %}
@@ -76,4 +76,7 @@ let carto = new Carto ([{{ center_lat }}, {{ center_lng }}], {{ default_zoom }})
 carto.init(geolayers)
 </script>
 {% endlocalize %}
+{% endblock %}
+
+{% block footer %}
 {% endblock %}
