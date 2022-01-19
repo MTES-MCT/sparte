@@ -141,7 +141,7 @@ class Project(BaseProject):
 
     @property
     def nb_years(self):
-        return int(self.analyse_end_date) - int(self.analyse_start_date) + 1
+        return len(self.years)
 
     @property
     def years(self):
@@ -225,9 +225,6 @@ class Project(BaseProject):
             "unknown": {...},
         }
         """
-        years = list(
-            range(int(self.analyse_start_date), int(self.analyse_end_date) + 1)
-        )
         determinants = {
             "hab": "Habitat",
             "act": "Acitvité",
@@ -236,9 +233,9 @@ class Project(BaseProject):
         }
         results = {f: dict() for f in determinants.values()}
         args = []
-        for year in years:
-            start = str(year - 1)[-2:]
-            end = str(year)[-2:]
+        for year in self.years:
+            start = year[-2:]
+            end = str(int(year) + 1)[-2:]
             for det in determinants.keys():
                 args.append(Sum(f"art{start}{det}{end}"))
         qs = self.get_cerema_cities().aggregate(*args)
