@@ -104,7 +104,7 @@ class BaseProject(models.Model):
 
 class Project(BaseProject):
 
-    ANALYZE_YEARS = [(str(y), str(y)) for y in range(2009, 2021)]
+    ANALYZE_YEARS = [(str(y), str(y)) for y in range(2009, 2020)]
 
     is_public = models.BooleanField("Public", default=False)
 
