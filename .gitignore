@@ -153,3 +153,7 @@ config/migrated
 id_rsa
 carto/media/conso_cerema/
 carto/media/ref_plan/
+
+
+# Identifier file
+*.Identifier
