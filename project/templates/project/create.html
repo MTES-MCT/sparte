@@ -11,7 +11,8 @@ Créer une emprise
 {% endblock %}
 
 {% block content %}
-    <div class="w-100 align-items-center">
+<div class="row w-100 justify-content-center">
+    <div class="col-12 col-md-8 col-lg-6">
         <h2 class="my-5">Nouveau projet</h2>
 
         <form action="{% url 'project:add' %}" method="post" enctype="multipart/form-data">
@@ -20,4 +21,5 @@ Créer une emprise
             <button class="btn w-100 btn-primary mt-4" type="submit">Créer</button>
         </form>
     </div>
+</div>
 {% endblock %}
