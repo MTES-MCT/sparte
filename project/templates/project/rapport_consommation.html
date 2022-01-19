@@ -37,9 +37,9 @@ Rapport consommation
                         Consommé avant {{ start_year }}
                     </div>
                     <div class="card-body">
-                        <p class="figure">{{ initial_surface|intcomma }} ha</p>
+                        <p class="figure">N/A ha</p>
                         <p class="card-text"><small class="text-muted">
-                            {{ initial_percent|floatformat:0 }}% du territoire
+                            N/A% du territoire
                         </small></p>
                     </div>
                 </div>
@@ -49,9 +49,9 @@ Rapport consommation
                         Consommé en {{ end_year }}
                     </div>
                     <div class="card-body">
-                        <p class="figure">{{ final_surface|intcomma }} ha</p>
+                        <p class="figure">N/A ha</p>
                         <p class="card-text"><small class="text-muted">
-                            {{ final_percent|floatformat:0 }}% du territoire
+                            N/A% du territoire
                         </small></p>
                     </div>
                 </div>
@@ -61,9 +61,9 @@ Rapport consommation
                         Progression {{ start_year }} à {{ end_year }}
                     </div>
                     <div class="card-body">
-                        <p class="figure">+{{ pki_progression }} ha</p>
+                        <p class="figure">+N/A ha</p>
                         <p class="card-text"><small class="text-muted">
-                            +{{ pki_progression_percent|floatformat:0 }}% du Territoire
+                            +N/A % du Territoire
                         </small></p>
                     </div>
                 </div>
@@ -141,36 +141,24 @@ Rapport consommation
             </div>
 
             <div class="box scrollme-x p-4">
-                <h3 class="mb-3">SURFACE CONSOMMEE (en ha) :</h3>
+                <h3 class="mb-3">Surface consommée (en ha) :</h3>
                 <table class="table table-striped table-sm table-borderless">
                     <thead>
                         <tr>
-                        {% for col_name in headers %}
-
-                            {% if col_name == "Commune" %}
                             <th scope="col">{{ col_name }}</th>
-                            {% else %}
-                            <th scope="col" style="text-align: right">
-                                {% if col_name == "Progression" %}
-                                <span data-toggle="tooltip" title="Progression de la surface consommée entre 2009 et 2018">Progression</span></th>
-                                {% else %}
-                                {{ col_name }}
-                                {% endif %}
-                            </th>
-                            {% endif %}
-                        {% endfor %}
+                            {% for year in years %}
+                            <th scope="col" style="text-align: right">{{ year }}</th>
+                            {% endfor %}
+                            <th scope="col" style="text-align: right">Total</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {% for city in table_artif %}
+                        {% for city_name, data in communes_data_table.items %}
                         <tr>
-                            <th scope="row">{{ city.name }}</th>
-                            <td align="right">{{ city.before }}</td>
-                            {% for item in city.items %}
-                            <td align="right">{{ item }}</td>
+                            <th scope="row">{{ city_name }}</th>
+                            {% for year, val in data.items %}
+                            <td align="right">+{{ val|floatformat:1 }}</td>
                             {% endfor %}
-                            <td align="right"><strong>{{ city.total }}</strong></td>
-                            <td align="right">+{{ city.progression|floatformat:1 }}%</td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -213,12 +201,7 @@ Highcharts.chart('chart', {
         }
     },
     xAxis: {
-        categories: [
-            {% for x_axis in graph_x_axis %}
-            "{{ x_axis }}",
-            {% endfor %}
-        ],
-        max: {{ graph_max }},
+        type: "category",
     },
     legend: {
         layout: 'horizontal',
@@ -228,20 +211,28 @@ Highcharts.chart('chart', {
     plotOptions: {
         area: {
             stacking: 'normal',
-            lineColor: '#666666',
-            lineWidth: 1,
-            marker: {
-                lineWidth: 1,
-                lineColor: '#666666'
-            }
         }
     },
-    series: [{% for city in table_artif %}
+    series: [{% for city_name, data in communes_data_graph.items %}
     {
-        name: '{{ city.name }}',
-        data: [{% for v in city.items %}{{ v }}, {% endfor %}]
+        name: '{{ city_name }}',
+        data: [{% for name, y in data.items %}{
+            name: "{{ name }}",
+            y: {{ y }},
+        }, {% endfor %}]
     },
-    {% endfor %}],
+    {% endfor %}
+    {
+        name: '{{ project.name }}',
+        type: 'line',
+        data: [
+            {% for y, v in project_data_graph.items %}{ name: "{{y}}", y: {{ v }} },
+            {% endfor %}
+        ],
+        color: '#ff0000',
+        dashStyle: 'ShortDash',
+    }
+    ],
 });
 
 
@@ -364,6 +355,16 @@ Highcharts.chart('chart_determinant', {
                 enabled: false
             },
         },
+        {
+            name: '{{ project.name }}',
+            type: 'line',
+            data: [
+                {% for y, v in project_data_graph.items %}{ name: "{{y}}", y: {{ v }} },
+                {% endfor %}
+            ],
+            color: '#ff0000',
+            dashStyle: 'ShortDash',
+        }
     ],
 });
 </script>
