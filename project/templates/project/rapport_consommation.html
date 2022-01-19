@@ -370,8 +370,8 @@ Highcharts.chart('pie_determinant', {
         text:'Sur la période'
     },
     tooltip: {
-        headerFormat: '<b>{point.x}</b><br/>',
-        pointFormat: '{series.name}: {point.y:.1f} Ha',
+        enabled: false,
+        pointFormat: '{point.name}: {point.y:.1f} Ha',
     },
     legend: {
         layout: 'horizontal',
@@ -396,10 +396,7 @@ Highcharts.chart('pie_determinant', {
             {
                 name: '{{ name }}',
                 y: {{ y }},
-                {% if forloop.first %}
                 sliced: true,
-                selected: true,
-                {% endif %}
             },
             {% endfor %}
             ],
