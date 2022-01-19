@@ -57,6 +57,8 @@ def process_project_with_shape(project_id: int):
         get_cities_from_emprise(project)
         # step 3 - evaluate couverture and usage
         evaluate_couverture_and_usage(project)
+        # all good !
+        project.set_success()
     except Exception as e:
         logger.exception(f"Unknow exception occured in process_project_with_shape: {e}")
         project.set_failed()
@@ -85,6 +87,8 @@ def build_emprise_from_city(project_id: int):
         # step 2 - do not do it, cities have been populated previously
         # step 3 - evaluate couverture and usage
         evaluate_couverture_and_usage(project)
+        # all good !
+        project.set_success()
     except Exception as e:
         logger.exception(f"Unknow exception occured in build_emprise_from_city: {e}")
         project.set_failed()
