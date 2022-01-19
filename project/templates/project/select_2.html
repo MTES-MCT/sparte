@@ -17,7 +17,8 @@ Sélectionner un plan
         <h1 class="mb-5">Diagnostiquer mon territoire 2/2</h1>
 
         <p class="mb-5">
-            Territoire sélectionné : {{ land.name }}
+            Territoires sélectionnés :
+            {% for land in lands %}{% if not forloop.first %}, {% endif %}{{ land.name }}{% endfor %}
         </p>
 
         <p class="mb-5">
