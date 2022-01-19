@@ -60,6 +60,7 @@ urlpatterns = [
         "<int:project_id>/plan/", views.PlanListView.as_view(), name="project-plan-list"
     ),
     path("diagnostic/etape/1", views.SelectPublicProjects.as_view(), name="select"),
+    path("diagnostic/etape/1/city", views.SelectCities.as_view(), name="select-city"),
     path("diagnostic/etape/2", views.SetProjectOptions.as_view(), name="select_2"),
 ]
 

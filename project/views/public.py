@@ -3,7 +3,7 @@ from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView, FormView
 
-from public_data.models import Epci, Departement, Region
+from public_data.models import Epci, Departement, Region, Commune, Land
 from utils.views_mixins import BreadCrumbMixin
 
 from project.forms import EpciForm, DepartementForm, RegionForm, OptionsForm
@@ -17,7 +17,7 @@ class SelectPublicProjects(BreadCrumbMixin, TemplateView):
     def get_context_breadcrumbs(self):
         breadcrumbs = super().get_context_breadcrumbs()
         breadcrumbs.append(
-            {"href": reverse_lazy("project:select"), "title": "Mon diagnostic"},
+            {"href": reverse_lazy("project:select"), "title": "Mon diagnostic 1/2"},
         )
         return breadcrumbs
 
@@ -99,42 +99,123 @@ class SetProjectOptions(BreadCrumbMixin, FormView):
     def get_context_breadcrumbs(self):
         breadcrumbs = super().get_context_breadcrumbs()
         breadcrumbs.append(
-            {"href": reverse_lazy("project:select"), "title": "Mon diagnostic"},
+            {"href": reverse_lazy("project:select"), "title": "Mon diagnostic 2/2"},
         )
         return breadcrumbs
 
     def get_territoire(self):
-        type_territoire, id = self.request.session["public_key"].split("_")
-        if type_territoire == "EPCI":
-            return Epci.objects.get(pk=int(id))
-        elif type_territoire == "DEPART":
-            return Departement.objects.get(pk=int(id))
-        elif type_territoire == "REGION":
-            return Region.objects.get(pk=int(id))
+        public_keys = self.request.session["public_key"]
+        if not isinstance(public_keys, list):
+            public_keys = [public_keys]
+        lands = list()
+        for public_key in public_keys:
+            type_territoire, id = public_key.split("_")
+            if type_territoire == "EPCI":
+                lands.append(Epci.objects.get(pk=int(id)))
+            elif type_territoire == "DEPART":
+                lands.append(Departement.objects.get(pk=int(id)))
+            elif type_territoire == "REGION":
+                lands.append(Region.objects.get(pk=int(id)))
+            elif type_territoire == "COMMUNE":
+                lands.append(Commune.objects.get(pk=int(id)))
+        return lands
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        land = self.get_territoire()
+        lands = self.get_territoire()
+        is_artif_ready = True
+        for land in lands:
+            is_artif_ready &= land.is_artif_ready
         context.update(
             {
-                "land": land,
-                "analysis_artif": land.is_artif_ready,
+                "lands": lands,
+                "analysis_artif": is_artif_ready,
             }
         )
         return context
 
     def form_valid(self, form):
         """If the form is valid, redirect to the supplied URL."""
-        land = self.get_territoire()
+        lands = self.get_territoire()
+        if len(lands) == 1:
+            name = f"Diagnostic de {lands[0].name}"
+            emprise_origin = Project.EmpriseOrigin.WITH_EMPRISE
+        else:
+            name = "Diagnostic de plusieurs communes"
+            emprise_origin = Project.EmpriseOrigin.FROM_CITIES
         project = Project(
-            name=f"Diagnostic de {land.name}",
+            name=name,
             is_public=True,
             analyse_start_date=str(form.cleaned_data["analysis_start"]),
             analyse_end_date=str(form.cleaned_data["analysis_end"]),
             import_status=Project.Status.PENDING,
-            emprise_origin=Project.EmpriseOrigin.WITH_EMPRISE,
+            emprise_origin=emprise_origin,
         )
         project.save()
-        project.emprise_set.create(mpoly=land.mpoly)
+        if len(lands) == 1:
+            project.emprise_set.create(mpoly=lands[0].mpoly)
+        else:
+            project.cities.add(*lands)
         process_project.delay(project.id)
         return redirect(project)
+
+
+class SelectCities(BreadCrumbMixin, TemplateView):
+    template_name = "project/select_1_city.html"
+
+    def get_context_breadcrumbs(self):
+        breadcrumbs = super().get_context_breadcrumbs()
+        breadcrumbs.append(
+            {"href": reverse_lazy("project:select"), "title": "Mon diagnostic 1/2"},
+        )
+        return breadcrumbs
+
+    def setup(self, request, *args, **kwargs):
+        super().setup(request, *args, **kwargs)
+        self.to_remove = self.request.GET.get("remove", None)
+        self.to_add = self.request.GET.get("add", None)
+        self.needle = self.request.GET.get("needle", None)
+        self.public_keys = list()
+        selected = self.request.GET.get("selected_cities", None)
+        if selected:
+            self.public_keys = [c.strip() for c in selected.split(";")]
+        self.select = self.request.GET.get("select", None)
+
+    def get(self, request, *args, **kwargs):
+        # Remove a city selected
+        if self.to_remove and self.to_remove in self.public_keys:
+            i = self.public_keys.index(self.to_remove)
+            self.public_keys.pop(i)
+        # add a new city
+        if self.to_add and self.to_add not in self.public_keys:
+            city = Land(self.to_add)
+            self.public_keys.append(city.public_key)
+        # list city autocompleted
+        if self.needle:
+            autocomplete = [
+                c
+                for c in Commune.search(self.needle)
+                if c.public_key not in self.public_keys
+            ]
+            kwargs.update(
+                {
+                    "autocomplete_cities": autocomplete,
+                }
+            )
+        if self.select:
+            request.session["public_key"] = self.public_keys
+            return redirect("project:select_2")
+        return super().get(request, *args, **kwargs)
+
+    def get_context_data(self, **context):
+        selected_cities = [Land(pk) for pk in self.public_keys]
+        selected_cities_url = f"selected_cities={';'.join(self.public_keys)}"
+        context.update(
+            {
+                "selected_cities": selected_cities,
+                "selected_cities_form": ";".join(self.public_keys),
+                "selected_cities_url": selected_cities_url,
+                "needle": self.needle,
+            }
+        )
+        return super().get_context_data(**context)

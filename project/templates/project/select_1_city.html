@@ -1,0 +1,90 @@
+{% extends 'index.html' %}
+
+{% load static %}
+{% load humanize %}
+{% load i18n %}
+{% load l10n %}
+{% load crispy_forms_tags %}
+
+{% block pagetitle %}
+Sélectionner une ville
+{% endblock %}
+
+{% block content %}
+{% localize off %}
+<div class="d-flex justify-content-center mt-5">
+    <div class="col-lg-6 col-md-8 col-12">
+
+        <h1 class="mb-5">Diagnostiquer mon territoire 1/2</h1>
+
+        <p class="mb-5">
+            Sélectionner les villes qui constitueront votre territoire. Vous pouvez également <a href="{% url 'project:select' %}">sélectionner une région administrative via cet autre formulaire</a>.
+        </p>
+
+        <div class="container">
+
+            <div class="row g-2">
+                <div class="col-8">
+                    <div class="border p-3 h-100">
+
+                        <form class="row align-items-center" action="" method="get">
+                            {% csrf_token %}
+                            <input type="hidden" name="selected_cities" id="id_selected_cities" value="{{ selected_cities_form }}">
+                            <label class="visually-hidden" for="inlineFormInputGroupUsername">Mot clé</label>
+                            <div class="input-group">
+                                <div class="input-group-text"><i class="bi bi-search"></i></div>
+                                <input type="text" name="needle" class="form-control" id="id_city">
+                                <button type="submit" class="btn btn-primary">Chercher</button>
+                            </div>
+                        </form>
+
+
+                        <div class="d-flex flex-column mt-3">
+                            {% for city in autocomplete_cities %}
+                            <div class="w-100">
+                                {{ city.name }}
+                                <a href="{% url 'project:select-city' %}?add={{city.public_key}}&{{ selected_cities_url }}&needle={{ needle }}">
+                                    <i class="bi bi-arrow-right-circle float-end text-success"></i>
+                                </a>
+                            </div>
+                            {% empty %}
+                            <div class="text-muted">Pour trouver des communes, tapper une partie du nom dans le champ de recherche ci-dessus.</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-4">
+                    <div class="border p-3 h-100">
+                        <div class="d-flex flex-column">
+                            {% for city in selected_cities %}
+                            <div class="w-100">
+                                {{ city.name }}
+                                <a href="{% url 'project:select-city' %}?remove={{city.public_key}}&{{ selected_cities_url }}">
+                                    <i class="bi bi-trash float-end text-danger"></i>
+                                </a>
+                            </div>
+                            {% empty %}
+                            <div class="text-muted">Aucune</div>
+                            {% endfor %}
+                        </div>
+                        <div class="text-center mt-3">
+                            <a class="btn {% if not selected_cities %}btn-outline-secondary disabled{% else %}btn-primary{% endif %}" href="{% url 'project:select-city' %}?{{ selected_cities_url }}&select=true" role="button">Sélectionner {{ selected_cities|length }} communes</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endlocalize %}
+{% endblock %}
+
+{% block bodyend %}
+<script language="javascript">
+$('#id_region').on('change', function(){ $(this).closest('form').submit() })
+$('#id_departement').on('change', function(){ $(this).closest('form').submit() })
+$('#id_epci').on('change', function(){ $(this).closest('form').submit() })
+</script>
+{% endblock %}
