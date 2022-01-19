@@ -240,7 +240,7 @@ class Project(BaseProject):
                 args.append(Sum(f"art{start}{det}{end}"))
         qs = self.get_cerema_cities().aggregate(*args)
         for key, val in qs.items():
-            if val:
+            if val is not None:
                 year = f"20{key[3:5]}"
                 det = determinants[key[5:8]]
                 results[det][year] = val / 10000
