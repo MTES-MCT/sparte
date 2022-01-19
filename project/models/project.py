@@ -273,7 +273,9 @@ class Project(BaseProject):
         fields = Cerema.get_art_field(self.analyse_start_date, self.analyse_end_date)
         args = (Sum(field) for field in fields)
         qs = qs.aggregate(*args)
-        return {f"20{key[3:5]}": val / 10000 for key, val in qs.items() if val}
+        return {
+            f"20{key[3:5]}": val / 10000 for key, val in qs.items() if val is not None
+        }
 
     def get_city_conso_per_year(self):
         """Return year artificialisation of each city in the project, on project
