@@ -958,7 +958,7 @@ class Cerema(AutoLoadMixin, DataColorationMixin, models.Model):
             raise ValueError("'end' must be between 2010 and 2020")
         if end < start:
             raise ValueError("start must be <= to end")
-        return [f"naf{i-1:0>2}art{i:0>2}" for i in range(start, end + 1)]
+        return [f"naf{i:0>2}art{i+1:0>2}" for i in range(start, end + 1)]
 
     @classmethod
     def list_attr(cls):
