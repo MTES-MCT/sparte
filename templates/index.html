@@ -116,17 +116,37 @@
                 </nav>
 
                 <!-- Page content-->
-                <main class="p-0 flex-grow-1" style="overflow: auto;">
-                    {% block content %}
-                    <div class="row align-items-center justify-content-center h-100 w-100 mr-0 ml-0">
-                        <div class="col-12 col-md-5 col-lg-4" style="width:450px;">
-                            <h2 class="mb-5">Bonjour {{ user.greetings }} !</h2>
-                            <p>La première étape pour utiliser SPARTE est de créer un PROJET :
-                            <br/><a class="btn btn-primary" href="{% url 'project:add' %}" role="button">Créer un projet</a></p>
+                <main class="p-0 flex-grow-1 d-flex flex-column" style="overflow: auto;">
+                    <div class="mb-5">
+                        {% block content %}
+                        <div class="row justify-content-center w-100 my-0">
+                            <div class="col-12 col-md-5 col-lg-4" style="width:450px;">
+                                <h2 class="mb-5">Bonjour {{ user.greetings }} !</h2>
+                                <p>La première étape pour utiliser SPARTE est de créer un PROJET :
+                                <br/><a class="btn btn-primary" href="{% url 'project:add' %}" role="button">Créer un projet</a></p>
+                            </div>
+                        </div>
+                        {% endblock %}
+                    </div>
+                    <!-- Footer-->
+                    {% block footer %}
+                    <div id="footer" class="bg-light border-top py-5 flex-grow-1">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-2">
+                                    <img class="w-100" src="{% static 'img/logo_france.png' %}" alt="Logo France Marianne"/>
+                                </div>
+                                <div class="col-10">
+                                    <p class="mt-5">Faites nous part de vos propositions pour améliorer ce service : <a href="mailto:sparte@beta.gouv.fr">sparte@beta.gouv.fr</a></p>
+                                    <p class="text-muted">SPARTE est incubée chez beta Gouv.</p></div>
+                            </div>
                         </div>
                     </div>
-                    {% endblock %}
+                    {% endblock footer %}
                 </main>
+
+
+
             </div>
 
         <script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>
