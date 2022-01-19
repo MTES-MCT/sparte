@@ -122,8 +122,8 @@ Rapport consommation
                         <h3>Analyse {{ start_year }} à {{ end_year }}</h3>
                         <p>
                             <strong>Consommé sur la période</strong> : +{{ project_scope.consummed|floatformat:1 }} ha
-                            <br/><strong>Conso. annuelle moyenne</strong> : +{{ project_scope.annual_avg|floatformat:1 }} Ha
-                            <br/><strong>Projection 2031 à ce rythme</strong> : +{{ project_scope.forecast_2031|floatformat:1 }} Ha
+                            <br/><strong>Conso. annuelle moyenne</strong> : +{{ project_scope.annual_avg|floatformat:1 }} Ha <i class="bi bi-question-circle" data-toggle="tooltip" title="Conso sur la période ({{ project_scope.consummed|floatformat:1 }}) / années sur la période ({{ project_scope.nb_years }})"></i>
+                            <br/><strong>Projection 2031 à ce rythme</strong> : +{{ project_scope.forecast_2031|floatformat:1 }} Ha <i class="bi bi-question-circle" data-toggle="tooltip" title="Années jusqu'à 2031 ({{ project_scope.nb_years_before_31 }}) x conso annuelle moyenne({{ project_scope.annual_avg|floatformat:1 }})"></i>
                             <br/>&nbsp;
                         </p>
                     </div>
