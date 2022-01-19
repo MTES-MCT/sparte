@@ -1099,6 +1099,10 @@ class Commune(LandMixin, GetDataFromCeremaMixin, models.Model):
     def public_key(self):
         return f"COMMUNE_{self.id}"
 
+    @property
+    def is_artif_ready(self):
+        return self.departement.is_artif_ready
+
     def get_qs_cerema(self):
         return Cerema.objects.filter(city_insee=self.insee)
 
