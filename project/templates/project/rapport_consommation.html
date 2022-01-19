@@ -168,7 +168,15 @@ Rapport consommation
 
             <div class="w-100 box p-4">
                 <h3>Déterminants de la consommation</h3>
-                <div id="chart_determinant" class="flex-fill"></div>
+                <div class="row">
+                    <div class="col-4 border-end">
+                        <div id="pie_determinant"></div>
+                    </div>
+                    <div class="col-8">
+                        <div id="chart_determinant"></div>
+                    </div>
+                </div>
+
             </div>
 
             <div class="box alert">
@@ -280,14 +288,14 @@ Highcharts.chart('chart_2', {
 
 
 ///////////////////////////////
-// DETERMINANT
+// DETERMINANT STACKED COLUMN
 ///////////////////////////////
 Highcharts.chart('chart_determinant', {
     chart: {
         type: 'column'
     },
     title:{
-        text:''
+        text:'Par an'
     },
     yAxis: {
         title: {
@@ -338,24 +346,6 @@ Highcharts.chart('chart_determinant', {
         },
         {% endfor %}
         {
-            type: 'pie',
-            name: 'Total',
-            data: [
-            {% for name, y in pie_data_determinant.items %}
-            {
-                name: '{{ name }}',
-                y: {{ y }},
-
-            },
-            {% endfor %}
-            ],
-            center: [55, 55],
-            size: 100,
-            dataLabels: {
-                enabled: false
-            },
-        },
-        {
             name: '{{ project.name }}',
             type: 'line',
             data: [
@@ -367,23 +357,56 @@ Highcharts.chart('chart_determinant', {
         }
     ],
 });
-</script>
-{% if debug %}
-<pre>
-<code>
-series: [
-    {% for land_name, data in comparison_data_graph.items %}
-    {
-        name: '{{ land_name }}',
-        data: [
-            {% for y, v in data.items %}{ name: "{{y}}", y: {{ v }} },
-            {% endfor %}
-        ],
+
+
+///////////////////////////////
+// DETERMINANT PIE
+///////////////////////////////
+Highcharts.chart('pie_determinant', {
+    chart: {
+        type: 'pie'
     },
-    {% endfor %}
-],
-</code>
-</pre>
-{% endif %}
+    title:{
+        text:'Sur la période'
+    },
+    tooltip: {
+        headerFormat: '<b>{point.x}</b><br/>',
+        pointFormat: '{series.name}: {point.y:.1f} Ha',
+    },
+    legend: {
+        layout: 'horizontal',
+        align: 'center',
+        verticalAlign: 'top'
+    },
+    plotOptions: {
+        pie: {
+            allowPointSelect: true,
+            cursor: 'pointer',
+            dataLabels: {
+                enabled: true,
+                format: '<b>{point.name}</b>: {point.y:.1f} Ha'
+            }
+        }
+    },
+    series: [
+        {
+            name: 'Déterminants',
+            data: [
+            {% for name, y in pie_data_determinant.items %}
+            {
+                name: '{{ name }}',
+                y: {{ y }},
+                {% if forloop.first %}
+                sliced: true,
+                selected: true,
+                {% endif %}
+            },
+            {% endfor %}
+            ],
+        },
+    ],
+});
+</script>
+
 {% endlocalize %}
 {% endblock %}
