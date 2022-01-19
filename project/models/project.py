@@ -144,6 +144,16 @@ class Project(BaseProject):
         return int(self.analyse_end_date) - int(self.analyse_start_date) + 1
 
     @property
+    def years(self):
+        return [
+            str(y)
+            for y in range(
+                int(self.analyse_start_date),
+                int(self.analyse_end_date) + 1,
+            )
+        ]
+
+    @property
     def nb_years_before_2031(self):
         return 2031 - int(self.analyse_end_date)
 
@@ -267,6 +277,30 @@ class Project(BaseProject):
         args = (Sum(field) for field in fields)
         qs = qs.aggregate(*args)
         return {f"20{key[3:5]}": val / 10000 for key, val in qs.items() if val}
+
+    def get_city_conso_per_year(self):
+        """Return year artificialisation of each city in the project, on project
+        time scope
+
+        {
+            "city_name": {
+                "2015": 10,
+                "2016": 12,
+                "2017": 9,
+            },
+        }
+        """
+        results = dict()
+        qs = self.get_cerema_cities()
+        fields = Cerema.get_art_field(self.analyse_start_date, self.analyse_end_date)
+        for city in qs:
+            results[city.city_name] = dict()
+            total = 0
+            for field in fields:
+                val = getattr(city, field) / 10000
+                total += val
+                results[city.city_name][f"20{field[3:5]}"] = val
+        return results
 
     def get_look_a_like_conso_per_year(self):
         """Return same data as get_conso_per_year but for land listed in
