@@ -3,6 +3,7 @@ import re
 
 from django.contrib.gis.db import models
 from django.contrib.gis.db.models.functions import Intersection, Area, Transform
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models as classic_models
 from django.db.models import F, Sum, Q
@@ -1129,8 +1130,8 @@ class Land:
         klass = self.get_land_class(land_type)
         try:
             self.land = klass.objects.get(pk=int(id))
-        except klass.DoesNotExists as e:
-            raise Exception("Public key unknown") from e
+        except ObjectDoesNotExist as e:
+            raise Exception(f"Public key '{id}' unknown") from e
 
     def get_conso_per_year(self, start="2010", end="2020"):
         return self.land.get_conso_per_year(start, end)
