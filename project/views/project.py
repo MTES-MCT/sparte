@@ -196,9 +196,14 @@ class ProjectReportConsoView(GroupMixin, DetailView):
         # communes_data_graph
         communes_data_graph = project.get_city_conso_per_year()
         communes_data_table = dict()
+        total = dict()
         for city, data in communes_data_graph.items():
             communes_data_table[city] = data.copy()
             communes_data_table[city]["total"] = sum(data.values())
+            for year, val in data.items():
+                total[year] = total.get(year, 0) + val
+        total["total"] = sum(total.values())
+        communes_data_table["Total"] = total
 
         return {
             **super().get_context_data(**kwargs),
@@ -228,6 +233,8 @@ class ProjectReportConsoView(GroupMixin, DetailView):
             "project_scope": {
                 "consummed": current_conso,
                 "annual_avg": current_conso / project.nb_years,
+                "nb_years": project.nb_years,
+                "nb_years_before_31": project.nb_years_before_2031,
                 "forecast_2031": project.nb_years_before_2031
                 * current_conso
                 / project.nb_years,
