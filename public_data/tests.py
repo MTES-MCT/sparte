@@ -112,3 +112,18 @@ class TestArtifCommune:
         expected = [0, 0.01, 0.1] + list(range(1, 9))
         expected = list(map(lambda x: round(Decimal(x / 100), 4), expected))
         assert commune.list_percent() == expected
+
+
+@pytest.mark.django_db
+class TestCerema:
+    def test_get_art_fields(self):
+        fields = models.Cerema.get_art_field(2015, 2018)
+        assert fields == ["naf15art16", "naf16art17", "naf17art18", "naf18art19"]
+        fields = models.Cerema.get_art_field(2014, 2014)
+        assert fields == ["naf14art15"]
+        with pytest.raises(ValueError):
+            models.Cerema.get_art_field(2008, 2019)
+        with pytest.raises(ValueError):
+            models.Cerema.get_art_field(2009, 2020)
+        with pytest.raises(ValueError):
+            models.Cerema.get_art_field(2019, 2009)
