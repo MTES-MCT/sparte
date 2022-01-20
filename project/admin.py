@@ -2,7 +2,7 @@ from django.contrib.gis import admin
 from django.http import HttpResponseRedirect
 
 from .models import Project, Emprise, Plan, PlanEmprise
-from .tasks import process_new_project, process_new_plan
+from .tasks import process_project, process_new_plan
 
 
 @admin.register(Project)
@@ -20,7 +20,7 @@ class ProjectAdmin(admin.GeoModelAdmin):
     search_fields = (
         "name",
         "import_error",
-        "user",
+        "user__email",
     )
     ordering = ("name",)
     filter_horizontal = ("cities",)
@@ -29,7 +29,7 @@ class ProjectAdmin(admin.GeoModelAdmin):
     def response_change(self, request, obj):
         if "_reload-emprise-action" in request.POST:
             # Trigger asynch task to reload emprise file
-            process_new_project.delay(obj.id)
+            process_project.delay(obj.id)
             return HttpResponseRedirect(".")  # stay on the same detail page
         return super().response_change(request, obj)
 

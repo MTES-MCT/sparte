@@ -12,21 +12,22 @@ En cours de traitement
 {% endblock %}
 
 {% block content %}
-<div style="width:750px;">
-    <h3>L'importation de l'emprise a échouée</h3>
+<div class="row w-100 justify-content-center">
+    <div class="col-12 col-md-8 col-lg-6">
+        <h1 class="my-5">L'importation de l'emprise a échouée</h1>
 
-    <form action="{% url 'project:reinit' project.pk %}" method="post">
-        {% csrf_token %}
-        <button class="btn w-100 btn-warning mt-4" type="submit">Paramétrer une nouvelle emprise</button>
-    </form>
+        <p class="fw-bold">Détail du problème rencontré:</p>
+        <p>
+            Nom du fichier : {{ project.shape_file.name }}
+            <br/>Date import : {{ project.import_date|date:"d.m.Y_H:i:s" }}
+            <br/>Stack trace:
+            <br/><pre>{{ project.import_error }}</pre>
+        </p>
 
-    <p>Détail du problème rencontré:</p>
-    <p>
-        Nom du fichier : {{ project.shape_file.name }}
-        <br/>Date import : {{ project.import_date|date:"d.m.Y_H:i:s" }}
-        <br/>Stack trace:
-        <br/><pre>{{ project.import_error }}</pre>
-    </p>
+        <form action="{% url 'project:reinit' project.pk %}" method="post">
+            {% csrf_token %}
+            <button class="btn w-100 btn-warning mt-4" type="submit">Paramétrer une nouvelle emprise</button>
+        </form>
 </div>
 {% endblock %}
 

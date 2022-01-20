@@ -1,0 +1,161 @@
+{% extends 'index.html' %}
+
+{% load static %}
+{% load project_tags %}
+{% load humanize %}
+{% load i18n %}
+{% load l10n %}
+
+{% block pagetitle %}
+Rapport synthèse consommation d'espace et artificialisation
+{% endblock %}
+
+{% block headers %}
+<link href="{% static 'project/css/project.css' %}" rel="stylesheet" />
+{% endblock %}
+
+{% block content %}
+<div class="px-4">
+    {% include "project/detail_menu.html" %}
+
+    <div class="bg-light p-5 rounded-5 border">
+
+        <div class="box box-alert px-4 py-2 mb-4 mt-0">
+            <p>L'objectif ZAN (Zéro Artificialisation Nette) de la Loi Climat & Résilience recommande :</p>
+            <ul>
+                <li>entre 2021 et 2031, de diviser par 2 la consommation d'espace mesurée entre 2011 et 2021</li>
+                <li>d'ici 2050 : d'atteindre un taux d'artificialisation nette égal à 0, soit un équilibre entre artificialisation des sols et renaturation</li>
+            </ul>
+            <p>La page de synthèse reprend les indicateurs clés au regard de la trajectoire ZAN.</p>
+        </div>
+
+        <div class="box px-4 py-2 clearfix">
+
+            <h3>Bilan de la consommation d'espace</h3>
+
+            <div class="card key-figure key-figure-green">
+                <div class="card-header">
+                    Bilan consommation d'espace 2010-2020
+                </div>
+                <div class="card-body">
+                    <p class="figure">+{{ conso_10_years|floatformat:1 }} ha</p>
+                </div>
+            </div>
+
+            <div class="card key-figure key-figure-green">
+                <div class="card-header">
+                    Horizon 2030 pour la consommation d'espace
+                </div>
+                <div class="card-body">
+                    <p class="figure">+{{ trajectoire_2030|floatformat:1 }} ha</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="box px-4 py-2 clearfix">
+
+            <h3>Bilan de l'artificialisation nette entre 2015 et 2018</h3>
+
+            <div class="clearfix">
+                <div class="card key-figure key-figure-yellow">
+                    <div class="card-header">
+                        Taux d'artificialisation nette
+                    </div>
+                    <div class="card-body">
+                        <p class="figure">xxx ha</p>
+                    </div>
+                </div>
+
+                <div class="card key-figure key-figure-yellow">
+                    <div class="card-header">
+                        Total artificialisation
+                    </div>
+                    <div class="card-body">
+                        <p class="figure">xxx ha</p>
+                    </div>
+                </div>
+
+                <div class="card key-figure key-figure-yellow">
+                    <div class="card-header">
+                        Total renaturation
+                    </div>
+                    <div class="card-body">
+                        <p class="figure">xxx ha</p>
+                    </div>
+                </div>
+            </div>
+
+            <p class="mt-2"><strong>Objectif 2050 :</strong> Zéro Artificialisation Nette</p>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
+
+{% block bodyend %}
+{% localize off %}
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/data.js"></script>
+<script src="https://code.highcharts.com/modules/heatmap.js"></script>
+<script src="https://code.highcharts.com/modules/treemap.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script language="javascript">
+points_2015 = [
+    {% for data in data_covers %}
+    {
+        id: "{{ data.code }}",
+        {% if data.parent %}
+        parent: "{{ data.parent.code }}",
+        {% endif %}
+        name: "CS{{ data.code }} {{ data.label }}",
+        value: {{ data.total_surface.2015 }},
+        color: "{{ data.map_color }}",
+    },
+    {% endfor %}
+]
+
+Highcharts.chart('chart', {
+    series: [{
+        type: 'treemap',
+        layoutAlgorithm: 'squarified',
+        allowDrillToNode: true,
+        animationLimit: 1000,
+        dataLabels: {
+            enabled: true
+        },
+        levels: [{
+            level: 1,
+            dataLabels: {
+                enabled: true
+            },
+            borderWidth: 3,
+            levelIsConstant: false
+        }, {
+            level: 1,
+            dataLabels: {
+                style: {
+                    fontSize: '14px'
+                }
+            }
+        }],
+        data: points_2015
+    }],
+    subtitle: {
+        text: 'Cliquer pour voir le détail'
+    },
+    title: {
+        text: "",
+        floating: true,
+    },
+    plotOptions: {
+        treemap: {
+            tooltip:{
+                valueSuffix: ' Ha',
+                valueDecimals: 0
+            },
+        },
+    },
+});
+</script>
+{% endlocalize %}
+{% endblock %}

@@ -39,6 +39,8 @@ class ConsommationDataframe:
         self.df_final = self.add_progression_columns(self.df_final)
         # reorder index and columns
         self.df_final = self.reorder_index(self.df_final)
+        # replace np.nan by "" (empty)
+        self.df_final = self.df_final.fillna("")
 
         return self.df_final.T
 
@@ -67,7 +69,8 @@ class ConsommationDataframe:
         index = ArtifCommune.list_attr()
         # do not use self.indexes that does not conserve order
         self.raw_df = DataFrame(0, index=index, columns=list())
-        for city in self.project.cities.all():
+        code_insee = self.project.cities.all().values_list("insee", flat=True)
+        for city in ArtifCommune.objects.filter(insee__in=code_insee):
             self.raw_df[city.name] = city.list_artif()
 
     def add_previous_years_sum_row(self, df: DataFrame) -> DataFrame:

@@ -1,0 +1,87 @@
+{% extends 'index.html' %}
+
+{% load static %}
+{% load humanize %}
+{% load i18n %}
+{% load l10n %}
+{% load crispy_forms_tags %}
+
+{% block pagetitle %}
+Sélectionner un plan
+{% endblock %}
+
+{% block content %}
+{% localize off %}
+<div class="d-flex justify-content-center mt-5">
+    <div class="col-lg-6 col-md-8 col-12">
+        <h1 class="mb-5">Diagnostiquer mon territoire 1/2</h1>
+
+        <p class="mb-5">
+            Veuillez sélectionner un territoire à diagnostiquer. Vous pouvez sélectionner une région, un département ou un EPCI. Utilisez le formulaire ci-dessous pour réaliser votre sélection.
+            Vous pouvez aussi <a href="{% url 'project:select-city' %}">sélectionner une liste de communes</a>.
+        </p>
+
+        <div class="card border">
+            <div class="card-header fs-4">
+                <strong>Territoire sélectionné :</strong>
+            </div>
+            <div class="card-body">
+                <form action="" method="get">
+                    {% csrf_token %}
+
+                    <p class="fs-4 mt-3">
+                    {% if region_form %}
+                        <span class="fs-6">{{ region_form.region }}</span>
+                    {% else %}
+                        {{ region.name }}
+                        <a href="{% url 'project:select' %}"><i class="bi bi-x-circle-fill fs-6 ms-1"></i></a>
+                        >
+                        {% if departement_form %}
+                            <span class="fs-6">{{ departement_form.departement }}</span>
+                        {% else %}
+                            {{ departement.name}}
+                            <a href="{% url 'project:select' %}?region={{ region.id }}"><i class="bi bi-x-circle-fill fs-6 ms-1"></i></a>
+                            >
+                            {% if epci %}
+                                {{ epci.name}}
+                                <a href="{% url 'project:select' %}?departement={{ departement.id }}"><i class="bi bi-x-circle-fill fs-6 ms-1"></i></a>
+                            {% else %}
+                                <span class="fs-6">{{ epci_form.epci }}</span> {{ epci_form.departement }}
+                            {% endif %}
+                        {% endif %}
+                    {% endif %}
+                </p>
+                </form>
+
+                    {% for message in messages %}
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                    <p class="mt-5">
+
+                        <a href="{% url 'project:select' %}?see_diagnostic=True&departement={{ departement.id }}&region={{ region.id }}&epci={{ epci.id }}"
+                            {% if region or departement or epci %}
+                                class="btn btn-primary w-100"
+                            {% else %}
+                                class="btn w-100 btn-secondary disabled"
+                            {% endif %}
+                        >Voir le diagnostic</a>
+
+                    </p>
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endlocalize %}
+{% endblock %}
+
+{% block bodyend %}
+<script language="javascript">
+$('#id_region').on('change', function(){ $(this).closest('form').submit() })
+$('#id_departement').on('change', function(){ $(this).closest('form').submit() })
+$('#id_epci').on('change', function(){ $(this).closest('form').submit() })
+</script>
+{% endblock %}

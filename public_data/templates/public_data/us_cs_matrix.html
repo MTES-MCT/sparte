@@ -5,8 +5,9 @@
 {% block pagetitle %}Matrice de compréhension des sols{% endblock %}
 
 {% block content %}
-<div class="h-100 justify-content-center p-3">
-    <h2>Matrice de qualification des sols</h2>
+<div class="justify-content-center mt-5 px-3">
+
+    <h1 class="mb-5 fw-bold text-center">Matrice de qualification des sols</h1>
 
     <p>Cette matrice croise les référentiels Couverture Des Sol et Usage Des
     Sols. Chaque intersection indique si le sol est artificiel, consommé
@@ -21,6 +22,11 @@
     but de démontrer la pertinence de SPARTE. La matrice sera mise à jour dès
     qu'une information officielle sera publiée.</p>
 
-    <p>{{ matrix|safe }}</p>
+    <div class="table table-responsive">
+        {{ matrix|safe }}
+    </div>
+
+</div>
+
 </div>
 {% endblock %}

@@ -6,7 +6,7 @@
 
 {% block content %}
 
-<div class="row align-items-center justify-content-center h-100 mr-0 ml-0">
+<div class="d-flex justify-content-center mt-5">
     <div class="col-12 col-md-5 col-lg-4">
         {% for message in messages %}
         <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
@@ -15,7 +15,7 @@
         </div>
         {% endfor %}
 
-        <h1 class="mb-3 fw-bold text-center">{{ title }}</h1>
+        <h1 class="mb-5 fw-bold text-center">{{ title }}</h1>
 
         <form action="" method="post">
             {% csrf_token %}

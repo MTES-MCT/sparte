@@ -6,8 +6,11 @@ from .models import (
     Artificielle2018,
     CommunesSybarval,
     CouvertureSol,
+    Departement,
     EnveloppeUrbaine2018,
+    Epci,
     Ocsge,
+    Region,
     Renaturee2018to2015,
     Sybarval,
     Voirie2018,
@@ -56,17 +59,13 @@ class Artificialisee2015to2018Serializer(serializers.GeoFeatureModelSerializer):
 
 
 class Artificielle2018Serializer(serializers.GeoFeatureModelSerializer):
-    couverture = s.SerializerMethodField()
+    # couverture = s.SerializerMethodField()
 
     def get_couverture(self, obj):
         return get_label(code=obj.couverture, label=obj.couverture_label)
 
     class Meta:
-        fields = (
-            "id",
-            "surface",
-            "couverture",
-        )
+        fields = ("id",)
         geo_field = "mpoly"
         model = Artificielle2018
 
@@ -80,7 +79,13 @@ class CommunesSybarvalSerializer(serializers.GeoFeatureModelSerializer):
         fields = (
             "nom",
             "code_insee",
+            "arrondisst",
+            "depart",
+            "region",
+            "_nom_epci",
+            "_nom_scot",
             "surface",
+            "d_brute_20",
         )
         geo_field = "mpoly"
         model = CommunesSybarval
@@ -93,11 +98,7 @@ class EnveloppeUrbaine2018Serializer(serializers.GeoFeatureModelSerializer):
         return get_label(code=obj.couverture, label=obj.couverture_label)
 
     class Meta:
-        fields = (
-            "id",
-            "couverture",
-            "surface",
-        )
+        fields = ("id",)
         geo_field = "mpoly"
         model = EnveloppeUrbaine2018
 
@@ -229,3 +230,37 @@ class UsageSolSerializer(serializers.ModelSerializer):
             "label",
         )
         model = UsageSol
+
+
+class RegionSerializer(serializers.GeoFeatureModelSerializer):
+    class Meta:
+        fields = (
+            "id",
+            "source_id",
+            "name",
+        )
+        model = Region
+        geo_field = "mpoly"
+
+
+class DepartementSerializer(serializers.GeoFeatureModelSerializer):
+    class Meta:
+        fields = (
+            "id",
+            "source_id",
+            "name",
+            "region_id",
+        )
+        model = Departement
+        geo_field = "mpoly"
+
+
+class EpciSerializer(serializers.GeoFeatureModelSerializer):
+    class Meta:
+        fields = (
+            "id",
+            "source_id",
+            "name",
+        )
+        model = Epci
+        geo_field = "mpoly"

@@ -1,7 +1,9 @@
 {% extends 'index.html' %}
 
 {% load static %}
-{% load map_tags %}
+{% load humanize %}
+{% load i18n %}
+{% load l10n %}
 
 {% block pagetitle %}
 Carte intéractive
@@ -39,29 +41,28 @@ Carte intéractive
     </style>
 {% endblock %}
 
-{% block content %}
-<div class="d-flex flex-column flex-fill h-100" style="overflow:auto;">
+{% block carto %}
+<div class="d-flex h-100" style="overflow:auto;">
     <div id="mapid" class="flex-grow-1"></div>
 </div>
 {% endblock %}
 
-{% block top_bar_title %}
+{% block sub_bar_actions %}
     {{ block.super }}
     <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="dropdownMenuButton1" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+        <a class="dropdown-toggle btn btn-sm btn-outline-primary" href="#" id="dropdownMenuButton1" role="button" data-bs-toggle="dropdown" aria-expanded="false">
             Calques
         </a>
-        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton1">
             <form class="px-4 py-3" id="layer_list" style="width:350px;"></form>
         </ul>
     </li>
 {% endblock %}
 
 {% block bodyend %}
+{% localize off %}
 <script src="{% static 'carto/js/map.js' %}"></script>
-
 <script language="javascript">
-
 geolayers = [
 {% for layer in layer_list %}
     {
@@ -71,8 +72,11 @@ geolayers = [
     },
 {% endfor %}
 ]
-
 let carto = new Carto ([{{ center_lat }}, {{ center_lng }}], {{ default_zoom }})
 carto.init(geolayers)
 </script>
+{% endlocalize %}
+{% endblock %}
+
+{% block footer %}
 {% endblock %}

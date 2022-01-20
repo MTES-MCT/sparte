@@ -4,11 +4,45 @@ from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView, FormView
 
+from utils.views_mixins import BreadCrumbMixin
+
 from .forms import DisplayOcsgeForm
 
 
-class HomeConnected(LoginRequiredMixin, TemplateView):
+class SelectTerritory(TemplateView):
+    template_name = "carto/select.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update(
+            {
+                # center map on France
+                "carto_name": "OCSGE 2015",
+                "center_lat": 46.227638,
+                "center_lng": 2.213749,
+                "default_zoom": 6,
+                "layer_list": [
+                    {
+                        "name": "Region",
+                        "url": reverse_lazy("public_data:region-list"),
+                        "display": True,
+                        "level": "4",
+                        "fit_map": True,
+                    },
+                ],
+            }
+        )
+        return context
+
+
+class HomeConnected(BreadCrumbMixin, LoginRequiredMixin, TemplateView):
     template_name = "index.html"
+
+    def get_context_breadcrumbs(self):
+        return [
+            {"href": reverse_lazy("home:home"), "title": "Accueil"},
+            {"href": reverse_lazy("carto:home_connected"), "title": "connecté"},
+        ]
 
 
 @login_required
@@ -32,7 +66,7 @@ def arcachon(request):
                 "display": False,
             },
             {
-                "name": "Communes SYBARVAL",
+                "name": "Communes SYBARVAL",  # TODO Remplacer par Commune ? Par RefPlan ?
                 "url": reverse_lazy("public_data:communessybarval-list"),
                 "display": False,
             },
@@ -63,6 +97,10 @@ def arcachon(request):
         ],
     }
     return render(request, "carto/full_carto.html", context=context)
+
+
+class OrthoMapView(LoginRequiredMixin, TemplateView):
+    template_name = "carto/ortho.html"
 
 
 class Ocsge2015MapView(LoginRequiredMixin, TemplateView):

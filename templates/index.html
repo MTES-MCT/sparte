@@ -12,52 +12,65 @@
         <!-- Core theme CSS (includes Bootstrap)-->
         <link href="{% static 'css/styles.css' %}" rel="stylesheet" />
         <!-- Bootstrap icon -->
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+        <link rel="stylesheet" href="{% static 'icons/bootstrap-icons.css' %}">
         <!-- subtemplate header injection -->
         {% block headers %}{% endblock %}
     </head>
     <body style="overflow: hidden; height: 100vh;">
-        <div id="wrapper" class="d-flex p-0 h-100" >
-            <!-- Sidebar-->
-            <div class="border-end bg-white" id="sidebar-wrapper">
-                <div class="sidebar-heading border-bottom bg-light text-center">
-                    <a href="{% url 'home' %}" class="text-decoration-none">SPARTE</a>
-                </div>
-                <div class="list-group list-group-flush">
-                    {% if user.is_authenticated %}
-                    <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'project:list' %}">Mes projets</a>
-                        {% if is_staff %}
-                        <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'project:plan-list' %}">Mes plans (beta)</a>
-                        <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'admin:index' %}">Espace administrateur</a>
-                        {% endif %}
-                    {% endif %}
-                    <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'public_data:matrix' %}">Matrice d'occupation des sols</a>
-                    <a class="list-group-item list-group-item-action list-group-item-light p-3" href="{% url 'carto:ocsge' %}">Carte Ocsge Sybarval</a>
-                </div>
-            </div>
+
+
             <!-- Page content wrapper-->
-            <div id="page-content-wrapper" class="flex-grow-1 p-0 d-flex flex-column ">
+            <div id="page-content-wrapper" class="d-flex flex-column h-100">
                 <!-- Top navigation-->
                 <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
                     <div class="container-fluid">
-                        <button class="btn btn-light" id="sidebarToggle"><i class="bi bi-list"></i></button>
+                        <img src="{% static 'Logo_de_la_Republique_francaise.png' %}" height="30"/>
+                        <a class="navbar-brand ms-2" href="{% url 'home:home' %}">SPARTE</a>
+
                         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
 
-                        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                        <div class="collapse navbar-collapse justify-content-between" id="navbarSupportedContent">
 
-                            <ul class="navbar-nav mx-auto mt-2 mt-lg-0">
-                                {% block top_bar_title %}
-                                {% include "project/project_menu.html" %}
-                                {% endblock %}
+                            <ul class="navbar-nav ms-0 mt-2 mt-lg-0">
+
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" id="DropdownPlan" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Plans d'aménagement</a>
+                                    <div class="dropdown-menu" aria-labelledby="DropdownPlan">
+                                        <a class="dropdown-item" href="{% url 'project:select' %}">Plans publics</a>
+                                        {% if user.is_authenticated %}
+                                        <hr class="dropdown-divider" />
+                                        <a class="dropdown-item" href="{% url 'project:add' %}">Nouveau</a>
+                                        <a class="dropdown-item" href="{% url 'project:list' %}">Ouvrir</a>
+                                        {% endif %}
+                                    </div>
+                                </li>
+
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" id="DropdownProject" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Documentations</a>
+                                    <div class="dropdown-menu" aria-labelledby="DropdownProject">
+
+                                        <a class="dropdown-item" href="{% url 'public_data:matrix' %}">Matrice d'occupation des sols</a>
+                                        <hr class="dropdown-divider" />
+                                        <h6 class="dropdown-header">Foire Aux Questions</h6>
+                                        {% for item in menu_faq %}
+                                        <a class="dropdown-item" href="{% url 'home:faq-detail' item.slug %}">{{ item.menu_entry }}</a>
+                                        {% endfor %}
+                                    </div>
+                                </li>
                             </ul>
-                            <ul class="navbar-nav ms-auto mt-2 mt-lg-0">
+
+                            <ul class="navbar-nav me-0 mt-2 mt-lg-0">
                                 {% if user.is_authenticated %}
                                 <li class="nav-item dropdown">
-                                    <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="bi bi-person-fill"></i> {{ user.email }}</a>
+                                    <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="bi bi-person-fill"></i></a>
                                     <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                                         <a class="dropdown-item" href="{% url 'users:profile' %}">
                                             <i class="bi bi-person-fill"></i> Profil
                                         </a>
+                                        {% if is_staff %}
+                                        <div class="dropdown-divider"></div>
+                                        <a class="dropdown-item" href="{% url 'admin:index' %}"><i class="bi bi-gear"></i> Administration</a>
+                                        {% endif %}
                                         <div class="dropdown-divider"></div>
                                         <a class="dropdown-item" href="{% url 'users:signout' %}">
                                             <i class="bi bi-box-arrow-right"></i> Déconnexion
@@ -69,27 +82,78 @@
                                 <li class="nav-item"><a class="nav-link" href="{% url 'users:signin' %}">Se connecter</a></li>
                                 {% endif %}
                             </ul>
+
+                        </div>
+                    </div>
+                </nav>
+
+                <nav class="navbar navbar-expand border-bottom" style="height:31px;">
+                    <div class="container-fluid">
+
+                        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent2" aria-controls="navbarSupportedContent2" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+
+                        <div class="collapse navbar-collapse justify-content-between" id="navbarSupportedContent2" style="font-size: 0.75rem">
+                            <ul class="navbar-nav ms-0 mt-2 mt-lg-0 ps-2">
+                                <nav aria-label="breadcrumb">
+                                    <ol class="breadcrumb mb-0">
+                                    {% for bread in breadcrumbs %}
+                                        {% if bread.is_active %}
+                                        <li class="breadcrumb-item active" aria-current="page">{{ bread.title}}</li>
+                                        {% else %}
+                                        <li class="breadcrumb-item"><a href="{{ bread.href }}">{{ bread.title}}</a></li>
+                                        {% endif %}
+                                    {% endfor %}
+                                    </ol>
+                                </nav>
+                            </ul>
+
+                            <ul class="navbar-nav me-0 mt-2 mt-lg-0">
+                                {% block sub_bar_actions %}
+                                {% endblock %}
+                            </ul>
                         </div>
                     </div>
                 </nav>
 
                 <!-- Page content-->
-                <main class="p-0 flex-grow-1" style="overflow: auto;">
-                    {% block content %}
-                    <div class="row align-items-center justify-content-center h-100 w-100 mr-0 ml-0">
-                        <div class="col-12 col-md-5 col-lg-4" style="width:450px;">
-                            <h2 class="mb-5">Bonjour {{ user.greetings }} !</h2>
-                            <p>La première étape pour utiliser SPARTE est de créer un PROJET :
-                            <br/><a class="btn btn-primary" href="{% url 'project:add' %}" role="button">Créer un projet</a></p>
+                <main class="p-0 flex-grow-1 d-flex flex-column" style="overflow: auto;">
+                    {% block carto %}
+                    <div class="mb-5">
+                        {% block content %}
+                        <div class="row justify-content-center w-100 my-0">
+                            <div class="col-12 col-md-5 col-lg-4" style="width:450px;">
+                                <h2 class="mb-5">Bonjour {{ user.greetings }} !</h2>
+                                <p>La première étape pour utiliser SPARTE est de créer un PROJET :
+                                <br/><a class="btn btn-primary" href="{% url 'project:add' %}" role="button">Créer un projet</a></p>
+                            </div>
                         </div>
+                        {% endblock %}
                     </div>
                     {% endblock %}
+                    <!-- Footer-->
+                    {% block footer %}
+                    <div id="footer" class="bg-light border-top py-5 flex-grow-1">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-2">
+                                    <img class="w-100" src="{% static 'img/logo_france.png' %}" alt="Logo France Marianne"/>
+                                </div>
+                                <div class="col-10">
+                                    <p class="mt-5">Faites nous part de vos propositions pour améliorer ce service : <a href="mailto:sparte@beta.gouv.fr">sparte@beta.gouv.fr</a></p>
+                                    <p class="text-muted">SPARTE est incubée chez beta Gouv.</p></div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endblock footer %}
                 </main>
+
+
+
             </div>
-        </div>
+
         <script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>
         <!-- Bootstrap core JS-->
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
         <!-- Core theme JS-->
         <script src="{% static 'js/scripts.js' %}"></script>
         <script>
