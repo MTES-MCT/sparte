@@ -93,7 +93,7 @@ class SetProjectOptions(BreadCrumbMixin, FormView):
     form_class = OptionsForm
     initial = {
         "analysis_start": "2011",
-        "analysis_end": "2020",
+        "analysis_end": "2019",
     }
 
     def get_context_breadcrumbs(self):
@@ -151,6 +151,8 @@ class SetProjectOptions(BreadCrumbMixin, FormView):
             import_status=Project.Status.PENDING,
             emprise_origin=emprise_origin,
         )
+        if self.request.user.is_authenticated:
+            project.user = self.request.user
         project.save()
         if len(lands) == 1:
             project.emprise_set.create(mpoly=lands[0].mpoly)

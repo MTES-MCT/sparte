@@ -45,8 +45,7 @@ class ProjectListView(GroupMixin, LoginRequiredMixin, ListView):
     context_object_name = "projects"  # override to add an "s"
 
     def get_queryset(self):
-        qs = super().get_queryset()
-        qs = qs.filter(is_public=False)
+        qs = Project.objects.filter(user=self.request.user)
         return qs
 
 
