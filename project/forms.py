@@ -112,7 +112,7 @@ class RegionForm(forms.Form):
 
 class DepartementForm(forms.Form):
     departement = forms.ModelChoiceField(
-        queryset=Departement.objects.all(),
+        queryset=Departement.objects.all().order_by("name"),
         label="Sélectionnez un département",
     )
 
@@ -120,13 +120,14 @@ class DepartementForm(forms.Form):
         self.region_id = kwargs.pop("region_id")
         super().__init__(*args, **kwargs)
         qs = Departement.objects.filter(region_id=self.region_id)
+        qs = qs.order_by("name")
         self.fields["departement"].queryset = qs
 
 
 class EpciForm(forms.Form):
     departement = forms.CharField(widget=forms.HiddenInput())
     epci = forms.ModelChoiceField(
-        queryset=Epci.objects.all(),
+        queryset=Epci.objects.all().order_by("name"),
         label="Sélectionnez un EPCI",
     )
 
@@ -134,13 +135,14 @@ class EpciForm(forms.Form):
         self.departement_id = kwargs.pop("departement_id")
         super().__init__(*args, **kwargs)
         qs = Epci.objects.filter(departements__id=self.departement_id)
+        qs = qs.order_by("name")
         self.fields["epci"].queryset = qs
         # dep = Departement.objects.get(pk=self.departement_id)
         self.fields["departement"].initial = self.departement_id
 
 
 class OptionsForm(forms.Form):
-    YEAR_CHOICES = [(i, str(i)) for i in range(2009, 2021)]
+    YEAR_CHOICES = [(i, str(i)) for i in range(2009, 2020)]
     analysis_start = forms.ChoiceField(label="Début d'analyse", choices=YEAR_CHOICES)
     analysis_end = forms.ChoiceField(label="Fin d'analyse", choices=YEAR_CHOICES)
 
