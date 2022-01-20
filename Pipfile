@@ -19,7 +19,7 @@ pytest-github-actions-annotate-failures = "*"
 
 [packages]
 boto3 = "*"
-celery = "==5.1.2"
+celery = "==5.2.2"
 colour = "*"
 dj-static = "*"
 django = "==3.2.5"
