@@ -3,28 +3,32 @@
 {% load static %}
 
 {% block pagetitle %}
- - Mes projets
+Mes projets
 {% endblock %}
 
+
 {% block headers %}
+<link href="{% static 'project/css/project.css' %}" rel="stylesheet" />
 {% endblock %}
 
 {% block content %}
+<div class="row w-100 h-100 justify-content-center">
+    <div class="col-12 col-md-4 col-lg-4">
+        <h2 class="my-5">Mes plans d'amménagement</h2>
 
-
-    <div class="d-flex flex-column h-100 w-100 align-items-center justify-content-center">
-        <h2 class="mb-5">Mes plans d'amménagement</h2>
-
-        <ul>
+        <div class="d-flex flex-column">
             {% for project in projects %}
-                <li><a href="{% url 'project:detail' project.id %}">{{ project.name }}</a></li>
+            <div class="row position-relative list-item align-items-center">
+                <a href="{% url 'project:detail' project.id %}" class="stretched-link">{{ project.name }}</a>
+            </div>
             {% empty %}
-            Pour commencer à utiliser SPARTE, veuillez créer un plan d'aménagement.
+            <p class="text-muted">Vous n'avez aucun plan d'aménagement.</p>
             {% endfor %}
-        </ul>
+        </div>
 
         <div>
             <a class="btn btn-primary mt-5" href="{% url 'project:add' %}" role="button">Nouveau</a>
         </div>
     </div>
+</div>
 {% endblock %}
