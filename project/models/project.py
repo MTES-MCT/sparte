@@ -139,6 +139,9 @@ class Project(BaseProject):
         null=True,
     )
 
+    created_date = models.DateTimeField(auto_now_add=True)
+    updated_date = models.DateTimeField(auto_now=True)
+
     @property
     def nb_years(self):
         return len(self.years)
