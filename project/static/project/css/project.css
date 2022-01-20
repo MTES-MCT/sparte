@@ -66,3 +66,15 @@
     background-color: rgb(241, 250, 255);
     color: rgb(0, 59, 117) !important;
 }
+
+.list-item {
+    background-color: rgb(255, 255, 255);
+    height: 2rem;
+    border-radius: 0.5rem;
+    border: 1px solid #fff !important;
+}
+
+.list-item:hover {
+    background-color: rgb(242, 245, 255);
+    border: 1px solid #dee2e6 !important;
+}
