@@ -17,10 +17,24 @@ urlpatterns = [
     path("<int:pk>/", views.ProjectDetailView.as_view(), name="detail"),
     path("<int:pk>/edit", views.ProjectUpdateView.as_view(), name="update"),
     path("<int:pk>/reinitialize", views.ProjectReinitView.as_view(), name="reinit"),
-    path("<int:pk>/report", views.ProjectReportView.as_view(), name="report"),
+    path(
+        "<int:pk>/ajouter/voisins",
+        views.ProjectAddLookALike.as_view(),
+        name="lookalike",
+    ),
+    path(
+        "<int:pk>/report/consommation",
+        views.ProjectReportConsoView.as_view(),
+        name="report",
+    ),
+    path(
+        "<int:pk>/report/synthesis",
+        views.ProjectReportSynthesisView.as_view(),
+        name="report_synthesis",
+    ),
     path(
         "<int:pk>/report/couverture",
-        views.ProjectReportArtifView.as_view(),
+        views.ProjectReportCouvertureView.as_view(),
         name="report_artif",
     ),
     path(
@@ -45,6 +59,9 @@ urlpatterns = [
     path(
         "<int:project_id>/plan/", views.PlanListView.as_view(), name="project-plan-list"
     ),
+    path("diagnostic/etape/1", views.SelectPublicProjects.as_view(), name="select"),
+    path("diagnostic/etape/1/city", views.SelectCities.as_view(), name="select-city"),
+    path("diagnostic/etape/2", views.SetProjectOptions.as_view(), name="select_2"),
 ]
 
 

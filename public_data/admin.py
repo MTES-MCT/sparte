@@ -7,11 +7,16 @@ from .models import (
     ArtifCommune,
     Artificialisee2015to2018,
     Artificielle2018,
+    Commune,
     CommunesSybarval,
     CouvertureSol,
     CouvertureUsageMatrix,
+    Departement,
     EnveloppeUrbaine2018,
+    Epci,
     Ocsge,
+    Cerema,
+    Region,
     Renaturee2018to2015,
     Sybarval,
     UsageSol,
@@ -97,11 +102,7 @@ class UsageSolResource(resources.ModelResource):
 @admin.register(UsageSol)
 class UsageSolAdmin(ImportExportMixin, admin.GeoModelAdmin):
     model = UsageSol
-    list_display = (
-        "code",
-        "label",
-        "parent",
-    )
+    list_display = ("code", "label", "parent", "map_color")
     list_filter = ("parent",)
     search_fields = (
         "code",
@@ -172,3 +173,68 @@ class CouvertureUsageMatrixAdmin(ImportExportMixin, admin.GeoModelAdmin):
     list_filter = ("is_artificial", "is_consumed", "is_natural")
     search_fields = ("couverture", "usage")
     resource_class = CouvertureUsageMatrixImportResource
+
+
+@admin.register(Region)
+class RegionAdmin(admin.GeoModelAdmin):
+    model = Region
+    list_display = (
+        "id",
+        "name",
+        "source_id",
+    )
+    search_fields = ("name", "source_id")
+    ordering = ("name",)
+
+
+@admin.register(Departement)
+class DepartementAdmin(admin.GeoModelAdmin):
+    model = Departement
+    list_display = (
+        "id",
+        "name",
+        "source_id",
+        "region",
+    )
+    search_fields = ("name", "source_id")
+    ordering = ("name",)
+
+
+@admin.register(Epci)
+class EpciAdmin(admin.GeoModelAdmin):
+    model = Epci
+    list_display = (
+        "id",
+        "name",
+        "source_id",
+    )
+    search_fields = ("name", "source_id")
+    ordering = ("name",)
+
+
+@admin.register(Commune)
+class CommuneAdmin(admin.GeoModelAdmin):
+    model = Commune
+    list_display = (
+        "insee",
+        "name",
+    )
+    search_fields = ("name", "insee")
+    ordering = ("insee",)
+
+
+@admin.register(Cerema)
+class CeremaAdmin(admin.GeoModelAdmin):
+    model = Cerema
+    list_display = (
+        "city_insee",
+        "city_name",
+        "region_id",
+        "region_name",
+        "dept_id",
+        "dept_name",
+        "epci_id",
+        "epci_name",
+    )
+    search_fields = ("city_insee", "city_name", "region_name", "dept_name", "epci_name")
+    ordering = ("city_insee",)

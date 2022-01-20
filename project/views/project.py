@@ -1,28 +1,52 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
+from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
-from public_data.models import CouvertureSol, UsageSol
+from public_data.models import CouvertureSol, UsageSol, Land
 
-from project.forms import SelectCitiesForm, SelectPluForm, UploadShpForm
+from project.forms import UploadShpForm, KeywordForm
 from project.models import Project
 from project.domains import ConsommationDataframe
 
-from .mixins import GetObjectMixin, UserQuerysetOnlyMixin
+from utils.views_mixins import BreadCrumbMixin, GetObjectMixin
+
+from .mixins import UserQuerysetOrPublicMixin
 
 
-class GroupMixin(GetObjectMixin, LoginRequiredMixin, UserQuerysetOnlyMixin):
+class GroupMixin(GetObjectMixin, UserQuerysetOrPublicMixin, BreadCrumbMixin):
     """Simple trick to not repeat myself. Pertinence to be evaluated."""
 
     queryset = Project.objects.all()
     context_object_name = "project"
 
+    def get_context_breadcrumbs(self):
+        breadcrumbs = super().get_context_breadcrumbs()
+        breadcrumbs.append(
+            {"href": reverse_lazy("project:list"), "title": "Mes projets"},
+        )
+        try:
+            project = self.get_object()
+            breadcrumbs.append(
+                {
+                    "href": reverse_lazy("project:detail", kwargs={"pk": project.id}),
+                    "title": project.name,
+                }
+            )
+        except AttributeError:
+            pass
+        return breadcrumbs
 
-class ProjectListView(GroupMixin, ListView):
+
+class ProjectListView(GroupMixin, LoginRequiredMixin, ListView):
     template_name = "project/list.html"
     context_object_name = "projects"  # override to add an "s"
+
+    def get_queryset(self):
+        qs = Project.objects.filter(user=self.request.user)
+        return qs
 
 
 class ProjectDetailView(GroupMixin, DetailView):
@@ -82,14 +106,10 @@ class ProjectNoShpView(GroupMixin, DetailView):
     def get_forms(self):
         if self.request.method in ("POST", "PUT"):
             return {
-                "city_form": SelectCitiesForm(self.request.POST),
-                "plu_form": SelectPluForm(self.request.POST),
                 "shp_form": UploadShpForm(self.request.POST, self.request.FILES),
             }
         else:
             return {
-                "city_form": SelectCitiesForm(),
-                "plu_form": SelectPluForm(),
                 "shp_form": UploadShpForm(),
             }
 
@@ -119,10 +139,15 @@ class ProjectFailedView(GroupMixin, DetailView):
     template_name = "project/detail_failed.html"
 
 
-class ProjectReportView(GroupMixin, DetailView):
+class ProjectReportConsoView(GroupMixin, DetailView):
     queryset = Project.objects.all()
     template_name = "project/rapport_consommation.html"
     context_object_name = "project"
+
+    def get_context_breadcrumbs(self):
+        breadcrumbs = super().get_context_breadcrumbs()
+        breadcrumbs.append({"href": None, "title": "Rapport consommation"})
+        return breadcrumbs
 
     def get_context_data(self, **kwargs):
         project = self.get_object()
@@ -131,9 +156,7 @@ class ProjectReportView(GroupMixin, DetailView):
         df = builder.build()
 
         # table headers
-        headers = [
-            "Commune",
-        ]
+        headers = ["Commune"]
         for col in df.columns:
             if col.startswith("artif"):
                 col = col.split("_")[-1]
@@ -148,7 +171,7 @@ class ProjectReportView(GroupMixin, DetailView):
                     "before": row[0],
                     "items": list(row[1:-2]),
                     "total": row[-2],
-                    "progression": f"{row[-1]*100:.2}%",
+                    "progression": row[-1] * 100,
                 }
             )
 
@@ -158,27 +181,132 @@ class ProjectReportView(GroupMixin, DetailView):
         pki_progression = int(builder.get_global_progression())
         pki_progression_percent = builder.get_global_progression_percent() * 100
 
+        target_2031_consumption = project.get_bilan_conso()
+        current_conso = project.get_bilan_conso_time_scoped()
+
+        # build data for comparison graph with all look a like and the project itself
+        comparison_data_graph = project.get_look_a_like_conso_per_year()
+        project_data_graph = project.get_conso_per_year()
+        data_determinant = project.get_determinants()
+        pie_data_determinant = {
+            det: sum(vals.values()) for det, vals in data_determinant.items()
+        }
+
+        # communes_data_graph
+        communes_data_graph = project.get_city_conso_per_year()
+        communes_data_table = dict()
+        total = dict()
+        for city, data in communes_data_graph.items():
+            communes_data_table[city] = data.copy()
+            communes_data_table[city]["total"] = sum(data.values())
+            for year, val in data.items():
+                total[year] = total.get(year, 0) + val
+        total["total"] = sum(total.values())
+        communes_data_table["Total"] = total
+
         return {
             **super().get_context_data(**kwargs),
             "start_year": project.analyse_start_date,
             "end_year": project.analyse_end_date,
+            "years": project.years,
             "headers": headers,
-            "table_artif": table_artif,
+            # "table_artif": table_artif,
             "initial_surface": pki_inital_surface,
-            "initial_percent": f"{pki_inital_surface / total_surface:.2%}",
+            "initial_percent": 100 * pki_inital_surface / total_surface,
             "final_surface": pki_final_surface,
-            "final_percent": f"{pki_final_surface / total_surface:.2%}",
+            "final_percent": 100 * pki_final_surface / total_surface,
             "total_surface": total_surface,
             "pki_progression": pki_progression,
-            "pki_progression_percent": f"{pki_progression_percent:.2}%",
+            "pki_progression_percent": pki_progression_percent,
             "active_page": "consommation",
+            "communes_data_graph": communes_data_graph,
+            "communes_data_table": communes_data_table,
+            "comparison_data_graph": comparison_data_graph,
+            "project_data_graph": project_data_graph,
+            "target_2031": {
+                "consummed": target_2031_consumption,
+                "annual_avg": target_2031_consumption / 10,
+                "target": target_2031_consumption / 2,
+                "annual_forecast": target_2031_consumption / 20,
+            },
+            "project_scope": {
+                "consummed": current_conso,
+                "annual_avg": current_conso / project.nb_years,
+                "nb_years": project.nb_years,
+                "nb_years_before_31": project.nb_years_before_2031,
+                "forecast_2031": project.nb_years_before_2031
+                * current_conso
+                / project.nb_years,
+            },
+            "graph_x_axis": [
+                str(i)
+                for i in range(
+                    int(project.analyse_start_date), int(project.analyse_end_date) + 1
+                )
+            ],
+            "graph_max": int(project.analyse_end_date)
+            - int(project.analyse_start_date),
+            "data_determinant": data_determinant,
+            "pie_data_determinant": pie_data_determinant,
         }
 
 
-class ProjectReportArtifView(GroupMixin, DetailView):
+class RefCouverture:
+    def __init__(self, couv, data, millesimes):
+        self.couv = couv
+        self.parent = couv.get_parent()
+        self.name = f"{couv.code} {couv.label}"
+        self.label_short = couv.label[:50]
+        # see all the available millesime
+        self.millesimes = millesimes
+        # surface contains one entry per year (millesime)
+        self.surface = dict()
+        for year in self.millesimes:
+            self.surface[year] = sum(
+                [
+                    v
+                    for k, v in data[year]["couverture"].items()
+                    if k.startswith(self.code_prefix)
+                ]
+            )
+
+    @property
+    def code(self):
+        return self.couv.code
+
+    @property
+    def map_color(self):
+        return self.couv.map_color
+
+    @property
+    def code_prefix(self):
+        return self.couv.code_prefix
+
+    @property
+    def level(self):
+        return self.couv.level
+
+    @property
+    def label(self):
+        return self.couv.label
+
+    def __getattr__(self, name):
+        if name.startswith("get_surface_"):
+            year = name.split("_")[-1]
+            return self.surface[year]
+        else:
+            return getattr(self, name)
+
+
+class ProjectReportCouvertureView(GroupMixin, DetailView):
     queryset = Project.objects.all()
     template_name = "project/rapport_couverture.html"
     context_object_name = "project"
+
+    def get_context_breadcrumbs(self):
+        breadcrumbs = super().get_context_breadcrumbs()
+        breadcrumbs.append({"href": None, "title": "Rapport artificialisation"})
+        return breadcrumbs
 
     def get_context_data(self, **kwargs):
         project = self.get_object()
@@ -187,25 +315,38 @@ class ProjectReportArtifView(GroupMixin, DetailView):
         data_covers = []
         for couv in CouvertureSol.objects.all().order_by("code"):
             data_covers.append(
+                RefCouverture(
+                    couv,
+                    raw_data,
+                    millesimes,
+                )
+            )
+
+        # PREP DATA FOR DRILL DOWN CHART
+        # column_drill_down = {
+        #     "top": [
+        #         {"name": "CS1", "y": 10},
+        #         {"name": "CS2", "y": 5},
+        #     ],
+        #     "CS1" : [
+        #         {"name": "CS1.1", "y": 8},
+        #         {"name": "CS1.2", "y": 2},
+        #     ],
+        # }
+        column_drill_down = dict()
+        for dc in data_covers:
+            key = "top" if dc.parent is None else dc.parent.code
+            if key not in column_drill_down:
+                column_drill_down[key] = []
+            column_drill_down[key].append(
                 {
-                    "code": couv.code,
-                    "code_prefix": couv.code_prefix,
-                    "level": couv.level,
-                    "parent": couv.get_parent(),
-                    "label_short": couv.label[:50],
-                    "label": couv.label,
-                    "color": None,
-                    "total_surface": dict(),
+                    "name": dc.name,
+                    "y_2015": dc.get_surface_2015,
+                    "y_2018": dc.get_surface_2018,
+                    "drilldown": dc.code,
+                    "map_color": dc.map_color,
                 }
             )
-        for year in millesimes:
-            data = raw_data[year]["couverture"]
-            for i in range(len(data_covers)):
-                key = f"total_surface_{year}"
-                label = data_covers[i]["code_prefix"]
-                value = sum([v for k, v in data.items() if k.startswith(label)])
-                data_covers[i][key] = value
-                data_covers[i]["total_surface"][year] = value
 
         return {
             **super().get_context_data(),
@@ -213,6 +354,7 @@ class ProjectReportArtifView(GroupMixin, DetailView):
             "millesimes": millesimes,
             "surface_territoire": project.area,
             "active_page": "couverture",
+            "column_drill_down": column_drill_down,
         }
 
 
@@ -220,6 +362,11 @@ class ProjectReportUsageView(GroupMixin, DetailView):
     queryset = Project.objects.all()
     template_name = "project/rapport_usage.html"
     context_object_name = "project"
+
+    def get_context_breadcrumbs(self):
+        breadcrumbs = super().get_context_breadcrumbs()
+        breadcrumbs.append({"href": None, "title": "Rapport usage"})
+        return breadcrumbs
 
     def get_context_data(self, **kwargs):
         project = self.get_object()
@@ -237,6 +384,7 @@ class ProjectReportUsageView(GroupMixin, DetailView):
                     "label": usage.label,
                     "color": None,
                     "total_surface": dict(),
+                    "map_color": usage.map_color,
                 }
             )
         for year in millesimes:
@@ -257,15 +405,68 @@ class ProjectReportUsageView(GroupMixin, DetailView):
         }
 
 
+class ProjectReportSynthesisView(GroupMixin, DetailView):
+    queryset = Project.objects.all()
+    template_name = "project/rapport_synthesis.html"
+    context_object_name = "project"
+
+    def get_context_breadcrumbs(self):
+        breadcrumbs = super().get_context_breadcrumbs()
+        breadcrumbs.append(
+            {
+                "href": None,
+                "title": "Synthèse consommation d'espace et artificialisation",
+            }
+        )
+        return breadcrumbs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data()
+        project = self.get_object()
+        total_surface = int(project.area * 100)
+        conso_10_years = project.get_bilan_conso()
+        context.update(
+            {
+                "active_page": "synthesis",
+                "conso_10_years": conso_10_years,
+                "trajectoire_2030": conso_10_years / 2,
+                "total_surface": total_surface,
+            }
+        )
+        # project = self.get_object()
+        return context
+
+
 class ProjectMapView(GroupMixin, DetailView):
     queryset = Project.objects.all()
     template_name = "carto/full_carto.html"
     context_object_name = "project"
 
+    def get_context_breadcrumbs(self):
+        breadcrumbs = super().get_context_breadcrumbs()
+        breadcrumbs.append({"href": None, "title": "Carte intéractive"})
+        return breadcrumbs
+
     def get_context_data(self, **kwargs):
         # UPGRADE: add center and zoom fields on project model
         # values would be infered when emprise is loaded
         context = super().get_context_data(**kwargs)
+        context.update(
+            {
+                "breadcrumb": [
+                    {"href": reverse_lazy("project:list"), "title": "Mes projets"},
+                    {
+                        "href": reverse_lazy(
+                            "project:detail",
+                            kwargs={
+                                "pk": self.object.pk,
+                            },
+                        ),
+                        "title": self.object.name,
+                    },
+                ]
+            }
+        )
         context.update(
             {
                 # center map on France
@@ -275,20 +476,21 @@ class ProjectMapView(GroupMixin, DetailView):
                 "default_zoom": 12,
                 "layer_list": [
                     {
-                        "name": "Communes SYBARVAL",
+                        "name": "Communes",
                         "url": reverse_lazy("public_data:communessybarval-list"),
                         "display": False,
                         "gradient_url": reverse_lazy(
                             "public_data:communessybarval-gradient"
                         ),
                         "level": "2",
+                        "color_property_name": "d_brute_20",
                     },
                     {
                         "name": "Emprise du projet",
                         "url": reverse_lazy("project:emprise-list")
                         + f"?id={self.object.pk}",
                         "display": True,
-                        "use_emprise_style": True,
+                        "style": "style_emprise",
                         "fit_map": True,
                         "level": "5",
                     },
@@ -297,7 +499,7 @@ class ProjectMapView(GroupMixin, DetailView):
                         "url": reverse_lazy(
                             "public_data:artificialisee2015to2018-list"
                         ),
-                        "display": False,
+                        "display": True,
                         "gradient_url": reverse_lazy(
                             "public_data:artificialisee2015to2018-gradient"
                         ),
@@ -310,6 +512,7 @@ class ProjectMapView(GroupMixin, DetailView):
                             "public_data:renaturee2018to2015-gradient"
                         ),
                         "level": "7",
+                        "display": True,
                     },
                     {
                         "name": "Zones artificielles",
@@ -319,12 +522,14 @@ class ProjectMapView(GroupMixin, DetailView):
                             "public_data:artificielle2018-gradient"
                         ),
                         "level": "3",
+                        "style": "style_zone_artificielle",
                     },
                     {
                         "name": "OCSGE",
                         "url": reverse_lazy("public_data:ocsge-optimized"),
                         "display": False,
                         "color_property_name": "map_color",
+                        "style": "get_color_from_property",
                         "level": "1",
                         "switch": "ocsge",
                     },
@@ -334,10 +539,15 @@ class ProjectMapView(GroupMixin, DetailView):
         return context
 
 
-class ProjectCreateView(GroupMixin, CreateView):
+class ProjectCreateView(GroupMixin, LoginRequiredMixin, CreateView):
     model = Project
     template_name = "project/create.html"
     fields = ["name", "description", "analyse_start_date", "analyse_end_date"]
+
+    def get_context_breadcrumbs(self):
+        breadcrumbs = super().get_context_breadcrumbs()
+        breadcrumbs.append({"href": None, "title": "Nouveau"})
+        return breadcrumbs
 
     def form_valid(self, form):
         # required to set the user who is logged as creator
@@ -355,19 +565,34 @@ class ProjectUpdateView(GroupMixin, UpdateView):
     fields = ["name", "description", "analyse_start_date", "analyse_end_date"]
     context_object_name = "project"
 
+    def get_context_breadcrumbs(self):
+        breadcrumbs = super().get_context_breadcrumbs()
+        breadcrumbs.append({"href": None, "title": "Editer"})
+        return breadcrumbs
+
     def get_success_url(self):
         return reverse_lazy("project:detail", kwargs=self.kwargs)
 
 
-class ProjectDeleteView(GroupMixin, DeleteView):
+class ProjectDeleteView(GroupMixin, LoginRequiredMixin, DeleteView):
     model = Project
     template_name = "project/delete.html"
     success_url = reverse_lazy("project:list")
 
+    def get_context_breadcrumbs(self):
+        breadcrumbs = super().get_context_breadcrumbs()
+        breadcrumbs.append({"href": None, "title": "Supprimer"})
+        return breadcrumbs
 
-class ProjectReinitView(GroupMixin, DeleteView):
+
+class ProjectReinitView(GroupMixin, LoginRequiredMixin, DeleteView):
     model = Project
     template_name = "project/reinit.html"
+
+    def get_context_breadcrumbs(self):
+        breadcrumbs = super().get_context_breadcrumbs()
+        breadcrumbs.append({"href": None, "title": "Réinitialiser"})
+        return breadcrumbs
 
     def post(self, request, *args, **kwargs):
         # reset project
@@ -378,3 +603,60 @@ class ProjectReinitView(GroupMixin, DeleteView):
 
     def get_success_url(self):
         return reverse_lazy("project:detail", kwargs=self.kwargs)
+
+
+class ProjectAddLookALike(GroupMixin, DetailView):
+    model = Project
+    template_name = "project/add_look_a_like.html"
+    context_object_name = "project"
+
+    def get_context_breadcrumbs(self):
+        breadcrumbs = super().get_context_breadcrumbs()
+        breadcrumbs.append(
+            {"href": None, "title": "Ajouter un territoire de comparaison"}
+        )
+        return breadcrumbs
+
+    def get_form(self):
+        if self.request.method in ("POST", "PUT"):
+            return KeywordForm(data=self.request.POST)
+        else:
+            return KeywordForm()
+
+    def get_context_data(self, **kwargs):
+        if "form" not in kwargs:
+            kwargs["form"] = self.get_form()
+        return super().get_context_data(**kwargs)
+
+    def get(self, request, *args, **kwargs):
+        add_public_key = request.GET.get("add", None)
+        project = self.get_object()
+        if add_public_key:
+            try:
+                # if public_key does not exist should raise an exception
+                land = Land(add_public_key)
+                # use land.public_key to avoid injection
+                project.add_look_a_like(land.public_key)
+                project.save()
+                return redirect(project)
+            except Exception:
+                return super().get(request, *args, **kwargs)
+        rm_public_key = request.GET.get("remove", None)
+        if rm_public_key:
+            project.remove_look_a_like(rm_public_key)
+            project.save()
+            return redirect(project)
+        return super().get(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        """
+        Handle POST requests: instantiate a form instance with the passed
+        POST variables and then check if it's valid.
+        """
+        self.object = self.get_object()
+        form = self.get_form()
+        context = self.get_context_data(form=form)
+        if form.is_valid():
+            needle = form.cleaned_data["keyword"]
+            context["results"] = Land.search(needle)
+        return self.render_to_response(context)

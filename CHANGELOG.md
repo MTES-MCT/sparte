@@ -20,6 +20,7 @@ Ce changelog suit la méthode "keep a changelog" disponible ici: [https://keepac
   * Projet
   * Utilisateur
   * Communes artificielles
+- US 8.13 - ajout de FAQ administrable dans la partie documentation (https://app.clickup.com/t/1uwt65e)
 
 ### Modifié
 - US 7.8 - Carte interactive: forte atténuation des bordures des polygons
@@ -31,6 +32,8 @@ Ce changelog suit la méthode "keep a changelog" disponible ici: [https://keepac
   * Possibilité de masquer le menu latéralle
 - US 7.9 - Afficher les layers dans un ordre déterminé pour faciliter la lecture
 - US 10.1 - restructurer les données OCSGE pour inclure les millésimes 2013, 2016 et 2019
+- Augmenter la période d'un projet pour aller jusqu'en 2020 (https://app.clickup.com/t/1uhcpk3)
+- US 8.11 - refondre la page d'accueil (https://app.clickup.com/t/1p89n5g)
 
 ### Corrigé
 - Affectation de la date & heure lors de l'import d'une emprise

@@ -6,8 +6,11 @@ from .api_views import (
     Artificielle2018ViewSet,
     CommunesSybarvalViewSet,
     CouvertureSolViewset,
+    DepartementViewSet,
     EnveloppeUrbaine2018ViewSet,
+    EpciViewSet,
     OcsgeViewSet,
+    RegionViewSet,
     Renaturee2018to2015ViewSet,
     SybarvalViewSet,
     UsageSolViewset,
@@ -38,5 +41,9 @@ router.register(r"sybarval/batie/2018", ZonesBaties2018ViewSet)
 router.register(r"referentiel/couverture-sol", CouvertureSolViewset)
 router.register(r"referentiel/usage-sol", UsageSolViewset)
 router.register(r"ocsge", OcsgeViewSet)
+
+router.register(r"referentiel/region", RegionViewSet)
+router.register(r"referentiel/departement", DepartementViewSet)
+router.register(r"referentiel/epci", EpciViewSet)
 
 urlpatterns += router.urls

@@ -9,13 +9,17 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework_gis import filters
 
+
 from .models import (
     Artificialisee2015to2018,
     Artificielle2018,
     CommunesSybarval,
     CouvertureSol,
+    Departement,
     EnveloppeUrbaine2018,
+    Epci,
     Ocsge,
+    Region,
     Renaturee2018to2015,
     Sybarval,
     UsageSol,
@@ -27,8 +31,11 @@ from .serializers import (
     Artificielle2018Serializer,
     CommunesSybarvalSerializer,
     CouvertureSolSerializer,
+    DepartementSerializer,
     EnveloppeUrbaine2018Serializer,
+    EpciSerializer,
     OcsgeSerializer,
+    RegionSerializer,
     Renaturee2018to2015Serializer,
     SybarvalSerializer,
     UsageSolSerializer,
@@ -219,3 +226,21 @@ class Voirie2018ViewSet(DataViewSet):
 class ZonesBaties2018ViewSet(DataViewSet):
     queryset = ZonesBaties2018.objects.all()
     serializer_class = ZonesBaties2018Serializer
+
+
+class RegionViewSet(DataViewSet):
+    queryset = Region.objects.all()
+    serializer_class = RegionSerializer
+    geo_field = "mpoly"
+
+
+class DepartementViewSet(DataViewSet):
+    queryset = Departement.objects.all()
+    serializer_class = DepartementSerializer
+    geo_field = "mpoly"
+
+
+class EpciViewSet(DataViewSet):
+    queryset = Epci.objects.all()
+    serializer_class = EpciSerializer
+    geo_field = "mpoly"
