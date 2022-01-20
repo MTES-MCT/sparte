@@ -5,55 +5,157 @@
 {% load project_tags %}
 
 {% block pagetitle %}
-Home projet
+SPARTE
 {% endblock %}
 
 {% block headers %}
+<link href="{% static 'project/css/project.css' %}" rel="stylesheet" />
 {% endblock %}
 
+
 {% block content %}
-<div class="d-flex flex-column h-100 w-100 align-items-center justify-content-center">
-    <div class="text-left">
-        <p>SPARTE vous propose les fonctionnalités suivantes pour explorer votre projet.</p>
+<div class="row w-100 justify-content-center">
 
-        <p>Vous trouverez les îcones en haut de la page, sous le nom de votre projet.</p>
+    <div class="col-8 bg-light p-3 rounded-5 border mt-1">
+        <h1 class="mb-5">{{ project.name }}</h1>
 
-        <ul>
-            <li>
-                <i class="bi bi-graph-down"></i>
-                <a href="{% url 'project:report' project.pk %}" data-toggle="tooltip" title="Rapports" class="me-1">
-                    <strong>Rapports</strong>
-                </a> : synthèse des territoires artificialisés, leur destination...
-            </li>
-            <li>
-                <i class="bi bi-map"></i>
-                <a href="{% url 'project:map' project.pk %}" data-toggle="tooltip" title="Carte intéractive">
-                    <strong>Carte interactive</strong>
-                </a> : visiter les zones artificielles et celles renaturées.
-            </li>
-        </ul>
+        <div class="row gx-2">
+            <div class="col">
+                <div class="d-flex flex-column box mt-0 p-4 justify-content-center h-100">
+                    <div class="text-center">
+                        <a href="{% url 'project:map' project.pk %}" data-toggle="tooltip" title="Carte intéractive">
+                            <i class="bi bi-map"></i>
+                            <br/><strong>Carte interactive</strong>
+                        </a>
+                    </div>
+                    <div class="mt-2">
+                        <ul class="list-unstyled">
+                            <li><i class="bi bi-arrow-right-short"></i>Zones artificielles</li>
+                            <li><i class="bi bi-arrow-right-short"></i>Zones artificialisées et renaturées sur la période</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="d-flex flex-column box mt-0 p-4 justify-content-center h-100">
+                    <div class="text-center">
+                        <a href="{% url 'project:report' project.pk %}" data-toggle="tooltip" title="Rapports" class="me-1">
+                            <i class="bi bi-graph-down"></i>
+                            <br/><strong>Tableau de bord</strong>
+                        </a>
+                    </div>
+                    <div class="mt-2">
+                        <ul class="list-unstyled">
+                            <li><i class="bi bi-arrow-right-short"></i>Trajectoire ZAN en 2031 et 2050</li>
+                            <li><i class="bi bi-arrow-right-short"></i>Bilan sur la période sélectionnée</li>
+                            <li><i class="bi bi-arrow-right-short"></i>Évolution sur la période sélectionnée</li>
+                            <li><i class="bi bi-arrow-right-short"></i>Comparaison au territoire supérieur</li>
+                            <li><i class="bi bi-arrow-right-short"></i>Déterminants (Habitat, activité...)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="d-flex flex-column box mt-0 p-4 justify-content-center h-100">
+                    <div class="text-center">
+                        <a href="#" data-toggle="tooltip" title="Télécharger le bilan du territoire">
+                            <i class="bi bi-download"></i>
+                            <br/><strong>Bilan téléchargeable</strong>
+                        </a>
+                    </div>
+                    <div class="mt-2">
+                        <ul class="list-unstyled">
+                            <li><i class="bi bi-arrow-right-short"></i>synthèse du diagnostic de votre territoire</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-        <p>Vous pouvez également réinitialiser l'emprise, voire supprimer le projet :</p>
 
-        <ul>
-            <li><i class="bi bi-pencil"></i> <a href="{% url 'project:update' project.pk %}">Editer la description, les dates d'analyse...</a></li>
-            <li><i class="bi bi-recycle"></i> <a href="{% url 'project:reinit' project.pk %}">réinitialiser l'emprise</a></li>
-            <li><i class="bi bi-trash"></i> <a href="{% url 'project:delete' project.pk %}">Supprimer le projet</a></li>
-        </ul>
+        <div class="row gx-1">
+            <div class="col-5 d-flex flex-column">
 
-        <p>
-            Plans associés : <a href="{% url 'project:project-plan-create' project.pk %}" class="btn btn-outline-success btn-sm" data-toggle="tooltip" title="Ajouter un plan"><i class="bi bi-plus-square-dotted"></i></a>
-            <ul>
-                {% for plan in project.plan_set.all %}
-                <li><i class="bi bi-bounding-box-circles"></i> <a href="{% url 'project:plan-detail' plan.pk %}">{{ plan.name }}</a></li>
-                {% empty %}
-                <li>Vide</li>
-                {% endfor %}
-            </ul>
+                <div class="box p-4">
+                    <a class="float-end" href="{% url 'project:update' project.pk %}">
+                        <i class="bi bi-pencil"></i>
+                    </a>
+                    <span  class="fw-bold">Période d'analyse</span>
+                    <p>De {{ project.analyse_start_date }} à {{ project.analyse_end_date }}</p>
+                </div>
 
-        </p>
+                <div class="box p-4 mt-1">
+                    <span  class="fw-bold">Analyses disponibles</span>
+                    <br/><i class="bi bi-check-circle text-success"></i> Consomation d'espace
+                    <br/>
+                    {% if analysis_artif %}
+                        <i class="bi bi-check-circle text-success"></i>
+                    {% else %}
+                        <i class="bi bi-x-circle text-danger"></i>
+                    {% endif %}
+                    Artificialisation
+                </div>
+
+                <div class="box p-4 mt-1 flex-grow-1">
+                    <a class="float-end" href="{% url 'project:lookalike' project.id %}">
+                        <i class="bi bi-plus-circle"></i>
+                    </a>
+                    <span  class="fw-bold">Territoires de comparaison</span>
+                    {% if project.look_a_like %}
+                        <div class="d-flex flex-column mt-2">
+                        {% for land in project.get_look_a_like %}
+                            <div class="w100">
+                                {{ land.name }}
+                                <a href="{% url 'project:lookalike' project.id %}?remove={{ land.public_key }}" class="float-end"><i class="bi bi-trash text-danger"></i></a>
+                            </div>
+                        {% endfor %}
+                        </div>
+                    {% else %}
+                    <p class="text-muted">Aucun territoire.</p>
+                    {% endif %}
+                </div>
+
+            </div>
+            <div class="col-7 d-flex">
+
+                <div class="box p-4 flex-grow-1">
+                    <a class="float-end" href="{% url 'project:update' project.pk %}">
+                        <i class="bi bi-pencil"></i>
+                    </a>
+                    <span  class="fw-bold">Description</span>
+                    {% if project.description %}
+                        <p>{{ project.description }}</p>
+                    {% else %}
+                        <p class="text-muted">Aucune description.</p>
+                    {% endif %}
+                </div>
+
+            </div>
+        </div>
+
     </div>
 </div>
+{% endblock %}
+
+{% block sub_bar_actions %}
+
+<li class="nav-item ms-1">
+    <a class="btn btn-sm btn-outline-primary" href="{% url 'project:update' project.pk %}">
+        <i class="bi bi-pencil"></i> Editer
+    </a>
+</li>
+{% if user.is_authenticated %}
+<li class="nav-item ms-1">
+    <a class="btn btn-sm btn-outline-warning" href="{% url 'project:reinit' project.pk %}">
+        <i class="bi bi-recycle"></i> Ré-initialiser
+    </a>
+</li>
+<li class="nav-item ms-1">
+    <a class="btn btn-sm btn-outline-danger" href="{% url 'project:delete' project.pk %}">
+        <i class="bi bi-trash"></i> Supprimer
+    </a>
+</li>
+{% endif %}
 {% endblock %}
 
 {% block bodyend %}

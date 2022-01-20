@@ -51,6 +51,7 @@ DJANGO_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django.contrib.gis",
+    "django.contrib.humanize",
 ]
 
 RESTFRAMEWORK_APPS = [
@@ -65,6 +66,7 @@ THIRD_APPS = [
 
 # upper app should not communicate with lower ones
 PROJECT_APPS = [
+    "utils.apps.UtilsConfig",
     "app_parameter.apps.AppParameterConfig",
     "users.apps.UsersConfig",
     "carto.apps.CartoConfig",
@@ -105,6 +107,7 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 "users.context_processors.add_connected_user_to_context",
+                "home.context_processors.add_faq_to_context",
             ],
         },
     },
@@ -308,6 +311,15 @@ REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination"
 }
 
+# FORMAT SETTINGS
+
+USE_L10N = True
+LANGUAGE_CODE = "fr"
+USE_THOUSAND_SEPARATOR = True
+DECIMAL_SEPARATOR = ","
+THOUSAND_SEPARATOR = " "
+NUMBER_GROUPING = 3
+
 # LOGGING SETTINGS
 
 LOGGING_LEVEL = env.str("LOGGING_LEVEL", default="INFO")
@@ -319,17 +331,17 @@ LOGGING = {
         "just_message": {
             "format": "[{asctime}] {message}",
             "style": "{",
-            "datefmt": "%d/%b/%Y %H:%M:%S",
+            "datefmt": "%d%m%Y %H%M%S",
         },
         "verbose": {
             "format": "[{asctime}]{levelname:<7} {module} {process:d} {thread:d} {message}",
             "style": "{",
-            "datefmt": "%d/%b/%Y %H:%M:%S",
+            "datefmt": "%d%m%Y %H%M%S",
         },
         "simple": {
             "format": "[{asctime}]{levelname:<7} {message}",
             "style": "{",
-            "datefmt": "%d/%b/%Y %H:%M:%S",
+            "datefmt": "%d%m%Y %H%M%S",
         },
     },
     "handlers": {
@@ -354,6 +366,11 @@ LOGGING = {
         },
         "public_data": {
             "handlers": ["console_just_message"],
+            "level": LOGGING_LEVEL,
+            "propagate": False,
+        },
+        "management.commands": {
+            "handlers": ["console"],
             "level": LOGGING_LEVEL,
             "propagate": False,
         },

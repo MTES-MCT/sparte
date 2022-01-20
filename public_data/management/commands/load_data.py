@@ -6,7 +6,7 @@ from django.core.management.base import BaseCommand
 from public_data.tasks import load_data
 
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("management.commands")
 
 
 class Command(BaseCommand):
@@ -38,6 +38,7 @@ class Command(BaseCommand):
                     "EnveloppeUrbaine2018",
                     "Ocsge2015",
                     "Ocsge2018",
+                    "Cerema",
                     "Renaturee2018to2015",
                     "Sybarval",
                     "Voirie2018",

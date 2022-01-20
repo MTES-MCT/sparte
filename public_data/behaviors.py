@@ -88,7 +88,7 @@ class AutoLoadMixin:
         cls.objects.all().delete()
 
     @classmethod
-    def load(cls, verbose=True):
+    def load(cls, verbose=True, shp_file=None):
         """
         Populate table with data from shapefile then calculate all fields
 
@@ -97,13 +97,18 @@ class AutoLoadMixin:
             verbose=True (undefined): define level of verbosity
         """
         logger.info("Load data of %s", cls)
-        shp_file = cls.get_shape_file()
+        if shp_file:
+            shp_file = Path(shp_file)
+            if not (shp_file.is_file() and shp_file.suffix == ".shp"):
+                raise FileNotFoundError("No file with .shp suffix")
+        else:
+            shp_file = cls.get_shape_file()
         logger.info("Shape file found: %s", shp_file)
         # delete previous data
         cls.clean_data()
         # load files
         lm = LayerMapping(cls, shp_file, cls.mapping)
-        lm.save(strict=True, verbose=False)
+        lm.save(strict=True, verbose=verbose)
         logger.info("Data loaded, now calculate fields")
         cls.calculate_fields()
         logger.info("End")

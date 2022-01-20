@@ -8,7 +8,9 @@ from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from project.models import Plan, Project
 from project.forms import PlanForm
 
-from .mixins import GetObjectMixin, UserQuerysetOnlyMixin
+from utils.views_mixins import GetObjectMixin
+
+from .mixins import UserQuerysetOnlyMixin
 
 
 class GroupMixin(GetObjectMixin, LoginRequiredMixin, UserQuerysetOnlyMixin):
@@ -108,7 +110,7 @@ class PlanDetailView(GroupMixin, DetailView):
                     "name": "Emprise du projet",
                     "url": project_url,
                     "display": True,
-                    "use_emprise_style": True,
+                    "style": "style_emprise",
                     "level": "5",
                 },
                 {

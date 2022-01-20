@@ -1,13 +1,26 @@
 import pandas as pd
 
 from django.db.models import F
+from django.urls import reverse_lazy
 from django.views.generic import TemplateView
+
+from utils.views_mixins import BreadCrumbMixin
 
 from .models import CouvertureUsageMatrix
 
 
-class DisplayMatrix(TemplateView):
+class DisplayMatrix(BreadCrumbMixin, TemplateView):
     template_name = "public_data/us_cs_matrix.html"
+
+    def get_context_breadcrumbs(self):
+        breadcrumbs = super().get_context_breadcrumbs()
+        breadcrumbs.append(
+            {
+                "href": reverse_lazy("public_data:matrix"),
+                "title": "Matrice d'occupation",
+            },
+        )
+        return breadcrumbs
 
     def get_context_data(self, **kwargs):
         qs = CouvertureUsageMatrix.objects.exclude(
@@ -21,7 +34,7 @@ class DisplayMatrix(TemplateView):
         df = pd.DataFrame(list(qs))
         df = df.pivot(index="usage_code", columns="couverture_code", values="label")
         # make html repr
-        html = df.to_html(na_rep="", classes="table table-sm")
+        html = df.to_html(na_rep="", classes="table table-sm table-striped table-hover")
         html = html.replace(
             "<td>ARTIF_NOT_CONSU</td>",
             "<td style='background-color:#fc6e9e !important'>Artif non consommé</td>",

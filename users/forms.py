@@ -64,7 +64,6 @@ class SigninForm(AuthenticationForm):
         widget=forms.TextInput(
             attrs={
                 "class": "form-control",
-                "placeholder": "ton@email.com",
             }
         ),
     )
@@ -73,7 +72,6 @@ class SigninForm(AuthenticationForm):
         widget=forms.PasswordInput(
             attrs={
                 "class": "form-control",
-                "placeholder": "********",
             },
         ),
         max_length=50,

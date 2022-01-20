@@ -9,18 +9,18 @@ class UserQuerysetOnlyMixin:
         qs = self.queryset
         # apply filter on user owned project only
         user = self.request.user
-        qs = qs.filter(user=user)
+        if user.is_authenticated:
+            qs = qs.filter(user=user)
+        else:
+            qs = qs.none()
         return qs
 
 
-class GetObjectMixin:
-    """override get_object to cache returned object."""
+class UserQuerysetOrPublicMixin(UserQuerysetOnlyMixin):
+    """Filter project to return all user's project or public ones."""
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.object = None
-
-    def get_object(self, queryset=None):
-        if not self.object:
-            self.object = super().get_object(queryset)
-        return self.object
+    def get_queryset(self):
+        # get queryset from class queryset var
+        qs = super().get_queryset()
+        qs |= self.queryset.filter(is_public=True)
+        return qs

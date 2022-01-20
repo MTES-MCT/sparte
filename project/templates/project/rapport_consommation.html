@@ -2,137 +2,418 @@
 
 {% load static %}
 {% load project_tags %}
+{% load humanize %}
+{% load i18n %}
+{% load l10n %}
 
 {% block pagetitle %}
 Rapport consommation
 {% endblock %}
 
 {% block headers %}
+<link href="{% static 'project/css/project.css' %}" rel="stylesheet" />
 {% endblock %}
 
 {% block content %}
-    <div class="pe-4 ps-4">
+    <div class="px-4">
         {% include "project/detail_menu.html" %}
 
-        <div class="alert alert-warning" role="alert">
-            La consommation d'espace est mesurée avec les fichiers fonciers qui font une description cadastrale du territoire.
-        </div>
+        <div class="bg-light p-5 rounded-5 border">
 
-        <h3>Chiffres clés:</h3>
-        <div class="d-flex">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Territoire total</h5>
-                    <p>{{ total_surface }} ha</p>
-                    <p>100 %</p>
+            <div class="box box-alert px-4 py-2 mb-4 mt-0">
+                <p>La loi Climat & Résilience recommande d'ici 2031 de diviser par 2 la consommation d'espace par rapport au bilan 2011-2021.</p>
+                <p>Pour comprendre la dynamique sur le territoire sélectionné, cette page propose les indicateurs suivants :</p>
+                <ul>
+                    <li>projection 2031 selon la trajectoire ZAN,</li>
+                    <li>consommation annuelle du territoire,</li>
+                    <li>comparaison du territoire avec les territoires voisins,</li>
+                    <li>évolution de la surface consommée sur la période,</li>
+                    <li>déterminants de sa consommation d'espace.</li>
+                </ul>
+            </div>
+
+            <div class="clearfix">
+                <div class="card key-figure">
+                    <div class="card-header">
+                        Territoire total
+                    </div>
+                    <div class="card-body">
+                        <p class="figure">{{ total_surface }} ha</p>
+                    </div>
+                </div>
+
+                <div class="card key-figure key-figure-yellow">
+                    <div class="card-header">
+                        Consommé avant {{ start_year }}
+                    </div>
+                    <div class="card-body">
+                        <p class="figure">N/A ha</p>
+                        <p class="card-text"><small class="text-muted">
+                            N/A% du territoire
+                        </small></p>
+                    </div>
+                </div>
+
+                <div class="card key-figure key-figure-yellow">
+                    <div class="card-header">
+                        Consommé en {{ end_year }}
+                    </div>
+                    <div class="card-body">
+                        <p class="figure">N/A ha</p>
+                        <p class="card-text"><small class="text-muted">
+                            N/A% du territoire
+                        </small></p>
+                    </div>
+                </div>
+
+                <div class="card key-figure key-figure-yellow">
+                    <div class="card-header">
+                        Progression {{ start_year }} à {{ end_year }}
+                    </div>
+                    <div class="card-body">
+                        <p class="figure">+N/A ha</p>
+                        <p class="card-text"><small class="text-muted">
+                            +N/A % du Territoire
+                        </small></p>
+                    </div>
                 </div>
             </div>
 
-            <div class="card ms-3">
-                <div class="card-body">
-                    <h5 class="card-title">Consommé avant {{ start_year }}</h5>
-                    <p>{{ initial_surface }} ha</p>
-                    <p>{{ initial_percent }}</p>
+            <div class="clearfix">
+                <div class="card key-figure key-figure-green">
+                    <div class="card-header">
+                        Consommation 2011-2019
+                    </div>
+                    <div class="card-body">
+                        <p class="figure">+{{ target_2031.consummed|floatformat:1 }} ha</p>
+                        <p class="card-text"><small class="text-danger">
+                            <i class="bi bi-exclamation-diamond-fill"></i> Données 2020 non encore disponibles
+                        </small></p>
+                    </div>
+
+                </div>
+
+                <div class="card key-figure key-figure-green">
+                    <div class="card-header">
+                        Trajectoire 2021-2030
+                    </div>
+                    <div class="card-body">
+                        <p class="figure">+{{ target_2031.target|floatformat:1 }} ha</p>
+                        <p class="card-text"><small class="text-muted">
+                            Réduction de 50% par rapport à la décennie précédente
+                        </small></p>
+                    </div>
+                </div>
+
+                <div class="card key-figure key-figure-green">
+                    <div class="card-header">
+                        Trajectoire annuelle
+                    </div>
+                    <div class="card-body">
+                        <p class="figure">+{{ target_2031.annual_forecast|floatformat:0 }} ha/an</p>
+                    </div>
                 </div>
             </div>
 
-            <div class="card ms-3">
-                <div class="card-body">
-                    <h5 class="card-title">Consommé en {{ end_year }}</h5>
-                    <p>{{ final_surface }} ha</p>
-                    <p>{{ final_percent }}</p>
+            <div class="row">
+                <div class="col-6">
+                    <div class="w-100 box p-4">
+                        <h3>Analyse 2011 à 2020 (vision légale)</h3>
+                        <p>
+                            <strong>Consommé sur la période</strong> : +{{ target_2031.consummed|floatformat:1 }} ha
+                            <br/><strong>Conso. annuelle moyenne</strong> : +{{ target_2031.annual_avg|floatformat:1 }} Ha
+                            <br/><strong>Projection 2031 à ce rythme</strong> : +{{ target_2031.consummed|floatformat:1 }} Ha
+                            <br/><strong>Projection 2031 souhaitée (-50%)</strong> : +{{ target_2031.target|floatformat:1 }} ha
+                        </p>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="w-100 box p-4">
+                        <h3>Analyse {{ start_year }} à {{ end_year }}</h3>
+                        <p>
+                            <strong>Consommé sur la période</strong> : +{{ project_scope.consummed|floatformat:1 }} ha
+                            <br/><strong>Conso. annuelle moyenne</strong> : +{{ project_scope.annual_avg|floatformat:1 }} Ha <i class="bi bi-question-circle" data-toggle="tooltip" title="Conso sur la période ({{ project_scope.consummed|floatformat:1 }}) / années sur la période ({{ project_scope.nb_years }})"></i>
+                            <br/><strong>Projection 2031 à ce rythme</strong> : +{{ project_scope.forecast_2031|floatformat:1 }} Ha <i class="bi bi-question-circle" data-toggle="tooltip" title="Années jusqu'à 2031 ({{ project_scope.nb_years_before_31 }}) x conso annuelle moyenne({{ project_scope.annual_avg|floatformat:1 }})"></i>
+                            <br/>&nbsp;
+                        </p>
+                    </div>
                 </div>
             </div>
 
-            <div class="card ms-3">
-                <div class="card-body">
-                    <h5 class="card-title">Progression {{ start_year }} à {{ end_year }}</h5>
-                    <p>+{{ pki_progression }} ha</p>
-                    <p>+{{ pki_progression_percent }}</p>
-                </div>
+            <div class="w-100 box p-4">
+                <h3>Consommation annuelle des communes du territoire</h3>
+                <div id="chart" class="flex-fill"></div>
             </div>
-        </div>
 
-        <div class="w-100 mt-5">
-            <div id="chart" class="flex-fill"></div>
-        </div>
+            <div class="w-100 box p-4">
+                <h3>Comparaison avec les territoires voisins</h3>
+                <div id="chart_2" class="flex-fill"></div>
+            </div>
 
-        <div class="mt-5">
-            <h3>Consommé (en ha):</h3>
-            <table class="table">
-                <thead>
-                    <tr>
-                    {% for col_name in headers %}
-                        <th scope="col">
-                            {% if col_name == "Progression" %}
-                                <span data-toggle="tooltip" title="Progression de la surface consommée entre 2009 et 2018">Progression</span>
-                            {% else %}
-                                {{ col_name }}
-                            {% endif %}
-                        </th>
-                    {% endfor %}
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for city in table_artif %}
-                    <tr>
-                        <th scope="row">{{ city.name }}</th>
-                        {{ city.before|td }}
-                        {{ city.items|td }}
-                        <th  scope="row">{{ city.total }}</th>
-                        <td>{{ city.progression }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+            <div class="box scrollme-x p-4">
+                <h3 class="mb-3">Surface consommée (en ha) :</h3>
+                <table class="table table-striped table-sm table-borderless">
+                    <thead>
+                        <tr>
+                            <th scope="col">{{ col_name }}</th>
+                            {% for year in years %}
+                            <th scope="col" style="text-align: right">{{ year }}</th>
+                            {% endfor %}
+                            <th scope="col" style="text-align: right">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for city_name, data in communes_data_table.items %}
+                        <tr>
+                            <th scope="row">{{ city_name }}</th>
+                            {% for year, val in data.items %}
+                            <td align="right">+{{ val|floatformat:1 }}</td>
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+
+            <div class="w-100 box p-4">
+                <h3>Déterminants de la consommation</h3>
+                <div class="row">
+                    <div class="col-4 border-end">
+                        <div id="pie_determinant"></div>
+                    </div>
+                    <div class="col-8">
+                        <div id="chart_determinant"></div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="box alert">
+                <h3>Provenance des données</h3>
+                La consommation d’espace est mesurée avec les fichiers fonciers qui font une description cadastrale du territoire.
+            </div>
         </div>
     </div>
+
 {% endblock %}
 
 {% block bodyend %}
+{% localize off %}
 <script src="https://code.highcharts.com/highcharts.js"></script>
 <script src="https://code.highcharts.com/modules/exporting.js"></script>
 <script language="javascript">
+///////////////////////////////
+// CONSOMMATION DES COMMUNES
+///////////////////////////////
 Highcharts.chart('chart', {
-
+    chart: {
+        type: 'area'
+    },
     title:{
         text:''
     },
-
     yAxis: {
         title: {
             text: 'Consommé (en ha)'
         }
     },
-
     xAxis: {
+        type: "category",
     },
-
     legend: {
         layout: 'horizontal',
         align: 'center',
         verticalAlign: 'top'
     },
-
-    pane: {
-        size: 400
-    },
-
     plotOptions: {
-        series: {
-            label: {
-                connectorAllowed: false
-            },
-            pointStart: {{ start_year }}
+        area: {
+            stacking: 'normal',
         }
     },
-
-    series: [{% for city in table_artif %}
+    series: [{% for city_name, data in communes_data_graph.items %}
     {
-        name: '{{ city.name }}',
-        data: [{% for v in city.items %}{{ v }}, {% endfor %}]
+        name: '{{ city_name }}',
+        data: [{% for name, y in data.items %}{
+            name: "{{ name }}",
+            y: {{ y }},
+        }, {% endfor %}]
     },
-    {% endfor %}],
+    {% endfor %}
+    {
+        name: '{{ project.name }}',
+        type: 'line',
+        data: [
+            {% for y, v in project_data_graph.items %}{ name: "{{y}}", y: {{ v }} },
+            {% endfor %}
+        ],
+        color: '#ff0000',
+        dashStyle: 'ShortDash',
+    }
+    ],
+});
+
+
+///////////////////////////////
+// CONSOMMATION DU TERRITOIRE ET DE SES VOISINS
+///////////////////////////////
+Highcharts.chart('chart_2', {
+    title:{
+        text:''
+    },
+    yAxis: {
+        title: {
+            text: 'Consommé (en ha)'
+        }
+    },
+    xAxis: {
+        type: "category",
+    },
+    legend: {
+        layout: 'horizontal',
+        align: 'center',
+        verticalAlign: 'top'
+    },
+    series: [
+        {% for land_name, data in comparison_data_graph.items %}
+        {
+            name: '{{ land_name }}',
+            data: [
+                {% for y, v in data.items %}{ name: "{{y}}", y: {{ v }} },
+                {% endfor %}
+            ],
+        },
+        {% endfor %}
+        {
+            name: '{{ project.name }}',
+            data: [
+                {% for y, v in project_data_graph.items %}{ name: "{{y}}", y: {{ v }} },
+                {% endfor %}
+            ],
+            color: '#ff0000',
+            dashStyle: 'ShortDash',
+        }
+    ],
+});
+
+
+///////////////////////////////
+// DETERMINANT STACKED COLUMN
+///////////////////////////////
+Highcharts.chart('chart_determinant', {
+    chart: {
+        type: 'column'
+    },
+    title:{
+        text:'Par an'
+    },
+    yAxis: {
+        title: {
+            text: 'Consommé (en ha)'
+        },
+        stackLabels: {
+            enabled: true,
+            format: '{total:,.1f}',
+        },
+    },
+    tooltip: {
+        headerFormat: '<b>{point.x}</b><br/>',
+        pointFormat: '{series.name}: {point.y}',
+        valueSuffix: ' Ha',
+        valueDecimals: 1,
+    },
+    xAxis: {
+        categories: [
+            {% for x_axis in graph_x_axis %}
+            "{{ x_axis }}",
+            {% endfor %}
+        ],
+        max: {{ graph_max }},
+    },
+    legend: {
+        layout: 'horizontal',
+        align: 'center',
+        verticalAlign: 'top'
+    },
+    plotOptions: {
+        column: {
+            stacking: 'normal',
+            dataLabels: {
+                enabled: true,
+                format: '{point.y:,.1f}',
+            }
+        },
+
+    },
+    series: [
+        {% for determinant_name, data in data_determinant.items %}
+        {
+            name: '{{ determinant_name }}',
+            data: [
+                {% for y, v in data.items %}{ name: "{{y}}", y: {{ v }} },
+                {% endfor %}
+            ],
+        },
+        {% endfor %}
+        {
+            name: '{{ project.name }}',
+            type: 'line',
+            data: [
+                {% for y, v in project_data_graph.items %}{ name: "{{y}}", y: {{ v }} },
+                {% endfor %}
+            ],
+            color: '#ff0000',
+            dashStyle: 'ShortDash',
+        }
+    ],
+});
+
+
+///////////////////////////////
+// DETERMINANT PIE
+///////////////////////////////
+Highcharts.chart('pie_determinant', {
+    chart: {
+        type: 'pie'
+    },
+    title:{
+        text:'Sur la période'
+    },
+    tooltip: {
+        enabled: false,
+        pointFormat: '{point.name}: {point.y:.1f} Ha',
+    },
+    legend: {
+        layout: 'horizontal',
+        align: 'center',
+        verticalAlign: 'top'
+    },
+    plotOptions: {
+        pie: {
+            allowPointSelect: true,
+            cursor: 'pointer',
+            dataLabels: {
+                enabled: true,
+                format: '<b>{point.name}</b>: {point.y:.1f} Ha'
+            }
+        }
+    },
+    series: [
+        {
+            name: 'Déterminants',
+            data: [
+            {% for name, y in pie_data_determinant.items %}
+            {
+                name: '{{ name }}',
+                y: {{ y }},
+                sliced: true,
+            },
+            {% endfor %}
+            ],
+        },
+    ],
 });
 </script>
+
+{% endlocalize %}
 {% endblock %}

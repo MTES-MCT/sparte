@@ -1,13 +1,12 @@
 """Public data API views."""
 from rest_framework.exceptions import ParseError
-
-from public_data.api_views import DataViewSet
+from rest_framework import viewsets
 
 from .models import Emprise, PlanEmprise
 from .serializers import EmpriseSerializer, PlanEmpriseSerializer
 
 
-class EmpriseViewSet(DataViewSet):
+class EmpriseViewSet(viewsets.ReadOnlyModelViewSet):
     """Endpoint that provide geojson data for a specific project"""
 
     queryset = Emprise.objects.all()
