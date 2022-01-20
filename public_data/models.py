@@ -931,7 +931,7 @@ class Cerema(AutoLoadMixin, DataColorationMixin, models.Model):
         ..warning:: 2021 is missing in the sum because data are missing.
         ..TODO:: update data to get 2021 and change sum.
         """
-        fields = cls.get_art_field(2011, 2020)
+        fields = cls.get_art_field(2011, 2019)
         kwargs = {"naf11art21": sum([F(f) for f in fields])}
         cls.objects.update(**kwargs)
 
@@ -943,9 +943,9 @@ class Cerema(AutoLoadMixin, DataColorationMixin, models.Model):
         ..Examples:
         ```
         >>> Cerema.get_art_field(2015, 2018)
-        ['naf14art15', 'naf15art16', 'naf16art17', 'naf17art18']
+        ['naf15art16', 'naf16art17', 'naf17art18', 'naf18art19']
         >>> Cerema.get_art_field(2014, 2014)
-        ['naf13art14']
+        ['naf14art15']
         >>> Cerema.get_art_field(2008, 2021)
         Exception: ValueError
         ```
