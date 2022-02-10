@@ -67,7 +67,6 @@ Rapport couverture du sol
                     <div id="chart_1"></div>
                 </div>
             </div>
-
         </div>
 
         <div class="box scrollme-x p-4 table table-responsive">
@@ -152,6 +151,7 @@ Highcharts.chart('chart_2', {
     tooltip: {
         valueSuffix: ' Ha',
         valueDecimals: 0,
+        pointFormat: '<b>{point.y}</b><br/>{point.percent}',
     },
     plotOptions:{
     	pie:
@@ -167,6 +167,7 @@ Highcharts.chart('chart_2', {
                     name: "{{ data.name }}",
                     y: {{ data.get_surface_2015 }},
                     color: '{{ data.map_color }}',
+                    percent: '{{ data.get_surface_2015|percent:surface_territoire }}',
                 },
             {% endif %}
         {% endfor %}],
@@ -184,6 +185,7 @@ Highcharts.chart('chart_3', {
     tooltip: {
         valueSuffix: ' Ha',
         valueDecimals: 0,
+        pointFormat: '<b>{point.y}</b><br/>{point.percent}',
     },
     plotOptions:{
     	pie:
@@ -200,6 +202,7 @@ Highcharts.chart('chart_3', {
                         name: "{{ data.name }}",
                         y: {{ data.get_surface_2018 }},
                         color: '{{ data.map_color }}',
+                        percent: '{{ data.get_surface_2018|percent:surface_territoire }}',
                     },
                 {% endif %}
             {% endfor %}],
