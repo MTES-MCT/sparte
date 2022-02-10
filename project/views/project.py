@@ -275,6 +275,14 @@ class RefCouverture:
         return self.couv.code
 
     @property
+    def evolution(self):
+        try:
+            val = list(self.surface.values())
+            return val[1] - val[0]
+        except KeyError:
+            return 0
+
+    @property
     def map_color(self):
         return self.couv.map_color
 
@@ -333,20 +341,20 @@ class ProjectReportCouvertureView(GroupMixin, DetailView):
         #         {"name": "CS1.2", "y": 2},
         #     ],
         # }
-        column_drill_down = dict()
-        for dc in data_covers:
-            key = "top" if dc.parent is None else dc.parent.code
-            if key not in column_drill_down:
-                column_drill_down[key] = []
-            column_drill_down[key].append(
-                {
-                    "name": dc.name,
-                    "y_2015": dc.get_surface_2015,
-                    "y_2018": dc.get_surface_2018,
-                    "drilldown": dc.code,
-                    "map_color": dc.map_color,
-                }
-            )
+        # column_drill_down = dict()
+        # for dc in data_covers:
+        #     key = "top" if dc.parent is None else dc.parent.code
+        #     if key not in column_drill_down:
+        #         column_drill_down[key] = []
+        #     column_drill_down[key].append(
+        #         {
+        #             "name": dc.name,
+        #             "y_2015": dc.get_surface_2015,
+        #             "y_2018": dc.get_surface_2018,
+        #             "drilldown": dc.code,
+        #             "map_color": dc.map_color,
+        #         }
+        #     )
 
         return {
             **super().get_context_data(),
@@ -354,7 +362,7 @@ class ProjectReportCouvertureView(GroupMixin, DetailView):
             "millesimes": millesimes,
             "surface_territoire": project.area,
             "active_page": "couverture",
-            "column_drill_down": column_drill_down,
+            # "column_drill_down": column_drill_down,
         }
 
 
