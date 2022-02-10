@@ -252,7 +252,7 @@ class ProjectReportConsoView(GroupMixin, DetailView):
 
 
 class RefCouverture:
-    def __init__(self, couv, data, millesimes):
+    def __init__(self, couv, data, millesimes, type_data="couverture"):
         self.couv = couv
         self.parent = couv.get_parent()
         self.name = f"{couv.code} {couv.label}"
@@ -265,7 +265,7 @@ class RefCouverture:
             self.surface[year] = sum(
                 [
                     v
-                    for k, v in data[year]["couverture"].items()
+                    for k, v in data[year][type_data].items()
                     if k.startswith(self.code_prefix)
                 ]
             )
@@ -381,28 +381,39 @@ class ProjectReportUsageView(GroupMixin, DetailView):
         raw_data = project.couverture_usage
         millesimes = raw_data.keys()
         data_covers = []
+
         for usage in UsageSol.objects.all().order_by("code"):
             data_covers.append(
-                {
-                    "code": usage.code,
-                    "code_prefix": usage.code_prefix,
-                    "level": usage.level,
-                    "parent": usage.get_parent(),
-                    "label_short": usage.label[:50],
-                    "label": usage.label,
-                    "color": None,
-                    "total_surface": dict(),
-                    "map_color": usage.map_color,
-                }
+                RefCouverture(
+                    usage,
+                    raw_data,
+                    millesimes,
+                    type_data="usage",
+                )
             )
-        for year in millesimes:
-            data = raw_data[year]["usage"]
-            for i in range(len(data_covers)):
-                key = f"total_surface_{year}"
-                label = data_covers[i]["code_prefix"]
-                value = sum([v for k, v in data.items() if k.startswith(label)])
-                data_covers[i][key] = value
-                data_covers[i]["total_surface"][year] = value
+
+        # for usage in UsageSol.objects.all().order_by("code"):
+        #     data_covers.append(
+        #         {
+        #             "code": usage.code,
+        #             "code_prefix": usage.code_prefix,
+        #             "level": usage.level,
+        #             "parent": usage.get_parent(),
+        #             "label_short": usage.label[:50],
+        #             "label": usage.label,
+        #             "color": None,
+        #             "total_surface": dict(),
+        #             "map_color": usage.map_color,
+        #         }
+        #     )
+        # for year in millesimes:
+        #     data = raw_data[year]["usage"]
+        #     for i in range(len(data_covers)):
+        #         key = f"total_surface_{year}"
+        #         label = data_covers[i]["code_prefix"]
+        #         value = sum([v for k, v in data.items() if k.startswith(label)])
+        #         data_covers[i][key] = value
+        #         data_covers[i]["total_surface"][year] = value
 
         return {
             **super().get_context_data(),
