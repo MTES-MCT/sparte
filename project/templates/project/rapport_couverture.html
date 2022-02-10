@@ -33,26 +33,13 @@ Rapport couverture du sol
         <div class="clearfix">
             <div class="card key-figure">
                 <div class="card-header">
-                    Territoire total
+                    Surface du territoire
                 </div>
                 <div class="card-body">
-                    <p class="figure">{{ total_surface }} ha</p>
-                </div>
-            </div>
-
-            <div class="card key-figure key-figure-yellow">
-                <div class="card-header">
-                    Progression
-                </div>
-                <div class="card-body">
-                    <p class="figure">XYZ ha</p>
-                    <p class="card-text"><small class="text-muted">
-                        aa% du territoire
-                    </small></p>
+                    <p class="figure">{{ surface_territoire|floatformat:0 }} ha</p>
                 </div>
             </div>
         </div>
-
 
         <div class="w-100 box p-4">
             <h3>Répartition</h3>
