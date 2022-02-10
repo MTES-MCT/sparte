@@ -313,7 +313,7 @@ class ProjectReportCouvertureView(GroupMixin, DetailView):
 
     def get_context_breadcrumbs(self):
         breadcrumbs = super().get_context_breadcrumbs()
-        breadcrumbs.append({"href": None, "title": "Rapport artificialisation"})
+        breadcrumbs.append({"href": None, "title": "Rapport couverture du sol"})
         return breadcrumbs
 
     def get_context_data(self, **kwargs):
@@ -392,29 +392,6 @@ class ProjectReportUsageView(GroupMixin, DetailView):
                 )
             )
 
-        # for usage in UsageSol.objects.all().order_by("code"):
-        #     data_covers.append(
-        #         {
-        #             "code": usage.code,
-        #             "code_prefix": usage.code_prefix,
-        #             "level": usage.level,
-        #             "parent": usage.get_parent(),
-        #             "label_short": usage.label[:50],
-        #             "label": usage.label,
-        #             "color": None,
-        #             "total_surface": dict(),
-        #             "map_color": usage.map_color,
-        #         }
-        #     )
-        # for year in millesimes:
-        #     data = raw_data[year]["usage"]
-        #     for i in range(len(data_covers)):
-        #         key = f"total_surface_{year}"
-        #         label = data_covers[i]["code_prefix"]
-        #         value = sum([v for k, v in data.items() if k.startswith(label)])
-        #         data_covers[i][key] = value
-        #         data_covers[i]["total_surface"][year] = value
-
         return {
             **super().get_context_data(),
             "data_covers": data_covers,
@@ -453,6 +430,34 @@ class ProjectReportSynthesisView(GroupMixin, DetailView):
             }
         )
         # project = self.get_object()
+        return context
+
+
+class ProjectReportArtifView(GroupMixin, DetailView):
+    queryset = Project.objects.all()
+    template_name = "project/rapport_artif.html"
+    context_object_name = "project"
+
+    def get_context_breadcrumbs(self):
+        breadcrumbs = super().get_context_breadcrumbs()
+        breadcrumbs.append(
+            {
+                "href": None,
+                "title": "Rapport artificialisation",
+            }
+        )
+        return breadcrumbs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data()
+        project = self.get_object()
+        total_surface = int(project.area * 100)
+        context.update(
+            {
+                "active_page": "artificialisation",
+                "total_surface": total_surface,
+            }
+        )
         return context
 
 
