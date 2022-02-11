@@ -75,7 +75,7 @@ class BaseProject(models.Model):
 
     @cached_property
     def area(self):
-        return self.combined_emprise.transform(2154, clone=True).area / 1000 ** 2
+        return self.combined_emprise.transform(2154, clone=True).area / (100 ** 2)
 
     def __str__(self):
         return self.name

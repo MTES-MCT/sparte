@@ -17,6 +17,10 @@
     </li>
     <li class="nav-item">
         <a class="nav-link{% if active_page == 'couverture' %} active bg-light{% endif %}"
-        href="{% url 'project:report_artif' project.pk %}">Couverture</a>
+        href="{% url 'project:report_couverture' project.pk %}">Couverture</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link{% if active_page == 'download' %} active bg-light{% endif %}"
+        href="{% url 'project:report_download' project.pk %}">Bilan téléchargeable</a>
     </li>
 </ul>
