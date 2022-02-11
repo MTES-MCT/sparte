@@ -8,7 +8,7 @@ from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from public_data.models import CouvertureSol, UsageSol, Land
 
 from project.forms import UploadShpForm, KeywordForm
-from project.models import Project
+from project.models import Project, Request
 from project.domains import ConsommationDataframe
 
 from utils.views_mixins import BreadCrumbMixin, GetObjectMixin
@@ -175,7 +175,7 @@ class ProjectReportConsoView(GroupMixin, DetailView):
                 }
             )
 
-        total_surface = int(project.area * 100)
+        total_surface = project.area
         pki_inital_surface = int(builder.get_global_intial())
         pki_final_surface = int(builder.get_global_final())
         pki_progression = int(builder.get_global_progression())
@@ -215,7 +215,7 @@ class ProjectReportConsoView(GroupMixin, DetailView):
             "initial_percent": 100 * pki_inital_surface / total_surface,
             "final_surface": pki_final_surface,
             "final_percent": 100 * pki_final_surface / total_surface,
-            "total_surface": total_surface,
+            "total_surface": project.area,
             "pki_progression": pki_progression,
             "pki_progression_percent": pki_progression_percent,
             "active_page": "consommation",
@@ -459,6 +459,62 @@ class ProjectReportArtifView(GroupMixin, DetailView):
             }
         )
         return context
+
+
+class ProjectReportDownloadView(GroupMixin, CreateView):
+    model = Request
+    template_name = "project/rapport_download.html"
+    fields = [
+        "first_name",
+        "last_name",
+        "function",
+        "organism",
+        "email",
+    ]
+
+    def get_context_breadcrumbs(self):
+        breadcrumbs = super().get_context_breadcrumbs()
+        breadcrumbs.append(
+            {
+                "href": None,
+                "title": "Téléchargement du bilan",
+            }
+        )
+        return breadcrumbs
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        context.update(
+            {
+                "project": self.get_object(),
+            }
+        )
+        return context
+
+    def get_initial(self):
+        """Return the initial data to use for forms on this view."""
+        initial = self.initial.copy()
+        if self.request.user:
+            initial.update(
+                {
+                    "first_name": self.request.user.first_name,
+                    "last_name": self.request.user.last_name,
+                    "function": self.request.user.function,
+                    "organism": self.request.user.organism,
+                    "email": self.request.user.email,
+                }
+            )
+        return initial
+
+    def form_valid(self, form):
+        # required to set the user who is logged as creator
+        if self.request.user:
+            form.instance.user = self.request.user
+        form.instance.project = self.get_object()
+        return super().form_valid(form)  # save the data in db
+
+    def get_success_url(self):
+        return reverse_lazy("project:detail", kwargs={"pk": self.get_object().id})
 
 
 class ProjectMapView(GroupMixin, DetailView):
