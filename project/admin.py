@@ -1,7 +1,9 @@
 from django.contrib.gis import admin
 from django.http import HttpResponseRedirect
+from django.urls import reverse
+from django.utils.html import format_html
 
-from .models import Project, Emprise, Plan, PlanEmprise
+from .models import Project, Emprise, Plan, PlanEmprise, Request
 from .tasks import process_project, process_new_plan
 
 
@@ -80,3 +82,66 @@ class PlanEmpriseAdmin(admin.GeoModelAdmin):
         "plan",
     )
     search_fields = ("plan",)
+
+
+@admin.register(Request)
+class RequestAdmin(admin.ModelAdmin):
+    model = Request
+    list_display = (
+        "email",
+        "created_date",
+        "link_to_user",
+        "sent_date",
+        "link_to_project",
+    )
+    search_fields = ("email",)
+    fieldsets = (
+        (
+            "Information personnelle",
+            {
+                "fields": (
+                    "first_name",
+                    "last_name",
+                    "organism",
+                    "function",
+                    "email",
+                    "link_to_user",
+                )
+            },
+        ),
+        (
+            "Réponse",
+            {
+                "description": "Suivre le traitement de la demande",
+                "fields": ("link_to_project", "sent_date", "done"),
+            },
+        ),
+    )
+    readonly_fields = (
+        "first_name",
+        "last_name",
+        "function",
+        "organism",
+        "email",
+        "project",
+        "user",
+        "link_to_user",
+        "link_to_project",
+        "created_date",
+        "updated_date",
+    )
+
+    def link_to_user(self, obj):
+        if obj.user_id:
+            link = reverse("admin:users_user_change", args=[obj.user_id])
+            return format_html(f'<a href="{link}">Accès à la fiche</a>')
+        else:
+            return format_html("Demande anonyme")
+
+    link_to_user.short_description = "Utilisateur"
+
+    def link_to_project(self, obj):
+        link = reverse("project:detail", args=[obj.project_id])
+        return format_html(f'<a href="{link}">Accès à la fiche</a>')
+
+    link_to_project.short_description = "Projet"
