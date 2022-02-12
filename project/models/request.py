@@ -36,4 +36,4 @@ class Request(models.Model):
         ordering = ["-created_date"]
 
     def __str__(self):
-        return f"Demande de {self.firstname}"
+        return f"Demande de {self.first_name}"
