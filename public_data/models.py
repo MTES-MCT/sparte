@@ -1020,6 +1020,13 @@ class Region(LandMixin, GetDataFromCeremaMixin, models.Model):
     name = models.CharField("Nom", max_length=27)
     mpoly = models.MultiPolygonField()
 
+    def get_ocsge_millesimes(self) -> set:
+        return {
+            millesime
+            for dept in self.departement_set.all()
+            for millesime in dept.get_ocsge_millesimes()
+        }
+
     @property
     def public_key(self):
         return f"REGION_{self.id}"
@@ -1052,13 +1059,12 @@ class Departement(LandMixin, GetDataFromCeremaMixin, models.Model):
     def public_key(self):
         return f"DEPART_{self.id}"
 
-    @property
-    def millesimes(self):
+    def get_ocsge_millesimes(self) -> set:
         """Return the list of all OCSGE millesimes (years) available for this dept."""
         if not self.ocsge_millesimes:
             return list()
         matches = re.finditer(r"([\d]{4,4})", self.ocsge_millesimes)
-        return [int(m.group(0)) for m in matches]
+        return {int(m.group(0)) for m in matches}
 
     def get_qs_cerema(self):
         return Cerema.objects.filter(dept_id=self.source_id)
@@ -1072,6 +1078,13 @@ class Epci(LandMixin, GetDataFromCeremaMixin, models.Model):
     name = models.CharField("Nom", max_length=64)
     mpoly = models.MultiPolygonField()
     departements = models.ManyToManyField(Departement)
+
+    def get_ocsge_millesimes(self) -> set:
+        return {
+            millesime
+            for dept in self.departements.all()
+            for millesime in dept.get_ocsge_millesimes()
+        }
 
     @property
     def public_key(self):
@@ -1112,6 +1125,9 @@ class Commune(LandMixin, GetDataFromCeremaMixin, models.Model):
     def __str__(self):
         return f"{self.name} ({self.insee})"
 
+    def get_ocsge_millesimes(self) -> set:
+        return self.departement.get_ocsge_millesimes()
+
     @classmethod
     def search(cls, needle):
         qs = cls.objects.filter(Q(name__icontains=needle) | Q(insee__icontains=needle))
@@ -1133,10 +1149,10 @@ class Land:
 
     def __init__(self, public_key):
         self.public_key = public_key
-        land_type, id = public_key.strip().split("_")
-        klass = self.get_land_class(land_type)
+        self.land_type, self.id = public_key.strip().split("_")
+        klass = self.get_land_class(self.land_type)
         try:
-            self.land = klass.objects.get(pk=int(id))
+            self.land = klass.objects.get(pk=int(self.id))
         except ObjectDoesNotExist as e:
             raise Exception(f"Public key '{id}' unknown") from e
 
