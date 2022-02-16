@@ -123,6 +123,9 @@ class SetProjectOptions(BreadCrumbMixin, FormView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         lands = self.get_territoire()
+        millesimes = {year for land in lands for year in land.get_ocsge_millesimes()}
+        millesimes = list(millesimes)
+        millesimes.sort()
         is_artif_ready = True
         for land in lands:
             is_artif_ready &= land.is_artif_ready
@@ -130,6 +133,7 @@ class SetProjectOptions(BreadCrumbMixin, FormView):
             {
                 "lands": lands,
                 "analysis_artif": is_artif_ready,
+                "millesimes": millesimes,
             }
         )
         return context

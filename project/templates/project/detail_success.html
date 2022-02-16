@@ -91,6 +91,12 @@ SPARTE
                 </div>
 
                 <div class="box p-4 mt-1">
+                    <span  class="fw-bold">Millésimes OCSGE utilisés</span>
+                    <p>Le plus ancien : {{ project.first_year_ocsge|stringformat:"i" }}
+                    <br/>Le plus récent : {{ project.last_year_ocsge|stringformat:"i" }}</p>
+                </div>
+
+                <div class="box p-4 mt-1">
                     <span  class="fw-bold">Analyses disponibles</span>
                     <br/><i class="bi bi-check-circle text-success"></i> Consomation d'espace
                     <br/>
