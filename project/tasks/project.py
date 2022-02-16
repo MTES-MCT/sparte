@@ -27,7 +27,7 @@ import logging
 from django.contrib.gis.db.models import Union
 from django.contrib.gis.geos.collections import MultiPolygon
 
-from public_data.models import Ocsge, Departement
+from public_data.models import Ocsge
 
 from project.models import Project
 
@@ -155,13 +155,15 @@ def evaluate_indicators(project: Project):
 def find_first_and_last_ocsge(project: Project):
     """Use associated cities to find departements and available OCSGE millesime"""
     logger.info("Find first and last ocsge id=%d", project.id)
-    dept_ids = project.cities.all().values_list("departement_id", flat=True)
-    depts = Departement.objects.filter(id__in=dept_ids)
-    millesimes = set()
-    for dept in depts:
-        millesimes += set(dept.millesimes)
-    project.first_year_ocsge = min(millesimes)
-    project.last_year_ocsge = max(millesimes)
+    millesimes = {
+        millesime
+        for city in project.cities.all()
+        for millesime in city.get_ocsge_millesimes()
+        if int(project.analyse_start_date) <= millesime <= int(project.analyse_end_date)
+    }
+    if millesimes:
+        project.first_year_ocsge = min(millesimes)
+        project.last_year_ocsge = max(millesimes)
 
 
 @shared_task
@@ -185,15 +187,16 @@ def evaluate_couverture_and_usage(project: Project):
     if isinstance(project, int):
         project = get_project(project)
     geom = project.combined_emprise
-    data = {
-        "2015": {
-            "couverture": Ocsge.get_groupby("couverture", coveredby=geom, year=2015),
-            "usage": Ocsge.get_groupby("usage", coveredby=geom, year=2015),
-        },
-        "2018": {
-            "couverture": Ocsge.get_groupby("couverture", coveredby=geom, year=2018),
-            "usage": Ocsge.get_groupby("usage", coveredby=geom, year=2018),
-        },
-    }
-    project.couverture_usage = data
+    project.couverture_usage = dict()
+    for year in {project.first_year_ocsge, project.last_year_ocsge}:
+        project.couverture_usage.update(
+            {
+                str(year): {
+                    "couverture": Ocsge.get_groupby(
+                        "couverture", coveredby=geom, year=year
+                    ),
+                    "usage": Ocsge.get_groupby("usage", coveredby=geom, year=year),
+                }
+            }
+        )
     project.save(update_fields=["couverture_usage"])
