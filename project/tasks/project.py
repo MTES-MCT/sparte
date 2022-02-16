@@ -7,7 +7,9 @@ Current process is :
 Step 1 - evaluate emprise from shape file or linked cities
 Step 2 - link cities within the emprise (obviously not done when emprise is
          built from it)
-Step 3 - Evaluate indicators: couverture and usage du sol
+Step 3 - Evaluate indicators:
+    3.1 - first and last OCSGE millesime available
+    3.2 - couverture and usage du sol
 
 There are 3 entry points :
 * process_project_with_shape : a shape have been provided steps 1 to 3 will be
@@ -25,7 +27,7 @@ import logging
 from django.contrib.gis.db.models import Union
 from django.contrib.gis.geos.collections import MultiPolygon
 
-from public_data.models import Ocsge
+from public_data.models import Ocsge, Departement
 
 from project.models import Project
 
@@ -55,8 +57,8 @@ def process_project_with_shape(project_id: int):
         import_shp(project)
         # step 2 - only for shape file built emprise
         get_cities_from_emprise(project)
-        # step 3 - evaluate couverture and usage
-        evaluate_couverture_and_usage(project)
+        # step 3 - evaluate indicators
+        evaluate_indicators(project)
         # all good !
         project.set_success()
     except Exception as e:
@@ -85,8 +87,8 @@ def build_emprise_from_city(project_id: int):
         else:
             project.emprise_set.create(mpoly=MultiPolygon(qs["mpoly"]))
         # step 2 - do not do it, cities have been populated previously
-        # step 3 - evaluate couverture and usage
-        evaluate_couverture_and_usage(project)
+        # step 3 - evaluate indicators
+        evaluate_indicators(project)
         # all good !
         project.set_success()
     except Exception as e:
@@ -109,8 +111,8 @@ def process_project_with_emprise(project_id: int):
         # step 1 : emprise already set, don't do it
         # step 2 - only for shape file built emprise
         get_cities_from_emprise(project)
-        # step 3 - evaluate couverture and usage
-        evaluate_couverture_and_usage(project)
+        # step 3 - evaluate indicators
+        evaluate_indicators(project)
         # all good !
         project.set_success()
     except Exception as e:
@@ -139,6 +141,30 @@ def process_project(project_id: int):
 
 
 @shared_task
+def evaluate_indicators(project: Project):
+    """Evaluate all indicators:
+    3.1 - find first and last OCSGE's millesimes
+    3.2 - evaluate couverture and usage
+    """
+    logger.info("Evaluate indicators id=%d", project.id)
+    find_first_and_last_ocsge(project)
+    evaluate_couverture_and_usage(project)
+
+
+@shared_task
+def find_first_and_last_ocsge(project: Project):
+    """Use associated cities to find departements and available OCSGE millesime"""
+    logger.info("Find first and last ocsge id=%d", project.id)
+    dept_ids = project.cities.all().values_list("departement_id", flat=True)
+    depts = Departement.objects.filter(id__in=dept_ids)
+    millesimes = set()
+    for dept in depts:
+        millesimes += set(dept.millesimes)
+    project.first_year_ocsge = min(millesimes)
+    project.last_year_ocsge = max(millesimes)
+
+
+@shared_task
 def evaluate_couverture_and_usage(project: Project):
     """Calculate couverture and usage of the floor of the project.
     it evaluates covering with Ocasge2015 and 2018 and for couverture and usage
@@ -155,7 +181,7 @@ def evaluate_couverture_and_usage(project: Project):
         '2018': { ... },  # same as 2015
     }
     """
-    logger.info("Calculate couverture and usage")
+    logger.info("Calculate couverture and usage, id=%s", project.id)
     if isinstance(project, int):
         project = get_project(project)
     geom = project.combined_emprise
