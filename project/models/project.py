@@ -3,6 +3,7 @@ import traceback
 from django.conf import settings
 from django.contrib.gis.db import models as gis_models
 from django.contrib.gis.db.models import Union
+from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models import Sum, F
 from django.urls import reverse
@@ -141,6 +142,13 @@ class Project(BaseProject):
 
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
+
+    first_year_ocsge = models.IntegerField(
+        "Premier millésime OCSGE", validators=[MinValueValidator(2000)]
+    )
+    last_year_ocsge = models.IntegerField(
+        "Dernier millésime OCSGE", validators=[MinValueValidator(2000)]
+    )
 
     @property
     def nb_years(self):
