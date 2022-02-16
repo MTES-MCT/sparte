@@ -2,8 +2,21 @@
 
 Ce changelog suit la méthode "keep a changelog" disponible ici: [https://keepachangelog.com/en/1.0.0/](https://keepachangelog.com/en/1.0.0/)
 
+## [1.1.0]
 
-## [Unreleased]
+Objectif principale : rapport sur l'artificialisation
+
+### Ajouté
+- Demander son bilan et le recevoir par e-mail
+- Log des erreurs dans Sentry (voir [le tableau de bord dédié](https://sentry.io/betagouv-f7/sparte))
+
+### Modifié
+- Changement des graphiques dans les rapports Couvertures et Usages
+
+### Corrigé
+
+
+## [1.0.0] - 2022-01-25
 
 ### Ajouté
 - Log des requêtes entrantes pour s'assurer qu'elles sont en cours de traitement
@@ -39,7 +52,7 @@ Ce changelog suit la méthode "keep a changelog" disponible ici: [https://keepac
 - Affectation de la date & heure lors de l'import d'une emprise
 - Masquer des layers lors de l'ouverture de la carte interactive
 
-## [0.1.0] - 2017-06-20
+## [0.1.0] - 2021-06-20
 
 Initialisation de ce changelog.
 
