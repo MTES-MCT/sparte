@@ -355,7 +355,7 @@ sentry_sdk.init(
     # something more human-readable.
     release=f"Sparte@{OFFICIAL_VERSION}",
     environment=env.str("ENVIRONMENT"),
-    debug=DEBUG,
+    debug=False,
     request_bodies="always",
     with_locals=True,
 )
