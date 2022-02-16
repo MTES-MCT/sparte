@@ -679,7 +679,9 @@ class Ocsge(AutoLoadMixin, DataColorationMixin, models.Model):
         qs = qs.annotate(surface=Area(Transform("intersection", 2154)))
         qs = qs.values(field_group_by).order_by(field_group_by)
         qs = qs.annotate(total_surface=classic_models.Sum("surface"))
-        data = {_[field_group_by]: _["total_surface"].sq_km for _ in qs}
+        # il n'y a pas les hectares dans l'objet area, on doit faire une conversion
+        # 1 m² ==> 0,0001 hectare
+        data = {_[field_group_by]: _["total_surface"].sq_m / (100 ** 2) for _ in qs}
         return data
 
     @classmethod
