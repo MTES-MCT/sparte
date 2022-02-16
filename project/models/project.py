@@ -144,10 +144,10 @@ class Project(BaseProject):
     updated_date = models.DateTimeField(auto_now=True)
 
     first_year_ocsge = models.IntegerField(
-        "Premier millésime OCSGE", validators=[MinValueValidator(2000)]
+        "Premier millésime OCSGE", validators=[MinValueValidator(2000)], null=True
     )
     last_year_ocsge = models.IntegerField(
-        "Dernier millésime OCSGE", validators=[MinValueValidator(2000)]
+        "Dernier millésime OCSGE", validators=[MinValueValidator(2000)], null=True
     )
 
     @property
