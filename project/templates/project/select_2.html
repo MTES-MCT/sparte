@@ -33,6 +33,14 @@ Sélectionner un plan
             Artificialisation
         </p>
 
+        <p>
+            <span  class="fw-bold">Millésimes de l'OCSGE disponibles : <i class="bi bi-question-circle" data-toggle="tooltip" title="Le millésime le plus ancien et le plus récent disponibles dans la période que vous aller renseigner ci-dessous vont être sélectionnés pour les analyses."></i></span>
+            {% for millesime in millesimes %}
+            <br/><i class="bi bi-arrow-right"></i> {{ millesime }}
+            {% endfor %}
+
+        </p>
+
         <p class="fw-bold">Options disponibles :</p>
 
         <form action="" method="post">
