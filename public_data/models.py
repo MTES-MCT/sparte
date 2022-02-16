@@ -1052,6 +1052,7 @@ class Departement(LandMixin, GetDataFromCeremaMixin, models.Model):
 
     @property
     def millesimes(self):
+        """Return the list of all OCSGE millesimes (years) available for this dept."""
         if not self.ocsge_millesimes:
             return list()
         matches = re.finditer(r"([\d]{4,4})", self.ocsge_millesimes)
