@@ -30,7 +30,7 @@ function emprise_style(feature) {
         // border (or stoke) options
         weight: 2,
         opacity: 1,
-        color: 'red',
+        color: 'yellow',
         dashArray: '10',
         fillOpacity: 0
     }
