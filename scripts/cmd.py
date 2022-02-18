@@ -102,9 +102,13 @@ def create_public_project(ctx):
 
 @cli.command()
 @click.pass_context
-def reset_project(ctx):
-    """Trigger create_public_project command"""
-    manage_py(ctx.obj["ENV_NAME"], "reset_project")
+def mep_110(ctx):
+    """Trigger all data transformation to successful MEP release 1.1.0"""
+    # set first and last ocsge
+    # change unit from km² to ha
+    manage_py(ctx.obj["ENV_NAME"], "reevaluate_project_mep_110")
+    # find which millesime is in each departement
+    manage_py(ctx.obj["ENV_NAME"], "set_dept_millesimes")
 
 
 if __name__ == "__main__":
