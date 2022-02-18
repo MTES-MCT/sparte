@@ -187,6 +187,8 @@ def evaluate_couverture_and_usage(project: Project):
     if isinstance(project, int):
         project = get_project(project)
     geom = project.combined_emprise
+    if not geom:
+        return
     project.couverture_usage = dict()
     for year in {project.first_year_ocsge, project.last_year_ocsge}:
         project.couverture_usage.update(
