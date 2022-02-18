@@ -25,7 +25,7 @@ class GroupMixin(GetObjectMixin, UserQuerysetOrPublicMixin, BreadCrumbMixin):
     def get_context_breadcrumbs(self):
         breadcrumbs = super().get_context_breadcrumbs()
         breadcrumbs.append(
-            {"href": reverse_lazy("project:list"), "title": "Mes projets"},
+            {"href": reverse_lazy("project:list"), "title": "Mes diagnostics"},
         )
         try:
             project = self.get_object()
@@ -534,7 +534,7 @@ class ProjectMapView(GroupMixin, DetailView):
         context.update(
             {
                 "breadcrumb": [
-                    {"href": reverse_lazy("project:list"), "title": "Mes projets"},
+                    {"href": reverse_lazy("project:list"), "title": "Mes diagnostics"},
                     {
                         "href": reverse_lazy(
                             "project:detail",
