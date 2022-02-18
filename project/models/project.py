@@ -238,9 +238,9 @@ class Project(BaseProject):
         """
         determinants = {
             "hab": "Habitat",
-            "act": "Acitvité",
+            "act": "Activité",
             "mix": "Mixte",
-            "inc": "Inconnu",
+            "inc": "Non renseigné",
         }
         results = {f: dict() for f in determinants.values()}
         args = []
