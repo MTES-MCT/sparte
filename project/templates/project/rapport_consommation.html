@@ -186,8 +186,34 @@ Rapport consommation
                         <div id="chart_determinant"></div>
                     </div>
                 </div>
-
             </div>
+
+            <div class="box scrollme-x p-4">
+                <h3 class="mb-3">Déterminants de la consommation :</h3>
+                <table class="table table-striped table-sm table-borderless">
+                    <thead>
+                        <tr>
+                            <th scope="col">Déterminant</th>
+                            {% for x_axis in graph_x_axis %}
+                            <th scope="col" style="text-align: right">{{ x_axis }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for determinant_name, data in data_determinant.items %}
+                        <tr>
+                            <th scope="row">{{ determinant_name }}</th>
+                            {% for year, val in data.items %}
+                            <td align="right">+{{ val|floatformat:1 }}</td>
+                            {% endfor %}
+                        </tr>
+
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+
 
             <div class="box alert">
                 <h3>Provenance des données</h3>
