@@ -146,6 +146,11 @@ class OptionsForm(forms.Form):
     analysis_start = forms.ChoiceField(label="Début d'analyse", choices=YEAR_CHOICES)
     analysis_end = forms.ChoiceField(label="Fin d'analyse", choices=YEAR_CHOICES)
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["analysis_start"].widget.attrs.update({"class": "force-carret"})
+        self.fields["analysis_end"].widget.attrs.update({"class": "force-carret"})
+
     def clean(self):
         cleaned_data = super().clean()
         if cleaned_data["analysis_start"] >= cleaned_data["analysis_end"]:
