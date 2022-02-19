@@ -331,34 +331,34 @@ NUMBER_GROUPING = 3
 
 
 # SENTRY
-
-sentry_sdk.init(
-    dsn="https://a227bee32f4f41c2a60e9292ce4d033e@o548798.ingest.sentry.io/6068271",
-    integrations=[
-        DjangoIntegration(
-            # available options:
-            # url (default) - formats based on the route
-            # function_name - formats based on the view function name
-            transaction_style="url",
-        ),
-    ],
-    # Set traces_sample_rate to 1.0 to capture 100%
-    # of transactions for performance monitoring.
-    # We recommend adjusting this value in production.
-    traces_sample_rate=0.0,
-    # If you wish to associate users to errors (assuming you are using
-    # django.contrib.auth) you may enable sending PII data.
-    send_default_pii=True,
-    # By default the SDK will try to use the SENTRY_RELEASE
-    # environment variable, or infer a git commit
-    # SHA as release, however you may want to set
-    # something more human-readable.
-    release=f"Sparte@{OFFICIAL_VERSION}",
-    environment=env.str("ENVIRONMENT"),
-    debug=False,
-    request_bodies="always",
-    with_locals=True,
-)
+if ENVIRONMENT != "local":
+    sentry_sdk.init(
+        dsn="https://a227bee32f4f41c2a60e9292ce4d033e@o548798.ingest.sentry.io/6068271",
+        integrations=[
+            DjangoIntegration(
+                # available options:
+                # url (default) - formats based on the route
+                # function_name - formats based on the view function name
+                transaction_style="url",
+            ),
+        ],
+        # Set traces_sample_rate to 1.0 to capture 100%
+        # of transactions for performance monitoring.
+        # We recommend adjusting this value in production.
+        traces_sample_rate=0.0,
+        # If you wish to associate users to errors (assuming you are using
+        # django.contrib.auth) you may enable sending PII data.
+        send_default_pii=True,
+        # By default the SDK will try to use the SENTRY_RELEASE
+        # environment variable, or infer a git commit
+        # SHA as release, however you may want to set
+        # something more human-readable.
+        release=f"Sparte@{OFFICIAL_VERSION}",
+        environment=ENVIRONMENT,
+        debug=False,
+        request_bodies="always",
+        with_locals=True,
+    )
 
 # LOGGING SETTINGS
 
