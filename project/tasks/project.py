@@ -26,10 +26,13 @@ import logging
 
 from django.contrib.gis.db.models import Union
 from django.contrib.gis.geos.collections import MultiPolygon
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import get_template
 
+from app_parameter.models import Parameter
 from public_data.models import Ocsge
 
-from project.models import Project
+from project.models import Project, Request
 
 from .utils import import_shp, get_cities_from_emprise
 
@@ -202,3 +205,32 @@ def evaluate_couverture_and_usage(project: Project):
             }
         )
     project.save(update_fields=["couverture_usage"])
+
+
+@shared_task
+def send_email_request_bilan(request_id):
+    """Il faut envoyer 2 e-mails: 1 au demandeur et 1 à l'équipe SPARTE"""
+    logger.info("Send email to bilan requester (start)")
+    logger.info("Request_id=%s", request_id)
+    request = Request.objects.get(pk=request_id)
+    subject = "Confirmation de demande de bilan"
+    recipients = [request.email]
+    from_email = Parameter.objects.str("TEAM_EMAIL")
+    # Retrive then fill templates
+    context = {
+        "project": request.project,
+        "request": request,
+    }
+    text = get_template("project/emails/dl_diagnostic_client.txt")
+    html = get_template("project/emails/dl_diagnostic_client.html")
+    text_content = text.render(context)
+    html_content = html.render(context)
+    # création de l'e-mail
+    msg = EmailMultiAlternatives(subject, text_content, from_email, recipients)
+    msg.attach_alternative(html_content, "text/html")
+    # envoi
+    try:
+        msg.send()
+        logger.info("Email sent with success (id=%s)", request_id)
+    except Exception as error:
+        logger.error("Error while sending email for request=%s: %s", request_id, error)
