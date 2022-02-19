@@ -109,6 +109,7 @@ def mep_110(ctx):
     manage_py(ctx.obj["ENV_NAME"], "reevaluate_project_mep_110")
     # find which millesime is in each departement
     manage_py(ctx.obj["ENV_NAME"], "set_dept_millesimes")
+    manage_py(ctx.obj["ENV_NAME"], "param_mep_110")
 
 
 if __name__ == "__main__":
