@@ -44,37 +44,10 @@ Rapport consommation
 
                 <div class="card key-figure key-figure-yellow">
                     <div class="card-header">
-                        Consommé avant {{ start_year }}
-                    </div>
-                    <div class="card-body">
-                        <p class="figure">N/A ha</p>
-                        <p class="card-text"><small class="text-muted">
-                            N/A% du territoire
-                        </small></p>
-                    </div>
-                </div>
-
-                <div class="card key-figure key-figure-yellow">
-                    <div class="card-header">
-                        Consommé en {{ end_year }}
-                    </div>
-                    <div class="card-body">
-                        <p class="figure">N/A ha</p>
-                        <p class="card-text"><small class="text-muted">
-                            N/A% du territoire
-                        </small></p>
-                    </div>
-                </div>
-
-                <div class="card key-figure key-figure-yellow">
-                    <div class="card-header">
                         Progression {{ start_year }} à {{ end_year }}
                     </div>
                     <div class="card-body">
-                        <p class="figure">+N/A ha</p>
-                        <p class="card-text"><small class="text-muted">
-                            +N/A % du Territoire
-                        </small></p>
+                        <p class="figure">+{{ project_scope.consummed|floatformat:1 }} ha</p>
                     </div>
                 </div>
             </div>
@@ -107,7 +80,7 @@ Rapport consommation
 
                 <div class="card key-figure key-figure-green">
                     <div class="card-header">
-                        Trajectoire annuelle
+                        Trajectoire projetée annualisée
                     </div>
                     <div class="card-body">
                         <p class="figure">+{{ target_2031.annual_forecast|floatformat:0 }} ha/an</p>
