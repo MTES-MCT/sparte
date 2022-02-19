@@ -146,7 +146,13 @@ Rapport consommation
             </div>
 
             <div class="w-100 box p-4">
-                <h3>Comparaison avec les territoires voisins</h3>
+                <a name="territoires-de-comparaison"></a>
+                <h3>
+                    <a class="float-end" href="{% url 'project:lookalike' project.id %}?from=conso_report">
+                        <i class="bi bi-plus-circle" data-toggle="tooltip" title="Ajouter un territoire de comparaison"></i>
+                    </a>
+                    Comparaison avec les territoires voisins
+                </h3>
                 <div id="chart_2" class="flex-fill"></div>
             </div>
 

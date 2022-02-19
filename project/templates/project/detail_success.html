@@ -109,10 +109,12 @@ SPARTE
                 </div>
 
                 <div class="box p-4 mt-1 flex-grow-1">
-                    <a class="float-end" href="{% url 'project:lookalike' project.id %}">
-                        <i class="bi bi-plus-circle"></i>
-                    </a>
-                    <span  class="fw-bold">Territoires de comparaison</span>
+                    <div  class="fw-bold">
+                        <a class="float-end" href="{% url 'project:lookalike' project.id %}">
+                            <i class="bi bi-plus-circle"></i>
+                        </a>
+                        Territoires de comparaison
+                    </div>
                     {% if project.look_a_like %}
                         <div class="d-flex flex-column mt-2">
                         {% for land in project.get_look_a_like %}

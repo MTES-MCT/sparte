@@ -1,7 +1,7 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
 from django.shortcuts import redirect
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.views.generic import ListView, DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
@@ -706,6 +706,8 @@ class ProjectAddLookALike(GroupMixin, DetailView):
     def get_context_data(self, **kwargs):
         if "form" not in kwargs:
             kwargs["form"] = self.get_form()
+        if "from" in self.request.GET:
+            kwargs["from"] = f"from={self.request.GET['from']}"
         return super().get_context_data(**kwargs)
 
     def get(self, request, *args, **kwargs):
@@ -718,7 +720,12 @@ class ProjectAddLookALike(GroupMixin, DetailView):
                 # use land.public_key to avoid injection
                 project.add_look_a_like(land.public_key)
                 project.save()
-                return redirect(project)
+                page_from = self.request.GET.get("from", None)
+                if page_from == "conso_report":
+                    url = reverse("project:report", kwargs={"pk": project.id})
+                    return redirect(f"{url}#territoires-de-comparaison")
+                else:
+                    return redirect(project)
             except Exception:
                 return super().get(request, *args, **kwargs)
         rm_public_key = request.GET.get("remove", None)
