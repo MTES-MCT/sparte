@@ -10,6 +10,7 @@ from public_data.models import CouvertureSol, UsageSol, Land
 from project.forms import UploadShpForm, KeywordForm
 from project.models import Project, Request
 from project.domains import ConsommationDataframe
+from project.tasks import send_email_request_bilan
 
 from utils.views_mixins import BreadCrumbMixin, GetObjectMixin
 
@@ -511,10 +512,12 @@ class ProjectReportDownloadView(GroupMixin, CreateView):
         if self.request.user:
             form.instance.user = self.request.user
         form.instance.project = self.get_object()
-        return super().form_valid(form)  # save the data in db
+        self.object = form.save()
+        send_email_request_bilan(self.object.id)
+        return HttpResponseRedirect(self.get_success_url())
 
     def get_success_url(self):
-        return reverse_lazy("project:detail", kwargs={"pk": self.get_object().id})
+        return reverse("project:detail", kwargs={"pk": self.object.id})
 
 
 class ProjectMapView(GroupMixin, DetailView):

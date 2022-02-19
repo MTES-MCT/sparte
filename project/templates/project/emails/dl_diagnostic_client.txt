@@ -1,0 +1,8 @@
+Bonjour {{ request.first_name }},
+
+Votre demande de téléchargement du bilan de "{{ project.name }}" (période {{ project.analysis_start_date }} à {{ project.analysis_end_date }}) a bien été enregistrée. L'équipe de SPARTE va rapidement prendre connaissance de votre demande puis produire et enfin envoyer votre bilan.
+
+Nous sommes à votre disposition si vous avez des questions.
+
+Cordialement,
+L'équipe de SPARTE
