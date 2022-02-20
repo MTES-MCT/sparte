@@ -43,20 +43,25 @@ Carte intéractive
 
 {% block carto %}
 <div class="d-flex h-100" style="overflow:auto;">
+    <div class="h-100 collapse collapse-horizontal p-2" id="layer_list" style="width: 300px;">
+        <h2>Calques</h2>
+    </div>
+    <div class="h-100 border-right" style="width: 22px;">
+        <a href="#" class="" data-bs-toggle="collapse" data-bs-target="#layer_list" aria-expanded="false" aria-controls="layer_list">
+            <i class="bi bi-chevron-double-right" id="toggle-calque" style="font-size: 1.5rem;"></i>
+        </a>
+    </div>
     <div id="mapid" class="flex-grow-1"></div>
 </div>
-{% endblock %}
-
-{% block sub_bar_actions %}
-    {{ block.super }}
-    <li class="nav-item dropdown">
-        <a class="dropdown-toggle btn btn-sm btn-outline-primary" href="#" id="dropdownMenuButton1" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Calques
-        </a>
-        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton1">
-            <form class="px-4 py-3" id="layer_list" style="width:350px;"></form>
-        </ul>
-    </li>
+<script language="javascript">
+var calque_div = document.getElementById('layer_list')
+calque_div.addEventListener('hidden.bs.collapse', function () {
+    $("#toggle-calque").toggleClass('bi-chevron-double-right').toggleClass('bi-chevron-double-left');
+})
+calque_div.addEventListener('show.bs.collapse', function () {
+    $("#toggle-calque").toggleClass('bi-chevron-double-right').toggleClass('bi-chevron-double-left');
+})
+</script>
 {% endblock %}
 
 {% block bodyend %}

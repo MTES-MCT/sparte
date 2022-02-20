@@ -171,15 +171,15 @@ function Carto (map_center, default_zoom)
         this._info_div.innerHTML = html_content
     }
 
-    this.legend.onAdd = (map) => {
-        // create a div with a class "legend"
-        this._info_legend = L.DomUtil.create('div', 'info legend');
-        return this._info_legend;
-    }
+    // this.legend.onAdd = (map) => {
+    //     // create a div with a class "legend"
+    //     this._info_legend = L.DomUtil.create('div', 'info legend');
+    //     return this._info_legend;
+    // }
 
-    this.legend.update = (html_content) => {
-        this._info_legend.innerHTML = html_content
-    }
+    // this.legend.update = (html_content) => {
+    //     this._info_legend.innerHTML = html_content
+    // }
 }
 
 
