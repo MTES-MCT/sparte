@@ -121,11 +121,23 @@
 
                 <!-- Page content-->
                 <main class="p-0 flex-grow-1 d-flex flex-column" style="overflow: auto;">
+                    {% if messages %}
+                        <div class="row justify-content-center w-100 my-0">
+                            <div class="col-12 col-md-8 col-lg-6">
+                                {% for message in messages %}
+                                <div class="alert alert-{{ message.tags }} alert-dismissible fade show mt-5" role="alert">
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
                     {% block carto %}
                     <div class="mb-5">
                         {% block content %}
                         <div class="row justify-content-center w-100 my-0">
-                            <div class="col-12 col-md-5 col-lg-4" style="width:450px;">
+                            <div class="col-12 col-md-5 col-lg-4">
                                 <h2 class="mb-5">Bonjour {{ user.greetings }} !</h2>
                                 <p>La première étape pour utiliser SPARTE est de créer un PROJET :
                                 <br/><a class="btn btn-primary" href="{% url 'project:add' %}" role="button">Créer un projet</a></p>
