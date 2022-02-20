@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
 from django.shortcuts import redirect
@@ -513,11 +514,18 @@ class ProjectReportDownloadView(GroupMixin, CreateView):
             form.instance.user = self.request.user
         form.instance.project = self.get_object()
         self.object = form.save()
-        send_email_request_bilan(self.object.id)
+        send_email_request_bilan.delay(self.object.id)
+        messages.success(
+            self.request,
+            (
+                "Votre demande de bilan a été enregistrée, un e-mail de confirmation "
+                "vous a été envoyé."
+            ),
+        )
         return HttpResponseRedirect(self.get_success_url())
 
     def get_success_url(self):
-        return reverse("project:detail", kwargs={"pk": self.object.id})
+        return self.object.project.get_absolute_url()
 
 
 class ProjectMapView(GroupMixin, DetailView):
