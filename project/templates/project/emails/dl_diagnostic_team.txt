@@ -1,0 +1,8 @@
+Hello l'équipe.
+
+Une nouvelle demande de bilan vient de nous parvenir. Voici les informations :
+* Accéder à la demande dans l'admin : {{ request_url }}
+* Accéder au diagnostic en ligne : {{ project_url }}
+
+Bon courage,
+Alfred

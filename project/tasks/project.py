@@ -27,11 +27,11 @@ import logging
 from django.conf import settings
 from django.contrib.gis.db.models import Union
 from django.contrib.gis.geos.collections import MultiPolygon
-from django.core.mail import EmailMultiAlternatives
-from django.template.loader import get_template
+from django.urls import reverse
 
 from app_parameter.models import Parameter
 from public_data.models import Ocsge
+from utils.emails import send_template_email
 
 from project.models import Project, Request
 
@@ -214,26 +214,31 @@ def send_email_request_bilan(request_id):
     logger.info("Send email to bilan requester (start)")
     logger.info("Request_id=%s", request_id)
     request = Request.objects.get(pk=request_id)
-    subject = "Confirmation de demande de bilan"
-    recipients = [request.email]
-    from_email = Parameter.objects.str("TEAM_EMAIL")
-    # Retrive then fill templates
-    project_url = request.project.get_absolute_url()
-    context = {
-        "project": request.project,
-        "request": request,
-        "project_url": f"https://{settings.DOMAIN}{project_url}",
-    }
-    text = get_template("project/emails/dl_diagnostic_client.txt")
-    html = get_template("project/emails/dl_diagnostic_client.html")
-    text_content = text.render(context)
-    html_content = html.render(context)
-    # création de l'e-mail
-    msg = EmailMultiAlternatives(subject, text_content, from_email, recipients)
-    msg.attach_alternative(html_content, "text/html")
-    # envoi
-    try:
-        msg.send()
-        logger.info("Email sent with success (id=%s)", request_id)
-    except Exception as error:
-        logger.error("Error while sending email for request=%s: %s", request_id, error)
+    project_url = f"https://{settings.DOMAIN}{request.project.get_absolute_url()}"
+    # send e-mail to requester
+    send_template_email(
+        subject="Confirmation de demande de bilan",
+        recipients=[request.email],
+        template_name="project/emails/dl_diagnostic_client",
+        context={
+            "project": request.project,
+            "request": request,
+            "project_url": project_url,
+        },
+    )
+    # send e-mail to team
+    relative_url = reverse(
+        "admin:project_request_change", kwargs={"object_id": request.id}
+    )
+    send_template_email(
+        subject="Nouvelle demande de bilan",
+        # recipients=[Parameter.objects.str("TEAM_EMAIL")],
+        recipients=["swann.bouviermuller@beta.gouv.fr"],
+        template_name="project/emails/dl_diagnostic_team",
+        context={
+            "project": request.project,
+            "request": request,
+            "project_url": project_url,
+            "request_url": f"https://{settings.DOMAIN}{relative_url}",
+        },
+    )
