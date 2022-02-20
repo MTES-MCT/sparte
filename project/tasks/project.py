@@ -24,6 +24,7 @@ There are 3 entry points :
 from celery import shared_task
 import logging
 
+from django.conf import settings
 from django.contrib.gis.db.models import Union
 from django.contrib.gis.geos.collections import MultiPolygon
 from django.core.mail import EmailMultiAlternatives
@@ -217,9 +218,11 @@ def send_email_request_bilan(request_id):
     recipients = [request.email]
     from_email = Parameter.objects.str("TEAM_EMAIL")
     # Retrive then fill templates
+    project_url = request.project.get_absolute_url()
     context = {
         "project": request.project,
         "request": request,
+        "project_url": f"https://{settings.DOMAIN}{project_url}",
     }
     text = get_template("project/emails/dl_diagnostic_client.txt")
     html = get_template("project/emails/dl_diagnostic_client.html")

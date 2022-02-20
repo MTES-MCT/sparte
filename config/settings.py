@@ -98,6 +98,9 @@ MIDDLEWARE = [
 ]
 
 
+# Should be one of : local, staging, production
+DOMAIN = env.str("DOMAIN")
+
 ROOT_URLCONF = "config.urls"
 
 TEMPLATES = [
