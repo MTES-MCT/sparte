@@ -108,7 +108,9 @@ class RegionForm(forms.Form):
         if regions:
             qs = Region.objects.filter(id__in=regions)
             self.fields["region"].queryset = qs
-        self.fields["region"].widget.attrs.update({"class": "force-carret"})
+        self.fields["region"].widget.attrs.update(
+            {"class": "form-control force-carret"}
+        )
 
 
 class DepartementForm(forms.Form):
@@ -118,13 +120,17 @@ class DepartementForm(forms.Form):
     )
 
     def __init__(self, *args, **kwargs):
-        self.region_id = kwargs.get("region_id", None)
+        self.region_id = None
+        if "region_id" in kwargs:
+            self.region_id = kwargs.pop("region_id")
         super().__init__(*args, **kwargs)
         if self.region_id:
             qs = Departement.objects.filter(region_id=self.region_id)
             qs = qs.order_by("name")
             self.fields["departement"].queryset = qs
-        self.fields["departement"].widget.attrs.update({"class": "force-carret"})
+        self.fields["departement"].widget.attrs.update(
+            {"class": "form-control force-carret"}
+        )
 
 
 class EpciForm(forms.Form):
@@ -142,6 +148,7 @@ class EpciForm(forms.Form):
         self.fields["epci"].queryset = qs
         # dep = Departement.objects.get(pk=self.departement_id)
         self.fields["departement"].initial = self.departement_id
+        self.fields["epci"].widget.attrs.update({"class": "form-control force-carret"})
 
 
 class OptionsForm(forms.Form):
