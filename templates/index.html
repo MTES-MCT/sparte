@@ -1,4 +1,6 @@
 {% load static %}
+{% load utils_tags %}
+
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -15,6 +17,8 @@
         <link rel="stylesheet" href="{% static 'icons/bootstrap-icons.css' %}">
         <!-- subtemplate header injection -->
         {% block headers %}{% endblock %}
+        <!-- matomo -->
+        {% tracking_code %}
     </head>
     <body style="overflow: hidden; height: 100vh;">
 
