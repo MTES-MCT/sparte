@@ -41,7 +41,7 @@ async def async_remote_run(env_name, user_cmd):
     )
 
     while True:
-        buf = await proc.stdout.read(1024)
+        buf = await proc.stdout.read(64)
         if not buf:
             break
         print(buf.decode(), end="")
@@ -109,10 +109,10 @@ def mep_110(ctx):
     click.secho("launch reevaluate_project_mep_110", fg="cyan")
     # set first and last ocsge
     # change unit from km² to ha
-    manage_py(ctx.obj["ENV_NAME"], "reevaluate_project_mep_110")
+    # TODO manage_py(ctx.obj["ENV_NAME"], "reevaluate_project_mep_110")
     click.secho("launch set_dept_millesimes", fg="cyan")
     # find which millesime is in each departement
-    manage_py(ctx.obj["ENV_NAME"], "set_dept_millesimes")
+    # TODO manage_py(ctx.obj["ENV_NAME"], "set_dept_millesimes")
     click.secho("launch param_mep_110", fg="cyan")
     manage_py(ctx.obj["ENV_NAME"], "param_mep_110")
 
