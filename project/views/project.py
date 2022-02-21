@@ -303,7 +303,10 @@ class RefCouverture:
     def __getattr__(self, name):
         if name.startswith("get_surface_"):
             year = name.split("_")[-1]
-            return self.surface[year]
+            try:
+                return self.surface[year]
+            except KeyError:
+                return 0
         else:
             return getattr(self, name)
 
