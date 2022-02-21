@@ -18,7 +18,7 @@ class Command(BaseCommand):
                 "name": "Adresse e-mail de l'équipe",
                 "slug": "TEAM_EMAIL",
                 "value_type": Parameter.TYPES.STR,
-                "value": "swann.bouviermuller@gmail.com",
+                "value": "sparte@beta.gouv.fr",
             },
         ]
         for param in new_params:
