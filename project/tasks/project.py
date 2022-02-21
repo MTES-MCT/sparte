@@ -192,6 +192,8 @@ def evaluate_couverture_and_usage(project: Project):
         project = get_project(project)
     geom = project.combined_emprise
     if not geom:
+        project.couverture_usage = "Pas d'emprise trouvée."
+        project.save(update_fields=["couverture_usage"])
         return
     project.couverture_usage = dict()
     for year in {project.first_year_ocsge, project.last_year_ocsge}:
@@ -232,8 +234,7 @@ def send_email_request_bilan(request_id):
     )
     send_template_email(
         subject="Nouvelle demande de bilan",
-        # recipients=[Parameter.objects.str("TEAM_EMAIL")],
-        recipients=["swann.bouviermuller@beta.gouv.fr"],
+        recipients=[Parameter.objects.str("TEAM_EMAIL")],
         template_name="project/emails/dl_diagnostic_team",
         context={
             "project": request.project,
