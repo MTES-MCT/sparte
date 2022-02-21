@@ -1,5 +1,4 @@
 import logging
-import traceback
 
 from django.core.management.base import BaseCommand
 
@@ -19,10 +18,8 @@ class Command(BaseCommand):
         logger.info("%d projects", qs.count())
         for project in qs:
             try:
+                logger.info("Process project %d", project.id)
                 evaluate_indicators(project)
             except Exception as e:
-                print(f"Failed for project={project.id}")
-                print(e)
-                print(traceback.format_exc())
-                print()
+                logger.error("Failed for project=%d, error=%s", project.id, e)
         logger.info("End reevaluation")
