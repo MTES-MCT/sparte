@@ -37,7 +37,7 @@ class ParameterManager(models.Manager):
             param.value_type = parameter["value_type"]
             param.save()
             return "Already exists, updated"
-        except ImproperlyConfigured:
+        except Parameter.DoesNotExist:
             Parameter.objects.create(**parameter)
             return "Added"
 
