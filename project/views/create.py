@@ -11,8 +11,36 @@ from project.models import Project
 from project.tasks import process_project
 
 
+class SelectTypeView(BreadCrumbMixin, TemplateView):
+    template_name = "project/create/choose_type_territoire.html"
+
+    def get_context_breadcrumbs(self):
+        breadcrumbs = super().get_context_breadcrumbs()
+        breadcrumbs.append(
+            {"href": reverse_lazy("project:select"), "title": "Mon diagnostic 1/2"},
+        )
+        return breadcrumbs
+
+
+class SelectRegionView(BreadCrumbMixin, FormView):
+    template_name = "project/create/select_region.html"
+    form_class = RegionForm
+
+    def get_context_breadcrumbs(self):
+        breadcrumbs = super().get_context_breadcrumbs()
+        breadcrumbs.append(
+            {"href": reverse_lazy("project:select"), "title": "Mon diagnostic 2/3"},
+        )
+        return breadcrumbs
+
+    def form_valid(self, form):
+        region = form.cleaned_data["region"]
+        self.request.session["public_key"] = f"REGION_{region.id}"
+        return redirect("project:select_2")
+
+
 class SelectPublicProjects(BreadCrumbMixin, TemplateView):
-    template_name = "project/select_1.html"
+    template_name = "project/create/select_1.html"
 
     def get_context_breadcrumbs(self):
         breadcrumbs = super().get_context_breadcrumbs()
@@ -89,7 +117,7 @@ class SelectPublicProjects(BreadCrumbMixin, TemplateView):
 
 
 class SetProjectOptions(BreadCrumbMixin, FormView):
-    template_name = "project/select_2.html"
+    template_name = "project/create/select_2.html"
     form_class = OptionsForm
     initial = {
         "analysis_start": "2011",
@@ -167,7 +195,7 @@ class SetProjectOptions(BreadCrumbMixin, FormView):
 
 
 class SelectCities(BreadCrumbMixin, TemplateView):
-    template_name = "project/select_1_city.html"
+    template_name = "project/create/select_1_city.html"
 
     def get_context_breadcrumbs(self):
         breadcrumbs = super().get_context_breadcrumbs()
