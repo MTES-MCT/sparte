@@ -32,7 +32,7 @@ Rapport couverture du sol
                 <form action="" method="post">
                     {% csrf_token %}
                     {{ form|crispy }}
-                    <button class="btn w-100 btn-primary mt-5" type="submit">Recevoir</button>
+                    <button class="btn w-100 btn-primary mt-5" type="submit" onclick="_paq.push(['trackEvent', 'Usage', 'Bilan', 'dl_bilan']);">Recevoir</button>
                 </form>
             </div>
         </div>
