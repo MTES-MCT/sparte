@@ -10,6 +10,7 @@ Backlog de la version: [https://app.clickup.com/14136489/v/li/122274320/74368258
 ### Modifié
 ### Corrigé
 
+<<<<<<< HEAD
 ## [1.1.1] - 28.02.2022
 
 Objectif : hotfixes pour corriger les anomalies détectées dans Sentry.
@@ -18,6 +19,8 @@ Objectif : hotfixes pour corriger les anomalies détectées dans Sentry.
 * Bug lorsqu'un utilisateur demande son bilan (https://app.clickup.com/t/221e9gt)
 * Bug "IndexError" lors de l'affichage d'un rapport couverture ou usage (https://app.clickup.com/t/2579cnj)
 * Bug lors de la création d'un diagnostic sans territoire (https://app.clickup.com/t/221fc7v)
+=======
+>>>>>>> update changelog with release date
 
 ## [1.1.0] - 2022-02-23
 
