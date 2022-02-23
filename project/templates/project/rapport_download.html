@@ -1,0 +1,42 @@
+{% extends 'index.html' %}
+
+{% load static %}
+{% load project_tags %}
+{% load humanize %}
+{% load i18n %}
+{% load l10n %}
+
+{% block pagetitle %}
+Rapport couverture du sol
+{% endblock %}
+
+{% block headers %}
+<link href="{% static 'project/css/project.css' %}" rel="stylesheet" />
+{% endblock %}
+
+{% block content %}
+<div class="px-4">
+    {% include "project/detail_menu.html" %}
+
+    <div class="bg-light p-5 rounded-5 border">
+
+        <div class="box box-alert px-4 py-2 mb-4 mt-0">
+            <p>Nous travaillons activement à automatiser l'assemblage du bilan de votre territoire. En attendant qu'il soit téléchargeable en un clic, nous vous proposons de le faire pour vous. Renseignez le formulaire ci-dessous pour effectuer votre demande.</p>
+            <p>Vous pouvez télécharger un exemple : <a href="https://docs.google.com/document/d/12L8N5qxoErlDLqvH4dQ07oQtAOo9GUiFII9oJik8_fE/edit?usp=sharing">bilan d'Andernos-les-bains</a>.
+        </div>
+
+        <div class="w-100 row justify-content-center">
+            <div class="box p-4 col-12 col-md-5 col-lg-4">
+                <h3>Recevoir votre bilan par e-mail</h3>
+                {% load crispy_forms_tags %}
+                <form action="" method="post">
+                    {% csrf_token %}
+                    {{ form|crispy }}
+                    <button class="btn w-100 btn-primary mt-5" type="submit" onclick="_paq.push(['trackEvent', 'Usage', 'Bilan', 'dl_bilan']);">Recevoir</button>
+                </form>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

@@ -22,41 +22,34 @@ def hectar(value):
     return f"{value} ha"
 
 
-@register.filter
-def sq_km(value):
-    """value is a float representing a surface using square kilometers as unit
-    this tag simply format mille with space and leave only two digits in decimals"""
-    if not isinstance(value, str):
-        value = str(value)
-    try:
-        integer, decimal = value.split(".")
-    except ValueError:
-        integer = value
-        decimal = "00"
-    if not integer.isdigit() or not decimal.isdigit():
-        return value
-    chunks = []
-    while integer:
-        if len(integer) >= 3:
-            chunks.insert(0, integer[-3:])
-            integer = integer[:-3]
-        else:
-            chunks.insert(0, integer)
-            integer = None
-    integer = " ".join(chunks)
-    return f"{integer},{decimal[:2]}"
+# @register.filter
+# def sq_km(value):
+#     """value is a float representing a surface using square kilometers as unit
+#     this tag simply format mille with space and leave only two digits in decimals"""
+#     if not isinstance(value, str):
+#         value = str(value)
+#     try:
+#         integer, decimal = value.split(".")
+#     except ValueError:
+#         integer = value
+#         decimal = "00"
+#     if not integer.isdigit() or not decimal.isdigit():
+#         return value
+#     chunks = []
+#     while integer:
+#         if len(integer) >= 3:
+#             chunks.insert(0, integer[-3:])
+#             integer = integer[:-3]
+#         else:
+#             chunks.insert(0, integer)
+#             integer = None
+#     integer = " ".join(chunks)
+#     return f"{integer},{decimal[:2]}"
 
 
 @register.filter
 def remove(value, arg=0):
-    result = value - arg
-    result = int(100 * result) / 100
-    if result > 0:
-        return f"+{sq_km(result)}"
-    elif result < 0:
-        return f"-{sq_km(abs(result))}"
-    else:
-        return "-"
+    return value - arg
 
 
 @register.filter

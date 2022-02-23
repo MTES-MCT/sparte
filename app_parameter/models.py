@@ -4,7 +4,6 @@ from decimal import Decimal
 
 from django.core.exceptions import ImproperlyConfigured
 from django.db import models
-from django.utils.translation import gettext_lazy as _
 
 
 class ParameterManager(models.Manager):
@@ -30,25 +29,37 @@ class ParameterManager(models.Manager):
     def json(self, slug):
         return self.get_from_slug(slug).json()
 
+    def create_if_not_exists(self, parameter):
+        try:
+            param = Parameter.objects.get(slug=parameter["slug"])
+            param.name = parameter["name"]
+            param.value = parameter["value"]
+            param.value_type = parameter["value_type"]
+            param.save()
+            return "Already exists, updated"
+        except Parameter.DoesNotExist:
+            Parameter.objects.create(**parameter)
+            return "Added"
+
 
 class Parameter(models.Model):
 
     objects = ParameterManager()
 
     class TYPES(models.TextChoices):
-        INT = "INT", _("Integer")
-        STR = "STR", _("String")
-        FLT = "FLT", _("Float")
-        DCL = "DCL", _("Decimal")
-        JSN = "JSN", _("JSON")
+        INT = "INT", "Nombre entier"
+        STR = "STR", "Chaîne de caractères"
+        FLT = "FLT", "Nombre à virgule (Float)"
+        DCL = "DCL", "Nombre à virgule (Decimal)"
+        JSN = "JSN", "JSON"
 
-    name = models.CharField(_("name"), max_length=100)
+    name = models.CharField("Nom", max_length=100)
     slug = models.SlugField(max_length=40, unique=True)
     value_type = models.CharField(
-        _("Casting type"), max_length=3, choices=TYPES.choices, default=TYPES.STR
+        "Type de donnée", max_length=3, choices=TYPES.choices, default=TYPES.STR
     )
-    description = models.TextField(_("description"), blank=True)
-    value = models.CharField(_("value"), max_length=250)
+    description = models.TextField("Description", blank=True)
+    value = models.CharField("Valeur", max_length=250)
 
     def int(self):
         return int(self.value)
@@ -64,3 +75,6 @@ class Parameter(models.Model):
 
     def json(self):
         return json.loads(self.value)
+
+    def __str__(self):
+        return self.name

@@ -20,7 +20,13 @@ from django.contrib.auth import views as auth_views
 from django.urls import path, include
 
 
+def trigger_error(request):
+    """Snippet to test Sentry integration"""
+    division_by_zero = 1 / 0  # # noqa: F841
+
+
 urlpatterns = [
+    path("boom/", trigger_error),
     path("", include("home.urls")),
     path("admin/", admin.site.urls),
     path("users/", include("users.urls")),
