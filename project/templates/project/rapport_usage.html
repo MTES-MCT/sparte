@@ -39,13 +39,10 @@ Rapport usage du sol
         <div class="w-100 box p-4">
             <h3>Répartition</h3>
             <div class="row">
-                <div class="col-4 border-end">
-                    <div id="chart_2"></div>
-                </div>
-                <div class="col-4 border-end">
+                <div class="col-6 border-end">
                     <div id="chart_3"></div>
                 </div>
-                <div class="col-4">
+                <div class="col-6">
                     <div id="chart_1"></div>
                 </div>
             </div>
@@ -125,40 +122,6 @@ Rapport usage du sol
 <script src="https://code.highcharts.com/modules/treemap.js"></script>
 <script src="https://code.highcharts.com/modules/exporting.js"></script>
 <script language="javascript">
-Highcharts.chart('chart_2', {
-    chart: {
-        type: 'pie'
-    },
-    title: {
-        text: "2015",
-        floating: true,
-    },
-    tooltip: {
-        valueSuffix: ' Ha',
-        valueDecimals: 0,
-        pointFormat: '<b>{point.y}</b><br/>{point.percent}',
-    },
-    plotOptions:{
-        pie:
-        {
-            innerSize: '60%',
-        },
-    },
-    series: [{
-        name: '2015',
-        data: [{% for data in data_covers %}
-            {% if data.level == 1 %}
-                {
-                    name: "{{ data.name }}",
-                    y: {{ data.get_surface_2015 }},
-                    color: '{{ data.map_color }}',
-                    percent: '{{ data.get_surface_2015|percent:surface_territoire }}',
-                },
-            {% endif %}
-        {% endfor %}],
-    }]
-})
-
 Highcharts.chart('chart_3', {
     chart: {
         type: 'pie'
