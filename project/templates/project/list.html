@@ -3,31 +3,50 @@
 {% load static %}
 
 {% block pagetitle %}
-Mes projets
+Mes diagnostics
 {% endblock %}
 
 
 {% block headers %}
 <link href="{% static 'project/css/project.css' %}" rel="stylesheet" />
+<script src="https://unpkg.com/masonry-layout@4/dist/masonry.pkgd.min.js"></script>
 {% endblock %}
 
 {% block content %}
 <div class="row w-100 h-100 justify-content-center">
-    <div class="col-12 col-md-4 col-lg-4">
-        <h2 class="my-5">Mes plans d'amménagement</h2>
+    <div class=" col-12 col-md-10 col-lg-8">
+        <h2 class="my-5">
+            Mes diagnostics
+            <a class="float-end" href="{% url 'project:select' %}">
+                <i class="bi bi-plus-circle text-success"></i>
+            </a>
+        </h2>
 
-        <div class="d-flex flex-column">
+        <div class="grid" data-masonry='{ "itemSelector": ".grid-item", "columnWidth": 300 }'>
             {% for project in projects %}
-            <div class="row position-relative list-item align-items-center">
-                <a href="{% url 'project:detail' project.id %}" class="stretched-link">{{ project.name }}</a>
+
+            <div class="grid-item">
+                <div class="card m-3">
+                    <svg class="bd-placeholder-img card-img-top" width="100%" height="140" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Image cap" preserveAspectRatio="xMidYMid slice" focusable="false">
+                        <title>Placeholder</title>
+                        <rect width="100%" height="100%" fill="#868e96"></rect>
+                        <text x="30%" y="50%" fill="#dee2e6" dy=".3em">Photo à venir</text>
+                    </svg>
+                    <div class="card-body">
+                    <p class="card-title"><a href="{% url 'project:detail' project.id %}" class="stretched-link">{{ project.name }}</a></p>
+                    <p class="card-text">{{ project.description }}</p>
+                    <p class="text-muted">{{ project.analyse_start_date }} - {{ project.analyse_end_date }}</p>
+                    </div>
+                </div>
             </div>
+
             {% empty %}
-            <p class="text-muted">Vous n'avez aucun plan d'aménagement.</p>
+            <p class="text-muted">Vous n'avez aucun diagnostic.</p>
             {% endfor %}
         </div>
 
         <div>
-            <a class="btn btn-primary mt-5" href="{% url 'project:add' %}" role="button">Nouveau</a>
+            <a class="btn btn-success mt-5" href="{% url 'project:select' %}" role="button">Nouveau diagnostic</a>
         </div>
     </div>
 </div>

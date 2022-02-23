@@ -21,35 +21,31 @@ Rapport usage du sol
     <div class="bg-light p-5 rounded-5 border">
 
         <div class="box box-alert px-4 py-2 mb-4 mt-0">
-            <p>Préambule : travail en cours.</p>
+            <p>L’usage du sol est une vue « anthropique du sol ». Il est partagé en fonction du rôle que jouent les portions de terrain en tant qu’occupation humaine.</p>
+            <p>Dans l'OCSGE, l'usage US235 regroupe les objets de US2 (production secondaire), US3 (production tertiaire) et US5 (usage résidentiel) de la nomenclature nationale quand la distinction entre ces usages n'est pas possible ou pas connue.</p>
         </div>
 
         <div class="clearfix">
             <div class="card key-figure">
                 <div class="card-header">
-                    Indicateurs clés
+                    Surface du territoire
                 </div>
                 <div class="card-body">
-                    <p class="figure">xxx ha</p>
-                </div>
-            </div>
-
-            <div class="card key-figure key-figure-yellow">
-                <div class="card-header">
-                    Progression
-                </div>
-                <div class="card-body">
-                    <p class="figure">xxx ha</p>
-                    <p class="card-text"><small class="text-muted">
-                        xx% du territoire
-                    </small></p>
+                    <p class="figure">{{ surface_territoire|floatformat:0 }} ha</p>
                 </div>
             </div>
         </div>
 
-        <div class="box p-4 w-100 mt-5">
-            <h3>Surface du territoire en fonction de l'usage du sol 2015</h3>
-            <div id="chart"></div>
+        <div class="w-100 box p-4">
+            <h3>Répartition</h3>
+            <div class="row">
+                <div class="col-6 border-end">
+                    <div id="chart_3"></div>
+                </div>
+                <div class="col-6">
+                    <div id="chart_1"></div>
+                </div>
+            </div>
         </div>
 
 
@@ -60,21 +56,21 @@ Rapport usage du sol
                     <tr>
                         <th scope="col">Code</th>
                         <th scope="col">Libellé</th>
-                        <th scope="col" style="text-align: right">Surface 2015 (km²)</th>
+                        <th scope="col" style="text-align: right">Surface 2015 (ha)</th>
                         <th scope="col" style="text-align: right">Progression</th>
-                        <th scope="col" style="text-align: right">Surface 2018 (km²)</th>
+                        <th scope="col" style="text-align: right">Surface 2018 (ha)</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for data in data_covers %}
-                    <tr>
+                    <tr {% if data.level == 1 %}class="fw-bold"{% endif %}>
                         <th scope="row">{{ data.level|space }} {{ data.code }}</th>
                         <td>{{ data.label_short }}</td>
-                        <td align="right">{{ data.total_surface.2015|sq_km }}</td>
+                        <td align="right">{{ data.get_surface_2015|floatformat:1 }}</td>
                         <td align="right">
-                            {{ data.total_surface.2018|remove:data.total_surface.2015 }}
+                            {{ data.evolution|floatformat:2 }}
                         </td>
-                        <td align="right">{{ data.total_surface.2018|sq_km }}</td>
+                        <td align="right">{{ data.get_surface_2018|floatformat:1 }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -83,24 +79,23 @@ Rapport usage du sol
 
         <div class="box scrollme-x p-4 table table-responsive">
             <h3>Répartition de l'usage du sol en 2018 :</h3>
-            <p>Surface du territoire considéré: {{ surface_territoire|sq_km }} km²</p>
             <table class="table table-striped table-sm">
                 <thead>
                     <tr>
                         <th scope="col">Code</th>
                         <th scope="col">Libellé</th>
-                        <th scope="col" style="text-align: right">Surface 2018 (km²)</th>
+                        <th scope="col" style="text-align: right">Surface 2018 (ha)</th>
                         <th scope="col" style="text-align: right">Pourcentage</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for data in data_covers %}
-                    <tr>
+                    <tr {% if data.level == 1 %}class="fw-bold"{% endif %}>
                         <th scope="row">{{ data.level|space }} {{ data.code }}</th>
                         <td>{{ data.label_short }}</td>
-                        <td align="right">{{ data.total_surface.2018|sq_km }}</td>
+                        <td align="right">{{ data.get_surface_2018|floatformat:1 }}</td>
                         <td align="right">
-                            {{ data.total_surface.2018|percent:surface_territoire }}
+                            {{ data.get_surface_2018|percent:surface_territoire }}
                         </td>
                     </tr>
                     {% endfor %}
@@ -127,62 +122,89 @@ Rapport usage du sol
 <script src="https://code.highcharts.com/modules/treemap.js"></script>
 <script src="https://code.highcharts.com/modules/exporting.js"></script>
 <script language="javascript">
-points_2015 = [
-    {% for data in data_covers %}
-    {
-        id: "{{ data.code }}",
-        {% if data.parent %}
-        parent: "{{ data.parent.code }}",
-        {% endif %}
-        name: "CS{{ data.code }} {{ data.label }}",
-        value: {{ data.total_surface.2015 }},
-        color: "{{ data.map_color }}",
-    },
-    {% endfor %}
-]
-
-Highcharts.chart('chart', {
-    series: [{
-        type: 'treemap',
-        layoutAlgorithm: 'squarified',
-        allowDrillToNode: true,
-        animationLimit: 1000,
-        dataLabels: {
-            enabled: true
-        },
-        levels: [{
-            level: 1,
-            dataLabels: {
-                enabled: true
-            },
-            borderWidth: 3,
-            levelIsConstant: false
-        }, {
-            level: 1,
-            dataLabels: {
-                style: {
-                    fontSize: '14px'
-                }
-            }
-        }],
-        data: points_2015
-    }],
-    subtitle: {
-        text: 'Cliquer pour voir le détail'
+Highcharts.chart('chart_3', {
+    chart: {
+        type: 'pie'
     },
     title: {
-        text: "",
+        text: "2018",
         floating: true,
     },
-    plotOptions: {
-        treemap: {
-            tooltip:{
-                valueSuffix: ' Ha',
-                valueDecimals: 0
-            },
+    tooltip: {
+        valueSuffix: ' Ha',
+        valueDecimals: 0,
+        pointFormat: '<b>{point.y}</b><br/>{point.percent}',
+    },
+    plotOptions:{
+        pie:
+        {
+            innerSize: '60%',
         },
     },
-});
+    series: [
+        {
+            name: '2018',
+            data: [{% for data in data_covers %}
+                {% if data.level == 1 %}
+                    {
+                        name: "{{ data.name }}",
+                        y: {{ data.get_surface_2018 }},
+                        color: '{{ data.map_color }}',
+                        percent: '{{ data.get_surface_2018|percent:surface_territoire }}',
+                    },
+                {% endif %}
+            {% endfor %}],
+        },
+    ]
+})
+
+
+Highcharts.chart('chart_1', {
+    chart: {
+        type: 'column'
+    },
+    title: {
+        text: "Progression",
+    },
+    tooltip: {
+        valueSuffix: ' Ha',
+        valueDecimals: 2,
+        headerFormat: '',
+        pointFormat: '{point.name}: {point.y}'
+    },
+    plotOptions:{
+    },
+    xAxis: {
+        type: 'category',
+    },
+    yAxis: [{
+        title: {
+            text: 'Surface'
+        },
+        plotLines: [{
+            value: 0,
+            width: 2,
+            color: '#ff0000'
+        }],
+    }],
+    legend: {
+        enabled: false,
+    },
+    series: [
+        {
+            name: 'Evolution',
+            data: [{% for data in data_covers %}
+                {% if data.level == 1 %}
+                    {
+                        name: "{{ data.name }}",
+                        y: {{ data.evolution }},
+                        color: '{{ data.map_color }}',
+                    },
+                {% endif %}
+            {% endfor %}],
+        },
+    ]
+})
 </script>
 {% endlocalize %}
 {% endblock %}

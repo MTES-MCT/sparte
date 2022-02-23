@@ -17,6 +17,12 @@ SPARTE
 <div class="row w-100 justify-content-center">
 
     <div class="col-8 bg-light p-3 rounded-5 border mt-1">
+        <div class="float-end">
+            <div class="form-check form-switch">
+                <label class="form-check-label" for="flexSwitchCheckDefault">Accès public</label>
+                <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
+            </div>
+        </div>
         <h1 class="mb-5">{{ project.name }}</h1>
 
         <div class="row gx-2">
@@ -58,7 +64,7 @@ SPARTE
             <div class="col">
                 <div class="d-flex flex-column box mt-0 p-4 justify-content-center h-100">
                     <div class="text-center">
-                        <a href="#" data-toggle="tooltip" title="Télécharger le bilan du territoire">
+                        <a href="{% url 'project:report_download' project.pk %}" data-toggle="tooltip" title="Télécharger le bilan du territoire">
                             <i class="bi bi-download"></i>
                             <br/><strong>Bilan téléchargeable</strong>
                         </a>
@@ -85,6 +91,12 @@ SPARTE
                 </div>
 
                 <div class="box p-4 mt-1">
+                    <span  class="fw-bold">Millésimes OCSGE utilisés</span>
+                    <p>Le plus ancien : {{ project.first_year_ocsge|stringformat:"i" }}
+                    <br/>Le plus récent : {{ project.last_year_ocsge|stringformat:"i" }}</p>
+                </div>
+
+                <div class="box p-4 mt-1">
                     <span  class="fw-bold">Analyses disponibles</span>
                     <br/><i class="bi bi-check-circle text-success"></i> Consomation d'espace
                     <br/>
@@ -97,10 +109,12 @@ SPARTE
                 </div>
 
                 <div class="box p-4 mt-1 flex-grow-1">
-                    <a class="float-end" href="{% url 'project:lookalike' project.id %}">
-                        <i class="bi bi-plus-circle"></i>
-                    </a>
-                    <span  class="fw-bold">Territoires de comparaison</span>
+                    <div  class="fw-bold">
+                        <a class="float-end" href="{% url 'project:lookalike' project.id %}">
+                            <i class="bi bi-plus-circle"></i>
+                        </a>
+                        Territoires de comparaison
+                    </div>
                     {% if project.look_a_like %}
                         <div class="d-flex flex-column mt-2">
                         {% for land in project.get_look_a_like %}

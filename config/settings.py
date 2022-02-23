@@ -13,9 +13,13 @@ hello world
 import environ
 from pathlib import Path
 import pkg_resources
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
 
 from django.core.exceptions import ImproperlyConfigured
 
+
+OFFICIAL_VERSION = "1.1.0"
 
 root = environ.Path(__file__) - 2  # get root of the project
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -32,6 +36,9 @@ if env_path.is_file():
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
+
+# Should be one of : local, staging, production
+ENVIRONMENT = env.str("ENVIRONMENT")
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = env.str("SECRET")
@@ -91,6 +98,9 @@ MIDDLEWARE = [
 ]
 
 
+# Should be one of : local, staging, production
+DOMAIN = env.str("DOMAIN")
+
 ROOT_URLCONF = "config.urls"
 
 TEMPLATES = [
@@ -121,6 +131,8 @@ WSGI_APPLICATION = "config.wsgi.application"
 DATABASES = {
     "default": env.db(),
 }
+# force postgis to avoid any surprise
+DATABASES["default"]["ENGINE"] = "django.contrib.gis.db.backends.postgis"
 
 
 # Password validation
@@ -319,6 +331,37 @@ USE_THOUSAND_SEPARATOR = True
 DECIMAL_SEPARATOR = ","
 THOUSAND_SEPARATOR = " "
 NUMBER_GROUPING = 3
+
+
+# SENTRY
+if ENVIRONMENT != "local":
+    sentry_sdk.init(
+        dsn="https://a227bee32f4f41c2a60e9292ce4d033e@o548798.ingest.sentry.io/6068271",
+        integrations=[
+            DjangoIntegration(
+                # available options:
+                # url (default) - formats based on the route
+                # function_name - formats based on the view function name
+                transaction_style="url",
+            ),
+        ],
+        # Set traces_sample_rate to 1.0 to capture 100%
+        # of transactions for performance monitoring.
+        # We recommend adjusting this value in production.
+        traces_sample_rate=0.0,
+        # If you wish to associate users to errors (assuming you are using
+        # django.contrib.auth) you may enable sending PII data.
+        send_default_pii=True,
+        # By default the SDK will try to use the SENTRY_RELEASE
+        # environment variable, or infer a git commit
+        # SHA as release, however you may want to set
+        # something more human-readable.
+        release=f"Sparte@{OFFICIAL_VERSION}",
+        environment=ENVIRONMENT,
+        debug=False,
+        request_bodies="always",
+        with_locals=True,
+    )
 
 # LOGGING SETTINGS
 

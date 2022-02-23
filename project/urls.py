@@ -23,24 +23,34 @@ urlpatterns = [
         name="lookalike",
     ),
     path(
-        "<int:pk>/report/consommation",
+        "<int:pk>/tableau/de/bord/consommation",
         views.ProjectReportConsoView.as_view(),
         name="report",
     ),
     path(
-        "<int:pk>/report/synthesis",
+        "<int:pk>/tableau/de/bord/synthesis",
         views.ProjectReportSynthesisView.as_view(),
         name="report_synthesis",
     ),
     path(
-        "<int:pk>/report/couverture",
+        "<int:pk>/tableau/de/bord/couverture",
         views.ProjectReportCouvertureView.as_view(),
+        name="report_couverture",
+    ),
+    path(
+        "<int:pk>/tableau/de/bord/usage",
+        views.ProjectReportUsageView.as_view(),
+        name="report_usage",
+    ),
+    path(
+        "<int:pk>/report/artificialisation",
+        views.ProjectReportArtifView.as_view(),
         name="report_artif",
     ),
     path(
-        "<int:pk>/report/usage",
-        views.ProjectReportUsageView.as_view(),
-        name="report_usage",
+        "<int:pk>/tableau/de/bord/telechargement",
+        views.ProjectReportDownloadView.as_view(),
+        name="report_download",
     ),
     path("<int:pk>/map", views.ProjectMapView.as_view(), name="map"),
     path("<int:pk>/delete/", views.ProjectDeleteView.as_view(), name="delete"),
@@ -58,6 +68,12 @@ urlpatterns = [
     ),
     path(
         "<int:project_id>/plan/", views.PlanListView.as_view(), name="project-plan-list"
+    ),
+    path("diagnostic/etape/0", views.SelectTypeView.as_view()),
+    path(
+        "diagnostic/etape/choisir/region",
+        views.SelectRegionView.as_view(),
+        name="select-region",
     ),
     path("diagnostic/etape/1", views.SelectPublicProjects.as_view(), name="select"),
     path("diagnostic/etape/1/city", views.SelectCities.as_view(), name="select-city"),

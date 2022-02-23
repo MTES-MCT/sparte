@@ -1,0 +1,10 @@
+<p>Bonjour {{ request.first_name }},</p>
+
+<p>Votre demande de téléchargement du bilan de "{{ project.name }}" (période {{ project.analyse_start_date }} à {{ project.analyse_end_date }}) a bien été enregistrée. L'équipe de SPARTE va rapidement prendre connaissance de votre demande puis produire et enfin envoyer votre bilan.</p>
+
+<p>En attendant, vous pouvez continuer à explorer votre diagnostic en ligne : <a href="{{ project_url }}">{{ project_url }}</a></p>
+
+<p>Nous sommes à votre disposition si vous avez des questions.</p>
+
+<p>Cordialement,
+<br/>L'équipe de SPARTE</p>

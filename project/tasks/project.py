@@ -7,7 +7,9 @@ Current process is :
 Step 1 - evaluate emprise from shape file or linked cities
 Step 2 - link cities within the emprise (obviously not done when emprise is
          built from it)
-Step 3 - Evaluate indicators: couverture and usage du sol
+Step 3 - Evaluate indicators:
+    3.1 - first and last OCSGE millesime available
+    3.2 - couverture and usage du sol
 
 There are 3 entry points :
 * process_project_with_shape : a shape have been provided steps 1 to 3 will be
@@ -22,12 +24,16 @@ There are 3 entry points :
 from celery import shared_task
 import logging
 
+from django.conf import settings
 from django.contrib.gis.db.models import Union
 from django.contrib.gis.geos.collections import MultiPolygon
+from django.urls import reverse
 
+from app_parameter.models import Parameter
 from public_data.models import Ocsge
+from utils.emails import send_template_email
 
-from project.models import Project
+from project.models import Project, Request
 
 from .utils import import_shp, get_cities_from_emprise
 
@@ -55,8 +61,8 @@ def process_project_with_shape(project_id: int):
         import_shp(project)
         # step 2 - only for shape file built emprise
         get_cities_from_emprise(project)
-        # step 3 - evaluate couverture and usage
-        evaluate_couverture_and_usage(project)
+        # step 3 - evaluate indicators
+        evaluate_indicators(project)
         # all good !
         project.set_success()
     except Exception as e:
@@ -85,8 +91,8 @@ def build_emprise_from_city(project_id: int):
         else:
             project.emprise_set.create(mpoly=MultiPolygon(qs["mpoly"]))
         # step 2 - do not do it, cities have been populated previously
-        # step 3 - evaluate couverture and usage
-        evaluate_couverture_and_usage(project)
+        # step 3 - evaluate indicators
+        evaluate_indicators(project)
         # all good !
         project.set_success()
     except Exception as e:
@@ -109,8 +115,8 @@ def process_project_with_emprise(project_id: int):
         # step 1 : emprise already set, don't do it
         # step 2 - only for shape file built emprise
         get_cities_from_emprise(project)
-        # step 3 - evaluate couverture and usage
-        evaluate_couverture_and_usage(project)
+        # step 3 - evaluate indicators
+        evaluate_indicators(project)
         # all good !
         project.set_success()
     except Exception as e:
@@ -139,6 +145,32 @@ def process_project(project_id: int):
 
 
 @shared_task
+def evaluate_indicators(project: Project):
+    """Evaluate all indicators:
+    3.1 - find first and last OCSGE's millesimes
+    3.2 - evaluate couverture and usage
+    """
+    logger.info("Evaluate indicators id=%d", project.id)
+    find_first_and_last_ocsge(project)
+    evaluate_couverture_and_usage(project)
+
+
+@shared_task
+def find_first_and_last_ocsge(project: Project):
+    """Use associated cities to find departements and available OCSGE millesime"""
+    logger.info("Find first and last ocsge id=%d", project.id)
+    millesimes = {
+        millesime
+        for city in project.cities.all()
+        for millesime in city.get_ocsge_millesimes()
+        if int(project.analyse_start_date) <= millesime <= int(project.analyse_end_date)
+    }
+    if millesimes:
+        project.first_year_ocsge = min(millesimes)
+        project.last_year_ocsge = max(millesimes)
+
+
+@shared_task
 def evaluate_couverture_and_usage(project: Project):
     """Calculate couverture and usage of the floor of the project.
     it evaluates covering with Ocasge2015 and 2018 and for couverture and usage
@@ -155,19 +187,59 @@ def evaluate_couverture_and_usage(project: Project):
         '2018': { ... },  # same as 2015
     }
     """
-    logger.info("Calculate couverture and usage")
+    logger.info("Calculate couverture and usage, id=%s", project.id)
     if isinstance(project, int):
         project = get_project(project)
     geom = project.combined_emprise
-    data = {
-        "2015": {
-            "couverture": Ocsge.get_groupby("couverture", coveredby=geom, year=2015),
-            "usage": Ocsge.get_groupby("usage", coveredby=geom, year=2015),
-        },
-        "2018": {
-            "couverture": Ocsge.get_groupby("couverture", coveredby=geom, year=2018),
-            "usage": Ocsge.get_groupby("usage", coveredby=geom, year=2018),
-        },
-    }
-    project.couverture_usage = data
+    if not geom:
+        project.couverture_usage = "Pas d'emprise trouvée."
+        project.save(update_fields=["couverture_usage"])
+        return
+    project.couverture_usage = dict()
+    for year in {project.first_year_ocsge, project.last_year_ocsge}:
+        project.couverture_usage.update(
+            {
+                str(year): {
+                    "couverture": Ocsge.get_groupby(
+                        "couverture", coveredby=geom, year=year
+                    ),
+                    "usage": Ocsge.get_groupby("usage", coveredby=geom, year=year),
+                }
+            }
+        )
     project.save(update_fields=["couverture_usage"])
+
+
+@shared_task
+def send_email_request_bilan(request_id):
+    """Il faut envoyer 2 e-mails: 1 au demandeur et 1 à l'équipe SPARTE"""
+    logger.info("Send email to bilan requester (start)")
+    logger.info("Request_id=%s", request_id)
+    request = Request.objects.get(pk=request_id)
+    project_url = f"https://{settings.DOMAIN}{request.project.get_absolute_url()}"
+    # send e-mail to requester
+    send_template_email(
+        subject="Confirmation de demande de bilan",
+        recipients=[request.email],
+        template_name="project/emails/dl_diagnostic_client",
+        context={
+            "project": request.project,
+            "request": request,
+            "project_url": project_url,
+        },
+    )
+    # send e-mail to team
+    relative_url = reverse(
+        "admin:project_request_change", kwargs={"object_id": request.id}
+    )
+    send_template_email(
+        subject="Nouvelle demande de bilan",
+        recipients=[Parameter.objects.str("TEAM_EMAIL")],
+        template_name="project/emails/dl_diagnostic_team",
+        context={
+            "project": request.project,
+            "request": request,
+            "project_url": project_url,
+            "request_url": f"https://{settings.DOMAIN}{relative_url}",
+        },
+    )
