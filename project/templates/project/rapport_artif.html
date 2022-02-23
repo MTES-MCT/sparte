@@ -1,0 +1,63 @@
+{% extends 'index.html' %}
+
+{% load static %}
+{% load project_tags %}
+{% load humanize %}
+{% load i18n %}
+{% load l10n %}
+
+{% block pagetitle %}
+Rapport artificialisation
+{% endblock %}
+
+{% block headers %}
+<link href="{% static 'project/css/project.css' %}" rel="stylesheet" />
+{% endblock %}
+
+{% block content %}
+<div class="px-4">
+    {% include "project/detail_menu.html" %}
+
+    <div class="bg-light p-5 rounded-5 border">
+
+        <div class="box box-alert px-4 py-2 mb-4 mt-0">
+            L’article 192 de la Loi Climat & Résilience votée en août 2021 définit l'artificialisation comme « une surface dont les sols sont :
+            <ul>
+                <li>soit imperméabilisés en raison du bâti ou d'un revêtement,</li>
+                <li>soit stabilisés et compactés,</li>
+                <li>soit constitués de matériaux composites »</li>
+            </ul>
+            Elle se traduit dans l’OCS GE nationale comme la somme des  objets anthropisés dans la description de la couverture des sols.
+        </div>
+
+        <div class="clearfix">
+            <div class="card key-figure">
+                <div class="card-header">
+                    Surface du territoire
+                </div>
+                <div class="card-body">
+                    <p class="figure">{{ total_surface|floatformat:0 }} ha</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="box px-4 py-2">
+            <p>Sources:</p>
+            <ul>
+                <li><a href="{% url 'public_data:ocsge-list' %}?limit=2"></a>Données OCS GE</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block bodyend %}
+{% localize off %}
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/drilldown.js"></script>
+<script language="javascript">
+
+</script>
+{% endlocalize %}
+{% endblock %}

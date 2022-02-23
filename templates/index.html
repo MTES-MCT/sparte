@@ -1,4 +1,6 @@
 {% load static %}
+{% load utils_tags %}
+
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -15,16 +17,17 @@
         <link rel="stylesheet" href="{% static 'icons/bootstrap-icons.css' %}">
         <!-- subtemplate header injection -->
         {% block headers %}{% endblock %}
+        <!-- matomo -->
+        {% tracking_code %}
     </head>
     <body style="overflow: hidden; height: 100vh;">
-
 
             <!-- Page content wrapper-->
             <div id="page-content-wrapper" class="d-flex flex-column h-100">
                 <!-- Top navigation-->
                 <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
                     <div class="container-fluid">
-                        <img src="{% static 'Logo_de_la_Republique_francaise.png' %}" height="30"/>
+                        <img src="{% static 'img/logo_france_beta.png' %}" height="30"/>
                         <a class="navbar-brand ms-2" href="{% url 'home:home' %}">SPARTE</a>
 
                         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
@@ -34,13 +37,18 @@
                             <ul class="navbar-nav ms-0 mt-2 mt-lg-0">
 
                                 <li class="nav-item dropdown">
-                                    <a class="nav-link dropdown-toggle" id="DropdownPlan" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Plans d'aménagement</a>
+                                    <a class="nav-link dropdown-toggle" id="DropdownPlan" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Diagnostic</a>
                                     <div class="dropdown-menu" aria-labelledby="DropdownPlan">
-                                        <a class="dropdown-item" href="{% url 'project:select' %}">Plans publics</a>
+                                        <a class="dropdown-item" href="{% url 'project:select' %}">Nouveau</a>
                                         {% if user.is_authenticated %}
-                                        <hr class="dropdown-divider" />
-                                        <a class="dropdown-item" href="{% url 'project:add' %}">Nouveau</a>
                                         <a class="dropdown-item" href="{% url 'project:list' %}">Ouvrir</a>
+
+                                        {% if is_staff %}
+                                        <hr class="dropdown-divider" />
+                                        <h6 class="dropdown-header">Administrateurs</h6>
+                                        <a class="dropdown-item" href="{% url 'project:add' %}">Nouveau avec fichier shape</a>
+                                        {% endif %}
+
                                         {% endif %}
                                     </div>
                                 </li>
@@ -117,11 +125,23 @@
 
                 <!-- Page content-->
                 <main class="p-0 flex-grow-1 d-flex flex-column" style="overflow: auto;">
+                    {% if messages %}
+                        <div class="row justify-content-center w-100 my-0">
+                            <div class="col-12 col-md-8 col-lg-6">
+                                {% for message in messages %}
+                                <div class="alert alert-{{ message.tags }} alert-dismissible fade show mt-5" role="alert">
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
                     {% block carto %}
                     <div class="mb-5">
                         {% block content %}
                         <div class="row justify-content-center w-100 my-0">
-                            <div class="col-12 col-md-5 col-lg-4" style="width:450px;">
+                            <div class="col-12 col-md-5 col-lg-4">
                                 <h2 class="mb-5">Bonjour {{ user.greetings }} !</h2>
                                 <p>La première étape pour utiliser SPARTE est de créer un PROJET :
                                 <br/><a class="btn btn-primary" href="{% url 'project:add' %}" role="button">Créer un projet</a></p>
@@ -139,7 +159,8 @@
                                     <img class="w-100" src="{% static 'img/logo_france.png' %}" alt="Logo France Marianne"/>
                                 </div>
                                 <div class="col-10">
-                                    <p class="mt-5">Faites nous part de vos propositions pour améliorer ce service : <a href="mailto:sparte@beta.gouv.fr">sparte@beta.gouv.fr</a></p>
+                                    <p class="mt-5">[BETA] SPARTE est un service en cours d'élaboration. [/BETA]</p>
+                                    <p>Faites nous part de vos propositions pour améliorer ce service : <a href="mailto:sparte@beta.gouv.fr">sparte@beta.gouv.fr</a></p>
                                     <p class="text-muted">SPARTE est incubée chez beta Gouv.</p></div>
                             </div>
                         </div>

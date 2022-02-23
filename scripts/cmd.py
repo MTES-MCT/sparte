@@ -41,7 +41,7 @@ async def async_remote_run(env_name, user_cmd):
     )
 
     while True:
-        buf = await proc.stdout.read(1024)
+        buf = await proc.stdout.read(64)
         if not buf:
             break
         print(buf.decode(), end="")
@@ -102,9 +102,22 @@ def create_public_project(ctx):
 
 @cli.command()
 @click.pass_context
-def reset_project(ctx):
-    """Trigger create_public_project command"""
-    manage_py(ctx.obj["ENV_NAME"], "reset_project")
+def mep_110(ctx):
+    """Trigger all data transformation to successful MEP release 1.1.0"""
+    click.secho("Start migration", fg="cyan")
+    click.secho(f'Env={ctx.obj["ENV_NAME"]}', fg="cyan")
+
+    click.secho("launch set_dept_millesimes", fg="cyan")
+    # find which millesime is in each departement
+    manage_py(ctx.obj["ENV_NAME"], "set_dept_millesimes")
+
+    click.secho("launch reevaluate_project_mep_110", fg="cyan")
+    # set first and last ocsge
+    # change unit from km² to ha
+    manage_py(ctx.obj["ENV_NAME"], "reevaluate_project_mep_110")
+
+    click.secho("launch param_mep_110", fg="cyan")
+    manage_py(ctx.obj["ENV_NAME"], "param_mep_110")
 
 
 if __name__ == "__main__":

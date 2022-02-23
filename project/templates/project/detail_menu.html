@@ -8,8 +8,8 @@
         href="{% url 'project:report' project.pk %}">Consommation</a>
     </li>
     <li class="nav-item">
-        <a class="nav-link{% if active_page == 'artificialisation' %} active bg-light{% endif %} disabled"
-        href="#">Artificialisation</a>
+        <a class="nav-link{% if active_page == 'artificialisation' %} active bg-light{% endif %}"
+        href="{% url 'project:report_artif' project.pk %}">Artificialisation</a>
     </li>
     <li class="nav-item">
         <a class="nav-link{% if active_page == 'usage' %} active bg-light{% endif %}"
@@ -17,6 +17,10 @@
     </li>
     <li class="nav-item">
         <a class="nav-link{% if active_page == 'couverture' %} active bg-light{% endif %}"
-        href="{% url 'project:report_artif' project.pk %}">Couverture</a>
+        href="{% url 'project:report_couverture' project.pk %}">Couverture</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link{% if active_page == 'download' %} active bg-light{% endif %}"
+        href="{% url 'project:report_download' project.pk %}">Bilan téléchargeable</a>
     </li>
 </ul>
