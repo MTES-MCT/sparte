@@ -9,6 +9,8 @@ services:
       - POSTGRES_DB=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
+    ports:
+      - "5432:5432"
     networks:
       - app-network
 
@@ -29,6 +31,10 @@ services:
       - .:/app
     env_file: .env
     # override a few environment variables to ensure it works with other containers
+    environment:
+      - DATABASE_URL=postgis://postgres:postgres@db:5432/postgres
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
     ports:
       - "8080:8080"
     depends_on:

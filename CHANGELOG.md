@@ -8,6 +8,8 @@ Backlog de la version: [https://app.clickup.com/14136489/v/li/122274320/74368258
 
 ### Ajouté
 ### Modifié
+* Montée de version Django vers 3.2.12
+* Remplacement de app_parameter par django-app-parameter
 ### Corrigé
 
 <<<<<<< HEAD
