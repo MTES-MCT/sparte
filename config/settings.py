@@ -69,12 +69,12 @@ RESTFRAMEWORK_APPS = [
 THIRD_APPS = [
     "import_export",
     "crispy_forms",
+    "django_app_parameter",
 ]
 
 # upper app should not communicate with lower ones
 PROJECT_APPS = [
     "utils.apps.UtilsConfig",
-    "app_parameter.apps.AppParameterConfig",
     "users.apps.UsersConfig",
     "carto.apps.CartoConfig",
     "public_data.apps.PublicDataConfig",
@@ -118,6 +118,7 @@ TEMPLATES = [
                 "django.contrib.messages.context_processors.messages",
                 "users.context_processors.add_connected_user_to_context",
                 "home.context_processors.add_faq_to_context",
+                "django_app_parameter.context_processors.add_global_parameter_context",
             ],
         },
     },
