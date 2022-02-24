@@ -6,18 +6,28 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('public_data', '0013_auto_20210923_2344'),
+        ("public_data", "0013_auto_20210923_2344"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='ocsge2015',
-            name='couverture_label',
-            field=models.CharField(blank=True, max_length=254, null=True, verbose_name='Libellé couverture du sol'),
+            model_name="ocsge2015",
+            name="couverture_label",
+            field=models.CharField(
+                blank=True,
+                max_length=254,
+                null=True,
+                verbose_name="Libellé couverture du sol",
+            ),
         ),
         migrations.AddField(
-            model_name='ocsge2015',
-            name='usage_label',
-            field=models.CharField(blank=True, max_length=254, null=True, verbose_name='Libellé usage du sol'),
+            model_name="ocsge2015",
+            name="usage_label",
+            field=models.CharField(
+                blank=True,
+                max_length=254,
+                null=True,
+                verbose_name="Libellé usage du sol",
+            ),
         ),
     ]
