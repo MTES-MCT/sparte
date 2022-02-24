@@ -6,11 +6,11 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('carto', '0001_initial'),
+        ("carto", "0001_initial"),
     ]
 
     operations = [
         migrations.DeleteModel(
-            name='WorldBorder',
+            name="WorldBorder",
         ),
     ]
