@@ -29,7 +29,7 @@ from django.contrib.gis.db.models import Union
 from django.contrib.gis.geos.collections import MultiPolygon
 from django.urls import reverse
 
-from app_parameter.models import Parameter
+from django_app_parameter import app_parameter
 from public_data.models import Ocsge
 from utils.emails import send_template_email
 
@@ -234,7 +234,7 @@ def send_email_request_bilan(request_id):
     )
     send_template_email(
         subject="Nouvelle demande de bilan",
-        recipients=[Parameter.objects.str("TEAM_EMAIL")],
+        recipients=[app_parameter.TEAM_EMAIL],
         template_name="project/emails/dl_diagnostic_team",
         context={
             "project": request.project,
