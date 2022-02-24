@@ -7,6 +7,13 @@ Ce changelog suit la méthode "keep a changelog" disponible ici: [https://keepac
 ### Corrigé
 - Autoriser les tableaux de bords à afficher un diagnostic commençant en 2009
 - Lors de la création d'un diagnostic, ajouter une exception à intercepter quand le territoire n'a pas été bien renseigné
+## [1.2.0] - Non livrée
+
+Backlog de la version: [https://app.clickup.com/14136489/v/li/122274320/74368258?pr=20181273](https://app.clickup.com/14136489/v/li/122274320/74368258?pr=20181273)
+
+### Ajouté
+### Modifié
+### Corrigé
 
 ## [1.1.1] - 28.02.2022
 
@@ -17,7 +24,7 @@ Objectif : hotfixes pour corriger les anomalies détectées dans Sentry.
 * Bug "IndexError" lors de l'affichage d'un rapport couverture ou usage (https://app.clickup.com/t/2579cnj)
 * Bug lors de la création d'un diagnostic sans territoire (https://app.clickup.com/t/221fc7v)
 
-## [1.1.0]
+## [1.1.0] - 2022-02-23
 
 Objectif principale : rapport sur l'artificialisation
 
