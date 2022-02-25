@@ -6,6 +6,8 @@ from django.urls import reverse_lazy, reverse
 from django.views.generic import ListView, DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
+from django_app_parameter import app_parameter
+
 from public_data.models import CouvertureSol, UsageSol, Land
 
 from project.forms import UploadShpForm, KeywordForm
@@ -483,6 +485,7 @@ class ProjectReportDownloadView(GroupMixin, CreateView):
             {
                 "href": None,
                 "title": "Téléchargement du bilan",
+                "url_bilan": app_parameter.BILAN_EXAMPLE,
             }
         )
         return breadcrumbs
