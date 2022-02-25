@@ -31,7 +31,7 @@ def get_color_gradient(color_name=None, scale=10):
     """
     if not color_name:
         all_available_colors = [_ for t in RGB_TO_COLOR_NAMES.items() for _ in t[1]]
-        color_name = choice(all_available_colors)
+        color_name = choice(all_available_colors)  # nosec - simple visual improvement
 
     c1 = Color(color_name)
     c2 = Color(c1.web)
@@ -191,7 +191,7 @@ class DataColorationMixin:
         if color_name in cls.ALL_COLORS:
             return color_name
         else:
-            return choice(cls.ALL_COLORS)
+            return choice(cls.ALL_COLORS)  # nosec - no security use of this color
 
     @classmethod
     def get_property_data(cls, property_name=None):
