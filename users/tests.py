@@ -1,3 +1,7 @@
+"""
+Test file for all functionnality of users package
+Should be ignored by security pluggins
+"""
 import pytest
 
 from django.contrib.auth import get_user_model
@@ -8,7 +12,7 @@ from django.utils import timezone
 def users(db):
     User = get_user_model()
     users = {
-        "normal": User.objects.create_user(
+        "normal": User.objects.create_user(  # nosec
             email="normal@user.com",
             password="foo",
             first_name="Henry",
@@ -17,14 +21,14 @@ def users(db):
             organism="EPF",
             function="président du monde",
         ),
-        "staff": User.objects.create_user(
+        "staff": User.objects.create_user(  # nosec
             email="staff@user.com",
             password="foo",
             first_name="Juliette",
             last_name="Binoche",
             is_staff=True,
         ),
-        "super": User.objects.create_superuser(
+        "super": User.objects.create_superuser(  # nosec
             email="super@user.com",
             password="foo",
             first_name="admin",
@@ -38,7 +42,9 @@ def users(db):
 class TestUsers:
     def test_create_user(self):
         User = get_user_model()
-        user = User.objects.create_user(email="normal@user.com", password="foo")
+        user = User.objects.create_user(  # nosec
+            email="normal@user.com", password="foo"
+        )
         assert user.email == "normal@user.com"
         assert str(user) == "normal@user.com"
         assert user.is_active
@@ -51,11 +57,11 @@ class TestUsers:
         with pytest.raises(TypeError):
             User.objects.create_user(email="")
         with pytest.raises(ValueError):
-            User.objects.create_user(email="", password="foo")
+            User.objects.create_user(email="", password="foo")  # nosec
 
     def test_all_fields(self):
         User = get_user_model()
-        user = User.objects.create_user(
+        user = User.objects.create_user(  # nosec
             email="normal@user.com",
             password="foo",
             first_name="Henry",
@@ -68,7 +74,9 @@ class TestUsers:
 
     def test_superuser(self):
         User = get_user_model()
-        user = User.objects.create_superuser(email="normal@user.com", password="foo")
+        user = User.objects.create_superuser(  # nosec
+            email="normal@user.com", password="foo"
+        )
         assert user.is_active
         assert user.is_staff
         assert user.is_superuser
@@ -77,18 +85,18 @@ class TestUsers:
         with pytest.raises(TypeError):
             User.objects.create_superuser(email="")
         with pytest.raises(ValueError):
-            User.objects.create_superuser(email="", password="foo")
+            User.objects.create_superuser(email="", password="foo")  # nosec
 
     def test_greetings(self):
         User = get_user_model()
-        user = User(email="normal@user.com", password="foo")
+        user = User(email="normal@user.com", password="foo")  # nosec
         assert user.greetings == "normal@user.com"
         user.first_name = "first name"
         assert user.greetings == "first name"
 
     def test_str(self):
         User = get_user_model()
-        user = User(email="normal@user.com", password="foo")
+        user = User(email="normal@user.com", password="foo")  # nosec
         assert str(user) == "normal@user.com"
 
     def test_fixtures(self, users):
