@@ -499,7 +499,7 @@ class ProjectReportDownloadView(GroupMixin, CreateView):
     def get_initial(self):
         """Return the initial data to use for forms on this view."""
         initial = self.initial.copy()
-        if self.request.user:
+        if self.request.user and not self.request.user.is_anonymous:
             initial.update(
                 {
                     "first_name": self.request.user.first_name,
