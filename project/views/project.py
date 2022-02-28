@@ -513,7 +513,7 @@ class ProjectReportDownloadView(GroupMixin, CreateView):
 
     def form_valid(self, form):
         # required to set the user who is logged as creator
-        if self.request.user:
+        if self.request.user.is_authenticated:
             form.instance.user = self.request.user
         form.instance.project = self.get_object()
         self.object = form.save()
