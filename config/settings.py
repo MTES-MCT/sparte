@@ -15,6 +15,7 @@ from pathlib import Path
 import pkg_resources
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
+from sentry_sdk.integrations.redis import RedisIntegration
 
 from django.core.exceptions import ImproperlyConfigured
 from django.contrib.messages import constants as messages
@@ -360,6 +361,7 @@ if ENVIRONMENT != "local":
                 # function_name - formats based on the view function name
                 transaction_style="url",
             ),
+            RedisIntegration(),
         ],
         # Set traces_sample_rate to 1.0 to capture 100%
         # of transactions for performance monitoring.
