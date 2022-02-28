@@ -2,6 +2,15 @@
 
 Ce changelog suit la méthode "keep a changelog" disponible ici: [https://keepachangelog.com/en/1.0.0/](https://keepachangelog.com/en/1.0.0/)
 
+## [1.1.1] - 28.02.2022
+
+Objectif : hotfixes pour corriger les anomalies détectées dans Sentry.
+
+### Corrigé
+* Bug lorsqu'un utilisateur demande son bilan (https://app.clickup.com/t/221e9gt)
+* Bug "IndexError" lors de l'affichage d'un rapport couverture ou usage (https://app.clickup.com/t/2579cnj)
+* Bug lors de la création d'un diagnostic sans territoire (https://app.clickup.com/t/221fc7v)
+
 ## [1.1.0]
 
 Objectif principale : rapport sur l'artificialisation
