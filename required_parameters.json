@@ -1,0 +1,14 @@
+[
+    {
+        "name": "Adresse e-mail de l'équipe",
+        "slug": "TEAM_EMAIL",
+        "value_type": "STR",
+        "value": "sparte@beta.gouv.fr"
+    },
+    {
+        "name": "Exemple de bilan Andernos",
+        "slug": "BILAN_EXAMPLE",
+        "value_type": "STR",
+        "value": "https://drive.google.com/file/d/1Drnc9u9Gjx3tWmtOZXzT2M4VvRZfBkO9"
+    }
+]
