@@ -281,7 +281,7 @@ class RefCouverture:
         try:
             val = list(self.surface.values())
             return val[1] - val[0]
-        except KeyError:
+        except (KeyError, IndexError):
             return 0
 
     @property
