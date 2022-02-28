@@ -17,6 +17,7 @@ import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
 
 from django.core.exceptions import ImproperlyConfigured
+from django.contrib.messages import constants as messages
 
 
 OFFICIAL_VERSION = "1.1.0"
@@ -216,6 +217,21 @@ AWS_LOCATION = env.str("AWS_LOCATION", default="local")
 AWS_S3_FILE_OVERWRITE = False
 # allow signed url to be accessed from all regions
 AWS_S3_SIGNATURE_VERSION = "s3v4"
+
+
+# Django.contrib.messages
+# tag for bootstrap compatibility
+
+MESSAGE_TAGS = {
+    messages.DEBUG: "secondary",
+    messages.INFO: "primary",
+    messages.SUCCESS: "success",
+    messages.WARNING: "warning",
+    messages.ERROR: "danger",
+}
+# default is INFO
+if DEBUG is True:
+    MESSAGE_LEVEL = messages.DEBUG
 
 
 # django-import-export
