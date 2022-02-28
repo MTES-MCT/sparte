@@ -107,11 +107,14 @@ class SelectPublicProjects(BreadCrumbMixin, TemplateView):
         if self.epci_id:
             public_key = f"EPCI_{self.epci_id}"
         if request.GET.get("see_diagnostic", None):
-            try:
-                request.session["public_key"] = public_key
-                return redirect("project:select_2")
-            except Project.DoesNotExist:
-                messages.error(self.request, "Territoire non disponible.")
+            if public_key:
+                try:
+                    request.session["public_key"] = public_key
+                    return redirect("project:select_2")
+                except Project.DoesNotExist:
+                    messages.error(self.request, "Territoire non disponible.")
+            else:
+                messages.warning(self.request, "Merci de sélectionner un territoire.")
         context = self.get_context_data(**kwargs)
         return self.render_to_response(context)
 
@@ -150,7 +153,13 @@ class SetProjectOptions(BreadCrumbMixin, FormView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        lands = self.get_territoire()
+        try:
+            lands = self.get_territoire()
+        except AttributeError:
+            messages.error(
+                self.request, "Le territoire n'a pas été correctement sélectionné."
+            )
+            return redirect("project:select")
         millesimes = {year for land in lands for year in land.get_ocsge_millesimes()}
         millesimes = list(millesimes)
         millesimes.sort()
