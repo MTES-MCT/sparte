@@ -281,7 +281,7 @@ class RefCouverture:
         try:
             val = list(self.surface.values())
             return val[1] - val[0]
-        except KeyError:
+        except (KeyError, IndexError):
             return 0
 
     @property
@@ -499,7 +499,7 @@ class ProjectReportDownloadView(GroupMixin, CreateView):
     def get_initial(self):
         """Return the initial data to use for forms on this view."""
         initial = self.initial.copy()
-        if self.request.user:
+        if self.request.user and not self.request.user.is_anonymous:
             initial.update(
                 {
                     "first_name": self.request.user.first_name,
@@ -513,7 +513,7 @@ class ProjectReportDownloadView(GroupMixin, CreateView):
 
     def form_valid(self, form):
         # required to set the user who is logged as creator
-        if self.request.user:
+        if self.request.user.is_authenticated:
             form.instance.user = self.request.user
         form.instance.project = self.get_object()
         self.object = form.save()
