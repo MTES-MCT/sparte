@@ -82,6 +82,7 @@ PROJECT_APPS = [
     "public_data.apps.PublicDataConfig",
     "project.apps.ProjectConfig",
     "home.apps.HomeConfig",
+    "highcharts.apps.HighchartsConfig",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + RESTFRAMEWORK_APPS + THIRD_APPS + PROJECT_APPS
