@@ -21,7 +21,7 @@ from django.core.exceptions import ImproperlyConfigured
 from django.contrib.messages import constants as messages
 
 
-OFFICIAL_VERSION = "1.1.0"
+OFFICIAL_VERSION = "1.1.2"
 
 root = environ.Path(__file__) - 2  # get root of the project
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -82,6 +82,7 @@ PROJECT_APPS = [
     "public_data.apps.PublicDataConfig",
     "project.apps.ProjectConfig",
     "home.apps.HomeConfig",
+    "highcharts.apps.HighchartsConfig",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + RESTFRAMEWORK_APPS + THIRD_APPS + PROJECT_APPS
