@@ -954,9 +954,9 @@ class Cerema(AutoLoadMixin, DataColorationMixin, models.Model):
         """
         end = int(end) - 2000
         start = int(start) - 2000
-        if not 10 <= start <= 20:
+        if not 9 <= start <= 20:
             raise ValueError("'start' must be between 2010 and 2020")
-        if not 10 <= end <= 20:
+        if not 9 <= end <= 20:
             raise ValueError("'end' must be between 2010 and 2020")
         if end < start:
             raise ValueError("start must be <= to end")
