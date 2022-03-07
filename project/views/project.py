@@ -8,9 +8,14 @@ from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
 from django_app_parameter import app_parameter
 
-from highcharts.charts import Chart
 from public_data.models import CouvertureSol, UsageSol, Land
 
+from project.charts import (
+    ConsoCommuneChart,
+    DeterminantPerYearChart,
+    DeterminantPieChart,
+    ConsoComparisonChart,
+)
 from project.forms import UploadShpForm, KeywordForm
 from project.models import Project, Request
 from project.domains import ConsommationDataframe
@@ -154,53 +159,6 @@ class ProjectReportConsoView(GroupMixin, DetailView):
         breadcrumbs.append({"href": None, "title": "Rapport consommation"})
         return breadcrumbs
 
-    def get_chart_conso_communes(self, communes_data, project_data, project_name):
-        param = {
-            "chart": {
-                "type": "area",
-            },
-            "title": {
-                "text": "",
-            },
-            "yAxis": {
-                "title": {
-                    "text": "Consommé (en ha)",
-                },
-            },
-            "xAxis": {
-                "type": "category",
-            },
-            "legend": {
-                "layout": "horizontal",
-                "align": "center",
-                "verticalAlign": "top",
-            },
-            "plotOptions": {
-                "area": {
-                    "stacking": "normal",
-                },
-            },
-            "series": [],
-        }
-        chart = Chart(param)
-        for city_name, data in communes_data.items():
-            chart.add_serie(
-                {
-                    "name": city_name,
-                    "data": [{"name": n, "y": y} for n, y in data.items()],
-                }
-            )
-        chart.add_serie(
-            {
-                "name": project_name,
-                "type": "line",
-                "color": "#ff0000",
-                "dashStyle": "ShortDash",
-                "data": [{"name": n, "y": y} for n, y in project_data.items()],
-            }
-        )
-        return chart
-
     def get_context_data(self, **kwargs):
         project = self.get_object()
 
@@ -227,22 +185,8 @@ class ProjectReportConsoView(GroupMixin, DetailView):
                 }
             )
 
-        total_surface = project.area
-        pki_inital_surface = int(builder.get_global_intial())
-        pki_final_surface = int(builder.get_global_final())
-        pki_progression = int(builder.get_global_progression())
-        pki_progression_percent = builder.get_global_progression_percent() * 100
-
         target_2031_consumption = project.get_bilan_conso()
         current_conso = project.get_bilan_conso_time_scoped()
-
-        # build data for comparison graph with all look a like and the project itself
-        comparison_data_graph = project.get_look_a_like_conso_per_year()
-        project_data_graph = project.get_conso_per_year()
-        data_determinant = project.get_determinants()
-        pie_data_determinant = {
-            det: sum(vals.values()) for det, vals in data_determinant.items()
-        }
 
         # communes_data_graph
         communes_data_graph = project.get_city_conso_per_year()
@@ -256,30 +200,13 @@ class ProjectReportConsoView(GroupMixin, DetailView):
         total["total"] = sum(total.values())
         communes_data_table["Total"] = total
 
+        determinant_per_year_chart = DeterminantPerYearChart(project)
+
         return {
             **super().get_context_data(**kwargs),
-            "start_year": project.analyse_start_date,
-            "end_year": project.analyse_end_date,
-            "years": project.years,
-            "headers": headers,
-            # "table_artif": table_artif,
-            "initial_surface": pki_inital_surface,
-            "initial_percent": 100 * pki_inital_surface / total_surface,
-            "final_surface": pki_final_surface,
-            "final_percent": 100 * pki_final_surface / total_surface,
             "total_surface": project.area,
-            "pki_progression": pki_progression,
-            "pki_progression_percent": pki_progression_percent,
             "active_page": "consommation",
-            "conso_commune_chart": self.get_chart_conso_communes(
-                communes_data_graph,
-                project_data_graph,
-                project.name,
-            ),
-            "communes_data_graph": communes_data_graph,
             "communes_data_table": communes_data_table,
-            "comparison_data_graph": comparison_data_graph,
-            "project_data_graph": project_data_graph,
             "target_2031": {
                 "consummed": target_2031_consumption,
                 "annual_avg": target_2031_consumption / 10,
@@ -301,10 +228,13 @@ class ProjectReportConsoView(GroupMixin, DetailView):
                     int(project.analyse_start_date), int(project.analyse_end_date) + 1
                 )
             ],
-            "graph_max": int(project.analyse_end_date)
-            - int(project.analyse_start_date),
-            "data_determinant": data_determinant,
-            "pie_data_determinant": pie_data_determinant,
+            # charts
+            "determinant_per_year_chart": determinant_per_year_chart,
+            "determinant_pie_chart": DeterminantPieChart(project),
+            "comparison_chart": ConsoComparisonChart(project),
+            "commune_chart": ConsoCommuneChart(project),
+            # tables
+            "data_determinant": determinant_per_year_chart.get_series(),
         }
 
 
