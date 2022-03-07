@@ -2,6 +2,12 @@
 
 Ce changelog suit la méthode "keep a changelog" disponible ici: [https://keepachangelog.com/en/1.0.0/](https://keepachangelog.com/en/1.0.0/)
 
+## [1.1.2] - 07.03.2022
+
+### Corrigé
+- Autoriser les tableaux de bords à afficher un diagnostic commençant en 2009
+- Lors de la création d'un diagnostic, ajouter une exception à intercepter quand le territoire n'a pas été bien renseigné
+
 ## [1.1.1] - 28.02.2022
 
 Objectif : hotfixes pour corriger les anomalies détectées dans Sentry.
