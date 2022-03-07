@@ -16,12 +16,39 @@ class ChartCollection:
 
 
 class Chart:
-    def __init__(self, chart, name=None):
-        self.name = name
-        self.chart = chart
+    param = None
+    name = None
+    series = None
 
-    def add_serie(self, data):
-        self.chart["series"].append(data)
+    def get_param(self):
+        return self.param
+
+    def __init__(self):
+        self.chart = self.get_param()
+        self.add_series()
+
+    def get_series(self):
+        return self.series
+
+    def add_serie(self, name, data, **options):
+        serie = {
+            "name": name,
+            "data": [{"name": n, "y": y} for n, y in data.items()],
+        }
+        serie.update(options)
+        self.chart["series"].append(serie)
+
+    def add_series(self, series=None, **options):
+        """
+        series : {
+            "serie_1_name": {"point_name": "value", "point_name_2": "value", ...},
+            "serie_2_name": {"point_name": "value", "point_name_2": "value", ...}
+        }
+        """
+        if not series:
+            series = self.get_series()
+        for serie_name, data in series.items():
+            self.add_serie(serie_name, data, **options)
 
     def dumps(self):
         chart_dumped = json.dumps(self.chart)
