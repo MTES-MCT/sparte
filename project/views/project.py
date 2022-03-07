@@ -8,6 +8,7 @@ from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
 from django_app_parameter import app_parameter
 
+from highcharts.charts import Chart
 from public_data.models import CouvertureSol, UsageSol, Land
 
 from project.forms import UploadShpForm, KeywordForm
@@ -153,6 +154,53 @@ class ProjectReportConsoView(GroupMixin, DetailView):
         breadcrumbs.append({"href": None, "title": "Rapport consommation"})
         return breadcrumbs
 
+    def get_chart_conso_communes(self, communes_data, project_data, project_name):
+        param = {
+            "chart": {
+                "type": "area",
+            },
+            "title": {
+                "text": "",
+            },
+            "yAxis": {
+                "title": {
+                    "text": "Consommé (en ha)",
+                },
+            },
+            "xAxis": {
+                "type": "category",
+            },
+            "legend": {
+                "layout": "horizontal",
+                "align": "center",
+                "verticalAlign": "top",
+            },
+            "plotOptions": {
+                "area": {
+                    "stacking": "normal",
+                },
+            },
+            "series": [],
+        }
+        chart = Chart(param)
+        for city_name, data in communes_data.items():
+            chart.add_serie(
+                {
+                    "name": city_name,
+                    "data": [{"name": n, "y": y} for n, y in data.items()],
+                }
+            )
+        chart.add_serie(
+            {
+                "name": project_name,
+                "type": "line",
+                "color": "#ff0000",
+                "dashStyle": "ShortDash",
+                "data": [{"name": n, "y": y} for n, y in project_data.items()],
+            }
+        )
+        return chart
+
     def get_context_data(self, **kwargs):
         project = self.get_object()
 
@@ -223,6 +271,11 @@ class ProjectReportConsoView(GroupMixin, DetailView):
             "pki_progression": pki_progression,
             "pki_progression_percent": pki_progression_percent,
             "active_page": "consommation",
+            "conso_commune_chart": self.get_chart_conso_communes(
+                communes_data_graph,
+                project_data_graph,
+                project.name,
+            ),
             "communes_data_graph": communes_data_graph,
             "communes_data_table": communes_data_table,
             "comparison_data_graph": comparison_data_graph,
