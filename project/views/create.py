@@ -155,7 +155,7 @@ class SetProjectOptions(BreadCrumbMixin, FormView):
         context = super().get_context_data(**kwargs)
         try:
             lands = self.get_territoire()
-        except AttributeError:
+        except (AttributeError, KeyError):
             messages.error(
                 self.request, "Le territoire n'a pas été correctement sélectionné."
             )
