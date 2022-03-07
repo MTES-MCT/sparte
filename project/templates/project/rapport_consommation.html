@@ -122,9 +122,9 @@ Rapport consommation
                                 Sélection
                             </button>
                             <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                                <li><a id="check" class="dropdown-item" href="#">Tout</a></li>
-                                <li><a id="uncheck" class="dropdown-item" href="#">Aucun</a></li>
-                                <li><a id="reverse" class="dropdown-item" href="#">Inverser</a></li>
+                                <li><a id="check" class="dropdown-item" href="#" chart_target="chart">Tout</a></li>
+                                <li><a id="uncheck" class="dropdown-item" href="#" chart_target="chart">Aucun</a></li>
+                                <li><a id="reverse" class="dropdown-item" href="#" chart_target="chart">Inverser</a></li>
                             </ul>
                         </div>
                 </div>
@@ -222,76 +222,32 @@ Rapport consommation
 {% localize off %}
 <script src="https://code.highcharts.com/highcharts.js"></script>
 <script src="https://code.highcharts.com/modules/exporting.js"></script>
+{% french_translation %}
+{% display_chart 'chart' conso_commune_chart %}
 <script language="javascript">
-
-{% translate_chart %}
-
 ///////////////////////////////
 // CONSOMMATION DES COMMUNES
 ///////////////////////////////
-var optionsChart1 = {
-    chart: {
-        renderTo:'chart',
-        type: 'area'
-    },
-    title:{
-        text:''
-    },
-    yAxis: {
-        title: {
-            text: 'Consommé (en ha)'
-        }
-    },
-    xAxis: {
-        type: "category",
-    },
-    legend: {
-        layout: 'horizontal',
-        align: 'center',
-        verticalAlign: 'top'
-    },
-    plotOptions: {
-        area: {
-            stacking: 'normal',
-        }
-    },
-    series: [{% for city_name, data in communes_data_graph.items %}
-    {
-        name: '{{ city_name }}',
-        data: [{% for name, y in data.items %}{
-            name: "{{ name }}",
-            y: {{ y }},
-        }, {% endfor %}]
-    },
-    {% endfor %}
-    {
-        name: '{{ project.name }}',
-        type: 'line',
-        data: [
-            {% for y, v in project_data_graph.items %}{ name: "{{y}}", y: {{ v }} },
-            {% endfor %}
-        ],
-        color: '#ff0000',
-        dashStyle: 'ShortDash',
-    }
-    ],
-}
-
-chart = new Highcharts.Chart(optionsChart1);
 
 $('#check').click(function(){
+    let div_id = $(this).attr('chart_target');
+    let chart = $("#" + div_id).highcharts();
     for(i=0; i < chart.series.length; i++) {
         chart.series[i].show()
     }
 })
 
 $('#uncheck').click(function(){
+    let div_id = $(this).attr('chart_target');
+    let chart = $("#" + div_id).highcharts();
     for(i=0; i < chart.series.length; i++) {
         chart.series[i].hide()
     }
 })
 
 $('#reverse').click(function(){
+    let div_id = $(this).attr('chart_target');
+    let chart = $("#" + div_id).highcharts();
     for(i=0; i < chart.series.length; i++) {
         if (chart.series[i].visible){
             chart.series[i].hide()
@@ -301,11 +257,6 @@ $('#reverse').click(function(){
     }
 })
 
-$('#uncheckAll').click(function(){
-    for(i=0; i < chart.series.length; i++) {
-        chart.series[i].hide();
-    }
-})
 
 ///////////////////////////////
 // CONSOMMATION DU TERRITOIRE ET DE SES VOISINS
