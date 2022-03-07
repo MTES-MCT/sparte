@@ -5,6 +5,7 @@
 {% load humanize %}
 {% load i18n %}
 {% load l10n %}
+{% load highcharts_tags %}
 
 {% block pagetitle %}
 Rapport consommation
@@ -114,7 +115,21 @@ Rapport consommation
             </div>
 
             <div class="w-100 box p-4">
-                <h3>Consommation annuelle des communes du territoire</h3>
+                <h3>
+                    <div class="float-end">
+                        <div class="dropdown">
+                            <button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                                Sélection
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                                <li><a id="check" class="dropdown-item" href="#">Tout</a></li>
+                                <li><a id="uncheck" class="dropdown-item" href="#">Aucun</a></li>
+                                <li><a id="reverse" class="dropdown-item" href="#">Inverser</a></li>
+                            </ul>
+                        </div>
+                </div>
+                Consommation annuelle des communes du territoire</h3>
+
                 <div id="chart" class="flex-fill"></div>
             </div>
 
@@ -208,11 +223,15 @@ Rapport consommation
 <script src="https://code.highcharts.com/highcharts.js"></script>
 <script src="https://code.highcharts.com/modules/exporting.js"></script>
 <script language="javascript">
+
+{% translate_chart %}
+
 ///////////////////////////////
 // CONSOMMATION DES COMMUNES
 ///////////////////////////////
-Highcharts.chart('chart', {
+var optionsChart1 = {
     chart: {
+        renderTo:'chart',
         type: 'area'
     },
     title:{
@@ -256,8 +275,37 @@ Highcharts.chart('chart', {
         dashStyle: 'ShortDash',
     }
     ],
-});
+}
 
+chart = new Highcharts.Chart(optionsChart1);
+
+$('#check').click(function(){
+    for(i=0; i < chart.series.length; i++) {
+        chart.series[i].show()
+    }
+})
+
+$('#uncheck').click(function(){
+    for(i=0; i < chart.series.length; i++) {
+        chart.series[i].hide()
+    }
+})
+
+$('#reverse').click(function(){
+    for(i=0; i < chart.series.length; i++) {
+        if (chart.series[i].visible){
+            chart.series[i].hide()
+        }else{
+            chart.series[i].show()
+        }
+    }
+})
+
+$('#uncheckAll').click(function(){
+    for(i=0; i < chart.series.length; i++) {
+        chart.series[i].hide();
+    }
+})
 
 ///////////////////////////////
 // CONSOMMATION DU TERRITOIRE ET DE SES VOISINS
