@@ -12,7 +12,6 @@ Ce changelog suit la méthode "keep a changelog" disponible ici: [https://keepac
 Backlog de la version: [https://app.clickup.com/14136489/v/li/122274320/74368258?pr=20181273](https://app.clickup.com/14136489/v/li/122274320/74368258?pr=20181273)
 
 ### Ajouté
-
 ### Modifié
 * Montée de version Django vers 3.2.12
 * Remplacement de app_parameter par django-app-parameter
