@@ -2,20 +2,26 @@
 
 Ce changelog suit la méthode "keep a changelog" disponible ici: [https://keepachangelog.com/en/1.0.0/](https://keepachangelog.com/en/1.0.0/)
 
-## [1.1.2] - 07.03.2022
-
-### Corrigé
-- Autoriser les tableaux de bords à afficher un diagnostic commençant en 2009
-- Lors de la création d'un diagnostic, ajouter une exception à intercepter quand le territoire n'a pas été bien renseigné
 ## [1.2.0] - Non livrée
 
 Backlog de la version: [https://app.clickup.com/14136489/v/li/122274320/74368258?pr=20181273](https://app.clickup.com/14136489/v/li/122274320/74368258?pr=20181273)
 
 ### Ajouté
+- Déselectionner toutes les communes d'un coup dans le graph de comparaison des communes
+- (tech) paramétrage des graphs dans les views afin de pouvoir facilement les exporter
+
 ### Modifié
 * Montée de version Django vers 3.2.12
 * Remplacement de app_parameter par django-app-parameter
+
 ### Corrigé
+- Erreur 500 lors d'un direct accès à l'étape 2 de création.
+
+## [1.1.2] - 07.03.2022
+
+### Corrigé
+- Autoriser les tableaux de bords à afficher un diagnostic commençant en 2009
+- Lors de la création d'un diagnostic, ajouter une exception à intercepter quand le territoire n'a pas été bien renseigné
 
 ## [1.1.1] - 28.02.2022
 

@@ -119,6 +119,10 @@ class SelectPublicProjects(BreadCrumbMixin, TemplateView):
         return self.render_to_response(context)
 
 
+class LandException(BaseException):
+    pass
+
+
 class SetProjectOptions(BreadCrumbMixin, FormView):
     template_name = "project/create/select_2.html"
     form_class = OptionsForm
@@ -135,7 +139,10 @@ class SetProjectOptions(BreadCrumbMixin, FormView):
         return breadcrumbs
 
     def get_territoire(self):
-        public_keys = self.request.session["public_key"]
+        try:
+            public_keys = self.request.session["public_key"]
+        except (AttributeError, KeyError) as e:
+            raise LandException("No territory available in session") from e
         if not isinstance(public_keys, list):
             public_keys = [public_keys]
         lands = list()
@@ -153,13 +160,7 @@ class SetProjectOptions(BreadCrumbMixin, FormView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        try:
-            lands = self.get_territoire()
-        except (AttributeError, KeyError):
-            messages.error(
-                self.request, "Le territoire n'a pas été correctement sélectionné."
-            )
-            return redirect("project:select")
+        lands = self.get_territoire()
         millesimes = {year for land in lands for year in land.get_ocsge_millesimes()}
         millesimes = list(millesimes)
         millesimes.sort()
@@ -174,6 +175,16 @@ class SetProjectOptions(BreadCrumbMixin, FormView):
             }
         )
         return context
+
+    def get(self, request, *args, **kwargs):
+        """Catch exception if no land are in the session and redirect to step 1"""
+        try:
+            return self.render_to_response(self.get_context_data())
+        except LandException:
+            messages.error(
+                self.request, "Le territoire n'a pas été correctement sélectionné."
+            )
+            return redirect("project:select")
 
     def form_valid(self, form):
         """If the form is valid, redirect to the supplied URL."""
