@@ -73,13 +73,14 @@ urlpatterns = [
     # old creation journey
     path("diagnostic/etape/1", views.SelectPublicProjects.as_view(), name="select"),
     path("diagnostic/etape/1/city", views.SelectCities.as_view(), name="select-city"),
-    path("diagnostic/etape/2", views.SetProjectOptions.as_view(), name="select_2"),
     # new creation journey
     path("diagnostic", views.SelectTypeView.as_view(), name="create-1"),
-    path("diagnostic/region", views.SelectRegionView.as_view(), name="create-region"),
-    path("diagnostic/departement", views.SelectDptView.as_view(), name="create-dpt"),
-    path("diagnostic/epci", views.SelectRegionView.as_view(), name="create-epci"),
-    path("diagnostic/city", views.SelectRegionView.as_view(), name="create-city"),
+    path(
+        "diagnostic/territoire/<slug:land_type>",
+        views.SelectTerritoireView.as_view(),
+        name="create-2",
+    ),
+    path("diagnostic/dates", views.SetProjectOptions.as_view(), name="create-3"),
 ]
 
 
