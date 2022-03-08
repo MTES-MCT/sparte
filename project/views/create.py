@@ -2,7 +2,6 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse_lazy
-from django.utils.datastructures import MultiValueDictKeyError
 from django.views.generic import TemplateView, FormView, RedirectView
 
 from public_data.models import Epci, Departement, Region, Commune, Land
@@ -30,28 +29,7 @@ class SelectTypeView(BreadCrumbMixin, TemplateView):
         return breadcrumbs
 
 
-class SelectRegionView(BreadCrumbMixin, FormView):
-    template_name = "project/create/select_region.html"
-    form_class = RegionForm
-
-    def get_context_breadcrumbs(self):
-        breadcrumbs = super().get_context_breadcrumbs()
-        breadcrumbs += [
-            {
-                "href": reverse_lazy("project:create-1"),
-                "title": "Nouveau diagnostic",
-            },
-            {"href": reverse_lazy("project:select"), "title": "Choisir une région"},
-        ]
-        return breadcrumbs
-
-    def form_valid(self, form):
-        region = form.cleaned_data["region"]
-        self.request.session["public_key"] = f"REGION_{region.id}"
-        return redirect("project:select_2")
-
-
-class SelectDptView(BreadCrumbMixin, FormView):
+class SelectTerritoireView(BreadCrumbMixin, FormView):
     template_name = "project/create/select_dept.html"
     form_class = KeywordForm
 
@@ -61,31 +39,46 @@ class SelectDptView(BreadCrumbMixin, FormView):
             {"href": reverse_lazy("project:create-1"), "title": "Nouveau diagnostic"},
             {
                 "href": reverse_lazy("project:create-dpt"),
-                "title": "Choisir un département",
+                "title": "Choisir un territoire",
             },
         ]
         return breadcrumbs
 
-    def post(self, request, *args, **kwargs):
-        form = self.get_form()
-        if form.is_valid():
-            keyword = form.cleaned_data["keyword"]
-            context = {
-                "keyword": keyword,
-                "object_list": Departement.objects.filter(name__icontains=keyword),
-            }
+    def get_context_data(self, **kwargs):
+        kwargs["feminin"] = ""
+        land_type = self.kwargs["land_type"].upper()
+        if land_type == "EPCI":
+            kwargs["land_label"] = "EPCI"
+        elif land_type == "DEPARTEMENT":
+            kwargs["land_label"] = "département"
+        elif land_type == "COMMUNE":
+            kwargs["land_label"] = "commune"
+            kwargs["feminin"] = "e"
         else:
-            dept_public_key = form.data.get("departement", None)
-            if dept_public_key:
-                dept_id = dept_public_key.split("_")[1]
-                Departement.objects.get(pk=dept_id)
-                request.session["public_key"] = dept_public_key
-                return redirect("project:select_2")
+            kwargs["land_label"] = "région"
+            kwargs["feminin"] = "e"
+        return super().get_context_data(**kwargs)
+
+    def post(self, request, *args, **kwargs):
+        land_type = self.kwargs["land_type"].upper()
+        keyword = request.POST.get("keyword", None)
+        public_key = request.POST.get("land", None)
+        context = {"keyword": keyword, "land_type": land_type}
+        if keyword:
+            if land_type == "EPCI":
+                context["object_list"] = Epci.objects.filter(name__icontains=keyword)
+            elif land_type == "DEPARTEMENT":
+                context["object_list"] = Departement.objects.filter(
+                    name__icontains=keyword
+                )
+            elif land_type == "COMMUNE":
+                context["object_list"] = Commune.objects.filter(name__icontains=keyword)
             else:
-                try:
-                    context = {"keyword": form.data["keyword"]}
-                except MultiValueDictKeyError:
-                    context = dict()
+                context["object_list"] = Region.objects.filter(name__icontains=keyword)
+        if public_key:
+            Land(public_key)
+            request.session["public_key"] = public_key
+            return redirect("project:create-3")
         return self.render_to_response(self.get_context_data(**context))
 
 
@@ -160,7 +153,7 @@ class SelectPublicProjects(BreadCrumbMixin, TemplateView):
             if public_key:
                 try:
                     request.session["public_key"] = public_key
-                    return redirect("project:select_2")
+                    return redirect("project:create-3")
                 except Project.DoesNotExist:
                     messages.error(self.request, "Territoire non disponible.")
             else:
@@ -308,7 +301,7 @@ class SelectCities(BreadCrumbMixin, TemplateView):
             )
         if self.select:
             request.session["public_key"] = self.public_keys
-            return redirect("project:select_2")
+            return redirect("project:create-3")
         return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **context):

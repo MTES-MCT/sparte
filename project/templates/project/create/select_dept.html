@@ -15,7 +15,7 @@ Sélectionner un département
 <div class="d-flex justify-content-center mt-5">
     <div class="col-lg-6 col-md-8 col-12">
 
-        <h1 class="mb-5">Sélectionner un département</h1>
+        <h1 class="mb-5">Sélectionner un{{ feminin }} {{ land_label }}</h1>
 
 
         <form method="post">
@@ -32,16 +32,13 @@ Sélectionner un département
             {% if object_list %}
                 <form method="post">
                     {% csrf_token %}
-                    <strong>Cliquez sur un département pour le sélectionner :</strong>
+                    <strong>Cliquez sur un{{ feminin }} {{ land_label }} pour le sélectionner :</strong>
                     <div class="row g-2 row-cols-3 align-items-center mt-3">
                     {% for object in object_list %}
-                        <div class="col">
-                            <div>
-                                <button type="submit" class="btn btn-outline-primary w-100" name="departement" value="{{ object.public_key }}">
-                                    {{ object.name }}
-                                    <i class="bi bi-arrow-right-circle float-end"></i>
-                                </button>
-                            </div>
+                        <div class="col h-100">
+                            <button type="submit" class="btn btn-outline-primary w-100 overflow-hidden" name="land" value="{{ object.public_key }}" style="height: 60px;">
+                                {{ object.name }}
+                            </button>
                         </div>
                     {% endfor %}
                     </div>
