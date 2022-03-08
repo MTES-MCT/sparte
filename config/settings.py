@@ -159,7 +159,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # indicate the new User model to Django
 AUTH_USER_MODEL = "users.User"
-LOGIN_REDIRECT_URL = "carto:home_connected"
+LOGIN_REDIRECT_URL = "project:list"
 LOGIN_URL = "users:signin"
 
 
