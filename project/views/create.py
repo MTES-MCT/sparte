@@ -2,12 +2,19 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse_lazy
+from django.utils.datastructures import MultiValueDictKeyError
 from django.views.generic import TemplateView, FormView, RedirectView
 
 from public_data.models import Epci, Departement, Region, Commune, Land
 from utils.views_mixins import BreadCrumbMixin
 
-from project.forms import EpciForm, DepartementForm, RegionForm, OptionsForm
+from project.forms import (
+    EpciForm,
+    DepartementForm,
+    RegionForm,
+    OptionsForm,
+    KeywordForm,
+)
 from project.models import Project
 from project.tasks import process_project
 
@@ -18,7 +25,7 @@ class SelectTypeView(BreadCrumbMixin, TemplateView):
     def get_context_breadcrumbs(self):
         breadcrumbs = super().get_context_breadcrumbs()
         breadcrumbs.append(
-            {"href": reverse_lazy("project:select"), "title": "Mon diagnostic 1/2"},
+            {"href": reverse_lazy("project:create-1"), "title": "Nouveau diagnostic"},
         )
         return breadcrumbs
 
@@ -29,15 +36,57 @@ class SelectRegionView(BreadCrumbMixin, FormView):
 
     def get_context_breadcrumbs(self):
         breadcrumbs = super().get_context_breadcrumbs()
-        breadcrumbs.append(
-            {"href": reverse_lazy("project:select"), "title": "Mon diagnostic 2/3"},
-        )
+        breadcrumbs += [
+            {
+                "href": reverse_lazy("project:create-1"),
+                "title": "Nouveau diagnostic",
+            },
+            {"href": reverse_lazy("project:select"), "title": "Choisir une région"},
+        ]
         return breadcrumbs
 
     def form_valid(self, form):
         region = form.cleaned_data["region"]
         self.request.session["public_key"] = f"REGION_{region.id}"
         return redirect("project:select_2")
+
+
+class SelectDptView(BreadCrumbMixin, FormView):
+    template_name = "project/create/select_dept.html"
+    form_class = KeywordForm
+
+    def get_context_breadcrumbs(self):
+        breadcrumbs = super().get_context_breadcrumbs()
+        breadcrumbs += [
+            {"href": reverse_lazy("project:create-1"), "title": "Nouveau diagnostic"},
+            {
+                "href": reverse_lazy("project:create-dpt"),
+                "title": "Choisir un département",
+            },
+        ]
+        return breadcrumbs
+
+    def post(self, request, *args, **kwargs):
+        form = self.get_form()
+        if form.is_valid():
+            keyword = form.cleaned_data["keyword"]
+            context = {
+                "keyword": keyword,
+                "object_list": Departement.objects.filter(name__icontains=keyword),
+            }
+        else:
+            dept_public_key = form.data.get("departement", None)
+            if dept_public_key:
+                dept_id = dept_public_key.split("_")[1]
+                Departement.objects.get(pk=dept_id)
+                request.session["public_key"] = dept_public_key
+                return redirect("project:select_2")
+            else:
+                try:
+                    context = {"keyword": form.data["keyword"]}
+                except MultiValueDictKeyError:
+                    context = dict()
+        return self.render_to_response(self.get_context_data(**context))
 
 
 class SelectPublicProjects(BreadCrumbMixin, TemplateView):
