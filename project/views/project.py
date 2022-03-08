@@ -144,6 +144,10 @@ class ProjectPendingView(GroupMixin, DetailView):
 class ProjectSuccessView(GroupMixin, DetailView):
     template_name = "project/detail_success.html"
 
+    def get_context_data(self, **kwargs):
+        kwargs["claim_diagnostic"] = self.object.user is None
+        return super().get_context_data(**kwargs)
+
 
 class ProjectFailedView(GroupMixin, DetailView):
     template_name = "project/detail_failed.html"
