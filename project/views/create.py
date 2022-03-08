@@ -30,7 +30,7 @@ class SelectTypeView(BreadCrumbMixin, TemplateView):
 
 
 class SelectTerritoireView(BreadCrumbMixin, FormView):
-    template_name = "project/create/select_dept.html"
+    template_name = "project/create/select_territoire.html"
     form_class = KeywordForm
 
     def get_context_breadcrumbs(self):
