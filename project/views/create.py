@@ -1,7 +1,8 @@
 from django.contrib import messages
-from django.shortcuts import redirect
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse_lazy
-from django.views.generic import TemplateView, FormView
+from django.views.generic import TemplateView, FormView, RedirectView
 
 from public_data.models import Epci, Departement, Region, Commune, Land
 from utils.views_mixins import BreadCrumbMixin
@@ -273,3 +274,21 @@ class SelectCities(BreadCrumbMixin, TemplateView):
             }
         )
         return super().get_context_data(**context)
+
+
+class ClaimProjectView(LoginRequiredMixin, RedirectView):
+    def get(self, request, *args, **kwargs):
+        project = get_object_or_404(Project, pk=self.kwargs["pk"])
+        self.url = project.get_absolute_url()
+        if project.user is not None:
+            messages.error(
+                request, "Erreur : ce diagnostic est appartient déjà à quelqu'un"
+            )
+        else:
+            messages.success(
+                request,
+                "Vous pouvez retrouver ce diagnostic en utilisant le menu Diagnostic > Ouvrir",
+            )
+            project.user = request.user
+            project.save()
+        return super().get(request, *args, **kwargs)

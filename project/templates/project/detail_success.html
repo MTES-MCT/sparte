@@ -17,13 +17,25 @@ SPARTE
 <div class="row w-100 justify-content-center">
 
     <div class="col-8 bg-light p-3 rounded-5 border mt-1">
-        <div class="float-end">
+        <!-- <div class="float-end">
             <div class="form-check form-switch">
                 <label class="form-check-label" for="flexSwitchCheckDefault">Accès public</label>
                 <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
             </div>
-        </div>
+        </div>-->
         <h1 class="mb-5">{{ project.name }}</h1>
+
+        {% if claim_diagnostic %}
+            <div class="alert alert-warning fade show mb-5" role="alert">
+            {% if user.is_authenticated %}
+                Pour retrouver facilement ce projet, ajoutez le à votre écran d'accueil.
+                <a href="{% url 'project:claim' project.id %}" class="btn btn-warning btn-sm ms-5">Ajouter</a>
+            {% else %}
+                Afin de retrouver facilement ce diagnostic, inscrivez-vous !
+                <a href="{% url 'users:signup' %}?next={% url 'project:claim' project.id %}" class="btn btn-warning btn-sm ms-5">S'inscrire</a>
+            {% endif %}
+            </div>
+        {% endif %}
 
         <div class="row gx-2">
             <div class="col">
