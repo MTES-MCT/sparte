@@ -1,3 +1,4 @@
+import copy
 import json
 import random
 import string
@@ -21,7 +22,7 @@ class Chart:
     series = None
 
     def get_param(self):
-        return self.param
+        return copy.deepcopy(self.param)
 
     def __init__(self):
         self.chart = self.get_param()
