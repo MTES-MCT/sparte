@@ -236,29 +236,33 @@ Rapport consommation
 $('#check').click(function(){
     let div_id = $(this).attr('chart_target');
     let chart = $("#" + div_id).highcharts();
-    for(i=0; i < chart.series.length; i++) {
-        chart.series[i].show()
-    }
+    $(chart.series).each(function(){
+        this.setVisible(true, false)
+    })
+    chart.redraw()
 })
 
 $('#uncheck').click(function(){
-    let div_id = $(this).attr('chart_target');
-    let chart = $("#" + div_id).highcharts();
-    for(i=0; i < chart.series.length; i++) {
-        chart.series[i].hide()
-    }
+    let div_id = $(this).attr('chart_target')
+    let chart = $("#" + div_id).highcharts()
+    //chart.series.forEach(serie => serie.hide())
+    $(chart.series).each(function(){
+        this.setVisible(false, false)
+    })
+    chart.redraw()
 })
 
 $('#reverse').click(function(){
     let div_id = $(this).attr('chart_target');
     let chart = $("#" + div_id).highcharts();
-    for(i=0; i < chart.series.length; i++) {
-        if (chart.series[i].visible){
-            chart.series[i].hide()
+    $(chart.series).each(function(){
+        if (this.visible){
+            this.setVisible(false, false)
         }else{
-            chart.series[i].show()
+            this.setVisible(true, false)
         }
-    }
+    })
+    chart.redraw()
 })
 </script>
 
