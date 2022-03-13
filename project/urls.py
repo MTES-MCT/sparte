@@ -15,6 +15,7 @@ urlpatterns = [
     path("", views.ProjectListView.as_view(), name="list"),
     path("add/", views.ProjectCreateView.as_view(), name="add"),
     path("<int:pk>/", views.ProjectDetailView.as_view(), name="detail"),
+    path("<int:pk>/ajouter", views.ClaimProjectView.as_view(), name="claim"),
     path("<int:pk>/edit", views.ProjectUpdateView.as_view(), name="update"),
     path("<int:pk>/reinitialize", views.ProjectReinitView.as_view(), name="reinit"),
     path(
@@ -69,15 +70,17 @@ urlpatterns = [
     path(
         "<int:project_id>/plan/", views.PlanListView.as_view(), name="project-plan-list"
     ),
-    path("diagnostic/etape/0", views.SelectTypeView.as_view()),
-    path(
-        "diagnostic/etape/choisir/region",
-        views.SelectRegionView.as_view(),
-        name="select-region",
-    ),
+    # old creation journey
     path("diagnostic/etape/1", views.SelectPublicProjects.as_view(), name="select"),
     path("diagnostic/etape/1/city", views.SelectCities.as_view(), name="select-city"),
-    path("diagnostic/etape/2", views.SetProjectOptions.as_view(), name="select_2"),
+    # new creation journey
+    path("diagnostic", views.SelectTypeView.as_view(), name="create-1"),
+    path(
+        "diagnostic/territoire/<slug:land_type>",
+        views.SelectTerritoireView.as_view(),
+        name="create-2",
+    ),
+    path("diagnostic/dates", views.SetProjectOptions.as_view(), name="create-3"),
 ]
 
 
