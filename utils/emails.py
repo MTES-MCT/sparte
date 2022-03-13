@@ -3,7 +3,7 @@ import logging
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import get_template
 
-from app_parameter.models import Parameter
+from django_app_parameter import app_parameter
 
 
 logger = logging.getLogger(__name__)
@@ -21,14 +21,12 @@ def send_template_email(
     * template_name : the function use two templates which should have the same name
     but two extensions : .html and .txt
     * context : should contains the data to populate templates (if any)
-    * expeditor : a parameter name containing the from e-mail
+    * expeditor : sender email address
 
     If no expeditor is provided, TEAM_EMAIL parameter is used.
     """
     logger.info("Send email based on templates")
-    if not expeditor:
-        expeditor = "TEAM_EMAIL"
-    from_email = Parameter.objects.str(expeditor)
+    from_email = expeditor if expeditor else app_parameter.TEAM_EMAIL
     text = get_template(f"{template_name}.txt")
     html = get_template(f"{template_name}.html")
     text_content = text.render(context)
