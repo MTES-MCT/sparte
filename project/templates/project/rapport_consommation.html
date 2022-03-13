@@ -5,6 +5,7 @@
 {% load humanize %}
 {% load i18n %}
 {% load l10n %}
+{% load highcharts_tags %}
 
 {% block pagetitle %}
 Rapport consommation
@@ -44,7 +45,7 @@ Rapport consommation
 
                 <div class="card key-figure key-figure-yellow">
                     <div class="card-header">
-                        Progression {{ start_year }} à {{ end_year }}
+                        Progression {{ project.analyse_start_date }} à {{ project.analyse_end_date }}
                     </div>
                     <div class="card-body">
                         <p class="figure">+{{ project_scope.consummed|floatformat:1 }} ha</p>
@@ -102,7 +103,7 @@ Rapport consommation
                 </div>
                 <div class="col-6">
                     <div class="w-100 box p-4">
-                        <h3>Analyse {{ start_year }} à {{ end_year }}</h3>
+                        <h3>Analyse {{ project.analyse_start_date }} à {{ project.analyse_end_date }}</h3>
                         <p>
                             <strong>Consommé sur la période</strong> : +{{ project_scope.consummed|floatformat:1 }} ha
                             <br/><strong>Conso. annuelle moyenne</strong> : +{{ project_scope.annual_avg|floatformat:1 }} Ha <i class="bi bi-question-circle" data-toggle="tooltip" title="Conso sur la période ({{ project_scope.consummed|floatformat:1 }}) / années sur la période ({{ project_scope.nb_years }})"></i>
@@ -114,7 +115,21 @@ Rapport consommation
             </div>
 
             <div class="w-100 box p-4">
-                <h3>Consommation annuelle des communes du territoire</h3>
+                <h3>
+                    <div class="float-end">
+                        <div class="dropdown">
+                            <button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                                Sélection
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                                <li><a id="check" class="dropdown-item" href="#" chart_target="chart">Tout</a></li>
+                                <li><a id="uncheck" class="dropdown-item" href="#" chart_target="chart">Aucun</a></li>
+                                <li><a id="reverse" class="dropdown-item" href="#" chart_target="chart">Inverser</a></li>
+                            </ul>
+                        </div>
+                </div>
+                Consommation annuelle des communes du territoire</h3>
+
                 <div id="chart" class="flex-fill"></div>
             </div>
 
@@ -135,7 +150,7 @@ Rapport consommation
                     <thead>
                         <tr>
                             <th scope="col">{{ col_name }}</th>
-                            {% for year in years %}
+                            {% for year in project.years %}
                             <th scope="col" style="text-align: right">{{ year }}</th>
                             {% endfor %}
                             <th scope="col" style="text-align: right">Total</th>
@@ -207,217 +222,48 @@ Rapport consommation
 {% localize off %}
 <script src="https://code.highcharts.com/highcharts.js"></script>
 <script src="https://code.highcharts.com/modules/exporting.js"></script>
+{% french_translation %}
+{% display_chart 'chart' commune_chart %}
+{% display_chart 'chart_2' comparison_chart %}
+{% display_chart 'chart_determinant' determinant_per_year_chart %}
+{% display_chart 'pie_determinant' determinant_pie_chart %}
+
 <script language="javascript">
 ///////////////////////////////
-// CONSOMMATION DES COMMUNES
+// Select / unselect all
 ///////////////////////////////
-Highcharts.chart('chart', {
-    chart: {
-        type: 'area'
-    },
-    title:{
-        text:''
-    },
-    yAxis: {
-        title: {
-            text: 'Consommé (en ha)'
+
+$('#check').click(function(){
+    let div_id = $(this).attr('chart_target');
+    let chart = $("#" + div_id).highcharts();
+    $(chart.series).each(function(){
+        this.setVisible(true, false)
+    })
+    chart.redraw()
+})
+
+$('#uncheck').click(function(){
+    let div_id = $(this).attr('chart_target')
+    let chart = $("#" + div_id).highcharts()
+    //chart.series.forEach(serie => serie.hide())
+    $(chart.series).each(function(){
+        this.setVisible(false, false)
+    })
+    chart.redraw()
+})
+
+$('#reverse').click(function(){
+    let div_id = $(this).attr('chart_target');
+    let chart = $("#" + div_id).highcharts();
+    $(chart.series).each(function(){
+        if (this.visible){
+            this.setVisible(false, false)
+        }else{
+            this.setVisible(true, false)
         }
-    },
-    xAxis: {
-        type: "category",
-    },
-    legend: {
-        layout: 'horizontal',
-        align: 'center',
-        verticalAlign: 'top'
-    },
-    plotOptions: {
-        area: {
-            stacking: 'normal',
-        }
-    },
-    series: [{% for city_name, data in communes_data_graph.items %}
-    {
-        name: '{{ city_name }}',
-        data: [{% for name, y in data.items %}{
-            name: "{{ name }}",
-            y: {{ y }},
-        }, {% endfor %}]
-    },
-    {% endfor %}
-    {
-        name: '{{ project.name }}',
-        type: 'line',
-        data: [
-            {% for y, v in project_data_graph.items %}{ name: "{{y}}", y: {{ v }} },
-            {% endfor %}
-        ],
-        color: '#ff0000',
-        dashStyle: 'ShortDash',
-    }
-    ],
-});
-
-
-///////////////////////////////
-// CONSOMMATION DU TERRITOIRE ET DE SES VOISINS
-///////////////////////////////
-Highcharts.chart('chart_2', {
-    title:{
-        text:''
-    },
-    yAxis: {
-        title: {
-            text: 'Consommé (en ha)'
-        }
-    },
-    xAxis: {
-        type: "category",
-    },
-    legend: {
-        layout: 'horizontal',
-        align: 'center',
-        verticalAlign: 'top'
-    },
-    series: [
-        {% for land_name, data in comparison_data_graph.items %}
-        {
-            name: '{{ land_name }}',
-            data: [
-                {% for y, v in data.items %}{ name: "{{y}}", y: {{ v }} },
-                {% endfor %}
-            ],
-        },
-        {% endfor %}
-        {
-            name: '{{ project.name }}',
-            data: [
-                {% for y, v in project_data_graph.items %}{ name: "{{y}}", y: {{ v }} },
-                {% endfor %}
-            ],
-            color: '#ff0000',
-            dashStyle: 'ShortDash',
-        }
-    ],
-});
-
-
-///////////////////////////////
-// DETERMINANT STACKED COLUMN
-///////////////////////////////
-Highcharts.chart('chart_determinant', {
-    chart: {
-        type: 'column'
-    },
-    title:{
-        text:'Par an'
-    },
-    yAxis: {
-        title: {
-            text: 'Consommé (en ha)'
-        },
-        stackLabels: {
-            enabled: true,
-            format: '{total:,.1f}',
-        },
-    },
-    tooltip: {
-        headerFormat: '<b>{point.x}</b><br/>',
-        pointFormat: '{series.name}: {point.y}',
-        valueSuffix: ' Ha',
-        valueDecimals: 1,
-    },
-    xAxis: {
-        categories: [
-            {% for x_axis in graph_x_axis %}
-            "{{ x_axis }}",
-            {% endfor %}
-        ],
-        max: {{ graph_max }},
-    },
-    legend: {
-        layout: 'horizontal',
-        align: 'center',
-        verticalAlign: 'top'
-    },
-    plotOptions: {
-        column: {
-            stacking: 'normal',
-            dataLabels: {
-                enabled: true,
-                format: '{point.y:,.1f}',
-            }
-        },
-
-    },
-    series: [
-        {% for determinant_name, data in data_determinant.items %}
-        {
-            name: '{{ determinant_name }}',
-            data: [
-                {% for y, v in data.items %}{ name: "{{y}}", y: {{ v }} },
-                {% endfor %}
-            ],
-        },
-        {% endfor %}
-        {
-            name: '{{ project.name }}',
-            type: 'line',
-            data: [
-                {% for y, v in project_data_graph.items %}{ name: "{{y}}", y: {{ v }} },
-                {% endfor %}
-            ],
-            color: '#ff0000',
-            dashStyle: 'ShortDash',
-        }
-    ],
-});
-
-
-///////////////////////////////
-// DETERMINANT PIE
-///////////////////////////////
-Highcharts.chart('pie_determinant', {
-    chart: {
-        type: 'pie'
-    },
-    title:{
-        text:'Sur la période'
-    },
-    tooltip: {
-        enabled: false,
-        pointFormat: '{point.name}: {point.y:.1f} Ha',
-    },
-    legend: {
-        layout: 'horizontal',
-        align: 'center',
-        verticalAlign: 'top'
-    },
-    plotOptions: {
-        pie: {
-            allowPointSelect: true,
-            cursor: 'pointer',
-            dataLabels: {
-                enabled: true,
-                format: '<b>{point.name}</b>: {point.y:.1f} Ha'
-            }
-        }
-    },
-    series: [
-        {
-            name: 'Déterminants',
-            data: [
-            {% for name, y in pie_data_determinant.items %}
-            {
-                name: '{{ name }}',
-                y: {{ y }},
-                sliced: true,
-            },
-            {% endfor %}
-            ],
-        },
-    ],
-});
+    })
+    chart.redraw()
+})
 </script>
 
 {% endlocalize %}

@@ -103,6 +103,14 @@ class BaseProject(models.Model):
         abstract = True
 
 
+class ProjectCommune(models.Model):
+    project = models.ForeignKey("project.Project", on_delete=models.CASCADE)
+    commune = models.ForeignKey("public_data.Commune", on_delete=models.PROTECT)
+    group_name = models.CharField(
+        "Nom du groupe", max_length=100, blank=True, null=True
+    )
+
+
 class Project(BaseProject):
 
     ANALYZE_YEARS = [(str(y), str(y)) for y in range(2009, 2020)]
@@ -124,6 +132,7 @@ class Project(BaseProject):
     cities = models.ManyToManyField(
         "public_data.Commune",
         verbose_name="Communes",
+        through=ProjectCommune,
         blank=True,
     )
 

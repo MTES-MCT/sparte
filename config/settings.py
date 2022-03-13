@@ -71,18 +71,18 @@ RESTFRAMEWORK_APPS = [
 THIRD_APPS = [
     "import_export",
     "crispy_forms",
+    "django_app_parameter",
 ]
 
 # upper app should not communicate with lower ones
 PROJECT_APPS = [
     "utils.apps.UtilsConfig",
-    "app_parameter.apps.AppParameterConfig",
     "users.apps.UsersConfig",
     "carto.apps.CartoConfig",
     "public_data.apps.PublicDataConfig",
     "project.apps.ProjectConfig",
     "home.apps.HomeConfig",
-    "dbbackup.apps.DbbackupConfig",
+    "highcharts.apps.HighchartsConfig",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + RESTFRAMEWORK_APPS + THIRD_APPS + PROJECT_APPS
@@ -120,6 +120,7 @@ TEMPLATES = [
                 "django.contrib.messages.context_processors.messages",
                 "users.context_processors.add_connected_user_to_context",
                 "home.context_processors.add_faq_to_context",
+                "django_app_parameter.context_processors.add_global_parameter_context",
             ],
         },
     },
@@ -158,7 +159,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # indicate the new User model to Django
 AUTH_USER_MODEL = "users.User"
-LOGIN_REDIRECT_URL = "carto:home_connected"
+LOGIN_REDIRECT_URL = "project:list"
 LOGIN_URL = "users:signin"
 
 
@@ -328,7 +329,7 @@ if "django-extensions" in {pkg.key for pkg in pkg_resources.working_set}:
     ]
     NOTEBOOK_ARGUMENTS = [
         "--ip",
-        "0.0.0.0",
+        "127.0.0.1",
         "--allow-root",
         '--notebook-dir="/app/notebooks/"',
     ]
