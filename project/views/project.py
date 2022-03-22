@@ -198,10 +198,10 @@ class ProjectReportConsoView(GroupMixin, DetailView):
         current_conso = project.get_bilan_conso_time_scoped()
 
         # communes_data_graph
-        communes_data_graph = project.get_city_conso_per_year()
+        chart_conso_cities = ConsoCommuneChart(project)
         communes_data_table = dict()
         total = dict()
-        for city, data in communes_data_graph.items():
+        for city, data in chart_conso_cities.get_series().items():
             communes_data_table[city] = data.copy()
             communes_data_table[city]["total"] = sum(data.values())
             for year, val in data.items():
@@ -209,12 +209,13 @@ class ProjectReportConsoView(GroupMixin, DetailView):
         total["total"] = sum(total.values())
         communes_data_table["Total"] = total
 
-        determinant_per_year_chart = DeterminantPerYearChart(project)
-
         # Liste des groupes de communes
         groups_names = project.projectcommune_set.all().order_by("group_name")
         groups_names = groups_names.exclude(group_name=None).distinct()
         groups_names = groups_names.values_list("group_name", flat=True)
+
+        # Déterminants
+        det_chart = DeterminantPerYearChart(project)
 
         return {
             **super().get_context_data(**kwargs),
@@ -236,19 +237,15 @@ class ProjectReportConsoView(GroupMixin, DetailView):
                 * current_conso
                 / project.nb_years,
             },
-            "graph_x_axis": [
-                str(i)
-                for i in range(
-                    int(project.analyse_start_date), int(project.analyse_end_date) + 1
-                )
-            ],
             # charts
-            "determinant_per_year_chart": determinant_per_year_chart,
-            "determinant_pie_chart": DeterminantPieChart(project),
+            "determinant_per_year_chart": det_chart,
+            "determinant_pie_chart": DeterminantPieChart(
+                project, series=det_chart.get_series()
+            ),
             "comparison_chart": ConsoComparisonChart(project),
-            "commune_chart": ConsoCommuneChart(project),
+            "commune_chart": chart_conso_cities,
             # tables
-            "data_determinant": determinant_per_year_chart.get_series(),
+            "data_determinant": det_chart.get_series(),
             "groups_names": groups_names,
         }
 
@@ -310,9 +307,9 @@ class ProjectReportCityGroupView(GroupMixin, DetailView):
 
         # Déterminants
         det_chart = DeterminantPerYearChart(project, group_name=group_name)
-        det_table = det_chart.get_series()
 
         kwargs = {
+            "active_page": "consommation",
             "group_name": group_name,
             "project": project,
             "groups_name": groups_name(city_group_list),
@@ -322,11 +319,11 @@ class ProjectReportCityGroupView(GroupMixin, DetailView):
             "chart_conso_cities": chart_conso_cities,
             "determinant_per_year_chart": det_chart,
             "determinant_pie_chart": DeterminantPieChart(
-                project, group_name=group_name
+                project, group_name=group_name, series=det_chart.get_series()
             ),
             # Tables
             "communes_data_table": communes_table,
-            "data_determinant": det_table,
+            "data_determinant": det_chart.get_series(),
         }
         return super().get_context_data(**kwargs)
 
