@@ -136,15 +136,15 @@ class DeterminantPieChart(ProjectChart):
         "series": [],
     }
 
+    def __init__(self, *args, **kwargs):
+        if "series" in kwargs:
+            self.series = kwargs.pop("series")
+        super().__init__(*args, **kwargs)
+
     def get_series(self):
-        return {
-            "Déterminants": {
-                n: sum(v.values())
-                for n, v in self.project.get_determinants(
-                    group_name=self.group_name
-                ).items()
-            }
-        }
+        if not self.series:
+            self.series = self.project.get_determinants(group_name=self.group_name)
+        return {"Déterminants": {n: sum(v.values()) for n, v in self.series.items()}}
 
     def add_series(self):
         super().add_series(sliced=True)

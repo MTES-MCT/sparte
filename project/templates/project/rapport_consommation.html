@@ -194,8 +194,8 @@ Rapport consommation
                     <thead>
                         <tr>
                             <th scope="col">Déterminant</th>
-                            {% for x_axis in graph_x_axis %}
-                            <th scope="col" style="text-align: right">{{ x_axis }}</th>
+                            {% for year in project.years %}
+                            <th scope="col" style="text-align: right">{{ year }}</th>
                             {% endfor %}
                         </tr>
                     </thead>
