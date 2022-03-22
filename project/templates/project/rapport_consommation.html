@@ -142,11 +142,17 @@ Rapport consommation
             <div class="w-100 box p-4">
                 <a name="territoires-de-comparaison"></a>
                 <h3>
-                    <a class="float-end" href="{% url 'project:lookalike' project.id %}?from=conso_report">
+                    <a class="float-end"href="{% url 'project:lookalike' project.id %}?from=conso_report">
                         <i class="bi bi-plus-circle" data-toggle="tooltip" title="Ajouter un territoire de comparaison"></i>
                     </a>
                     Comparaison avec les territoires voisins
                 </h3>
+                <div class="clearfix">
+                    <div class="form-check form-switch float-end">
+                        <label class="form-check-label" for="flexSwitchCheckDefault">Pondérer par la surface</label>
+                        <input class="form-check-input" type="checkbox" id="conso_territory_reltive" {% if relative %}CHECKED{% endif %}>
+                    </div>
+                </div>
                 <div id="chart_2" class="flex-fill"></div>
             </div>
 
@@ -269,6 +275,12 @@ $('#reverse').click(function(){
         }
     })
     chart.redraw()
+})
+
+$('#conso_territory_reltive').change(function() {
+    url = '{% url "project:report_conso" project.id %}?relative=' + this.checked
+    url = url + '#territoires-de-comparaison'
+    window.location.replace(url)
 })
 </script>
 
