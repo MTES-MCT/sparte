@@ -111,6 +111,18 @@ class ProjectCommune(models.Model):
     )
 
 
+class CityGroup:
+    def __init__(self, name: str):
+        self.name = name
+        self.cities = list()
+
+    def append(self, project_commune: ProjectCommune):
+        self.cities.append(project_commune.commune)
+
+    def __str__(self) -> str:
+        return self.name
+
+
 class Project(BaseProject):
 
     ANALYZE_YEARS = [(str(y), str(y)) for y in range(2009, 2020)]
@@ -176,6 +188,24 @@ class Project(BaseProject):
     @property
     def nb_years_before_2031(self):
         return 2031 - int(self.analyse_end_date)
+
+    _city_group_list = None
+
+    @property
+    def city_group_list(self):
+        if self._city_group_list is None:
+            self._city_group_list = list()
+            qs = ProjectCommune.objects.filter(project=self).order_by(
+                "group_name", "commune__name"
+            )
+            for project_commune in qs:
+                if (
+                    len(self._city_group_list) == 0
+                    or self._city_group_list[-1].name != project_commune.group_name
+                ):
+                    self._city_group_list.append(CityGroup(project_commune.group_name))
+                self._city_group_list[-1].append(project_commune)
+        return self._city_group_list
 
     def add_look_a_like(self, public_key):
         """Add a public_key to look a like keeping the field formated
