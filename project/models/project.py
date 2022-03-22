@@ -226,12 +226,16 @@ class Project(BaseProject):
     # }
     couverture_usage = models.JSONField(blank=True, null=True)
 
-    def get_cerema_cities(self):
-        code_insee = self.cities.all().values_list("insee", flat=True)
+    def get_cerema_cities(self, group_name=None):
+        if not group_name:
+            code_insee = self.cities.all().values_list("insee", flat=True)
+        else:
+            code_insee = self.projectcommune_set.filter(group_name=group_name)
+            code_insee = code_insee.values_list("commune__insee", flat=True)
         qs = Cerema.objects.filter(city_insee__in=code_insee)
         return qs
 
-    def get_determinants(self):
+    def get_determinants(self, group_name=None):
         """Return determinant for project's periode
         {
             "house"
@@ -258,7 +262,7 @@ class Project(BaseProject):
             end = str(int(year) + 1)[-2:]
             for det in determinants.keys():
                 args.append(Sum(f"art{start}{det}{end}"))
-        qs = self.get_cerema_cities().aggregate(*args)
+        qs = self.get_cerema_cities(group_name=group_name).aggregate(*args)
         for key, val in qs.items():
             if val is not None:
                 year = f"20{key[3:5]}"
@@ -297,7 +301,7 @@ class Project(BaseProject):
             f"20{key[3:5]}": val / 10000 for key, val in qs.items() if val is not None
         }
 
-    def get_city_conso_per_year(self):
+    def get_city_conso_per_year(self, group_name=None):
         """Return year artificialisation of each city in the project, on project
         time scope
 
@@ -310,7 +314,7 @@ class Project(BaseProject):
         }
         """
         results = dict()
-        qs = self.get_cerema_cities()
+        qs = self.get_cerema_cities(group_name=group_name)
         fields = Cerema.get_art_field(self.analyse_start_date, self.analyse_end_date)
         for city in qs:
             results[city.city_name] = dict()
