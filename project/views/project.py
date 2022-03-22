@@ -3,8 +3,13 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
 from django.shortcuts import redirect
 from django.urls import reverse_lazy, reverse
-from django.views.generic import ListView, DetailView
-from django.views.generic.edit import CreateView, DeleteView, UpdateView
+from django.views.generic import (
+    ListView,
+    DetailView,
+    CreateView,
+    DeleteView,
+    UpdateView,
+)
 
 from django_app_parameter import app_parameter
 
@@ -17,7 +22,7 @@ from project.charts import (
     ConsoComparisonChart,
 )
 from project.forms import UploadShpForm, KeywordForm
-from project.models import Project, Request
+from project.models import Project, Request, ProjectCommune
 from project.domains import ConsommationDataframe
 from project.tasks import send_email_request_bilan
 
@@ -193,10 +198,10 @@ class ProjectReportConsoView(GroupMixin, DetailView):
         current_conso = project.get_bilan_conso_time_scoped()
 
         # communes_data_graph
-        communes_data_graph = project.get_city_conso_per_year()
+        chart_conso_cities = ConsoCommuneChart(project)
         communes_data_table = dict()
         total = dict()
-        for city, data in communes_data_graph.items():
+        for city, data in chart_conso_cities.get_series().items():
             communes_data_table[city] = data.copy()
             communes_data_table[city]["total"] = sum(data.values())
             for year, val in data.items():
@@ -204,7 +209,13 @@ class ProjectReportConsoView(GroupMixin, DetailView):
         total["total"] = sum(total.values())
         communes_data_table["Total"] = total
 
-        determinant_per_year_chart = DeterminantPerYearChart(project)
+        # Liste des groupes de communes
+        groups_names = project.projectcommune_set.all().order_by("group_name")
+        groups_names = groups_names.exclude(group_name=None).distinct()
+        groups_names = groups_names.values_list("group_name", flat=True)
+
+        # Déterminants
+        det_chart = DeterminantPerYearChart(project)
 
         return {
             **super().get_context_data(**kwargs),
@@ -226,20 +237,112 @@ class ProjectReportConsoView(GroupMixin, DetailView):
                 * current_conso
                 / project.nb_years,
             },
-            "graph_x_axis": [
-                str(i)
-                for i in range(
-                    int(project.analyse_start_date), int(project.analyse_end_date) + 1
-                )
-            ],
             # charts
-            "determinant_per_year_chart": determinant_per_year_chart,
-            "determinant_pie_chart": DeterminantPieChart(project),
+            "determinant_per_year_chart": det_chart,
+            "determinant_pie_chart": DeterminantPieChart(
+                project, series=det_chart.get_series()
+            ),
             "comparison_chart": ConsoComparisonChart(project),
-            "commune_chart": ConsoCommuneChart(project),
+            "commune_chart": chart_conso_cities,
             # tables
-            "data_determinant": determinant_per_year_chart.get_series(),
+            "data_determinant": det_chart.get_series(),
+            "groups_names": groups_names,
         }
+
+
+class ProjectReportCityGroupView(GroupMixin, DetailView):
+    queryset = Project.objects.all()
+    template_name = "project/report_city_group.html"
+    context_object_name = "project"
+
+    def get_context_breadcrumbs(self):
+        project = self.get_object()
+        breadcrumbs = super().get_context_breadcrumbs()
+        breadcrumbs += [
+            {
+                "href": reverse("project:report_conso", args=[project.id]),
+                "title": "Rapport consommation",
+            },
+            {
+                "href": None,
+                "title": "Zoom groupes de villes",
+            },
+        ]
+        return breadcrumbs
+
+    def get_context_data(self, **kwargs):
+        project = self.get_object()
+        group_name = self.request.GET.get("group_name", None)
+        if not group_name:
+            qs = ProjectCommune.objects.filter(project=project)
+            qs = qs.exclude(group_name=None).order_by("group_name").distinct()
+            qs = qs.values_list("group_name", flat=True)
+            group_name = qs.first()
+        # retrieve groups of cities
+        city_group_list = project.city_group_list
+
+        def city_without_group(city_group_list):
+            """Return cities without group (group_name==None)"""
+            for city_group in city_group_list:
+                if city_group.name is None:
+                    return city_group.cities
+
+        def groups_with_name(city_group_list):
+            """Return named group (exclude cities with group_name == None)"""
+            return [
+                city_group
+                for city_group in city_group_list
+                if city_group.name is not None
+            ]
+
+        def groups_name(group):
+            return set(_.name for _ in group if _.name is not None)
+
+        # Consommation des communes
+        chart_conso_cities = ConsoCommuneChart(project, group_name=group_name)
+        communes_table = dict()
+        for city_name, data in chart_conso_cities.get_series().items():
+            data.update({"Total": sum(data.values())})
+            communes_table[city_name] = data
+
+        # Déterminants
+        det_chart = DeterminantPerYearChart(project, group_name=group_name)
+
+        kwargs = {
+            "active_page": "consommation",
+            "group_name": group_name,
+            "project": project,
+            "groups_name": groups_name(city_group_list),
+            "city_group_list": groups_with_name(city_group_list),
+            "city_without_group": city_without_group(city_group_list),
+            # Charts
+            "chart_conso_cities": chart_conso_cities,
+            "determinant_per_year_chart": det_chart,
+            "determinant_pie_chart": DeterminantPieChart(
+                project, group_name=group_name, series=det_chart.get_series()
+            ),
+            # Tables
+            "communes_data_table": communes_table,
+            "data_determinant": det_chart.get_series(),
+        }
+        return super().get_context_data(**kwargs)
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        groups = {
+            v1: [v2 for k2, v2 in request.POST.items() if k2.startswith(v1)]
+            for k1, v1 in request.POST.items()
+            if k1.startswith("group_name_")
+        }
+        base_qs = ProjectCommune.objects.filter(project=self.object)
+        base_qs.update(group_name=None)
+        for group_name, city_names in groups.items():
+            qs = base_qs.filter(commune__name__in=city_names)
+            if not group_name:
+                group_name = "sans_nom"
+            qs.update(group_name=group_name)
+        context = self.get_context_data(object=self.object)
+        return self.render_to_response(context)
 
 
 class RefCouverture:
@@ -726,7 +829,7 @@ class ProjectAddLookALike(GroupMixin, DetailView):
                 project.save()
                 page_from = self.request.GET.get("from", None)
                 if page_from == "conso_report":
-                    url = reverse("project:report", kwargs={"pk": project.id})
+                    url = reverse("project:report_conso", kwargs={"pk": project.id})
                     return redirect(f"{url}#territoires-de-comparaison")
                 else:
                     return redirect(project)

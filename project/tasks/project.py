@@ -23,6 +23,7 @@ There are 3 entry points :
 """
 from celery import shared_task
 import logging
+from zipfile import BadZipFile
 
 from django.conf import settings
 from django.contrib.gis.db.models import Union
@@ -65,6 +66,10 @@ def process_project_with_shape(project_id: int):
         evaluate_indicators(project)
         # all good !
         project.set_success()
+    except BadZipFile as e:
+        msg = f"Zipfile not recognized: {e}"
+        logger.info(msg)
+        project.set_failed(trace=msg)
     except Exception as e:
         logger.exception(f"Unknow exception occured in process_project_with_shape: {e}")
         project.set_failed()
