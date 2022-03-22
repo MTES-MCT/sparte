@@ -217,6 +217,14 @@ class ProjectReportConsoView(GroupMixin, DetailView):
         # Déterminants
         det_chart = DeterminantPerYearChart(project)
 
+        # check conso relative required or not
+        relative_required = self.request.GET.get("relative", "false")
+        if relative_required == "true":
+            relative = True
+        else:
+            relative = False
+        comparison_chart = ConsoComparisonChart(project, relative=relative)
+
         return {
             **super().get_context_data(**kwargs),
             "total_surface": project.area,
@@ -242,7 +250,8 @@ class ProjectReportConsoView(GroupMixin, DetailView):
             "determinant_pie_chart": DeterminantPieChart(
                 project, series=det_chart.get_series()
             ),
-            "comparison_chart": ConsoComparisonChart(project),
+            "comparison_chart": comparison_chart,
+            "relative": relative,
             "commune_chart": chart_conso_cities,
             # tables
             "data_determinant": det_chart.get_series(),

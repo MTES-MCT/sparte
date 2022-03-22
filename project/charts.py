@@ -18,8 +18,20 @@ class ConsoComparisonChart(ProjectChart):
         "series": [],
     }
 
+    def __init__(self, *args, **kwargs):
+        self.relative = kwargs.pop("relative") if "relative" in kwargs else False
+        super().__init__(*args, **kwargs)
+
     def get_series(self):
-        return self.project.get_look_a_like_conso_per_year()
+        datas = dict()
+        for land in self.project.get_lands():
+            coef = self.project.area / land.area if self.relative else 1
+            datas[land.name] = land.get_conso_per_year(
+                self.project.analyse_start_date,
+                self.project.analyse_end_date,
+                coef=coef,
+            )
+        return datas
 
     def add_series(self):
         super().add_series()

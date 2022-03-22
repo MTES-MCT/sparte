@@ -7,6 +7,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models as classic_models
 from django.db.models import F, Sum, Q
+from django.utils.functional import cached_property
 
 from .behaviors import AutoLoadMixin, DataColorationMixin
 
@@ -998,16 +999,21 @@ class GetDataFromCeremaMixin:
     def get_qs_cerema(self):
         raise NotImplementedError("Need to be specified in child")
 
-    def get_conso_per_year(self, start="2010", end="2020"):
+    def get_conso_per_year(self, start="2010", end="2020", coef=1):
         """Return Cerema data for the city, transposed and named after year"""
         fields = Cerema.get_art_field(start, end)
         qs = self.get_qs_cerema()
         args = (Sum(field) for field in fields)
         qs = qs.aggregate(*args)
-        return {f"20{key[3:5]}": val / 10000 for key, val in qs.items()}
+        return {f"20{key[3:5]}": val * coef / 10000 for key, val in qs.items()}
 
 
 class LandMixin:
+    @cached_property
+    def area(self):
+        """Return surface of the land in Ha"""
+        return self.mpoly.transform(2154, clone=True).area / (100 ** 2)
+
     @classmethod
     def search(cls, needle):
         qs = cls.objects.filter(name__icontains=needle)
@@ -1156,8 +1162,8 @@ class Land:
         except ObjectDoesNotExist as e:
             raise Exception(f"Public key '{id}' unknown") from e
 
-    def get_conso_per_year(self, start="2010", end="2020"):
-        return self.land.get_conso_per_year(start, end)
+    def get_conso_per_year(self, start="2010", end="2020", coef=1):
+        return self.land.get_conso_per_year(start, end, coef)
 
     def __getattr__(self, name):
         return getattr(self.land, name)
