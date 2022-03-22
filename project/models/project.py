@@ -242,6 +242,11 @@ class Project(BaseProject):
             self.save()
         return lands
 
+    def get_lands(self):
+        if self.look_a_like:
+            return [Land(public_key) for public_key in self.look_a_like.split(";")]
+        return list()
+
     # calculated fields
     # Following field contains calculated dict :
     # {
