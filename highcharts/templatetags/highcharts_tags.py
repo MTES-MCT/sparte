@@ -11,9 +11,16 @@ def french_translation():
 
 @register.inclusion_tag("highcharts/display_chart.html")
 def display_chart(div_id, chart):
-    return {
+    context = {
         "div_id": div_id,
-        "chart_name": chart.get_name(),
-        "json_options": chart.dumps(),
-        "js_name": chart.get_js_name(),
+        "js_name": "noname",
     }
+    if chart:
+        context.update(
+            {
+                "chart_name": chart.get_name(),
+                "json_options": chart.dumps(),
+                "js_name": chart.get_js_name(),
+            }
+        )
+    return context
