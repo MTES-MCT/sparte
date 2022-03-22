@@ -125,6 +125,12 @@ Rapport consommation
                                 <li><a id="check" class="dropdown-item" href="#" chart_target="chart">Tout</a></li>
                                 <li><a id="uncheck" class="dropdown-item" href="#" chart_target="chart">Aucun</a></li>
                                 <li><a id="reverse" class="dropdown-item" href="#" chart_target="chart">Inverser</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><h6 class="dropdown-header">Zoom sur un groupe de villes</h6></li>
+                                {% for name in groups_names %}
+                                    <li><a class="dropdown-item" href="{% url 'project:report_city_group' project.id %}?group_name={{ name }}">{{ name }}</a></li>
+                                {% endfor %}
+                                <li><a class="dropdown-item" href="{% url 'project:report_city_group' project.id %}">Tous</a></li>
                             </ul>
                         </div>
                 </div>
