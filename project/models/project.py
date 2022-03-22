@@ -195,9 +195,9 @@ class Project(BaseProject):
     def city_group_list(self):
         if self._city_group_list is None:
             self._city_group_list = list()
-            qs = ProjectCommune.objects.filter(project=self).order_by(
-                "group_name", "commune__name"
-            )
+            qs = ProjectCommune.objects.filter(project=self)
+            qs = qs.select_related("commune")
+            qs = qs.order_by("group_name", "commune__name")
             for project_commune in qs:
                 if (
                     len(self._city_group_list) == 0
@@ -303,8 +303,8 @@ class Project(BaseProject):
     def get_bilan_conso(self):
         """Return the space consummed between 2011 and 2020 in hectare"""
         qs = self.get_cerema_cities()
-        if not qs.exists():
-            return 0
+        # if not qs.exists():
+        #     return 0
         aggregation = qs.aggregate(bilan=Sum("naf11art21"))
         return aggregation["bilan"] / 10000
 
@@ -313,23 +313,31 @@ class Project(BaseProject):
         analyze_start_data and analyze_end_date)
         Evaluation is based on city consumption, not geo work."""
         qs = self.get_cerema_cities()
-        if not qs.exists():
-            return 0
+        # if not qs.exists():
+        #     return 0
         fields = Cerema.get_art_field(self.analyse_start_date, self.analyse_end_date)
         sum_function = sum([F(f) for f in fields])
         qs = qs.annotate(line_sum=sum_function)
         aggregation = qs.aggregate(bilan=Sum("line_sum"))
         return aggregation["bilan"] / 10000
 
+    _conso_per_year = None
+
     def get_conso_per_year(self):
         """Return Cerema data for the project, transposed and named after year"""
-        qs = self.get_cerema_cities()
-        fields = Cerema.get_art_field(self.analyse_start_date, self.analyse_end_date)
-        args = (Sum(field) for field in fields)
-        qs = qs.aggregate(*args)
-        return {
-            f"20{key[3:5]}": val / 10000 for key, val in qs.items() if val is not None
-        }
+        if not self._conso_per_year:
+            qs = self.get_cerema_cities()
+            fields = Cerema.get_art_field(
+                self.analyse_start_date, self.analyse_end_date
+            )
+            args = (Sum(field) for field in fields)
+            qs = qs.aggregate(*args)
+            self._conso_per_year = {
+                f"20{key[3:5]}": val / 10000
+                for key, val in qs.items()
+                if val is not None
+            }
+        return self._conso_per_year
 
     def get_city_conso_per_year(self, group_name=None):
         """Return year artificialisation of each city in the project, on project

@@ -739,7 +739,7 @@ class Cerema(AutoLoadMixin, DataColorationMixin, models.Model):
     Voir PDF dans lien ci-dessus
     """
 
-    city_insee = models.CharField(max_length=5)
+    city_insee = models.CharField(max_length=5, db_index=True)
     city_name = models.CharField(max_length=45)
     region_id = models.CharField(max_length=2)
     region_name = models.CharField(max_length=27)
