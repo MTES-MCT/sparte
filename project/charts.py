@@ -14,7 +14,7 @@ class ConsoComparisonChart(ProjectChart):
         "title": {"text": ""},
         "yAxis": {"title": {"text": "Consommé (en ha)"}},
         "xAxis": {"type": "category"},
-        "legend": {"layout": "horizontal", "align": "center", "verticalAlign": "top"},
+        "legend": {"layout": "vertical", "align": "right", "verticalAlign": "top"},
         "series": [],
     }
 
@@ -52,7 +52,7 @@ class ConsoCommuneChart(ProjectChart):
         "title": {"text": ""},
         "yAxis": {"title": {"text": "Consommé (en ha)"}},
         "xAxis": {"type": "category"},
-        "legend": {"layout": "horizontal", "align": "center", "verticalAlign": "top"},
+        "legend": {"layout": "vertical", "align": "right", "verticalAlign": "top"},
         "plotOptions": {"area": {"stacking": "normal"}},
         "series": [],
     }
