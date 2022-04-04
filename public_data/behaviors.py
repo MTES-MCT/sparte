@@ -1,8 +1,6 @@
-from colour import Color, RGB_TO_COLOR_NAMES
 import logging
 import numpy as np
 from pathlib import Path
-from random import choice
 from tempfile import TemporaryDirectory
 from zipfile import ZipFile
 
@@ -10,33 +8,12 @@ from django.contrib.gis.utils import LayerMapping
 from django.core.exceptions import FieldDoesNotExist
 from django.db.models import OuterRef, Subquery
 
+from utils.colors import get_random_color, get_color_gradient, is_valid
+
 from .storages import DataStorage
 
 
 logger = logging.getLogger(__name__)
-
-
-def get_color_gradient(color_name=None, scale=10):
-    """
-    Return a list of a color's gradient
-    Example:
-    > get_color_gradient(color_name="orange", scale=9)
-    [<Color orange>, <Color #ffaf1d>, <Color #ffba39>, <Color #ffc456>,
-    <Color #ffce72>, <Color #ffd88f>, <Color #ffe2ac>, <Color #ffecc8>,
-    <Color #fff6e5>]
-
-    Args:
-        color_name=None (undefined): name available in colour.Colour
-        scale=9 (undefined): number of colors require to fill the gradien
-    """
-    if not color_name:
-        all_available_colors = [_ for t in RGB_TO_COLOR_NAMES.items() for _ in t[1]]
-        color_name = choice(all_available_colors)  # nosec - simple visual improvement
-
-    c1 = Color(color_name)
-    c2 = Color(c1.web)
-    c2.set_luminance(0.95)
-    return list(c1.range_to(c2, scale))
 
 
 class AutoLoadMixin:
@@ -154,8 +131,6 @@ class DataColorationMixin:
     - https://numpy.org/doc/stable/reference/generated/numpy.percentile.html
     """
 
-    ALL_COLORS = [_ for t in RGB_TO_COLOR_NAMES.items() for _ in t[1]]
-
     # DataColorationMixin properties that need to be set when heritating
     default_property = "surface"  # need to be set correctly to work
     default_color = None
@@ -188,10 +163,10 @@ class DataColorationMixin:
             color_name = cls.default_color
         # if color is known by the lib return it
         # else a color is chosen randomly
-        if color_name in cls.ALL_COLORS:
+        if is_valid(color_name):
             return color_name
         else:
-            return choice(cls.ALL_COLORS)  # nosec - no security use of this color
+            return get_random_color()
 
     @classmethod
     def get_property_data(cls, property_name=None):
