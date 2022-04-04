@@ -67,7 +67,7 @@ def arcachon(request):
             },
             {
                 "name": "Communes SYBARVAL",  # TODO Remplacer par Commune ? Par RefPlan ?
-                "url": reverse_lazy("public_data:communessybarval-list"),
+                "url": reverse_lazy("public_data:commune-list"),
                 "display": False,
             },
             {

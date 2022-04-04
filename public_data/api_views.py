@@ -13,6 +13,7 @@ from rest_framework_gis import filters
 from .models import (
     Artificialisee2015to2018,
     Artificielle2018,
+    Commune,
     CommunesSybarval,
     CouvertureSol,
     Departement,
@@ -29,6 +30,7 @@ from .models import (
 from .serializers import (
     Artificialisee2015to2018Serializer,
     Artificielle2018Serializer,
+    CommuneSerializer,
     CommunesSybarvalSerializer,
     CouvertureSolSerializer,
     DepartementSerializer,
@@ -77,6 +79,13 @@ class Artificialisee2015to2018ViewSet(DataViewSet):
 class Artificielle2018ViewSet(DataViewSet):
     queryset = Artificielle2018.objects.all()
     serializer_class = Artificielle2018Serializer
+
+
+class CommuneViewSet(DataViewSet):
+    """CommunesSybarval view set."""
+
+    queryset = Commune.objects.all()
+    serializer_class = CommuneSerializer
 
 
 class CommunesSybarvalViewSet(DataViewSet):
