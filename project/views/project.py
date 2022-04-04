@@ -673,7 +673,10 @@ class ProjectMapView(GroupMixin, DetailView):
                 "layer_list": [
                     {
                         "name": "Communes",
-                        "url": reverse_lazy("public_data:commune-list"),
+                        # "url": reverse_lazy("public_data:commune-list"),
+                        "url": reverse_lazy(
+                            "project:project-communes", args=[self.object.id]
+                        ),
                         "display": False,
                         "level": "2",
                         "color_property_name": "map_color",
