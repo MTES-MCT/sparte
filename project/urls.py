@@ -2,7 +2,7 @@ from django.urls import path
 from rest_framework import routers
 
 from . import views
-from .api_views import EmpriseViewSet, PlanEmpriseViewSet
+from .api_views import EmpriseViewSet, PlanEmpriseViewSet, ProjectViewSet
 
 
 app_name = "project"
@@ -93,6 +93,7 @@ urlpatterns = [
 router = routers.DefaultRouter()
 router.register(r"geojson", EmpriseViewSet)
 router.register(r"plan/geojson", PlanEmpriseViewSet)
+router.register(r"projects", ProjectViewSet)
 
 
 urlpatterns += router.urls
