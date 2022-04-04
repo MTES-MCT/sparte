@@ -1,9 +1,12 @@
-from rest_framework_gis import serializers
+from rest_framework import serializers
+from rest_framework_gis import serializers as gis_serializers
+
+from public_data.models import Commune
 
 from .models import Emprise, PlanEmprise
 
 
-class EmpriseSerializer(serializers.GeoFeatureModelSerializer):
+class EmpriseSerializer(gis_serializers.GeoFeatureModelSerializer):
     class Meta:
         fields = (
             "id",
@@ -13,7 +16,7 @@ class EmpriseSerializer(serializers.GeoFeatureModelSerializer):
         model = Emprise
 
 
-class PlanEmpriseSerializer(serializers.GeoFeatureModelSerializer):
+class PlanEmpriseSerializer(gis_serializers.GeoFeatureModelSerializer):
     class Meta:
         fields = (
             "id",
@@ -21,3 +24,19 @@ class PlanEmpriseSerializer(serializers.GeoFeatureModelSerializer):
         )
         geo_field = "mpoly"
         model = PlanEmprise
+
+
+class ProjectCommuneSerializer(gis_serializers.GeoFeatureModelSerializer):
+    artif_area = serializers.FloatField()
+
+    class Meta:
+        fields = (
+            "id",
+            "name",
+            "insee",
+            "area",
+            "map_color",
+            "artif_area",
+        )
+        geo_field = "mpoly"
+        model = Commune
