@@ -151,5 +151,19 @@ def mep_110(ctx):
     connecter.manage_py("param_mep_110")
 
 
+@cli.command()
+@click.pass_context
+def mep_120(ctx):
+    """Trigger all data transformation to successful MEP release 1.2.0"""
+    click.secho("Start migration v1.2.0", fg="cyan")
+
+    click.secho("Set color for Commune layer", fg="cyan")
+    # find which millesime is in each departement
+    connecter = ScalingoInterface(ctx.obj)
+    connecter.manage_py("set_commune_color")
+
+    click.secho("End migration", fg="cyan")
+
+
 if __name__ == "__main__":
     cli(obj={})
