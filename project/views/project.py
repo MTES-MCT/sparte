@@ -673,13 +673,14 @@ class ProjectMapView(GroupMixin, DetailView):
                 "layer_list": [
                     {
                         "name": "Communes",
-                        "url": reverse_lazy("public_data:communessybarval-list"),
-                        "display": False,
-                        "gradient_url": reverse_lazy(
-                            "public_data:communessybarval-gradient"
+                        # "url": reverse_lazy("public_data:commune-list"),
+                        "url": reverse_lazy(
+                            "project:project-communes", args=[self.object.id]
                         ),
+                        "display": False,
                         "level": "2",
-                        "color_property_name": "d_brute_20",
+                        "color_property_name": "map_color",
+                        "style": "get_color_from_property",
                     },
                     {
                         "name": "Emprise du projet",

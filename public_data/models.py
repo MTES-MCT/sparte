@@ -1110,12 +1110,24 @@ class Epci(LandMixin, GetDataFromCeremaMixin, models.Model):
         return self.name
 
 
-class Commune(LandMixin, GetDataFromCeremaMixin, models.Model):
+class Commune(DataColorationMixin, LandMixin, GetDataFromCeremaMixin, models.Model):
     insee = models.CharField("Code INSEE", max_length=5)
     name = models.CharField("Nom", max_length=45)
     departement = models.ForeignKey(Departement, on_delete=models.CASCADE)
     epci = models.ForeignKey(Epci, on_delete=models.CASCADE)
     mpoly = models.MultiPolygonField()
+    # Calculated fields
+    map_color = models.CharField(
+        "Couleur d'afficgage", max_length=30, null=True, blank=True
+    )
+    # area_consumed = models.DecimalField("Surface consommée", max_digits=10, decimal_places=2, null=True, blank=True)
+    # area_artificial = models.DecimalField("Surface artificielle", max_digits=10, decimal_places=2, null=True, blank=True)
+    # area_naf = models.DecimalField("Surface naturelle", max_digits=10, decimal_places=2, null=True, blank=True)
+    # last_year_ocsge = models.IntegerField("Dernier millésime disponible")
+
+    # DataColorationMixin properties that need to be set when heritating
+    default_property = "insee"  # need to be set correctly to work
+    default_color = "Yellow"
 
     @property
     def public_key(self):
@@ -1139,6 +1151,13 @@ class Commune(LandMixin, GetDataFromCeremaMixin, models.Model):
         qs = cls.objects.filter(Q(name__icontains=needle) | Q(insee__icontains=needle))
         qs = qs.order_by("name")
         return qs
+
+    @classmethod
+    def get_property_data(cls, property_name=None):
+        qs = cls.objects.all()
+        qs = qs.values_list(property_name, flat=True)
+        qs = qs.order_by(property_name)
+        return [(int(x),) for x in qs if x.isdigit()]
 
 
 class Land:
