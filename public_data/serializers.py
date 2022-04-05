@@ -4,6 +4,7 @@ from rest_framework import serializers as s
 from .models import (
     Artificialisee2015to2018,
     Artificielle2018,
+    Commune,
     CommunesSybarval,
     CouvertureSol,
     Departement,
@@ -65,9 +66,26 @@ class Artificielle2018Serializer(serializers.GeoFeatureModelSerializer):
         return get_label(code=obj.couverture, label=obj.couverture_label)
 
     class Meta:
-        fields = ("id",)
+        fields = ("id", "surface")
         geo_field = "mpoly"
         model = Artificielle2018
+
+
+class CommuneSerializer(serializers.GeoFeatureModelSerializer):
+    """Marker GeoJSON serializer."""
+
+    class Meta:
+        """Marker serializer meta class."""
+
+        fields = (
+            "id",
+            "name",
+            "insee",
+            "area",
+            "map_color",
+        )
+        geo_field = "mpoly"
+        model = Commune
 
 
 class CommunesSybarvalSerializer(serializers.GeoFeatureModelSerializer):
