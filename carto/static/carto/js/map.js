@@ -29,7 +29,7 @@ function get_info_label(name) {
         (name == "usage_2018") ? "Usage en 2018" :
         (name == "couverture_2015") ? "Couverture en 2015" :
         (name == "couverture_2018") ? "Couverture en 2018" :
-        (name == "artif_area") ? "Artificialisé (pdt diag., Ha)" :
+        (name == "artif_area") ? "Consommé (pdt diag., Ha)" :
         name
 }
 
@@ -302,7 +302,7 @@ function GeoLayer(name, url) {
             let label = get_info_label(property_name)
             if (label != "") {
                 let property_value = properties[property_name]
-                if (label == "Surface (Ha)" | label == "Artificialisé (pdt diag., Ha)") {
+                if (label == "Surface (Ha)" | label == "Consommé (pdt diag., Ha)") {
                     property_value = property_value.toFixed(1)
                 }
                 info = info + `<b>${label}</b>: ${property_value}<br/>`
