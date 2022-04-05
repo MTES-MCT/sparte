@@ -584,7 +584,6 @@ class ProjectReportDownloadView(GroupMixin, CreateView):
             {
                 "href": None,
                 "title": "Téléchargement du bilan",
-                "url_bilan": app_parameter.BILAN_EXAMPLE,
             }
         )
         return breadcrumbs
@@ -594,6 +593,7 @@ class ProjectReportDownloadView(GroupMixin, CreateView):
         context.update(
             {
                 "project": self.get_object(),
+                "url_bilan": app_parameter.BILAN_EXAMPLE,
             }
         )
         return context
