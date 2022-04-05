@@ -1,9 +1,21 @@
 """Public data API views."""
+from django.contrib.gis.geos import Polygon
+from django.db.models import Subquery, OuterRef, F
+from django.http import JsonResponse
+
+from rest_framework.decorators import action
 from rest_framework.exceptions import ParseError
 from rest_framework import viewsets
 
-from .models import Emprise, PlanEmprise
-from .serializers import EmpriseSerializer, PlanEmpriseSerializer
+from public_data.models import Commune, Cerema
+
+from .views.mixins import UserQuerysetOrPublicMixin
+from .models import Project, Emprise, PlanEmprise
+from .serializers import (
+    EmpriseSerializer,
+    PlanEmpriseSerializer,
+    ProjectCommuneSerializer,
+)
 
 
 class EmpriseViewSet(viewsets.ReadOnlyModelViewSet):
@@ -29,3 +41,32 @@ class PlanEmpriseViewSet(EmpriseViewSet):
     queryset = PlanEmprise.objects.all()
     serializer_class = PlanEmpriseSerializer
     filter_field = "plan_id"
+
+
+class ProjectViewSet(UserQuerysetOrPublicMixin, viewsets.ReadOnlyModelViewSet):
+    queryset = Project.objects.all()
+    serializer_class = ProjectCommuneSerializer
+
+    @action(detail=True, methods=["get"])
+    def communes(self, request, pk):
+        project = self.get_object()
+        sum_function = sum(
+            [
+                F(f) / 10000
+                for f in Cerema.get_art_field(
+                    project.analyse_start_date, project.analyse_end_date
+                )
+            ]
+        )
+        qs = Cerema.objects.annotate(artif_area=sum_function)
+        queryset = Commune.objects.annotate(
+            artif_area=Subquery(
+                qs.filter(city_insee=OuterRef("insee")).values("artif_area")[:1]
+            )
+        )
+        bbox = self.request.GET.get("in_bbox", None)
+        if bbox is not None and len(bbox) > 0:
+            polygon_box = Polygon.from_bbox(bbox.split(","))
+            queryset = queryset.filter(mpoly__bboverlaps=polygon_box)
+        serializer = ProjectCommuneSerializer(queryset, many=True)
+        return JsonResponse(serializer.data, status=200)
