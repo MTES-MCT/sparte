@@ -41,6 +41,9 @@ psycopg2 = "==2.9.1"
 redis = "==3.5.3"
 sentry-sdk = "*"
 django-app-parameter = "*"
+setuptools = "*"
+django-docx-template = {git = "https://github.com/Swannbm/django-docx-template"}
+docxtpl = "*"
 
 [scripts]
 shell = "python manage.py shell"
