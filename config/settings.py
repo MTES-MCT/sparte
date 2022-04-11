@@ -72,6 +72,7 @@ THIRD_APPS = [
     "import_export",
     "crispy_forms",
     "django_app_parameter",
+    "django_docx_template",
 ]
 
 # upper app should not communicate with lower ones
@@ -278,6 +279,14 @@ if DEBUG:
 
     except ImportError:
         pass
+
+
+# DJANGO DOCX TEMPLATES
+DJANGO_DOCX_TEMPLATES = {
+    "data_sources": [
+        "project.datasources.DiagnosticSource",
+    ]
+}
 
 
 # EMAIL
