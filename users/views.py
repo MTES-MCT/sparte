@@ -2,6 +2,8 @@ from django.contrib import messages
 from django.contrib.auth import logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
+from django.contrib.auth import login
+from django.http import HttpResponseRedirect
 from django.views.generic import RedirectView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormView
 from django.urls import reverse_lazy
@@ -38,11 +40,25 @@ class UserCreateView(BreadCrumbMixin, CreateView):
     form_class = SignupForm
     success_url = reverse_lazy("users:signin")
 
+    def form_valid(self, form):
+        """If the form is valid, save the associated model."""
+        self.object = form.save()
+        # login created user
+        login(self.request, self.object)
+        return HttpResponseRedirect(self.get_success_url())
+
+    def get_success_url(self):
+        return self.request.GET.get("next", None) or super().get_success_url()
+
     def get_context_breadcrumbs(self):
         return [
             {"href": reverse_lazy("home:home"), "title": "Accueil"},
             {"href": reverse_lazy("users:signup"), "title": "Inscription"},
         ]
+
+    def get_context_data(self, **kwargs):
+        kwargs["next"] = self.request.GET.get("next", None)
+        return super().get_context_data(**kwargs)
 
 
 class UserDeleteView(BreadCrumbMixin, DeleteView):

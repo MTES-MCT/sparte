@@ -23,13 +23,14 @@ There are 3 entry points :
 """
 from celery import shared_task
 import logging
+from zipfile import BadZipFile
 
 from django.conf import settings
 from django.contrib.gis.db.models import Union
 from django.contrib.gis.geos.collections import MultiPolygon
 from django.urls import reverse
 
-from app_parameter.models import Parameter
+from django_app_parameter import app_parameter
 from public_data.models import Ocsge
 from utils.emails import send_template_email
 
@@ -65,6 +66,10 @@ def process_project_with_shape(project_id: int):
         evaluate_indicators(project)
         # all good !
         project.set_success()
+    except BadZipFile as e:
+        msg = f"Zipfile not recognized: {e}"
+        logger.info(msg)
+        project.set_failed(trace=msg)
     except Exception as e:
         logger.exception(f"Unknow exception occured in process_project_with_shape: {e}")
         project.set_failed()
@@ -234,7 +239,7 @@ def send_email_request_bilan(request_id):
     )
     send_template_email(
         subject="Nouvelle demande de bilan",
-        recipients=[Parameter.objects.str("TEAM_EMAIL")],
+        recipients=[app_parameter.TEAM_EMAIL],
         template_name="project/emails/dl_diagnostic_team",
         context={
             "project": request.project,

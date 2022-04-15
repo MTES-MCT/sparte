@@ -6,7 +6,8 @@ from django.utils.text import slugify
 
 TITLE = "Les données utilisées"
 MD_CONTENT = """
-Cette section est en construction, mais vous pouvez déjà y trouver des informations intéressantes.
+Cette section est en construction, mais vous pouvez déjà y trouver des informations
+intéressantes.
 
 ## Provenance des données
 
@@ -17,13 +18,17 @@ Nous utilisons 2 sources de données externes :
 
 ## L'occupation des sols à grande échelle (OCSGE)
 
-La documentation officielle est disponible au format PDF ici : [https://drive.google.com/drive/u/0/folders/1cDmEpUmIdtop6cOBCe9w3J-dPqhGd8V9](https://drive.google.com/drive/u/0/folders/1cDmEpUmIdtop6cOBCe9w3J-dPqhGd8V9)
+La documentation officielle est disponible au format PDF ici :
+[https://drive.google.com/drive/u/0/folders/1cDmEpUmIdtop6cOBCe9w3J-dPqhGd8V9]
+(https://drive.google.com/drive/u/0/folders/1cDmEpUmIdtop6cOBCe9w3J-dPqhGd8V9)
 
-**TODO** fournir la description de la table stockant les données dans SPARTE ainsi que le endpoint public
+**TODO** fournir la description de la table stockant les données dans SPARTE ainsi que
+le endpoint public
 
 ## Les fichiers fonciers
 
-La documentation officielle est disponible sur le site du CEREMA : [http://doc-datafoncier.cerema.fr/ff/docff/](http://doc-datafoncier.cerema.fr/ff/docff/)
+La documentation officielle est disponible sur le site du CEREMA :
+[http://doc-datafoncier.cerema.fr/ff/docff/](http://doc-datafoncier.cerema.fr/ff/docff/)
 
 **TODO** fournir la description de la table, le endpoint et les champs calculés.
 """
@@ -46,7 +51,7 @@ def reverse(apps, schema_editor):
     FAQ = apps.get_model("home", "FrequentlyAskedQuestion")
     try:
         FAQ.objects.get(slug=slugify(TITLE)).delete()
-    except Exception:
+    except FAQ.DoesNotExists:
         pass
 
 

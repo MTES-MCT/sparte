@@ -1,13 +1,13 @@
 var info = L.control()
-var legend = L.control({position: 'bottomright'});
+var legend = L.control({ position: 'bottomright' });
 
 ///// HELPER FUNCTIONS
 
 // cast "True" or "False" to true or false
-function cast(value){
-    return (value == "True")  ? true  :
-           (value == "False") ? false :
-                                value
+function cast(value) {
+    return (value == "True") ? true :
+        (value == "False") ? false :
+        value
 }
 
 // equivalent of dict().get(field, default_value) from python
@@ -17,6 +17,20 @@ function get(object, key, default_value) {
         return cast(result)
     else
         return default_value
+}
+
+function get_info_label(name) {
+    return (name == "name") ? "Nom" :
+        (name == "insee") ? "Code INSEE" :
+        (name == "area") ? "Surface (Ha)" :
+        (name == "surface") ? "Surface (Ha)" :
+        (name == "map_color") ? "" :
+        (name == "usage_2015") ? "Usage en 2015" :
+        (name == "usage_2018") ? "Usage en 2018" :
+        (name == "couverture_2015") ? "Couverture en 2015" :
+        (name == "couverture_2018") ? "Couverture en 2018" :
+        (name == "artif_area") ? "Consommé (pdt diag., Ha)" :
+        name
 }
 
 /////////////////////////////////////////////////
@@ -31,7 +45,6 @@ function emprise_style(feature) {
         weight: 2,
         opacity: 1,
         color: 'yellow',
-        dashArray: '10',
         fillOpacity: 0
     }
 }
@@ -47,6 +60,16 @@ function style_zone_artificielle(feature) {
     }
 }
 
+function style_communes(feature) {
+    return {
+        fillColor: '#ffffff',
+        fillOpacity: 0.1,
+        weight: 3,
+        opacity: 1,
+        color: '#FF8C00',
+    }
+}
+
 // Styling :
 // 1. valeur identique pour toutes les features (zone artificielle, emprise)
 // 2. basée sur une échélle et la valeur d'une propriété (exemple surface pour
@@ -57,14 +80,13 @@ function style_zone_artificielle(feature) {
 // INITIALISATION
 /////////////////////////
 
-function Carto (map_center, default_zoom)
-{
+function Carto(map_center, default_zoom) {
     this.map_center = map_center
     this.default_zoom = default_zoom
 
     //this.layerControl = L.control.layers(null, null)
-    this.info = L.control({position: 'bottomleft'})
-    this.legend = L.control({position: 'bottomright'});
+    this.info = L.control({ position: 'bottomleft' })
+    this.legend = L.control({ position: 'bottomright' });
     this.map = L.map('mapid')
 
     // contains all added geolayer (see add_geolayer function)
@@ -78,8 +100,7 @@ function Carto (map_center, default_zoom)
         // Initialize map
         this.map.setView(this.map_center, this.default_zoom)
 
-        for (i=0; i<10; i++)
-        {
+        for (i = 0; i < 10; i++) {
             let pane_name = `level_${i}`
             let pane = this.map.createPane(pane_name)
             pane.style.zIndex = 505 + 10 * i
@@ -88,20 +109,19 @@ function Carto (map_center, default_zoom)
 
         // Choix du fond de carte
         let ortho = L.tileLayer(
-            'https://wxs.ign.fr/{ignApiKey}/geoportail/wmts?'+
-            '&REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0&TILEMATRIXSET=PM'+
-            '&LAYER={ignLayer}&STYLE={style}&FORMAT={format}'+
-            '&TILECOL={x}&TILEROW={y}&TILEMATRIX={z}',
-            {
-                attribution: '<a target="_blank" href="https://www.geoportail.gouv.fr/">Geoportail France</a>',
-                ignApiKey: 'ortho',
-                ignLayer: 'ORTHOIMAGERY.ORTHOPHOTOS',
-                style: 'normal',
-                format: 'image/jpeg',
-                service: 'WMTS'
-            }
-        ).addTo( this.map )
-        // add info div
+                'https://wxs.ign.fr/{ignApiKey}/geoportail/wmts?' +
+                '&REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0&TILEMATRIXSET=PM' +
+                '&LAYER={ignLayer}&STYLE={style}&FORMAT={format}' +
+                '&TILECOL={x}&TILEROW={y}&TILEMATRIX={z}', {
+                    attribution: '<a target="_blank" href="https://www.geoportail.gouv.fr/">Geoportail France</a>',
+                    ignApiKey: 'ortho',
+                    ignLayer: 'ORTHOIMAGERY.ORTHOPHOTOS',
+                    style: 'normal',
+                    format: 'image/jpeg',
+                    service: 'WMTS'
+                }
+            ).addTo(this.map)
+            // add info div
         this.info.addTo(this.map);
 
         // add legend div
@@ -135,6 +155,8 @@ function Carto (map_center, default_zoom)
             layer.style = style_zone_artificielle
         if (style == 'style_emprise')
             layer.style = emprise_style
+        if (style == 'style_communes')
+            layer.style = style_communes
         if (style == 'get_color_from_property')
             layer.get_color = layer.get_color_from_property
 
@@ -142,13 +164,13 @@ function Carto (map_center, default_zoom)
         // level can be set from 0 to 9
         // 9 is on top, 0 is the most lowest
         let pane = `level_${get(geolayer, "level", "5")}`
-        if (this.panes.includes(pane))  // check the layer is known
+        if (this.panes.includes(pane)) // check the layer is known
             layer.pane = pane
 
         // set the url to retrieve the scale
         layer.scale_url = get(geolayer, "gradient_url", undefined)
-        // change how the get_color works to use the scale
-        if (layer.scale_url != undefined){
+            // change how the get_color works to use the scale
+        if (layer.scale_url != undefined) {
             layer.get_color = layer.get_color_from_scale
         }
 
@@ -187,14 +209,14 @@ function Carto (map_center, default_zoom)
 //  Add layer
 /////////////////////////////////
 
-function GeoLayer (name, url) {
+function GeoLayer(name, url) {
     // name of the layer, to be displayed in layercontrol div
     this.name = name
-    // url where to fetch GeoJson data
+        // url where to fetch GeoJson data
     this.url = url
-    // will contain the built GeoJsonLayer
+        // will contain the built GeoJsonLayer
     this.geojsonlayer = null
-    // will contain fetched data
+        // will contain fetched data
     this.data = null
 
     this.info_txt = null
@@ -220,7 +242,7 @@ function GeoLayer (name, url) {
     //     {value: 230, color: '#ff6600'},  // 151 -> 230
     // ]
     this.scale = null
-    // Define the url to get data for initialise the scale
+        // Define the url to get data for initialise the scale
     this.scale_url = undefined
 
     // Set to true to center the map on layer after data has been loaded
@@ -247,14 +269,14 @@ function GeoLayer (name, url) {
     this.get_color_from_scale = (feature) => {
         // get the property that will decide the color
         property_value = feature.properties[this.color_property_name]
-        // use provided scale and color
-        // return gray in case of unset
+            // use provided scale and color
+            // return gray in case of unset
         let item = this.scale.find((item) => property_value < item.value)
-        // si on a pas trouvé, on doit être sur la dernière valeur de scale
-        // donc le find n'est jamais vrai, on va donc récupérer la dernière
-        // valeur pour initialiser item
+            // si on a pas trouvé, on doit être sur la dernière valeur de scale
+            // donc le find n'est jamais vrai, on va donc récupérer la dernière
+            // valeur pour initialiser item
         item = item ? item : this.scale[this.scale.length - 1]
-        // finalement, on renvoit la couleur
+            // finalement, on renvoit la couleur
         return item.color
     }
 
@@ -286,40 +308,44 @@ function GeoLayer (name, url) {
     this.info_txt = (properties) => {
         let info = '<h4>' + this.name + '</h4>'
         let properties_names = Object.getOwnPropertyNames(properties)
-        for (i=0; i<properties_names.length; i++)
-        {
+        for (i = 0; i < properties_names.length; i++) {
             let property_name = properties_names[i]
-            let property_value = properties[property_name]
-            info = info + `<b>${property_name}</b>: ${property_value}<br/>`
+            let label = get_info_label(property_name)
+            if (label != "") {
+                let property_value = properties[property_name]
+                if (label == "Surface (Ha)" | label == "Consommé (pdt diag., Ha)") {
+                    property_value = property_value.toFixed(1)
+                }
+                info = info + `<b>${label}</b>: ${property_value}<br/>`
+            }
         }
         return info
     }
 
     // surcharge to update content of legend div (return empty string to not show info)
-    this.legend_txt = (feature) => {
-        if (this.scale == null)
-            return null
-        let property = this.color_property_name
-        let property_value = feature.properties[property]
-        let legend = '<h4>' + this.name + '</h4>'
-        let bold = false
-        let val = new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 1 }).format(property_value)
-        legend = legend + `Propriété utilisée: ${property} (${val})<br\>`
+    // this.legend_txt = (feature) => {
+    //     if (this.scale == null)
+    //         return null
+    //     let property = this.color_property_name
+    //     let property_value = feature.properties[property]
+    //     let legend = '<h4>' + this.name + '</h4>'
+    //     let bold = false
+    //     let val = new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 1 }).format(property_value)
+    //     legend = legend + `Propriété utilisée: ${property} (${val})<br\>`
 
-        for (i=0; i<this.scale.length; i++)
-        {
-            let color = this.scale[i].color
-            let value = this.scale[i].value
-            let next_value = i+1 < this.scale.length ? this.scale[i+1].value : '+'
-            if ((bold == false) && (i+1 == this.scale.length || property_value < next_value)){
-                legend = legend + `<i style="background:${color}"></i> <b>${value} &ndash; ${next_value}</b></br>`
-                bold = true
-            }else{
-                legend = legend + `<i style="background:${color}"></i> ${value} &ndash; ${next_value}</br>`
-            }
-        }
-        return legend
-    }
+    //     for (i = 0; i < this.scale.length; i++) {
+    //         let color = this.scale[i].color
+    //         let value = this.scale[i].value
+    //         let next_value = i + 1 < this.scale.length ? this.scale[i + 1].value : '+'
+    //         if ((bold == false) && (i + 1 == this.scale.length || property_value < next_value)) {
+    //             legend = legend + `<i style="background:${color}"></i> <b>${value} &ndash; ${next_value}</b></br>`
+    //             bold = true
+    //         } else {
+    //             legend = legend + `<i style="background:${color}"></i> ${value} &ndash; ${next_value}</br>`
+    //         }
+    //     }
+    //     return legend
+    // }
 
     // set the layer appearance, fetch the data and display it on the map
     this.add_to_map = (carto) => {
@@ -329,8 +355,7 @@ function GeoLayer (name, url) {
 
         // define appearance
         this.geojsonlayer = L.geoJson(
-            null,
-            {
+            null, {
                 style: this.style,
                 onEachFeature: (feature, layer) => {
                     layer.on({
@@ -344,7 +369,7 @@ function GeoLayer (name, url) {
 
                             // mets à jour le div d'information
                             carto.info.update(this.info_txt(feature.properties))
-                            carto.legend.update(this.legend_txt(feature))
+                                // carto.legend.update(this.legend_txt(feature))
                         },
                         // on mousse out
                         mouseout: (e) => {
@@ -366,7 +391,7 @@ function GeoLayer (name, url) {
             $.getJSON(this.scale_url, (data) => {
                 this.scale = data
                 this._add_to_map_step_2()
-            })  // TODO faire un point d'arrêt pour récupérer les données
+            }) // TODO faire un point d'arrêt pour récupérer les données
         else
             this._add_to_map_step_2()
     }
@@ -378,7 +403,7 @@ function GeoLayer (name, url) {
         // carto.layerControl.addOverlay(this.geojsonlayer, this.name)
 
         if (this.load_full_data == false)
-            // add an eventlistner on user moving the map
+        // add an eventlistner on user moving the map
             carto.map.on('moveend', this.refresh_data)
     }
 
@@ -398,8 +423,7 @@ function GeoLayer (name, url) {
         // full: indicate if we have to load everything (true) or if we have to get only data visible on the map (false)
 
         let url = this.get_url()
-        if (this.load_full_data == false)
-        {
+        if (this.load_full_data == false) {
             if (url.includes("?"))
                 url = url + '&'
             else
@@ -417,10 +441,10 @@ function GeoLayer (name, url) {
             this.geojsonlayer.clearLayers()
             this.geojsonlayer.addData(data)
 
-            if (this.fit_map){
+            if (this.fit_map) {
                 // TODO : move this in carto object
                 // center the layer on the center of the map
-                this.fit_map = false  // do not recenter after first loading
+                this.fit_map = false // do not recenter after first loading
                 bounds = this.geojsonlayer.getBounds()
                 console.log(bounds)
                 carto.map.fitBounds(bounds);
@@ -436,11 +460,11 @@ function GeoLayer (name, url) {
         let outer_div = document.createElement("div")
         outer_div.setAttribute("class", "form-check form-switch")
         document.getElementById("layer_list").appendChild(outer_div)
-        // add switch
+            // add switch
         let input = document.createElement("input")
         input.setAttribute("class", "form-check-input")
         input.setAttribute("type", "checkbox")
-        // input.setAttribute("index", index)
+            // input.setAttribute("index", index)
         input.checked = this.display // == "True" ? true : false
         let id = `${this.name}_switch`
         input.setAttribute("id", id)
@@ -456,9 +480,9 @@ function GeoLayer (name, url) {
 
         input.addEventListener('click', (event, state) => {
             let checked = event.target.checked
-            if (checked){
+            if (checked) {
                 this.activate_layer()
-            }else{
+            } else {
                 this.deactivate_layer()
             }
         })
@@ -490,12 +514,12 @@ function GeoLayer (name, url) {
         let outer_div = document.createElement("div")
         outer_div.setAttribute("class", "form-check form-switch")
         document.getElementById("layer_list").appendChild(outer_div)
-        //document.getElementById("layer_ocsge").appendChild(outer_div)
-        // add input button
+            //document.getElementById("layer_ocsge").appendChild(outer_div)
+            // add input button
         let input = document.createElement("input")
         input.setAttribute("class", "form-check-input")
         input.setAttribute("type", "checkbox")
-        // input.setAttribute("index", index)
+            // input.setAttribute("index", index)
         input.checked = this.display // == "True" ? true : false
         let id = `${this.name}_switch`
         input.setAttribute("id", id)
@@ -504,7 +528,7 @@ function GeoLayer (name, url) {
         let label = document.createElement("label")
         label.setAttribute("class", "form-check-label")
         label.setAttribute("for", id)
-        //label.innerHTML = this.name
+            //label.innerHTML = this.name
         outer_div.appendChild(label)
 
         // <div class="input-group">
@@ -518,7 +542,7 @@ function GeoLayer (name, url) {
         text_div.innerHTML = "OCSGE : "
         input_div.appendChild(text_div)
 
-        let select_year = get_select("ocsge_years", {"2015": "2015", "2018": "2018"})
+        let select_year = get_select("ocsge_years", { "2015": "2015", "2018": "2018" })
         select_year.addEventListener('click', (e, s) => this.click(input))
         input_div.appendChild(select_year)
 
@@ -537,7 +561,7 @@ function GeoLayer (name, url) {
                 url = url + '&'
             else
                 url = url + '?'
-            //?year=2015&color=couverture
+                //?year=2015&color=couverture
             url = url + `year=${document.getElementById("ocsge_years").value}`
             url = url + `&color=${document.getElementById("ocsge_sol").value}`
             return url
@@ -547,16 +571,16 @@ function GeoLayer (name, url) {
     }
 
     this.click = (target) => {
-        if (target.checked){
+        if (target.checked) {
             this.activate_layer()
-        }else{
+        } else {
             this.deactivate_layer()
         }
     }
 
 }
 
-function get_select(id, options){
+function get_select(id, options) {
     let select = document.createElement("select")
     select.setAttribute("class", "form-select form-select-sm")
     select.setAttribute("aria-label", "form-select")
@@ -570,7 +594,7 @@ function get_select(id, options){
     return select
 }
 
-function get_loading_gif(id){
+function get_loading_gif(id) {
     let img = document.createElement("img")
     img.setAttribute("src", "/static/carto/img/loading-buffering.gif")
     img.setAttribute("id", id)
