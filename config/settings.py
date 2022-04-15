@@ -288,6 +288,9 @@ DJANGO_DOCX_TEMPLATES = {
     ]
 }
 
+# Configuration for highchart
+HIGHCHART_SERVER = "https://export.highcharts.com/"
+
 
 # EMAIL
 """Configuration of e-mails
