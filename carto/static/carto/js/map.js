@@ -45,7 +45,6 @@ function emprise_style(feature) {
         weight: 2,
         opacity: 1,
         color: 'yellow',
-        dashArray: '10',
         fillOpacity: 0
     }
 }
@@ -58,6 +57,16 @@ function style_zone_artificielle(feature) {
         opacity: 1,
         color: '#ffffff',
         dashArray: '10',
+    }
+}
+
+function style_communes(feature) {
+    return {
+        fillColor: '#ffffff',
+        fillOpacity: 0.1,
+        weight: 3,
+        opacity: 1,
+        color: '#FF8C00',
     }
 }
 
@@ -146,6 +155,8 @@ function Carto(map_center, default_zoom) {
             layer.style = style_zone_artificielle
         if (style == 'style_emprise')
             layer.style = emprise_style
+        if (style == 'style_communes')
+            layer.style = style_communes
         if (style == 'get_color_from_property')
             layer.get_color = layer.get_color_from_property
 
