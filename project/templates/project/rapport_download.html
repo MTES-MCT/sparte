@@ -20,9 +20,15 @@ Rapport couverture du sol
 
     <div class="bg-light p-5 rounded-5 border">
 
+        {% if is_staff %}
+        <div class="box box-alert px-4 py-2 mb-4 mt-0">
+            <p>Version pré-construite pour l'équipe: <a href="{% url 'docx_template:template-bilan-1-merge' project.id %}">télécharger</a>.</p>
+        </div>
+        {% endif %}
+
         <div class="box box-alert px-4 py-2 mb-4 mt-0">
             <p>Nous travaillons activement à automatiser l'assemblage du bilan de votre territoire. En attendant qu'il soit téléchargeable en un clic, nous vous proposons de le faire pour vous. Renseignez le formulaire ci-dessous pour effectuer votre demande.</p>
-            <p>Vous pouvez télécharger un exemple : <a href="{{ url_bilan }}" target="_blank">bilan d'Andernos-les-bains</a>.
+            <p>Vous pouvez télécharger un exemple : <a href="{{ url_bilan }}" target="_blank">bilan d'Andernos-les-bains</a>.</p>
         </div>
 
         <div class="w-100 row justify-content-center">
