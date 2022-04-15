@@ -1,12 +1,19 @@
 from django.contrib import messages
-from django.shortcuts import redirect
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse_lazy
-from django.views.generic import TemplateView, FormView
+from django.views.generic import TemplateView, FormView, RedirectView
 
 from public_data.models import Epci, Departement, Region, Commune, Land
 from utils.views_mixins import BreadCrumbMixin
 
-from project.forms import EpciForm, DepartementForm, RegionForm, OptionsForm
+from project.forms import (
+    EpciForm,
+    DepartementForm,
+    RegionForm,
+    OptionsForm,
+    KeywordForm,
+)
 from project.models import Project
 from project.tasks import process_project
 
@@ -17,26 +24,62 @@ class SelectTypeView(BreadCrumbMixin, TemplateView):
     def get_context_breadcrumbs(self):
         breadcrumbs = super().get_context_breadcrumbs()
         breadcrumbs.append(
-            {"href": reverse_lazy("project:select"), "title": "Mon diagnostic 1/2"},
+            {"href": reverse_lazy("project:create-1"), "title": "Nouveau diagnostic"},
         )
         return breadcrumbs
 
 
-class SelectRegionView(BreadCrumbMixin, FormView):
-    template_name = "project/create/select_region.html"
-    form_class = RegionForm
+class SelectTerritoireView(BreadCrumbMixin, FormView):
+    template_name = "project/create/select_territoire.html"
+    form_class = KeywordForm
 
     def get_context_breadcrumbs(self):
         breadcrumbs = super().get_context_breadcrumbs()
-        breadcrumbs.append(
-            {"href": reverse_lazy("project:select"), "title": "Mon diagnostic 2/3"},
-        )
+        breadcrumbs += [
+            {"href": reverse_lazy("project:create-1"), "title": "Nouveau diagnostic"},
+            {
+                "href": reverse_lazy("project:create-dpt"),
+                "title": "Choisir un territoire",
+            },
+        ]
         return breadcrumbs
 
-    def form_valid(self, form):
-        region = form.cleaned_data["region"]
-        self.request.session["public_key"] = f"REGION_{region.id}"
-        return redirect("project:select_2")
+    def get_context_data(self, **kwargs):
+        kwargs["feminin"] = ""
+        land_type = self.kwargs["land_type"].upper()
+        if land_type == "EPCI":
+            kwargs["land_label"] = "EPCI"
+        elif land_type == "DEPARTEMENT":
+            kwargs["land_label"] = "département"
+        elif land_type == "COMMUNE":
+            kwargs["land_label"] = "commune"
+            kwargs["feminin"] = "e"
+        else:
+            kwargs["land_label"] = "région"
+            kwargs["feminin"] = "e"
+        return super().get_context_data(**kwargs)
+
+    def post(self, request, *args, **kwargs):
+        land_type = self.kwargs["land_type"].upper()
+        keyword = request.POST.get("keyword", None)
+        public_key = request.POST.get("land", None)
+        context = {"keyword": keyword, "land_type": land_type}
+        if keyword:
+            if land_type == "EPCI":
+                context["object_list"] = Epci.objects.filter(name__icontains=keyword)
+            elif land_type == "DEPARTEMENT":
+                context["object_list"] = Departement.objects.filter(
+                    name__icontains=keyword
+                )
+            elif land_type == "COMMUNE":
+                context["object_list"] = Commune.objects.filter(name__icontains=keyword)
+            else:
+                context["object_list"] = Region.objects.filter(name__icontains=keyword)
+        if public_key:
+            Land(public_key)
+            request.session["public_key"] = public_key
+            return redirect("project:create-3")
+        return self.render_to_response(self.get_context_data(**context))
 
 
 class SelectPublicProjects(BreadCrumbMixin, TemplateView):
@@ -110,13 +153,17 @@ class SelectPublicProjects(BreadCrumbMixin, TemplateView):
             if public_key:
                 try:
                     request.session["public_key"] = public_key
-                    return redirect("project:select_2")
+                    return redirect("project:create-3")
                 except Project.DoesNotExist:
                     messages.error(self.request, "Territoire non disponible.")
             else:
                 messages.warning(self.request, "Merci de sélectionner un territoire.")
         context = self.get_context_data(**kwargs)
         return self.render_to_response(context)
+
+
+class LandException(BaseException):
+    pass
 
 
 class SetProjectOptions(BreadCrumbMixin, FormView):
@@ -135,7 +182,10 @@ class SetProjectOptions(BreadCrumbMixin, FormView):
         return breadcrumbs
 
     def get_territoire(self):
-        public_keys = self.request.session["public_key"]
+        try:
+            public_keys = self.request.session["public_key"]
+        except (AttributeError, KeyError) as e:
+            raise LandException("No territory available in session") from e
         if not isinstance(public_keys, list):
             public_keys = [public_keys]
         lands = list()
@@ -153,13 +203,7 @@ class SetProjectOptions(BreadCrumbMixin, FormView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        try:
-            lands = self.get_territoire()
-        except (AttributeError, KeyError):
-            messages.error(
-                self.request, "Le territoire n'a pas été correctement sélectionné."
-            )
-            return redirect("project:select")
+        lands = self.get_territoire()
         millesimes = {year for land in lands for year in land.get_ocsge_millesimes()}
         millesimes = list(millesimes)
         millesimes.sort()
@@ -174,6 +218,16 @@ class SetProjectOptions(BreadCrumbMixin, FormView):
             }
         )
         return context
+
+    def get(self, request, *args, **kwargs):
+        """Catch exception if no land are in the session and redirect to step 1"""
+        try:
+            return self.render_to_response(self.get_context_data())
+        except LandException:
+            messages.error(
+                self.request, "Le territoire n'a pas été correctement sélectionné."
+            )
+            return redirect("project:select")
 
     def form_valid(self, form):
         """If the form is valid, redirect to the supplied URL."""
@@ -247,7 +301,7 @@ class SelectCities(BreadCrumbMixin, TemplateView):
             )
         if self.select:
             request.session["public_key"] = self.public_keys
-            return redirect("project:select_2")
+            return redirect("project:create-3")
         return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **context):
@@ -262,3 +316,21 @@ class SelectCities(BreadCrumbMixin, TemplateView):
             }
         )
         return super().get_context_data(**context)
+
+
+class ClaimProjectView(LoginRequiredMixin, RedirectView):
+    def get(self, request, *args, **kwargs):
+        project = get_object_or_404(Project, pk=self.kwargs["pk"])
+        self.url = project.get_absolute_url()
+        if project.user is not None:
+            messages.error(
+                request, "Erreur : ce diagnostic est appartient déjà à quelqu'un"
+            )
+        else:
+            messages.success(
+                request,
+                "Vous pouvez retrouver ce diagnostic en utilisant le menu Diagnostic > Ouvrir",
+            )
+            project.user = request.user
+            project.save()
+        return super().get(request, *args, **kwargs)

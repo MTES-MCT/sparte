@@ -2,6 +2,32 @@
 
 Ce changelog suit la méthode "keep a changelog" disponible ici: [https://keepachangelog.com/en/1.0.0/](https://keepachangelog.com/en/1.0.0/)
 
+## [1.2.0] - Non livrée
+
+Backlog de la version: [https://app.clickup.com/14136489/v/li/122274320/74368258?pr=20181273](https://app.clickup.com/14136489/v/li/122274320/74368258?pr=20181273)
+
+### Ajouté
+- Déselectionner toutes les communes d'un coup dans le graph de comparaison des communes
+- Possibilité de faire des groupes de communes dans un diagnostic et rapport dédié
+- Consommation relative dans le graph de comparaison des territoires
+- Possibilité de "réclamer" un projet sans propriétaire
+- (tech) paramétrage des graphs dans les views afin de pouvoir facilement les exporter
+- (tech) ajout de bandit pour vérifier les dépendances et le code
+- (tech) ajout de l'environnement "local" pour tester les scripts
+
+### Modifié
+* Montée de version Django vers 3.2.12
+* Remplacement de app_parameter par django-app-parameter
+* Nettoyage des scripts pour faciliter l'ajout de nouveau
+* Redirigé vers la liste des diagnostics après connexion
+* Réduction du temps de chargement du rapport consommation en optimisant les requêtes SQL
+* Ajout d'une erreur lorsque le zip d'un shape n'est pas bon afin de ne pas enregistrer l'erreur dans Sentry
+* Revue de l'affichage des infos dans la carte interactive
+* Affichage des communes de toute la France dans la carte interactive
+
+### Corrigé
+- Erreur 500 lors d'un direct accès à l'étape 2 de création.
+
 ## [1.1.2] - 07.03.2022
 
 ### Corrigé
@@ -17,7 +43,7 @@ Objectif : hotfixes pour corriger les anomalies détectées dans Sentry.
 * Bug "IndexError" lors de l'affichage d'un rapport couverture ou usage (https://app.clickup.com/t/2579cnj)
 * Bug lors de la création d'un diagnostic sans territoire (https://app.clickup.com/t/221fc7v)
 
-## [1.1.0]
+## [1.1.0] - 2022-02-23
 
 Objectif principale : rapport sur l'artificialisation
 

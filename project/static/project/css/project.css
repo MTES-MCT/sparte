@@ -1,5 +1,4 @@
 @charset "UTF-8";
-
 .key-figure {
     background-color: rgb(241, 250, 255);
     box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
@@ -79,12 +78,13 @@
     border: 1px solid #dee2e6 !important;
 }
 
-.grid-item
-{
+.grid-item {
     width: 300px;
 }
 
-.grid-item--width2 { width: 600px; }
+.grid-item--width2 {
+    width: 600px;
+}
 
 .card-title {
     margin-bottom: 0.5rem;
@@ -93,4 +93,30 @@
 
 .bg-light-blue {
     background-color: rgb(242, 245, 255);
+}
+
+.grab {
+    cursor: move;
+    cursor: grab;
+    cursor: -moz-grab;
+    cursor: -webkit-grab;
+}
+
+.grab:active {
+    cursor: grabbing;
+    cursor: -moz-grabbing;
+    cursor: -webkit-grabbing;
+}
+
+.city-group {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    width: 300px;
+    overflow-y: hidden;
+    float: left !important;
+    margin: 15px;
+}
+
+.city-group>.card-body {
+    max-height: 600px;
+    overflow-y: auto;
 }
