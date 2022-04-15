@@ -6,13 +6,15 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('public_data', '0014_auto_20210924_0019'),
+        ("public_data", "0014_auto_20210924_0019"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='ocsge2015',
-            name='map_color',
-            field=models.CharField(blank=True, max_length=8, null=True, verbose_name='Couleur'),
+            model_name="ocsge2015",
+            name="map_color",
+            field=models.CharField(
+                blank=True, max_length=8, null=True, verbose_name="Couleur"
+            ),
         ),
     ]

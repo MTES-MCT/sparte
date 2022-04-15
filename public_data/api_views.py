@@ -13,6 +13,7 @@ from rest_framework_gis import filters
 from .models import (
     Artificialisee2015to2018,
     Artificielle2018,
+    Commune,
     CommunesSybarval,
     CouvertureSol,
     Departement,
@@ -29,6 +30,7 @@ from .models import (
 from .serializers import (
     Artificialisee2015to2018Serializer,
     Artificielle2018Serializer,
+    CommuneSerializer,
     CommunesSybarvalSerializer,
     CouvertureSolSerializer,
     DepartementSerializer,
@@ -79,6 +81,13 @@ class Artificielle2018ViewSet(DataViewSet):
     serializer_class = Artificielle2018Serializer
 
 
+class CommuneViewSet(DataViewSet):
+    """CommunesSybarval view set."""
+
+    queryset = Commune.objects.all()
+    serializer_class = CommuneSerializer
+
+
 class CommunesSybarvalViewSet(DataViewSet):
     """CommunesSybarval view set."""
 
@@ -88,11 +97,15 @@ class CommunesSybarvalViewSet(DataViewSet):
     @action(detail=True)
     def ocsge(self, request, pk):
         year = request.query_params["year"]
+        # clean year to avoid any injection (because it is used as parameter in the
+        # query below)... Might be overkill as Django as sql injection protection
+        year = str(int(year))
         commune = self.get_object()
         params = list(commune.mpoly.extent)
         params.append(year)
+        # after investigation, below query looks safe
         query = (
-            "SELECT id, couverture_label, usage_label, millesime, map_color, "
+            "SELECT id, couverture_label, usage_label, millesime, map_color, "  # nosec
             "year, st_AsGeoJSON(mpoly, 4) AS geojson "
             f"FROM {Ocsge._meta.db_table} "
             "WHERE mpoly && ST_MakeEnvelope(%s, %s, %s, %s, 4326) "
@@ -150,7 +163,8 @@ class OcsgeViewSet(DataViewSet):
             table_name = CouvertureSol._meta.db_table
             field = "couverture"
         query = (
-            "SELECT o.id, o.couverture_label, o.usage_label, o.millesime, t.map_color, "
+            "SELECT "  # nosec - all parameters are safe
+            "o.id, o.couverture_label, o.usage_label, o.millesime, t.map_color, "
             "o.year, st_AsGeoJSON(o.mpoly, 8) AS geojson "
             f"FROM {Ocsge._meta.db_table} o "
             f"INNER JOIN {table_name} t ON t.code_prefix = o.{field} "

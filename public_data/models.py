@@ -7,6 +7,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models as classic_models
 from django.db.models import F, Sum, Q
+from django.utils.functional import cached_property
 
 from .behaviors import AutoLoadMixin, DataColorationMixin
 
@@ -739,7 +740,7 @@ class Cerema(AutoLoadMixin, DataColorationMixin, models.Model):
     Voir PDF dans lien ci-dessus
     """
 
-    city_insee = models.CharField(max_length=5)
+    city_insee = models.CharField(max_length=5, db_index=True)
     city_name = models.CharField(max_length=45)
     region_id = models.CharField(max_length=2)
     region_name = models.CharField(max_length=27)
@@ -998,16 +999,21 @@ class GetDataFromCeremaMixin:
     def get_qs_cerema(self):
         raise NotImplementedError("Need to be specified in child")
 
-    def get_conso_per_year(self, start="2010", end="2020"):
+    def get_conso_per_year(self, start="2010", end="2020", coef=1):
         """Return Cerema data for the city, transposed and named after year"""
         fields = Cerema.get_art_field(start, end)
         qs = self.get_qs_cerema()
         args = (Sum(field) for field in fields)
         qs = qs.aggregate(*args)
-        return {f"20{key[3:5]}": val / 10000 for key, val in qs.items()}
+        return {f"20{key[3:5]}": val * coef / 10000 for key, val in qs.items()}
 
 
 class LandMixin:
+    @cached_property
+    def area(self):
+        """Return surface of the land in Ha"""
+        return self.mpoly.transform(2154, clone=True).area / (100 ** 2)
+
     @classmethod
     def search(cls, needle):
         qs = cls.objects.filter(name__icontains=needle)
@@ -1104,12 +1110,24 @@ class Epci(LandMixin, GetDataFromCeremaMixin, models.Model):
         return self.name
 
 
-class Commune(LandMixin, GetDataFromCeremaMixin, models.Model):
+class Commune(DataColorationMixin, LandMixin, GetDataFromCeremaMixin, models.Model):
     insee = models.CharField("Code INSEE", max_length=5)
     name = models.CharField("Nom", max_length=45)
     departement = models.ForeignKey(Departement, on_delete=models.CASCADE)
     epci = models.ForeignKey(Epci, on_delete=models.CASCADE)
     mpoly = models.MultiPolygonField()
+    # Calculated fields
+    map_color = models.CharField(
+        "Couleur d'afficgage", max_length=30, null=True, blank=True
+    )
+    # area_consumed = models.DecimalField("Surface consommée", max_digits=10, decimal_places=2, null=True, blank=True)
+    # area_artificial = models.DecimalField("Surface artificielle", max_digits=10, decimal_places=2, null=True, blank=True)
+    # area_naf = models.DecimalField("Surface naturelle", max_digits=10, decimal_places=2, null=True, blank=True)
+    # last_year_ocsge = models.IntegerField("Dernier millésime disponible")
+
+    # DataColorationMixin properties that need to be set when heritating
+    default_property = "insee"  # need to be set correctly to work
+    default_color = "Yellow"
 
     @property
     def public_key(self):
@@ -1134,6 +1152,13 @@ class Commune(LandMixin, GetDataFromCeremaMixin, models.Model):
         qs = qs.order_by("name")
         return qs
 
+    @classmethod
+    def get_property_data(cls, property_name=None):
+        qs = cls.objects.all()
+        qs = qs.values_list(property_name, flat=True)
+        qs = qs.order_by(property_name)
+        return [(int(x),) for x in qs if x.isdigit()]
+
 
 class Land:
     """It's a generic class to work with Epci, Departement, Region or Commune.
@@ -1156,8 +1181,8 @@ class Land:
         except ObjectDoesNotExist as e:
             raise Exception(f"Public key '{id}' unknown") from e
 
-    def get_conso_per_year(self, start="2010", end="2020"):
-        return self.land.get_conso_per_year(start, end)
+    def get_conso_per_year(self, start="2010", end="2020", coef=1):
+        return self.land.get_conso_per_year(start, end, coef)
 
     def __getattr__(self, name):
         return getattr(self.land, name)
