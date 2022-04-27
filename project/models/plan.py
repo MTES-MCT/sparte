@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.gis.db import models as gis_models
 
-from public_data.behaviors import DataColorationMixin
+from public_data.models.mixins import DataColorationMixin
 
 from .project import BaseProject, Project
 
