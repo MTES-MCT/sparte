@@ -2,7 +2,7 @@
 
 import django.contrib.gis.db.models.fields
 from django.db import migrations, models
-import public_data.behaviors
+import public_data.models.mixins
 
 
 class Migration(migrations.Migration):
@@ -115,8 +115,8 @@ class Migration(migrations.Migration):
                 ),
             ],
             bases=(
-                public_data.behaviors.AutoLoadMixin,
-                public_data.behaviors.DataColorationMixin,
+                public_data.models.mixins.AutoLoadMixin,
+                public_data.models.mixins.DataColorationMixin,
                 models.Model,
             ),
         ),
