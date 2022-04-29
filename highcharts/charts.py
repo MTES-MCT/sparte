@@ -1,8 +1,13 @@
+import base64
 import copy
 import json
 import random
+import os
+import requests
 import string
+import tempfile
 
+from django.conf import settings
 from django.utils.safestring import mark_safe
 from django.utils.text import slugify
 
@@ -70,3 +75,28 @@ class Chart:
 
     def get_js_name(self):
         return slugify(self.get_name()).replace("-", "_")
+
+    def request_b64_image_from_server(self):
+        json_option = copy.deepcopy(self.chart)
+        json_option["legend"] = {
+            "layout": "vertical",
+            "align": "center",
+            "verticalAlign": "bottom",
+        }
+        data = {
+            "infile": json_option,
+            "width": 1000,
+            "scale": False,
+            "constr": "chart",
+            "type": "image/png",
+            "b64": True,
+        }
+        r = requests.post(settings.HIGHCHART_SERVER, json=data)
+        return r.content
+
+    def get_temp_image(self):
+        b64_content = self.request_b64_image_from_server()
+        fd, img_path = tempfile.mkstemp(suffix=".png", text=False)
+        os.write(fd, base64.decodebytes(b64_content))
+        os.close(fd)
+        return img_path
