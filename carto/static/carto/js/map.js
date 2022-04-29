@@ -64,8 +64,8 @@ function style_communes(feature) {
     return {
         fillColor: '#ffffff',
         fillOpacity: 0.1,
-        weight: 3,
-        opacity: 1,
+        weight: 1,
+        opacity: 0.7,
         color: '#FF8C00',
     }
 }
