@@ -692,7 +692,7 @@ class ProjectMapView(GroupMixin, DetailView):
                         "level": "5",
                     },
                     {
-                        "name": "Artificialisation 2015 à 2018",
+                        "name": "Archachon : artificialisation 2015 à 2018",
                         "url": reverse_lazy(
                             "public_data:artificialisee2015to2018-list"
                         ),
@@ -703,7 +703,7 @@ class ProjectMapView(GroupMixin, DetailView):
                         "level": "7",
                     },
                     {
-                        "name": "Renaturation de 2018 à 2015",
+                        "name": "Arcachon : renaturation de 2015 à 2018",
                         "url": reverse_lazy("public_data:renaturee2018to2015-list"),
                         "gradient_url": reverse_lazy(
                             "public_data:renaturee2018to2015-gradient"
@@ -729,6 +729,61 @@ class ProjectMapView(GroupMixin, DetailView):
                         "style": "get_color_from_property",
                         "level": "1",
                         "switch": "ocsge",
+                    },
+                    {
+                        "name": "Gers: Couverture 2016",
+                        "url": (
+                            f'{reverse_lazy("public_data:ocsge-optimized")}'
+                            "?year=2016&color=couverture"
+                        ),
+                        "display": False,
+                        "color_property_name": "map_color",
+                        "style": "get_color_from_property",
+                        "level": "1",
+                    },
+                    {
+                        "name": "Gers: Couverture 2019",
+                        "url": (
+                            f'{reverse_lazy("public_data:ocsge-optimized")}'
+                            "?year=2019&color=couverture"
+                        ),
+                        "display": False,
+                        "color_property_name": "map_color",
+                        "style": "get_color_from_property",
+                        "level": "1",
+                    },
+                    {
+                        "name": "Gers: Usage 2016",
+                        "url": (
+                            f'{reverse_lazy("public_data:ocsge-optimized")}'
+                            "?year=2016&color=usage"
+                        ),
+                        "display": False,
+                        "color_property_name": "map_color",
+                        "style": "get_color_from_property",
+                        "level": "1",
+                    },
+                    {
+                        "name": "Gers: Usage 2019",
+                        "url": (
+                            f'{reverse_lazy("public_data:ocsge-optimized")}'
+                            "?year=2019&color=usage"
+                        ),
+                        "display": False,
+                        "color_property_name": "map_color",
+                        "style": "get_color_from_property",
+                        "level": "1",
+                    },
+                    {
+                        "name": "Gers: différence 2016 à 2019",
+                        "url": (
+                            f'{reverse_lazy("public_data:ocsgediff-optimized")}'
+                            "?year=2019&color=usage"
+                        ),
+                        "display": False,
+                        "color_property_name": "map_color",
+                        "style": "get_color_from_property",
+                        "level": "1",
                     },
                 ],
             }
