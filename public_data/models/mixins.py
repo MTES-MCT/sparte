@@ -10,7 +10,7 @@ from django.db.models import OuterRef, Subquery
 
 from utils.colors import get_random_color, get_color_gradient, is_valid
 
-from .storages import DataStorage
+from public_data.storages import DataStorage
 
 
 logger = logging.getLogger(__name__)
@@ -35,7 +35,7 @@ class AutoLoadMixin:
     mapping = dict()
 
     @classmethod
-    def get_shape_file(cls):
+    def get_shape_file(cls, bucket_file=None):
         # use special storage class to access files in s3://xxx/data directory
         storage = DataStorage()
         if not storage.exists(cls.shape_file_path):
@@ -59,13 +59,16 @@ class AutoLoadMixin:
         raise FileNotFoundError("No file with .shp suffix")
 
     @classmethod
-    def clean_data(cls):
+    def clean_data(cls, clean_queryset=None):
         """Delete all previous data. Can be overrided, usefull if data are in
         several files"""
-        cls.objects.all().delete()
+        if clean_queryset:
+            clean_queryset.delete()
+        else:
+            cls.objects.all().delete()
 
     @classmethod
-    def load(cls, verbose=True, shp_file=None):
+    def load(cls, verbose=True, shp_file=None, bucket_file=None, clean_queryset=None):
         """
         Populate table with data from shapefile then calculate all fields
 
@@ -79,14 +82,20 @@ class AutoLoadMixin:
             if not (shp_file.is_file() and shp_file.suffix == ".shp"):
                 raise FileNotFoundError("No file with .shp suffix")
         else:
-            shp_file = cls.get_shape_file()
+            if bucket_file:
+                shp_file = cls.get_shape_file(bucket_file=bucket_file)
+            else:
+                shp_file = cls.get_shape_file(bucket_file=cls.shape_file_path)
         logger.info("Shape file found: %s", shp_file)
-        # delete previous data
-        cls.clean_data()
-        # load files
+        # # delete previous data
+        logger.info("Delete previous data")
+        # cls.clean_data(clean_queryset=clean_queryset)
+        logger.info("Load new data")
+        # # load files
         lm = LayerMapping(cls, shp_file, cls.mapping)
         lm.save(strict=True, verbose=verbose)
-        logger.info("Data loaded, now calculate fields")
+        logger.info("Data loaded")
+        logger.info("Calculate fields")
         cls.calculate_fields()
         logger.info("End")
 
@@ -118,8 +127,9 @@ class AutoLoadMixin:
         """
         label = klass.objects.filter(code_prefix=OuterRef(field_code))
         label = label.values("label")[:1]
-        kwargs = {field_label: Subquery(label)}
-        cls.objects.all().update(**kwargs)
+        update_kwargs = {field_label: Subquery(label)}
+        filter_kwargs = {f"{field_label}__isnull": True}
+        cls.objects.all().filter(**filter_kwargs).update(**update_kwargs)
 
 
 class DataColorationMixin:

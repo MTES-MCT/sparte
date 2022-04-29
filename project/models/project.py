@@ -10,7 +10,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.functional import cached_property
 
-from public_data.behaviors import DataColorationMixin
+from public_data.models.mixins import DataColorationMixin
 from public_data.models import Cerema, Land
 
 from .utils import user_directory_path
