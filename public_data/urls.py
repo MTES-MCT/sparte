@@ -10,6 +10,7 @@ from .api.views import (
     # EnveloppeUrbaine2018ViewSet,
     EpciViewSet,
     OcsgeViewSet,
+    OcsgeDiffViewSet,
     RegionViewSet,
     Renaturee2018to2015ViewSet,
     # SybarvalViewSet,
@@ -40,7 +41,8 @@ router.register(r"renaturee/2018to2015", Renaturee2018to2015ViewSet)
 # router.register(r"batie/2018", ZonesBaties2018ViewSet)
 router.register(r"referentiel/couverture-sol", CouvertureSolViewset)
 router.register(r"referentiel/usage-sol", UsageSolViewset)
-router.register(r"ocsge", OcsgeViewSet)
+router.register(r"ocsge/general", OcsgeViewSet)
+router.register(r"ocsge/diff", OcsgeDiffViewSet)
 
 router.register(r"referentiel/region", RegionViewSet)
 router.register(r"referentiel/departement", DepartementViewSet)

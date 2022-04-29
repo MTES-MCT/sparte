@@ -70,6 +70,34 @@ function style_communes(feature) {
     }
 }
 
+function get_color_for_ocsge_diff(feature) {
+    if (feature.properties["Artificialisation"] == "oui") {
+        return {
+            fillColor: '#ff0000',
+            fillOpacity: 0.7,
+            weight: 0,
+            opacity: 1,
+            color: '#ff0000',
+        }
+    }
+    if (feature.properties["Renaturation"] == "oui") {
+        return {
+            fillColor: '#00ff00',
+            fillOpacity: 0.7,
+            weight: 0,
+            opacity: 1,
+            color: '#00ff00',
+        }
+    }
+    return {
+        fillColor: '#ffffff',
+        fillOpacity: 0.7,
+        weight: 0,
+        opacity: 1,
+        color: '#ffffff',
+    }
+}
+
 // Styling :
 // 1. valeur identique pour toutes les features (zone artificielle, emprise)
 // 2. basée sur une échélle et la valeur d'une propriété (exemple surface pour
@@ -159,6 +187,8 @@ function Carto(map_center, default_zoom) {
             layer.style = style_communes
         if (style == 'get_color_from_property')
             layer.get_color = layer.get_color_from_property
+        if (style == 'get_color_for_ocsge_diff')
+            layer.style = get_color_for_ocsge_diff
 
         // set the correct panes according to required level
         // level can be set from 0 to 9
