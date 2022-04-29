@@ -2,12 +2,23 @@
 
 Ce changelog suit la méthode "keep a changelog" disponible ici: [https://keepachangelog.com/en/1.0.0/](https://keepachangelog.com/en/1.0.0/)
 
-## [1.2.0] - Non livrée
+
+## [1.3.0] - Non livrée
+
+### Ajouté
+- Génération automatique du diagnostic word (sans les cartes)
+- Chargement des données OCSGE du Gers
+
+## Modifié
+- Unification du stockage des données OCSGE et des couches différentielles et adaptation des données du bassin d'Arcachon
+
+
+## [1.2.0] - 15.04.2022
 
 Backlog de la version: [https://app.clickup.com/14136489/v/li/122274320/74368258?pr=20181273](https://app.clickup.com/14136489/v/li/122274320/74368258?pr=20181273)
 
 ### Ajouté
-- Déselectionner toutes les communes d'un coup dans le graph de comparaison des communes
+- Déselectionner toutes les communes d'un clic dans le graph de comparaison des communes
 - Possibilité de faire des groupes de communes dans un diagnostic et rapport dédié
 - Consommation relative dans le graph de comparaison des territoires
 - Possibilité de "réclamer" un projet sans propriétaire
