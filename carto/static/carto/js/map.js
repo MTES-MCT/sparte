@@ -64,9 +64,37 @@ function style_communes(feature) {
     return {
         fillColor: '#ffffff',
         fillOpacity: 0.1,
-        weight: 3,
-        opacity: 1,
+        weight: 1,
+        opacity: 0.7,
         color: '#FF8C00',
+    }
+}
+
+function get_color_for_ocsge_diff(feature) {
+    if (feature.properties["Artificialisation"] == "oui") {
+        return {
+            fillColor: '#ff0000',
+            fillOpacity: 0.7,
+            weight: 0,
+            opacity: 1,
+            color: '#ff0000',
+        }
+    }
+    if (feature.properties["Renaturation"] == "oui") {
+        return {
+            fillColor: '#00ff00',
+            fillOpacity: 0.7,
+            weight: 0,
+            opacity: 1,
+            color: '#00ff00',
+        }
+    }
+    return {
+        fillColor: '#ffffff',
+        fillOpacity: 0.7,
+        weight: 0,
+        opacity: 1,
+        color: '#ffffff',
     }
 }
 
@@ -159,6 +187,8 @@ function Carto(map_center, default_zoom) {
             layer.style = style_communes
         if (style == 'get_color_from_property')
             layer.get_color = layer.get_color_from_property
+        if (style == 'get_color_for_ocsge_diff')
+            layer.style = get_color_for_ocsge_diff
 
         // set the correct panes according to required level
         // level can be set from 0 to 9

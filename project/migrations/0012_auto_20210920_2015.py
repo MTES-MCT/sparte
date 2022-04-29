@@ -5,7 +5,7 @@ import django.contrib.gis.db.models.fields
 from django.db import migrations, models
 import django.db.models.deletion
 import project.models
-import public_data.behaviors
+import public_data.models.mixins
 
 
 class Migration(migrations.Migration):
@@ -192,6 +192,6 @@ class Migration(migrations.Migration):
             options={
                 "ordering": ["plan", "name"],
             },
-            bases=(public_data.behaviors.DataColorationMixin, models.Model),
+            bases=(public_data.models.mixins.DataColorationMixin, models.Model),
         ),
     ]

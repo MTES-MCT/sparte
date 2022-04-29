@@ -1,0 +1,25 @@
+id,code_prefix,code,label,map_color,parent
+20,US1,1,Production primaire,green,
+21,US1.1,1.1,Agriculture,#ffffa8,20
+22,US1.2,1.2,Sylviculture,green,20
+23,US1.3,1.3,Activités d’extraction,#a600cc,20
+24,US1.4,1.4,Pêche et aquaculture,#009,20
+25,US1.5,1.5,Autre,#963,20
+26,US2,2,Secondaire,#e6004d,
+27,US235,235,Production secondaire; tertiaire et usage résidentiel,#e6004d,26
+28,US3,3,Tertiaire,#e6004d,
+29,US4,4,Réseaux de transport logistiques et infrastructures,#c00,
+30,US4.1,4.1,Réseaux de transport,#c00,29
+39,US4.1.1,4.1.1,Routier,#c00,30
+40,US4.1.2,4.1.2,Ferré,#5a5a5a,30
+41,US4.1.3,4.1.3,Aérien,#e6cce6,30
+42,US4.1.4,4.1.4,Eau,#06f,30
+43,US4.1.5,4.1.5,Autres réseaux de transport,#603,30
+31,US4.2,4.2,Services de logistique et de stockage,red,29
+32,US4.3,4.3,Réseaux d’utilité publique,#ff4b00,29
+33,US5,5,Résidentiel,#e6004d,
+34,US6,6,Autre usage,#fc0,
+35,US6.1,6.1,Zones en transition,#ff4dff,34
+36,US6.2,6.2,Zones abandonnées,#404040,34
+37,US6.3,6.3,Sans usage,#f0f028,34
+38,US6.6,6.6,Usage Inconnu,#fc0,34
