@@ -52,7 +52,7 @@ class Ocsge(AutoLoadMixin, DataColorationMixin, models.Model):
     id_origine = models.CharField("ID origine", max_length=200, blank=True, null=True)
     code_or = models.CharField("Code OR", max_length=200, blank=True, null=True)
     millesime_source = models.CharField(
-        "SOurce du millesime", max_length=200, blank=True, null=True
+        "Source du millesime", max_length=200, blank=True, null=True
     )
 
     # calculated fields
