@@ -165,5 +165,19 @@ def mep_120(ctx):
     click.secho("End migration", fg="cyan")
 
 
+@cli.command()
+@click.pass_context
+def mep_130(ctx):
+    """Trigger all data transformation to successful MEP release 1.2.0"""
+    click.secho("Start migration v1.3.0", fg="cyan")
+    connecter = ScalingoInterface(ctx.obj)
+
+    click.secho("Trigger Gers data loading", fg="cyan")
+    connecter.detached = True
+    connecter.manage_py("load_gers")
+
+    click.secho("End migration", fg="cyan")
+
+
 if __name__ == "__main__":
     cli(obj={})
