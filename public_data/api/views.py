@@ -38,6 +38,7 @@ from .serializers import (
     # EnveloppeUrbaine2018Serializer,
     EpciSerializer,
     OcsgeSerializer,
+    OcsgeDiffSerializer,
     RegionSerializer,
     Renaturee2018to2015Serializer,
     # SybarvalSerializer,
@@ -167,48 +168,55 @@ class Renaturee2018to2015ViewSet(DataViewSet):
 
 class OcsgeDiffViewSet(DataViewSet):
     queryset = OcsgeDiff.objects.all()
-    serializer_class = OcsgeSerializer
+    serializer_class = OcsgeDiffSerializer
 
     def get_params(self, request):
         bbox = request.query_params.get("in_bbox").split(",")
         bbox = list(map(float, bbox))
-        year = int(request.query_params.get("year"))
-        return {
-            "bbox": bbox,
-            "year": year,
-        }
+        year_old = int(request.query_params.get("year_old"))
+        year_new = int(request.query_params.get("year_new"))
+        return [year_new, year_old] + bbox  # /!\ order matter, see sql query below
 
-    def get_data(self, bbox=None, year=2015, color="usage"):
-        if color == "usage":
-            table_name = UsageSol._meta.db_table
-            field = "usage"
-        else:
-            table_name = CouvertureSol._meta.db_table
-            field = "couverture"
+    def get_data(self, request):
         query = (
-            "SELECT "  # nosec - all parameters are safe
-            "o.id, o.couverture_label, o.usage_label, o.millesime, t.map_color, "
-            "o.year, st_AsGeoJSON(o.mpoly, 8) AS geojson "
-            f"FROM {Ocsge._meta.db_table} o "
-            f"INNER JOIN {table_name} t ON t.code_prefix = o.{field} "
-            "WHERE o. mpoly && ST_MakeEnvelope(%s, %s, %s, %s, 4326) "
-            "AND o.year = %s"
+            "select "
+            "    id, year_old, year_new, "
+            "    CONCAT(cs_old, ' ', cs_old_label), "
+            "    CONCAT(us_old, ' ', us_old_label), "
+            "    CONCAT(cs_new, ' ', cs_new_label), "
+            "    CONCAT(us_new, ' ', us_new_label), "
+            "    is_new_artif, is_new_naf, "
+            "    st_AsGeoJSON(mpoly, 8) "
+            "from public_data_ocsgediff "
+            "where year_new = %s and year_old = %s "
+            "    and mpoly && ST_MakeEnvelope(%s, %s, %s, %s, 4326) "
         )
-        params = bbox + [year]
+        params = self.get_params(request)
         with connection.cursor() as cursor:
             cursor.execute(query, params)
-            rows = cursor.fetchall()
-        return rows
+            return [
+                {
+                    name: row[i]
+                    for i, name in enumerate(
+                        [
+                            "id",
+                            "year_old",
+                            "year_new",
+                            "cs_old",
+                            "us_old",
+                            "cs_new",
+                            "us_new",
+                            "is_new_artif",
+                            "is_new_naf",
+                            "geojson",
+                        ]
+                    )
+                }
+                for row in cursor.fetchall()
+            ]
 
     @action(detail=False)
     def optimized(self, request):
-        bbox = request.query_params.get("in_bbox").split(",")
-        bbox = list(map(float, bbox))
-        data = self.get_data(
-            bbox=bbox,
-            year=int(request.query_params.get("year")),
-            color=request.query_params.get("color"),
-        )
         geojson = json.dumps(
             {
                 "type": "FeatureCollection",
@@ -217,30 +225,28 @@ class OcsgeDiffViewSet(DataViewSet):
             }
         )
         features = []
-        for row in data:
-            try:
-                millesime = row[3].strftime("%Y-%m-%d")
-            except AttributeError:
-                millesime = ""
+        for row in self.get_data(request):
             feature = json.dumps(
                 {
                     "type": "Feature",
                     "properties": {
-                        "id": row[0],
-                        "couverture_label": row[1],
-                        "usage_label": row[2],
-                        "millesime": millesime,
-                        "map_color": row[4],
-                        "year": row[5],
+                        "id": row["id"],
+                        "Ancienne année": row["year_old"],
+                        "Nouvelle année": row["year_new"],
+                        "Ancienne couverture": row["cs_old"],
+                        "Nouvelle couverture": row["cs_new"],
+                        "Ancien usage": row["us_old"],
+                        "Nouveau usage": row["us_new"],
+                        "Artificialisation": "oui" if row["is_new_artif"] else "non",
+                        "Renaturation": "oui" if row["is_new_naf"] else "non",
                     },
                     "geometry": "-geometry-",
                 }
             )
-            feature = feature.replace('"-geometry-"', row[6])
+            feature = feature.replace('"-geometry-"', row["geojson"])
             features.append(feature)
         features = f" [{', '.join(features)}]"
         geojson = geojson.replace('"-features-"', features)
-        # return Response(geojson)
         return HttpResponse(geojson, content_type="application/json")
 
 

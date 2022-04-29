@@ -778,12 +778,11 @@ class ProjectMapView(GroupMixin, DetailView):
                         "name": "Gers: différence 2016 à 2019",
                         "url": (
                             f'{reverse_lazy("public_data:ocsgediff-optimized")}'
-                            "?year=2019&color=usage"
+                            "?year_old=2016&year_new=2019"
                         ),
                         "display": False,
-                        "color_property_name": "map_color",
-                        "style": "get_color_from_property",
-                        "level": "1",
+                        "style": "get_color_for_ocsge_diff",
+                        "level": "7",
                     },
                 ],
             }

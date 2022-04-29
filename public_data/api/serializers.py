@@ -11,6 +11,7 @@ from public_data.models import (
     EnveloppeUrbaine2018,
     Epci,
     Ocsge,
+    OcsgeDiff,
     Region,
     Renaturee2018to2015,
     Sybarval,
@@ -142,6 +143,23 @@ class OcsgeSerializer(serializers.GeoFeatureModelSerializer):
         )
         geo_field = "mpoly"
         model = Ocsge
+
+
+class OcsgeDiffSerializer(serializers.GeoFeatureModelSerializer):
+    class Meta:
+        fields = (
+            "id",
+            "year_old",
+            "year_new",
+            "cs_old_label",
+            "cs_new_label",
+            "us_old_label",
+            "us_new_label",
+            "is_new_artif",
+            "is_new_naf",
+        )
+        geo_field = "mpoly"
+        model = OcsgeDiff
 
 
 class Renaturee2018to2015Serializer(serializers.GeoFeatureModelSerializer):
