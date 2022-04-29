@@ -679,8 +679,8 @@ class ProjectMapView(GroupMixin, DetailView):
                         ),
                         "display": False,
                         "level": "2",
-                        "color_property_name": "map_color",
-                        "style": "get_color_from_property",
+                        # "color_property_name": "map_color",
+                        "style": "style_communes",
                     },
                     {
                         "name": "Emprise du projet",
