@@ -21,7 +21,7 @@ from django.core.exceptions import ImproperlyConfigured
 from django.contrib.messages import constants as messages
 
 
-OFFICIAL_VERSION = "1.1.2"
+OFFICIAL_VERSION = "1.3.0"
 
 root = environ.Path(__file__) - 2  # get root of the project
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -72,6 +72,7 @@ THIRD_APPS = [
     "import_export",
     "crispy_forms",
     "django_app_parameter",
+    "django_docx_template",
 ]
 
 # upper app should not communicate with lower ones
@@ -280,6 +281,17 @@ if DEBUG:
         pass
 
 
+# DJANGO DOCX TEMPLATES
+DJANGO_DOCX_TEMPLATES = {
+    "data_sources": [
+        "project.datasources.DiagnosticSource",
+    ]
+}
+
+# Configuration for highchart
+HIGHCHART_SERVER = "https://export.highcharts.com/"
+
+
 # EMAIL
 """Configuration of e-mails
 
@@ -331,7 +343,7 @@ if "django-extensions" in {pkg.key for pkg in pkg_resources.working_set}:
         "--ip",
         "127.0.0.1",
         "--allow-root",
-        '--notebook-dir="/app/notebooks/"',
+        '--notebook-dir="notebooks/"',
     ]
 
 # RESTRAMEWORK parameters
@@ -354,7 +366,8 @@ NUMBER_GROUPING = 3
 # SENTRY
 if ENVIRONMENT != "local":
     sentry_sdk.init(
-        dsn="https://a227bee32f4f41c2a60e9292ce4d033e@o548798.ingest.sentry.io/6068271",
+        # dsn="https://a227bee32f4f41c2a60e9292ce4d033e@o548798.ingest.sentry.io/6068271",
+        dsn="https://b40bb226b8a148fdafff102baf5abf34@sentry.incubateur.net/21",
         integrations=[
             DjangoIntegration(
                 # available options:
