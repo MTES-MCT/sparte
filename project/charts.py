@@ -57,6 +57,11 @@ class ConsoCommuneChart(ProjectChart):
         "series": [],
     }
 
+    def get_legend_for_paper(self):
+        return {
+            "enabled": False,
+        }
+
     def get_series(self):
         if not self.series:
             self.series = self.project.get_city_conso_per_year(

@@ -76,13 +76,16 @@ class Chart:
     def get_js_name(self):
         return slugify(self.get_name()).replace("-", "_")
 
-    def request_b64_image_from_server(self):
-        json_option = copy.deepcopy(self.chart)
-        json_option["legend"] = {
+    def get_legend_for_paper(self):
+        return {
             "layout": "vertical",
             "align": "center",
             "verticalAlign": "bottom",
         }
+
+    def request_b64_image_from_server(self):
+        json_option = copy.deepcopy(self.chart)
+        json_option["legend"] = self.get_legend_for_paper()
         data = {
             "infile": json_option,
             "width": 1000,
