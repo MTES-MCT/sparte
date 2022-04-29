@@ -1,7 +1,7 @@
 from rest_framework_gis import serializers
 from rest_framework import serializers as s
 
-from .models import (
+from public_data.models import (
     Artificialisee2015to2018,
     Artificielle2018,
     Commune,
