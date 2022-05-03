@@ -50,6 +50,8 @@ DEBUG = env.bool("DEBUG", default=False)
 
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["127.0.0.1", "localhost"])
 
+DOMAIN_URL = env.str("DOMAIN_URL", default="http://localhost:8080/")
+
 # Application definition
 
 DJANGO_APPS = [
@@ -101,8 +103,11 @@ MIDDLEWARE = [
 ]
 
 
-# Should be one of : local, staging, production
+#  build the domain url
+HTTP_PREFIX = env.str("HTTP_PREFIX", default="https")
 DOMAIN = env.str("DOMAIN")
+DOMAIN_PORT = env.str("DOMAIN_PORT", default="")
+
 
 ROOT_URLCONF = "config.urls"
 
