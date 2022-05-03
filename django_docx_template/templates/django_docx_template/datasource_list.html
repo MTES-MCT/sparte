@@ -1,0 +1,16 @@
+{% extends base_template %}
+
+
+{% block content %}
+<h1 class="mb-5"><i class="bi bi-boxes"></i> Data sources</h1>
+{% for object in object_list %}
+<div class="card float-start m-1 p-0" style="width: 100px; height: 100px;">
+    <div class="card-body p-1 text-center">
+        <i class="bi bi-box"></i>
+        <br/><a href="{% url 'docx_template:data_source' object.class_path %}" class="stretched-link">
+            {{ object.get_label }}
+        </a>
+    </div>
+  </div>
+{% endfor %}
+{% endblock content %}
