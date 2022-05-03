@@ -1,0 +1,16 @@
+{% extends base_template %}
+
+
+{% block content %}
+<h1 class="mb-5"><i class="bi bi-file-earmark-word"></i> {{ object.name }}</h1>
+
+<p>
+    Please confirm deletion by clicking on Confirm button below.
+    <br/>
+    <form methode="post">
+        <button type="submit" class="btn btn-danger">Confirm delete</button>
+    </form>
+    <a href="{% url 'docx_template:detail' object.slug %}" class="btn btn-secondary mt-1">Cancel</a>
+</p>
+
+{% endblock content %}
