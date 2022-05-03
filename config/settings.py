@@ -74,11 +74,12 @@ THIRD_APPS = [
     "import_export",
     "crispy_forms",
     "django_app_parameter",
-    "django_docx_template",
+    # "django_docx_template",
 ]
 
 # upper app should not communicate with lower ones
 PROJECT_APPS = [
+    "django_docx_template",
     "utils.apps.UtilsConfig",
     "users.apps.UsersConfig",
     "carto.apps.CartoConfig",
