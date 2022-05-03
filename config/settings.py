@@ -50,6 +50,8 @@ DEBUG = env.bool("DEBUG", default=False)
 
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["127.0.0.1", "localhost"])
 
+DOMAIN_URL = env.str("DOMAIN_URL")
+
 # Application definition
 
 DJANGO_APPS = [
@@ -72,11 +74,12 @@ THIRD_APPS = [
     "import_export",
     "crispy_forms",
     "django_app_parameter",
-    "django_docx_template",
+    # "django_docx_template",
 ]
 
 # upper app should not communicate with lower ones
 PROJECT_APPS = [
+    "django_docx_template",
     "utils.apps.UtilsConfig",
     "users.apps.UsersConfig",
     "carto.apps.CartoConfig",
@@ -100,9 +103,6 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-
-# Should be one of : local, staging, production
-DOMAIN = env.str("DOMAIN")
 
 ROOT_URLCONF = "config.urls"
 
