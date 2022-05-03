@@ -3,7 +3,18 @@
 Ce changelog suit la méthode "keep a changelog" disponible ici: [https://keepachangelog.com/en/1.0.0/](https://keepachangelog.com/en/1.0.0/)
 
 
-## [1.3.0] - Non livrée
+## [1.3.2] - 29.04.2022
+
+### Ajouté
+* Ajout de données dans la datasource : url et pie chart des déterminants
+
+## [1.3.1] - 29.04.2022
+
+### Bugs
+* Obligatoin de désactivé puis activer le module django-templates-docx pour réussir à migrer la base de données
+
+
+## [1.3.0] - 29.04.2022
 
 ### Ajouté
 - Génération automatique du diagnostic word (sans les cartes)
