@@ -1,0 +1,21 @@
+{% extends base_template %}
+
+
+{% block content %}
+<h1 class="mb-5"><i class="bi bi-folder2-open"></i> Docx template list</h1>
+
+{% for object in object_list %}
+    <div class="card float-start m-1 p-0" style="width: 100px; height: 100px;">
+        <div class="card-body p-1 text-center">
+            <i class="bi bi-file-earmark-word"></i>
+            <br/><a href="{% url 'docx_template:detail' object.pk %}" class="stretched-link">
+                {{ object.name }}
+            </a>
+        </div>
+    </div>
+{% endfor %}
+
+<div class="clearfix"></div>
+
+<p><a href="{% url 'docx_template:create' %}" class="btn btn-primary mt-5">Add new template</a></p>
+{% endblock content %}
