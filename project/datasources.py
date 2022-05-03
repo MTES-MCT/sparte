@@ -1,5 +1,7 @@
 from django_docx_template import data_sources
 
+from utils.functions import get_url_with_domain
+
 from .charts import ConsoCommuneChart, DeterminantPerYearChart
 from .models import Project
 
@@ -26,7 +28,8 @@ class DiagnosticSource(data_sources.DataSource):
         det_chart = DeterminantPerYearChart(project)
 
         context = {
-            "project": project,
+            "diagnostic": project,
+            "url": get_url_with_domain(project.get_absolute_url()),
             "ocsge_is_available": False,
             "communes_data_table": communes_table,  # tableau de conso des communes
             "determinants_data_table": det_chart.get_series(),
@@ -44,6 +47,8 @@ class DiagnosticSource(data_sources.DataSource):
                     width=170,
                 ),
             },
+            # deprecated
+            "project": project,
         }
 
         return context
