@@ -51,12 +51,11 @@ function emprise_style(feature) {
 
 function style_zone_artificielle(feature) {
     return {
-        fillColor: '#FFEDA0',
-        fillOpacity: 0.7,
-        weight: 3,
+        fillColor: '#f88e55',
+        fillOpacity: 0.5,
+        weight: 0.5,
         opacity: 1,
-        color: '#ffffff',
-        dashArray: '10',
+        color: '#f88e55',
     }
 }
 
