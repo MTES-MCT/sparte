@@ -285,7 +285,8 @@ if DEBUG:
 DJANGO_DOCX_TEMPLATES = {
     "data_sources": [
         "project.datasources.DiagnosticSource",
-    ]
+    ],
+    "base_template": "index.html",
 }
 
 # Configuration for highchart
