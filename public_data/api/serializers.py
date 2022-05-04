@@ -18,6 +18,7 @@ from public_data.models import (
     Voirie2018,
     ZonesBaties2018,
     UsageSol,
+    ZoneConstruite,
 )
 
 
@@ -299,4 +300,16 @@ class EpciSerializer(serializers.GeoFeatureModelSerializer):
             "name",
         )
         model = Epci
+        geo_field = "mpoly"
+
+
+class ZoneConstruiteSerializer(serializers.GeoFeatureModelSerializer):
+    class Meta:
+        fields = (
+            "id",
+            "id_source",
+            "millesime",
+            "year",
+        )
+        model = ZoneConstruite()
         geo_field = "mpoly"
