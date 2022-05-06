@@ -696,7 +696,7 @@ class ProjectMapView(GroupMixin, DetailView):
                         "url": reverse_lazy(
                             "public_data:artificialisee2015to2018-list"
                         ),
-                        "display": True,
+                        "display": False,
                         "gradient_url": reverse_lazy(
                             "public_data:artificialisee2015to2018-gradient"
                         ),
@@ -709,7 +709,7 @@ class ProjectMapView(GroupMixin, DetailView):
                             "public_data:renaturee2018to2015-gradient"
                         ),
                         "level": "7",
-                        "display": True,
+                        "display": False,
                     },
                     {
                         "name": "Zones artificielles",
@@ -730,60 +730,80 @@ class ProjectMapView(GroupMixin, DetailView):
                         "level": "1",
                         "switch": "ocsge",
                     },
-                    # {
-                    #     "name": "Gers: Couverture 2016",
-                    #     "url": (
-                    #         f'{reverse_lazy("public_data:ocsge-optimized")}'
-                    #         "?year=2016&color=couverture"
-                    #     ),
-                    #     "display": False,
-                    #     "color_property_name": "map_color",
-                    #     "style": "get_color_from_property",
-                    #     "level": "1",
-                    # },
-                    # {
-                    #     "name": "Gers: Couverture 2019",
-                    #     "url": (
-                    #         f'{reverse_lazy("public_data:ocsge-optimized")}'
-                    #         "?year=2019&color=couverture"
-                    #     ),
-                    #     "display": False,
-                    #     "color_property_name": "map_color",
-                    #     "style": "get_color_from_property",
-                    #     "level": "1",
-                    # },
-                    # {
-                    #     "name": "Gers: Usage 2016",
-                    #     "url": (
-                    #         f'{reverse_lazy("public_data:ocsge-optimized")}'
-                    #         "?year=2016&color=usage"
-                    #     ),
-                    #     "display": False,
-                    #     "color_property_name": "map_color",
-                    #     "style": "get_color_from_property",
-                    #     "level": "1",
-                    # },
-                    # {
-                    #     "name": "Gers: Usage 2019",
-                    #     "url": (
-                    #         f'{reverse_lazy("public_data:ocsge-optimized")}'
-                    #         "?year=2019&color=usage"
-                    #     ),
-                    #     "display": False,
-                    #     "color_property_name": "map_color",
-                    #     "style": "get_color_from_property",
-                    #     "level": "1",
-                    # },
-                    # {
-                    #     "name": "Gers: différence 2016 à 2019",
-                    #     "url": (
-                    #         f'{reverse_lazy("public_data:ocsgediff-optimized")}'
-                    #         "?year_old=2016&year_new=2019"
-                    #     ),
-                    #     "display": False,
-                    #     "style": "get_color_for_ocsge_diff",
-                    #     "level": "7",
-                    # },
+                    {
+                        "name": "Gers: Couverture 2016",
+                        "url": (
+                            f'{reverse_lazy("public_data:ocsge-optimized")}'
+                            "?year=2016&color=couverture"
+                        ),
+                        "display": False,
+                        "color_property_name": "map_color",
+                        "style": "get_color_from_property",
+                        "level": "1",
+                    },
+                    {
+                        "name": "Gers: Couverture 2019",
+                        "url": (
+                            f'{reverse_lazy("public_data:ocsge-optimized")}'
+                            "?year=2019&color=couverture"
+                        ),
+                        "display": False,
+                        "color_property_name": "map_color",
+                        "style": "get_color_from_property",
+                        "level": "1",
+                    },
+                    {
+                        "name": "Gers: Usage 2016",
+                        "url": (
+                            f'{reverse_lazy("public_data:ocsge-optimized")}'
+                            "?year=2016&color=usage"
+                        ),
+                        "display": False,
+                        "color_property_name": "map_color",
+                        "style": "get_color_from_property",
+                        "level": "1",
+                    },
+                    {
+                        "name": "Gers: Usage 2019",
+                        "url": (
+                            f'{reverse_lazy("public_data:ocsge-optimized")}'
+                            "?year=2019&color=usage"
+                        ),
+                        "display": False,
+                        "color_property_name": "map_color",
+                        "style": "get_color_from_property",
+                        "level": "1",
+                    },
+                    {
+                        "name": "Gers: différence 2016 à 2019",
+                        "url": (
+                            f'{reverse_lazy("public_data:ocsgediff-optimized")}'
+                            "?year_old=2016&year_new=2019"
+                        ),
+                        "display": False,
+                        "style": "get_color_for_ocsge_diff",
+                        "level": "7",
+                    },
+                    {
+                        "name": "Gers: zones construites 2016",
+                        "url": (
+                            f'{reverse_lazy("public_data:zoneconstruite-optimized")}'
+                            "?year=2016"
+                        ),
+                        "display": False,
+                        "style": "style_zone_artificielle",
+                        "level": "3",
+                    },
+                    {
+                        "name": "Gers: zones construites 2019",
+                        "url": (
+                            f'{reverse_lazy("public_data:zoneconstruite-optimized")}'
+                            "?year=2019"
+                        ),
+                        "display": False,
+                        "style": "style_zone_artificielle",
+                        "level": "3",
+                    },
                 ],
             }
         )

@@ -2,7 +2,7 @@ import logging
 
 from django.core.management.base import BaseCommand
 
-from public_data.models import Ocsge, Departement, OcsgeDiff
+from public_data.models import Ocsge, Departement, OcsgeDiff, ZoneConstruite
 
 
 logger = logging.getLogger("management.commands")
@@ -81,30 +81,68 @@ class GersOcsgeDiff(OcsgeDiff):
         qs.delete()
 
 
+class ZoneConstruite2016(ZoneConstruite):
+    _year = 2016
+    shape_file_path = "gers_zone_construite_2016.zip"
+
+    class Meta:
+        proxy = True
+
+    def save(self, *args, **kwargs):
+        self.year = self._year
+        return super().save(*args, **kwargs)
+
+    @classmethod
+    def clean_data(cls, clean_queryset=None):
+        gers = Departement.objects.get(id=33)
+        # select only data covered by Gers
+        qs = cls.objects.filter(mpoly__intersects=gers.mpoly)
+        # only current millesime
+        qs = qs.filter(year=cls._year)
+        qs.delete()
+
+
+class ZoneConstruite2019(ZoneConstruite2016):
+    _year = 2019
+    shape_file_path = "gers_zone_construite_2019.zip"
+
+    class Meta:
+        proxy = True
+
+
 class Command(BaseCommand):
     help = "Load all data from gers territory"
 
-    # def add_arguments(self, parser):
-    #     parser.add_argument(
-    #         "--class",
-    #         type=str,
-    #         help="class name that need to be reloaded",
-    #     )
-    #     parser.add_argument(
-    #         "--verbose",
-    #         action="store_true",
-    #         help="To activate verbose mode of LayerMapping",
-    #     )
+    def add_arguments(self, parser):
+        parser.add_argument(
+            "--test",
+            action="store_true",
+            help="To activate verbose mode of LayerMapping",
+        )
 
     def handle(self, *args, **options):
         logger.info("Load Gers OCSGE")
-        logger.info("Millesime=2016")
+        if options["test"]:
+            self.test()
+        else:
+            self.prod()
+        logger.info("End loading Gers OCSGE")
+
+    def test(self):
+        logger.info("MODE TEST")
         # GersOcsge2016.load(shp_file="media/gers/OCCUPATION_SOL_2016.shp", verbose=True)
+        # GersOcsge2019.load(shp_file="media/gers/OCCUPATION_SOL_2019.shp", verbose=True)
+        # GersOcsgeDiff.load(shp_file="media/gers/DIFF_2016_2019.shp", verbose=True)
+        ZoneConstruite2019.load(shp_file="media/gers/ZONE_CONSTRUITE_2019.shp")
+
+    def prod(self):
+        logger.info("Millesime=2016")
         GersOcsge2016.load()
         logger.info("Millesime=2019")
-        # GersOcsge2019.load(shp_file="media/gers/OCCUPATION_SOL_2019.shp", verbose=True)
         GersOcsge2019.load()
         logger.info("Millesime=Diff")
-        # GersOcsgeDiff.load(shp_file="media/gers/DIFF_2016_2019.shp", verbose=True)
         GersOcsgeDiff.load()
-        logger.info("End loading Gers OCSGE")
+        logger.info("Zones construites=2016")
+        ZoneConstruite2016.load()
+        logger.info("Zones construites=2019")
+        ZoneConstruite2019.load()
