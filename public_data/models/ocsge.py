@@ -245,3 +245,38 @@ class OcsgeDiff(AutoLoadMixin, DataColorationMixin, models.Model):
                 cls.set_label(CouvertureSol, fieldname, f"{fieldname}_label")
             else:
                 cls.set_label(UsageSol, fieldname, f"{fieldname}_label")
+
+
+class ZoneConstruite(AutoLoadMixin, DataColorationMixin, models.Model):
+    id_source = models.CharField("ID Source", max_length=200)
+    millesime = models.CharField("Millesime", max_length=200)
+    mpoly = models.MultiPolygonField()
+    # calculated
+    year = models.IntegerField(
+        "Année",
+        validators=[MinValueValidator(2000), MaxValueValidator(2050)],
+        null=True,
+        blank=True,
+    )
+    surface = models.DecimalField(
+        "surface", max_digits=15, decimal_places=4, blank=True, null=True
+    )
+
+    mapping = {
+        "id_source": "ID",
+        "millesime": "MILLESIME",
+        "mpoly": "MULTIPOLYGON",
+    }
+
+    @classmethod
+    def calculate_fields(cls):
+        """Set year field"""
+        cls.objects.filter(year__isnull=True).update(
+            year=Cast("millesime", output_field=models.IntegerField())
+        )
+        cls.objects.filter(surface__isnull=True).update(
+            surface=Cast(
+                Area(Transform("mpoly", 2154)),
+                models.DecimalField(max_digits=15, decimal_places=4),
+            )
+        )

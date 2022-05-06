@@ -17,6 +17,7 @@ from .api.views import (
     UsageSolViewset,
     # Voirie2018ViewSet,
     # ZonesBaties2018ViewSet,
+    ZoneConstruiteViewSet,
 )
 
 from .views import DisplayMatrix
@@ -43,6 +44,7 @@ router.register(r"referentiel/couverture-sol", CouvertureSolViewset)
 router.register(r"referentiel/usage-sol", UsageSolViewset)
 router.register(r"ocsge/general", OcsgeViewSet)
 router.register(r"ocsge/diff", OcsgeDiffViewSet)
+router.register(r"ocsge/zones-construites", ZoneConstruiteViewSet)
 
 router.register(r"referentiel/region", RegionViewSet)
 router.register(r"referentiel/departement", DepartementViewSet)

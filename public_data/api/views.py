@@ -26,6 +26,7 @@ from public_data.models import (
     UsageSol,
     # Voirie2018,
     # ZonesBaties2018,
+    ZoneConstruite,
 )
 
 from .serializers import (
@@ -45,6 +46,7 @@ from .serializers import (
     UsageSolSerializer,
     # Voirie2018Serializer,
     # ZonesBaties2018Serializer,
+    ZoneConstruiteSerializer,
 )
 
 
@@ -187,7 +189,7 @@ class OcsgeDiffViewSet(DataViewSet):
             "    CONCAT(us_new, ' ', us_new_label), "
             "    is_new_artif, is_new_naf, "
             "    st_AsGeoJSON(mpoly, 8) "
-            "from public_data_ocsgediff "
+            f"from {OcsgeDiff._meta.db_table} "
             "where year_new = %s and year_old = %s "
             "    and mpoly && ST_MakeEnvelope(%s, %s, %s, %s, 4326) "
         )
@@ -239,6 +241,70 @@ class OcsgeDiffViewSet(DataViewSet):
                         "Nouveau usage": row["us_new"],
                         "Artificialisation": "oui" if row["is_new_artif"] else "non",
                         "Renaturation": "oui" if row["is_new_naf"] else "non",
+                    },
+                    "geometry": "-geometry-",
+                }
+            )
+            feature = feature.replace('"-geometry-"', row["geojson"])
+            features.append(feature)
+        features = f" [{', '.join(features)}]"
+        geojson = geojson.replace('"-features-"', features)
+        return HttpResponse(geojson, content_type="application/json")
+
+
+class ZoneConstruiteViewSet(DataViewSet):
+    queryset = ZoneConstruite.objects.all()
+    serializer_class = ZoneConstruiteSerializer
+
+    def get_params(self, request):
+        bbox = request.query_params.get("in_bbox").split(",")
+        bbox = list(map(float, bbox))
+        year = int(request.query_params.get("year"))
+        return [year] + bbox  # /!\ order matter, see sql query below
+
+    def get_data(self, request):
+        query = (
+            "select id, id_source, year, millesime, surface, st_AsGeoJSON(mpoly, 8) "
+            f"from {ZoneConstruite._meta.db_table} "
+            "where year = %s and mpoly && ST_MakeEnvelope(%s, %s, %s, %s, 4326) "
+        )
+        params = self.get_params(request)
+        with connection.cursor() as cursor:
+            cursor.execute(query, params)
+            return [
+                {
+                    name: row[i]
+                    for i, name in enumerate(
+                        [
+                            "id",
+                            "id_source",
+                            "year",
+                            "millesime",
+                            "surface",
+                            "geojson",
+                        ]
+                    )
+                }
+                for row in cursor.fetchall()
+            ]
+
+    @action(detail=False)
+    def optimized(self, request):
+        geojson = json.dumps(
+            {
+                "type": "FeatureCollection",
+                "crs": {"type": "name", "properties": {"name": "EPSG:4326"}},
+                "features": "-features-",
+            }
+        )
+        features = []
+        for row in self.get_data(request):
+            feature = json.dumps(
+                {
+                    "type": "Feature",
+                    "properties": {
+                        "Année": row["year"],
+                        "Surface": int(row["surface"] * 100) / 100,
                     },
                     "geometry": "-geometry-",
                 }
