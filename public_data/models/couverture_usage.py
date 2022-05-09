@@ -75,6 +75,32 @@ class UsageSol(BaseSol):
         related_name="children",
     )
 
+    @classmethod
+    def get_leafs(cls):
+        return cls.objects.filter(
+            code__in=[
+                "1.1",
+                "1.2",
+                "1.3",
+                "1.4",
+                "2",
+                "3",
+                "5",
+                "235",
+                "4.1.1",
+                "4.1.2",
+                "4.1.3",
+                "4.1.4",
+                "4.1.5",
+                "4.2",
+                "4.3",
+                "6.1",
+                "6.2",
+                "6.3",
+                "6.6",
+            ]
+        )
+
 
 class CouvertureSol(BaseSol):
     parent = models.ForeignKey(
@@ -84,6 +110,27 @@ class CouvertureSol(BaseSol):
         on_delete=models.PROTECT,
         related_name="children",
     )
+
+    @classmethod
+    def get_leafs(cls):
+        return cls.objects.filter(
+            code__in=[
+                "1.1.1.1",
+                "1.1.1.2",
+                "1.1.2.1",
+                "1.1.2.2",
+                "1.2.1",
+                "1.2.2",
+                "1.2.3",
+                "2.1.1.1",
+                "2.1.1.2",
+                "2.1.1.3",
+                "2.1.2",
+                "2.1.3",
+                "2.2.1",
+                "2.2.2",
+            ]
+        )
 
 
 class CouvertureUsageMatrix(models.Model):
@@ -96,9 +143,11 @@ class CouvertureUsageMatrix(models.Model):
 
     couverture = models.ForeignKey("CouvertureSol", on_delete=models.PROTECT)
     usage = models.ForeignKey("UsageSol", on_delete=models.PROTECT)
-    is_artificial = models.BooleanField("Artificiel", default=False)
-    is_consumed = models.BooleanField("Consommé", default=False)
-    is_natural = models.BooleanField("Naturel", default=False)
+    is_artificial = models.BooleanField(
+        "Artificiel", default=False, blank=True, null=True
+    )
+    is_consumed = models.BooleanField("Consommé", default=None, blank=True, null=True)
+    is_natural = models.BooleanField("Naturel", default=None, blank=True, null=True)
     label = models.CharField(
         "Libellé",
         max_length=20,
