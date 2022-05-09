@@ -173,7 +173,7 @@ def mep_130(ctx):
     connecter = ScalingoInterface(ctx.obj)
 
     click.secho("Trigger Gers data loading", fg="cyan")
-    connecter.detached = True
+    # connecter.detached = True
     connecter.manage_py("load_gers")
 
     click.secho("End migration", fg="cyan")

@@ -115,17 +115,14 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument(
-            "--test",
-            action="store_true",
-            help="To activate verbose mode of LayerMapping",
+            "--item",
+            type=str,
+            help="item that you want to load ex: GersOcsge2016, ZoneConstruite2019...",
         )
 
     def handle(self, *args, **options):
         logger.info("Load Gers OCSGE")
-        if options["test"]:
-            self.test()
-        else:
-            self.prod()
+        self.load(item=options["item"])
         logger.info("End loading Gers OCSGE")
 
     def test(self):
@@ -135,14 +132,15 @@ class Command(BaseCommand):
         # GersOcsgeDiff.load(shp_file="media/gers/DIFF_2016_2019.shp", verbose=True)
         ZoneConstruite2019.load(shp_file="media/gers/ZONE_CONSTRUITE_2019.shp")
 
-    def prod(self):
-        logger.info("Millesime=2016")
-        GersOcsge2016.load()
-        logger.info("Millesime=2019")
-        GersOcsge2019.load()
-        logger.info("Millesime=Diff")
-        GersOcsgeDiff.load()
-        logger.info("Zones construites=2016")
-        ZoneConstruite2016.load()
-        logger.info("Zones construites=2019")
-        ZoneConstruite2019.load()
+    def load(self, item=None):
+        gers_model_list = [
+            GersOcsge2016,
+            GersOcsge2019,
+            GersOcsgeDiff,
+            ZoneConstruite2016,
+            ZoneConstruite2019,
+        ]
+        for gers_model in gers_model_list:
+            if not item or gers_model.__name__ == item:
+                logger.info(f"process: {gers_model.__name__}")
+                gers_model.load()
