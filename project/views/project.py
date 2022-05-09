@@ -14,6 +14,7 @@ from django.views.generic import (
 from django_app_parameter import app_parameter
 
 from public_data.models import CouvertureSol, UsageSol, Land
+from utils.views_mixins import BreadCrumbMixin, GetObjectMixin
 
 from project.charts import (
     ConsoCommuneChart,
@@ -25,8 +26,7 @@ from project.forms import UploadShpForm, KeywordForm
 from project.models import Project, Request, ProjectCommune
 from project.domains import ConsommationDataframe
 from project.tasks import send_email_request_bilan
-
-from utils.views_mixins import BreadCrumbMixin, GetObjectMixin
+from project.utils import add_total_line_column
 
 from .mixins import UserQuerysetOrPublicMixin
 
@@ -199,23 +199,14 @@ class ProjectReportConsoView(GroupMixin, DetailView):
 
         # communes_data_graph
         chart_conso_cities = ConsoCommuneChart(project)
-        communes_data_table = dict()
-        total = dict()
-        for city, data in chart_conso_cities.get_series().items():
-            communes_data_table[city] = data.copy()
-            communes_data_table[city]["total"] = sum(data.values())
-            for year, val in data.items():
-                total[year] = total.get(year, 0) + val
-        total["total"] = sum(total.values())
-        communes_data_table["Total"] = total
+
+        # Déterminants
+        det_chart = DeterminantPerYearChart(project)
 
         # Liste des groupes de communes
         groups_names = project.projectcommune_set.all().order_by("group_name")
         groups_names = groups_names.exclude(group_name=None).distinct()
         groups_names = groups_names.values_list("group_name", flat=True)
-
-        # Déterminants
-        det_chart = DeterminantPerYearChart(project)
 
         # check conso relative required or not
         relative_required = self.request.GET.get("relative", "false")
@@ -229,7 +220,6 @@ class ProjectReportConsoView(GroupMixin, DetailView):
             **super().get_context_data(**kwargs),
             "total_surface": project.area,
             "active_page": "consommation",
-            "communes_data_table": communes_data_table,
             "target_2031": {
                 "consummed": target_2031_consumption,
                 "annual_avg": target_2031_consumption / 10,
@@ -254,7 +244,10 @@ class ProjectReportConsoView(GroupMixin, DetailView):
             "relative": relative,
             "commune_chart": chart_conso_cities,
             # tables
-            "data_determinant": det_chart.get_series(),
+            "communes_data_table": add_total_line_column(
+                chart_conso_cities.get_series()
+            ),
+            "data_determinant": add_total_line_column(det_chart.get_series()),
             "groups_names": groups_names,
         }
 
