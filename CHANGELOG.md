@@ -3,6 +3,13 @@
 Ce changelog suit la méthode "keep a changelog" disponible ici: [https://keepachangelog.com/en/1.0.0/](https://keepachangelog.com/en/1.0.0/)
 
 
+## [1.3.4] - 10.05.2022
+
+### Ajout :
+* Données du Gers: OCS GE 2016 & 2019, OCS GE diff, zone construite 2016 & 2019
+* Fonction de calcule des données d'artificialisation de chaque commune
+* Rapport d'artificialisation
+
 ## [1.3.2] - 29.04.2022
 
 ### Ajouté
