@@ -5,13 +5,14 @@ from django.contrib.gis.db import models as gis_models
 from django.contrib.gis.db.models import Union
 from django.core.validators import MinValueValidator
 from django.db import models
-from django.db.models import Sum, F
+from django.db.models import Sum, F, Value
+from django.db.models.functions import Concat
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.functional import cached_property
 
 from public_data.models.mixins import DataColorationMixin
-from public_data.models import Cerema, Land
+from public_data.models import Cerema, Land, CommuneDiff
 
 from .utils import user_directory_path
 
@@ -396,6 +397,47 @@ class Project(BaseProject):
         self.shape_file.delete(save=save)
         if save:
             self.save()
+
+    def get_artif_area(self):
+        """Return artificial surface total for all city inside diagnostic"""
+        result = self.cities.all().aggregate(total=Sum("surface_artif"))
+        return result["total"]
+
+    def get_artif_progession_time_scoped(self):
+        """Return example: {"new_artif": 12, "new_natural": 2: "net_artif": 10}"""
+        qs = CommuneDiff.objects.filter(city__in=self.cities.all())
+        qs = qs.filter(
+            year_old__gte=self.analyse_start_date, year_new__lte=self.analyse_end_date
+        )
+        return qs.aggregate(
+            new_artif=Sum("new_artif"),
+            new_natural=Sum("new_natural"),
+            net_artif=Sum("net_artif"),
+        )
+
+    def get_artif_evolution(self):
+        """Return example:
+        [
+            {"period": "2013 - 2016", "new_artif": 12, "new_natural": 2: "net_artif": 10},
+            {"period": "2016 - 2019", "new_artif": 15, "new_natural": 7: "net_artif": 8},
+        ]
+        """
+        qs = CommuneDiff.objects.filter(city__in=self.cities.all())
+        qs = qs.annotate(
+            period=Concat(
+                "year_old",
+                Value(" - "),
+                "year_new",
+                output_field=models.CharField(),
+            )
+        )
+        qs = qs.values("period")
+        qs = qs.annotate(
+            new_artif=Sum("new_artif"),
+            new_natural=Sum("new_natural"),
+            net_artif=Sum("net_artif"),
+        )
+        return qs
 
 
 class Emprise(DataColorationMixin, gis_models.Model):

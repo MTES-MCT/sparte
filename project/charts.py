@@ -165,3 +165,57 @@ class DeterminantPieChart(ProjectChart):
 
     def add_series(self):
         super().add_series(sliced=True)
+
+
+class EvolutionArtifChart(ProjectChart):
+    name = "Evolution de l'artificialisation"
+    param = {
+        "chart": {"type": "column"},
+        "title": {"text": "Par millésime"},
+        "yAxis": {
+            "title": {"text": "Surface (en ha)"},
+            "stackLabels": {"enabled": True, "format": "{total:,.1f}"},
+        },
+        "tooltip": {
+            "pointFormat": "{series.name}: {point.y}",
+            "valueSuffix": " Ha",
+            "valueDecimals": 1,
+        },
+        "xAxis": {"type": "category"},
+        "legend": {"layout": "horizontal", "align": "center", "verticalAlign": "top"},
+        "plotOptions": {
+            "column": {
+                "dataLabels": {"enabled": True, "format": "{point.y:,.1f}"},
+                "pointPadding": 0.2,
+                "borderWidth": 0,
+            }
+        },
+        "series": [],
+    }
+
+    def get_series(self):
+        if not self.series:
+            self.series = {
+                "Artificialisation": dict(),
+                "Renaturation": dict(),
+                "Artificialisation net": dict(),
+            }
+            for prd in self.project.get_artif_evolution():
+                key = prd["period"]
+                self.series["Artificialisation"][key] = prd["new_artif"]
+                self.series["Renaturation"][key] = prd["new_natural"]
+                self.series["Artificialisation net"][key] = prd["net_artif"]
+        return self.series
+
+    def add_series(self):
+        series = self.get_series()
+        self.add_serie(
+            "Artificialisation", series["Artificialisation"], color="#ff0000"
+        )
+        self.add_serie("Renaturation", series["Renaturation"], color="#00ff00")
+        self.add_serie(
+            "Artificialisation net",
+            series["Artificialisation net"],
+            # type="line",
+            color="#0000ff",
+        )
