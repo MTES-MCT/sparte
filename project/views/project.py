@@ -554,9 +554,13 @@ class ProjectReportArtifView(GroupMixin, DetailView):
         artif_area = project.get_artif_area()
         progression_time_scoped = project.get_artif_progession_time_scoped()
         net_artif = progression_time_scoped["net_artif"]
-        net_artif_rate = 100 * net_artif / (artif_area - net_artif)
-        # show + on front of net_artif
-        net_artif = f"+{net_artif}" if net_artif > 0 else str(net_artif)
+        try:
+            net_artif_rate = 100 * net_artif / (artif_area - net_artif)
+            # show + on front of net_artif
+            net_artif = f"+{net_artif}" if net_artif > 0 else str(net_artif)
+        except TypeError:
+            net_artif_rate = 0
+            net_artif = "0"
 
         chart_evolution_artif = EvolutionArtifChart(project)
         table_evolution_artif = chart_evolution_artif.get_series()
