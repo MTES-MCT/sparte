@@ -187,7 +187,7 @@ class OcsgeDiffViewSet(DataViewSet):
             "    CONCAT(us_old, ' ', us_old_label), "
             "    CONCAT(cs_new, ' ', cs_new_label), "
             "    CONCAT(us_new, ' ', us_new_label), "
-            "    is_new_artif, is_new_naf, "
+            "    is_new_artif, is_new_natural, "
             "    st_AsGeoJSON(mpoly, 8) "
             f"from {OcsgeDiff._meta.db_table} "
             "where year_new = %s and year_old = %s "
@@ -209,7 +209,7 @@ class OcsgeDiffViewSet(DataViewSet):
                             "cs_new",
                             "us_new",
                             "is_new_artif",
-                            "is_new_naf",
+                            "is_new_natural",
                             "geojson",
                         ]
                     )
@@ -240,7 +240,7 @@ class OcsgeDiffViewSet(DataViewSet):
                         "Ancien usage": row["us_old"],
                         "Nouveau usage": row["us_new"],
                         "Artificialisation": "oui" if row["is_new_artif"] else "non",
-                        "Renaturation": "oui" if row["is_new_naf"] else "non",
+                        "Renaturation": "oui" if row["is_new_natural"] else "non",
                     },
                     "geometry": "-geometry-",
                 }

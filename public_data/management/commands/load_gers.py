@@ -110,7 +110,7 @@ class GersOcsgeDiff(OcsgeDiff):
             self.old_is_artif = False
 
         self.is_new_artif = not self.old_is_artif and self.new_is_artif
-        self.is_new_naf = self.old_is_artif and not self.new_is_artif
+        self.is_new_natural = self.old_is_artif and not self.new_is_artif
 
         return super().save(*args, **kwargs)
 
