@@ -2,7 +2,13 @@ import logging
 
 from django.core.management.base import BaseCommand
 
-from public_data.models import Ocsge, Departement, OcsgeDiff, ZoneConstruite
+from public_data.models import (
+    Ocsge,
+    Departement,
+    OcsgeDiff,
+    ZoneConstruite,
+    CouvertureUsageMatrix,
+)
 
 
 logger = logging.getLogger("management.commands")
@@ -25,7 +31,19 @@ class GersOcsge(Ocsge):
     }
     default_color = "Chocolate"
 
+    matrix_list = {
+        (item.couverture.code_prefix, item.usage.code_prefix): item
+        for item in CouvertureUsageMatrix.objects.all().select_related(
+            "usage", "couverture"
+        )
+    }
+
     def save(self, *args, **kwargs):
+        key = (self.couverture, self.usage)
+        self.matrix = self.__class__.matrix_list[key]
+        self.is_artificial = bool(self.matrix.is_artificial)
+        self.couverture_label = self.matrix.couverture.label
+        self.usage_label = self.matrix.usage.label
         self.year = self.__class__.year
         return super().save(*args, **kwargs)
 
@@ -63,16 +81,41 @@ class GersOcsgeDiff(OcsgeDiff):
     _year_new = 2019
     _year_old = 2016
 
-    shape_file_path = "gers_diff_2016_2019.zip"  # "media/gers/DIFF_2016_2019.zip"
+    shape_file_path = "gers_diff_2016_2019.zip"
+
+    matrix_list = {
+        (item.couverture.code_prefix, item.usage.code_prefix): item
+        for item in CouvertureUsageMatrix.objects.all().select_related(
+            "usage", "couverture"
+        )
+    }
 
     def save(self, *args, **kwargs):
         self.year_new = self.__class__._year_new
         self.year_old = self.__class__._year_old
+        try:
+            self.new_matrix = self.__class__.matrix_list[(self.cs_new, self.us_new)]
+            self.cs_new_label = self.new_matrix.couverture.label
+            self.us_new_label = self.new_matrix.usage.label
+            self.new_is_artif = bool(self.new_matrix.is_artificial)
+        except KeyError:
+            self.new_is_artif = False
+
+        try:
+            self.old_matrix = self.__class__.matrix_list[(self.cs_old, self.us_old)]
+            self.cs_old_label = self.old_matrix.couverture.label
+            self.us_old_label = self.old_matrix.usage.label
+            self.old_is_artif = bool(self.old_matrix.is_artificial)
+        except KeyError:
+            self.old_is_artif = False
+
+        self.is_new_artif = not self.old_is_artif and self.new_is_artif
+        self.is_new_naf = self.old_is_artif and not self.new_is_artif
+
         return super().save(*args, **kwargs)
 
     @classmethod
     def clean_data(cls, clean_queryset=None):
-        """Delete only data with year=2015"""
         gers = Departement.objects.get(id=33)
         # select only data covered by Gers
         qs = cls.objects.filter(mpoly__intersects=gers.mpoly)
