@@ -29,6 +29,7 @@ import re
 
 from django.contrib.gis.db import models
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db.models import Sum, Q
 from django.utils.functional import cached_property
 
@@ -53,7 +54,7 @@ class LandMixin:
     @cached_property
     def area(self):
         """Return surface of the land in Ha"""
-        return self.mpoly.transform(2154, clone=True).area / (100 ** 2)
+        return self.mpoly.transform(2154, clone=True).area / 10000
 
     @classmethod
     def search(cls, needle):
@@ -159,18 +160,21 @@ class Commune(DataColorationMixin, LandMixin, GetDataFromCeremaMixin, models.Mod
     mpoly = models.MultiPolygonField()
     # Calculated fields
     map_color = models.CharField(
-        "Couleur d'afficgage", max_length=30, null=True, blank=True
+        "Couleur d'affichage", max_length=30, null=True, blank=True
     )
-    # area_consumed = models.DecimalField(
-    #     "Surface consommée", max_digits=10, decimal_places=2, null=True, blank=True
-    # )
-    # area_artificial = models.DecimalField(
-    #     "Surface artificielle", max_digits=10, decimal_places=2, null=True, blank=True
-    # )
-    # area_naf = models.DecimalField(
-    #     "Surface naturelle", max_digits=10, decimal_places=2, null=True, blank=True
-    # )
-    # last_year_ocsge = models.IntegerField("Dernier millésime disponible")
+    last_millesime = models.IntegerField(
+        "Dernier millésime disponible",
+        validators=[MinValueValidator(2000), MaxValueValidator(2050)],
+        blank=True,
+        null=True,
+    )
+    surface_artif = models.DecimalField(
+        "Surface artificielle",
+        max_digits=15,
+        decimal_places=4,
+        blank=True,
+        null=True,
+    )
 
     # DataColorationMixin properties that need to be set when heritating
     default_property = "insee"  # need to be set correctly to work
@@ -205,6 +209,39 @@ class Commune(DataColorationMixin, LandMixin, GetDataFromCeremaMixin, models.Mod
         qs = qs.values_list(property_name, flat=True)
         qs = qs.order_by(property_name)
         return [(int(x),) for x in qs if x.isdigit()]
+
+
+class CommuneDiff(models.Model):
+    city = models.ForeignKey(Commune, verbose_name="Commune", on_delete=models.CASCADE)
+    year_old = models.IntegerField(
+        "Ancienne année",
+        validators=[MinValueValidator(2000), MaxValueValidator(2050)],
+    )
+    year_new = models.IntegerField(
+        "Nouvelle année",
+        validators=[MinValueValidator(2000), MaxValueValidator(2050)],
+    )
+    new_artif = models.DecimalField(
+        "Artificialisation",
+        max_digits=15,
+        decimal_places=4,
+        blank=True,
+        null=True,
+    )
+    new_natural = models.DecimalField(
+        "Renaturation",
+        max_digits=15,
+        decimal_places=4,
+        blank=True,
+        null=True,
+    )
+    net_artif = models.DecimalField(
+        "Artificialisation nette",
+        max_digits=15,
+        decimal_places=4,
+        blank=True,
+        null=True,
+    )
 
 
 class Land:
