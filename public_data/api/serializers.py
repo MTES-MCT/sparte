@@ -157,7 +157,7 @@ class OcsgeDiffSerializer(serializers.GeoFeatureModelSerializer):
             "us_old_label",
             "us_new_label",
             "is_new_artif",
-            "is_new_naf",
+            "is_new_natural",
         )
         geo_field = "mpoly"
         model = OcsgeDiff
