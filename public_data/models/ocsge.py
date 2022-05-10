@@ -195,7 +195,7 @@ class OcsgeDiff(AutoLoadMixin, DataColorationMixin, models.Model):
     old_is_artif = models.BooleanField(blank=True, null=True)
     new_is_artif = models.BooleanField(blank=True, null=True)
     is_new_artif = models.BooleanField(blank=True, null=True)
-    is_new_naf = models.BooleanField(blank=True, null=True)
+    is_new_natural = models.BooleanField(blank=True, null=True)
     old_matrix = models.ForeignKey(
         CouvertureUsageMatrix,
         on_delete=models.PROTECT,
