@@ -40,6 +40,8 @@ class Command(BaseCommand):
             self.process_one(options["insee"])
         elif options["departement"]:
             self.process_departement(options["departement"])
+        else:
+            self.process_all()
         logger.info("End building cities data")
 
     def process_multi(self, queryset):
