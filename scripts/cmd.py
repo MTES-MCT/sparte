@@ -42,7 +42,10 @@ class ScalingoInterface:
             buf = await proc.stdout.read(64)
             if not buf:
                 break
-            print(buf.decode(), end="")
+            try:
+                print(buf.decode(), end="")
+            except UnicodeDecodeError:
+                print("decode error")
 
     def run(self, cmd):
         """If it is not local, add scalingo prefix to execute the command remotly,
