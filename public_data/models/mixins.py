@@ -6,6 +6,7 @@ from zipfile import ZipFile
 
 from django.contrib.gis.utils import LayerMapping
 from django.core.exceptions import FieldDoesNotExist
+from django.db import connection
 
 from utils.colors import get_random_color, get_color_gradient, is_valid
 
@@ -32,6 +33,20 @@ class AutoLoadMixin:
     usage_field = None
     shape_file_path = Path()
     mapping = dict()
+
+    def before_save(self):
+        """Hook to set data before saving"""
+        pass
+
+    def save(self, *args, **kwargs):
+        self.before_save()
+        super().save(*args, **kwargs)
+        self.after_save()
+        return self
+
+    def after_save(self):
+        """Hook to do things after saving"""
+        pass
 
     @classmethod
     def get_shape_file(cls, bucket_file=None):
@@ -88,7 +103,7 @@ class AutoLoadMixin:
         logger.info("Shape file found: %s", shp_file)
         # # delete previous data
         logger.info("Delete previous data")
-        # cls.clean_data(clean_queryset=clean_queryset)
+        cls.clean_data(clean_queryset=clean_queryset)
         logger.info("Load new data")
         # # load files
         lm = LayerMapping(cls, shp_file, cls.mapping)
@@ -183,3 +198,15 @@ class DataColorationMixin:
             return None
         else:
             return np.percentile(rows, percentiles, interpolation="lower")
+
+
+class TruncateTableMixin:
+    """enable a truncate statement (compatible only with PostgreSQL so far)"""
+
+    @classmethod
+    def truncate(cls, restart_id=True):
+        query = f'TRUNCATE TABLE "{cls._meta.db_table}"'
+        if restart_id:
+            query += " RESTART IDENTITY"
+        with connection.cursor() as cursor:
+            cursor.execute(query)
