@@ -175,6 +175,9 @@ def mep_130(ctx):
     click.secho("Start migration v1.3.0", fg="cyan")
     connecter = ScalingoInterface(ctx.obj)
 
+    click.secho("Set new artificial matrix", fg="cyan")
+    connecter.manage_py("correct_matrix")
+
     click.secho("Trigger Gers data loading", fg="cyan")
     connecter.manage_py("load_gers")
 
