@@ -34,6 +34,7 @@ from django.db.models import Sum, Q
 from django.utils.functional import cached_property
 
 from .cerema import Cerema
+from .couverture_usage import CouvertureUsageMatrix
 from .mixins import DataColorationMixin
 
 
@@ -242,6 +243,28 @@ class CommuneDiff(models.Model):
         blank=True,
         null=True,
     )
+
+
+class CommuneSol(models.Model):
+    city = models.ForeignKey(Commune, verbose_name="Commune", on_delete=models.CASCADE)
+    year = models.IntegerField(
+        "Millésime",
+        validators=[MinValueValidator(2000), MaxValueValidator(2050)],
+    )
+    matrix = models.ForeignKey(CouvertureUsageMatrix, on_delete=models.CASCADE)
+    surface = models.DecimalField(
+        "Surface", max_digits=15, decimal_places=4, blank=True, null=True
+    )
+
+    class Meta:
+        indexes = [
+            models.Index(
+                name="communesol-triplet-index", fields=["city", "matrix", "year"]
+            ),
+            models.Index(name="communesol-city-index", fields=["city"]),
+            models.Index(name="communesol-year-index", fields=["year"]),
+            models.Index(name="communesol-matrix-index", fields=["matrix"]),
+        ]
 
 
 class Land:
