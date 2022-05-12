@@ -98,6 +98,9 @@ class ArcachonOcsge2015(AutoLoadMixin, Ocsge):
     python manage.py load_data --class public_data.models.Ocsge2015
     """
 
+    class Meta:
+        proxy = True
+
     shape_file_path = "OCSGE_2015.zip"
     _year = 2015
     mapping = {
@@ -107,7 +110,7 @@ class ArcachonOcsge2015(AutoLoadMixin, Ocsge):
     }
 
     @classmethod
-    def clean_data(cls):
+    def clean_data(cls, clean_queryset=None):
         """Delete only data with year=2015"""
         gironde = Departement.objects.get(id=32)
         # select only data covered by Gironde
@@ -128,8 +131,18 @@ class ArcachonOcsge2015(AutoLoadMixin, Ocsge):
             self.is_artificial = False
         return super().save(*args, **kwargs)
 
-    class Meta:
-        proxy = True
+    @classmethod
+    def calculate_fields(cls):
+        """Override if you need to calculate some fields after loading data.
+        By default, it will calculate label for couverture and usage if couverture_field
+        and usage_field are set with the name of the field containing code (cs.2.1.3)
+        """
+        cls.objects.all().filter(surface__isnull=True).update(
+            surface=Cast(
+                Area(Transform("mpoly", 2154)),
+                DecimalField(max_digits=15, decimal_places=4),
+            )
+        )
 
 
 class ArcachonOcsge2018(ArcachonOcsge2015):
@@ -161,19 +174,9 @@ class ArcachonArtif(AutoOcsgeDiff):
         "mpoly": "MULTIPOLYGON",
     }
 
-    def save(self, *args, **kwargs):
-        self.before_save()
-
-        self.new_is_artif = True
-        self.old_is_artif = False
-        self.is_new_artif = True
-        self.is_new_natural = False
-
-        return super().save(*args, **kwargs)
-
     @classmethod
     def clean_data(cls, clean_queryset=None):
-        gironde = Departement.objects.get(id=32)
+        gironde = Departement.objects.get(name="Gironde")
         # select only data covered by Gironde
         qs = cls.objects.filter(mpoly__intersects=gironde.mpoly)
         # only current millesime
@@ -188,19 +191,9 @@ class ArcachonRenat(ArcachonArtif):
 
     shape_file_path = "a_b_2015_2018.zip"
 
-    def save(self, *args, **kwargs):
-        self.before_save()
-
-        self.new_is_artif = False
-        self.old_is_artif = True
-        self.is_new_artif = False
-        self.is_new_natural = True
-
-        return super().save(*args, **kwargs)
-
     @classmethod
     def clean_data(cls, clean_queryset=None):
-        gironde = Departement.objects.get(id=32)
+        gironde = Departement.objects.get(name="Gironde")
         # select only data covered by Gironde
         qs = cls.objects.filter(mpoly__intersects=gironde.mpoly)
         # only current millesime
@@ -222,8 +215,6 @@ class GersOcsge(AutoLoadMixin, Ocsge):
         "id_source": "ID",
         "couverture": "CODE_CS",
         "usage": "CODE_US",
-        "millesime_source": "MILLESIME",
-        "id_origine": "ID_ORIGINE",
         "mpoly": "MULTIPOLYGON",
     }
 
@@ -245,6 +236,19 @@ class GersOcsge(AutoLoadMixin, Ocsge):
         # only current millesime
         qs = qs.filter(year=cls.year)
         qs.delete()
+
+    @classmethod
+    def calculate_fields(cls):
+        """Override if you need to calculate some fields after loading data.
+        By default, it will calculate label for couverture and usage if couverture_field
+        and usage_field are set with the name of the field containing code (cs.2.1.3)
+        """
+        cls.objects.all().filter(surface__isnull=True).update(
+            surface=Cast(
+                Area(Transform("mpoly", 2154)),
+                DecimalField(max_digits=15, decimal_places=4),
+            )
+        )
 
 
 class GersOcsge2016(GersOcsge):
@@ -282,9 +286,9 @@ class GersOcsgeDiff(AutoOcsgeDiff):
     # mapping provisoir avec les données erronées
     mapping = {
         "cs_old": "CS_nouveau",
-        "us_new": "US_nouveau",
+        "us_old": "US_nouveau",
         "cs_new": "CS_ancien",
-        "us_old": "US_ancien",
+        "us_new": "US_ancien",
         "mpoly": "MULTIPOLYGON",
     }
 
@@ -344,7 +348,10 @@ class Command(BaseCommand):
         parser.add_argument(
             "--truncate",
             action="store_true",
-            help="if you want to completly restart tables including id, not compatible with --item",
+            help=(
+                "if you want to completly restart tables including id, not compatible "
+                "with --item"
+            ),
         )
         parser.add_argument(
             "--no-verbose",

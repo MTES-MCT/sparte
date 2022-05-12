@@ -74,12 +74,9 @@ class AutoLoadMixin:
 
     @classmethod
     def clean_data(cls, clean_queryset=None):
-        """Delete all previous data. Can be overrided, usefull if data are in
-        several files"""
-        if clean_queryset:
-            clean_queryset.delete()
-        else:
-            cls.objects.all().delete()
+        raise NotImplementedError(
+            "Need to be overrided to delete old data before loading"
+        )
 
     @classmethod
     def load(cls, verbose=True, shp_file=None, bucket_file=None, clean_queryset=None):

@@ -25,7 +25,22 @@ class Command(BaseCommand):
         # code_cs = ["1.1.1.1", "1.1.1.2", "1.1.2.1", "1.1.2.2"]
         artificial = CouvertureUsageMatrix.objects.filter(
             Q(couverture__code__startswith="1.1.")
-            | Q(couverture__code="2.2.1", usage__code__in=["2", "3", "5", "235"])
+            | Q(
+                couverture__code="2.2.1",
+                usage__code__in=[
+                    "2",
+                    "3",
+                    "5",
+                    "235",
+                    "4.1.1",
+                    "4.1.2",
+                    "4.1.3",
+                    "4.1.4",
+                    "4.1.5",
+                    "4.2",
+                    "4.3",
+                ],
+            )
         )
         artificial.update(
             is_artificial=True,

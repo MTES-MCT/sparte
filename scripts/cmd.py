@@ -178,8 +178,8 @@ def mep_130(ctx):
     click.secho("Set new artificial matrix", fg="cyan")
     connecter.manage_py("correct_matrix")
 
-    click.secho("Trigger Gers data loading", fg="cyan")
-    connecter.manage_py("load_gers")
+    click.secho("Trigger OVS GE data loading", fg="cyan")
+    connecter.manage_py("load_ocsge --truncate")
 
     click.secho("Build data for all communes", fg="cyan")
     connecter.manage_py("build_commune_data")
