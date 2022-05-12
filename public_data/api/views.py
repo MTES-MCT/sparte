@@ -177,7 +177,10 @@ class OcsgeDiffViewSet(DataViewSet):
         bbox = list(map(float, bbox))
         year_old = int(request.query_params.get("year_old"))
         year_new = int(request.query_params.get("year_new"))
-        return [year_new, year_old] + bbox  # /!\ order matter, see sql query below
+        is_new_artif = bool(request.query_params.get("is_new_artif", False))
+        is_new_natural = bool(request.query_params.get("is_new_natural", False))
+        # /!\ order matter, see sql query below
+        return [year_new, year_old] + bbox + [is_new_artif, is_new_natural]
 
     def get_data(self, request):
         query = (
@@ -192,6 +195,8 @@ class OcsgeDiffViewSet(DataViewSet):
             f"from {OcsgeDiff._meta.db_table} "
             "where year_new = %s and year_old = %s "
             "    and mpoly && ST_MakeEnvelope(%s, %s, %s, %s, 4326) "
+            "    and is_new_artif = %s "
+            "    and is_new_natural = %s "
         )
         params = self.get_params(request)
         with connection.cursor() as cursor:
@@ -299,12 +304,16 @@ class ZoneConstruiteViewSet(DataViewSet):
         )
         features = []
         for row in self.get_data(request):
+            try:
+                surface = int(row["surface"] * 100) / 100
+            except TypeError:
+                surface = 0
             feature = json.dumps(
                 {
                     "type": "Feature",
                     "properties": {
                         "Année": row["year"],
-                        "Surface": int(row["surface"] * 100) / 100,
+                        "Surface": surface,
                     },
                     "geometry": "-geometry-",
                 }
