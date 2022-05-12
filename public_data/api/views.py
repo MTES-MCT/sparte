@@ -1,4 +1,5 @@
 """Public data API views."""
+from decimal import Decimal
 import json
 
 from django.db import connection
@@ -48,6 +49,11 @@ from .serializers import (
     # ZonesBaties2018Serializer,
     ZoneConstruiteSerializer,
 )
+
+
+def decimal2float(obj):
+    if isinstance(obj, Decimal):
+        return float(obj)
 
 
 # OCSGE layers viewssets
@@ -106,7 +112,7 @@ class OcsgeViewSet(DataViewSet):
             field = "couverture"
         query = (
             "SELECT "  # nosec - all parameters are safe
-            "o.id, o.couverture_label, o.usage_label, o.millesime, t.map_color, "
+            "o.id, o.couverture_label, o.usage_label, t.map_color, o.surface, "
             "o.year, st_AsGeoJSON(o.mpoly, 8) AS geojson "
             f"FROM {Ocsge._meta.db_table} o "
             f"INNER JOIN {table_name} t ON t.code_prefix = o.{field} "
@@ -116,8 +122,23 @@ class OcsgeViewSet(DataViewSet):
         params = bbox + [year]
         with connection.cursor() as cursor:
             cursor.execute(query, params)
-            rows = cursor.fetchall()
-        return rows
+            return [
+                {
+                    name: row[i]
+                    for i, name in enumerate(
+                        [
+                            "id",
+                            "couverture_label",
+                            "usage_label",
+                            "map_color",
+                            "surface",
+                            "year",
+                            "geojson",
+                        ]
+                    )
+                }
+                for row in cursor.fetchall()
+            ]
 
     @action(detail=False)
     def optimized(self, request):
@@ -137,25 +158,22 @@ class OcsgeViewSet(DataViewSet):
         )
         features = []
         for row in data:
-            try:
-                millesime = row[3].strftime("%Y-%m-%d")
-            except AttributeError:
-                millesime = ""
             feature = json.dumps(
                 {
                     "type": "Feature",
                     "properties": {
-                        "id": row[0],
-                        "couverture_label": row[1],
-                        "usage_label": row[2],
-                        "millesime": millesime,
-                        "map_color": row[4],
-                        "year": row[5],
+                        "id": row["id"],
+                        "Couverture": row["couverture_label"],
+                        "Usage": row["usage_label"],
+                        "Millésime": row["year"],
+                        "map_color": row["map_color"],
+                        "Surface": row["surface"],
                     },
                     "geometry": "-geometry-",
-                }
+                },
+                default=decimal2float,
             )
-            feature = feature.replace('"-geometry-"', row[6])
+            feature = feature.replace('"-geometry-"', row["geojson"])
             features.append(feature)
         features = f" [{', '.join(features)}]"
         geojson = geojson.replace('"-features-"', features)
