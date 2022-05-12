@@ -12,7 +12,13 @@ class BaseSol(models.Model):
     code_prefix = models.CharField("Nomenclature préfixée", max_length=10, unique=True)
     code = models.CharField("Nomenclature", max_length=8, unique=True)
     label = models.CharField("Libellé", max_length=250)
+    label_short = models.CharField("Libellé", max_length=50, blank=True, null=True)
     map_color = models.CharField("Couleur", max_length=8, blank=True, null=True)
+
+    def get_label_short(self):
+        if not self.label_short:
+            return self.label[:50]
+        return self.label_short
 
     @property
     def level(self) -> int:
