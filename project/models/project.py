@@ -86,7 +86,7 @@ class BaseProject(models.Model):
 
     @cached_property
     def area(self):
-        return self.combined_emprise.transform(2154, clone=True).area / (100 ** 2)
+        return self.combined_emprise.transform(2154, clone=True).area / 10000
 
     def __str__(self):
         return self.name
@@ -521,14 +521,14 @@ class Project(BaseProject):
         for item in item_list:
             item.surface_first = sum(
                 [
-                    _["surface_first"]
+                    _["surface_first"] if _["surface_first"] else 0
                     for _ in data
                     if _["code_prefix"].startswith(item.code_prefix)
                 ]
             )
             item.surface_last = sum(
                 [
-                    _["surface_last"]
+                    _["surface_last"] if _["surface_last"] else 0
                     for _ in data
                     if _["code_prefix"].startswith(item.code_prefix)
                 ]
