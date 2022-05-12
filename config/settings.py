@@ -436,12 +436,12 @@ LOGGING = {
     },
     "loggers": {
         "config": {
-            "handlers": ["console_just_message"],
+            "handlers": ["console"],
             "level": LOGGING_LEVEL,
             "propagate": False,
         },
         "public_data": {
-            "handlers": ["console_just_message"],
+            "handlers": ["console"],
             "level": LOGGING_LEVEL,
             "propagate": False,
         },

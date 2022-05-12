@@ -87,7 +87,7 @@ class AutoLoadMixin:
             cls (undefined): default class calling
             verbose=True (undefined): define level of verbosity
         """
-        logger.info("Load data of %s", cls)
+        logger.info("Load data of %s", cls.__name__)
         if shp_file:
             shp_file = Path(shp_file)
             if not (shp_file.is_file() and shp_file.suffix == ".shp"):
@@ -108,7 +108,7 @@ class AutoLoadMixin:
         logger.info("Data loaded")
         logger.info("Calculate fields")
         cls.calculate_fields()
-        logger.info("End")
+        logger.info("End loading data %s", cls.__name__)
 
     @classmethod
     def calculate_fields(cls):
