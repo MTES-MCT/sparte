@@ -3,7 +3,7 @@ import logging
 from django.core.management.base import BaseCommand
 from django.db.models import Q
 
-from public_data.models import CouvertureUsageMatrix
+from public_data.models import CouvertureUsageMatrix, CouvertureSol, UsageSol
 
 
 logger = logging.getLogger("management.commands")
@@ -14,6 +14,22 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         logger.info("Update matrix to comply to décret")
+
+        # add all keys with None
+        for couv in CouvertureSol.objects.all():
+            qs = CouvertureUsageMatrix.objects.filter(couverture=couv, usage=None)
+            if not qs.exists():
+                CouvertureUsageMatrix.objects.create(couverture=couv, usage=None)
+
+        for usage in UsageSol.objects.all():
+            qs = CouvertureUsageMatrix.objects.filter(couverture=None, usage=usage)
+            if not qs.exists():
+                CouvertureUsageMatrix.objects.create(couverture=None, usage=usage)
+
+        qs = CouvertureUsageMatrix.objects.filter(couverture=None, usage=None)
+        if not qs.exists():
+            CouvertureUsageMatrix.objects.create(couverture=None, usage=None)
+
         # first reinitialize
         CouvertureUsageMatrix.objects.all().update(
             is_artificial=False,

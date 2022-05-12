@@ -12,7 +12,13 @@ class BaseSol(models.Model):
     code_prefix = models.CharField("Nomenclature préfixée", max_length=10, unique=True)
     code = models.CharField("Nomenclature", max_length=8, unique=True)
     label = models.CharField("Libellé", max_length=250)
+    label_short = models.CharField("Libellé", max_length=50, blank=True, null=True)
     map_color = models.CharField("Couleur", max_length=8, blank=True, null=True)
+
+    def get_label_short(self):
+        if not self.label_short:
+            return self.label[:50]
+        return self.label_short
 
     @property
     def level(self) -> int:
@@ -141,8 +147,12 @@ class CouvertureUsageMatrix(models.Model):
         ARTIF_NOT_CONSUMED = "ARTIF_NOT_CONSU", "Artificiel non consommé"
         NONE = "NONE", "Non renseigné"
 
-    couverture = models.ForeignKey("CouvertureSol", on_delete=models.PROTECT)
-    usage = models.ForeignKey("UsageSol", on_delete=models.PROTECT)
+    couverture = models.ForeignKey(
+        "CouvertureSol", on_delete=models.PROTECT, blank=True, null=True
+    )
+    usage = models.ForeignKey(
+        "UsageSol", on_delete=models.PROTECT, blank=True, null=True
+    )
     is_artificial = models.BooleanField(
         "Artificiel", default=False, blank=True, null=True
     )
@@ -154,6 +164,16 @@ class CouvertureUsageMatrix(models.Model):
         choices=LabelChoices.choices,
         default=LabelChoices.NONE,
     )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["couverture", "usage"], name="matrix-couverture-usage-unique"
+            ),
+        ]
+        indexes = [
+            models.Index(fields=["is_artificial"], name="matrix-is_artificial-index"),
+        ]
 
     def compute(self):
         """Set is_field to correct boolean value according to label"""

@@ -24,12 +24,14 @@ USAGE_LIST = {usage.code_prefix: usage for usage in UsageSol.objects.all()}
 COUVERTURE_LIST = {
     couverture.code_prefix: couverture for couverture in CouvertureSol.objects.all()
 }
-MATRIX_LIST = {
-    (item.couverture.code_prefix, item.usage.code_prefix): item
-    for item in CouvertureUsageMatrix.objects.all().select_related(
-        "usage", "couverture"
+MATRIX_LIST = dict()
+qs = CouvertureUsageMatrix.objects.all().select_related("usage", "couverture")
+for item in qs:
+    key = (
+        item.couverture.code_prefix if item.couverture else None,
+        item.usage.code_prefix if item.usage else None,
     )
-}
+    MATRIX_LIST[key] = item
 GIRONDE = Departement.objects.get(name="Gironde")
 GERS = Departement.objects.get(name="Gers")
 
@@ -147,7 +149,7 @@ class ArcachonOcsge2015(AutoLoadMixin, Ocsge):
 
 
 class ArcachonOcsge2018(ArcachonOcsge2015):
-    hape_file_path = "OCSGE_2018.zip"
+    shape_file_path = "OCSGE_2018.zip"
     _year = 2018
 
     class Meta:
