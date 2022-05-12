@@ -5,6 +5,7 @@
 {% load humanize %}
 {% load i18n %}
 {% load l10n %}
+{% load highcharts_tags %}
 
 {% block pagetitle %}
 Rapport couverture du sol
@@ -36,7 +37,7 @@ Rapport couverture du sol
                     Surface du territoire
                 </div>
                 <div class="card-body">
-                    <p class="figure">{{ surface_territoire|floatformat:0 }} ha</p>
+                    <p class="figure">{{ surface_territory|floatformat:0 }} ha</p>
                 </div>
             </div>
         </div>
@@ -54,59 +55,34 @@ Rapport couverture du sol
         </div>
 
         <div class="box scrollme-x p-4 table table-responsive">
-            <h3>Progression de la couverture du sol-artificialisation de 2015 à 2018 :</h3>
+            <h3>Progression de la couverture du sol-artificialisation de {{ first_millesime }} à {{ last_millesime }} :</h3>
             <table class="table table-striped table-sm">
                 <thead>
                     <tr>
                         <th scope="col">Code</th>
                         <th scope="col">Libellé</th>
-                        <th scope="col" style="text-align: right">Surface 2015 (ha)</th>
-                        <th scope="col" style="text-align: right">Progression</th>
-                        <th scope="col" style="text-align: right">Surface 2018 (ha)</th>
+                        <th scope="col" style="text-align: right">Surface {{ first_millesime }} (ha)</th>
+                        <th scope="col" style="text-align: right">Progression (ha)</th>
+                        <th scope="col" style="text-align: right">Surface {{ last_millesime }} (ha)</th>
+                        <th scope="col" style="text-align: right">Pourcentage {{ last_millesime }}</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for data in data_covers %}
-                    <tr {% if data.level == 2 %}class="fw-bold"{% endif %}>
-                        <th scope="row">{{ data.level|space }} {{ data.code }}</th>
-                        <td>{{ data.label_short }}</td>
-                        <td align="right">{{ data.get_surface_2015|floatformat:1 }}</td>
+                    {% for couv in progression_chart.get_series %}
+                    <tr {% if couv.level == 2 %}class="fw-bold"{% endif %}>
+                        <th scope="row">{{ couv.level|space }} {{ couv.code }}</th>
+                        <td>{{ couv.get_label_short }}</td>
+                        <td align="right">{{ couv.surface_first|floatformat:1 }}</td>
                         <td align="right">
-                            {% if data.evolution > 0 %}+{% endif%}{{ data.evolution|floatformat:2 }}
+                            {% if couv.surface_diff > 0 %}+{% endif%}{{ couv.surface_diff|floatformat:2 }}
                         </td>
-                        <td align="right">{{ data.get_surface_2018|floatformat:1 }}</td>
+                        <td align="right">{{ couv.surface_last|floatformat:1 }}</td>
+                        <td align="right">{{ couv.surface_last|percent:surface_territory }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
-
-        <div class="box scrollme-x p-4 table table-responsive">
-            <h3>Répartition de la couverture du sol en 2018 :</h3>
-            <table class="table table-striped table-sm">
-                <thead>
-                    <tr>
-                        <th scope="col">Code</th>
-                        <th scope="col">Libellé</th>
-                        <th scope="col" style="text-align: right">Surface 2018 (ha)</th>
-                        <th scope="col" style="text-align: right">Pourcentage</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for data in data_covers %}
-                        <tr {% if data.level == 2 %}class="fw-bold"{% endif %}>
-                            <th scope="row">{{ data.level|space }} {{ data.code }}</th>
-                            <td>{{ data.label_short }}</td>
-                            <td align="right">{{ data.get_surface_2018|floatformat:2 }}</td>
-                            <td align="right">
-                                {{ data.get_surface_2018|percent:surface_territoire }}
-                            </td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-
 
         <div class="box px-4 py-2">
             <p>Sources:</p>
@@ -122,91 +98,8 @@ Rapport couverture du sol
 {% localize off %}
 <script src="https://code.highcharts.com/highcharts.js"></script>
 <script src="https://code.highcharts.com/modules/exporting.js"></script>
-<script src="https://code.highcharts.com/modules/drilldown.js"></script>
-<script language="javascript">
-Highcharts.chart('chart_3', {
-    chart: {
-        type: 'pie'
-    },
-    title: {
-        text: "2018",
-        floating: true,
-    },
-    tooltip: {
-        valueSuffix: ' Ha',
-        valueDecimals: 0,
-        pointFormat: '<b>{point.y}</b><br/>{point.percent}',
-    },
-    plotOptions:{
-    	pie:
-        {
-            innerSize: '60%',
-        },
-    },
-    series: [
-        {
-            name: '2018',
-            data: [{% for data in data_covers %}
-                {% if data.level == 2 %}
-                    {
-                        name: "{{ data.name }}",
-                        y: {{ data.get_surface_2018 }},
-                        color: '{{ data.map_color }}',
-                        percent: '{{ data.get_surface_2018|percent:surface_territoire }}',
-                    },
-                {% endif %}
-            {% endfor %}],
-        },
-    ]
-})
-
-
-Highcharts.chart('chart_1', {
-    chart: {
-        type: 'column'
-    },
-    title: {
-        text: "Progression",
-    },
-    tooltip: {
-        valueSuffix: ' Ha',
-        valueDecimals: 2,
-        headerFormat: '',
-        pointFormat: '{point.name}: {point.y}'
-    },
-    plotOptions:{
-    },
-    xAxis: {
-        type: 'category',
-    },
-    yAxis: [{
-        title: {
-            text: 'Surface'
-        },
-        plotLines: [{
-            value: 0,
-            width: 2,
-            color: '#ff0000'
-        }],
-    }],
-    legend: {
-        enabled: false,
-    },
-    series: [
-        {
-            name: 'Evolution',
-            data: [{% for data in data_covers %}
-                {% if data.level == 2 %}
-                    {
-                        name: "{{ data.name }}",
-                        y: {{ data.evolution }},
-                        color: '{{ data.map_color }}',
-                    },
-                {% endif %}
-            {% endfor %}],
-        },
-    ]
-})
-</script>
+{% french_translation %}
+{% display_chart 'chart_3' pie_chart %}
+{% display_chart 'chart_1' progression_chart %}
 {% endlocalize %}
 {% endblock %}
