@@ -713,21 +713,31 @@ class ProjectMapView(GroupMixin, DetailView):
                     },
                     {
                         "name": "Archachon : artificialisation 2015 à 2018",
-                        "url": reverse_lazy(
-                            "public_data:artificialisee2015to2018-list"
+                        # "url": reverse_lazy(
+                        #     "public_data:artificialisee2015to2018-list"
+                        # ),
+                        "url": (
+                            f'{reverse_lazy("public_data:ocsgediff-optimized")}'
+                            "?year_old=2015&year_new=2018&is_new_artif=true"
                         ),
                         "display": False,
-                        "gradient_url": reverse_lazy(
-                            "public_data:artificialisee2015to2018-gradient"
-                        ),
+                        # "gradient_url": reverse_lazy(
+                        #     "public_data:artificialisee2015to2018-gradient"
+                        # ),
+                        "style": "get_color_for_ocsge_diff",
                         "level": "7",
                     },
                     {
                         "name": "Arcachon : renaturation de 2015 à 2018",
-                        "url": reverse_lazy("public_data:renaturee2018to2015-list"),
-                        "gradient_url": reverse_lazy(
-                            "public_data:renaturee2018to2015-gradient"
+                        # "url": reverse_lazy("public_data:renaturee2018to2015-list"),
+                        # "gradient_url": reverse_lazy(
+                        #     "public_data:renaturee2018to2015-gradient"
+                        # ),
+                        "url": (
+                            f'{reverse_lazy("public_data:ocsgediff-optimized")}'
+                            "?year_old=2015&year_new=2018&is_new_natural=true"
                         ),
+                        "style": "get_color_for_ocsge_diff",
                         "level": "7",
                         "display": False,
                     },
@@ -795,10 +805,20 @@ class ProjectMapView(GroupMixin, DetailView):
                         "level": "1",
                     },
                     {
-                        "name": "Gers: différence 2016 à 2019",
+                        "name": "Gers: artificialisation 2016 à 2019",
                         "url": (
                             f'{reverse_lazy("public_data:ocsgediff-optimized")}'
-                            "?year_old=2016&year_new=2019"
+                            "?year_old=2016&year_new=2019&is_new_artif=true"
+                        ),
+                        "display": False,
+                        "style": "get_color_for_ocsge_diff",
+                        "level": "7",
+                    },
+                    {
+                        "name": "Gers: renaturation 2016 à 2019",
+                        "url": (
+                            f'{reverse_lazy("public_data:ocsgediff-optimized")}'
+                            "?year_old=2016&year_new=2019&is_new_natural=true"
                         ),
                         "display": False,
                         "style": "get_color_for_ocsge_diff",
