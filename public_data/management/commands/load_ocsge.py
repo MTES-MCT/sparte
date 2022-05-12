@@ -49,31 +49,19 @@ class AutoOcsgeDiff(AutoLoadMixin, OcsgeDiff):
         self.year_new = self.__class__._year_new
         self.year_old = self.__class__._year_old
 
-        key = (self.cs_new, self.us_new)
-        if key in MATRIX_LIST:
-            self.new_matrix = MATRIX_LIST[key]
+        self.new_matrix = MATRIX_LIST[(self.cs_new, self.us_new)]
+        self.new_is_artif = bool(self.new_matrix.is_artificial)
+        if self.new_matrix.couverture:
             self.cs_new_label = self.new_matrix.couverture.label
+        if self.new_matrix.usage:
             self.us_new_label = self.new_matrix.usage.label
-            self.new_is_artif = bool(self.new_matrix.is_artificial)
-        else:
-            if self.cs_new in COUVERTURE_LIST:
-                self.cs_new_label = COUVERTURE_LIST[self.cs_new].label
-            if self.us_new in USAGE_LIST:
-                self.us_new_label = USAGE_LIST[self.us_new].label
-            self.new_is_artif = False
 
-        key = (self.cs_old, self.us_old)
-        if key in MATRIX_LIST:
-            self.old_matrix = MATRIX_LIST[key]
+        self.old_matrix = MATRIX_LIST[(self.cs_old, self.us_old)]
+        if self.old_matrix.couverture:
             self.cs_old_label = self.old_matrix.couverture.label
+        if self.old_matrix.usage:
             self.us_old_label = self.old_matrix.usage.label
-            self.old_is_artif = bool(self.old_matrix.is_artificial)
-        else:
-            if self.cs_old in COUVERTURE_LIST:
-                self.cs_old_label = COUVERTURE_LIST[self.cs_old].label
-            if self.us_old in USAGE_LIST:
-                self.us_old_label = USAGE_LIST[self.us_old].label
-            self.old_is_artif = False
+        self.old_is_artif = bool(self.old_matrix.is_artificial)
 
         self.is_new_artif = not self.old_is_artif and self.new_is_artif
         self.is_new_natural = self.old_is_artif and not self.new_is_artif
