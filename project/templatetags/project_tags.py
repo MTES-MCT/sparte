@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from django.template import Library
 
 
@@ -56,6 +58,8 @@ def remove(value, arg=0):
 def percent(value, arg=0):
     if not arg or arg < value:
         return value
+    if isinstance(value, Decimal):
+        value = float(value)
     return f"{int((value / arg) * 100)}%"
 
 

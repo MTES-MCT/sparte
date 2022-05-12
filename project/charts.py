@@ -41,7 +41,7 @@ class ConsoComparisonChart(ProjectChart):
             **{
                 "color": "#ff0000",
                 "dashStyle": "ShortDash",
-            }
+            },
         )
 
 
@@ -79,7 +79,7 @@ class ConsoCommuneChart(ProjectChart):
                     "type": "line",
                     "color": "#ff0000",
                     "dashStyle": "ShortDash",
-                }
+                },
             )
 
 
@@ -124,7 +124,7 @@ class DeterminantPerYearChart(ProjectChart):
                     "type": "line",
                     "color": "#ff0000",
                     "dashStyle": "ShortDash",
-                }
+                },
             )
 
 
@@ -219,3 +219,114 @@ class EvolutionArtifChart(ProjectChart):
             # type="line",
             color="#0000ff",
         )
+
+
+class CouvertureSolPieChart(ProjectChart):
+    _level = 2
+    _sol = "couverture"
+    name = "Sol usage and couverture pie chart"
+    param = {
+        "chart": {"type": "pie"},
+        "title": {"text": "Dernier millésime", "floating": True},
+        "yAxis": {
+            "title": {"text": "Consommé (en ha)"},
+            "stackLabels": {"enabled": True, "format": "{total:,.1f}"},
+        },
+        "tooltip": {
+            "valueSuffix": " Ha",
+            "valueDecimals": 0,
+            "pointFormat": "<b>{point.y}</b><br/>{point.percent}",
+        },
+        "xAxis": {"type": "category"},
+        "legend": {"layout": "horizontal", "align": "center", "verticalAlign": "top"},
+        "plotOptions": {
+            "pie": {
+                "innerSize": "60%",
+            }
+        },
+        "series": [],
+    }
+
+    def get_series(self, millesime):
+        if not self.series:
+            self.series = self.project.get_base_sol(millesime, sol=self._sol)
+        return self.series
+
+    def add_series(self):
+        millesime = self.project.get_last_available_millesime()
+        series = [_ for _ in self.get_series(millesime) if _.level == self._level]
+        surface_total = sum(_.surface for _ in series)
+        self.chart["series"].append(
+            {
+                "name": millesime,
+                "data": [
+                    {
+                        "name": f"{item.code_prefix} {item.label}",
+                        "y": item.surface,
+                        "color": item.map_color,
+                        "percent": f"{int(100 * item.surface / surface_total)}%",
+                    }
+                    for item in series
+                ],
+            }
+        )
+
+
+class UsageSolPieChart(CouvertureSolPieChart):
+    _level = 1
+    _sol = "usage"
+
+
+class CouvertureSolProgressionChart(ProjectChart):
+    _level = 2
+    _sol = "couverture"
+    name = "Progression des principaux postes de la couverture du sol"
+    param = {
+        "chart": {"type": "column"},
+        "title": {"text": "Progression"},
+        "yAxis": {
+            "title": {"text": "Surface (en ha)"},
+            "plotLines": [{"value": 0, "width": 2, "color": "#ff0000"}],
+        },
+        "tooltip": {
+            "pointFormat": "{series.name}: {point.y}",
+            "valueSuffix": " Ha",
+            "valueDecimals": 2,
+            "headerFormat": "",
+        },
+        "xAxis": {"type": "category"},
+        "legend": {"enabled": False},
+        "series": [],
+    }
+
+    def get_series(self):
+        if not self.series:
+            first_millesime = self.project.get_first_available_millesime()
+            last_millesime = self.project.get_last_available_millesime()
+            title = f"Progression de {first_millesime} à {last_millesime}"
+            self.chart["title"]["text"] = title
+            self.series = self.project.get_base_sol_progression(
+                first_millesime, last_millesime, sol=self._sol
+            )
+        return self.series
+
+    def add_series(self):
+        self.chart["series"].append(
+            {
+                "name": "Evolution",
+                "data": [
+                    {
+                        "name": f"{couv.code_prefix} {couv.label}",
+                        "y": couv.surface_diff,
+                        "color": couv.map_color,
+                    }
+                    for couv in self.get_series()
+                    if couv.level == self._level
+                ],
+            }
+        )
+
+
+class UsageSolProgressionChart(CouvertureSolProgressionChart):
+    _level = 1
+    _sol = "usage"
