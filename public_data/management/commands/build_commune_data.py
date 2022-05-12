@@ -99,9 +99,12 @@ class Command(BaseCommand):
         qs = qs.annotate(intersection=Intersection("mpoly", city.mpoly))
         qs = qs.annotate(intersection_area=Area(Transform("intersection", 2154)))
         qs = qs.values("year_old", "year_new")
-        qs = qs.annotate(new_artif=Sum("surface", filter=Q(is_new_artif=True)))
-        qs = qs.annotate(new_natural=Sum("surface", filter=Q(is_new_natural=True)))
-        # qs = qs.annotate(net_artif=F("new_artif") - F("new_natural"))
+        qs = qs.annotate(
+            new_artif=Sum("intersection_area", filter=Q(is_new_artif=True))
+        )
+        qs = qs.annotate(
+            new_natural=Sum("intersection_area", filter=Q(is_new_natural=True))
+        )
 
         for result in qs:
             try:
@@ -115,8 +118,8 @@ class Command(BaseCommand):
                 )
             city_data.new_artif = city_data.new_natural = 0
             if result["new_artif"]:
-                city_data.new_artif = result["new_artif"] / 10000
+                city_data.new_artif = result["new_artif"].sq_m / 10000
             if result["new_natural"]:
-                city_data.new_natural = result["new_natural"] / 10000
+                city_data.new_natural = result["new_natural"].sq_m / 10000
             city_data.net_artif = city_data.new_artif - city_data.new_natural
             city_data.save()
