@@ -7,6 +7,7 @@ from django.db.models import Sum, Q
 from public_data.models import (
     Commune,
     CommuneDiff,
+    CommuneSol,
     Departement,
     Ocsge,
     # Departement,
@@ -53,7 +54,7 @@ class Command(BaseCommand):
 
     def process_all(self):
         logger.info("Processing all cities")
-        qs = Commune.objects.all()
+        qs = Commune.objects.all().order_by("insee")
         self.process_multi(qs)
 
     def process_departement(self, departement):
@@ -95,6 +96,28 @@ class Command(BaseCommand):
             city.surface_artif = result["surface__sum"] / 10000
         city.save()
 
+        # Prep data for couverture and usage in CommuneSol
+        # clean data first
+        CommuneSol.objects.filter(city=city).delete()
+        qs = Ocsge.objects.filter(mpoly__intersects=city.mpoly)
+        qs = qs.exclude(matrix=None)
+        qs = qs.annotate(intersection=Intersection("mpoly", city.mpoly))
+        qs = qs.annotate(intersection_area=Area(Transform("intersection", 2154)))
+        qs = qs.values("matrix", "year")
+        qs = qs.annotate(surface=Sum("intersection_area"))
+        CommuneSol.objects.bulk_create(
+            [
+                CommuneSol(
+                    city=city,
+                    year=result["year"],
+                    matrix_id=result["matrix"],
+                    surface=result["surface"].sq_m / 10000,
+                )
+                for result in qs
+            ]
+        )
+
+        # prep data for artif report in CommuneDiff
         qs = OcsgeDiff.objects.filter(mpoly__intersects=city.mpoly)
         qs = qs.annotate(intersection=Intersection("mpoly", city.mpoly))
         qs = qs.annotate(intersection_area=Area(Transform("intersection", 2154)))
