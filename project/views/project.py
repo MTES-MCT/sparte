@@ -609,13 +609,11 @@ class ProjectMapView(GroupMixin, DetailView):
                 "layer_list": [
                     {
                         "name": "Communes",
-                        # "url": reverse_lazy("public_data:commune-list"),
                         "url": reverse_lazy(
                             "project:project-communes", args=[self.object.id]
                         ),
                         "display": False,
                         "level": "2",
-                        # "color_property_name": "map_color",
                         "style": "style_communes",
                     },
                     {
@@ -628,27 +626,61 @@ class ProjectMapView(GroupMixin, DetailView):
                         "level": "5",
                     },
                     {
+                        "name": "Arcachon: Couverture 2015",
+                        "url": (
+                            f'{reverse_lazy("public_data:ocsge-optimized")}'
+                            "?year=2015&color=couverture"
+                        ),
+                        "display": False,
+                        "color_property_name": "map_color",
+                        "style": "get_color_from_property",
+                        "level": "1",
+                    },
+                    {
+                        "name": "Arcachon: Couverture 2018",
+                        "url": (
+                            f'{reverse_lazy("public_data:ocsge-optimized")}'
+                            "?year=2018&color=couverture"
+                        ),
+                        "display": False,
+                        "color_property_name": "map_color",
+                        "style": "get_color_from_property",
+                        "level": "1",
+                    },
+                    {
+                        "name": "Arcachon: Usage 2015",
+                        "url": (
+                            f'{reverse_lazy("public_data:ocsge-optimized")}'
+                            "?year=2015&color=usage"
+                        ),
+                        "display": False,
+                        "color_property_name": "map_color",
+                        "style": "get_color_from_property",
+                        "level": "1",
+                    },
+                    {
+                        "name": "Arcachon: Usage 2018",
+                        "url": (
+                            f'{reverse_lazy("public_data:ocsge-optimized")}'
+                            "?year=2018&color=usage"
+                        ),
+                        "display": False,
+                        "color_property_name": "map_color",
+                        "style": "get_color_from_property",
+                        "level": "1",
+                    },
+                    {
                         "name": "Archachon : artificialisation 2015 à 2018",
-                        # "url": reverse_lazy(
-                        #     "public_data:artificialisee2015to2018-list"
-                        # ),
                         "url": (
                             f'{reverse_lazy("public_data:ocsgediff-optimized")}'
                             "?year_old=2015&year_new=2018&is_new_artif=true"
                         ),
                         "display": False,
-                        # "gradient_url": reverse_lazy(
-                        #     "public_data:artificialisee2015to2018-gradient"
-                        # ),
                         "style": "get_color_for_ocsge_diff",
                         "level": "7",
                     },
                     {
                         "name": "Arcachon : renaturation de 2015 à 2018",
-                        # "url": reverse_lazy("public_data:renaturee2018to2015-list"),
-                        # "gradient_url": reverse_lazy(
-                        #     "public_data:renaturee2018to2015-gradient"
-                        # ),
                         "url": (
                             f'{reverse_lazy("public_data:ocsgediff-optimized")}'
                             "?year_old=2015&year_new=2018&is_new_natural=true"
@@ -658,7 +690,7 @@ class ProjectMapView(GroupMixin, DetailView):
                         "display": False,
                     },
                     {
-                        "name": "Zones artificielles",
+                        "name": "Zones artificielles 2018",
                         "url": reverse_lazy("public_data:artificielle2018-list"),
                         "display": False,
                         "gradient_url": reverse_lazy(
@@ -667,15 +699,15 @@ class ProjectMapView(GroupMixin, DetailView):
                         "level": "3",
                         "style": "style_zone_artificielle",
                     },
-                    {
-                        "name": "OCSGE",
-                        "url": reverse_lazy("public_data:ocsge-optimized"),
-                        "display": False,
-                        "color_property_name": "map_color",
-                        "style": "get_color_from_property",
-                        "level": "1",
-                        "switch": "ocsge",
-                    },
+                    # {
+                    #     "name": "OCSGE",
+                    #     "url": reverse_lazy("public_data:ocsge-optimized"),
+                    #     "display": False,
+                    #     "color_property_name": "map_color",
+                    #     "style": "get_color_from_property",
+                    #     "level": "1",
+                    #     "switch": "ocsge",
+                    # },
                     {
                         "name": "Gers: Couverture 2016",
                         "url": (
