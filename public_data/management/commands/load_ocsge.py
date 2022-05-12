@@ -30,6 +30,8 @@ MATRIX_LIST = {
         "usage", "couverture"
     )
 }
+GIRONDE = Departement.objects.get(name="Gironde")
+GERS = Departement.objects.get(name="Gers")
 
 
 # #######
@@ -112,9 +114,8 @@ class ArcachonOcsge2015(AutoLoadMixin, Ocsge):
     @classmethod
     def clean_data(cls, clean_queryset=None):
         """Delete only data with year=2015"""
-        gironde = Departement.objects.get(id=32)
         # select only data covered by Gironde
-        qs = cls.objects.filter(mpoly__intersects=gironde.mpoly)
+        qs = cls.objects.filter(mpoly__intersects=GIRONDE.mpoly)
         # only current millesime
         qs = qs.filter(year=cls._year)
         qs.delete()
@@ -176,9 +177,8 @@ class ArcachonArtif(AutoOcsgeDiff):
 
     @classmethod
     def clean_data(cls, clean_queryset=None):
-        gironde = Departement.objects.get(name="Gironde")
         # select only data covered by Gironde
-        qs = cls.objects.filter(mpoly__intersects=gironde.mpoly)
+        qs = cls.objects.filter(mpoly__intersects=GIRONDE.mpoly)
         # only current millesime
         qs = qs.filter(year_new=cls._year_new, year_old=cls._year_old)
         qs = qs.filter(is_new_natural=False, is_new_artif=True)
@@ -193,9 +193,8 @@ class ArcachonRenat(ArcachonArtif):
 
     @classmethod
     def clean_data(cls, clean_queryset=None):
-        gironde = Departement.objects.get(name="Gironde")
         # select only data covered by Gironde
-        qs = cls.objects.filter(mpoly__intersects=gironde.mpoly)
+        qs = cls.objects.filter(mpoly__intersects=GIRONDE.mpoly)
         # only current millesime
         qs = qs.filter(year_new=cls._year_new, year_old=cls._year_old)
         qs = qs.filter(is_new_natural=True, is_new_artif=False)
@@ -230,9 +229,8 @@ class GersOcsge(AutoLoadMixin, Ocsge):
     @classmethod
     def clean_data(cls, clean_queryset=None):
         """Delete only data with year=2015"""
-        gers = Departement.objects.get(id=33)
         # select only data covered by Gers
-        qs = cls.objects.filter(mpoly__intersects=gers.mpoly)
+        qs = cls.objects.filter(mpoly__intersects=GERS.mpoly)
         # only current millesime
         qs = qs.filter(year=cls.year)
         qs.delete()
@@ -294,9 +292,8 @@ class GersOcsgeDiff(AutoOcsgeDiff):
 
     @classmethod
     def clean_data(cls, clean_queryset=None):
-        gers = Departement.objects.get(id=33)
         # select only data covered by Gers
-        qs = cls.objects.filter(mpoly__intersects=gers.mpoly)
+        qs = cls.objects.filter(mpoly__intersects=GERS.mpoly)
         # only current millesime
         qs = qs.filter(year_new=cls._year_new, year_old=cls._year_old)
         qs.delete()
@@ -320,9 +317,8 @@ class GersZoneConstruite2016(AutoLoadMixin, ZoneConstruite):
 
     @classmethod
     def clean_data(cls, clean_queryset=None):
-        gers = Departement.objects.get(id=33)
         # select only data covered by Gers
-        qs = cls.objects.filter(mpoly__intersects=gers.mpoly)
+        qs = cls.objects.filter(mpoly__intersects=GERS.mpoly)
         # only current millesime
         qs = qs.filter(year=cls._year)
         qs.delete()
