@@ -128,8 +128,10 @@ class ArcachonOcsge2015(AutoLoadMixin, Ocsge):
         try:
             self.matrix = MATRIX_LIST[key]
             self.is_artificial = bool(self.matrix.is_artificial)
-            self.couverture_label = self.matrix.couverture.label
-            self.usage_label = self.matrix.usage.label
+            if self.matrix.couverture:
+                self.couverture_label = self.matrix.couverture.label
+            if self.matrix.usage:
+                self.usage_label = self.matrix.usage.label
         except KeyError:
             self.is_artificial = False
         return super().save(*args, **kwargs)
@@ -223,8 +225,10 @@ class GersOcsge(AutoLoadMixin, Ocsge):
         key = (self.couverture, self.usage)
         self.matrix = MATRIX_LIST[key]
         self.is_artificial = bool(self.matrix.is_artificial)
-        self.couverture_label = self.matrix.couverture.label
-        self.usage_label = self.matrix.usage.label
+        if self.matrix.couverture:
+            self.couverture_label = self.matrix.couverture.label
+        if self.matrix.usage:
+            self.usage_label = self.matrix.usage.label
         self.year = self.__class__.year
         return super().save(*args, **kwargs)
 
