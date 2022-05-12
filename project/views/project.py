@@ -13,15 +13,19 @@ from django.views.generic import (
 
 from django_app_parameter import app_parameter
 
-from public_data.models import CouvertureSol, UsageSol, Land
+from public_data.models import Land
 from utils.views_mixins import BreadCrumbMixin, GetObjectMixin
 
 from project.charts import (
     ConsoCommuneChart,
+    ConsoComparisonChart,
+    CouvertureSolPieChart,
+    CouvertureSolProgressionChart,
     DeterminantPerYearChart,
     DeterminantPieChart,
-    ConsoComparisonChart,
     EvolutionArtifChart,
+    UsageSolPieChart,
+    UsageSolProgressionChart,
 )
 from project.forms import UploadShpForm, KeywordForm
 from project.models import Project, Request, ProjectCommune
@@ -348,64 +352,6 @@ class ProjectReportCityGroupView(GroupMixin, DetailView):
         return self.render_to_response(context)
 
 
-class RefCouverture:
-    def __init__(self, couv, data, millesimes, type_data="couverture"):
-        self.couv = couv
-        self.parent = couv.get_parent()
-        self.name = f"{couv.code} {couv.label}"
-        self.label_short = couv.label[:50]
-        # see all the available millesime
-        self.millesimes = millesimes
-        # surface contains one entry per year (millesime)
-        self.surface = dict()
-        for year in self.millesimes:
-            self.surface[year] = sum(
-                [
-                    v
-                    for k, v in data[year][type_data].items()
-                    if k.startswith(self.code_prefix)
-                ]
-            )
-
-    @property
-    def code(self):
-        return self.couv.code
-
-    @property
-    def evolution(self):
-        try:
-            val = list(self.surface.values())
-            return val[1] - val[0]
-        except (KeyError, IndexError):
-            return 0
-
-    @property
-    def map_color(self):
-        return self.couv.map_color
-
-    @property
-    def code_prefix(self):
-        return self.couv.code_prefix
-
-    @property
-    def level(self):
-        return self.couv.level
-
-    @property
-    def label(self):
-        return self.couv.label
-
-    def __getattr__(self, name):
-        if name.startswith("get_surface_"):
-            year = name.split("_")[-1]
-            try:
-                return self.surface[year]
-            except KeyError:
-                return 0
-        else:
-            return getattr(self, name)
-
-
 class ProjectReportCouvertureView(GroupMixin, DetailView):
     queryset = Project.objects.all()
     template_name = "project/rapport_couverture.html"
@@ -418,52 +364,24 @@ class ProjectReportCouvertureView(GroupMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         project = self.get_object()
-        raw_data = project.couverture_usage
-        millesimes = raw_data.keys()
-        data_covers = []
-        for couv in CouvertureSol.objects.all().order_by("code"):
-            data_covers.append(
-                RefCouverture(
-                    couv,
-                    raw_data,
-                    millesimes,
-                )
-            )
 
-        # PREP DATA FOR DRILL DOWN CHART
-        # column_drill_down = {
-        #     "top": [
-        #         {"name": "CS1", "y": 10},
-        #         {"name": "CS2", "y": 5},
-        #     ],
-        #     "CS1" : [
-        #         {"name": "CS1.1", "y": 8},
-        #         {"name": "CS1.2", "y": 2},
-        #     ],
-        # }
-        # column_drill_down = dict()
-        # for dc in data_covers:
-        #     key = "top" if dc.parent is None else dc.parent.code
-        #     if key not in column_drill_down:
-        #         column_drill_down[key] = []
-        #     column_drill_down[key].append(
-        #         {
-        #             "name": dc.name,
-        #             "y_2015": dc.get_surface_2015,
-        #             "y_2018": dc.get_surface_2018,
-        #             "drilldown": dc.code,
-        #             "map_color": dc.map_color,
-        #         }
-        #     )
+        surface_territory = project.area
+        first_millesime = project.get_first_available_millesime()
+        last_millesime = project.get_last_available_millesime()
 
-        return {
-            **super().get_context_data(),
-            "data_covers": data_covers,
-            "millesimes": millesimes,
-            "surface_territoire": project.area,
+        pie_chart = CouvertureSolPieChart(project)
+        progression_chart = CouvertureSolProgressionChart(project)
+
+        kwargs = {
+            "first_millesime": str(first_millesime),
+            "last_millesime": str(last_millesime),
+            "surface_territory": surface_territory,
             "active_page": "couverture",
-            # "column_drill_down": column_drill_down,
+            "pie_chart": pie_chart,
+            "progression_chart": progression_chart,
         }
+
+        return super().get_context_data(**kwargs)
 
 
 class ProjectReportUsageView(GroupMixin, DetailView):
@@ -478,27 +396,24 @@ class ProjectReportUsageView(GroupMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         project = self.get_object()
-        raw_data = project.couverture_usage
-        millesimes = raw_data.keys()
-        data_covers = []
 
-        for usage in UsageSol.objects.all().order_by("code"):
-            data_covers.append(
-                RefCouverture(
-                    usage,
-                    raw_data,
-                    millesimes,
-                    type_data="usage",
-                )
-            )
+        surface_territory = project.area
+        first_millesime = project.get_first_available_millesime()
+        last_millesime = project.get_last_available_millesime()
 
-        return {
-            **super().get_context_data(),
-            "data_covers": data_covers,
-            "millesimes": millesimes,
-            "surface_territoire": project.area,
+        pie_chart = UsageSolPieChart(project)
+        progression_chart = UsageSolProgressionChart(project)
+
+        kwargs = {
+            "first_millesime": str(first_millesime),
+            "last_millesime": str(last_millesime),
+            "surface_territory": surface_territory,
             "active_page": "usage",
+            "pie_chart": pie_chart,
+            "progression_chart": progression_chart,
         }
+
+        return super().get_context_data(**kwargs)
 
 
 class ProjectReportSynthesisView(GroupMixin, DetailView):
