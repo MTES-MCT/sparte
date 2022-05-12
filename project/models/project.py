@@ -2,7 +2,8 @@ import traceback
 
 from django.conf import settings
 from django.contrib.gis.db import models as gis_models
-from django.contrib.gis.db.models import Union
+from django.contrib.gis.db.models import Union, Extent
+from django.contrib.gis.db.models.functions import Centroid
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models import Sum, F, Value
@@ -159,6 +160,7 @@ class Project(BaseProject):
             "REGION_[ID], COMMUNE_[ID]. "
             "field can contain several public key separate by ;"
         ),
+        blank=True,
         null=True,
     )
 
@@ -166,10 +168,16 @@ class Project(BaseProject):
     updated_date = models.DateTimeField(auto_now=True)
 
     first_year_ocsge = models.IntegerField(
-        "Premier millésime OCSGE", validators=[MinValueValidator(2000)], null=True
+        "Premier millésime OCSGE",
+        validators=[MinValueValidator(2000)],
+        null=True,
+        blank=True,
     )
     last_year_ocsge = models.IntegerField(
-        "Dernier millésime OCSGE", validators=[MinValueValidator(2000)], null=True
+        "Dernier millésime OCSGE",
+        validators=[MinValueValidator(2000)],
+        null=True,
+        blank=True,
     )
 
     @property
@@ -438,6 +446,15 @@ class Project(BaseProject):
             net_artif=Sum("net_artif"),
         )
         return qs
+
+    def get_bounding_box(self):
+        result = self.emprise_set.aggregate(bbox=Extent("mpoly"))
+        return list(result["bbox"])
+
+    def get_centroid(self):
+        # result = self.emprise_set.aggregate(bbox=Extent('mpoly'))
+        result = self.emprise_set.aggregate(center=Centroid(Union("mpoly")))
+        return result["center"]
 
 
 class Emprise(DataColorationMixin, gis_models.Model):

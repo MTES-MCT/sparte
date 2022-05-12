@@ -683,13 +683,14 @@ class ProjectMapView(GroupMixin, DetailView):
                 ]
             }
         )
+        center = self.object.get_centroid()
         context.update(
             {
                 # center map on France
                 "carto_name": "Project",
-                "center_lat": 44.6586,
-                "center_lng": -1.164,
-                "default_zoom": 12,
+                "center_lat": center.y,
+                "center_lng": center.x,
+                "default_zoom": 10,
                 "layer_list": [
                     {
                         "name": "Communes",
