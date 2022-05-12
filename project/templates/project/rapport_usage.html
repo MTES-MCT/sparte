@@ -70,7 +70,11 @@ Rapport usage du sol
                         <td>{{ item.get_label_short }}</td>
                         <td align="right">{{ item.surface_first|floatformat:1 }}</td>
                         <td align="right">
-                            {{ item.surface_diff|floatformat:2 }}
+                            {% if item.surface_diff == 0 %}-
+                            {%else%}
+                                {% if item.surface_diff > 0 %}+{% endif%}
+                                {{ item.surface_diff|floatformat:2 }}
+                            {% endif%}
                         </td>
                         <td align="right">{{ item.surface_last|floatformat:1 }}</td>
                         <td align="right">{{ item.surface_last|percent:surface_territory }}</td>
