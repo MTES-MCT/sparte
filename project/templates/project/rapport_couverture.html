@@ -74,7 +74,11 @@ Rapport couverture du sol
                         <td>{{ couv.get_label_short }}</td>
                         <td align="right">{{ couv.surface_first|floatformat:1 }}</td>
                         <td align="right">
-                            {% if couv.surface_diff > 0 %}+{% endif%}{{ couv.surface_diff|floatformat:2 }}
+                            {% if couv.surface_diff == 0 %}-
+                            {%else%}
+                                {% if couv.surface_diff > 0 %}+{% endif%}
+                                {{ couv.surface_diff|floatformat:2 }}
+                            {% endif%}
                         </td>
                         <td align="right">{{ couv.surface_last|floatformat:1 }}</td>
                         <td align="right">{{ couv.surface_last|percent:surface_territory }}</td>
