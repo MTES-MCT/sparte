@@ -114,7 +114,10 @@ function Carto(map_center, default_zoom) {
     //this.layerControl = L.control.layers(null, null)
     this.info = L.control({ position: 'bottomleft' })
     this.legend = L.control({ position: 'bottomright' });
-    this.map = L.map('mapid')
+    this.map = L.map('mapid', {
+        center: this.map_center,
+        zoom: this.default_zoom
+    })
 
     // contains all added geolayer (see add_geolayer function)
     this.geolayers = []
@@ -125,7 +128,7 @@ function Carto(map_center, default_zoom) {
 
     this.init = (geolayers) => {
         // Initialize map
-        this.map.setView(this.map_center, this.default_zoom)
+        // this.map.flyTo(this.map_center, this.default_zoom)
 
         for (i = 0; i < 10; i++) {
             let pane_name = `level_${i}`
@@ -475,7 +478,6 @@ function GeoLayer(name, url) {
                 // center the layer on the center of the map
                 this.fit_map = false // do not recenter after first loading
                 bounds = this.geojsonlayer.getBounds()
-                console.log(bounds)
                 carto.map.fitBounds(bounds);
             }
 
