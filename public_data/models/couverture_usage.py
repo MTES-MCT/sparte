@@ -141,8 +141,12 @@ class CouvertureUsageMatrix(models.Model):
         ARTIF_NOT_CONSUMED = "ARTIF_NOT_CONSU", "Artificiel non consommé"
         NONE = "NONE", "Non renseigné"
 
-    couverture = models.ForeignKey("CouvertureSol", on_delete=models.PROTECT)
-    usage = models.ForeignKey("UsageSol", on_delete=models.PROTECT)
+    couverture = models.ForeignKey(
+        "CouvertureSol", on_delete=models.PROTECT, blank=True, null=True
+    )
+    usage = models.ForeignKey(
+        "UsageSol", on_delete=models.PROTECT, blank=True, null=True
+    )
     is_artificial = models.BooleanField(
         "Artificiel", default=False, blank=True, null=True
     )
@@ -154,6 +158,16 @@ class CouvertureUsageMatrix(models.Model):
         choices=LabelChoices.choices,
         default=LabelChoices.NONE,
     )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["couverture", "usage"], name="matrix-couverture-usage-unique"
+            ),
+        ]
+        indexes = [
+            models.Index(fields=["is_artificial"], name="matrix-is_artificial-index"),
+        ]
 
     def compute(self):
         """Set is_field to correct boolean value according to label"""
