@@ -21,10 +21,22 @@ Rapport usage du sol
 
     <div class="bg-light p-5 rounded-5 border">
 
+        {% if active_page == "usage" %}
         <div class="box box-alert px-4 py-2 mb-4 mt-0">
             <p>L’usage du sol est une vue « anthropique du sol ». Il est partagé en fonction du rôle que jouent les portions de terrain en tant qu’occupation humaine.</p>
             <p>Dans l'OCSGE, l'usage US235 regroupe les objets de US2 (production secondaire), US3 (production tertiaire) et US5 (usage résidentiel) de la nomenclature nationale quand la distinction entre ces usages n'est pas possible ou pas connue.</p>
         </div>
+        {% else %}
+        <div class="box box-alert px-4 py-2 mb-4 mt-0">
+            L’article 192 de la Loi Climat & Résilience votée en août 2021 définit l'artificialisation comme « une surface dont les sols sont :
+            <ul>
+                <li>soit imperméabilisés en raison du bâti ou d'un revêtement,</li>
+                <li>soit stabilisés et compactés,</li>
+                <li>soit constitués de matériaux composites »</li>
+            </ul>
+            Elle se traduit dans l’OCS GE nationale comme la somme des  objets anthropisés dans la description de la couverture des sols.
+        </div>
+        {% endif %}
 
         <div class="clearfix">
             <div class="card key-figure">
@@ -36,6 +48,7 @@ Rapport usage du sol
                 </div>
             </div>
         </div>
+    {% if ocsge_available %}
 
         <div class="w-100 box p-4">
             <h3>Répartition</h3>
@@ -84,6 +97,11 @@ Rapport usage du sol
             </table>
         </div>
 
+    {% else %}
+        <div class="box px-4 py-2 mb-4 mt-5">
+            <p>Nous sommes désolé, mais votre territoire n'est pas encore couvert par l'OCSGE.</p>
+        </div>
+    {% endif %}
 
         <div class="box px-4 py-2">
             <p>Sources:</p>
