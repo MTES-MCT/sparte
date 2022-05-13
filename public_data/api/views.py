@@ -323,7 +323,8 @@ class ZoneConstruiteViewSet(DataViewSet):
         features = []
         for row in self.get_data(request):
             try:
-                surface = int(row["surface"] * 100) / 100
+                surface = row["surface"] / 10000
+                surface = int(surface * 100) / 100
             except TypeError:
                 surface = 0
             feature = json.dumps(
