@@ -198,13 +198,13 @@ class EvolutionArtifChart(ProjectChart):
             self.series = {
                 "Artificialisation": dict(),
                 "Renaturation": dict(),
-                "Artificialisation net": dict(),
+                "Artificialisation nette": dict(),
             }
             for prd in self.project.get_artif_evolution():
                 key = prd["period"]
                 self.series["Artificialisation"][key] = prd["new_artif"]
                 self.series["Renaturation"][key] = prd["new_natural"]
-                self.series["Artificialisation net"][key] = prd["net_artif"]
+                self.series["Artificialisation nette"][key] = prd["net_artif"]
         return self.series
 
     def add_series(self):
@@ -214,8 +214,8 @@ class EvolutionArtifChart(ProjectChart):
         )
         self.add_serie("Renaturation", series["Renaturation"], color="#00ff00")
         self.add_serie(
-            "Artificialisation net",
-            series["Artificialisation net"],
+            "Artificialisation nette",
+            series["Artificialisation nette"],
             # type="line",
             color="#0000ff",
         )
