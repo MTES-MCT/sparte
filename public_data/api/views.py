@@ -323,7 +323,8 @@ class ZoneConstruiteViewSet(DataViewSet):
         features = []
         for row in self.get_data(request):
             try:
-                surface = int(row["surface"] * 100) / 100
+                surface = row["surface"] / 10000
+                surface = int(surface * 100) / 100
             except TypeError:
                 surface = 0
             feature = json.dumps(
@@ -372,83 +373,15 @@ class DepartementViewSet(DataViewSet):
 
 
 class EpciViewSet(DataViewSet):
+    """EPCI view set."""
+
     queryset = Epci.objects.all()
     serializer_class = EpciSerializer
     geo_field = "mpoly"
 
 
 class CommuneViewSet(DataViewSet):
-    """CommunesSybarval view set."""
+    """Commune view set."""
 
     queryset = Commune.objects.all()
     serializer_class = CommuneSerializer
-
-
-# DEPRECATED AND NOT USED
-
-# class EnveloppeUrbaine2018ViewSet(DataViewSet):
-#     queryset = EnveloppeUrbaine2018.objects.all()
-#     serializer_class = EnveloppeUrbaine2018Serializer
-
-
-# class Voirie2018ViewSet(DataViewSet):
-#     queryset = Voirie2018.objects.all()
-#     serializer_class = Voirie2018Serializer
-
-
-# class ZonesBaties2018ViewSet(DataViewSet):
-#     queryset = ZonesBaties2018.objects.all()
-#     serializer_class = ZonesBaties2018Serializer
-
-
-# class SybarvalViewSet(DataViewSet):
-#     queryset = Sybarval.objects.all()
-#     serializer_class = SybarvalSerializer
-
-
-# class CommunesSybarvalViewSet(DataViewSet):
-#     """CommunesSybarval view set."""
-
-#     queryset = CommunesSybarval.objects.all()
-#     serializer_class = CommunesSybarvalSerializer
-
-#     @action(detail=True)
-#     def ocsge(self, request, pk):
-#         year = request.query_params["year"]
-#         # clean year to avoid any injection (because it is used as parameter in the
-#         # query below)... Might be overkill as Django as sql injection protection
-#         year = str(int(year))
-#         commune = self.get_object()
-#         params = list(commune.mpoly.extent)
-#         params.append(year)
-#         # after investigation, below query looks safe
-#         query = (
-#             "SELECT id, couverture_label, usage_label, millesime, map_color, "  # nosec
-#             "year, st_AsGeoJSON(mpoly, 4) AS geojson "
-#             f"FROM {Ocsge._meta.db_table} "
-#             "WHERE mpoly && ST_MakeEnvelope(%s, %s, %s, %s, 4326) "
-#             "AND year = %s"
-#         )
-#         features = []
-#         with connection.cursor() as cursor:
-#             cursor.execute(query, params)
-#             for row in cursor.fetchall():
-#                 feature = {
-#                     "type": "Feature",
-#                     "properties": {
-#                         "id": row[0],
-#                         "couverture_label": row[1],
-#                         "usage_label": row[2],
-#                         "millesime": row[3].strftime("%Y-%m-%d"),
-#                         "map_color": row[4],
-#                         "year": row[5],
-#                     },
-#                     "geometry": json.loads(row[6]),
-#                 }
-#                 features.append(feature)
-#         geojson = {
-#             "type": "FeatureCollection",
-#             "crs": {"type": "name", "properties": {"name": "EPSG:4326"}},
-#             "features": features,
-#         }
-#         return Response(geojson)

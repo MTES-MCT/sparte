@@ -26,7 +26,6 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 
 # from django.db import connection
 from django.db.models import Sum
-from django.db.models.functions import Cast
 
 from .mixins import DataColorationMixin, TruncateTableMixin
 
@@ -161,16 +160,3 @@ class ZoneConstruite(TruncateTableMixin, DataColorationMixin, models.Model):
     surface = models.DecimalField(
         "surface", max_digits=15, decimal_places=4, blank=True, null=True
     )
-
-    @classmethod
-    def calculate_fields(cls):
-        """Set year field"""
-        cls.objects.filter(year__isnull=True).update(
-            year=Cast("millesime", output_field=models.IntegerField())
-        )
-        cls.objects.filter(surface__isnull=True).update(
-            surface=Cast(
-                Area(Transform("mpoly", 2154)),
-                models.DecimalField(max_digits=15, decimal_places=4),
-            )
-        )
