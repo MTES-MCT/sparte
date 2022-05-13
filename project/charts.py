@@ -247,18 +247,21 @@ class CouvertureSolPieChart(ProjectChart):
         "series": [],
     }
 
-    def get_series(self, millesime):
+    def __init__(self, project, millesime):
+        self.millesime = millesime
+        super().__init__(project)
+
+    def get_series(self):
         if not self.series:
-            self.series = self.project.get_base_sol(millesime, sol=self._sol)
+            self.series = self.project.get_base_sol(self.millesime, sol=self._sol)
         return self.series
 
     def add_series(self):
-        millesime = self.project.get_last_available_millesime()
-        series = [_ for _ in self.get_series(millesime) if _.level == self._level]
+        series = [_ for _ in self.get_series() if _.level == self._level]
         surface_total = sum(_.surface for _ in series)
         self.chart["series"].append(
             {
-                "name": millesime,
+                "name": self.millesime,
                 "data": [
                     {
                         "name": f"{item.code_prefix} {item.label}",
@@ -299,14 +302,17 @@ class CouvertureSolProgressionChart(ProjectChart):
         "series": [],
     }
 
+    def __init__(self, project, first_millesime, last_millesime):
+        self.first_millesime = first_millesime
+        self.last_millesime = last_millesime
+        super().__init__(project)
+
     def get_series(self):
         if not self.series:
-            first_millesime = self.project.get_first_available_millesime()
-            last_millesime = self.project.get_last_available_millesime()
-            title = f"Progression de {first_millesime} à {last_millesime}"
+            title = f"Progression de {self.first_millesime} à {self.last_millesime}"
             self.chart["title"]["text"] = title
             self.series = self.project.get_base_sol_progression(
-                first_millesime, last_millesime, sol=self._sol
+                self.first_millesime, self.last_millesime, sol=self._sol
             )
         return self.series
 
