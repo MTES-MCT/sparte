@@ -34,9 +34,15 @@ class Command(BaseCommand):
             type=str,
             help="insee code of a particular city",
         )
+        parser.add_argument(
+            "--verbose",
+            action="store_true",
+            help="insee code of a particular city",
+        )
 
     def handle(self, *args, **options):
         logger.info("Start build cities data")
+        self.verbose = options["verbose"]
         if options["insee"]:
             self.process_one(options["insee"])
         elif options["departement"]:
@@ -50,7 +56,8 @@ class Command(BaseCommand):
         logger.info("Total cities : %d", total)
         for i, city in enumerate(queryset):
             self.build_data(city)
-            logger.info("%d/%d - %s (%s)", i + 1, total, city.name, city.insee)
+            if self.verbose:
+                logger.info("%d/%d - %s (%s)", i + 1, total, city.name, city.insee)
 
     def process_all(self):
         logger.info("Processing all cities")
