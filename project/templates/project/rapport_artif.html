@@ -41,6 +41,7 @@ Rapport artificialisation
                 </div>
             </div>
 
+            {% if ocsge_available %}
             <div class="card key-figure">
                 <div class="card-header">
                     Surfaces artificialisées
@@ -52,7 +53,10 @@ Rapport artificialisation
                     </small></p>
                 </div>
             </div>
+            {% endif %}
         </div>
+
+        {% if ocsge_available %}
         <h3>Evolution en volume sur la période de {{ diagnostic.analyse_start_date }} à {{ diagnostic.analyse_end_date }}</h3>
         <div class="clearfix">
             <div class="card key-figure key-figure-yellow">
@@ -124,6 +128,11 @@ Rapport artificialisation
                 </tbody>
             </table>
         </div>
+        {% else %}
+        <div class="box px-4 py-2 mb-4 mt-5">
+            <p class="my-1">Nous sommes désolé, mais votre territoire n'est pas encore couvert par l'OCSGE. Restez informer de son arrivée en vous abonnant à notre infolettre !</p>
+        </div>
+        {% endif %}
 
         <div class="box px-4 py-2">
             <p>Sources:</p>
