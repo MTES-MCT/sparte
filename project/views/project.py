@@ -488,6 +488,21 @@ class ProjectReportArtifView(GroupMixin, DetailView):
     def get_context_data(self, **kwargs):
         project = self.get_object()
         total_surface = project.area
+
+        kwargs = {
+            "diagnostic": project,
+            "active_page": "artificialisation",
+            "total_surface": total_surface,
+            "ocsge_available": True,
+        }
+
+        try:
+            last_millesime = project.get_last_available_millesime()
+        except Ocsge.DoesNotExist:
+            # There is no OCSGE available for this territoru
+            kwargs.update({"ocsge_available": False})
+            return super().get_context_data(**kwargs)
+
         artif_area = project.get_artif_area()
         progression_time_scoped = project.get_artif_progession_time_scoped()
         net_artif = progression_time_scoped["net_artif"]
@@ -503,24 +518,22 @@ class ProjectReportArtifView(GroupMixin, DetailView):
         table_evolution_artif = chart_evolution_artif.get_series()
         headers_evolution_artif = table_evolution_artif["Artificialisation"].keys()
 
-        kwargs = {
-            "diagnostic": project,
-            "active_page": "artificialisation",
-            "total_surface": total_surface,
-            "last_millesime": str(
-                project.cities.latest("last_millesime").last_millesime
-            ),
-            "artif_area": artif_area,
-            "new_artif": progression_time_scoped["new_artif"],
-            "new_natural": progression_time_scoped["new_natural"],
-            "net_artif": net_artif,
-            "net_artif_rate": net_artif_rate,
-            "chart_evolution_artif": chart_evolution_artif,
-            "table_evolution_artif": add_total_line_column(
-                table_evolution_artif, line=False
-            ),
-            "headers_evolution_artif": headers_evolution_artif,
-        }
+        kwargs.update(
+            {
+                "last_millesime": str(last_millesime),
+                "artif_area": artif_area,
+                "new_artif": progression_time_scoped["new_artif"],
+                "new_natural": progression_time_scoped["new_natural"],
+                "net_artif": net_artif,
+                "net_artif_rate": net_artif_rate,
+                "chart_evolution_artif": chart_evolution_artif,
+                "table_evolution_artif": add_total_line_column(
+                    table_evolution_artif, line=False
+                ),
+                "headers_evolution_artif": headers_evolution_artif,
+            }
+        )
+
         return super().get_context_data(**kwargs)
 
 
