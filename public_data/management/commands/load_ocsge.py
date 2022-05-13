@@ -2,7 +2,7 @@ import logging
 
 from django.contrib.gis.db.models.functions import Area, Transform
 from django.core.management.base import BaseCommand
-from django.db.models import DecimalField
+from django.db.models import DecimalField, IntegerField
 from django.db.models.functions import Cast
 
 from public_data.models import (
@@ -316,6 +316,19 @@ class GersZoneConstruite2016(AutoLoadMixin, ZoneConstruite):
         # only current millesime
         qs = qs.filter(year=cls._year)
         qs.delete()
+
+    @classmethod
+    def calculate_fields(cls):
+        """Set year field"""
+        cls.objects.filter(year__isnull=True).update(
+            year=Cast("millesime", output_field=IntegerField())
+        )
+        cls.objects.filter(surface__isnull=True).update(
+            surface=Cast(
+                Area(Transform("mpoly", 2154)),
+                DecimalField(max_digits=15, decimal_places=4),
+            )
+        )
 
 
 class GersZoneConstruite2019(GersZoneConstruite2016):
