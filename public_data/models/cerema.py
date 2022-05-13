@@ -106,8 +106,11 @@ class Cerema(AutoLoadMixin, DataColorationMixin, models.Model):
     menhab1217 = models.FloatField(null=True)
     artpop1217 = models.FloatField(null=True)
     surfcom20 = models.FloatField(null=True)
+    # calculated field :
+    naf11art21 = models.FloatField(null=True)
+    art11hab21 = models.FloatField(null=True)
+    art11act21 = models.FloatField(null=True)
 
-    # GeoDjango-specific: a geometry field (MultiPolygonField)
     mpoly = models.MultiPolygonField()
 
     shape_file_path = "ref_plan.zip"
@@ -203,8 +206,6 @@ class Cerema(AutoLoadMixin, DataColorationMixin, models.Model):
         "mpoly": "MULTIPOLYGON",
     }
 
-    naf11art21 = models.FloatField(null=True)
-
     def __str__(self):
         return self.city_insee
 
@@ -216,7 +217,15 @@ class Cerema(AutoLoadMixin, DataColorationMixin, models.Model):
         ..TODO:: update data to get 2021 and change sum.
         """
         fields = cls.get_art_field(2011, 2019)
-        kwargs = {"naf11art21": sum([F(f) for f in fields])}
+        kwargs = {
+            "naf11art21": sum([F(f) for f in fields]),
+            "art11hab21": sum(
+                [F(f.replace("art", "hab").replace("naf", "art")) for f in fields]
+            ),
+            "art11act21": sum(
+                [F(f.replace("art", "act").replace("naf", "art")) for f in fields]
+            ),
+        }
         cls.objects.update(**kwargs)
 
     @classmethod
