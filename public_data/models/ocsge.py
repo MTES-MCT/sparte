@@ -161,16 +161,3 @@ class ZoneConstruite(TruncateTableMixin, DataColorationMixin, models.Model):
     surface = models.DecimalField(
         "surface", max_digits=15, decimal_places=4, blank=True, null=True
     )
-
-    @classmethod
-    def calculate_fields(cls):
-        """Set year field"""
-        cls.objects.filter(year__isnull=True).update(
-            year=Cast("millesime", output_field=models.IntegerField())
-        )
-        cls.objects.filter(surface__isnull=True).update(
-            surface=Cast(
-                Area(Transform("mpoly", 2154)),
-                models.DecimalField(max_digits=15, decimal_places=4),
-            )
-        )
