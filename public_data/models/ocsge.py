@@ -26,7 +26,6 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 
 # from django.db import connection
 from django.db.models import Sum
-from django.db.models.functions import Cast
 
 from .mixins import DataColorationMixin, TruncateTableMixin
 

@@ -36,7 +36,13 @@ class Migration(migrations.Migration):
             name="look_a_like",
             field=models.CharField(
                 blank=True,
-                help_text="We need a way to find Project related within Cerema's data. this is the purpose of this field which has a very specific rule of construction, it's like a slug: EPCI_[ID], DEPART_[ID] (département), REGION_[ID], COMMUNE_[ID]. field can contain several public key separate by ;",
+                help_text=(
+                    "We need a way to find Project related within Cerema's data. this "
+                    "is the purpose of this field which has a very specific rule of "
+                    "construction, it's like a slug: EPCI_[ID], DEPART_[ID] "
+                    "(département), REGION_[ID], COMMUNE_[ID]. field can contain "
+                    "several public key separate by ;"
+                ),
                 max_length=250,
                 null=True,
                 verbose_name="Territoire pour se comparer",
