@@ -29,10 +29,12 @@ function get_info_label(name) {
         (name == "usage_2018") ? "Usage en 2018" :
         (name == "couverture_2015") ? "Couverture en 2015" :
         (name == "couverture_2018") ? "Couverture en 2018" :
-        (name == "artif_area") ? "Consommé (pdt diag., Ha)" :
+        (name == "artif_area") ? "Consommé (pdt diag.)" :
         (name == "conso_1121_art") ? "Conso total 11-21" :
         (name == "conso_1121_hab") ? "Conso habitat 11-21" :
         (name == "conso_1121_act") ? "Conso activité 11-21" :
+        (name == "surface_artif") ? "Artificialisée" :
+        (name == "artif_evo") ? "Artificialisation" :
         name
 }
 
@@ -348,10 +350,22 @@ function GeoLayer(name, url) {
             let label = get_info_label(property_name)
             if (label != "") {
                 let property_value = properties[property_name]
-                if (label == "Surface (Ha)" | label == "Consommé (pdt diag., Ha)") {
+                if (label == "Surface (Ha)" | label == "Consommé (pdt diag.)") {
                     property_value = property_value.toFixed(1)
-                }
-                info = info + `<b>${label}</b>: ${property_value}<br/>`
+                    info = info + `<b>${label}</b>: ${property_value}<br/>`
+                } else if (property_name == "artif_evo") {
+                    info = info + `<b>${label}</b>:<br/>`
+                    info = info + `<table class="table table-striped table-sm"><thead><tr><th>Période</th><th>Artif</th><th>Renat</th></tr></thead><tbody>`
+                    for (j = 0; j < property_value.length; j++) {
+                        new_artif = property_value[j].new_artif
+                        new_natural = property_value[j].new_natural
+                        info = info + `<tr><td>${property_value[j].year_old}-${property_value[j].year_new}</td>`
+                        info = info + `<td>${new_artif}</td>`
+                        info = info + `<td>${new_natural}</td></tr>`
+                    }
+                    info = info + `</tbody></table>`
+                } else
+                    info = info + `<b>${label}</b>: ${property_value}<br/>`
             }
         }
         return info
