@@ -30,6 +30,9 @@ function get_info_label(name) {
         (name == "couverture_2015") ? "Couverture en 2015" :
         (name == "couverture_2018") ? "Couverture en 2018" :
         (name == "artif_area") ? "Consommé (pdt diag., Ha)" :
+        (name == "conso_1121_art") ? "Conso total 11-21" :
+        (name == "conso_1121_hab") ? "Conso habitat 11-21" :
+        (name == "conso_1121_act") ? "Conso activité 11-21" :
         name
 }
 

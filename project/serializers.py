@@ -28,6 +28,9 @@ class PlanEmpriseSerializer(gis_serializers.GeoFeatureModelSerializer):
 
 class ProjectCommuneSerializer(gis_serializers.GeoFeatureModelSerializer):
     artif_area = serializers.FloatField()
+    conso_1121_art = serializers.FloatField()
+    conso_1121_hab = serializers.FloatField()
+    conso_1121_act = serializers.FloatField()
 
     class Meta:
         fields = (
@@ -37,6 +40,9 @@ class ProjectCommuneSerializer(gis_serializers.GeoFeatureModelSerializer):
             "area",
             "map_color",
             "artif_area",
+            "conso_1121_art",
+            "conso_1121_hab",
+            "conso_1121_act",
         )
         geo_field = "mpoly"
         model = Commune
