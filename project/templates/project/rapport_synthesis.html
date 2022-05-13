@@ -34,9 +34,21 @@ Rapport synthèse consommation d'espace et artificialisation
             <p>La page de synthèse reprend les indicateurs clés au regard de la trajectoire ZAN.</p>
         </div>
 
+
+        <div class="clearfix">
+            <div class="card key-figure">
+                <div class="card-header">
+                    Surface du territoire
+                </div>
+                <div class="card-body">
+                    <p class="figure">{{ diagnostic.area|floatformat:0 }} ha</p>
+                </div>
+            </div>
+        </div>
+
         <div class="box px-4 py-2 clearfix">
 
-            <h3>Bilan de la consommation d'espace</h3>
+            <h3><a href="{% url 'project:report_conso' diagnostic.pk %}">Bilan de la consommation d'espace</a></h3>
 
             <div class="card key-figure key-figure-green">
                 <div class="card-header">
@@ -59,15 +71,18 @@ Rapport synthèse consommation d'espace et artificialisation
 
         <div class="box px-4 py-2 clearfix">
 
-            <h3>Bilan de l'artificialisation nette entre 2015 et 2018</h3>
+            <h3><a href="{% url 'project:report_artif' project.pk %}">Bilan de l'artificialisation nette entre {{ diagnostic.analyse_start_date }} et {{ diagnostic.analyse_end_date }}</a></h3>
 
             <div class="clearfix">
                 <div class="card key-figure key-figure-yellow">
                     <div class="card-header">
-                        Taux d'artificialisation nette
+                        Artificialisation nette
                     </div>
                     <div class="card-body">
-                        <p class="figure">xxx ha</p>
+                        <p class="figure">{{ net_artif|floatformat:0 }} ha</p>
+                        <p class="card-text"><small class="text-secondary">
+                            = artificialisation - renaturation
+                        </small></p>
                     </div>
                 </div>
 
@@ -76,7 +91,7 @@ Rapport synthèse consommation d'espace et artificialisation
                         Total artificialisation
                     </div>
                     <div class="card-body">
-                        <p class="figure">xxx ha</p>
+                        <p class="figure">+ {{ new_artif|floatformat:1 }} ha</p>
                     </div>
                 </div>
 
@@ -85,7 +100,7 @@ Rapport synthèse consommation d'espace et artificialisation
                         Total renaturation
                     </div>
                     <div class="card-body">
-                        <p class="figure">xxx ha</p>
+                        <p class="figure">+ {{ new_natural|floatformat:0 }} ha</p>
                     </div>
                 </div>
             </div>

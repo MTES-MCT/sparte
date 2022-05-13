@@ -58,12 +58,15 @@ class ProjectViewSet(UserQuerysetOrPublicMixin, viewsets.ReadOnlyModelViewSet):
                 )
             ]
         )
-        qs = Cerema.objects.annotate(artif_area=sum_function)
+        sub_cerema = Cerema.objects.annotate(artif_area=sum_function)
+        sub_cerema = sub_cerema.filter(city_insee=OuterRef("insee"))
         queryset = Commune.objects.annotate(
-            artif_area=Subquery(
-                qs.filter(city_insee=OuterRef("insee")).values("artif_area")[:1]
-            )
-        )
+            artif_area=Subquery(sub_cerema.values("artif_area")[:1]),
+            conso_1121_art=Subquery(sub_cerema.values("naf11art21")[:1]) / 10000,
+            conso_1121_hab=Subquery(sub_cerema.values("art11hab21")[:1]) / 10000,
+            conso_1121_act=Subquery(sub_cerema.values("art11act21")[:1]) / 10000,
+        ).prefetch_related("communediff_set")
+
         bbox = self.request.GET.get("in_bbox", None)
         if bbox is not None and len(bbox) > 0:
             polygon_box = Polygon.from_bbox(bbox.split(","))
