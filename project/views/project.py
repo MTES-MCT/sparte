@@ -13,7 +13,7 @@ from django.views.generic import (
 
 from django_app_parameter import app_parameter
 
-from public_data.models import Land
+from public_data.models import Land, Ocsge
 from utils.views_mixins import BreadCrumbMixin, GetObjectMixin
 
 from project.charts import (
@@ -354,7 +354,7 @@ class ProjectReportCityGroupView(GroupMixin, DetailView):
 
 class ProjectReportCouvertureView(GroupMixin, DetailView):
     queryset = Project.objects.all()
-    template_name = "project/rapport_couverture.html"
+    template_name = "project/rapport_usage.html"
     context_object_name = "project"
 
     def get_context_breadcrumbs(self):
@@ -366,20 +366,31 @@ class ProjectReportCouvertureView(GroupMixin, DetailView):
         project = self.get_object()
 
         surface_territory = project.area
-        first_millesime = project.get_first_available_millesime()
-        last_millesime = project.get_last_available_millesime()
-
-        pie_chart = CouvertureSolPieChart(project)
-        progression_chart = CouvertureSolProgressionChart(project)
-
         kwargs = {
-            "first_millesime": str(first_millesime),
-            "last_millesime": str(last_millesime),
             "surface_territory": surface_territory,
             "active_page": "couverture",
-            "pie_chart": pie_chart,
-            "progression_chart": progression_chart,
+            "ocsge_available": True,
         }
+        try:
+            first_millesime = project.get_first_available_millesime()
+            last_millesime = project.get_last_available_millesime()
+
+            pie_chart = CouvertureSolPieChart(project, last_millesime)
+            progression_chart = CouvertureSolProgressionChart(
+                project, first_millesime, last_millesime
+            )
+
+            kwargs.update(
+                {
+                    "first_millesime": str(first_millesime),
+                    "last_millesime": str(last_millesime),
+                    "pie_chart": pie_chart,
+                    "progression_chart": progression_chart,
+                }
+            )
+        except Ocsge.DoesNotExist:
+            # There is no OCSGE available for this territoru
+            kwargs.update({"ocsge_available": False})
 
         return super().get_context_data(**kwargs)
 
@@ -398,20 +409,31 @@ class ProjectReportUsageView(GroupMixin, DetailView):
         project = self.get_object()
 
         surface_territory = project.area
-        first_millesime = project.get_first_available_millesime()
-        last_millesime = project.get_last_available_millesime()
-
-        pie_chart = UsageSolPieChart(project)
-        progression_chart = UsageSolProgressionChart(project)
-
         kwargs = {
-            "first_millesime": str(first_millesime),
-            "last_millesime": str(last_millesime),
             "surface_territory": surface_territory,
             "active_page": "usage",
-            "pie_chart": pie_chart,
-            "progression_chart": progression_chart,
+            "ocsge_available": True,
         }
+        try:
+            first_millesime = project.get_first_available_millesime()
+            last_millesime = project.get_last_available_millesime()
+
+            pie_chart = UsageSolPieChart(project, last_millesime)
+            progression_chart = UsageSolProgressionChart(
+                project, first_millesime, last_millesime
+            )
+
+            kwargs.update(
+                {
+                    "first_millesime": str(first_millesime),
+                    "last_millesime": str(last_millesime),
+                    "pie_chart": pie_chart,
+                    "progression_chart": progression_chart,
+                }
+            )
+        except Ocsge.DoesNotExist:
+            # There is no OCSGE available for this territoru
+            kwargs.update({"ocsge_available": False})
 
         return super().get_context_data(**kwargs)
 
