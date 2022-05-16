@@ -11,22 +11,18 @@ from rest_framework.response import Response
 from rest_framework_gis import filters
 
 from public_data.models import (
+    ArtificialArea,
     Artificialisee2015to2018,
     Artificielle2018,
     Commune,
-    # CommunesSybarval,
     CouvertureSol,
     Departement,
-    # EnveloppeUrbaine2018,
     Epci,
     Ocsge,
     OcsgeDiff,
     Region,
     Renaturee2018to2015,
-    # Sybarval,
     UsageSol,
-    # Voirie2018,
-    # ZonesBaties2018,
     ZoneConstruite,
 )
 
@@ -34,19 +30,14 @@ from .serializers import (
     Artificialisee2015to2018Serializer,
     Artificielle2018Serializer,
     CommuneSerializer,
-    # CommunesSybarvalSerializer,
     CouvertureSolSerializer,
     DepartementSerializer,
-    # EnveloppeUrbaine2018Serializer,
     EpciSerializer,
     OcsgeSerializer,
     OcsgeDiffSerializer,
     RegionSerializer,
     Renaturee2018to2015Serializer,
-    # SybarvalSerializer,
     UsageSolSerializer,
-    # Voirie2018Serializer,
-    # ZonesBaties2018Serializer,
     ZoneConstruiteSerializer,
 )
 
@@ -57,6 +48,98 @@ def decimal2float(obj):
 
 
 # OCSGE layers viewssets
+
+
+class OptimizedMixins:
+    optimized_fields = {
+        "sql": "name",
+    }
+    optimized_geo_field = "st_AsGeoJSON(mpoly, 8)"
+
+    def get_params(self, request):
+        bbox = request.query_params.get("in_bbox").split(",")
+        bbox = list(map(float, bbox))
+        year = int(request.query_params.get("year"))
+        return [year] + bbox  # /!\ order matter, see sql query below
+
+    def get_sql_fields(self):
+        return list(self.optimized_fields.keys()) + [self.optimized_geo_field]
+
+    def get_field_names(self):
+        return list(self.optimized_fields.values()) + ["geojson"]
+
+    def get_sql_select(self):
+        return f"select {', '.join(self.get_sql_fields())}"
+
+    def get_sql_from(self):
+        return f"from {self.queryset.model._meta.db_table}"
+
+    def get_sql_where(self):
+        return "where year = %s and mpoly && ST_MakeEnvelope(%s, %s, %s, %s, 4326)"
+
+    def get_sql_query(self):
+        return " ".join(
+            [
+                self.get_sql_select(),
+                self.get_sql_from(),
+                self.get_sql_where(),
+            ]
+        )
+
+    def get_data(self, request):
+        query = self.get_sql_query()
+        params = self.get_params(request)
+        fields_names = self.get_field_names()
+        with connection.cursor() as cursor:
+            cursor.execute(query, params)
+            return [
+                {name: row[i] for i, name in enumerate(fields_names)}
+                for row in cursor.fetchall()
+            ]
+
+    def clean_surface(self, value):
+        try:
+            value = value / 10000
+            value = int(value * 100) / 100
+        except TypeError:
+            value = 0
+        return value
+
+    def clean_properties(self, props):
+        cleaned_props = dict()
+        for name, val in props.items():
+            try:
+                clean_method = getattr(self, f"clean_{name}")
+                cleaned_props[name] = clean_method(val)
+            except AttributeError:
+                # no cleaning required
+                cleaned_props[name] = val
+        return cleaned_props
+
+    @action(detail=False)
+    def optimized(self, request):
+        envelope = json.dumps(
+            {
+                "type": "FeatureCollection",
+                "crs": {"type": "name", "properties": {"name": "EPSG:4326"}},
+                "features": "-features-",
+            }
+        )
+        features = []
+        for row in self.get_data(request):
+            geojson = row.pop("geojson")
+            feature = json.dumps(
+                {
+                    "type": "Feature",
+                    "properties": self.clean_properties(row),
+                    "geometry": "-geometry-",
+                }
+            )
+            feature = feature.replace('"-geometry-"', geojson)
+            features.append(feature)
+        features = f" [{', '.join(features)}]"
+        envelope = envelope.replace('"-features-"', features)
+        return HttpResponse(envelope, content_type="application/json")
 
 
 class DataViewSet(viewsets.ReadOnlyModelViewSet):
@@ -89,9 +172,17 @@ class Artificielle2018ViewSet(DataViewSet):
     serializer_class = Artificielle2018Serializer
 
 
-class OcsgeViewSet(DataViewSet):
+class OcsgeViewSet(OptimizedMixins, DataViewSet):
     queryset = Ocsge.objects.all()
     serializer_class = OcsgeSerializer
+    optimized_fields = {
+        # "o.id": "id",
+        "o.couverture_label": "couverture_label",
+        "o.usage_label": "usage_label",
+        "t.map_color": "map_color",
+        "o.surface": "surface",
+        "o.year": "year",
+    }
 
     def get_queryset(self):
         """
@@ -103,82 +194,18 @@ class OcsgeViewSet(DataViewSet):
             qs = qs.filter(year=year)
         return qs
 
-    def get_data(self, bbox=None, year=2015, color="usage"):
-        if color == "usage":
+    def get_sql_from(self):
+        if self.request.query_params.get("color") == "usage":
             table_name = UsageSol._meta.db_table
             field = "usage"
         else:
             table_name = CouvertureSol._meta.db_table
             field = "couverture"
-        query = (
-            "SELECT "  # nosec - all parameters are safe
-            "o.id, o.couverture_label, o.usage_label, t.map_color, o.surface, "
-            "o.year, st_AsGeoJSON(o.mpoly, 8) AS geojson "
-            f"FROM {Ocsge._meta.db_table} o "
-            f"INNER JOIN {table_name} t ON t.code_prefix = o.{field} "
-            "WHERE o. mpoly && ST_MakeEnvelope(%s, %s, %s, %s, 4326) "
-            "AND o.year = %s"
+        return (
+            f"FROM {self.queryset.model._meta.db_table} o "
+            f"INNER JOIN {table_name} t "
+            f"ON t.code_prefix = o.{field} "
         )
-        params = bbox + [year]
-        with connection.cursor() as cursor:
-            cursor.execute(query, params)
-            return [
-                {
-                    name: row[i]
-                    for i, name in enumerate(
-                        [
-                            "id",
-                            "couverture_label",
-                            "usage_label",
-                            "map_color",
-                            "surface",
-                            "year",
-                            "geojson",
-                        ]
-                    )
-                }
-                for row in cursor.fetchall()
-            ]
-
-    @action(detail=False)
-    def optimized(self, request):
-        bbox = request.query_params.get("in_bbox").split(",")
-        bbox = list(map(float, bbox))
-        data = self.get_data(
-            bbox=bbox,
-            year=int(request.query_params.get("year")),
-            color=request.query_params.get("color"),
-        )
-        geojson = json.dumps(
-            {
-                "type": "FeatureCollection",
-                "crs": {"type": "name", "properties": {"name": "EPSG:4326"}},
-                "features": "-features-",
-            }
-        )
-        features = []
-        for row in data:
-            feature = json.dumps(
-                {
-                    "type": "Feature",
-                    "properties": {
-                        "id": row["id"],
-                        "Couverture": row["couverture_label"],
-                        "Usage": row["usage_label"],
-                        "Millésime": row["year"],
-                        "map_color": row["map_color"],
-                        "Surface": row["surface"],
-                    },
-                    "geometry": "-geometry-",
-                },
-                default=decimal2float,
-            )
-            feature = feature.replace('"-geometry-"', row["geojson"])
-            features.append(feature)
-        features = f" [{', '.join(features)}]"
-        geojson = geojson.replace('"-features-"', features)
-        # return Response(geojson)
-        return HttpResponse(geojson, content_type="application/json")
 
 
 class Renaturee2018to2015ViewSet(DataViewSet):
@@ -186,9 +213,29 @@ class Renaturee2018to2015ViewSet(DataViewSet):
     serializer_class = Renaturee2018to2015Serializer
 
 
-class OcsgeDiffViewSet(DataViewSet):
+class OcsgeDiffViewSet(OptimizedMixins, DataViewSet):
     queryset = OcsgeDiff.objects.all()
     serializer_class = OcsgeDiffSerializer
+    optimized_fields = {
+        # "o.id": "id",
+        "CONCAT(cs_old, ' ', cs_old_label)": "cs_old",
+        "CONCAT(us_old, ' ', us_old_label)": "us_old",
+        "CONCAT(cs_new, ' ', cs_new_label)": "cs_new",
+        "CONCAT(us_new, ' ', us_new_label)": "us_new",
+        "year_new": "year_new",
+        "year_old": "year_old",
+        "is_new_artif": "is_new_artif",
+        "is_new_natural": "is_new_natural",
+        "surface": "surface",
+    }
+
+    def get_sql_where(self):
+        return (
+            "where year_new = %s and year_old = %s "
+            "    and mpoly && ST_MakeEnvelope(%s, %s, %s, %s, 4326) "
+            "    and is_new_artif = %s "
+            "    and is_new_natural = %s "
+        )
 
     def get_params(self, request):
         bbox = request.query_params.get("in_bbox").split(",")
@@ -200,148 +247,27 @@ class OcsgeDiffViewSet(DataViewSet):
         # /!\ order matter, see sql query below
         return [year_new, year_old] + bbox + [is_new_artif, is_new_natural]
 
-    def get_data(self, request):
-        query = (
-            "select "
-            "    id, year_old, year_new, "
-            "    CONCAT(cs_old, ' ', cs_old_label), "
-            "    CONCAT(us_old, ' ', us_old_label), "
-            "    CONCAT(cs_new, ' ', cs_new_label), "
-            "    CONCAT(us_new, ' ', us_new_label), "
-            "    is_new_artif, is_new_natural, "
-            "    st_AsGeoJSON(mpoly, 8) "
-            f"from {OcsgeDiff._meta.db_table} "
-            "where year_new = %s and year_old = %s "
-            "    and mpoly && ST_MakeEnvelope(%s, %s, %s, %s, 4326) "
-            "    and is_new_artif = %s "
-            "    and is_new_natural = %s "
-        )
-        params = self.get_params(request)
-        with connection.cursor() as cursor:
-            cursor.execute(query, params)
-            return [
-                {
-                    name: row[i]
-                    for i, name in enumerate(
-                        [
-                            "id",
-                            "year_old",
-                            "year_new",
-                            "cs_old",
-                            "us_old",
-                            "cs_new",
-                            "us_new",
-                            "is_new_artif",
-                            "is_new_natural",
-                            "geojson",
-                        ]
-                    )
-                }
-                for row in cursor.fetchall()
-            ]
 
-    @action(detail=False)
-    def optimized(self, request):
-        geojson = json.dumps(
-            {
-                "type": "FeatureCollection",
-                "crs": {"type": "name", "properties": {"name": "EPSG:4326"}},
-                "features": "-features-",
-            }
-        )
-        features = []
-        for row in self.get_data(request):
-            feature = json.dumps(
-                {
-                    "type": "Feature",
-                    "properties": {
-                        "id": row["id"],
-                        "Ancienne année": row["year_old"],
-                        "Nouvelle année": row["year_new"],
-                        "Ancienne couverture": row["cs_old"],
-                        "Nouvelle couverture": row["cs_new"],
-                        "Ancien usage": row["us_old"],
-                        "Nouveau usage": row["us_new"],
-                        "Artificialisation": "oui" if row["is_new_artif"] else "non",
-                        "Renaturation": "oui" if row["is_new_natural"] else "non",
-                    },
-                    "geometry": "-geometry-",
-                }
-            )
-            feature = feature.replace('"-geometry-"', row["geojson"])
-            features.append(feature)
-        features = f" [{', '.join(features)}]"
-        geojson = geojson.replace('"-features-"', features)
-        return HttpResponse(geojson, content_type="application/json")
-
-
-class ZoneConstruiteViewSet(DataViewSet):
+class ZoneConstruiteViewSet(OptimizedMixins, DataViewSet):
     queryset = ZoneConstruite.objects.all()
     serializer_class = ZoneConstruiteSerializer
+    optimized_fields = {
+        "id": "id",
+        "id_source": "id_source",
+        "surface": "surface",
+        "year": "year",
+    }
 
-    def get_params(self, request):
-        bbox = request.query_params.get("in_bbox").split(",")
-        bbox = list(map(float, bbox))
-        year = int(request.query_params.get("year"))
-        return [year] + bbox  # /!\ order matter, see sql query below
 
-    def get_data(self, request):
-        query = (
-            "select id, id_source, year, millesime, surface, st_AsGeoJSON(mpoly, 8) "
-            f"from {ZoneConstruite._meta.db_table} "
-            "where year = %s and mpoly && ST_MakeEnvelope(%s, %s, %s, %s, 4326) "
-        )
-        params = self.get_params(request)
-        with connection.cursor() as cursor:
-            cursor.execute(query, params)
-            return [
-                {
-                    name: row[i]
-                    for i, name in enumerate(
-                        [
-                            "id",
-                            "id_source",
-                            "year",
-                            "millesime",
-                            "surface",
-                            "geojson",
-                        ]
-                    )
-                }
-                for row in cursor.fetchall()
-            ]
-
-    @action(detail=False)
-    def optimized(self, request):
-        geojson = json.dumps(
-            {
-                "type": "FeatureCollection",
-                "crs": {"type": "name", "properties": {"name": "EPSG:4326"}},
-                "features": "-features-",
-            }
-        )
-        features = []
-        for row in self.get_data(request):
-            try:
-                surface = row["surface"] / 10000
-                surface = int(surface * 100) / 100
-            except TypeError:
-                surface = 0
-            feature = json.dumps(
-                {
-                    "type": "Feature",
-                    "properties": {
-                        "Année": row["year"],
-                        "Surface": surface,
-                    },
-                    "geometry": "-geometry-",
-                }
-            )
-            feature = feature.replace('"-geometry-"', row["geojson"])
-            features.append(feature)
-        features = f" [{', '.join(features)}]"
-        geojson = geojson.replace('"-features-"', features)
-        return HttpResponse(geojson, content_type="application/json")
+class ArtificialAreaViewSet(OptimizedMixins, DataViewSet):
+    queryset = ArtificialArea.objects.all()
+    serializer_class = OcsgeDiffSerializer
+    optimized_fields = {
+        "id": "id",
+        "city_id": "city_id",
+        "surface": "surface",
+        "year": "year",
+    }
 
 
 # Views for referentials Couverture and Usage

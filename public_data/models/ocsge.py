@@ -146,6 +146,28 @@ class OcsgeDiff(TruncateTableMixin, DataColorationMixin, models.Model):
     default_color = "Red"
 
 
+class ArtificialArea(TruncateTableMixin, DataColorationMixin, models.Model):
+    mpoly = models.MultiPolygonField()
+    year = models.IntegerField(
+        "Année",
+        validators=[MinValueValidator(2000), MaxValueValidator(2050)],
+    )
+    surface = models.DecimalField("surface", max_digits=15, decimal_places=4)
+    city = models.ForeignKey("public_data.Commune", on_delete=models.CASCADE)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["city", "year"], name="artificialarea-city-year-unique"
+            ),
+        ]
+        indexes = [
+            models.Index(fields=["year"]),
+            models.Index(fields=["city"]),
+            models.Index(fields=["city", "year"]),
+        ]
+
+
 class ZoneConstruite(TruncateTableMixin, DataColorationMixin, models.Model):
     id_source = models.CharField("ID Source", max_length=200)
     millesime = models.CharField("Millesime", max_length=200)
