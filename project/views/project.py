@@ -831,6 +831,26 @@ class ProjectMapView(GroupMixin, DetailView):
                         "style": "style_zone_artificielle",
                         "level": "3",
                     },
+                    {
+                        "name": "Gers: zones artificielles 2016",
+                        "url": (
+                            f'{reverse_lazy("public_data:artificialarea-optimized")}'
+                            "?year=2016"
+                        ),
+                        "display": False,
+                        "style": "style_zone_artificielle",
+                        "level": "3",
+                    },
+                    {
+                        "name": "Gers: zones artificielles 2019",
+                        "url": (
+                            f'{reverse_lazy("public_data:artificialarea-optimized")}'
+                            "?year=2019"
+                        ),
+                        "display": False,
+                        "style": "style_zone_artificielle",
+                        "level": "3",
+                    },
                 ],
             }
         )
