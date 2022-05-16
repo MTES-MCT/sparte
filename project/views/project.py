@@ -729,12 +729,22 @@ class ProjectMapView(GroupMixin, DetailView):
                         "display": False,
                     },
                     {
-                        "name": "Zones artificielles 2018",
-                        "url": reverse_lazy("public_data:artificielle2018-list"),
-                        "display": False,
-                        "gradient_url": reverse_lazy(
-                            "public_data:artificielle2018-gradient"
+                        "name": "Arcachon: zones artificielles 2015",
+                        "url": (
+                            f'{reverse_lazy("public_data:artificialarea-optimized")}'
+                            "?year=2015"
                         ),
+                        "display": False,
+                        "level": "3",
+                        "style": "style_zone_artificielle",
+                    },
+                    {
+                        "name": "Arcachon: zones artificielles 2018",
+                        "url": (
+                            f'{reverse_lazy("public_data:artificialarea-optimized")}'
+                            "?year=2018"
+                        ),
+                        "display": False,
                         "level": "3",
                         "style": "style_zone_artificielle",
                     },

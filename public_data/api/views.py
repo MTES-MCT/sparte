@@ -1,5 +1,4 @@
 """Public data API views."""
-from decimal import Decimal
 import json
 
 from django.db import connection
@@ -9,6 +8,8 @@ from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework_gis import filters
+
+from utils.json import decimal2float
 
 from public_data.models import (
     ArtificialArea,
@@ -42,11 +43,6 @@ from .serializers import (
 )
 
 
-def decimal2float(obj):
-    if isinstance(obj, Decimal):
-        return float(obj)
-
-
 # OCSGE layers viewssets
 
 
@@ -54,7 +50,7 @@ class OptimizedMixins:
     optimized_fields = {
         "sql": "name",
     }
-    optimized_geo_field = "st_AsGeoJSON(mpoly, 8)"
+    optimized_geo_field = "st_AsGeoJSON(o.mpoly, 8)"
 
     def get_params(self, request):
         bbox = request.query_params.get("in_bbox").split(",")
@@ -72,10 +68,10 @@ class OptimizedMixins:
         return f"select {', '.join(self.get_sql_fields())}"
 
     def get_sql_from(self):
-        return f"from {self.queryset.model._meta.db_table}"
+        return f"from {self.queryset.model._meta.db_table} o"
 
     def get_sql_where(self):
-        return "where year = %s and mpoly && ST_MakeEnvelope(%s, %s, %s, %s, 4326)"
+        return "where o.year = %s and o.mpoly && ST_MakeEnvelope(%s, %s, %s, %s, 4326)"
 
     def get_sql_query(self):
         return " ".join(
@@ -96,14 +92,6 @@ class OptimizedMixins:
                 {name: row[i] for i, name in enumerate(fields_names)}
                 for row in cursor.fetchall()
             ]
-
-    def clean_surface(self, value):
-        try:
-            value = value / 10000
-            value = int(value * 100) / 100
-        except TypeError:
-            value = 0
-        return value
 
     def clean_properties(self, props):
         cleaned_props = dict()
@@ -133,7 +121,8 @@ class OptimizedMixins:
                     "type": "Feature",
                     "properties": self.clean_properties(row),
                     "geometry": "-geometry-",
-                }
+                },
+                default=decimal2float,
             )
             feature = feature.replace('"-geometry-"', geojson)
             features.append(feature)
@@ -193,6 +182,14 @@ class OcsgeViewSet(OptimizedMixins, DataViewSet):
         if year:
             qs = qs.filter(year=year)
         return qs
+
+    def clean_surface(self, value):
+        try:
+            value = value / 10000
+            value = int(value * 100) / 100
+        except TypeError:
+            value = 0
+        return value
 
     def get_sql_from(self):
         if self.request.query_params.get("color") == "usage":
@@ -263,11 +260,18 @@ class ArtificialAreaViewSet(OptimizedMixins, DataViewSet):
     queryset = ArtificialArea.objects.all()
     serializer_class = OcsgeDiffSerializer
     optimized_fields = {
-        "id": "id",
-        "city_id": "city_id",
-        "surface": "surface",
-        "year": "year",
+        "o.id": "id",
+        "c.name": "city",
+        "o.surface": "surface",
+        "o.year": "year",
     }
+
+    def get_sql_from(self):
+        return (
+            f"from {self.queryset.model._meta.db_table} o "
+            f"inner join {Commune._meta.db_table} c "
+            "on o.city_id = c.id"
+        )
 
 
 # Views for referentials Couverture and Usage
