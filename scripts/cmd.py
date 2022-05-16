@@ -200,5 +200,18 @@ def mep_130(ctx):
     click.secho("End migration", fg="cyan")
 
 
+@cli.command()
+@click.pass_context
+def mep_140(ctx):
+    """Trigger all data transformation to successful MEP release 1.2.0"""
+    click.secho("Start migration v1.4.0", fg="cyan")
+    connecter = ScalingoInterface(ctx.obj)
+
+    click.secho("Build artificial area", fg="cyan")
+    connecter.manage_py("build_artificial_area --verbose")
+
+    click.secho("End migration", fg="cyan")
+
+
 if __name__ == "__main__":
     cli(obj={})
