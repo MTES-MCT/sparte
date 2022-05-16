@@ -23,6 +23,7 @@ function get_info_label(name) {
     return (name == "area") ? "Surface (Ha)" :
         (name == "artif_area") ? "Consommé (pdt diag.)" :
         (name == "artif_evo") ? "Artificialisation" :
+        (name == "city") ? "Commune" :
         (name == "conso_1121_act") ? "Conso activité 11-21" :
         (name == "conso_1121_art") ? "Conso total 11-21" :
         (name == "conso_1121_hab") ? "Conso habitat 11-21" :
@@ -30,6 +31,8 @@ function get_info_label(name) {
         (name == "cs_old") ? "Ancienne couverture" :
         (name == "couverture_2015") ? "Couverture en 2015" :
         (name == "couverture_2018") ? "Couverture en 2018" :
+        (name == "couverture_label") ? "Couverture" :
+        (name == "id") ? "" :
         (name == "insee") ? "Code INSEE" :
         (name == "is_new_artif") ? "Artificialisation" :
         (name == "is_new_natural") ? "Renaturation" :
@@ -41,6 +44,7 @@ function get_info_label(name) {
         (name == "us_old") ? "Ancien usage" :
         (name == "usage_2015") ? "Usage en 2015" :
         (name == "usage_2018") ? "Usage en 2018" :
+        (name == "usage_label") ? "Usage" :
         (name == "year") ? "Millésime" :
         (name == "year_new") ? "Nouveau millésime" :
         (name == "year_old") ? "Ancien millésime" :
