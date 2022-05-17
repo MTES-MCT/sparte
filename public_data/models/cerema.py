@@ -179,7 +179,7 @@ class Cerema(AutoLoadMixin, DataColorationMixin, models.Model):
         "art18hab19": "ART18HAB19",
         "art18mix19": "ART18MIX19",
         "art18inc19": "ART18INC19",
-        "naf19art20": "NAF19ART20",  # 2019
+        "naf19art20": "NAF19ART20",  # 2020
         "art19act20": "ART19ACT20",
         "art19hab20": "ART19HAB20",
         "art19mix20": "ART19MIX20",
