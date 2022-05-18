@@ -97,7 +97,9 @@ class Command(BaseCommand):
             return
         city.last_millesime = ocsge.year
         qs = qs.filter(year=ocsge.year, is_artificial=True)
-        result = qs.aggregate(Sum("surface"))
+        qs = qs.annotate(intersection=Intersection("mpoly", city.mpoly))
+        qs = qs.annotate(intersection_area=Area(Transform("intersection", 2154)))
+        result = qs.aggregate(Sum("intersection_area"))
         city.surface_artif = 0
         if result["surface__sum"]:
             city.surface_artif = result["surface__sum"] / 10000
