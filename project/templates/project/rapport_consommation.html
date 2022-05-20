@@ -36,7 +36,7 @@ Rapport consommation
             <div class="clearfix">
                 <div class="card key-figure">
                     <div class="card-header">
-                        Territoire total
+                        Surface du territoire
                     </div>
                     <div class="card-body">
                         <p class="figure">{{ total_surface|floatformat:0 }} ha</p>
@@ -45,7 +45,7 @@ Rapport consommation
 
                 <div class="card key-figure key-figure-yellow">
                     <div class="card-header">
-                        Progression {{ project.analyse_start_date }} à {{ project.analyse_end_date }}
+                        Consommation {{ project.analyse_start_date }} à {{ project.analyse_end_date }}
                     </div>
                     <div class="card-body">
                         <p class="figure">+{{ project_scope.consummed|floatformat:1 }} ha</p>
@@ -203,6 +203,7 @@ Rapport consommation
                             {% for year in project.years %}
                             <th scope="col" style="text-align: right">{{ year }}</th>
                             {% endfor %}
+                            <th scope="col" style="text-align: right">Total</th>
                         </tr>
                     </thead>
                     <tbody>

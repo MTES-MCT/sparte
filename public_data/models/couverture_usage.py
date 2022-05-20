@@ -12,7 +12,13 @@ class BaseSol(models.Model):
     code_prefix = models.CharField("Nomenclature préfixée", max_length=10, unique=True)
     code = models.CharField("Nomenclature", max_length=8, unique=True)
     label = models.CharField("Libellé", max_length=250)
+    label_short = models.CharField("Libellé", max_length=50, blank=True, null=True)
     map_color = models.CharField("Couleur", max_length=8, blank=True, null=True)
+
+    def get_label_short(self):
+        if not self.label_short:
+            return self.label[:50]
+        return self.label_short
 
     @property
     def level(self) -> int:
@@ -75,6 +81,32 @@ class UsageSol(BaseSol):
         related_name="children",
     )
 
+    @classmethod
+    def get_leafs(cls):
+        return cls.objects.filter(
+            code__in=[
+                "1.1",
+                "1.2",
+                "1.3",
+                "1.4",
+                "2",
+                "3",
+                "5",
+                "235",
+                "4.1.1",
+                "4.1.2",
+                "4.1.3",
+                "4.1.4",
+                "4.1.5",
+                "4.2",
+                "4.3",
+                "6.1",
+                "6.2",
+                "6.3",
+                "6.6",
+            ]
+        )
+
 
 class CouvertureSol(BaseSol):
     parent = models.ForeignKey(
@@ -85,6 +117,27 @@ class CouvertureSol(BaseSol):
         related_name="children",
     )
 
+    @classmethod
+    def get_leafs(cls):
+        return cls.objects.filter(
+            code__in=[
+                "1.1.1.1",
+                "1.1.1.2",
+                "1.1.2.1",
+                "1.1.2.2",
+                "1.2.1",
+                "1.2.2",
+                "1.2.3",
+                "2.1.1.1",
+                "2.1.1.2",
+                "2.1.1.3",
+                "2.1.2",
+                "2.1.3",
+                "2.2.1",
+                "2.2.2",
+            ]
+        )
+
 
 class CouvertureUsageMatrix(models.Model):
     class LabelChoices(models.TextChoices):
@@ -94,17 +147,33 @@ class CouvertureUsageMatrix(models.Model):
         ARTIF_NOT_CONSUMED = "ARTIF_NOT_CONSU", "Artificiel non consommé"
         NONE = "NONE", "Non renseigné"
 
-    couverture = models.ForeignKey("CouvertureSol", on_delete=models.PROTECT)
-    usage = models.ForeignKey("UsageSol", on_delete=models.PROTECT)
-    is_artificial = models.BooleanField("Artificiel", default=False)
-    is_consumed = models.BooleanField("Consommé", default=False)
-    is_natural = models.BooleanField("Naturel", default=False)
+    couverture = models.ForeignKey(
+        "CouvertureSol", on_delete=models.PROTECT, blank=True, null=True
+    )
+    usage = models.ForeignKey(
+        "UsageSol", on_delete=models.PROTECT, blank=True, null=True
+    )
+    is_artificial = models.BooleanField(
+        "Artificiel", default=False, blank=True, null=True
+    )
+    is_consumed = models.BooleanField("Consommé", default=None, blank=True, null=True)
+    is_natural = models.BooleanField("Naturel", default=None, blank=True, null=True)
     label = models.CharField(
         "Libellé",
         max_length=20,
         choices=LabelChoices.choices,
         default=LabelChoices.NONE,
     )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["couverture", "usage"], name="matrix-couverture-usage-unique"
+            ),
+        ]
+        indexes = [
+            models.Index(fields=["is_artificial"], name="matrix-is_artificial-index"),
+        ]
 
     def compute(self):
         """Set is_field to correct boolean value according to label"""

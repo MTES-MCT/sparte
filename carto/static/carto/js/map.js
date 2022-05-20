@@ -29,7 +29,12 @@ function get_info_label(name) {
         (name == "usage_2018") ? "Usage en 2018" :
         (name == "couverture_2015") ? "Couverture en 2015" :
         (name == "couverture_2018") ? "Couverture en 2018" :
-        (name == "artif_area") ? "Consommé (pdt diag., Ha)" :
+        (name == "artif_area") ? "Consommé (pdt diag.)" :
+        (name == "conso_1121_art") ? "Conso total 11-21" :
+        (name == "conso_1121_hab") ? "Conso habitat 11-21" :
+        (name == "conso_1121_act") ? "Conso activité 11-21" :
+        (name == "surface_artif") ? "Artificialisée" :
+        (name == "artif_evo") ? "Artificialisation" :
         name
 }
 
@@ -51,12 +56,11 @@ function emprise_style(feature) {
 
 function style_zone_artificielle(feature) {
     return {
-        fillColor: '#FFEDA0',
-        fillOpacity: 0.7,
-        weight: 3,
+        fillColor: '#f88e55',
+        fillOpacity: 0.5,
+        weight: 0.5,
         opacity: 1,
-        color: '#ffffff',
-        dashArray: '10',
+        color: '#f88e55',
     }
 }
 
@@ -115,7 +119,10 @@ function Carto(map_center, default_zoom) {
     //this.layerControl = L.control.layers(null, null)
     this.info = L.control({ position: 'bottomleft' })
     this.legend = L.control({ position: 'bottomright' });
-    this.map = L.map('mapid')
+    this.map = L.map('mapid', {
+        center: this.map_center,
+        zoom: this.default_zoom
+    })
 
     // contains all added geolayer (see add_geolayer function)
     this.geolayers = []
@@ -126,7 +133,7 @@ function Carto(map_center, default_zoom) {
 
     this.init = (geolayers) => {
         // Initialize map
-        this.map.setView(this.map_center, this.default_zoom)
+        // this.map.flyTo(this.map_center, this.default_zoom)
 
         for (i = 0; i < 10; i++) {
             let pane_name = `level_${i}`
@@ -343,10 +350,22 @@ function GeoLayer(name, url) {
             let label = get_info_label(property_name)
             if (label != "") {
                 let property_value = properties[property_name]
-                if (label == "Surface (Ha)" | label == "Consommé (pdt diag., Ha)") {
+                if (label == "Surface (Ha)" | label == "Consommé (pdt diag.)") {
                     property_value = property_value.toFixed(1)
-                }
-                info = info + `<b>${label}</b>: ${property_value}<br/>`
+                    info = info + `<b>${label}</b>: ${property_value}<br/>`
+                } else if (property_name == "artif_evo") {
+                    info = info + `<b>${label}</b>:<br/>`
+                    info = info + `<table class="table table-striped table-sm"><thead><tr><th>Période</th><th>Artif</th><th>Renat</th></tr></thead><tbody>`
+                    for (j = 0; j < property_value.length; j++) {
+                        new_artif = property_value[j].new_artif
+                        new_natural = property_value[j].new_natural
+                        info = info + `<tr><td>${property_value[j].year_old}-${property_value[j].year_new}</td>`
+                        info = info + `<td>${new_artif}</td>`
+                        info = info + `<td>${new_natural}</td></tr>`
+                    }
+                    info = info + `</tbody></table>`
+                } else
+                    info = info + `<b>${label}</b>: ${property_value}<br/>`
             }
         }
         return info
@@ -476,7 +495,6 @@ function GeoLayer(name, url) {
                 // center the layer on the center of the map
                 this.fit_map = false // do not recenter after first loading
                 bounds = this.geojsonlayer.getBounds()
-                console.log(bounds)
                 carto.map.fitBounds(bounds);
             }
 

@@ -2,16 +2,26 @@ import traceback
 
 from django.conf import settings
 from django.contrib.gis.db import models as gis_models
-from django.contrib.gis.db.models import Union
+from django.contrib.gis.db.models import Union, Extent
+from django.contrib.gis.db.models.functions import Centroid
 from django.core.validators import MinValueValidator
 from django.db import models
-from django.db.models import Sum, F
+from django.db.models import Sum, F, Value, Q
+from django.db.models.functions import Concat
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.functional import cached_property
 
 from public_data.models.mixins import DataColorationMixin
-from public_data.models import Cerema, Land
+from public_data.models import (
+    Cerema,
+    Land,
+    CommuneDiff,
+    CommuneSol,
+    Ocsge,
+    CouvertureSol,
+    UsageSol,
+)
 
 from .utils import user_directory_path
 
@@ -76,7 +86,7 @@ class BaseProject(models.Model):
 
     @cached_property
     def area(self):
-        return self.combined_emprise.transform(2154, clone=True).area / (100 ** 2)
+        return self.combined_emprise.transform(2154, clone=True).area / 10000
 
     def __str__(self):
         return self.name
@@ -158,6 +168,7 @@ class Project(BaseProject):
             "REGION_[ID], COMMUNE_[ID]. "
             "field can contain several public key separate by ;"
         ),
+        blank=True,
         null=True,
     )
 
@@ -165,10 +176,16 @@ class Project(BaseProject):
     updated_date = models.DateTimeField(auto_now=True)
 
     first_year_ocsge = models.IntegerField(
-        "Premier millésime OCSGE", validators=[MinValueValidator(2000)], null=True
+        "Premier millésime OCSGE",
+        validators=[MinValueValidator(2000)],
+        null=True,
+        blank=True,
     )
     last_year_ocsge = models.IntegerField(
-        "Dernier millésime OCSGE", validators=[MinValueValidator(2000)], null=True
+        "Dernier millésime OCSGE",
+        validators=[MinValueValidator(2000)],
+        null=True,
+        blank=True,
     )
 
     @property
@@ -396,6 +413,128 @@ class Project(BaseProject):
         self.shape_file.delete(save=save)
         if save:
             self.save()
+
+    def get_artif_area(self):
+        """Return artificial surface total for all city inside diagnostic"""
+        result = self.cities.all().aggregate(total=Sum("surface_artif"))
+        return result["total"]
+
+    def get_artif_progession_time_scoped(self):
+        """Return example: {"new_artif": 12, "new_natural": 2: "net_artif": 10}"""
+        qs = CommuneDiff.objects.filter(city__in=self.cities.all())
+        qs = qs.filter(
+            year_old__gte=self.analyse_start_date, year_new__lte=self.analyse_end_date
+        )
+        return qs.aggregate(
+            new_artif=Sum("new_artif"),
+            new_natural=Sum("new_natural"),
+            net_artif=Sum("net_artif"),
+        )
+
+    def get_artif_evolution(self):
+        """Return example:
+        [
+            {"period": "2013 - 2016", "new_artif": 12, "new_natural": 2: "net_artif": 10},
+            {"period": "2016 - 2019", "new_artif": 15, "new_natural": 7: "net_artif": 8},
+        ]
+        """
+        qs = CommuneDiff.objects.filter(city__in=self.cities.all())
+        qs = qs.annotate(
+            period=Concat(
+                "year_old",
+                Value(" - "),
+                "year_new",
+                output_field=models.CharField(),
+            )
+        )
+        qs = qs.values("period")
+        qs = qs.annotate(
+            new_artif=Sum("new_artif"),
+            new_natural=Sum("new_natural"),
+            net_artif=Sum("net_artif"),
+        )
+        return qs
+
+    def get_bounding_box(self):
+        result = self.emprise_set.aggregate(bbox=Extent("mpoly"))
+        return list(result["bbox"])
+
+    def get_centroid(self):
+        # result = self.emprise_set.aggregate(bbox=Extent('mpoly'))
+        result = self.emprise_set.aggregate(center=Centroid(Union("mpoly")))
+        return result["center"]
+
+    def get_last_available_millesime(self):
+        qs = Ocsge.objects.filter(mpoly__intersects=self.combined_emprise)
+        qs = qs.filter(year__gte=self.analyse_start_date)
+        qs = qs.filter(year__lte=self.analyse_end_date)
+        return qs.latest("year").year
+
+    def get_first_available_millesime(self):
+        qs = Ocsge.objects.filter(mpoly__intersects=self.combined_emprise)
+        qs = qs.filter(year__gte=self.analyse_start_date)
+        qs = qs.filter(year__lte=self.analyse_end_date)
+        return qs.earliest("year").year
+
+    def get_base_sol(self, millesime, sol="couverture"):
+        if sol == "couverture":
+            code_field = F("matrix__couverture__code_prefix")
+            klass = CouvertureSol
+        else:
+            code_field = F("matrix__usage__code_prefix")
+            klass = UsageSol
+        qs = CommuneSol.objects.filter(city__in=self.cities.all(), year=millesime)
+        qs = qs.annotate(code_prefix=code_field)
+        qs = qs.values("code_prefix")
+        qs = qs.annotate(surface=Sum("surface"))
+        data = list(qs)
+        item_list = list(klass.objects.all().order_by("code"))
+        for item in item_list:
+            item.surface = sum(
+                [
+                    _["surface"]
+                    for _ in data
+                    if _["code_prefix"].startswith(item.code_prefix)
+                ]
+            )
+        return item_list
+
+    def get_base_sol_progression(
+        self, first_millesime, last_millesime, sol="couverture"
+    ):
+        if sol == "couverture":
+            code_field = F("matrix__couverture__code_prefix")
+            klass = CouvertureSol
+        else:
+            code_field = F("matrix__usage__code_prefix")
+            klass = UsageSol
+
+        qs = CommuneSol.objects.filter(
+            city__in=self.cities.all(), year__in=[first_millesime, last_millesime]
+        )
+        qs = qs.annotate(code_prefix=code_field)
+        qs = qs.values("code_prefix")
+        qs = qs.annotate(surface_first=Sum("surface", filter=Q(year=first_millesime)))
+        qs = qs.annotate(surface_last=Sum("surface", filter=Q(year=last_millesime)))
+        data = list(qs)
+        item_list = list(klass.objects.all().order_by("code"))
+        for item in item_list:
+            item.surface_first = sum(
+                [
+                    _["surface_first"] if _["surface_first"] else 0
+                    for _ in data
+                    if _["code_prefix"].startswith(item.code_prefix)
+                ]
+            )
+            item.surface_last = sum(
+                [
+                    _["surface_last"] if _["surface_last"] else 0
+                    for _ in data
+                    if _["code_prefix"].startswith(item.code_prefix)
+                ]
+            )
+            item.surface_diff = item.surface_last - item.surface_first
+        return item_list
 
 
 class Emprise(DataColorationMixin, gis_models.Model):
