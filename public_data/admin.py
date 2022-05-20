@@ -171,7 +171,7 @@ class CouvertureUsageMatrixAdmin(ImportExportMixin, admin.GeoModelAdmin):
         "is_consumed",
     )
     list_filter = ("is_artificial", "is_consumed", "is_natural")
-    search_fields = ("couverture", "usage")
+    search_fields = ("couverture__code_prefix", "usage__code_prefix")
     resource_class = CouvertureUsageMatrixImportResource
 
 

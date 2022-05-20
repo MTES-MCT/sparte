@@ -6,7 +6,7 @@ from zipfile import ZipFile
 
 from django.contrib.gis.utils import LayerMapping
 from django.core.exceptions import FieldDoesNotExist
-from django.db.models import OuterRef, Subquery
+from django.db import connection
 
 from utils.colors import get_random_color, get_color_gradient, is_valid
 
@@ -34,6 +34,20 @@ class AutoLoadMixin:
     shape_file_path = Path()
     mapping = dict()
 
+    def before_save(self):
+        """Hook to set data before saving"""
+        pass
+
+    def save(self, *args, **kwargs):
+        self.before_save()
+        super().save(*args, **kwargs)
+        self.after_save()
+        return self
+
+    def after_save(self):
+        """Hook to do things after saving"""
+        pass
+
     @classmethod
     def get_shape_file(cls, bucket_file=None):
         # use special storage class to access files in s3://xxx/data directory
@@ -60,12 +74,9 @@ class AutoLoadMixin:
 
     @classmethod
     def clean_data(cls, clean_queryset=None):
-        """Delete all previous data. Can be overrided, usefull if data are in
-        several files"""
-        if clean_queryset:
-            clean_queryset.delete()
-        else:
-            cls.objects.all().delete()
+        raise NotImplementedError(
+            "Need to be overrided to delete old data before loading"
+        )
 
     @classmethod
     def load(cls, verbose=True, shp_file=None, bucket_file=None, clean_queryset=None):
@@ -76,7 +87,7 @@ class AutoLoadMixin:
             cls (undefined): default class calling
             verbose=True (undefined): define level of verbosity
         """
-        logger.info("Load data of %s", cls)
+        logger.info("Load data of %s", cls.__name__)
         if shp_file:
             shp_file = Path(shp_file)
             if not (shp_file.is_file() and shp_file.suffix == ".shp"):
@@ -89,7 +100,7 @@ class AutoLoadMixin:
         logger.info("Shape file found: %s", shp_file)
         # # delete previous data
         logger.info("Delete previous data")
-        # cls.clean_data(clean_queryset=clean_queryset)
+        cls.clean_data(clean_queryset=clean_queryset)
         logger.info("Load new data")
         # # load files
         lm = LayerMapping(cls, shp_file, cls.mapping)
@@ -97,39 +108,12 @@ class AutoLoadMixin:
         logger.info("Data loaded")
         logger.info("Calculate fields")
         cls.calculate_fields()
-        logger.info("End")
+        logger.info("End loading data %s", cls.__name__)
 
     @classmethod
     def calculate_fields(cls):
-        """Override if you need to calculate some fields after loading data.
-        By default, it will calculate label for couverture and usage if couverture_field
-        and usage_field are set with the name of the field containing code (cs.2.1.3)
-        """
-        if cls.couverture_field:
-            from public_data.models import CouvertureSol
-
-            cls.set_label(CouvertureSol, cls.couverture_field, "couverture_label")
-
-        if cls.usage_field:
-            from public_data.models import UsageSol
-
-            cls.set_label(UsageSol, cls.usage_field, "usage_label")
-
-    @classmethod
-    def set_label(cls, klass, field_code, field_label):
-        """Set label field using CouvertureSol or UsageSol référentiel.
-
-        Parameters:
-        ===========
-        * klass: CouvertureSol or UsageSol
-        * field_code: name of the field containing the code (eg. us1.1.1)
-        * field_label: name of the field where to save the label
-        """
-        label = klass.objects.filter(code_prefix=OuterRef(field_code))
-        label = label.values("label")[:1]
-        update_kwargs = {field_label: Subquery(label)}
-        filter_kwargs = {f"{field_label}__isnull": True}
-        cls.objects.all().filter(**filter_kwargs).update(**update_kwargs)
+        """Override if you need to calculate some fields after loading data."""
+        pass
 
 
 class DataColorationMixin:
@@ -211,3 +195,15 @@ class DataColorationMixin:
             return None
         else:
             return np.percentile(rows, percentiles, interpolation="lower")
+
+
+class TruncateTableMixin:
+    """enable a truncate statement (compatible only with PostgreSQL so far)"""
+
+    @classmethod
+    def truncate(cls, restart_id=True):
+        query = f'TRUNCATE TABLE "{cls._meta.db_table}"'
+        if restart_id:
+            query += " RESTART IDENTITY"
+        with connection.cursor() as cursor:
+            cursor.execute(query)

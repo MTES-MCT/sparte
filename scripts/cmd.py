@@ -26,7 +26,7 @@ class ScalingoInterface:
         """Return the line to execute the command on scalingo remote app"""
         cmd = f"scalingo --app {self.app} --region {self.region}"
         if self.detached:
-            cmd += " -d"
+            return f"{cmd} run -d"
         return f"{cmd} run"
 
     async def async_run(self, cmd):
@@ -42,7 +42,10 @@ class ScalingoInterface:
             buf = await proc.stdout.read(64)
             if not buf:
                 break
-            print(buf.decode(), end="")
+            try:
+                print(buf.decode(), end="")
+            except UnicodeDecodeError:
+                print("decode error")
 
     def run(self, cmd):
         """If it is not local, add scalingo prefix to execute the command remotly,
@@ -87,6 +90,19 @@ def cli(ctx, env, detached):
 def run(ctx, user_cmd):
     """Send a command to a remote host."""
     connecter = ScalingoInterface(ctx.obj)
+    connecter.run(user_cmd)
+
+
+@cli.command()
+@click.argument(
+    "user_cmd",
+    nargs=1,
+)
+@click.pass_context
+def arun(ctx, user_cmd):
+    """Send a command to a remote host in detached mode."""
+    connecter = ScalingoInterface(ctx.obj)
+    connecter.detached = True
     connecter.run(user_cmd)
 
 
@@ -172,9 +188,14 @@ def mep_130(ctx):
     click.secho("Start migration v1.3.0", fg="cyan")
     connecter = ScalingoInterface(ctx.obj)
 
-    click.secho("Trigger Gers data loading", fg="cyan")
-    connecter.detached = True
-    connecter.manage_py("load_gers")
+    click.secho("Set new artificial matrix", fg="cyan")
+    connecter.manage_py("correct_matrix")
+
+    click.secho("Trigger OVS GE data loading", fg="cyan")
+    connecter.manage_py("load_ocsge --no-verbose --truncate")
+
+    click.secho("Build data for all communes", fg="cyan")
+    connecter.manage_py("build_commune_data")
 
     click.secho("End migration", fg="cyan")
 

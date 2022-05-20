@@ -1,4 +1,5 @@
 """Public data API views."""
+from decimal import Decimal
 import json
 
 from django.db import connection
@@ -26,6 +27,7 @@ from public_data.models import (
     UsageSol,
     # Voirie2018,
     # ZonesBaties2018,
+    ZoneConstruite,
 )
 
 from .serializers import (
@@ -45,7 +47,13 @@ from .serializers import (
     UsageSolSerializer,
     # Voirie2018Serializer,
     # ZonesBaties2018Serializer,
+    ZoneConstruiteSerializer,
 )
+
+
+def decimal2float(obj):
+    if isinstance(obj, Decimal):
+        return float(obj)
 
 
 # OCSGE layers viewssets
@@ -104,7 +112,7 @@ class OcsgeViewSet(DataViewSet):
             field = "couverture"
         query = (
             "SELECT "  # nosec - all parameters are safe
-            "o.id, o.couverture_label, o.usage_label, o.millesime, t.map_color, "
+            "o.id, o.couverture_label, o.usage_label, t.map_color, o.surface, "
             "o.year, st_AsGeoJSON(o.mpoly, 8) AS geojson "
             f"FROM {Ocsge._meta.db_table} o "
             f"INNER JOIN {table_name} t ON t.code_prefix = o.{field} "
@@ -114,8 +122,23 @@ class OcsgeViewSet(DataViewSet):
         params = bbox + [year]
         with connection.cursor() as cursor:
             cursor.execute(query, params)
-            rows = cursor.fetchall()
-        return rows
+            return [
+                {
+                    name: row[i]
+                    for i, name in enumerate(
+                        [
+                            "id",
+                            "couverture_label",
+                            "usage_label",
+                            "map_color",
+                            "surface",
+                            "year",
+                            "geojson",
+                        ]
+                    )
+                }
+                for row in cursor.fetchall()
+            ]
 
     @action(detail=False)
     def optimized(self, request):
@@ -135,25 +158,22 @@ class OcsgeViewSet(DataViewSet):
         )
         features = []
         for row in data:
-            try:
-                millesime = row[3].strftime("%Y-%m-%d")
-            except AttributeError:
-                millesime = ""
             feature = json.dumps(
                 {
                     "type": "Feature",
                     "properties": {
-                        "id": row[0],
-                        "couverture_label": row[1],
-                        "usage_label": row[2],
-                        "millesime": millesime,
-                        "map_color": row[4],
-                        "year": row[5],
+                        "id": row["id"],
+                        "Couverture": row["couverture_label"],
+                        "Usage": row["usage_label"],
+                        "Millésime": row["year"],
+                        "map_color": row["map_color"],
+                        "Surface": row["surface"],
                     },
                     "geometry": "-geometry-",
-                }
+                },
+                default=decimal2float,
             )
-            feature = feature.replace('"-geometry-"', row[6])
+            feature = feature.replace('"-geometry-"', row["geojson"])
             features.append(feature)
         features = f" [{', '.join(features)}]"
         geojson = geojson.replace('"-features-"', features)
@@ -175,7 +195,10 @@ class OcsgeDiffViewSet(DataViewSet):
         bbox = list(map(float, bbox))
         year_old = int(request.query_params.get("year_old"))
         year_new = int(request.query_params.get("year_new"))
-        return [year_new, year_old] + bbox  # /!\ order matter, see sql query below
+        is_new_artif = bool(request.query_params.get("is_new_artif", False))
+        is_new_natural = bool(request.query_params.get("is_new_natural", False))
+        # /!\ order matter, see sql query below
+        return [year_new, year_old] + bbox + [is_new_artif, is_new_natural]
 
     def get_data(self, request):
         query = (
@@ -185,11 +208,13 @@ class OcsgeDiffViewSet(DataViewSet):
             "    CONCAT(us_old, ' ', us_old_label), "
             "    CONCAT(cs_new, ' ', cs_new_label), "
             "    CONCAT(us_new, ' ', us_new_label), "
-            "    is_new_artif, is_new_naf, "
+            "    is_new_artif, is_new_natural, "
             "    st_AsGeoJSON(mpoly, 8) "
-            "from public_data_ocsgediff "
+            f"from {OcsgeDiff._meta.db_table} "
             "where year_new = %s and year_old = %s "
             "    and mpoly && ST_MakeEnvelope(%s, %s, %s, %s, 4326) "
+            "    and is_new_artif = %s "
+            "    and is_new_natural = %s "
         )
         params = self.get_params(request)
         with connection.cursor() as cursor:
@@ -207,7 +232,7 @@ class OcsgeDiffViewSet(DataViewSet):
                             "cs_new",
                             "us_new",
                             "is_new_artif",
-                            "is_new_naf",
+                            "is_new_natural",
                             "geojson",
                         ]
                     )
@@ -238,7 +263,76 @@ class OcsgeDiffViewSet(DataViewSet):
                         "Ancien usage": row["us_old"],
                         "Nouveau usage": row["us_new"],
                         "Artificialisation": "oui" if row["is_new_artif"] else "non",
-                        "Renaturation": "oui" if row["is_new_naf"] else "non",
+                        "Renaturation": "oui" if row["is_new_natural"] else "non",
+                    },
+                    "geometry": "-geometry-",
+                }
+            )
+            feature = feature.replace('"-geometry-"', row["geojson"])
+            features.append(feature)
+        features = f" [{', '.join(features)}]"
+        geojson = geojson.replace('"-features-"', features)
+        return HttpResponse(geojson, content_type="application/json")
+
+
+class ZoneConstruiteViewSet(DataViewSet):
+    queryset = ZoneConstruite.objects.all()
+    serializer_class = ZoneConstruiteSerializer
+
+    def get_params(self, request):
+        bbox = request.query_params.get("in_bbox").split(",")
+        bbox = list(map(float, bbox))
+        year = int(request.query_params.get("year"))
+        return [year] + bbox  # /!\ order matter, see sql query below
+
+    def get_data(self, request):
+        query = (
+            "select id, id_source, year, millesime, surface, st_AsGeoJSON(mpoly, 8) "
+            f"from {ZoneConstruite._meta.db_table} "
+            "where year = %s and mpoly && ST_MakeEnvelope(%s, %s, %s, %s, 4326) "
+        )
+        params = self.get_params(request)
+        with connection.cursor() as cursor:
+            cursor.execute(query, params)
+            return [
+                {
+                    name: row[i]
+                    for i, name in enumerate(
+                        [
+                            "id",
+                            "id_source",
+                            "year",
+                            "millesime",
+                            "surface",
+                            "geojson",
+                        ]
+                    )
+                }
+                for row in cursor.fetchall()
+            ]
+
+    @action(detail=False)
+    def optimized(self, request):
+        geojson = json.dumps(
+            {
+                "type": "FeatureCollection",
+                "crs": {"type": "name", "properties": {"name": "EPSG:4326"}},
+                "features": "-features-",
+            }
+        )
+        features = []
+        for row in self.get_data(request):
+            try:
+                surface = row["surface"] / 10000
+                surface = int(surface * 100) / 100
+            except TypeError:
+                surface = 0
+            feature = json.dumps(
+                {
+                    "type": "Feature",
+                    "properties": {
+                        "Année": row["year"],
+                        "Surface": surface,
                     },
                     "geometry": "-geometry-",
                 }
@@ -279,83 +373,15 @@ class DepartementViewSet(DataViewSet):
 
 
 class EpciViewSet(DataViewSet):
+    """EPCI view set."""
+
     queryset = Epci.objects.all()
     serializer_class = EpciSerializer
     geo_field = "mpoly"
 
 
 class CommuneViewSet(DataViewSet):
-    """CommunesSybarval view set."""
+    """Commune view set."""
 
     queryset = Commune.objects.all()
     serializer_class = CommuneSerializer
-
-
-# DEPRECATED AND NOT USED
-
-# class EnveloppeUrbaine2018ViewSet(DataViewSet):
-#     queryset = EnveloppeUrbaine2018.objects.all()
-#     serializer_class = EnveloppeUrbaine2018Serializer
-
-
-# class Voirie2018ViewSet(DataViewSet):
-#     queryset = Voirie2018.objects.all()
-#     serializer_class = Voirie2018Serializer
-
-
-# class ZonesBaties2018ViewSet(DataViewSet):
-#     queryset = ZonesBaties2018.objects.all()
-#     serializer_class = ZonesBaties2018Serializer
-
-
-# class SybarvalViewSet(DataViewSet):
-#     queryset = Sybarval.objects.all()
-#     serializer_class = SybarvalSerializer
-
-
-# class CommunesSybarvalViewSet(DataViewSet):
-#     """CommunesSybarval view set."""
-
-#     queryset = CommunesSybarval.objects.all()
-#     serializer_class = CommunesSybarvalSerializer
-
-#     @action(detail=True)
-#     def ocsge(self, request, pk):
-#         year = request.query_params["year"]
-#         # clean year to avoid any injection (because it is used as parameter in the
-#         # query below)... Might be overkill as Django as sql injection protection
-#         year = str(int(year))
-#         commune = self.get_object()
-#         params = list(commune.mpoly.extent)
-#         params.append(year)
-#         # after investigation, below query looks safe
-#         query = (
-#             "SELECT id, couverture_label, usage_label, millesime, map_color, "  # nosec
-#             "year, st_AsGeoJSON(mpoly, 4) AS geojson "
-#             f"FROM {Ocsge._meta.db_table} "
-#             "WHERE mpoly && ST_MakeEnvelope(%s, %s, %s, %s, 4326) "
-#             "AND year = %s"
-#         )
-#         features = []
-#         with connection.cursor() as cursor:
-#             cursor.execute(query, params)
-#             for row in cursor.fetchall():
-#                 feature = {
-#                     "type": "Feature",
-#                     "properties": {
-#                         "id": row[0],
-#                         "couverture_label": row[1],
-#                         "usage_label": row[2],
-#                         "millesime": row[3].strftime("%Y-%m-%d"),
-#                         "map_color": row[4],
-#                         "year": row[5],
-#                     },
-#                     "geometry": json.loads(row[6]),
-#                 }
-#                 features.append(feature)
-#         geojson = {
-#             "type": "FeatureCollection",
-#             "crs": {"type": "name", "properties": {"name": "EPSG:4326"}},
-#             "features": features,
-#         }
-#         return Response(geojson)
