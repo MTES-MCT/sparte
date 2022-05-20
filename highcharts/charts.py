@@ -1,5 +1,6 @@
 import base64
 import copy
+from decimal import Decimal
 import json
 import random
 import os
@@ -57,7 +58,11 @@ class Chart:
             self.add_serie(serie_name, data, **options)
 
     def dumps(self):
-        chart_dumped = json.dumps(self.chart)
+        def decimal2float(obj):
+            if isinstance(obj, Decimal):
+                return float(obj)
+
+        chart_dumped = json.dumps(self.chart, default=decimal2float)
         chart_dumped = chart_dumped.replace("'", "\\'")
         return mark_safe(chart_dumped)  # nosec
 

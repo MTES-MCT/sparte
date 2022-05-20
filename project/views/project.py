@@ -13,20 +13,25 @@ from django.views.generic import (
 
 from django_app_parameter import app_parameter
 
-from public_data.models import CouvertureSol, UsageSol, Land
+from public_data.models import Land, Ocsge
+from utils.views_mixins import BreadCrumbMixin, GetObjectMixin
 
 from project.charts import (
     ConsoCommuneChart,
+    ConsoComparisonChart,
+    CouvertureSolPieChart,
+    CouvertureSolProgressionChart,
     DeterminantPerYearChart,
     DeterminantPieChart,
-    ConsoComparisonChart,
+    EvolutionArtifChart,
+    UsageSolPieChart,
+    UsageSolProgressionChart,
 )
 from project.forms import UploadShpForm, KeywordForm
 from project.models import Project, Request, ProjectCommune
 from project.domains import ConsommationDataframe
 from project.tasks import send_email_request_bilan
-
-from utils.views_mixins import BreadCrumbMixin, GetObjectMixin
+from project.utils import add_total_line_column
 
 from .mixins import UserQuerysetOrPublicMixin
 
@@ -199,23 +204,14 @@ class ProjectReportConsoView(GroupMixin, DetailView):
 
         # communes_data_graph
         chart_conso_cities = ConsoCommuneChart(project)
-        communes_data_table = dict()
-        total = dict()
-        for city, data in chart_conso_cities.get_series().items():
-            communes_data_table[city] = data.copy()
-            communes_data_table[city]["total"] = sum(data.values())
-            for year, val in data.items():
-                total[year] = total.get(year, 0) + val
-        total["total"] = sum(total.values())
-        communes_data_table["Total"] = total
+
+        # Déterminants
+        det_chart = DeterminantPerYearChart(project)
 
         # Liste des groupes de communes
         groups_names = project.projectcommune_set.all().order_by("group_name")
         groups_names = groups_names.exclude(group_name=None).distinct()
         groups_names = groups_names.values_list("group_name", flat=True)
-
-        # Déterminants
-        det_chart = DeterminantPerYearChart(project)
 
         # check conso relative required or not
         relative_required = self.request.GET.get("relative", "false")
@@ -229,7 +225,6 @@ class ProjectReportConsoView(GroupMixin, DetailView):
             **super().get_context_data(**kwargs),
             "total_surface": project.area,
             "active_page": "consommation",
-            "communes_data_table": communes_data_table,
             "target_2031": {
                 "consummed": target_2031_consumption,
                 "annual_avg": target_2031_consumption / 10,
@@ -254,7 +249,10 @@ class ProjectReportConsoView(GroupMixin, DetailView):
             "relative": relative,
             "commune_chart": chart_conso_cities,
             # tables
-            "data_determinant": det_chart.get_series(),
+            "communes_data_table": add_total_line_column(
+                chart_conso_cities.get_series()
+            ),
+            "data_determinant": add_total_line_column(det_chart.get_series()),
             "groups_names": groups_names,
         }
 
@@ -354,67 +352,9 @@ class ProjectReportCityGroupView(GroupMixin, DetailView):
         return self.render_to_response(context)
 
 
-class RefCouverture:
-    def __init__(self, couv, data, millesimes, type_data="couverture"):
-        self.couv = couv
-        self.parent = couv.get_parent()
-        self.name = f"{couv.code} {couv.label}"
-        self.label_short = couv.label[:50]
-        # see all the available millesime
-        self.millesimes = millesimes
-        # surface contains one entry per year (millesime)
-        self.surface = dict()
-        for year in self.millesimes:
-            self.surface[year] = sum(
-                [
-                    v
-                    for k, v in data[year][type_data].items()
-                    if k.startswith(self.code_prefix)
-                ]
-            )
-
-    @property
-    def code(self):
-        return self.couv.code
-
-    @property
-    def evolution(self):
-        try:
-            val = list(self.surface.values())
-            return val[1] - val[0]
-        except (KeyError, IndexError):
-            return 0
-
-    @property
-    def map_color(self):
-        return self.couv.map_color
-
-    @property
-    def code_prefix(self):
-        return self.couv.code_prefix
-
-    @property
-    def level(self):
-        return self.couv.level
-
-    @property
-    def label(self):
-        return self.couv.label
-
-    def __getattr__(self, name):
-        if name.startswith("get_surface_"):
-            year = name.split("_")[-1]
-            try:
-                return self.surface[year]
-            except KeyError:
-                return 0
-        else:
-            return getattr(self, name)
-
-
 class ProjectReportCouvertureView(GroupMixin, DetailView):
     queryset = Project.objects.all()
-    template_name = "project/rapport_couverture.html"
+    template_name = "project/rapport_usage.html"
     context_object_name = "project"
 
     def get_context_breadcrumbs(self):
@@ -424,52 +364,35 @@ class ProjectReportCouvertureView(GroupMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         project = self.get_object()
-        raw_data = project.couverture_usage
-        millesimes = raw_data.keys()
-        data_covers = []
-        for couv in CouvertureSol.objects.all().order_by("code"):
-            data_covers.append(
-                RefCouverture(
-                    couv,
-                    raw_data,
-                    millesimes,
-                )
+
+        surface_territory = project.area
+        kwargs = {
+            "surface_territory": surface_territory,
+            "active_page": "couverture",
+            "ocsge_available": True,
+        }
+        try:
+            first_millesime = project.get_first_available_millesime()
+            last_millesime = project.get_last_available_millesime()
+
+            pie_chart = CouvertureSolPieChart(project, last_millesime)
+            progression_chart = CouvertureSolProgressionChart(
+                project, first_millesime, last_millesime
             )
 
-        # PREP DATA FOR DRILL DOWN CHART
-        # column_drill_down = {
-        #     "top": [
-        #         {"name": "CS1", "y": 10},
-        #         {"name": "CS2", "y": 5},
-        #     ],
-        #     "CS1" : [
-        #         {"name": "CS1.1", "y": 8},
-        #         {"name": "CS1.2", "y": 2},
-        #     ],
-        # }
-        # column_drill_down = dict()
-        # for dc in data_covers:
-        #     key = "top" if dc.parent is None else dc.parent.code
-        #     if key not in column_drill_down:
-        #         column_drill_down[key] = []
-        #     column_drill_down[key].append(
-        #         {
-        #             "name": dc.name,
-        #             "y_2015": dc.get_surface_2015,
-        #             "y_2018": dc.get_surface_2018,
-        #             "drilldown": dc.code,
-        #             "map_color": dc.map_color,
-        #         }
-        #     )
+            kwargs.update(
+                {
+                    "first_millesime": str(first_millesime),
+                    "last_millesime": str(last_millesime),
+                    "pie_chart": pie_chart,
+                    "progression_chart": progression_chart,
+                }
+            )
+        except Ocsge.DoesNotExist:
+            # There is no OCSGE available for this territoru
+            kwargs.update({"ocsge_available": False})
 
-        return {
-            **super().get_context_data(),
-            "data_covers": data_covers,
-            "millesimes": millesimes,
-            "surface_territoire": project.area,
-            "active_page": "couverture",
-            # "column_drill_down": column_drill_down,
-        }
+        return super().get_context_data(**kwargs)
 
 
 class ProjectReportUsageView(GroupMixin, DetailView):
@@ -484,27 +407,35 @@ class ProjectReportUsageView(GroupMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         project = self.get_object()
-        raw_data = project.couverture_usage
-        millesimes = raw_data.keys()
-        data_covers = []
 
-        for usage in UsageSol.objects.all().order_by("code"):
-            data_covers.append(
-                RefCouverture(
-                    usage,
-                    raw_data,
-                    millesimes,
-                    type_data="usage",
-                )
+        surface_territory = project.area
+        kwargs = {
+            "surface_territory": surface_territory,
+            "active_page": "usage",
+            "ocsge_available": True,
+        }
+        try:
+            first_millesime = project.get_first_available_millesime()
+            last_millesime = project.get_last_available_millesime()
+
+            pie_chart = UsageSolPieChart(project, last_millesime)
+            progression_chart = UsageSolProgressionChart(
+                project, first_millesime, last_millesime
             )
 
-        return {
-            **super().get_context_data(),
-            "data_covers": data_covers,
-            "millesimes": millesimes,
-            "surface_territoire": project.area,
-            "active_page": "usage",
-        }
+            kwargs.update(
+                {
+                    "first_millesime": str(first_millesime),
+                    "last_millesime": str(last_millesime),
+                    "pie_chart": pie_chart,
+                    "progression_chart": progression_chart,
+                }
+            )
+        except Ocsge.DoesNotExist:
+            # There is no OCSGE available for this territoru
+            kwargs.update({"ocsge_available": False})
+
+        return super().get_context_data(**kwargs)
 
 
 class ProjectReportSynthesisView(GroupMixin, DetailView):
@@ -523,20 +454,22 @@ class ProjectReportSynthesisView(GroupMixin, DetailView):
         return breadcrumbs
 
     def get_context_data(self, **kwargs):
-        context = super().get_context_data()
         project = self.get_object()
         total_surface = int(project.area * 100)
         conso_10_years = project.get_bilan_conso()
-        context.update(
-            {
-                "active_page": "synthesis",
-                "conso_10_years": conso_10_years,
-                "trajectoire_2030": conso_10_years / 2,
-                "total_surface": total_surface,
-            }
-        )
+        progression_time_scoped = project.get_artif_progession_time_scoped()
+        kwargs = {
+            "diagnostic": project,
+            "active_page": "synthesis",
+            "conso_10_years": conso_10_years,
+            "trajectoire_2030": conso_10_years / 2,
+            "total_surface": total_surface,
+            "new_artif": progression_time_scoped["new_artif"],
+            "new_natural": progression_time_scoped["new_natural"],
+            "net_artif": progression_time_scoped["net_artif"],
+        }
         # project = self.get_object()
-        return context
+        return super().get_context_data(**kwargs)
 
 
 class ProjectReportArtifView(GroupMixin, DetailView):
@@ -555,16 +488,57 @@ class ProjectReportArtifView(GroupMixin, DetailView):
         return breadcrumbs
 
     def get_context_data(self, **kwargs):
-        context = super().get_context_data()
         project = self.get_object()
         total_surface = project.area
-        context.update(
+
+        kwargs = {
+            "diagnostic": project,
+            "active_page": "artificialisation",
+            "total_surface": total_surface,
+            "ocsge_available": True,
+        }
+
+        try:
+            first_millesime = project.get_first_available_millesime()
+            last_millesime = project.get_last_available_millesime()
+        except Ocsge.DoesNotExist:
+            # There is no OCSGE available for this territoru
+            kwargs.update({"ocsge_available": False})
+            return super().get_context_data(**kwargs)
+
+        artif_area = project.get_artif_area()
+        progression_time_scoped = project.get_artif_progession_time_scoped()
+        net_artif = progression_time_scoped["net_artif"]
+        try:
+            net_artif_rate = 100 * net_artif / (artif_area - net_artif)
+            # show + on front of net_artif
+            net_artif = f"+{net_artif}" if net_artif > 0 else str(net_artif)
+        except TypeError:
+            net_artif_rate = 0
+            net_artif = "0"
+
+        chart_evolution_artif = EvolutionArtifChart(project)
+        table_evolution_artif = chart_evolution_artif.get_series()
+        headers_evolution_artif = table_evolution_artif["Artificialisation"].keys()
+
+        kwargs.update(
             {
-                "active_page": "artificialisation",
-                "total_surface": total_surface,
+                "first_millesime": first_millesime,
+                "last_millesime": str(last_millesime),
+                "artif_area": artif_area,
+                "new_artif": progression_time_scoped["new_artif"],
+                "new_natural": progression_time_scoped["new_natural"],
+                "net_artif": net_artif,
+                "net_artif_rate": net_artif_rate,
+                "chart_evolution_artif": chart_evolution_artif,
+                "table_evolution_artif": add_total_line_column(
+                    table_evolution_artif, line=False
+                ),
+                "headers_evolution_artif": headers_evolution_artif,
             }
         )
-        return context
+
+        return super().get_context_data(**kwargs)
 
 
 class ProjectReportDownloadView(GroupMixin, CreateView):
@@ -663,23 +637,22 @@ class ProjectMapView(GroupMixin, DetailView):
                 ]
             }
         )
+        center = self.object.get_centroid()
         context.update(
             {
                 # center map on France
                 "carto_name": "Project",
-                "center_lat": 44.6586,
-                "center_lng": -1.164,
-                "default_zoom": 12,
+                "center_lat": center.y,
+                "center_lng": center.x,
+                "default_zoom": 10,
                 "layer_list": [
                     {
                         "name": "Communes",
-                        # "url": reverse_lazy("public_data:commune-list"),
                         "url": reverse_lazy(
                             "project:project-communes", args=[self.object.id]
                         ),
                         "display": False,
                         "level": "2",
-                        # "color_property_name": "map_color",
                         "style": "style_communes",
                     },
                     {
@@ -692,27 +665,71 @@ class ProjectMapView(GroupMixin, DetailView):
                         "level": "5",
                     },
                     {
+                        "name": "Arcachon: Couverture 2015",
+                        "url": (
+                            f'{reverse_lazy("public_data:ocsge-optimized")}'
+                            "?year=2015&color=couverture"
+                        ),
+                        "display": False,
+                        "color_property_name": "map_color",
+                        "style": "get_color_from_property",
+                        "level": "1",
+                    },
+                    {
+                        "name": "Arcachon: Couverture 2018",
+                        "url": (
+                            f'{reverse_lazy("public_data:ocsge-optimized")}'
+                            "?year=2018&color=couverture"
+                        ),
+                        "display": False,
+                        "color_property_name": "map_color",
+                        "style": "get_color_from_property",
+                        "level": "1",
+                    },
+                    {
+                        "name": "Arcachon: Usage 2015",
+                        "url": (
+                            f'{reverse_lazy("public_data:ocsge-optimized")}'
+                            "?year=2015&color=usage"
+                        ),
+                        "display": False,
+                        "color_property_name": "map_color",
+                        "style": "get_color_from_property",
+                        "level": "1",
+                    },
+                    {
+                        "name": "Arcachon: Usage 2018",
+                        "url": (
+                            f'{reverse_lazy("public_data:ocsge-optimized")}'
+                            "?year=2018&color=usage"
+                        ),
+                        "display": False,
+                        "color_property_name": "map_color",
+                        "style": "get_color_from_property",
+                        "level": "1",
+                    },
+                    {
                         "name": "Archachon : artificialisation 2015 à 2018",
-                        "url": reverse_lazy(
-                            "public_data:artificialisee2015to2018-list"
+                        "url": (
+                            f'{reverse_lazy("public_data:ocsgediff-optimized")}'
+                            "?year_old=2015&year_new=2018&is_new_artif=true"
                         ),
-                        "display": True,
-                        "gradient_url": reverse_lazy(
-                            "public_data:artificialisee2015to2018-gradient"
-                        ),
+                        "display": False,
+                        "style": "get_color_for_ocsge_diff",
                         "level": "7",
                     },
                     {
                         "name": "Arcachon : renaturation de 2015 à 2018",
-                        "url": reverse_lazy("public_data:renaturee2018to2015-list"),
-                        "gradient_url": reverse_lazy(
-                            "public_data:renaturee2018to2015-gradient"
+                        "url": (
+                            f'{reverse_lazy("public_data:ocsgediff-optimized")}'
+                            "?year_old=2015&year_new=2018&is_new_natural=true"
                         ),
+                        "style": "get_color_for_ocsge_diff",
                         "level": "7",
-                        "display": True,
+                        "display": False,
                     },
                     {
-                        "name": "Zones artificielles",
+                        "name": "Zones artificielles 2018",
                         "url": reverse_lazy("public_data:artificielle2018-list"),
                         "display": False,
                         "gradient_url": reverse_lazy(
@@ -721,69 +738,99 @@ class ProjectMapView(GroupMixin, DetailView):
                         "level": "3",
                         "style": "style_zone_artificielle",
                     },
+                    # {
+                    #     "name": "OCSGE",
+                    #     "url": reverse_lazy("public_data:ocsge-optimized"),
+                    #     "display": False,
+                    #     "color_property_name": "map_color",
+                    #     "style": "get_color_from_property",
+                    #     "level": "1",
+                    #     "switch": "ocsge",
+                    # },
                     {
-                        "name": "OCSGE",
-                        "url": reverse_lazy("public_data:ocsge-optimized"),
+                        "name": "Gers: Couverture 2016",
+                        "url": (
+                            f'{reverse_lazy("public_data:ocsge-optimized")}'
+                            "?year=2016&color=couverture"
+                        ),
                         "display": False,
                         "color_property_name": "map_color",
                         "style": "get_color_from_property",
                         "level": "1",
-                        "switch": "ocsge",
                     },
-                    # {
-                    #     "name": "Gers: Couverture 2016",
-                    #     "url": (
-                    #         f'{reverse_lazy("public_data:ocsge-optimized")}'
-                    #         "?year=2016&color=couverture"
-                    #     ),
-                    #     "display": False,
-                    #     "color_property_name": "map_color",
-                    #     "style": "get_color_from_property",
-                    #     "level": "1",
-                    # },
-                    # {
-                    #     "name": "Gers: Couverture 2019",
-                    #     "url": (
-                    #         f'{reverse_lazy("public_data:ocsge-optimized")}'
-                    #         "?year=2019&color=couverture"
-                    #     ),
-                    #     "display": False,
-                    #     "color_property_name": "map_color",
-                    #     "style": "get_color_from_property",
-                    #     "level": "1",
-                    # },
-                    # {
-                    #     "name": "Gers: Usage 2016",
-                    #     "url": (
-                    #         f'{reverse_lazy("public_data:ocsge-optimized")}'
-                    #         "?year=2016&color=usage"
-                    #     ),
-                    #     "display": False,
-                    #     "color_property_name": "map_color",
-                    #     "style": "get_color_from_property",
-                    #     "level": "1",
-                    # },
-                    # {
-                    #     "name": "Gers: Usage 2019",
-                    #     "url": (
-                    #         f'{reverse_lazy("public_data:ocsge-optimized")}'
-                    #         "?year=2019&color=usage"
-                    #     ),
-                    #     "display": False,
-                    #     "color_property_name": "map_color",
-                    #     "style": "get_color_from_property",
-                    #     "level": "1",
-                    # },
-                    # {
-                    #     "name": "Gers: différence 2016 à 2019",
-                    #     "url": (
-                    #         f'{reverse_lazy("public_data:ocsgediff-optimized")}'
-                    #         "?year_old=2016&year_new=2019"
-                    #     ),
-                    #     "display": False,
-                    #     "style": "get_color_for_ocsge_diff",
-                    #     "level": "7",
-                    # },
+                    {
+                        "name": "Gers: Couverture 2019",
+                        "url": (
+                            f'{reverse_lazy("public_data:ocsge-optimized")}'
+                            "?year=2019&color=couverture"
+                        ),
+                        "display": False,
+                        "color_property_name": "map_color",
+                        "style": "get_color_from_property",
+                        "level": "1",
+                    },
+                    {
+                        "name": "Gers: Usage 2016",
+                        "url": (
+                            f'{reverse_lazy("public_data:ocsge-optimized")}'
+                            "?year=2016&color=usage"
+                        ),
+                        "display": False,
+                        "color_property_name": "map_color",
+                        "style": "get_color_from_property",
+                        "level": "1",
+                    },
+                    {
+                        "name": "Gers: Usage 2019",
+                        "url": (
+                            f'{reverse_lazy("public_data:ocsge-optimized")}'
+                            "?year=2019&color=usage"
+                        ),
+                        "display": False,
+                        "color_property_name": "map_color",
+                        "style": "get_color_from_property",
+                        "level": "1",
+                    },
+                    {
+                        "name": "Gers: artificialisation 2016 à 2019",
+                        "url": (
+                            f'{reverse_lazy("public_data:ocsgediff-optimized")}'
+                            "?year_old=2016&year_new=2019&is_new_artif=true"
+                        ),
+                        "display": False,
+                        "style": "get_color_for_ocsge_diff",
+                        "level": "7",
+                    },
+                    {
+                        "name": "Gers: renaturation 2016 à 2019",
+                        "url": (
+                            f'{reverse_lazy("public_data:ocsgediff-optimized")}'
+                            "?year_old=2016&year_new=2019&is_new_natural=true"
+                        ),
+                        "display": False,
+                        "style": "get_color_for_ocsge_diff",
+                        "level": "7",
+                    },
+                    {
+                        "name": "Gers: zones construites 2016",
+                        "url": (
+                            f'{reverse_lazy("public_data:zoneconstruite-optimized")}'
+                            "?year=2016"
+                        ),
+                        "display": False,
+                        "style": "style_zone_artificielle",
+                        "level": "3",
+                    },
+                    {
+                        "name": "Gers: zones construites 2019",
+                        "url": (
+                            f'{reverse_lazy("public_data:zoneconstruite-optimized")}'
+                            "?year=2019"
+                        ),
+                        "display": False,
+                        "style": "style_zone_artificielle",
+                        "level": "3",
+                    },
                 ],
             }
         )

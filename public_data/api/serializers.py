@@ -18,6 +18,7 @@ from public_data.models import (
     Voirie2018,
     ZonesBaties2018,
     UsageSol,
+    ZoneConstruite,
 )
 
 
@@ -156,7 +157,7 @@ class OcsgeDiffSerializer(serializers.GeoFeatureModelSerializer):
             "us_old_label",
             "us_new_label",
             "is_new_artif",
-            "is_new_naf",
+            "is_new_natural",
         )
         geo_field = "mpoly"
         model = OcsgeDiff
@@ -299,4 +300,16 @@ class EpciSerializer(serializers.GeoFeatureModelSerializer):
             "name",
         )
         model = Epci
+        geo_field = "mpoly"
+
+
+class ZoneConstruiteSerializer(serializers.GeoFeatureModelSerializer):
+    class Meta:
+        fields = (
+            "id",
+            "id_source",
+            "millesime",
+            "year",
+        )
+        model = ZoneConstruite()
         geo_field = "mpoly"

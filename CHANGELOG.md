@@ -3,6 +3,29 @@
 Ce changelog suit la méthode "keep a changelog" disponible ici: [https://keepachangelog.com/en/1.0.0/](https://keepachangelog.com/en/1.0.0/)
 
 
+## [1.3.5] - 20.05.2022
+
+### Ajout :
+* Numéro de version de l'app visible dans le header de l'admin
+* Commande pour calculer la zone artificielle grâce aux données de l'OCS GE
+* Complétion du rapport de synthèse et utilisation par défaut lors de l'ouverture des rapports
+* Commande de calcule des données des villes pour faciliter la construction des rapports
+
+### Modifié :
+* Ajout colonne et ligne total dans les tableaux de données
+* Masquer le contenu du rapport si les données sont manquantes
+* Unification des données OCSGE, OcsgeDiff, Zone artificielle et Zone construite
+* Unification des endpoints pour les données de la carte interactive
+* Unifier template des rapports couverture et usage
+* Fusionner les tableaux couverture et usage
+
+## [1.3.4] - Non livrée
+
+### Ajout :
+* Données du Gers: OCS GE 2016 & 2019, OCS GE diff, zone construite 2016 & 2019
+* Fonction de calcule des données d'artificialisation de chaque commune
+* Rapport d'artificialisation
+
 ## [1.3.2] - 29.04.2022
 
 ### Ajouté
@@ -11,7 +34,7 @@ Ce changelog suit la méthode "keep a changelog" disponible ici: [https://keepac
 ## [1.3.1] - 29.04.2022
 
 ### Bugs
-* Obligatoin de désactivé puis activer le module django-templates-docx pour réussir à migrer la base de données
+* Obligatoir de désactivé puis activer le module django-templates-docx pour réussir à migrer la base de données
 
 
 ## [1.3.0] - 29.04.2022

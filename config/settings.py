@@ -21,7 +21,7 @@ from django.core.exceptions import ImproperlyConfigured
 from django.contrib.messages import constants as messages
 
 
-OFFICIAL_VERSION = "1.3.0"
+OFFICIAL_VERSION = "1.3.5"
 
 root = environ.Path(__file__) - 2  # get root of the project
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -285,7 +285,8 @@ if DEBUG:
 DJANGO_DOCX_TEMPLATES = {
     "data_sources": [
         "project.datasources.DiagnosticSource",
-    ]
+    ],
+    "base_template": "index.html",
 }
 
 # Configuration for highchart
@@ -435,12 +436,12 @@ LOGGING = {
     },
     "loggers": {
         "config": {
-            "handlers": ["console_just_message"],
+            "handlers": ["console"],
             "level": LOGGING_LEVEL,
             "propagate": False,
         },
         "public_data": {
-            "handlers": ["console_just_message"],
+            "handlers": ["console"],
             "level": LOGGING_LEVEL,
             "propagate": False,
         },

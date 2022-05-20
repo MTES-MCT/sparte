@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib import messages
 from django.http import FileResponse
 from django.views.generic import (
@@ -12,23 +13,27 @@ from django.views.generic import (
 from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse_lazy, reverse
 
-
 from .forms import TemplateForm
 from .models import DocxTemplate
 from .utils import import_from_string, get_all_data_sources
 
 
-class TemplateCreateView(CreateView):
+class BaseTemplateMixin:
+    def get_context_data(self, **kwargs):
+        try:
+            kwargs["base_template"] = settings.DJANGO_DOCX_TEMPLATES["base_template"]
+        except KeyError:
+            kwargs["base_template"] = "django_docx_template/base.html"
+        return super().get_context_data(**kwargs)
+
+
+class TemplateCreateView(BaseTemplateMixin, CreateView):
     model = DocxTemplate
     form_class = TemplateForm
     success_url = reverse_lazy("docx_template:list")
 
-    def get_context_data(self, **kwargs):
-        kwargs["base_template"] = "django_docx_template/base.html"
-        return super().get_context_data(**kwargs)
 
-
-class TemplateUpdateView(UpdateView):
+class TemplateUpdateView(BaseTemplateMixin, UpdateView):
     model = DocxTemplate
     form_class = TemplateForm
 
@@ -36,24 +41,18 @@ class TemplateUpdateView(UpdateView):
         return reverse("docx_template:detail", kwargs={"slug": self.object.slug})
 
     def get_context_data(self, **kwargs):
-        kwargs["base_template"] = "django_docx_template/base.html"
         kwargs["submit_label"] = "Update"
         return super().get_context_data(**kwargs)
 
 
-class TemplateListView(ListView):
+class TemplateListView(BaseTemplateMixin, ListView):
+    model = DocxTemplate
+
+
+class TemplateDetailView(BaseTemplateMixin, DetailView):
     model = DocxTemplate
 
     def get_context_data(self, **kwargs):
-        kwargs["base_template"] = "django_docx_template/base.html"
-        return super().get_context_data(**kwargs)
-
-
-class TemplateDetailView(DetailView):
-    model = DocxTemplate
-
-    def get_context_data(self, **kwargs):
-        kwargs["base_template"] = "django_docx_template/base.html"
         kwargs["url_name"] = f"{self.object.slug}-merge"
         base_url = reverse("docx_template:base_url")[1:]  # remove leading /
         kwargs["url_merge"] = f"{base_url}{self.object.get_merge_url()}"
@@ -67,11 +66,10 @@ class TemplateDetailView(DetailView):
         return super().get_context_data(**kwargs)
 
 
-class TemplateDeletelView(DeleteView):
+class TemplateDeletelView(BaseTemplateMixin, DeleteView):
     model = DocxTemplate
 
     def get_context_data(self, **kwargs):
-        kwargs["base_template"] = "django_docx_template/base.html"
         examples = self.object.data_source.get_all_example_combinations()
         if examples:
             kwargs["examples"] = [_.values() for _ in examples]
@@ -104,20 +102,18 @@ class TemplateExampleMergeView(TemplateMergeView):
         return template.merge_example(example_number=example_number)
 
 
-class DataSourceListView(TemplateView):
+class DataSourceListView(BaseTemplateMixin, TemplateView):
     template_name = "django_docx_template/datasource_list.html"
 
     def get_context_data(self, **kwargs):
         kwargs["object_list"] = get_all_data_sources()
-        kwargs["base_template"] = "django_docx_template/base.html"
         return super().get_context_data(**kwargs)
 
 
-class DataSourceDetailView(TemplateView):
+class DataSourceDetailView(BaseTemplateMixin, TemplateView):
     template_name = "django_docx_template/datasource_detail.html"
 
     def get_context_data(self, **kwargs):
-        kwargs["base_template"] = "django_docx_template/base.html"
         kwargs["data_source_class"] = self.kwargs["slug"]
         try:
             kwargs["object"] = import_from_string(kwargs["data_source_class"])
