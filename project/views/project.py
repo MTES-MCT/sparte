@@ -21,6 +21,7 @@ from project.charts import (
     ConsoComparisonChart,
     CouvertureSolPieChart,
     CouvertureSolProgressionChart,
+    DetailArtifChart,
     DeterminantPerYearChart,
     DeterminantPieChart,
     EvolutionArtifChart,
@@ -521,9 +522,11 @@ class ProjectReportArtifView(GroupMixin, DetailView):
         table_evolution_artif = chart_evolution_artif.get_series()
         headers_evolution_artif = table_evolution_artif["Artificialisation"].keys()
 
+        detail_artif_chart = DetailArtifChart(project, first_millesime, last_millesime)
+
         kwargs.update(
             {
-                "first_millesime": first_millesime,
+                "first_millesime": str(first_millesime),
                 "last_millesime": str(last_millesime),
                 "artif_area": artif_area,
                 "new_artif": progression_time_scoped["new_artif"],
@@ -535,6 +538,13 @@ class ProjectReportArtifView(GroupMixin, DetailView):
                     table_evolution_artif, line=False
                 ),
                 "headers_evolution_artif": headers_evolution_artif,
+                "detail_artif_chart": detail_artif_chart,
+                "detail_total_last": sum(
+                    _["surface_last"] for _ in detail_artif_chart.get_series()
+                ),
+                "detail_total_diff": sum(
+                    _["surface_diff"] for _ in detail_artif_chart.get_series()
+                ),
             }
         )
 
