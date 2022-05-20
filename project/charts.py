@@ -336,3 +336,72 @@ class CouvertureSolProgressionChart(ProjectChart):
 class UsageSolProgressionChart(CouvertureSolProgressionChart):
     _level = 1
     _sol = "usage"
+
+
+class DetailArtifChart(ProjectChart):
+    name = "Progression des principaux postes de la couverture du sol"
+    param = {
+        "chart": {"type": "column", "alignThresholds": True},
+        "title": {"text": "Détail de l'artificialisation"},
+        "yAxis": [
+            {  # primary axis
+                "title": {"text": "Surface (en ha)"},
+                # "plotLines": [{"value": 0, "width": 2, "color": "#ff0000"}],
+            },
+            {  # primary axis
+                "title": {"text": "Progression (en ha)"},
+                # "plotLines": [{"value": 0, "width": 2, "color": "#ff0000"}],
+                "opposite": True,
+            },
+        ],
+        "tooltip": {
+            "pointFormat": "{series.name}: {point.y}",
+            "valueSuffix": " Ha",
+            "valueDecimals": 2,
+            "headerFormat": "",
+        },
+        "xAxis": {"type": "category"},
+        "legend": {"layout": "horizontal", "align": "center", "verticalAlign": "top"},
+        "series": [],
+    }
+
+    def __init__(self, project, first_millesime, last_millesime):
+        self.first_millesime = first_millesime
+        self.last_millesime = last_millesime
+        super().__init__(project)
+
+    def get_series(self):
+        if not self.series:
+            self.series = self.project.get_detail_artif(
+                self.first_millesime, self.last_millesime
+            )
+        return self.series
+
+    def add_series(self):
+        self.chart["series"].append(
+            {
+                "name": f"Surface artificielle totale ({self.last_millesime})",
+                "yAxis": 0,
+                "data": [
+                    {
+                        "name": f'{couv["code_prefix"]} {couv["label"]}',
+                        "y": couv["surface_last"],
+                    }
+                    for couv in self.get_series()
+                ],
+            }
+        )
+        self.chart["series"].append(
+            {
+                "name": f"Progression ({self.first_millesime} à {self.last_millesime})",
+                "yAxis": 1,
+                # "type": "line",
+                "data": [
+                    {
+                        "name": f'{couv["code_prefix"]} {couv["label"]}',
+                        "y": couv["surface_diff"],
+                    }
+                    for couv in self.get_series()
+                ],
+            }
+        )

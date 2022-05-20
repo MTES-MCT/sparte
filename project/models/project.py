@@ -536,6 +536,25 @@ class Project(BaseProject):
             item.surface_diff = item.surface_last - item.surface_first
         return item_list
 
+    def get_detail_artif(self, first_millesime, last_millesime):
+        qs = CommuneSol.objects.filter(
+            city__in=self.cities.all(), year__in=[first_millesime, last_millesime]
+        )
+        qs = qs.filter(matrix__is_artificial=True)
+        qs = qs.annotate(code_prefix=F("matrix__couverture__code_prefix"))
+        qs = qs.annotate(label=F("matrix__couverture__label"))
+        qs = qs.annotate(label_short=F("matrix__couverture__label_short"))
+        qs = qs.values("code_prefix", "label", "label_short")
+        # TODO : ajouter Coalece(Sum(), 0) pour éviter les None dans les surfaces
+        qs = qs.annotate(
+            surface_first=Sum("surface", filter=Q(year=first_millesime), default=0)
+        )
+        qs = qs.annotate(
+            surface_last=Sum("surface", filter=Q(year=last_millesime), default=0)
+        )
+        qs = qs.annotate(surface_diff=F("surface_last") - F("surface_first"))
+        return qs
+
 
 class Emprise(DataColorationMixin, gis_models.Model):
 
