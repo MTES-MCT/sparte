@@ -499,6 +499,7 @@ class ProjectReportArtifView(GroupMixin, DetailView):
         }
 
         try:
+            first_millesime = project.get_first_available_millesime()
             last_millesime = project.get_last_available_millesime()
         except Ocsge.DoesNotExist:
             # There is no OCSGE available for this territoru
@@ -522,6 +523,7 @@ class ProjectReportArtifView(GroupMixin, DetailView):
 
         kwargs.update(
             {
+                "first_millesime": first_millesime,
                 "last_millesime": str(last_millesime),
                 "artif_area": artif_area,
                 "new_artif": progression_time_scoped["new_artif"],
