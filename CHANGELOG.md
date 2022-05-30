@@ -23,6 +23,12 @@ Ce changelog suit la méthode "keep a changelog" disponible ici: [https://keepac
 * Unifier template des rapports couverture et usage
 * Fusionner les tableaux couverture et usage
 
+## [1.4.0] - 10.05.2022
+
+### Ajout :
+* Zones artificielles. Function de construction, affichage pour Gers et Arcachon dans la carte interactive.
+
+
 ## [1.3.4] - 10.05.2022
 
 ### Ajout :
