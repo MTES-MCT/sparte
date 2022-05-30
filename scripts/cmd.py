@@ -147,28 +147,6 @@ def migrate(ctx):
 
 @cli.command()
 @click.pass_context
-def mep_110(ctx):
-    """Trigger all data transformation to successful MEP release 1.1.0"""
-    click.secho("Start migration v1.1.0", fg="cyan")
-
-    click.secho("launch set_dept_millesimes", fg="cyan")
-    # find which millesime is in each departement
-    connecter = ScalingoInterface(ctx.obj)
-    connecter.manage_py("set_dept_millesimes")
-
-    click.secho("launch reevaluate_project_mep_110", fg="cyan")
-    # set first and last ocsge
-    # change unit from km² to ha
-    connecter.detached = True
-    connecter.manage_py("reevaluate_project_mep_110")
-
-    click.secho("launch param_mep_110", fg="cyan")
-    connecter.detached = False
-    connecter.manage_py("param_mep_110")
-
-
-@cli.command()
-@click.pass_context
 def mep_120(ctx):
     """Trigger all data transformation to successful MEP release 1.2.0"""
     click.secho("Start migration v1.2.0", fg="cyan")
@@ -209,6 +187,9 @@ def mep_140(ctx):
 
     click.secho("Build artificial area", fg="cyan")
     connecter.manage_py("build_artificial_area --verbose")
+
+    click.secho("Reset diagnostic first and last millesime OCS GE", fg="cyan")
+    connecter.manage_py("reset_first_last")
 
     click.secho("End migration", fg="cyan")
 

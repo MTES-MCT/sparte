@@ -165,8 +165,9 @@ def evaluate_indicators(project: Project):
 def find_first_and_last_ocsge(project: Project):
     """Use associated cities to find departements and available OCSGE millesime"""
     logger.info("Find first and last ocsge id=%d", project.id)
-    project.first_year_ocsge = project.get_first_available_millesime()
-    project.last_year_ocsge = project.get_last_available_millesime()
+    result = project.get_first_last_millesime()
+    project.first_year_ocsge = result["first"]
+    project.last_year_ocsge = result["last"]
 
 
 @shared_task

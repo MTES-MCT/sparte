@@ -464,7 +464,6 @@ class Project(BaseProject):
         result = self.emprise_set.aggregate(center=Centroid(Union("mpoly")))
         return result["center"]
 
-    @cached_property
     def get_first_last_millesime(self):
         """return {"first": yyyy, "last": yyyy} which are the first and last
         OCS GE millesime completly included in diagnostic time frame"""
@@ -472,22 +471,8 @@ class Project(BaseProject):
         qs = qs.filter(
             year__gte=self.analyse_start_date, year__lte=self.analyse_end_date
         )
-        qs = qs.annotate(first=Min("year"), last=Max("year"))
+        qs = qs.aggregate(first=Min("year"), last=Max("year"))
         return qs
-
-    def get_last_available_millesime(self):
-        # qs = Ocsge.objects.filter(mpoly__intersects=self.combined_emprise)
-        # qs = qs.filter(year__gte=self.analyse_start_date)
-        # qs = qs.filter(year__lte=self.analyse_end_date)
-        # return qs.latest("year").year
-        return self.get_first_last_millesime()["last"]
-
-    def get_first_available_millesime(self):
-        # qs = Ocsge.objects.filter(mpoly__intersects=self.combined_emprise)
-        # qs = qs.filter(year__gte=self.analyse_start_date)
-        # qs = qs.filter(year__lte=self.analyse_end_date)
-        # return qs.earliest("year").year
-        return self.get_first_last_millesime()["first"]
 
     def get_base_sol(self, millesime, sol="couverture"):
         if sol == "couverture":
