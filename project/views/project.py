@@ -373,10 +373,10 @@ class ProjectReportCouvertureView(GroupMixin, DetailView):
             "ocsge_available": True,
         }
         try:
-            first_millesime = project.get_first_available_millesime()
-            last_millesime = project.get_last_available_millesime()
+            first_millesime = project.first_year_ocsge
+            last_millesime = project.last_year_ocsge
 
-            pie_chart = CouvertureSolPieChart(project, last_millesime)
+            pie_chart = CouvertureSolPieChart(project)
             progression_chart = CouvertureSolProgressionChart(
                 project, first_millesime, last_millesime
             )
@@ -416,8 +416,8 @@ class ProjectReportUsageView(GroupMixin, DetailView):
             "ocsge_available": True,
         }
         try:
-            first_millesime = project.get_first_available_millesime()
-            last_millesime = project.get_last_available_millesime()
+            first_millesime = project.first_year_ocsge
+            last_millesime = project.last_year_ocsge
 
             pie_chart = UsageSolPieChart(project, last_millesime)
             progression_chart = UsageSolProgressionChart(
@@ -500,8 +500,8 @@ class ProjectReportArtifView(GroupMixin, DetailView):
         }
 
         try:
-            first_millesime = project.get_first_available_millesime()
-            last_millesime = project.get_last_available_millesime()
+            first_millesime = project.first_year_ocsge
+            last_millesime = project.last_year_ocsge
         except Ocsge.DoesNotExist:
             # There is no OCSGE available for this territoru
             kwargs.update({"ocsge_available": False})
