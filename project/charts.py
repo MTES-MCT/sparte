@@ -247,8 +247,8 @@ class CouvertureSolPieChart(ProjectChart):
         "series": [],
     }
 
-    def __init__(self, project, millesime):
-        self.millesime = millesime
+    def __init__(self, project):
+        self.millesime = project.last_year_ocsge
         super().__init__(project)
 
     def get_series(self):
