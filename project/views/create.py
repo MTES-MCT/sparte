@@ -253,7 +253,8 @@ class SetProjectOptions(BreadCrumbMixin, FormView):
             project.emprise_set.create(mpoly=lands[0].mpoly)
         else:
             project.cities.add(*lands)
-        process_project.delay(project.id)
+        # process_project.delay(project.id)
+        process_project(project.id)
         return redirect(project)
 
 
