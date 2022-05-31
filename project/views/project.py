@@ -535,11 +535,11 @@ class ProjectReportArtifView(GroupMixin, DetailView):
                 ),
                 "headers_evolution_artif": headers_evolution_artif,
                 "detail_artif_chart": detail_artif_chart,
-                "detail_total_last": sum(
-                    _["surface_last"] for _ in detail_artif_chart.get_series()
+                "detail_total_artif": sum(
+                    _["artif"] for _ in detail_artif_chart.get_series()
                 ),
-                "detail_total_diff": sum(
-                    _["surface_diff"] for _ in detail_artif_chart.get_series()
+                "detail_total_renat": sum(
+                    _["renat"] for _ in detail_artif_chart.get_series()
                 ),
             }
         )
