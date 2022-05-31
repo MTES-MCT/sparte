@@ -6,7 +6,7 @@ from django.contrib.gis.db.models import Union, Extent
 from django.contrib.gis.db.models.functions import Centroid
 from django.core.validators import MinValueValidator
 from django.db import models
-from django.db.models import Sum, F, Value, Q, Min, Max
+from django.db.models import Sum, F, Value, Q, Min, Max, Case, When
 from django.db.models.functions import Concat
 from django.urls import reverse
 from django.utils import timezone
@@ -19,9 +19,12 @@ from public_data.models import (
     CommuneDiff,
     CommuneSol,
     Ocsge,
+    OcsgeDiff,
     CouvertureSol,
     UsageSol,
 )
+
+from utils.db import cast_sum
 
 from .utils import user_directory_path
 
@@ -538,23 +541,33 @@ class Project(BaseProject):
             item.surface_diff = item.surface_last - item.surface_first
         return item_list
 
-    def get_detail_artif(self, first_millesime, last_millesime):
-        qs = CommuneSol.objects.filter(
-            city__in=self.cities.all(), year__in=[first_millesime, last_millesime]
+    def get_detail_artif(self):
+        qs = OcsgeDiff.objects.intersect(self.combined_emprise)
+        # sélection
+        qs = qs.filter(
+            year_old__gte=self.analyse_start_date,
+            year_new__lte=self.analyse_end_date,
         )
-        qs = qs.filter(matrix__is_artificial=True)
-        qs = qs.annotate(code_prefix=F("matrix__couverture__code_prefix"))
-        qs = qs.annotate(label=F("matrix__couverture__label"))
-        qs = qs.annotate(label_short=F("matrix__couverture__label_short"))
-        qs = qs.annotate(is_artif=F("matrix__is_artif"))
+        qs = qs.filter(Q(is_new_artif=True) | Q(is_new_natural=True))
+        qs = qs.annotate(
+            code_prefix=Case(
+                When(is_new_artif=True, then=F("new_matrix__couverture__code_prefix")),
+                default=F("old_matrix__couverture__code_prefix"),
+            ),
+            label=Case(
+                When(is_new_artif=True, then=F("new_matrix__couverture__label")),
+                default=F("old_matrix__couverture__label"),
+            ),
+            label_short=Case(
+                When(is_new_artif=True, then=F("new_matrix__couverture__label_short")),
+                default=F("old_matrix__couverture__label_short"),
+            ),
+        )
         qs = qs.values("code_prefix", "label", "label_short")
         qs = qs.annotate(
-            surface_first=Sum("surface", filter=Q(year=first_millesime), default=0)
+            artif=cast_sum("intersection_area", filter=Q(is_new_artif=True)),
+            renat=cast_sum("intersection_area", filter=Q(is_new_natural=True)),
         )
-        qs = qs.annotate(
-            surface_last=Sum("surface", filter=Q(year=last_millesime), default=0)
-        )
-        qs = qs.annotate(surface_diff=F("surface_last") - F("surface_first"))
         return qs
 
 

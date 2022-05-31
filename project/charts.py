@@ -342,18 +342,10 @@ class DetailArtifChart(ProjectChart):
     name = "Progression des principaux postes de la couverture du sol"
     param = {
         "chart": {"type": "column", "alignThresholds": True},
-        "title": {"text": "Détail de l'artificialisation"},
-        "yAxis": [
-            {  # primary axis
-                "title": {"text": "Surface (en ha)"},
-                # "plotLines": [{"value": 0, "width": 2, "color": "#ff0000"}],
-            },
-            {  # primary axis
-                "title": {"text": "Progression (en ha)"},
-                # "plotLines": [{"value": 0, "width": 2, "color": "#ff0000"}],
-                "opposite": True,
-            },
-        ],
+        "title": {"text": ""},
+        "yAxis": {
+            "title": {"text": "Progression (en ha)"},
+        },
         "tooltip": {
             "pointFormat": "{series.name}: {point.y}",
             "valueSuffix": " Ha",
@@ -372,20 +364,17 @@ class DetailArtifChart(ProjectChart):
 
     def get_series(self):
         if not self.series:
-            self.series = self.project.get_detail_artif(
-                self.first_millesime, self.last_millesime
-            )
+            self.series = self.project.get_detail_artif()
         return self.series
 
     def add_series(self):
         self.chart["series"].append(
             {
-                "name": f"Surface artificielle totale ({self.last_millesime})",
-                "yAxis": 0,
+                "name": "Artificialisation",
                 "data": [
                     {
-                        "name": f'{couv["code_prefix"]} {couv["label"]}',
-                        "y": couv["surface_last"],
+                        "name": couv["code_prefix"],
+                        "y": couv["artif"],
                     }
                     for couv in self.get_series()
                 ],
@@ -393,13 +382,11 @@ class DetailArtifChart(ProjectChart):
         )
         self.chart["series"].append(
             {
-                "name": f"Progression ({self.first_millesime} à {self.last_millesime})",
-                "yAxis": 1,
-                # "type": "line",
+                "name": "Renaturation",
                 "data": [
                     {
-                        "name": f'{couv["code_prefix"]} {couv["label"]}',
-                        "y": couv["surface_diff"],
+                        "name": couv["code_prefix"],
+                        "y": couv["renat"],
                     }
                     for couv in self.get_series()
                 ],
