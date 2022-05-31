@@ -191,6 +191,9 @@ def mep_140(ctx):
     click.secho("Reset diagnostic first and last millesime OCS GE", fg="cyan")
     connecter.manage_py("reset_first_last")
 
+    click.secho("Add short label to couverture and usage", fg="cyan")
+    connecter.manage_py("correct_label_couv_usage")
+
     click.secho("End migration", fg="cyan")
 
 
