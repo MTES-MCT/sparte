@@ -377,9 +377,7 @@ class ProjectReportCouvertureView(GroupMixin, DetailView):
             last_millesime = project.last_year_ocsge
 
             pie_chart = CouvertureSolPieChart(project)
-            progression_chart = CouvertureSolProgressionChart(
-                project, first_millesime, last_millesime
-            )
+            progression_chart = CouvertureSolProgressionChart(project)
 
             kwargs.update(
                 {
@@ -419,10 +417,8 @@ class ProjectReportUsageView(GroupMixin, DetailView):
             first_millesime = project.first_year_ocsge
             last_millesime = project.last_year_ocsge
 
-            pie_chart = UsageSolPieChart(project, last_millesime)
-            progression_chart = UsageSolProgressionChart(
-                project, first_millesime, last_millesime
-            )
+            pie_chart = UsageSolPieChart(project)
+            progression_chart = UsageSolProgressionChart(project)
 
             kwargs.update(
                 {
@@ -522,7 +518,7 @@ class ProjectReportArtifView(GroupMixin, DetailView):
         table_evolution_artif = chart_evolution_artif.get_series()
         headers_evolution_artif = table_evolution_artif["Artificialisation"].keys()
 
-        detail_artif_chart = DetailArtifChart(project, first_millesime, last_millesime)
+        detail_artif_chart = DetailArtifChart(project)
 
         kwargs.update(
             {
