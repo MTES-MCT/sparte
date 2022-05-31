@@ -133,11 +133,11 @@ Rapport artificialisation
             </table>
         </div>
 
-        <div class="box scrollme-x p-4">
+        <div class="box scrollme-x p-4" >
             <h3 class="mb-3">Détail de l'artificialisation :</h3>
             <div class="row">
                 <div class="col-4 border-end">
-                    <div id="detail_artif_chart"></div>
+                    <div id="detail_artif_chart" style="height:250px"></div>
                 </div>
                 <div class="col-8 d-flex align-content-center flex-wrap justify-content-center">
                     <div>
@@ -145,9 +145,9 @@ Rapport artificialisation
                             <thead>
                                 <tr>
                                     <th scope="col"></th>
-                                    <th scope="col" style="text-align: right">Artificielle<br/>en {{ last_millesime }}</th>
+                                    <th scope="col" style="text-align: right">Artificialisation</th>
                                     <th scope="col" style="text-align: right" class="text-muted">%</th>
-                                    <th scope="col" style="text-align: right">Artificialisation<br/>{{ first_millesime }} à {{ last_millesime }}</th>
+                                    <th scope="col" style="text-align: right">renaturation</th>
                                     <th scope="col" style="text-align: right" class="text-muted">%</th>
                                 </tr>
                             </thead>
@@ -155,17 +155,17 @@ Rapport artificialisation
                                 {% for couv in detail_artif_chart.get_series %}
                                 <tr>
                                     <th scope="row">{{ couv.code_prefix }} {{ couv.label }}</th>
-                                    <td align="right">{{ couv.surface_last|floatformat:1 }}</td>
-                                    <td align="right" class="text-muted">{{ couv.surface_last|percent:detail_total_last }}</td>
-                                    <td align="right">{{ couv.surface_diff|floatformat:2 }}</td>
-                                    <td align="right" class="text-muted">{{ couv.surface_diff|percent:detail_total_diff }}</td>
+                                    <td align="right">{{ couv.artif|floatformat:1 }}</td>
+                                    <td align="right" class="text-muted">{{ couv.artif|percent:detail_total_artif }}</td>
+                                    <td align="right">{{ couv.renat|floatformat:2 }}</td>
+                                    <td align="right" class="text-muted">{{ couv.renat|percent:detail_total_renat }}</td>
                                 </tr>
                                 {% endfor %}
                                 <tr>
                                     <th scope="row" class="text-muted">Total :</th>
-                                    <td align="right" class="text-muted">{{ detail_total_last|floatformat:1 }}</td>
+                                    <td align="right" class="text-muted">{{ detail_total_artif|floatformat:1 }}</td>
                                     <td align="right" class="text-muted">100%</td>
-                                    <td align="right" class="text-muted">{{ detail_total_diff|floatformat:2 }}</td>
+                                    <td align="right" class="text-muted">{{ detail_total_renat|floatformat:2 }}</td>
                                     <td align="right" class="text-muted">100%</td>
                                 </tr>
                             </tbody>
