@@ -546,8 +546,8 @@ class Project(BaseProject):
         qs = qs.annotate(code_prefix=F("matrix__couverture__code_prefix"))
         qs = qs.annotate(label=F("matrix__couverture__label"))
         qs = qs.annotate(label_short=F("matrix__couverture__label_short"))
+        qs = qs.annotate(is_artif=F("matrix__is_artif"))
         qs = qs.values("code_prefix", "label", "label_short")
-        # TODO : ajouter Coalece(Sum(), 0) pour éviter les None dans les surfaces
         qs = qs.annotate(
             surface_first=Sum("surface", filter=Q(year=first_millesime), default=0)
         )
