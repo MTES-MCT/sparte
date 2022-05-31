@@ -27,6 +27,8 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 # from django.db import connection
 from django.db.models import Sum
 
+from utils.db import IntersectManager
+
 from .mixins import DataColorationMixin, TruncateTableMixin
 
 from .couverture_usage import CouvertureUsageMatrix
@@ -56,6 +58,8 @@ class Ocsge(TruncateTableMixin, DataColorationMixin, models.Model):
     )
 
     mpoly = models.MultiPolygonField()
+
+    objects = IntersectManager()
 
     default_property = "id"
 
@@ -142,6 +146,8 @@ class OcsgeDiff(TruncateTableMixin, DataColorationMixin, models.Model):
         related_name="ocsge_difnew",
     )
 
+    objects = IntersectManager()
+
     default_property = "surface"
     default_color = "Red"
 
@@ -154,6 +160,8 @@ class ArtificialArea(TruncateTableMixin, DataColorationMixin, models.Model):
     )
     surface = models.DecimalField("surface", max_digits=15, decimal_places=4)
     city = models.ForeignKey("public_data.Commune", on_delete=models.CASCADE)
+
+    objects = IntersectManager()
 
     class Meta:
         constraints = [
@@ -182,3 +190,5 @@ class ZoneConstruite(TruncateTableMixin, DataColorationMixin, models.Model):
     surface = models.DecimalField(
         "surface", max_digits=15, decimal_places=4, blank=True, null=True
     )
+
+    objects = IntersectManager()
