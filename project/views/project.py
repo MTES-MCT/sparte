@@ -17,6 +17,8 @@ from public_data.models import Land, Ocsge
 from utils.views_mixins import BreadCrumbMixin, GetObjectMixin
 
 from project.charts import (
+    ArtifCouvSolPieChart,
+    ArtifUsageSolPieChart,
     ConsoCommuneChart,
     ConsoComparisonChart,
     CouvertureSolPieChart,
@@ -520,6 +522,9 @@ class ProjectReportArtifView(GroupMixin, DetailView):
 
         detail_artif_chart = DetailArtifChart(project)
 
+        couv_artif_sol = ArtifCouvSolPieChart(project)
+        usage_artif_sol = ArtifUsageSolPieChart(project)
+
         kwargs.update(
             {
                 "first_millesime": str(first_millesime),
@@ -541,6 +546,8 @@ class ProjectReportArtifView(GroupMixin, DetailView):
                 "detail_total_renat": sum(
                     _["renat"] for _ in detail_artif_chart.get_series()
                 ),
+                "couv_artif_sol": couv_artif_sol,
+                "usage_artif_sol": usage_artif_sol,
             }
         )
 
