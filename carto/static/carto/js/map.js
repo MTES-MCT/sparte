@@ -20,21 +20,34 @@ function get(object, key, default_value) {
 }
 
 function get_info_label(name) {
-    return (name == "name") ? "Nom" :
-        (name == "insee") ? "Code INSEE" :
-        (name == "area") ? "Surface (Ha)" :
-        (name == "surface") ? "Surface (Ha)" :
-        (name == "map_color") ? "" :
-        (name == "usage_2015") ? "Usage en 2015" :
-        (name == "usage_2018") ? "Usage en 2018" :
-        (name == "couverture_2015") ? "Couverture en 2015" :
-        (name == "couverture_2018") ? "Couverture en 2018" :
+    return (name == "area") ? "Surface (Ha)" :
         (name == "artif_area") ? "Consommé (pdt diag.)" :
+        (name == "artif_evo") ? "Artificialisation" :
+        (name == "city") ? "Commune" :
+        (name == "conso_1121_act") ? "Conso activité 11-21" :
         (name == "conso_1121_art") ? "Conso total 11-21" :
         (name == "conso_1121_hab") ? "Conso habitat 11-21" :
-        (name == "conso_1121_act") ? "Conso activité 11-21" :
+        (name == "cs_new") ? "Nouvelle couverture" :
+        (name == "cs_old") ? "Ancienne couverture" :
+        (name == "couverture_2015") ? "Couverture en 2015" :
+        (name == "couverture_2018") ? "Couverture en 2018" :
+        (name == "couverture_label") ? "Couverture" :
+        (name == "id") ? "" :
+        (name == "insee") ? "Code INSEE" :
+        (name == "is_new_artif") ? "Artificialisation" :
+        (name == "is_new_natural") ? "Renaturation" :
+        (name == "map_color") ? "" :
+        (name == "name") ? "Nom" :
+        (name == "surface") ? "Surface (Ha)" :
         (name == "surface_artif") ? "Artificialisée" :
-        (name == "artif_evo") ? "Artificialisation" :
+        (name == "us_new") ? "Nouveau usage" :
+        (name == "us_old") ? "Ancien usage" :
+        (name == "usage_2015") ? "Usage en 2015" :
+        (name == "usage_2018") ? "Usage en 2018" :
+        (name == "usage_label") ? "Usage" :
+        (name == "year") ? "Millésime" :
+        (name == "year_new") ? "Nouveau millésime" :
+        (name == "year_old") ? "Ancien millésime" :
         name
 }
 
@@ -75,7 +88,7 @@ function style_communes(feature) {
 }
 
 function get_color_for_ocsge_diff(feature) {
-    if (feature.properties["Artificialisation"] == "oui") {
+    if (feature.properties["is_new_artif"] == true) {
         return {
             fillColor: '#ff0000',
             fillOpacity: 0.7,
@@ -84,7 +97,7 @@ function get_color_for_ocsge_diff(feature) {
             color: '#ff0000',
         }
     }
-    if (feature.properties["Renaturation"] == "oui") {
+    if (feature.properties["is_new_natural"] == true) {
         return {
             fillColor: '#00ff00',
             fillOpacity: 0.7,

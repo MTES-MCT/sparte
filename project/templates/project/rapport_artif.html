@@ -97,6 +97,9 @@ Rapport artificialisation
                 <div class="card-body">
                     <p class="figure">{{ net_artif_rate|floatformat:0 }} %</p>
                 </div>
+                <p class="card-text"><small class="text-secondary">
+                    = Artificialisation nette / surface du territoire
+                </small></p>
             </div>
         </div>
 
@@ -129,6 +132,58 @@ Rapport artificialisation
                 </tbody>
             </table>
         </div>
+
+        <div class="box scrollme-x p-4" >
+            <h3 class="mb-3">Détail de l'artificialisation :</h3>
+            <div class="row border-bottom mb-3">
+                <div class="col-6 border-end">
+                    <div id="couv_artif_sol"></div>
+                </div>
+                <div class="col-6">
+                    <div id="usage_artif_sol"></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-4 border-end">
+                    <div id="detail_artif_chart" style="height:250px"></div>
+                </div>
+                <div class="col-8 d-flex align-content-center flex-wrap justify-content-center">
+                    <div>
+                        <table class="table table-striped table-sm table-borderless">
+                            <thead>
+                                <tr>
+                                    <th scope="col"></th>
+                                    <th scope="col" style="text-align: right">Artificialisation</th>
+                                    <th scope="col" style="text-align: right" class="text-muted">%</th>
+                                    <th scope="col" style="text-align: right">renaturation</th>
+                                    <th scope="col" style="text-align: right" class="text-muted">%</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for couv in detail_artif_chart.get_series %}
+                                <tr>
+                                    <th scope="row">{{ couv.code_prefix }} {{ couv.label }}</th>
+                                    <td align="right">{{ couv.artif|floatformat:1 }}</td>
+                                    <td align="right" class="text-muted">{{ couv.artif|percent:detail_total_artif }}</td>
+                                    <td align="right">{{ couv.renat|floatformat:2 }}</td>
+                                    <td align="right" class="text-muted">{{ couv.renat|percent:detail_total_renat }}</td>
+                                </tr>
+                                {% endfor %}
+                                <tr>
+                                    <th scope="row" class="text-muted">Total :</th>
+                                    <td align="right" class="text-muted">{{ detail_total_artif|floatformat:1 }}</td>
+                                    <td align="right" class="text-muted">100%</td>
+                                    <td align="right" class="text-muted">{{ detail_total_renat|floatformat:2 }}</td>
+                                    <td align="right" class="text-muted">100%</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
         {% else %}
         <div class="box px-4 py-2 mb-4 mt-5">
             <p class="my-1">Nous sommes désolé, mais votre territoire n'est pas encore couvert par l'OCSGE. Restez informer de son arrivée en vous abonnant à notre infolettre !</p>
@@ -149,5 +204,8 @@ Rapport artificialisation
 <script src="https://code.highcharts.com/modules/exporting.js"></script>
 {% french_translation %}
 {% display_chart 'chart_evolution_artif' chart_evolution_artif %}
+{% display_chart 'detail_artif_chart' detail_artif_chart %}
+{% display_chart 'couv_artif_sol' couv_artif_sol %}
+{% display_chart 'usage_artif_sol' usage_artif_sol %}
 {% endlocalize %}
 {% endblock %}
