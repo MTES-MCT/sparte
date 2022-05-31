@@ -392,3 +392,59 @@ class DetailArtifChart(ProjectChart):
                 ],
             }
         )
+
+
+class ArtifCouvSolPieChart(ProjectChart):
+    _sol = "couverture"
+    name = "Artificialisation usage and couverture pie chart"
+    param = {
+        "chart": {"type": "pie"},
+        "title": {"text": ""},
+        "yAxis": {
+            "title": {"text": "Consommé (en ha)"},
+            "stackLabels": {"enabled": True, "format": "{total:,.1f}"},
+        },
+        "tooltip": {
+            "valueSuffix": " Ha",
+            "valueDecimals": 0,
+            "pointFormat": "<b>{point.y}</b><br/>{point.percent}",
+        },
+        "xAxis": {"type": "category"},
+        "legend": {"layout": "horizontal", "align": "center", "verticalAlign": "top"},
+        "plotOptions": {
+            "pie": {
+                "innerSize": "60%",
+            }
+        },
+        "series": [],
+    }
+
+    def __init__(self, project):
+        self.millesime = project.last_year_ocsge
+        super().__init__(project)
+
+    def get_series(self):
+        if not self.series:
+            self.series = self.project.get_base_sol_artif(sol=self._sol)
+        return self.series
+
+    def add_series(self):
+        surface_total = sum(_["surface"] for _ in self.get_series())
+        self.chart["series"].append(
+            {
+                "name": "Sol artificiel",
+                "data": [
+                    {
+                        "name": f"{item['code_prefix']} {item['label_short']}",
+                        "y": item["surface"],
+                        "color": item["map_color"],
+                        "percent": f"{int(100 * item['surface'] / surface_total)}%",
+                    }
+                    for item in self.get_series()
+                ],
+            }
+        )
+
+
+class ArtifUsageSolPieChart(ArtifCouvSolPieChart):
+    _sol = "usage"
