@@ -247,8 +247,8 @@ class CouvertureSolPieChart(ProjectChart):
         "series": [],
     }
 
-    def __init__(self, project, millesime):
-        self.millesime = millesime
+    def __init__(self, project):
+        self.millesime = project.last_year_ocsge
         super().__init__(project)
 
     def get_series(self):
@@ -302,9 +302,9 @@ class CouvertureSolProgressionChart(ProjectChart):
         "series": [],
     }
 
-    def __init__(self, project, first_millesime, last_millesime):
-        self.first_millesime = first_millesime
-        self.last_millesime = last_millesime
+    def __init__(self, project):
+        self.first_millesime = project.first_year_ocsge
+        self.last_millesime = project.last_year_ocsge
         super().__init__(project)
 
     def get_series(self):
@@ -335,4 +335,116 @@ class CouvertureSolProgressionChart(ProjectChart):
 
 class UsageSolProgressionChart(CouvertureSolProgressionChart):
     _level = 1
+    _sol = "usage"
+
+
+class DetailArtifChart(ProjectChart):
+    name = "Progression des principaux postes de la couverture du sol"
+    param = {
+        "chart": {"type": "column", "alignThresholds": True},
+        "title": {"text": ""},
+        "yAxis": {
+            "title": {"text": "Progression (en ha)"},
+        },
+        "tooltip": {
+            "pointFormat": "{series.name}: {point.y}",
+            "valueSuffix": " Ha",
+            "valueDecimals": 2,
+            "headerFormat": "",
+        },
+        "xAxis": {"type": "category"},
+        "legend": {"layout": "horizontal", "align": "center", "verticalAlign": "top"},
+        "series": [],
+    }
+
+    def __init__(self, project):
+        self.first_millesime = project.first_year_ocsge
+        self.last_millesime = project.last_year_ocsge
+        super().__init__(project)
+
+    def get_series(self):
+        if not self.series:
+            self.series = self.project.get_detail_artif()
+        return self.series
+
+    def add_series(self):
+        self.chart["series"].append(
+            {
+                "name": "Artificialisation",
+                "data": [
+                    {
+                        "name": couv["code_prefix"],
+                        "y": couv["artif"],
+                    }
+                    for couv in self.get_series()
+                ],
+            }
+        )
+        self.chart["series"].append(
+            {
+                "name": "Renaturation",
+                "data": [
+                    {
+                        "name": couv["code_prefix"],
+                        "y": couv["renat"],
+                    }
+                    for couv in self.get_series()
+                ],
+            }
+        )
+
+
+class ArtifCouvSolPieChart(ProjectChart):
+    _sol = "couverture"
+    name = "Artificialisation usage and couverture pie chart"
+    param = {
+        "chart": {"type": "pie"},
+        "title": {"text": ""},
+        "yAxis": {
+            "title": {"text": "Consommé (en ha)"},
+            "stackLabels": {"enabled": True, "format": "{total:,.1f}"},
+        },
+        "tooltip": {
+            "valueSuffix": " Ha",
+            "valueDecimals": 0,
+            "pointFormat": "<b>{point.y}</b><br/>{point.percent}",
+        },
+        "xAxis": {"type": "category"},
+        "legend": {"layout": "horizontal", "align": "center", "verticalAlign": "top"},
+        "plotOptions": {
+            "pie": {
+                "innerSize": "60%",
+            }
+        },
+        "series": [],
+    }
+
+    def __init__(self, project):
+        self.millesime = project.last_year_ocsge
+        super().__init__(project)
+
+    def get_series(self):
+        if not self.series:
+            self.series = self.project.get_base_sol_artif(sol=self._sol)
+        return self.series
+
+    def add_series(self):
+        surface_total = sum(_["surface"] for _ in self.get_series())
+        self.chart["series"].append(
+            {
+                "name": "Sol artificiel",
+                "data": [
+                    {
+                        "name": f"{item['code_prefix']} {item['label_short']}",
+                        "y": item["surface"],
+                        "color": item["map_color"],
+                        "percent": f"{int(100 * item['surface'] / surface_total)}%",
+                    }
+                    for item in self.get_series()
+                ],
+            }
+        )
+
+
+class ArtifUsageSolPieChart(ArtifCouvSolPieChart):
     _sol = "usage"

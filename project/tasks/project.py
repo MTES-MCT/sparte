@@ -157,22 +157,17 @@ def evaluate_indicators(project: Project):
     """
     logger.info("Evaluate indicators id=%d", project.id)
     find_first_and_last_ocsge(project)
-    evaluate_couverture_and_usage(project)
+    # not used anymore:
+    # evaluate_couverture_and_usage(project)
 
 
 @shared_task
 def find_first_and_last_ocsge(project: Project):
     """Use associated cities to find departements and available OCSGE millesime"""
     logger.info("Find first and last ocsge id=%d", project.id)
-    millesimes = {
-        millesime
-        for city in project.cities.all()
-        for millesime in city.get_ocsge_millesimes()
-        if int(project.analyse_start_date) <= millesime <= int(project.analyse_end_date)
-    }
-    if millesimes:
-        project.first_year_ocsge = min(millesimes)
-        project.last_year_ocsge = max(millesimes)
+    result = project.get_first_last_millesime()
+    project.first_year_ocsge = result["first"]
+    project.last_year_ocsge = result["last"]
 
 
 @shared_task

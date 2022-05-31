@@ -6,7 +6,7 @@ from django.contrib.gis.db.models import Union, Extent
 from django.contrib.gis.db.models.functions import Centroid
 from django.core.validators import MinValueValidator
 from django.db import models
-from django.db.models import Sum, F, Value, Q
+from django.db.models import Sum, F, Value, Q, Min, Max, Case, When
 from django.db.models.functions import Concat
 from django.urls import reverse
 from django.utils import timezone
@@ -19,9 +19,12 @@ from public_data.models import (
     CommuneDiff,
     CommuneSol,
     Ocsge,
+    OcsgeDiff,
     CouvertureSol,
     UsageSol,
 )
+
+from utils.db import cast_sum
 
 from .utils import user_directory_path
 
@@ -447,7 +450,7 @@ class Project(BaseProject):
                 output_field=models.CharField(),
             )
         )
-        qs = qs.values("period")
+        qs = qs.values("period", "year_old", "year_new")
         qs = qs.annotate(
             new_artif=Sum("new_artif"),
             new_natural=Sum("new_natural"),
@@ -464,17 +467,15 @@ class Project(BaseProject):
         result = self.emprise_set.aggregate(center=Centroid(Union("mpoly")))
         return result["center"]
 
-    def get_last_available_millesime(self):
+    def get_first_last_millesime(self):
+        """return {"first": yyyy, "last": yyyy} which are the first and last
+        OCS GE millesime completly included in diagnostic time frame"""
         qs = Ocsge.objects.filter(mpoly__intersects=self.combined_emprise)
-        qs = qs.filter(year__gte=self.analyse_start_date)
-        qs = qs.filter(year__lte=self.analyse_end_date)
-        return qs.latest("year").year
-
-    def get_first_available_millesime(self):
-        qs = Ocsge.objects.filter(mpoly__intersects=self.combined_emprise)
-        qs = qs.filter(year__gte=self.analyse_start_date)
-        qs = qs.filter(year__lte=self.analyse_end_date)
-        return qs.earliest("year").year
+        qs = qs.filter(
+            year__gte=self.analyse_start_date, year__lte=self.analyse_end_date
+        )
+        qs = qs.aggregate(first=Min("year"), last=Max("year"))
+        return qs
 
     def get_base_sol(self, millesime, sol="couverture"):
         if sol == "couverture":
@@ -514,27 +515,84 @@ class Project(BaseProject):
         )
         qs = qs.annotate(code_prefix=code_field)
         qs = qs.values("code_prefix")
-        qs = qs.annotate(surface_first=Sum("surface", filter=Q(year=first_millesime)))
-        qs = qs.annotate(surface_last=Sum("surface", filter=Q(year=last_millesime)))
+        qs = qs.annotate(
+            surface_first=Sum("surface", filter=Q(year=first_millesime), default=0)
+        )
+        qs = qs.annotate(
+            surface_last=Sum("surface", filter=Q(year=last_millesime), default=0)
+        )
         data = list(qs)
         item_list = list(klass.objects.all().order_by("code"))
         for item in item_list:
             item.surface_first = sum(
                 [
-                    _["surface_first"] if _["surface_first"] else 0
+                    _["surface_first"]
                     for _ in data
                     if _["code_prefix"].startswith(item.code_prefix)
                 ]
             )
             item.surface_last = sum(
                 [
-                    _["surface_last"] if _["surface_last"] else 0
+                    _["surface_last"]
                     for _ in data
                     if _["code_prefix"].startswith(item.code_prefix)
                 ]
             )
             item.surface_diff = item.surface_last - item.surface_first
         return item_list
+
+    def get_detail_artif(self):
+        qs = OcsgeDiff.objects.intersect(self.combined_emprise)
+        # sélection
+        qs = qs.filter(
+            year_old__gte=self.analyse_start_date,
+            year_new__lte=self.analyse_end_date,
+        )
+        qs = qs.filter(Q(is_new_artif=True) | Q(is_new_natural=True))
+        qs = qs.annotate(
+            code_prefix=Case(
+                When(is_new_artif=True, then=F("new_matrix__couverture__code_prefix")),
+                default=F("old_matrix__couverture__code_prefix"),
+            ),
+            label=Case(
+                When(is_new_artif=True, then=F("new_matrix__couverture__label")),
+                default=F("old_matrix__couverture__label"),
+            ),
+            label_short=Case(
+                When(is_new_artif=True, then=F("new_matrix__couverture__label_short")),
+                default=F("old_matrix__couverture__label_short"),
+            ),
+        )
+        qs = qs.values("code_prefix", "label", "label_short")
+        qs = qs.annotate(
+            artif=cast_sum("intersection_area", filter=Q(is_new_artif=True)),
+            renat=cast_sum("intersection_area", filter=Q(is_new_natural=True)),
+        )
+        return qs
+
+    def get_base_sol_artif(self, sol="couverture"):
+        qs = CommuneSol.objects.filter(
+            city__in=self.cities.all(),
+            year=self.last_year_ocsge,
+            matrix__is_artificial=True,
+        )
+        if sol == "couverture":
+            qs = qs.annotate(
+                code_prefix=F("matrix__couverture__code_prefix"),
+                label=F("matrix__couverture__label"),
+                label_short=F("matrix__couverture__label_short"),
+                map_color=F("matrix__couverture__map_color"),
+            )
+        else:
+            qs = qs.annotate(
+                code_prefix=F("matrix__usage__code_prefix"),
+                label=F("matrix__usage__label"),
+                label_short=F("matrix__usage__label_short"),
+                map_color=F("matrix__usage__map_color"),
+            )
+        qs = qs.values("code_prefix", "label", "label_short", "map_color")
+        qs = qs.annotate(surface=Sum("surface"))
+        return qs
 
 
 class Emprise(DataColorationMixin, gis_models.Model):
