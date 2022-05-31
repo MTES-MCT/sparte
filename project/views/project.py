@@ -17,10 +17,13 @@ from public_data.models import Land, Ocsge
 from utils.views_mixins import BreadCrumbMixin, GetObjectMixin
 
 from project.charts import (
+    ArtifCouvSolPieChart,
+    ArtifUsageSolPieChart,
     ConsoCommuneChart,
     ConsoComparisonChart,
     CouvertureSolPieChart,
     CouvertureSolProgressionChart,
+    DetailArtifChart,
     DeterminantPerYearChart,
     DeterminantPieChart,
     EvolutionArtifChart,
@@ -372,13 +375,11 @@ class ProjectReportCouvertureView(GroupMixin, DetailView):
             "ocsge_available": True,
         }
         try:
-            first_millesime = project.get_first_available_millesime()
-            last_millesime = project.get_last_available_millesime()
+            first_millesime = project.first_year_ocsge
+            last_millesime = project.last_year_ocsge
 
-            pie_chart = CouvertureSolPieChart(project, last_millesime)
-            progression_chart = CouvertureSolProgressionChart(
-                project, first_millesime, last_millesime
-            )
+            pie_chart = CouvertureSolPieChart(project)
+            progression_chart = CouvertureSolProgressionChart(project)
 
             kwargs.update(
                 {
@@ -415,13 +416,11 @@ class ProjectReportUsageView(GroupMixin, DetailView):
             "ocsge_available": True,
         }
         try:
-            first_millesime = project.get_first_available_millesime()
-            last_millesime = project.get_last_available_millesime()
+            first_millesime = project.first_year_ocsge
+            last_millesime = project.last_year_ocsge
 
-            pie_chart = UsageSolPieChart(project, last_millesime)
-            progression_chart = UsageSolProgressionChart(
-                project, first_millesime, last_millesime
-            )
+            pie_chart = UsageSolPieChart(project)
+            progression_chart = UsageSolProgressionChart(project)
 
             kwargs.update(
                 {
@@ -499,8 +498,8 @@ class ProjectReportArtifView(GroupMixin, DetailView):
         }
 
         try:
-            first_millesime = project.get_first_available_millesime()
-            last_millesime = project.get_last_available_millesime()
+            first_millesime = project.first_year_ocsge
+            last_millesime = project.last_year_ocsge
         except Ocsge.DoesNotExist:
             # There is no OCSGE available for this territoru
             kwargs.update({"ocsge_available": False})
@@ -521,9 +520,14 @@ class ProjectReportArtifView(GroupMixin, DetailView):
         table_evolution_artif = chart_evolution_artif.get_series()
         headers_evolution_artif = table_evolution_artif["Artificialisation"].keys()
 
+        detail_artif_chart = DetailArtifChart(project)
+
+        couv_artif_sol = ArtifCouvSolPieChart(project)
+        usage_artif_sol = ArtifUsageSolPieChart(project)
+
         kwargs.update(
             {
-                "first_millesime": first_millesime,
+                "first_millesime": str(first_millesime),
                 "last_millesime": str(last_millesime),
                 "artif_area": artif_area,
                 "new_artif": progression_time_scoped["new_artif"],
@@ -535,6 +539,15 @@ class ProjectReportArtifView(GroupMixin, DetailView):
                     table_evolution_artif, line=False
                 ),
                 "headers_evolution_artif": headers_evolution_artif,
+                "detail_artif_chart": detail_artif_chart,
+                "detail_total_artif": sum(
+                    _["artif"] for _ in detail_artif_chart.get_series()
+                ),
+                "detail_total_renat": sum(
+                    _["renat"] for _ in detail_artif_chart.get_series()
+                ),
+                "couv_artif_sol": couv_artif_sol,
+                "usage_artif_sol": usage_artif_sol,
             }
         )
 
@@ -729,12 +742,22 @@ class ProjectMapView(GroupMixin, DetailView):
                         "display": False,
                     },
                     {
-                        "name": "Zones artificielles 2018",
-                        "url": reverse_lazy("public_data:artificielle2018-list"),
-                        "display": False,
-                        "gradient_url": reverse_lazy(
-                            "public_data:artificielle2018-gradient"
+                        "name": "Arcachon: zones artificielles 2015",
+                        "url": (
+                            f'{reverse_lazy("public_data:artificialarea-optimized")}'
+                            "?year=2015"
                         ),
+                        "display": False,
+                        "level": "3",
+                        "style": "style_zone_artificielle",
+                    },
+                    {
+                        "name": "Arcachon: zones artificielles 2018",
+                        "url": (
+                            f'{reverse_lazy("public_data:artificialarea-optimized")}'
+                            "?year=2018"
+                        ),
+                        "display": False,
                         "level": "3",
                         "style": "style_zone_artificielle",
                     },
@@ -825,6 +848,26 @@ class ProjectMapView(GroupMixin, DetailView):
                         "name": "Gers: zones construites 2019",
                         "url": (
                             f'{reverse_lazy("public_data:zoneconstruite-optimized")}'
+                            "?year=2019"
+                        ),
+                        "display": False,
+                        "style": "style_zone_artificielle",
+                        "level": "3",
+                    },
+                    {
+                        "name": "Gers: zones artificielles 2016",
+                        "url": (
+                            f'{reverse_lazy("public_data:artificialarea-optimized")}'
+                            "?year=2016"
+                        ),
+                        "display": False,
+                        "style": "style_zone_artificielle",
+                        "level": "3",
+                    },
+                    {
+                        "name": "Gers: zones artificielles 2019",
+                        "url": (
+                            f'{reverse_lazy("public_data:artificialarea-optimized")}'
                             "?year=2019"
                         ),
                         "display": False,

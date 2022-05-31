@@ -60,6 +60,8 @@ def percent(value, arg=0):
         return value
     if isinstance(value, Decimal):
         value = float(value)
+    if isinstance(arg, Decimal):
+        arg = float(arg)
     return f"{int((value / arg) * 100)}%"
 
 

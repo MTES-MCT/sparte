@@ -2,6 +2,10 @@
 
 Ce changelog suit la méthode "keep a changelog" disponible ici: [https://keepachangelog.com/en/1.0.0/](https://keepachangelog.com/en/1.0.0/)
 
+## [1.4.0] - 10.05.2022
+
+### Ajout :
+* Zones artificielles. Function de construction, affichage pour Gers et Arcachon dans la carte interactive.
 
 ## [1.3.5] - 20.05.2022
 
@@ -19,7 +23,13 @@ Ce changelog suit la méthode "keep a changelog" disponible ici: [https://keepac
 * Unifier template des rapports couverture et usage
 * Fusionner les tableaux couverture et usage
 
-## [1.3.4] - Non livrée
+## [1.4.0] - 10.05.2022
+
+### Ajout :
+* Zones artificielles. Function de construction, affichage pour Gers et Arcachon dans la carte interactive.
+
+
+## [1.3.4] - 10.05.2022
 
 ### Ajout :
 * Données du Gers: OCS GE 2016 & 2019, OCS GE diff, zone construite 2016 & 2019
