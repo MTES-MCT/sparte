@@ -1,12 +1,12 @@
 from django.contrib.gis.db.models.functions import Intersection, Area, Transform
 from django.db.models import Sum, DecimalField, Manager
-from django.db.models.functions import Cast
+from django.db.models.functions import Cast, Coalesce
 
 
 def cast_sum(field, filter=None, divider=10000):
     """Add all required data to a queryset to sum a field and return a Decimal"""
     return Cast(
-        Sum(field, filter=filter, default=0) / divider,
+        Coalesce(Sum(field, filter=filter, default=0), 0) / divider,
         DecimalField(max_digits=15, decimal_places=2),
     )
 
