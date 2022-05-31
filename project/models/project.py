@@ -570,6 +570,30 @@ class Project(BaseProject):
         )
         return qs
 
+    def get_base_sol_artif(self, sol="couverture"):
+        qs = CommuneSol.objects.filter(
+            city__in=self.cities.all(),
+            year=self.last_year_ocsge,
+            matrix__is_artificial=True,
+        )
+        if sol == "couverture":
+            qs = qs.annotate(
+                code_prefix=F("matrix__couverture__code_prefix"),
+                label=F("matrix__couverture__label"),
+                label_short=F("matrix__couverture__label_short"),
+                map_color=F("matrix__couverture__map_color"),
+            )
+        else:
+            qs = qs.annotate(
+                code_prefix=F("matrix__usage__code_prefix"),
+                label=F("matrix__usage__label"),
+                label_short=F("matrix__usage__label_short"),
+                map_color=F("matrix__usage__map_color"),
+            )
+        qs = qs.values("code_prefix", "label", "label_short", "map_color")
+        qs = qs.annotate(surface=Sum("surface"))
+        return qs
+
 
 class Emprise(DataColorationMixin, gis_models.Model):
 
