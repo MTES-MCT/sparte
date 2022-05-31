@@ -302,9 +302,9 @@ class CouvertureSolProgressionChart(ProjectChart):
         "series": [],
     }
 
-    def __init__(self, project, first_millesime, last_millesime):
-        self.first_millesime = first_millesime
-        self.last_millesime = last_millesime
+    def __init__(self, project):
+        self.first_millesime = project.first_year_ocsge
+        self.last_millesime = project.last_year_ocsge
         super().__init__(project)
 
     def get_series(self):
@@ -365,9 +365,9 @@ class DetailArtifChart(ProjectChart):
         "series": [],
     }
 
-    def __init__(self, project, first_millesime, last_millesime):
-        self.first_millesime = first_millesime
-        self.last_millesime = last_millesime
+    def __init__(self, project):
+        self.first_millesime = project.first_year_ocsge
+        self.last_millesime = project.last_year_ocsge
         super().__init__(project)
 
     def get_series(self):
