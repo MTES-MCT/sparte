@@ -7,6 +7,9 @@ Ce changelog suit la méthode "keep a changelog" disponible ici: [https://keepac
 ### Ajout :
 * Zones artificielles. Function de construction, affichage pour Gers et Arcachon dans la carte interactive.
 
+### Modifié :
+* Migration des buildpacks pour s'adapter aux montées de version de Scalingo
+
 ## [1.3.5] - 20.05.2022
 
 ### Ajout :
