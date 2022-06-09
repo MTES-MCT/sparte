@@ -190,5 +190,8 @@ class ZoneConstruite(TruncateTableMixin, DataColorationMixin, models.Model):
     surface = models.DecimalField(
         "surface", max_digits=15, decimal_places=4, blank=True, null=True
     )
+    builded_density = models.DecimalField(
+        "Densité construite", max_digits=15, decimal_places=4, blank=True, null=True
+    )
 
     objects = IntersectManager()

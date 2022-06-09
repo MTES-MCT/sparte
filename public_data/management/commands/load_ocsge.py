@@ -319,16 +319,20 @@ class GersZoneConstruite2016(AutoLoadMixin, ZoneConstruite):
 
     @classmethod
     def calculate_fields(cls):
-        """Set year field"""
+        """Set year field, surface and density"""
+        # year
         cls.objects.filter(year__isnull=True).update(
             year=Cast("millesime", output_field=IntegerField())
         )
+        # surface
         cls.objects.filter(surface__isnull=True).update(
             surface=Cast(
                 Area(Transform("mpoly", 2154)),
                 DecimalField(max_digits=15, decimal_places=4),
             )
         )
+        # density
+        # Ocsge.objects.filter(year=Outer)
 
 
 class GersZoneConstruite2019(GersZoneConstruite2016):
