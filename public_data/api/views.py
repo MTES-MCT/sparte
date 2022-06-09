@@ -250,9 +250,9 @@ class ZoneConstruiteViewSet(OptimizedMixins, DataViewSet):
     serializer_class = ZoneConstruiteSerializer
     optimized_fields = {
         "id": "id",
-        "id_source": "id_source",
         "surface": "surface",
         "year": "year",
+        "built_density": "Densité",
     }
 
 
