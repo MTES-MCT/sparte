@@ -162,7 +162,7 @@ class Project(BaseProject):
     )
     level = models.CharField(
         "Niveau d'analyse",
-        choices=ANALYZE_YEARS,
+        choices=LEVEL_CHOICES,
         default="COMM",
         max_length=4,
     )
@@ -377,10 +377,10 @@ class Project(BaseProject):
             }
         return self._conso_per_year
 
-    def get_epci_conso_per_year(self):
-        """Return conso data aggregated by epci
-         {
-            "epci_name": {
+    def get_land_conso_per_year(self, level):
+        """Return conso data aggregated by a specific level
+        {
+            "dept_name": {
                 "2015": 10,
                 "2016": 12,
                 "2017": 9,
@@ -389,11 +389,9 @@ class Project(BaseProject):
         """
         fields = Cerema.get_art_field(self.analyse_start_date, self.analyse_end_date)
         qs = self.get_cerema_cities()
-        qs = qs.values("epci_name")
+        qs = qs.values(level)
         qs = qs.annotate(**{f"20{field[8:10]}": Sum(field) / 10000 for field in fields})
-        return {
-            row["epci_name"]: {year: row[year] for year in self.years} for row in qs
-        }
+        return {row[level]: {year: row[year] for year in self.years} for row in qs}
 
     def get_city_conso_per_year(self, group_name=None):
         """Return year artificialisation of each city in the project, on project

@@ -178,8 +178,11 @@ class ProjectReportConsoView(GroupMixin, DetailView):
     def get_context_data(self, **kwargs):
         project = self.get_object()
 
+        # Retieve request level of analysis
+        level = self.request.GET.get("level_conso", project.level)
+
         # communes_data_graph
-        chart_conso_cities = ConsoCommuneChart(project)
+        chart_conso_cities = ConsoCommuneChart(project, level=level)
 
         target_2031_consumption = project.get_bilan_conso()
         current_conso = project.get_bilan_conso_time_scoped()

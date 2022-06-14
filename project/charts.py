@@ -57,6 +57,10 @@ class ConsoCommuneChart(ProjectChart):
         "series": [],
     }
 
+    def __init__(self, *args, **kwargs):
+        self.level = kwargs.pop("level")
+        super().__init__(*args, **kwargs)
+
     def get_legend_for_paper(self):
         return {
             "enabled": False,
@@ -64,8 +68,12 @@ class ConsoCommuneChart(ProjectChart):
 
     def get_series(self):
         if not self.series:
-            if self.project.level == "EPCI":
-                self.series = self.project.get_epci_conso_per_year()
+            if self.level == "REGI":
+                self.series = self.project.get_land_conso_per_year("region_name")
+            elif self.level == "DEPT":
+                self.series = self.project.get_land_conso_per_year("dept_name")
+            elif self.level == "EPCI":
+                self.series = self.project.get_land_conso_per_year("epci_name")
             else:
                 self.series = self.project.get_city_conso_per_year(
                     group_name=self.group_name
