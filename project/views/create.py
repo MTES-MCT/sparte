@@ -172,6 +172,7 @@ class SetProjectOptions(BreadCrumbMixin, FormView):
     initial = {
         "analysis_start": "2011",
         "analysis_end": "2019",
+        "analysis_level": "COMM",
     }
 
     def get_context_breadcrumbs(self):
@@ -243,7 +244,8 @@ class SetProjectOptions(BreadCrumbMixin, FormView):
             is_public=True,
             analyse_start_date=str(form.cleaned_data["analysis_start"]),
             analyse_end_date=str(form.cleaned_data["analysis_end"]),
-            import_status=Project.Status.PENDING,
+            level=form.cleaned_data["analysis_level"],
+            import_status=Project.Status.SUCCESS,
             emprise_origin=emprise_origin,
         )
         if self.request.user.is_authenticated:
