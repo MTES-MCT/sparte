@@ -64,9 +64,12 @@ class ConsoCommuneChart(ProjectChart):
 
     def get_series(self):
         if not self.series:
-            self.series = self.project.get_city_conso_per_year(
-                group_name=self.group_name
-            )
+            if self.project.level == "EPCI":
+                self.series = self.project.get_epci_conso_per_year()
+            else:
+                self.series = self.project.get_city_conso_per_year(
+                    group_name=self.group_name
+                )
         return self.series
 
     def add_series(self):

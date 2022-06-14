@@ -32,7 +32,6 @@ from project.charts import (
 )
 from project.forms import UploadShpForm, KeywordForm
 from project.models import Project, Request, ProjectCommune
-from project.domains import ConsommationDataframe
 from project.tasks import send_email_request_bilan
 from project.utils import add_total_line_column
 
@@ -179,34 +178,11 @@ class ProjectReportConsoView(GroupMixin, DetailView):
     def get_context_data(self, **kwargs):
         project = self.get_object()
 
-        builder = ConsommationDataframe(project)
-        df = builder.build()
-
-        # table headers
-        headers = ["Commune"]
-        for col in df.columns:
-            if col.startswith("artif"):
-                col = col.split("_")[-1]
-            headers.append(col)
-
-        # table content
-        table_artif = []
-        for city, row in df.iterrows():
-            table_artif.append(
-                {
-                    "name": city,
-                    "before": row[0],
-                    "items": list(row[1:-2]),
-                    "total": row[-2],
-                    "progression": row[-1] * 100,
-                }
-            )
+        # communes_data_graph
+        chart_conso_cities = ConsoCommuneChart(project)
 
         target_2031_consumption = project.get_bilan_conso()
         current_conso = project.get_bilan_conso_time_scoped()
-
-        # communes_data_graph
-        chart_conso_cities = ConsoCommuneChart(project)
 
         # Déterminants
         det_chart = DeterminantPerYearChart(project)
