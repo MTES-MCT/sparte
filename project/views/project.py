@@ -178,7 +178,7 @@ class ProjectReportConsoView(GroupMixin, DetailView):
     def get_context_data(self, **kwargs):
         project = self.get_object()
 
-        # Retieve request level of analysis
+        # Retrieve request level of analysis
         level = self.request.GET.get("level_conso", project.level)
 
         # communes_data_graph
@@ -236,6 +236,7 @@ class ProjectReportConsoView(GroupMixin, DetailView):
             ),
             "data_determinant": add_total_line_column(det_chart.get_series()),
             "groups_names": groups_names,
+            "level": level,
         }
 
 
