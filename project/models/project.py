@@ -1,3 +1,4 @@
+import collections
 import traceback
 
 from django.conf import settings
@@ -484,6 +485,24 @@ class Project(BaseProject):
             net_artif=Sum("net_artif"),
         )
         return qs
+
+    def get_city_artif_per_year(self):
+        """Return artif evolution for all cities of the diagnostic
+
+        {
+            "city_name": {
+                "2013-2016": 10,
+                "2016-2019": 15,
+            }
+        }
+        """
+        qs = CommuneDiff.objects.filter(city__in=self.cities.all()).filter(
+            year_old__gte=self.analyse_start_date, year_new__lte=self.analyse_end_date
+        )
+        results = collections.defaultdict(dict)
+        for commune in qs:
+            results[commune.city.name][commune.period] = commune.net_artif
+        return results
 
     def get_bounding_box(self):
         result = self.emprise_set.aggregate(bbox=Extent("mpoly"))
