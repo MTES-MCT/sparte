@@ -16,20 +16,7 @@ from django_app_parameter import app_parameter
 from public_data.models import Land, Ocsge
 from utils.views_mixins import BreadCrumbMixin, GetObjectMixin
 
-from project.charts import (
-    ArtifCouvSolPieChart,
-    ArtifUsageSolPieChart,
-    ConsoCommuneChart,
-    ConsoComparisonChart,
-    CouvertureSolPieChart,
-    CouvertureSolProgressionChart,
-    DetailArtifChart,
-    DeterminantPerYearChart,
-    DeterminantPieChart,
-    EvolutionArtifChart,
-    UsageSolPieChart,
-    UsageSolProgressionChart,
-)
+from project import charts
 from project.forms import UploadShpForm, KeywordForm
 from project.models import Project, Request, ProjectCommune
 from project.tasks import send_email_request_bilan
@@ -182,13 +169,13 @@ class ProjectReportConsoView(GroupMixin, DetailView):
         level = self.request.GET.get("level_conso", project.level)
 
         # communes_data_graph
-        chart_conso_cities = ConsoCommuneChart(project, level=level)
+        chart_conso_cities = charts.ConsoCommuneChart(project, level=level)
 
         target_2031_consumption = project.get_bilan_conso()
         current_conso = project.get_bilan_conso_time_scoped()
 
         # Déterminants
-        det_chart = DeterminantPerYearChart(project)
+        det_chart = charts.DeterminantPerYearChart(project)
 
         # Liste des groupes de communes
         groups_names = project.projectcommune_set.all().order_by("group_name")
@@ -201,7 +188,7 @@ class ProjectReportConsoView(GroupMixin, DetailView):
             relative = True
         else:
             relative = False
-        comparison_chart = ConsoComparisonChart(project, relative=relative)
+        comparison_chart = charts.ConsoComparisonChart(project, relative=relative)
 
         return {
             **super().get_context_data(**kwargs),
@@ -224,7 +211,7 @@ class ProjectReportConsoView(GroupMixin, DetailView):
             },
             # charts
             "determinant_per_year_chart": det_chart,
-            "determinant_pie_chart": DeterminantPieChart(
+            "determinant_pie_chart": charts.DeterminantPieChart(
                 project, series=det_chart.get_series()
             ),
             "comparison_chart": comparison_chart,
@@ -289,14 +276,14 @@ class ProjectReportCityGroupView(GroupMixin, DetailView):
             return set(_.name for _ in group if _.name is not None)
 
         # Consommation des communes
-        chart_conso_cities = ConsoCommuneChart(project, group_name=group_name)
+        chart_conso_cities = charts.ConsoCommuneChart(project, group_name=group_name)
         communes_table = dict()
         for city_name, data in chart_conso_cities.get_series().items():
             data.update({"Total": sum(data.values())})
             communes_table[city_name] = data
 
         # Déterminants
-        det_chart = DeterminantPerYearChart(project, group_name=group_name)
+        det_chart = charts.DeterminantPerYearChart(project, group_name=group_name)
 
         kwargs = {
             "active_page": "consommation",
@@ -308,7 +295,7 @@ class ProjectReportCityGroupView(GroupMixin, DetailView):
             # Charts
             "chart_conso_cities": chart_conso_cities,
             "determinant_per_year_chart": det_chart,
-            "determinant_pie_chart": DeterminantPieChart(
+            "determinant_pie_chart": charts.DeterminantPieChart(
                 project, group_name=group_name, series=det_chart.get_series()
             ),
             # Tables
@@ -358,8 +345,8 @@ class ProjectReportCouvertureView(GroupMixin, DetailView):
             first_millesime = project.first_year_ocsge
             last_millesime = project.last_year_ocsge
 
-            pie_chart = CouvertureSolPieChart(project)
-            progression_chart = CouvertureSolProgressionChart(project)
+            pie_chart = charts.CouvertureSolPieChart(project)
+            progression_chart = charts.CouvertureSolProgressionChart(project)
 
             kwargs.update(
                 {
@@ -399,8 +386,8 @@ class ProjectReportUsageView(GroupMixin, DetailView):
             first_millesime = project.first_year_ocsge
             last_millesime = project.last_year_ocsge
 
-            pie_chart = UsageSolPieChart(project)
-            progression_chart = UsageSolProgressionChart(project)
+            pie_chart = charts.UsageSolPieChart(project)
+            progression_chart = charts.UsageSolProgressionChart(project)
 
             kwargs.update(
                 {
@@ -496,14 +483,16 @@ class ProjectReportArtifView(GroupMixin, DetailView):
             net_artif_rate = 0
             net_artif = "0"
 
-        chart_evolution_artif = EvolutionArtifChart(project)
+        chart_evolution_artif = charts.EvolutionArtifChart(project)
         table_evolution_artif = chart_evolution_artif.get_series()
         headers_evolution_artif = table_evolution_artif["Artificialisation"].keys()
 
-        detail_artif_chart = DetailArtifChart(project)
+        chart_comparison = charts.NetArtifComparaisonChart(project)
 
-        couv_artif_sol = ArtifCouvSolPieChart(project)
-        usage_artif_sol = ArtifUsageSolPieChart(project)
+        detail_artif_chart = charts.DetailArtifChart(project)
+
+        couv_artif_sol = charts.ArtifCouvSolPieChart(project)
+        usage_artif_sol = charts.ArtifUsageSolPieChart(project)
 
         kwargs.update(
             {
@@ -528,6 +517,10 @@ class ProjectReportArtifView(GroupMixin, DetailView):
                 ),
                 "couv_artif_sol": couv_artif_sol,
                 "usage_artif_sol": usage_artif_sol,
+                "chart_comparison": chart_comparison,
+                "table_comparison": add_total_line_column(
+                    chart_comparison.get_series()
+                ),
             }
         )
 

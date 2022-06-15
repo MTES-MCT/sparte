@@ -244,6 +244,10 @@ class CommuneDiff(models.Model):
         null=True,
     )
 
+    @property
+    def period(self):
+        return f"{self.year_old} - {self.year_new}"
+
 
 class CommuneSol(models.Model):
     city = models.ForeignKey(Commune, verbose_name="Commune", on_delete=models.CASCADE)
