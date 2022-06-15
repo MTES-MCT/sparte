@@ -1,3 +1,5 @@
+import collections
+
 from highcharts import charts
 
 
@@ -459,3 +461,35 @@ class ArtifCouvSolPieChart(ProjectChart):
 
 class ArtifUsageSolPieChart(ArtifCouvSolPieChart):
     _sol = "usage"
+
+
+class NetArtifComparaisonChart(ProjectChart):
+    name = "Net artificialisation per cities"
+    param = {
+        "chart": {"type": "column"},
+        "title": {"text": ""},
+        "yAxis": {"title": {"text": "Artificialisation net (en ha)"}},
+        "xAxis": {"type": "category"},
+        "legend": {"layout": "vertical", "align": "right", "verticalAlign": "top"},
+        "series": [],
+    }
+
+    def get_series(self):
+        if not self.series:
+            self.series = self.project.get_city_artif_per_year()
+        return self.series
+
+    def add_series(self):
+        super().add_series()
+        total = collections.defaultdict(lambda: 0)
+        for data in self.get_series().values():
+            for period, value in data.items():
+                total[period] += value
+        # self.add_serie(
+        #     self.project.name,
+        #     total,
+        #     **{
+        #         "color": "#ff0000",
+        #         "dashStyle": "ShortDash",
+        #     },
+        # )
