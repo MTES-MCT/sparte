@@ -2,11 +2,14 @@
 .key-figure {
     background-color: rgb(241, 250, 255);
     box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-    width: 230px;
-    height: 150px;
     float: left !important;
     margin: 15px;
+    white-space: nowrap !important;
+    text-overflow: clip;
+    overflow-x: hidden;
 }
+
+
 
 .key-figure-green {
     background-color: rgb(228, 255, 244);
@@ -20,8 +23,9 @@
     background-color: rgb(255, 239, 243);
 }
 
-.key-figure .card-header {
-    font-weight: normal;
+.key-figure > .card-header {
+    background-color: rgba(241, 250, 255, 0);
+    font-weight: bold;
 }
 
 .key-figure .figure {
@@ -32,6 +36,7 @@
 .key-figure .card-body {
     padding-top: 0px;
     padding-bottom: 0px;
+    font-weight: normal;
 }
 
 .rounded-5 {
