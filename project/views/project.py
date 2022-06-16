@@ -457,6 +457,9 @@ class ProjectReportArtifView(GroupMixin, DetailView):
         project = self.get_object()
         total_surface = project.area
 
+        # Retrieve request level of analysis
+        level = self.request.GET.get("level_analysis", project.level)
+
         kwargs = {
             "diagnostic": project,
             "active_page": "artificialisation",
@@ -473,8 +476,13 @@ class ProjectReportArtifView(GroupMixin, DetailView):
             return super().get_context_data(**kwargs)
 
         artif_area = project.get_artif_area()
-        progression_time_scoped = project.get_artif_progession_time_scoped()
+
+        chart_evolution_artif = charts.EvolutionArtifChart(project)
+        chart_waterfall = charts.WaterfallnArtifChart(project)
+
+        progression_time_scoped = chart_waterfall.get_series()
         net_artif = progression_time_scoped["net_artif"]
+
         try:
             net_artif_rate = 100 * net_artif / (artif_area - net_artif)
             # show + on front of net_artif
@@ -483,11 +491,10 @@ class ProjectReportArtifView(GroupMixin, DetailView):
             net_artif_rate = 0
             net_artif = "0"
 
-        chart_evolution_artif = charts.EvolutionArtifChart(project)
         table_evolution_artif = chart_evolution_artif.get_series()
         headers_evolution_artif = table_evolution_artif["Artificialisation"].keys()
 
-        chart_comparison = charts.NetArtifComparaisonChart(project)
+        chart_comparison = charts.NetArtifComparaisonChart(project, level=level)
 
         detail_artif_chart = charts.DetailArtifChart(project)
 
@@ -521,6 +528,8 @@ class ProjectReportArtifView(GroupMixin, DetailView):
                 "table_comparison": add_total_line_column(
                     chart_comparison.get_series()
                 ),
+                "level": level,
+                "chart_waterfall": chart_waterfall,
             }
         )
 
