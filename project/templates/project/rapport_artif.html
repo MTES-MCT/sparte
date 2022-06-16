@@ -90,14 +90,29 @@ Rapport artificialisation
                     <p class="figure">{{ net_artif_rate|floatformat:0 }} %</p>
                 </div>
                 <div class="card-header">
-                    Taux d'artificialisation net <i class="bi bi-question-circle" data-toggle="tooltip" title="= Artificialisation nette / surface du territoire"></i>
+                    Taux d'artificialisation nette <i class="bi bi-question-circle" data-toggle="tooltip" title="= Artificialisation nette / surface du territoire"></i>
                 </div>
             </div>
         </div>
 
 
         <div class="w-100 box p-4">
-            <h3>Artificialisation nette</h3>
+            <h3>
+                <div class="float-end">
+                    <div class="dropdown me-2">
+                        <button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton2" data-bs-toggle="dropdown" aria-expanded="false">
+                            Maille d'analyse
+                        </button>
+                        <ul class="dropdown-menu mt-2" aria-labelledby="dropdownMenuButton2">
+                            <li><a class="dropdown-item {% if level == "COMM" %}active{% endif %}" href="{% url "project:report_artif" project.id %}?level_conso=COMM">Communes</a></li>
+                            <li><a class="dropdown-item {% if level == "EPCI" %}active{% endif %}" href="{% url "project:report_artif" project.id %}?level_conso=EPCI">EPCI</a></li>
+                            <li><a class="dropdown-item {% if level == "DEPT" %}active{% endif %} " href="{% url "project:report_artif" project.id %}?level_conso=DEPT">Départements</a></li>
+                            <li><a class="dropdown-item {% if level == "REGI" %}active{% endif %}" href="{% url "project:report_artif" project.id %}?level_conso=REGI">Régions</a></li>
+                        </ul>
+                    </div>
+                </div>
+                Artificialisation nette
+            </h3>
 
             <div class="row">
                 <div class="col-4 border-end">
