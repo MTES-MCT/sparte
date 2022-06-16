@@ -184,7 +184,7 @@ class EvolutionArtifChart(ProjectChart):
     name = "Evolution de l'artificialisation"
     param = {
         "chart": {"type": "column"},
-        "title": {"text": "Par millésime"},
+        "title": {"text": "Par commune"},
         "yAxis": {
             "title": {"text": "Surface (en ha)"},
             "stackLabels": {"enabled": True, "format": "{total:,.1f}"},
@@ -232,6 +232,62 @@ class EvolutionArtifChart(ProjectChart):
             # type="line",
             color="#0000ff",
         )
+
+
+class WaterfallnArtifChart(ProjectChart):
+    name = "Evolution de l'artificialisation"
+    param = {
+        "chart": {"type": "waterfall"},
+        "title": {"text": "Synthèse"},
+        "yAxis": {
+            "title": {"text": "Surface (en ha)"},
+            "stackLabels": {"enabled": True, "format": "{total:,.1f}"},
+        },
+        "tooltip": {
+            "pointFormat": "{series.name}: {point.y}",
+            "valueSuffix": " Ha",
+            "valueDecimals": 1,
+        },
+        "xAxis": {"type": "category"},
+        "legend": {"layout": "horizontal", "align": "center", "verticalAlign": "top"},
+        "plotOptions": {
+            "column": {
+                "dataLabels": {"enabled": True, "format": "{point.y:,.1f}"},
+                "pointPadding": 0.2,
+                "borderWidth": 0,
+            }
+        },
+        "series": [],
+    }
+
+    def get_series(self):
+        if not self.series:
+            self.series = self.project.get_artif_progession_time_scoped()
+        return self.series
+
+    def add_series(self):
+        series = self.get_series()
+        self.chart["series"] = [
+            {
+                "data": [
+                    {
+                        "name": "Artificialisation",
+                        "y": series["new_artif"],
+                        "color": "#ff0000",
+                    },
+                    {
+                        "name": "Renaturation",
+                        "y": series["new_natural"] * -1,
+                        "color": "#00ff00",
+                    },
+                    {
+                        "name": "Artificialisation nette",
+                        "isSum": True,
+                        "color": "#0000ff",
+                    },
+                ],
+            },
+        ]
 
 
 class CouvertureSolPieChart(ProjectChart):
@@ -474,9 +530,13 @@ class NetArtifComparaisonChart(ProjectChart):
         "series": [],
     }
 
+    def __init__(self, *args, **kwargs):
+        self.level = kwargs.pop("level")
+        super().__init__(*args, **kwargs)
+
     def get_series(self):
         if not self.series:
-            self.series = self.project.get_city_artif_per_year()
+            self.series = self.project.get_land_artif_per_year(self.level)
         return self.series
 
     def add_series(self):
