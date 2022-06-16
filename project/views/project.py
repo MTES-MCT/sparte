@@ -458,7 +458,7 @@ class ProjectReportArtifView(GroupMixin, DetailView):
         total_surface = project.area
 
         # Retrieve request level of analysis
-        level = self.request.GET.get("level_analysis", project.level)
+        level = self.request.GET.get("level_conso", project.level)
 
         kwargs = {
             "diagnostic": project,
