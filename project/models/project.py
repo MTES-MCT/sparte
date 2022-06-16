@@ -486,6 +486,44 @@ class Project(BaseProject):
         )
         return qs
 
+    def get_land_artif_per_year(self, analysis_level):
+        """Return artif evolution for all cities of the diagnostic
+
+        {
+            "city_name": {
+                "2013-2016": 10,
+                "2016-2019": 15,
+            }
+        }
+        """
+        qs = CommuneDiff.objects.filter(city__in=self.cities.all())
+        if analysis_level == "DEPT":
+            qs = qs.annotate(name=F("city__departement__name"))
+        elif analysis_level == "EPCI":
+            qs = qs.annotate(name=F("city__epci__name"))
+        elif analysis_level == "REGI":
+            qs = qs.annotate(name=F("city__departement__region__name"))
+        else:
+            qs = qs.annotate(name=F("city__name"))
+        qs = qs.filter(
+            year_old__gte=self.analyse_start_date, year_new__lte=self.analyse_end_date
+        )
+        qs = qs.annotate(
+            period=Concat(
+                "year_old",
+                Value(" - "),
+                "year_new",
+                output_field=models.CharField(),
+            )
+        )
+        qs = qs.values("name", "period")
+        qs = qs.annotate(net_artif=Sum("net_artif"))
+
+        results = collections.defaultdict(dict)
+        for row in qs:
+            results[row["name"]][row["period"]] = row["net_artif"]
+        return results
+
     def get_city_artif_per_year(self):
         """Return artif evolution for all cities of the diagnostic
 
