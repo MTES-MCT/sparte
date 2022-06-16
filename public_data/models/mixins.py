@@ -107,13 +107,11 @@ class AutoLoadMixin:
         lm.save(strict=True, verbose=verbose)
         logger.info("Data loaded")
         logger.info("Calculate fields")
-        cls.calculate_fields()
+        try:
+            getattr(cls, "calculate_fields")()  # noqa: B009
+        except AttributeError:
+            pass
         logger.info("End loading data %s", cls.__name__)
-
-    @classmethod
-    def calculate_fields(cls):
-        """Override if you need to calculate some fields after loading data."""
-        pass
 
 
 class DataColorationMixin:
