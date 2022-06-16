@@ -1,3 +1,4 @@
+import collections
 import traceback
 
 from django.conf import settings
@@ -139,6 +140,12 @@ class CityGroup:
 class Project(BaseProject):
 
     ANALYZE_YEARS = [(str(y), str(y)) for y in range(2009, 2020)]
+    LEVEL_CHOICES = (
+        ("COMM", "Commune"),
+        ("EPCI", "EPCI"),
+        ("DEPT", "Département"),
+        ("REGI", "Région"),
+    )
 
     is_public = models.BooleanField("Public", default=False)
 
@@ -152,6 +159,12 @@ class Project(BaseProject):
         "Date de fin de période d'analyse",
         choices=ANALYZE_YEARS,
         default="2018",
+        max_length=4,
+    )
+    level = models.CharField(
+        "Niveau d'analyse",
+        choices=LEVEL_CHOICES,
+        default="COMM",
         max_length=4,
     )
     cities = models.ManyToManyField(
@@ -287,7 +300,8 @@ class Project(BaseProject):
         else:
             code_insee = self.projectcommune_set.filter(group_name=group_name)
             code_insee = code_insee.values_list("commune__insee", flat=True)
-        qs = Cerema.objects.filter(city_insee__in=code_insee)
+        qs = Cerema.objects.pre_annotated()
+        qs = qs.filter(city_insee__in=code_insee)
         return qs
 
     def get_determinants(self, group_name=None):
@@ -313,14 +327,14 @@ class Project(BaseProject):
         results = {f: dict() for f in determinants.values()}
         args = []
         for year in self.years:
-            start = year[-2:]
-            end = str(int(year) + 1)[-2:]
+            start = str(int(year) - 1)[-2:]
+            end = year[-2:]
             for det in determinants.keys():
                 args.append(Sum(f"art{start}{det}{end}"))
         qs = self.get_cerema_cities(group_name=group_name).aggregate(*args)
         for key, val in qs.items():
             if val is not None:
-                year = f"20{key[3:5]}"
+                year = f"20{key[8:10]}"
                 det = determinants[key[5:8]]
                 results[det][year] = val / 10000
         return results
@@ -355,14 +369,30 @@ class Project(BaseProject):
             fields = Cerema.get_art_field(
                 self.analyse_start_date, self.analyse_end_date
             )
-            args = (Sum(field) for field in fields)
+            args = (Sum(field, default=0) for field in fields)
             qs = qs.aggregate(*args)
             self._conso_per_year = {
-                f"20{key[3:5]}": val / 10000
+                f"20{key[8:10]}": val / 10000
                 for key, val in qs.items()
-                if val is not None
+                # if val is not None
             }
         return self._conso_per_year
+
+    def get_land_conso_per_year(self, level):
+        """Return conso data aggregated by a specific level
+        {
+            "dept_name": {
+                "2015": 10,
+                "2016": 12,
+                "2017": 9,
+            },
+        }
+        """
+        fields = Cerema.get_art_field(self.analyse_start_date, self.analyse_end_date)
+        qs = self.get_cerema_cities()
+        qs = qs.values(level)
+        qs = qs.annotate(**{f"20{field[8:10]}": Sum(field) / 10000 for field in fields})
+        return {row[level]: {year: row[year] for year in self.years} for row in qs}
 
     def get_city_conso_per_year(self, group_name=None):
         """Return year artificialisation of each city in the project, on project
@@ -376,17 +406,15 @@ class Project(BaseProject):
             },
         }
         """
-        results = dict()
         qs = self.get_cerema_cities(group_name=group_name)
         fields = Cerema.get_art_field(self.analyse_start_date, self.analyse_end_date)
-        for city in qs:
-            results[city.city_name] = dict()
-            total = 0
-            for field in fields:
-                val = getattr(city, field) / 10000
-                total += val
-                results[city.city_name][f"20{field[3:5]}"] = val
-        return results
+        return {
+            cerema_city.city_name: {
+                f"20{field[8:10]}": getattr(cerema_city, field) / 10000
+                for field in fields
+            }
+            for cerema_city in qs
+        }
 
     def get_look_a_like_conso_per_year(self):
         """Return same data as get_conso_per_year but for land listed in
@@ -457,6 +485,62 @@ class Project(BaseProject):
             net_artif=Sum("net_artif"),
         )
         return qs
+
+    def get_land_artif_per_year(self, analysis_level):
+        """Return artif evolution for all cities of the diagnostic
+
+        {
+            "city_name": {
+                "2013-2016": 10,
+                "2016-2019": 15,
+            }
+        }
+        """
+        qs = CommuneDiff.objects.filter(city__in=self.cities.all())
+        if analysis_level == "DEPT":
+            qs = qs.annotate(name=F("city__departement__name"))
+        elif analysis_level == "EPCI":
+            qs = qs.annotate(name=F("city__epci__name"))
+        elif analysis_level == "REGI":
+            qs = qs.annotate(name=F("city__departement__region__name"))
+        else:
+            qs = qs.annotate(name=F("city__name"))
+        qs = qs.filter(
+            year_old__gte=self.analyse_start_date, year_new__lte=self.analyse_end_date
+        )
+        qs = qs.annotate(
+            period=Concat(
+                "year_old",
+                Value(" - "),
+                "year_new",
+                output_field=models.CharField(),
+            )
+        )
+        qs = qs.values("name", "period")
+        qs = qs.annotate(net_artif=Sum("net_artif"))
+
+        results = collections.defaultdict(dict)
+        for row in qs:
+            results[row["name"]][row["period"]] = row["net_artif"]
+        return results
+
+    def get_city_artif_per_year(self):
+        """Return artif evolution for all cities of the diagnostic
+
+        {
+            "city_name": {
+                "2013-2016": 10,
+                "2016-2019": 15,
+            }
+        }
+        """
+        qs = CommuneDiff.objects.filter(city__in=self.cities.all()).filter(
+            year_old__gte=self.analyse_start_date, year_new__lte=self.analyse_end_date
+        )
+        results = collections.defaultdict(dict)
+        for commune in qs:
+            results[commune.city.name][commune.period] = commune.net_artif
+        return results
 
     def get_bounding_box(self):
         result = self.emprise_set.aggregate(bbox=Extent("mpoly"))
