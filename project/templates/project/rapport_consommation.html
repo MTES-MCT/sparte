@@ -35,56 +35,51 @@ Rapport consommation
 
             <div class="clearfix">
                 <div class="card key-figure">
-                    <div class="card-header">
-                        Surface du territoire
-                    </div>
                     <div class="card-body">
                         <p class="figure">{{ total_surface|floatformat:0 }} ha</p>
+                    </div>
+                    <div class="card-header">
+                        Surface du territoire
                     </div>
                 </div>
 
                 <div class="card key-figure key-figure-yellow">
-                    <div class="card-header">
-                        Consommation {{ project.analyse_start_date }} à {{ project.analyse_end_date }}
-                    </div>
                     <div class="card-body">
                         <p class="figure">+{{ project_scope.consummed|floatformat:1 }} ha</p>
+                    </div>
+                    <div class="card-header">
+                        Consommation {{ project.analyse_start_date }} à {{ project.analyse_end_date }}
                     </div>
                 </div>
             </div>
 
             <div class="clearfix">
                 <div class="card key-figure key-figure-green">
-                    <div class="card-header">
-                        Consommation 2011-2019
-                    </div>
+
                     <div class="card-body">
                         <p class="figure">+{{ target_2031.consummed|floatformat:1 }} ha</p>
-                        <p class="card-text"><small class="text-danger">
-                            <i class="bi bi-exclamation-diamond-fill"></i> Données 2020 non encore disponibles
-                        </small></p>
                     </div>
-
+                    <div class="card-header">
+                        Consommation 2011-2019 <i class="bi bi-question-circle" data-toggle="tooltip" title="Données 2020 non encore disponibles"></i>
+                    </div>
                 </div>
 
                 <div class="card key-figure key-figure-green">
-                    <div class="card-header">
-                        Trajectoire 2021-2030
-                    </div>
                     <div class="card-body">
                         <p class="figure">+{{ target_2031.target|floatformat:1 }} ha</p>
-                        <p class="card-text"><small class="text-muted">
-                            Réduction de 50% par rapport à la décennie précédente
-                        </small></p>
+                    </div>
+                    <div class="card-header">
+                        Trajectoire 2021-2030 <i class="bi bi-question-circle" data-toggle="tooltip" title="Réduction de 50% par rapport à la décennie précédente"></i>
                     </div>
                 </div>
 
                 <div class="card key-figure key-figure-green">
-                    <div class="card-header">
-                        Trajectoire projetée annualisée
-                    </div>
+
                     <div class="card-body">
                         <p class="figure">+{{ target_2031.annual_forecast|floatformat:0 }} ha/an</p>
+                    </div>
+                    <div class="card-header">
+                        Trajectoire projetée annualisée
                     </div>
                 </div>
             </div>
@@ -115,26 +110,41 @@ Rapport consommation
             </div>
 
             <div class="w-100 box p-4">
-                <h3>
+                <h3 class="clearfix">
                     <div class="float-end">
-                        <div class="dropdown">
-                            <button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                                Sélection
-                            </button>
-                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                                <li><a id="check" class="dropdown-item" href="#" chart_target="chart">Tout</a></li>
-                                <li><a id="uncheck" class="dropdown-item" href="#" chart_target="chart">Aucun</a></li>
-                                <li><a id="reverse" class="dropdown-item" href="#" chart_target="chart">Inverser</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><h6 class="dropdown-header">Zoom sur un groupe de villes</h6></li>
-                                {% for name in groups_names %}
-                                    <li><a class="dropdown-item" href="{% url 'project:report_city_group' project.id %}?group_name={{ name }}">{{ name }}</a></li>
-                                {% endfor %}
-                                <li><a class="dropdown-item" href="{% url 'project:report_city_group' project.id %}">Tous</a></li>
-                            </ul>
+                        <div class="btn-group">
+                            <div class="dropdown me-2">
+                                <button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton2" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Maille d'analyse
+                                </button>
+                                <ul class="dropdown-menu mt-2" aria-labelledby="dropdownMenuButton2">
+                                    <li><a class="dropdown-item {% if level == "COMM" %}active{% endif %}" href="{% url "project:report_conso" project.id %}?level_conso=COMM">Communes</a></li>
+                                    <li><a class="dropdown-item {% if level == "EPCI" %}active{% endif %}" href="{% url "project:report_conso" project.id %}?level_conso=EPCI">EPCI</a></li>
+                                    <li><a class="dropdown-item {% if level == "DEPT" %}active{% endif %} " href="{% url "project:report_conso" project.id %}?level_conso=DEPT">Départements</a></li>
+                                    <li><a class="dropdown-item {% if level == "REGI" %}active{% endif %}" href="{% url "project:report_conso" project.id %}?level_conso=REGI">Régions</a></li>
+                                </ul>
+                            </div>
+
+                            <div class="dropdown">
+                                <button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Sélection
+                                </button>
+                                <ul class="dropdown-menu mt-2" aria-labelledby="dropdownMenuButton1">
+                                    <li><a id="check" class="dropdown-item" href="#" chart_target="chart">Tout</a></li>
+                                    <li><a id="uncheck" class="dropdown-item" href="#" chart_target="chart">Aucun</a></li>
+                                    <li><a id="reverse" class="dropdown-item" href="#" chart_target="chart">Inverser</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><h6 class="dropdown-header">Zoom sur un groupe de villes</h6></li>
+                                    {% for name in groups_names %}
+                                        <li><a class="dropdown-item" href="{% url 'project:report_city_group' project.id %}?group_name={{ name }}">{{ name }}</a></li>
+                                    {% endfor %}
+                                    <li><a class="dropdown-item" href="{% url 'project:report_city_group' project.id %}">Tous</a></li>
+                                </ul>
+                            </div>
                         </div>
-                </div>
-                Consommation annuelle des communes du territoire</h3>
+                    </div>
+                    Consommation annuelle des {% if level == "COMM" %}communes{% elif level == "EPCI" %}EPCI{% elif level == "DEPT" %}départements{% else %}régions{% endif %} du territoire
+                </h3>
 
                 <div id="chart" class="flex-fill"></div>
             </div>

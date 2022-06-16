@@ -1,3 +1,5 @@
+import collections
+
 from highcharts import charts
 
 
@@ -57,6 +59,10 @@ class ConsoCommuneChart(ProjectChart):
         "series": [],
     }
 
+    def __init__(self, *args, **kwargs):
+        self.level = kwargs.pop("level")
+        super().__init__(*args, **kwargs)
+
     def get_legend_for_paper(self):
         return {
             "enabled": False,
@@ -64,9 +70,16 @@ class ConsoCommuneChart(ProjectChart):
 
     def get_series(self):
         if not self.series:
-            self.series = self.project.get_city_conso_per_year(
-                group_name=self.group_name
-            )
+            if self.level == "REGI":
+                self.series = self.project.get_land_conso_per_year("region_name")
+            elif self.level == "DEPT":
+                self.series = self.project.get_land_conso_per_year("dept_name")
+            elif self.level == "EPCI":
+                self.series = self.project.get_land_conso_per_year("epci_name")
+            else:
+                self.series = self.project.get_city_conso_per_year(
+                    group_name=self.group_name
+                )
         return self.series
 
     def add_series(self):
@@ -171,7 +184,7 @@ class EvolutionArtifChart(ProjectChart):
     name = "Evolution de l'artificialisation"
     param = {
         "chart": {"type": "column"},
-        "title": {"text": "Par millésime"},
+        "title": {"text": "Par commune"},
         "yAxis": {
             "title": {"text": "Surface (en ha)"},
             "stackLabels": {"enabled": True, "format": "{total:,.1f}"},
@@ -219,6 +232,62 @@ class EvolutionArtifChart(ProjectChart):
             # type="line",
             color="#0000ff",
         )
+
+
+class WaterfallnArtifChart(ProjectChart):
+    name = "Evolution de l'artificialisation"
+    param = {
+        "chart": {"type": "waterfall"},
+        "title": {"text": "Synthèse"},
+        "yAxis": {
+            "title": {"text": "Surface (en ha)"},
+            "stackLabels": {"enabled": True, "format": "{total:,.1f}"},
+        },
+        "tooltip": {
+            "pointFormat": "{series.name}: {point.y}",
+            "valueSuffix": " Ha",
+            "valueDecimals": 1,
+        },
+        "xAxis": {"type": "category"},
+        "legend": {"layout": "horizontal", "align": "center", "verticalAlign": "top"},
+        "plotOptions": {
+            "column": {
+                "dataLabels": {"enabled": True, "format": "{point.y:,.1f}"},
+                "pointPadding": 0.2,
+                "borderWidth": 0,
+            }
+        },
+        "series": [],
+    }
+
+    def get_series(self):
+        if not self.series:
+            self.series = self.project.get_artif_progession_time_scoped()
+        return self.series
+
+    def add_series(self):
+        series = self.get_series()
+        self.chart["series"] = [
+            {
+                "data": [
+                    {
+                        "name": "Artificialisation",
+                        "y": series["new_artif"],
+                        "color": "#ff0000",
+                    },
+                    {
+                        "name": "Renaturation",
+                        "y": series["new_natural"] * -1,
+                        "color": "#00ff00",
+                    },
+                    {
+                        "name": "Artificialisation nette",
+                        "isSum": True,
+                        "color": "#0000ff",
+                    },
+                ],
+            },
+        ]
 
 
 class CouvertureSolPieChart(ProjectChart):
@@ -448,3 +517,39 @@ class ArtifCouvSolPieChart(ProjectChart):
 
 class ArtifUsageSolPieChart(ArtifCouvSolPieChart):
     _sol = "usage"
+
+
+class NetArtifComparaisonChart(ProjectChart):
+    name = "Net artificialisation per cities"
+    param = {
+        "chart": {"type": "column"},
+        "title": {"text": ""},
+        "yAxis": {"title": {"text": "Artificialisation net (en ha)"}},
+        "xAxis": {"type": "category"},
+        "legend": {"layout": "vertical", "align": "right", "verticalAlign": "top"},
+        "series": [],
+    }
+
+    def __init__(self, *args, **kwargs):
+        self.level = kwargs.pop("level")
+        super().__init__(*args, **kwargs)
+
+    def get_series(self):
+        if not self.series:
+            self.series = self.project.get_land_artif_per_year(self.level)
+        return self.series
+
+    def add_series(self):
+        super().add_series()
+        total = collections.defaultdict(lambda: 0)
+        for data in self.get_series().values():
+            for period, value in data.items():
+                total[period] += value
+        # self.add_serie(
+        #     self.project.name,
+        #     total,
+        #     **{
+        #         "color": "#ff0000",
+        #         "dashStyle": "ShortDash",
+        #     },
+        # )

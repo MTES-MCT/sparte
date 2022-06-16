@@ -126,14 +126,30 @@ def load_data(ctx, klass=None):
 def rebuild(ctx, klass=None):
     """Trigger management command public_data scalingo."""
     connecter = ScalingoInterface(ctx.obj)
-    click.secho("Load all public data", fg="cyan")
-    # connecter.manage_py("load_data")
+    click.secho("Load parameters", fg="cyan")
+    connecter.manage_py("load_param --file required_parameters.json")
+
+    click.secho("Load data from cerema", fg="cyan")
+    connecter.manage_py("build_matrix")
+
+    click.secho("Load data from cerema", fg="cyan")
+    connecter.manage_py("load_cerema")
+
     click.secho("build administrative territory", fg="cyan")
-    connecter.manage_py("load_from_cerema")
+    connecter.manage_py("build_administrative_layers")
+
+    click.secho("Trigger OVS GE data loading", fg="cyan")
+    connecter.manage_py("load_ocsge --no-verbose --truncate")
+
+    click.secho("Build data for all communes", fg="cyan")
+    connecter.manage_py("build_commune_data")
+
     click.secho("Set available millesimes", fg="cyan")
     connecter.manage_py("set_dept_millesimes")
-    click.secho("Load parameters", fg="cyan")
-    connecter.manage_py("load_param")
+
+    click.secho("Build artificial area", fg="cyan")
+    connecter.manage_py("build_artificial_area --verbose")
+
     click.secho("End", fg="cyan")
 
 
@@ -193,6 +209,14 @@ def mep_140(ctx):
 
     click.secho("Add short label to couverture and usage", fg="cyan")
     connecter.manage_py("correct_label_couv_usage")
+
+    click.secho("Reload zone construite for density", fg="cyan")
+    connecter.run(
+        "python manage.py load_ocsge --item GersZoneConstruite2016 --no-verbose"
+    )
+    connecter.run(
+        "python manage.py load_ocsge --item GersZoneConstruite2019 --no-verbose"
+    )
 
     click.secho("End migration", fg="cyan")
 

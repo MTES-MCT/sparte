@@ -2,7 +2,7 @@ import logging
 
 from django.contrib.gis.db.models.functions import Area, Transform
 from django.core.management.base import BaseCommand
-from django.db.models import DecimalField, IntegerField
+from django.db.models import DecimalField, FloatField, Sum
 from django.db.models.functions import Cast
 
 from public_data.models import (
@@ -307,7 +307,17 @@ class GersZoneConstruite2016(AutoLoadMixin, ZoneConstruite):
 
     def save(self, *args, **kwargs):
         self.year = self._year
-        return super().save(*args, **kwargs)
+        # surface
+        self.surface = self.mpoly.transform(2154, clone=True).area
+        # get density
+        qs = Ocsge.objects.intersect(self.mpoly)
+        qs = qs.filter(couverture="CS1.1.1.1", year=self.year)
+        qs = qs.aggregate(built=Cast(Sum("intersection_area"), FloatField()))
+        if qs["built"] is None:
+            self.built_density = 0
+        else:
+            self.built_density = round(qs["built"] / self.surface, 2)
+        super().save(*args, **kwargs)
 
     @classmethod
     def clean_data(cls, clean_queryset=None):
@@ -317,18 +327,20 @@ class GersZoneConstruite2016(AutoLoadMixin, ZoneConstruite):
         qs = qs.filter(year=cls._year)
         qs.delete()
 
-    @classmethod
-    def calculate_fields(cls):
-        """Set year field"""
-        cls.objects.filter(year__isnull=True).update(
-            year=Cast("millesime", output_field=IntegerField())
-        )
-        cls.objects.filter(surface__isnull=True).update(
-            surface=Cast(
-                Area(Transform("mpoly", 2154)),
-                DecimalField(max_digits=15, decimal_places=4),
-            )
-        )
+    # @classmethod
+    # def calculate_fields(cls):
+    #     """Set year field, surface and density"""
+    #     year
+    #     cls.objects.filter(year__isnull=True).update(
+    #         year=Cast("millesime", output_field=IntegerField())
+    #     )
+    #     surface
+    #     cls.objects.filter(surface__isnull=True).update(
+    #         surface=Cast(
+    #             Area(Transform("mpoly", 2154)),
+    #             DecimalField(max_digits=15, decimal_places=4),
+    #         )
+    #     )
 
 
 class GersZoneConstruite2019(GersZoneConstruite2016):
