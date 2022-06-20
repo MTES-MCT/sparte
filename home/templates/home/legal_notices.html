@@ -1,0 +1,62 @@
+{% extends 'index.html' %}
+
+{% load static %}
+
+{% block pagetitle %}Accueil{% endblock %}
+
+{% block headers %}
+<link rel="stylesheet" href="{% static 'home/css/home.css' %}" />
+{% endblock headers %}
+
+{% block content %}
+<div class="d-flex justify-content-center">
+    <div class="" style="width:750px;">
+        <h1>Mentions légales du Service de Portrait de l'Artificialisation des Territoires (SPARTE)</h1>
+
+        <h2>Editeur de la Plateforme</h2>
+
+        <p>La Plateforme SPARTE est éditée par une équipe pluridisciplinaire :</p>
+
+        <ul>
+            <li>Philippe Loriot, intrapreneur</li>
+            <li>Inès Dartiguenave, coach produit</li>
+            <li>Swann Bouvier-Muller, lead développeur fullstack</li>
+        </ul>
+
+        <p>Vous pouvez nous contacter <a href="mailto:sparte@beta.gouv.fr">sparte@beta.gouv.fr</a>.</p>
+
+
+        <h2>Hébergement du service</h2>
+
+        <p>
+            SPARTE est hébergée en France sur l’infrastructure Scalingo.
+            <br/>
+            <br/>Scalingo SAS
+            <br/>15, avenue du Rhin
+            <br/>67100 Strasbourg
+            <br/>France
+            <br/>SIRET 80866548300018
+        </p>
+
+        <h2>Accessibilité</h2>
+
+        <p>La conformité aux normes d’accessibilité numérique est un objectif ultérieur mais nous tâchons de rendre ce site accessible à toutes et à tous.</p>
+
+        <h2>Signaler un dysfonctionnement</h2>
+
+        <p>Si vous rencontrez un défaut d’accessibilité vous empêchant d’accéder à un contenu ou une fonctionnalité du site, merci de nous en faire part.</p>
+
+        <p>Si vous n’obtenez pas de réponse rapide de notre part, vous êtes en droit de faire parvenir vos doléances ou une demande de saisine au Défenseur des droits.</p>
+
+        <h2>En savoir plus</h2>
+
+        <p>Pour en savoir plus sur la politique d’accessibilité numérique de l’État : <a href="http://references.modernisation.gouv.fr/accessibilite-numerique">http://references.modernisation.gouv.fr/accessibilite-numerique</a>.</p>
+
+        <h2>Sécurité</h2>
+
+        <p>Le site est protégé par un certificat électronique, matérialisé pour la grande majorité des navigateurs par un cadenas. Cette protection participe à la confidentialité des échanges.</p>
+
+        <p>En aucun cas les services associés à la plateforme ne seront à l’origine d’envoi de courriels pour demander la saisie d’informations personnelles.</p>
+    </div>
+</div>
+{% endblock %}
