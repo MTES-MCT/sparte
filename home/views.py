@@ -10,6 +10,14 @@ class Home(BreadCrumbMixin, TemplateView):
     template_name = "home/home.html"
 
 
+class LegalNotice(BreadCrumbMixin, TemplateView):
+    template_name = "home/legal_notices.html"
+
+
+class Privacy(BreadCrumbMixin, TemplateView):
+    template_name = "home/privacy.html"
+
+
 class FrequentlyAskedQuestionDetail(GetObjectMixin, BreadCrumbMixin, DetailView):
     template_name = "home/faq_detail.html"
     context_object_name = "faq"
