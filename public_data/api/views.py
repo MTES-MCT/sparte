@@ -9,7 +9,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework_gis import filters
 
-from utils.json import decimal2float
+from utils.functions import decimal2float
 
 from public_data.models import (
     ArtificialArea,
