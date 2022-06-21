@@ -67,7 +67,7 @@ class UseOfReportPieChart(charts.Chart):
     name = "How reports tab are opened"
     param = {
         "chart": {"type": "pie"},
-        "title": {"text": "Rapports consultés (12 derniers mois)"},
+        "title": {"text": "Pages consultées dans le diagnostic en ligne "},
         "yAxis": {
             "title": {"text": "Ouverture"},
             "stackLabels": {"enabled": True, "format": "{total:,.1f}"},
