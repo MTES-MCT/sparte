@@ -16,5 +16,20 @@
         "value_type": "STR",
         "value": "bilan d'Andernos-les-bains",
         "is_global": true
+    },
+    {
+        "name": "Budget consommé",
+        "slug": "BUDGET_CONSOMME",
+        "value_type": "INT",
+        "value": "150000",
+        "is_global": true
+    }
+    ,
+    {
+        "name": "Date de mise à jour du budget conso",
+        "slug": "BUDGET_DATE",
+        "value_type": "STR",
+        "value": "1er juin 2022",
+        "is_global": true
     }
 ]
