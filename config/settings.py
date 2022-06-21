@@ -396,6 +396,11 @@ if ENVIRONMENT != "local":
         with_locals=True,
     )
 
+
+# MATOMO
+
+MATOMO_TOKEN = env.str("MATOMO_TOKEN", default="")
+
 # LOGGING SETTINGS
 
 LOGGING_LEVEL = env.str("LOGGING_LEVEL", default="INFO")
