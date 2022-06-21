@@ -89,6 +89,14 @@ class UseOfReportPieChart(charts.Chart):
     }
 
     def get_series(self):
+        def t(title):
+            if title == "map":
+                return "Carte intéractive"
+            elif title == "synthesis":
+                return "Synthèse"
+            else:
+                return title
+
         if not self.series:
             self.end = date.today()
             self.start = date(year=self.end.year - 1, month=self.end.month + 1, day=1)
@@ -100,5 +108,5 @@ class UseOfReportPieChart(charts.Chart):
             for row in mato.request():
                 match = re_map.search(row["label"])
                 if match:
-                    self.series[match.group(0)] += row["nb_hits"]
+                    self.series[t(match.group(0))] += row["nb_hits"]
         return {"Page du rapport": self.series}
