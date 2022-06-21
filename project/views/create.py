@@ -1,5 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+
+# from django.contrib.gis.db.models import Union
 from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView, FormView, RedirectView
@@ -15,7 +17,8 @@ from project.forms import (
     KeywordForm,
 )
 from project.models import Project
-from project.tasks import process_project
+
+# from project.tasks import process_project
 
 
 class SelectTypeView(BreadCrumbMixin, TemplateView):
@@ -251,12 +254,18 @@ class SetProjectOptions(BreadCrumbMixin, FormView):
         if self.request.user.is_authenticated:
             project.user = self.request.user
         project.save()
-        if len(lands) == 1:
-            project.emprise_set.create(mpoly=lands[0].mpoly)
-        else:
-            project.cities.add(*lands)
+
+        for land in lands:
+            project.cities.add(*land.get_cities())
+            project.emprise_set.create(mpoly=land.mpoly)
+
         # process_project.delay(project.id)
-        process_project(project.id)
+        # process_project(project.id)
+        result = project.get_first_last_millesime()
+        project.first_year_ocsge = result["first"]
+        project.last_year_ocsge = result["last"]
+        project.set_success()
+
         return redirect(project)
 
 
