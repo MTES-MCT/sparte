@@ -23,8 +23,7 @@
         "value_type": "INT",
         "value": "150000",
         "is_global": true
-    }
-    ,
+    },
     {
         "name": "Date de mise à jour du budget conso",
         "slug": "BUDGET_DATE",
