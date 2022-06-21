@@ -110,3 +110,50 @@ class UseOfReportPieChart(charts.Chart):
                 if match:
                     self.series[t(match.group(0))] += row["nb_hits"]
         return {"Page du rapport": self.series}
+
+
+class OrganismPieChart(charts.Chart):
+    _field = "organism"
+    name = "How reports tab are opened"
+    param = {
+        "chart": {"type": "pie"},
+        "title": {"text": "Organismes des téléchargeurs"},
+        "yAxis": {
+            "title": {"text": "Ouverture"},
+            "stackLabels": {"enabled": True, "format": "{total:,.1f}"},
+        },
+        "tooltip": {"enabled": False, "pointFormat": "{point.name}: {point.y}"},
+        "xAxis": {"type": "category"},
+        "legend": {"layout": "horizontal", "align": "center", "verticalAlign": "top"},
+        "plotOptions": {
+            "pie": {
+                "allowPointSelect": True,
+                "cursor": "pointer",
+                "dataLabels": {
+                    "enabled": True,
+                    "format": "<b>{point.name}</b>: {point.y}",
+                },
+            }
+        },
+        "series": [],
+    }
+
+    def get_series(self):
+        if not self.series:
+            self.series = {
+                row[self._field]: row["total"]
+                for row in (
+                    Request.objects.all()
+                    .values(self._field)
+                    .annotate(total=Count("id"))
+                )
+            }
+        return self.series
+
+
+class FunctionsPieChart(OrganismPieChart):
+    _field = "organism"
+
+    def get_series(self):
+        self.param["title"]["text"] = "Fonctions des téléchargeurs"
+        return super().get_series()

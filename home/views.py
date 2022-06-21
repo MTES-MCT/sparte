@@ -35,6 +35,8 @@ class Stats(BreadCrumbMixin, TemplateView):
         kwargs["diag_created_downloaded"] = charts.DiagAndDownloadChart()
         kwargs["report_pie"] = charts.UseOfReportPieChart()
         kwargs["date_budget"] = app_parameter.BUDGET_DATE
+        kwargs["organism_pie_chart"] = charts.OrganismPieChart()
+        kwargs["function_pie_chart"] = charts.FunctionsPieChart()
         return super().get_context_data(**kwargs)
 
 
