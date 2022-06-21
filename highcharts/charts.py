@@ -11,7 +11,7 @@ from django.conf import settings
 from django.utils.safestring import mark_safe
 from django.utils.text import slugify
 
-from utils.json import decimal2float
+from utils.functions import decimal2float
 
 
 class ChartCollection:

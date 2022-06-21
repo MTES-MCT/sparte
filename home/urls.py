@@ -13,4 +13,7 @@ urlpatterns = [
         views.FrequentlyAskedQuestionDetail.as_view(),
         name="faq-detail",
     ),
+    path("cgu", views.LegalNotice.as_view(), name="cgv"),
+    path("confidentialité", views.Privacy.as_view(), name="privacy"),
+    path("stats", views.Stats.as_view(), name="stats"),
 ]
