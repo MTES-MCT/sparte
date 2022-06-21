@@ -327,14 +327,14 @@ class Project(BaseProject):
         results = {f: dict() for f in determinants.values()}
         args = []
         for year in self.years:
-            start = str(int(year) - 1)[-2:]
-            end = year[-2:]
+            start = year[-2:]
+            end = str(int(year) + 1)[-2:]
             for det in determinants.keys():
                 args.append(Sum(f"art{start}{det}{end}"))
         qs = self.get_cerema_cities(group_name=group_name).aggregate(*args)
         for key, val in qs.items():
             if val is not None:
-                year = f"20{key[8:10]}"
+                year = f"20{key[3:5]}"
                 det = determinants[key[5:8]]
                 results[det][year] = val / 10000
         return results
@@ -372,7 +372,7 @@ class Project(BaseProject):
             args = (Sum(field, default=0) for field in fields)
             qs = qs.aggregate(*args)
             self._conso_per_year = {
-                f"20{key[8:10]}": val / 10000
+                f"20{key[3:5]}": val / 10000
                 for key, val in qs.items()
                 # if val is not None
             }
@@ -391,7 +391,7 @@ class Project(BaseProject):
         fields = Cerema.get_art_field(self.analyse_start_date, self.analyse_end_date)
         qs = self.get_cerema_cities()
         qs = qs.values(level)
-        qs = qs.annotate(**{f"20{field[8:10]}": Sum(field) / 10000 for field in fields})
+        qs = qs.annotate(**{f"20{field[3:5]}": Sum(field) / 10000 for field in fields})
         return {row[level]: {year: row[year] for year in self.years} for row in qs}
 
     def get_city_conso_per_year(self, group_name=None):
@@ -410,7 +410,7 @@ class Project(BaseProject):
         fields = Cerema.get_art_field(self.analyse_start_date, self.analyse_end_date)
         return {
             cerema_city.city_name: {
-                f"20{field[8:10]}": getattr(cerema_city, field) / 10000
+                f"20{field[3:5]}": getattr(cerema_city, field) / 10000
                 for field in fields
             }
             for cerema_city in qs
