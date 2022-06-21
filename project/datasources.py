@@ -20,7 +20,7 @@ class DiagnosticSource(data_sources.DataSource):
         current_conso = project.get_bilan_conso_time_scoped()
 
         # Consommation des communes
-        chart_conso_cities = ConsoCommuneChart(project)
+        chart_conso_cities = ConsoCommuneChart(project, level=project.level)
 
         # Déterminants
         det_chart = DeterminantPerYearChart(project)

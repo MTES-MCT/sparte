@@ -43,9 +43,17 @@
         </div>
 
         <h2 class="mt-5">Progression mensuelle</h2>
-        <p class="my-5">Ce graphique présente le nombre de diagnostics créés et le nombre de portrait téléchargés mois par mois depuis le lancement de l'application début 2022.</p>
-        <div class="">
+        <p class="my-5">Ce graphique présente le nombre de diagnostics créés et le nombre de portrait téléchargés mois par mois depuis le lancement de l'application début 2022. En dessous, le profil des utilisateurs qui les ont téléchargés.</p>
+        <div class="my-5">
             <div id="diag_created_downloaded"></div>
+        </div>
+
+        <div class="my-5">
+            <div id="organism_pie_chart"></div>
+        </div>
+
+        <div class="">
+            <div id="function_pie_chart"></div>
         </div>
 
         <h2 class="mt-5">Utilisation des rapports en ligne</h2>
@@ -64,5 +72,7 @@
 {% french_translation %}
 {% display_chart 'diag_created_downloaded' diag_created_downloaded %}
 {% display_chart 'report_pie' report_pie %}
+{% display_chart 'organism_pie_chart' organism_pie_chart %}
+{% display_chart 'function_pie_chart' function_pie_chart %}
 {% endlocalize %}
 {% endblock %}
