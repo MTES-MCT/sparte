@@ -1,0 +1,68 @@
+{% extends 'index.html' %}
+
+{% load static %}
+{% load humanize %}
+{% load i18n %}
+{% load l10n %}
+{% load highcharts_tags %}
+
+{% block pagetitle %}Accueil{% endblock %}
+
+{% block headers %}
+<link rel="stylesheet" href="{% static 'home/css/home.css' %}" />
+<link rel="stylesheet" href="{% static 'project/css/project.css' %}" />
+{% endblock headers %}
+
+{% block content %}
+<div class="d-flex justify-content-center">
+    <div class="" style="width:750px;">
+        <h1 class="">Statistiques</h1>
+
+        <h2 class="mt-5">Principale mesure d'impact</h2>
+
+        <p class="my-5">SPARTE vise à fournir des portraits décrivant l'artificialisation des sols et la conformité à la loi ZAN. Les portraits sont téléchargeables au format Word. SPARTE prétend réaliser une économie d'échelle importante, à ce titre il nous semble important de mesurer le "coût moyen" des portraits à l'aune du budget total consommé.</p>
+
+        <div class="clearfix">
+            <div class="card key-figure">
+                <div class="card-body">
+                    <p class="figure">{{ nb_dl_portrait }}</p>
+                </div>
+                <div class="card-header">
+                    Portraits téléchargés
+                </div>
+            </div>
+
+            <div class="card key-figure">
+                <div class="card-body">
+                    <p class="figure">{{ cout_portrait }} €</p>
+                </div>
+                <div class="card-header">
+                    Coût moyen d'un portrait
+                </div>
+            </div>
+        </div>
+
+        <h2 class="mt-5">Progression mensuelle</h2>
+        <p class="my-5">Ce graphique présente le nombre de diagnostics créés et le nombre de portrait téléchargés mois par mois depuis le lancement de l'application en mars 2022.</p>
+        <div class="">
+            <div id="diag_created_downloaded"></div>
+        </div>
+
+        <h2 class="mt-5">Utilisation des rapports en ligne</h2>
+        <p class="my-5">Ce graphique présente comment les usagers consultent les rapports en ligne (source Matomo, cookie d'analytic). Période sélectionné : {{ report_pie.start }} - {{ report_pie.end }}</p>
+        <div class="">
+            <div id="report_pie"></div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block bodyend %}
+{% localize off %}
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+{% french_translation %}
+{% display_chart 'diag_created_downloaded' diag_created_downloaded %}
+{% display_chart 'report_pie' report_pie %}
+{% endlocalize %}
+{% endblock %}
