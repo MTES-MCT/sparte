@@ -33,7 +33,7 @@ class RegionViewSet(viewsets.ReadOnlyModelViewSet):
                 .values("project_id")
             )
             region.total = Request.objects.filter(project_id__in=project_id).count()
-        regions.sort(key=lambda x: x.total)
+        regions.sort(key=lambda x: x.total, reverse=True)
         colors = get_color_gradient(scale=len(regions))
         for region in regions:
             if region.total > 0:
