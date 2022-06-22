@@ -60,7 +60,10 @@ class ConsoCommuneChart(ProjectChart):
     }
 
     def __init__(self, *args, **kwargs):
-        self.level = kwargs.pop("level")
+        try:
+            self.level = kwargs.pop("level")
+        except KeyError:
+            self.level = "COMM"
         super().__init__(*args, **kwargs)
 
     def get_legend_for_paper(self):
