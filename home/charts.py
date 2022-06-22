@@ -17,13 +17,11 @@ class DiagAndDownloadChart(charts.Chart):
         "title": {"text": "Progression des indicateurs clés mois par mois"},
         "yAxis": {
             "title": {"text": "Nombre"},
-            "stackLabels": {"enabled": True, "format": "{total:,.0f}"},
         },
         "xAxis": {"type": "category"},
         "legend": {"layout": "horizontal", "align": "center", "verticalAlign": "top"},
         "plotOptions": {
             "column": {
-                "stacking": "normal",
                 "dataLabels": {"enabled": True, "format": "{point.y:,.0f}"},
             }
         },
@@ -69,6 +67,7 @@ class DiagAndDownloadChart(charts.Chart):
                 )
                 .values("date")
                 .annotate(total=Count("id"))
+                .order_by("date")
             )
             self.series = {
                 "Utilisateurs inscris": {

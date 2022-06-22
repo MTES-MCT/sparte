@@ -104,22 +104,6 @@ var GeoportailFrance_orthos = L.tileLayer(
     }
 ).addTo(map)
 
-function poppuper(feature, layer) {
-    if (feature.properties && feature.properties.total) {
-        layer.bindPopup(feature.properties.total);
-    }
-}
-
-function styler(feature){
-    return {
-        fillColor: feature.properties.map_color,
-        fillOpacity: 0.7,
-        weight: 1,
-        opacity: 0.3,
-        color: 'white',
-    }
-}
-
 $.getJSON("{% url 'home:region-list' %}", function(data) {
     L.geoJson(data, {
         style: (feature) => {
@@ -133,7 +117,7 @@ $.getJSON("{% url 'home:region-list' %}", function(data) {
         },
         onEachFeature: (feature, layer) => {
             if (feature.properties && feature.properties.total) {
-                layer.bindPopup(feature.properties.total);
+                layer.bindPopup('<p><b>'+feature.properties.name+'</b> : '+feature.properties.total+'</p>')
             }
         }
     }).addTo(map);
