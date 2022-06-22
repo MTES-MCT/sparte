@@ -345,7 +345,7 @@ class Project(BaseProject):
         qs = self.get_cerema_cities()
         # if not qs.exists():
         #     return 0
-        aggregation = qs.aggregate(bilan=Coalesce(Sum("naf11art21"), Decimal(0)))
+        aggregation = qs.aggregate(bilan=Coalesce(Sum("naf11art21"), float(0)))
         try:
             return aggregation["bilan"] / 10000
         except TypeError:
@@ -361,7 +361,7 @@ class Project(BaseProject):
         fields = Cerema.get_art_field(self.analyse_start_date, self.analyse_end_date)
         sum_function = sum([F(f) for f in fields])
         qs = qs.annotate(line_sum=sum_function)
-        aggregation = qs.aggregate(bilan=Coalesce(Sum("line_sum"), Decimal(0)))
+        aggregation = qs.aggregate(bilan=Coalesce(Sum("line_sum"), float(0)))
         try:
             return aggregation["bilan"] / 10000
         except TypeError:
@@ -376,7 +376,7 @@ class Project(BaseProject):
             fields = Cerema.get_art_field(
                 self.analyse_start_date, self.analyse_end_date
             )
-            args = (Coalesce(Sum(field), Decimal(0)) for field in fields)
+            args = (Sum(field) for field in fields)
             qs = qs.aggregate(*args)
             self._conso_per_year = {
                 f"20{key[3:5]}": val / 10000
