@@ -1,4 +1,5 @@
 import collections
+from decimal import Decimal
 import traceback
 
 from django.conf import settings
@@ -8,7 +9,7 @@ from django.contrib.gis.db.models.functions import Centroid
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models import Sum, F, Value, Q, Min, Max, Case, When
-from django.db.models.functions import Concat
+from django.db.models.functions import Concat, Coalesce
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.functional import cached_property
@@ -344,8 +345,11 @@ class Project(BaseProject):
         qs = self.get_cerema_cities()
         # if not qs.exists():
         #     return 0
-        aggregation = qs.aggregate(bilan=Sum("naf11art21"))
-        return aggregation["bilan"] / 10000
+        aggregation = qs.aggregate(bilan=Coalesce(Sum("naf11art21"), 0))
+        try:
+            return aggregation["bilan"] / 10000
+        except TypeError:
+            return 0
 
     def get_bilan_conso_time_scoped(self):
         """Return land consummed during the project time scope (between
@@ -357,8 +361,11 @@ class Project(BaseProject):
         fields = Cerema.get_art_field(self.analyse_start_date, self.analyse_end_date)
         sum_function = sum([F(f) for f in fields])
         qs = qs.annotate(line_sum=sum_function)
-        aggregation = qs.aggregate(bilan=Sum("line_sum"))
-        return aggregation["bilan"] / 10000
+        aggregation = qs.aggregate(bilan=Coalesce(Sum("line_sum"), 0))
+        try:
+            return aggregation["bilan"] / 10000
+        except TypeError:
+            return 0
 
     _conso_per_year = None
 
@@ -457,9 +464,9 @@ class Project(BaseProject):
             year_old__gte=self.analyse_start_date, year_new__lte=self.analyse_end_date
         )
         return qs.aggregate(
-            new_artif=Sum("new_artif"),
-            new_natural=Sum("new_natural"),
-            net_artif=Sum("net_artif"),
+            new_artif=Coalesce(Sum("new_artif"), Decimal("0")),
+            new_natural=Coalesce(Sum("new_natural"), Decimal("0")),
+            net_artif=Coalesce(Sum("net_artif"), Decimal("0")),
         )
 
     def get_artif_evolution(self):
@@ -571,7 +578,7 @@ class Project(BaseProject):
         qs = CommuneSol.objects.filter(city__in=self.cities.all(), year=millesime)
         qs = qs.annotate(code_prefix=code_field)
         qs = qs.values("code_prefix")
-        qs = qs.annotate(surface=Sum("surface"))
+        qs = qs.annotate(surface=Coalesce(Sum("surface"), Decimal(0)))
         data = list(qs)
         item_list = list(klass.objects.all().order_by("code"))
         for item in item_list:

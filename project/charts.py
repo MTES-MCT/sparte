@@ -331,20 +331,21 @@ class CouvertureSolPieChart(ProjectChart):
     def add_series(self):
         series = [_ for _ in self.get_series() if _.level == self._level]
         surface_total = sum(_.surface for _ in series)
-        self.chart["series"].append(
-            {
-                "name": self.millesime,
-                "data": [
-                    {
-                        "name": f"{item.code_prefix} {item.label}",
-                        "y": item.surface,
-                        "color": item.map_color,
-                        "percent": f"{int(100 * item.surface / surface_total)}%",
-                    }
-                    for item in series
-                ],
-            }
-        )
+        if surface_total:
+            self.chart["series"].append(
+                {
+                    "name": self.millesime,
+                    "data": [
+                        {
+                            "name": f"{item.code_prefix} {item.label}",
+                            "y": item.surface,
+                            "color": item.map_color,
+                            "percent": f"{int(100 * item.surface / surface_total)}%",
+                        }
+                        for item in series
+                    ],
+                }
+            )
 
 
 class UsageSolPieChart(CouvertureSolPieChart):

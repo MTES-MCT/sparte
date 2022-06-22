@@ -63,6 +63,9 @@ class ScalingoInterface:
             cmd += f" --{name} {val}"
         self.run(cmd)
 
+    def print_cmd(self):
+        print(self.get_scalingo_run_cmd())
+
 
 @click.group()
 @click.option(
@@ -79,6 +82,14 @@ def cli(ctx, env, detached):
     ctx.ensure_object(dict)
     ctx.obj["ENV_NAME"] = env
     ctx.obj["DETACHED"] = detached
+
+
+@cli.command()
+@click.pass_context
+def print_cmd(ctx, klass=None):
+    """Return scalingo cmd for the selected environment"""
+    connecter = ScalingoInterface(ctx.obj)
+    connecter.print_cmd()
 
 
 @cli.command()
