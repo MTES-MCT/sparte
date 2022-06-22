@@ -201,6 +201,9 @@ def mep_140(ctx):
     click.secho("Start migration v1.4.0", fg="cyan")
     connecter = ScalingoInterface(ctx.obj)
 
+    click.secho("Add new params (if any)", fg="cyan")
+    connecter.manage_py("load_param --file required_parameters.json")
+
     click.secho("Build artificial area", fg="cyan")
     connecter.manage_py("build_artificial_area --verbose")
 
