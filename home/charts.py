@@ -6,6 +6,7 @@ from django.db.models import Count, CharField, Func, F, Value
 
 from highcharts import charts
 from project.models import Project, Request
+from users.models import User
 from utils.matomo import Matomo
 
 
@@ -13,7 +14,7 @@ class DiagAndDownloadChart(charts.Chart):
     name = "Diagnostic created and downloaded per month"
     param = {
         "chart": {"type": "column"},
-        "title": {"text": "Diagnostics créés et téléchargés par mois"},
+        "title": {"text": "Progression des indicateurs clés mois par mois"},
         "yAxis": {
             "title": {"text": "Nombre"},
             "stackLabels": {"enabled": True, "format": "{total:,.0f}"},
@@ -31,6 +32,19 @@ class DiagAndDownloadChart(charts.Chart):
 
     def get_series(self):
         if not self.series:
+            qs_account = (
+                User.objects.annotate(
+                    date=Func(
+                        F("date_joined"),
+                        Value("yyyy-MM"),
+                        function="to_char",
+                        output_field=CharField(),
+                    )
+                )
+                .values("date")
+                .annotate(total=Count("id"))
+                .order_by("date")
+            )
             qs_created = (
                 Project.objects.annotate(
                     date=Func(
@@ -57,8 +71,11 @@ class DiagAndDownloadChart(charts.Chart):
                 .annotate(total=Count("id"))
             )
             self.series = {
-                "Créés": {row["date"]: row["total"] for row in qs_created},
-                "Téléchargés": {row["date"]: row["total"] for row in qs_dl},
+                "Utilisateurs inscris": {
+                    row["date"]: row["total"] for row in qs_account
+                },
+                "Diagnostics créés": {row["date"]: row["total"] for row in qs_created},
+                "Diagnostics téléchargés": {row["date"]: row["total"] for row in qs_dl},
             }
         return self.series
 
@@ -114,10 +131,11 @@ class UseOfReportPieChart(charts.Chart):
 
 class OrganismPieChart(charts.Chart):
     _field = "organism"
+    _name = "Organismes"
     name = "How reports tab are opened"
     param = {
         "chart": {"type": "pie"},
-        "title": {"text": "Organismes des téléchargeurs"},
+        "title": {"text": ""},
         "yAxis": {
             "title": {"text": "Ouverture"},
             "stackLabels": {"enabled": True, "format": "{total:,.1f}"},
@@ -138,22 +156,32 @@ class OrganismPieChart(charts.Chart):
         "series": [],
     }
 
+    def t(self, value):
+        try:
+            return dict(User.ORGANISMS.choices)[value]
+        except KeyError:
+            return value
+
     def get_series(self):
         if not self.series:
             self.series = {
-                row[self._field]: row["total"]
-                for row in (
-                    Request.objects.all()
-                    .values(self._field)
-                    .annotate(total=Count("id"))
-                )
+                self._name: {
+                    self.t(row[self._field]): row["total"]
+                    for row in (
+                        Request.objects.all()
+                        .values(self._field)
+                        .annotate(total=Count("id"))
+                        .order_by(self._field)
+                    )
+                }
             }
         return self.series
 
 
 class FunctionsPieChart(OrganismPieChart):
-    _field = "organism"
+    _field = "function"
+    _name = "Fonctions"
 
     def get_series(self):
-        self.param["title"]["text"] = "Fonctions des téléchargeurs"
+        self.chart["title"]["text"] = "Répartition des fonctions"
         return super().get_series()
