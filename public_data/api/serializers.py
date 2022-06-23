@@ -273,7 +273,6 @@ class RegionSerializer(serializers.GeoFeatureModelSerializer):
     class Meta:
         fields = (
             "id",
-            "source_id",
             "name",
         )
         model = Region
