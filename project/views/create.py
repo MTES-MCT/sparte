@@ -178,6 +178,21 @@ class SetProjectOptions(BreadCrumbMixin, FormView):
         "analysis_level": "COMM",
     }
 
+    def get_initial(self):
+        """Return the initial data to use for forms on this view."""
+        kwargs = self.initial.copy()
+        public_keys = self.request.session["public_key"]
+        if not isinstance(public_keys, list):
+            public_keys = [public_keys]
+        land_types = {Land(pk).land_type for pk in public_keys}
+        if "COMMUNE" in land_types or "EPCI" in land_types:
+            kwargs.update({"analysis_level": "COMM"})
+        elif "DEPART" in land_types:
+            kwargs.update({"analysis_level": "EPCI"})
+        elif "REGION" in land_types:
+            kwargs.update({"analysis_level": "DEPART"})
+        return kwargs
+
     def get_context_breadcrumbs(self):
         breadcrumbs = super().get_context_breadcrumbs()
         breadcrumbs.append(
@@ -235,13 +250,19 @@ class SetProjectOptions(BreadCrumbMixin, FormView):
 
     def form_valid(self, form):
         """If the form is valid, redirect to the supplied URL."""
-        lands = self.get_territoire()
+        # lands = self.get_territoire()
+        public_keys = self.request.session["public_key"]
+        if not isinstance(public_keys, list):
+            public_keys = [public_keys]
+        lands = [Land(pk) for pk in public_keys]
+
+        name = "Diagnostic de plusieurs communes"
         if len(lands) == 1:
             name = f"Diagnostic de {lands[0].name}"
-            emprise_origin = Project.EmpriseOrigin.WITH_EMPRISE
-        else:
-            name = "Diagnostic de plusieurs communes"
-            emprise_origin = Project.EmpriseOrigin.FROM_CITIES
+
+        nb_types = len({type(land) for land in lands})
+        land_type = "COMP" if nb_types > 1 else lands[0].land_type
+
         project = Project(
             name=name,
             is_public=True,
@@ -249,7 +270,9 @@ class SetProjectOptions(BreadCrumbMixin, FormView):
             analyse_end_date=str(form.cleaned_data["analysis_end"]),
             level=form.cleaned_data["analysis_level"],
             import_status=Project.Status.SUCCESS,
-            emprise_origin=emprise_origin,
+            emprise_origin=Project.EmpriseOrigin.WITH_EMPRISE,
+            land_ids=",".join(str(land.id) for land in lands),
+            land_type=land_type,
         )
         if self.request.user.is_authenticated:
             project.user = self.request.user
@@ -259,8 +282,6 @@ class SetProjectOptions(BreadCrumbMixin, FormView):
             project.cities.add(*land.get_cities())
             project.emprise_set.create(mpoly=land.mpoly)
 
-        # process_project.delay(project.id)
-        # process_project(project.id)
         result = project.get_first_last_millesime()
         project.first_year_ocsge = result["first"]
         project.last_year_ocsge = result["last"]
