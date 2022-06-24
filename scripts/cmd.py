@@ -212,6 +212,9 @@ def mep_140(ctx):
     click.secho("Start migration v1.4.0", fg="cyan")
     connecter = ScalingoInterface(ctx.obj)
 
+    click.secho("Set new artificial matrix", fg="cyan")
+    connecter.manage_py("build_matrix")
+
     click.secho("Add new params (if any)", fg="cyan")
     connecter.manage_py("load_param --file required_parameters.json")
 
