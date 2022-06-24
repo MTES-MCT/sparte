@@ -33,6 +33,7 @@ from .utils import user_directory_path
 
 class BaseProject(models.Model):
     class EmpriseOrigin(models.TextChoices):
+        UNSET = "UNSET", "Origine non renseignée"
         FROM_SHP = "FROM_SHP", "Construit depuis un fichier shape"
         FROM_CITIES = "FROM_CITIES", "Construit depuis une liste de villes"
         WITH_EMPRISE = "WITH_EMPRISE", "Emprise déjà fournie"
@@ -47,7 +48,7 @@ class BaseProject(models.Model):
         "Origine de l'emprise",
         max_length=20,
         choices=EmpriseOrigin.choices,
-        default=EmpriseOrigin.FROM_SHP,
+        default=EmpriseOrigin.UNSET,
     )
 
     user = models.ForeignKey(
@@ -142,10 +143,11 @@ class Project(BaseProject):
 
     ANALYZE_YEARS = [(str(y), str(y)) for y in range(2009, 2020)]
     LEVEL_CHOICES = (
-        ("COMM", "Commune"),
+        ("COMMUNE", "Commune"),
         ("EPCI", "EPCI"),
-        ("DEPT", "Département"),
-        ("REGI", "Région"),
+        ("DEPART", "Département"),
+        ("REGION", "Région"),
+        ("COMP", "Composite"),
     )
 
     is_public = models.BooleanField("Public", default=False)
@@ -165,8 +167,37 @@ class Project(BaseProject):
     level = models.CharField(
         "Niveau d'analyse",
         choices=LEVEL_CHOICES,
-        default="COMM",
-        max_length=4,
+        default="COMMUNE",
+        max_length=7,
+        help_text=(
+            "Utilisé lors de la création des rapports afin de déterminer le niveau "
+            "d'aggrégation des données à afficher. Si l'utilisateur a sélectionné "
+            "EPCI, alors les rapports doivent montrer des données EPCI par EPCI."
+        ),
+    )
+    land_type = models.CharField(
+        "Type de territoire",
+        choices=LEVEL_CHOICES,
+        default="EPCI",
+        max_length=7,
+        help_text=(
+            "Indique le niveau administratif des territoires sélectionnés par "
+            "l'utilisateur lors de la création du diagnostic. Cela va de la commune à "
+            "la région."
+        ),
+        blank=True,
+        null=True,
+    )
+    land_ids = models.CharField(
+        "Type de territoire",
+        max_length=255,
+        help_text=(
+            "Contient les identifiants qui composent le territoire du diagnostic. "
+            "Il faut croiser cette donnée avec 'land_type' pour être en mesure de "
+            "de récupérer dans la base les instances correspondantes."
+        ),
+        blank=True,
+        null=True,
     )
     cities = models.ManyToManyField(
         "public_data.Commune",
@@ -174,7 +205,6 @@ class Project(BaseProject):
         through=ProjectCommune,
         blank=True,
     )
-
     look_a_like = models.CharField(
         "Territoire pour se comparer",
         max_length=250,
@@ -240,6 +270,16 @@ class Project(BaseProject):
                     self._city_group_list.append(CityGroup(project_commune.group_name))
                 self._city_group_list[-1].append(project_commune)
         return self._city_group_list
+
+    def get_available_analysis_level(self):
+        available = {
+            "COMM": ["COMM"],
+            "EPCI": ["COMM"],
+            "DEPT": ["COMM", "EPCI"],
+            "REGI": ["COMM", "EPCI", "DEPT"],
+            "COMP": ["COMM", "EPCI", "DEPT", "REGI"],
+        }
+        return available[self.land_type]
 
     def add_look_a_like(self, public_key):
         """Add a public_key to look a like keeping the field formated
@@ -504,11 +544,11 @@ class Project(BaseProject):
         }
         """
         qs = CommuneDiff.objects.filter(city__in=self.cities.all())
-        if analysis_level == "DEPT":
+        if analysis_level == "DEPART":
             qs = qs.annotate(name=F("city__departement__name"))
         elif analysis_level == "EPCI":
             qs = qs.annotate(name=F("city__epci__name"))
-        elif analysis_level == "REGI":
+        elif analysis_level == "REGION":
             qs = qs.annotate(name=F("city__departement__region__name"))
         else:
             qs = qs.annotate(name=F("city__name"))

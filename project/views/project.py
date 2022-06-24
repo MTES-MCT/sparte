@@ -190,41 +190,45 @@ class ProjectReportConsoView(GroupMixin, DetailView):
             relative = False
         comparison_chart = charts.ConsoComparisonChart(project, relative=relative)
 
-        return {
-            **super().get_context_data(**kwargs),
-            "total_surface": project.area,
-            "active_page": "consommation",
-            "target_2031": {
-                "consummed": target_2031_consumption,
-                "annual_avg": target_2031_consumption / 10,
-                "target": target_2031_consumption / 2,
-                "annual_forecast": target_2031_consumption / 20,
-            },
-            "project_scope": {
-                "consummed": current_conso,
-                "annual_avg": current_conso / project.nb_years,
-                "nb_years": project.nb_years,
-                "nb_years_before_31": project.nb_years_before_2031,
-                "forecast_2031": project.nb_years_before_2031
-                * current_conso
-                / project.nb_years,
-            },
-            # charts
-            "determinant_per_year_chart": det_chart,
-            "determinant_pie_chart": charts.DeterminantPieChart(
-                project, series=det_chart.get_series()
-            ),
-            "comparison_chart": comparison_chart,
-            "relative": relative,
-            "commune_chart": chart_conso_cities,
-            # tables
-            "communes_data_table": add_total_line_column(
-                chart_conso_cities.get_series()
-            ),
-            "data_determinant": add_total_line_column(det_chart.get_series()),
-            "groups_names": groups_names,
-            "level": level,
-        }
+        kwargs.update(
+            {
+                "total_surface": project.area,
+                "land_type": project.land_type or "COMP",
+                "active_page": "consommation",
+                "target_2031": {
+                    "consummed": target_2031_consumption,
+                    "annual_avg": target_2031_consumption / 10,
+                    "target": target_2031_consumption / 2,
+                    "annual_forecast": target_2031_consumption / 20,
+                },
+                "project_scope": {
+                    "consummed": current_conso,
+                    "annual_avg": current_conso / project.nb_years,
+                    "nb_years": project.nb_years,
+                    "nb_years_before_31": project.nb_years_before_2031,
+                    "forecast_2031": project.nb_years_before_2031
+                    * current_conso
+                    / project.nb_years,
+                },
+                # charts
+                "determinant_per_year_chart": det_chart,
+                "determinant_pie_chart": charts.DeterminantPieChart(
+                    project, series=det_chart.get_series()
+                ),
+                "comparison_chart": comparison_chart,
+                "relative": relative,
+                "commune_chart": chart_conso_cities,
+                # tables
+                "communes_data_table": add_total_line_column(
+                    chart_conso_cities.get_series()
+                ),
+                "data_determinant": add_total_line_column(det_chart.get_series()),
+                "groups_names": groups_names,
+                "level": level,
+            }
+        )
+
+        return super().get_context_data(**kwargs)
 
 
 class ProjectReportCityGroupView(GroupMixin, DetailView):
@@ -461,6 +465,7 @@ class ProjectReportArtifView(GroupMixin, DetailView):
         level = self.request.GET.get("level_conso", project.level)
 
         kwargs = {
+            "land_type": project.land_type or "COMP",
             "diagnostic": project,
             "active_page": "artificialisation",
             "total_surface": total_surface,
