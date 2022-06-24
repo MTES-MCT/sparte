@@ -25,7 +25,8 @@ from django.contrib.gis.db.models.functions import Intersection, Area, Transform
 from django.core.validators import MinValueValidator, MaxValueValidator
 
 # from django.db import connection
-from django.db.models import Sum
+from django.db.models import Sum, DecimalField
+from django.db.models.functions import Coalesce
 
 from utils.db import IntersectManager
 
@@ -195,3 +196,17 @@ class ZoneConstruite(TruncateTableMixin, DataColorationMixin, models.Model):
     )
 
     objects = IntersectManager()
+
+    def set_built_density(self, save=False):
+        qs = Ocsge.objects.intersect(self.mpoly)
+        qs = qs.filter(couverture="CS1.1.1.1", year=self.year)
+        qs = qs.aggregate(
+            built=Coalesce(
+                Sum("intersection_area"),
+                0,
+                output_field=DecimalField(max_digits=15, decimal_places=4),
+            )
+        )
+        self.built_density = round(qs["built"] / self.surface, 2)
+        if save:
+            self.save(update_fields=["built_density"])
