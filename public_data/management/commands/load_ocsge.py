@@ -2,7 +2,7 @@ import logging
 
 from django.contrib.gis.db.models.functions import Area, Transform
 from django.core.management.base import BaseCommand
-from django.db.models import DecimalField, FloatField, Sum
+from django.db.models import DecimalField
 from django.db.models.functions import Cast
 
 from public_data.models import (
@@ -310,13 +310,7 @@ class GersZoneConstruite2016(AutoLoadMixin, ZoneConstruite):
         # surface
         self.surface = self.mpoly.transform(2154, clone=True).area
         # get density
-        qs = Ocsge.objects.intersect(self.mpoly)
-        qs = qs.filter(couverture="CS1.1.1.1", year=self.year)
-        qs = qs.aggregate(built=Cast(Sum("intersection_area"), FloatField()))
-        if qs["built"] is None:
-            self.built_density = 0
-        else:
-            self.built_density = round(qs["built"] / self.surface, 2)
+        # self.set_built_density()
         super().save(*args, **kwargs)
 
     @classmethod
