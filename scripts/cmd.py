@@ -224,13 +224,9 @@ def mep_140(ctx):
     click.secho("Add short label to couverture and usage", fg="cyan")
     connecter.manage_py("correct_label_couv_usage")
 
-    click.secho("Reload zone construite for density", fg="cyan")
-    connecter.run(
-        "python manage.py load_ocsge --item GersZoneConstruite2016 --no-verbose"
-    )
-    connecter.run(
-        "python manage.py load_ocsge --item GersZoneConstruite2019 --no-verbose"
-    )
+    click.secho("Evaluate density of building in zone construite (async)", fg="cyan")
+    connecter.detached = True
+    connecter.manage_py("set_density")
 
     click.secho("End migration", fg="cyan")
 
