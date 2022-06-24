@@ -73,9 +73,9 @@ class ConsoCommuneChart(ProjectChart):
 
     def get_series(self):
         if not self.series:
-            if self.level == "REGI":
+            if self.level == "REGION":
                 self.series = self.project.get_land_conso_per_year("region_name")
-            elif self.level == "DEPT":
+            elif self.level == "DEPART":
                 self.series = self.project.get_land_conso_per_year("dept_name")
             elif self.level == "EPCI":
                 self.series = self.project.get_land_conso_per_year("epci_name")
