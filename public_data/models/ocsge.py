@@ -25,7 +25,10 @@ from django.contrib.gis.db.models.functions import Intersection, Area, Transform
 from django.core.validators import MinValueValidator, MaxValueValidator
 
 # from django.db import connection
-from django.db.models import Sum
+from django.db.models import Sum, DecimalField
+from django.db.models.functions import Coalesce
+
+from utils.db import IntersectManager
 
 from .mixins import DataColorationMixin, TruncateTableMixin
 
@@ -56,6 +59,8 @@ class Ocsge(TruncateTableMixin, DataColorationMixin, models.Model):
     )
 
     mpoly = models.MultiPolygonField()
+
+    objects = IntersectManager()
 
     default_property = "id"
 
@@ -142,8 +147,34 @@ class OcsgeDiff(TruncateTableMixin, DataColorationMixin, models.Model):
         related_name="ocsge_difnew",
     )
 
+    objects = IntersectManager()
+
     default_property = "surface"
     default_color = "Red"
+
+
+class ArtificialArea(TruncateTableMixin, DataColorationMixin, models.Model):
+    mpoly = models.MultiPolygonField()
+    year = models.IntegerField(
+        "Année",
+        validators=[MinValueValidator(2000), MaxValueValidator(2050)],
+    )
+    surface = models.DecimalField("surface", max_digits=15, decimal_places=4)
+    city = models.ForeignKey("public_data.Commune", on_delete=models.CASCADE)
+
+    objects = IntersectManager()
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["city", "year"], name="artificialarea-city-year-unique"
+            ),
+        ]
+        indexes = [
+            models.Index(fields=["year"]),
+            models.Index(fields=["city"]),
+            models.Index(fields=["city", "year"]),
+        ]
 
 
 class ZoneConstruite(TruncateTableMixin, DataColorationMixin, models.Model):
@@ -160,3 +191,22 @@ class ZoneConstruite(TruncateTableMixin, DataColorationMixin, models.Model):
     surface = models.DecimalField(
         "surface", max_digits=15, decimal_places=4, blank=True, null=True
     )
+    built_density = models.DecimalField(
+        "Densité construite", max_digits=15, decimal_places=4, blank=True, null=True
+    )
+
+    objects = IntersectManager()
+
+    def set_built_density(self, save=False):
+        qs = Ocsge.objects.intersect(self.mpoly)
+        qs = qs.filter(couverture="CS1.1.1.1", year=self.year)
+        qs = qs.aggregate(
+            built=Coalesce(
+                Sum("intersection_area"),
+                0,
+                output_field=DecimalField(max_digits=15, decimal_places=4),
+            )
+        )
+        self.built_density = round(qs["built"] / self.surface, 2)
+        if save:
+            self.save(update_fields=["built_density"])

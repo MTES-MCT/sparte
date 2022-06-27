@@ -16,20 +16,9 @@ from django_app_parameter import app_parameter
 from public_data.models import Land, Ocsge
 from utils.views_mixins import BreadCrumbMixin, GetObjectMixin
 
-from project.charts import (
-    ConsoCommuneChart,
-    ConsoComparisonChart,
-    CouvertureSolPieChart,
-    CouvertureSolProgressionChart,
-    DeterminantPerYearChart,
-    DeterminantPieChart,
-    EvolutionArtifChart,
-    UsageSolPieChart,
-    UsageSolProgressionChart,
-)
+from project import charts
 from project.forms import UploadShpForm, KeywordForm
 from project.models import Project, Request, ProjectCommune
-from project.domains import ConsommationDataframe
 from project.tasks import send_email_request_bilan
 from project.utils import add_total_line_column
 
@@ -176,37 +165,17 @@ class ProjectReportConsoView(GroupMixin, DetailView):
     def get_context_data(self, **kwargs):
         project = self.get_object()
 
-        builder = ConsommationDataframe(project)
-        df = builder.build()
+        # Retrieve request level of analysis
+        level = self.request.GET.get("level_conso", project.level)
 
-        # table headers
-        headers = ["Commune"]
-        for col in df.columns:
-            if col.startswith("artif"):
-                col = col.split("_")[-1]
-            headers.append(col)
-
-        # table content
-        table_artif = []
-        for city, row in df.iterrows():
-            table_artif.append(
-                {
-                    "name": city,
-                    "before": row[0],
-                    "items": list(row[1:-2]),
-                    "total": row[-2],
-                    "progression": row[-1] * 100,
-                }
-            )
+        # communes_data_graph
+        chart_conso_cities = charts.ConsoCommuneChart(project, level=level)
 
         target_2031_consumption = project.get_bilan_conso()
         current_conso = project.get_bilan_conso_time_scoped()
 
-        # communes_data_graph
-        chart_conso_cities = ConsoCommuneChart(project)
-
         # Déterminants
-        det_chart = DeterminantPerYearChart(project)
+        det_chart = charts.DeterminantPerYearChart(project)
 
         # Liste des groupes de communes
         groups_names = project.projectcommune_set.all().order_by("group_name")
@@ -219,42 +188,47 @@ class ProjectReportConsoView(GroupMixin, DetailView):
             relative = True
         else:
             relative = False
-        comparison_chart = ConsoComparisonChart(project, relative=relative)
+        comparison_chart = charts.ConsoComparisonChart(project, relative=relative)
 
-        return {
-            **super().get_context_data(**kwargs),
-            "total_surface": project.area,
-            "active_page": "consommation",
-            "target_2031": {
-                "consummed": target_2031_consumption,
-                "annual_avg": target_2031_consumption / 10,
-                "target": target_2031_consumption / 2,
-                "annual_forecast": target_2031_consumption / 20,
-            },
-            "project_scope": {
-                "consummed": current_conso,
-                "annual_avg": current_conso / project.nb_years,
-                "nb_years": project.nb_years,
-                "nb_years_before_31": project.nb_years_before_2031,
-                "forecast_2031": project.nb_years_before_2031
-                * current_conso
-                / project.nb_years,
-            },
-            # charts
-            "determinant_per_year_chart": det_chart,
-            "determinant_pie_chart": DeterminantPieChart(
-                project, series=det_chart.get_series()
-            ),
-            "comparison_chart": comparison_chart,
-            "relative": relative,
-            "commune_chart": chart_conso_cities,
-            # tables
-            "communes_data_table": add_total_line_column(
-                chart_conso_cities.get_series()
-            ),
-            "data_determinant": add_total_line_column(det_chart.get_series()),
-            "groups_names": groups_names,
-        }
+        kwargs.update(
+            {
+                "total_surface": project.area,
+                "land_type": project.land_type or "COMP",
+                "active_page": "consommation",
+                "target_2031": {
+                    "consummed": target_2031_consumption,
+                    "annual_avg": target_2031_consumption / 10,
+                    "target": target_2031_consumption / 2,
+                    "annual_forecast": target_2031_consumption / 20,
+                },
+                "project_scope": {
+                    "consummed": current_conso,
+                    "annual_avg": current_conso / project.nb_years,
+                    "nb_years": project.nb_years,
+                    "nb_years_before_31": project.nb_years_before_2031,
+                    "forecast_2031": project.nb_years_before_2031
+                    * current_conso
+                    / project.nb_years,
+                },
+                # charts
+                "determinant_per_year_chart": det_chart,
+                "determinant_pie_chart": charts.DeterminantPieChart(
+                    project, series=det_chart.get_series()
+                ),
+                "comparison_chart": comparison_chart,
+                "relative": relative,
+                "commune_chart": chart_conso_cities,
+                # tables
+                "communes_data_table": add_total_line_column(
+                    chart_conso_cities.get_series()
+                ),
+                "data_determinant": add_total_line_column(det_chart.get_series()),
+                "groups_names": groups_names,
+                "level": level,
+            }
+        )
+
+        return super().get_context_data(**kwargs)
 
 
 class ProjectReportCityGroupView(GroupMixin, DetailView):
@@ -306,14 +280,14 @@ class ProjectReportCityGroupView(GroupMixin, DetailView):
             return set(_.name for _ in group if _.name is not None)
 
         # Consommation des communes
-        chart_conso_cities = ConsoCommuneChart(project, group_name=group_name)
+        chart_conso_cities = charts.ConsoCommuneChart(project, group_name=group_name)
         communes_table = dict()
         for city_name, data in chart_conso_cities.get_series().items():
             data.update({"Total": sum(data.values())})
             communes_table[city_name] = data
 
         # Déterminants
-        det_chart = DeterminantPerYearChart(project, group_name=group_name)
+        det_chart = charts.DeterminantPerYearChart(project, group_name=group_name)
 
         kwargs = {
             "active_page": "consommation",
@@ -325,7 +299,7 @@ class ProjectReportCityGroupView(GroupMixin, DetailView):
             # Charts
             "chart_conso_cities": chart_conso_cities,
             "determinant_per_year_chart": det_chart,
-            "determinant_pie_chart": DeterminantPieChart(
+            "determinant_pie_chart": charts.DeterminantPieChart(
                 project, group_name=group_name, series=det_chart.get_series()
             ),
             # Tables
@@ -372,13 +346,11 @@ class ProjectReportCouvertureView(GroupMixin, DetailView):
             "ocsge_available": True,
         }
         try:
-            first_millesime = project.get_first_available_millesime()
-            last_millesime = project.get_last_available_millesime()
+            first_millesime = project.first_year_ocsge
+            last_millesime = project.last_year_ocsge
 
-            pie_chart = CouvertureSolPieChart(project, last_millesime)
-            progression_chart = CouvertureSolProgressionChart(
-                project, first_millesime, last_millesime
-            )
+            pie_chart = charts.CouvertureSolPieChart(project)
+            progression_chart = charts.CouvertureSolProgressionChart(project)
 
             kwargs.update(
                 {
@@ -415,13 +387,11 @@ class ProjectReportUsageView(GroupMixin, DetailView):
             "ocsge_available": True,
         }
         try:
-            first_millesime = project.get_first_available_millesime()
-            last_millesime = project.get_last_available_millesime()
+            first_millesime = project.first_year_ocsge
+            last_millesime = project.last_year_ocsge
 
-            pie_chart = UsageSolPieChart(project, last_millesime)
-            progression_chart = UsageSolProgressionChart(
-                project, first_millesime, last_millesime
-            )
+            pie_chart = charts.UsageSolPieChart(project)
+            progression_chart = charts.UsageSolProgressionChart(project)
 
             kwargs.update(
                 {
@@ -491,7 +461,11 @@ class ProjectReportArtifView(GroupMixin, DetailView):
         project = self.get_object()
         total_surface = project.area
 
+        # Retrieve request level of analysis
+        level = self.request.GET.get("level_conso", project.level)
+
         kwargs = {
+            "land_type": project.land_type or "COMP",
             "diagnostic": project,
             "active_page": "artificialisation",
             "total_surface": total_surface,
@@ -499,16 +473,21 @@ class ProjectReportArtifView(GroupMixin, DetailView):
         }
 
         try:
-            first_millesime = project.get_first_available_millesime()
-            last_millesime = project.get_last_available_millesime()
+            first_millesime = project.first_year_ocsge
+            last_millesime = project.last_year_ocsge
         except Ocsge.DoesNotExist:
             # There is no OCSGE available for this territoru
             kwargs.update({"ocsge_available": False})
             return super().get_context_data(**kwargs)
 
         artif_area = project.get_artif_area()
-        progression_time_scoped = project.get_artif_progession_time_scoped()
+
+        chart_evolution_artif = charts.EvolutionArtifChart(project)
+        chart_waterfall = charts.WaterfallnArtifChart(project)
+
+        progression_time_scoped = chart_waterfall.get_series()
         net_artif = progression_time_scoped["net_artif"]
+
         try:
             net_artif_rate = 100 * net_artif / (artif_area - net_artif)
             # show + on front of net_artif
@@ -517,13 +496,19 @@ class ProjectReportArtifView(GroupMixin, DetailView):
             net_artif_rate = 0
             net_artif = "0"
 
-        chart_evolution_artif = EvolutionArtifChart(project)
         table_evolution_artif = chart_evolution_artif.get_series()
         headers_evolution_artif = table_evolution_artif["Artificialisation"].keys()
 
+        chart_comparison = charts.NetArtifComparaisonChart(project, level=level)
+
+        detail_artif_chart = charts.DetailArtifChart(project)
+
+        couv_artif_sol = charts.ArtifCouvSolPieChart(project)
+        usage_artif_sol = charts.ArtifUsageSolPieChart(project)
+
         kwargs.update(
             {
-                "first_millesime": first_millesime,
+                "first_millesime": str(first_millesime),
                 "last_millesime": str(last_millesime),
                 "artif_area": artif_area,
                 "new_artif": progression_time_scoped["new_artif"],
@@ -535,6 +520,21 @@ class ProjectReportArtifView(GroupMixin, DetailView):
                     table_evolution_artif, line=False
                 ),
                 "headers_evolution_artif": headers_evolution_artif,
+                "detail_artif_chart": detail_artif_chart,
+                "detail_total_artif": sum(
+                    _["artif"] for _ in detail_artif_chart.get_series()
+                ),
+                "detail_total_renat": sum(
+                    _["renat"] for _ in detail_artif_chart.get_series()
+                ),
+                "couv_artif_sol": couv_artif_sol,
+                "usage_artif_sol": usage_artif_sol,
+                "chart_comparison": chart_comparison,
+                "table_comparison": add_total_line_column(
+                    chart_comparison.get_series()
+                ),
+                "level": level,
+                "chart_waterfall": chart_waterfall,
             }
         )
 
@@ -729,12 +729,22 @@ class ProjectMapView(GroupMixin, DetailView):
                         "display": False,
                     },
                     {
-                        "name": "Zones artificielles 2018",
-                        "url": reverse_lazy("public_data:artificielle2018-list"),
-                        "display": False,
-                        "gradient_url": reverse_lazy(
-                            "public_data:artificielle2018-gradient"
+                        "name": "Arcachon: zones artificielles 2015",
+                        "url": (
+                            f'{reverse_lazy("public_data:artificialarea-optimized")}'
+                            "?year=2015"
                         ),
+                        "display": False,
+                        "level": "3",
+                        "style": "style_zone_artificielle",
+                    },
+                    {
+                        "name": "Arcachon: zones artificielles 2018",
+                        "url": (
+                            f'{reverse_lazy("public_data:artificialarea-optimized")}'
+                            "?year=2018"
+                        ),
+                        "display": False,
                         "level": "3",
                         "style": "style_zone_artificielle",
                     },
@@ -825,6 +835,26 @@ class ProjectMapView(GroupMixin, DetailView):
                         "name": "Gers: zones construites 2019",
                         "url": (
                             f'{reverse_lazy("public_data:zoneconstruite-optimized")}'
+                            "?year=2019"
+                        ),
+                        "display": False,
+                        "style": "style_zone_artificielle",
+                        "level": "3",
+                    },
+                    {
+                        "name": "Gers: zones artificielles 2016",
+                        "url": (
+                            f'{reverse_lazy("public_data:artificialarea-optimized")}'
+                            "?year=2016"
+                        ),
+                        "display": False,
+                        "style": "style_zone_artificielle",
+                        "level": "3",
+                    },
+                    {
+                        "name": "Gers: zones artificielles 2019",
+                        "url": (
+                            f'{reverse_lazy("public_data:artificialarea-optimized")}'
                             "?year=2019"
                         ),
                         "display": False,

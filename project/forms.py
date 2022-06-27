@@ -152,14 +152,21 @@ class EpciForm(forms.Form):
 
 
 class OptionsForm(forms.Form):
-    YEAR_CHOICES = [(i, str(i)) for i in range(2009, 2020)]
-    analysis_start = forms.ChoiceField(label="Début d'analyse", choices=YEAR_CHOICES)
-    analysis_end = forms.ChoiceField(label="Fin d'analyse", choices=YEAR_CHOICES)
+    analysis_start = forms.ChoiceField(
+        label="Début d'analyse", choices=Project.ANALYZE_YEARS
+    )
+    analysis_end = forms.ChoiceField(
+        label="Fin d'analyse", choices=Project.ANALYZE_YEARS
+    )
+    analysis_level = forms.ChoiceField(
+        label="Niveau d'analyse", choices=Project.LEVEL_CHOICES
+    )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["analysis_start"].widget.attrs.update({"class": "force-carret"})
         self.fields["analysis_end"].widget.attrs.update({"class": "force-carret"})
+        self.fields["analysis_level"].widget.attrs.update({"class": "force-carret"})
 
     def clean(self):
         cleaned_data = super().clean()

@@ -21,7 +21,7 @@ from django.core.exceptions import ImproperlyConfigured
 from django.contrib.messages import constants as messages
 
 
-OFFICIAL_VERSION = "1.3.5"
+OFFICIAL_VERSION = "1.4.4"
 
 root = environ.Path(__file__) - 2  # get root of the project
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -395,6 +395,11 @@ if ENVIRONMENT != "local":
         request_bodies="always",
         with_locals=True,
     )
+
+
+# MATOMO
+
+MATOMO_TOKEN = env.str("MATOMO_TOKEN", default="")
 
 # LOGGING SETTINGS
 

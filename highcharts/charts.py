@@ -1,6 +1,5 @@
 import base64
 import copy
-from decimal import Decimal
 import json
 import random
 import os
@@ -11,6 +10,8 @@ import tempfile
 from django.conf import settings
 from django.utils.safestring import mark_safe
 from django.utils.text import slugify
+
+from utils.functions import decimal2float
 
 
 class ChartCollection:
@@ -58,10 +59,6 @@ class Chart:
             self.add_serie(serie_name, data, **options)
 
     def dumps(self):
-        def decimal2float(obj):
-            if isinstance(obj, Decimal):
-                return float(obj)
-
         chart_dumped = json.dumps(self.chart, default=decimal2float)
         chart_dumped = chart_dumped.replace("'", "\\'")
         return mark_safe(chart_dumped)  # nosec
