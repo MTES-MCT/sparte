@@ -90,6 +90,9 @@ class Region(LandMixin, GetDataFromCeremaMixin, models.Model):
     def get_qs_cerema(self):
         return Cerema.objects.filter(region_id=self.source_id)
 
+    def get_cities(self):
+        return list(Commune.objects.filter(departement__region=self))
+
     def __str__(self):
         return self.name
 
@@ -117,6 +120,9 @@ class Departement(LandMixin, GetDataFromCeremaMixin, models.Model):
 
     def get_qs_cerema(self):
         return Cerema.objects.filter(dept_id=self.source_id)
+
+    def get_cities(self):
+        return list(self.commune_set.all())
 
     def __str__(self):
         return self.name
@@ -148,6 +154,9 @@ class Epci(LandMixin, GetDataFromCeremaMixin, models.Model):
 
     def get_qs_cerema(self):
         return Cerema.objects.filter(epci_id=self.source_id)
+
+    def get_cities(self):
+        return list(self.commune_set.all())
 
     def __str__(self):
         return self.name
@@ -198,6 +207,9 @@ class Commune(DataColorationMixin, LandMixin, GetDataFromCeremaMixin, models.Mod
     def get_ocsge_millesimes(self) -> set:
         return self.departement.get_ocsge_millesimes()
 
+    def get_cities(self):
+        return [self]
+
     @classmethod
     def search(cls, needle):
         qs = cls.objects.filter(Q(name__icontains=needle) | Q(insee__icontains=needle))
@@ -243,6 +255,10 @@ class CommuneDiff(models.Model):
         blank=True,
         null=True,
     )
+
+    @property
+    def period(self):
+        return f"{self.year_old} - {self.year_new}"
 
 
 class CommuneSol(models.Model):
@@ -290,6 +306,9 @@ class Land:
 
     def get_conso_per_year(self, start="2010", end="2020", coef=1):
         return self.land.get_conso_per_year(start, end, coef)
+
+    def get_cities(self):
+        return self.land.get_cities()
 
     def __getattr__(self, name):
         return getattr(self.land, name)

@@ -1,3 +1,5 @@
+import collections
+
 from highcharts import charts
 
 
@@ -57,6 +59,13 @@ class ConsoCommuneChart(ProjectChart):
         "series": [],
     }
 
+    def __init__(self, *args, **kwargs):
+        try:
+            self.level = kwargs.pop("level")
+        except KeyError:
+            self.level = "COMM"
+        super().__init__(*args, **kwargs)
+
     def get_legend_for_paper(self):
         return {
             "enabled": False,
@@ -64,9 +73,16 @@ class ConsoCommuneChart(ProjectChart):
 
     def get_series(self):
         if not self.series:
-            self.series = self.project.get_city_conso_per_year(
-                group_name=self.group_name
-            )
+            if self.level == "REGION":
+                self.series = self.project.get_land_conso_per_year("region_name")
+            elif self.level == "DEPART":
+                self.series = self.project.get_land_conso_per_year("dept_name")
+            elif self.level == "EPCI":
+                self.series = self.project.get_land_conso_per_year("epci_name")
+            else:
+                self.series = self.project.get_city_conso_per_year(
+                    group_name=self.group_name
+                )
         return self.series
 
     def add_series(self):
@@ -171,7 +187,7 @@ class EvolutionArtifChart(ProjectChart):
     name = "Evolution de l'artificialisation"
     param = {
         "chart": {"type": "column"},
-        "title": {"text": "Par millésime"},
+        "title": {"text": "Par commune"},
         "yAxis": {
             "title": {"text": "Surface (en ha)"},
             "stackLabels": {"enabled": True, "format": "{total:,.1f}"},
@@ -221,6 +237,62 @@ class EvolutionArtifChart(ProjectChart):
         )
 
 
+class WaterfallnArtifChart(ProjectChart):
+    name = "Evolution de l'artificialisation"
+    param = {
+        "chart": {"type": "waterfall"},
+        "title": {"text": "Synthèse"},
+        "yAxis": {
+            "title": {"text": "Surface (en ha)"},
+            "stackLabels": {"enabled": True, "format": "{total:,.1f}"},
+        },
+        "tooltip": {
+            "pointFormat": "{series.name}: {point.y}",
+            "valueSuffix": " Ha",
+            "valueDecimals": 1,
+        },
+        "xAxis": {"type": "category"},
+        "legend": {"layout": "horizontal", "align": "center", "verticalAlign": "top"},
+        "plotOptions": {
+            "column": {
+                "dataLabels": {"enabled": True, "format": "{point.y:,.1f}"},
+                "pointPadding": 0.2,
+                "borderWidth": 0,
+            }
+        },
+        "series": [],
+    }
+
+    def get_series(self):
+        if not self.series:
+            self.series = self.project.get_artif_progession_time_scoped()
+        return self.series
+
+    def add_series(self):
+        series = self.get_series()
+        self.chart["series"] = [
+            {
+                "data": [
+                    {
+                        "name": "Artificialisation",
+                        "y": series["new_artif"],
+                        "color": "#ff0000",
+                    },
+                    {
+                        "name": "Renaturation",
+                        "y": series["new_natural"] * -1,
+                        "color": "#00ff00",
+                    },
+                    {
+                        "name": "Artificialisation nette",
+                        "isSum": True,
+                        "color": "#0000ff",
+                    },
+                ],
+            },
+        ]
+
+
 class CouvertureSolPieChart(ProjectChart):
     _level = 2
     _sol = "couverture"
@@ -247,8 +319,8 @@ class CouvertureSolPieChart(ProjectChart):
         "series": [],
     }
 
-    def __init__(self, project, millesime):
-        self.millesime = millesime
+    def __init__(self, project):
+        self.millesime = project.last_year_ocsge
         super().__init__(project)
 
     def get_series(self):
@@ -259,20 +331,21 @@ class CouvertureSolPieChart(ProjectChart):
     def add_series(self):
         series = [_ for _ in self.get_series() if _.level == self._level]
         surface_total = sum(_.surface for _ in series)
-        self.chart["series"].append(
-            {
-                "name": self.millesime,
-                "data": [
-                    {
-                        "name": f"{item.code_prefix} {item.label}",
-                        "y": item.surface,
-                        "color": item.map_color,
-                        "percent": f"{int(100 * item.surface / surface_total)}%",
-                    }
-                    for item in series
-                ],
-            }
-        )
+        if surface_total:
+            self.chart["series"].append(
+                {
+                    "name": self.millesime,
+                    "data": [
+                        {
+                            "name": f"{item.code_prefix} {item.label}",
+                            "y": item.surface,
+                            "color": item.map_color,
+                            "percent": f"{int(100 * item.surface / surface_total)}%",
+                        }
+                        for item in series
+                    ],
+                }
+            )
 
 
 class UsageSolPieChart(CouvertureSolPieChart):
@@ -302,9 +375,9 @@ class CouvertureSolProgressionChart(ProjectChart):
         "series": [],
     }
 
-    def __init__(self, project, first_millesime, last_millesime):
-        self.first_millesime = first_millesime
-        self.last_millesime = last_millesime
+    def __init__(self, project):
+        self.first_millesime = project.first_year_ocsge
+        self.last_millesime = project.last_year_ocsge
         super().__init__(project)
 
     def get_series(self):
@@ -336,3 +409,151 @@ class CouvertureSolProgressionChart(ProjectChart):
 class UsageSolProgressionChart(CouvertureSolProgressionChart):
     _level = 1
     _sol = "usage"
+
+
+class DetailArtifChart(ProjectChart):
+    name = "Progression des principaux postes de la couverture du sol"
+    param = {
+        "chart": {"type": "column", "alignThresholds": True},
+        "title": {"text": ""},
+        "yAxis": {
+            "title": {"text": "Progression (en ha)"},
+        },
+        "tooltip": {
+            "pointFormat": "{series.name}: {point.y}",
+            "valueSuffix": " Ha",
+            "valueDecimals": 2,
+            "headerFormat": "",
+        },
+        "xAxis": {"type": "category"},
+        "legend": {"layout": "horizontal", "align": "center", "verticalAlign": "top"},
+        "series": [],
+    }
+
+    def __init__(self, project):
+        self.first_millesime = project.first_year_ocsge
+        self.last_millesime = project.last_year_ocsge
+        super().__init__(project)
+
+    def get_series(self):
+        if not self.series:
+            self.series = self.project.get_detail_artif()
+        return self.series
+
+    def add_series(self):
+        self.chart["series"].append(
+            {
+                "name": "Artificialisation",
+                "data": [
+                    {
+                        "name": couv["code_prefix"],
+                        "y": couv["artif"],
+                    }
+                    for couv in self.get_series()
+                ],
+            }
+        )
+        self.chart["series"].append(
+            {
+                "name": "Renaturation",
+                "data": [
+                    {
+                        "name": couv["code_prefix"],
+                        "y": couv["renat"],
+                    }
+                    for couv in self.get_series()
+                ],
+            }
+        )
+
+
+class ArtifCouvSolPieChart(ProjectChart):
+    _sol = "couverture"
+    name = "Artificialisation usage and couverture pie chart"
+    param = {
+        "chart": {"type": "pie"},
+        "title": {"text": ""},
+        "yAxis": {
+            "title": {"text": "Consommé (en ha)"},
+            "stackLabels": {"enabled": True, "format": "{total:,.1f}"},
+        },
+        "tooltip": {
+            "valueSuffix": " Ha",
+            "valueDecimals": 0,
+            "pointFormat": "<b>{point.y}</b><br/>{point.percent}",
+        },
+        "xAxis": {"type": "category"},
+        "legend": {"layout": "horizontal", "align": "center", "verticalAlign": "top"},
+        "plotOptions": {
+            "pie": {
+                "innerSize": "60%",
+            }
+        },
+        "series": [],
+    }
+
+    def __init__(self, project):
+        self.millesime = project.last_year_ocsge
+        super().__init__(project)
+
+    def get_series(self):
+        if not self.series:
+            self.series = self.project.get_base_sol_artif(sol=self._sol)
+        return self.series
+
+    def add_series(self):
+        surface_total = sum(_["surface"] for _ in self.get_series())
+        self.chart["series"].append(
+            {
+                "name": "Sol artificiel",
+                "data": [
+                    {
+                        "name": f"{item['code_prefix']} {item['label_short']}",
+                        "y": item["surface"],
+                        "color": item["map_color"],
+                        "percent": f"{int(100 * item['surface'] / surface_total)}%",
+                    }
+                    for item in self.get_series()
+                ],
+            }
+        )
+
+
+class ArtifUsageSolPieChart(ArtifCouvSolPieChart):
+    _sol = "usage"
+
+
+class NetArtifComparaisonChart(ProjectChart):
+    name = "Net artificialisation per cities"
+    param = {
+        "chart": {"type": "column"},
+        "title": {"text": ""},
+        "yAxis": {"title": {"text": "Artificialisation net (en ha)"}},
+        "xAxis": {"type": "category"},
+        "legend": {"layout": "vertical", "align": "right", "verticalAlign": "top"},
+        "series": [],
+    }
+
+    def __init__(self, *args, **kwargs):
+        self.level = kwargs.pop("level")
+        super().__init__(*args, **kwargs)
+
+    def get_series(self):
+        if not self.series:
+            self.series = self.project.get_land_artif_per_year(self.level)
+        return self.series
+
+    def add_series(self):
+        super().add_series()
+        total = collections.defaultdict(lambda: 0)
+        for data in self.get_series().values():
+            for period, value in data.items():
+                total[period] += value
+        # self.add_serie(
+        #     self.project.name,
+        #     total,
+        #     **{
+        #         "color": "#ff0000",
+        #         "dashStyle": "ShortDash",
+        #     },
+        # )
