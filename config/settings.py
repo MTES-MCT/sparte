@@ -342,9 +342,11 @@ if "django-extensions" in {pkg.key for pkg in pkg_resources.working_set}:
     ]
     NOTEBOOK_ARGUMENTS = [
         "--ip",
-        "127.0.0.1",
+        "0.0.0.0",
         "--allow-root",
-        '--notebook-dir="notebooks/"',
+        "--notebook-dir='notebooks/'",
+        "--NotebookApp.token=''",
+        "--NotebookApp.password=''",
     ]
 
 # RESTRAMEWORK parameters

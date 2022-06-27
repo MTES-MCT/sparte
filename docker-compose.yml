@@ -22,22 +22,25 @@ services:
       - app-network
     restart: on-failure
 
-  # jupyter:
-  #   build: .
-  #   working_dir: /app
-  #   command: python manage.py shell_plus --notebook
-  #   env_file: .env
-  #   volumes:
-  #     - .:/app
-  #   environment:
-  #     - DJANGO_ALLOW_ASYNC_UNSAFE=true
-  #     - JUPYTER_CONFIG_DIR=/app/config/
-  #   depends_on:
-  #     - db
-  #   ports:
-  #     - 8888:8888
-  #   networks:
-  #     - app-network
+  jupyter:
+    build: .
+    working_dir: /app
+    command: python manage.py shell_plus --notebook
+    volumes:
+      - .:/app
+    env_file: .env
+    environment:
+      - DJANGO_ALLOW_ASYNC_UNSAFE=true
+      - JUPYTER_CONFIG_DIR=/app/config/
+      - DATABASE_URL=postgis://postgres:postgres@db:5432/postgres
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    depends_on:
+      - db
+    ports:
+      - 8888:8888
+    networks:
+      - app-network
 
   # app:
   #   build: .
