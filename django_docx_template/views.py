@@ -89,8 +89,7 @@ class TemplateMergeView(View):
             "charset=utf-8"
         )
         # TODO use context data to improve filenaming
-        filename = template.name.replace(" ", "_")
-        filename += ".docx"
+        filename = template.get_file_name()
         return FileResponse(
             buffer, content_type=content_type, as_attachment=True, filename=filename
         )
