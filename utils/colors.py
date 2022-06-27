@@ -31,4 +31,7 @@ def get_color_gradient(color_name="Blue", scale=10):
     c1 = Color(color_name)
     c2 = Color(c1.web)
     c2.set_luminance(0.95)
-    return list(c1.range_to(c2, scale))
+    try:
+        return list(c1.range_to(c2, scale))
+    except ValueError:
+        return list()

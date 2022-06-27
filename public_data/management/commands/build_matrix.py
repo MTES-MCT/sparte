@@ -26,6 +26,12 @@ class Command(BaseCommand):
             if not qs.exists():
                 CouvertureUsageMatrix.objects.create(couverture=None, usage=usage)
 
+        for couv in CouvertureSol.objects.all():
+            for usage in UsageSol.objects.all():
+                qs = CouvertureUsageMatrix.objects.filter(couverture=couv, usage=usage)
+                if not qs.exists():
+                    CouvertureUsageMatrix.objects.create(couverture=couv, usage=usage)
+
         qs = CouvertureUsageMatrix.objects.filter(couverture=None, usage=None)
         if not qs.exists():
             CouvertureUsageMatrix.objects.create(couverture=None, usage=None)
@@ -42,7 +48,7 @@ class Command(BaseCommand):
         artificial = CouvertureUsageMatrix.objects.filter(
             Q(couverture__code__startswith="1.1.")
             | Q(
-                couverture__code="2.2.1",
+                couverture__code__startswith="2.2.",
                 usage__code__in=[
                     "2",
                     "3",
@@ -57,7 +63,7 @@ class Command(BaseCommand):
                     "4.3",
                 ],
             )
-        )
+        ).exclude(couverture__code="1.1.2.1", usage__code="1.3")
         artificial.update(
             is_artificial=True,
             label=CouvertureUsageMatrix.LabelChoices.ARTIFICIAL,

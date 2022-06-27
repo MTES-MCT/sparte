@@ -37,70 +37,71 @@ Rapport synthèse consommation d'espace et artificialisation
 
         <div class="clearfix">
             <div class="card key-figure">
-                <div class="card-header">
-                    Surface du territoire
-                </div>
                 <div class="card-body">
                     <p class="figure">{{ diagnostic.area|floatformat:0 }} ha</p>
                 </div>
+                <div class="card-header">
+                    Surface du territoire
+                </div>
             </div>
         </div>
 
         <div class="box px-4 py-2 clearfix">
 
-            <h3><a href="{% url 'project:report_conso' diagnostic.pk %}">Bilan de la consommation d'espace</a></h3>
+            <a href="{% url 'project:report_conso' diagnostic.pk %}" class="stretched-link"></a>
+
+            <h3>Bilan de la consommation d'espace</h3>
 
             <div class="card key-figure key-figure-green">
-                <div class="card-header">
-                    Bilan consommation d'espace 2010-2020
-                </div>
                 <div class="card-body">
                     <p class="figure">+{{ conso_10_years|floatformat:1 }} ha</p>
                 </div>
+                <div class="card-header">
+                    Bilan consommation d'espace 2010-2020
+                </div>
             </div>
 
             <div class="card key-figure key-figure-green">
-                <div class="card-header">
-                    Horizon 2030 pour la consommation d'espace
-                </div>
                 <div class="card-body">
                     <p class="figure">+{{ trajectoire_2030|floatformat:1 }} ha</p>
+                </div>
+                <div class="card-header">
+                    Horizon 2030 pour la consommation d'espace
                 </div>
             </div>
         </div>
 
         <div class="box px-4 py-2 clearfix">
 
-            <h3><a href="{% url 'project:report_artif' project.pk %}">Bilan de l'artificialisation nette entre {{ diagnostic.analyse_start_date }} et {{ diagnostic.analyse_end_date }}</a></h3>
+            <a href="{% url 'project:report_artif' project.pk %}" class="stretched-link"></a>
+
+            <h3>Bilan de l'artificialisation nette entre {{ diagnostic.analyse_start_date }} et {{ diagnostic.analyse_end_date }}</h3>
 
             <div class="clearfix">
                 <div class="card key-figure key-figure-yellow">
-                    <div class="card-header">
-                        Artificialisation nette
-                    </div>
                     <div class="card-body">
                         <p class="figure">{{ net_artif|floatformat:0 }} ha</p>
-                        <p class="card-text"><small class="text-secondary">
-                            = artificialisation - renaturation
-                        </small></p>
+                    </div>
+                    <div class="card-header">
+                        Artificialisation nette <i class="bi bi-question-circle" data-toggle="tooltip" title="= artificialisation - renaturation"></i>
                     </div>
                 </div>
 
                 <div class="card key-figure key-figure-yellow">
-                    <div class="card-header">
-                        Total artificialisation
-                    </div>
                     <div class="card-body">
                         <p class="figure">+ {{ new_artif|floatformat:1 }} ha</p>
                     </div>
+                    <div class="card-header">
+                        Total artificialisation
+                    </div>
                 </div>
 
                 <div class="card key-figure key-figure-yellow">
-                    <div class="card-header">
-                        Total renaturation
-                    </div>
                     <div class="card-body">
                         <p class="figure">+ {{ new_natural|floatformat:0 }} ha</p>
+                    </div>
+                    <div class="card-header">
+                        Total renaturation
                     </div>
                 </div>
             </div>

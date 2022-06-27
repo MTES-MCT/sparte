@@ -1,3 +1,5 @@
+import collections
+from decimal import Decimal
 import traceback
 
 from django.conf import settings
@@ -6,8 +8,8 @@ from django.contrib.gis.db.models import Union, Extent
 from django.contrib.gis.db.models.functions import Centroid
 from django.core.validators import MinValueValidator
 from django.db import models
-from django.db.models import Sum, F, Value, Q
-from django.db.models.functions import Concat
+from django.db.models import Sum, F, Value, Q, Min, Max, Case, When
+from django.db.models.functions import Concat, Coalesce
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.functional import cached_property
@@ -19,15 +21,19 @@ from public_data.models import (
     CommuneDiff,
     CommuneSol,
     Ocsge,
+    OcsgeDiff,
     CouvertureSol,
     UsageSol,
 )
+
+from utils.db import cast_sum
 
 from .utils import user_directory_path
 
 
 class BaseProject(models.Model):
     class EmpriseOrigin(models.TextChoices):
+        UNSET = "UNSET", "Origine non renseignée"
         FROM_SHP = "FROM_SHP", "Construit depuis un fichier shape"
         FROM_CITIES = "FROM_CITIES", "Construit depuis une liste de villes"
         WITH_EMPRISE = "WITH_EMPRISE", "Emprise déjà fournie"
@@ -42,7 +48,7 @@ class BaseProject(models.Model):
         "Origine de l'emprise",
         max_length=20,
         choices=EmpriseOrigin.choices,
-        default=EmpriseOrigin.FROM_SHP,
+        default=EmpriseOrigin.UNSET,
     )
 
     user = models.ForeignKey(
@@ -136,6 +142,13 @@ class CityGroup:
 class Project(BaseProject):
 
     ANALYZE_YEARS = [(str(y), str(y)) for y in range(2009, 2020)]
+    LEVEL_CHOICES = (
+        ("COMMUNE", "Commune"),
+        ("EPCI", "EPCI"),
+        ("DEPART", "Département"),
+        ("REGION", "Région"),
+        ("COMP", "Composite"),
+    )
 
     is_public = models.BooleanField("Public", default=False)
 
@@ -151,13 +164,47 @@ class Project(BaseProject):
         default="2018",
         max_length=4,
     )
+    level = models.CharField(
+        "Niveau d'analyse",
+        choices=LEVEL_CHOICES,
+        default="COMMUNE",
+        max_length=7,
+        help_text=(
+            "Utilisé lors de la création des rapports afin de déterminer le niveau "
+            "d'aggrégation des données à afficher. Si l'utilisateur a sélectionné "
+            "EPCI, alors les rapports doivent montrer des données EPCI par EPCI."
+        ),
+    )
+    land_type = models.CharField(
+        "Type de territoire",
+        choices=LEVEL_CHOICES,
+        default="EPCI",
+        max_length=7,
+        help_text=(
+            "Indique le niveau administratif des territoires sélectionnés par "
+            "l'utilisateur lors de la création du diagnostic. Cela va de la commune à "
+            "la région."
+        ),
+        blank=True,
+        null=True,
+    )
+    land_ids = models.CharField(
+        "Type de territoire",
+        max_length=255,
+        help_text=(
+            "Contient les identifiants qui composent le territoire du diagnostic. "
+            "Il faut croiser cette donnée avec 'land_type' pour être en mesure de "
+            "de récupérer dans la base les instances correspondantes."
+        ),
+        blank=True,
+        null=True,
+    )
     cities = models.ManyToManyField(
         "public_data.Commune",
         verbose_name="Communes",
         through=ProjectCommune,
         blank=True,
     )
-
     look_a_like = models.CharField(
         "Territoire pour se comparer",
         max_length=250,
@@ -224,6 +271,16 @@ class Project(BaseProject):
                 self._city_group_list[-1].append(project_commune)
         return self._city_group_list
 
+    def get_available_analysis_level(self):
+        available = {
+            "COMM": ["COMM"],
+            "EPCI": ["COMM"],
+            "DEPT": ["COMM", "EPCI"],
+            "REGI": ["COMM", "EPCI", "DEPT"],
+            "COMP": ["COMM", "EPCI", "DEPT", "REGI"],
+        }
+        return available[self.land_type]
+
     def add_look_a_like(self, public_key):
         """Add a public_key to look a like keeping the field formated
         and avoiding duplicate"""
@@ -284,7 +341,8 @@ class Project(BaseProject):
         else:
             code_insee = self.projectcommune_set.filter(group_name=group_name)
             code_insee = code_insee.values_list("commune__insee", flat=True)
-        qs = Cerema.objects.filter(city_insee__in=code_insee)
+        qs = Cerema.objects.pre_annotated()
+        qs = qs.filter(city_insee__in=code_insee)
         return qs
 
     def get_determinants(self, group_name=None):
@@ -327,8 +385,11 @@ class Project(BaseProject):
         qs = self.get_cerema_cities()
         # if not qs.exists():
         #     return 0
-        aggregation = qs.aggregate(bilan=Sum("naf11art21"))
-        return aggregation["bilan"] / 10000
+        aggregation = qs.aggregate(bilan=Coalesce(Sum("naf11art21"), float(0)))
+        try:
+            return aggregation["bilan"] / 10000
+        except TypeError:
+            return 0
 
     def get_bilan_conso_time_scoped(self):
         """Return land consummed during the project time scope (between
@@ -340,8 +401,11 @@ class Project(BaseProject):
         fields = Cerema.get_art_field(self.analyse_start_date, self.analyse_end_date)
         sum_function = sum([F(f) for f in fields])
         qs = qs.annotate(line_sum=sum_function)
-        aggregation = qs.aggregate(bilan=Sum("line_sum"))
-        return aggregation["bilan"] / 10000
+        aggregation = qs.aggregate(bilan=Coalesce(Sum("line_sum"), float(0)))
+        try:
+            return aggregation["bilan"] / 10000
+        except TypeError:
+            return 0
 
     _conso_per_year = None
 
@@ -357,9 +421,25 @@ class Project(BaseProject):
             self._conso_per_year = {
                 f"20{key[3:5]}": val / 10000
                 for key, val in qs.items()
-                if val is not None
+                # if val is not None
             }
         return self._conso_per_year
+
+    def get_land_conso_per_year(self, level):
+        """Return conso data aggregated by a specific level
+        {
+            "dept_name": {
+                "2015": 10,
+                "2016": 12,
+                "2017": 9,
+            },
+        }
+        """
+        fields = Cerema.get_art_field(self.analyse_start_date, self.analyse_end_date)
+        qs = self.get_cerema_cities()
+        qs = qs.values(level)
+        qs = qs.annotate(**{f"20{field[3:5]}": Sum(field) / 10000 for field in fields})
+        return {row[level]: {year: row[year] for year in self.years} for row in qs}
 
     def get_city_conso_per_year(self, group_name=None):
         """Return year artificialisation of each city in the project, on project
@@ -373,17 +453,15 @@ class Project(BaseProject):
             },
         }
         """
-        results = dict()
         qs = self.get_cerema_cities(group_name=group_name)
         fields = Cerema.get_art_field(self.analyse_start_date, self.analyse_end_date)
-        for city in qs:
-            results[city.city_name] = dict()
-            total = 0
-            for field in fields:
-                val = getattr(city, field) / 10000
-                total += val
-                results[city.city_name][f"20{field[3:5]}"] = val
-        return results
+        return {
+            cerema_city.city_name: {
+                f"20{field[3:5]}": getattr(cerema_city, field) / 10000
+                for field in fields
+            }
+            for cerema_city in qs
+        }
 
     def get_look_a_like_conso_per_year(self):
         """Return same data as get_conso_per_year but for land listed in
@@ -426,9 +504,9 @@ class Project(BaseProject):
             year_old__gte=self.analyse_start_date, year_new__lte=self.analyse_end_date
         )
         return qs.aggregate(
-            new_artif=Sum("new_artif"),
-            new_natural=Sum("new_natural"),
-            net_artif=Sum("net_artif"),
+            new_artif=Coalesce(Sum("new_artif"), Decimal("0")),
+            new_natural=Coalesce(Sum("new_natural"), Decimal("0")),
+            net_artif=Coalesce(Sum("net_artif"), Decimal("0")),
         )
 
     def get_artif_evolution(self):
@@ -447,13 +525,69 @@ class Project(BaseProject):
                 output_field=models.CharField(),
             )
         )
-        qs = qs.values("period")
+        qs = qs.values("period", "year_old", "year_new")
         qs = qs.annotate(
-            new_artif=Sum("new_artif"),
-            new_natural=Sum("new_natural"),
-            net_artif=Sum("net_artif"),
+            new_artif=Coalesce(Sum("new_artif"), Decimal("0")),
+            new_natural=Coalesce(Sum("new_natural"), Decimal("0")),
+            net_artif=Coalesce(Sum("net_artif"), Decimal("0")),
         )
         return qs
+
+    def get_land_artif_per_year(self, analysis_level):
+        """Return artif evolution for all cities of the diagnostic
+
+        {
+            "city_name": {
+                "2013-2016": 10,
+                "2016-2019": 15,
+            }
+        }
+        """
+        qs = CommuneDiff.objects.filter(city__in=self.cities.all())
+        if analysis_level == "DEPART":
+            qs = qs.annotate(name=F("city__departement__name"))
+        elif analysis_level == "EPCI":
+            qs = qs.annotate(name=F("city__epci__name"))
+        elif analysis_level == "REGION":
+            qs = qs.annotate(name=F("city__departement__region__name"))
+        else:
+            qs = qs.annotate(name=F("city__name"))
+        qs = qs.filter(
+            year_old__gte=self.analyse_start_date, year_new__lte=self.analyse_end_date
+        )
+        qs = qs.annotate(
+            period=Concat(
+                "year_old",
+                Value(" - "),
+                "year_new",
+                output_field=models.CharField(),
+            )
+        )
+        qs = qs.values("name", "period")
+        qs = qs.annotate(net_artif=Sum("net_artif"))
+
+        results = collections.defaultdict(dict)
+        for row in qs:
+            results[row["name"]][row["period"]] = row["net_artif"]
+        return results
+
+    def get_city_artif_per_year(self):
+        """Return artif evolution for all cities of the diagnostic
+
+        {
+            "city_name": {
+                "2013-2016": 10,
+                "2016-2019": 15,
+            }
+        }
+        """
+        qs = CommuneDiff.objects.filter(city__in=self.cities.all()).filter(
+            year_old__gte=self.analyse_start_date, year_new__lte=self.analyse_end_date
+        )
+        results = collections.defaultdict(dict)
+        for commune in qs:
+            results[commune.city.name][commune.period] = commune.net_artif
+        return results
 
     def get_bounding_box(self):
         result = self.emprise_set.aggregate(bbox=Extent("mpoly"))
@@ -464,17 +598,15 @@ class Project(BaseProject):
         result = self.emprise_set.aggregate(center=Centroid(Union("mpoly")))
         return result["center"]
 
-    def get_last_available_millesime(self):
+    def get_first_last_millesime(self):
+        """return {"first": yyyy, "last": yyyy} which are the first and last
+        OCS GE millesime completly included in diagnostic time frame"""
         qs = Ocsge.objects.filter(mpoly__intersects=self.combined_emprise)
-        qs = qs.filter(year__gte=self.analyse_start_date)
-        qs = qs.filter(year__lte=self.analyse_end_date)
-        return qs.latest("year").year
-
-    def get_first_available_millesime(self):
-        qs = Ocsge.objects.filter(mpoly__intersects=self.combined_emprise)
-        qs = qs.filter(year__gte=self.analyse_start_date)
-        qs = qs.filter(year__lte=self.analyse_end_date)
-        return qs.earliest("year").year
+        qs = qs.filter(
+            year__gte=self.analyse_start_date, year__lte=self.analyse_end_date
+        )
+        qs = qs.aggregate(first=Min("year"), last=Max("year"))
+        return qs
 
     def get_base_sol(self, millesime, sol="couverture"):
         if sol == "couverture":
@@ -486,7 +618,7 @@ class Project(BaseProject):
         qs = CommuneSol.objects.filter(city__in=self.cities.all(), year=millesime)
         qs = qs.annotate(code_prefix=code_field)
         qs = qs.values("code_prefix")
-        qs = qs.annotate(surface=Sum("surface"))
+        qs = qs.annotate(surface=Coalesce(Sum("surface"), Decimal(0)))
         data = list(qs)
         item_list = list(klass.objects.all().order_by("code"))
         for item in item_list:
@@ -514,27 +646,84 @@ class Project(BaseProject):
         )
         qs = qs.annotate(code_prefix=code_field)
         qs = qs.values("code_prefix")
-        qs = qs.annotate(surface_first=Sum("surface", filter=Q(year=first_millesime)))
-        qs = qs.annotate(surface_last=Sum("surface", filter=Q(year=last_millesime)))
+        qs = qs.annotate(
+            surface_first=Sum("surface", filter=Q(year=first_millesime), default=0)
+        )
+        qs = qs.annotate(
+            surface_last=Sum("surface", filter=Q(year=last_millesime), default=0)
+        )
         data = list(qs)
         item_list = list(klass.objects.all().order_by("code"))
         for item in item_list:
             item.surface_first = sum(
                 [
-                    _["surface_first"] if _["surface_first"] else 0
+                    _["surface_first"]
                     for _ in data
                     if _["code_prefix"].startswith(item.code_prefix)
                 ]
             )
             item.surface_last = sum(
                 [
-                    _["surface_last"] if _["surface_last"] else 0
+                    _["surface_last"]
                     for _ in data
                     if _["code_prefix"].startswith(item.code_prefix)
                 ]
             )
             item.surface_diff = item.surface_last - item.surface_first
         return item_list
+
+    def get_detail_artif(self):
+        qs = OcsgeDiff.objects.intersect(self.combined_emprise)
+        # sélection
+        qs = qs.filter(
+            year_old__gte=self.analyse_start_date,
+            year_new__lte=self.analyse_end_date,
+        )
+        qs = qs.filter(Q(is_new_artif=True) | Q(is_new_natural=True))
+        qs = qs.annotate(
+            code_prefix=Case(
+                When(is_new_artif=True, then=F("new_matrix__couverture__code_prefix")),
+                default=F("old_matrix__couverture__code_prefix"),
+            ),
+            label=Case(
+                When(is_new_artif=True, then=F("new_matrix__couverture__label")),
+                default=F("old_matrix__couverture__label"),
+            ),
+            label_short=Case(
+                When(is_new_artif=True, then=F("new_matrix__couverture__label_short")),
+                default=F("old_matrix__couverture__label_short"),
+            ),
+        )
+        qs = qs.values("code_prefix", "label", "label_short")
+        qs = qs.annotate(
+            artif=cast_sum("intersection_area", filter=Q(is_new_artif=True)),
+            renat=cast_sum("intersection_area", filter=Q(is_new_natural=True)),
+        )
+        return qs
+
+    def get_base_sol_artif(self, sol="couverture"):
+        qs = CommuneSol.objects.filter(
+            city__in=self.cities.all(),
+            year=self.last_year_ocsge,
+            matrix__is_artificial=True,
+        )
+        if sol == "couverture":
+            qs = qs.annotate(
+                code_prefix=F("matrix__couverture__code_prefix"),
+                label=F("matrix__couverture__label"),
+                label_short=F("matrix__couverture__label_short"),
+                map_color=F("matrix__couverture__map_color"),
+            )
+        else:
+            qs = qs.annotate(
+                code_prefix=F("matrix__usage__code_prefix"),
+                label=F("matrix__usage__label"),
+                label_short=F("matrix__usage__label_short"),
+                map_color=F("matrix__usage__map_color"),
+            )
+        qs = qs.values("code_prefix", "label", "label_short", "map_color")
+        qs = qs.annotate(surface=Sum("surface"))
+        return qs
 
 
 class Emprise(DataColorationMixin, gis_models.Model):

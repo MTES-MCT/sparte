@@ -1,23 +1,15 @@
 import logging
 
 from django.contrib.gis.db.models import Union
-from django.contrib.gis.geos import Polygon, MultiPolygon
+
 from django.core.management.base import BaseCommand
 from django.core.paginator import Paginator
 
 from public_data.models import Cerema, Region, Departement, Epci, Commune
+from public_data.utils import fix_poly
 
 
 logger = logging.getLogger("management.commands")
-
-
-def fix_poly(field):
-    if isinstance(field, Polygon):
-        return MultiPolygon(field)
-    elif isinstance(field, MultiPolygon):
-        return field
-    else:
-        raise TypeError("Field n'est ni un Polygon ni un MultiPolygon")
 
 
 class Command(BaseCommand):

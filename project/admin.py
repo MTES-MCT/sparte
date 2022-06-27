@@ -1,6 +1,6 @@
 from django.contrib.gis import admin
 from django.http import HttpResponseRedirect
-from django.urls import reverse
+from django.urls import reverse, exceptions
 from django.utils.html import format_html
 
 from .models import Project, Emprise, Plan, PlanEmprise, Request
@@ -141,7 +141,10 @@ class RequestAdmin(admin.ModelAdmin):
     link_to_user.short_description = "Utilisateur"
 
     def link_to_project(self, obj):
-        link = reverse("project:detail", args=[obj.project_id])
-        return format_html(f'<a href="{link}">Accès à la fiche</a>')
+        try:
+            link = reverse("project:detail", args=[obj.project_id])
+            return format_html(f'<a href="{link}">Accès à la fiche</a>')
+        except exceptions.NoReverseMatch:
+            return format_html("Diagnostic inconnu")
 
     link_to_project.short_description = "Projet"

@@ -25,7 +25,6 @@ from celery import shared_task
 import logging
 from zipfile import BadZipFile
 
-from django.conf import settings
 from django.contrib.gis.db.models import Union
 from django.contrib.gis.geos.collections import MultiPolygon
 from django.urls import reverse
@@ -33,6 +32,8 @@ from django.urls import reverse
 from django_app_parameter import app_parameter
 from public_data.models import Ocsge
 from utils.emails import send_template_email
+
+from utils.functions import get_url_with_domain
 
 from project.models import Project, Request
 
@@ -157,22 +158,17 @@ def evaluate_indicators(project: Project):
     """
     logger.info("Evaluate indicators id=%d", project.id)
     find_first_and_last_ocsge(project)
-    evaluate_couverture_and_usage(project)
+    # not used anymore:
+    # evaluate_couverture_and_usage(project)
 
 
 @shared_task
 def find_first_and_last_ocsge(project: Project):
     """Use associated cities to find departements and available OCSGE millesime"""
     logger.info("Find first and last ocsge id=%d", project.id)
-    millesimes = {
-        millesime
-        for city in project.cities.all()
-        for millesime in city.get_ocsge_millesimes()
-        if int(project.analyse_start_date) <= millesime <= int(project.analyse_end_date)
-    }
-    if millesimes:
-        project.first_year_ocsge = min(millesimes)
-        project.last_year_ocsge = max(millesimes)
+    result = project.get_first_last_millesime()
+    project.first_year_ocsge = result["first"]
+    project.last_year_ocsge = result["last"]
 
 
 @shared_task
@@ -221,7 +217,7 @@ def send_email_request_bilan(request_id):
     logger.info("Send email to bilan requester (start)")
     logger.info("Request_id=%s", request_id)
     request = Request.objects.get(pk=request_id)
-    project_url = f"https://{settings.DOMAIN}{request.project.get_absolute_url()}"
+    project_url = get_url_with_domain(request.project.get_absolute_url())
     # send e-mail to requester
     send_template_email(
         subject="Confirmation de demande de bilan",
@@ -245,6 +241,6 @@ def send_email_request_bilan(request_id):
             "project": request.project,
             "request": request,
             "project_url": project_url,
-            "request_url": f"https://{settings.DOMAIN}{relative_url}",
+            "request_url": get_url_with_domain(relative_url),
         },
     )

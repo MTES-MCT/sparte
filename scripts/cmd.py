@@ -63,6 +63,9 @@ class ScalingoInterface:
             cmd += f" --{name} {val}"
         self.run(cmd)
 
+    def print_cmd(self):
+        print(self.get_scalingo_run_cmd())
+
 
 @click.group()
 @click.option(
@@ -79,6 +82,14 @@ def cli(ctx, env, detached):
     ctx.ensure_object(dict)
     ctx.obj["ENV_NAME"] = env
     ctx.obj["DETACHED"] = detached
+
+
+@cli.command()
+@click.pass_context
+def print_cmd(ctx, klass=None):
+    """Return scalingo cmd for the selected environment"""
+    connecter = ScalingoInterface(ctx.obj)
+    connecter.print_cmd()
 
 
 @cli.command()
@@ -126,14 +137,30 @@ def load_data(ctx, klass=None):
 def rebuild(ctx, klass=None):
     """Trigger management command public_data scalingo."""
     connecter = ScalingoInterface(ctx.obj)
-    click.secho("Load all public data", fg="cyan")
-    # connecter.manage_py("load_data")
+    click.secho("Load parameters", fg="cyan")
+    connecter.manage_py("load_param --file required_parameters.json")
+
+    click.secho("Load data from cerema", fg="cyan")
+    connecter.manage_py("build_matrix")
+
+    click.secho("Load data from cerema", fg="cyan")
+    connecter.manage_py("load_cerema")
+
     click.secho("build administrative territory", fg="cyan")
-    connecter.manage_py("load_from_cerema")
+    connecter.manage_py("build_administrative_layers")
+
+    click.secho("Trigger OVS GE data loading", fg="cyan")
+    connecter.manage_py("load_ocsge --no-verbose --truncate")
+
+    click.secho("Build data for all communes", fg="cyan")
+    connecter.manage_py("build_commune_data")
+
     click.secho("Set available millesimes", fg="cyan")
     connecter.manage_py("set_dept_millesimes")
-    click.secho("Load parameters", fg="cyan")
-    connecter.manage_py("load_param")
+
+    click.secho("Build artificial area", fg="cyan")
+    connecter.manage_py("build_artificial_area --verbose")
+
     click.secho("End", fg="cyan")
 
 
@@ -143,28 +170,6 @@ def migrate(ctx):
     """Trigger migrate command to update database"""
     connecter = ScalingoInterface(ctx.obj)
     connecter.manage_py("migrate")
-
-
-@cli.command()
-@click.pass_context
-def mep_110(ctx):
-    """Trigger all data transformation to successful MEP release 1.1.0"""
-    click.secho("Start migration v1.1.0", fg="cyan")
-
-    click.secho("launch set_dept_millesimes", fg="cyan")
-    # find which millesime is in each departement
-    connecter = ScalingoInterface(ctx.obj)
-    connecter.manage_py("set_dept_millesimes")
-
-    click.secho("launch reevaluate_project_mep_110", fg="cyan")
-    # set first and last ocsge
-    # change unit from km² to ha
-    connecter.detached = True
-    connecter.manage_py("reevaluate_project_mep_110")
-
-    click.secho("launch param_mep_110", fg="cyan")
-    connecter.detached = False
-    connecter.manage_py("param_mep_110")
 
 
 @cli.command()
@@ -196,6 +201,35 @@ def mep_130(ctx):
 
     click.secho("Build data for all communes", fg="cyan")
     connecter.manage_py("build_commune_data")
+
+    click.secho("End migration", fg="cyan")
+
+
+@cli.command()
+@click.pass_context
+def mep_140(ctx):
+    """Trigger all data transformation to successful MEP release 1.2.0"""
+    click.secho("Start migration v1.4.0", fg="cyan")
+    connecter = ScalingoInterface(ctx.obj)
+
+    click.secho("Set new artificial matrix", fg="cyan")
+    connecter.manage_py("build_matrix")
+
+    click.secho("Add new params (if any)", fg="cyan")
+    connecter.manage_py("load_param --file required_parameters.json")
+
+    click.secho("Build artificial area", fg="cyan")
+    connecter.manage_py("build_artificial_area --verbose")
+
+    click.secho("Reset diagnostic first and last millesime OCS GE", fg="cyan")
+    connecter.manage_py("reset_first_last")
+
+    click.secho("Add short label to couverture and usage", fg="cyan")
+    connecter.manage_py("correct_label_couv_usage")
+
+    click.secho("Evaluate density of building in zone construite (async)", fg="cyan")
+    connecter.detached = True
+    connecter.manage_py("set_density")
 
     click.secho("End migration", fg="cyan")
 
