@@ -299,6 +299,10 @@ class Project(BaseProject):
         except (AttributeError, KeyError):
             return
 
+    @property
+    def nb_look_a_like(self):
+        return len({_ for _ in self.look_a_like.split(";")})
+
     def get_look_a_like(self):
         """If a public_key is corrupted it removes it and hide the error"""
         lands = list()
