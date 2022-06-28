@@ -31,8 +31,14 @@ class DiagnosticSource(data_sources.DataSource):
         chart_conso_cities = charts.ConsoCommuneChart(project, level=project.level)
 
         # comparison charts
-        comparison_chart = charts.ConsoComparisonChart(project, relative=False)
-        comparison_relative_chart = charts.ConsoComparisonChart(project, relative=True)
+        nb_neighbors = project.nb_look_a_like
+        voisins = list()
+        if nb_neighbors > 0:
+            comparison_chart = charts.ConsoComparisonChart(project, relative=False)
+            comparison_relative_chart = charts.ConsoComparisonChart(
+                project, relative=True
+            )
+            voisins = project.get_look_a_like()
 
         # Déterminants
         det_chart = charts.DeterminantPerYearChart(project)
@@ -53,6 +59,8 @@ class DiagnosticSource(data_sources.DataSource):
 
         context = {
             "diagnostic": project,
+            "nb_voisins": nb_neighbors,
+            "voisins": voisins,
             "url_clickable": data_sources.HyperLink(url_diag),
             "url": url_diag,
             "ocsge_is_available": False,
@@ -91,6 +99,9 @@ class DiagnosticSource(data_sources.DataSource):
             "comparison_relative_chart": data_sources.Image(
                 comparison_relative_chart.get_temp_image(),
                 width=170,
+            ),
+            "comparison_data_table": add_total_line_column(
+                comparison_chart.get_series()
             ),
             # deprecated
             "project": project,
