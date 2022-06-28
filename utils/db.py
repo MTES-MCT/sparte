@@ -1,4 +1,5 @@
 from django.contrib.gis.db.models.functions import Intersection, Area, Transform
+from django.contrib.gis.geos import Polygon, MultiPolygon
 from django.db.models import Sum, DecimalField, Manager
 from django.db.models.functions import Cast, Coalesce
 
@@ -27,3 +28,12 @@ class IntersectMixin:
 
 class IntersectManager(IntersectMixin, Manager):
     pass
+
+
+def fix_poly(field):
+    if isinstance(field, Polygon):
+        return MultiPolygon(field)
+    elif isinstance(field, MultiPolygon):
+        return field
+    else:
+        raise TypeError("Field should be Polygon or MultiPolygon")
