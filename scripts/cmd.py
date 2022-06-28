@@ -182,7 +182,7 @@ def migrate(ctx):
 @cli.command()
 @click.pass_context
 def mep_140(ctx):
-    """Trigger all data transformation to successful MEP release 1.2.0"""
+    """Trigger all data transformation to successful MEP release 1.4.0"""
     click.secho("Start migration v1.4.0", fg="cyan")
     connecter = ScalingoInterface(ctx.obj)
 
@@ -206,6 +206,17 @@ def mep_140(ctx):
     connecter.manage_py("set_density")
 
     click.secho("End migration", fg="cyan")
+
+
+@cli.command()
+@click.pass_context
+def mep_150(ctx):
+    """Trigger all data transformation to successful MEP release 1.5.0"""
+    click.secho("Start migration v1.5.0", fg="cyan")
+    connecter = ScalingoInterface(ctx.obj)
+
+    click.secho("Fix look a like", fg="cyan")
+    connecter.manage_py("fix_look_a_like")
 
 
 if __name__ == "__main__":
