@@ -136,7 +136,7 @@ class DepartementForm(forms.Form):
 class EpciForm(forms.Form):
     departement = forms.CharField(widget=forms.HiddenInput())
     epci = forms.ModelChoiceField(
-        queryset=Epci.objects.all().order_by("name"),
+        queryset=Epci.objects.none(),
         label="Sélectionnez un EPCI",
     )
 
