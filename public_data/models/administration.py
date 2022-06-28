@@ -284,6 +284,12 @@ class CommuneDiff(models.Model):
         null=True,
     )
 
+    class Meta:
+        indexes = [
+            models.Index(fields=["year_old"]),
+            models.Index(fields=["year_new"]),
+        ]
+
     @property
     def period(self):
         return f"{self.year_old} - {self.year_new}"
