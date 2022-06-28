@@ -6,7 +6,7 @@ from django.core.management.base import BaseCommand
 from django.db.models import Sum, Q
 
 from public_data.models import Commune, Departement, Ocsge, ArtificialArea
-from public_data.utils import fix_poly
+from utils.db import fix_poly
 
 
 logger = logging.getLogger("management.commands")
