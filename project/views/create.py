@@ -6,7 +6,7 @@ from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView, FormView, RedirectView
 
-from public_data.models import Epci, Departement, Region, Commune, Land
+from utils.db import fix_poly
 from utils.views_mixins import BreadCrumbMixin
 
 from project.forms import (
