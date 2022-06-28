@@ -38,6 +38,29 @@ from .couverture_usage import CouvertureUsageMatrix
 from .mixins import DataColorationMixin
 
 
+class AdministrationReferentiel:
+    REGION = "REGION"
+    DEPARTEMENT = "DEPART"
+    EPCI = "EPCI"
+    COMMUNE = "COMM"
+    SCOT = "SCOT"
+    COMPOSITE = "COMP"
+
+    @classmethod
+    def get_class(cls, name):
+        if name == cls.REGION:
+            return Region
+        elif name == cls.DEPARTEMENT:
+            return Departement
+        elif name == cls.EPCI:
+            return Epci
+        elif name == cls.COMMUNE:
+            return Commune
+        elif name == cls.SCOT:
+            pass
+        raise AttributeError(f"{name} is not an administrative layer")
+
+
 class GetDataFromCeremaMixin:
     def get_qs_cerema(self):
         raise NotImplementedError("Need to be specified in child")
@@ -52,6 +75,10 @@ class GetDataFromCeremaMixin:
 
 
 class LandMixin:
+    @property
+    def public_key(self):
+        return f"{self.land_type}_{self.id}"
+
     @cached_property
     def area(self):
         """Return surface of the land in Ha"""
@@ -63,11 +90,20 @@ class LandMixin:
         qs = qs.order_by("name")
         return qs
 
+    def get_qs_cerema(self):
+        raise NotImplementedError("need to be overrided")
+
+    def get_cities(self):
+        raise NotImplementedError("need to be overrided")
+
 
 class Region(LandMixin, GetDataFromCeremaMixin, models.Model):
     source_id = models.CharField("Identifiant source", max_length=2)
     name = models.CharField("Nom", max_length=27)
     mpoly = models.MultiPolygonField()
+
+    land_type = AdministrationReferentiel.REGION
+    default_analysis_level = AdministrationReferentiel.DEPARTEMENT
 
     def get_ocsge_millesimes(self) -> set:
         return {
@@ -75,10 +111,6 @@ class Region(LandMixin, GetDataFromCeremaMixin, models.Model):
             for dept in self.departement_set.all()
             for millesime in dept.get_ocsge_millesimes()
         }
-
-    @property
-    def public_key(self):
-        return f"REGION_{self.id}"
 
     @property
     def is_artif_ready(self):
@@ -107,9 +139,8 @@ class Departement(LandMixin, GetDataFromCeremaMixin, models.Model):
     name = models.CharField("Nom", max_length=23)
     mpoly = models.MultiPolygonField()
 
-    @property
-    def public_key(self):
-        return f"DEPART_{self.id}"
+    land_type = AdministrationReferentiel.DEPARTEMENT
+    default_analysis_level = AdministrationReferentiel.EPCI
 
     def get_ocsge_millesimes(self) -> set:
         """Return the list of all OCSGE millesimes (years) available for this dept."""
@@ -134,16 +165,15 @@ class Epci(LandMixin, GetDataFromCeremaMixin, models.Model):
     mpoly = models.MultiPolygonField()
     departements = models.ManyToManyField(Departement)
 
+    land_type = AdministrationReferentiel.EPCI
+    default_analysis_level = AdministrationReferentiel.COMMUNE
+
     def get_ocsge_millesimes(self) -> set:
         return {
             millesime
             for dept in self.departements.all()
             for millesime in dept.get_ocsge_millesimes()
         }
-
-    @property
-    def public_key(self):
-        return f"EPCI_{self.id}"
 
     @property
     def is_artif_ready(self):
@@ -189,10 +219,8 @@ class Commune(DataColorationMixin, LandMixin, GetDataFromCeremaMixin, models.Mod
     # DataColorationMixin properties that need to be set when heritating
     default_property = "insee"  # need to be set correctly to work
     default_color = "Yellow"
-
-    @property
-    def public_key(self):
-        return f"COMMUNE_{self.id}"
+    land_type = AdministrationReferentiel.COMMUNE
+    default_analysis_level = AdministrationReferentiel.COMMUNE
 
     @property
     def is_artif_ready(self):
@@ -289,10 +317,10 @@ class Land:
 
     class Meta:
         subclasses = {
-            "COMMUNE": Commune,
-            "EPCI": Epci,
-            "DEPART": Departement,
-            "REGION": Region,
+            AdministrationReferentiel.COMMUNE: Commune,
+            AdministrationReferentiel.EPCI: Epci,
+            AdministrationReferentiel.DEPARTEMENT: Departement,
+            AdministrationReferentiel.REGION: Region,
         }
 
     def __init__(self, public_key):
@@ -315,6 +343,52 @@ class Land:
 
     def __str__(self):
         return f"Land({str(self.land)})"
+
+    @classmethod
+    def get_lands(cls, public_keys):
+        if not isinstance(public_keys, list):
+            public_keys = [public_keys]
+        return [Land(pk) for pk in public_keys]
+
+    @classmethod
+    def get_available_analysis_level(cls, land_type):
+        available = {
+            AdministrationReferentiel.COMMUNE: [AdministrationReferentiel.COMMUNE],
+            AdministrationReferentiel.EPCI: [AdministrationReferentiel.COMMUNE],
+            AdministrationReferentiel.DEPARTEMENT: [
+                AdministrationReferentiel.COMMUNE,
+                AdministrationReferentiel.EPCI,
+            ],
+            AdministrationReferentiel.REGION: [
+                AdministrationReferentiel.COMMUNE,
+                AdministrationReferentiel.EPCI,
+                AdministrationReferentiel.DEPARTEMENT,
+            ],
+            AdministrationReferentiel.COMPOSITE: [
+                AdministrationReferentiel.COMMUNE,
+                AdministrationReferentiel.EPCI,
+                AdministrationReferentiel.DEPARTEMENT,
+                AdministrationReferentiel.REGION,
+            ],
+        }
+        return available[land_type]
+
+    @classmethod
+    def get_default_analysis_level(cls, lands):
+        """When we have a group of lands, the smallest analysis level is selected
+        REGION > DEPARTEMENT > EPCI > COMMUNE
+        """
+        available = {land.default_analysis_level for land in lands}
+        if AdministrationReferentiel.COMMUNE in available:
+            return AdministrationReferentiel.COMMUNE
+        elif AdministrationReferentiel.EPCI in available:
+            return AdministrationReferentiel.EPCI
+        elif AdministrationReferentiel.DEPARTEMENT in available:
+            return AdministrationReferentiel.DEPARTEMENT
+        elif AdministrationReferentiel.REGION in available:
+            return AdministrationReferentiel.REGION
+        else:
+            return AdministrationReferentiel.COMMUNE
 
     @classmethod
     def get_land_class(cls, land_type):

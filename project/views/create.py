@@ -261,7 +261,9 @@ class SetProjectOptions(BreadCrumbMixin, FormView):
             name = f"Diagnostic de {lands[0].name}"
 
         nb_types = len({type(land) for land in lands})
-        land_type = "COMP" if nb_types > 1 else lands[0].land_type
+        land_type = (
+            AdministrationReferentiel.COMPOSITE if nb_types > 1 else lands[0].land_type
+        )
 
         project = Project(
             name=name,
