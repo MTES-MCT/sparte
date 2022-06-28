@@ -46,17 +46,8 @@
                                     </div>
                                 </li>
 
-                                <li class="nav-item dropdown">
-                                    <a class="nav-link dropdown-toggle" id="DropdownProject" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Documentations</a>
-                                    <div class="dropdown-menu" aria-labelledby="DropdownProject">
-
-                                        <a class="dropdown-item" href="{% url 'public_data:matrix' %}">Matrice d'occupation des sols</a>
-                                        <hr class="dropdown-divider" />
-                                        <h6 class="dropdown-header">Foire Aux Questions</h6>
-                                        {% for item in menu_faq %}
-                                        <a class="dropdown-item" href="{% url 'home:faq-detail' item.slug %}">{{ item.menu_entry }}</a>
-                                        {% endfor %}
-                                    </div>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ EXTERNAL_DOC }}" target="_blank">Documentations</a>
                                 </li>
                             </ul>
 
