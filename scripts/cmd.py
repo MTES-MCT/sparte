@@ -201,6 +201,9 @@ def mep_140(ctx):
     click.secho("Add short label to couverture and usage", fg="cyan")
     connecter.manage_py("correct_label_couv_usage")
 
+    click.secho("Build data for all communes", fg="cyan")
+    connecter.manage_py("build_commune_data")
+
     click.secho("Evaluate density of building in zone construite (async)", fg="cyan")
     connecter.detached = True
     connecter.manage_py("set_density")
