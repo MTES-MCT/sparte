@@ -6,7 +6,7 @@ from django.core.management.base import BaseCommand
 from django.core.paginator import Paginator
 
 from public_data.models import Cerema, Region, Departement, Epci, Commune
-from public_data.utils import fix_poly
+from utils.db import fix_poly
 
 
 logger = logging.getLogger("management.commands")

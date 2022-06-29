@@ -30,5 +30,12 @@
         "value_type": "STR",
         "value": "1er juin 2022",
         "is_global": true
+    },
+    {
+        "name": "Lien vers la documentation externe",
+        "slug": "EXTERNAL_DOC",
+        "value_type": "STR",
+        "value": "https://fabrique-numerique.gitbook.io/sparte/",
+        "is_global": true
     }
 ]
