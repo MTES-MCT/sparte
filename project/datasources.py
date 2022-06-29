@@ -2,7 +2,7 @@ from django_docx_template import data_sources
 
 from utils.functions import get_url_with_domain
 
-from .charts import ConsoCommuneChart, DeterminantPerYearChart, DeterminantPieChart
+from . import charts
 from .models import Project
 from .utils import add_total_line_column
 
@@ -13,18 +13,36 @@ class DiagnosticSource(data_sources.DataSource):
     model = Project
     url_args = {"pk": "int"}
 
+    def get_file_name(self):
+        """You can overide this method to set a specific filename to files generated
+        with this datasource.If this method raise AttributeError, the name will be set
+        with TemplateDocx rules."""
+        name = self.project.name.replace(" ", "_")
+        return f"{{date:%Y%m%d}}_{name}"
+
     def get_context_data(self, **keys: dict()) -> dict():
         project = Project.objects.get(pk=keys["pk"])
+        self.project = project
 
         target_2031_consumption = project.get_bilan_conso()
         current_conso = project.get_bilan_conso_time_scoped()
 
         # Consommation des communes
-        chart_conso_cities = ConsoCommuneChart(project, level=project.level)
+        chart_conso_cities = charts.ConsoCommuneChart(project, level=project.level)
+
+        # comparison charts
+        nb_neighbors = project.nb_look_a_like
+        voisins = list()
+        if nb_neighbors > 0:
+            comparison_chart = charts.ConsoComparisonChart(project, relative=False)
+            comparison_relative_chart = charts.ConsoComparisonChart(
+                project, relative=True
+            )
+            voisins = project.get_look_a_like()
 
         # Déterminants
-        det_chart = DeterminantPerYearChart(project)
-        pie_det_chart = DeterminantPieChart(project)
+        det_chart = charts.DeterminantPerYearChart(project)
+        pie_det_chart = charts.DeterminantPieChart(project)
 
         # déterminant table, add total line and column
         det_data_table = dict()
@@ -41,6 +59,8 @@ class DiagnosticSource(data_sources.DataSource):
 
         context = {
             "diagnostic": project,
+            "nb_voisins": nb_neighbors,
+            "voisins": voisins,
             "url_clickable": data_sources.HyperLink(url_diag),
             "url": url_diag,
             "ocsge_is_available": False,
@@ -71,6 +91,17 @@ class DiagnosticSource(data_sources.DataSource):
             "pie_chart_determinants": data_sources.Image(
                 pie_det_chart.get_temp_image(),
                 width=170,
+            ),
+            "comparison_chart": data_sources.Image(
+                comparison_chart.get_temp_image(),
+                width=170,
+            ),
+            "comparison_relative_chart": data_sources.Image(
+                comparison_relative_chart.get_temp_image(),
+                width=170,
+            ),
+            "comparison_data_table": add_total_line_column(
+                comparison_chart.get_series()
             ),
             # deprecated
             "project": project,

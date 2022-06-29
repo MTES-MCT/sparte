@@ -137,6 +137,10 @@ def load_data(ctx, klass=None):
 def rebuild(ctx, klass=None):
     """Trigger management command public_data scalingo."""
     connecter = ScalingoInterface(ctx.obj)
+
+    click.secho("Build database", fg="cyan")
+    connecter.manage_py("migrate")
+
     click.secho("Load parameters", fg="cyan")
     connecter.manage_py("load_param --file required_parameters.json")
 
@@ -144,7 +148,7 @@ def rebuild(ctx, klass=None):
     connecter.manage_py("build_matrix")
 
     click.secho("Load data from cerema", fg="cyan")
-    connecter.manage_py("load_cerema")
+    connecter.manage_py("load_cerema --no-verbose")
 
     click.secho("build administrative territory", fg="cyan")
     connecter.manage_py("build_administrative_layers")
@@ -159,7 +163,10 @@ def rebuild(ctx, klass=None):
     connecter.manage_py("set_dept_millesimes")
 
     click.secho("Build artificial area", fg="cyan")
-    connecter.manage_py("build_artificial_area --verbose")
+    connecter.manage_py("build_artificial_area --no-verbose")
+
+    click.secho("Evaluate density of building in zone construite (async)", fg="cyan")
+    connecter.manage_py("set_density")
 
     click.secho("End", fg="cyan")
 
@@ -174,41 +181,8 @@ def migrate(ctx):
 
 @cli.command()
 @click.pass_context
-def mep_120(ctx):
-    """Trigger all data transformation to successful MEP release 1.2.0"""
-    click.secho("Start migration v1.2.0", fg="cyan")
-
-    click.secho("Set color for Commune layer", fg="cyan")
-    # find which millesime is in each departement
-    connecter = ScalingoInterface(ctx.obj)
-    connecter.manage_py("set_commune_color")
-
-    click.secho("End migration", fg="cyan")
-
-
-@cli.command()
-@click.pass_context
-def mep_130(ctx):
-    """Trigger all data transformation to successful MEP release 1.2.0"""
-    click.secho("Start migration v1.3.0", fg="cyan")
-    connecter = ScalingoInterface(ctx.obj)
-
-    click.secho("Set new artificial matrix", fg="cyan")
-    connecter.manage_py("correct_matrix")
-
-    click.secho("Trigger OVS GE data loading", fg="cyan")
-    connecter.manage_py("load_ocsge --no-verbose --truncate")
-
-    click.secho("Build data for all communes", fg="cyan")
-    connecter.manage_py("build_commune_data")
-
-    click.secho("End migration", fg="cyan")
-
-
-@cli.command()
-@click.pass_context
 def mep_140(ctx):
-    """Trigger all data transformation to successful MEP release 1.2.0"""
+    """Trigger all data transformation to successful MEP release 1.4.0"""
     click.secho("Start migration v1.4.0", fg="cyan")
     connecter = ScalingoInterface(ctx.obj)
 
@@ -227,11 +201,25 @@ def mep_140(ctx):
     click.secho("Add short label to couverture and usage", fg="cyan")
     connecter.manage_py("correct_label_couv_usage")
 
+    click.secho("Build data for all communes", fg="cyan")
+    connecter.manage_py("build_commune_data")
+
     click.secho("Evaluate density of building in zone construite (async)", fg="cyan")
     connecter.detached = True
     connecter.manage_py("set_density")
 
     click.secho("End migration", fg="cyan")
+
+
+@cli.command()
+@click.pass_context
+def mep_150(ctx):
+    """Trigger all data transformation to successful MEP release 1.5.0"""
+    click.secho("Start migration v1.5.0", fg="cyan")
+    connecter = ScalingoInterface(ctx.obj)
+
+    click.secho("Fix look a like", fg="cyan")
+    connecter.manage_py("fix_look_a_like")
 
 
 if __name__ == "__main__":

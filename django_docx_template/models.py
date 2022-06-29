@@ -1,3 +1,4 @@
+from datetime import datetime
 from io import BytesIO
 from pydoc import locate
 import random
@@ -5,6 +6,7 @@ import random
 from django.conf import settings
 from django.db import models
 from django.urls import reverse
+from django.utils.functional import cached_property
 from django.utils.text import slugify
 
 from docxtpl import DocxTemplate as DocxEngine
@@ -31,7 +33,7 @@ class DocxTemplate(models.Model):
         "DataSource class", max_length=250, blank=True, null=True
     )
 
-    @property
+    @cached_property
     def data_source(self) -> DataSource:
         return import_from_string(self.data_source_class)
 
@@ -108,3 +110,16 @@ class DocxTemplate(models.Model):
             combinations = self.data_source.get_all_example_combinations()
             context = random.choice(combinations)
         return self._merge(context=context)
+
+    def get_file_name(self):
+        """Return the name of the file merged.
+        Available hydratation:
+        date (example {date:%Y%m%d})
+        time (example {time:%H%M})"""
+        try:
+            filename = self.data_source.get_file_name()
+        except AttributeError:
+            filename = self.name.replace(" ", "_")
+        filename = filename.format(date=datetime.now())
+        filename = filename.format(time=datetime.now())
+        return f"{filename}.docx"

@@ -68,6 +68,7 @@ class Ocsge(TruncateTableMixin, DataColorationMixin, models.Model):
         indexes = [
             models.Index(fields=["couverture"]),
             models.Index(fields=["usage"]),
+            models.Index(fields=["year"]),
         ]
 
     @classmethod
@@ -152,6 +153,12 @@ class OcsgeDiff(TruncateTableMixin, DataColorationMixin, models.Model):
     default_property = "surface"
     default_color = "Red"
 
+    class Meta:
+        indexes = [
+            models.Index(fields=["year_old"]),
+            models.Index(fields=["year_new"]),
+        ]
+
 
 class ArtificialArea(TruncateTableMixin, DataColorationMixin, models.Model):
     mpoly = models.MultiPolygonField()
@@ -196,6 +203,11 @@ class ZoneConstruite(TruncateTableMixin, DataColorationMixin, models.Model):
     )
 
     objects = IntersectManager()
+
+    class Meta:
+        indexes = [
+            models.Index(fields=["year"]),
+        ]
 
     def set_built_density(self, save=False):
         qs = Ocsge.objects.intersect(self.mpoly)
