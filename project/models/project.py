@@ -302,13 +302,19 @@ class Project(BaseProject):
 
     @property
     def nb_look_a_like(self):
-        return len({_ for _ in self.look_a_like.split(";")})
+        try:
+            return len({_ for _ in self.look_a_like.split(";")})
+        except AttributeError:
+            return 0
 
     def get_look_a_like(self):
         """If a public_key is corrupted it removes it and hide the error"""
         lands = list()
         to_remove = list()
-        public_keys = {_ for _ in self.look_a_like.split(";")}
+        try:
+            public_keys = {_ for _ in self.look_a_like.split(";")}
+        except AttributeError:
+            public_keys = set()
         for public_key in public_keys:
             try:
                 lands.append(Land(public_key))
@@ -472,7 +478,11 @@ class Project(BaseProject):
         datas = dict()
         if not self.look_a_like:
             return datas
-        for public_key in self.look_a_like.split(";"):
+        try:
+            keys = self.look_a_like.split(";")
+        except AttributeError:
+            keys = set()
+        for public_key in keys:
             land = Land(public_key)
             datas[land.name] = land.get_conso_per_year(
                 self.analyse_start_date,
