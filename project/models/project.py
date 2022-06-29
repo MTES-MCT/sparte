@@ -1,5 +1,6 @@
 import collections
 from decimal import Decimal
+import pandas as pd
 import traceback
 
 from django.conf import settings
@@ -732,6 +733,36 @@ class Project(BaseProject):
             land_type = self.land_type
         klass = AdministrationReferentiel.get_class(land_type)
         return klass.objects.filter(mpoly__touches=self.combined_emprise)
+
+    def get_matrix(self, sol="couverture"):
+        if sol == "usage":
+            prefix = "us"
+            headers = {_.code: _ for _ in UsageSol.objects.all()}
+        else:
+            prefix = "cs"
+            headers = {_.code: _ for _ in CouvertureSol.objects.all()}
+        index = f"{prefix}_old"
+        column = f"{prefix}_new"
+        qs = (
+            OcsgeDiff.objects.intersect(self.combined_emprise)
+            .filter(
+                year_old__gte=self.analyse_start_date,
+                year_new__lte=self.analyse_end_date,
+            )
+            .values(index, column)
+            .annotate(total=Sum("surface") / 10000)
+            .order_by(index, column)
+        )
+        df = (
+            pd.DataFrame(qs)
+            .pivot(index=index, columns=column, values="total")
+            .fillna(0)
+        )
+
+        return {
+            headers[i[2:]]: {headers[c[2:]]: row[c] for c in df.columns}
+            for i, row in df.iterrows()
+        }
 
 
 class Emprise(DataColorationMixin, gis_models.Model):
