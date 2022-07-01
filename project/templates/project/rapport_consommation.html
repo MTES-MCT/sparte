@@ -116,46 +116,21 @@ Rapport consommation
                 </div>
             </div>
 
-            <div class="row">
-                <div class="col-6">
-                    <div class="w-100 box p-4">
-                        <h3>Analyse 2011 à 2020 (vision légale)</h3>
-                        <p>
-                            <strong>Consommé sur la période</strong> : +{{ target_2031.consummed|floatformat:1 }} ha
-                            <br/><strong>Conso. annuelle moyenne</strong> : +{{ target_2031.annual_avg|floatformat:1 }} Ha
-                            <br/><strong>Projection 2031 à ce rythme</strong> : +{{ target_2031.consummed|floatformat:1 }} Ha
-                            <br/><strong>Projection 2031 souhaitée (-50%)</strong> : +{{ target_2031.target|floatformat:1 }} ha
-                        </p>
-                    </div>
-                </div>
-                <div class="col-6">
-                    <div class="w-100 box p-4">
-                        <h3>Analyse {{ project.analyse_start_date }} à {{ project.analyse_end_date }}</h3>
-                        <p>
-                            <strong>Consommé sur la période</strong> : +{{ project_scope.consummed|floatformat:1 }} ha
-                            <br/><strong>Conso. annuelle moyenne</strong> : +{{ project_scope.annual_avg|floatformat:1 }} Ha <i class="bi bi-question-circle" data-toggle="tooltip" title="Conso sur la période ({{ project_scope.consummed|floatformat:1 }}) / années sur la période ({{ project_scope.nb_years }})"></i>
-                            <br/><strong>Projection 2031 à ce rythme</strong> : +{{ project_scope.forecast_2031|floatformat:1 }} Ha <i class="bi bi-question-circle" data-toggle="tooltip" title="Années jusqu'à 2031 ({{ project_scope.nb_years_before_31 }}) x conso annuelle moyenne({{ project_scope.annual_avg|floatformat:1 }})"></i>
-                            <br/>&nbsp;
-                        </p>
-                    </div>
-                </div>
-            </div>
-
             <div class="w-100 box p-4">
                 <h3>
-                    Progression cumulée de la consommation du territoire conformément à la loi Climat et Résilience
+                    Projection 2031 selon la trajectoire ZAN
                 </h3>
 
                 <div id="objective_chart" class=""></div>
 
                 <p class="my-0">
-                    <strong>En <span class="plotband_blue">bleu</span> et <span class="plotband_gray">gris</span> : période de référence</strong>
+                    <strong>En <span class="plotband_blue">bleu</span> : période de référence</strong>
                 </p>
                 <p class="my-0">
                     <span class="text-muted"><em>1er jan. 2012 - 31 déc. 2021, 10 ans</em></span>
                 </p>
                 <p class="my-0">
-                    L'ensemble des données officielles ne sont pas encore disponibles et les dernières années sont une consommation prévisionnelle (en gris). La consommation prévisionnelle est la moyenne de la consommation réelle (en bleu).
+                    L'ensemble des données officielles n'est pas encore disponible et les dernières années sont une consommation prévisionnelle (en gris dans le graphique). La consommation prévisionnelle est la moyenne de la consommation réelle (en bleu).
                 </p>
                 <p class="mt-2 mb-4">
                     Consommation totale (réelle + prévisionnelle) : {{ objective_chart.total_real|floatformat:1 }} ha
@@ -172,36 +147,6 @@ Rapport consommation
                 </p>
                 <p class="mt-2 mb-4">
                     Consommation annuelle autorisée : {{ objective_chart.annual_objective_2031|floatformat:1 }} ha
-                </p>
-
-                <p class="my-0">
-                    <strong>En <span class="plotband_orange">orange</span> : Atteindre le 0 consommation nette</strong>
-                </p>
-                <p class="my-0">
-                    <span class="text-muted"><em>1er jan. 2032 - 31 déc. 2051, 20 ans</em></span>
-                </p>
-                <p class="my-0">
-                    La loi autorise de consommer la même superficie que sur la période précédente. Cependant, la période étant 2 fois plus grande, la consommation annuelle est moitié moins grande.
-                </p>
-                <p class="mt-2 mb-4">
-                    Consommation annuelle autorisée : {{ objective_chart.annual_objective_2050|floatformat:1 }} ha
-                </p>
-
-                <p class="my-0">
-                    <strong>En <span class="plotband_violet">violet</span> : 0 consomattion nette</strong>
-                </p>
-                <p class="my-0">
-                    <span class="text-muted"><em>A partir du 1er jan. 2052</em></span>
-                </p>
-                <p class="my-0">
-                    A partir de 2052, la loi interdit toute consommation supplémentaire. Chaque consommation devra être compensée par une rénaturation équivalente.
-                </p>
-                <p class="mt-2 mb-4">
-                    Consommation annuelle autorisée : 0 ha
-                </p>
-
-                <p>
-                    De 2012 à 2051, le territoire est autorisé à consommer {{ objective_chart.total_2051|floatformat:1 }} ha maximum.
                 </p>
             </div>
 
@@ -246,7 +191,7 @@ Rapport consommation
                             </div>
                         </div>
                     </div>
-                    Consommation annuelle des {% if level == "COMM" %}communes{% elif level == "EPCI" %}EPCI{% elif level == "DEPT" %}départements{% else %}régions{% endif %} du territoire
+                    Consommation annuelle des {% if level == "COMM" %}communes{% elif level == "EPCI" %}communes{% elif level == "DEPT" %}EPCI{% else %}départements{% endif %} du territoire
                 </h3>
 
                 <div id="chart" class="flex-fill"></div>
