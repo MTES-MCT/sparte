@@ -101,6 +101,155 @@ class ConsoCommuneChart(ProjectChart):
             )
 
 
+class ObjectiveChart(ProjectChart):
+    name = "suivi de l'objectif"
+    param = {
+        "chart": {"type": "column"},
+        "title": {"text": ""},
+        "yAxis": [
+            {
+                "title": {"text": "Consommation cumulée (en ha)"},
+                "labels": {"format": "{value} Ha"},
+                "opposite": True,
+            },
+            {
+                "title": {"text": "Consommation annuelle"},
+                "labels": {"format": "{value} Ha"},
+                "min": 0,
+            },
+        ],
+        "xAxis": {
+            "type": "category",
+            "categories": [str(i) for i in range(2012, 2032)],
+            "plotBands": [
+                {
+                    "from": -0.5,
+                    "to": 9.5,
+                    "label": {
+                        "text": "Période de référence",
+                        "style": {"color": "#95ceff", "fontWeight": "bold"},
+                    },
+                    "className": "plotband_blue",
+                },
+                {
+                    "from": 9.5,
+                    "to": 19.5,
+                    "label": {
+                        "text": "Réduction de 50%",
+                        "style": {"color": "#87cc78", "fontWeight": "bold"},
+                    },
+                    "className": "plotband_green",
+                },
+            ],
+        },
+        "legend": {"layout": "horizontal", "align": "center", "verticalAlign": "top"},
+        "tooltip": {
+            "headerFormat": "<b>{series.name}</b><br/>",
+            "pointFormat": "{point.name}: {point.y}",
+            "valueSuffix": " Ha",
+            "valueDecimals": 1,
+        },
+        "series": [],
+    }
+
+    def add_serie(self, name, data, **options):
+        serie = {
+            "name": name,
+            "data": [{"name": n, "y": y} for n, y in data.items()],
+        }
+        serie.update(options)
+        self.chart["series"].append(serie)
+
+    def add_series(self):
+        series = [
+            {
+                "name": "Conso. annuelle réelle",
+                "yAxis": 1,
+                "data": list(),
+                "type": "line",
+                "color": "#95ceff",
+                "dashStyle": "ShortDash",
+                "zIndex": 4,
+            },
+            {
+                "name": "Conso. cumulée réelle",
+                "data": list(),
+                "color": "#95ceff",
+                "zIndex": 3,
+            },
+            {
+                "name": "Objectif conso. annuelle",
+                "yAxis": 1,
+                "data": list(),
+                "type": "line",
+                "color": "#87cc78",
+                "dashStyle": "ShortDash",
+                "zIndex": 2,
+            },
+            {
+                "name": "Objectif conso. cumulée",
+                "data": list(),
+                "color": "#a9ff96",
+                "zIndex": 1,
+            },
+        ]
+        total = 0
+        cpt = 0
+        for key, val in self.project.get_bilan_conso_per_year().items():
+            total += val
+            cpt += 1
+            series[1]["data"].append(
+                {
+                    "name": key,
+                    "y": total,
+                    "progression": val,
+                }
+            )
+            series[0]["data"].append({"name": key, "y": val})
+
+        self.previsionnal = total / cpt
+        self.annual_objective_2031 = total / (cpt * 2)
+        self.annual_objective_2050 = total / (cpt * 4)
+
+        for i in range(int(key) + 1, 2022):
+            total += self.previsionnal
+            series[1]["data"].append(
+                {
+                    "name": str(i),
+                    "y": total,
+                    "progression": self.previsionnal,
+                    "color": "#2b2d2e",
+                }
+            )
+            series[0]["data"].append(
+                {
+                    "name": str(i),
+                    "y": self.previsionnal,
+                    "color": "#2b2d2e",
+                }
+            )
+
+        self.total_real = total
+
+        for i in range(2022, 2032):
+            total += self.annual_objective_2031
+            series[3]["data"].append(
+                {
+                    "name": str(i),
+                    "y": total,
+                    "progression": self.annual_objective_2031,
+                }
+            )
+            series[2]["data"].append({"name": str(i), "y": self.annual_objective_2031})
+
+        self.total_2031 = total
+
+        self.chart["yAxis"][0]["max"] = total * 1.2
+
+        for serie in series:
+            self.chart["series"].append(serie)
+
+
 class DeterminantPerYearChart(ProjectChart):
     name = "determinant per year"
     param = {
