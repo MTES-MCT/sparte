@@ -110,34 +110,17 @@ class ObjectiveChart(ProjectChart):
             {
                 "title": {"text": "Consommation cumulée (en ha)"},
                 "labels": {"format": "{value} Ha"},
-                "plotLines": [
-                    {
-                        "color": "#999eff",
-                        "width": 2,
-                        "value": 5.5,
-                        "label": {
-                            "align": "left",
-                            "text": "Consommation maximum",
-                            "verticalAlign": "bottom",
-                            "y": 20,
-                            "style": {"color": "#999eff"},
-                        },
-                        "dashStyle": "Dot",
-                    }
-                ],
                 "opposite": True,
             },
             {
-                "title": {
-                    "text": "Consommation annuelle",
-                    "style": {"color": "#ff0000"},
-                },
-                "labels": {"format": "{value} Ha", "style": {"color": "#ff0000"}},
+                "title": {"text": "Consommation annuelle"},
+                "labels": {"format": "{value} Ha"},
+                "min": 0,
             },
         ],
         "xAxis": {
             "type": "category",
-            "categories": [str(i) for i in range(2012, 2056)],
+            "categories": [str(i) for i in range(2012, 2032)],
             "plotBands": [
                 {
                     "from": -0.5,
@@ -153,27 +136,9 @@ class ObjectiveChart(ProjectChart):
                     "to": 19.5,
                     "label": {
                         "text": "Réduction de 50%",
-                        "style": {"color": "#a9ff96", "fontWeight": "bold"},
+                        "style": {"color": "#87cc78", "fontWeight": "bold"},
                     },
                     "className": "plotband_green",
-                },
-                {
-                    "from": 19.5,
-                    "to": 39.5,
-                    "label": {
-                        "text": "Atteindre le 0 consommation nette",
-                        "style": {"color": "#ffbc75", "fontWeight": "bold"},
-                    },
-                    "className": "plotband_orange",
-                },
-                {
-                    "from": 39.5,
-                    "to": 45,
-                    "label": {
-                        "text": "0 conso. nette",
-                        "style": {"color": "#999eff", "fontWeight": "bold"},
-                    },
-                    "className": "plotband_violet",
                 },
             ],
         },
@@ -183,14 +148,6 @@ class ObjectiveChart(ProjectChart):
             "pointFormat": "{point.name}: {point.y}",
             "valueSuffix": " Ha",
             "valueDecimals": 1,
-        },
-        "plotOptions": {
-            "series": {
-                # "dataLabels": {"enabled": True, "format": "+{point.progression:,.1f}"},
-                "pointPadding": 0,
-                "borderWidth": 0,
-                "shadow": False,
-            }
         },
         "series": [],
     }
@@ -206,109 +163,89 @@ class ObjectiveChart(ProjectChart):
     def add_series(self):
         series = [
             {
-                "name": "Bilan réel",
-                "data": list(),
-                "width": 10,
-            },
-            {"name": "Prévisionnel", "data": list()},
-            {"name": "Objectif 2031", "data": list()},
-            {"name": "Objectif 2050", "data": list()},
-            {
-                "name": "Consommation annuelle",
+                "name": "Conso. annuelle réelle",
                 "yAxis": 1,
-                "lineWidth": 0.5,
                 "data": list(),
                 "type": "line",
-                "color": "#ff0000",
+                "color": "#95ceff",
                 "dashStyle": "ShortDash",
-                "marker": {
-                    "radius": 2,
-                },
+                "zIndex": 4,
             },
-            {"name": "Zéro consommation nette", "data": list()},
+            {
+                "name": "Conso. cumulée réelle",
+                "data": list(),
+                "color": "#95ceff",
+                "zIndex": 3,
+            },
+            {
+                "name": "Objectif conso. annuelle",
+                "yAxis": 1,
+                "data": list(),
+                "type": "line",
+                "color": "#87cc78",
+                "dashStyle": "ShortDash",
+                "zIndex": 2,
+            },
+            {
+                "name": "Objectif conso. cumulée",
+                "data": list(),
+                "color": "#a9ff96",
+                "zIndex": 1,
+            },
         ]
         total = 0
         cpt = 0
         for key, val in self.project.get_bilan_conso_per_year().items():
             total += val
             cpt += 1
-            series[0]["data"].append(
+            series[1]["data"].append(
                 {
                     "name": key,
                     "y": total,
                     "progression": val,
-                    "id": f"point_{key}",
                 }
             )
-            series[4]["data"].append({"name": key, "y": val})
+            series[0]["data"].append({"name": key, "y": val})
 
         self.previsionnal = total / cpt
         self.annual_objective_2031 = total / (cpt * 2)
         self.annual_objective_2050 = total / (cpt * 4)
 
-        total += self.previsionnal
-        series[1]["data"].append(
-            {
-                "name": "2020",
-                "y": total,
-                "progression": self.previsionnal,
-                "id": "point_2020",
-            }
-        )
-        series[4]["data"].append({"name": "2020", "y": self.previsionnal})
-        total += self.previsionnal
-        series[1]["data"].append(
-            {
-                "name": "2021",
-                "y": total,
-                "progression": self.previsionnal,
-                "id": "point_2021",
-            }
-        )
-        series[4]["data"].append({"name": "2021", "y": self.previsionnal})
+        for i in range(int(key) + 1, 2022):
+            total += self.previsionnal
+            series[1]["data"].append(
+                {
+                    "name": str(i),
+                    "y": total,
+                    "progression": self.previsionnal,
+                    "color": "#2b2d2e",
+                }
+            )
+            series[0]["data"].append(
+                {
+                    "name": str(i),
+                    "y": self.previsionnal,
+                    "color": "#2b2d2e",
+                }
+            )
 
         self.total_real = total
 
         for i in range(2022, 2032):
             total += self.annual_objective_2031
-            series[2]["data"].append(
-                {
-                    "name": str(i),
-                    "y": total,
-                    "progression": self.annual_objective_2031,
-                    "id": f"point_{str(i)}",
-                }
-            )
-            series[4]["data"].append({"name": str(i), "y": self.annual_objective_2031})
-
-        self.total_2031 = total
-
-        for i in range(2032, 2052):
-            total += self.annual_objective_2050
             series[3]["data"].append(
                 {
                     "name": str(i),
                     "y": total,
-                    "progression": self.annual_objective_2050,
-                    "id": f"point_{str(i)}",
+                    "progression": self.annual_objective_2031,
                 }
             )
-            series[4]["data"].append({"name": str(i), "y": self.annual_objective_2050})
+            series[2]["data"].append({"name": str(i), "y": self.annual_objective_2031})
 
-        self.total_2051 = total
+        self.total_2031 = total
 
-        for i in range(2052, 2056):
-            series[5]["data"].append(
-                {
-                    "name": str(i),
-                    "y": total,
-                    "progression": 0,
-                    "id": f"point_{str(i)}",
-                }
-            )
-            series[4]["data"].append({"name": str(i), "y": 0})
-        self.chart["yAxis"][0]["plotLines"][0]["value"] = total
         self.chart["yAxis"][0]["max"] = total * 1.2
+
         for serie in series:
             self.chart["series"].append(serie)
 
