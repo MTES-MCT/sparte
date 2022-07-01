@@ -391,14 +391,20 @@ class Project(BaseProject):
 
     def get_bilan_conso(self):
         """Return the space consummed between 2011 and 2020 in hectare"""
-        qs = self.get_cerema_cities()
-        # if not qs.exists():
-        #     return 0
-        aggregation = qs.aggregate(bilan=Coalesce(Sum("naf11art21"), float(0)))
-        try:
-            return aggregation["bilan"] / 10000
-        except TypeError:
-            return 0
+        qs = self.get_cerema_cities().aggregate(
+            bilan=Coalesce(Sum("naf11art21"), float(0))
+        )
+        return qs["bilan"] / 10000
+
+    def get_bilan_conso_per_year(self):
+        """Return the space consummed per year between 2012 and 2021"""
+        qs = self.get_cerema_cities().aggregate(
+            **{
+                f"20{f[3:5]}": Sum(f) / 10000
+                for f in Cerema.get_art_field("2012", "2019")
+            }
+        )
+        return qs
 
     def get_bilan_conso_time_scoped(self):
         """Return land consummed during the project time scope (between
