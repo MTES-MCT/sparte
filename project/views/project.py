@@ -177,6 +177,9 @@ class ProjectReportConsoView(GroupMixin, DetailView):
         # Déterminants
         det_chart = charts.DeterminantPerYearChart(project)
 
+        # objectives
+        objective_chart = charts.ObjectiveChart(project)
+
         # Liste des groupes de communes
         groups_names = project.projectcommune_set.all().order_by("group_name")
         groups_names = groups_names.exclude(group_name=None).distinct()
@@ -225,6 +228,7 @@ class ProjectReportConsoView(GroupMixin, DetailView):
                 "data_determinant": add_total_line_column(det_chart.get_series()),
                 "groups_names": groups_names,
                 "level": level,
+                "objective_chart": objective_chart,
             }
         )
 

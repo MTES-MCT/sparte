@@ -13,6 +13,38 @@ Rapport consommation
 
 {% block headers %}
 <link href="{% static 'project/css/project.css' %}" rel="stylesheet" />
+<style>
+.plotband_blue{
+    fill: rgba(149, 206, 255, 0.1);
+    color: rgb(149, 206, 255);
+}
+
+.plotband_green{
+    fill: rgba(169, 255, 150, 0.1);
+    color: rgb(135, 204, 120);
+}
+
+.plotband_orange{
+    fill: rgba(255, 188, 117, 0.1);
+    color: rgb(255, 188, 117);
+}
+
+.plotband_pink{
+    fill: rgba(255, 117, 153, 0.1);
+    color: rgb(255, 117, 153);
+}
+
+.plotband_violet{
+    fill: rgba(153, 158, 255, 0.1);
+    color: rgb(153, 158, 255);
+}
+
+.plotband_gray {
+    fill: rgba(92, 92, 97, 0.1);
+    color: rgb(92, 92, 97);
+
+}
+</style>
 {% endblock %}
 
 {% block content %}
@@ -108,6 +140,71 @@ Rapport consommation
                     </div>
                 </div>
             </div>
+
+            <div class="w-100 box p-4">
+                <h3>
+                    Progression cumulée de la consommation du territoire conformément à la loi Climat et Résilience
+                </h3>
+
+                <div id="objective_chart" class=""></div>
+
+                <p class="my-0">
+                    <strong>En <span class="plotband_blue">bleu</span> et <span class="plotband_gray">gris</span> : période de référence</strong>
+                </p>
+                <p class="my-0">
+                    <span class="text-muted"><em>1er jan. 2012 - 31 déc. 2021, 10 ans</em></span>
+                </p>
+                <p class="my-0">
+                    L'ensemble des données officielles ne sont pas encore disponibles et les dernières années sont une consommation prévisionnelle (en gris). La consommation prévisionnelle est la moyenne de la consommation réelle (en bleu).
+                </p>
+                <p class="mt-2 mb-4">
+                    Consommation totale (réelle + prévisionnelle) : {{ objective_chart.total_real|floatformat:1 }} ha
+                    <br/>Consommation annuelle moyenne : {{ objective_chart.previsionnal|floatformat:1 }} ha
+                </p>
+
+                <p class="my-0">
+                    <strong>En <span class="plotband_green">vert</span> : réduction de 50% </strong>
+                <p class="my-0">
+                    <span class="text-muted"><em>1er jan. 2022 - 31 déc. 2031, 10 ans</em></span>
+                </p>
+                <p class="my-0">
+                    La loi prévoit que le territoires ne consomme que 50% de ce qui a été consommé pendant la période de référence.
+                </p>
+                <p class="mt-2 mb-4">
+                    Consommation annuelle autorisée : {{ objective_chart.annual_objective_2031|floatformat:1 }} ha
+                </p>
+
+                <p class="my-0">
+                    <strong>En <span class="plotband_orange">orange</span> : Atteindre le 0 consommation nette</strong>
+                </p>
+                <p class="my-0">
+                    <span class="text-muted"><em>1er jan. 2032 - 31 déc. 2051, 20 ans</em></span>
+                </p>
+                <p class="my-0">
+                    La loi autorise de consommer la même superficie que sur la période précédente. Cependant, la période étant 2 fois plus grande, la consommation annuelle est moitié moins grande.
+                </p>
+                <p class="mt-2 mb-4">
+                    Consommation annuelle autorisée : {{ objective_chart.annual_objective_2050|floatformat:1 }} ha
+                </p>
+
+                <p class="my-0">
+                    <strong>En <span class="plotband_violet">violet</span> : 0 consomattion nette</strong>
+                </p>
+                <p class="my-0">
+                    <span class="text-muted"><em>A partir du 1er jan. 2052</em></span>
+                </p>
+                <p class="my-0">
+                    A partir de 2052, la loi interdit toute consommation supplémentaire. Chaque consommation devra être compensée par une rénaturation équivalente.
+                </p>
+                <p class="mt-2 mb-4">
+                    Consommation annuelle autorisée : 0 ha
+                </p>
+
+                <p>
+                    De 2012 à 2051, le territoire est autorisé à consommer {{ objective_chart.total_2051|floatformat:1 }} ha maximum.
+                </p>
+            </div>
+
 
             <div class="w-100 box p-4">
                 <h3 class="clearfix">
@@ -256,7 +353,7 @@ Rapport consommation
 {% display_chart 'chart_2' comparison_chart %}
 {% display_chart 'chart_determinant' determinant_per_year_chart %}
 {% display_chart 'pie_determinant' determinant_pie_chart %}
-
+{% display_chart 'objective_chart' objective_chart %}
 <script language="javascript">
 ///////////////////////////////
 // Select / unselect all
