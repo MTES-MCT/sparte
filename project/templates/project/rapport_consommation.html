@@ -133,8 +133,8 @@ Rapport consommation
                     L'ensemble des données officielles n'est pas encore disponible et les dernières années sont une consommation prévisionnelle (en gris dans le graphique). La consommation prévisionnelle est la moyenne de la consommation réelle (en bleu).
                 </p>
                 <p class="mt-2 mb-4">
-                    Consommation totale (réelle + prévisionnelle) : {{ objective_chart.total_real|floatformat:1 }} ha
-                    <br/>Consommation annuelle moyenne : {{ objective_chart.previsionnal|floatformat:1 }} ha
+                    Consommation totale de référence (réelle + prévisionnelle) : {{ objective_chart.total_real|floatformat:1 }} ha
+                    <br/>Consommation annuelle de référence : {{ objective_chart.previsionnal|floatformat:1 }} ha
                 </p>
 
                 <p class="my-0">
@@ -143,7 +143,7 @@ Rapport consommation
                     <span class="text-muted"><em>1er jan. 2022 - 31 déc. 2031, 10 ans</em></span>
                 </p>
                 <p class="my-0">
-                    La loi prévoit que le territoires ne consomme que 50% de ce qui a été consommé pendant la période de référence.
+                    La loi prévoit que le territoire ne consomme que 50% de ce qui a été consommé pendant la période de référence.
                 </p>
                 <p class="mt-2 mb-4">
                     Consommation annuelle autorisée : {{ objective_chart.annual_objective_2031|floatformat:1 }} ha
