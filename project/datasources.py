@@ -17,8 +17,10 @@ class DiagnosticSource(data_sources.DataSource):
         """You can overide this method to set a specific filename to files generated
         with this datasource.If this method raise AttributeError, the name will be set
         with TemplateDocx rules."""
-        name = self.project.name.replace(" ", "_")
-        return f"{{date:%Y%m%d}}_{name}"
+        return (
+            f"{self.project.name} - {self.project.analyse_start_date} à "
+            f"{self.project.analyse_end_date} - issu de SPARTE.docx"
+        )
 
     def get_context_data(self, **keys: dict()) -> dict():
         project = Project.objects.get(pk=keys["pk"])

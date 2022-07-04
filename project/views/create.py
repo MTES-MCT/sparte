@@ -189,7 +189,10 @@ class SetProjectOptions(BreadCrumbMixin, FormView):
     def get_initial(self):
         """Return the initial data to use for forms on this view."""
         kwargs = self.initial.copy()
-        lands = Land.get_lands(self.request.session["public_key"])
+        try:
+            lands = Land.get_lands(self.request.session["public_key"])
+        except (AttributeError, KeyError) as e:
+            raise LandException("No territory available in session") from e
         kwargs.update({"analysis_level": Land.get_default_analysis_level(lands)})
         return kwargs
 
