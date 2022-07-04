@@ -401,7 +401,7 @@ class Project(BaseProject):
         qs = self.get_cerema_cities().aggregate(
             **{
                 f"20{f[3:5]}": Sum(f) / 10000
-                for f in Cerema.get_art_field("2012", "2019")
+                for f in Cerema.get_art_field("2011", "2019")
             }
         )
         return qs
