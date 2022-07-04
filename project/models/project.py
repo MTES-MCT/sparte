@@ -155,13 +155,13 @@ class Project(BaseProject):
     is_public = models.BooleanField("Public", default=False)
 
     analyse_start_date = models.CharField(
-        "Date de début de période d'analyse",
+        "Année de début de période d'analyse",
         choices=ANALYZE_YEARS,
         default="2015",
         max_length=4,
     )
     analyse_end_date = models.CharField(
-        "Date de fin de période d'analyse",
+        "Année de fin de période d'analyse",
         choices=ANALYZE_YEARS,
         default="2018",
         max_length=4,
@@ -678,14 +678,16 @@ class Project(BaseProject):
                 [
                     _["surface_first"]
                     for _ in data
-                    if _["code_prefix"].startswith(item.code_prefix)
+                    if _["code_prefix"]
+                    and _["code_prefix"].startswith(item.code_prefix)
                 ]
             )
             item.surface_last = sum(
                 [
                     _["surface_last"]
                     for _ in data
-                    if _["code_prefix"].startswith(item.code_prefix)
+                    if _["code_prefix"]
+                    and _["code_prefix"].startswith(item.code_prefix)
                 ]
             )
             item.surface_diff = item.surface_last - item.surface_first
