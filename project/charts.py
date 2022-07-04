@@ -120,7 +120,7 @@ class ObjectiveChart(ProjectChart):
         ],
         "xAxis": {
             "type": "category",
-            "categories": [str(i) for i in range(2012, 2032)],
+            "categories": [str(i) for i in range(2011, 2031)],
             "plotBands": [
                 {
                     "from": -0.5,
@@ -195,27 +195,27 @@ class ObjectiveChart(ProjectChart):
         ]
         total = 0
         cpt = 0
-        for key, val in self.project.get_bilan_conso_per_year().items():
+        for year, val in self.project.get_bilan_conso_per_year().items():
             total += val
             cpt += 1
             series[1]["data"].append(
                 {
-                    "name": key,
+                    "name": year,
                     "y": total,
                     "progression": val,
                 }
             )
-            series[0]["data"].append({"name": key, "y": val})
+            series[0]["data"].append({"name": year, "y": val})
 
         self.previsionnal = total / cpt
         self.annual_objective_2031 = total / (cpt * 2)
         self.annual_objective_2050 = total / (cpt * 4)
 
-        for i in range(int(key) + 1, 2022):
+        for year in range(int(year) + 1, 2021):
             total += self.previsionnal
             series[1]["data"].append(
                 {
-                    "name": str(i),
+                    "name": str(year),
                     "y": total,
                     "progression": self.previsionnal,
                     "color": "#2b2d2e",
@@ -223,7 +223,7 @@ class ObjectiveChart(ProjectChart):
             )
             series[0]["data"].append(
                 {
-                    "name": str(i),
+                    "name": str(year),
                     "y": self.previsionnal,
                     "color": "#2b2d2e",
                 }
@@ -231,17 +231,20 @@ class ObjectiveChart(ProjectChart):
 
         self.total_real = total
 
-        for i in range(2022, 2032):
+        for year in range(year + 1, 2031):
             total += self.annual_objective_2031
             series[3]["data"].append(
                 {
-                    "name": str(i),
+                    "name": str(year),
                     "y": total,
                     "progression": self.annual_objective_2031,
                 }
             )
-            series[2]["data"].append({"name": str(i), "y": self.annual_objective_2031})
+            series[2]["data"].append(
+                {"name": str(year), "y": self.annual_objective_2031}
+            )
 
+        self.conso_2031 = total - self.total_real
         self.total_2031 = total
 
         self.chart["yAxis"][0]["max"] = total * 1.2
