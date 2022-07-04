@@ -14,13 +14,8 @@ from django.utils.text import slugify
 from utils.functions import decimal2float
 
 
-class ChartCollection:
-    def __init__(self, **options):
-        self.charts = []
-        self.options = options
-
-    def append(self, chart):
-        self.charts.append(chart)
+class ChartGenerationException(Exception):
+    pass
 
 
 class Chart:
@@ -97,6 +92,8 @@ class Chart:
             "b64": True,
         }
         r = requests.post(settings.HIGHCHART_SERVER, json=data)
+        if r.content.startswith(b"0x04 error when performing chart generation"):
+            raise ChartGenerationException(json.dumps(data, default=decimal2float))
         return r.content
 
     def get_temp_image(self):
