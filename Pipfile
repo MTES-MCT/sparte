@@ -24,7 +24,7 @@ boto3 = "*"
 celery = "==5.2.2"
 colour = "*"
 dj-static = "*"
-django = "==3.2.13"
+django = "==3.2.14"
 django-anymail = {extras = ["mailjet"], version = "*"}
 django-crispy-forms = "==1.12.0"
 django-environ = "==0.4.5"
