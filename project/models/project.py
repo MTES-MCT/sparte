@@ -771,16 +771,19 @@ class Project(BaseProject):
             .annotate(total=Sum("surface") / 10000)
             .order_by(index, column)
         )
-        df = (
-            pd.DataFrame(qs)
-            .pivot(index=index, columns=column, values="total")
-            .fillna(0)
-        )
+        if qs.exists():
+            df = (
+                pd.DataFrame(qs)
+                .pivot(index=index, columns=column, values="total")
+                .fillna(0)
+            )
 
-        return {
-            headers[i[2:]]: {headers[c[2:]]: row[c] for c in df.columns}
-            for i, row in df.iterrows()
-        }
+            return {
+                headers[i[2:]]: {headers[c[2:]]: row[c] for c in df.columns}
+                for i, row in df.iterrows()
+            }
+        else:
+            return dict()
 
 
 class Emprise(DataColorationMixin, gis_models.Model):

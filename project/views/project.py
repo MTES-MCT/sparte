@@ -356,19 +356,23 @@ class ProjectReportCouvertureView(GroupMixin, DetailView):
             pie_chart = charts.CouvertureSolPieChart(project)
             progression_chart = charts.CouvertureSolProgressionChart(project)
 
-            matrix_data = project.get_matrix(sol="couverture")
-            matrix_headers = list(matrix_data.values())[0].keys()
-
             kwargs.update(
                 {
                     "first_millesime": str(first_millesime),
                     "last_millesime": str(last_millesime),
                     "pie_chart": pie_chart,
                     "progression_chart": progression_chart,
-                    "matrix_data": add_total_line_column(matrix_data),
-                    "matrix_headers": matrix_headers,
                 }
             )
+
+            matrix_data = project.get_matrix(sol="couverture")
+            if matrix_data:
+                kwargs.update(
+                    {
+                        "matrix_data": add_total_line_column(matrix_data),
+                        "matrix_headers": list(matrix_data.values())[0].keys(),
+                    }
+                )
         except Ocsge.DoesNotExist:
             # There is no OCSGE available for this territoru
             kwargs.update({"ocsge_available": False})
@@ -401,20 +405,23 @@ class ProjectReportUsageView(GroupMixin, DetailView):
 
             pie_chart = charts.UsageSolPieChart(project)
             progression_chart = charts.UsageSolProgressionChart(project)
-
-            matrix_data = project.get_matrix(sol="usage")
-            matrix_headers = list(matrix_data.values())[0].keys()
-
             kwargs.update(
                 {
                     "first_millesime": str(first_millesime),
                     "last_millesime": str(last_millesime),
                     "pie_chart": pie_chart,
                     "progression_chart": progression_chart,
-                    "matrix_data": add_total_line_column(matrix_data),
-                    "matrix_headers": matrix_headers,
                 }
             )
+
+            matrix_data = project.get_matrix(sol="usage")
+            if matrix_data:
+                kwargs.update(
+                    {
+                        "matrix_data": add_total_line_column(matrix_data),
+                        "matrix_headers": list(matrix_data.values())[0].keys(),
+                    }
+                )
         except Ocsge.DoesNotExist:
             # There is no OCSGE available for this territoru
             kwargs.update({"ocsge_available": False})
