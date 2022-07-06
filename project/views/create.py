@@ -6,7 +6,15 @@ from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView, FormView, RedirectView
 
-from public_data.models import Epci, Departement, Region, Commune, Land
+from public_data.models import (
+    Epci,
+    Departement,
+    Region,
+    Commune,
+    Land,
+    AdministrationReferentiel,
+)
+from utils.db import fix_poly
 from utils.views_mixins import BreadCrumbMixin
 
 from project.forms import (
@@ -101,6 +109,29 @@ class SelectPublicProjects(BreadCrumbMixin, TemplateView):
         self.region_id = None
         self.epci_id = None
 
+    def get(self, request, *args, **kwargs):
+        public_key = None
+        self.region_id = request.GET.get("region", None)
+        self.departement_id = request.GET.get("departement", None)
+        self.epci_id = request.GET.get("epci", None)
+        if self.region_id:
+            public_key = f"REGION_{self.region_id}"
+        if self.departement_id:
+            public_key = f"DEPART_{self.departement_id}"
+        if self.epci_id:
+            public_key = f"EPCI_{self.epci_id}"
+        if request.GET.get("see_diagnostic", None):
+            if public_key:
+                try:
+                    request.session["public_key"] = public_key
+                    return redirect("project:create-3")
+                except Project.DoesNotExist:
+                    messages.error(self.request, "Territoire non disponible.")
+            else:
+                messages.warning(self.request, "Merci de sélectionner un territoire.")
+        context = self.get_context_data(**kwargs)
+        return self.render_to_response(context)
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         if self.epci_id:
@@ -141,29 +172,6 @@ class SelectPublicProjects(BreadCrumbMixin, TemplateView):
             )
         return context
 
-    def get(self, request, *args, **kwargs):
-        public_key = None
-        self.region_id = request.GET.get("region", None)
-        self.departement_id = request.GET.get("departement", None)
-        self.epci_id = request.GET.get("epci", None)
-        if self.region_id:
-            public_key = f"REGION_{self.region_id}"
-        if self.departement_id:
-            public_key = f"DEPART_{self.departement_id}"
-        if self.epci_id:
-            public_key = f"EPCI_{self.epci_id}"
-        if request.GET.get("see_diagnostic", None):
-            if public_key:
-                try:
-                    request.session["public_key"] = public_key
-                    return redirect("project:create-3")
-                except Project.DoesNotExist:
-                    messages.error(self.request, "Territoire non disponible.")
-            else:
-                messages.warning(self.request, "Merci de sélectionner un territoire.")
-        context = self.get_context_data(**kwargs)
-        return self.render_to_response(context)
-
 
 class LandException(BaseException):
     pass
@@ -181,16 +189,11 @@ class SetProjectOptions(BreadCrumbMixin, FormView):
     def get_initial(self):
         """Return the initial data to use for forms on this view."""
         kwargs = self.initial.copy()
-        public_keys = self.request.session["public_key"]
-        if not isinstance(public_keys, list):
-            public_keys = [public_keys]
-        land_types = {Land(pk).land_type for pk in public_keys}
-        if "COMMUNE" in land_types or "EPCI" in land_types:
-            kwargs.update({"analysis_level": "COMM"})
-        elif "DEPART" in land_types:
-            kwargs.update({"analysis_level": "EPCI"})
-        elif "REGION" in land_types:
-            kwargs.update({"analysis_level": "DEPART"})
+        try:
+            lands = Land.get_lands(self.request.session["public_key"])
+        except (AttributeError, KeyError) as e:
+            raise LandException("No territory available in session") from e
+        kwargs.update({"analysis_level": Land.get_default_analysis_level(lands)})
         return kwargs
 
     def get_context_breadcrumbs(self):
@@ -250,7 +253,6 @@ class SetProjectOptions(BreadCrumbMixin, FormView):
 
     def form_valid(self, form):
         """If the form is valid, redirect to the supplied URL."""
-        # lands = self.get_territoire()
         public_keys = self.request.session["public_key"]
         if not isinstance(public_keys, list):
             public_keys = [public_keys]
@@ -261,7 +263,9 @@ class SetProjectOptions(BreadCrumbMixin, FormView):
             name = f"Diagnostic de {lands[0].name}"
 
         nb_types = len({type(land) for land in lands})
-        land_type = "COMP" if nb_types > 1 else lands[0].land_type
+        land_type = (
+            AdministrationReferentiel.COMPOSITE if nb_types > 1 else lands[0].land_type
+        )
 
         project = Project(
             name=name,
@@ -278,14 +282,28 @@ class SetProjectOptions(BreadCrumbMixin, FormView):
             project.user = self.request.user
         project.save()
 
+        combined_emprise = None
         for land in lands:
             project.cities.add(*land.get_cities())
-            project.emprise_set.create(mpoly=land.mpoly)
+            if not combined_emprise:
+                combined_emprise = land.mpoly
+            else:
+                combined_emprise = land.mpoly.union(combined_emprise)
+
+        project.emprise_set.create(mpoly=fix_poly(combined_emprise))
 
         result = project.get_first_last_millesime()
         project.first_year_ocsge = result["first"]
         project.last_year_ocsge = result["last"]
-        project.set_success()
+
+        if (
+            project.land_type
+            and project.land_type != AdministrationReferentiel.COMPOSITE
+        ):
+            public_keys = [_.public_key for _ in project.get_neighbors()]
+            project.add_look_a_like(public_keys, many=True)
+
+        project.set_success(save=True)
 
         return redirect(project)
 

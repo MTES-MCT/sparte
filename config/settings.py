@@ -21,7 +21,7 @@ from django.core.exceptions import ImproperlyConfigured
 from django.contrib.messages import constants as messages
 
 
-OFFICIAL_VERSION = "1.4.4"
+OFFICIAL_VERSION = "1.5.1"
 
 root = environ.Path(__file__) - 2  # get root of the project
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -342,9 +342,11 @@ if "django-extensions" in {pkg.key for pkg in pkg_resources.working_set}:
     ]
     NOTEBOOK_ARGUMENTS = [
         "--ip",
-        "127.0.0.1",
+        "0.0.0.0",
         "--allow-root",
-        '--notebook-dir="notebooks/"',
+        "--notebook-dir='notebooks/'",
+        "--NotebookApp.token=''",
+        "--NotebookApp.password=''",
     ]
 
 # RESTRAMEWORK parameters
