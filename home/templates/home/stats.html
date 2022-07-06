@@ -87,7 +87,14 @@
 {% display_chart 'report_pie' report_pie %}
 {% display_chart 'organism_pie_chart' organism_pie_chart %}
 <script language="javascript">
-map = L.map('mapid', { zoomControl: false, dragging: false, center: [46.5, 2.5], zoom: 5 })
+map = L.map('mapid', {
+    zoomControl: false,
+    dragging: false,
+    center: [46.5, 2.5],
+    zoom: 5,
+    minZoom: 5,
+    maxZoom: 5,
+})
 
 var GeoportailFrance_orthos = L.tileLayer(
     'https://wxs.ign.fr/{ignApiKey}/geoportail/wmts?'+

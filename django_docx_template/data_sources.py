@@ -104,6 +104,12 @@ class DataSource:
     def __init__(self, class_path):
         self.class_path = class_path
 
+    def get_file_name(self):
+        """You can overide this method to set a specific filename to files generated
+        with this datasource.If this method raise AttributeError, the name will be set
+        with TemplateDocx rules."""
+        raise AttributeError("No file name defined")
+
     def get_label(self):
         if not self.label:
             raise ImproperlyConfigured("DataSource.label is not set.")
