@@ -95,6 +95,7 @@ INSTALLED_APPS = DJANGO_APPS + RESTFRAMEWORK_APPS + THIRD_APPS + PROJECT_APPS
 MIDDLEWARE = [
     "config.middlewares.LogIncomingRequest",
     "django.middleware.security.SecurityMiddleware",
+    "csp.middleware.CSPMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -402,6 +403,14 @@ if ENVIRONMENT != "local":
 # MATOMO
 
 MATOMO_TOKEN = env.str("MATOMO_TOKEN", default="")
+
+# SECURITY
+
+CSP_DEFAULT_SRC = ["'self'"]
+# CSP_SCRIPT_SRC = ["'self'"]
+# CSP_STYLE_SRC = ["'self'"]
+# CSP_IMG_SRC = ["'self'"]
+CSP_UPGRADE_INSECURE_REQUESTS = not DEBUG
 
 # LOGGING SETTINGS
 

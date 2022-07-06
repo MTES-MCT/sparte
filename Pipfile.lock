@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "ab33e2e882effa3675f8974d60cfcae6fe8b23d1ade47b2966461cfa257dbe7a"
+            "sha256": "46dcdd67326c1560c166dc857d88baafc01b170c614f725558e207468647143a"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -174,6 +174,14 @@
             ],
             "index": "pypi",
             "version": "==1.14.0"
+        },
+        "django-csp": {
+            "hashes": [
+                "sha256:01443a07723f9a479d498bd7bb63571aaa771e690f64bde515db6cdb76e8041a",
+                "sha256:01eda02ad3f10261c74131cdc0b5a6a62b7c7ad4fd017fbefb7a14776e0a9727"
+            ],
+            "index": "pypi",
+            "version": "==3.7"
         },
         "django-docx-template": {
             "git": "https://github.com/Swannbm/django-docx-template",
