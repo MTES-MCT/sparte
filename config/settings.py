@@ -96,6 +96,7 @@ MIDDLEWARE = [
     "config.middlewares.LogIncomingRequest",
     "django.middleware.security.SecurityMiddleware",
     "csp.middleware.CSPMiddleware",
+    "csp.context_processors.nonce",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -407,8 +408,13 @@ MATOMO_TOKEN = env.str("MATOMO_TOKEN", default="")
 # SECURITY
 
 CSP_DEFAULT_SRC = ["'self'"]
-# CSP_SCRIPT_SRC = ["'self'"]
-# CSP_STYLE_SRC = ["'self'"]
+CSP_SCRIPT_SRC = [
+    "'self'",
+    "https://unpkg.com/masonry-layout",
+    "'unsafe-inline'",
+    "https://stats.data.gouv.fr",
+]
+CSP_STYLE_SRC = ["'self'", "'unsafe-inline'"]
 # CSP_IMG_SRC = ["'self'"]
 CSP_UPGRADE_INSECURE_REQUESTS = not DEBUG
 

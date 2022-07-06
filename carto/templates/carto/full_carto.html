@@ -55,7 +55,7 @@ Carte intéractive
     </div>
     <div id="mapid" class="flex-grow-1"></div>
 </div>
-<script language="javascript">
+<script language="javascript" nonce="{{ CSP_NONCE }}">
 var calque_div = document.getElementById('layer_list')
 calque_div.addEventListener('hidden.bs.collapse', function () {
     $("#toggle-calque").toggleClass('bi-chevron-double-right').toggleClass('bi-chevron-double-left');
@@ -69,7 +69,7 @@ calque_div.addEventListener('show.bs.collapse', function () {
 {% block bodyend %}
 {% localize off %}
 <script src="{% static 'carto/js/map.js' %}"></script>
-<script language="javascript">
+<script language="javascript" nonce="{{ CSP_NONCE }}">
 geolayers = [
 {% for layer in layer_list %}
     {
