@@ -13,6 +13,38 @@ Rapport consommation
 
 {% block headers %}
 <link href="{% static 'project/css/project.css' %}" rel="stylesheet" />
+<style>
+.plotband_blue{
+    fill: rgba(149, 206, 255, 0.1);
+    color: rgb(149, 206, 255);
+}
+
+.plotband_green{
+    fill: rgba(169, 255, 150, 0.1);
+    color: rgb(135, 204, 120);
+}
+
+.plotband_orange{
+    fill: rgba(255, 188, 117, 0.1);
+    color: rgb(255, 188, 117);
+}
+
+.plotband_pink{
+    fill: rgba(255, 117, 153, 0.1);
+    color: rgb(255, 117, 153);
+}
+
+.plotband_violet{
+    fill: rgba(153, 158, 255, 0.1);
+    color: rgb(153, 158, 255);
+}
+
+.plotband_gray {
+    fill: rgba(92, 92, 97, 0.1);
+    color: rgb(92, 92, 97);
+
+}
+</style>
 {% endblock %}
 
 {% block content %}
@@ -57,16 +89,16 @@ Rapport consommation
                 <div class="card key-figure key-figure-green">
 
                     <div class="card-body">
-                        <p class="figure">+{{ target_2031.consummed|floatformat:1 }} ha</p>
+                        <p class="figure">+{{ objective_chart.total_real|floatformat:1 }} ha</p>
                     </div>
                     <div class="card-header">
-                        Consommation 2011-2019 <i class="bi bi-question-circle" data-toggle="tooltip" title="Données 2020 non encore disponibles"></i>
+                        Consommation 2011-2020 <i class="bi bi-question-circle" data-toggle="tooltip" title="Données prévisionelles pour 2020"></i>
                     </div>
                 </div>
 
                 <div class="card key-figure key-figure-green">
                     <div class="card-body">
-                        <p class="figure">+{{ target_2031.target|floatformat:1 }} ha</p>
+                        <p class="figure">+{{ objective_chart.conso_2031|floatformat:1 }} ha</p>
                     </div>
                     <div class="card-header">
                         Trajectoire 2021-2030 <i class="bi bi-question-circle" data-toggle="tooltip" title="Réduction de 50% par rapport à la décennie précédente"></i>
@@ -76,7 +108,7 @@ Rapport consommation
                 <div class="card key-figure key-figure-green">
 
                     <div class="card-body">
-                        <p class="figure">+{{ target_2031.annual_forecast|floatformat:0 }} ha/an</p>
+                        <p class="figure">+{{ objective_chart.annual_objective_2031|floatformat:1 }} ha/an</p>
                     </div>
                     <div class="card-header">
                         Trajectoire projetée annualisée
@@ -84,30 +116,41 @@ Rapport consommation
                 </div>
             </div>
 
-            <div class="row">
-                <div class="col-6">
-                    <div class="w-100 box p-4">
-                        <h3>Analyse 2011 à 2020 (vision légale)</h3>
-                        <p>
-                            <strong>Consommé sur la période</strong> : +{{ target_2031.consummed|floatformat:1 }} ha
-                            <br/><strong>Conso. annuelle moyenne</strong> : +{{ target_2031.annual_avg|floatformat:1 }} Ha
-                            <br/><strong>Projection 2031 à ce rythme</strong> : +{{ target_2031.consummed|floatformat:1 }} Ha
-                            <br/><strong>Projection 2031 souhaitée (-50%)</strong> : +{{ target_2031.target|floatformat:1 }} ha
-                        </p>
-                    </div>
-                </div>
-                <div class="col-6">
-                    <div class="w-100 box p-4">
-                        <h3>Analyse {{ project.analyse_start_date }} à {{ project.analyse_end_date }}</h3>
-                        <p>
-                            <strong>Consommé sur la période</strong> : +{{ project_scope.consummed|floatformat:1 }} ha
-                            <br/><strong>Conso. annuelle moyenne</strong> : +{{ project_scope.annual_avg|floatformat:1 }} Ha <i class="bi bi-question-circle" data-toggle="tooltip" title="Conso sur la période ({{ project_scope.consummed|floatformat:1 }}) / années sur la période ({{ project_scope.nb_years }})"></i>
-                            <br/><strong>Projection 2031 à ce rythme</strong> : +{{ project_scope.forecast_2031|floatformat:1 }} Ha <i class="bi bi-question-circle" data-toggle="tooltip" title="Années jusqu'à 2031 ({{ project_scope.nb_years_before_31 }}) x conso annuelle moyenne({{ project_scope.annual_avg|floatformat:1 }})"></i>
-                            <br/>&nbsp;
-                        </p>
-                    </div>
-                </div>
+            <div class="w-100 box p-4">
+                <h3>
+                    Projection 2031 selon la trajectoire ZAN
+                </h3>
+
+                <div id="objective_chart" class=""></div>
+
+                <p class="my-0">
+                    <strong>En <span class="plotband_blue">bleu</span> : période de référence</strong>
+                </p>
+                <p class="my-0">
+                    <span class="text-muted"><em>1er jan. 2011 - 31 déc. 2020, 10 ans</em></span>
+                </p>
+                <p class="my-0">
+                    L'ensemble des données officielles n'étant pas encore disponible, l'année 2020 est une consommation prévisionnelle (en gris dans le graphique). La consommation prévisionnelle est la moyenne de la consommation réelle (en bleu).
+                </p>
+                <p class="mt-2 mb-4">
+                    Consommation cumulée de référence (réelle + prévisionnelle) : {{ objective_chart.total_real|floatformat:1 }} ha
+                    <br/>Consommation annuelle de référence : {{ objective_chart.previsionnal|floatformat:1 }} ha
+                </p>
+
+                <p class="my-0">
+                    <strong>En <span class="plotband_green">vert</span> : réduction de 50% </strong>
+                <p class="my-0">
+                    <span class="text-muted"><em>1er jan. 2021 - 31 déc. 2030, 10 ans</em></span>
+                </p>
+                <p class="my-0">
+                    Pendant la période de réduction, la loi prévoit que le territoire ne consomme que 50% de ce qui a été consommé pendant la période de référence. Par conséquent, la consommation cumulée du 1er janvier 2021 au 31 décembre 2030 doit être égale à la consommation du 1er janvier 2011 au 31 décembre 2020 divisée par 2.
+                </p>
+                <p class="mt-2 mb-4">
+                    Objectif de consommation cumulée 2030 : {{ objective_chart.conso_2031|floatformat:1 }} ha
+                    <br/>Consommation annuelle moyenne : {{ objective_chart.annual_objective_2031|floatformat:1 }} ha
+                </p>
             </div>
+
 
             <div class="w-100 box p-4">
                 <h3 class="clearfix">
@@ -149,7 +192,7 @@ Rapport consommation
                             </div>
                         </div>
                     </div>
-                    Consommation annuelle des {% if level == "COMM" %}communes{% elif level == "EPCI" %}EPCI{% elif level == "DEPT" %}départements{% else %}régions{% endif %} du territoire
+                    Consommation annuelle des {% if level == "COMM" %}communes{% elif level == "EPCI" %}communes{% elif level == "DEPT" %}EPCI{% else %}départements{% endif %} du territoire
                 </h3>
 
                 <div id="chart" class="flex-fill"></div>
@@ -256,7 +299,7 @@ Rapport consommation
 {% display_chart 'chart_2' comparison_chart %}
 {% display_chart 'chart_determinant' determinant_per_year_chart %}
 {% display_chart 'pie_determinant' determinant_pie_chart %}
-
+{% display_chart 'objective_chart' objective_chart %}
 <script language="javascript">
 ///////////////////////////////
 // Select / unselect all

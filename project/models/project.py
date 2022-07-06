@@ -1,5 +1,6 @@
 import collections
 from decimal import Decimal
+import pandas as pd
 import traceback
 
 from django.conf import settings
@@ -20,9 +21,10 @@ from public_data.models import (
     Land,
     CommuneDiff,
     CommuneSol,
+    CouvertureSol,
     Ocsge,
     OcsgeDiff,
-    CouvertureSol,
+    AdministrationReferentiel,
     UsageSol,
 )
 
@@ -153,13 +155,13 @@ class Project(BaseProject):
     is_public = models.BooleanField("Public", default=False)
 
     analyse_start_date = models.CharField(
-        "Date de début de période d'analyse",
+        "Année de début de période d'analyse",
         choices=ANALYZE_YEARS,
         default="2015",
         max_length=4,
     )
     analyse_end_date = models.CharField(
-        "Date de fin de période d'analyse",
+        "Année de fin de période d'analyse",
         choices=ANALYZE_YEARS,
         default="2018",
         max_length=4,
@@ -271,49 +273,56 @@ class Project(BaseProject):
                 self._city_group_list[-1].append(project_commune)
         return self._city_group_list
 
-    def get_available_analysis_level(self):
-        available = {
-            "COMM": ["COMM"],
-            "EPCI": ["COMM"],
-            "DEPT": ["COMM", "EPCI"],
-            "REGI": ["COMM", "EPCI", "DEPT"],
-            "COMP": ["COMM", "EPCI", "DEPT", "REGI"],
-        }
-        return available[self.land_type]
-
-    def add_look_a_like(self, public_key):
+    def add_look_a_like(self, public_key, many=False):
         """Add a public_key to look a like keeping the field formated
-        and avoiding duplicate"""
-        if self.look_a_like:
-            keys = self.look_a_like.split(";")
-            if public_key not in keys:
-                keys.append(public_key)
-                self.look_a_like = ";".join(keys)
+        and avoiding duplicate. Can process a list if many=True."""
+        try:
+            keys = {_ for _ in self.look_a_like.split(";")}
+        except AttributeError:
+            keys = set()
+        if many:
+            for item in public_key:
+                keys.add(item)
         else:
-            self.look_a_like = public_key
+            keys.add(public_key)
+        self.look_a_like = ";".join(list(keys))
 
-    def remove_look_a_like(self, public_key):
+    def remove_look_a_like(self, public_key, many=False):
         """Remove a public_key from look_a_like property keeping it formated"""
-        if self.look_a_like:
-            keys = self.look_a_like.split(";")
-            if public_key in keys:
-                keys.pop(keys.index(public_key))
-                self.look_a_like = ";".join(keys)
+        try:
+            keys = {_ for _ in self.look_a_like.split(";")}
+            if many:
+                for key in public_key:
+                    keys.remove(key)
+            else:
+                keys.remove(public_key)
+            self.look_a_like = ";".join(list(keys))
+        except (AttributeError, KeyError):
+            return
+
+    @property
+    def nb_look_a_like(self):
+        try:
+            return len({_ for _ in self.look_a_like.split(";")})
+        except AttributeError:
+            return 0
 
     def get_look_a_like(self):
         """If a public_key is corrupted it removes it and hide the error"""
         lands = list()
         to_remove = list()
-        public_keys = self.look_a_like.split(";")
+        try:
+            public_keys = {_ for _ in self.look_a_like.split(";")}
+        except AttributeError:
+            public_keys = set()
         for public_key in public_keys:
             try:
                 lands.append(Land(public_key))
             except Exception:
                 to_remove.append(public_key)
         if to_remove:
-            for public_key in to_remove:
-                self.remove_look_a_like(public_key)
-            self.save()
+            self.remove_look_a_like(to_remove, many=True)
+            self.save(update_fields=["look_a_like"])
         return lands
 
     def get_lands(self):
@@ -382,14 +391,20 @@ class Project(BaseProject):
 
     def get_bilan_conso(self):
         """Return the space consummed between 2011 and 2020 in hectare"""
-        qs = self.get_cerema_cities()
-        # if not qs.exists():
-        #     return 0
-        aggregation = qs.aggregate(bilan=Coalesce(Sum("naf11art21"), float(0)))
-        try:
-            return aggregation["bilan"] / 10000
-        except TypeError:
-            return 0
+        qs = self.get_cerema_cities().aggregate(
+            bilan=Coalesce(Sum("naf11art21"), float(0))
+        )
+        return qs["bilan"] / 10000
+
+    def get_bilan_conso_per_year(self):
+        """Return the space consummed per year between 2012 and 2021"""
+        qs = self.get_cerema_cities().aggregate(
+            **{
+                f"20{f[3:5]}": Sum(f) / 10000
+                for f in Cerema.get_art_field("2011", "2019")
+            }
+        )
+        return qs
 
     def get_bilan_conso_time_scoped(self):
         """Return land consummed during the project time scope (between
@@ -469,7 +484,11 @@ class Project(BaseProject):
         datas = dict()
         if not self.look_a_like:
             return datas
-        for public_key in self.look_a_like.split(";"):
+        try:
+            keys = self.look_a_like.split(";")
+        except AttributeError:
+            keys = set()
+        for public_key in keys:
             land = Land(public_key)
             datas[land.name] = land.get_conso_per_year(
                 self.analyse_start_date,
@@ -659,14 +678,16 @@ class Project(BaseProject):
                 [
                     _["surface_first"]
                     for _ in data
-                    if _["code_prefix"].startswith(item.code_prefix)
+                    if _["code_prefix"]
+                    and _["code_prefix"].startswith(item.code_prefix)
                 ]
             )
             item.surface_last = sum(
                 [
                     _["surface_last"]
                     for _ in data
-                    if _["code_prefix"].startswith(item.code_prefix)
+                    if _["code_prefix"]
+                    and _["code_prefix"].startswith(item.code_prefix)
                 ]
             )
             item.surface_diff = item.surface_last - item.surface_first
@@ -724,6 +745,45 @@ class Project(BaseProject):
         qs = qs.values("code_prefix", "label", "label_short", "map_color")
         qs = qs.annotate(surface=Sum("surface"))
         return qs
+
+    def get_neighbors(self, land_type=None):
+        if not land_type:
+            land_type = self.land_type
+        klass = AdministrationReferentiel.get_class(land_type)
+        return klass.objects.filter(mpoly__touches=self.combined_emprise)
+
+    def get_matrix(self, sol="couverture"):
+        if sol == "usage":
+            prefix = "us"
+            headers = {_.code: _ for _ in UsageSol.objects.all()}
+        else:
+            prefix = "cs"
+            headers = {_.code: _ for _ in CouvertureSol.objects.all()}
+        index = f"{prefix}_old"
+        column = f"{prefix}_new"
+        qs = (
+            OcsgeDiff.objects.intersect(self.combined_emprise)
+            .filter(
+                year_old__gte=self.analyse_start_date,
+                year_new__lte=self.analyse_end_date,
+            )
+            .values(index, column)
+            .annotate(total=Sum("surface") / 10000)
+            .order_by(index, column)
+        )
+        if qs.exists():
+            df = (
+                pd.DataFrame(qs)
+                .pivot(index=index, columns=column, values="total")
+                .fillna(0)
+            )
+
+            return {
+                headers[i[2:]]: {headers[c[2:]]: row[c] for c in df.columns}
+                for i, row in df.iterrows()
+            }
+        else:
+            return dict()
 
 
 class Emprise(DataColorationMixin, gis_models.Model):
