@@ -11,9 +11,9 @@ Carte intéractive
 
 {% block headers %}
     <!-- leaflet -->
-    <link rel="stylesheet" href="{% static 'carto/css/leaflet.css' %}"/>
-    <script src="{% static 'carto/js/leaflet.js' %}"></script>
-    <style>
+    <link rel="stylesheet" href="{% static 'carto/css/leaflet.css' %}" nonce="{{ CSP_NONCE }}"/>
+    <script src="{% static 'carto/js/leaflet.js' %}" nonce="{{ CSP_NONCE }}"></script>
+    <style nonce="{{ CSP_NONCE }}">
         .info {
             padding: 6px 8px;
             font: 14px/16px Arial, Helvetica, sans-serif;
@@ -38,17 +38,27 @@ Carte intéractive
             margin-right: 8px;
             opacity: 0.7;
         }
+        #local-container {
+            overflow: auto;
+        }
+        #layer_list {
+            width: 300px;
+        }
+        #layer_title {
+            width: 23px;
+            font-size: 1.5rem;
+        }
     </style>
 {% endblock %}
 
 {% block carto %}
-<div class="d-flex h-100" style="overflow:auto;">
-    <div class="h-100 collapse collapse-horizontal p-2" id="layer_list" style="width: 300px;">
+<div id="local-container" class="d-flex h-100">
+    <div class="h-100 collapse collapse-horizontal p-2" id="layer_list">
         <h2>Calques</h2>
     </div>
-    <div class="row justify-content-center h-100 border-right m-0 p-0" style="width: 23px;">
+    <div id="layer_title" class="row justify-content-center h-100 border-right m-0 p-0">
         <a href="#" class="p-0 text-center" data-bs-toggle="collapse" data-bs-target="#layer_list" aria-expanded="false" aria-controls="layer_list">
-            <i class="bi bi-chevron-double-right" id="toggle-calque" style="font-size: 1.5rem;"></i>
+            <i class="bi bi-chevron-double-right" id="toggle-calque"></i>
             <br/><img src="{% static 'carto/img/calques-vertical.png' %}" width="18px" />
         </a>
 
@@ -68,7 +78,7 @@ calque_div.addEventListener('show.bs.collapse', function () {
 
 {% block bodyend %}
 {% localize off %}
-<script src="{% static 'carto/js/map.js' %}"></script>
+<script src="{% static 'carto/js/map.js' %}" nonce="{{ CSP_NONCE }}"></script>
 <script language="javascript" nonce="{{ CSP_NONCE }}">
 geolayers = [
 {% for layer in layer_list %}

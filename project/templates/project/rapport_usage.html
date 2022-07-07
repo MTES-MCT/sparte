@@ -75,10 +75,10 @@ Rapport usage du sol
                     <tr>
                         <th scope="col">Code</th>
                         <th scope="col">Libellé</th>
-                        <th scope="col" style="text-align: right">Surface {{ first_millesime }} (ha)</th>
-                        <th scope="col" style="text-align: right">Progression (ha)</th>
-                        <th scope="col" style="text-align: right">Surface {{ last_millesime }} (ha)</th>
-                        <th scope="col" style="text-align: right">Pourcentage {{ last_millesime }}</th>
+                        <th scope="col" class="text-end">Surface {{ first_millesime }} (ha)</th>
+                        <th scope="col" class="text-end">Progression (ha)</th>
+                        <th scope="col" class="text-end">Surface {{ last_millesime }} (ha)</th>
+                        <th scope="col" class="text-end">Pourcentage {{ last_millesime }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -112,13 +112,13 @@ Rapport usage du sol
                     <tr>
                         <th scope="col"></th>
                         {% for header in matrix_headers %}
-                        <th scope="col" style="text-align: right">
+                        <th scope="col" class="text-end">
                             <span class="tooltiped" data-toggle="tooltip" title="{{ header.label }}">
                                 {{ header.code }}
                             </span>
                         </th>
                         {% endfor %}
-                        <th scope="col" style="text-align: right">Total</th>
+                        <th scope="col" class="text-end">Total</th>
                     </tr>
                 </thead>
                 <tbody>

@@ -9,15 +9,15 @@
 {% block pagetitle %}Accueil{% endblock %}
 
 {% block headers %}
-<link rel="stylesheet" href="{% static 'home/css/home.css' %}" />
-<link rel="stylesheet" href="{% static 'project/css/project.css' %}" />
-<link rel="stylesheet" href="{% static 'carto/css/leaflet.css' %}"/>
-<script src="{% static 'carto/js/leaflet.js' %}"></script>
+<link rel="stylesheet" href="{% static 'home/css/home.css' %}" nonce="{{ CSP_NONCE }}" />
+<link rel="stylesheet" href="{% static 'project/css/project.css' %}" nonce="{{ CSP_NONCE }}" />
+<link rel="stylesheet" href="{% static 'carto/css/leaflet.css' %}" nonce="{{ CSP_NONCE }}" />
+<script src="{% static 'carto/js/leaflet.js' %}" nonce="{{ CSP_NONCE }}"></script>
 {% endblock headers %}
 
 {% block content %}
 <div class="d-flex justify-content-center">
-    <div class="" style="width:750px;">
+    <div class="home-container">
         <h1 class="mt-5">Statistiques</h1>
 
         <h2 class="mt-5">Principale mesure d'impact</h2>
@@ -59,7 +59,7 @@
             </div>
             <div class="col-6">
                 <h5>Répartition par région</h5>
-                <div class="mt-5" style="height: 350px">
+                <div class="mt-5 height-350px">
                     <div id="mapid" class="w-100 h-100"></div>
                 </div>
             </div>

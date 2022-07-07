@@ -96,7 +96,6 @@ MIDDLEWARE = [
     "config.middlewares.LogIncomingRequest",
     "django.middleware.security.SecurityMiddleware",
     "csp.middleware.CSPMiddleware",
-    "csp.context_processors.nonce",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -124,6 +123,7 @@ TEMPLATES = [
                 "users.context_processors.add_connected_user_to_context",
                 "home.context_processors.add_faq_to_context",
                 "django_app_parameter.context_processors.add_global_parameter_context",
+                "csp.context_processors.nonce",
             ],
         },
     },
@@ -411,12 +411,13 @@ CSP_DEFAULT_SRC = ["'self'"]
 CSP_SCRIPT_SRC = [
     "'self'",
     "https://unpkg.com/masonry-layout",
-    "'unsafe-inline'",
     "https://stats.data.gouv.fr",
+    "https://code.highcharts.com",
 ]
-CSP_STYLE_SRC = ["'self'", "'unsafe-inline'"]
-# CSP_IMG_SRC = ["'self'"]
+CSP_STYLE_SRC = ["'self'"]
+CSP_IMG_SRC = ["'self'", "http://www.w3.org"]
 CSP_UPGRADE_INSECURE_REQUESTS = not DEBUG
+CSP_INCLUDE_NONCE_IN = ["script-src", "style-src"]
 
 # LOGGING SETTINGS
 

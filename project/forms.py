@@ -108,9 +108,7 @@ class RegionForm(forms.Form):
         if regions:
             qs = Region.objects.filter(id__in=regions)
             self.fields["region"].queryset = qs
-        self.fields["region"].widget.attrs.update(
-            {"class": "form-control force-carret"}
-        )
+        self.fields["region"].widget.attrs.update({"class": "form-control-with-carret"})
 
 
 class DepartementForm(forms.Form):
@@ -129,7 +127,7 @@ class DepartementForm(forms.Form):
             qs = qs.order_by("name")
             self.fields["departement"].queryset = qs
         self.fields["departement"].widget.attrs.update(
-            {"class": "form-control force-carret"}
+            {"class": "form-control-with-carret"}
         )
 
 
@@ -148,7 +146,7 @@ class EpciForm(forms.Form):
         self.fields["epci"].queryset = qs
         # dep = Departement.objects.get(pk=self.departement_id)
         self.fields["departement"].initial = self.departement_id
-        self.fields["epci"].widget.attrs.update({"class": "form-control force-carret"})
+        self.fields["epci"].widget.attrs.update({"class": "form-control-with-carret"})
 
 
 class OptionsForm(forms.Form):
@@ -164,9 +162,15 @@ class OptionsForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["analysis_start"].widget.attrs.update({"class": "force-carret"})
-        self.fields["analysis_end"].widget.attrs.update({"class": "force-carret"})
-        self.fields["analysis_level"].widget.attrs.update({"class": "force-carret"})
+        self.fields["analysis_start"].widget.attrs.update(
+            {"class": "form-control-with-carret-and-block"}
+        )
+        self.fields["analysis_end"].widget.attrs.update(
+            {"class": "form-control-with-carret-and-block"}
+        )
+        self.fields["analysis_level"].widget.attrs.update(
+            {"class": "form-control-with-carret-and-block"}
+        )
 
     def clean(self):
         cleaned_data = super().clean()
