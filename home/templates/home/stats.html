@@ -9,10 +9,10 @@
 {% block pagetitle %}Accueil{% endblock %}
 
 {% block headers %}
-<link rel="stylesheet" href="{% static 'home/css/home.css' %}" nonce="{{ CSP_NONCE }}" />
-<link rel="stylesheet" href="{% static 'project/css/project.css' %}" nonce="{{ CSP_NONCE }}" />
-<link rel="stylesheet" href="{% static 'carto/css/leaflet.css' %}" nonce="{{ CSP_NONCE }}" />
-<script src="{% static 'carto/js/leaflet.js' %}" nonce="{{ CSP_NONCE }}"></script>
+<link rel="stylesheet" href="{% static 'home/css/home.css' %}"/>
+<link rel="stylesheet" href="{% static 'project/css/project.css' %}"/>
+<link rel="stylesheet" href="{% static 'carto/css/leaflet.css' %}"/>
+<script src="{% static 'carto/js/leaflet.js' %}"></script>
 {% endblock headers %}
 
 {% block content %}
@@ -83,10 +83,10 @@
 <script src="https://code.highcharts.com/highcharts.js"></script>
 <script src="https://code.highcharts.com/modules/exporting.js"></script>
 {% french_translation %}
-{% display_chart 'diag_created_downloaded' diag_created_downloaded %}
-{% display_chart 'report_pie' report_pie %}
-{% display_chart 'organism_pie_chart' organism_pie_chart %}
-<script language="javascript">
+{% display_chart 'diag_created_downloaded' diag_created_downloaded CSP_NONCE %}
+{% display_chart 'report_pie' report_pie CSP_NONCE %}
+{% display_chart 'organism_pie_chart' organism_pie_chart CSP_NONCE %}
+<script language="javascript" nonce="{{ CSP_NONCE }}">
 map = L.map('mapid', {
     zoomControl: false,
     dragging: false,

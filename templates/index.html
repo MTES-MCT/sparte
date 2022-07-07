@@ -10,11 +10,11 @@
         <meta name="author" content="" />
         <title>{% block pagetitle %}SPARTE{% endblock %}</title>
         <!-- Favicon-->
-        <link rel="icon"href="{% static 'favicon.ico' %}" nonce="{{ CSP_NONCE }}">
+        <link rel="icon" href="{% static 'favicon.ico' %}">
         <!-- Core theme CSS (includes Bootstrap)-->
-        <link href="{% static 'css/styles.css' %}" rel="stylesheet" nonce="{{ CSP_NONCE }}" />
+        <link href="{% static 'css/styles.css' %}" rel="stylesheet"/>
         <!-- Bootstrap icon -->
-        <link rel="stylesheet" href="{% static 'icons/bootstrap-icons.css' %}" nonce="{{ CSP_NONCE }}">
+        <link rel="stylesheet" href="{% static 'icons/bootstrap-icons.css' %}">
         <!-- subtemplate header injection -->
         {% block headers %}{% endblock %}
         <!-- matomo -->
@@ -30,7 +30,7 @@
         main {
             overflow: auto;
         }
-        .bread-font {
+        #navbarSupportedContent2 {
             font-size: 0.75rem;
         }
         </style>
@@ -102,7 +102,7 @@
 
                     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent2" aria-controls="navbarSupportedContent2" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
 
-                    <div class="collapse navbar-collapse justify-content-between bread-font" id="navbarSupportedContent2">
+                    <div class="collapse navbar-collapse justify-content-between" id="navbarSupportedContent2">
                         <ul class="navbar-nav ms-0 mt-2 mt-lg-0 ps-2">
                             <nav aria-label="breadcrumb">
                                 <ol class="breadcrumb mb-0">
@@ -171,11 +171,11 @@
             </main>
         </div>
 
-        <script src="{% static 'js/jquery-3.6.0.min.js' %}" nonce="{{ CSP_NONCE }}"></script>
+        <script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>
         <!-- Bootstrap core JS-->
-        <script src="{% static 'js/bootstrap.bundle.min.js' %}" nonce="{{ CSP_NONCE }}"></script>
+        <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
         <!-- Core theme JS-->
-        <script src="{% static 'js/scripts.js' %}" nonce="{{ CSP_NONCE }}"></script>
+        <script src="{% static 'js/scripts.js' %}"></script>
         <script nonce="{{ CSP_NONCE }}">
         // initialize les tooltips
         $(function () {

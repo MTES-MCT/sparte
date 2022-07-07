@@ -13,7 +13,7 @@ Rapport usage du sol
 
 {% block headers %}
 <link href="{% static 'project/css/project.css' %}" rel="stylesheet" />
-<style>
+<style nonce="{{ CSP_NONCE }}">
 .tooltiped {
     border-bottom:1px dashed #000;
 }
@@ -167,7 +167,7 @@ Rapport usage du sol
 <script src="https://code.highcharts.com/highcharts.js"></script>
 <script src="https://code.highcharts.com/modules/exporting.js"></script>
 {% french_translation %}
-{% display_chart 'chart_3' pie_chart %}
-{% display_chart 'chart_1' progression_chart %}
+{% display_chart 'chart_3' pie_chart CSP_NONCE %}
+{% display_chart 'chart_1' progression_chart CSP_NONCE %}
 {% endlocalize %}
 {% endblock %}

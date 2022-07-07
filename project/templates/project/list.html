@@ -9,7 +9,7 @@ Mes diagnostics
 
 {% block headers %}
 <link href="{% static 'project/css/project.css' %}" rel="stylesheet" />
-<script src="https://unpkg.com/masonry-layout@4/dist/masonry.pkgd.min.js"></script>
+<script src="https://unpkg.com/masonry-layout@4/dist/masonry.pkgd.min.js" nonce="{{ CSP_NONCE }}"></script>
 {% endblock %}
 
 {% block content %}
