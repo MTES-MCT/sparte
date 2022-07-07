@@ -12,12 +12,12 @@ Consommation des villes
 {% endblock %}
 
 {% block headers %}
-<link href="{% static 'project/css/project.css' %}" rel="stylesheet" />
+<link href="{% static 'project/css/project.css' %}" rel="stylesheet" nonce="{{ CSP_NONCE }}" />
 {% endblock %}
 
 {% block content %}
-<link href="{% static 'css/dragula.min.css' %}" rel="stylesheet" />
-<script src="{% static 'js/dragula.min.js' %}"></script>
+<link href="{% static 'css/dragula.min.css' %}" rel="stylesheet" nonce="{{ CSP_NONCE }}" />
+<script src="{% static 'js/dragula.min.js' %}" nonce="{{ CSP_NONCE }}"></script>
 
 <div class="px-4">
     {% include "project/detail_menu.html" %}
@@ -90,9 +90,9 @@ Consommation des villes
                     <tr>
                         <th scope="col"></th>
                         {% for year in project.years %}
-                        <th scope="col" style="text-align: right">{{ year }}</th>
+                        <th scope="col" class="text-end">{{ year }}</th>
                         {% endfor %}
-                        <th scope="col" style="text-align: right">Total</th>
+                        <th scope="col" class="text-end">Total</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -127,7 +127,7 @@ Consommation des villes
                     <tr>
                         <th scope="col">Déterminant</th>
                         {% for year in project.years %}
-                        <th scope="col" style="text-align: right">{{ year }}</th>
+                        <th scope="col" class="text-end">{{ year }}</th>
                         {% endfor %}
                     </tr>
                 </thead>
@@ -147,7 +147,7 @@ Consommation des villes
     </div>
 </div>
 
-<div style="display:none;" id="group-model">
+<div id="group-model">
     <div class="card city-group">
         <div class="card-header">
             <div class="row">

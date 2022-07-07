@@ -12,8 +12,8 @@ Rapport consommation
 {% endblock %}
 
 {% block headers %}
-<link href="{% static 'project/css/project.css' %}" rel="stylesheet" />
-<style>
+<link href="{% static 'project/css/project.css' %}" rel="stylesheet" nonce="{{ CSP_NONCE }}" />
+<style nonce="{{ CSP_NONCE }}">
 .plotband_blue{
     fill: rgba(149, 206, 255, 0.1);
     color: rgb(149, 206, 255);
@@ -222,9 +222,9 @@ Rapport consommation
                         <tr>
                             <th scope="col">{{ col_name }}</th>
                             {% for year in project.years %}
-                            <th scope="col" style="text-align: right">{{ year }}</th>
+                            <th scope="col" class="text-end">{{ year }}</th>
                             {% endfor %}
-                            <th scope="col" style="text-align: right">Total</th>
+                            <th scope="col" class="text-end">Total</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -260,9 +260,9 @@ Rapport consommation
                         <tr>
                             <th scope="col">Déterminant</th>
                             {% for year in project.years %}
-                            <th scope="col" style="text-align: right">{{ year }}</th>
+                            <th scope="col" class="text-end">{{ year }}</th>
                             {% endfor %}
-                            <th scope="col" style="text-align: right">Total</th>
+                            <th scope="col" class="text-end">Total</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -292,15 +292,15 @@ Rapport consommation
 
 {% block bodyend %}
 {% localize off %}
-<script src="https://code.highcharts.com/highcharts.js"></script>
-<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/highcharts.js" nonce="{{ CSP_NONCE }}"></script>
+<script src="https://code.highcharts.com/modules/exporting.js" nonce="{{ CSP_NONCE }}"></script>
 {% french_translation %}
-{% display_chart 'chart' commune_chart %}
-{% display_chart 'chart_2' comparison_chart %}
-{% display_chart 'chart_determinant' determinant_per_year_chart %}
-{% display_chart 'pie_determinant' determinant_pie_chart %}
-{% display_chart 'objective_chart' objective_chart %}
-<script language="javascript">
+{% display_chart 'chart' commune_chart CSP_NONCE %}
+{% display_chart 'chart_2' comparison_chart CSP_NONCE %}
+{% display_chart 'chart_determinant' determinant_per_year_chart CSP_NONCE %}
+{% display_chart 'pie_determinant' determinant_pie_chart CSP_NONCE %}
+{% display_chart 'objective_chart' objective_chart CSP_NONCE %}
+<script language="javascript" nonce="{{ CSP_NONCE }}">
 ///////////////////////////////
 // Select / unselect all
 ///////////////////////////////
