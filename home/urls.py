@@ -17,6 +17,7 @@ urlpatterns = [
     path("cgu", views.LegalNotice.as_view(), name="cgv"),
     path("confidentialité", views.Privacy.as_view(), name="privacy"),
     path("stats", views.Stats.as_view(), name="stats"),
+    path("test", views.TestView.as_view(), name="test"),
 ]
 
 router = routers.DefaultRouter()

@@ -10,6 +10,10 @@ from . import charts
 from .models import FrequentlyAskedQuestion
 
 
+class TestView(TemplateView):
+    template_name = "home/test.html"
+
+
 class Home(BreadCrumbMixin, TemplateView):
     template_name = "home/home.html"
 

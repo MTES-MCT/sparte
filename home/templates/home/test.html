@@ -1,0 +1,18 @@
+{% extends 'index.html' %}
+
+{% load static %}
+
+{% block headers %}
+<link rel="stylesheet" href="{% static 'home/css/home.css' %}" nonce="{{ CSP_NONCE }}" />
+<style nonce="{{ CSP_NONCE }}">
+.test {
+    background-color: rgba(25, 135, 84, 0.9);
+    width: 750px;
+}
+</style>
+{% endblock headers %}
+
+{% block content %}
+<h1 class="test">TEST</h1>
+<br/>NONCE = {{ CSP_NONCE }}
+{% endblock content %}
