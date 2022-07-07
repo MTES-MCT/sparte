@@ -18,6 +18,7 @@ pytest-django = "==4.4.0"
 pytest-cov = "*"
 pytest-github-actions-annotate-failures = "*"
 bandit = "*"
+djt-csp = "*"
 
 [packages]
 boto3 = "*"

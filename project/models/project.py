@@ -759,6 +759,13 @@ class Project(BaseProject):
         else:
             prefix = "cs"
             headers = {_.code: _ for _ in CouvertureSol.objects.all()}
+        headers.update(
+            {
+                "": CouvertureSol(
+                    id=0, code="N/A", label="Inconnu", label_short="Inconnu"
+                )
+            }
+        )
         index = f"{prefix}_old"
         column = f"{prefix}_new"
         qs = (
@@ -774,6 +781,7 @@ class Project(BaseProject):
         if qs.exists():
             df = (
                 pd.DataFrame(qs)
+                .fillna("")
                 .pivot(index=index, columns=column, values="total")
                 .fillna(0)
             )
