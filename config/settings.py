@@ -121,7 +121,6 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 "users.context_processors.add_connected_user_to_context",
-                "home.context_processors.add_faq_to_context",
                 "django_app_parameter.context_processors.add_global_parameter_context",
                 "csp.context_processors.nonce",
             ],
@@ -427,7 +426,6 @@ MATOMO_TOKEN = env.str("MATOMO_TOKEN", default="")
 CSP_DEFAULT_SRC = ["'self'"]
 CSP_SCRIPT_SRC = [
     "'self'",
-    "https://unpkg.com/masonry-layout",
     "https://stats.data.gouv.fr",
     "https://code.highcharts.com",
 ]
