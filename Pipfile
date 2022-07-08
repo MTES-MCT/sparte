@@ -47,6 +47,7 @@ setuptools = "*"
 docxtpl = "*"
 django-docx-template = {git = "https://github.com/Swannbm/django-docx-template"}
 django-csp = "*"
+django-sri = "*"
 
 [scripts]
 shell = "python manage.py shell"
