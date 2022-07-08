@@ -6,6 +6,7 @@
 {% load l10n %}
 {% load project_tags %}
 {% load highcharts_tags %}
+{% load sri %}
 
 {% block pagetitle %}
 Consommation des villes
@@ -16,8 +17,8 @@ Consommation des villes
 {% endblock %}
 
 {% block content %}
-<link href="{% static 'css/dragula.min.css' %}" rel="stylesheet" nonce="{{ CSP_NONCE }}" />
-<script src="{% static 'js/dragula.min.js' %}" nonce="{{ CSP_NONCE }}"></script>
+{% sri_static "css/dragula.min.css" %}
+{% sri_static "js/dragula.min.js" %}
 
 <div class="px-4">
     {% include "project/detail_menu.html" %}
@@ -215,8 +216,8 @@ $("#save-all").click(function(){
 
 
 </script>
-<script src="https://code.highcharts.com/highcharts.js"></script>
-<script src="https://code.highcharts.com/modules/exporting.js"></script>
+{% sri_static "highcharts/js/highcharts.js" %}
+{% sri_static "highcharts/js/exporting.js" %}
 {% french_translation %}
 {% display_chart 'chart_conso_cities' chart_conso_cities %}
 {% display_chart 'chart_determinant' determinant_per_year_chart %}
