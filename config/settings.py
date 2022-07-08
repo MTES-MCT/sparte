@@ -47,6 +47,7 @@ SECRET_KEY = env.str("SECRET")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env.bool("DEBUG", default=False)
+USE_SRI = env.bool("USE_SRI", default=False)
 
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["127.0.0.1", "localhost"])
 
@@ -74,6 +75,7 @@ THIRD_APPS = [
     "import_export",
     "crispy_forms",
     "django_app_parameter",
+    "sri",
     # "django_docx_template",
 ]
 
