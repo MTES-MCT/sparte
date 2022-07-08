@@ -78,7 +78,7 @@ Sélectionner une ville
 {% endblock %}
 
 {% block bodyend %}
-<script language="javascript">
+<script language="javascript" nonce="{{ CSP_NONCE }}">
 $('#id_region').on('change', function(){ $(this).closest('form').submit() })
 $('#id_departement').on('change', function(){ $(this).closest('form').submit() })
 $('#id_epci').on('change', function(){ $(this).closest('form').submit() })
