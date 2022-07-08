@@ -421,7 +421,8 @@ if ENVIRONMENT != "local":
 
 MATOMO_TOKEN = env.str("MATOMO_TOKEN", default="")
 
-# SECURITY
+# SECURITY - Content Security Header Policy
+# https://django-csp.readthedocs.io
 
 CSP_DEFAULT_SRC = ["'self'"]
 CSP_SCRIPT_SRC = [
