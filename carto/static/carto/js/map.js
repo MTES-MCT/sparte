@@ -480,7 +480,9 @@ function GeoLayer(name, url) {
             return
 
         //display loading image
-        this.loading_img.setAttribute("style", "display: inline;")
+        // this.loading_img.setAttribute("style", "display: inline;")
+        this.loading_img.classList.remove("d-none")
+        this.loading_img.classList.add("d-inline")
 
         // full: indicate if we have to load everything (true) or if we have to get only data visible on the map (false)
 
@@ -512,7 +514,10 @@ function GeoLayer(name, url) {
             }
 
             // hide loading image
-            this.loading_img.setAttribute("style", "display: none;")
+            // this.loading_img.setAttribute("style", "display: none;")
+            this.loading_img.classList.remove("d-inline")
+            this.loading_img.classList.add("d-none")
+
         })
     }
 
@@ -552,8 +557,8 @@ function GeoLayer(name, url) {
     this.create_loading_image = (container) => {
         let img = document.createElement("img")
         img.setAttribute("src", "/static/carto/img/loading-buffering.gif")
-        img.setAttribute("class", "ms-1")
-        img.setAttribute("style", "display: none;")
+        img.setAttribute("class", "ms-1 d-none")
+        // img.setAttribute("style", "display: none;")
         img.setAttribute("width", "12")
         img.setAttribute("height", "12")
         this.loading_img = img

@@ -169,7 +169,7 @@ Consommation des villes
 
 {% block bodyend %}
 {% localize off %}
-<script language="javascript">
+<script language="javascript" nonce="{{ CSP_NONCE }}">
 var drake = dragula([$('#no-group')[0]])
 $('.select-group').each(function(){
     drake.containers.push($(this).find(".card-body")[0])
