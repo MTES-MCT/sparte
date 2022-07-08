@@ -1,5 +1,6 @@
 {% load static %}
 {% load utils_tags %}
+{% load sri %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -12,9 +13,9 @@
         <!-- Favicon-->
         <link rel="icon" href="{% static 'favicon.ico' %}">
         <!-- Core theme CSS (includes Bootstrap)-->
-        <link href="{% static 'css/styles.css' %}" rel="stylesheet"/>
+        {% sri_static "css/styles.css" %}
         <!-- Bootstrap icon -->
-        <link rel="stylesheet" href="{% static 'icons/bootstrap-icons.css' %}">
+        {% sri_static "icons/bootstrap-icons.css" %}
         <!-- subtemplate header injection -->
         {% block headers %}{% endblock %}
         <!-- matomo -->
@@ -171,11 +172,11 @@
             </main>
         </div>
 
-        <script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>
+        {% sri_static "js/jquery-3.6.0.min.js" %}
         <!-- Bootstrap core JS-->
-        <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+        {% sri_static "js/bootstrap.bundle.min.js" %}
         <!-- Core theme JS-->
-        <script src="{% static 'js/scripts.js' %}"></script>
+        {% sri_static "js/scripts.js" %}
         <script nonce="{{ CSP_NONCE }}">
         // initialize les tooltips
         $(function () {

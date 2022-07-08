@@ -6,6 +6,7 @@
 {% load i18n %}
 {% load l10n %}
 {% load highcharts_tags %}
+{% load sri %}
 
 {% block pagetitle %}
 Rapport usage du sol
@@ -164,8 +165,8 @@ Rapport usage du sol
 
 {% block bodyend %}
 {% localize off %}
-<script src="https://code.highcharts.com/highcharts.js"></script>
-<script src="https://code.highcharts.com/modules/exporting.js"></script>
+{% sri_static "highcharts/js/highcharts.js" %}
+{% sri_static "highcharts/js/exporting.js" %}
 {% french_translation %}
 {% display_chart 'chart_3' pie_chart CSP_NONCE %}
 {% display_chart 'chart_1' progression_chart CSP_NONCE %}
