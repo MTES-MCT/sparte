@@ -1,4 +1,5 @@
 from django import template
+from django.conf import settings
 
 register = template.Library()
 
@@ -7,4 +8,5 @@ register = template.Library()
 def tracking_code(context):
     return {
         "CSP_NONCE": context["CSP_NONCE"],
+        "DISPLAY": not settings.DEBUG,
     }
