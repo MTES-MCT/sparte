@@ -17,12 +17,6 @@ SPARTE
 <div class="row w-100 justify-content-center">
 
     <div class="col-8 bg-light p-3 rounded-5 border mt-1">
-        <!-- <div class="float-end">
-            <div class="form-check form-switch">
-                <label class="form-check-label" for="flexSwitchCheckDefault">Accès public</label>
-                <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
-            </div>
-        </div>-->
         <h1 class="mb-5">{{ project.name }}</h1>
 
         {% if claim_diagnostic %}
@@ -172,15 +166,11 @@ SPARTE
 </li>
 {% if user.is_authenticated %}
 <li class="nav-item ms-1">
-    <a class="btn btn-sm btn-outline-warning" href="{% url 'project:reinit' project.pk %}">
-        <i class="bi bi-recycle"></i> Ré-initialiser
-    </a>
-</li>
-<li class="nav-item ms-1">
     <a class="btn btn-sm btn-outline-danger" href="{% url 'project:delete' project.pk %}">
         <i class="bi bi-trash"></i> Supprimer
     </a>
 </li>
+
 {% endif %}
 {% endblock %}
 

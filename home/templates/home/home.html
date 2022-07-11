@@ -5,12 +5,12 @@
 {% block pagetitle %}Accueil{% endblock %}
 
 {% block headers %}
-<link rel="stylesheet" href="{% static 'home/css/home.css' %}" />
+<link rel="stylesheet" href="{% static 'home/css/home.css' %}" nonce="{{ CSP_NONCE }}" />
 {% endblock headers %}
 
 {% block content %}
 <div class="d-flex justify-content-center">
-    <div class="" style="width:750px;">
+    <div class="home-container">
         <p class="w-100 my-5"><img src="{% static 'home/img/header.png' %}"  class="w-100" alt="Aperçu de la carte OCSGE"/></p>
 
 
@@ -21,7 +21,7 @@
                         <h4 class="card-title">
                             Sparte mesure votre
                             <br/>consommation d'espace et
-                            <br/><span style="color:#6A6AF4">l'artificialisation de votre territoire</span>
+                            <br/><span class="text-blue">l'artificialisation de votre territoire</span>
                         </h4>
                         <p class="card-text">
                             Pilotez votre programme d'urbanisation en vue d'atteindre l'objectif Zéro Artificialisation Nette acté par la Loi Climat et Résilience.
@@ -50,16 +50,10 @@
                         <p class="card-text">
                             Les calculs sont basés sur la définition et données d’observation préconisées dans l’article 192 de la Loi Climat et Résilience et ses décrets d'application.
                         </p>
-                        <p class="text-center">
-                            <a href="{% url 'home:faq-detail' 'les-donnees-utilisees' %}" class="btn btn-secondary">
-                                Plus d'infos sur les données utilisées
-                                <i class="bi bi-question-circle-fill"></i>
-                            </a>
-                        </p>
                     </div>
                 </div>
                 <div class="col-md-4 text-center">
-                    <img class="img-fluid rounded-start" style="height: 176px" src="{% static 'cover_doc_ocsge_small.png' %}" alt="Couverture de la documentation OCSGE">
+                    <img class="img-fluid rounded-start h-100" src="{% static 'cover_doc_ocsge_small.png' %}" alt="Couverture de la documentation OCSGE">
                 </div>
             </div>
         </div>
@@ -67,7 +61,7 @@
         <div class="card my-5">
             <div class="row g-0">
                 <div class="col-md-4">
-                    <img class="card-img-top" src="{% static 'home/img/loi_climat_vertical.png' %}" alt="Photo de couverture de la loi Climat et Résilience" style="height: 100%;">
+                    <img class="card-img-top h-100" src="{% static 'home/img/loi_climat_vertical.png' %}" alt="Photo de couverture de la loi Climat et Résilience">
                 </div>
                 <div class="col-md-8 d-flex align-items-center">
                     <div class="card-body">
@@ -81,12 +75,6 @@
                         <p class="card-text">
                             <strong>2050</strong> :
                             <br/>équilibre entre le total des surfaces artificialisées et renaturées
-                        </p>
-                        <p class="text-center">
-                            <a href="{% url 'home:faq-detail' 'foire-aux-questions-pedagogique' %}" class="btn btn-warning">
-                                Plus d'infos sur la loi
-                                <i class="bi bi-question-circle-fill"></i>
-                            </a>
                         </p>
                     </div>
                 </div>
@@ -134,7 +122,7 @@
             </div>
             <div class="carousel-inner">
               <div class="carousel-item active">
-                <img src="{% static 'home/img/usage_grand.png' %}" class="d-block w-100" alt="Usage du sol" style="height: 400px;">
+                <img src="{% static 'home/img/usage_grand.png' %}" class="d-block w-100 height-400px" alt="Usage du sol">
                 <div class="carousel-caption d-none d-md-block">
                   <h5>Usage du sol</h5>
                   <p>Une carte interactive pour comprendre l’artificialisation
@@ -142,21 +130,21 @@
                 </div>
               </div>
               <div class="carousel-item">
-                <img src="{% static 'home/img/rapport.png' %}" class="d-block w-100" alt="..." style="height: 400px;">
+                <img src="{% static 'home/img/rapport.png' %}" class="d-block w-100 height-400px" alt="Les chiffres clés du territoire">
                 <div class="carousel-caption d-none d-md-block">
                   <h5>Des Tableaux de bord</h5>
                   <p>Obtenez en quelques clics les chiffres clés sur votre territoire ainsi que la trajectoire 2031</p>
                 </div>
               </div>
               <div class="carousel-item">
-                <img src="{% static 'home/img/couverture_grand.png' %}" class="d-block w-100" alt="..." style="height: 400px;">
+                <img src="{% static 'home/img/couverture_grand.png' %}" class="d-block w-100 height-400px" alt="Rapport de la couverture du sol du territoire">
                 <div class="carousel-caption d-none d-md-block">
                   <h5>La couverture du sol selon l'OCSGE</h5>
                   <p>Indicateurs et données</p>
                 </div>
               </div>
               <div class="carousel-item">
-                <img src="{% static 'home/img/slider_dl_report.png' %}" class="d-block w-100" alt="Couverture d'un bilan d'artificialisation" style="height: 400px;">
+                <img src="{% static 'home/img/slider_dl_report.png' %}" class="d-block w-100 height-400px" alt="Couverture d'un bilan d'artificialisation">
                 <div class="carousel-caption d-none d-md-block">
                   <h5>Bilan de votre territoire</h5>
                   <p>Télécharger le bilan de votre territoire pour compléter vos propres documents</p>

@@ -126,3 +126,11 @@
     max-height: 600px;
     overflow-y: auto;
 }
+
+#detail_artif_chart {
+    height: 250px;
+}
+
+#group-model {
+    display: none;
+}

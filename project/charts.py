@@ -2,7 +2,7 @@ import collections
 
 from highcharts import charts
 
-from public_data.models import AdministrationReferentiel
+from public_data.models import AdminRef
 
 
 class ProjectChart(charts.Chart):
@@ -65,7 +65,7 @@ class ConsoCommuneChart(ProjectChart):
         try:
             self.level = kwargs.pop("level")
         except KeyError:
-            self.level = AdministrationReferentiel.COMMUNE
+            self.level = AdminRef.COMMUNE
         super().__init__(*args, **kwargs)
 
     def get_legend_for_paper(self):

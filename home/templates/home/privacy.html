@@ -5,12 +5,12 @@
 {% block pagetitle %}Accueil{% endblock %}
 
 {% block headers %}
-<link rel="stylesheet" href="{% static 'home/css/home.css' %}" />
+<link rel="stylesheet" href="{% static 'home/css/home.css' %}" nonce="{{ CSP_NONCE }}" />
 {% endblock headers %}
 
 {% block content %}
 <div class="d-flex justify-content-center">
-    <div class="" style="width:750px;">
+    <div class="home-container">
         <h1 class="">Politique de confidentialité</h1>
 
         <h2 class="">Données à caractère personnel</h2>
