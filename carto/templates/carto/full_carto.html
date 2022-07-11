@@ -14,11 +14,7 @@ Carte intéractive
     <!-- leaflet -->
 
     {% sri_static "carto/js/leaflet.js" %}
-
-    <!-- Il y a un bug dans django-sri 0.3.0 et le hash n'est pas correcte pour ce fichier. Dès qu'une nouvelle version de django-sri sera disponible il faudra retirer la balise manuelle link ci-dessous
-    voir https://github.com/RealOrangeOne/django-sri/issues/66 -->
     {% sri_static "carto/css/leaflet.css" %}
-    <link crossorigin="anonymous" href="/static/carto/css/leaflet.css" integrity="sha256-BPfK9M5v34c2XP6p0cxVz1mUQLst0gTLk0mlc7kuodA=" rel="stylesheet" type="text/css"/>'
 
     <style nonce="{{ CSP_NONCE }}">
         .info {
