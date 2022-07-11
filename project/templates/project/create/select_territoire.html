@@ -35,8 +35,8 @@ Sélectionner un département
                     <strong>Cliquez sur un{{ feminin }} {{ land_label }} pour le sélectionner :</strong>
                     <div class="row g-2 row-cols-3 align-items-center mt-3">
                     {% for object in object_list %}
-                        <div class="col h-100">
-                            <button type="submit" class="btn btn-outline-primary w-100 overflow-hidden" name="land" value="{{ object.public_key }}" style="height: 60px;">
+                        <div class="col" height="60">
+                            <button type="submit" class="btn btn-outline-primary w-100 overflow-hidden" name="land" value="{{ object.public_key }}">
                                 {{ object.name }}
                             </button>
                         </div>
@@ -51,10 +51,4 @@ Sélectionner un département
     </div>
 </div>
 {% endlocalize %}
-{% endblock %}
-
-{% block bodyend %}
-<script language="javascript">
-
-</script>
 {% endblock %}

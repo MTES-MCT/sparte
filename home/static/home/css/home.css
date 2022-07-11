@@ -3,3 +3,19 @@
     background-color: rgba(250, 250, 250, 0.800);
     border-radius: 0.3rem !important;
 }
+
+.home-container {
+    width: 750px;
+}
+
+.text-blue {
+    color:#6A6AF4;
+}
+
+.height-400px {
+    height: 400px;
+}
+
+.height-350px {
+    height: 350px;
+}

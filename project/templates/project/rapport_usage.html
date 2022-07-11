@@ -6,6 +6,7 @@
 {% load i18n %}
 {% load l10n %}
 {% load highcharts_tags %}
+{% load sri %}
 
 {% block pagetitle %}
 Rapport usage du sol
@@ -13,7 +14,7 @@ Rapport usage du sol
 
 {% block headers %}
 <link href="{% static 'project/css/project.css' %}" rel="stylesheet" />
-<style>
+<style nonce="{{ CSP_NONCE }}">
 .tooltiped {
     border-bottom:1px dashed #000;
 }
@@ -75,10 +76,10 @@ Rapport usage du sol
                     <tr>
                         <th scope="col">Code</th>
                         <th scope="col">Libellé</th>
-                        <th scope="col" style="text-align: right">Surface {{ first_millesime }} (ha)</th>
-                        <th scope="col" style="text-align: right">Progression (ha)</th>
-                        <th scope="col" style="text-align: right">Surface {{ last_millesime }} (ha)</th>
-                        <th scope="col" style="text-align: right">Pourcentage {{ last_millesime }}</th>
+                        <th scope="col" class="text-end">Surface {{ first_millesime }} (ha)</th>
+                        <th scope="col" class="text-end">Progression (ha)</th>
+                        <th scope="col" class="text-end">Surface {{ last_millesime }} (ha)</th>
+                        <th scope="col" class="text-end">Pourcentage {{ last_millesime }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -112,13 +113,13 @@ Rapport usage du sol
                     <tr>
                         <th scope="col"></th>
                         {% for header in matrix_headers %}
-                        <th scope="col" style="text-align: right">
+                        <th scope="col" class="text-end">
                             <span class="tooltiped" data-toggle="tooltip" title="{{ header.label }}">
                                 {{ header.code }}
                             </span>
                         </th>
                         {% endfor %}
-                        <th scope="col" style="text-align: right">Total</th>
+                        <th scope="col" class="text-end">Total</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -164,10 +165,10 @@ Rapport usage du sol
 
 {% block bodyend %}
 {% localize off %}
-<script src="https://code.highcharts.com/highcharts.js"></script>
-<script src="https://code.highcharts.com/modules/exporting.js"></script>
+{% sri_static "highcharts/js/highcharts.js" %}
+{% sri_static "highcharts/js/exporting.js" %}
 {% french_translation %}
-{% display_chart 'chart_3' pie_chart %}
-{% display_chart 'chart_1' progression_chart %}
+{% display_chart 'chart_3' pie_chart CSP_NONCE %}
+{% display_chart 'chart_1' progression_chart CSP_NONCE %}
 {% endlocalize %}
 {% endblock %}

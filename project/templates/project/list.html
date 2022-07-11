@@ -1,6 +1,7 @@
 {% extends 'index.html' %}
 
 {% load static %}
+{% load sri %}
 
 {% block pagetitle %}
 Mes diagnostics
@@ -8,8 +9,9 @@ Mes diagnostics
 
 
 {% block headers %}
-<link href="{% static 'project/css/project.css' %}" rel="stylesheet" />
-<script src="https://unpkg.com/masonry-layout@4/dist/masonry.pkgd.min.js"></script>
+{% sri_static "project/css/project.css" %}
+{% sri_static "js/masonry.pkgd.min.js" %}
+<script src="https://unpkg.com/masonry-layout@4/dist/masonry.pkgd.min.js" nonce="{{ CSP_NONCE }}"></script>
 {% endblock %}
 
 {% block content %}

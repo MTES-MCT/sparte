@@ -53,7 +53,7 @@ class ScalingoInterface:
         if self.env_name == "local":
             asyncio.run(self.async_run(cmd))
         else:
-            cmd = f"{self.get_scalingo_run_cmd()} {cmd}"
+            cmd = f"{self.get_scalingo_run_cmd()} '{cmd}'"
             asyncio.run(self.async_run(cmd))
 
     def manage_py(self, management_command_name, **options):
