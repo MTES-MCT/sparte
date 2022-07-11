@@ -7,13 +7,17 @@ Le Service de Portrait de l’ARtificialisation des TErritoires (ou SPARTE) est 
 
 ## Installation
 
-1. Cloner le répository git
-2. Installer les dépendances avec pipenv (Poetry n'étant pas supporté par Scalingo)
-
-```
-git clone git@github.com:MTES-MCT/sparte.git
-pipenv install --dev
-```
+1. Cloner le répository git `git clone git@github.com:MTES-MCT/sparte.git` puis aller dans le dossier `cd sparte`
+2. Installer les dépendances avec pipenv `pipenv install --dev`
+3. Créer un fichier .env avec (à compléter avec vos crédentials, voir ci-dessous...)
+4. Démarrer les bases de données `docker-compose up -d`
+5. Basculer dans l'environnement virtuel `pipenv shell`
+6. Migration initiale `python manage.py migrate`
+7. Créer un super utilisateur `python manage.py createsuperuser`
+8. Démarrer le serveur `python manage.py runserver 0.0.0.0:8080`
+9. Ouvrer la home page [http://localhost:8080/](http://localhost:8080/)
+10. Copier les fichiers de données OCS GE et Cérema... sur votre bucket AWS
+11. Lancer l'installation des données `python scripts/cmd.py --env local rebuild`
 
 ### Variables d'environnement
 
@@ -21,39 +25,50 @@ Pour une installation locale, ces valeurs doivent être dans le fichier .env à 
 
 | Nom | description | valeur locale |
 |-----|-------------|---------------|
-| SECRET | salt pour django | N/A |
-| DEBUG | salt pour django | true |
-| DATABASE_URL | chaîne pour se connecter à la base de données Postgresql + gis | postgis://sparte_user:1234@localhost:5432/sparte |
+| SECRET | salt pour django |  |
+| DEBUG | salt pour django | 1 |
+| DATABASE_URL | chaîne pour se connecter à la base de données Postgresql + gis | postgis://postgres:postgres@127.0.0.1:5432/postgres |
 | ALLOWED_HOSTS | urls qui peuvent se connecter au site web | 127.0.0.1,localhost |
-| CELERY_BROKER_URL | chaîne pour se connecter à redis | redis://localhost:6379/0 |
-| CELERY_RESULT_BACKEND | chaîne pour se connecter à redis | redis://localhost:6379/0 |
+| CELERY_BROKER_URL | chaîne pour se connecter à redis | redis://127.0.0.1:6379/0 |
+| CELERY_RESULT_BACKEND | chaîne pour se connecter à redis | redis://127.0.0.1:6379/0 |
+| ENVIRONMENT | indique sur quel environnement est exécuté l'app. Choix possibles: local, staging, prod | local |
+| ALLOWED_HOSTS | les noms de domaines utilisables | 127.0.0.1,localhost |
+| DOMAIN_URL | l'url sur laquelle est branchée l'application | http://localhost:8080/ |
+| AWS_ACCESS_KEY_ID | compte AWS pour stocker les données |  |
+| AWS_SECRET_ACCESS_KEY | secret pour se connecter à AWS |  |
+| AWS_STORAGE_BUCKET_NAME | nom du bucket de stockage | sparte-staging |
+| AWS_S3_REGION_NAME | région de AWS | eu-west-3 |
+| AWS_LOCATION | prefix pour ne pas avoir de collisions entre les instances de l'app | local |
+| EMAIL_ENGINE | indique à l'application le backend à utiliser pour envoyer les e-mails. 2 choix disponibles : mailjet, local | local |
+| MAILJET_ID | ID pour se connecter au compte mailjet |  |
+| MAILJET_SECRET | secret pour se connecter au compte mailjet |  |
+| DEFAULT_FROM_EMAIL |  | swann.bouviermuller@gmail.com |
+| MATOMO_TOKEN | Token pour envoyer les données à Matomo |  |
+| USE_SRI | Active l'utilisation des SRI même lorsque debug = 1 | 1 |
+
+Cariables d'environnement spécifique à Scalingo. Voir les valeurs sur Scalingo.
+
+| Nom | description |
+|-----|-------------|
+| DISABLE_COLLECTSTATIC | Requis pour déployer correctement les buildpacks |
+| GDAL_DATA | requis pour le buildpack qui install GeoDjango |
+| LD_LIBRARY_PATH | requis pour le buildpack qui install GeoDjango |
+| PROJ_LIB | requis pour le buildpack qui install GeoDjango |
+| PYTHONPATH | Non déterminé |
+| SCALINGO_POSTGRESQL_URL | Ajouté lorsque l'addon postgres est activé |
+| SCALINGO_REDIS_URL | Ajouté lorsque l'addon redis est activé |
 
 
 ## Before commiting
 
-Check unit test coverage: `coverage run -m pytest && coverage report -m`
+Vérifier la couverture des TU: `coverage run -m pytest && coverage report -m`
 
-Check flake8 linting: `flake8`
+Vérifier que le formatage est bon: `flake8`
 
 Si vous souhaitez bypasser pre-commit hook (usefull pour ajouter des fichiers shapes sans les modifiers):
 ```
 git commit --no-verify
 ```
-
-## TODO List
-
-- [ ] Connecté à un git remote et mettre en place les branches
-- [ ] Déployer en DEV, PROD
-- [ ] Plug Sentry
-- [ ] Ajouter les TU et flake8 dans le PRE-COMMIT
-
-
-Done :
-- [x] deploy on staging
-- [x] add celery asynchrone tasking
-- [x] Home page avec connexion
-- [x] Custom user pour associer des données telles que téléphone, date de naissance, etc...
-- [x] storage on S3 bucket
 
 ## The rocky river pattern
 
@@ -65,24 +80,6 @@ graph TD;
   public_data-->Carto;
   Carto-->project;
 ```
-
-## Folder /scripts
-
-This folder contains several Sclingo CLI wrappers to update servers. It uses Click framework.
-
-There are two commandes:
-- upload-public-data: that upload data on public_data models using files available on remote /media folder.
-- migrate: execute database migration begining by users
-
-Commands:
-```
-python -m cmd migrate --env prod
-python -m cmd upload-public-data --env staging
-```
-
-env option is used to indicate which scalingo app to update.
-
-variables.py file containes required information to pass to scalingo CLI to contact correct app (sparte-staging for staging or sparte for production)
 
 ## Useful links
 
