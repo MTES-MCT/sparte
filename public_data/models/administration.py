@@ -38,13 +38,33 @@ from .couverture_usage import CouvertureUsageMatrix
 from .mixins import DataColorationMixin
 
 
-class AdministrationReferentiel:
+class AdminRef:
     REGION = "REGION"
     DEPARTEMENT = "DEPART"
     EPCI = "EPCI"
     COMMUNE = "COMM"
     SCOT = "SCOT"
     COMPOSITE = "COMP"
+
+    CHOICES = (
+        (COMMUNE, "Commune"),
+        (EPCI, "EPCI"),
+        (DEPARTEMENT, "Département"),
+        (REGION, "Région"),
+        (COMPOSITE, "Composite"),
+    )
+
+    CHOICES_DICT = {key: value for key, value in CHOICES}
+
+    @classmethod
+    def get_form_choices(cls, status_list):
+        result = list()
+        for status in status_list:
+            for key, value in cls.CHOICES:
+                if status == key:
+                    result.append((key, value))
+                    break
+        return result
 
     @classmethod
     def get_class(cls, name):
@@ -59,6 +79,71 @@ class AdministrationReferentiel:
         elif name == cls.SCOT:
             pass
         raise AttributeError(f"{name} is not an administrative layer")
+
+    @classmethod
+    def get_analysis_default_level(cls, level):
+        default_analysis = {
+            cls.COMMUNE: cls.COMMUNE,
+            cls.EPCI: cls.COMMUNE,
+            cls.DEPARTEMENT: cls.EPCI,
+            cls.REGION: cls.DEPARTEMENT,
+            cls.COMPOSITE: cls.COMMUNE,
+        }
+        return default_analysis[level]
+
+    @classmethod
+    def get_admin_level(cls, type_list):
+        if not isinstance(type_list, set):
+            type_list = {_ for _ in type_list}
+        if len(type_list) == 1:
+            return type_list.pop()
+        else:
+            return cls.COMPOSITE
+
+    @classmethod
+    def get_available_analysis_level(cls, land_type):
+        available = {
+            cls.COMMUNE: [cls.COMMUNE],
+            cls.EPCI: [cls.COMMUNE],
+            cls.DEPARTEMENT: [
+                cls.COMMUNE,
+                cls.EPCI,
+            ],
+            cls.REGION: [
+                cls.COMMUNE,
+                cls.EPCI,
+                cls.DEPARTEMENT,
+            ],
+            cls.COMPOSITE: [
+                cls.COMMUNE,
+                cls.EPCI,
+                cls.DEPARTEMENT,
+                cls.REGION,
+            ],
+        }
+        return available[land_type]
+
+    @classmethod
+    def get_default_analysis_level(cls, type_list):
+        """When we have a group of lands, the smallest analysis level is selected
+        REGION > DEPARTEMENT > EPCI > COMMUNE
+        """
+        if isinstance(type_list, str):
+            type_list = [
+                type_list,
+            ]
+        elif not isinstance(type_list, list):
+            type_list = list(type_list)
+        if cls.COMMUNE in type_list:
+            return cls.COMMUNE
+        elif cls.EPCI in type_list:
+            return cls.EPCI
+        elif cls.DEPARTEMENT in type_list:
+            return cls.DEPARTEMENT
+        elif cls.REGION in type_list:
+            return cls.REGION
+        else:
+            return cls.COMMUNE
 
 
 class GetDataFromCeremaMixin:
@@ -102,8 +187,8 @@ class Region(LandMixin, GetDataFromCeremaMixin, models.Model):
     name = models.CharField("Nom", max_length=27)
     mpoly = models.MultiPolygonField()
 
-    land_type = AdministrationReferentiel.REGION
-    default_analysis_level = AdministrationReferentiel.DEPARTEMENT
+    land_type = AdminRef.REGION
+    default_analysis_level = AdminRef.DEPARTEMENT
 
     def get_ocsge_millesimes(self) -> set:
         return {
@@ -139,8 +224,8 @@ class Departement(LandMixin, GetDataFromCeremaMixin, models.Model):
     name = models.CharField("Nom", max_length=23)
     mpoly = models.MultiPolygonField()
 
-    land_type = AdministrationReferentiel.DEPARTEMENT
-    default_analysis_level = AdministrationReferentiel.EPCI
+    land_type = AdminRef.DEPARTEMENT
+    default_analysis_level = AdminRef.EPCI
 
     def get_ocsge_millesimes(self) -> set:
         """Return the list of all OCSGE millesimes (years) available for this dept."""
@@ -165,8 +250,8 @@ class Epci(LandMixin, GetDataFromCeremaMixin, models.Model):
     mpoly = models.MultiPolygonField()
     departements = models.ManyToManyField(Departement)
 
-    land_type = AdministrationReferentiel.EPCI
-    default_analysis_level = AdministrationReferentiel.COMMUNE
+    land_type = AdminRef.EPCI
+    default_analysis_level = AdminRef.COMMUNE
 
     def get_ocsge_millesimes(self) -> set:
         return {
@@ -219,8 +304,8 @@ class Commune(DataColorationMixin, LandMixin, GetDataFromCeremaMixin, models.Mod
     # DataColorationMixin properties that need to be set when heritating
     default_property = "insee"  # need to be set correctly to work
     default_color = "Yellow"
-    land_type = AdministrationReferentiel.COMMUNE
-    default_analysis_level = AdministrationReferentiel.COMMUNE
+    land_type = AdminRef.COMMUNE
+    default_analysis_level = AdminRef.COMMUNE
 
     @property
     def is_artif_ready(self):
@@ -323,10 +408,10 @@ class Land:
 
     class Meta:
         subclasses = {
-            AdministrationReferentiel.COMMUNE: Commune,
-            AdministrationReferentiel.EPCI: Epci,
-            AdministrationReferentiel.DEPARTEMENT: Departement,
-            AdministrationReferentiel.REGION: Region,
+            AdminRef.COMMUNE: Commune,
+            AdminRef.EPCI: Epci,
+            AdminRef.DEPARTEMENT: Departement,
+            AdminRef.REGION: Region,
         }
 
     def __init__(self, public_key):
@@ -357,44 +442,12 @@ class Land:
         return [Land(pk) for pk in public_keys]
 
     @classmethod
-    def get_available_analysis_level(cls, land_type):
-        available = {
-            AdministrationReferentiel.COMMUNE: [AdministrationReferentiel.COMMUNE],
-            AdministrationReferentiel.EPCI: [AdministrationReferentiel.COMMUNE],
-            AdministrationReferentiel.DEPARTEMENT: [
-                AdministrationReferentiel.COMMUNE,
-                AdministrationReferentiel.EPCI,
-            ],
-            AdministrationReferentiel.REGION: [
-                AdministrationReferentiel.COMMUNE,
-                AdministrationReferentiel.EPCI,
-                AdministrationReferentiel.DEPARTEMENT,
-            ],
-            AdministrationReferentiel.COMPOSITE: [
-                AdministrationReferentiel.COMMUNE,
-                AdministrationReferentiel.EPCI,
-                AdministrationReferentiel.DEPARTEMENT,
-                AdministrationReferentiel.REGION,
-            ],
-        }
-        return available[land_type]
-
-    @classmethod
     def get_default_analysis_level(cls, lands):
         """When we have a group of lands, the smallest analysis level is selected
         REGION > DEPARTEMENT > EPCI > COMMUNE
         """
         available = {land.default_analysis_level for land in lands}
-        if AdministrationReferentiel.COMMUNE in available:
-            return AdministrationReferentiel.COMMUNE
-        elif AdministrationReferentiel.EPCI in available:
-            return AdministrationReferentiel.EPCI
-        elif AdministrationReferentiel.DEPARTEMENT in available:
-            return AdministrationReferentiel.DEPARTEMENT
-        elif AdministrationReferentiel.REGION in available:
-            return AdministrationReferentiel.REGION
-        else:
-            return AdministrationReferentiel.COMMUNE
+        return AdminRef.get_default_analysis_level(available)
 
     @classmethod
     def get_land_class(cls, land_type):

@@ -85,7 +85,12 @@ urlpatterns = [
         views.SelectTerritoireView.as_view(),
         name="create-2",
     ),
-    path("diagnostic/dates", views.SetProjectOptions.as_view(), name="create-3"),
+    # path("diagnostic/dates", views.SetProjectOptions.as_view(), name="create-3"),
+    path(
+        "diagnostic/dates/<slug:public_keys>",
+        views.SetProjectOptions.as_view(),
+        name="create-3",
+    ),
 ]
 
 
