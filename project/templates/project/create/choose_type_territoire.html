@@ -8,19 +8,17 @@
 
 {% block pagetitle %}
 Nouveau diagnostic
+{% endblock %}
+
+{% block headers %}
 <style nonce="{{ CSP_NONCE }}">
 .test {
     background-color: rgba(25, 135, 84, 0.9);
     width: 750px;
 }
-
 .choice-box {
     width: 200px;
-    height: 200px;
-    position: relative;
-}
-
-.choice-box > div {
+    height: 100px;
     position: relative;
 }
 </style>
@@ -33,29 +31,25 @@ Nouveau diagnostic
         <div class="d-flex">
             <div class="shadow border rounded-3 m-2 bg-secondary d-flex align-items-center justify-content-center choice-box">
                 <div class="text-center text-white">
-                    <h1><i class="bi bi-geo-alt"></i></h1>
-                    <p><a href="{% url 'project:create-2' 'region' %}" class="stretched-link link-light">Une région</a></p>
+                    <p class="m-0"><a href="{% url 'project:create-2' 'region' %}" class="stretched-link link-light">Une région</a></p>
                 </div>
             </div>
 
             <div class="shadow border rounded-3 m-2 bg-secondary d-flex align-items-center justify-content-center text-white choice-box">
                 <div class="text-center">
-                    <h2><i class="bi bi-geo-alt"></i></h2>
-                    <p><a href="{% url 'project:create-2' 'departement' %}" class="stretched-link link-light">Un département</a></p>
+                    <p class="m-0"><a href="{% url 'project:create-2' 'departement' %}" class="stretched-link link-light">Un département</a></p>
                 </div>
             </div>
 
             <div class="shadow border rounded-3 m-2 bg-secondary d-flex align-items-center justify-content-center text-white choice-box">
                 <div class="text-center">
-                    <h3><i class="bi bi-geo-alt"></i></h3>
-                    <p><a href="{% url 'project:create-2' 'epci' %}" class="stretched-link link-light">Un EPCI</a></p>
+                    <p class="m-0"><a href="{% url 'project:create-2' 'epci' %}" class="stretched-link link-light">Un EPCI</a></p>
                 </div>
             </div>
 
             <div class="shadow  border rounded-3 m-2 bg-secondary d-flex align-items-center justify-content-center text-white choice-box">
                 <div class="text-center">
-                    <h3><i class="bi bi-geo-alt"></i></h3>
-                    <p><a href="{% url 'project:create-2' 'commune' %}" class="stretched-link link-light">Une commune</a></p>
+                    <p class="m-0"><a href="{% url 'project:create-2' 'commune' %}" class="stretched-link link-light">Une commune</a></p>
                 </div>
             </div>
         </div>
@@ -63,21 +57,16 @@ Nouveau diagnostic
         <p class="mt-5">Mode avancé :</p>
         <div class="shadow  border rounded-3 m-2 bg-secondary d-flex align-items-center justify-content-center text-white choice-box">
             <div class="text-center">
-                <h3><i class="bi bi-grid-3x3-gap"></i></h3>
-                <p><a href="{% url 'project:select-city' %}" class="stretched-link link-light">Plusieurs communes</a></p>
+                <p class="m-0"><a href="{% url 'project:select-city' %}" class="stretched-link link-light">Plusieurs communes</a></p>
             </div>
         </div>
 
         <p class="mt-5">Prochainement disponible :</p>
         <div class="border rounded-3 m-2 bg-light d-flex align-items-center justify-content-center text-muted">
             <div class="text-center">
-                <h3><i class="bi bi-geo-alt"></i></h3>
                 <p>Un scot</p>
             </div>
         </div>
-
-
-
     </div>
 </div>
 
