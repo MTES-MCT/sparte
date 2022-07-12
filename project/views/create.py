@@ -12,6 +12,7 @@ from public_data.models import (
     Region,
     Commune,
     Land,
+    LandException,
     AdministrationReferentiel,
 )
 from utils.db import fix_poly
@@ -171,10 +172,6 @@ class SelectPublicProjects(BreadCrumbMixin, TemplateView):
                 }
             )
         return context
-
-
-class LandException(BaseException):
-    pass
 
 
 class SetProjectOptions(BreadCrumbMixin, FormView):
@@ -357,7 +354,12 @@ class SelectCities(BreadCrumbMixin, TemplateView):
         return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **context):
-        selected_cities = [Land(pk) for pk in self.public_keys]
+        selected_cities = []
+        for pk in self.public_keys:
+            try:
+                selected_cities.append(Land(pk))
+            except LandException:
+                messages.error(self.request, "Erreur de sélection d'une commune")
         selected_cities_url = f"selected_cities={';'.join(self.public_keys)}"
         context.update(
             {
