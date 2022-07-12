@@ -660,10 +660,10 @@ class Project(BaseProject):
         qs = qs.annotate(code_prefix=code_field)
         qs = qs.values("code_prefix")
         qs = qs.annotate(
-            surface_first=Sum("surface", filter=Q(year=first_millesime), default=0)
+            surface_first=cast_sum("surface", filter=Q(year=first_millesime))
         )
         qs = qs.annotate(
-            surface_last=Sum("surface", filter=Q(year=last_millesime), default=0)
+            surface_last=cast_sum("surface", filter=Q(year=last_millesime))
         )
         data = list(qs)
         item_list = list(klass.objects.all().order_by("code"))
@@ -783,6 +783,7 @@ class Project(BaseProject):
             return {
                 headers[i[2:]]: {headers[c[2:]]: row[c] for c in df.columns}
                 for i, row in df.iterrows()
+                if not isinstance(i, float)
             }
         else:
             return dict()

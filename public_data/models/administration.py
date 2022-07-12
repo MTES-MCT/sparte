@@ -38,6 +38,10 @@ from .couverture_usage import CouvertureUsageMatrix
 from .mixins import DataColorationMixin
 
 
+class LandException(BaseException):
+    pass
+
+
 class AdminRef:
     REGION = "REGION"
     DEPARTEMENT = "DEPART"
@@ -416,8 +420,16 @@ class Land:
 
     def __init__(self, public_key):
         self.public_key = public_key
-        self.land_type, self.id = public_key.strip().split("_")
-        klass = self.get_land_class(self.land_type)
+        try:
+            self.land_type, self.id = public_key.strip().split("_")
+        except ValueError:
+            raise LandException("Clé du territoire mal formatée")
+        if not self.id.isdigit():
+            raise LandException("ID n'est pas un entier correcte.")
+        try:
+            klass = self.get_land_class(self.land_type)
+        except KeyError:
+            raise LandException("Territoire inconnu.")
         try:
             self.land = klass.objects.get(pk=int(self.id))
         except ObjectDoesNotExist as e:

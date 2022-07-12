@@ -14,6 +14,7 @@ urlpatterns = [
     path("stats", views.StatsView.as_view(), name="stats"),
     path("test", views.TestView.as_view(), name="test"),
     path("accessibilite", views.AccessView.as_view(), name="accessibilite"),
+    path("robots.txt", views.RobotView.as_view(), name="robots"),
 ]
 
 router = routers.DefaultRouter()
