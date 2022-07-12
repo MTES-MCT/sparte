@@ -301,7 +301,8 @@ class SetProjectOptions(BreadCrumbMixin, FormView):
             and project.land_type != AdministrationReferentiel.COMPOSITE
         ):
             public_keys = [_.public_key for _ in project.get_neighbors()]
-            project.add_look_a_like(public_keys, many=True)
+            if len(public_keys) <= 8:
+                project.add_look_a_like(public_keys, many=True)
 
         project.set_success(save=True)
 
