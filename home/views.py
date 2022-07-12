@@ -52,3 +52,8 @@ class FrequentlyAskedQuestionDetail(GetObjectMixin, BreadCrumbMixin, DetailView)
             {"href": reverse_lazy("home:faq-detail"), "title": faq.menu_entry},
         ]
         return breadcrumbs
+
+
+class RobotView(TemplateView):
+    template_name = "home/robots.txt"
+    content_type = "text/plain"
