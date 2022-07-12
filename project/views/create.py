@@ -300,8 +300,11 @@ class SelectCities(BreadCrumbMixin, TemplateView):
             self.public_keys.pop(i)
         # add a new city
         if self.to_add and self.to_add not in self.public_keys:
-            city = Land(self.to_add)
-            self.public_keys.append(city.public_key)
+            try:
+                city = Land(self.to_add)
+                self.public_keys.append(city.public_key)
+            except LandException:
+                messages.error(request, "Commune non ajoutable")
         # list city autocompleted
         if self.needle:
             autocomplete = [
