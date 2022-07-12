@@ -44,3 +44,8 @@ class StatsView(BreadCrumbMixin, TemplateView):
         kwargs["organism_pie_chart"] = charts.OrganismPieChart()
         # kwargs["function_pie_chart"] = charts.FunctionsPieChart()
         return super().get_context_data(**kwargs)
+
+
+class RobotView(TemplateView):
+    template_name = "home/robots.txt"
+    content_type = "text/plain"
