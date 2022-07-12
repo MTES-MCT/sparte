@@ -27,7 +27,7 @@ Pour une installation locale, ces valeurs doivent être dans le fichier .env à 
 |-----|-------------|---------------|
 | SECRET | salt pour django |  |
 | DEBUG | salt pour django | 1 |
-| DATABASE_URL | chaîne pour se connecter à la base de données Postgresql + gis | postgis://postgres:postgres@127.0.0.1:5432/postgres |
+| DATABASE_URL | chaîne pour se connecter à la base de données Postgresql + gis | postgis://postgres:postgres@127.0.0.1:54321/postgres |
 | ALLOWED_HOSTS | urls qui peuvent se connecter au site web | 127.0.0.1,localhost |
 | CELERY_BROKER_URL | chaîne pour se connecter à redis | redis://127.0.0.1:6379/0 |
 | CELERY_RESULT_BACKEND | chaîne pour se connecter à redis | redis://127.0.0.1:6379/0 |
