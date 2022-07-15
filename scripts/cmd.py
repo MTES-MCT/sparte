@@ -144,11 +144,14 @@ def rebuild(ctx, klass=None):
     click.secho("Load parameters", fg="cyan")
     connecter.manage_py("load_param --file required_parameters.json")
 
-    click.secho("Load data from cerema", fg="cyan")
+    click.secho("Load usage and couverture referentials", fg="cyan")
+    connecter.manage_py("load_usage_couv")
+
+    click.secho("Create matrix", fg="cyan")
     connecter.manage_py("build_matrix")
 
     click.secho("Load data from cerema", fg="cyan")
-    connecter.manage_py("load_cerema --no-verbose")
+    connecter.manage_py("load_cerema")
 
     click.secho("build administrative territory", fg="cyan")
     connecter.manage_py("build_administrative_layers")
