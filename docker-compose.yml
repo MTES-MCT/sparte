@@ -10,7 +10,7 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
     ports:
-      - "54321:54321"
+      - "54321:5432"
     networks:
       - app-network
 
@@ -32,7 +32,7 @@ services:
     environment:
       - DJANGO_ALLOW_ASYNC_UNSAFE=true
       - JUPYTER_CONFIG_DIR=/app/config/
-      - DATABASE_URL=postgis://postgres:postgres@db:54321/postgres
+      - DATABASE_URL=postgis://postgres:postgres@db:5432/postgres
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
     depends_on:
