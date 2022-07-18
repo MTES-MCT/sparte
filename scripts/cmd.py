@@ -151,7 +151,7 @@ def rebuild(ctx, klass=None):
     connecter.manage_py("build_matrix")
 
     click.secho("Load data from cerema", fg="cyan")
-    connecter.manage_py("load_cerema")
+    connecter.manage_py("load_cerema --no-verbose")
 
     click.secho("build administrative territory", fg="cyan")
     connecter.manage_py("build_administrative_layers")
@@ -166,7 +166,7 @@ def rebuild(ctx, klass=None):
     connecter.manage_py("set_dept_millesimes")
 
     click.secho("Build artificial area", fg="cyan")
-    connecter.manage_py("build_artificial_area --no-verbose")
+    connecter.manage_py("build_artificial_area")
 
     click.secho("Evaluate density of building in zone construite (async)", fg="cyan")
     connecter.manage_py("set_density")
