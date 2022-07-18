@@ -253,7 +253,6 @@ class CouvertureSolSerializer(serializers.ModelSerializer):
             "parent",
             "code",
             "label",
-            "is_artificial",
         )
         model = CouvertureSol
 
