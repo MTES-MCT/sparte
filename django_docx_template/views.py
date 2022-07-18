@@ -70,13 +70,6 @@ class TemplateDetailView(LoginRequiredMixin, BaseTemplateMixin, DetailView):
 class TemplateDeletelView(LoginRequiredMixin, BaseTemplateMixin, DeleteView):
     model = DocxTemplate
 
-    def get_context_data(self, **kwargs):
-        examples = self.object.data_source.get_all_example_combinations()
-        if examples:
-            kwargs["examples"] = [_.values() for _ in examples]
-            kwargs["example_headers"] = examples[0].keys()
-        return super().get_context_data(**kwargs)
-
 
 class TemplateMergeView(View):
     def merge(self, template, **kwargs):
