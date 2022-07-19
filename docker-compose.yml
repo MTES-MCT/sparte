@@ -52,7 +52,7 @@ services:
     env_file: .env
     # override a few environment variables to ensure it works with other containers
     environment:
-      - DATABASE_URL=postgis://postgres:postgres@db:54321/postgres
+      - DATABASE_URL=postgis://postgres:postgres@db:5432/postgres
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
     ports:
