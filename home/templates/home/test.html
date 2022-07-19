@@ -1,15 +1,15 @@
-{% load sri %}
+{% extends 'index.html' %}
 
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <title>SPARTE - Test</title>
-        <link crossorigin="anonymous" href="/static/carto/css/leaflet.css" integrity="sha256-BPfK9M5v34c2XP6p0cxVz1mUQLst0gTLk0mlc7kuodA=" rel="stylesheet" type="text/css"/>
-        {% sri_static "carto/css/leaflet.css" %}
-    </head>
-    <body>
-        <h1>Test</h1>
-        <p>Problème de hash sur leaflet.css</p>
-        <textarea>{% sri_static "carto/css/leaflet.css" %}</textarea>
-    </body>
-</html>
+{% load utils_tags %}
+
+{% block headers %}
+{% endblock headers %}
+
+{% block content %}
+<div class="d-flex justify-content-center">
+    <div class="home-container">
+        <h1 class="mt-5">Tests Matomo event</h1>
+
+    </div>
+</div>
+{% endblock content %}
