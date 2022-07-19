@@ -46,7 +46,7 @@ Pour une installation locale, ces valeurs doivent être dans le fichier .env à 
 | MATOMO_TOKEN | Token pour envoyer les données à Matomo |  |
 | USE_SRI | Active l'utilisation des SRI même lorsque debug = 1 | 1 |
 
-Cariables d'environnement spécifique à Scalingo. Voir les valeurs sur Scalingo.
+Variables d'environnement spécifique à Scalingo. Voir les valeurs sur Scalingo.
 
 | Nom | description |
 |-----|-------------|
