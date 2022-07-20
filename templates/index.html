@@ -62,7 +62,7 @@
                             </li>
 
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ EXTERNAL_DOC }}" target="_blank">Documentations</a>
+                                <a id="btn-documentation" class="nav-link" href="{{ EXTERNAL_DOC }}" target="_blank">Documentations</a>
                             </li>
                         </ul>
 
@@ -127,7 +127,7 @@
             </nav>
 
             <!-- Page content-->
-            <main class="p-0 flex-grow-1 d-flex flex-column">
+            <main class="p-0 flex-grow-1 d-flex flex-column" id="main">
                 {% if messages %}
                     <div class="row justify-content-center w-100 my-0">
                         <div class="col-12 col-md-8 col-lg-6">
@@ -141,7 +141,7 @@
                     </div>
                 {% endif %}
                 {% block carto %}
-                <div class="mb-5">
+                <div class="mb-5" id="block-content">
                     {% block content %}
                     {% endblock %}
                 </div>
@@ -169,6 +169,7 @@
                     </div>
                 </div>
                 {% endblock footer %}
+                </div>
             </main>
         </div>
 
@@ -184,6 +185,13 @@
         })
         </script>
         <!-- subtemplate footer injection -->
-        {% block bodyend %}{% endblock %}
+        {% block bodyend %}{% endblock bodyend %}
+        <!-- Tagging injection -->
+        {% block tagging %}{% endblock tagging %}
+        <script language="javascript" nonce="{{ CSP_NONCE }}">
+            $( "#btn-documentation" ).click(function() {
+                _paq.push(['trackEvent', 'Documentation', 'Barre de menu'])
+            })
+        </script>
     </body>
 </html>
