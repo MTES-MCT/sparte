@@ -9,7 +9,7 @@
 {% load sri %}
 
 {% block pagetitle %}
-Rapport usage du sol
+{{ nom }}
 {% endblock %}
 
 {% block headers %}
@@ -70,7 +70,7 @@ Rapport usage du sol
 
 
         <div class="box scrollme-x p-4 table table-responsive">
-            <h3>Progression de l'usage du sol de {{ first_millesime }} à {{ last_millesime }} :</h3>
+            <h3>Progression de {{ first_millesime }} à {{ last_millesime }} :</h3>
             <table class="table table-striped table-sm table-hover">
                 <thead>
                     <tr>
@@ -172,3 +172,19 @@ Rapport usage du sol
 {% display_chart 'chart_1' progression_chart CSP_NONCE %}
 {% endlocalize %}
 {% endblock %}
+
+{% block tagging %}
+<script language="javascript" nonce="{{ CSP_NONCE }}">
+$( window ).on('load', function () {
+    _paq.push(['trackEvent', 'Consultation diagnostic', 'Tableau de bord', '{{ nom }}'])
+})
+
+var fired = false
+$( "#main" ).scroll(function() {
+    if(fired == false && $( "#main" ).scrollTop() + $( window ).height() > $( "#block-content" ).height() - 100) {
+        _paq.push(['trackEvent', 'Consultation diagnostic', 'Fin tableau de bord', '{{ nom }}'])
+        fired = true
+    }
+})
+</script>
+{% endblock tagging %}

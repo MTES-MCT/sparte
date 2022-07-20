@@ -224,3 +224,11 @@ $("#save-all").click(function(){
 {% display_chart 'pie_determinant' determinant_pie_chart %}
 {% endlocalize %}
 {% endblock %}
+
+{% block tagging %}
+<script language="javascript" nonce="{{ CSP_NONCE }}">
+$( window ).on('load', function () {
+    _paq.push(['trackEvent', 'Consultation diagnostic', 'Option avancée', 'Analyse par groupe de communes'])
+})
+</script>
+{% endblock tagging %}

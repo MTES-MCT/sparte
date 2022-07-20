@@ -46,7 +46,7 @@ Sélectionner un plan
         <form action="" method="post">
             {% csrf_token %}
             {{ form }}
-            <button class="btn w-100 btn-primary mt-4" type="submit">Voir mon diagnostic</button>
+            <button id="show-diag" class="btn w-100 btn-primary mt-4" type="submit">Voir mon diagnostic</button>
         </form>
     </div>
 </div>
@@ -60,3 +60,15 @@ $('#id_departement').on('change', function(){ $(this).closest('form').submit() }
 $('#id_epci').on('change', function(){ $(this).closest('form').submit() })
 </script>
 {% endblock %}
+
+{% block tagging %}
+<script language="javascript" nonce="{{ CSP_NONCE }}">
+$( window ).on('load', function () {
+    _paq.push(['trackEvent', 'Création diagnostic', 'Options point'])
+})
+
+$( "#show-diag" ).click(function () {
+    _paq.push(['trackEvent', 'Création diagnostic', 'End point'])
+})
+</script>
+{% endblock tagging %}

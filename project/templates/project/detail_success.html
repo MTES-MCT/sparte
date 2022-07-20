@@ -174,5 +174,10 @@ SPARTE
 {% endif %}
 {% endblock %}
 
-{% block bodyend %}
-{% endblock %}
+{% block tagging %}
+<script language="javascript" nonce="{{ CSP_NONCE }}">
+$( window ).on('load', function () {
+    _paq.push(['trackEvent', 'Consultation diagnostic', 'Home page'])
+})
+</script>
+{% endblock tagging %}
