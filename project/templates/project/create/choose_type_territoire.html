@@ -71,3 +71,11 @@ Nouveau diagnostic
 </div>
 
 {% endblock %}
+
+{% block tagging %}
+<script language="javascript" nonce="{{ CSP_NONCE }}">
+$( window ).on('load', function () {
+    _paq.push(['trackEvent', 'Création diagnostic', 'Entry point', 'parcours 2'])
+})
+</script>
+{% endblock tagging %}
