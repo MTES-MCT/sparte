@@ -345,6 +345,7 @@ class ProjectReportCouvertureView(GroupMixin, DetailView):
 
         surface_territory = project.area
         kwargs = {
+            "nom": "Couverture",
             "surface_territory": surface_territory,
             "active_page": "couverture",
             "ocsge_available": True,
@@ -395,6 +396,7 @@ class ProjectReportUsageView(GroupMixin, DetailView):
 
         surface_territory = project.area
         kwargs = {
+            "nom": "Usage",
             "surface_territory": surface_territory,
             "active_page": "usage",
             "ocsge_available": True,
