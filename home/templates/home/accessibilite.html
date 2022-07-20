@@ -53,3 +53,11 @@
     </div>
 </div>
 {% endblock %}
+
+{% block tagging %}
+<script language="javascript" nonce="{{ CSP_NONCE }}">
+$( window ).on('load', function () {
+    _paq.push(['trackEvent', 'Accessibilité', 'Ouverture'])
+})
+</script>
+{% endblock tagging %}

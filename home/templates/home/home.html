@@ -27,7 +27,7 @@
                             Pilotez votre programme d'urbanisation en vue d'atteindre l'objectif Zéro Artificialisation Nette acté par la Loi Climat et Résilience.
                         </p>
                         <p class="text-center">
-                            <a href="{% url 'project:select' %}" class="btn btn-lg btn-primary w-100">
+                            <a id="btn-voir-diag-1" href="{% url 'project:select' %}" class="btn btn-lg btn-primary w-100">
                                 Consulter votre diagnostic
                             </a>
                         </p>
@@ -165,3 +165,15 @@
     </div>
 </div>
 {% endblock %}
+
+{% block tagging %}
+<script language="javascript" nonce="{{ CSP_NONCE }}">
+$( window ).on('load', function () {
+    _paq.push(['trackEvent', 'Home page', 'Ouverture'])
+})
+
+$( "#btn-voir-diag-1" ).click(function() {
+    _paq.push(['trackEvent', 'CTA', 'Voir mon diagnostic', 'CTA0001'])
+})
+</script>
+{% endblock tagging %}

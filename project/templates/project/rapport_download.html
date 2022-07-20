@@ -47,10 +47,24 @@ Télécharger le bilan
 </div>
 {% endblock %}
 
-{% block bodyend %}
+
+{% block tagging %}
 <script language="javascript" nonce="{{ CSP_NONCE }}">
+$( window ).on('load', function () {
+    _paq.push(['trackEvent', 'Consultation diagnostic', 'Tableau de bord', 'Téléchargement'])
+})
+
+
 $( "#dl_btn" ).click(function() {
-    _paq.push(['trackEvent', 'Usage', 'Bilan', 'dl_bilan'])
+    _paq.push(['trackEvent', 'Consultation diagnostic', 'Télécharger'])
+})
+
+var fired = false
+$( "#main" ).scroll(function() {
+    if(fired == false && $( "#main" ).scrollTop() + $( window ).height() > $( "#block-content" ).height() - 100) {
+        _paq.push(['trackEvent', 'Consultation diagnostic', 'Fin tableau de bord', 'Téléchargement'])
+        fired = true
+    }
 })
 </script>
-{% endblock bodyend %}
+{% endblock tagging %}

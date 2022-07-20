@@ -44,6 +44,7 @@ Pour une installation locale, ces valeurs doivent être dans le fichier .env à 
 | MAILJET_SECRET | secret pour se connecter au compte mailjet |  |
 | DEFAULT_FROM_EMAIL |  | swann.bouviermuller@gmail.com |
 | MATOMO_TOKEN | Token pour envoyer les données à Matomo |  |
+| MATOMO_ACTIVATE | Détermine si des infos doivent être envoyé à Matomo | 0 |
 | USE_SRI | Active l'utilisation des SRI même lorsque debug = 1 | 1 |
 
 Variables d'environnement spécifique à Scalingo. Voir les valeurs sur Scalingo.
