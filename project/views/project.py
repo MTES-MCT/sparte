@@ -1,5 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import Max
 from django.http import HttpResponseRedirect
 from django.shortcuts import redirect
 from django.urls import reverse_lazy, reverse
@@ -888,6 +889,87 @@ class ProjectMapView(GroupMixin, DetailView):
             }
         )
         return context
+
+
+class MyArtifMapView(GroupMixin, DetailView):
+    queryset = Project.objects.all()
+    template_name = "carto/theme_map.html"
+    context_object_name = "project"
+
+    def get_context_breadcrumbs(self):
+        breadcrumbs = super().get_context_breadcrumbs()
+        breadcrumbs += [
+            {"href": reverse_lazy("project:list"), "title": "Mes diagnostics"},
+            {
+                "href": reverse_lazy("project:detail", kwargs={"pk": self.object.pk}),
+                "title": self.object.name,
+            },
+        ]
+        return breadcrumbs
+
+    def get_context_data(self, **kwargs):
+        years = (
+            self.object.cities.all()
+            .first()
+            .communediff_set.all()
+            .aggregate(old=Max("year_old"), new=Max("year_new"))
+        )
+        center = self.object.get_centroid()
+        kwargs.update(
+            {
+                # center map on France
+                "map_name": "Comprendre mon artificialisation",
+                "center_lat": center.y,
+                "center_lng": center.x,
+                "default_zoom": 10,
+                "year_old": years["old"],
+                "year_new": years["new"],
+                "layer_list": [
+                    {
+                        "name": "Emprise du projet",
+                        "url": (
+                            f'{reverse_lazy("project:emprise-list")}'
+                            f"?id={self.object.pk}"
+                        ),
+                        "display": True,
+                        "style": "style_emprise",
+                        "fit_map": True,
+                        "level": "5",
+                    },
+                    {
+                        "name": "Artificialisation",
+                        "url": (
+                            f'{reverse_lazy("public_data:ocsgediff-optimized")}'
+                            f"?year_old={years['old']}&year_new={years['new']}&is_new_artif=true"
+                        ),
+                        "display": True,
+                        "style": "get_color_for_ocsge_diff",
+                        "level": "7",
+                    },
+                    {
+                        "name": "Renaturation",
+                        "url": (
+                            f'{reverse_lazy("public_data:ocsgediff-optimized")}'
+                            f"?year_old={years['old']}&year_new={years['new']}&is_new_natural=true"
+                        ),
+                        "display": True,
+                        "style": "get_color_for_ocsge_diff",
+                        "level": "7",
+                    },
+                    {
+                        "name": "Zones artificielles",
+                        "url": (
+                            f'{reverse_lazy("public_data:artificialarea-optimized")}'
+                            f"?year={years['new']}"
+                        ),
+                        "display": True,
+                        "style": "style_zone_artificielle",
+                        "level": "3",
+                    },
+                ],
+            }
+        )
+        return super().get_context_data(**kwargs)
 
 
 class ProjectCreateView(GroupMixin, LoginRequiredMixin, CreateView):
