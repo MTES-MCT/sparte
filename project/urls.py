@@ -59,6 +59,11 @@ urlpatterns = [
         name="report_city_group",
     ),
     path("<int:pk>/map", views.ProjectMapView.as_view(), name="map"),
+    path(
+        "<int:pk>/carte/comprendre-mon-artificialisation",
+        views.MyArtifMapView.as_view(),
+        name="theme-my-artif",
+    ),
     path("<int:pk>/delete/", views.ProjectDeleteView.as_view(), name="delete"),
     # ### PLANS ###
     path("plan/create/", views.PlanCreateView.as_view(), name="plan-create"),
