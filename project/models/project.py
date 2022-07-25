@@ -267,6 +267,12 @@ class Project(BaseProject):
                 self._city_group_list[-1].append(project_commune)
         return self._city_group_list
 
+    def is_artif(self):
+        for city in self.cities.all().select_related("departement"):
+            if city.is_artif_ready:
+                return True
+        return False
+
     def add_look_a_like(self, public_key, many=False):
         """Add a public_key to look a like keeping the field formated
         and avoiding duplicate. Can process a list if many=True."""

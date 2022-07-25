@@ -224,6 +224,9 @@ def mep_150(ctx):
     click.secho("Fix look a like", fg="cyan")
     connecter.manage_py("fix_look_a_like")
 
+    click.secho("Setup departement", fg="cyan")
+    connecter.manage_py("setup_dept")
+
 
 if __name__ == "__main__":
     cli(obj={})
