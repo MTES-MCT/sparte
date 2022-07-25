@@ -112,7 +112,14 @@ class LoadCerema(AutoLoadMixin, Cerema):
 class Command(BaseCommand):
     help = "Load data from Cerema"
 
+    def add_arguments(self, parser):
+        parser.add_argument(
+            "--no-verbose",
+            action="store_true",
+            help="reduce output",
+        )
+
     def handle(self, *args, **options):
         logger.info("Load Cerema")
-        LoadCerema.load()
+        LoadCerema.load(verbose=not options["no_verbose"])
         logger.info("End Cerema")
