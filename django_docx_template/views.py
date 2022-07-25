@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import FileResponse
 from django.views.generic import (
     View,
@@ -27,13 +28,13 @@ class BaseTemplateMixin:
         return super().get_context_data(**kwargs)
 
 
-class TemplateCreateView(BaseTemplateMixin, CreateView):
+class TemplateCreateView(LoginRequiredMixin, BaseTemplateMixin, CreateView):
     model = DocxTemplate
     form_class = TemplateForm
     success_url = reverse_lazy("docx_template:list")
 
 
-class TemplateUpdateView(BaseTemplateMixin, UpdateView):
+class TemplateUpdateView(LoginRequiredMixin, BaseTemplateMixin, UpdateView):
     model = DocxTemplate
     form_class = TemplateForm
 
@@ -45,11 +46,11 @@ class TemplateUpdateView(BaseTemplateMixin, UpdateView):
         return super().get_context_data(**kwargs)
 
 
-class TemplateListView(BaseTemplateMixin, ListView):
+class TemplateListView(LoginRequiredMixin, BaseTemplateMixin, ListView):
     model = DocxTemplate
 
 
-class TemplateDetailView(BaseTemplateMixin, DetailView):
+class TemplateDetailView(LoginRequiredMixin, BaseTemplateMixin, DetailView):
     model = DocxTemplate
 
     def get_context_data(self, **kwargs):
@@ -66,15 +67,8 @@ class TemplateDetailView(BaseTemplateMixin, DetailView):
         return super().get_context_data(**kwargs)
 
 
-class TemplateDeletelView(BaseTemplateMixin, DeleteView):
+class TemplateDeletelView(LoginRequiredMixin, BaseTemplateMixin, DeleteView):
     model = DocxTemplate
-
-    def get_context_data(self, **kwargs):
-        examples = self.object.data_source.get_all_example_combinations()
-        if examples:
-            kwargs["examples"] = [_.values() for _ in examples]
-            kwargs["example_headers"] = examples[0].keys()
-        return super().get_context_data(**kwargs)
 
 
 class TemplateMergeView(View):
@@ -88,7 +82,6 @@ class TemplateMergeView(View):
             "application/vnd.openxmlformats-officedocument.wordprocessingml.document;"
             "charset=utf-8"
         )
-        # TODO use context data to improve filenaming
         filename = template.get_file_name()
         return FileResponse(
             buffer, content_type=content_type, as_attachment=True, filename=filename
@@ -101,7 +94,7 @@ class TemplateExampleMergeView(TemplateMergeView):
         return template.merge_example(example_number=example_number)
 
 
-class DataSourceListView(BaseTemplateMixin, TemplateView):
+class DataSourceListView(LoginRequiredMixin, BaseTemplateMixin, TemplateView):
     template_name = "django_docx_template/datasource_list.html"
 
     def get_context_data(self, **kwargs):
@@ -109,7 +102,7 @@ class DataSourceListView(BaseTemplateMixin, TemplateView):
         return super().get_context_data(**kwargs)
 
 
-class DataSourceDetailView(BaseTemplateMixin, TemplateView):
+class DataSourceDetailView(LoginRequiredMixin, BaseTemplateMixin, TemplateView):
     template_name = "django_docx_template/datasource_detail.html"
 
     def get_context_data(self, **kwargs):

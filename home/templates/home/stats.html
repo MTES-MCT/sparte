@@ -5,19 +5,20 @@
 {% load i18n %}
 {% load l10n %}
 {% load highcharts_tags %}
+{% load sri %}
 
 {% block pagetitle %}Accueil{% endblock %}
 
 {% block headers %}
-<link rel="stylesheet" href="{% static 'home/css/home.css' %}" />
-<link rel="stylesheet" href="{% static 'project/css/project.css' %}" />
-<link rel="stylesheet" href="{% static 'carto/css/leaflet.css' %}"/>
-<script src="{% static 'carto/js/leaflet.js' %}"></script>
+{% sri_static "home/css/home.css" %}
+{% sri_static "project/css/project.css" %}
+{% sri_static "carto/css/leaflet.css" %}
+{% sri_static "carto/js/leaflet.js" %}
 {% endblock headers %}
 
 {% block content %}
 <div class="d-flex justify-content-center">
-    <div class="" style="width:750px;">
+    <div class="home-container">
         <h1 class="mt-5">Statistiques</h1>
 
         <h2 class="mt-5">Principale mesure d'impact</h2>
@@ -59,7 +60,7 @@
             </div>
             <div class="col-6">
                 <h5>Répartition par région</h5>
-                <div class="mt-5" style="height: 350px">
+                <div class="mt-5 height-350px">
                     <div id="mapid" class="w-100 h-100"></div>
                 </div>
             </div>
@@ -80,13 +81,13 @@
 
 {% block bodyend %}
 {% localize off %}
-<script src="https://code.highcharts.com/highcharts.js"></script>
-<script src="https://code.highcharts.com/modules/exporting.js"></script>
+{% sri_static "highcharts/js/highcharts.js" %}
+{% sri_static "highcharts/js/exporting.js" %}
 {% french_translation %}
-{% display_chart 'diag_created_downloaded' diag_created_downloaded %}
-{% display_chart 'report_pie' report_pie %}
-{% display_chart 'organism_pie_chart' organism_pie_chart %}
-<script language="javascript">
+{% display_chart 'diag_created_downloaded' diag_created_downloaded CSP_NONCE %}
+{% display_chart 'report_pie' report_pie CSP_NONCE %}
+{% display_chart 'organism_pie_chart' organism_pie_chart CSP_NONCE %}
+<script language="javascript" nonce="{{ CSP_NONCE }}">
 map = L.map('mapid', {
     zoomControl: false,
     dragging: false,

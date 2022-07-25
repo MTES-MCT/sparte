@@ -6,18 +6,19 @@
 {% load l10n %}
 {% load project_tags %}
 {% load highcharts_tags %}
+{% load sri %}
 
 {% block pagetitle %}
 Consommation des villes
 {% endblock %}
 
 {% block headers %}
-<link href="{% static 'project/css/project.css' %}" rel="stylesheet" />
+<link href="{% static 'project/css/project.css' %}" rel="stylesheet" nonce="{{ CSP_NONCE }}" />
 {% endblock %}
 
 {% block content %}
-<link href="{% static 'css/dragula.min.css' %}" rel="stylesheet" />
-<script src="{% static 'js/dragula.min.js' %}"></script>
+{% sri_static "css/dragula.min.css" %}
+{% sri_static "js/dragula.min.js" %}
 
 <div class="px-4">
     {% include "project/detail_menu.html" %}
@@ -90,9 +91,9 @@ Consommation des villes
                     <tr>
                         <th scope="col"></th>
                         {% for year in project.years %}
-                        <th scope="col" style="text-align: right">{{ year }}</th>
+                        <th scope="col" class="text-end">{{ year }}</th>
                         {% endfor %}
-                        <th scope="col" style="text-align: right">Total</th>
+                        <th scope="col" class="text-end">Total</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -127,7 +128,7 @@ Consommation des villes
                     <tr>
                         <th scope="col">Déterminant</th>
                         {% for year in project.years %}
-                        <th scope="col" style="text-align: right">{{ year }}</th>
+                        <th scope="col" class="text-end">{{ year }}</th>
                         {% endfor %}
                     </tr>
                 </thead>
@@ -147,7 +148,7 @@ Consommation des villes
     </div>
 </div>
 
-<div style="display:none;" id="group-model">
+<div id="group-model">
     <div class="card city-group">
         <div class="card-header">
             <div class="row">
@@ -169,7 +170,7 @@ Consommation des villes
 
 {% block bodyend %}
 {% localize off %}
-<script language="javascript">
+<script language="javascript" nonce="{{ CSP_NONCE }}">
 var drake = dragula([$('#no-group')[0]])
 $('.select-group').each(function(){
     drake.containers.push($(this).find(".card-body")[0])
@@ -215,11 +216,19 @@ $("#save-all").click(function(){
 
 
 </script>
-<script src="https://code.highcharts.com/highcharts.js"></script>
-<script src="https://code.highcharts.com/modules/exporting.js"></script>
+{% sri_static "highcharts/js/highcharts.js" %}
+{% sri_static "highcharts/js/exporting.js" %}
 {% french_translation %}
 {% display_chart 'chart_conso_cities' chart_conso_cities %}
 {% display_chart 'chart_determinant' determinant_per_year_chart %}
 {% display_chart 'pie_determinant' determinant_pie_chart %}
 {% endlocalize %}
 {% endblock %}
+
+{% block tagging %}
+<script language="javascript" nonce="{{ CSP_NONCE }}">
+$( window ).on('load', function () {
+    _paq.push(['trackEvent', 'Consultation diagnostic', 'Option avancée', 'Analyse par groupe de communes'])
+})
+</script>
+{% endblock tagging %}
