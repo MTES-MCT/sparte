@@ -146,6 +146,7 @@ class ProjectSuccessView(GroupMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         kwargs["claim_diagnostic"] = self.object.user is None
+        kwargs["analysis_artif"] = self.object.is_artif
         return super().get_context_data(**kwargs)
 
 
