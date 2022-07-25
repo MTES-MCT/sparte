@@ -1,0 +1,5 @@
+@media (min-width: 992px) {
+  .fr-nav__list > li.fr-nav__item.ml-auto {
+    margin-left: auto;
+  }
+}
