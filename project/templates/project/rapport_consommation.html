@@ -6,14 +6,15 @@
 {% load i18n %}
 {% load l10n %}
 {% load highcharts_tags %}
+{% load sri %}
 
 {% block pagetitle %}
 Rapport consommation
 {% endblock %}
 
 {% block headers %}
-<link href="{% static 'project/css/project.css' %}" rel="stylesheet" />
-<style>
+{% sri_static "project/css/project.css" %}
+<style nonce="{{ CSP_NONCE }}">
 .plotband_blue{
     fill: rgba(149, 206, 255, 0.1);
     color: rgb(149, 206, 255);
@@ -42,7 +43,6 @@ Rapport consommation
 .plotband_gray {
     fill: rgba(92, 92, 97, 0.1);
     color: rgb(92, 92, 97);
-
 }
 </style>
 {% endblock %}
@@ -222,9 +222,9 @@ Rapport consommation
                         <tr>
                             <th scope="col">{{ col_name }}</th>
                             {% for year in project.years %}
-                            <th scope="col" style="text-align: right">{{ year }}</th>
+                            <th scope="col" class="text-end">{{ year }}</th>
                             {% endfor %}
-                            <th scope="col" style="text-align: right">Total</th>
+                            <th scope="col" class="text-end">Total</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -260,9 +260,9 @@ Rapport consommation
                         <tr>
                             <th scope="col">Déterminant</th>
                             {% for year in project.years %}
-                            <th scope="col" style="text-align: right">{{ year }}</th>
+                            <th scope="col" class="text-end">{{ year }}</th>
                             {% endfor %}
-                            <th scope="col" style="text-align: right">Total</th>
+                            <th scope="col" class="text-end">Total</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -292,15 +292,15 @@ Rapport consommation
 
 {% block bodyend %}
 {% localize off %}
-<script src="https://code.highcharts.com/highcharts.js"></script>
-<script src="https://code.highcharts.com/modules/exporting.js"></script>
+{% sri_static "highcharts/js/highcharts.js" %}
+{% sri_static "highcharts/js/exporting.js" %}
 {% french_translation %}
-{% display_chart 'chart' commune_chart %}
-{% display_chart 'chart_2' comparison_chart %}
-{% display_chart 'chart_determinant' determinant_per_year_chart %}
-{% display_chart 'pie_determinant' determinant_pie_chart %}
-{% display_chart 'objective_chart' objective_chart %}
-<script language="javascript">
+{% display_chart 'chart' commune_chart CSP_NONCE %}
+{% display_chart 'chart_2' comparison_chart CSP_NONCE %}
+{% display_chart 'chart_determinant' determinant_per_year_chart CSP_NONCE %}
+{% display_chart 'pie_determinant' determinant_pie_chart CSP_NONCE %}
+{% display_chart 'objective_chart' objective_chart CSP_NONCE %}
+<script language="javascript" nonce="{{ CSP_NONCE }}">
 ///////////////////////////////
 // Select / unselect all
 ///////////////////////////////
@@ -343,6 +343,27 @@ $('#conso_territory_reltive').change(function() {
     window.location.replace(url)
 })
 </script>
-
 {% endlocalize %}
 {% endblock %}
+
+{% block tagging %}
+<script language="javascript" nonce="{{ CSP_NONCE }}">
+$( window ).on('load', function () {
+    _paq.push(['trackEvent', 'Consultation diagnostic', 'Tableau de bord', 'Consommation'])
+})
+
+var fired = false
+$( "#main" ).scroll(function() {
+    if(fired == false && $( "#main" ).scrollTop() + $( window ).height() > $( "#block-content" ).height() - 100) {
+        _paq.push(['trackEvent', 'Consultation diagnostic', 'Fin tableau de bord', 'Consommation'])
+        fired = true
+    }
+})
+
+$('#conso_territory_reltive').change(function() {
+    if (this.checked) {
+        _paq.push(['trackEvent', 'Consultation diagnostic', 'Option avancée', 'Pondération par la surface'])
+    }
+})
+</script>
+{% endblock tagging %}

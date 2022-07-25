@@ -53,7 +53,7 @@ class ScalingoInterface:
         if self.env_name == "local":
             asyncio.run(self.async_run(cmd))
         else:
-            cmd = f"{self.get_scalingo_run_cmd()} {cmd}"
+            cmd = f"{self.get_scalingo_run_cmd()} '{cmd}'"
             asyncio.run(self.async_run(cmd))
 
     def manage_py(self, management_command_name, **options):
@@ -144,7 +144,10 @@ def rebuild(ctx, klass=None):
     click.secho("Load parameters", fg="cyan")
     connecter.manage_py("load_param --file required_parameters.json")
 
-    click.secho("Load data from cerema", fg="cyan")
+    click.secho("Load usage and couverture referentials", fg="cyan")
+    connecter.manage_py("load_usage_couv")
+
+    click.secho("Create matrix", fg="cyan")
     connecter.manage_py("build_matrix")
 
     click.secho("Load data from cerema", fg="cyan")
@@ -163,7 +166,7 @@ def rebuild(ctx, klass=None):
     connecter.manage_py("set_dept_millesimes")
 
     click.secho("Build artificial area", fg="cyan")
-    connecter.manage_py("build_artificial_area --no-verbose")
+    connecter.manage_py("build_artificial_area")
 
     click.secho("Evaluate density of building in zone construite (async)", fg="cyan")
     connecter.manage_py("set_density")
