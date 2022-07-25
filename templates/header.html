@@ -1,0 +1,82 @@
+{% extends "dsfr/header.html" %}
+
+{% block service_title %}
+<a href="/" title="Accueil — SPARTE">
+    <p class="fr-header__service-title">SPARTE</p>
+</a>
+{% endblock service_title %}
+
+{% block service_tagline %}Mesurer votre consommation d'espace et l'artificialisation de votre territoire{% endblock service_tagline %}
+
+<!-- {% block header_tools %}
+{% endblock header_tools %} -->
+
+{# Leave burger_menu and main_menu blocks empty if the main menu is not used #}
+{# block burger_menu #}
+{# endblock burger_menu #}
+
+{% block main_menu %}
+    <div class="fr-header__menu fr-modal" id="fr-menu-mobile" aria-labelledby="fr-btn-menu-mobile">
+      <div class="fr-container">
+        <button type="button" class="fr-btn--close fr-btn" aria-controls="fr-menu-mobile">Fermer</button>
+        <div class="fr-header__menu-links"></div>
+        <nav role="navigation" class="fr-nav" id="fr-navigation" aria-label="Menu principal">
+          <ul class="fr-nav__list">
+            <li class="fr-nav__item">
+              <a class="fr-nav__link" href="/" target="_self">Accueil</a>
+            </li>
+            <li class="fr-nav__item">
+              <a class="fr-nav__link" href="{{ EXTERNAL_DOC }}" target="_blank" title="Consulter la documentation - nouvelle fenêtre">Documentations</a>
+            </li>
+
+            <!-- login / mon compte -->
+            {% if user.is_authenticated %}
+            <li class="fr-nav__item ml-auto">
+                <button class="fr-nav__btn" aria-expanded="false" aria-controls="menu-774">Mon compte</button>
+                <div class="fr-collapse fr-menu" id="menu-774">
+                    <ul class="fr-menu__list">
+                        <li>
+                          <a class="fr-nav__link" href="{% url 'project:list' %}">Mes diagnostics</a>
+                        </li>
+                        <li>
+                            <a class="fr-nav__link" href="{% url 'users:profile' %}" target="_self">Profil</a>
+                        </li>
+
+
+                        {% if is_staff %}
+                        <li>
+                          <a class="fr-nav__link" href="{% url 'admin:index' %}">Administration</a>
+                        </li>
+                        <li>
+                          <a class="fr-nav__link" href="{% url 'public_data:matrix' %}">Matrice</a>
+                        </li>
+                        <li>
+                          <a class="fr-nav__link" href="{% url 'docx_template:list' %}"> Modèles de document</a>
+                        </li>
+                        <li>
+                          <a class="fr-nav__link" href="{% url 'docx_template:data_source_list' %}"> Sources de données</a>
+                        </li>
+                        {% endif %}
+                        <li>
+                            <a class="fr-nav__link" href="{% url 'users:signout' %}" target="_self">Déconnexion</a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+            {% else %}
+            <li class="fr-nav__item ml-auto">
+              <a class="fr-nav__link" href="{% url 'users:signup' %}">
+                S’inscrire
+              </a>
+            </li>
+            <li class="fr-nav__item">
+              <a class="fr-nav__link" href="{% url 'users:signin' %}">
+                Se connecter
+              </a>
+            </li>
+            {% endif %}
+          </ul>
+        </nav>
+      </div>
+    </div>
+{% endblock main_menu %}
