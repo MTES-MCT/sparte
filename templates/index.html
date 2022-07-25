@@ -9,8 +9,9 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta name="description" content="" />
         <meta name="author" content="" />
+
         <title>{% block pagetitle %}SPARTE{% endblock %}</title>
-        <!-- Favicon-->
+
         <link rel="icon" href="{% static 'favicon.ico' %}">
         <!-- Core theme CSS (includes Bootstrap)-->
         {% sri_static "css/styles.css" %}
@@ -174,10 +175,8 @@
         </div>
 
         {% sri_static "js/jquery-3.6.0.min.js" %}
-        <!-- Bootstrap core JS-->
         {% sri_static "js/bootstrap.bundle.min.js" %}
-        <!-- Core theme JS-->
-        {% sri_static "js/scripts.js" %}
+
         <script nonce="{{ CSP_NONCE }}">
         // initialize les tooltips
         $(function () {
