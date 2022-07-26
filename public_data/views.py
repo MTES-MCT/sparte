@@ -1,6 +1,4 @@
-# import pandas as pd
-
-# from django.db.models import F
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView
 
@@ -9,7 +7,7 @@ from utils.views_mixins import BreadCrumbMixin
 from .models import CouvertureUsageMatrix, UsageSol, CouvertureSol
 
 
-class DisplayMatrix(BreadCrumbMixin, TemplateView):
+class DisplayMatrix(LoginRequiredMixin, BreadCrumbMixin, TemplateView):
     template_name = "public_data/us_cs_matrix.html"
 
     def get_context_breadcrumbs(self):
