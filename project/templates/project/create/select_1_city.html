@@ -30,7 +30,7 @@ Sélectionner une ville
                             <div class="input-group">
                                 <div class="input-group-text"><i class="bi bi-search"></i></div>
                                 <input type="text" name="needle" class="form-control" id="id_city">
-                                <button type="submit" class="btn btn-primary">Chercher</button>
+                                <button type="submit" class="fr-btn ">Chercher</button>
                             </div>
                         </form>
 
@@ -65,7 +65,7 @@ Sélectionner une ville
                             {% endfor %}
                         </div>
                         <div class="text-center mt-3">
-                            <a class="btn {% if not selected_cities %}btn-outline-secondary disabled{% else %}btn-primary{% endif %}" href="{% url 'project:select-city' %}?{{ selected_cities_url }}&select=true" role="button">Sélectionner {{ selected_cities|length }} communes</a>
+                            <a class="fr-btn {% if not selected_cities %}fr-btn-outline-secondary disabled{% else %}{% endif %}" href="{% url 'project:select-city' %}?{{ selected_cities_url }}&select=true" role="button">Sélectionner {{ selected_cities|length }} communes</a>
                         </div>
                     </div>
                 </div>

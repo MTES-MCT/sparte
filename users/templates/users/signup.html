@@ -21,7 +21,7 @@
     <form {% if next %}action="?next={{ next }}"{% endif %} method="post">
       {% csrf_token %}
       {{ form|crispy }}
-      <button id="btn-inscription" class="btn w-100 btn-primary mt-2" type="submit">S'inscrire</button>
+      <button id="btn-inscription" class="fr-btn mt-2" type="submit">S'inscrire</button>
     </form>
 
 
