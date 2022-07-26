@@ -20,7 +20,7 @@ Rapport artificialisation
 <div class="px-4">
     {% include "project/detail_menu.html" %}
 
-    <div class="bg-light p-5 rounded-5 border">
+    <div class="bg-light rounded-5 border fr-container fr-py-3w">
 
         <div class="box box-alert px-4 py-2 mb-4 mt-0">
             L’article 192 de la Loi Climat & Résilience votée en août 2021 définit l'artificialisation comme « une surface dont les sols sont :
@@ -32,70 +32,58 @@ Rapport artificialisation
             Elle se traduit dans l’OCS GE nationale comme la somme des  objets anthropisés dans la description de la couverture des sols.
         </div>
 
-        <div class="clearfix">
-            <div class="card key-figure">
-                <div class="card-body">
-                    <p class="figure">{{ total_surface|floatformat:0 }} ha</p>
-                </div>
-                <div class="card-header">
-                    Surface du territoire
-                </div>
+        <div class="fr-grid-row fr-grid-row--gutters">
+          <div class="fr-col-12 fr-col-md-6">
+            <div class="fr-callout">
+              <p class="fr-callout__title">{{ total_surface|floatformat:0 }} ha</p>
+              <p>Surface du territoire</p>
             </div>
+          </div>
 
-            {% if ocsge_available %}
-            <div class="card key-figure">
-                <div class="card-body">
-                    <p class="figure">{{ artif_area|floatformat:0 }} ha</p>
-                </div>
-                <div class="card-header">
-                    Surfaces artificialisées <i class="bi bi-question-circle" data-toggle="tooltip" title="Dernier millésime : {{ last_millesime }}"></i>
-                </div>
+          {% if ocsge_available %}
+          <div class="fr-col-12 fr-col-md-6">
+            <div class="fr-callout">
+              <p class="fr-callout__title">{{ artif_area|floatformat:0 }} ha</p>
+              <p>Surfaces artificialisées <i class="bi bi-question-circle" data-toggle="tooltip" title="Dernier millésime : {{ last_millesime }}"></i></p>
             </div>
-            {% endif %}
+          </div>
+          {% endif %}
         </div>
 
         {% if ocsge_available %}
-        <h3>Evolution en volume sur la période de {{ diagnostic.analyse_start_date }} à {{ diagnostic.analyse_end_date }}</h3>
-        <p class="small">Sur la période demandée, l'OCS GE couvre de {{ first_millesime }} à {{ last_millesime }}.</p>
-        <div class="clearfix">
-            <div class="card key-figure key-figure-yellow">
-                <div class="card-body">
-                    <p class="figure">{{ new_artif|floatformat:0 }} ha</p>
-                </div>
-                <div class="card-header">
-                    Artificialisation
-                </div>
+        <div class="fr-grid-row fr-grid-row--gutters">
+          <div class="fr-col-12">
+            <h3 class="fr-mt-3w">Evolution en volume sur la période de {{ diagnostic.analyse_start_date }} à {{ diagnostic.analyse_end_date }}</h3>
+            <p>Sur la période demandée, l'OCS GE couvre de {{ first_millesime }} à {{ last_millesime }}.</p>
+          </div>
+          <div class="fr-col-12 fr-col-md-6">
+            <div class="fr-callout">
+              <p class="fr-callout__title">{{ new_artif|floatformat:0 }} ha</p>
+              <p>Artificialisation</p>
             </div>
+          </div>
 
-            <div class="card key-figure key-figure-yellow">
-                <div class="card-body">
-                    <p class="figure">{{ new_natural|floatformat:0 }} ha</p>
-                </div>
-                <div class="card-header">
-                    Renaturation
-                </div>
+          <div class="fr-col-12 fr-col-md-6">
+            <div class="fr-callout">
+              <p class="fr-callout__title">{{ new_natural|floatformat:0 }} ha</p>
+              <p>Renaturation</p>
             </div>
+          </div>
 
-            <div class="card key-figure key-figure-yellow">
-                <div class="card-body">
-                    <p class="figure">{{ net_artif|floatformat:0 }} ha</p>
-                </div>
-                <div class="card-header">
-                    Artificialisation nette <i class="bi bi-question-circle" data-toggle="tooltip" title="= artificialisation - renaturation"></i>
-                </div>
+          <div class="fr-col-12 fr-col-md-6">
+            <div class="fr-callout">
+              <p class="fr-callout__title">{{ net_artif|floatformat:0 }} ha</p>
+              <p>Artificialisation nette <i class="bi bi-question-circle" data-toggle="tooltip" title="= artificialisation - renaturation"></i></p>
             </div>
+          </div>
 
-            <div class="card key-figure key-figure-yellow">
-
-                <div class="card-body">
-                    <p class="figure">{{ net_artif_rate|floatformat:0 }} %</p>
-                </div>
-                <div class="card-header">
-                    Taux d'artificialisation nette <i class="bi bi-question-circle" data-toggle="tooltip" title="= Artificialisation nette / surface du territoire"></i>
-                </div>
+          <div class="fr-col-12 fr-col-md-6">
+            <div class="fr-callout">
+              <p class="fr-callout__title">{{ net_artif_rate|floatformat:0 }} %</p>
+              <p>Taux d'artificialisation nette <i class="bi bi-question-circle" data-toggle="tooltip" title="= Artificialisation nette / surface du territoire"></i></p>
             </div>
+          </div>
         </div>
-
 
         <div class="w-100 box p-4">
             <h3>

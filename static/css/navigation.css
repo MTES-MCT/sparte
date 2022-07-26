@@ -1,3 +1,11 @@
+/* Pour avoir les callout de la même hauteur */
+.fr-callout {
+  height: 100%;
+  align-content: center;
+  display: grid;
+}
+
+/* Fix à supprimer pour les dropdown-menu dans le tableau de bord */
 .dropdown-menu [href] {
   background-image: none;
 }
@@ -7,7 +15,7 @@
   color: #1e2125;
 }
 
-
+/* Pour mettre l'item de navigation ferré à droite en version desktop */
 @media (min-width: 992px) {
   .fr-nav__list > li.fr-nav__item.ml-auto {
     margin-left: auto;
