@@ -25,24 +25,20 @@
 
         <p class="my-5">SPARTE vise à fournir des diagnostics décrivant l'artificialisation des sols et la conformité à la loi ZAN. Les diagnostics sont téléchargeables au format Word. SPARTE prétend réaliser une économie d'échelle importante, à ce titre il nous semble important de mesurer le "coût moyen" des diagnostics à l'aune du budget total consommé en date du {{ date_budget }}.</p>
 
-        <div class="clearfix">
-            <div class="card key-figure">
-                <div class="card-body">
-                    <p class="figure">{{ nb_dl_portrait }}</p>
-                </div>
-                <div class="card-header">
-                    Diagnostics téléchargés
-                </div>
+        <div class="fr-grid-row fr-grid-row--gutters">
+          <div class="fr-col-12 fr-col-md-6">
+            <div class="fr-callout">
+              <p class="fr-callout__title">{{ nb_dl_portrait }}</p>
+              <p>Diagnostics téléchargés</p>
             </div>
+          </div>
 
-            <div class="card key-figure">
-                <div class="card-body">
-                    <p class="figure">{{ cout_portrait }} €</p>
-                </div>
-                <div class="card-header">
-                    Coût moyen d'un diagnostic téléchargé
-                </div>
+          <div class="fr-col-12 fr-col-md-6">
+            <div class="fr-callout">
+              <p class="fr-callout__title">{{ cout_portrait }} €</p>
+              <p>Coût moyen d'un diagnostic téléchargé</p>
             </div>
+          </div>
         </div>
 
         <h2 class="mt-5">Progression mensuelle</h2>
