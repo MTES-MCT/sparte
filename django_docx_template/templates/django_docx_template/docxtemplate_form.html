@@ -8,7 +8,7 @@
         <form  enctype="multipart/form-data" method="post">
             {% csrf_token %}
             {{ form.as_p }}
-            <button type="submit" class="btn btn-primary">{% if submit_label %}{{ submit_label }}{% else %}Add{% endif %}</button>
+            <button type="submit" class="fr-btn ">{% if submit_label %}{{ submit_label }}{% else %}Add{% endif %}</button>
         </form>
     </div>
 </div>

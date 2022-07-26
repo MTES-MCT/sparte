@@ -29,18 +29,18 @@ Consommation des villes
 
         <div class="box mt-5 p-4">
             <h3>Sélectionner le groupe à visionner</h3>
-            <div class="btn-group" role="group" aria-label="Sélectionner un groupe">
+            <div class="fr-btn-group" role="group" aria-label="Sélectionner un groupe">
                 {% for name in groups_name %}
-                    <a href="{% url 'project:report_city_group' project.id %}?group_name={{ name }}" class="btn btn-outline-primary{% if name == group_name %} active{% endif %}">{{ name }}{% if name == group_name %} <i class="bi bi-eye ms-3"></i>{% endif %}</a>
+                    <a href="{% url 'project:report_city_group' project.id %}?group_name={{ name }}" class="fr-btn fr-btn-outline-primary{% if name == group_name %} active{% endif %}">{{ name }}{% if name == group_name %} <i class="bi bi-eye ms-3"></i>{% endif %}</a>
                 {% endfor %}
-                <a class="btn btn-outline-secondary" data-bs-toggle="collapse" href="#collapseGroups" role="button" aria-expanded="false" aria-controls="collapseGroups">
+                <a class="fr-btn fr-btn-outline-secondary" data-bs-toggle="collapse" href="#collapseGroups" role="button" aria-expanded="false" aria-controls="collapseGroups">
                     Modifier<i class="bi bi-caret-down"></i>
                 </a>
             </div>
 
             <div class="collapse mt-3 border-start border-5" id="collapseGroups">
-                <button id="add-group" class="btn btn-sm btn-success mb-0 ms-3"><i class="bi bi-plus"></i> Ajouter un groupe</button>
-                <button id="save-all" class="btn btn-sm btn-primary mb-0 ms-3"><i class="bi bi-save-fill"></i> Sauvegarder les modifications</button>
+                <button id="add-group" class="fr-btn mb-0 ms-3"><i class="bi bi-plus"></i> Ajouter un groupe</button>
+                <button id="save-all" class="fr-btn mb-0 ms-3"><i class="bi bi-save-fill"></i> Sauvegarder les modifications</button>
                 <div class="clearfix mt-0" id="group-container">
                     <div class="card city-group">
                         <div class="card-header">

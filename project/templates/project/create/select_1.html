@@ -56,9 +56,9 @@ Sélectionner un plan
 
                         <a href="{% url 'project:select' %}?see_diagnostic=True&departement={{ departement.id }}&region={{ region.id }}&epci={{ epci.id }}"
                             {% if region or departement or epci %}
-                                class="btn btn-primary w-100"
+                                class="fr-btn"
                             {% else %}
-                                class="btn w-100 btn-secondary disabled"
+                                class="fr-btn fr-btn--secondary disabled"
                             {% endif %}
                         >Voir le diagnostic</a>
 
