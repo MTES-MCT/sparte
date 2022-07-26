@@ -268,10 +268,7 @@ class Project(BaseProject):
         return self._city_group_list
 
     def is_artif(self):
-        for city in self.cities.all().select_related("departement"):
-            if city.is_artif_ready:
-                return True
-        return False
+        return self.cities.filter(departement__is_artif_ready=True).exists()
 
     def add_look_a_like(self, public_key, many=False):
         """Add a public_key to look a like keeping the field formated
