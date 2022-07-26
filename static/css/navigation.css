@@ -1,3 +1,13 @@
+.dropdown-menu [href] {
+  background-image: none;
+}
+
+.dropdown-menu a[href]:hover {
+  background-color: #e9ecef;
+  color: #1e2125;
+}
+
+
 @media (min-width: 992px) {
   .fr-nav__list > li.fr-nav__item.ml-auto {
     margin-left: auto;

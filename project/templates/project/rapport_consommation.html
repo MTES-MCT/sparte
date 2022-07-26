@@ -155,9 +155,9 @@ Rapport consommation
             <div class="w-100 box p-4">
                 <h3 class="clearfix">
                     <div class="float-end">
-                        <div class="btn-group">
+                        <div class="fr-btns-group fr-btns-group--inline">
                             <div class="dropdown me-2">
-                                <button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton2" data-bs-toggle="dropdown" aria-expanded="false">
+                                <button class="fr-btn fr-btn--sm dropdown-toggle" type="button" id="dropdownMenuButton2" data-bs-toggle="dropdown" aria-expanded="false">
                                     Maille d'analyse
                                 </button>
                                 <ul class="dropdown-menu mt-2" aria-labelledby="dropdownMenuButton2">
@@ -175,14 +175,13 @@ Rapport consommation
                             </div>
 
                             <div class="dropdown">
-                                <button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                                <button class="fr-btn fr-btn--sm dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
                                     Sélection
                                 </button>
                                 <ul class="dropdown-menu mt-2" aria-labelledby="dropdownMenuButton1">
                                     <li><a id="check" class="dropdown-item" href="#" chart_target="chart">Tout</a></li>
                                     <li><a id="uncheck" class="dropdown-item" href="#" chart_target="chart">Aucun</a></li>
                                     <li><a id="reverse" class="dropdown-item" href="#" chart_target="chart">Inverser</a></li>
-                                    <li><hr class="dropdown-divider"></li>
                                     <li><h6 class="dropdown-header">Zoom sur un groupe de villes</h6></li>
                                     {% for name in groups_names %}
                                         <li><a class="dropdown-item" href="{% url 'project:report_city_group' project.id %}?group_name={{ name }}">{{ name }}</a></li>
