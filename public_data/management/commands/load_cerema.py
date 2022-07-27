@@ -1,6 +1,7 @@
 import logging
 
 from django.core.management.base import BaseCommand
+from django.db.models import F
 
 from public_data.models.mixins import AutoLoadMixin, TruncateTableMixin
 from public_data.models import Cerema
@@ -114,6 +115,21 @@ class LoadCerema(TruncateTableMixin, AutoLoadMixin, Cerema):
         return (
             f"{self.region_name}-{self.dept_name}-{self.city_name}({self.city_insee})"
         )
+
+    @classmethod
+    def calculate_fields(cls):
+        """Calculate fields to speedup user consultation."""
+        fields = cls.get_art_field(2011, 2020)
+        kwargs = {
+            "naf11art21": sum([F(f) for f in fields]),
+            "art11hab21": sum(
+                [F(f.replace("art", "hab").replace("naf", "art")) for f in fields]
+            ),
+            "art11act21": sum(
+                [F(f.replace("art", "act").replace("naf", "art")) for f in fields]
+            ),
+        }
+        cls.objects.update(**kwargs)
 
     @classmethod
     def clean_data(cls, clean_queryset=None):
