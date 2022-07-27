@@ -48,28 +48,22 @@
             <!-- Top navigation-->
             {% include "header.html" %}
 
-            <!-- <nav id="second-navbar" class="navbar navbar-expand border-bottom">
-                <div class="container-fluid">
-
-                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent2" aria-controls="navbarSupportedContent2" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
-
-                    <div class="collapse navbar-collapse justify-content-between" id="navbarSupportedContent2">
-                        <ul class="navbar-nav ms-0 mt-2 mt-lg-0 ps-2">
-                            <nav aria-label="breadcrumb">
-                                <ol class="breadcrumb mb-0">
-                                {% for bread in breadcrumbs %}
-                                    {% if bread.is_active %}
-                                    <li class="breadcrumb-item active" aria-current="page">{{ bread.title}}</li>
-                                    {% else %}
-                                    <li class="breadcrumb-item"><a href="{{ bread.href }}">{{ bread.title}}</a></li>
-                                    {% endif %}
-                                {% endfor %}
-                                </ol>
-                            </nav>
-                        </ul>
-                    </div>
-                </div>
-            </nav> -->
+            <div class="fr-container">
+              <nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
+                  <button class="fr-breadcrumb__button" aria-expanded="false" aria-controls="breadcrumb-1">Voir le fil d’Ariane</button>
+                  <div class="fr-collapse" id="breadcrumb-1">
+                      <ol class="fr-breadcrumb__list">
+                        {% for bread in breadcrumbs %}
+                            {% if bread.is_active %}
+                            <li class="fr-breadcrumb__link" aria-current="page">{{ bread.title}}</li>
+                            {% else %}
+                            <li class="fr-breadcrumb__link"><a href="{{ bread.href }}">{{ bread.title}}</a></li>
+                            {% endif %}
+                        {% endfor %}
+                      </ol>
+                  </div>
+              </nav>
+            </div>
 
             <ul class="list-inline text-center">
                 {% block sub_bar_actions %}
