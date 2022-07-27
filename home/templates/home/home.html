@@ -8,6 +8,10 @@
 <link rel="stylesheet" href="{% static 'home/css/home.css' %}" nonce="{{ CSP_NONCE }}" />
 {% endblock headers %}
 
+<!-- Hide breadcrumbs on home page -->
+{% block breadcrumbs %}{% endblock breadcrumbs %}
+
+
 {% block content %}
 <div class="d-flex justify-content-center">
     <div class="home-container">
