@@ -65,7 +65,7 @@ Sélectionner une ville
                             {% endfor %}
                         </div>
                         <div class="text-center mt-3">
-                            <a class="fr-btn {% if not selected_cities %}fr-btn-outline-secondary disabled{% else %}{% endif %}" href="{% url 'project:select-city' %}?{{ selected_cities_url }}&select=true" role="button">Sélectionner {{ selected_cities|length }} communes</a>
+                            <a class="fr-btn {% if not selected_cities %}fr-btn--secondary disabled{% else %}{% endif %}" href="{% url 'project:select-city' %}?{{ selected_cities_url }}&select=true" role="button">Sélectionner {{ selected_cities|length }} communes</a>
                         </div>
                     </div>
                 </div>

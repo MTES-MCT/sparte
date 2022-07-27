@@ -29,11 +29,11 @@ Consommation des villes
 
         <div class="box mt-5 p-4">
             <h3>Sélectionner le groupe à visionner</h3>
-            <div class="fr-btn-group" role="group" aria-label="Sélectionner un groupe">
+            <div class="fr-btns-group fr-btns-group--inline" role="group" aria-label="Sélectionner un groupe">
                 {% for name in groups_name %}
-                    <a href="{% url 'project:report_city_group' project.id %}?group_name={{ name }}" class="fr-btn fr-btn-outline-primary{% if name == group_name %} active{% endif %}">{{ name }}{% if name == group_name %} <i class="bi bi-eye ms-3"></i>{% endif %}</a>
+                    <a href="{% url 'project:report_city_group' project.id %}?group_name={{ name }}" class="fr-btn{% if name == group_name %} active{% endif %}">{{ name }}{% if name == group_name %} <i class="bi bi-eye ms-3"></i>{% endif %}</a>
                 {% endfor %}
-                <a class="fr-btn fr-btn-outline-secondary" data-bs-toggle="collapse" href="#collapseGroups" role="button" aria-expanded="false" aria-controls="collapseGroups">
+                <a class="fr-btn fr-btn--secondary" data-bs-toggle="collapse" href="#collapseGroups" role="button" aria-expanded="false" aria-controls="collapseGroups">
                     Modifier<i class="bi bi-caret-down"></i>
                 </a>
             </div>

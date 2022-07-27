@@ -27,7 +27,7 @@
             <div class="input-group mb-3">
                 <span class="input-group-text" id="basic-addon3">Replace parameters:</span>
                 <input id="merge-url" type="text" class="form-control" placeholder="url" aria-label="Recipient's username" aria-describedby="basic-addon2" value="{{ url_merge }}">
-                <button class="fr-btn fr-btn--secondary" type="button" id="fr-btn-dl-merge"><i class="bi bi-file-earmark-arrow-down"></i> Merge</button>
+                <button class="fr-btn fr-btn--secondary" type="button" id="btn-dl-merge"><i class="bi bi-file-earmark-arrow-down"></i> Merge</button>
             </div>
 
             <script
@@ -36,7 +36,7 @@
                 crossorigin="anonymous"></script>
 
             <script>
-                $("#fr-btn-dl-merge").click(function() {
+                $("#btn-dl-merge").click(function() {
                     let url = window.location.origin + "/" + $("#merge-url").val()
                     window.location.href = url
                 })
