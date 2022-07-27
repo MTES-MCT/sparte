@@ -23,23 +23,23 @@ from .mixins import DataColorationMixin
 class CeremaManager(models.Manager):
     def pre_annotated(self):
         qs = self.all()
-        annotations = {str(y): F(f"naf{y:0>2}art{y+1:0>2}") for y in range(9, 20)}
+        annotations = {str(y): F(f"naf{y:0>2}art{y+1:0>2}") for y in range(9, 21)}
         qs = qs.annotate(**annotations)
         return qs
 
 
 class Cerema(DataColorationMixin, models.Model):
-    city_insee = models.CharField(max_length=5, db_index=True)
-    city_name = models.CharField(max_length=45)
-    region_id = models.CharField(max_length=2)
-    region_name = models.CharField(max_length=27)
-    dept_id = models.CharField(max_length=3)
-    dept_name = models.CharField(max_length=23)
-    epci_id = models.CharField(max_length=9)
-    epci_name = models.CharField(max_length=64)
-    aav2020 = models.CharField(max_length=3, null=True)
-    libaav2020 = models.CharField(max_length=39, null=True)
-    cateaav202 = models.BigIntegerField(null=True)
+    city_insee = models.CharField(max_length=7, db_index=True)
+    city_name = models.CharField(max_length=50)
+    region_id = models.CharField(max_length=50)
+    region_name = models.CharField(max_length=50)
+    dept_id = models.CharField(max_length=50)
+    dept_name = models.CharField(max_length=50)
+    epci_id = models.CharField(max_length=50)
+    epci_name = models.CharField(max_length=70)
+    aav2020 = models.CharField(max_length=80, null=True)
+    libaav2020 = models.CharField(max_length=80, null=True)
+    aav2020_ty = models.CharField(max_length=80, null=True)
     naf09art10 = models.FloatField(null=True)
     art09act10 = models.FloatField(null=True)
     art09hab10 = models.FloatField(null=True)
@@ -95,25 +95,41 @@ class Cerema(DataColorationMixin, models.Model):
     art19hab20 = models.FloatField(null=True)
     art19mix20 = models.FloatField(null=True)
     art19inc20 = models.FloatField(null=True)
-    nafart0920 = models.FloatField(null=True)
-    artact0920 = models.FloatField(null=True)
-    arthab0920 = models.FloatField(null=True)
-    artmix0920 = models.FloatField(null=True)
-    artinc0920 = models.FloatField(null=True)
-    artcom0920 = models.FloatField(null=True)
-    pop12 = models.BigIntegerField(null=True)
-    pop17 = models.BigIntegerField(null=True)
-    pop1217 = models.BigIntegerField(null=True)
-    men12 = models.BigIntegerField(null=True)
-    men17 = models.BigIntegerField(null=True)
-    men1217 = models.BigIntegerField(null=True)
-    emp17 = models.BigIntegerField(null=True)
-    emp12 = models.BigIntegerField(null=True)
-    emp1217 = models.BigIntegerField(null=True)
-    mepart1217 = models.FloatField(null=True)
-    menhab1217 = models.FloatField(null=True)
-    artpop1217 = models.FloatField(null=True)
-    surfcom20 = models.FloatField(null=True)
+    # changed fields 2021
+    pop13 = models.BigIntegerField(null=True)
+    pop18 = models.BigIntegerField(null=True)
+    pop1318 = models.BigIntegerField(null=True)
+    men13 = models.BigIntegerField(null=True)
+    men18 = models.BigIntegerField(null=True)
+    men1318 = models.BigIntegerField(null=True)
+    emp13 = models.BigIntegerField(null=True)
+    emp18 = models.BigIntegerField(null=True)
+    emp1318 = models.BigIntegerField(null=True)
+    mepart1318 = models.FloatField(null=True)
+    menhab1318 = models.FloatField(null=True)
+    artpop1318 = models.FloatField(null=True)
+    surfcom202 = models.FloatField(null=True)
+    # new fields 2021
+    scot = models.CharField(max_length=254, null=True)
+    naf20art21 = models.FloatField(null=True)
+    art20act21 = models.FloatField(null=True)
+    art20hab21 = models.FloatField(null=True)
+    art20mix21 = models.FloatField(null=True)
+    art20inc21 = models.FloatField(null=True)
+    naf09art21 = models.FloatField(null=True)
+    art09act21 = models.FloatField(null=True)
+    art09hab21 = models.FloatField(null=True)
+    art09mix21 = models.FloatField(null=True)
+    art09inc21 = models.FloatField(null=True)
+    artcom0921 = models.FloatField(null=True)
+    # deleted fields 2021
+    # nafart0920 = models.FloatField(null=True)
+    # artact0920 = models.FloatField(null=True)
+    # arthab0920 = models.FloatField(null=True)
+    # artmix0920 = models.FloatField(null=True)
+    # artinc0920 = models.FloatField(null=True)
+    # artcom0920 = models.FloatField(null=True)
+    # cateaav202 = models.BigIntegerField(null=True)
     # calculated field :
     naf11art21 = models.FloatField(null=True)
     art11hab21 = models.FloatField(null=True)
@@ -128,25 +144,6 @@ class Cerema(DataColorationMixin, models.Model):
 
     def __str__(self):
         return self.city_insee
-
-    @classmethod
-    def calculate_fields(cls):
-        """
-        Calculate fields to speedup user consultation
-        ..warning:: 2021 is missing in the sum because data are missing.
-        ..TODO:: update data to get 2021 and change sum.
-        """
-        fields = cls.get_art_field(2011, 2019)
-        kwargs = {
-            "naf11art21": sum([F(f) for f in fields]),
-            "art11hab21": sum(
-                [F(f.replace("art", "hab").replace("naf", "art")) for f in fields]
-            ),
-            "art11act21": sum(
-                [F(f.replace("art", "act").replace("naf", "art")) for f in fields]
-            ),
-        }
-        cls.objects.update(**kwargs)
 
     @classmethod
     def get_art_field(self, start="2010", end="2020"):
@@ -165,9 +162,9 @@ class Cerema(DataColorationMixin, models.Model):
         """
         end = int(end) - 2000
         start = int(start) - 2000
-        if not 9 <= start <= 19:
+        if not 9 <= start <= 20:
             raise ValueError("'start' must be between 2009 and 2019")
-        if not 10 <= end <= 19:
+        if not 10 <= end <= 20:
             raise ValueError("'end' must be between 2010 and 2019")
         if end < start:
             raise ValueError("start must be <= to end")
