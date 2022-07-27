@@ -36,7 +36,7 @@ Sélectionner un département
                     <div class="row g-2 row-cols-3 align-items-center mt-3">
                     {% for object in object_list %}
                         <div class="col" height="60">
-                            <button type="submit" class="fr-btn fr-btn-outline-primary w-100 overflow-hidden" name="land" value="{{ object.public_key }}">
+                            <button type="submit" class="fr-btn overflow-hidden" name="land" value="{{ object.public_key }}">
                                 {{ object.name }}
                             </button>
                         </div>
