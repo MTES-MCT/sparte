@@ -219,9 +219,9 @@ $("#save-all").click(function(){
 {% sri_static "highcharts/js/highcharts.js" %}
 {% sri_static "highcharts/js/exporting.js" %}
 {% french_translation %}
-{% display_chart 'chart_conso_cities' chart_conso_cities %}
-{% display_chart 'chart_determinant' determinant_per_year_chart %}
-{% display_chart 'pie_determinant' determinant_pie_chart %}
+{% display_chart 'chart_conso_cities' chart_conso_cities CSP_NONCE %}
+{% display_chart 'chart_determinant' determinant_per_year_chart CSP_NONCE %}
+{% display_chart 'pie_determinant' determinant_pie_chart CSP_NONCE %}
 {% endlocalize %}
 {% endblock %}
 
