@@ -23,7 +23,7 @@ from .mixins import DataColorationMixin
 class CeremaManager(models.Manager):
     def pre_annotated(self):
         qs = self.all()
-        annotations = {str(y): F(f"naf{y:0>2}art{y+1:0>2}") for y in range(9, 20)}
+        annotations = {str(y): F(f"naf{y:0>2}art{y+1:0>2}") for y in range(9, 21)}
         qs = qs.annotate(**annotations)
         return qs
 
@@ -146,25 +146,6 @@ class Cerema(DataColorationMixin, models.Model):
         return self.city_insee
 
     @classmethod
-    def calculate_fields(cls):
-        """
-        Calculate fields to speedup user consultation
-        ..warning:: 2021 is missing in the sum because data are missing.
-        ..TODO:: update data to get 2021 and change sum.
-        """
-        fields = cls.get_art_field(2011, 2019)
-        kwargs = {
-            "naf11art21": sum([F(f) for f in fields]),
-            "art11hab21": sum(
-                [F(f.replace("art", "hab").replace("naf", "art")) for f in fields]
-            ),
-            "art11act21": sum(
-                [F(f.replace("art", "act").replace("naf", "art")) for f in fields]
-            ),
-        }
-        cls.objects.update(**kwargs)
-
-    @classmethod
     def get_art_field(self, start="2010", end="2020"):
         """Return field name list of nafAAartAA (where AA are years) between
         2 years included.
@@ -181,9 +162,9 @@ class Cerema(DataColorationMixin, models.Model):
         """
         end = int(end) - 2000
         start = int(start) - 2000
-        if not 9 <= start <= 19:
+        if not 9 <= start <= 20:
             raise ValueError("'start' must be between 2009 and 2019")
-        if not 10 <= end <= 19:
+        if not 10 <= end <= 20:
             raise ValueError("'end' must be between 2010 and 2019")
         if end < start:
             raise ValueError("start must be <= to end")
