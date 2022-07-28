@@ -187,8 +187,8 @@ class LandMixin:
 
 
 class Region(LandMixin, GetDataFromCeremaMixin, models.Model):
-    source_id = models.CharField("Identifiant source", max_length=2)
-    name = models.CharField("Nom", max_length=27)
+    source_id = models.CharField("Identifiant source", max_length=50)
+    name = models.CharField("Nom", max_length=50)
     mpoly = models.MultiPolygonField()
 
     land_type = AdminRef.REGION
@@ -219,13 +219,13 @@ class Region(LandMixin, GetDataFromCeremaMixin, models.Model):
 
 
 class Departement(LandMixin, GetDataFromCeremaMixin, models.Model):
-    source_id = models.CharField("Identifiant source", max_length=3)
+    source_id = models.CharField("Identifiant source", max_length=50)
     region = models.ForeignKey(Region, on_delete=models.CASCADE)
     is_artif_ready = models.BooleanField("Données artif disponibles", default=False)
     ocsge_millesimes = models.CharField(
         "Millesimes OCSGE dispo", max_length=100, null=True
     )
-    name = models.CharField("Nom", max_length=23)
+    name = models.CharField("Nom", max_length=50)
     mpoly = models.MultiPolygonField()
 
     land_type = AdminRef.DEPARTEMENT
@@ -249,8 +249,8 @@ class Departement(LandMixin, GetDataFromCeremaMixin, models.Model):
 
 
 class Epci(LandMixin, GetDataFromCeremaMixin, models.Model):
-    source_id = models.CharField("Identifiant source", max_length=9)
-    name = models.CharField("Nom", max_length=64)
+    source_id = models.CharField("Identifiant source", max_length=50)
+    name = models.CharField("Nom", max_length=70)
     mpoly = models.MultiPolygonField()
     departements = models.ManyToManyField(Departement)
 
@@ -282,8 +282,8 @@ class Epci(LandMixin, GetDataFromCeremaMixin, models.Model):
 
 
 class Commune(DataColorationMixin, LandMixin, GetDataFromCeremaMixin, models.Model):
-    insee = models.CharField("Code INSEE", max_length=5)
-    name = models.CharField("Nom", max_length=45)
+    insee = models.CharField("Code INSEE", max_length=7)
+    name = models.CharField("Nom", max_length=50)
     departement = models.ForeignKey(Departement, on_delete=models.CASCADE)
     epci = models.ForeignKey(Epci, on_delete=models.CASCADE)
     mpoly = models.MultiPolygonField()
