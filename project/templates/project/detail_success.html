@@ -162,17 +162,20 @@ SPARTE
 
 {% block sub_bar_actions %}
 
-<li class="list-inline-item">
-    <a href="{% url 'project:update' project.pk %}">
-        <i class="bi bi-pencil"></i> Editer
-    </a>
-</li>
-{% if user.is_authenticated %}
-<li class="list-inline-item">
-    <a href="{% url 'project:delete' project.pk %}">
-        <i class="bi bi-trash"></i> Supprimer
-    </a>
-</li>
+<ul class="list-inline text-center">
+  <li class="list-inline-item">
+      <a href="{% url 'project:update' project.pk %}">
+          <i class="bi bi-pencil"></i> Editer
+      </a>
+  </li>
+  {% if user.is_authenticated %}
+  <li class="list-inline-item">
+      <a href="{% url 'project:delete' project.pk %}">
+          <i class="bi bi-trash"></i> Supprimer
+      </a>
+  </li>
+</ul>
+
 
 {% endif %}
 {% endblock %}
