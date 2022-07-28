@@ -85,14 +85,14 @@ Rapport consommation
               <div class="fr-col-12 fr-col-md-4">
                 <div class="fr-callout">
                   <p class="fr-callout__title">+{{ objective_chart.total_real|floatformat:1 }} ha</p>
-                  <p>Consommation 2011-2020 <i class="bi bi-question-circle" data-toggle="tooltip" title="Données prévisionelles pour 2020"></i></p>
+                  <p>Consommation 2011-2020 <i class="bi bi-question-circle" data-toggle="tooltip" title="Données prévisionelles pour 2020" aria-hidden="true"></i></p>
                 </div>
               </div>
 
               <div class="fr-col-12 fr-col-md-4">
                 <div class="fr-callout">
                   <p class="fr-callout__title">+{{ objective_chart.conso_2031|floatformat:1 }} ha</p>
-                  <p>Trajectoire 2021-2030 <i class="bi bi-question-circle" data-toggle="tooltip" title="Réduction de 50% par rapport à la décennie précédente"></i></p>
+                  <p>Trajectoire 2021-2030 <i class="bi bi-question-circle" data-toggle="tooltip" title="Réduction de 50% par rapport à la décennie précédente" aria-hidden="true"></i></p>
                 </div>
               </div>
 
@@ -190,7 +190,7 @@ Rapport consommation
                 <a name="territoires-de-comparaison"></a>
                 <h3>
                     <a class="float-end"href="{% url 'project:lookalike' project.id %}?from=conso_report">
-                        <i class="bi bi-plus-circle" data-toggle="tooltip" title="Ajouter un territoire de comparaison"></i>
+                        <i class="bi bi-plus-circle" data-toggle="tooltip" title="Ajouter un territoire de comparaison" aria-hidden="true"></i>
                     </a>
                     Comparaison avec les territoires voisins
                 </h3>
