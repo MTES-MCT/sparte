@@ -227,8 +227,10 @@ class SetProjectOptions(BreadCrumbMixin, FormView):
         lands = Land.get_lands(public_keys)
 
         name = "Diagnostic de plusieurs communes"
+        territory_name = ""
         if len(lands) == 1:
             name = f"Diagnostic de {lands[0].name}"
+            territory_name = lands[0].name
 
         nb_types = len({type(land) for land in lands})
         land_type = AdminRef.COMPOSITE if nb_types > 1 else lands[0].land_type
@@ -243,6 +245,7 @@ class SetProjectOptions(BreadCrumbMixin, FormView):
             emprise_origin=Project.EmpriseOrigin.WITH_EMPRISE,
             land_ids=",".join(str(land.id) for land in lands),
             land_type=land_type,
+            territory_name=territory_name,
         )
         if self.request.user.is_authenticated:
             project.user = self.request.user
