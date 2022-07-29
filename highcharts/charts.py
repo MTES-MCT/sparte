@@ -94,6 +94,10 @@ class Chart:
         r = requests.post(settings.HIGHCHART_SERVER, json=data)
         if r.content.startswith(b"0x04 error when performing chart generation"):
             raise ChartGenerationException(json.dumps(data, default=decimal2float))
+        if r.content.startswith(b'{"message":"Too many requests, you have been rate l'):
+            raise ChartGenerationException(
+                "Highchart export server rate limitation reached"
+            )
         return r.content
 
     def get_temp_image(self):
