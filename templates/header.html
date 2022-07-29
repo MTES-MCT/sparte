@@ -6,8 +6,13 @@
 </a>
 {% endblock service_title %}
 
-<!-- {% block header_tools %}
-{% endblock header_tools %} -->
+{% block header_tools %}
+<li>
+  <a class="fr-btn fr-fi-add-circle-line" href="{% url 'project:select' %}">
+    Créer un diagnostic
+  </a>
+</li>
+{% endblock header_tools %}
 
 {# Leave burger_menu and main_menu blocks empty if the main menu is not used #}
 {# block burger_menu #}
