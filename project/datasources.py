@@ -1,3 +1,6 @@
+import os
+import tempfile
+
 from django_docx_template import data_sources
 
 from utils.functions import get_url_with_domain
@@ -27,9 +30,20 @@ class DiagnosticSource(data_sources.DataSource):
         self.project = project
         context = {
             "diagnostic": project,
+            "nom_territoire": project.get_territory_name(),
+            "periode_differente_zan": (
+                project.analyse_start_date != "2011"
+                or project.analyse_end_date != "2020"
+            ),
             # deprecated
             "project": project,
         }
+
+        if project.cover_image:
+            fd, img_path = tempfile.mkstemp(suffix=".png", text=False)
+            os.write(fd, project.cover_image.open().read())
+            os.close(fd)
+            context.update({"photo_emprise": data_sources.Image(img_path, height=70)})
 
         target_2031_consumption = project.get_bilan_conso()
         current_conso = project.get_bilan_conso_time_scoped()
@@ -78,6 +92,9 @@ class DiagnosticSource(data_sources.DataSource):
         total["total"] = sum(total.values())
         det_data_table["Total"] = total
 
+        # projection ZAN 2031
+        objective_chart = charts.ObjectiveChart(project)
+
         url_diag = get_url_with_domain(project.get_absolute_url())
 
         context.update(
@@ -114,7 +131,17 @@ class DiagnosticSource(data_sources.DataSource):
                 ),
                 "pie_chart_determinants": data_sources.Image(
                     pie_det_chart.get_temp_image(),
+                    width=140,
+                ),
+                "projection_zan_2031": data_sources.Image(
+                    objective_chart.get_temp_image(),
                     width=170,
+                ),
+                "projection_zan_cumulee_ref": round(objective_chart.total_real, 1),
+                "projection_zan_annuelle_ref": round(objective_chart.previsionnal, 1),
+                "projection_zan_cumulee_objectif": round(objective_chart.conso_2031),
+                "projection_zan_annuelle_objectif": round(
+                    objective_chart.annual_objective_2031
                 ),
             }
         )
