@@ -33,6 +33,19 @@ from utils.db import cast_sum
 from .utils import user_directory_path
 
 
+class ProjectNotSaved(BaseException):
+    """Exception raised when project needs to be saved once before performing the
+    requested action"""
+
+    pass
+
+
+def upload_cover_image(project: "Project", filename: str) -> str:
+    """Define where to upload project's cover image : diagnostic/<int:id>
+    nb: currently you can't add cover image if project is not saved yet"""
+    return f"diagnostics/{project.get_folder_name()}/{filename}"
+
+
 class BaseProject(models.Model):
     class EmpriseOrigin(models.TextChoices):
         UNSET = "UNSET", "Origine non renseignée"
@@ -230,6 +243,20 @@ class Project(BaseProject):
         null=True,
         blank=True,
     )
+
+    folder_name = models.CharField("Dossier", max_length=15, blank=True, null=True)
+    cover_image = models.ImageField(upload_to=upload_cover_image, blank=True, null=True)
+
+    def get_folder_name(self):
+        if not self.id:
+            raise ProjectNotSaved(
+                "Impossible de récupérer le dossier de stockage des fichiers avant "
+                "d'avoir sauvegardé au moins une fois le diagnostic."
+            )
+        if not self.folder_name:
+            self.folder_name = f"diag_{self.id:>06}"
+            self.save(update_fields=["folder_name"])
+        return self.folder_name
 
     @property
     def nb_years(self):
