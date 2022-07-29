@@ -128,6 +128,7 @@ TEMPLATES = [
                 "users.context_processors.add_connected_user_to_context",
                 "django_app_parameter.context_processors.add_global_parameter_context",
                 "csp.context_processors.nonce",
+                "dsfr.context_processors.site_config",
             ],
         },
     },
