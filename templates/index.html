@@ -75,29 +75,9 @@
                     {% endblock %}
                 </div>
                 {% endblock carto %}
+
                 <!-- Footer-->
-                {% block footer %}
-                <div id="footer" class="border-top py-5 flex-grow-1 mt-5">
-                    <div class="container">
-                        <div class="row">
-                            <div class="col-2">
-                                <img class="w-100" src="{% static 'img/logo_france.png' %}" alt="Logo France Marianne"/>
-                            </div>
-                            <div class="col-10">
-                                <p class="my-3">
-                                    <a href="{% url 'home:cgv' %}">Mentions légales</a> - <a href="{% url 'home:privacy' %}">Politique de confidentialité</a> - <a href="{% url 'home:stats' %}">Statistiques</a> - <a href="{% url 'home:accessibilite' %}">Accessibilité : non conforme</a>
-                                </p>
-                                <p class="text-muted">
-                                    SPARTE est une start-up d'état en cours d'élaboration, la plateforme est en version BETA publique. Faites nous part de vos propositions pour améliorer ce service en envoyant un e-mail à <a href="mailto:sparte@beta.gouv.fr">sparte@beta.gouv.fr</a>. SPARTE est incubée à la Fabrique du numérique du Ministère de la Transition Ecologique, et membre de la communauté <a href="https://www.beta.gouv.fr">Beta Gouv</a>.
-                                </p>
-                                <p class="text-muted">
-                                    Sparte est Open Source, le code est disponible sur github : <a href="https://github.com/MTES-MCT/sparte" target="_blank">https://github.com/MTES-MCT/sparte</a>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                {% endblock footer %}
+                {% include "footer.html" %}
                 </div>
             </main>
         </div>
