@@ -22,14 +22,13 @@ There are 3 entry points :
                                  will be done.
 """
 from celery import shared_task
-import io
-import logging
-from zipfile import BadZipFile
-
 import contextily as cx
 import geopandas
+import io
+import logging
 import matplotlib.pyplot as plt
-from shapely.geometry import MultiPolygon as MP, Polygon
+import shapely
+from zipfile import BadZipFile
 
 from django.contrib.gis.db.models import Union
 from django.contrib.gis.geos.collections import MultiPolygon
@@ -257,7 +256,8 @@ def send_email_request_bilan(request_id):
 def generate_cover_image(project_id):
     diagnostic = Project.objects.get(id=int(project_id))
     geom = diagnostic.combined_emprise.transform("2154", clone=True)
-    polygons = MP([Polygon(coord) for coord in geom.coords])
+    srid, wkt = geom.ewkt.split(";")
+    polygons = shapely.wkt.loads(wkt)
 
     gdf_emprise = geopandas.GeoDataFrame(
         {
