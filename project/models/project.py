@@ -245,6 +245,9 @@ class Project(BaseProject):
     )
 
     folder_name = models.CharField("Dossier", max_length=15, blank=True, null=True)
+    territory_name = models.CharField(
+        "Territoire", max_length=250, blank=True, null=True
+    )
     cover_image = models.ImageField(upload_to=upload_cover_image, blank=True, null=True)
 
     @property
@@ -286,6 +289,12 @@ class Project(BaseProject):
     def delete(self):
         self.cover_image.delete(save=False)
         return super().delete()
+
+    def get_territory_name(self):
+        if self.territory_name:
+            return self.territory_name
+        else:
+            return self.name
 
     def get_folder_name(self):
         if not self.id:
