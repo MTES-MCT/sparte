@@ -22,11 +22,18 @@ There are 3 entry points :
                                  will be done.
 """
 from celery import shared_task
+import io
 import logging
 from zipfile import BadZipFile
 
+import contextily as cx
+import geopandas
+import matplotlib.pyplot as plt
+from shapely.geometry import MultiPolygon as MP, Polygon
+
 from django.contrib.gis.db.models import Union
 from django.contrib.gis.geos.collections import MultiPolygon
+from django.core.files.images import ImageFile
 from django.urls import reverse
 
 from django_app_parameter import app_parameter
@@ -244,3 +251,45 @@ def send_email_request_bilan(request_id):
             "request_url": get_url_with_domain(relative_url),
         },
     )
+
+
+@shared_task
+def generate_cover_image(project_id):
+    diagnostic = Project.objects.get(id=int(project_id))
+    geom = diagnostic.combined_emprise.transform("2154", clone=True)
+    polygons = MP([Polygon(coord) for coord in geom.coords])
+
+    gdf_emprise = geopandas.GeoDataFrame(
+        {
+            "col1": [
+                "emprise diagnostic",
+            ],
+            "geometry": [
+                polygons,
+            ],
+        },
+        crs="EPSG:2154",
+    ).to_crs(epsg=3857)
+
+    fig, ax = plt.subplots(figsize=(60, 10))
+    plt.axis("off")
+    fig.set_dpi(150)
+
+    gdf_emprise.buffer(250000).plot(ax=ax, facecolor="none", edgecolor="none")
+    gdf_emprise.plot(ax=ax, facecolor="none", edgecolor="yellow")
+    cx.add_basemap(
+        ax,
+        source=(
+            "https://wxs.ign.fr/ortho/geoportail/wmts?"
+            "&REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0&TILEMATRIXSET=PM"
+            "&LAYER=ORTHOIMAGERY.ORTHOPHOTOS&STYLE=normal&FORMAT=image/jpeg"
+            "&TILECOL={x}&TILEROW={y}&TILEMATRIX={z}"
+        ),
+    )
+
+    img_data = io.BytesIO()
+    plt.savefig(img_data, bbox_inches="tight")
+    img_data.seek(0)
+    diagnostic.cover_image.delete(save=False)
+    diagnostic.cover_image = ImageFile(img_data, name=f"cover_{project_id}.png")
+    diagnostic.save()

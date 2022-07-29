@@ -247,17 +247,6 @@ class Project(BaseProject):
     folder_name = models.CharField("Dossier", max_length=15, blank=True, null=True)
     cover_image = models.ImageField(upload_to=upload_cover_image, blank=True, null=True)
 
-    def get_folder_name(self):
-        if not self.id:
-            raise ProjectNotSaved(
-                "Impossible de récupérer le dossier de stockage des fichiers avant "
-                "d'avoir sauvegardé au moins une fois le diagnostic."
-            )
-        if not self.folder_name:
-            self.folder_name = f"diag_{self.id:>06}"
-            self.save(update_fields=["folder_name"])
-        return self.folder_name
-
     @property
     def nb_years(self):
         return len(self.years)
@@ -293,6 +282,21 @@ class Project(BaseProject):
                     self._city_group_list.append(CityGroup(project_commune.group_name))
                 self._city_group_list[-1].append(project_commune)
         return self._city_group_list
+
+    def delete(self):
+        self.cover_image.delete(save=False)
+        return super().delete()
+
+    def get_folder_name(self):
+        if not self.id:
+            raise ProjectNotSaved(
+                "Impossible de récupérer le dossier de stockage des fichiers avant "
+                "d'avoir sauvegardé au moins une fois le diagnostic."
+            )
+        if not self.folder_name:
+            self.folder_name = f"diag_{self.id:>06}"
+            self.save(update_fields=["folder_name"])
+        return self.folder_name
 
     def is_artif(self):
         return self.cities.filter(departement__is_artif_ready=True).exists()

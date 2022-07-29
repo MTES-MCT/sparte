@@ -27,7 +27,7 @@ from project.forms import (
 )
 from project.models import Project
 
-# from project.tasks import process_project
+from project.tasks import generate_cover_image
 
 
 class SelectTypeView(BreadCrumbMixin, TemplateView):
@@ -268,6 +268,8 @@ class SetProjectOptions(BreadCrumbMixin, FormView):
                 project.add_look_a_like(public_keys, many=True)
 
         project.set_success(save=True)
+
+        generate_cover_image.delay(project.id)
 
         return redirect(project)
 
