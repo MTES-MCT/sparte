@@ -25,22 +25,22 @@ Consommation des villes
 
     <div class="bg-light p-5 rounded-5 border">
 
-        <a href="{% url 'project:report_conso' project.pk %}" class="text-decoration-none"><i class="bi bi-arrow-left"></i> Retour au rapport "Consommation"</a>
+        <a href="{% url 'project:report_conso' project.pk %}" class="text-decoration-none"><i class="bi bi-arrow-left" aria-hidden="true"></i> Retour au rapport "Consommation"</a>
 
         <div class="box mt-5 p-4">
             <h3>Sélectionner le groupe à visionner</h3>
             <div class="fr-btns-group fr-btns-group--inline" role="group" aria-label="Sélectionner un groupe">
                 {% for name in groups_name %}
-                    <a href="{% url 'project:report_city_group' project.id %}?group_name={{ name }}" class="fr-btn{% if name == group_name %} active{% endif %}">{{ name }}{% if name == group_name %} <i class="bi bi-eye ms-3"></i>{% endif %}</a>
+                    <a href="{% url 'project:report_city_group' project.id %}?group_name={{ name }}" class="fr-btn{% if name == group_name %} active{% endif %}">{{ name }}{% if name == group_name %} <i class="bi bi-eye ms-3" aria-hidden="true"></i>{% endif %}</a>
                 {% endfor %}
                 <a class="fr-btn fr-btn--secondary" data-bs-toggle="collapse" href="#collapseGroups" role="button" aria-expanded="false" aria-controls="collapseGroups">
-                    Modifier<i class="bi bi-caret-down"></i>
+                    Modifier<i class="bi bi-caret-down" aria-hidden="true"></i>
                 </a>
             </div>
 
             <div class="collapse mt-3 border-start border-5" id="collapseGroups">
-                <button id="add-group" class="fr-btn mb-0 ms-3"><i class="bi bi-plus"></i> Ajouter un groupe</button>
-                <button id="save-all" class="fr-btn mb-0 ms-3"><i class="bi bi-save-fill"></i> Sauvegarder les modifications</button>
+                <button id="add-group" class="fr-btn mb-0 ms-3"><i class="bi bi-plus" aria-hidden="true"></i> Ajouter un groupe</button>
+                <button id="save-all" class="fr-btn mb-0 ms-3"><i class="bi bi-save-fill" aria-hidden="true"></i> Sauvegarder les modifications</button>
                 <div class="clearfix mt-0" id="group-container">
                     <div class="card city-group">
                         <div class="card-header">
@@ -48,7 +48,7 @@ Consommation des villes
                         </div>
                         <div id="no-group" class="card-body">
                             {% for city in city_without_group %}
-                            <div class="grab"><i class="bi bi-grip-vertical"></i>{{ city.name }}</div>
+                            <div class="grab"><i class="bi bi-grip-vertical" aria-hidden="true"></i>{{ city.name }}</div>
                             {% endfor %}
                         </div>
                     </div>
@@ -62,14 +62,14 @@ Consommation des villes
                                 </div>
                                 <div class="col-2 ">
                                     <a href="#">
-                                        <i class="bi bi-trash float-end"></i>
+                                        <i class="bi bi-trash float-end" aria-hidden="true"></i>
                                     </a>
                                 </div>
                             </div>
                         </div>
                         <div id="no-group" class="card-body">
                             {% for city in city_group.cities %}
-                            <div class="grab"><i class="bi bi-grip-vertical"></i>{{ city.name }}</div>
+                            <div class="grab"><i class="bi bi-grip-vertical" aria-hidden="true"></i>{{ city.name }}</div>
                             {% endfor %}
                         </div>
                     </div>
@@ -155,7 +155,7 @@ Consommation des villes
                 <div class="col-10"><input type="text" name="group_name" class="form-control" placeholder="nom du groupe"></div>
                 <div class="col-2 ">
                     <a href="#">
-                        <i class="bi bi-trash float-end"></i>
+                        <i class="bi bi-trash float-end" aria-hidden="true"></i>
                     </a>
                 </div>
             </div>
