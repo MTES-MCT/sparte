@@ -15,6 +15,10 @@
   color: #1e2125;
 }
 
+.bg-color-neutral {
+  background-color: #f4f6ff;
+}
+
 /* Pour mettre l'item de navigation ferré à droite en version desktop */
 @media (min-width: 992px) {
   .fr-nav__list > li.fr-nav__item.ml-auto {
