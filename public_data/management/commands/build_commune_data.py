@@ -31,12 +31,12 @@ class Command(BaseCommand):
         parser.add_argument(
             "--departement",
             type=str,
-            help="insee code of a particular city",
+            help="name of a specific departement",
         )
         parser.add_argument(
             "--verbose",
             action="store_true",
-            help="insee code of a particular city",
+            help="display city processed",
         )
 
     def handle(self, *args, **options):
