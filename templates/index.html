@@ -52,10 +52,8 @@
             </div>
             {% endblock breadcrumbs %}
 
-            <ul class="list-inline text-center">
-                {% block sub_bar_actions %}
-                {% endblock %}
-            </ul>
+            {% block sub_bar_actions %}
+            {% endblock %}
 
             <!-- Page content-->
             <main class="p-0 flex-grow-1 d-flex flex-column" id="main">
