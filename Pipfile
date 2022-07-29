@@ -51,6 +51,7 @@ django-sri = "*"
 django-dsfr = "*"
 geopandas = "*"
 matplotlib = "*"
+contextily = "*"
 
 [scripts]
 shell = "python manage.py shell"
