@@ -20,7 +20,7 @@ from utils.views_mixins import BreadCrumbMixin, GetObjectMixin
 from project import charts
 from project.forms import UploadShpForm, KeywordForm
 from project.models import Project, Request, ProjectCommune
-from project.tasks import send_email_request_bilan, generate_word_diagnostic
+from project import tasks
 from project.utils import add_total_line_column
 
 from .mixins import UserQuerysetOrPublicMixin
@@ -623,8 +623,10 @@ class ProjectReportDownloadView(GroupMixin, CreateView):
             form.instance.user = self.request.user
         form.instance.project = self.get_object()
         self.object = form.save()
-        send_email_request_bilan.delay(self.object.id)
-        generate_word_diagnostic.delay(self.object.id)
+        tasks.send_email_request_bilan.delay(self.object.id)
+        tasks.generate_word_diagnostic.apply_async(
+            (self.object.id,), link=tasks.send_word_diagnostic.s()
+        )
         messages.success(
             self.request,
             (
