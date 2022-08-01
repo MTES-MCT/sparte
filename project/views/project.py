@@ -56,6 +56,11 @@ class ProjectListView(GroupMixin, LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         qs = Project.objects.filter(user=self.request.user)
+        for project in qs:
+            project.prop_width = 266
+            project.prop_height = (
+                project.cover_image.height * 266 / project.cover_image.width
+            )
         return qs
 
 
