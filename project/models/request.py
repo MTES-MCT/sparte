@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.db import models
+from django.utils import timezone
 
 from users.models import User
 
@@ -40,8 +41,26 @@ class Request(models.Model):
         upload_to=upload_in_project_folder, null=True, blank=True
     )
 
+    def sent(self):
+        self.done = True
+        self.sent_date = timezone.now()
+        self.save(update_fields=["done", "sent_date"])
+
+    def record_exception(self, exc):
+        from traceback.TracebackException import from_exception
+
+        self.errors.create(exception=from_exception(exc))
+
     class Meta:
         ordering = ["-created_date"]
 
     def __str__(self):
         return f"Demande de {self.first_name}"
+
+
+class ErrorTracking(models.Model):
+    request = models.ForeignKey(
+        Request, on_delete=models.CASCADE, related_name="errors"
+    )
+    created_date = models.DateTimeField(auto_now_add=True)
+    exception = models.TextField()
