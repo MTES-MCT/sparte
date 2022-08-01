@@ -295,7 +295,6 @@ def generate_word_diagnostic(self, request_id):
             buffer = template.merge(pk=req.project_id)
             filename = template.get_file_name()
             req.sent_file.save(filename, buffer, save=True)
-            buffer.seek(0)
             logger.info("Word created and saved")
         return request_id
     except RateLimitExceededException as exc:
@@ -318,9 +317,10 @@ def send_word_diagnostic(self, request_id):
         # sending email
         msg = prep_email(
             "Bilan issu de SPARTE",
-            [req.email, app_parameter.TEAM_EMAIL],
+            [req.email],
             "project/emails/send_diagnostic",
             context={
+                "request": req,
                 "phone_contact": "+33 6 07 33 56 19",
                 "email_contact": app_parameter.TEAM_EMAIL,
             },
