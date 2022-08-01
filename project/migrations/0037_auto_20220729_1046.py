@@ -17,7 +17,7 @@ class Migration(migrations.Migration):
             field=models.ImageField(
                 blank=True,
                 null=True,
-                upload_to=project.models.project.upload_cover_image,
+                upload_to=project.models.project.upload_in_project_folder,
             ),
         ),
         migrations.AddField(

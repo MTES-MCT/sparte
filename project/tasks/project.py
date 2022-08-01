@@ -32,10 +32,10 @@ from zipfile import BadZipFile
 
 from django.contrib.gis.db.models import Union
 from django.contrib.gis.geos.collections import MultiPolygon
-from django.core.files.images import ImageFile
 from django.urls import reverse
 
 from django_app_parameter import app_parameter
+from django_docx_template.models import DocxTemplate
 from public_data.models import Ocsge
 from utils.emails import send_template_email
 
@@ -291,5 +291,13 @@ def generate_cover_image(project_id):
     plt.savefig(img_data, bbox_inches="tight")
     img_data.seek(0)
     diagnostic.cover_image.delete(save=False)
-    diagnostic.cover_image = ImageFile(img_data, name=f"cover_{project_id}.png")
-    diagnostic.save()
+    diagnostic.cover_image.save(f"cover_{project_id}.png", img_data, save=True)
+
+
+@shared_task
+def generate_word_diagnostic(request_id):
+    logger.info(f"Generate word for request={request_id}")
+    req = Request.objects.get(id=int(request_id))
+    template = DocxTemplate.objects.get(slug="template-bilan-1")
+    buffer = template.merge(pk=req.project_id)
+    req.sent_file.save(template.get_file_name(), buffer, save=True)
