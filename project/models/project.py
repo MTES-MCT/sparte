@@ -40,7 +40,7 @@ class ProjectNotSaved(BaseException):
     pass
 
 
-def upload_cover_image(project: "Project", filename: str) -> str:
+def upload_in_project_folder(project: "Project", filename: str) -> str:
     """Define where to upload project's cover image : diagnostic/<int:id>
     nb: currently you can't add cover image if project is not saved yet"""
     return f"diagnostics/{project.get_folder_name()}/{filename}"
@@ -248,7 +248,9 @@ class Project(BaseProject):
     territory_name = models.CharField(
         "Territoire", max_length=250, blank=True, null=True
     )
-    cover_image = models.ImageField(upload_to=upload_cover_image, blank=True, null=True)
+    cover_image = models.ImageField(
+        upload_to=upload_in_project_folder, blank=True, null=True
+    )
 
     @property
     def nb_years(self):

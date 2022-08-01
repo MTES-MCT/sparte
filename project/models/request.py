@@ -6,6 +6,10 @@ from users.models import User
 from .project import Project
 
 
+def upload_in_project_folder(request: "Request", filename: str) -> str:
+    return f"diagnostics/{request.project.get_folder_name()}/{filename}"
+
+
 class Request(models.Model):
     first_name = models.CharField("Prénom", max_length=150)
     last_name = models.CharField("Nom", max_length=150)
@@ -31,6 +35,10 @@ class Request(models.Model):
     updated_date = models.DateTimeField(auto_now=True)
     sent_date = models.DateTimeField("date d'envoi", null=True, blank=True)
     done = models.BooleanField("A été envoyé ?", default=False)
+
+    sent_file = models.FileField(
+        upload_to=upload_in_project_folder, null=True, blank=True
+    )
 
     class Meta:
         ordering = ["-created_date"]
