@@ -18,6 +18,10 @@ class ChartGenerationException(Exception):
     pass
 
 
+class RateLimitExceededException(Exception):
+    pass
+
+
 class Chart:
     param = None
     name = None
@@ -95,9 +99,7 @@ class Chart:
         if r.content.startswith(b"0x04 error when performing chart generation"):
             raise ChartGenerationException(json.dumps(data, default=decimal2float))
         if r.content.startswith(b'{"message":"Too many requests, you have been rate l'):
-            raise ChartGenerationException(
-                "Highchart export server rate limitation reached"
-            )
+            raise RateLimitExceededException()
         return r.content
 
     def get_temp_image(self):
