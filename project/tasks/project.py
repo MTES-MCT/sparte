@@ -223,18 +223,6 @@ def send_email_request_bilan(request_id):
     logger.info("Request_id=%s", request_id)
     request = Request.objects.get(pk=request_id)
     project_url = get_url_with_domain(request.project.get_absolute_url())
-    # send e-mail to requester
-    # send_template_email(
-    #     subject="Confirmation de demande de bilan",
-    #     recipients=[request.email],
-    #     template_name="project/emails/dl_diagnostic_client",
-    #     context={
-    #         "project": request.project,
-    #         "request": request,
-    #         "project_url": project_url,
-    #     },
-    # )
-    # send e-mail to team
     relative_url = reverse(
         "admin:project_request_change", kwargs={"object_id": request.id}
     )
