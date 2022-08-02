@@ -22,6 +22,7 @@ from public_data.models import (
     CommuneDiff,
     CommuneSol,
     CouvertureSol,
+    Departement,
     Ocsge,
     OcsgeDiff,
     AdminRef,
@@ -311,6 +312,21 @@ class Project(BaseProject):
 
     def is_artif(self):
         return self.cities.filter(departement__is_artif_ready=True).exists()
+
+    def get_ocsge_millesimes(self):
+        """Return all OCS GE millésimes available within project cities and between
+        project analyse ztart and end date"""
+        ids = self.cities.filter(departement__is_artif_ready=True).value_list(
+            "departement_id", flat=True
+        )
+        years = set()
+        for dept in Departement.objects.filter(id__in=ids):
+            years.update(dept.get_ocsge_millesimes())
+        return [
+            x
+            for x in years
+            if x <= self.analyse_end_date and x >= self.analyse_start_date
+        ]
 
     def add_look_a_like(self, public_key, many=False):
         """Add a public_key to look a like keeping the field formated

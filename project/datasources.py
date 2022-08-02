@@ -10,6 +10,38 @@ from .models import Project
 from .utils import add_total_line_column
 
 
+class SolInterface:
+    def __init__(self, item):
+        self.item = item
+
+    @property
+    def code(self):
+        spacer = " ".join(["-"] * self.item.level)
+        return f"{spacer} {self.item.code}"
+
+    @property
+    def label(self):
+        return self.item.get_label_short()
+
+    @property
+    def surface_first(self):
+        return str(round(self.item.surface_first, 1))
+
+    @property
+    def surface_last(self):
+        return str(round(self.item.surface_last, 1))
+
+    @property
+    def surface_diff(self):
+        val = round(self.item.surface_diff, 2)
+        if self.item.surface_diff > 0:
+            return f"+{val}"
+        elif self.item.surface_diff == 0:
+            return "-"
+        else:
+            return str(val)
+
+
 class DiagnosticSource(data_sources.DataSource):
     # properties
     label = "Données pour publier un rapport de diagnostic"
@@ -31,6 +63,7 @@ class DiagnosticSource(data_sources.DataSource):
         context = {
             "diagnostic": project,
             "nom_territoire": project.get_territory_name(),
+            "ocsge_is_available": False,
             "periode_differente_zan": (
                 project.analyse_start_date != "2011"
                 or project.analyse_end_date != "2020"
@@ -102,7 +135,6 @@ class DiagnosticSource(data_sources.DataSource):
                 "nb_voisins": nb_neighbors,
                 "url_clickable": data_sources.HyperLink(url_diag),
                 "url": url_diag,
-                "ocsge_is_available": False,
                 "communes_data_table": add_total_line_column(
                     chart_conso_cities.get_series()
                 ),
@@ -145,4 +177,41 @@ class DiagnosticSource(data_sources.DataSource):
                 ),
             }
         )
+
+        if project.is_artif:
+            donut_usage = charts.UsageSolPieChart(project)
+            graphique_usage = charts.UsageSolProgressionChart(project)
+            usage_data = [SolInterface(i) for i in graphique_usage.get_series()]
+
+            donut_couverture = charts.CouvertureSolPieChart(project)
+            graphique_couverture = charts.CouvertureSolProgressionChart(project)
+            couverture_data = [
+                SolInterface(i) for i in graphique_couverture.get_series()
+            ]
+
+            context.update(
+                {
+                    "ocsge_is_available": True,
+                    "debut_ocsge": str(project.first_year_ocsge),
+                    "fin_ocsge": str(project.last_year_ocsge),
+                    "donut_usage": data_sources.Image(
+                        donut_usage.get_temp_image(),
+                        width=140,
+                    ),
+                    "graphique_usage": data_sources.Image(
+                        graphique_usage.get_temp_image(),
+                        width=170,
+                    ),
+                    "usage_data": usage_data,
+                    "donut_couverture": data_sources.Image(
+                        donut_couverture.get_temp_image(),
+                        width=140,
+                    ),
+                    "graphique_couverture": data_sources.Image(
+                        graphique_couverture.get_temp_image(),
+                        width=170,
+                    ),
+                    "couverture_data": couverture_data,
+                }
+            )
         return context
