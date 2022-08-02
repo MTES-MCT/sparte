@@ -18,6 +18,7 @@ pytest-django = "==4.4.0"
 pytest-cov = "*"
 pytest-github-actions-annotate-failures = "*"
 bandit = "*"
+djt-csp = "*"
 
 [packages]
 boto3 = "*"
@@ -45,6 +46,8 @@ django-app-parameter = "*"
 setuptools = "*"
 docxtpl = "*"
 django-docx-template = {git = "https://github.com/Swannbm/django-docx-template"}
+django-csp = "*"
+django-sri = "*"
 
 [scripts]
 shell = "python manage.py shell"

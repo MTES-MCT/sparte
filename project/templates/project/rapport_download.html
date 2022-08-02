@@ -5,9 +5,10 @@
 {% load humanize %}
 {% load i18n %}
 {% load l10n %}
+{% load crispy_forms_tags %}
 
 {% block pagetitle %}
-Rapport couverture du sol
+Télécharger le bilan
 {% endblock %}
 
 {% block headers %}
@@ -34,15 +35,36 @@ Rapport couverture du sol
         <div class="w-100 row justify-content-center">
             <div class="box p-4 col-12 col-md-5 col-lg-4">
                 <h3>Recevoir votre bilan par e-mail</h3>
-                {% load crispy_forms_tags %}
+
                 <form action="" method="post">
                     {% csrf_token %}
                     {{ form|crispy }}
-                    <button class="btn w-100 btn-primary mt-5" type="submit" onclick="_paq.push(['trackEvent', 'Usage', 'Bilan', 'dl_bilan']);">Recevoir</button>
+                    <button id="dl_btn" class="btn w-100 btn-primary mt-5" type="submit">Recevoir</button>
                 </form>
             </div>
         </div>
-
     </div>
 </div>
 {% endblock %}
+
+
+{% block tagging %}
+<script language="javascript" nonce="{{ CSP_NONCE }}">
+$( window ).on('load', function () {
+    _paq.push(['trackEvent', 'Consultation diagnostic', 'Tableau de bord', 'Téléchargement'])
+})
+
+
+$( "#dl_btn" ).click(function() {
+    _paq.push(['trackEvent', 'Consultation diagnostic', 'Télécharger'])
+})
+
+var fired = false
+$( "#main" ).scroll(function() {
+    if(fired == false && $( "#main" ).scrollTop() + $( window ).height() > $( "#block-content" ).height() - 100) {
+        _paq.push(['trackEvent', 'Consultation diagnostic', 'Fin tableau de bord', 'Téléchargement'])
+        fired = true
+    }
+})
+</script>
+{% endblock tagging %}

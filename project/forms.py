@@ -1,9 +1,7 @@
 from django import forms
 from django.core.exceptions import ValidationError
-from django.db.models import Q
 
-from public_data.models import CommunesSybarval
-from public_data.models import Region, Departement, Epci, Commune
+from public_data.models import Region, Departement, Epci, Commune, AdminRef
 
 from .models import Project, Plan
 from .tasks import process_project_with_shape, process_new_plan, build_emprise_from_city
@@ -24,35 +22,6 @@ class SelectCitiesForm(SetEmpriseForm):
     cities = forms.ModelMultipleChoiceField(
         queryset=Commune.objects.all().order_by("name"),
     )
-
-
-class SelectPluForm(SetEmpriseForm):
-    plu = forms.ChoiceField()
-
-    def __init__(self, *args, **kwargs):
-        """set choices dynamicaly"""
-        super().__init__(*args, **kwargs)
-        qs_epci = Epci.objects.all()
-        qs_scot = CommunesSybarval.objects.values("_nom_scot").distinct()
-        choices_plu = [x.name for x in qs_epci]
-        choices_plu += [x["_nom_scot"] for x in qs_scot]
-        self.fields["plu"].choices = [(x, x) for x in choices_plu]
-
-    def clean(self):
-        """Add cleaned_data["cities"]"""
-        super().clean()
-        if "plu" in self.cleaned_data:
-            name = self.cleaned_data["plu"]
-            # 1/ get all the insee code from a SCOT
-            qs_insee = CommunesSybarval.objects.filter(_nom_scot=name)
-            qs_insee = qs_insee.values_list("code_insee", flat=True).distinct()
-            # 2/ find the EPCI selected
-            qs_epci = Epci.objects.filter(name=name)
-            # 3/ retrieve all Commune from scot and epci
-            q_part = Q(insee__in=qs_insee) | Q(epci__in=qs_epci)
-            qs = Commune.objects.filter(q_part)
-            self.cleaned_data["cities"] = qs
-        return self.cleaned_data
 
 
 class UploadShpForm(forms.Form):
@@ -108,9 +77,7 @@ class RegionForm(forms.Form):
         if regions:
             qs = Region.objects.filter(id__in=regions)
             self.fields["region"].queryset = qs
-        self.fields["region"].widget.attrs.update(
-            {"class": "form-control force-carret"}
-        )
+        self.fields["region"].widget.attrs.update({"class": "form-control-with-carret"})
 
 
 class DepartementForm(forms.Form):
@@ -129,7 +96,7 @@ class DepartementForm(forms.Form):
             qs = qs.order_by("name")
             self.fields["departement"].queryset = qs
         self.fields["departement"].widget.attrs.update(
-            {"class": "form-control force-carret"}
+            {"class": "form-control-with-carret"}
         )
 
 
@@ -148,25 +115,44 @@ class EpciForm(forms.Form):
         self.fields["epci"].queryset = qs
         # dep = Departement.objects.get(pk=self.departement_id)
         self.fields["departement"].initial = self.departement_id
-        self.fields["epci"].widget.attrs.update({"class": "form-control force-carret"})
+        self.fields["epci"].widget.attrs.update({"class": "form-control-with-carret"})
 
 
 class OptionsForm(forms.Form):
+    public_keys = forms.CharField(
+        label="Territoires sélectionnés", widget=forms.HiddenInput()
+    )
     analysis_start = forms.ChoiceField(
-        label="Début d'analyse", choices=Project.ANALYZE_YEARS
+        label="Début d'analyse", choices=Project.ANALYZE_YEARS, initial="2011"
     )
     analysis_end = forms.ChoiceField(
-        label="Fin d'analyse", choices=Project.ANALYZE_YEARS
+        label="Fin d'analyse", choices=Project.ANALYZE_YEARS, initial="2019"
     )
     analysis_level = forms.ChoiceField(
-        label="Niveau d'analyse", choices=Project.LEVEL_CHOICES
+        label="Niveau d'analyse",
+        choices=Project.LEVEL_CHOICES,
+        initial=AdminRef.COMMUNE,
     )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["analysis_start"].widget.attrs.update({"class": "force-carret"})
-        self.fields["analysis_end"].widget.attrs.update({"class": "force-carret"})
-        self.fields["analysis_level"].widget.attrs.update({"class": "force-carret"})
+        self.fields["analysis_start"].widget.attrs.update(
+            {"class": "form-control-with-carret-and-block"}
+        )
+        self.fields["analysis_end"].widget.attrs.update(
+            {"class": "form-control-with-carret-and-block"}
+        )
+        self.fields["analysis_level"].widget.attrs.update(
+            {"class": "form-control-with-carret-and-block"}
+        )
+
+        type_list = {p.split("_")[0] for p in self.initial["public_keys"].split("-")}
+        level = AdminRef.get_admin_level(type_list)
+        available_levels = AdminRef.get_available_analysis_level(level)
+        self.fields["analysis_level"].widget.choices = [
+            (_, AdminRef.CHOICES_DICT[_]) for _ in available_levels
+        ]
+        self.initial["analysis_level"] = AdminRef.get_analysis_default_level(level)
 
     def clean(self):
         cleaned_data = super().clean()
