@@ -231,7 +231,7 @@ class ObjectiveChart(ProjectChart):
 
         self.total_real = total
 
-        for year in range(year + 1, 2031):
+        for year in range(int(year) + 1, 2031):
             total += self.annual_objective_2031
             series[3]["data"].append(
                 {

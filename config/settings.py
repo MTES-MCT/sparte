@@ -76,6 +76,8 @@ THIRD_APPS = [
     "crispy_forms",
     "django_app_parameter",
     "sri",
+    "widget_tweaks",
+    "dsfr",
     # "django_docx_template",
 ]
 
@@ -113,6 +115,7 @@ TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         "DIRS": [
+            BASE_DIR / "dsfr/templates",
             BASE_DIR / "templates",
         ],
         "APP_DIRS": True,
@@ -125,6 +128,7 @@ TEMPLATES = [
                 "users.context_processors.add_connected_user_to_context",
                 "django_app_parameter.context_processors.add_global_parameter_context",
                 "csp.context_processors.nonce",
+                "dsfr.context_processors.site_config",
             ],
         },
     },
@@ -437,6 +441,7 @@ CSP_STYLE_SRC = ["'self'"]
 CSP_IMG_SRC = ["'self'", "https://wxs.ign.fr", "data:"]
 CSP_UPGRADE_INSECURE_REQUESTS = not DEBUG
 CSP_INCLUDE_NONCE_IN = ["script-src", "style-src"]
+CSP_FONT_SRC = ("'self'", "data:")
 CSP_CONNECT_SRC = ["https://stats.data.gouv.fr", "'self'"]
 
 # LOGGING SETTINGS

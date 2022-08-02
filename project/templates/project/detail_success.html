@@ -23,10 +23,10 @@ SPARTE
             <div class="alert alert-warning fade show mb-5" role="alert">
             {% if user.is_authenticated %}
                 Le diagnostic n'est pas associé à votre compte, vous ne pourrez pas le retrouver lors de votre prochaine visite. Pour corriger cela :
-                <a href="{% url 'project:claim' project.id %}" class="btn btn-warning btn-sm ms-5">Associer le diagnostic à votre compte</a>
+                <a href="{% url 'project:claim' project.id %}" class="fr-btn ms-5">Associer le diagnostic à votre compte</a>
             {% else %}
                 Vous êtes actuellement en mode "anonyme", pour reprendre votre travail lors de votre prochaine visite, vous serez obligé de recréer votre diagnostic (nom, description, territoires de comparaison et groupes de communes auront disparus). Vous pouvez créer un compte et ainsi conserver vos diagnostics et leur configuration. Vous pourrez également les partager avec d'autres utilisateurs.
-                <a href="{% url 'users:signup' %}?next={% url 'project:claim' project.id %}" class="btn btn-warning btn-sm ms-5">Créer un compte</a> (ou <a href="{% url 'users:signin' %}?next={% url 'project:claim' project.id %}" class="">connectez vous</a>)
+                <a href="{% url 'users:signup' %}?next={% url 'project:claim' project.id %}" class="fr-btn ms-5">Créer un compte</a> (ou <a href="{% url 'users:signin' %}?next={% url 'project:claim' project.id %}" class="">connectez vous</a>)
             {% endif %}
             </div>
         {% endif %}
@@ -162,17 +162,20 @@ SPARTE
 
 {% block sub_bar_actions %}
 
-<li class="nav-item ms-1">
-    <a class="btn btn-sm btn-outline-primary" href="{% url 'project:update' project.pk %}">
-        <i class="bi bi-pencil"></i> Editer
-    </a>
-</li>
-{% if user.is_authenticated %}
-<li class="nav-item ms-1">
-    <a class="btn btn-sm btn-outline-danger" href="{% url 'project:delete' project.pk %}">
-        <i class="bi bi-trash"></i> Supprimer
-    </a>
-</li>
+<ul class="list-inline text-center">
+  <li class="list-inline-item">
+      <a href="{% url 'project:update' project.pk %}">
+          <i class="bi bi-pencil"></i> Editer
+      </a>
+  </li>
+  {% if user.is_authenticated %}
+  <li class="list-inline-item">
+      <a href="{% url 'project:delete' project.pk %}">
+          <i class="bi bi-trash"></i> Supprimer
+      </a>
+  </li>
+</ul>
+
 
 {% endif %}
 {% endblock %}

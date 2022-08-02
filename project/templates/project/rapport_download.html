@@ -39,7 +39,7 @@ Télécharger le bilan
                 <form action="" method="post">
                     {% csrf_token %}
                     {{ form|crispy }}
-                    <button id="dl_btn" class="btn w-100 btn-primary mt-5" type="submit">Recevoir</button>
+                    <button id="dl_btn" class="fr-btn mt-5" type="submit">Recevoir</button>
                 </form>
             </div>
         </div>
@@ -60,8 +60,8 @@ $( "#dl_btn" ).click(function() {
 })
 
 var fired = false
-$( "#main" ).scroll(function() {
-    if(fired == false && $( "#main" ).scrollTop() + $( window ).height() > $( "#block-content" ).height() - 100) {
+$( window ).scroll(function() {
+    if(fired == false && $( window ).scrollTop() + $( window ).height() > $( "#block-content" ).height() - 100) {
         _paq.push(['trackEvent', 'Consultation diagnostic', 'Fin tableau de bord', 'Téléchargement'])
         fired = true
     }

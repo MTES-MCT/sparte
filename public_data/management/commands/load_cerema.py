@@ -1,112 +1,140 @@
 import logging
 
 from django.core.management.base import BaseCommand
+from django.db.models import F
 
-from public_data.models.mixins import AutoLoadMixin
+from public_data.models.mixins import AutoLoadMixin, TruncateTableMixin
 from public_data.models import Cerema
 
 
 logger = logging.getLogger("management.commands")
 
 
-class LoadCerema(AutoLoadMixin, Cerema):
+class LoadCerema(TruncateTableMixin, AutoLoadMixin, Cerema):
     class Meta:
         proxy = True
 
-    shape_file_path = "ref_plan.zip"
+    shape_file_path = "obs_artif_conso_com_2009_2021.zip"
 
     mapping = {
-        "city_insee": "IDCOM",
-        "city_name": "IDCOMTXT",
-        "region_id": "IDREG",
-        "region_name": "IDREGTXT",
-        "dept_id": "IDDEP",
-        "dept_name": "IDDEPTXT",
-        "epci_id": "EPCI20",
-        "epci_name": "EPCI20TXT",
-        "aav2020": "AAV2020",
-        "libaav2020": "LIBAAV2020",
-        "cateaav202": "CATEAAV202",
-        "naf09art10": "NAF09ART10",  # 2010
-        "art09act10": "ART09ACT10",
-        "art09hab10": "ART09HAB10",
-        "art09mix10": "ART09MIX10",
-        "art09inc10": "ART09INC10",
-        "naf10art11": "NAF10ART11",  # 2011
-        "art10act11": "ART10ACT11",
-        "art10hab11": "ART10HAB11",
-        "art10mix11": "ART10MIX11",
-        "art10inc11": "ART10INC11",
-        "naf11art12": "NAF11ART12",  # 2012
-        "art11act12": "ART11ACT12",
-        "art11hab12": "ART11HAB12",
-        "art11mix12": "ART11MIX12",
-        "art11inc12": "ART11INC12",
-        "naf12art13": "NAF12ART13",
-        "art12act13": "ART12ACT13",
-        "art12hab13": "ART12HAB13",
-        "art12mix13": "ART12MIX13",
-        "art12inc13": "ART12INC13",
-        "naf13art14": "NAF13ART14",
-        "art13act14": "ART13ACT14",
-        "art13hab14": "ART13HAB14",
-        "art13mix14": "ART13MIX14",
-        "art13inc14": "ART13INC14",
-        "naf14art15": "NAF14ART15",
-        "art14act15": "ART14ACT15",
-        "art14hab15": "ART14HAB15",
-        "art14mix15": "ART14MIX15",
-        "art14inc15": "ART14INC15",
-        "naf15art16": "NAF15ART16",
-        "art15act16": "ART15ACT16",
-        "art15hab16": "ART15HAB16",
-        "art15mix16": "ART15MIX16",
-        "art15inc16": "ART15INC16",
-        "naf16art17": "NAF16ART17",
-        "art16act17": "ART16ACT17",
-        "art16hab17": "ART16HAB17",
-        "art16mix17": "ART16MIX17",
-        "art16inc17": "ART16INC17",
-        "naf17art18": "NAF17ART18",
-        "art17act18": "ART17ACT18",
-        "art17hab18": "ART17HAB18",
-        "art17mix18": "ART17MIX18",
-        "art17inc18": "ART17INC18",
-        "naf18art19": "NAF18ART19",
-        "art18act19": "ART18ACT19",
-        "art18hab19": "ART18HAB19",
-        "art18mix19": "ART18MIX19",
-        "art18inc19": "ART18INC19",
-        "naf19art20": "NAF19ART20",  # 2020
-        "art19act20": "ART19ACT20",
-        "art19hab20": "ART19HAB20",
-        "art19mix20": "ART19MIX20",
-        "art19inc20": "ART19INC20",
-        "nafart0920": "NAFART0920",
-        "artact0920": "ARTACT0920",
-        "arthab0920": "ARTHAB0920",
-        "artmix0920": "ARTMIX0920",
-        "artinc0920": "ARTINC0920",
-        "artcom0920": "ARTCOM0920",
-        "pop12": "POP12",
-        "pop17": "POP17",
-        "pop1217": "POP1217",
-        "men12": "MEN12",
-        "men17": "MEN17",
-        "men1217": "MEN1217",
-        "emp17": "EMP17",
-        "emp12": "EMP12",
-        "emp1217": "EMP1217",
-        "mepart1217": "MEPART1217",
-        "menhab1217": "MENHAB1217",
-        "artpop1217": "ARTPOP1217",
-        "surfcom20": "SURFCOM20",
+        "city_insee": "idcom",
+        "city_name": "idcomtxt",
+        "region_id": "idreg",
+        "region_name": "idregtxt",
+        "dept_id": "iddep",
+        "dept_name": "iddeptxt",
+        "epci_id": "epci21",
+        "epci_name": "epci21txt",
+        "scot": "scot",
+        "aav2020": "aav2020",
+        "libaav2020": "aav2020txt",
+        "aav2020_ty": "aav2020_ty",
+        "naf09art10": "naf09art10",
+        "art09act10": "art09act10",
+        "art09hab10": "art09hab10",
+        "art09mix10": "art09mix10",
+        "art09inc10": "art09inc10",
+        "naf10art11": "naf10art11",
+        "art10act11": "art10act11",
+        "art10hab11": "art10hab11",
+        "art10mix11": "art10mix11",
+        "art10inc11": "art10inc11",
+        "naf11art12": "naf11art12",
+        "art11act12": "art11act12",
+        "art11hab12": "art11hab12",
+        "art11mix12": "art11mix12",
+        "art11inc12": "art11inc12",
+        "naf12art13": "naf12art13",
+        "art12act13": "art12act13",
+        "art12hab13": "art12hab13",
+        "art12mix13": "art12mix13",
+        "art12inc13": "art12inc13",
+        "naf13art14": "naf13art14",
+        "art13act14": "art13act14",
+        "art13hab14": "art13hab14",
+        "art13mix14": "art13mix14",
+        "art13inc14": "art13inc14",
+        "naf14art15": "naf14art15",
+        "art14act15": "art14act15",
+        "art14hab15": "art14hab15",
+        "art14mix15": "art14mix15",
+        "art14inc15": "art14inc15",
+        "naf15art16": "naf15art16",
+        "art15act16": "art15act16",
+        "art15hab16": "art15hab16",
+        "art15mix16": "art15mix16",
+        "art15inc16": "art15inc16",
+        "naf16art17": "naf16art17",
+        "art16act17": "art16act17",
+        "art16hab17": "art16hab17",
+        "art16mix17": "art16mix17",
+        "art16inc17": "art16inc17",
+        "naf17art18": "naf17art18",
+        "art17act18": "art17act18",
+        "art17hab18": "art17hab18",
+        "art17mix18": "art17mix18",
+        "art17inc18": "art17inc18",
+        "naf18art19": "naf18art19",
+        "art18act19": "art18act19",
+        "art18hab19": "art18hab19",
+        "art18mix19": "art18mix19",
+        "art18inc19": "art18inc19",
+        "naf19art20": "naf19art20",
+        "art19act20": "art19act20",
+        "art19hab20": "art19hab20",
+        "art19mix20": "art19mix20",
+        "art19inc20": "art19inc20",
+        "naf20art21": "naf20art21",
+        "art20act21": "art20act21",
+        "art20hab21": "art20hab21",
+        "art20mix21": "art20mix21",
+        "art20inc21": "art20inc21",
+        "naf09art21": "naf09art21",
+        "art09act21": "art09act21",
+        "art09hab21": "art09hab21",
+        "art09mix21": "art09mix21",
+        "art09inc21": "art09inc21",
+        "artcom0921": "artcom0921",
+        "pop13": "pop13",
+        "pop18": "pop18",
+        "pop1318": "pop1318",
+        "men13": "men13",
+        "men18": "men18",
+        "men1318": "men1318",
+        "emp13": "emp13",
+        "emp18": "emp18",
+        "emp1318": "emp1318",
+        "mepart1318": "mepart1318",
+        "menhab1318": "menhab1318",
+        "artpop1318": "artpop1318",
+        "surfcom202": "surfcom202",
         "mpoly": "MULTIPOLYGON",
     }
 
+    def __str__(self):
+        return (
+            f"{self.region_name}-{self.dept_name}-{self.city_name}({self.city_insee})"
+        )
+
+    @classmethod
+    def calculate_fields(cls):
+        """Calculate fields to speedup user consultation."""
+        fields = cls.get_art_field(2011, 2020)
+        kwargs = {
+            "naf11art21": sum([F(f) for f in fields]),
+            "art11hab21": sum(
+                [F(f.replace("art", "hab").replace("naf", "art")) for f in fields]
+            ),
+            "art11act21": sum(
+                [F(f.replace("art", "act").replace("naf", "art")) for f in fields]
+            ),
+        }
+        cls.objects.update(**kwargs)
+
     @classmethod
     def clean_data(cls, clean_queryset=None):
-        cls.objects.all().delete()
+        # cls.objects.all().delete()
+        cls.truncate()
 
 
 class Command(BaseCommand):
@@ -121,5 +149,5 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         logger.info("Load Cerema")
-        LoadCerema.load(verbose=not options["no_verbose"])
+        LoadCerema.load(verbose=not options["no_verbose"], strict=False, silent=False)
         logger.info("End Cerema")

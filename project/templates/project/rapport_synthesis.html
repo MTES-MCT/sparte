@@ -19,7 +19,7 @@ Synthèse
 <div class="px-4">
     {% include "project/detail_menu.html" %}
 
-    <div class="bg-light p-5 rounded-5 border">
+    <div class="bg-light rounded-5 border fr-container fr-py-3w">
 
         <div class="box box-alert px-4 py-2 mb-4 mt-0">
             <p>L'objectif ZAN (Zéro Artificialisation Nette) de la Loi Climat & Résilience recommande :</p>
@@ -35,81 +35,68 @@ Synthèse
             <p>La page de synthèse reprend les indicateurs clés au regard de la trajectoire ZAN.</p>
         </div>
 
-
-        <div class="clearfix">
-            <div class="card key-figure">
-                <div class="card-body">
-                    <p class="figure">{{ diagnostic.area|floatformat:0 }} ha</p>
-                </div>
-                <div class="card-header">
-                    Surface du territoire
-                </div>
+        <div class="fr-grid-row fr-grid-row--gutters">
+          <div class="fr-col-12 fr-col-md-6">
+            <div class="fr-callout">
+              <p class="fr-callout__title">{{ diagnostic.area|floatformat:0 }} ha</p>
+              <p>Surface du territoire</p>
             </div>
+          </div>
         </div>
 
-        <div class="box px-4 py-2 clearfix">
-
-            <a href="{% url 'project:report_conso' diagnostic.pk %}" class="stretched-link"></a>
-
-            <h3>Bilan de la consommation d'espace</h3>
-
-            <div class="card key-figure key-figure-green">
-                <div class="card-body">
-                    <p class="figure">+{{ conso_10_years|floatformat:1 }} ha</p>
-                </div>
-                <div class="card-header">
-                    Bilan consommation d'espace 2010-2020
-                </div>
+        <div class="fr-grid-row fr-grid-row--gutters">
+          <div class="fr-col-12">
+            <h3 class="fr-mt-3w">Bilan de la consommation d'espace</h3>
+          </div>
+          <div class="fr-col-12 fr-col-md-6">
+            <div class="fr-callout">
+              <p class="fr-callout__title">+{{ conso_10_years|floatformat:1 }} ha</p>
+              <p>Bilan consommation d'espace 2010-2020</p>
             </div>
+          </div>
 
-            <div class="card key-figure key-figure-green">
-                <div class="card-body">
-                    <p class="figure">+{{ trajectoire_2030|floatformat:1 }} ha</p>
-                </div>
-                <div class="card-header">
-                    Horizon 2030 pour la consommation d'espace
-                </div>
+          <div class="fr-col-12 fr-col-md-6">
+            <div class="fr-callout">
+              <p class="fr-callout__title">+{{ trajectoire_2030|floatformat:1 }} ha</p>
+              <p>Horizon 2030 pour la consommation d'espace</p>
             </div>
+          </div>
+
+          <div class="fr-col-12">
+            <a href="{% url 'project:report_conso' diagnostic.pk %}">Consulter le bilan de la consommation d'espace</a>
+          </div>
         </div>
 
-        <div class="box px-4 py-2 clearfix">
-
-            <a href="{% url 'project:report_artif' project.pk %}" class="stretched-link"></a>
-
-            <h3>Bilan de l'artificialisation nette entre {{ diagnostic.analyse_start_date }} et {{ diagnostic.analyse_end_date }}</h3>
-
-            <div class="clearfix">
-                <div class="card key-figure key-figure-yellow">
-                    <div class="card-body">
-                        <p class="figure">{{ net_artif|floatformat:0 }} ha</p>
-                    </div>
-                    <div class="card-header">
-                        Artificialisation nette <i class="bi bi-question-circle" data-toggle="tooltip" title="= artificialisation - renaturation"></i>
-                    </div>
-                </div>
-
-                <div class="card key-figure key-figure-yellow">
-                    <div class="card-body">
-                        <p class="figure">+ {{ new_artif|floatformat:1 }} ha</p>
-                    </div>
-                    <div class="card-header">
-                        Total artificialisation
-                    </div>
-                </div>
-
-                <div class="card key-figure key-figure-yellow">
-                    <div class="card-body">
-                        <p class="figure">+ {{ new_natural|floatformat:0 }} ha</p>
-                    </div>
-                    <div class="card-header">
-                        Total renaturation
-                    </div>
-                </div>
+        <div class="fr-grid-row fr-grid-row--gutters">
+          <div class="fr-col-12">
+            <h3 class="fr-mt-3w">Bilan de l'artificialisation nette entre {{ diagnostic.analyse_start_date }} et {{ diagnostic.analyse_end_date }}</h3>
+          </div>
+          <div class="fr-col-12 fr-col-md-4">
+            <div class="fr-callout">
+              <p class="fr-callout__title">{{ net_artif|floatformat:0 }} ha</p>
+              <p>Artificialisation nette <i class="bi bi-question-circle" data-toggle="tooltip" title="= artificialisation - renaturation" aria-hidden="true"></i></p>
             </div>
+          </div>
 
+          <div class="fr-col-12 fr-col-md-4">
+            <div class="fr-callout">
+              <p class="fr-callout__title">+{{ trajectoire_2030|floatformat:1 }} ha</p>
+              <p>Total artificialisation</p>
+            </div>
+          </div>
+
+          <div class="fr-col-12 fr-col-md-4">
+            <div class="fr-callout">
+              <p class="fr-callout__title">+ {{ new_natural|floatformat:0 }} ha</p>
+              <p>Total renaturation</p>
+            </div>
+          </div>
+
+          <div class="fr-col-12">
+            <a href="{% url 'project:report_artif' project.pk %}">Consulter le bilan de l'artificialisation nette entre {{ diagnostic.analyse_start_date }} et {{ diagnostic.analyse_end_date }}</a>
             <p class="mt-2"><strong>Objectif 2050 :</strong> Zéro Artificialisation Nette</p>
+          </div>
         </div>
-
     </div>
 </div>
 {% endblock %}
@@ -121,8 +108,8 @@ $( window ).on('load', function () {
 })
 
 var fired = false
-$( "#main" ).scroll(function() {
-    if(fired == false && $( "#main" ).scrollTop() + $( window ).height() > $( "#block-content" ).height() - 100) {
+$( window ).scroll(function() {
+    if(fired == false && $( window ).scrollTop() + $( window ).height() > $( "#block-content" ).height() - 100) {
         _paq.push(['trackEvent', 'Consultation diagnostic', 'Fin tableau de bord', 'Synthèse'])
         fired = true
     }

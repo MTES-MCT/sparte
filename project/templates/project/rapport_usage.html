@@ -25,8 +25,7 @@
 <div class="px-4">
     {% include "project/detail_menu.html" %}
 
-    <div class="bg-light p-5 rounded-5 border">
-
+    <div class="bg-light rounded-5 border fr-container fr-py-3w">
         {% if active_page == "usage" %}
         <div class="box box-alert px-4 py-2 mb-4 mt-0">
             <p>L’usage du sol est une vue « anthropique du sol ». Il est partagé en fonction du rôle que jouent les portions de terrain en tant qu’occupation humaine.</p>
@@ -44,16 +43,15 @@
         </div>
         {% endif %}
 
-        <div class="clearfix">
-            <div class="card key-figure">
-                <div class="card-body">
-                    <p class="figure">{{ surface_territory|floatformat:0 }} ha</p>
-                </div>
-                <div class="card-header">
-                    Surface du territoire
-                </div>
+        <div class="fr-grid-row fr-grid-row--gutters">
+          <div class="fr-col-12 fr-col-md-6">
+            <div class="fr-callout">
+              <p class="fr-callout__title">{{ surface_territory|floatformat:0 }} ha</p>
+              <p>Surface du territoire</p>
             </div>
+          </div>
         </div>
+
     {% if ocsge_available %}
 
         <div class="w-100 box p-4">
@@ -180,8 +178,8 @@ $( window ).on('load', function () {
 })
 
 var fired = false
-$( "#main" ).scroll(function() {
-    if(fired == false && $( "#main" ).scrollTop() + $( window ).height() > $( "#block-content" ).height() - 100) {
+$( window ).scroll(function() {
+    if(fired == false && $( window ).scrollTop() + $( window ).height() > $( "#block-content" ).height() - 100) {
         _paq.push(['trackEvent', 'Consultation diagnostic', 'Fin tableau de bord', '{{ nom }}'])
         fired = true
     }
