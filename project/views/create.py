@@ -13,7 +13,7 @@ from public_data.models import (
     Commune,
     Land,
     LandException,
-    AdministrationReferentiel,
+    AdminRef,
 )
 from utils.db import fix_poly
 from utils.views_mixins import BreadCrumbMixin
@@ -89,8 +89,7 @@ class SelectTerritoireView(BreadCrumbMixin, FormView):
                 context["object_list"] = Region.objects.filter(name__icontains=keyword)
         if public_key:
             Land(public_key)
-            request.session["public_key"] = public_key
-            return redirect("project:create-3")
+            return redirect("project:create-3", public_keys=public_key)
         return self.render_to_response(self.get_context_data(**context))
 
 
@@ -124,8 +123,7 @@ class SelectPublicProjects(BreadCrumbMixin, TemplateView):
         if request.GET.get("see_diagnostic", None):
             if public_key:
                 try:
-                    request.session["public_key"] = public_key
-                    return redirect("project:create-3")
+                    return redirect("project:create-3", public_keys=public_key)
                 except Project.DoesNotExist:
                     messages.error(self.request, "Territoire non disponible.")
             else:
@@ -177,20 +175,12 @@ class SelectPublicProjects(BreadCrumbMixin, TemplateView):
 class SetProjectOptions(BreadCrumbMixin, FormView):
     template_name = "project/create/select_2.html"
     form_class = OptionsForm
-    initial = {
-        "analysis_start": "2011",
-        "analysis_end": "2019",
-        "analysis_level": "COMM",
-    }
+    initial = {"public_keys": ""}
 
     def get_initial(self):
         """Return the initial data to use for forms on this view."""
         kwargs = self.initial.copy()
-        try:
-            lands = Land.get_lands(self.request.session["public_key"])
-        except (AttributeError, KeyError) as e:
-            raise LandException("No territory available in session") from e
-        kwargs.update({"analysis_level": Land.get_default_analysis_level(lands)})
+        kwargs.update({"public_keys": self.kwargs["public_keys"]})
         return kwargs
 
     def get_context_breadcrumbs(self):
@@ -200,46 +190,29 @@ class SetProjectOptions(BreadCrumbMixin, FormView):
         )
         return breadcrumbs
 
-    def get_territoire(self):
-        try:
-            public_keys = self.request.session["public_key"]
-        except (AttributeError, KeyError) as e:
-            raise LandException("No territory available in session") from e
-        if not isinstance(public_keys, list):
-            public_keys = [public_keys]
-        lands = list()
-        for public_key in public_keys:
-            type_territoire, id = public_key.split("_")
-            if type_territoire == "EPCI":
-                lands.append(Epci.objects.get(pk=int(id)))
-            elif type_territoire == "DEPART":
-                lands.append(Departement.objects.get(pk=int(id)))
-            elif type_territoire == "REGION":
-                lands.append(Region.objects.get(pk=int(id)))
-            elif type_territoire == "COMMUNE":
-                lands.append(Commune.objects.get(pk=int(id)))
-        return lands
-
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        lands = self.get_territoire()
+        try:
+            public_keys = self.kwargs["public_keys"].split("-")
+        except KeyError as e:
+            raise LandException("No territory available") from e
+        lands = Land.get_lands(public_keys)
         millesimes = {year for land in lands for year in land.get_ocsge_millesimes()}
         millesimes = list(millesimes)
         millesimes.sort()
         is_artif_ready = True
         for land in lands:
             is_artif_ready &= land.is_artif_ready
-        context.update(
+        kwargs.update(
             {
                 "lands": lands,
                 "analysis_artif": is_artif_ready,
                 "millesimes": millesimes,
             }
         )
-        return context
+        return super().get_context_data(**kwargs)
 
     def get(self, request, *args, **kwargs):
-        """Catch exception if no land are in the session and redirect to step 1"""
+        """Catch exception if no land is available then redirect to step 1"""
         try:
             return self.render_to_response(self.get_context_data())
         except LandException:
@@ -250,19 +223,15 @@ class SetProjectOptions(BreadCrumbMixin, FormView):
 
     def form_valid(self, form):
         """If the form is valid, redirect to the supplied URL."""
-        public_keys = self.request.session["public_key"]
-        if not isinstance(public_keys, list):
-            public_keys = [public_keys]
-        lands = [Land(pk) for pk in public_keys]
+        public_keys = form.cleaned_data["public_keys"].split("-")
+        lands = Land.get_lands(public_keys)
 
         name = "Diagnostic de plusieurs communes"
         if len(lands) == 1:
             name = f"Diagnostic de {lands[0].name}"
 
         nb_types = len({type(land) for land in lands})
-        land_type = (
-            AdministrationReferentiel.COMPOSITE if nb_types > 1 else lands[0].land_type
-        )
+        land_type = AdminRef.COMPOSITE if nb_types > 1 else lands[0].land_type
 
         project = Project(
             name=name,
@@ -293,10 +262,7 @@ class SetProjectOptions(BreadCrumbMixin, FormView):
         project.first_year_ocsge = result["first"]
         project.last_year_ocsge = result["last"]
 
-        if (
-            project.land_type
-            and project.land_type != AdministrationReferentiel.COMPOSITE
-        ):
+        if project.land_type and project.land_type != AdminRef.COMPOSITE:
             public_keys = [_.public_key for _ in project.get_neighbors()]
             if len(public_keys) <= 8:
                 project.add_look_a_like(public_keys, many=True)
@@ -352,8 +318,8 @@ class SelectCities(BreadCrumbMixin, TemplateView):
                 }
             )
         if self.select:
-            request.session["public_key"] = self.public_keys
-            return redirect("project:create-3")
+            param = "-".join(self.public_keys)
+            return redirect("project:create-3", public_keys=param)
         return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **context):

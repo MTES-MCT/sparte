@@ -1,0 +1,51 @@
+{% extends 'index.html' %}
+
+{% load static %}
+{% load humanize %}
+{% load i18n %}
+{% load l10n %}
+{% load sri %}
+
+{% block pagetitle %}
+Carte thématique - {{ map_name }}
+{% endblock pagetitle %}
+
+{% block headers %}
+{% sri_static "carto/js/leaflet.js" %}
+{% sri_static "carto/css/leaflet.css" %}
+{% sri_static "carto/css/theme_map.css" %}
+{% sri_static "carto/js/map.js" %}
+{% endblock headers %}
+
+{% block content %}
+<div id="mapid" class="h-100 w-100"></div>
+<div id="layer_list"></div>
+{% endblock content %}
+
+{% block footer %}{% endblock footer %}
+
+{% block bodyend %}
+{% localize off %}
+<script language="javascript" nonce="{{ CSP_NONCE }}">
+geolayers = [
+{% for layer in layer_list %}
+    {
+        {% for k, v in layer.items %}
+        {{ k }}: "{{ v|safe }}",
+        {% endfor %}
+    },
+{% endfor %}
+]
+let carto = new Carto ([{{ center_lat }}, {{ center_lng }}], {{ default_zoom }})
+carto.init(geolayers)
+</script>
+{% endlocalize %}
+{% endblock bodyend %}
+
+{% block tagging %}
+<script language="javascript" nonce="{{ CSP_NONCE }}">
+$( window ).on('load', function () {
+    _paq.push(['trackEvent', 'Consultation diagnostic', 'Carte intéractive', '{{ map_name }}'])
+})
+</script>
+{% endblock tagging %}

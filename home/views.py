@@ -1,28 +1,34 @@
-from django.urls import reverse_lazy
-from django.views.generic import TemplateView, DetailView
+from django.views.generic import TemplateView
 
 from django_app_parameter import app_parameter
 
 from project.models import Request
-from utils.views_mixins import BreadCrumbMixin, GetObjectMixin
+from utils.views_mixins import BreadCrumbMixin
 
 from . import charts
-from .models import FrequentlyAskedQuestion
 
 
-class Home(BreadCrumbMixin, TemplateView):
+class TestView(TemplateView):
+    template_name = "home/test.html"
+
+
+class HomeView(BreadCrumbMixin, TemplateView):
     template_name = "home/home.html"
 
 
-class LegalNotice(BreadCrumbMixin, TemplateView):
+class AccessView(BreadCrumbMixin, TemplateView):
+    template_name = "home/accessibilite.html"
+
+
+class LegalNoticeView(BreadCrumbMixin, TemplateView):
     template_name = "home/legal_notices.html"
 
 
-class Privacy(BreadCrumbMixin, TemplateView):
+class PrivacyView(BreadCrumbMixin, TemplateView):
     template_name = "home/privacy.html"
 
 
-class Stats(BreadCrumbMixin, TemplateView):
+class StatsView(BreadCrumbMixin, TemplateView):
     template_name = "home/stats.html"
 
     def get_context_data(self, **kwargs):
@@ -38,20 +44,6 @@ class Stats(BreadCrumbMixin, TemplateView):
         kwargs["organism_pie_chart"] = charts.OrganismPieChart()
         # kwargs["function_pie_chart"] = charts.FunctionsPieChart()
         return super().get_context_data(**kwargs)
-
-
-class FrequentlyAskedQuestionDetail(GetObjectMixin, BreadCrumbMixin, DetailView):
-    template_name = "home/faq_detail.html"
-    context_object_name = "faq"
-    queryset = FrequentlyAskedQuestion.objects.all()
-
-    def get_context_breadcrumbs(self):
-        breadcrumbs = super().get_context_breadcrumbs()
-        faq = self.get_object()
-        breadcrumbs += [
-            {"href": reverse_lazy("home:faq-detail"), "title": faq.menu_entry},
-        ]
-        return breadcrumbs
 
 
 class RobotView(TemplateView):
