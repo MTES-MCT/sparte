@@ -143,7 +143,7 @@ class CityGroup:
 
 class Project(BaseProject):
 
-    ANALYZE_YEARS = [(str(y), str(y)) for y in range(2009, 2020)]
+    ANALYZE_YEARS = [(str(y), str(y)) for y in range(2009, 2021)]
     LEVEL_CHOICES = AdminRef.CHOICES
 
     is_public = models.BooleanField("Public", default=False)
@@ -394,11 +394,11 @@ class Project(BaseProject):
         return qs["bilan"] / 10000
 
     def get_bilan_conso_per_year(self):
-        """Return the space consummed per year between 2012 and 2021"""
+        """Return the space consummed per year between 2011 and 2020"""
         qs = self.get_cerema_cities().aggregate(
             **{
                 f"20{f[3:5]}": Sum(f) / 10000
-                for f in Cerema.get_art_field("2011", "2019")
+                for f in Cerema.get_art_field("2011", "2020")
             }
         )
         return qs

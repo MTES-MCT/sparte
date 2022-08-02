@@ -79,7 +79,15 @@ class AutoLoadMixin:
         )
 
     @classmethod
-    def load(cls, verbose=True, shp_file=None, bucket_file=None, clean_queryset=None):
+    def load(
+        cls,
+        verbose=True,
+        shp_file=None,
+        bucket_file=None,
+        clean_queryset=None,
+        strict=True,
+        silent=False,
+    ):
         """
         Populate table with data from shapefile then calculate all fields
 
@@ -104,7 +112,7 @@ class AutoLoadMixin:
         logger.info("Load new data")
         # # load files
         lm = LayerMapping(cls, shp_file, cls.mapping)
-        lm.save(strict=True, verbose=verbose)
+        lm.save(strict=strict, silent=silent, verbose=verbose)
         logger.info("Data loaded")
         logger.info("Calculate fields")
         try:
