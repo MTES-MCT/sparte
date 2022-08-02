@@ -1,5 +1,6 @@
 {% load static %}
 {% load utils_tags %}
+{% load sri %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -8,177 +9,189 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta name="description" content="" />
         <meta name="author" content="" />
+
         <title>{% block pagetitle %}SPARTE{% endblock %}</title>
-        <!-- Favicon-->
-        <link rel="icon"href="{% static 'favicon.ico' %}">
+
+        <link rel="icon" href="{% static 'favicon.ico' %}">
         <!-- Core theme CSS (includes Bootstrap)-->
-        <link href="{% static 'css/styles.css' %}" rel="stylesheet" />
+        {% sri_static "css/styles.css" %}
         <!-- Bootstrap icon -->
-        <link rel="stylesheet" href="{% static 'icons/bootstrap-icons.css' %}">
+        {% sri_static "icons/bootstrap-icons.css" %}
         <!-- subtemplate header injection -->
         {% block headers %}{% endblock %}
         <!-- matomo -->
         {% tracking_code %}
+        <style nonce="{{ CSP_NONCE }}">
+        body {
+            overflow: hidden;
+            height: 100vh;
+        }
+        #second-navbar {
+            height:31px;
+        }
+        main {
+            overflow: auto;
+        }
+        #navbarSupportedContent2 {
+            font-size: 0.75rem;
+        }
+        </style>
     </head>
-    <body style="overflow: hidden; height: 100vh;">
+    <body>
+        <!-- Page content wrapper-->
+        <div id="page-content-wrapper" class="d-flex flex-column h-100">
+            <!-- Top navigation-->
+            <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+                <div class="container-fluid">
+                    <img src="{% static 'img/logo_france_beta.png' %}" height="30"/>
+                    <a class="navbar-brand ms-2" href="{% url 'home:home' %}">SPARTE</a>
 
-            <!-- Page content wrapper-->
-            <div id="page-content-wrapper" class="d-flex flex-column h-100">
-                <!-- Top navigation-->
-                <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
-                    <div class="container-fluid">
-                        <img src="{% static 'img/logo_france_beta.png' %}" height="30"/>
-                        <a class="navbar-brand ms-2" href="{% url 'home:home' %}">SPARTE</a>
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
 
-                        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+                    <div class="collapse navbar-collapse justify-content-between" id="navbarSupportedContent">
 
-                        <div class="collapse navbar-collapse justify-content-between" id="navbarSupportedContent">
+                        <ul class="navbar-nav ms-0 mt-2 mt-lg-0">
 
-                            <ul class="navbar-nav ms-0 mt-2 mt-lg-0">
-
-                                <li class="nav-item dropdown">
-                                    <a class="nav-link dropdown-toggle" id="DropdownPlan" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Diagnostic</a>
-                                    <div class="dropdown-menu" aria-labelledby="DropdownPlan">
-                                        <a class="dropdown-item" href="{% url 'project:select' %}">Nouveau</a>
-                                        {% if user.is_authenticated %}
-                                        <a class="dropdown-item" href="{% url 'project:list' %}">Ouvrir</a>
-                                        {% endif %}
-                                    </div>
-                                </li>
-
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ EXTERNAL_DOC }}" target="_blank">Documentations</a>
-                                </li>
-                            </ul>
-
-                            <ul class="navbar-nav me-0 mt-2 mt-lg-0">
-                                {% if user.is_authenticated %}
-                                <li class="nav-item dropdown">
-                                    <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="bi bi-person-fill"></i></a>
-                                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                                        <a class="dropdown-item" href="{% url 'users:profile' %}">
-                                            <i class="bi bi-person-fill"></i> Profil
-                                        </a>
-                                        {% if is_staff %}
-                                        <div class="dropdown-divider"></div>
-                                        <a class="dropdown-item" href="{% url 'admin:index' %}"><i class="bi bi-gear"></i> Administration</a>
-                                        <div class="dropdown-divider"></div>
-                                        <h6 class="dropdown-header">Publipostage</h6>
-                                        <a class="dropdown-item" href="{% url 'docx_template:list' %}"><i class="bi bi-file-earmark-word"></i> Modèles de document</a>
-                                        <a class="dropdown-item" href="{% url 'docx_template:data_source_list' %}"><i class="bi bi-box"></i> Sources de données</a>
-                                        {% endif %}
-                                        <div class="dropdown-divider"></div>
-                                        <a class="dropdown-item" href="{% url 'users:signout' %}">
-                                            <i class="bi bi-box-arrow-right"></i> Déconnexion
-                                        </a>
-                                    </div>
-                                </li>
-                                {% else %}
-                                <li class="nav-item"><a class="nav-link" href="{% url 'users:signup' %}">S'inscrire</a></li>
-                                <li class="nav-item"><a class="nav-link" href="{% url 'users:signin' %}">Se connecter</a></li>
-                                {% endif %}
-                            </ul>
-
-                        </div>
-                    </div>
-                </nav>
-
-                <nav class="navbar navbar-expand border-bottom" style="height:31px;">
-                    <div class="container-fluid">
-
-                        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent2" aria-controls="navbarSupportedContent2" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
-
-                        <div class="collapse navbar-collapse justify-content-between" id="navbarSupportedContent2" style="font-size: 0.75rem">
-                            <ul class="navbar-nav ms-0 mt-2 mt-lg-0 ps-2">
-                                <nav aria-label="breadcrumb">
-                                    <ol class="breadcrumb mb-0">
-                                    {% for bread in breadcrumbs %}
-                                        {% if bread.is_active %}
-                                        <li class="breadcrumb-item active" aria-current="page">{{ bread.title}}</li>
-                                        {% else %}
-                                        <li class="breadcrumb-item"><a href="{{ bread.href }}">{{ bread.title}}</a></li>
-                                        {% endif %}
-                                    {% endfor %}
-                                    </ol>
-                                </nav>
-                            </ul>
-
-                            <ul class="navbar-nav me-0 mt-2 mt-lg-0">
-                                {% block sub_bar_actions %}
-                                {% endblock %}
-                            </ul>
-                        </div>
-                    </div>
-                </nav>
-
-                <!-- Page content-->
-                <main class="p-0 flex-grow-1 d-flex flex-column" style="overflow: auto;">
-                    {% if messages %}
-                        <div class="row justify-content-center w-100 my-0">
-                            <div class="col-12 col-md-8 col-lg-6">
-                                {% for message in messages %}
-                                <div class="alert alert-{{ message.tags }} alert-dismissible fade show my-1" role="alert">
-                                    {{ message }}
-                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" id="DropdownPlan" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Diagnostic</a>
+                                <div class="dropdown-menu" aria-labelledby="DropdownPlan">
+                                    <a class="dropdown-item" href="{% url 'project:select' %}">Nouveau</a>
+                                    {% if user.is_authenticated %}
+                                    <a class="dropdown-item" href="{% url 'project:list' %}">Ouvrir</a>
+                                    {% endif %}
                                 </div>
+                            </li>
+
+                            <li class="nav-item">
+                                <a id="btn-documentation" class="nav-link" href="{{ EXTERNAL_DOC }}" target="_blank">Documentations</a>
+                            </li>
+                        </ul>
+
+                        <ul class="navbar-nav me-0 mt-2 mt-lg-0">
+                            {% if user.is_authenticated %}
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="bi bi-person-fill"></i></a>
+                                <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                    <a class="dropdown-item" href="{% url 'users:profile' %}">
+                                        <i class="bi bi-person-fill"></i> Profil
+                                    </a>
+                                    {% if is_staff %}
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item" href="{% url 'admin:index' %}"><i class="bi bi-gear"></i> Administration</a>
+                                    <a class="dropdown-item" href="{% url 'public_data:matrix' %}"><i class="bi bi-grid-3x3"></i> Matrice</a>
+                                    <div class="dropdown-divider"></div>
+                                    <h6 class="dropdown-header">Publipostage</h6>
+                                    <a class="dropdown-item" href="{% url 'docx_template:list' %}"><i class="bi bi-file-earmark-word"></i> Modèles de document</a>
+                                    <a class="dropdown-item" href="{% url 'docx_template:data_source_list' %}"><i class="bi bi-box"></i> Sources de données</a>
+                                    {% endif %}
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item" href="{% url 'users:signout' %}">
+                                        <i class="bi bi-box-arrow-right"></i> Déconnexion
+                                    </a>
+                                </div>
+                            </li>
+                            {% else %}
+                            <li class="nav-item"><a class="nav-link" href="{% url 'users:signup' %}">S'inscrire</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{% url 'users:signin' %}">Se connecter</a></li>
+                            {% endif %}
+                        </ul>
+
+                    </div>
+                </div>
+            </nav>
+
+            <nav id="second-navbar" class="navbar navbar-expand border-bottom">
+                <div class="container-fluid">
+
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent2" aria-controls="navbarSupportedContent2" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+
+                    <div class="collapse navbar-collapse justify-content-between" id="navbarSupportedContent2">
+                        <ul class="navbar-nav ms-0 mt-2 mt-lg-0 ps-2">
+                            <nav aria-label="breadcrumb">
+                                <ol class="breadcrumb mb-0">
+                                {% for bread in breadcrumbs %}
+                                    {% if bread.is_active %}
+                                    <li class="breadcrumb-item active" aria-current="page">{{ bread.title}}</li>
+                                    {% else %}
+                                    <li class="breadcrumb-item"><a href="{{ bread.href }}">{{ bread.title}}</a></li>
+                                    {% endif %}
                                 {% endfor %}
-                            </div>
-                        </div>
-                    {% endif %}
-                    {% block carto %}
-                    <div class="mb-5">
-                        {% block content %}
-                        <div class="row justify-content-center w-100 my-0">
-                            <div class="col-12 col-md-5 col-lg-4">
-                                <h2 class="mb-5">Bonjour {{ user.greetings }} !</h2>
-                                <p>La première étape pour utiliser SPARTE est de créer un PROJET :
-                                <br/><a class="btn btn-primary" href="{% url 'project:add' %}" role="button">Créer un projet</a></p>
-                            </div>
-                        </div>
-                        {% endblock %}
+                                </ol>
+                            </nav>
+                        </ul>
+
+                        <ul class="navbar-nav me-0 mt-2 mt-lg-0">
+                            {% block sub_bar_actions %}
+                            {% endblock %}
+                        </ul>
                     </div>
+                </div>
+            </nav>
+
+            <!-- Page content-->
+            <main class="p-0 flex-grow-1 d-flex flex-column" id="main">
+                {% if messages %}
+                    <div class="row justify-content-center w-100 my-0">
+                        <div class="col-12 col-md-8 col-lg-6">
+                            {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show my-1" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+                {% block carto %}
+                <div id="block-content">
+                    {% block content %}
                     {% endblock %}
-                    <!-- Footer-->
-                    {% block footer %}
-                    <div id="footer" class="border-top py-5 flex-grow-1">
-                        <div class="container">
-                            <div class="row">
-                                <div class="col-2">
-                                    <img class="w-100" src="{% static 'img/logo_france.png' %}" alt="Logo France Marianne"/>
-                                </div>
-                                <div class="col-10">
-                                    <p class="my-3">
-                                        <a href="{% url 'home:cgv' %}">Mentions légales</a> - <a href="{% url 'home:privacy' %}">Politique de confidentialité</a> - <a href="{% url 'home:stats' %}">Statistiques</a> - Accessibilité : non conforme
-                                    </p>
-                                    <p class="text-muted">
-                                        SPARTE est une start-up d'état en cours d'élaboration, la plateforme est en version BETA publique. Faites nous part de vos propositions pour améliorer ce service en envoyant un e-mail à <a href="mailto:sparte@beta.gouv.fr">sparte@beta.gouv.fr</a>. SPARTE est incubée à la Fabrique du numérique du Ministère de la Transition Ecologique, et membre de la communauté <a href="https://www.beta.gouv.fr">Beta Gouv</a>.
-                                    </p>
-                                    <p class="text-muted">
-                                        Sparte est Open Source, le code est disponible sur github : <a href="https://github.com/MTES-MCT/sparte" target="_blank">https://github.com/MTES-MCT/sparte</a>
-                                    </p>
-                                </div>
+                </div>
+                {% endblock carto %}
+                <!-- Footer-->
+                {% block footer %}
+                <div id="footer" class="border-top py-5 flex-grow-1 mt-5">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-2">
+                                <img class="w-100" src="{% static 'img/logo_france.png' %}" alt="Logo France Marianne"/>
+                            </div>
+                            <div class="col-10">
+                                <p class="my-3">
+                                    <a href="{% url 'home:cgv' %}">Mentions légales</a> - <a href="{% url 'home:privacy' %}">Politique de confidentialité</a> - <a href="{% url 'home:stats' %}">Statistiques</a> - <a href="{% url 'home:accessibilite' %}">Accessibilité : non conforme</a>
+                                </p>
+                                <p class="text-muted">
+                                    SPARTE est une start-up d'état en cours d'élaboration, la plateforme est en version BETA publique. Faites nous part de vos propositions pour améliorer ce service en envoyant un e-mail à <a href="mailto:sparte@beta.gouv.fr">sparte@beta.gouv.fr</a>. SPARTE est incubée à la Fabrique du numérique du Ministère de la Transition Ecologique, et membre de la communauté <a href="https://www.beta.gouv.fr">Beta Gouv</a>.
+                                </p>
+                                <p class="text-muted">
+                                    Sparte est Open Source, le code est disponible sur github : <a href="https://github.com/MTES-MCT/sparte" target="_blank">https://github.com/MTES-MCT/sparte</a>
+                                </p>
                             </div>
                         </div>
                     </div>
-                    {% endblock footer %}
-                </main>
+                </div>
+                {% endblock footer %}
+                </div>
+            </main>
+        </div>
 
+        {% sri_static "js/jquery-3.6.0.min.js" %}
+        {% sri_static "js/bootstrap.bundle.min.js" %}
 
-
-            </div>
-
-        <script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>
-        <!-- Bootstrap core JS-->
-        <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
-        <!-- Core theme JS-->
-        <script src="{% static 'js/scripts.js' %}"></script>
-        <script>
+        <script nonce="{{ CSP_NONCE }}">
         // initialize les tooltips
         $(function () {
             $('[data-toggle="tooltip"]').tooltip()
         })
         </script>
         <!-- subtemplate footer injection -->
-        {% block bodyend %}{% endblock %}
+        {% block bodyend %}{% endblock bodyend %}
+        <!-- Tagging injection -->
+        {% block tagging %}{% endblock tagging %}
+        <script language="javascript" nonce="{{ CSP_NONCE }}">
+            $( "#btn-documentation" ).click(function() {
+                _paq.push(['trackEvent', 'Documentation', 'Barre de menu'])
+            })
+        </script>
     </body>
 </html>

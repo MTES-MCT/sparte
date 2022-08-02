@@ -5,13 +5,14 @@
 {% load humanize %}
 {% load i18n %}
 {% load l10n %}
+{% load sri %}
 
 {% block pagetitle %}
-Rapport synthèse consommation d'espace et artificialisation
+Synthèse
 {% endblock %}
 
 {% block headers %}
-<link href="{% static 'project/css/project.css' %}" rel="stylesheet" />
+{% sri_static "project/css/project.css" %}
 {% endblock %}
 
 {% block content %}
@@ -113,70 +114,18 @@ Rapport synthèse consommation d'espace et artificialisation
 </div>
 {% endblock %}
 
-{% block bodyend %}
-{% localize off %}
-<script src="https://code.highcharts.com/highcharts.js"></script>
-<script src="https://code.highcharts.com/modules/data.js"></script>
-<script src="https://code.highcharts.com/modules/heatmap.js"></script>
-<script src="https://code.highcharts.com/modules/treemap.js"></script>
-<script src="https://code.highcharts.com/modules/exporting.js"></script>
-<script language="javascript">
-points_2015 = [
-    {% for data in data_covers %}
-    {
-        id: "{{ data.code }}",
-        {% if data.parent %}
-        parent: "{{ data.parent.code }}",
-        {% endif %}
-        name: "CS{{ data.code }} {{ data.label }}",
-        value: {{ data.total_surface.2015 }},
-        color: "{{ data.map_color }}",
-    },
-    {% endfor %}
-]
+{% block tagging %}
+<script language="javascript" nonce="{{ CSP_NONCE }}">
+$( window ).on('load', function () {
+    _paq.push(['trackEvent', 'Consultation diagnostic', 'Tableau de bord', 'Synthèse'])
+})
 
-Highcharts.chart('chart', {
-    series: [{
-        type: 'treemap',
-        layoutAlgorithm: 'squarified',
-        allowDrillToNode: true,
-        animationLimit: 1000,
-        dataLabels: {
-            enabled: true
-        },
-        levels: [{
-            level: 1,
-            dataLabels: {
-                enabled: true
-            },
-            borderWidth: 3,
-            levelIsConstant: false
-        }, {
-            level: 1,
-            dataLabels: {
-                style: {
-                    fontSize: '14px'
-                }
-            }
-        }],
-        data: points_2015
-    }],
-    subtitle: {
-        text: 'Cliquer pour voir le détail'
-    },
-    title: {
-        text: "",
-        floating: true,
-    },
-    plotOptions: {
-        treemap: {
-            tooltip:{
-                valueSuffix: ' Ha',
-                valueDecimals: 0
-            },
-        },
-    },
-});
+var fired = false
+$( "#main" ).scroll(function() {
+    if(fired == false && $( "#main" ).scrollTop() + $( window ).height() > $( "#block-content" ).height() - 100) {
+        _paq.push(['trackEvent', 'Consultation diagnostic', 'Fin tableau de bord', 'Synthèse'])
+        fired = true
+    }
+})
 </script>
-{% endlocalize %}
-{% endblock %}
+{% endblock tagging %}

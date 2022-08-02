@@ -21,7 +21,7 @@ from django.core.exceptions import ImproperlyConfigured
 from django.contrib.messages import constants as messages
 
 
-OFFICIAL_VERSION = "1.5.1"
+OFFICIAL_VERSION = "1.5.2"
 
 root = environ.Path(__file__) - 2  # get root of the project
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -47,6 +47,7 @@ SECRET_KEY = env.str("SECRET")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env.bool("DEBUG", default=False)
+USE_SRI = env.bool("USE_SRI", default=False)
 
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["127.0.0.1", "localhost"])
 
@@ -74,6 +75,7 @@ THIRD_APPS = [
     "import_export",
     "crispy_forms",
     "django_app_parameter",
+    "sri",
     # "django_docx_template",
 ]
 
@@ -95,6 +97,7 @@ INSTALLED_APPS = DJANGO_APPS + RESTFRAMEWORK_APPS + THIRD_APPS + PROJECT_APPS
 MIDDLEWARE = [
     "config.middlewares.LogIncomingRequest",
     "django.middleware.security.SecurityMiddleware",
+    "csp.middleware.CSPMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -120,8 +123,8 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 "users.context_processors.add_connected_user_to_context",
-                "home.context_processors.add_faq_to_context",
                 "django_app_parameter.context_processors.add_global_parameter_context",
+                "csp.context_processors.nonce",
             ],
         },
     },
@@ -281,6 +284,23 @@ if DEBUG:
         pass
 
 
+DEBUG_TOOLBAR_PANELS = [
+    "debug_toolbar.panels.versions.VersionsPanel",
+    "debug_toolbar.panels.timer.TimerPanel",
+    "djt_csp.panel.SecurityPanel",
+    "debug_toolbar.panels.settings.SettingsPanel",
+    "debug_toolbar.panels.profiling.ProfilingPanel",
+    "debug_toolbar.panels.headers.HeadersPanel",
+    "debug_toolbar.panels.request.RequestPanel",
+    "debug_toolbar.panels.sql.SQLPanel",
+    "debug_toolbar.panels.templates.TemplatesPanel",
+    "debug_toolbar.panels.staticfiles.StaticFilesPanel",
+    "debug_toolbar.panels.cache.CachePanel",
+    "debug_toolbar.panels.signals.SignalsPanel",
+    "debug_toolbar.panels.redirects.RedirectsPanel",
+]
+
+
 # DJANGO DOCX TEMPLATES
 DJANGO_DOCX_TEMPLATES = {
     "data_sources": [
@@ -402,6 +422,22 @@ if ENVIRONMENT != "local":
 # MATOMO
 
 MATOMO_TOKEN = env.str("MATOMO_TOKEN", default="")
+MATOMO_ACTIVATE = env.bool("MATOMO_ACTIVATE", default=False)
+
+# SECURITY - Content Security Header Policy
+# https://django-csp.readthedocs.io
+
+CSP_DEFAULT_SRC = ["'self'"]
+CSP_SCRIPT_SRC = [
+    "'self'",
+    "https://stats.data.gouv.fr",
+    "https://code.highcharts.com",
+]
+CSP_STYLE_SRC = ["'self'"]
+CSP_IMG_SRC = ["'self'", "https://wxs.ign.fr", "data:"]
+CSP_UPGRADE_INSECURE_REQUESTS = not DEBUG
+CSP_INCLUDE_NONCE_IN = ["script-src", "style-src"]
+CSP_CONNECT_SRC = ["https://stats.data.gouv.fr", "'self'"]
 
 # LOGGING SETTINGS
 

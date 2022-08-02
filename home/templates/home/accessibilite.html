@@ -1,0 +1,63 @@
+{% extends 'index.html' %}
+
+{% load static %}
+
+{% block pagetitle %}Déclaration d’accessibilité{% endblock %}
+
+{% block headers %}
+<link rel="stylesheet" href="{% static 'home/css/home.css' %}"/>
+{% endblock headers %}
+
+{% block content %}
+<div class="d-flex justify-content-center">
+    <div class="home-container">
+        <h1>Déclaration d’accessibilité</h1>
+
+        <p>
+            Établie le 7 juillet 2022.
+        </p>
+
+        <p>
+            Le ministère de l’Écologie s’engage à rendre son service accessible, conformément à l’article 47 de la loi n° 2005-102 du 11 février 2005.
+        </p>
+
+        <p>
+            Cette déclaration d’accessibilité s’applique à <strong>SPARTE</strong> (https://sparte.beta.gouv.fr).
+        </p>
+
+        <h2>État de conformité</h2>
+
+        <p>
+            <strong>SPARTE</strong> est <strong>non conforme</strong> avec le <abbr title="Référentiel général d’amélioration de l’accessibilité">RGAA</abbr>. L'application n’a encore pas été auditée.
+        </p>
+
+        <h2>Voie de recours</h2>
+
+        <p>
+            Cette procédure est à utiliser dans le cas suivant&nbsp;: vous avez signalé au responsable du site internet un défaut d’accessibilité qui vous empêche d’accéder à un contenu ou à un des services du portail et vous n’avez pas obtenu de réponse satisfaisante.
+        </p>
+
+        <p>Vous pouvez&nbsp;:</p>
+
+        <ul>
+            <li> Écrire un message au <a href="https://formulaire.defenseurdesdroits.fr/">Défenseur des droits</a></li>
+            <li> Contacter <a href="https://www.defenseurdesdroits.fr/saisir/delegues">le délégué du Défenseur des droits dans votre région</a></li>
+            <li> Envoyer un courrier par la poste (gratuit, ne pas mettre de timbre)&nbsp;:<br> Défenseur des droits<br> Libre réponse 71120 75342 Paris CEDEX 07 </li>
+        </ul>
+
+        <hr>
+
+        <p>
+            Cette déclaration d’accessibilité a été créé le 7 juillet 2022 grâce au <a href="https://betagouv.github.io/a11y-generateur-declaration/#create">Générateur de Déclaration d’Accessibilité de BetaGouv</a>
+        </p>
+    </div>
+</div>
+{% endblock %}
+
+{% block tagging %}
+<script language="javascript" nonce="{{ CSP_NONCE }}">
+$( window ).on('load', function () {
+    _paq.push(['trackEvent', 'Accessibilité', 'Ouverture'])
+})
+</script>
+{% endblock tagging %}

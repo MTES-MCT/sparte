@@ -24,7 +24,7 @@ from public_data.models import (
     CouvertureSol,
     Ocsge,
     OcsgeDiff,
-    AdministrationReferentiel,
+    AdminRef,
     UsageSol,
 )
 
@@ -144,13 +144,7 @@ class CityGroup:
 class Project(BaseProject):
 
     ANALYZE_YEARS = [(str(y), str(y)) for y in range(2009, 2020)]
-    LEVEL_CHOICES = (
-        ("COMMUNE", "Commune"),
-        ("EPCI", "EPCI"),
-        ("DEPART", "Département"),
-        ("REGION", "Région"),
-        ("COMP", "Composite"),
-    )
+    LEVEL_CHOICES = AdminRef.CHOICES
 
     is_public = models.BooleanField("Public", default=False)
 
@@ -272,6 +266,9 @@ class Project(BaseProject):
                     self._city_group_list.append(CityGroup(project_commune.group_name))
                 self._city_group_list[-1].append(project_commune)
         return self._city_group_list
+
+    def is_artif(self):
+        return self.cities.filter(departement__is_artif_ready=True).exists()
 
     def add_look_a_like(self, public_key, many=False):
         """Add a public_key to look a like keeping the field formated
@@ -749,7 +746,7 @@ class Project(BaseProject):
     def get_neighbors(self, land_type=None):
         if not land_type:
             land_type = self.land_type
-        klass = AdministrationReferentiel.get_class(land_type)
+        klass = AdminRef.get_class(land_type)
         return klass.objects.filter(mpoly__touches=self.combined_emprise)
 
     def get_matrix(self, sol="couverture"):
@@ -759,6 +756,13 @@ class Project(BaseProject):
         else:
             prefix = "cs"
             headers = {_.code: _ for _ in CouvertureSol.objects.all()}
+        headers.update(
+            {
+                "": CouvertureSol(
+                    id=0, code="N/A", label="Inconnu", label_short="Inconnu"
+                )
+            }
+        )
         index = f"{prefix}_old"
         column = f"{prefix}_new"
         qs = (
@@ -774,6 +778,7 @@ class Project(BaseProject):
         if qs.exists():
             df = (
                 pd.DataFrame(qs)
+                .fillna("")
                 .pivot(index=index, columns=column, values="total")
                 .fillna(0)
             )
