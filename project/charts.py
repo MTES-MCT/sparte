@@ -411,7 +411,7 @@ class WaterfallnArtifChart(ProjectChart):
             "valueDecimals": 1,
         },
         "xAxis": {"type": "category"},
-        "legend": {"layout": "horizontal", "align": "center", "verticalAlign": "top"},
+        "legend": {"enabled": False},
         "plotOptions": {
             "column": {
                 "dataLabels": {"enabled": True, "format": "{point.y:,.1f}"},
