@@ -95,7 +95,11 @@ class Chart:
             "type": "image/png",
             "b64": True,
         }
-        r = requests.post(settings.HIGHCHART_SERVER, json=data)
+        r = requests.post(
+            settings.HIGHCHART_SERVER,
+            data=json.dumps(data, default=decimal2float),
+            headers={"content-type": "application/json"},
+        )
         if r.content.startswith(b"0x04 error when performing chart generation"):
             raise ChartGenerationException(json.dumps(data, default=decimal2float))
         if r.content.startswith(b'{"message":"Too many requests, you have been rate l'):
