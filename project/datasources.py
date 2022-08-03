@@ -11,12 +11,17 @@ from .utils import add_total_line_column
 
 
 class SolInterface:
+    surface_territory = None
+
     def __init__(self, item):
         self.item = item
 
     @property
     def code(self):
-        spacer = " ".join(["-"] * self.item.level)
+        if self.item.level == 1:
+            spacer = ""
+        else:
+            spacer = "".join(["-"] * self.item.level - 1)
         return f"{spacer} {self.item.code}"
 
     @property
@@ -41,6 +46,11 @@ class SolInterface:
         else:
             return str(val)
 
+    @property
+    def percent(self):
+        val = 100 * float(self.item.surface_last) / self.surface_territory
+        return f"{round(val)}%"
+
 
 class DiagnosticSource(data_sources.DataSource):
     # properties
@@ -60,9 +70,11 @@ class DiagnosticSource(data_sources.DataSource):
     def get_context_data(self, **keys: dict()) -> dict():
         project = Project.objects.get(pk=keys["pk"])
         self.project = project
+        surface_territory = project.area
         context = {
             "diagnostic": project,
             "nom_territoire": project.get_territory_name(),
+            "surface_totale": str(round(surface_territory, 2)),
             "ocsge_is_available": False,
             "periode_differente_zan": (
                 project.analyse_start_date != "2011"
@@ -179,21 +191,21 @@ class DiagnosticSource(data_sources.DataSource):
         )
 
         if project.is_artif:
-            donut_usage = charts.UsageSolPieChart(project)
-            graphique_usage = charts.UsageSolProgressionChart(project)
-            usage_data = [SolInterface(i) for i in graphique_usage.get_series()]
-
-            donut_couverture = charts.CouvertureSolPieChart(project)
-            graphique_couverture = charts.CouvertureSolProgressionChart(project)
-            couverture_data = [
-                SolInterface(i) for i in graphique_couverture.get_series()
-            ]
-
             context.update(
                 {
                     "ocsge_is_available": True,
                     "debut_ocsge": str(project.first_year_ocsge),
                     "fin_ocsge": str(project.last_year_ocsge),
+                }
+            )
+
+            SolInterface.surface_territory = surface_territory
+            donut_usage = charts.UsageSolPieChart(project)
+            graphique_usage = charts.UsageSolProgressionChart(project)
+            usage_data = [SolInterface(i) for i in graphique_usage.get_series()]
+
+            context.update(
+                {
                     "donut_usage": data_sources.Image(
                         donut_usage.get_temp_image(),
                         width=140,
@@ -203,6 +215,26 @@ class DiagnosticSource(data_sources.DataSource):
                         width=170,
                     ),
                     "usage_data": usage_data,
+                }
+            )
+
+            usage_matrix_data = project.get_matrix(sol="usage")
+            if usage_matrix_data:
+                headers = list(list(usage_matrix_data.values())[0].keys()) + ["Total"]
+                context.update(
+                    {
+                        "usage_matrix_data": add_total_line_column(usage_matrix_data),
+                        "usage_matrix_headers": headers,
+                    }
+                )
+
+            donut_couverture = charts.CouvertureSolPieChart(project)
+            graphique_couverture = charts.CouvertureSolProgressionChart(project)
+            couverture_data = [
+                SolInterface(i) for i in graphique_couverture.get_series()
+            ]
+            context.update(
+                {
                     "donut_couverture": data_sources.Image(
                         donut_couverture.get_temp_image(),
                         width=140,
@@ -214,4 +246,39 @@ class DiagnosticSource(data_sources.DataSource):
                     "couverture_data": couverture_data,
                 }
             )
+
+            couverture_matrix_data = project.get_matrix(sol="couverture")
+            if couverture_matrix_data:
+                headers = list(list(couverture_matrix_data.values())[0].keys()) + [
+                    "Total"
+                ]
+                context.update(
+                    {
+                        "couverture_matrix_data": add_total_line_column(
+                            couverture_matrix_data
+                        ),
+                        "couverture_matrix_headers": headers,
+                    }
+                )
+            # paragraphe 3.3.2
+            chart_waterfall = charts.WaterfallnArtifChart(project)
+            waterfall_series = chart_waterfall.get_series()
+            total_artif = project.get_artif_area()
+            artif_net = waterfall_series["net_artif"]
+            context.update(
+                {
+                    "surface_artificielle": str(round(total_artif, 2)),
+                    "graphique_artificialisation_nette": data_sources.Image(
+                        chart_waterfall.get_temp_image(),
+                        width=170,
+                    ),
+                    "artificialisation_nette": str(round(artif_net, 2)),
+                    "artificialisation": str(round(waterfall_series["new_artif"], 2)),
+                    "renaturation": str(round(waterfall_series["new_natural"], 2)),
+                    "taux_artificialisation_nette": str(
+                        round(100 * artif_net / total_artif, 1)
+                    ),
+                }
+            )
+
         return context
