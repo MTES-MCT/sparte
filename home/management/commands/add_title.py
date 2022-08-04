@@ -1,10 +1,15 @@
 from django.core.management.base import BaseCommand
+
 from dsfr.models import DsfrConfig
 
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
-        config = DsfrConfig.objects.all().first()
+        qs = DsfrConfig.objects.all()
+        if not qs.exists():
+            config = DsfrConfig()
+        else:
+            config = qs.first()
         config.site_title = "SPARTE"
         config.site_tagline = (
             "Mesurer votre consommation d'espace et l'artificialisation de votre "
