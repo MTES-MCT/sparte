@@ -241,6 +241,9 @@ def mep_160(ctx):
     click.secho("Create all diagnostic cover images", fg="cyan")
     connecter.manage_py("generate_cover")
 
+    click.secho("Add title, tagline and footer", fg="cyan")
+    connecter.manage_py("add_title")
+
 
 if __name__ == "__main__":
     cli(obj={})
