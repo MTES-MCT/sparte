@@ -22,7 +22,12 @@ There are 3 entry points :
                                  will be done.
 """
 from celery import shared_task
+import contextily as cx
+import geopandas
+import io
 import logging
+import matplotlib.pyplot as plt
+import shapely
 from zipfile import BadZipFile
 
 from django.contrib.gis.db.models import Union
@@ -218,23 +223,11 @@ def send_email_request_bilan(request_id):
     logger.info("Request_id=%s", request_id)
     request = Request.objects.get(pk=request_id)
     project_url = get_url_with_domain(request.project.get_absolute_url())
-    # send e-mail to requester
-    send_template_email(
-        subject="Confirmation de demande de bilan",
-        recipients=[request.email],
-        template_name="project/emails/dl_diagnostic_client",
-        context={
-            "project": request.project,
-            "request": request,
-            "project_url": project_url,
-        },
-    )
-    # send e-mail to team
     relative_url = reverse(
         "admin:project_request_change", kwargs={"object_id": request.id}
     )
     send_template_email(
-        subject="Nouvelle demande de bilan",
+        subject=f"Demande de bilan - {request.email} - {request.project.name}",
         recipients=[app_parameter.TEAM_EMAIL],
         template_name="project/emails/dl_diagnostic_team",
         context={
@@ -244,3 +237,102 @@ def send_email_request_bilan(request_id):
             "request_url": get_url_with_domain(relative_url),
         },
     )
+
+
+@shared_task
+def generate_cover_image(project_id):
+    diagnostic = Project.objects.get(id=int(project_id))
+    geom = diagnostic.combined_emprise.transform("2154", clone=True)
+    srid, wkt = geom.ewkt.split(";")
+    polygons = shapely.wkt.loads(wkt)
+
+    gdf_emprise = geopandas.GeoDataFrame(
+        {
+            "col1": [
+                "emprise diagnostic",
+            ],
+            "geometry": [
+                polygons,
+            ],
+        },
+        crs="EPSG:2154",
+    ).to_crs(epsg=3857)
+
+    fig, ax = plt.subplots(figsize=(60, 10))
+    plt.axis("off")
+    fig.set_dpi(150)
+
+    gdf_emprise.buffer(250000).plot(ax=ax, facecolor="none", edgecolor="none")
+    gdf_emprise.plot(ax=ax, facecolor="none", edgecolor="yellow")
+    cx.add_basemap(
+        ax,
+        source=(
+            "https://wxs.ign.fr/ortho/geoportail/wmts?"
+            "&REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0&TILEMATRIXSET=PM"
+            "&LAYER=ORTHOIMAGERY.ORTHOPHOTOS&STYLE=normal&FORMAT=image/jpeg"
+            "&TILECOL={x}&TILEROW={y}&TILEMATRIX={z}"
+        ),
+    )
+
+    img_data = io.BytesIO()
+    plt.savefig(img_data, bbox_inches="tight")
+    img_data.seek(0)
+    diagnostic.cover_image.delete(save=False)
+    diagnostic.cover_image.save(f"cover_{project_id}.png", img_data, save=True)
+
+
+@shared_task(bind=True, max_retries=5)
+def generate_word_diagnostic(self, request_id):
+    from django_docx_template.models import DocxTemplate
+    from highcharts.charts import RateLimitExceededException
+
+    logger.info(f"Start generate word for request={request_id}")
+    try:
+        req = Request.objects.get(id=int(request_id))
+        if not req.sent_file:
+            logger.info("Start generating word")
+            template = DocxTemplate.objects.get(slug="template-bilan-1")
+            buffer = template.merge(pk=req.project_id)
+            filename = template.get_file_name()
+            req.sent_file.save(filename, buffer, save=True)
+            logger.info("Word created and saved")
+        return request_id
+    except RateLimitExceededException as exc:
+        self.retry(exc=exc, countdown=2 ** (self.request.retries + 10))
+        req.record_exception(exc)
+        logger.error("Error while generating word: %s", exc)
+    finally:
+        logger.info(f"End generate word for request={request_id}")
+
+
+@shared_task(bind=True, max_retries=5)
+def send_word_diagnostic(self, request_id):
+    from utils.emails import prep_email
+
+    logger.info(f"Start send word for request={request_id}")
+    try:
+        req = Request.objects.get(id=int(request_id))
+        filename = req.sent_file.name.split("/")[-1]
+        buffer = req.sent_file.open().read()
+        # sending email
+        msg = prep_email(
+            "Bilan issu de SPARTE",
+            [req.email],
+            "project/emails/send_diagnostic",
+            context={
+                "request": req,
+                "phone_contact": "+33 6 07 33 56 19",
+                "email_contact": app_parameter.TEAM_EMAIL,
+            },
+        )
+        msg.attach(filename, buffer)
+        msg.send()
+        logger.info("Email sent with success")
+        req.sent()
+        logger.info("Saving request state done")
+    except Exception as exc:
+        self.retry(exc=exc, countdown=2 ** (self.request.retries + 10))
+        req.record_exception(exc)
+        logger.error("Error while sending email, error: %s", exc)
+    finally:
+        logger.info(f"End send word for request={request_id}")

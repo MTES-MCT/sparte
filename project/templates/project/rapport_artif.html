@@ -203,7 +203,7 @@ Rapport artificialisation
                                     <th scope="row">{{ couv.code_prefix }} {{ couv.label }}</th>
                                     <td align="right">{{ couv.artif|floatformat:1 }}</td>
                                     <td align="right" class="text-muted">{{ couv.artif|percent:detail_total_artif }}</td>
-                                    <td align="right">{{ couv.renat|floatformat:2 }}</td>
+                                    <td align="right">{{ couv.renat|floatformat:1 }}</td>
                                     <td align="right" class="text-muted">{{ couv.renat|percent:detail_total_renat }}</td>
                                 </tr>
                                 {% endfor %}
