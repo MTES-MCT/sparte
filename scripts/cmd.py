@@ -230,7 +230,7 @@ def mep_150(ctx):
 
 @cli.command()
 @click.pass_context
-def mep_160(ctx):
+def mep_200(ctx):
     """Trigger all data transformation to successful MEP release 1.6"""
     click.secho("Start migration v1.6", fg="cyan")
     connecter = ScalingoInterface(ctx.obj)
