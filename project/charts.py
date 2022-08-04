@@ -697,6 +697,16 @@ class NetArtifComparaisonChart(ProjectChart):
         self.level = kwargs.pop("level")
         super().__init__(*args, **kwargs)
 
+    def get_legend_for_paper(self):
+        if len(self.get_series()) > 20:
+            return {"enabled": False}
+        else:
+            return {
+                "layout": "vertical",
+                "align": "center",
+                "verticalAlign": "bottom",
+            }
+
     def get_series(self):
         if not self.series:
             self.series = self.project.get_land_artif_per_year(self.level)
