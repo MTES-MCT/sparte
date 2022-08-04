@@ -22,6 +22,7 @@ from public_data.models import (
     CommuneDiff,
     CommuneSol,
     CouvertureSol,
+    Departement,
     Ocsge,
     OcsgeDiff,
     AdminRef,
@@ -31,6 +32,19 @@ from public_data.models import (
 from utils.db import cast_sum
 
 from .utils import user_directory_path
+
+
+class ProjectNotSaved(BaseException):
+    """Exception raised when project needs to be saved once before performing the
+    requested action"""
+
+    pass
+
+
+def upload_in_project_folder(project: "Project", filename: str) -> str:
+    """Define where to upload project's cover image : diagnostic/<int:id>
+    nb: currently you can't add cover image if project is not saved yet"""
+    return f"diagnostics/{project.get_folder_name()}/{filename}"
 
 
 class BaseProject(models.Model):
@@ -231,6 +245,14 @@ class Project(BaseProject):
         blank=True,
     )
 
+    folder_name = models.CharField("Dossier", max_length=15, blank=True, null=True)
+    territory_name = models.CharField(
+        "Territoire", max_length=250, blank=True, null=True
+    )
+    cover_image = models.ImageField(
+        upload_to=upload_in_project_folder, blank=True, null=True
+    )
+
     @property
     def nb_years(self):
         return len(self.years)
@@ -267,8 +289,44 @@ class Project(BaseProject):
                 self._city_group_list[-1].append(project_commune)
         return self._city_group_list
 
+    def delete(self):
+        self.cover_image.delete(save=False)
+        return super().delete()
+
+    def get_territory_name(self):
+        if self.territory_name:
+            return self.territory_name
+        else:
+            return self.name
+
+    def get_folder_name(self):
+        if not self.id:
+            raise ProjectNotSaved(
+                "Impossible de récupérer le dossier de stockage des fichiers avant "
+                "d'avoir sauvegardé au moins une fois le diagnostic."
+            )
+        if not self.folder_name:
+            self.folder_name = f"diag_{self.id:>06}"
+            self.save(update_fields=["folder_name"])
+        return self.folder_name
+
     def is_artif(self):
         return self.cities.filter(departement__is_artif_ready=True).exists()
+
+    def get_ocsge_millesimes(self):
+        """Return all OCS GE millésimes available within project cities and between
+        project analyse ztart and end date"""
+        ids = self.cities.filter(departement__is_artif_ready=True).value_list(
+            "departement_id", flat=True
+        )
+        years = set()
+        for dept in Departement.objects.filter(id__in=ids):
+            years.update(dept.get_ocsge_millesimes())
+        return [
+            x
+            for x in years
+            if x <= self.analyse_end_date and x >= self.analyse_start_date
+        ]
 
     def add_look_a_like(self, public_key, many=False):
         """Add a public_key to look a like keeping the field formated

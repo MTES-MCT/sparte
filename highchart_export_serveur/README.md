@@ -1,8 +1,10 @@
 ## Tests
 
+docker run -it --rm --name highcharts -p 8081:8080 onsdigital/highcharts-export-node
+
 Test issu du repo officiel. Génère une image contenant un line chart à la racine du projet.
 ```
-curl -H "Content-Type: application/json" -X POST -d '{"infile":{"title": {"text": "Steep Chart"}, "xAxis": {"categories": ["Jan", "Feb", "Mar"]}, "series": [{"data": [29.9, 71.5, 106.4]}]}}' 127.0.0.1:8090 -o mychart.png
+curl -H "Content-Type: application/json" -X POST -d '{"infile":{"title": {"text": "Steep Chart"}, "xAxis": {"categories": ["Jan", "Feb", "Mar"]}, "series": [{"data": [29.9, 71.5, 106.4]}]}}' 127.0.0.1:8091 -o mychart.png
 ```
 
 Second test avec un graphique plus compliqué

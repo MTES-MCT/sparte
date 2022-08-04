@@ -26,6 +26,22 @@ def send_template_email(
     If no expeditor is provided, TEAM_EMAIL parameter is used.
     """
     logger.info("Send email based on templates")
+    msg = prep_email(
+        subject,
+        recipients,
+        template_name,
+        context=context,
+        expeditor=expeditor,
+    )
+    # envoi
+    try:
+        msg.send()
+        logger.info("Email sent with success")
+    except Exception as error:
+        logger.error("Error while sending email, error: %s", error)
+
+
+def prep_email(subject, recipients, template_name, context=None, expeditor=None):
     from_email = expeditor if expeditor else app_parameter.TEAM_EMAIL
     text = get_template(f"{template_name}.txt")
     html = get_template(f"{template_name}.html")
@@ -34,9 +50,4 @@ def send_template_email(
     # création de l'e-mail
     msg = EmailMultiAlternatives(subject, text_content, from_email, recipients)
     msg.attach_alternative(html_content, "text/html")
-    # envoi
-    try:
-        msg.send()
-        logger.info("Email sent with success")
-    except Exception as error:
-        logger.error("Error while sending email, error: %s", error)
+    return msg

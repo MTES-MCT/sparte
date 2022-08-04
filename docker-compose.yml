@@ -22,9 +22,29 @@ services:
       - app-network
     restart: on-failure
 
-  jupyter:
+  app:
     build: .
-    working_dir: /app
+    image: sparte/backend:latest
+    command: python manage.py runserver 0.0.0.0:8080
+    # required to attach vsc to the container and run debug
+    # command: tail -F anything
+    volumes:
+      - .:/app
+    env_file: .env
+    environment:
+      - DATABASE_URL=postgis://postgres:postgres@db:5432/postgres
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+      - redis
+    networks:
+      - app-network
+
+  jupyter:
+    image: sparte/backend:latest
     command: python manage.py shell_plus --notebook
     volumes:
       - .:/app
@@ -35,31 +55,18 @@ services:
       - DATABASE_URL=postgis://postgres:postgres@db:5432/postgres
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
-    depends_on:
-      - db
     ports:
       - 8888:8888
     networks:
       - app-network
 
-  app:
-    build: .
-    command: python manage.py runserver 0.0.0.0:8080
-    # required to attach vsc to the container and run debug
-    # command: tail -F anything
-    volumes:
-      - .:/app
-    env_file: .env
-    # override a few environment variables to ensure it works with other containers
-    environment:
-      - DATABASE_URL=postgis://postgres:postgres@db:5432/postgres
-      - CELERY_BROKER_URL=redis://redis:6379/0
-      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+  highchart:
+    build:
+      context: ./highchart_export_serveur
+    image: sparte/highchart-export-server:13
+    command: highcharts-export-server --enableServer 1 --port $PORT
     ports:
-      - "8080:8080"
-    depends_on:
-      - db
-      - redis
+      - "8090:8090"
     networks:
       - app-network
 
