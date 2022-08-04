@@ -27,7 +27,6 @@ def upload_to_hook(instance: "DocxTemplate", filename: str) -> str:
 class DocxTemplate(models.Model):
     slug = models.SlugField("Slug", primary_key=True, blank=True)
     name = models.CharField("Name", max_length=100)
-    # description = models.TextField("Description", blank=True, null=True)
     docx = models.FileField(upload_to=upload_to_hook)
     data_source_class = models.CharField(
         "DataSource class", max_length=250, blank=True, null=True

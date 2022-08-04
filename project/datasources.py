@@ -21,7 +21,7 @@ class SolInterface:
         if self.item.level == 1:
             spacer = ""
         else:
-            spacer = "".join(["-"] * self.item.level - 1)
+            spacer = "".join(["-"] * (self.item.level - 1))
         return f"{spacer} {self.item.code}"
 
     @property
@@ -50,6 +50,18 @@ class SolInterface:
     def percent(self):
         val = 100 * float(self.item.surface_last) / self.surface_territory
         return f"{round(val)}%"
+
+
+class ReprDetailArtif:
+    total_artif = None
+    total_renat = None
+
+    def __init__(self, item):
+        self.label = f"{item['code_prefix'] } {item['label_short']}"
+        self.artif = str(round(item["artif"], 1))
+        self.renat = str(round(item["renat"], 1))
+        self.artif_percent = str(round(100 * item["artif"] / self.total_artif))
+        self.renat_percent = str(round(100 * item["renat"] / self.total_renat))
 
 
 class DiagnosticSource(data_sources.DataSource):
@@ -260,11 +272,13 @@ class DiagnosticSource(data_sources.DataSource):
                         "couverture_matrix_headers": headers,
                     }
                 )
-            # paragraphe 3.3.2
+            # paragraphe 3.2.1
             chart_waterfall = charts.WaterfallnArtifChart(project)
             waterfall_series = chart_waterfall.get_series()
             total_artif = project.get_artif_area()
             artif_net = waterfall_series["net_artif"]
+            artificialisation = waterfall_series["new_artif"]
+            renaturation = waterfall_series["new_natural"]
             context.update(
                 {
                     "surface_artificielle": str(round(total_artif, 2)),
@@ -273,10 +287,64 @@ class DiagnosticSource(data_sources.DataSource):
                         width=170,
                     ),
                     "artificialisation_nette": str(round(artif_net, 2)),
-                    "artificialisation": str(round(waterfall_series["new_artif"], 2)),
-                    "renaturation": str(round(waterfall_series["new_natural"], 2)),
+                    "artificialisation": str(round(artificialisation, 2)),
+                    "renaturation": str(round(renaturation, 2)),
                     "taux_artificialisation_nette": str(
                         round(100 * artif_net / total_artif, 1)
+                    ),
+                }
+            )
+            # paragraphe 3.2.2
+            detail_artif_chart = charts.DetailArtifChart(project)
+            ReprDetailArtif.total_artif = artificialisation
+            ReprDetailArtif.total_renat = renaturation
+
+            for item in detail_artif_chart.get_series():
+                if item["code_prefix"] == "CS1.1.1.1":
+                    nouveau_bati = item["artif"]
+                    bati_renature = item["renat"]
+
+            context.update(
+                {
+                    "nouveau_bati": str(round(nouveau_bati, 2)),
+                    "bati_renature": str(round(bati_renature, 2)),
+                    "tableau_artificialisation_par_couverture": [
+                        ReprDetailArtif(i) for i in detail_artif_chart.get_series()
+                    ],
+                    "graphique_artificialisation_par_couverture": data_sources.Image(
+                        detail_artif_chart.get_temp_image(),
+                        width=170,
+                    ),
+                }
+            )
+            # paragraphe 3.2.3
+            chart_comparison = charts.NetArtifComparaisonChart(
+                project, level=project.level
+            )
+            table_comparison = add_total_line_column(chart_comparison.get_series())
+            header_comparison = list(list(table_comparison.values())[0].keys())
+            context.update(
+                {
+                    "graphique_evolution_artif": data_sources.Image(
+                        chart_comparison.get_temp_image(),
+                        width=170,
+                    ),
+                    "tableau_evolution_artif": table_comparison,
+                    "entetes_evolution_artif": header_comparison,
+                }
+            )
+            # paragraphe 3.2.4
+            couv_artif_sol = charts.ArtifCouvSolPieChart(project)
+            usage_artif_sol = charts.ArtifUsageSolPieChart(project)
+            context.update(
+                {
+                    "graphique_determinant_couv_artif": data_sources.Image(
+                        couv_artif_sol.get_temp_image(),
+                        width=170,
+                    ),
+                    "graphique_determinant_usage_artif": data_sources.Image(
+                        usage_artif_sol.get_temp_image(),
+                        width=170,
                     ),
                 }
             )
