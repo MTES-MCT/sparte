@@ -1,0 +1,7 @@
+carto/static/*
+home/static/*
+notebooks/*
+project/static/*
+public_data/static/*
+scripts/*
+static/*
