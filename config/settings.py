@@ -320,8 +320,7 @@ DJANGO_DOCX_TEMPLATES = {
 }
 
 # Configuration for highchart
-HIGHCHART_SERVER = "https://export.highcharts.com/"
-
+HIGHCHART_SERVER = env.str("HIGHCHART_SERVER", default="https://export.highcharts.com/")
 
 # EMAIL
 """Configuration of e-mails
