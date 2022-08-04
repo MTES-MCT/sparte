@@ -442,11 +442,11 @@ CSP_SCRIPT_SRC = [
     "https://stats.data.gouv.fr",
     "https://code.highcharts.com",
 ]
-CSP_STYLE_SRC = ["'self'"]
+CSP_STYLE_SRC = ["'self'", "https://cdn.jsdelivr.net"]
 CSP_IMG_SRC = ["'self'", "https://wxs.ign.fr", "data:", MEDIA_URL]
 CSP_UPGRADE_INSECURE_REQUESTS = not DEBUG
 CSP_INCLUDE_NONCE_IN = ["script-src", "style-src"]
-CSP_FONT_SRC = ("'self'", "data:")
+CSP_FONT_SRC = ("'self'", "data:", "https://cdn.jsdelivr.net")
 CSP_CONNECT_SRC = ["https://stats.data.gouv.fr", "'self'"]
 
 # LOGGING SETTINGS
