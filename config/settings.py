@@ -228,6 +228,12 @@ AWS_S3_FILE_OVERWRITE = False
 # allow signed url to be accessed from all regions
 AWS_S3_SIGNATURE_VERSION = "s3v4"
 
+AWS_S3_CUSTOM_DOMAIN = f"{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com"
+AWS_S3_OBJECT_PARAMETERS = {"CacheControl": "max-age=86400"}
+PUBLIC_MEDIA_LOCATION = "media"
+MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/{PUBLIC_MEDIA_LOCATION}/"
+DEFAULT_FILE_STORAGE = "config.storages.PublicMediaStorage"
+
 
 # Django.contrib.messages
 # tag for bootstrap compatibility
@@ -314,8 +320,7 @@ DJANGO_DOCX_TEMPLATES = {
 }
 
 # Configuration for highchart
-HIGHCHART_SERVER = "https://export.highcharts.com/"
-
+HIGHCHART_SERVER = env.str("HIGHCHART_SERVER", default="https://export.highcharts.com/")
 
 # EMAIL
 """Configuration of e-mails
@@ -438,7 +443,7 @@ CSP_SCRIPT_SRC = [
     "https://code.highcharts.com",
 ]
 CSP_STYLE_SRC = ["'self'"]
-CSP_IMG_SRC = ["'self'", "https://wxs.ign.fr", "data:"]
+CSP_IMG_SRC = ["'self'", "https://wxs.ign.fr", "data:", MEDIA_URL]
 CSP_UPGRADE_INSECURE_REQUESTS = not DEBUG
 CSP_INCLUDE_NONCE_IN = ["script-src", "style-src"]
 CSP_FONT_SRC = ("'self'", "data:")

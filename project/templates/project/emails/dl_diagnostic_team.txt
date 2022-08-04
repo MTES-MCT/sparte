@@ -1,6 +1,8 @@
 Hello l'équipe.
 
-Une nouvelle demande de bilan vient de nous parvenir. Voici les informations :
+Une nouvelle demande de bilan vient de nous parvenir. Elle devrait être traitée automatiquement, mais vous devez le vérifier !
+* Demandeur : {{ request.email }}
+* Bilan : {{ project.name }}
 * Accéder à la demande dans l'admin : {{ request_url }}
 * Accéder au diagnostic en ligne : {{ project_url }}
 
