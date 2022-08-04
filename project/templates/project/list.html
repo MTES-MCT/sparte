@@ -11,7 +11,7 @@ Mes diagnostics
 {% block headers %}
 {% sri_static "project/css/project.css" %}
 {% sri_static "js/masonry.pkgd.min.js" %}
-<script src="https://unpkg.com/masonry-layout@4/dist/masonry.pkgd.min.js" nonce="{{ CSP_NONCE }}"></script>
+
 {% endblock %}
 
 {% block content %}
@@ -29,11 +29,15 @@ Mes diagnostics
 
             <div class="grid-item">
                 <div class="card m-3">
-                    <svg class="bd-placeholder-img card-img-top" width="100%" height="140" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Image cap" preserveAspectRatio="xMidYMid slice" focusable="false">
-                        <title>Placeholder</title>
-                        <rect width="100%" height="100%" fill="#868e96"></rect>
-                        <text x="30%" y="50%" fill="#dee2e6" dy=".3em">Photo à venir</text>
-                    </svg>
+                    {% if project.cover_image %}
+                        <img src="{{ project.cover_image.url }}" width="{{ project.prop_width }}" height="{{ project.prop_height }}" />
+                    {% else %}
+                        <svg class="bd-placeholder-img card-img-top" width="100%" height="140" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Image cap" preserveAspectRatio="xMidYMid slice" focusable="false">
+                            <title>Placeholder</title>
+                            <rect width="100%" height="100%" fill="#868e96"></rect>
+                            <text x="30%" y="50%" fill="#dee2e6" dy=".3em">Photo à venir</text>
+                        </svg>
+                    {% endif %}
                     <div class="card-body">
                     <p class="card-title"><a href="{% url 'project:detail' project.id %}" class="stretched-link">{{ project.name }}</a></p>
                     <p class="card-text">{{ project.description }}</p>

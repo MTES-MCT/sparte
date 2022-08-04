@@ -113,7 +113,7 @@ class RequestAdmin(admin.ModelAdmin):
             "Réponse",
             {
                 "description": "Suivre le traitement de la demande",
-                "fields": ("link_to_project", "sent_date", "done"),
+                "fields": ("link_to_project", "sent_file", "sent_date", "done"),
             },
         ),
     )

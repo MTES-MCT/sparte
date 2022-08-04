@@ -69,9 +69,14 @@ class ConsoCommuneChart(ProjectChart):
         super().__init__(*args, **kwargs)
 
     def get_legend_for_paper(self):
-        return {
-            "enabled": False,
-        }
+        if len(self.get_series()) > 20:
+            return {"enabled": False}
+        else:
+            return {
+                "layout": "vertical",
+                "align": "center",
+                "verticalAlign": "bottom",
+            }
 
     def get_series(self):
         if not self.series:
@@ -406,7 +411,7 @@ class WaterfallnArtifChart(ProjectChart):
             "valueDecimals": 1,
         },
         "xAxis": {"type": "category"},
-        "legend": {"layout": "horizontal", "align": "center", "verticalAlign": "top"},
+        "legend": {"enabled": False},
         "plotOptions": {
             "column": {
                 "dataLabels": {"enabled": True, "format": "{point.y:,.1f}"},
@@ -691,6 +696,16 @@ class NetArtifComparaisonChart(ProjectChart):
     def __init__(self, *args, **kwargs):
         self.level = kwargs.pop("level")
         super().__init__(*args, **kwargs)
+
+    def get_legend_for_paper(self):
+        if len(self.get_series()) > 20:
+            return {"enabled": False}
+        else:
+            return {
+                "layout": "vertical",
+                "align": "center",
+                "verticalAlign": "bottom",
+            }
 
     def get_series(self):
         if not self.series:

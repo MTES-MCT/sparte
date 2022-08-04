@@ -123,7 +123,7 @@ class ArtifCommune(models.Model):
         """Return all field names with a artif numerical values
         Usefull to get an easy way to change available data withou changing the
         code"""
-        return ["artif_before_2009"] + [f"artif_{y}" for y in range(2009, 2019)]
+        return ["artif_before_2009"] + [f"artif_{y}" for y in range(2009, 2020)]
 
     def list_artif(self, flat=True):
         """Return a list of all artif numerical values : `[123.45, 456.78,]`
