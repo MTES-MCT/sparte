@@ -184,29 +184,6 @@ USE_L10N = True
 
 USE_TZ = True
 
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/3.2/howto/static-files/
-
-STATIC_URL = "/static/"
-
-STATIC_ROOT = str(BASE_DIR / "staticroot")
-
-STATICFILES_DIRS = [
-    BASE_DIR / "static",
-    # BASE_DIR / "htmlcov",
-]
-
-# same goes for media
-MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "media"
-
-# Default primary key field type
-# https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
-
-DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-
-
 # Bucket S3 and filestorage
 # see https://django-storages.readthedocs.io/en/latest/
 
@@ -230,9 +207,37 @@ AWS_S3_SIGNATURE_VERSION = "s3v4"
 
 AWS_S3_CUSTOM_DOMAIN = f"{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com"
 AWS_S3_OBJECT_PARAMETERS = {"CacheControl": "max-age=86400"}
-PUBLIC_MEDIA_LOCATION = "media"
-MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/{PUBLIC_MEDIA_LOCATION}/"
-DEFAULT_FILE_STORAGE = "config.storages.PublicMediaStorage"
+
+
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/3.2/howto/static-files/
+
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+    # BASE_DIR / "htmlcov",
+]
+
+USE_S3 = env.bool("USE_S3", default=False)
+
+if USE_S3:
+    STATIC_LOCATION = "staticfiles"
+    STATIC_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/{STATIC_LOCATION}/"
+    STATICFILES_STORAGE = "config.storages.StaticMediaStorage"
+
+    PUBLIC_MEDIA_LOCATION = "media"
+    MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/{PUBLIC_MEDIA_LOCATION}/"
+    DEFAULT_FILE_STORAGE = "config.storages.PublicMediaStorage"
+else:
+    STATIC_URL = "/static/"
+    STATIC_ROOT = str(BASE_DIR / "staticroot")
+
+    MEDIA_URL = "/media/"
+    MEDIA_ROOT = BASE_DIR / "media"
+
+# Default primary key field type
+# https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
+
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
 # Django.contrib.messages
@@ -441,12 +446,13 @@ CSP_SCRIPT_SRC = [
     "'self'",
     "https://stats.data.gouv.fr",
     "https://code.highcharts.com",
+    STATIC_URL,
 ]
-CSP_STYLE_SRC = ["'self'", "https://cdn.jsdelivr.net"]
-CSP_IMG_SRC = ["'self'", "https://wxs.ign.fr", "data:", MEDIA_URL]
+CSP_STYLE_SRC = ["'self'", "https://cdn.jsdelivr.net", STATIC_URL]
+CSP_IMG_SRC = ["'self'", "https://wxs.ign.fr", "data:", MEDIA_URL, STATIC_URL]
 CSP_UPGRADE_INSECURE_REQUESTS = not DEBUG
 CSP_INCLUDE_NONCE_IN = ["script-src", "style-src"]
-CSP_FONT_SRC = ("'self'", "data:", "https://cdn.jsdelivr.net")
+CSP_FONT_SRC = ("'self'", "data:", "https://cdn.jsdelivr.net", STATIC_URL)
 CSP_CONNECT_SRC = ["https://stats.data.gouv.fr", "'self'"]
 
 # LOGGING SETTINGS
