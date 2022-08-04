@@ -45,7 +45,6 @@ sentry-sdk = "*"
 django-app-parameter = "*"
 setuptools = "*"
 docxtpl = "*"
-django-docx-template = {git = "https://github.com/Swannbm/django-docx-template"}
 django-csp = "*"
 django-sri = "*"
 django-dsfr = "*"
