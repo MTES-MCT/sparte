@@ -459,17 +459,16 @@ class ProjectReportSynthesisView(GroupMixin, DetailView):
     def get_context_data(self, **kwargs):
         project = self.get_object()
         total_surface = int(project.area * 100)
-        conso_10_years = project.get_bilan_conso()
         progression_time_scoped = project.get_artif_progession_time_scoped()
+        objective_chart = charts.ObjectiveChart(project)
         kwargs = {
             "diagnostic": project,
             "active_page": "synthesis",
-            "conso_10_years": conso_10_years,
-            "trajectoire_2030": conso_10_years / 2,
             "total_surface": total_surface,
             "new_artif": progression_time_scoped["new_artif"],
             "new_natural": progression_time_scoped["new_natural"],
             "net_artif": progression_time_scoped["net_artif"],
+            "objective_chart": objective_chart,
         }
         # project = self.get_object()
         return super().get_context_data(**kwargs)
