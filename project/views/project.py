@@ -356,10 +356,11 @@ class ProjectReportCouvertureView(GroupMixin, DetailView):
             "nom": "Couverture",
             "surface_territory": surface_territory,
             "active_page": "couverture",
-            "ocsge_available": project.is_artif,
+            "ocsge_available": True,
         }
 
-        if not project.is_artif:
+        if not project.is_artif():
+            kwargs.update({"ocsge_available": False})
             return super().get_context_data(**kwargs)
 
         first_millesime = project.first_year_ocsge
@@ -407,10 +408,11 @@ class ProjectReportUsageView(GroupMixin, DetailView):
             "nom": "Usage",
             "surface_territory": surface_territory,
             "active_page": "usage",
-            "ocsge_available": project.is_artif,
+            "ocsge_available": True,
         }
 
-        if not project.is_artif:
+        if not project.is_artif():
+            kwargs.update({"ocsge_available": False})
             return super().get_context_data(**kwargs)
 
         first_millesime = project.first_year_ocsge
@@ -500,10 +502,11 @@ class ProjectReportArtifView(GroupMixin, DetailView):
             "diagnostic": project,
             "active_page": "artificialisation",
             "total_surface": total_surface,
-            "ocsge_available": project.is_artif,
+            "ocsge_available": True,
         }
 
-        if not project.is_artif:
+        if not project.is_artif():
+            kwargs.update({"ocsge_available": False})
             return super().get_context_data(**kwargs)
 
         first_millesime = project.first_year_ocsge

@@ -202,7 +202,7 @@ class DiagnosticSource(data_sources.DataSource):
             }
         )
 
-        if project.is_artif:
+        if project.is_artif():
             context.update(
                 {
                     "ocsge_is_available": True,
