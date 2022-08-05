@@ -60,8 +60,14 @@ class ReprDetailArtif:
         self.label = f"{item['code_prefix'] } {item['label_short']}"
         self.artif = str(round(item["artif"], 1))
         self.renat = str(round(item["renat"], 1))
-        self.artif_percent = str(round(100 * item["artif"] / self.total_artif))
-        self.renat_percent = str(round(100 * item["renat"] / self.total_renat))
+        if self.total_artif > 0:
+            self.artif_percent = str(round(100 * item["artif"] / self.total_artif))
+        else:
+            self.artif_percent = "N/A"
+        if self.total_renat > 0:
+            self.renat_percent = str(round(100 * item["renat"] / self.total_renat))
+        else:
+            self.renat_percent = "N/A"
 
 
 class DiagnosticSource(data_sources.DataSource):
