@@ -14,7 +14,7 @@ from django.views.generic import (
 
 from django_app_parameter import app_parameter
 
-from public_data.models import Land, Ocsge
+from public_data.models import Land
 from utils.views_mixins import BreadCrumbMixin, GetObjectMixin
 
 from project import charts
@@ -356,35 +356,35 @@ class ProjectReportCouvertureView(GroupMixin, DetailView):
             "nom": "Couverture",
             "surface_territory": surface_territory,
             "active_page": "couverture",
-            "ocsge_available": True,
+            "ocsge_available": project.is_artif,
         }
-        try:
-            first_millesime = project.first_year_ocsge
-            last_millesime = project.last_year_ocsge
 
-            pie_chart = charts.CouvertureSolPieChart(project)
-            progression_chart = charts.CouvertureSolProgressionChart(project)
+        if not project.is_artif:
+            return super().get_context_data(**kwargs)
 
+        first_millesime = project.first_year_ocsge
+        last_millesime = project.last_year_ocsge
+
+        pie_chart = charts.CouvertureSolPieChart(project)
+        progression_chart = charts.CouvertureSolProgressionChart(project)
+
+        kwargs.update(
+            {
+                "first_millesime": str(first_millesime),
+                "last_millesime": str(last_millesime),
+                "pie_chart": pie_chart,
+                "progression_chart": progression_chart,
+            }
+        )
+
+        matrix_data = project.get_matrix(sol="couverture")
+        if matrix_data:
             kwargs.update(
                 {
-                    "first_millesime": str(first_millesime),
-                    "last_millesime": str(last_millesime),
-                    "pie_chart": pie_chart,
-                    "progression_chart": progression_chart,
+                    "matrix_data": add_total_line_column(matrix_data),
+                    "matrix_headers": list(matrix_data.values())[0].keys(),
                 }
             )
-
-            matrix_data = project.get_matrix(sol="couverture")
-            if matrix_data:
-                kwargs.update(
-                    {
-                        "matrix_data": add_total_line_column(matrix_data),
-                        "matrix_headers": list(matrix_data.values())[0].keys(),
-                    }
-                )
-        except Ocsge.DoesNotExist:
-            # There is no OCSGE available for this territoru
-            kwargs.update({"ocsge_available": False})
 
         return super().get_context_data(**kwargs)
 
@@ -407,34 +407,34 @@ class ProjectReportUsageView(GroupMixin, DetailView):
             "nom": "Usage",
             "surface_territory": surface_territory,
             "active_page": "usage",
-            "ocsge_available": True,
+            "ocsge_available": project.is_artif,
         }
-        try:
-            first_millesime = project.first_year_ocsge
-            last_millesime = project.last_year_ocsge
 
-            pie_chart = charts.UsageSolPieChart(project)
-            progression_chart = charts.UsageSolProgressionChart(project)
+        if not project.is_artif:
+            return super().get_context_data(**kwargs)
+
+        first_millesime = project.first_year_ocsge
+        last_millesime = project.last_year_ocsge
+
+        pie_chart = charts.UsageSolPieChart(project)
+        progression_chart = charts.UsageSolProgressionChart(project)
+        kwargs.update(
+            {
+                "first_millesime": str(first_millesime),
+                "last_millesime": str(last_millesime),
+                "pie_chart": pie_chart,
+                "progression_chart": progression_chart,
+            }
+        )
+
+        matrix_data = project.get_matrix(sol="usage")
+        if matrix_data:
             kwargs.update(
                 {
-                    "first_millesime": str(first_millesime),
-                    "last_millesime": str(last_millesime),
-                    "pie_chart": pie_chart,
-                    "progression_chart": progression_chart,
+                    "matrix_data": add_total_line_column(matrix_data),
+                    "matrix_headers": list(matrix_data.values())[0].keys(),
                 }
             )
-
-            matrix_data = project.get_matrix(sol="usage")
-            if matrix_data:
-                kwargs.update(
-                    {
-                        "matrix_data": add_total_line_column(matrix_data),
-                        "matrix_headers": list(matrix_data.values())[0].keys(),
-                    }
-                )
-        except Ocsge.DoesNotExist:
-            # There is no OCSGE available for this territoru
-            kwargs.update({"ocsge_available": False})
 
         return super().get_context_data(**kwargs)
 
@@ -500,16 +500,14 @@ class ProjectReportArtifView(GroupMixin, DetailView):
             "diagnostic": project,
             "active_page": "artificialisation",
             "total_surface": total_surface,
-            "ocsge_available": True,
+            "ocsge_available": project.is_artif,
         }
 
-        try:
-            first_millesime = project.first_year_ocsge
-            last_millesime = project.last_year_ocsge
-        except Ocsge.DoesNotExist:
-            # There is no OCSGE available for this territoru
-            kwargs.update({"ocsge_available": False})
+        if not project.is_artif:
             return super().get_context_data(**kwargs)
+
+        first_millesime = project.first_year_ocsge
+        last_millesime = project.last_year_ocsge
 
         artif_area = project.get_artif_area()
 
