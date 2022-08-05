@@ -235,6 +235,9 @@ def mep_200(ctx):
     click.secho("Start migration v1.6", fg="cyan")
     connecter = ScalingoInterface(ctx.obj)
 
+    click.secho("Fix missing 6.1 and 6.2 in artificial", fg="cyan")
+    connecter.manage_py("build_matrix")
+
     click.secho("Load 2021 Cérema's data", fg="cyan")
     connecter.manage_py("load_cerema")
 
