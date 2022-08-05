@@ -311,7 +311,7 @@ def send_word_diagnostic(self, request_id):
 
     logger.info(f"Start send word for request={request_id}")
     try:
-        req = Request.objects.get(id=int(request_id))
+        req = Request.objects.select_related("project").get(id=int(request_id))
         filename = req.sent_file.name.split("/")[-1]
         buffer = req.sent_file.open().read()
         # sending email
@@ -321,6 +321,7 @@ def send_word_diagnostic(self, request_id):
             "project/emails/send_diagnostic",
             context={
                 "request": req,
+                "ocsge_available": req.project.is_artif(),
                 "phone_contact": "+33 6 07 33 56 19",
                 "email_contact": app_parameter.TEAM_EMAIL,
             },
