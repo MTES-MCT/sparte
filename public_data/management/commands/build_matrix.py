@@ -61,6 +61,8 @@ class Command(BaseCommand):
                     "4.1.5",
                     "4.2",
                     "4.3",
+                    "6.1",
+                    "6.2",
                 ],
             )
         ).exclude(couverture__code="1.1.2.1", usage__code="1.3")
