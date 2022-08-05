@@ -3,7 +3,7 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse, exceptions
 from django.utils.html import format_html
 
-from .models import Project, Emprise, Plan, PlanEmprise, Request
+from .models import Project, Emprise, Request
 from .tasks import send_word_diagnostic, generate_word_diagnostic
 
 
@@ -36,44 +36,6 @@ class EmpriseAdmin(admin.GeoModelAdmin):
         "project",
     )
     search_fields = ("project",)
-
-
-@admin.register(Plan)
-class PlanAdmin(admin.GeoModelAdmin):
-    model = Plan
-    list_display = (
-        "name",
-        "project",
-        "user",
-        "import_status",
-        "import_date",
-    )
-    list_filter = ("import_status",)
-    search_fields = (
-        "project",
-        "name",
-        "import_error",
-        "user",
-    )
-    ordering = ("name",)
-    change_form_template = "project/admin_detail.html"
-
-    def response_change(self, request, obj):
-        if "_reload-emprise-action" in request.POST:
-            # Trigger asynch task to reload emprise file
-            process_new_plan.delay(obj.id)
-            return HttpResponseRedirect(".")  # stay on the same detail page
-        return super().response_change(request, obj)
-
-
-@admin.register(PlanEmprise)
-class PlanEmpriseAdmin(admin.GeoModelAdmin):
-    model = PlanEmprise
-    list_display = (
-        "id",
-        "plan",
-    )
-    search_fields = ("plan",)
 
 
 @admin.register(Request)
