@@ -1,6 +1,8 @@
 import logging
 
 from django.core.management.base import BaseCommand
+from time import sleep
+
 from django.db.models import Q
 
 from project.models import Project
@@ -18,6 +20,7 @@ class Command(BaseCommand):
         total = qs.count()
         logger.info(f"To be processed: {total}")
         for i, diag in enumerate(qs):
-            generate_cover_image(diag.id)
+            generate_cover_image.delay(diag.id)
+            sleep(5)
             logger.info(f"{diag.id} - {100 * i / total:.0f}%")
         logger.info("End generate covers")
