@@ -20,7 +20,8 @@ class Command(BaseCommand):
         total = qs.count()
         logger.info(f"To be processed: {total}")
         for i, diag in enumerate(qs):
-            generate_cover_image.delay(diag.id)
-            sleep(5)
+            result = generate_cover_image.delay(diag.id)
+            while result.status == "PENDING":
+                sleep(1)
             logger.info(f"{diag.id} - {100 * i / total:.0f}%")
         logger.info("End generate covers")
