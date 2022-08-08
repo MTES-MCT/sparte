@@ -26,6 +26,11 @@ urlpatterns = [
         views.NewsLetterConfirmationView.as_view(),
         name="nwl-confirmation",
     ),
+    path(
+        "emails",
+        views.AllEmailsView.as_view(),
+        name="all-emails",
+    ),
 ]
 
 router = routers.DefaultRouter()
