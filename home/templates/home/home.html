@@ -5,26 +5,26 @@
 {% block pagetitle %}Accueil{% endblock %}
 
 {% block headers %}
-<link rel="stylesheet" href="{% static 'home/css/home.css' %}" nonce="{{ CSP_NONCE }}" />
+  <link rel="stylesheet"
+        href="{% static 'home/css/home.css' %}"
+        nonce="{{ CSP_NONCE }}"/>
 {% endblock headers %}
 
 <!-- Hide breadcrumbs on home page -->
-{% block breadcrumbs %}{% endblock breadcrumbs %}
-
+{% block breadcrumbs %}
+{% endblock breadcrumbs %}
 
 {% block content %}
-
 <div class="bg-color-neutral">
   <div class="fr-container">
     <div class="fr-grid-row fr-grid-row--gutters fr-py-6w">
-        <div class="fr-col-12 fr-col-md-8">
-          <h1>Sparte mesure votre consommation d'espace et <span class="text-blue">l'artificialisation de votre territoire</span></h1>
-          <p class="fr-text--xl">Pilotez votre programme d’urbanisation en vue d’atteindre l’objectif Zéro Artificialisation Nette acté par la Loi Climat et Résilience</p>
-          <a href="{% url 'project:select' %}" id="btn-voir-diag-1" class="fr-btn">Créer un diagnostic</a>
-        </div>
-        <div class="fr-col-12 fr-col-md-4">
-          <img src="{% static 'home/img/OCSGE.png' %}"  class="w-100 fr-hidden fr-unhidden-md" alt="Aperçu de la carte OCSGE"/>
-        </div>
+      <div class="fr-col-12 fr-col-md-8">
+        <h1>Sparte mesure votre consommation d'espace et <span class="text-blue">l'artificialisation de votre territoire</span></h1>
+        <p class="fr-text--xl">Pilotez votre programme d’urbanisation en vue d’atteindre l’objectif Zéro Artificialisation Nette acté par la Loi Climat et Résilience</p>
+        <a href="{% url 'project:select' %}" id="btn-voir-diag-1" class="fr-btn">Créer un diagnostic</a>
+      </div>
+      <div class="fr-col-12 fr-col-md-4">
+        <img src="{% static 'home/img/OCSGE.png' %}" class="w-100 fr-hidden fr-unhidden-md" alt="Aperçu de la carte OCSGE"/>
       </div>
     </div>
   </div>
@@ -37,82 +37,91 @@
     </div>
 
     <div class="fr-col-12 fr-col-md-4">
-      <img src="{% static 'home/img/loi_climat_logo.png' %}"  class="w-100 fr-hidden fr-unhidden-md" alt="Logo de la loi climat et résilience"/>
+      <img src="{% static 'home/img/loi_climat_logo.png' %}" class="w-100 fr-hidden fr-unhidden-md" alt="Logo de la loi climat et résilience"/>
     </div>
     <div class="fr-col-12 fr-col-md-8">
       <p class="fr-text--bold">SPARTE est un outil basé sur les données d’observation préconisées dans l’article 192 de la Loi Climat et Résilience et ses décrets d’applications.</p>
       <p>SPARTE vous donne accès à un diagnostic en ligne et à une synthèse téléchargeable de votre diagnostic de consommation et d’artificialisation.</p>
       <div class="fr-accordions-group fr-mb-3w">
         <section class="fr-accordion">
-            <h3 class="fr-accordion__title">
-                <button class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-114">Que contient le diagnostic en ligne ?</button>
-            </h3>
-            <div class="fr-collapse" id="accordion-114">
-              <p class="fr-text--bold">Pour la France entière, le diagnostic de consommation d'espace contient  :</p>
-              <ul>
-                <li>Trajectoire de réduction de la consommation d'espaces NAF en 2030</li>
-                <li>Bilan de la consommation d'espaces NAF sur la période sélectionnée et sur la période de référence de la loi (2011-2021)</li>
-                <li>Évolution annuelle sur la période sélectionnée</li>
-                <li>Comparaison à d'autres territoires</li>
-                <li>Déterminants (Habitat, activité...)</li>
-              </ul>
+          <h3 class="fr-accordion__title">
+            <button class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-114">Que contient le diagnostic en ligne ?</button>
+          </h3>
+          <div class="fr-collapse" id="accordion-114">
+            <p class="fr-text--bold">Pour la France entière, le diagnostic de consommation d'espace contient  :</p>
+            <ul>
+              <li>Trajectoire de réduction de la consommation d'espaces NAF en 2030</li>
+              <li>Bilan de la consommation d'espaces NAF sur la période sélectionnée et sur la période de référence de la loi (2011-2021)</li>
+              <li>Évolution annuelle sur la période sélectionnée</li>
+              <li>Comparaison à d'autres territoires</li>
+              <li>Déterminants (Habitat, activité...)</li>
+            </ul>
 
-              <p class="fr-text--bold fr-mt-3w">Pour les territoires disposant de l'OCS GE, le diagnostic d'artificialisation des sols offre, sur la période où l'OCS GE existe, en complément :</p>
-              <ul>
-                <li>Évolutions chiffrées de la couverture et de l'usage des sols</li>
-                <li>Matrices d'évolution de la couverture et de l'usage des sols</li>
-                <li>Artificialisation, renaturation et artificialisation nette</li>
-                <li>Déterminants de l'artificialisation (production secondaire, tertiaire, voirie, résidentiel...)</li>
-                <li>Descriptif des zones artificialisées</li>
-              </ul>
+            <p class="fr-text--bold fr-mt-3w">Pour les territoires disposant de l'OCS GE, le diagnostic d'artificialisation des sols offre, sur la période où l'OCS GE existe, en complément :</p>
+            <ul>
+              <li>Évolutions chiffrées de la couverture et de l'usage des sols</li>
+              <li>Matrices d'évolution de la couverture et de l'usage des sols</li>
+              <li>Artificialisation, renaturation et artificialisation nette</li>
+              <li>Déterminants de l'artificialisation (production secondaire, tertiaire, voirie, résidentiel...)</li>
+              <li>Descriptif des zones artificialisées</li>
+            </ul>
 
-              <p class="fr-text--bold fr-mt-3w">Une cartographie interactive reprenant les indicateurs de suivi de la consommation d'espaces NAF et de l'artificialisation :</p>
-              <ul>
-                <li>Consommation communale sur la période et sur la période de référence</li>
-                <li>Consommation annuelle pour de l'activité ou de l'habitat </li>
-                <li>Surface artificialisée communale</li>
-                <li>Densité bâtie dans les zones construites de l'OCS GE</li>
-                <li>…</li>
-              </ul>
-            </div>
+            <p class="fr-text--bold fr-mt-3w">Une cartographie interactive reprenant les indicateurs de suivi de la consommation d'espaces NAF et de l'artificialisation :</p>
+            <ul>
+              <li>Consommation communale sur la période et sur la période de référence</li>
+              <li>Consommation annuelle pour de l'activité ou de l'habitat</li>
+              <li>Surface artificialisée communale</li>
+              <li>Densité bâtie dans les zones construites de l'OCS GE</li>
+              <li>…</li>
+            </ul>
+          </div>
         </section>
 
         <section class="fr-accordion">
-            <h3 class="fr-accordion__title">
-                <button class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-115">Que contient la synthèse téléchargeable ?</button>
-            </h3>
-            <div class="fr-collapse" id="accordion-115">
-              <p class="fr-text--bold">La synthèse est l'export des tableaux de bord et cartographies associées à votre territoire, augmentée de textes d'accompagnement.</p>
-              <ul>
-                <li>Couverture des sols</li>
-                <li>Usage des sols</li>
-                <li>Consommation des espaces NAF</li>
-                <li>Bilan de l’artificialisation (pour les territoires couverts par l'OCS GE)</li>
-              </ul>
-            </div>
+          <h3 class="fr-accordion__title">
+            <button class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-115">Que contient la synthèse téléchargeable ?</button>
+          </h3>
+          <div class="fr-collapse" id="accordion-115">
+            <p class="fr-text--bold">La synthèse est l'export des tableaux de bord et cartographies associées à votre territoire, augmentée de textes d'accompagnement.</p>
+            <ul>
+              <li>Couverture des sols</li>
+              <li>Usage des sols</li>
+              <li>Consommation des espaces NAF</li>
+              <li>Bilan de l’artificialisation (pour les territoires couverts par l'OCS GE)</li>
+            </ul>
+          </div>
         </section>
 
         <section class="fr-accordion">
-            <h3 class="fr-accordion__title">
-                <button class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-116">Pourquoi faire confiance à SPARTE ?</button>
-            </h3>
-            <div class="fr-collapse" id="accordion-116">
-              <p class="fr-text--bold">Les calculs sont basés sur la définition et données d’observation  préconisées dans l’article 192 de la Loi Climat et Résilience et ses  décrets d'application.</p>
-              <p>La plateforme permet de connaître votre consommation d'espaces des dernières années, et piloter votre trajectoire de réduction de l'artificialisation. C'est un outil conçu pour accompagner les objectifs de la Loi Climat & Résilience et de ses décrets :</p>
-              <ul>
-                <li>2030 : diminution par deux de la consommation d’espaces, par rapport au bilan 2011-2021</li>
-                <li>2050 : équilibre entre le total des surfaces artificialisées et renaturées</li>
-              </ul>
-            </div>
+          <h3 class="fr-accordion__title">
+            <button class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-116">Pourquoi faire confiance à SPARTE ?</button>
+          </h3>
+          <div class="fr-collapse" id="accordion-116">
+            <p class="fr-text--bold">Les calculs sont basés sur la définition et données d’observation  préconisées dans l’article 192 de la Loi Climat et Résilience et ses  décrets d'application.</p>
+            <p>La plateforme permet de connaître votre consommation d'espaces des dernières années, et piloter votre trajectoire de réduction de l'artificialisation. C'est un outil conçu pour accompagner les objectifs de la Loi Climat & Résilience et de ses décrets :</p>
+            <ul>
+              <li>2030 : diminution par deux de la consommation d’espaces, par rapport au bilan 2011-2021</li>
+              <li>2050 : équilibre entre le total des surfaces artificialisées et renaturées</li>
+            </ul>
+          </div>
         </section>
+      </div>
+      <a href="{% url 'project:select' %}" class="fr-btn">Créer un diagnostic</a>
     </div>
-    <a href="{% url 'project:select' %}" class="fr-btn">Créer un diagnostic</a>
+  </div>
+</div>
+
+<div class="bg-color-neutral">
+  <div class="fr-container">
+    <div class="d-grid gap-2 d-flex justify-content-center py-4">
+      <a href="{% url 'project:select' %}" class="fr-btn me-5">S'inscrire à l'infolettre</a>
+      <a href="{% url 'project:select' %}" class="fr-btn fr-btn--secondary">Nous écrire</a>
+    </div>
   </div>
 </div>
 {% endblock %}
-
 {% block tagging %}
-<script language="javascript" nonce="{{ CSP_NONCE }}">
+  <script language="javascript" nonce="{{ CSP_NONCE }}">
 $( window ).on('load', function () {
     _paq.push(['trackEvent', 'Home page', 'Ouverture'])
 })
@@ -120,5 +129,5 @@ $( window ).on('load', function () {
 $( "#btn-voir-diag-1" ).click(function() {
     _paq.push(['trackEvent', 'CTA', 'Voir mon diagnostic', 'CTA0001'])
 })
-</script>
+  </script>
 {% endblock tagging %}
