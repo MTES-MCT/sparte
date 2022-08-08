@@ -16,6 +16,16 @@ urlpatterns = [
     path("accessibilite", views.AccessView.as_view(), name="accessibilite"),
     path("robots.txt", views.RobotView.as_view(), name="robots"),
     path("contact", views.ContactView.as_view(), name="contact"),
+    path(
+        "infolettre/inscription",
+        views.NewsletterCreateView.as_view(),
+        name="nwl-subscription",
+    ),
+    path(
+        "infolettre/confirmation/<slug:token>",
+        views.NewsLetterConfirmationView.as_view(),
+        name="nwl-confirmation",
+    ),
 ]
 
 router = routers.DefaultRouter()
