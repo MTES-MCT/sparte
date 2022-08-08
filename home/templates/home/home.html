@@ -114,8 +114,8 @@
 <div class="bg-color-neutral">
   <div class="fr-container">
     <div class="d-grid gap-2 d-flex justify-content-center py-4">
-      <a href="{% url 'home:nwl-subscription' %}" class="fr-btn me-5">S'inscrire à l'infolettre</a>
-      <a href="{% url 'home:contact' %}" class="fr-btn fr-btn--secondary">Nous écrire</a>
+      <a id="btn-sub-nwl" href="{% url 'home:nwl-subscription' %}" class="fr-btn me-5">S'inscrire à l'infolettre</a>
+      <a id="btn-contact-form" href="{% url 'home:contact' %}" class="fr-btn fr-btn--secondary">Nous écrire</a>
     </div>
   </div>
 </div>
@@ -129,5 +129,13 @@ $( window ).on('load', function () {
 $( "#btn-voir-diag-1" ).click(function() {
     _paq.push(['trackEvent', 'CTA', 'Voir mon diagnostic', 'CTA0001'])
 })
-  </script>
+
+$( "#btn-sub-nwl" ).click(function() {
+  _paq.push(['trackEvent', 'CTA', "S'inscrire à l'infolettre", 'CTA0002'])
+})
+
+$( "#btn-contact-form" ).click(function() {
+  _paq.push(['trackEvent', 'CTA', 'Nous écrire', 'CTA0003'])
+})
+</script>
 {% endblock tagging %}
