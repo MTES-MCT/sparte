@@ -15,6 +15,7 @@ urlpatterns = [
     path("test", views.TestView.as_view(), name="test"),
     path("accessibilite", views.AccessView.as_view(), name="accessibilite"),
     path("robots.txt", views.RobotView.as_view(), name="robots"),
+    path("contact", views.ContactView.as_view(), name="contact"),
 ]
 
 router = routers.DefaultRouter()

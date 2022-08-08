@@ -1,0 +1,27 @@
+{% extends 'index.html' %}
+
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block pagetitle %}Formulaire de contact{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-center">
+    <div class="home-container">
+        <h1>Envoyez-nous un message</h1>
+        <form action="" method="post">
+            {% csrf_token %}
+            {{ form|crispy }}
+            <button class="fr-btn mt-4" type="submit">Envoyer</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block tagging %}
+<script language="javascript" nonce="{{ CSP_NONCE }}">
+$( window ).on('load', function () {
+    _paq.push(['trackEvent', 'Formulaire de contact', 'Ouverture'])
+})
+</script>
+{% endblock tagging %}

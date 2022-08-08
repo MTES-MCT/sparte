@@ -1,4 +1,4 @@
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, FormView
 
 from django_app_parameter import app_parameter
 
@@ -6,6 +6,7 @@ from project.models import Request
 from utils.views_mixins import BreadCrumbMixin
 
 from . import charts
+from .forms import ContactForm
 
 
 class TestView(TemplateView):
@@ -49,3 +50,8 @@ class StatsView(BreadCrumbMixin, TemplateView):
 class RobotView(TemplateView):
     template_name = "home/robots.txt"
     content_type = "text/plain"
+
+
+class ContactView(FormView):
+    form_class = ContactForm
+    template_name = "home/contact.html"
