@@ -21,15 +21,13 @@
         "name": "Budget consommé",
         "slug": "BUDGET_CONSOMME",
         "value_type": "INT",
-        "value": "150000",
-        "is_global": true
+        "value": "150000"
     },
     {
         "name": "Date de mise à jour du budget conso",
         "slug": "BUDGET_DATE",
         "value_type": "STR",
-        "value": "1er juin 2022",
-        "is_global": true
+        "value": "1er juin 2022"
     },
     {
         "name": "Lien vers la documentation externe",
@@ -37,5 +35,11 @@
         "value_type": "STR",
         "value": "https://fabrique-numerique.gitbook.io/sparte/",
         "is_global": true
+    },
+    {
+        "name": "Téléphone de contact",
+        "slug": "PHONE_CONTACT",
+        "value_type": "STR",
+        "value": "+33 6 07 33 56 19"
     }
 ]
