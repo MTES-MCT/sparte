@@ -30,3 +30,10 @@ class ContactForm(models.Model):
         self.status = self.StatusChoices.FAILED
         self.error = traceback.format_exc()
         self.save()
+
+
+class Newsletter(models.Model):
+    email = models.EmailField("Votre courriel")
+    created_date = models.DateTimeField(auto_now_add=True)
+    confirm_token = models.CharField(max_length=25)
+    confirmation_date = models.DateTimeField(null=True, blank=True)
