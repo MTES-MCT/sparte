@@ -12,7 +12,7 @@ from utils.views_mixins import BreadCrumbMixin
 
 from . import charts
 from .models import ContactForm, Newsletter
-from .tasks import send_contact_form, send_nwl_confirmation
+from .tasks import send_contact_form, send_nwl_confirmation, send_nwl_final
 
 
 class TestView(TemplateView):
@@ -101,6 +101,7 @@ class NewsLetterConfirmationView(RedirectView):
                 self.request,
                 "Félicitation, vous êtes maintenant inscrit à l'inforlettre.",
             )
+            send_nwl_final.delay(nwl.id)
         except Newsletter.DoesNotExist:
             messages.error(
                 self.request, "Confirmation impossible, le jeton fourni est inconnu."

@@ -2,8 +2,6 @@ from celery import shared_task
 import logging
 from django_app_parameter import app_parameter
 
-from django.conf import settings
-
 from utils.emails import send_template_email
 
 from .models import ContactForm, Newsletter
@@ -37,7 +35,7 @@ def send_contact_form(contact_form_id):
 
 @shared_task
 def send_nwl_confirmation(newsletter_id):
-    logger.info("Send newsletter subscription confirmation")
+    logger.info("Send newsletter subscription confirmation request")
     logger.info("newsletter_id=%s", newsletter_id)
     nwl = Newsletter.objects.get(pk=newsletter_id)
     try:
@@ -45,10 +43,24 @@ def send_nwl_confirmation(newsletter_id):
             subject="Confirmez votre inscription à l'infolettre de SPARTE",
             recipients=[nwl.email],
             template_name="home/emails/nwl_confirmation",
-            context={
-                "url": nwl.get_confirmation_url(),
-                "sparte_url": settings.DOMAIN_URL,
-            },
+            context={"url": nwl.get_confirmation_url()},
+        )
+    except:  # noqa: E722, B001
+        logger.error("Failing sending nwl confirmation")
+    finally:
+        logger.info("End send newsletter subscription confirmation")
+
+
+@shared_task
+def send_nwl_final(newsletter_id):
+    logger.info("Send newsletter finale")
+    logger.info("newsletter_id=%s", newsletter_id)
+    nwl = Newsletter.objects.get(pk=newsletter_id)
+    try:
+        send_template_email(
+            subject="Vous êtes inscris à l'infolettre de SPARTE",
+            recipients=[nwl.email],
+            template_name="home/emails/nwl_finale",
         )
     except:  # noqa: E722, B001
         logger.error("Failing sending nwl confirmation")
