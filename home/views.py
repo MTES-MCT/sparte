@@ -1,4 +1,6 @@
-from django.views.generic import TemplateView, FormView
+from django.contrib import messages
+from django.http import HttpResponseRedirect
+from django.views.generic import TemplateView, CreateView
 
 from django_app_parameter import app_parameter
 
@@ -6,7 +8,10 @@ from project.models import Request
 from utils.views_mixins import BreadCrumbMixin
 
 from . import charts
-from .forms import ContactForm
+
+# from .forms import ContactForm
+from .models import ContactForm
+from .tasks import send_contact_form
 
 
 class TestView(TemplateView):
@@ -52,6 +57,16 @@ class RobotView(TemplateView):
     content_type = "text/plain"
 
 
-class ContactView(FormView):
-    form_class = ContactForm
+class ContactView(CreateView):
+    model = ContactForm
     template_name = "home/contact.html"
+    success_url = "/"
+    fields = ["email", "content"]
+
+    def form_valid(self, form):
+        self.object = form.save()
+        send_contact_form.delay(self.object.id)
+        messages.success(
+            self.request, "Votre message a été envoyé à l'équipe de SPARTE."
+        )
+        return HttpResponseRedirect(self.get_success_url())
