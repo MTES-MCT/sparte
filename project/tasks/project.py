@@ -319,12 +319,7 @@ def send_word_diagnostic(self, request_id):
             "Bilan issu de SPARTE",
             [req.email],
             "project/emails/send_diagnostic",
-            context={
-                "request": req,
-                "ocsge_available": req.project.is_artif(),
-                "phone_contact": "+33 6 07 33 56 19",
-                "email_contact": app_parameter.TEAM_EMAIL,
-            },
+            context={"request": req, "ocsge_available": req.project.is_artif()},
         )
         msg.attach(filename, buffer)
         msg.send()
