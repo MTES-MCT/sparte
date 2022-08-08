@@ -1,6 +1,6 @@
 from django.contrib import messages
 from django.http import HttpResponseRedirect
-from django.views.generic import TemplateView, CreateView
+from django.views.generic import TemplateView, CreateView, RedirectView
 
 from django_app_parameter import app_parameter
 
@@ -10,8 +10,8 @@ from utils.views_mixins import BreadCrumbMixin
 from . import charts
 
 # from .forms import ContactForm
-from .models import ContactForm
-from .tasks import send_contact_form
+from .models import ContactForm, Newsletter
+from .tasks import send_contact_form, send_nwl_confirmation
 
 
 class TestView(TemplateView):
@@ -70,3 +70,38 @@ class ContactView(CreateView):
             self.request, "Votre message a été envoyé à l'équipe de SPARTE."
         )
         return HttpResponseRedirect(self.get_success_url())
+
+
+class NewsletterCreateView(CreateView):
+    model = Newsletter
+    template_name = "home/newsletter.html"
+    success_url = "/"
+    fields = ["email"]
+
+    def form_valid(self, form):
+        self.object = form.save()
+        send_nwl_confirmation.delay(self.object.id)
+        messages.success(
+            self.request,
+            (
+                "Votre inscription a été prise en compte. Vous allez recevoir un e-mail"
+                " vous demandant de confirmer votre souhait."
+            ),
+        )
+        return HttpResponseRedirect(self.get_success_url())
+
+
+class NewsLetterConfirmationView(RedirectView):
+    def get_redirect_url(self, *args, **kwargs):
+        try:
+            nwl = Newsletter.objects.get(confirm_token=self.kwargs["token"])
+            nwl.confirm()
+            messages.success(
+                self.request,
+                "Félicitation, vous êtes maintenant inscrit à l'inforlettre.",
+            )
+        except Newsletter.DoesNotExist:
+            messages.error(
+                self.request, "Confirmation impossible, le jeton fourni est inconnu."
+            )
+        return "/"
