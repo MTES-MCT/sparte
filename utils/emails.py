@@ -1,5 +1,6 @@
 import logging
 
+from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import get_template
 
@@ -45,6 +46,13 @@ def prep_email(subject, recipients, template_name, context=None, expeditor=None)
     from_email = expeditor if expeditor else app_parameter.TEAM_EMAIL
     text = get_template(f"{template_name}.txt")
     html = get_template(f"{template_name}.html")
+    context.update(
+        {
+            "phone_contact": app_parameter.PHONE_CONTACT,
+            "email_contact": app_parameter.TEAM_EMAIL,
+            "sparte_url": settings.DOMAIN_URL,
+        }
+    )
     text_content = text.render(context)
     html_content = html.render(context)
     # création de l'e-mail
