@@ -1,0 +1,13 @@
+Bonjour,
+
+Nous avons bien noté votre intérêt pour SPARTE.
+
+Nous envoyons environ 1 newsletter par mois, vous recevrez bientôt notre prochaine édition.
+
+D'ici là, n'hésitez pas à nous écrire à {{ email_contact }}
+
+Cordialement
+--
+*L'équipe de SPARTE*
+Tel mobile : {{ phone_contact }}
+{{ sparte_url }}
