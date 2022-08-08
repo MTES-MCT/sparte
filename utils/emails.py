@@ -46,6 +46,8 @@ def prep_email(subject, recipients, template_name, context=None, expeditor=None)
     from_email = expeditor if expeditor else app_parameter.TEAM_EMAIL
     text = get_template(f"{template_name}.txt")
     html = get_template(f"{template_name}.html")
+    if context is None:
+        context = dict()
     context.update(
         {
             "phone_contact": app_parameter.PHONE_CONTACT,
