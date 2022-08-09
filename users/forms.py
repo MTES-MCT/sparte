@@ -61,19 +61,11 @@ class SignupForm(forms.ModelForm):
 class SigninForm(AuthenticationForm):
     username = forms.EmailField(
         label="E-mail",
-        widget=forms.TextInput(
-            attrs={
-                "class": "form-control",
-            }
-        ),
+        widget=forms.TextInput(attrs={"class": "form-control"}),
     )
     password = forms.CharField(
         label="Mot de passe",
-        widget=forms.PasswordInput(
-            attrs={
-                "class": "form-control",
-            },
-        ),
+        widget=forms.PasswordInput(attrs={"class": "form-control"}),
         max_length=50,
     )
 
