@@ -1,0 +1,15 @@
+Bonjour {{ request.first_name }},
+
+Vous trouverez ci-joint le bilan de la consommation d'espaces issu de SPARTE, conforme aux attendus de la Loi Climat & Résilience.
+
+{% if not ocsge_available %}Comme la donnée d'OCS GE (Occupation du Sol à Grande Echelle) n’est pas encore disponible pour votre département, pour l’instant nous ne pouvons décrire la couverture, l'usage des sols, les espaces artificialisés, l'artificialisation et la renaturation sur votre période de bilan.
+{% endif %}
+La production de l'OCS GE est en cours pour une couverture France entière fin 2024. Très prochainement, nous afficherons dans SPARTE les dates prévues de livraison pour chaque département.
+
+N'hésitez pas si vous avez des questions ou des remarques à nous écrire sur : {{ email_contact }}
+
+Cordialement
+--
+*L'équipe de SPARTE*
+Tel mobile : {{ phone_contact }}
+https://sparte.beta.gouv.fr

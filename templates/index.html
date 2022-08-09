@@ -1,4 +1,5 @@
 {% load static %}
+{% load static dsfr_tags %}
 {% load utils_tags %}
 {% load sri %}
 
@@ -16,117 +17,40 @@
         <!-- Core theme CSS (includes Bootstrap)-->
         {% sri_static "css/styles.css" %}
         <!-- Bootstrap icon -->
-        {% sri_static "icons/bootstrap-icons.css" %}
+        <link crossorigin="anonymous" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css" integrity="sha256-8M+b2Hj+vy/2J5tZ9pYDHeuPD59KsaEZn1XXj3xVhjg=">
+        <!-- Design System CSS -->
+        {% sri_static 'dsfr/dist/dsfr/dsfr.min.css' %}
+        <!-- Override DSFR CSS -->
+        {% sri_static "css/navigation.css" %}
         <!-- subtemplate header injection -->
         {% block headers %}{% endblock %}
         <!-- matomo -->
         {% tracking_code %}
-        <style nonce="{{ CSP_NONCE }}">
-        body {
-            overflow: hidden;
-            height: 100vh;
-        }
-        #second-navbar {
-            height:31px;
-        }
-        main {
-            overflow: auto;
-        }
-        #navbarSupportedContent2 {
-            font-size: 0.75rem;
-        }
-        </style>
     </head>
     <body>
         <!-- Page content wrapper-->
         <div id="page-content-wrapper" class="d-flex flex-column h-100">
             <!-- Top navigation-->
-            <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
-                <div class="container-fluid">
-                    <img src="{% static 'img/logo_france_beta.png' %}" height="30"/>
-                    <a class="navbar-brand ms-2" href="{% url 'home:home' %}">SPARTE</a>
+            {% include "header.html" %}
 
-                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
-
-                    <div class="collapse navbar-collapse justify-content-between" id="navbarSupportedContent">
-
-                        <ul class="navbar-nav ms-0 mt-2 mt-lg-0">
-
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" id="DropdownPlan" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Diagnostic</a>
-                                <div class="dropdown-menu" aria-labelledby="DropdownPlan">
-                                    <a class="dropdown-item" href="{% url 'project:select' %}">Nouveau</a>
-                                    {% if user.is_authenticated %}
-                                    <a class="dropdown-item" href="{% url 'project:list' %}">Ouvrir</a>
-                                    {% endif %}
-                                </div>
-                            </li>
-
-                            <li class="nav-item">
-                                <a id="btn-documentation" class="nav-link" href="{{ EXTERNAL_DOC }}" target="_blank">Documentations</a>
-                            </li>
-                        </ul>
-
-                        <ul class="navbar-nav me-0 mt-2 mt-lg-0">
-                            {% if user.is_authenticated %}
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="bi bi-person-fill"></i></a>
-                                <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                                    <a class="dropdown-item" href="{% url 'users:profile' %}">
-                                        <i class="bi bi-person-fill"></i> Profil
-                                    </a>
-                                    {% if is_staff %}
-                                    <div class="dropdown-divider"></div>
-                                    <a class="dropdown-item" href="{% url 'admin:index' %}"><i class="bi bi-gear"></i> Administration</a>
-                                    <a class="dropdown-item" href="{% url 'public_data:matrix' %}"><i class="bi bi-grid-3x3"></i> Matrice</a>
-                                    <div class="dropdown-divider"></div>
-                                    <h6 class="dropdown-header">Publipostage</h6>
-                                    <a class="dropdown-item" href="{% url 'docx_template:list' %}"><i class="bi bi-file-earmark-word"></i> Modèles de document</a>
-                                    <a class="dropdown-item" href="{% url 'docx_template:data_source_list' %}"><i class="bi bi-box"></i> Sources de données</a>
-                                    {% endif %}
-                                    <div class="dropdown-divider"></div>
-                                    <a class="dropdown-item" href="{% url 'users:signout' %}">
-                                        <i class="bi bi-box-arrow-right"></i> Déconnexion
-                                    </a>
-                                </div>
-                            </li>
+            {% block breadcrumbs %}
+            <div class="fr-container">
+              <nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
+                  <button class="fr-breadcrumb__button" aria-expanded="false" aria-controls="breadcrumb-1">Voir le fil d’Ariane</button>
+                  <div class="fr-collapse" id="breadcrumb-1">
+                      <ol class="fr-breadcrumb__list">
+                        {% for bread in breadcrumbs %}
+                            {% if bread.is_active %}
+                            <li class="fr-breadcrumb__link" aria-current="page">{{ bread.title}}</li>
                             {% else %}
-                            <li class="nav-item"><a class="nav-link" href="{% url 'users:signup' %}">S'inscrire</a></li>
-                            <li class="nav-item"><a class="nav-link" href="{% url 'users:signin' %}">Se connecter</a></li>
+                            <li class="fr-breadcrumb__link"><a href="{{ bread.href }}">{{ bread.title}}</a></li>
                             {% endif %}
-                        </ul>
-
-                    </div>
-                </div>
-            </nav>
-
-            <nav id="second-navbar" class="navbar navbar-expand border-bottom">
-                <div class="container-fluid">
-
-                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent2" aria-controls="navbarSupportedContent2" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
-
-                    <div class="collapse navbar-collapse justify-content-between" id="navbarSupportedContent2">
-                        <ul class="navbar-nav ms-0 mt-2 mt-lg-0 ps-2">
-                            <nav aria-label="breadcrumb">
-                                <ol class="breadcrumb mb-0">
-                                {% for bread in breadcrumbs %}
-                                    {% if bread.is_active %}
-                                    <li class="breadcrumb-item active" aria-current="page">{{ bread.title}}</li>
-                                    {% else %}
-                                    <li class="breadcrumb-item"><a href="{{ bread.href }}">{{ bread.title}}</a></li>
-                                    {% endif %}
-                                {% endfor %}
-                                </ol>
-                            </nav>
-                        </ul>
-
-                        <ul class="navbar-nav me-0 mt-2 mt-lg-0">
-                            {% block sub_bar_actions %}
-                            {% endblock %}
-                        </ul>
-                    </div>
-                </div>
-            </nav>
+                        {% endfor %}
+                      </ol>
+                  </div>
+              </nav>
+            </div>
+            {% endblock breadcrumbs %}
 
             <!-- Page content-->
             <main class="p-0 flex-grow-1 d-flex flex-column" id="main">
@@ -148,33 +72,17 @@
                     {% endblock %}
                 </div>
                 {% endblock carto %}
+
                 <!-- Footer-->
                 {% block footer %}
-                <div id="footer" class="border-top py-5 flex-grow-1 mt-5">
-                    <div class="container">
-                        <div class="row">
-                            <div class="col-2">
-                                <img class="w-100" src="{% static 'img/logo_france.png' %}" alt="Logo France Marianne"/>
-                            </div>
-                            <div class="col-10">
-                                <p class="my-3">
-                                    <a href="{% url 'home:cgv' %}">Mentions légales</a> - <a href="{% url 'home:privacy' %}">Politique de confidentialité</a> - <a href="{% url 'home:stats' %}">Statistiques</a> - <a href="{% url 'home:accessibilite' %}">Accessibilité : non conforme</a>
-                                </p>
-                                <p class="text-muted">
-                                    SPARTE est une start-up d'état en cours d'élaboration, la plateforme est en version BETA publique. Faites nous part de vos propositions pour améliorer ce service en envoyant un e-mail à <a href="mailto:sparte@beta.gouv.fr">sparte@beta.gouv.fr</a>. SPARTE est incubée à la Fabrique du numérique du Ministère de la Transition Ecologique, et membre de la communauté <a href="https://www.beta.gouv.fr">Beta Gouv</a>.
-                                </p>
-                                <p class="text-muted">
-                                    Sparte est Open Source, le code est disponible sur github : <a href="https://github.com/MTES-MCT/sparte" target="_blank">https://github.com/MTES-MCT/sparte</a>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                {% include "footer.html" %}
                 {% endblock footer %}
                 </div>
             </main>
         </div>
 
+        <script nonce="{{ CSP_NONCE }}" type="module" src="{% static 'dsfr/dist/dsfr/dsfr.module.min.js' %}"></script>
+        <script nonce="{{ CSP_NONCE }}" nomodule src="{% static 'dsfr/dist/dsfr/dsfr.nomodule.min.js' %}"></script>
         {% sri_static "js/jquery-3.6.0.min.js" %}
         {% sri_static "js/bootstrap.bundle.min.js" %}
 
@@ -184,6 +92,7 @@
             $('[data-toggle="tooltip"]').tooltip()
         })
         </script>
+        {% block extra_js %}{% endblock extra_js %}
         <!-- subtemplate footer injection -->
         {% block bodyend %}{% endblock bodyend %}
         <!-- Tagging injection -->

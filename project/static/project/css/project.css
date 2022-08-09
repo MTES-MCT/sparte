@@ -1,43 +1,4 @@
 @charset "UTF-8";
-.key-figure {
-    background-color: rgb(241, 250, 255);
-    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-    float: left !important;
-    margin: 15px;
-    white-space: nowrap !important;
-    text-overflow: clip;
-    overflow-x: hidden;
-}
-
-
-
-.key-figure-green {
-    background-color: rgb(228, 255, 244);
-}
-
-.key-figure-yellow {
-    background-color: rgb(255, 248, 221);
-}
-
-.key-figure-red {
-    background-color: rgb(255, 239, 243);
-}
-
-.key-figure > .card-header {
-    background-color: rgba(241, 250, 255, 0);
-    font-weight: bold;
-}
-
-.key-figure .figure {
-    font-size: 2.5em;
-    margin-bottom: 0px;
-}
-
-.key-figure .card-body {
-    padding-top: 0px;
-    padding-bottom: 0px;
-    font-weight: lighter;
-}
 
 .rounded-5 {
     border-radius: 0.5rem;

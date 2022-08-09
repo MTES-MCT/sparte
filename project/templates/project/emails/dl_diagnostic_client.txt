@@ -1,10 +1,15 @@
 Bonjour {{ request.first_name }},
 
-Votre demande de téléchargement du bilan de "{{ project.name }}" (période {{ project.analyse_start_date }} à {{ project.analyse_end_date }}) a bien été enregistrée. L'équipe de SPARTE va rapidement prendre connaissance de votre demande puis produire et enfin envoyer votre bilan.
+Vous trouverez ci-joint le bilan de la consommation d'espaces issu de SPARTE, conforme aux attendus de la Loi Climat & Résilience.
 
-En attendant, vous pouvez continuer à explorer votre diagnostic en ligne : {{ project_url }}
+Comme la donnée d'OCS GE (Occupation du Sol à Grande Echelle) n’est pas encore disponible pour votre département, pour l’instant nous ne pouvons décrire la couverture, l'usage des sols, les espaces artificialisés, l'artificialisation et la renaturation sur votre période de bilan.
 
-Nous sommes à votre disposition si vous avez des questions.
+La production de cette donnée est en cours pour une couverture France entière fin 2024. Très prochainement, nous afficherons dans SPARTE les dates prévues de livraison pour chaque département.
 
-Cordialement,
-L'équipe de SPARTE
+N'hésitez pas si vous avez des questions ou des remarques à nous écrire sur : {{ email_contact }}
+
+Cordialement
+--
+*L'équipe de SPARTE*
+Tel mobile : {{ phone_contact }}
+https://sparte.beta.gouv.fr

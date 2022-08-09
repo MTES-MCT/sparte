@@ -18,7 +18,7 @@ Créer une emprise
         <form action="{% url 'project:add' %}" method="post" enctype="multipart/form-data">
             {% csrf_token %}
             {{ form|crispy }}
-            <button class="btn w-100 btn-primary mt-4" type="submit">Créer</button>
+            <button class="fr-btn mt-4" type="submit">Créer</button>
         </form>
     </div>
 </div>
