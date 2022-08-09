@@ -214,6 +214,10 @@ class DiagnosticSource(data_sources.DataSource):
                     "ocsge_is_available": True,
                     "debut_ocsge": str(project.first_year_ocsge),
                     "fin_ocsge": str(project.last_year_ocsge),
+                    "usage_matrix_data": dict(),
+                    "usage_matrix_headers": dict(),
+                    "couverture_matrix_data": dict(),
+                    "couverture_matrix_headers": dict(),
                 }
             )
 
@@ -305,6 +309,7 @@ class DiagnosticSource(data_sources.DataSource):
             ReprDetailArtif.total_artif = artificialisation
             ReprDetailArtif.total_renat = renaturation
 
+            nouveau_bati = bati_renature = 0
             for item in detail_artif_chart.get_series():
                 if item["code_prefix"] == "CS1.1.1.1":
                     nouveau_bati = item["artif"]
