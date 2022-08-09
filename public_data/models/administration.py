@@ -33,6 +33,8 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db.models import Sum, Q
 from django.utils.functional import cached_property
 
+from utils.db import IntersectManager
+
 from .cerema import Cerema
 from .couverture_usage import CouvertureUsageMatrix
 from .mixins import DataColorationMixin
@@ -191,6 +193,8 @@ class Region(LandMixin, GetDataFromCeremaMixin, models.Model):
     name = models.CharField("Nom", max_length=50)
     mpoly = models.MultiPolygonField()
 
+    objects = IntersectManager()
+
     land_type = AdminRef.REGION
     default_analysis_level = AdminRef.DEPARTEMENT
 
@@ -228,6 +232,8 @@ class Departement(LandMixin, GetDataFromCeremaMixin, models.Model):
     name = models.CharField("Nom", max_length=50)
     mpoly = models.MultiPolygonField()
 
+    objects = IntersectManager()
+
     land_type = AdminRef.DEPARTEMENT
     default_analysis_level = AdminRef.EPCI
 
@@ -253,6 +259,8 @@ class Epci(LandMixin, GetDataFromCeremaMixin, models.Model):
     name = models.CharField("Nom", max_length=70)
     mpoly = models.MultiPolygonField()
     departements = models.ManyToManyField(Departement)
+
+    objects = IntersectManager()
 
     land_type = AdminRef.EPCI
     default_analysis_level = AdminRef.COMMUNE
@@ -287,6 +295,9 @@ class Commune(DataColorationMixin, LandMixin, GetDataFromCeremaMixin, models.Mod
     departement = models.ForeignKey(Departement, on_delete=models.CASCADE)
     epci = models.ForeignKey(Epci, on_delete=models.CASCADE)
     mpoly = models.MultiPolygonField()
+
+    objects = IntersectManager()
+
     # Calculated fields
     map_color = models.CharField(
         "Couleur d'affichage", max_length=30, null=True, blank=True
