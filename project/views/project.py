@@ -14,13 +14,13 @@ from django.views.generic import (
 
 from django_app_parameter import app_parameter
 
-from public_data.models import Land, Ocsge
+from public_data.models import Land
 from utils.views_mixins import BreadCrumbMixin, GetObjectMixin
 
 from project import charts
 from project.forms import UploadShpForm, KeywordForm
 from project.models import Project, Request, ProjectCommune
-from project.tasks import send_email_request_bilan
+from project import tasks
 from project.utils import add_total_line_column
 
 from .mixins import UserQuerysetOrPublicMixin
@@ -56,6 +56,12 @@ class ProjectListView(GroupMixin, LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         qs = Project.objects.filter(user=self.request.user)
+        for project in qs:
+            if project.cover_image:
+                project.prop_width = 266
+                project.prop_height = (
+                    project.cover_image.height * 266 / project.cover_image.width
+                )
         return qs
 
 
@@ -352,33 +358,34 @@ class ProjectReportCouvertureView(GroupMixin, DetailView):
             "active_page": "couverture",
             "ocsge_available": True,
         }
-        try:
-            first_millesime = project.first_year_ocsge
-            last_millesime = project.last_year_ocsge
 
-            pie_chart = charts.CouvertureSolPieChart(project)
-            progression_chart = charts.CouvertureSolProgressionChart(project)
+        if not project.is_artif():
+            kwargs.update({"ocsge_available": False})
+            return super().get_context_data(**kwargs)
 
+        first_millesime = project.first_year_ocsge
+        last_millesime = project.last_year_ocsge
+
+        pie_chart = charts.CouvertureSolPieChart(project)
+        progression_chart = charts.CouvertureSolProgressionChart(project)
+
+        kwargs.update(
+            {
+                "first_millesime": str(first_millesime),
+                "last_millesime": str(last_millesime),
+                "pie_chart": pie_chart,
+                "progression_chart": progression_chart,
+            }
+        )
+
+        matrix_data = project.get_matrix(sol="couverture")
+        if matrix_data:
             kwargs.update(
                 {
-                    "first_millesime": str(first_millesime),
-                    "last_millesime": str(last_millesime),
-                    "pie_chart": pie_chart,
-                    "progression_chart": progression_chart,
+                    "matrix_data": add_total_line_column(matrix_data),
+                    "matrix_headers": list(matrix_data.values())[0].keys(),
                 }
             )
-
-            matrix_data = project.get_matrix(sol="couverture")
-            if matrix_data:
-                kwargs.update(
-                    {
-                        "matrix_data": add_total_line_column(matrix_data),
-                        "matrix_headers": list(matrix_data.values())[0].keys(),
-                    }
-                )
-        except Ocsge.DoesNotExist:
-            # There is no OCSGE available for this territoru
-            kwargs.update({"ocsge_available": False})
 
         return super().get_context_data(**kwargs)
 
@@ -403,32 +410,33 @@ class ProjectReportUsageView(GroupMixin, DetailView):
             "active_page": "usage",
             "ocsge_available": True,
         }
-        try:
-            first_millesime = project.first_year_ocsge
-            last_millesime = project.last_year_ocsge
 
-            pie_chart = charts.UsageSolPieChart(project)
-            progression_chart = charts.UsageSolProgressionChart(project)
+        if not project.is_artif():
+            kwargs.update({"ocsge_available": False})
+            return super().get_context_data(**kwargs)
+
+        first_millesime = project.first_year_ocsge
+        last_millesime = project.last_year_ocsge
+
+        pie_chart = charts.UsageSolPieChart(project)
+        progression_chart = charts.UsageSolProgressionChart(project)
+        kwargs.update(
+            {
+                "first_millesime": str(first_millesime),
+                "last_millesime": str(last_millesime),
+                "pie_chart": pie_chart,
+                "progression_chart": progression_chart,
+            }
+        )
+
+        matrix_data = project.get_matrix(sol="usage")
+        if matrix_data:
             kwargs.update(
                 {
-                    "first_millesime": str(first_millesime),
-                    "last_millesime": str(last_millesime),
-                    "pie_chart": pie_chart,
-                    "progression_chart": progression_chart,
+                    "matrix_data": add_total_line_column(matrix_data),
+                    "matrix_headers": list(matrix_data.values())[0].keys(),
                 }
             )
-
-            matrix_data = project.get_matrix(sol="usage")
-            if matrix_data:
-                kwargs.update(
-                    {
-                        "matrix_data": add_total_line_column(matrix_data),
-                        "matrix_headers": list(matrix_data.values())[0].keys(),
-                    }
-                )
-        except Ocsge.DoesNotExist:
-            # There is no OCSGE available for this territoru
-            kwargs.update({"ocsge_available": False})
 
         return super().get_context_data(**kwargs)
 
@@ -451,17 +459,16 @@ class ProjectReportSynthesisView(GroupMixin, DetailView):
     def get_context_data(self, **kwargs):
         project = self.get_object()
         total_surface = int(project.area * 100)
-        conso_10_years = project.get_bilan_conso()
         progression_time_scoped = project.get_artif_progession_time_scoped()
+        objective_chart = charts.ObjectiveChart(project)
         kwargs = {
             "diagnostic": project,
             "active_page": "synthesis",
-            "conso_10_years": conso_10_years,
-            "trajectoire_2030": conso_10_years / 2,
             "total_surface": total_surface,
             "new_artif": progression_time_scoped["new_artif"],
             "new_natural": progression_time_scoped["new_natural"],
             "net_artif": progression_time_scoped["net_artif"],
+            "objective_chart": objective_chart,
         }
         # project = self.get_object()
         return super().get_context_data(**kwargs)
@@ -497,13 +504,12 @@ class ProjectReportArtifView(GroupMixin, DetailView):
             "ocsge_available": True,
         }
 
-        try:
-            first_millesime = project.first_year_ocsge
-            last_millesime = project.last_year_ocsge
-        except Ocsge.DoesNotExist:
-            # There is no OCSGE available for this territoru
+        if not project.is_artif():
             kwargs.update({"ocsge_available": False})
             return super().get_context_data(**kwargs)
+
+        first_millesime = project.first_year_ocsge
+        last_millesime = project.last_year_ocsge
 
         artif_area = project.get_artif_area()
 
@@ -593,6 +599,7 @@ class ProjectReportDownloadView(GroupMixin, CreateView):
             {
                 "project": self.get_object(),
                 "url_bilan": app_parameter.BILAN_EXAMPLE,
+                "active_page": "download",
             }
         )
         return context
@@ -618,7 +625,10 @@ class ProjectReportDownloadView(GroupMixin, CreateView):
             form.instance.user = self.request.user
         form.instance.project = self.get_object()
         self.object = form.save()
-        send_email_request_bilan.delay(self.object.id)
+        tasks.send_email_request_bilan.delay(self.object.id)
+        tasks.generate_word_diagnostic.apply_async(
+            (self.object.id,), link=tasks.send_word_diagnostic.s()
+        )
         messages.success(
             self.request,
             (
