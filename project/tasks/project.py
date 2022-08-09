@@ -279,6 +279,7 @@ def generate_cover_image(project_id):
     img_data.seek(0)
     diagnostic.cover_image.delete(save=False)
     diagnostic.cover_image.save(f"cover_{project_id}.png", img_data, save=True)
+    plt.close()
 
 
 @shared_task(bind=True, max_retries=5)
