@@ -1,26 +1,20 @@
 <ul class="nav nav-tabs mb-0 mt-3 justify-content-center border-bottom-0">
-    <li class="nav-item">
-        <a class="nav-link{% if active_page == 'synthesis' %} active bg-light{% endif %}"
-        href="{% url 'project:report_synthesis' project.pk %}">Synthèse</a>
+    <li class="nav-item pb-0">
+        <a class="nav-link{% if active_page == 'synthesis' %} active bg-light{% endif %}" href="{% url 'project:report_synthesis' project.pk %}">Synthèse</a>
     </li>
-    <li class="nav-item">
-        <a class="nav-link{% if active_page == 'consommation' %} active bg-light{% endif %}"
-        href="{% url 'project:report_conso' project.pk %}">Consommation</a>
+    <li class="nav-item pb-0">
+        <a class="nav-link{% if active_page == 'consommation' %} active bg-light{% endif %}" href="{% url 'project:report_conso' project.pk %}">Consommation</a>
     </li>
-    <li class="nav-item">
-        <a class="nav-link{% if active_page == 'artificialisation' %} active bg-light{% endif %}"
-        href="{% url 'project:report_artif' project.pk %}">Artificialisation</a>
+    <li class="nav-item pb-0">
+        <a class="nav-link{% if active_page == 'artificialisation' %} active bg-light{% endif %}" href="{% url 'project:report_artif' project.pk %}">Artificialisation</a>
     </li>
-    <li class="nav-item">
-        <a class="nav-link{% if active_page == 'usage' %} active bg-light{% endif %}"
-        href="{% url 'project:report_usage' project.pk %}">Usage</a>
+    <li class="nav-item pb-0">
+        <a class="nav-link{% if active_page == 'usage' %} active bg-light{% endif %}" href="{% url 'project:report_usage' project.pk %}">Usage</a>
     </li>
-    <li class="nav-item">
-        <a class="nav-link{% if active_page == 'couverture' %} active bg-light{% endif %}"
-        href="{% url 'project:report_couverture' project.pk %}">Couverture</a>
+    <li class="nav-item pb-0">
+        <a class="nav-link{% if active_page == 'couverture' %} active bg-light{% endif %}" href="{% url 'project:report_couverture' project.pk %}">Couverture</a>
     </li>
-    <li class="nav-item">
-        <a class="nav-link{% if active_page == 'download' %} active bg-light{% endif %}"
-        href="{% url 'project:report_download' project.pk %}">Bilan téléchargeable</a>
+    <li class="nav-item pb-0">
+        <a class="nav-link{% if active_page == 'download' %} active bg-light{% endif %}" href="{% url 'project:report_download' project.pk %}">Bilan téléchargeable</a>
     </li>
 </ul>

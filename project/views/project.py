@@ -599,6 +599,7 @@ class ProjectReportDownloadView(GroupMixin, CreateView):
             {
                 "project": self.get_object(),
                 "url_bilan": app_parameter.BILAN_EXAMPLE,
+                "active_page": "download",
             }
         )
         return context

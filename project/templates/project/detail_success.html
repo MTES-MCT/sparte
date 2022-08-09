@@ -15,6 +15,20 @@ SPARTE
 
 {% block content %}
 <div class="row w-100 justify-content-center">
+    <ul class="list-inline text-center">
+        <li class="list-inline-item">
+            <a href="{% url 'project:update' project.pk %}">
+                <i class="bi bi-pencil"></i> Editer
+            </a>
+        </li>
+        {% if user.is_authenticated %}
+        <li class="list-inline-item">
+            <a href="{% url 'project:delete' project.pk %}">
+                <i class="bi bi-trash"></i> Supprimer
+            </a>
+        </li>
+        {% endif %}
+    </ul>
 
     <div class="col-8 bg-light p-3 rounded-5 border mt-1">
         <h1 class="mb-5">{{ project.name }}</h1>
@@ -158,26 +172,6 @@ SPARTE
 
     </div>
 </div>
-{% endblock %}
-
-{% block sub_bar_actions %}
-
-<ul class="list-inline text-center">
-  <li class="list-inline-item">
-      <a href="{% url 'project:update' project.pk %}">
-          <i class="bi bi-pencil"></i> Editer
-      </a>
-  </li>
-  {% if user.is_authenticated %}
-  <li class="list-inline-item">
-      <a href="{% url 'project:delete' project.pk %}">
-          <i class="bi bi-trash"></i> Supprimer
-      </a>
-  </li>
-</ul>
-
-
-{% endif %}
 {% endblock %}
 
 {% block tagging %}
