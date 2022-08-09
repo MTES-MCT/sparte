@@ -19,27 +19,20 @@ Télécharger le bilan
 <div class="px-4">
     {% include "project/detail_menu.html" %}
 
-    <div class="bg-light p-5 rounded-5 border">
+    <div class="bg-light rounded-5 border fr-container fr-py-3w">
+        <h3>Recevoir le bilan par e-mail</h3>
 
-        {% if is_staff %}
-        <div class="box box-alert px-4 py-2 mb-4 mt-0">
-            <p>Version pré-construite pour l'équipe: <a href="{% url 'docx_template:template-bilan-1-merge' project.id %}">télécharger</a>.</p>
-        </div>
-        {% endif %}
-
-        <div class="box box-alert px-4 py-2 mb-4 mt-0">
-            <p>Nous travaillons activement à automatiser l'assemblage du bilan de votre territoire. En attendant qu'il soit téléchargeable en un clic, nous vous proposons de le faire pour vous. Renseignez le formulaire ci-dessous pour effectuer votre demande.</p>
-            <p>Vous pouvez télécharger un exemple : <a href="{{ url_bilan }}" target="_blank">{{ BILAN_EXAMPLE_TITLE }}</a>.
-        </div>
+        <p>Pour recevoir le bilan du <em>{{ project.get_territory_name }}</em> au format Word, veuillez compléter le formulaire ci-dessous.
+        <br/>Une fois validé, vous recevrez sous quelques minutes le document par e-mail.</p>
 
         <div class="w-100 row justify-content-center">
-            <div class="box p-4 col-12 col-md-5 col-lg-4">
-                <h3>Recevoir votre bilan par e-mail</h3>
+            <div class="box p-4 col-12 col-md-6 col-lg-5">
+
 
                 <form action="" method="post">
                     {% csrf_token %}
                     {{ form|crispy }}
-                    <button id="dl_btn" class="btn w-100 btn-primary mt-5" type="submit">Recevoir</button>
+                    <button id="dl_btn" class="fr-btn mt-5" type="submit">Recevoir</button>
                 </form>
             </div>
         </div>
@@ -60,8 +53,8 @@ $( "#dl_btn" ).click(function() {
 })
 
 var fired = false
-$( "#main" ).scroll(function() {
-    if(fired == false && $( "#main" ).scrollTop() + $( window ).height() > $( "#block-content" ).height() - 100) {
+$( window ).scroll(function() {
+    if(fired == false && $( window ).scrollTop() + $( window ).height() > $( "#block-content" ).height() - 100) {
         _paq.push(['trackEvent', 'Consultation diagnostic', 'Fin tableau de bord', 'Téléchargement'])
         fired = true
     }

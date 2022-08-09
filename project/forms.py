@@ -126,7 +126,7 @@ class OptionsForm(forms.Form):
         label="Début d'analyse", choices=Project.ANALYZE_YEARS, initial="2011"
     )
     analysis_end = forms.ChoiceField(
-        label="Fin d'analyse", choices=Project.ANALYZE_YEARS, initial="2019"
+        label="Fin d'analyse", choices=Project.ANALYZE_YEARS, initial="2020"
     )
     analysis_level = forms.ChoiceField(
         label="Niveau d'analyse",

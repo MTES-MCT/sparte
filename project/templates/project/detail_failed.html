@@ -26,7 +26,7 @@ En cours de traitement
 
         <form action="{% url 'project:reinit' project.pk %}" method="post">
             {% csrf_token %}
-            <button class="btn w-100 btn-warning mt-4" type="submit">Paramétrer une nouvelle emprise</button>
+            <button class="fr-btn mt-4" type="submit">Paramétrer une nouvelle emprise</button>
         </form>
 </div>
 {% endblock %}

@@ -4,7 +4,7 @@ from django.urls import reverse, exceptions
 from django.utils.html import format_html
 
 from .models import Project, Emprise, Plan, PlanEmprise, Request
-from .tasks import process_project, process_new_plan
+from .tasks import send_word_diagnostic, generate_word_diagnostic
 
 
 @admin.register(Project)
@@ -26,14 +26,6 @@ class ProjectAdmin(admin.GeoModelAdmin):
     )
     ordering = ("name",)
     filter_horizontal = ("cities",)
-    change_form_template = "project/admin_detail.html"
-
-    def response_change(self, request, obj):
-        if "_reload-emprise-action" in request.POST:
-            # Trigger asynch task to reload emprise file
-            process_project.delay(obj.id)
-            return HttpResponseRedirect(".")  # stay on the same detail page
-        return super().response_change(request, obj)
 
 
 @admin.register(Emprise)
@@ -113,7 +105,7 @@ class RequestAdmin(admin.ModelAdmin):
             "Réponse",
             {
                 "description": "Suivre le traitement de la demande",
-                "fields": ("link_to_project", "sent_date", "done"),
+                "fields": ("link_to_project", "sent_file", "sent_date", "done"),
             },
         ),
     )
@@ -148,3 +140,18 @@ class RequestAdmin(admin.ModelAdmin):
             return format_html("Diagnostic inconnu")
 
     link_to_project.short_description = "Projet"
+
+    change_form_template = "project/admin_request_detail.html"
+
+    def response_change(self, request, obj):
+        if "_send-action" in request.POST:
+            obj.done = False
+            obj.sent_date = None
+            obj.save()
+            send_word_diagnostic.delay(obj.id)
+            return HttpResponseRedirect(".")
+        elif "_generate-action" in request.POST:
+            obj.sent_file.delete(save=True)
+            generate_word_diagnostic.delay(obj.id)
+            return HttpResponseRedirect(".")
+        return super().response_change(request, obj)

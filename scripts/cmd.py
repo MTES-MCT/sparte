@@ -228,5 +228,25 @@ def mep_150(ctx):
     connecter.manage_py("setup_dept")
 
 
+@cli.command()
+@click.pass_context
+def mep_200(ctx):
+    """Trigger all data transformation to successful MEP release 1.6"""
+    click.secho("Start migration v1.6", fg="cyan")
+    connecter = ScalingoInterface(ctx.obj)
+
+    click.secho("Fix missing 6.1 and 6.2 in artificial", fg="cyan")
+    connecter.manage_py("build_matrix")
+
+    click.secho("Load 2021 Cérema's data", fg="cyan")
+    connecter.manage_py("load_cerema")
+
+    click.secho("Create all diagnostic cover images", fg="cyan")
+    connecter.manage_py("generate_cover")
+
+    click.secho("Add title, tagline and footer", fg="cyan")
+    connecter.manage_py("add_title")
+
+
 if __name__ == "__main__":
     cli(obj={})
