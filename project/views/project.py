@@ -655,8 +655,7 @@ class ProjectMapView(GroupMixin, DetailView):
     def get_context_data(self, **kwargs):
         # UPGRADE: add center and zoom fields on project model
         # values would be infered when emprise is loaded
-        context = super().get_context_data(**kwargs)
-        context.update(
+        kwargs.update(
             {
                 "breadcrumb": [
                     {"href": reverse_lazy("project:list"), "title": "Mes diagnostics"},
@@ -673,7 +672,7 @@ class ProjectMapView(GroupMixin, DetailView):
             }
         )
         center = self.object.get_centroid()
-        context.update(
+        kwargs.update(
             {
                 # center map on France
                 "carto_name": "Project",
@@ -783,15 +782,6 @@ class ProjectMapView(GroupMixin, DetailView):
                         "level": "3",
                         "style": "style_zone_artificielle",
                     },
-                    # {
-                    #     "name": "OCSGE",
-                    #     "url": reverse_lazy("public_data:ocsge-optimized"),
-                    #     "display": False,
-                    #     "color_property_name": "map_color",
-                    #     "style": "get_color_from_property",
-                    #     "level": "1",
-                    #     "switch": "ocsge",
-                    # },
                     {
                         "name": "Gers: Couverture 2016",
                         "url": (
@@ -899,7 +889,7 @@ class ProjectMapView(GroupMixin, DetailView):
                 ],
             }
         )
-        return context
+        return super().get_context_data(**kwargs)
 
 
 class MyArtifMapView(GroupMixin, DetailView):
