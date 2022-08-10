@@ -219,7 +219,7 @@ function Carto(map_center, default_zoom) {
 
         // set the url to retrieve the scale
         layer.scale_url = get(geolayer, "gradient_url", undefined)
-            // change how the get_color works to use the scale
+        // change how the get_color works to use the scale
         if (layer.scale_url != undefined) {
             layer.get_color = layer.get_color_from_scale
         }
@@ -262,11 +262,11 @@ function Carto(map_center, default_zoom) {
 function GeoLayer(name, url) {
     // name of the layer, to be displayed in layercontrol div
     this.name = name
-        // url where to fetch GeoJson data
+    // url where to fetch GeoJson data
     this.url = url
-        // will contain the built GeoJsonLayer
+    // will contain the built GeoJsonLayer
     this.geojsonlayer = null
-        // will contain fetched data
+    // will contain fetched data
     this.data = null
 
     this.info_txt = null
@@ -292,7 +292,7 @@ function GeoLayer(name, url) {
     //     {value: 230, color: '#ff6600'},  // 151 -> 230
     // ]
     this.scale = null
-        // Define the url to get data for initialise the scale
+    // Define the url to get data for initialise the scale
     this.scale_url = undefined
 
     // Set to true to center the map on layer after data has been loaded
@@ -319,14 +319,14 @@ function GeoLayer(name, url) {
     this.get_color_from_scale = (feature) => {
         // get the property that will decide the color
         property_value = feature.properties[this.color_property_name]
-            // use provided scale and color
-            // return gray in case of unset
+        // use provided scale and color
+        // return gray in case of unset
         let item = this.scale.find((item) => property_value < item.value)
-            // si on a pas trouvé, on doit être sur la dernière valeur de scale
-            // donc le find n'est jamais vrai, on va donc récupérer la dernière
-            // valeur pour initialiser item
+        // si on a pas trouvé, on doit être sur la dernière valeur de scale
+        // donc le find n'est jamais vrai, on va donc récupérer la dernière
+        // valeur pour initialiser item
         item = item ? item : this.scale[this.scale.length - 1]
-            // finalement, on renvoit la couleur
+        // finalement, on renvoit la couleur
         return item.color
     }
 
@@ -339,7 +339,7 @@ function GeoLayer(name, url) {
     this.style = (feature) => {
         return {
             fillColor: this.get_color(feature),
-            fillOpacity: 0.7,
+            fillOpacity: 0.5,
             weight: 1,
             opacity: 0.1,
             color: 'white',
