@@ -37,12 +37,6 @@ class EmpriseViewSet(viewsets.ReadOnlyModelViewSet):
         return self.queryset.filter(**{self.filter_field: id})
 
 
-class PlanEmpriseViewSet(EmpriseViewSet):
-    queryset = PlanEmprise.objects.all()
-    serializer_class = PlanEmpriseSerializer
-    filter_field = "plan_id"
-
-
 class ProjectViewSet(UserQuerysetOrPublicMixin, viewsets.ReadOnlyModelViewSet):
     queryset = Project.objects.all()
     serializer_class = ProjectCommuneSerializer

@@ -33,7 +33,6 @@ urlpatterns = [
     path("", include("home.urls")),
     path("admin/", admin.site.urls),
     path("users/", include("users.urls")),
-    path("carto/", include("carto.urls")),
     path("public/", include("public_data.urls")),
     path("project/", include("project.urls")),
     # use django's default views to handle password reseting process
