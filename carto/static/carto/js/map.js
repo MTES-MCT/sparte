@@ -286,6 +286,7 @@ function GeoLayer(name, url) {
     this.pane = 'level_5'
 
     // Initialiser avec un objet permettant une colorisation personnalisée
+    // value doit être la borne haute
     // this.scale = [
     //     {value: 100, color: '#ff0000'},  //   0 -> 100
     //     {value: 150, color: '#ff3300'},  // 101 -> 150
@@ -321,7 +322,7 @@ function GeoLayer(name, url) {
         property_value = feature.properties[this.color_property_name]
         // use provided scale and color
         // return gray in case of unset
-        let item = this.scale.find((item) => property_value < item.value)
+        let item = this.scale.find((item) => property_value <= item.value)
         // si on a pas trouvé, on doit être sur la dernière valeur de scale
         // donc le find n'est jamais vrai, on va donc récupérer la dernière
         // valeur pour initialiser item
