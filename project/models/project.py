@@ -504,6 +504,13 @@ class Project(BaseProject):
                 "2017": 9,
             },
         }
+
+        Available level: any Cerema's field
+        * city_name
+        * epci_name
+        * dept_name
+        * region_name
+        * scot [experimental]
         """
         fields = Cerema.get_art_field(self.analyse_start_date, self.analyse_end_date)
         qs = self.get_cerema_cities()
@@ -523,15 +530,7 @@ class Project(BaseProject):
             },
         }
         """
-        qs = self.get_cerema_cities(group_name=group_name)
-        fields = Cerema.get_art_field(self.analyse_start_date, self.analyse_end_date)
-        return {
-            cerema_city.city_name: {
-                f"20{field[3:5]}": getattr(cerema_city, field) / 10000
-                for field in fields
-            }
-            for cerema_city in qs
-        }
+        return self.get_land_conso_per_year("city_name")
 
     def get_look_a_like_conso_per_year(self):
         """Return same data as get_conso_per_year but for land listed in

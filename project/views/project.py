@@ -1,6 +1,8 @@
+from jenkspy import jenks_breaks
+
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import Max
+from django.db.models import Max, Sum, F
 from django.http import HttpResponseRedirect
 from django.shortcuts import redirect
 from django.urls import reverse_lazy, reverse
@@ -14,7 +16,8 @@ from django.views.generic import (
 
 from django_app_parameter import app_parameter
 
-from public_data.models import Land
+from public_data.models import Land, AdminRef, Cerema
+from utils.colors import get_color_gradient
 from utils.views_mixins import BreadCrumbMixin, GetObjectMixin
 
 from project import charts
@@ -1101,3 +1104,48 @@ class ProjectAddLookALike(GroupMixin, DetailView):
             needle = form.cleaned_data["keyword"]
             context["results"] = Land.search(needle)
         return self.render_to_response(context)
+
+
+class ProjectGradientView(GroupMixin, LoginRequiredMixin, DetailView):
+    template_name = "project/gradient.html"
+
+    def get_level(self):
+        level = self.kwargs.get("level", self.object.level)
+        if level == AdminRef.COMMUNE:
+            return "city_name"
+        elif level == AdminRef.EPCI:
+            return "epci_name"
+        elif level == AdminRef.DEPARTEMENT:
+            return "dept_name"
+        elif level == AdminRef.REGION:
+            return "region_name"
+        elif level == AdminRef.SCOT:
+            return "scot"
+        else:
+            return "city_name"
+
+    def get_gradient(self):
+        level = self.get_level()
+        fields = Cerema.get_art_field(
+            self.object.analyse_start_date, self.object.analyse_end_date
+        )
+        qs = (
+            self.object.get_cerema_cities()
+            .annotate(conso=sum([F(f) for f in fields]))
+            .values(level)
+            .annotate(conso=Sum(F("conso")))
+            .order_by(level)
+        )
+        scale = min(9, qs.count() - 1)
+        return [
+            {"value": v, "color": c.hex_l}
+            for v, c in zip(
+                jenks_breaks([i["conso"] for i in qs], nb_class=scale)[1:],
+                get_color_gradient(scale=scale)[::-1],
+            )
+        ]
+
+    def get_context_data(self, **kwargs):
+        kwargs["gradients"] = self.get_gradient()
+        kwargs["headers"] = self.request.headers
+        return super().get_context_data(**kwargs)
