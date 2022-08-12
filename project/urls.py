@@ -2,7 +2,7 @@ from django.urls import path
 from rest_framework import routers
 
 from . import views
-from .api_views import EmpriseViewSet, PlanEmpriseViewSet, ProjectViewSet
+from .api_views import EmpriseViewSet, ProjectViewSet
 
 
 app_name = "project"
@@ -65,21 +65,6 @@ urlpatterns = [
         name="theme-my-artif",
     ),
     path("<int:pk>/delete/", views.ProjectDeleteView.as_view(), name="delete"),
-    # ### PLANS ###
-    path("plan/create/", views.PlanCreateView.as_view(), name="plan-create"),
-    path("plan/", views.PlanListView.as_view(), name="plan-list"),
-    path("plan/<int:pk>", views.PlanDetailView.as_view(), name="plan-detail"),
-    path("plan/<int:pk>/delete", views.PlanDeleteView.as_view(), name="plan-delete"),
-    path("plan/<int:pk>/update", views.PlanUpdateView.as_view(), name="plan-update"),
-    # Shortcuts
-    path(
-        "<int:project_id>/plan/create",
-        views.PlanCreateView.as_view(),
-        name="project-plan-create",
-    ),
-    path(
-        "<int:project_id>/plan/", views.PlanListView.as_view(), name="project-plan-list"
-    ),
     # old creation journey
     path("diagnostic/etape/1", views.SelectPublicProjects.as_view(), name="select"),
     path("diagnostic/etape/1/city", views.SelectCities.as_view(), name="select-city"),
@@ -96,13 +81,17 @@ urlpatterns = [
         views.SetProjectOptions.as_view(),
         name="create-3",
     ),
+    path(
+        "<int:pk>/gradient/",
+        views.ProjectGradientView.as_view(),
+        name="gradient",
+    ),
 ]
 
 
 # Add API urls
 router = routers.DefaultRouter()
 router.register(r"geojson", EmpriseViewSet)
-router.register(r"plan/geojson", PlanEmpriseViewSet)
 router.register(r"projects", ProjectViewSet)
 
 
