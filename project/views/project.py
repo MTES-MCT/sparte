@@ -944,7 +944,8 @@ class MyArtifMapView(GroupMixin, DetailView):
                         "name": "Artificialisation",
                         "url": (
                             f'{reverse_lazy("public_data:ocsgediff-optimized")}'
-                            f"?year_old={years['old']}&year_new={years['new']}&is_new_artif=true"
+                            f"?year_old={years['old']}&year_new={years['new']}"
+                            f"&is_new_artif=true"
                         ),
                         "display": True,
                         "style": "get_color_for_ocsge_diff",
@@ -954,7 +955,8 @@ class MyArtifMapView(GroupMixin, DetailView):
                         "name": "Renaturation",
                         "url": (
                             f'{reverse_lazy("public_data:ocsgediff-optimized")}'
-                            f"?year_old={years['old']}&year_new={years['new']}&is_new_natural=true"
+                            f"?year_old={years['old']}&year_new={years['new']}"
+                            "&is_new_natural=true"
                         ),
                         "display": True,
                         "style": "get_color_for_ocsge_diff",
