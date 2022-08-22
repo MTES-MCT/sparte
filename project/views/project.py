@@ -17,7 +17,7 @@ from django.views.generic import (
 from django_app_parameter import app_parameter
 
 from public_data.models import Land, AdminRef, Cerema
-from utils.colors import get_color_gradient
+from utils.colors import get_blue_gradient
 from utils.views_mixins import BreadCrumbMixin, GetObjectMixin
 
 from project import charts
@@ -1143,7 +1143,7 @@ class ProjectGradientView(GroupMixin, LoginRequiredMixin, DetailView):
             {"value": v, "color": c.hex_l}
             for v, c in zip(
                 jenks_breaks([i["conso"] for i in qs], nb_class=scale)[1:],
-                get_color_gradient(scale=scale)[::-1],
+                get_blue_gradient(scale)[::-1],
             )
         ]
 
