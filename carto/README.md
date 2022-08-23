@@ -104,7 +104,7 @@ Les différents styles disponibles sont :
 
 **Remarques :**
 
-si gradient_url est utilisé, cela remplace le style (il faut utiliser l'un ou l'autre).
+si gradient_url est utilisé, cela remplace le style (il faut utiliser l'un ou l'autre). De plus, vous devez spécifier la propriété à utiliser pour trouver la bonne couleur dans le gradient via : color_property_name
 
 
 ## Autres
