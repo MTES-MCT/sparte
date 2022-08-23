@@ -19,6 +19,7 @@ function get(object, key, default_value) {
         return default_value
 }
 
+
 function get_info_label(name) {
     return (name == "area") ? "Surface (Ha)" :
         (name == "artif_area") ? "Consommé (pdt diag.)" :
@@ -173,7 +174,7 @@ function Carto(map_center, default_zoom) {
         this.info.addTo(this.map);
 
         // add legend div
-        // this.legend.addTo(this.map)
+        this.legend.addTo(this.map)
 
         geolayers.forEach(layer => this.add_geolayer(layer))
     }
@@ -243,15 +244,15 @@ function Carto(map_center, default_zoom) {
         this._info_div.innerHTML = html_content
     }
 
-    // this.legend.onAdd = (map) => {
-    //     // create a div with a class "legend"
-    //     this._info_legend = L.DomUtil.create('div', 'info legend');
-    //     return this._info_legend;
-    // }
+    this.legend.onAdd = (map) => {
+        // create a div with a class "legend"
+        this._info_legend = L.DomUtil.create('div', 'info legend');
+        return this._info_legend;
+    }
 
-    // this.legend.update = (html_content) => {
-    //     this._info_legend.innerHTML = html_content
-    // }
+    this.legend.update = (html_content) => {
+        this._info_legend.innerHTML = html_content
+    }
 }
 
 
@@ -385,30 +386,33 @@ function GeoLayer(name, url) {
         return info
     }
 
-    // surcharge to update content of legend div (return empty string to not show info)
-    // this.legend_txt = (feature) => {
-    //     if (this.scale == null)
-    //         return null
-    //     let property = this.color_property_name
-    //     let property_value = feature.properties[property]
-    //     let legend = '<h4>' + this.name + '</h4>'
-    //     let bold = false
-    //     let val = new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 1 }).format(property_value)
-    //     legend = legend + `Propriété utilisée: ${property} (${val})<br\>`
+    //surcharge to update content of legend div (return empty string to not show info)
+    this.legend_txt = (feature) => {
+        if (this.scale == null)
+            return null
+        let property = this.color_property_name
+        let property_value = feature.properties[property]
+        let legend = '<h4>' + this.name + '</h4>'
+        let bold = false
+        let formater = new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 1 })
+        let val = formater.format(property_value)
+        legend = legend + `Propriété utilisée: ${property} (${val})<br\>`
 
-    //     for (i = 0; i < this.scale.length; i++) {
-    //         let color = this.scale[i].color
-    //         let value = this.scale[i].value
-    //         let next_value = i + 1 < this.scale.length ? this.scale[i + 1].value : '+'
-    //         if ((bold == false) && (i + 1 == this.scale.length || property_value < next_value)) {
-    //             legend = legend + `<i style="background:${color}"></i> <b>${value} &ndash; ${next_value}</b></br>`
-    //             bold = true
-    //         } else {
-    //             legend = legend + `<i style="background:${color}"></i> ${value} &ndash; ${next_value}</br>`
-    //         }
-    //     }
-    //     return legend
-    // }
+        for (i = 0; i < this.scale.length; i++) {
+            let color = this.scale[i].color
+            let value = this.scale[i].value
+            let next_value = i + 1 < this.scale.length ? this.scale[i + 1].value : '+'
+            legend = legend + `<svg width="18" height="18" xmlns="http://www.w3.org/2000/svg" version="1.1"><rect x="0" y="0" width="18" height="18" fill="${color}"/></svg>`
+
+            if ((bold == false) && (i + 1 == this.scale.length || property_value < next_value)) {
+                legend = legend + `<b>${formater.format(value)} &ndash; ${formater.format(next_value)}</b></br>`
+                bold = true
+            } else {
+                legend = legend + `${formater.format(value)} &ndash; ${formater.format(next_value)}</br>`
+            }
+        }
+        return legend
+    }
 
     // set the layer appearance, fetch the data and display it on the map
     this.add_to_map = (carto) => {
@@ -432,7 +436,7 @@ function GeoLayer(name, url) {
 
                             // mets à jour le div d'information
                             carto.info.update(this.info_txt(feature.properties))
-                                // carto.legend.update(this.legend_txt(feature))
+                            carto.legend.update(this.legend_txt(feature))
                         },
                         // on mousse out
                         mouseout: (e) => {
