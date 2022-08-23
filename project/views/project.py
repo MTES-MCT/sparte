@@ -3,7 +3,7 @@ from jenkspy import jenks_breaks
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Max, Sum, F
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import redirect
 from django.urls import reverse_lazy, reverse
 from django.views.generic import (
@@ -17,7 +17,7 @@ from django.views.generic import (
 from django_app_parameter import app_parameter
 
 from public_data.models import Land, AdminRef, Cerema
-from utils.colors import get_blue_gradient
+from utils.colors import get_yellow2red_gradient
 from utils.views_mixins import BreadCrumbMixin, GetObjectMixin
 
 from project import charts
@@ -61,10 +61,13 @@ class ProjectListView(GroupMixin, LoginRequiredMixin, ListView):
         qs = Project.objects.filter(user=self.request.user)
         for project in qs:
             if project.cover_image:
-                project.prop_width = 266
-                project.prop_height = (
-                    project.cover_image.height * 266 / project.cover_image.width
-                )
+                try:
+                    project.prop_width = 266
+                    project.prop_height = (
+                        project.cover_image.height * 266 / project.cover_image.width
+                    )
+                except FileNotFoundError:
+                    project.cover_image = None
         return qs
 
 
@@ -978,6 +981,61 @@ class MyArtifMapView(GroupMixin, DetailView):
         return super().get_context_data(**kwargs)
 
 
+class CitySpaceConsoMapView(GroupMixin, DetailView):
+    queryset = Project.objects.all()
+    template_name = "carto/theme_map.html"
+    context_object_name = "project"
+
+    def get_context_breadcrumbs(self):
+        breadcrumbs = super().get_context_breadcrumbs()
+        breadcrumbs += [
+            {"href": reverse_lazy("project:list"), "title": "Mes diagnostics"},
+            {
+                "href": reverse_lazy("project:detail", kwargs={"pk": self.object.pk}),
+                "title": self.object.name,
+            },
+        ]
+        return breadcrumbs
+
+    def get_context_data(self, **kwargs):
+        center = self.object.get_centroid()
+        kwargs.update(
+            {
+                # center map on France
+                "map_name": "Consommation des villes de mon territoire",
+                "center_lat": center.y,
+                "center_lng": center.x,
+                "default_zoom": 8,
+                "layer_list": [
+                    {
+                        "name": "Emprise du projet",
+                        "url": (
+                            f'{reverse_lazy("project:emprise-list")}'
+                            f"?id={self.object.pk}"
+                        ),
+                        "display": True,
+                        "style": "style_emprise",
+                        "fit_map": True,
+                        "level": "5",
+                    },
+                    {
+                        "name": "Consommation des communes",
+                        "url": reverse_lazy(
+                            "project:project-communes", args=[self.object.id]
+                        ),
+                        "display": True,
+                        "gradient_url": reverse_lazy(
+                            "project:gradient", args=[self.object.id, "json"]
+                        ),
+                        "level": "2",
+                        "color_property_name": "artif_area",
+                    },
+                ],
+            }
+        )
+        return super().get_context_data(**kwargs)
+
+
 class ProjectCreateView(GroupMixin, LoginRequiredMixin, CreateView):
     model = Project
     template_name = "project/create.html"
@@ -1127,27 +1185,35 @@ class ProjectGradientView(GroupMixin, LoginRequiredMixin, DetailView):
             return "city_name"
 
     def get_gradient(self):
-        level = self.get_level()
+        # level = self.get_level()
         fields = Cerema.get_art_field(
             self.object.analyse_start_date, self.object.analyse_end_date
         )
         qs = (
             self.object.get_cerema_cities()
-            .annotate(conso=sum([F(f) for f in fields]))
-            .values(level)
+            .annotate(conso=sum([F(f) for f in fields]) / 10000)
+            .values("city_name")
             .annotate(conso=Sum(F("conso")))
-            .order_by(level)
+            .order_by("conso")
         )
-        scale = min(9, qs.count() - 1)
+        if qs.count() <= 9:
+            boundaries = sorted([i["conso"] for i in qs])
+        else:
+            boundaries = jenks_breaks([i["conso"] for i in qs], nb_class=9)[1:]
         return [
             {"value": v, "color": c.hex_l}
-            for v, c in zip(
-                jenks_breaks([i["conso"] for i in qs], nb_class=scale)[1:],
-                get_blue_gradient(scale)[::-1],
-            )
+            for v, c in zip(boundaries, get_yellow2red_gradient(len(boundaries)))
         ]
 
     def get_context_data(self, **kwargs):
         kwargs["gradients"] = self.get_gradient()
         kwargs["headers"] = self.request.headers
         return super().get_context_data(**kwargs)
+
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        if self.kwargs["format"] == "json":
+            return JsonResponse(self.get_gradient(), safe=False)
+        else:
+            context = self.get_context_data(object=self.object)
+            return self.render_to_response(context)

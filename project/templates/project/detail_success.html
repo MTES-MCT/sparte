@@ -60,9 +60,10 @@ SPARTE
                             <li><i class="bi bi-arrow-right-short"></i>Zones artificialisées et renaturées sur la période</li>
                         </ul>
                     </div>
-                    <p>
-                        <a href="{% url 'project:theme-my-artif' project.pk %}">Comprendre mon artificialisation</a>
-                    </p>
+                    <ul>
+                        <li><a href="{% url 'project:theme-my-artif' project.pk %}">Comprendre mon artificialisation</a></li>
+                        <li><a href="{% url 'project:theme-city-conso' project.pk %}">Consommation des villes de mon territoire</a></li>
+                    </ul>
                 </div>
             </div>
             <div class="col">
