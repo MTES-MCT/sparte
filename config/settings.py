@@ -99,7 +99,6 @@ INSTALLED_APPS = DJANGO_APPS + RESTFRAMEWORK_APPS + THIRD_APPS + PROJECT_APPS
 MIDDLEWARE = [
     "config.middlewares.LogIncomingRequest",
     "django.middleware.security.SecurityMiddleware",
-    "csp.middleware.CSPMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -107,6 +106,9 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
+
+if not DEBUG:
+    MIDDLEWARE.insert(2, "csp.middleware.CSPMiddleware")
 
 
 ROOT_URLCONF = "config.urls"
@@ -448,7 +450,7 @@ CSP_SCRIPT_SRC = [
     "https://code.highcharts.com",
     STATIC_URL,
 ]
-CSP_STYLE_SRC = ["'self'", "https://cdn.jsdelivr.net", STATIC_URL]
+CSP_STYLE_SRC = ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net", STATIC_URL]
 CSP_IMG_SRC = ["'self'", "https://wxs.ign.fr", "data:", MEDIA_URL, STATIC_URL]
 CSP_UPGRADE_INSECURE_REQUESTS = not DEBUG
 CSP_INCLUDE_NONCE_IN = ["script-src", "style-src"]
