@@ -229,7 +229,7 @@ if USE_S3:
     DEFAULT_FILE_STORAGE = "config.storages.PublicMediaStorage"
 else:
     STATIC_URL = "/static/"
-    STATIC_ROOT = str(BASE_DIR / "staticroot")
+    STATIC_ROOT = BASE_DIR / "staticroot"
 
     MEDIA_URL = "/media/"
     MEDIA_ROOT = BASE_DIR / "media"
