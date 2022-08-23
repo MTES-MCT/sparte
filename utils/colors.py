@@ -16,6 +16,8 @@ def get_random_color():
 
 
 def get_2_colors_gradient(c1, c2, scale):
+    if scale == 1:
+        return [c1]
     progression = zip(
         [i / (scale - 1) for i in range(scale)],
         [i / (scale - 1) for i in range(scale - 1, -1, -1)],
