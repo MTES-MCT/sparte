@@ -2,4 +2,4 @@
 from .project import Emprise, Project, ProjectCommune
 from .plan import Plan, PlanEmprise
 from .utils import user_directory_path
-from .request import Request
+from .request import Request, ErrorTracking
