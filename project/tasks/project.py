@@ -302,6 +302,9 @@ def generate_word_diagnostic(self, request_id):
         self.retry(exc=exc, countdown=2 ** (self.request.retries + 10))
         req.record_exception(exc)
         logger.error("Error while generating word: %s", exc)
+    except Exception as exc:
+        req.record_exception(exc)
+        logger.error("Error while generating word: %s", exc)
     finally:
         logger.info(f"End generate word for request={request_id}")
 
