@@ -10,10 +10,9 @@ from rest_framework import viewsets
 from public_data.models import Commune, Cerema
 
 from .views.mixins import UserQuerysetOrPublicMixin
-from .models import Project, Emprise, PlanEmprise
+from .models import Project, Emprise
 from .serializers import (
     EmpriseSerializer,
-    PlanEmpriseSerializer,
     ProjectCommuneSerializer,
 )
 
