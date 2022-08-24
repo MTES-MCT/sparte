@@ -121,4 +121,7 @@ class DocxTemplate(models.Model):
             filename = self.name.replace(" ", "_")
         filename = filename.format(date=datetime.now())
         filename = filename.format(time=datetime.now())
-        return f"{filename}.docx"
+        if filename.endswith(".docx"):
+            return filename
+        else:
+            return f"{filename}.docx"
