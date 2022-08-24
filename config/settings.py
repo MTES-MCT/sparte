@@ -188,9 +188,8 @@ USE_TZ = True
 
 # Bucket S3 and filestorage
 # see https://django-storages.readthedocs.io/en/latest/
-
-# specify to django we use only S3 to store files
-DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 # credentials
 AWS_ACCESS_KEY_ID = env.str("AWS_ACCESS_KEY_ID", default="")
@@ -210,18 +209,16 @@ AWS_S3_SIGNATURE_VERSION = "s3v4"
 AWS_S3_CUSTOM_DOMAIN = f"{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com"
 AWS_S3_OBJECT_PARAMETERS = {"CacheControl": "max-age=86400"}
 
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/3.2/howto/static-files/
-
 STATICFILES_DIRS = [
     BASE_DIR / "static",
     # BASE_DIR / "htmlcov",
 ]
 
 USE_S3 = env.bool("USE_S3", default=False)
-
 if USE_S3:
+    # specify to django we use only S3 to store files
+    DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+
     STATIC_LOCATION = "staticfiles"
     STATIC_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/{STATIC_LOCATION}/"
     STATICFILES_STORAGE = "config.storages.StaticMediaStorage"
