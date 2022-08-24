@@ -3,7 +3,7 @@ from rest_framework_gis import serializers as gis_serializers
 
 from public_data.models import Commune, CommuneDiff
 
-from .models import Emprise, PlanEmprise
+from .models import Emprise
 
 
 class EmpriseSerializer(gis_serializers.GeoFeatureModelSerializer):
@@ -14,16 +14,6 @@ class EmpriseSerializer(gis_serializers.GeoFeatureModelSerializer):
         )
         geo_field = "mpoly"
         model = Emprise
-
-
-class PlanEmpriseSerializer(gis_serializers.GeoFeatureModelSerializer):
-    class Meta:
-        fields = (
-            "id",
-            "plan",
-        )
-        geo_field = "mpoly"
-        model = PlanEmprise
 
 
 class ArtifEvolutionSubSerializer(serializers.ModelSerializer):
