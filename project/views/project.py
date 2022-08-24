@@ -661,22 +661,6 @@ class ProjectMapView(GroupMixin, DetailView):
     def get_context_data(self, **kwargs):
         # UPGRADE: add center and zoom fields on project model
         # values would be infered when emprise is loaded
-        kwargs.update(
-            {
-                "breadcrumb": [
-                    {"href": reverse_lazy("project:list"), "title": "Mes diagnostics"},
-                    {
-                        "href": reverse_lazy(
-                            "project:detail",
-                            kwargs={
-                                "pk": self.object.pk,
-                            },
-                        ),
-                        "title": self.object.name,
-                    },
-                ]
-            }
-        )
         center = self.object.get_centroid()
         kwargs.update(
             {
@@ -906,11 +890,7 @@ class MyArtifMapView(GroupMixin, DetailView):
     def get_context_breadcrumbs(self):
         breadcrumbs = super().get_context_breadcrumbs()
         breadcrumbs += [
-            {"href": reverse_lazy("project:list"), "title": "Mes diagnostics"},
-            {
-                "href": reverse_lazy("project:detail", kwargs={"pk": self.object.pk}),
-                "title": self.object.name,
-            },
+            {"title": "Comprendre l'artificialisation du territoire"},
         ]
         return breadcrumbs
 
@@ -989,11 +969,7 @@ class CitySpaceConsoMapView(GroupMixin, DetailView):
     def get_context_breadcrumbs(self):
         breadcrumbs = super().get_context_breadcrumbs()
         breadcrumbs += [
-            {"href": reverse_lazy("project:list"), "title": "Mes diagnostics"},
-            {
-                "href": reverse_lazy("project:detail", kwargs={"pk": self.object.pk}),
-                "title": self.object.name,
-            },
+            {"title": "Consommation d'espace des communes de mon territoire"},
         ]
         return breadcrumbs
 
