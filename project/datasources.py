@@ -103,10 +103,15 @@ class DiagnosticSource(data_sources.DataSource):
         }
 
         if project.cover_image:
-            fd, img_path = tempfile.mkstemp(suffix=".png", text=False)
-            os.write(fd, project.cover_image.open().read())
-            os.close(fd)
-            context.update({"photo_emprise": data_sources.Image(img_path, height=110)})
+            try:
+                fd, img_path = tempfile.mkstemp(suffix=".png", text=False)
+                os.write(fd, project.cover_image.open().read())
+                os.close(fd)
+                context.update(
+                    {"photo_emprise": data_sources.Image(img_path, height=110)}
+                )
+            except FileNotFoundError:
+                pass
 
         target_2031_consumption = project.get_bilan_conso()
         current_conso = project.get_bilan_conso_time_scoped()
