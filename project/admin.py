@@ -3,7 +3,7 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse, exceptions
 from django.utils.html import format_html
 
-from .models import Project, Emprise, Request
+from .models import Project, Emprise, Request, ErrorTracking
 from .tasks import send_word_diagnostic, generate_word_diagnostic
 
 
@@ -60,6 +60,7 @@ class RequestAdmin(admin.ModelAdmin):
                     "function",
                     "email",
                     "link_to_user",
+                    "created_date",
                 )
             },
         ),
@@ -117,3 +118,19 @@ class RequestAdmin(admin.ModelAdmin):
             generate_word_diagnostic.delay(obj.id)
             return HttpResponseRedirect(".")
         return super().response_change(request, obj)
+
+
+@admin.register(ErrorTracking)
+class ErrorTrackingAdmin(admin.ModelAdmin):
+    model = ErrorTracking
+    list_display = (
+        "id",
+        "request",
+        "created_date",
+    )
+    readonly_fields = (
+        "id",
+        "request",
+        "created_date",
+        "exception",
+    )
