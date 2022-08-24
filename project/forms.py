@@ -3,8 +3,8 @@ from django.core.exceptions import ValidationError
 
 from public_data.models import Region, Departement, Epci, Commune, AdminRef
 
-from .models import Project, Plan
-from .tasks import process_project_with_shape, process_new_plan, build_emprise_from_city
+from .models import Project
+from .tasks import process_project_with_shape, build_emprise_from_city
 
 
 class SetEmpriseForm(forms.Form):
@@ -33,36 +33,6 @@ class UploadShpForm(forms.Form):
         project.emprise_origin = Project.EmpriseOrigin.FROM_SHP
         project.save()
         process_project_with_shape.delay(project.id)
-
-
-class PlanForm(forms.ModelForm):
-    class Meta:
-        model = Plan
-        fields = [
-            "name",
-            "description",
-            "shape_file",
-            "supplier_email",
-            "project",
-        ]
-
-    def __init__(self, *args, **kwargs):
-        """Hide project field if a value is provided"""
-        self.project = kwargs.pop("project")
-        super().__init__(*args, **kwargs)
-        if self.project:
-            # we keep it in our form but we force the value later on
-            # self.fields["project"].widget = forms.widgets.HiddenInput()
-            # self.fields["project"].initial = self.project
-            del self.fields["project"]
-
-    def save(self, *args, **kwargs):
-        self.instance.import_status = Project.Status.PENDING
-        if self.project:
-            self.instance.project = self.project
-        super().save(*args, **kwargs)
-        process_new_plan.delay(self.instance.id)
-        return self.instance
 
 
 class RegionForm(forms.Form):
