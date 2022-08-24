@@ -396,19 +396,19 @@ function GeoLayer(name, url) {
         let bold = false
         let formater = new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 1 })
         let val = formater.format(property_value)
-        legend = legend + `Propriété utilisée: ${property} (${val})<br\>`
+        legend = legend + `Propriété utilisée: ${get_info_label(property)} (${val})<br\>`
 
         for (i = 0; i < this.scale.length; i++) {
             let color = this.scale[i].color
-            let value = this.scale[i].value
+            let value = formater.format(this.scale[i].value)
             let next_value = i + 1 < this.scale.length ? this.scale[i + 1].value : '+'
-            legend = legend + `<svg width="18" height="18" xmlns="http://www.w3.org/2000/svg" version="1.1"><rect x="0" y="0" width="18" height="18" fill="${color}"/></svg>`
-
+            let print_next_value = next_value == '+' ? '+' : formater.format(next_value)
+            legend = legend + `<svg class="me-2" width="18" height="18" xmlns="http://www.w3.org/2000/svg" version="1.1"><rect x="0" y="0" width="18" height="18" fill="${color}"/></svg>`
             if ((bold == false) && (i + 1 == this.scale.length || property_value < next_value)) {
-                legend = legend + `<b>${formater.format(value)} &ndash; ${formater.format(next_value)}</b></br>`
+                legend = legend + `<b>${value} &ndash; ${print_next_value}</b></br>`
                 bold = true
             } else {
-                legend = legend + `${formater.format(value)} &ndash; ${formater.format(next_value)}</br>`
+                legend = legend + `${value} &ndash; ${print_next_value}</br>`
             }
         }
         return legend
