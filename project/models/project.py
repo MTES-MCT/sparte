@@ -378,7 +378,7 @@ class Project(BaseProject):
         if to_remove:
             self.remove_look_a_like(to_remove, many=True)
             self.save(update_fields=["look_a_like"])
-        return lands
+        return sorted(lands, key=lambda x: x.name)
 
     def get_lands(self):
         if self.look_a_like:
