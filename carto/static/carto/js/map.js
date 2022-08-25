@@ -321,13 +321,12 @@ function GeoLayer(name, url) {
     this.get_color_from_scale = (feature) => {
         // get the property that will decide the color
         property_value = feature.properties[this.color_property_name]
-            // use provided scale and color
-            // return gray in case of unset
-            // round number before comparison to avoid incorrect behavior
+        // use provided scale and color
+        // return gray in case of unset
         let item = this.scale.find((item) => property_value <= item.value)
-            // si on a pas trouvé, on doit être sur la dernière valeur de scale
-            // donc le find n'est jamais vrai, on va donc récupérer la dernière
-            // valeur pour initialiser item
+        // si on a pas trouvé, on doit être sur la dernière valeur de scale
+        // donc le find n'est jamais vrai, on va donc récupérer la dernière
+        // valeur pour initialiser item
         item = item ? item : this.scale[this.scale.length - 1]
             // finalement, on renvoit la couleur
         return item.color
