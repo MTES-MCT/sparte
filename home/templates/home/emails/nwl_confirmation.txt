@@ -1,6 +1,6 @@
 Bonjour,
 
-Afin de confirmer votre inscription à l'infolettre de SPARTE, veuillez cliquer sur le lien ci-dessous:
+Afin de confirmer votre inscription à la newsletter de SPARTE, veuillez cliquer sur le lien ci-dessous:
 
 {{ url }}
 

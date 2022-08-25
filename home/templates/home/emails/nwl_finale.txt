@@ -2,7 +2,7 @@ Bonjour,
 
 Nous avons bien noté votre intérêt pour SPARTE.
 
-Nous envoyons environ une infolettre par mois, vous recevrez bientôt notre prochaine édition.
+Nous envoyons environ une newsletter par mois, vous recevrez bientôt notre prochaine édition.
 
 D'ici là, n'hésitez pas à nous écrire à {{ email_contact }}
 
