@@ -266,12 +266,19 @@ class BaseThemeMap(GroupMixin, DetailView):
     queryset = Project.objects.all()
     template_name = "carto/theme_map.html"
     context_object_name = "project"
+<<<<<<< HEAD
     scale_size = 5
+=======
+>>>>>>> add thematic map and refactore
     title = "To be set"
     url_name = "to be set"
 
     def get_data_url(self):
+<<<<<<< HEAD
         start = reverse_lazy(f"project:{self.url_name}", args=[self.object.id])
+=======
+        start = reverse_lazy(f"project:{self.url_name}")
+>>>>>>> add thematic map and refactore
         return f"{start}?data=1"
 
     def get_gradient_url(self):
@@ -386,7 +393,11 @@ class CitySpaceConsoMapView(BaseThemeMap):
         layers = [
             {
                 "name": "Consommation des communes",
+<<<<<<< HEAD
                 "url": self.get_data_url(),
+=======
+                "url": reverse_lazy("project:project-communes", args=[self.object.id]),
+>>>>>>> add thematic map and refactore
                 "display": True,
                 "gradient_url": self.get_gradient_url(),
                 "level": "2",
@@ -394,6 +405,7 @@ class CitySpaceConsoMapView(BaseThemeMap):
             }
         ] + list(layers)
         return super().get_layers_list(*layers)
+<<<<<<< HEAD
 
     def get_data(self):
         project = self.get_object()
@@ -413,6 +425,73 @@ class CitySpaceConsoMapView(BaseThemeMap):
             queryset = queryset.filter(mpoly__within=polygon_box)
         serializer = CitySpaceConsoMapSerializer(queryset, many=True)
         return JsonResponse(serializer.data, status=200)
+=======
+
+    def get_gradient(self):
+        fields = Cerema.get_art_field(
+            self.object.analyse_start_date, self.object.analyse_end_date
+        )
+        qs = (
+            self.object.get_cerema_cities()
+            .annotate(conso=sum([F(f) for f in fields]) / 10000)
+            .values("city_name")
+            .annotate(conso=Sum(F("conso")))
+            .order_by("conso")
+        )
+        if qs.count() <= 9:
+            boundaries = sorted([i["conso"] for i in qs])
+        else:
+            boundaries = jenks_breaks([i["conso"] for i in qs], nb_class=9)[1:]
+        data = [
+            {"value": v, "color": c.hex_l}
+            for v, c in zip(boundaries, get_yellow2red_gradient(len(boundaries)))
+        ]
+        return JsonResponse(data, safe=False)
+
+
+class CityArtifMapView(BaseThemeMap):
+    title = "Artificialisation des communes de mon territoire"
+    url_name = "theme-city-artif"
+
+    def get_layers_list(self, *layers):
+        layers = [
+            {
+                "name": "Consommation des communes",
+                "url": reverse_lazy("project:project-communes", args=[self.object.id]),
+                "display": True,
+                "gradient_url": self.get_gradient_url(),
+                "level": "2",
+                "color_property_name": "conso_1121_art",
+            },
+        ] + list(layers)
+        return super().get_layers_list(*layers)
+
+    def get_gradient(self):
+        fields = Cerema.get_art_field(
+            self.object.analyse_start_date, self.object.analyse_end_date
+        )
+        qs = (
+            self.object.get_cerema_cities()
+            .annotate(conso=sum([F(f) for f in fields]) / 10000)
+            .values("city_name")
+            .annotate(conso=Sum(F("conso")))
+            .order_by("conso")
+        )
+        if qs.count() <= 9:
+            boundaries = sorted([i["conso"] for i in qs])
+        else:
+            boundaries = jenks_breaks([i["conso"] for i in qs], nb_class=9)[1:]
+        data = [
+            {"value": v, "color": c.hex_l}
+            for v, c in zip(boundaries, get_yellow2red_gradient(len(boundaries)))
+        ]
+        return JsonResponse(data, safe=False)
+
+
+class ProjectGradientView(GroupMixin, LoginRequiredMixin, DetailView):
+    queryset = Project.objects.all()
+    template_name = "project/gradient.html"
+>>>>>>> add thematic map and refactore
 
     def get_gradient(self):
         fields = Cerema.get_art_field(
@@ -437,6 +516,7 @@ class CitySpaceConsoMapView(BaseThemeMap):
         ]
         return JsonResponse(data, safe=False)
 
+<<<<<<< HEAD
 
 class CityArtifMapView(BaseThemeMap):
     title = "Artificialisation des communes de mon territoire"
@@ -481,3 +561,9 @@ class CityArtifMapView(BaseThemeMap):
             queryset = queryset.filter(mpoly__within=polygon_box)
         serializer = CityArtifMapSerializer(queryset, many=True)
         return JsonResponse(serializer.data, status=200)
+=======
+    def get_context_data(self, **kwargs):
+        kwargs["gradients"] = self.get_gradient()
+        kwargs["headers"] = self.request.headers
+        return super().get_context_data(**kwargs)
+>>>>>>> add thematic map and refactore
