@@ -18,7 +18,25 @@ Carte thématique - {{ map_name }}
 {% endblock headers %}
 
 {% block content %}
+<div id="local-container" class="d-flex h-100">
+    <div class="h-100 collapse collapse-horizontal p-2" id="map_list">
+        <h2>Cartes thématiques</h2>
+        <ul>
+            <li><a href="{% url 'project:theme-my-artif' project.pk %}">Comprendre L'évolution de l'artificialisation de mon territoire</a></li>
+            <li><a href="{% url 'project:theme-city-conso' project.pk %}">Consommation des villes de mon territoire</a></li>
+            <li><a href="{% url 'project:theme-city-artif' project.pk %}">Artificialisation des villes de mon territoire</a></li>
+        </ul>
+    </div>
+    <div id="map_title" class="row justify-content-center h-100 border-right m-0 p-0">
+        <a href="#" class="p-0 text-center" data-bs-toggle="collapse" data-bs-target="#map_list" aria-expanded="false" aria-controls="map_list">
+            <i class="bi bi-chevron-double-right" id="toggle-calque"></i>
+        </a>
+    </div>
+
+    <div id="mapid" class="flex-grow-1"></div>
+</div>
 <div id="mapid" class="h-100 w-100"></div>
+
 <div id="layer_list"></div>
 {% endblock content %}
 
