@@ -40,7 +40,7 @@ def send_nwl_confirmation(newsletter_id):
     nwl = Newsletter.objects.get(pk=newsletter_id)
     try:
         send_template_email(
-            subject="Confirmez votre inscription à l'infolettre de SPARTE",
+            subject="Confirmez votre inscription à la newsletter de SPARTE",
             recipients=[nwl.email],
             template_name="home/emails/nwl_confirmation",
             context={"url": nwl.get_confirmation_url()},
@@ -58,7 +58,7 @@ def send_nwl_final(newsletter_id):
     nwl = Newsletter.objects.get(pk=newsletter_id)
     try:
         send_template_email(
-            subject="Vous êtes inscris à l'infolettre de SPARTE",
+            subject="Vous êtes inscrit à la newsletter de SPARTE",
             recipients=[nwl.email],
             template_name="home/emails/nwl_finale",
         )
