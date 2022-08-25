@@ -417,6 +417,17 @@ class CommuneSol(models.Model):
         ]
 
 
+class CommunePop(models.Model):
+    city = models.ForeignKey(
+        Commune, verbose_name="Commune", on_delete=models.CASCADE, related_name="pop"
+    )
+    year = models.IntegerField(
+        "Millésime",
+        validators=[MinValueValidator(2000), MaxValueValidator(2050)],
+    )
+    pop = models.IntegerField("Population")
+
+
 class Land:
     """It's a generic class to work with Epci, Departement, Region or Commune.
     Like a proxy."""
