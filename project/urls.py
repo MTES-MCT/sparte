@@ -68,6 +68,11 @@ urlpatterns = [
         views.CitySpaceConsoMapView.as_view(),
         name="theme-city-conso",
     ),
+    path(
+        "<int:pk>/carte/artificialisation-villes-du-territoire",
+        views.CityArtifMapView.as_view(),
+        name="theme-city-artif",
+    ),
     path("<int:pk>/delete/", views.ProjectDeleteView.as_view(), name="delete"),
     # old creation journey
     path("diagnostic/etape/1", views.SelectPublicProjects.as_view(), name="select"),
@@ -86,7 +91,7 @@ urlpatterns = [
         name="create-3",
     ),
     path(
-        "<int:pk>/gradient/<slug:format>/",
+        "<int:pk>/gradient",
         views.ProjectGradientView.as_view(),
         name="gradient",
     ),
