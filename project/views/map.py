@@ -6,7 +6,7 @@ from django.http import JsonResponse
 from django.urls import reverse_lazy
 from django.views.generic import DetailView
 
-from public_data.models import AdminRef, Cerema
+from public_data.models import Cerema
 from utils.colors import get_yellow2red_gradient
 
 from project.models import Project
@@ -247,157 +247,216 @@ class ProjectMapView(GroupMixin, DetailView):
         return super().get_context_data(**kwargs)
 
 
-class MyArtifMapView(GroupMixin, DetailView):
+class BaseThemeMap(GroupMixin, DetailView):
+    """This is a base class for thematic map. It group together layer definition, data
+    provider and gradient provider.
+
+    Main methods:
+    =============
+    * get_data: return GeoJson of the features to display
+    * get_data_url: return endpoint url to retrieve feature to display in the map
+    * get_gradient: return JSON of the coloring scale
+    * get_gradient_url: return endpoint url of the coloring scale (inc. colors)
+    * get_layers_list: define the layer to be display in the map
+    """
+
     queryset = Project.objects.all()
     template_name = "carto/theme_map.html"
     context_object_name = "project"
+    title = "To be set"
+    url_name = "to be set"
+
+    def get_data_url(self):
+        start = reverse_lazy(f"project:{self.url_name}")
+        return f"{start}?data=1"
+
+    def get_gradient_url(self):
+        start = reverse_lazy(f"project:{self.url_name}", args=[self.object.id])
+        return f"{start}?gradient=1"
 
     def get_context_breadcrumbs(self):
         breadcrumbs = super().get_context_breadcrumbs()
         breadcrumbs += [
-            {"title": "Comprendre l'artificialisation du territoire"},
+            {"title": self.title},
         ]
         return breadcrumbs
 
+    def get_gradient(self):
+        raise NotImplementedError("You need build gradient scale.")
+
+    def get_data(self):
+        raise NotImplementedError("You need build gradient scale.")
+
+    def get_layers_list(self, *layers):
+        layers = [
+            {
+                "name": "Emprise du projet",
+                "url": (
+                    f'{reverse_lazy("project:emprise-list")}' f"?id={self.object.pk}"
+                ),
+                "display": True,
+                "style": "style_emprise",
+                "fit_map": True,
+                "level": "5",
+            },
+        ] + list(layers)
+        return layers
+
     def get_context_data(self, **kwargs):
+        center = self.object.get_centroid()
+        kwargs.update(
+            {
+                # center map on France
+                "map_name": self.title,
+                "center_lat": center.y,
+                "center_lng": center.x,
+                "default_zoom": 12,
+                "layer_list": self.get_layers_list(),
+            }
+        )
+        return super().get_context_data(**kwargs)
+
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        if "gradient" in self.request.GET:
+            return self.get_gradient()
+        elif "data" in self.request.GET:
+            return self.get_data()
+        else:
+            context = self.get_context_data(object=self.object)
+            return self.render_to_response(context)
+
+
+class MyArtifMapView(BaseThemeMap):
+    title = "Comprendre l'artificialisation du territoire"
+
+    def get_layers_list(self, *layers):
         years = (
             self.object.cities.all()
             .first()
             .communediff_set.all()
             .aggregate(old=Max("year_old"), new=Max("year_new"))
         )
-        center = self.object.get_centroid()
-        kwargs.update(
+        layers = list(layers) + [
             {
-                # center map on France
-                "map_name": "Comprendre mon artificialisation",
-                "center_lat": center.y,
-                "center_lng": center.x,
-                "default_zoom": 10,
-                "year_old": years["old"],
-                "year_new": years["new"],
-                "layer_list": [
-                    {
-                        "name": "Emprise du projet",
-                        "url": (
-                            f'{reverse_lazy("project:emprise-list")}'
-                            f"?id={self.object.pk}"
-                        ),
-                        "display": True,
-                        "style": "style_emprise",
-                        "fit_map": True,
-                        "level": "5",
-                    },
-                    {
-                        "name": "Artificialisation",
-                        "url": (
-                            f'{reverse_lazy("public_data:ocsgediff-optimized")}'
-                            f"?year_old={years['old']}&year_new={years['new']}"
-                            f"&is_new_artif=true"
-                        ),
-                        "display": True,
-                        "style": "get_color_for_ocsge_diff",
-                        "level": "7",
-                    },
-                    {
-                        "name": "Renaturation",
-                        "url": (
-                            f'{reverse_lazy("public_data:ocsgediff-optimized")}'
-                            f"?year_old={years['old']}&year_new={years['new']}"
-                            "&is_new_natural=true"
-                        ),
-                        "display": True,
-                        "style": "get_color_for_ocsge_diff",
-                        "level": "7",
-                    },
-                    {
-                        "name": "Zones artificielles",
-                        "url": (
-                            f'{reverse_lazy("public_data:artificialarea-optimized")}'
-                            f"?year={years['new']}"
-                        ),
-                        "display": True,
-                        "style": "style_zone_artificielle",
-                        "level": "3",
-                    },
-                ],
-            }
-        )
-        return super().get_context_data(**kwargs)
-
-
-class CitySpaceConsoMapView(GroupMixin, DetailView):
-    queryset = Project.objects.all()
-    template_name = "carto/theme_map.html"
-    context_object_name = "project"
-
-    def get_context_breadcrumbs(self):
-        breadcrumbs = super().get_context_breadcrumbs()
-        breadcrumbs += [
-            {"title": "Consommation d'espace des communes de mon territoire"},
+                "name": "Artificialisation",
+                "url": (
+                    f'{reverse_lazy("public_data:ocsgediff-optimized")}'
+                    f"?year_old={years['old']}&year_new={years['new']}"
+                    f"&is_new_artif=true"
+                ),
+                "display": True,
+                "style": "get_color_for_ocsge_diff",
+                "level": "7",
+            },
+            {
+                "name": "Renaturation",
+                "url": (
+                    f'{reverse_lazy("public_data:ocsgediff-optimized")}'
+                    f"?year_old={years['old']}&year_new={years['new']}"
+                    "&is_new_natural=true"
+                ),
+                "display": True,
+                "style": "get_color_for_ocsge_diff",
+                "level": "7",
+            },
+            {
+                "name": "Zones artificielles",
+                "url": (
+                    f'{reverse_lazy("public_data:artificialarea-optimized")}'
+                    f"?year={years['new']}"
+                ),
+                "display": True,
+                "style": "style_zone_artificielle",
+                "level": "3",
+            },
         ]
-        return breadcrumbs
+        return super().get_layers_list(*layers)
 
-    def get_context_data(self, **kwargs):
-        center = self.object.get_centroid()
-        kwargs.update(
+
+class CitySpaceConsoMapView(BaseThemeMap):
+    title = "Consommation d'espace des communes de mon territoire"
+    url_name = "theme-city-conso"
+
+    def get_layers_list(self, *layers):
+        layers = [
             {
-                # center map on France
-                "map_name": "Consommation des villes de mon territoire",
-                "center_lat": center.y,
-                "center_lng": center.x,
-                "default_zoom": 8,
-                "layer_list": [
-                    {
-                        "name": "Emprise du projet",
-                        "url": (
-                            f'{reverse_lazy("project:emprise-list")}'
-                            f"?id={self.object.pk}"
-                        ),
-                        "display": True,
-                        "style": "style_emprise",
-                        "fit_map": True,
-                        "level": "5",
-                    },
-                    {
-                        "name": "Consommation des communes",
-                        "url": reverse_lazy(
-                            "project:project-communes", args=[self.object.id]
-                        ),
-                        "display": True,
-                        "gradient_url": reverse_lazy(
-                            "project:gradient", args=[self.object.id, "json"]
-                        ),
-                        "level": "2",
-                        "color_property_name": "artif_area",
-                    },
-                ],
+                "name": "Consommation des communes",
+                "url": reverse_lazy("project:project-communes", args=[self.object.id]),
+                "display": True,
+                "gradient_url": self.get_gradient_url(),
+                "level": "2",
+                "color_property_name": "artif_area",
             }
+        ] + list(layers)
+        return super().get_layers_list(*layers)
+
+    def get_gradient(self):
+        fields = Cerema.get_art_field(
+            self.object.analyse_start_date, self.object.analyse_end_date
         )
-        return super().get_context_data(**kwargs)
+        qs = (
+            self.object.get_cerema_cities()
+            .annotate(conso=sum([F(f) for f in fields]) / 10000)
+            .values("city_name")
+            .annotate(conso=Sum(F("conso")))
+            .order_by("conso")
+        )
+        if qs.count() <= 9:
+            boundaries = sorted([i["conso"] for i in qs])
+        else:
+            boundaries = jenks_breaks([i["conso"] for i in qs], nb_class=9)[1:]
+        data = [
+            {"value": v, "color": c.hex_l}
+            for v, c in zip(boundaries, get_yellow2red_gradient(len(boundaries)))
+        ]
+        return JsonResponse(data, safe=False)
+
+
+class CityArtifMapView(BaseThemeMap):
+    title = "Artificialisation des communes de mon territoire"
+    url_name = "theme-city-artif"
+
+    def get_layers_list(self, *layers):
+        layers = [
+            {
+                "name": "Consommation des communes",
+                "url": reverse_lazy("project:project-communes", args=[self.object.id]),
+                "display": True,
+                "gradient_url": self.get_gradient_url(),
+                "level": "2",
+                "color_property_name": "conso_1121_art",
+            },
+        ] + list(layers)
+        return super().get_layers_list(*layers)
+
+    def get_gradient(self):
+        fields = Cerema.get_art_field(
+            self.object.analyse_start_date, self.object.analyse_end_date
+        )
+        qs = (
+            self.object.get_cerema_cities()
+            .annotate(conso=sum([F(f) for f in fields]) / 10000)
+            .values("city_name")
+            .annotate(conso=Sum(F("conso")))
+            .order_by("conso")
+        )
+        if qs.count() <= 9:
+            boundaries = sorted([i["conso"] for i in qs])
+        else:
+            boundaries = jenks_breaks([i["conso"] for i in qs], nb_class=9)[1:]
+        data = [
+            {"value": v, "color": c.hex_l}
+            for v, c in zip(boundaries, get_yellow2red_gradient(len(boundaries)))
+        ]
+        return JsonResponse(data, safe=False)
 
 
 class ProjectGradientView(GroupMixin, LoginRequiredMixin, DetailView):
     queryset = Project.objects.all()
     template_name = "project/gradient.html"
 
-    def get_level(self):
-        level = self.kwargs.get("level", self.object.level)
-        if level == AdminRef.COMMUNE:
-            return "city_name"
-        elif level == AdminRef.EPCI:
-            return "epci_name"
-        elif level == AdminRef.DEPARTEMENT:
-            return "dept_name"
-        elif level == AdminRef.REGION:
-            return "region_name"
-        elif level == AdminRef.SCOT:
-            return "scot"
-        else:
-            return "city_name"
-
     def get_gradient(self):
-        # level = self.get_level()
         fields = Cerema.get_art_field(
             self.object.analyse_start_date, self.object.analyse_end_date
         )
@@ -421,11 +480,3 @@ class ProjectGradientView(GroupMixin, LoginRequiredMixin, DetailView):
         kwargs["gradients"] = self.get_gradient()
         kwargs["headers"] = self.request.headers
         return super().get_context_data(**kwargs)
-
-    def get(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        if self.kwargs["format"] == "json":
-            return JsonResponse(self.get_gradient(), safe=False)
-        else:
-            context = self.get_context_data(object=self.object)
-            return self.render_to_response(context)
