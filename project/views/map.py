@@ -1,7 +1,8 @@
 from jenkspy import jenks_breaks
 
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import Max, Sum, F
+from django.db.models import Max, Sum, F, FloatField
+from django.db.models.functions import Cast
 from django.http import JsonResponse
 from django.urls import reverse_lazy
 from django.views.generic import DetailView
@@ -263,6 +264,7 @@ class BaseThemeMap(GroupMixin, DetailView):
     queryset = Project.objects.all()
     template_name = "carto/theme_map.html"
     context_object_name = "project"
+    scale_size = 5
     title = "To be set"
     url_name = "to be set"
 
@@ -402,10 +404,12 @@ class CitySpaceConsoMapView(BaseThemeMap):
             .annotate(conso=Sum(F("conso")))
             .order_by("conso")
         )
-        if qs.count() <= 9:
+        if qs.count() <= self.scale_size:
             boundaries = sorted([i["conso"] for i in qs])
         else:
-            boundaries = jenks_breaks([i["conso"] for i in qs], nb_class=9)[1:]
+            boundaries = jenks_breaks(
+                [i["conso"] for i in qs], nb_class=self.scale_size
+            )[1:]
         data = [
             {"value": v, "color": c.hex_l}
             for v, c in zip(boundaries, get_yellow2red_gradient(len(boundaries)))
@@ -420,31 +424,28 @@ class CityArtifMapView(BaseThemeMap):
     def get_layers_list(self, *layers):
         layers = [
             {
-                "name": "Consommation des communes",
+                "name": self.title,
                 "url": reverse_lazy("project:project-communes", args=[self.object.id]),
                 "display": True,
                 "gradient_url": self.get_gradient_url(),
                 "level": "2",
-                "color_property_name": "conso_1121_art",
+                "color_property_name": "surface_artif",
             },
         ] + list(layers)
         return super().get_layers_list(*layers)
 
     def get_gradient(self):
-        fields = Cerema.get_art_field(
-            self.object.analyse_start_date, self.object.analyse_end_date
+        boundaries = (
+            self.object.cities.all()
+            .filter(surface_artif__isnull=False)
+            .annotate(artif=Cast("surface_artif", output_field=FloatField()))
+            .order_by("artif")
+            .values_list("artif", flat=True)
         )
-        qs = (
-            self.object.get_cerema_cities()
-            .annotate(conso=sum([F(f) for f in fields]) / 10000)
-            .values("city_name")
-            .annotate(conso=Sum(F("conso")))
-            .order_by("conso")
-        )
-        if qs.count() <= 9:
-            boundaries = sorted([i["conso"] for i in qs])
-        else:
-            boundaries = jenks_breaks([i["conso"] for i in qs], nb_class=9)[1:]
+        if len(boundaries) == 0:
+            boundaries = [1]
+        elif len(boundaries) > self.scale_size:
+            boundaries = jenks_breaks(boundaries, nb_class=self.scale_size)[1:]
         data = [
             {"value": v, "color": c.hex_l}
             for v, c in zip(boundaries, get_yellow2red_gradient(len(boundaries)))
