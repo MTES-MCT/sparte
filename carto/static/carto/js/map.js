@@ -324,7 +324,7 @@ function GeoLayer(name, url) {
             // use provided scale and color
             // return gray in case of unset
             // round number before comparison to avoid incorrect behavior
-        let item = this.scale.find((item) => property_value < item.value)
+        let item = this.scale.find((item) => property_value <= item.value)
             // si on a pas trouvé, on doit être sur la dernière valeur de scale
             // donc le find n'est jamais vrai, on va donc récupérer la dernière
             // valeur pour initialiser item
@@ -394,23 +394,19 @@ function GeoLayer(name, url) {
         let property = this.color_property_name
         let property_value = feature.properties[property]
         let legend = '<h4>' + this.name + '</h4>'
-        let bold = false
         let formater = new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 1 })
-        let val = formater.format(property_value)
-        legend = legend + `Propriété utilisée: ${get_info_label(property)} (${val})<br\>`
+        legend = legend + `Propriété utilisée: ${get_info_label(property)} (${formater.format(property_value)})<br\>`
 
+        let prev_value = 0
         for (i = 0; i < this.scale.length; i++) {
             let color = this.scale[i].color
-            let value = formater.format(this.scale[i].value)
-            let next_value = i + 1 < this.scale.length ? this.scale[i + 1].value : '+'
-            let print_next_value = next_value == '+' ? '+' : formater.format(next_value)
             legend = legend + `<svg class="me-2" width="18" height="18" xmlns="http://www.w3.org/2000/svg" version="1.1"><rect x="0" y="0" width="18" height="18" fill="${color}"/></svg>`
-            if ((bold == false) && (i + 1 == this.scale.length || property_value < next_value)) {
-                legend = legend + `<b>${value} &ndash; ${print_next_value}</b></br>`
-                bold = true
+            if ((prev_value < property_value) && (property_value <= this.scale[i].value || i+1 == this.scale.length)) {
+                legend = legend + `<b>${formater.format(prev_value)} &ndash; ${formater.format(this.scale[i].value)}</b></br>`
             } else {
-                legend = legend + `${value} &ndash; ${print_next_value}</br>`
+                legend = legend + `${formater.format(prev_value)} &ndash; ${formater.format(this.scale[i].value)}</br>`
             }
+            prev_value = this.scale[i].value
         }
         return legend
     }

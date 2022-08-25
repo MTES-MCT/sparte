@@ -33,6 +33,7 @@ class ProjectCommuneSerializer(gis_serializers.GeoFeatureModelSerializer):
     conso_1121_art = serializers.FloatField()
     conso_1121_hab = serializers.FloatField()
     conso_1121_act = serializers.FloatField()
+    surface_artif = serializers.FloatField()
     artif_evo = ArtifEvolutionSubSerializer(
         source="communediff_set", many=True, read_only=True
     )
