@@ -20,6 +20,7 @@ from public_data.models import (
     Cerema,
     Land,
     CommuneDiff,
+    CommunePop,
     CommuneSol,
     CouvertureSol,
     Departement,
@@ -494,6 +495,20 @@ class Project(BaseProject):
                 # if val is not None
             }
         return self._conso_per_year
+
+    def get_land_pop_per_year(self, level=None):
+        if not level:
+            # fall back on default value
+            level = self.level
+        cities = (
+            CommunePop.objects.filter(city__in=self.cities.all())
+            .filter(year__gte=self.analyse_start_date)
+            .filter(year__lte=self.analyse_end_date)
+        )
+        data = collections.defaultdict(lambda: dict())
+        for city in cities:
+            data[city.city.name][str(city.year)] = city.pop
+        return data
 
     def get_land_conso_per_year(self, level):
         """Return conso data aggregated by a specific level
