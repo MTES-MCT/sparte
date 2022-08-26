@@ -1,5 +1,5 @@
 import logging
-import pandas as pd
+from openpyxl import load_workbook
 
 from django.core.management.base import BaseCommand
 
@@ -24,32 +24,54 @@ class Command(BaseCommand):
         self.upload_pop()
         logger.info("End loading INSEE data")
 
-    def upload_pop(self):
-        logger.info("Load population from Excel file on S3")
-        remote_file_path = "base-pop-historiques-1876-2019.xlsx"
+    def get(self, remote_file_path, headers):
         logger.info(f"file={remote_file_path}")
-        file_stream = DataStorage().open(remote_file_path)
-        # hook for testing
-        file_stream = "notebooks/base-pop-historiques-1876-2019(1).xlsx"
-        df = pd.DataFrame(pd.read_excel(file_stream))
-        # file_stream.close()
-        df.columns = df.T[4]
-        df = df.iloc[5:, :18]
+        with DataStorage().open(remote_file_path) as file_stream:
+            wb = load_workbook(file_stream, data_only=True)
+        ws = wb.active
+        return {
+            r[0]: dict(zip(headers, r))
+            for r in ws.iter_rows(min_row=2, max_col=len(headers), values_only=True)
+        }
+
+    def get_pop_data(self):
+        remote_file_path = "base-pop-historiques-1876-2019.xlsx"
+        headers = ["CODGEO", "LIBGEO"] + [f"P{year}" for year in range(2019, 2005, -1)]
+        return self.get(remote_file_path, headers)
+
+    def get_household_data(self):
+        remote_file_path = "base-cc-coupl-fam-men-2018-lite.xlsx"
+        headers = ["CODGEO", "LIBGEO"] + [f"M{y}" for y in range(2018, 2007, -1)]
+        return self.get(remote_file_path, headers)
+
+    def get_data(self):
+        pop = self.get_pop_data()
+        household = self.get_household_data()
+        for insee, data in pop.items():
+            data.update(household[str(insee)])
+        return list(pop.values())
+
+    def upload_pop(self):
+        logger.info("Load population and household from Excel file on S3")
         logger.info("Delete previous data and reset id counter")
         TruncateComPop.truncate()
         todo = []
-        for row in df.iterrows():
-            items = row[1].tolist()
+        for row in self.get_data():
             try:
-                city = Commune.objects.get(insee=items[0])
+                city = Commune.objects.get(insee=row["CODGEO"])
             except Commune.DoesNotExist:
                 continue
             todo += [
-                CommunePop(city=city, year=(2019 - i), pop=item)
-                for i, item in enumerate(items[4:])
+                CommunePop(
+                    city=city,
+                    year=y,
+                    pop=row.get(f"P{y}", None),
+                    household=row.get(f"M{y}", None),
+                )
+                for y in range(2019, 2005, -1)
             ]
             if len(todo) >= 10000:
-                logger.info(f"Save to bdd, INSEE so far {items[0]}")
+                logger.info(f"Save to bdd, INSEE so far {row['CODGEO']}")
                 CommunePop.objects.bulk_create(todo)
                 del todo
                 todo = []
