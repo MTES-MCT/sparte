@@ -718,11 +718,29 @@ class NetArtifComparaisonChart(ProjectChart):
         for data in self.get_series().values():
             for period, value in data.items():
                 total[period] += value
-        # self.add_serie(
-        #     self.project.name,
-        #     total,
-        #     **{
-        #         "color": "#ff0000",
-        #         "dashStyle": "ShortDash",
-        #     },
-        # )
+
+
+class ConsoComparisonPopChart(ProjectChart):
+    name = "conso comparison"
+    param = {
+        "title": {"text": ""},
+        "yAxis": {"title": {"text": "Consommation par habitant (en ha)"}},
+        "xAxis": {"type": "category"},
+        "legend": {"layout": "vertical", "align": "right", "verticalAlign": "top"},
+        "series": [],
+    }
+
+    def get_series(self):
+        if not self.series:
+            pop = self.project.get_land_pop_per_year()
+            conso = self.project.get_land_conso_per_year("city_name")
+            self.series = collections.defaultdict(lambda: dict())
+            for city_name, data in conso.items():
+                for year, val in data.items():
+                    self.series[city_name][year] = None
+                    try:
+                        self.series[city_name][year] = val / pop[city_name][year]
+                    except (KeyError, ValueError):
+                        continue
+            self.series = dict(self.series)
+        return self.series
