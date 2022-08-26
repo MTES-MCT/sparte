@@ -425,7 +425,8 @@ class CommunePop(models.Model):
         "Millésime",
         validators=[MinValueValidator(2000), MaxValueValidator(2050)],
     )
-    pop = models.IntegerField("Population")
+    pop = models.IntegerField("Population", blank=True, null=True)
+    household = models.IntegerField("Nb ménages", blank=True, null=True)
 
 
 class Land:
