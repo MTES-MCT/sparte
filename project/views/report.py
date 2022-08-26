@@ -493,3 +493,29 @@ class ProjectReportDownloadView(GroupMixin, CreateView):
 
     def get_success_url(self):
         return self.object.project.get_absolute_url()
+
+
+class ProjectReportConsoRelativeView(GroupMixin, DetailView):
+    queryset = Project.objects.all()
+    template_name = "project/rapport_conso_relative.html"
+    context_object_name = "project"
+
+    def get_context_breadcrumbs(self):
+        breadcrumbs = super().get_context_breadcrumbs()
+        breadcrumbs.append({"href": None, "title": "Rapport consommation relative"})
+        return breadcrumbs
+
+    def get_context_data(self, **kwargs):
+        project = kwargs.get("object", self.get_object())
+
+        pop_chart = charts.ConsoComparisonPopChart(project)
+
+        kwargs.update(
+            {
+                "active_page": "consommation",
+                "pop_chart": pop_chart,
+                "pop_table": add_total_line_column(pop_chart.get_series()),
+            }
+        )
+
+        return super().get_context_data(**kwargs)

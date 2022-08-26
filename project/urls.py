@@ -57,6 +57,11 @@ urlpatterns = [
         views.ProjectReportCityGroupView.as_view(),
         name="report_city_group",
     ),
+    path(
+        "<int:pk>/tableau-de-bord/consommation-relative",
+        views.ProjectReportConsoRelativeView.as_view(),
+        name="report_conso_relative",
+    ),
     path("<int:pk>/map", views.ProjectMapView.as_view(), name="map"),
     path(
         "<int:pk>/carte/comprendre-mon-artificialisation",
