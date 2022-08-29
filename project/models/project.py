@@ -2,6 +2,7 @@ import collections
 from decimal import Decimal
 import pandas as pd
 import traceback
+from typing import Literal
 
 from django.conf import settings
 from django.contrib.gis.db import models as gis_models
@@ -496,16 +497,22 @@ class Project(BaseProject):
             }
         return self._conso_per_year
 
-    def get_pop_change_per_year(self):
+    def get_pop_change_per_year(
+        self, criteria: Literal["pop", "household"] = "pop"
+    ) -> dict():
         cities = (
             CommunePop.objects.filter(city__in=self.cities.all())
             .filter(year__gte=self.analyse_start_date)
             .filter(year__lte=self.analyse_end_date)
             .values("year")
             .annotate(pop_progression=Sum("pop_change"))
+            .annotate(household_progression=Sum("household_change"))
             .order_by("year")
         )
-        data = {str(city["year"]): city["pop_progression"] for city in cities}
+        if criteria == "pop":
+            data = {str(city["year"]): city["pop_progression"] for city in cities}
+        else:
+            data = {str(city["year"]): city["household_progression"] for city in cities}
         return {year: data.get(year, None) for year in self.years}
 
     def get_land_conso_per_year(self, level):
@@ -563,7 +570,10 @@ class Project(BaseProject):
             )
         return datas
 
-    def get_look_a_like_pop_change_per_year(self):
+    def get_look_a_like_pop_change_per_year(
+        self,
+        criteria: Literal["pop", "household"] = "pop",
+    ):
         """Return same data as get_pop_per_year but for land listed in
         look_a_like property"""
         datas = dict()
@@ -576,8 +586,7 @@ class Project(BaseProject):
         for public_key in keys:
             land = Land(public_key)
             datas[land.name] = land.get_pop_change_per_year(
-                self.analyse_start_date,
-                self.analyse_end_date,
+                self.analyse_start_date, self.analyse_end_date, criteria=criteria
             )
         return datas
 
