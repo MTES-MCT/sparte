@@ -25,6 +25,57 @@ Rapport comparaison
 
             <div class="w-100 box p-4">
                 <h3>
+                    Surface consommée relativement à la surface du territoire
+                </h3>
+
+                <div id="surface_chart"></div>
+
+                <table class="table table-striped table-sm table-borderless mt-5">
+                    <thead>
+                        <tr>
+                            <th scope="col">{{ col_name }}</th>
+                            <th scope="col" class="text-end">Surface</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for city_name, data in surface_table.items %}
+                        <tr>
+                            <th scope="row">{{ city_name }}</th>
+                            {% for year, val in data.items %}
+                            <td align="right">{{ val|floatformat:0 }} Ha</td>
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                <div id="conso_surface_chart" class="mt-5"></div>
+
+                <table class="table table-striped table-sm table-borderless mt-5">
+                    <thead>
+                        <tr>
+                            <th scope="col">{{ col_name }}</th>
+                            {% for year in project.years %}
+                            <th scope="col" class="text-end">{{ year }}</th>
+                            {% endfor %}
+                            <th scope="col" class="text-end">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for city_name, data in conso_surface_table.items %}
+                        <tr>
+                            <th scope="row">{{ city_name }}</th>
+                            {% for year, val in data.items %}
+                            <td align="right">{{ val|floatformat:1 }}</td>
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="w-100 box p-4">
+                <h3>
                     Surface consommée relativement à la population du territoire
                 </h3>
 
@@ -45,7 +96,7 @@ Rapport comparaison
                         <tr>
                             <th scope="row">{{ city_name }}</th>
                             {% for year, val in data.items %}
-                            <td align="right">{{ val|stringformat:"+d" }}</td>
+                            <td align="right">{{ val|floatformat:0 }}</td>
                             {% endfor %}
                         </tr>
                         {% endfor %}
@@ -69,13 +120,14 @@ Rapport comparaison
                         <tr>
                             <th scope="row">{{ city_name }}</th>
                             {% for year, val in data.items %}
-                            <td align="right">{{ val|stringformat:"+.1f" }}</td>
+                            <td align="right">{{ val|floatformat:0 }}</td>
                             {% endfor %}
                         </tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
+
             <div class="w-100 box p-4">
                 <h3>
                     Surface consommée relativement au nombre de ménages du territoire
@@ -98,7 +150,7 @@ Rapport comparaison
                         <tr>
                             <th scope="row">{{ city_name }}</th>
                             {% for year, val in data.items %}
-                            <td align="right">{{ val|stringformat:"+d" }}</td>
+                            <td align="right">{{ val|floatformat:0 }}</td>
                             {% endfor %}
                         </tr>
                         {% endfor %}
@@ -143,6 +195,8 @@ Rapport comparaison
 {% display_chart 'conso_pop_chart' conso_pop_chart CSP_NONCE %}
 {% display_chart 'household_chart' household_chart CSP_NONCE %}
 {% display_chart 'conso_household_chart' conso_household_chart CSP_NONCE %}
+{% display_chart 'surface_chart' surface_chart CSP_NONCE %}
+{% display_chart 'conso_surface_chart' conso_surface_chart CSP_NONCE %}
 {% endlocalize %}
 {% endblock %}
 
