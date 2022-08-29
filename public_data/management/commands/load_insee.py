@@ -55,18 +55,30 @@ class Command(BaseCommand):
         logger.info("Load population and household from Excel file on S3")
         logger.info("Delete previous data and reset id counter")
         TruncateComPop.truncate()
+        logger.info("Begin looping on Excel rows")
         todo = []
         for row in self.get_data():
             try:
                 city = Commune.objects.get(insee=row["CODGEO"])
             except Commune.DoesNotExist:
                 continue
+
+            def diff(prefix, year):
+                try:
+                    current = row.get(f"{prefix}{year}", None)
+                    previous = row.get(f"{prefix}{year-1}", None)
+                    return current - previous
+                except (TypeError, ValueError):
+                    return None
+
             todo += [
                 CommunePop(
                     city=city,
                     year=y,
                     pop=row.get(f"P{y}", None),
+                    pop_change=diff("P", y),
                     household=row.get(f"M{y}", None),
+                    household_change=diff("M", y),
                 )
                 for y in range(2019, 2005, -1)
             ]
