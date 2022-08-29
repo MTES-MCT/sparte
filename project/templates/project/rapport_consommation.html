@@ -163,14 +163,12 @@ Rapport consommation
                     </a>
                     Comparaison avec les territoires voisins
                 </h3>
-                <div class="clearfix">
-                    <a href="{% url 'project:report_conso_relative' project.id %}">Voir toutes les comparaisons</a>
-                    <div class="form-check form-switch float-end">
-                        <label class="form-check-label" for="flexSwitchCheckDefault">Pondérer par la surface</label>
-                        <input class="form-check-input" type="checkbox" id="conso_territory_reltive" {% if relative %}CHECKED{% endif %}>
-                    </div>
-                </div>
                 <div id="chart_2" class="flex-fill"></div>
+                <p class="mt-5">
+                    <a href="{% url 'project:report_conso_relative' project.id %}">
+                        <strong>Voir aussi :</strong> toutes les comparaisons disponibles
+                    </a>
+                </p>
             </div>
 
             <div class="box scrollme-x p-4">

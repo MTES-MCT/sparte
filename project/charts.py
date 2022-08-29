@@ -25,10 +25,12 @@ class ConsoComparisonChart(ProjectChart):
     def __init__(self, *args, **kwargs):
         self.relative = kwargs.pop("relative") if "relative" in kwargs else False
         super().__init__(*args, **kwargs)
+        if self.relative:
+            self.chart["title"]["text"] = "Consommation proportionnelle à la surface"
 
     def get_series(self):
         datas = dict()
-        for land in self.project.get_lands():
+        for land in self.project.get_look_a_like():
             coef = self.project.area / land.area if self.relative else 1
             datas[land.name] = land.get_conso_per_year(
                 self.project.analyse_start_date,
@@ -731,6 +733,12 @@ class PopChart(ProjectChart):
         "series": [],
     }
 
+    def get_options(self, serie_name):
+        if serie_name == self.project.name:
+            return {"color": "#ff0000"}
+        else:
+            return super().get_options(serie_name)
+
     def get_series(self):
         if not self.series:
             self.series = {self.project.name: self.project.get_pop_change_per_year()}
@@ -752,6 +760,12 @@ class ConsoComparisonPopChart(ProjectChart):
         "legend": {"layout": "vertical", "align": "right", "verticalAlign": "middle"},
         "series": [],
     }
+
+    def get_options(self, serie_name):
+        if serie_name == self.project.name:
+            return {"color": "#ff0000", "dashStyle": "ShortDash"}
+        else:
+            return super().get_options(serie_name)
 
     def get_series(self):
         if not self.series:
@@ -791,6 +805,12 @@ class HouseholdChart(ProjectChart):
         "series": [],
     }
 
+    def get_options(self, serie_name):
+        if serie_name == self.project.name:
+            return {"color": "#ff0000"}
+        else:
+            return super().get_options(serie_name)
+
     def get_series(self):
         if not self.series:
             self.series = {
@@ -819,6 +839,12 @@ class ConsoComparisonHouseholdChart(ProjectChart):
         "series": [],
     }
 
+    def get_options(self, serie_name):
+        if serie_name == self.project.name:
+            return {"color": "#ff0000", "dashStyle": "ShortDash"}
+        else:
+            return super().get_options(serie_name)
+
     def get_series(self):
         if not self.series:
             self.series = collections.defaultdict(lambda: dict())
@@ -845,4 +871,34 @@ class ConsoComparisonHouseholdChart(ProjectChart):
                         data[year] = conso / land_pop[year]
                     else:
                         data[year] = None
+        return self.series
+
+
+class SurfaceChart(ProjectChart):
+    name = "Surface des territoires"
+    param = {
+        "chart": {"type": "column"},
+        "title": {"text": "Surface des territoires"},
+        "yAxis": {"title": {"text": "Surface (en ha)"}},
+        "xAxis": {"type": "category"},
+        "legend": {"layout": "vertical", "align": "right", "verticalAlign": "middle"},
+        "series": [],
+    }
+
+    def get_options(self, serie_name):
+        if serie_name == self.project.name:
+            return {"color": "#ff0000"}
+        else:
+            return super().get_options(serie_name)
+
+    def get_series(self):
+        if not self.series:
+            self.series = {self.project.name: {"surface": self.project.area}}
+            self.series.update(
+                {
+                    land.name: {"surface": land.area}
+                    for land in self.project.get_look_a_like()
+                }
+            )
+
         return self.series

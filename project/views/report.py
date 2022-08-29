@@ -46,13 +46,7 @@ class ProjectReportConsoView(GroupMixin, DetailView):
         groups_names = groups_names.exclude(group_name=None).distinct()
         groups_names = groups_names.values_list("group_name", flat=True)
 
-        # check conso relative required or not
-        relative_required = self.request.GET.get("relative", "false")
-        if relative_required == "true":
-            relative = True
-        else:
-            relative = False
-        comparison_chart = charts.ConsoComparisonChart(project, relative=relative)
+        comparison_chart = charts.ConsoComparisonChart(project, relative=False)
 
         kwargs.update(
             {
@@ -80,7 +74,6 @@ class ProjectReportConsoView(GroupMixin, DetailView):
                     project, series=det_chart.get_series()
                 ),
                 "comparison_chart": comparison_chart,
-                "relative": relative,
                 "commune_chart": chart_conso_cities,
                 # tables
                 "communes_data_table": add_total_line_column(
@@ -512,6 +505,8 @@ class ProjectReportConsoRelativeView(GroupMixin, DetailView):
         pop_chart = charts.PopChart(project)
         household_chart = charts.HouseholdChart(project)
         conso_household_chart = charts.ConsoComparisonHouseholdChart(project)
+        surface_chart = charts.SurfaceChart(project)
+        conso_surface_chart = charts.ConsoComparisonChart(project, relative=True)
 
         kwargs.update(
             {
@@ -529,6 +524,12 @@ class ProjectReportConsoRelativeView(GroupMixin, DetailView):
                 "conso_household_chart": conso_household_chart,
                 "conso_household_table": add_total_line_column(
                     conso_household_chart.get_series(), line=False
+                ),
+                "surface_chart": surface_chart,
+                "surface_table": surface_chart.get_series(),
+                "conso_surface_chart": conso_surface_chart,
+                "conso_surface_table": add_total_line_column(
+                    conso_surface_chart.get_series(), line=False
                 ),
             }
         )
