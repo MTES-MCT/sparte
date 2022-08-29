@@ -23,11 +23,11 @@ class Request(models.Model):
     )
     email = models.EmailField("E-mail")
     project = models.ForeignKey(
-        Project, on_delete=models.CASCADE, verbose_name="Projet"
+        Project, on_delete=models.SET_NULL, verbose_name="Projet", blank=True, null=True
     )
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
         verbose_name="demandeur",
         blank=True,
         null=True,
