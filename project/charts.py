@@ -40,7 +40,6 @@ class ConsoComparisonChart(ProjectChart):
         return datas
 
     def add_series(self):
-        super().add_series()
         self.add_serie(
             self.project.name,
             self.project.get_conso_per_year(),
@@ -49,6 +48,7 @@ class ConsoComparisonChart(ProjectChart):
                 "dashStyle": "ShortDash",
             },
         )
+        super().add_series()
 
 
 class ConsoCommuneChart(ProjectChart):
