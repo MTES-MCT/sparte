@@ -187,6 +187,19 @@ class LandMixin:
     def get_cities(self):
         raise NotImplementedError("need to be overrided")
 
+    def get_pop_change_per_year(self, start="2010", end="2020"):
+        cities = (
+            CommunePop.objects.filter(city__in=self.get_cities())
+            .filter(year__gte=start, year__lte=end)
+            .values("year")
+            .annotate(pop_progression=Sum("pop_change"))
+            .order_by("year")
+        )
+        data = {city["year"]: city["pop_progression"] for city in cities}
+        return {
+            str(year): data.get(year, None) for year in range(int(start), int(end) + 1)
+        }
+
 
 class Region(LandMixin, GetDataFromCeremaMixin, models.Model):
     source_id = models.CharField("Identifiant source", max_length=50)
@@ -216,7 +229,7 @@ class Region(LandMixin, GetDataFromCeremaMixin, models.Model):
         return Cerema.objects.filter(region_id=self.source_id)
 
     def get_cities(self):
-        return list(Commune.objects.filter(departement__region=self))
+        return Commune.objects.filter(departement__region=self)
 
     def __str__(self):
         return self.name
@@ -248,7 +261,7 @@ class Departement(LandMixin, GetDataFromCeremaMixin, models.Model):
         return Cerema.objects.filter(dept_id=self.source_id)
 
     def get_cities(self):
-        return list(self.commune_set.all())
+        return self.commune_set.all()
 
     def __str__(self):
         return self.name
@@ -283,7 +296,7 @@ class Epci(LandMixin, GetDataFromCeremaMixin, models.Model):
         return Cerema.objects.filter(epci_id=self.source_id)
 
     def get_cities(self):
-        return list(self.commune_set.all())
+        return self.commune_set.all()
 
     def __str__(self):
         return self.name
@@ -426,7 +439,9 @@ class CommunePop(models.Model):
         validators=[MinValueValidator(2000), MaxValueValidator(2050)],
     )
     pop = models.IntegerField("Population", blank=True, null=True)
+    pop_change = models.IntegerField("Population", blank=True, null=True)
     household = models.IntegerField("Nb ménages", blank=True, null=True)
+    household_change = models.IntegerField("Population", blank=True, null=True)
 
 
 class Land:
