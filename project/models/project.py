@@ -496,19 +496,17 @@ class Project(BaseProject):
             }
         return self._conso_per_year
 
-    def get_land_pop_per_year(self, level=None):
-        if not level:
-            # fall back on default value
-            level = self.level
+    def get_pop_change_per_year(self):
         cities = (
             CommunePop.objects.filter(city__in=self.cities.all())
             .filter(year__gte=self.analyse_start_date)
             .filter(year__lte=self.analyse_end_date)
+            .values("year")
+            .annotate(pop_progression=Sum("pop_change"))
+            .order_by("year")
         )
-        data = collections.defaultdict(lambda: dict())
-        for city in cities:
-            data[city.city.name][str(city.year)] = city.pop
-        return data
+        data = {str(city["year"]): city["pop_progression"] for city in cities}
+        return {year: data.get(year, None) for year in self.years}
 
     def get_land_conso_per_year(self, level):
         """Return conso data aggregated by a specific level
@@ -560,6 +558,24 @@ class Project(BaseProject):
         for public_key in keys:
             land = Land(public_key)
             datas[land.name] = land.get_conso_per_year(
+                self.analyse_start_date,
+                self.analyse_end_date,
+            )
+        return datas
+
+    def get_look_a_like_pop_change_per_year(self):
+        """Return same data as get_pop_per_year but for land listed in
+        look_a_like property"""
+        datas = dict()
+        if not self.look_a_like:
+            return datas
+        try:
+            keys = self.look_a_like.split(";")
+        except AttributeError:
+            keys = set()
+        for public_key in keys:
+            land = Land(public_key)
+            datas[land.name] = land.get_pop_change_per_year(
                 self.analyse_start_date,
                 self.analyse_end_date,
             )

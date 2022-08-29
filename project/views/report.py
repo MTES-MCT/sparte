@@ -508,13 +508,18 @@ class ProjectReportConsoRelativeView(GroupMixin, DetailView):
     def get_context_data(self, **kwargs):
         project = kwargs.get("object", self.get_object())
 
-        pop_chart = charts.ConsoComparisonPopChart(project)
+        conso_pop_chart = charts.ConsoComparisonPopChart(project)
+        pop_chart = charts.PopChart(project)
 
         kwargs.update(
             {
                 "active_page": "consommation",
                 "pop_chart": pop_chart,
-                "pop_table": add_total_line_column(pop_chart.get_series()),
+                "pop_table": add_total_line_column(pop_chart.get_series(), line=False),
+                "conso_pop_chart": conso_pop_chart,
+                "conso_pop_table": add_total_line_column(
+                    conso_pop_chart.get_series(), line=False
+                ),
             }
         )
 

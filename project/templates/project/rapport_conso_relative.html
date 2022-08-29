@@ -28,9 +28,9 @@ Rapport comparaison
                     Surface consommée relativement à la population du territoire
                 </h3>
 
-                <div id="pop_chart" class=""></div>
+                <div id="pop_chart"></div>
 
-                <table class="table table-striped table-sm table-borderless">
+                <table class="table table-striped table-sm table-borderless mt-5">
                     <thead>
                         <tr>
                             <th scope="col">{{ col_name }}</th>
@@ -45,7 +45,84 @@ Rapport comparaison
                         <tr>
                             <th scope="row">{{ city_name }}</th>
                             {% for year, val in data.items %}
-                            <td align="right">+{{ val|floatformat:1 }}</td>
+                            <td align="right">{{ val|stringformat:"+d" }}</td>
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                <div id="conso_pop_chart" class="mt-5"></div>
+
+                <table class="table table-striped table-sm table-borderless mt-5">
+                    <thead>
+                        <tr>
+                            <th scope="col">{{ col_name }}</th>
+                            {% for year in project.years %}
+                            <th scope="col" class="text-end">{{ year }}</th>
+                            {% endfor %}
+                            <th scope="col" class="text-end">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for city_name, data in conso_pop_table.items %}
+                        <tr>
+                            <th scope="row">{{ city_name }}</th>
+                            {% for year, val in data.items %}
+                            <td align="right">{{ val|stringformat:"+.1f" }}</td>
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="w-100 box p-4">
+                <h3>
+                    Surface consommée relativement au nombre de ménages du territoire
+                </h3>
+
+                <div id="household_chart"></div>
+
+                <table class="table table-striped table-sm table-borderless mt-5">
+                    <thead>
+                        <tr>
+                            <th scope="col">{{ col_name }}</th>
+                            {% for year in project.years %}
+                            <th scope="col" class="text-end">{{ year }}</th>
+                            {% endfor %}
+                            <th scope="col" class="text-end">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for city_name, data in household_table.items %}
+                        <tr>
+                            <th scope="row">{{ city_name }}</th>
+                            {% for year, val in data.items %}
+                            <td align="right">{{ val|stringformat:"+d" }}</td>
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                <div id="conso_household_chart" class="mt-5"></div>
+
+                <table class="table table-striped table-sm table-borderless mt-5">
+                    <thead>
+                        <tr>
+                            <th scope="col">{{ col_name }}</th>
+                            {% for year in project.years %}
+                            <th scope="col" class="text-end">{{ year }}</th>
+                            {% endfor %}
+                            <th scope="col" class="text-end">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for city_name, data in conso_household_table.items %}
+                        <tr>
+                            <th scope="row">{{ city_name }}</th>
+                            {% for year, val in data.items %}
+                            <td align="right">{{ val|stringformat:"+.1f" }}</td>
                             {% endfor %}
                         </tr>
                         {% endfor %}
@@ -63,6 +140,7 @@ Rapport comparaison
 {% sri_static "highcharts/js/exporting.js" %}
 {% french_translation %}
 {% display_chart 'pop_chart' pop_chart CSP_NONCE %}
+{% display_chart 'conso_pop_chart' conso_pop_chart CSP_NONCE %}
 {% endlocalize %}
 {% endblock %}
 
