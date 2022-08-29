@@ -10,7 +10,7 @@ from project.models import Project, Request, ProjectCommune
 from project import tasks
 from project.utils import add_total_line_column
 
-from .mixins import GroupMixin
+from .mixins import GroupMixin, BreadCrumbMixin
 
 
 class ProjectReportConsoView(GroupMixin, DetailView):
@@ -418,7 +418,7 @@ class ProjectReportArtifView(GroupMixin, DetailView):
         return super().get_context_data(**kwargs)
 
 
-class ProjectReportDownloadView(GroupMixin, CreateView):
+class ProjectReportDownloadView(BreadCrumbMixin, CreateView):
     model = Request
     template_name = "project/rapport_download.html"
     fields = [
@@ -439,16 +439,15 @@ class ProjectReportDownloadView(GroupMixin, CreateView):
         )
         return breadcrumbs
 
-    def get_context_data(self, *args, **kwargs):
-        context = super().get_context_data(*args, **kwargs)
-        context.update(
+    def get_context_data(self, **kwargs):
+        kwargs.update(
             {
-                "project": self.get_object(),
+                "project": Project.objects.get(pk=self.kwargs["pk"]),
                 "url_bilan": app_parameter.BILAN_EXAMPLE,
                 "active_page": "download",
             }
         )
-        return context
+        return super().get_context_data(**kwargs)
 
     def get_initial(self):
         """Return the initial data to use for forms on this view."""
@@ -469,11 +468,11 @@ class ProjectReportDownloadView(GroupMixin, CreateView):
         # required to set the user who is logged as creator
         if self.request.user.is_authenticated:
             form.instance.user = self.request.user
-        form.instance.project = self.get_object()
-        self.object = form.save()
-        tasks.send_email_request_bilan.delay(self.object.id)
+        form.instance.project = Project.objects.get(pk=self.kwargs["pk"])
+        new_request = form.save()
+        tasks.send_email_request_bilan.delay(new_request.id)
         tasks.generate_word_diagnostic.apply_async(
-            (self.object.id,), link=tasks.send_word_diagnostic.s()
+            (new_request.id,), link=tasks.send_word_diagnostic.s()
         )
         messages.success(
             self.request,
@@ -482,10 +481,8 @@ class ProjectReportDownloadView(GroupMixin, CreateView):
                 "vous a été envoyé."
             ),
         )
-        return HttpResponseRedirect(self.get_success_url())
-
-    def get_success_url(self):
-        return self.object.project.get_absolute_url()
+        succes_url = new_request.project.get_absolute_url()
+        return HttpResponseRedirect(succes_url)
 
 
 class ProjectReportConsoRelativeView(GroupMixin, DetailView):
