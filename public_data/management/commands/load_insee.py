@@ -55,12 +55,12 @@ class Command(BaseCommand):
         logger.info("Load population and household from Excel file on S3")
         logger.info("Delete previous data and reset id counter")
         TruncateComPop.truncate()
+        data = self.get_data()
         logger.info("Begin looping on Excel rows")
         todo = []
-        for row in self.get_data():
-            try:
-                city = Commune.objects.get(insee=row["CODGEO"])
-            except Commune.DoesNotExist:
+        commune_list = {city.insee: city for city in Commune.objects.all()}
+        for row in data:
+            if not row["CODGEO"] in commune_list:
                 continue
 
             def diff(prefix, year):
@@ -73,7 +73,7 @@ class Command(BaseCommand):
 
             todo += [
                 CommunePop(
-                    city=city,
+                    city=commune_list[row["CODGEO"]],
                     year=y,
                     pop=row.get(f"P{y}", None),
                     pop_change=diff("P", y),
@@ -82,6 +82,8 @@ class Command(BaseCommand):
                 )
                 for y in range(2019, 2005, -1)
             ]
-            # if len(todo) >= 100000000:
-        logger.info(f"Save to bdd, INSEE so far {row['CODGEO']}")
-        CommunePop.objects.bulk_create(todo)
+            if len(todo) >= 10000:
+                logger.info(f"Save to bdd, INSEE so far {row['CODGEO']}")
+                CommunePop.objects.bulk_create(todo)
+                del todo
+                todo = []
