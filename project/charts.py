@@ -734,7 +734,7 @@ class PopChart(ProjectChart):
     def get_series(self):
         if not self.series:
             self.series = {self.project.name: self.project.get_pop_change_per_year()}
-            self.series.update(self.project.get_look_a_like_conso_per_year())
+            self.series.update(self.project.get_look_a_like_pop_change_per_year())
         return self.series
 
 
@@ -769,6 +769,74 @@ class ConsoComparisonPopChart(ProjectChart):
 
             lands_conso = self.project.get_look_a_like_conso_per_year()
             lands_pop = self.project.get_look_a_like_pop_change_per_year()
+            for land_name, land_data in lands_conso.items():
+                data = self.series[land_name]
+                land_pop = lands_pop[land_name]
+                for year, conso in land_data.items():
+                    if land_pop[year]:
+                        data[year] = conso / land_pop[year]
+                    else:
+                        data[year] = None
+        return self.series
+
+
+class HouseholdChart(ProjectChart):
+    name = "Project ménages bar chart"
+    param = {
+        "chart": {"type": "column"},
+        "title": {"text": "Evolution du nombre de ménages du territoire"},
+        "yAxis": {"title": {"text": "Evolution du nombre de ménages"}},
+        "xAxis": {"type": "category"},
+        "legend": {"layout": "vertical", "align": "right", "verticalAlign": "middle"},
+        "series": [],
+    }
+
+    def get_series(self):
+        if not self.series:
+            self.series = {
+                self.project.name: self.project.get_pop_change_per_year(
+                    criteria="household"
+                )
+            }
+            self.series.update(
+                self.project.get_look_a_like_pop_change_per_year(criteria="household")
+            )
+        return self.series
+
+
+class ConsoComparisonHouseholdChart(ProjectChart):
+    name = "conso comparison"
+    param = {
+        "title": {
+            "text": (
+                "Consommation d'espace en fonction de l'évolution du nombre de ménages"
+                " du territoire"
+            )
+        },
+        "yAxis": {"title": {"text": "Consommation par ménage (en ha)"}},
+        "xAxis": {"type": "category"},
+        "legend": {"layout": "vertical", "align": "right", "verticalAlign": "middle"},
+        "series": [],
+    }
+
+    def get_series(self):
+        if not self.series:
+            self.series = collections.defaultdict(lambda: dict())
+
+            self_pop = self.project.get_pop_change_per_year(criteria="household")
+            self_conso = self.project.get_conso_per_year()
+
+            data = self.series[self.project.name]
+            for year, pop_progression in self_pop.items():
+                if pop_progression:
+                    data[year] = self_conso[year] / pop_progression
+                else:
+                    data[year] = None
+
+            lands_conso = self.project.get_look_a_like_conso_per_year()
+            lands_pop = self.project.get_look_a_like_pop_change_per_year(
+                criteria="household"
+            )
             for land_name, land_data in lands_conso.items():
                 data = self.series[land_name]
                 land_pop = lands_pop[land_name]

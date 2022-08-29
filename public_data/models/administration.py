@@ -26,6 +26,7 @@ Afin de se référer à un Land, on utilise un identifiant unique :
     COMMUNE_[ID]
 """
 import re
+from typing import Literal
 
 from django.contrib.gis.db import models
 from django.core.exceptions import ObjectDoesNotExist
@@ -187,15 +188,24 @@ class LandMixin:
     def get_cities(self):
         raise NotImplementedError("need to be overrided")
 
-    def get_pop_change_per_year(self, start="2010", end="2020"):
+    def get_pop_change_per_year(
+        self,
+        start: str = "2010",
+        end: str = "2020",
+        criteria: Literal["pop", "household"] = "pop",
+    ):
         cities = (
             CommunePop.objects.filter(city__in=self.get_cities())
             .filter(year__gte=start, year__lte=end)
             .values("year")
             .annotate(pop_progression=Sum("pop_change"))
+            .annotate(household_progression=Sum("household_change"))
             .order_by("year")
         )
-        data = {city["year"]: city["pop_progression"] for city in cities}
+        if criteria == "pop":
+            data = {city["year"]: city["pop_progression"] for city in cities}
+        else:
+            data = {city["year"]: city["household_progression"] for city in cities}
         return {
             str(year): data.get(year, None) for year in range(int(start), int(end) + 1)
         }

@@ -510,6 +510,8 @@ class ProjectReportConsoRelativeView(GroupMixin, DetailView):
 
         conso_pop_chart = charts.ConsoComparisonPopChart(project)
         pop_chart = charts.PopChart(project)
+        household_chart = charts.HouseholdChart(project)
+        conso_household_chart = charts.ConsoComparisonHouseholdChart(project)
 
         kwargs.update(
             {
@@ -519,6 +521,14 @@ class ProjectReportConsoRelativeView(GroupMixin, DetailView):
                 "conso_pop_chart": conso_pop_chart,
                 "conso_pop_table": add_total_line_column(
                     conso_pop_chart.get_series(), line=False
+                ),
+                "household_chart": household_chart,
+                "household_table": add_total_line_column(
+                    household_chart.get_series(), line=False
+                ),
+                "conso_household_chart": conso_household_chart,
+                "conso_household_table": add_total_line_column(
+                    conso_household_chart.get_series(), line=False
                 ),
             }
         )
