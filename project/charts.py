@@ -720,27 +720,61 @@ class NetArtifComparaisonChart(ProjectChart):
                 total[period] += value
 
 
-class ConsoComparisonPopChart(ProjectChart):
-    name = "conso comparison"
+class PopChart(ProjectChart):
+    name = "Project population bar chart"
     param = {
-        "title": {"text": ""},
-        "yAxis": {"title": {"text": "Consommation par habitant (en ha)"}},
+        "chart": {"type": "column"},
+        "title": {"text": "Evolution de la population du territoire"},
+        "yAxis": {"title": {"text": "Evolution de la population"}},
         "xAxis": {"type": "category"},
-        "legend": {"layout": "vertical", "align": "right", "verticalAlign": "top"},
+        "legend": {"layout": "vertical", "align": "right", "verticalAlign": "middle"},
         "series": [],
     }
 
     def get_series(self):
         if not self.series:
-            pop = self.project.get_land_pop_per_year()
-            conso = self.project.get_land_conso_per_year("city_name")
+            self.series = {self.project.name: self.project.get_pop_change_per_year()}
+            self.series.update(self.project.get_look_a_like_conso_per_year())
+        return self.series
+
+
+class ConsoComparisonPopChart(ProjectChart):
+    name = "conso comparison"
+    param = {
+        "title": {
+            "text": (
+                "Consommation d'espace en fonction de l'évolution de la population du"
+                " territoire"
+            )
+        },
+        "yAxis": {"title": {"text": "Consommation par habitant (en ha)"}},
+        "xAxis": {"type": "category"},
+        "legend": {"layout": "vertical", "align": "right", "verticalAlign": "middle"},
+        "series": [],
+    }
+
+    def get_series(self):
+        if not self.series:
             self.series = collections.defaultdict(lambda: dict())
-            for city_name, data in conso.items():
-                for year, val in data.items():
-                    self.series[city_name][year] = None
-                    try:
-                        self.series[city_name][year] = val / pop[city_name][year]
-                    except (KeyError, ValueError):
-                        continue
-            self.series = dict(self.series)
+
+            self_pop = self.project.get_pop_change_per_year()
+            self_conso = self.project.get_conso_per_year()
+
+            data = self.series[self.project.name]
+            for year, pop_progression in self_pop.items():
+                if pop_progression:
+                    data[year] = self_conso[year] / pop_progression
+                else:
+                    data[year] = None
+
+            lands_conso = self.project.get_look_a_like_conso_per_year()
+            lands_pop = self.project.get_look_a_like_pop_change_per_year()
+            for land_name, land_data in lands_conso.items():
+                data = self.series[land_name]
+                land_pop = lands_pop[land_name]
+                for year, conso in land_data.items():
+                    if land_pop[year]:
+                        data[year] = conso / land_pop[year]
+                    else:
+                        data[year] = None
         return self.series
