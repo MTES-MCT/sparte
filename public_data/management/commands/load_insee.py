@@ -82,8 +82,6 @@ class Command(BaseCommand):
                 )
                 for y in range(2019, 2005, -1)
             ]
-            if len(todo) >= 10000:
-                logger.info(f"Save to bdd, INSEE so far {row['CODGEO']}")
-                CommunePop.objects.bulk_create(todo)
-                del todo
-                todo = []
+            # if len(todo) >= 100000000:
+        logger.info(f"Save to bdd, INSEE so far {row['CODGEO']}")
+        CommunePop.objects.bulk_create(todo)
