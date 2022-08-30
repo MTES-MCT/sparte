@@ -255,6 +255,11 @@ class Project(BaseProject):
         upload_to=upload_in_project_folder, blank=True, null=True
     )
 
+    class Meta:
+        ordering = ["-created_date"]
+        verbose_name = "Diagnostic en ligne"
+        verbose_name_plural = "Diagnostics en lignes"
+
     @property
     def nb_years(self):
         return len(self.years)
