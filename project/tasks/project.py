@@ -303,6 +303,7 @@ def generate_word_diagnostic(self, request_id):
         req.record_exception(exc)
         logger.error("Error while generating word: %s", exc)
     except Exception as exc:
+        self.retry(exc=exc, countdown=900)
         req.record_exception(exc)
         logger.error("Error while generating word: %s", exc)
     finally:
