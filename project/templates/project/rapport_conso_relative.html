@@ -174,7 +174,7 @@ Rapport comparaison
                         <tr>
                             <th scope="row">{{ city_name }}</th>
                             {% for year, val in data.items %}
-                            <td align="right">{{ val|stringformat:"+.1f" }}</td>
+                            <td align="right">{{ val|floatformat:1 }}</td>
                             {% endfor %}
                         </tr>
                         {% endfor %}
