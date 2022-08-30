@@ -61,8 +61,6 @@ services:
       - app-network
 
   highchart:
-    build:
-      context: ./highchart_export_serveur
     image: sparte/highchart-export-server:13
     command: highcharts-export-server --enableServer 1 --port $PORT
     ports:
