@@ -53,6 +53,8 @@ class Request(models.Model):
 
     class Meta:
         ordering = ["-created_date"]
+        verbose_name = "Demande d'un diagnostic"
+        verbose_name_plural = "Demandes de diagnostics"
 
     def __str__(self):
         return f"Demande de {self.first_name}"
