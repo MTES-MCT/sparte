@@ -28,14 +28,35 @@ class ProjectAdmin(admin.GeoModelAdmin):
     filter_horizontal = ("cities",)
 
 
-@admin.register(Emprise)
-class EmpriseAdmin(admin.GeoModelAdmin):
-    model = Emprise
+# @admin.register(Emprise)
+# class EmpriseAdmin(admin.GeoModelAdmin):
+#     model = Emprise
+#     list_display = (
+#         "id",
+#         "project",
+#     )
+#     search_fields = ("project",)
+
+
+class ErrorTrackingAdmin(admin.StackedInline):
+    model = ErrorTracking
     list_display = (
         "id",
-        "project",
+        "request",
+        "created_date",
     )
-    search_fields = ("project",)
+    readonly_fields = (
+        "id",
+        "request",
+        "created_date",
+        "exception",
+    )
+    extra = 0
+    verbose_name = "Exception"
+    can_delete = False
+
+    def has_add_permission(self, request, obj):
+        return False
 
 
 @admin.register(Request)
@@ -72,6 +93,7 @@ class RequestAdmin(admin.ModelAdmin):
             },
         ),
     )
+    inlines = [ErrorTrackingAdmin]
     readonly_fields = (
         "first_name",
         "last_name",
@@ -118,19 +140,3 @@ class RequestAdmin(admin.ModelAdmin):
             generate_word_diagnostic.delay(obj.id)
             return HttpResponseRedirect(".")
         return super().response_change(request, obj)
-
-
-@admin.register(ErrorTracking)
-class ErrorTrackingAdmin(admin.ModelAdmin):
-    model = ErrorTracking
-    list_display = (
-        "id",
-        "request",
-        "created_date",
-    )
-    readonly_fields = (
-        "id",
-        "request",
-        "created_date",
-        "exception",
-    )
