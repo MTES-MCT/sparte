@@ -95,11 +95,6 @@ urlpatterns = [
         views.SetProjectOptions.as_view(),
         name="create-3",
     ),
-    path(
-        "<int:pk>/gradient",
-        views.ProjectGradientView.as_view(),
-        name="gradient",
-    ),
 ]
 
 
