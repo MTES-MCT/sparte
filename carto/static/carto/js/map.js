@@ -359,6 +359,7 @@ function GeoLayer(name, url) {
 
     // surcharge to update content of info div (return empty string to not show info)
     this.info_txt = (properties) => {
+        let formater = new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 1 })
         let info = '<h4>' + this.name + '</h4>'
         let properties_names = Object.getOwnPropertyNames(properties)
         for (i = 0; i < properties_names.length; i++) {
@@ -366,18 +367,17 @@ function GeoLayer(name, url) {
             let label = get_info_label(property_name)
             if (label != "") {
                 let property_value = properties[property_name]
-                if (label == "Surface (Ha)" | label == "Consommé (pdt diag.)") {
-                    property_value = property_value.toFixed(1)
+                if (label == "Surface (Ha)" | label == "Consommé (pdt diag.)" | label == "Artificialisée") {
+                    property_value = formater.format(property_value)
                     info = info + `<b>${label}</b>: ${property_value}<br/>`
                 } else if (property_name == "artif_evo") {
                     info = info + `<b>${label}</b>:<br/>`
-                    info = info + `<table class="table table-striped table-sm"><thead><tr><th>Période</th><th>Artif</th><th>Renat</th></tr></thead><tbody>`
+                    info = info + `<table class="table table-striped table-sm"><thead><tr><th>Période</th><th>Artificialisée</th><th>Renaturée</th><th>Nette</th></tr></thead><tbody>`
                     for (j = 0; j < property_value.length; j++) {
-                        new_artif = property_value[j].new_artif
-                        new_natural = property_value[j].new_natural
                         info = info + `<tr><td>${property_value[j].year_old}-${property_value[j].year_new}</td>`
-                        info = info + `<td>${new_artif}</td>`
-                        info = info + `<td>${new_natural}</td></tr>`
+                        info = info + `<td>${formater.format(property_value[j].new_artif)}</td>`
+                        info = info + `<td>${formater.format(property_value[j].new_natural)}</td>`
+                        info = info + `<td>${formater.format(property_value[j].net_artif)}</td></tr>`
                     }
                     info = info + `</tbody></table>`
                 } else

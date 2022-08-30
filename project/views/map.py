@@ -1,7 +1,8 @@
 from jenkspy import jenks_breaks
 
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import Max, Sum, F, FloatField
+from django.contrib.gis.geos import Polygon
+from django.db.models import Max, Sum, F, FloatField, Subquery, OuterRef
 from django.db.models.functions import Cast
 from django.http import JsonResponse
 from django.urls import reverse_lazy
@@ -11,6 +12,7 @@ from public_data.models import Cerema
 from utils.colors import get_yellow2red_gradient
 
 from project.models import Project
+from project.serializers import CitySpaceConsoMapSerializer, CityArtifMapSerializer
 from .mixins import GroupMixin
 
 
@@ -269,7 +271,7 @@ class BaseThemeMap(GroupMixin, DetailView):
     url_name = "to be set"
 
     def get_data_url(self):
-        start = reverse_lazy(f"project:{self.url_name}")
+        start = reverse_lazy(f"project:{self.url_name}", args=[self.object.id])
         return f"{start}?data=1"
 
     def get_gradient_url(self):
@@ -384,7 +386,7 @@ class CitySpaceConsoMapView(BaseThemeMap):
         layers = [
             {
                 "name": "Consommation des communes",
-                "url": reverse_lazy("project:project-communes", args=[self.object.id]),
+                "url": self.get_data_url(),
                 "display": True,
                 "gradient_url": self.get_gradient_url(),
                 "level": "2",
@@ -392,6 +394,25 @@ class CitySpaceConsoMapView(BaseThemeMap):
             }
         ] + list(layers)
         return super().get_layers_list(*layers)
+
+    def get_data(self):
+        project = self.get_object()
+        fields = Cerema.get_art_field(
+            project.analyse_start_date, project.analyse_end_date
+        )
+        qs = Cerema.objects.annotate(artif_area=sum(F(f) for f in fields))
+        queryset = project.cities.all().annotate(
+            artif_area=Subquery(
+                qs.filter(city_insee=OuterRef("insee")).values("artif_area")[:1]
+            )
+            / 10000
+        )
+        bbox = self.request.GET.get("bbox", None)
+        if bbox is not None and len(bbox) > 0:
+            polygon_box = Polygon.from_bbox(bbox.split(","))
+            queryset = queryset.filter(mpoly__within=polygon_box)
+        serializer = CitySpaceConsoMapSerializer(queryset, many=True)
+        return JsonResponse(serializer.data, status=200)
 
     def get_gradient(self):
         fields = Cerema.get_art_field(
@@ -408,7 +429,7 @@ class CitySpaceConsoMapView(BaseThemeMap):
             boundaries = sorted([i["conso"] for i in qs])
         else:
             boundaries = jenks_breaks(
-                [i["conso"] for i in qs], nb_class=self.scale_size
+                [i["conso"] for i in qs], n_classes=self.scale_size
             )[1:]
         data = [
             {"value": v, "color": c.hex_l}
@@ -425,7 +446,7 @@ class CityArtifMapView(BaseThemeMap):
         layers = [
             {
                 "name": self.title,
-                "url": reverse_lazy("project:project-communes", args=[self.object.id]),
+                "url": self.get_data_url(),
                 "display": True,
                 "gradient_url": self.get_gradient_url(),
                 "level": "2",
@@ -445,12 +466,21 @@ class CityArtifMapView(BaseThemeMap):
         if len(boundaries) == 0:
             boundaries = [1]
         elif len(boundaries) > self.scale_size:
-            boundaries = jenks_breaks(boundaries, nb_class=self.scale_size)[1:]
+            boundaries = jenks_breaks(boundaries, n_classes=self.scale_size)[1:]
         data = [
             {"value": v, "color": c.hex_l}
             for v, c in zip(boundaries, get_yellow2red_gradient(len(boundaries)))
         ]
         return JsonResponse(data, safe=False)
+
+    def get_data(self):
+        queryset = self.object.cities.all()
+        bbox = self.request.GET.get("bbox", None)
+        if bbox is not None and len(bbox) > 0:
+            polygon_box = Polygon.from_bbox(bbox.split(","))
+            queryset = queryset.filter(mpoly__within=polygon_box)
+        serializer = CityArtifMapSerializer(queryset, many=True)
+        return JsonResponse(serializer.data, status=200)
 
 
 class ProjectGradientView(GroupMixin, LoginRequiredMixin, DetailView):
@@ -471,7 +501,7 @@ class ProjectGradientView(GroupMixin, LoginRequiredMixin, DetailView):
         if qs.count() <= 9:
             boundaries = sorted([i["conso"] for i in qs])
         else:
-            boundaries = jenks_breaks([i["conso"] for i in qs], nb_class=9)[1:]
+            boundaries = jenks_breaks([i["conso"] for i in qs], n_classes=9)[1:]
         return [
             {"value": v, "color": c.hex_l}
             for v, c in zip(boundaries, get_yellow2red_gradient(len(boundaries)))
