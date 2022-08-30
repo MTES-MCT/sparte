@@ -25,6 +25,10 @@ class ContactForm(models.Model):
     processed_date = models.DateTimeField(null=True, blank=True)
     error = models.TextField(null=True, blank=True)
 
+    class Meta:
+        verbose_name = "Formulaire de contact"
+        verbose_name_plural = "Formulaires de contact"
+
     def success(self):
         self.processed_date = timezone.now()
         self.status = self.StatusChoices.SUCCESS
