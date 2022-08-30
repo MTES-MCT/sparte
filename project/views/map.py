@@ -481,33 +481,3 @@ class CityArtifMapView(BaseThemeMap):
             queryset = queryset.filter(mpoly__within=polygon_box)
         serializer = CityArtifMapSerializer(queryset, many=True)
         return JsonResponse(serializer.data, status=200)
-
-
-class ProjectGradientView(GroupMixin, LoginRequiredMixin, DetailView):
-    queryset = Project.objects.all()
-    template_name = "project/gradient.html"
-
-    def get_gradient(self):
-        fields = Cerema.get_art_field(
-            self.object.analyse_start_date, self.object.analyse_end_date
-        )
-        qs = (
-            self.object.get_cerema_cities()
-            .annotate(conso=sum([F(f) for f in fields]) / 10000)
-            .values("city_name")
-            .annotate(conso=Sum(F("conso")))
-            .order_by("conso")
-        )
-        if qs.count() <= 9:
-            boundaries = sorted([i["conso"] for i in qs])
-        else:
-            boundaries = jenks_breaks([i["conso"] for i in qs], n_classes=9)[1:]
-        return [
-            {"value": v, "color": c.hex_l}
-            for v, c in zip(boundaries, get_yellow2red_gradient(len(boundaries)))
-        ]
-
-    def get_context_data(self, **kwargs):
-        kwargs["gradients"] = self.get_gradient()
-        kwargs["headers"] = self.request.headers
-        return super().get_context_data(**kwargs)
