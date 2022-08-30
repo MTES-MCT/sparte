@@ -372,7 +372,7 @@ function GeoLayer(name, url) {
                     info = info + `<b>${label}</b>: ${property_value}<br/>`
                 } else if (property_name == "artif_evo") {
                     info = info + `<b>${label}</b>:<br/>`
-                    info = info + `<table class="table table-striped table-sm"><thead><tr><th>Période</th><th>Artificialisée</th><th>Renaturée</th><th>Nette</th></tr></thead><tbody>`
+                    info = info + `<table class="table table-striped table-sm"><thead><tr><th>Période</th><th>Artificialisée (ha)</th><th>Renaturée (ha)</th><th>Nette (ha)</th></tr></thead><tbody>`
                     for (j = 0; j < property_value.length; j++) {
                         info = info + `<tr><td>${property_value[j].year_old}-${property_value[j].year_new}</td>`
                         info = info + `<td>${formater.format(property_value[j].new_artif)}</td>`
