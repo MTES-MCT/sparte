@@ -70,6 +70,7 @@ class RequestAdmin(admin.ModelAdmin):
         "link_to_project",
     )
     search_fields = ("email",)
+    list_filter = ("done", "created_date", "sent_date")
     fieldsets = (
         (
             "Information personnelle",
