@@ -26,9 +26,14 @@ class OptimizedMixins:
     optimized_geo_field = "st_AsGeoJSON(o.mpoly, 8)"
 
     def get_params(self, request):
-        bbox = request.query_params.get("in_bbox").split(",")
-        bbox = list(map(float, bbox))
-        year = int(request.query_params.get("year"))
+        bbox = request.query_params.get("in_bbox")
+        year = request.query_params.get("year")
+        if bbox is None or year is None:
+            raise ValueError(
+                f"bbox and year parameter must be set. bbox={bbox};year={year}"
+            )
+        bbox = list(map(float, bbox.split(",")))
+        year = int(year)
         return [year] + bbox  # /!\ order matter, see sql query below
 
     def get_sql_fields(self):
@@ -79,28 +84,38 @@ class OptimizedMixins:
 
     @action(detail=False)
     def optimized(self, request):
-        envelope = json.dumps(
-            {
-                "type": "FeatureCollection",
-                "crs": {"type": "name", "properties": {"name": "EPSG:4326"}},
-                "features": "-features-",
-            }
-        )
-        features = []
-        for row in self.get_data(request):
-            geojson = row.pop("geojson")
-            feature = json.dumps(
+        try:
+            envelope = json.dumps(
                 {
-                    "type": "Feature",
-                    "properties": self.clean_properties(row),
-                    "geometry": "-geometry-",
-                },
-                default=decimal2float,
+                    "type": "FeatureCollection",
+                    "crs": {"type": "name", "properties": {"name": "EPSG:4326"}},
+                    "features": "-features-",
+                }
             )
-            feature = feature.replace('"-geometry-"', geojson)
-            features.append(feature)
-        features = f" [{', '.join(features)}]"
-        envelope = envelope.replace('"-features-"', features)
+            features = []
+            for row in self.get_data(request):
+                geojson = row.pop("geojson")
+                feature = json.dumps(
+                    {
+                        "type": "Feature",
+                        "properties": self.clean_properties(row),
+                        "geometry": "-geometry-",
+                    },
+                    default=decimal2float,
+                )
+                feature = feature.replace('"-geometry-"', geojson)
+                features.append(feature)
+            features = f" [{', '.join(features)}]"
+            envelope = envelope.replace('"-features-"', features)
+        except ValueError as exc:
+            envelope = json.dumps(
+                {
+                    "error": {
+                        "type": "ValueError",
+                        "message": str(exc),
+                    }
+                }
+            )
         return HttpResponse(envelope, content_type="application/json")
 
 
