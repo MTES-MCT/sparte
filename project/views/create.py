@@ -249,30 +249,20 @@ class SetProjectOptions(BreadCrumbMixin, FormView):
         )
         if self.request.user.is_authenticated:
             project.user = self.request.user
-        project.save()
-
-        combined_emprise = None
-        for land in lands:
-            project.cities.add(*land.get_cities())
-            if not combined_emprise:
-                combined_emprise = land.mpoly
-            else:
-                combined_emprise = land.mpoly.union(combined_emprise)
-
-        project.emprise_set.create(mpoly=fix_poly(combined_emprise))
-
-        result = project.get_first_last_millesime()
-        project.first_year_ocsge = result["first"]
-        project.last_year_ocsge = result["last"]
-
-        if project.land_type and project.land_type != AdminRef.COMPOSITE:
-            public_keys = [_.public_key for _ in project.get_neighbors()]
-            if len(public_keys) <= 8:
-                project.add_look_a_like(public_keys, many=True)
-
         project.set_success(save=True)
 
-        generate_cover_image.delay(project.id)
+        # use celery to speedup user experience
+        pks = form.cleaned_data["public_keys"]
+        jobs = [
+            tasks.add_city_and_set_combined_emprise.s(project.id, pks),
+            tasks.find_first_and_last_ocsge.s(project.id),
+            tasks.generate_cover_image.s(project.id),
+        ]
+        if project.land_type and project.land_type != AdminRef.COMPOSITE:
+            # insert in jobs list before cover generation
+            jobs.insert(-1, tasks.add_neighboors.s(project.id))
+        # tells celery to execute all jobs in parallel
+        celery.group(jobs).apply_async()
 
         return redirect(project)
 
