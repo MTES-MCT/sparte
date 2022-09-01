@@ -1,6 +1,6 @@
 from django.contrib import messages
 from django.http import HttpResponseRedirect
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.views.generic import DetailView, CreateView
 
 from django_app_parameter import app_parameter
@@ -430,19 +430,21 @@ class ProjectReportDownloadView(BreadCrumbMixin, CreateView):
     ]
 
     def get_context_breadcrumbs(self):
-        breadcrumbs = super().get_context_breadcrumbs()
-        breadcrumbs.append(
+        breadcrumbs = super().get_context_breadcrumbs() + [
+            {"href": reverse_lazy("project:list"), "title": "Mes diagnostics"},
             {
-                "href": None,
-                "title": "Téléchargement du bilan",
-            }
-        )
+                "href": reverse_lazy("project:detail", kwargs={"pk": self.project.id}),
+                "title": self.project.name,
+            },
+            {"href": None, "title": "Téléchargement du bilan"},
+        ]
         return breadcrumbs
 
     def get_context_data(self, **kwargs):
+        self.project = Project.objects.get(pk=self.kwargs["pk"])
         kwargs.update(
             {
-                "project": Project.objects.get(pk=self.kwargs["pk"]),
+                "project": self.project,
                 "url_bilan": app_parameter.BILAN_EXAMPLE,
                 "active_page": "download",
             }
