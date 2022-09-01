@@ -52,6 +52,7 @@ geopandas = "*"
 matplotlib = "*"
 contextily = "*"
 jenkspy = "*"
+django-celery-results = "*"
 
 [scripts]
 shell = "python manage.py shell"
