@@ -78,6 +78,7 @@ THIRD_APPS = [
     "sri",
     "widget_tweaks",
     "dsfr",
+    "django_celery_results",
     # "django_docx_template",
 ]
 
@@ -270,6 +271,7 @@ default_redis = "redis://redis:6379/0"
 CELERY_BROKER_URL = env.str("CELERY_BROKER_URL", default=default_redis)
 CELERY_RESULT_BACKEND = env.str("CELERY_RESULT_BACKEND", default=default_redis)
 CELERY_ACKS_LATE = True
+CELERY_RESULT_EXTENDED = True
 
 # django-debug-toolbar configuration
 
