@@ -832,7 +832,11 @@ class Project(BaseProject):
         if not land_type:
             land_type = self.land_type
         klass = AdminRef.get_class(land_type)
-        return klass.objects.filter(mpoly__touches=self.combined_emprise)
+        return (
+            klass.objects.all()
+            .filter(mpoly__touches=self.combined_emprise)
+            .order_by("name")
+        )
 
     def get_matrix(self, sol="couverture"):
         if sol == "usage":
