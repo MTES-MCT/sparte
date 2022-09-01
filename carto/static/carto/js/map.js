@@ -22,7 +22,7 @@ function get(object, key, default_value) {
 
 function get_info_label(name) {
     return (name == "area") ? "Surface (Ha)" :
-        (name == "artif_area") ? "Consommé (pdt diag.)" :
+        (name == "artif_area") ? "Consommé (pdt diag. Ha)" :
         (name == "artif_evo") ? "Artificialisation" :
         (name == "city") ? "Commune" :
         (name == "conso_1121_act") ? "Conso activité 11-21" :
@@ -40,7 +40,7 @@ function get_info_label(name) {
         (name == "map_color") ? "" :
         (name == "name") ? "Nom" :
         (name == "surface") ? "Surface (Ha)" :
-        (name == "surface_artif") ? "Artificialisée" :
+        (name == "surface_artif") ? "Artificialisée (Ha)" :
         (name == "us_new") ? "Nouveau usage" :
         (name == "us_old") ? "Ancien usage" :
         (name == "usage_2015") ? "Usage en 2015" :
@@ -366,7 +366,7 @@ function GeoLayer(name, url) {
             let label = get_info_label(property_name)
             if (label != "") {
                 let property_value = properties[property_name]
-                if (label == "Surface (Ha)" | label == "Consommé (pdt diag.)" | label == "Artificialisée") {
+                if (label == "Surface (Ha)" | label == "Consommé (pdt diag. Ha)" | label == "Artificialisée (Ha)") {
                     property_value = formater.format(property_value)
                     info = info + `<b>${label}</b>: ${property_value}<br/>`
                 } else if (property_name == "artif_evo") {
@@ -394,7 +394,7 @@ function GeoLayer(name, url) {
         let property_value = feature.properties[property]
         let legend = '<h4>' + this.name + '</h4>'
         let formater = new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 1 })
-        legend = legend + `Propriété utilisée: ${get_info_label(property)} (${formater.format(property_value)})<br\>`
+        legend = legend + `Propriété utilisée: ${get_info_label(property)} ${formater.format(property_value)} Ha<br\>`
 
         let prev_value = 0
         for (i = 0; i < this.scale.length; i++) {
