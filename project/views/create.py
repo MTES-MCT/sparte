@@ -1,8 +1,7 @@
+import celery
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-
-# from django.contrib.gis.db.models import Union
-from django.shortcuts import redirect, get_object_or_404
+from django.shortcuts import redirect, get_object_or_404, reverse
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView, FormView, RedirectView
 
@@ -15,7 +14,6 @@ from public_data.models import (
     LandException,
     AdminRef,
 )
-from utils.db import fix_poly
 from utils.views_mixins import BreadCrumbMixin
 
 from project.forms import (
@@ -26,8 +24,7 @@ from project.forms import (
     KeywordForm,
 )
 from project.models import Project
-
-from project.tasks import generate_cover_image
+from project import tasks
 
 
 class SelectTypeView(BreadCrumbMixin, TemplateView):
@@ -123,7 +120,13 @@ class SelectPublicProjects(BreadCrumbMixin, TemplateView):
         if request.GET.get("see_diagnostic", None):
             if public_key:
                 try:
-                    return redirect("project:create-3", public_keys=public_key)
+                    url = reverse(
+                        "project:create-3", kwargs={"public_keys": public_key}
+                    )
+                    next_param = self.request.GET.get("next", None)
+                    if next_param:
+                        url = f"{url}?next={next_param}"
+                    return redirect(url)
                 except Project.DoesNotExist:
                     messages.error(self.request, "Territoire non disponible.")
             else:
@@ -132,11 +135,11 @@ class SelectPublicProjects(BreadCrumbMixin, TemplateView):
         return self.render_to_response(context)
 
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
+        kwargs.update({"next": self.request.GET.get("next", None)})
         if self.epci_id:
             dep = Departement.objects.get(pk=self.departement_id)
             epci = Epci.objects.get(pk=self.epci_id)
-            context.update(
+            kwargs.update(
                 {
                     "region": dep.region,
                     "region_id": dep.region.id,
@@ -146,7 +149,7 @@ class SelectPublicProjects(BreadCrumbMixin, TemplateView):
             )
         elif self.departement_id:
             dep = Departement.objects.get(pk=self.departement_id)
-            context.update(
+            kwargs.update(
                 {
                     "region": dep.region,
                     "region_id": dep.region.id,
@@ -156,7 +159,7 @@ class SelectPublicProjects(BreadCrumbMixin, TemplateView):
             )
         elif self.region_id:
             region = Region.objects.get(pk=self.region_id)
-            context.update(
+            kwargs.update(
                 {
                     "region": region,
                     "region_id": region.id,
@@ -164,12 +167,8 @@ class SelectPublicProjects(BreadCrumbMixin, TemplateView):
                 }
             )
         else:
-            context.update(
-                {
-                    "region_form": RegionForm(),
-                }
-            )
-        return context
+            kwargs.update({"region_form": RegionForm()})
+        return super().get_context_data(**kwargs)
 
 
 class SetProjectOptions(BreadCrumbMixin, FormView):
@@ -181,6 +180,7 @@ class SetProjectOptions(BreadCrumbMixin, FormView):
         """Return the initial data to use for forms on this view."""
         kwargs = self.initial.copy()
         kwargs.update({"public_keys": self.kwargs["public_keys"]})
+        kwargs.update({"next": self.request.GET.get("next", None)})
         return kwargs
 
     def get_context_breadcrumbs(self):
@@ -264,7 +264,10 @@ class SetProjectOptions(BreadCrumbMixin, FormView):
         # tells celery to execute all jobs in parallel
         celery.group(jobs).apply_async()
 
-        return redirect(project)
+        if form.cleaned_data["next"] == "download":
+            return redirect("project:report_download", pk=project.id)
+        else:
+            return redirect(project)
 
 
 class SelectCities(BreadCrumbMixin, TemplateView):
