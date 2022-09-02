@@ -99,7 +99,7 @@ class NewsLetterConfirmationView(RedirectView):
             nwl.confirm()
             messages.success(
                 self.request,
-                "Félicitation, vous êtes maintenant inscrit à l'inforlettre.",
+                "Félicitation, vous êtes maintenant inscrit à la newsletter.",
             )
             send_nwl_final.delay(nwl.id)
         except Newsletter.DoesNotExist:
