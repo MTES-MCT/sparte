@@ -43,8 +43,8 @@ def process_project(project_id: int):
     raise DeprecationWarning("taks.process_project: Do not use anymore")
 
 
-@shared_task
-def add_city_and_set_combined_emprise(project_id: int, public_keys: str) -> None:
+@shared_task(bind=True, max_retries=5)
+def add_city_and_set_combined_emprise(self, project_id: int, public_keys: str) -> None:
     """Do a Union() on all mpoly lands and set project combined emprise
 
     :param project_id: primary key to find Project
@@ -67,11 +67,14 @@ def add_city_and_set_combined_emprise(project_id: int, public_keys: str) -> None
         project.emprise_set.create(mpoly=fix_poly(combined_emprise))
     except Project.DoesNotExist:
         logger.error(f"project_id={project_id} does not exist")
-    logger.info("End find_first_and_last_ocsge")
+    except Exception as exc:
+        self.retry(exc=exc, countdown=300)
+        logger.error(exc)
+    logger.info("End add_city_and_set_combined_emprise")
 
 
-@shared_task
-def find_first_and_last_ocsge(project_id: int) -> None:
+@shared_task(bind=True, max_retries=5)
+def find_first_and_last_ocsge(self, project_id: int) -> None:
     """Use associated cities to find departements and available OCSGE millesime"""
     logger.info("Start find_first_and_last_ocsge id=%d", project_id)
     try:
@@ -84,6 +87,9 @@ def find_first_and_last_ocsge(project_id: int) -> None:
         project.save(update_fields=["first_year_ocsge", "last_year_ocsge"])
     except Project.DoesNotExist:
         logger.error(f"project_id={project_id} does not exist")
+    except Exception as exc:
+        self.retry(exc=exc, countdown=300)
+        logger.error(exc)
     logger.info("End find_first_and_last_ocsge")
 
 
@@ -111,8 +117,8 @@ def send_email_request_bilan(request_id):
     logger.info("End send_email_request_bilan")
 
 
-@shared_task
-def add_neighboors(project_id):
+@shared_task(bind=True, max_retries=5)
+def add_neighboors(self, project_id):
     logger.info("Start add_neighboors, project_id=%d", project_id)
     try:
         project = Project.objects.get(pk=project_id)
@@ -122,11 +128,14 @@ def add_neighboors(project_id):
         project.save(update_fields=["look_a_like"])
     except Project.DoesNotExist:
         logger.error(f"project_id={project_id} does not exist")
+    except Exception as exc:
+        self.retry(exc=exc, countdown=300)
+        logger.error(exc)
     logger.info("End add_neighboors")
 
 
-@shared_task
-def generate_cover_image(project_id):
+@shared_task(bind=True, max_retries=5)
+def generate_cover_image(self, project_id):
     logger.info("Start generate_cover_image, project_id=%d", project_id)
     try:
         diagnostic = Project.objects.get(id=int(project_id))
@@ -168,8 +177,12 @@ def generate_cover_image(project_id):
         diagnostic.cover_image.delete(save=False)
         diagnostic.cover_image.save(f"cover_{project_id}.png", img_data, save=True)
         plt.close()
-    except Project.DoesNotExist:
+    except Project.DoesNotExist as exc:
+        self.retry(exc=exc, countdown=300)
         logger.error(f"project_id={project_id} does not exist")
+    except Exception as exc:
+        self.retry(exc=exc, countdown=300)
+        logger.error(exc)
     logger.info("End generate_cover_image")
 
 
