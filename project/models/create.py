@@ -33,10 +33,12 @@ def create_from_public_key(
     # use celery to speedup user experience
     celery.group(
         [
-            t.add_city_and_set_combined_emprise.s(project.id, [public_key]),
+            celery.chain(
+                t.add_city_and_set_combined_emprise.s(project.id, [public_key]),
+                t.generate_cover_image.s(project.id),
+            ),
             t.find_first_and_last_ocsge.s(project.id),
             t.add_neighboors.s(project.id),
-            t.generate_cover_image.s(project.id),
         ]
     ).apply_async()
 
@@ -74,13 +76,17 @@ def create_from_public_key_list(
 
     # use celery to speedup user experience
     jobs = [
-        t.add_city_and_set_combined_emprise.s(project.id, "-".join(public_key_list)),
+        celery.chain(
+            t.add_city_and_set_combined_emprise.s(
+                project.id, "-".join(public_key_list)
+            ),
+            t.generate_cover_image.s(project.id),
+        ),
         t.find_first_and_last_ocsge.s(project.id),
-        t.generate_cover_image.s(project.id),
     ]
     if project.land_type != AdminRef.COMPOSITE:
         # insert in jobs list before cover generation
-        jobs.insert(-1, t.add_neighboors.s(project.id))
+        jobs.append(t.add_neighboors.s(project.id))
     celery.group(jobs).apply_async()
 
     return project
