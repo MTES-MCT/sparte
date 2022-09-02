@@ -79,6 +79,8 @@ Rapport comparaison
                     Surface consommée relativement à la population du territoire
                 </h3>
 
+                <p>Croisement des données des fichiers fonciers avec les données de l'INSEE</p>
+
                 <div id="pop_chart"></div>
 
                 <table class="table table-striped table-sm table-borderless mt-5">
@@ -108,7 +110,7 @@ Rapport comparaison
                 <table class="table table-striped table-sm table-borderless mt-5">
                     <thead>
                         <tr>
-                            <th scope="col">{{ col_name }}</th>
+                            <th scope="col" class="text-end">(en Hectares par habitant)</th>
                             {% for year in project.years %}
                             <th scope="col" class="text-end">{{ year }}</th>
                             {% endfor %}
@@ -132,6 +134,8 @@ Rapport comparaison
                 <h3>
                     Surface consommée relativement au nombre de ménages du territoire
                 </h3>
+
+                <p>Croisement des données des fichiers fonciers avec les données de l'INSEE</p>
 
                 <div id="household_chart"></div>
 
@@ -162,7 +166,7 @@ Rapport comparaison
                 <table class="table table-striped table-sm table-borderless mt-5">
                     <thead>
                         <tr>
-                            <th scope="col">{{ col_name }}</th>
+                            <th scope="col" class="text-end">(en Hectares par ménage)</th>
                             {% for year in project.years %}
                             <th scope="col" class="text-end">{{ year }}</th>
                             {% endfor %}
