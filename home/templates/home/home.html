@@ -21,7 +21,7 @@
       <div class="fr-col-12 fr-col-md-8">
         <h1>Sparte mesure votre consommation d'espace et <span class="text-blue">l'artificialisation de votre territoire</span></h1>
         <p class="fr-text--xl">Pilotez votre programme d’urbanisation en vue d’atteindre l’objectif Zéro Artificialisation Nette acté par la Loi Climat et Résilience</p>
-        <a href="{% url 'project:select' %}" id="btn-voir-diag-1" class="fr-btn">Créer un diagnostic</a>
+        <a href="{% url 'project:create' %}" id="btn-voir-diag-1" class="fr-btn">Créer un diagnostic</a>
       </div>
       <div class="fr-col-12 fr-col-md-4">
         <img src="{% static 'home/img/OCSGE.png' %}" class="w-100 fr-hidden fr-unhidden-md" alt="Aperçu de la carte OCSGE"/>
@@ -106,7 +106,7 @@
           </div>
         </section>
       </div>
-      <a href="{% url 'project:select' %}" class="fr-btn">Créer un diagnostic</a> <a href="{% url 'project:select' %}?next=download" class="fr-btn ms-3">Télécharger un diagnostic</a>
+      <a href="{% url 'project:create' %}" class="fr-btn">Créer un diagnostic</a> <a href="{% url 'project:create' %}?next=download" class="fr-btn ms-3">Télécharger un diagnostic</a>
     </div>
   </div>
 </div>

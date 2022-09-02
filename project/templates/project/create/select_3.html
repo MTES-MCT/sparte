@@ -1,0 +1,89 @@
+{% extends 'index.html' %}
+
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block pagetitle %}
+Créer un diagnostic
+{% endblock %}
+
+{% block headers %}
+<style nonce="{{ CSP_NONCE }}">
+.item {
+    position: relative;
+    display: block;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row w-100 justify-content-center">
+    <div class="col-12 col-md-8 col-lg-6">
+
+        <h2 class="my-5">Sélectionner un territoire à diagnostiquer</h2>
+
+        <form id="main-form" class="row align-items-center" action="?next={{ next }}" method="post">
+            {% csrf_token %}
+            <label class="visually-hidden" for="inlineFormInputGroupUsername">Mot clé</label>
+            <div class="input-group">
+                <div class="input-group-text"><i class="bi bi-search"></i></div>
+                <input type="text" name="keyword" class="form-control" id="id_keyword" value="{{ form.cleaned_data.keyword }}">
+                <button type="submit" class="fr-btn ">Chercher</button>
+            </div>
+            <input type="hidden" name="selection" id="id_selection" value="">
+        </form>
+
+        {% if results %}
+        <h3 class="my-5">Résultats</h3>
+
+        <div class="accordion" id="results-panel">
+            {% for land, data in results.items %}
+            <div class="accordion-item">
+              <h2 class="accordion-header" id="{{ land }}-heading">
+                <button class="accordion-button{% if not data %} collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#{{ land }}-collapse" aria-expanded="{% if data %}true{% else %}false{% endif %}" aria-controls="{{ land }}-collapse">
+                    <span class="badge bg-light float-end text-dark me-5">{{ data|length }}</span> {{ land }}
+                </button>
+              </h2>
+              <div id="{{ land }}-collapse" class="accordion-collapse collapse{% if data %} show{% endif %}" aria-labelledby="{{ land }}-heading">
+                <div class="accordion-body">
+                    {% for result in data %}
+                    <div class="position-relative">
+                        <a href="#" class="stretched-link" public-key="{{ result.public_key }}">
+                            {{ result.name }} {% if result.insee %}({{ result.insee }}){% endif %}
+                        </a>
+                    </div>
+                {% endfor %}
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        {% else %}
+        <p class="mt-5">
+            Saissiez le nom du territoire que vous recherchez ci-dessus.
+        </p>
+        {% endif %}
+
+
+
+    </div>
+</div>
+{% endblock %}
+
+{% block bodyend %}
+<script language="javascript" nonce="{{ CSP_NONCE }}">
+$(".stretched-link").click(function(){
+    $("#id_selection").val($(this).attr("public-key"))
+    $("#main-form").submit()
+})
+</script>
+{% endblock bodyend %}
+
+{% block tagging %}
+<script language="javascript" nonce="{{ CSP_NONCE }}">
+$( window ).on('load', function () {
+    _paq.push(['trackEvent', 'Création diagnostic', 'Entry point', 'parcours 4'])
+})
+</script>
+{% endblock tagging %}
