@@ -5,7 +5,6 @@ from django.urls import reverse_lazy, reverse
 from django.views.generic import (
     ListView,
     DetailView,
-    CreateView,
     DeleteView,
     UpdateView,
 )
@@ -15,26 +14,6 @@ from public_data.models import Land
 from project.forms import UploadShpForm, KeywordForm
 from project.models import Project
 from .mixins import GroupMixin
-
-
-class ProjectCreateView(GroupMixin, LoginRequiredMixin, CreateView):
-    model = Project
-    template_name = "project/create.html"
-    fields = ["name", "description", "analyse_start_date", "analyse_end_date"]
-
-    def get_context_breadcrumbs(self):
-        breadcrumbs = super().get_context_breadcrumbs()
-        breadcrumbs.append({"href": None, "title": "Nouveau"})
-        return breadcrumbs
-
-    def form_valid(self, form):
-        # required to set the user who is logged as creator
-        form.instance.user = self.request.user
-        response = super().form_valid(form)  # save the data in db
-        return response
-
-    def get_success_url(self):
-        return reverse_lazy("project:detail", kwargs={"pk": self.object.id})
 
 
 class ProjectUpdateView(GroupMixin, UpdateView):

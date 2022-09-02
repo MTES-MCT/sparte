@@ -12,8 +12,12 @@ app_name = "project"
 
 urlpatterns = [
     # ### PROJECTS ###
+    # CREATE
+    path("nouveau", views.CreateProjectViews.as_view(), name="create"),
+    # CRUD
+    # REPORT
+    # MAP
     path("", views.ProjectListView.as_view(), name="list"),
-    path("add/", views.ProjectCreateView.as_view(), name="add"),
     path("<int:pk>/", views.ProjectDetailView.as_view(), name="detail"),
     path("<int:pk>/ajouter", views.ClaimProjectView.as_view(), name="claim"),
     path("<int:pk>/edit", views.ProjectUpdateView.as_view(), name="update"),
@@ -79,22 +83,6 @@ urlpatterns = [
         name="theme-city-artif",
     ),
     path("<int:pk>/delete/", views.ProjectDeleteView.as_view(), name="delete"),
-    # old creation journey
-    path("diagnostic/etape/1", views.SelectPublicProjects.as_view(), name="select"),
-    path("diagnostic/etape/1/city", views.SelectCities.as_view(), name="select-city"),
-    # new creation journey
-    path("diagnostic", views.SelectTypeView.as_view(), name="create-1"),
-    path(
-        "diagnostic/territoire/<slug:land_type>",
-        views.SelectTerritoireView.as_view(),
-        name="create-2",
-    ),
-    # path("diagnostic/dates", views.SetProjectOptions.as_view(), name="create-3"),
-    path(
-        "diagnostic/dates/<slug:public_keys>",
-        views.SetProjectOptions.as_view(),
-        name="create-3",
-    ),
 ]
 
 
