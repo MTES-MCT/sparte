@@ -122,7 +122,7 @@ Rapport comparaison
                         <tr>
                             <th scope="row">{{ city_name }}</th>
                             {% for year, val in data.items %}
-                            <td align="right">{{ val|floatformat:0 }}</td>
+                            <td align="right">{{ val|floatformat:2 }}</td>
                             {% endfor %}
                         </tr>
                         {% endfor %}
@@ -178,7 +178,7 @@ Rapport comparaison
                         <tr>
                             <th scope="row">{{ city_name }}</th>
                             {% for year, val in data.items %}
-                            <td align="right">{{ val|floatformat:1 }}</td>
+                            <td align="right">{{ val|floatformat:2 }}</td>
                             {% endfor %}
                         </tr>
                         {% endfor %}
