@@ -4,7 +4,7 @@ from django.utils import timezone
 
 from users.models import User
 
-from .project import Project
+from project.models import Project
 
 
 def upload_in_project_folder(request: "Request", filename: str) -> str:
