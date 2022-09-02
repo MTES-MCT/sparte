@@ -18,7 +18,7 @@ Sélectionner un plan
 
         <p class="mb-5">
             Veuillez sélectionner un territoire à diagnostiquer. Vous pouvez sélectionner une région, un département ou un EPCI. Utilisez le formulaire ci-dessous pour réaliser votre sélection.
-            Vous pouvez aussi <a href="{% url 'project:select-city' %}">sélectionner une liste de communes</a>.
+            Vous pouvez aussi <a href="{% url 'project:create' %}">sélectionner une liste de communes</a>.
         </p>
 
         <div class="card border">
@@ -36,17 +36,17 @@ Sélectionner un plan
                         <span class="fs-6">{{ region_form.region }}</span>
                     {% else %}
                         {{ region.name }}
-                        <a href="{% url 'project:select' %}"><i class="bi bi-x-circle-fill fs-6 ms-1"></i></a>
+                        <a href="{% url 'project:create' %}"><i class="bi bi-x-circle-fill fs-6 ms-1"></i></a>
                         >
                         {% if departement_form %}
                             <span class="fs-6">{{ departement_form.departement }}</span>
                         {% else %}
                             {{ departement.name}}
-                            <a href="{% url 'project:select' %}?region={{ region.id }}"><i class="bi bi-x-circle-fill fs-6 ms-1"></i></a>
+                            <a href="{% url 'project:create' %}?region={{ region.id }}"><i class="bi bi-x-circle-fill fs-6 ms-1"></i></a>
                             >
                             {% if epci %}
                                 {{ epci.name}}
-                                <a href="{% url 'project:select' %}?departement={{ departement.id }}"><i class="bi bi-x-circle-fill fs-6 ms-1"></i></a>
+                                <a href="{% url 'project:create' %}?departement={{ departement.id }}"><i class="bi bi-x-circle-fill fs-6 ms-1"></i></a>
                             {% else %}
                                 <span class="fs-6">{{ epci_form.epci }}</span> {{ epci_form.departement }}
                             {% endif %}
