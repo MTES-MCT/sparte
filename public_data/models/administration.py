@@ -64,6 +64,10 @@ class AdminRef:
     CHOICES_DICT = {key: value for key, value in CHOICES}
 
     @classmethod
+    def get_label(cls, key):
+        return cls.CHOICES_DICT[key]
+
+    @classmethod
     def get_form_choices(cls, status_list):
         result = list()
         for status in status_list:
