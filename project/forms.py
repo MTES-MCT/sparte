@@ -32,31 +32,12 @@ class SelectTerritoryForm(forms.Form):
     epci = forms.ModelChoiceField(
         queryset=Epci.objects.all().order_by("name"), required=False
     )
-    search_region = forms.BooleanField(required=False)
-    search_departement = forms.BooleanField(required=False)
-    search_epci = forms.BooleanField(required=False)
-    search_commune = forms.BooleanField(required=False)
-
-    def clean_data(self, data):
-        dept = epci = None
-        if "region" in data and data["region"]:
-            dept = data.get("departement", None)
-            if dept:
-                epci = data.get("epci", None)
-        return {
-            "keyword": data.get("keyword", None),
-            "selection": data.get("selection", None),
-            "region": data.get("region", None),
-            "departement": dept,
-            "epci": epci,
-            "search_region": data.get("search_region", None),
-            "search_departement": data.get("search_departement", None),
-            "search_epci": data.get("search_epci", None),
-            "search_commune": data.get("search_commune", None),
-        }
+    search_region = forms.BooleanField(required=False, initial=True)
+    search_departement = forms.BooleanField(required=False, initial=True)
+    search_epci = forms.BooleanField(required=False, initial=True)
+    search_commune = forms.BooleanField(required=False, initial=True)
 
     def __init__(self, *args, **kwargs):
-        kwargs["data"] = self.clean_data(kwargs.get("data", dict()))
 
         super().__init__(*args, **kwargs)
 
@@ -64,14 +45,14 @@ class SelectTerritoryForm(forms.Form):
         self.fields["departement"].widget.attrs.update({"class": "adv-item"})
         self.fields["epci"].widget.attrs.update({"class": "adv-item"})
 
-        if self.data["region"]:
+        if "region" in self.data and self.data["region"]:
             try:
                 region = Region.objects.get(pk=int(self.data["region"]))
                 dept_qs = Departement.objects.filter(region=region).order_by("name")
                 self.fields["departement"].queryset = dept_qs
             except Region.DoesNotExist:
                 pass
-        if self.data["departement"]:
+        if "departement" in self.data and self.data["departement"]:
             try:
                 dept = Departement.objects.get(pk=int(self.data["departement"]))
                 epci_qs = Epci.objects.filter(departements=dept).order_by("name")
