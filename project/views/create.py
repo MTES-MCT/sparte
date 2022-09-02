@@ -46,7 +46,25 @@ class CreateProjectViews(BreadCrumbMixin, FormView):
     def form_valid(self, form):
         """If the form is valid, redirect to the supplied URL."""
         if not form.cleaned_data["selection"]:
-            results = Land.search(form.cleaned_data["keyword"])
+            search_for = []
+            if form.cleaned_data["search_region"]:
+                search_for.append(AdminRef.REGION)
+            if form.cleaned_data["search_departement"]:
+                search_for.append(AdminRef.DEPARTEMENT)
+            if form.cleaned_data["search_epci"]:
+                search_for.append(AdminRef.EPCI)
+            if form.cleaned_data["search_commune"]:
+                search_for.append(AdminRef.COMMUNE)
+            needle = form.cleaned_data["keyword"]
+            if needle == "*":
+                needle = ""
+            results = Land.search(
+                needle,
+                region=form.cleaned_data["region"],
+                departement=form.cleaned_data["departement"],
+                epci=form.cleaned_data["epci"],
+                search_for=search_for,
+            )
             kwargs = {
                 "results": {AdminRef.get_label(k): v for k, v in results.items()},
                 "form": form,

@@ -181,10 +181,8 @@ class LandMixin:
         return self.mpoly.transform(2154, clone=True).area / 10000
 
     @classmethod
-    def search(cls, needle):
-        qs = cls.objects.filter(name__icontains=needle)
-        qs = qs.order_by("name")
-        return qs
+    def search(cls, needle, region=None, departement=None, epci=None):
+        raise NotImplementedError("need to be overrided")
 
     def get_qs_cerema(self):
         raise NotImplementedError("need to be overrided")
@@ -231,6 +229,14 @@ class Region(LandMixin, GetDataFromCeremaMixin, models.Model):
             for dept in self.departement_set.all()
             for millesime in dept.get_ocsge_millesimes()
         }
+
+    @classmethod
+    def search(cls, needle, region=None, departement=None, epci=None):
+        qs = cls.objects.filter(name__icontains=needle)
+        if region:
+            qs = qs.filter(id=region.id)
+        qs = qs.order_by("name")
+        return qs
 
     @property
     def is_artif_ready(self):
@@ -280,6 +286,16 @@ class Departement(LandMixin, GetDataFromCeremaMixin, models.Model):
     def __str__(self):
         return self.name
 
+    @classmethod
+    def search(cls, needle, region=None, departement=None, epci=None):
+        qs = cls.objects.filter(name__icontains=needle)
+        if region:
+            qs = qs.filter(region=region)
+        if departement:
+            qs = qs.filter(id=departement.id)
+        qs = qs.order_by("name")
+        return qs
+
 
 class Epci(LandMixin, GetDataFromCeremaMixin, models.Model):
     source_id = models.CharField("Identifiant source", max_length=50)
@@ -314,6 +330,18 @@ class Epci(LandMixin, GetDataFromCeremaMixin, models.Model):
 
     def __str__(self):
         return self.name
+
+    @classmethod
+    def search(cls, needle, region=None, departement=None, epci=None):
+        qs = cls.objects.filter(name__icontains=needle)
+        if region:
+            qs = qs.filter(departements__region=region)
+        if departement:
+            qs = qs.filter(departements__id=departement.id)
+        if epci:
+            qs = qs.filter(id=epci.id)
+        qs = qs.distinct().order_by("name")
+        return qs
 
 
 class Commune(DataColorationMixin, LandMixin, GetDataFromCeremaMixin, models.Model):
@@ -366,8 +394,14 @@ class Commune(DataColorationMixin, LandMixin, GetDataFromCeremaMixin, models.Mod
         return [self]
 
     @classmethod
-    def search(cls, needle):
+    def search(cls, needle, region=None, departement=None, epci=None):
         qs = cls.objects.filter(Q(name__icontains=needle) | Q(insee__icontains=needle))
+        if region:
+            qs = qs.filter(departement__region=region)
+        if departement:
+            qs = qs.filter(departement=departement)
+        if epci:
+            qs = qs.filter(epci=epci)
         qs = qs.order_by("name")
         return qs
 
@@ -518,9 +552,14 @@ class Land:
         return cls.Meta.subclasses[land_type.upper()]
 
     @classmethod
-    def search(cls, needle):
+    def search(cls, needle, region=None, departement=None, epci=None, search_for=None):
         """Search for a keyword on all land subclasses"""
+        if not search_for:
+            return dict()
         return {
-            name: subclass.search(needle)
+            name: subclass.search(
+                needle, region=region, departement=departement, epci=epci
+            )
             for name, subclass in cls.Meta.subclasses.items()
+            if name in search_for
         }
