@@ -1,4 +1,4 @@
-FROM python:3.9.7
+FROM python:3.9
 
 ENV STAGE=$stage
 
@@ -7,7 +7,7 @@ LABEL vendor="Innov & Code"
 
 # Setup GDAL
 RUN apt update
-RUN apt install -y binutils libproj-dev gdal-bin
+RUN apt install -y binutils libproj-dev gdal-bin libgdal-dev
 
 # copy all the app
 COPY . ./app
