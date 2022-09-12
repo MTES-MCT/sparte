@@ -13,7 +13,8 @@
 
         <title>{% block pagetitle %}SPARTE{% endblock %}</title>
 
-        <link rel="icon" href="{% static 'favicon.ico' %}">
+        {% sri_static "favicon.ico" %}
+        <!-- <link crossorigin="anonymous" rel="icon" href="{% static 'favicon.ico' %}" integrity="sha256-17516aeae70e8509e89871d53bcf8a423dfa4d0c59d18a706d3046f4e6f513f7">-->
         <!-- Core theme CSS (includes Bootstrap)-->
         {% sri_static "css/styles.css" %}
         <!-- Bootstrap icon -->
@@ -82,8 +83,8 @@
             </main>
         </div>
 
-        <script nonce="{{ CSP_NONCE }}" type="module" src="{% static 'dsfr/dist/dsfr/dsfr.module.min.js' %}"></script>
-        <script nonce="{{ CSP_NONCE }}" nomodule src="{% static 'dsfr/dist/dsfr/dsfr.nomodule.min.js' %}"></script>
+        <script crossorigin="anonymous" type="module" src="{% static 'dsfr/dist/dsfr/dsfr.module.min.js' %}" integrity="{% sri_integrity_static "dsfr/dist/dsfr/dsfr.module.min.js" %}"></script>
+        <script crossorigin="anonymous" nomodule src="{% static 'dsfr/dist/dsfr/dsfr.nomodule.min.js' %}" integrity="{% sri_integrity_static "dsfr/dist/dsfr/dsfr.nomodule.min.js" %}"></script>
         {% sri_static "js/jquery-3.6.0.min.js" %}
         {% sri_static "js/bootstrap.bundle.min.js" %}
 
