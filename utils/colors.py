@@ -93,5 +93,5 @@ def get_blue_gradient(scale):
 
 
 def get_dark_blue_gradient(scale):
-    colors = [Color(h) for h in ("#084594", "#6baed6", "#eff3ff")]
+    colors = [Color(h) for h in ("#eff3ff", "#6baed6", "#084594")]
     return get_multicolors_gradient(colors=colors, scale=scale)
