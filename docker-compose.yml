@@ -35,6 +35,7 @@ services:
       - DATABASE_URL=postgis://postgres:postgres@db:5432/postgres
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
+      - USE_S3=0
     ports:
       - "8080:8080"
     depends_on:
