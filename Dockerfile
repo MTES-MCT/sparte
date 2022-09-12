@@ -19,7 +19,6 @@ RUN pip install --upgrade pip
 # install pipenv
 RUN pip install pipenv
 # install project dependencies
-# RUN pipenv install $(test "$STAGE" == production || echo "--dev") --deploy --system --ignore-pipfile
 RUN pipenv install --dev --deploy --system --ignore-pipfile
 
 EXPOSE 8080
