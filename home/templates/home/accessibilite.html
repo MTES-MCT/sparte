@@ -1,11 +1,12 @@
 {% extends 'index.html' %}
 
 {% load static %}
+{% load sri %}
 
 {% block pagetitle %}Déclaration d’accessibilité{% endblock %}
 
 {% block headers %}
-<link rel="stylesheet" href="{% static 'home/css/home.css' %}"/>
+{% sri_static "home/css/home.css" %}
 {% endblock headers %}
 
 {% block content %}
