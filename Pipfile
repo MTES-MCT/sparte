@@ -46,13 +46,13 @@ django-app-parameter = "*"
 setuptools = "*"
 docxtpl = "*"
 django-csp = "*"
-django-sri = "*"
 django-dsfr = "*"
 geopandas = "*"
 matplotlib = "*"
 contextily = "*"
 jenkspy = "*"
 django-celery-results = "*"
+django-sri = {git = "https://github.com/Swannbm/django-sri"}
 
 [scripts]
 shell = "python manage.py shell"
