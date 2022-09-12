@@ -90,3 +90,8 @@ def get_green2red_gradient(scale):
 
 def get_blue_gradient(scale):
     return get_onecolor_gradient(Color("blue"), scale)
+
+
+def get_dark_blue_gradient(scale):
+    colors = [Color(h) for h in ("#eff3ff", "#6baed6", "#084594")]
+    return get_multicolors_gradient(colors=colors, scale=scale)
