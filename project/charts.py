@@ -27,6 +27,8 @@ class ConsoComparisonChart(ProjectChart):
         super().__init__(*args, **kwargs)
         if self.relative:
             self.chart["title"]["text"] = "Consommation proportionnelle à la surface"
+            self.chart["yAxis"]["visible"] = False
+            self.chart["tooltip"] = {"enabled": False}
 
     def get_series(self):
         datas = dict()

@@ -13,7 +13,7 @@
 {% endblock %}
 
 {% block headers %}
-<link href="{% static 'project/css/project.css' %}" rel="stylesheet" />
+{% sri_static "project/css/project.css" %}
 <style nonce="{{ CSP_NONCE }}">
 .tooltiped {
     border-bottom:1px dashed #000;
