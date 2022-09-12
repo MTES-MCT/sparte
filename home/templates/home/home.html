@@ -105,11 +105,12 @@
           </div>
         </section>
       </div>
-      <a href="{% url 'project:create' %}" class="fr-btn">Créer un diagnostic</a> <a href="{% url 'project:create' %}?next=download" class="fr-btn ms-3">Télécharger un diagnostic</a>
+      <a href="{% url 'project:create' %}" class="fr-btn">Créer un diagnostic</a> <!-- <a href="{% url 'project:create' %}?next=download" class="fr-btn ms-3">Télécharger un diagnostic</a> -->
     </div>
   </div>
 </div>
 
+<!--
 <div class="bg-color-neutral">
   <div class="fr-container">
     <div class="d-grid gap-2 d-flex justify-content-center py-4">
@@ -118,6 +119,8 @@
     </div>
   </div>
 </div>
+-->
+
 {% endblock %}
 {% block tagging %}
   <script language="javascript" nonce="{{ CSP_NONCE }}">
