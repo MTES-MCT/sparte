@@ -52,7 +52,7 @@ matplotlib = "*"
 contextily = "*"
 jenkspy = "*"
 django-celery-results = "*"
-django-sri = {editable = true, git = "https://github.com/Swannbm/django-sri"}
+django-sri = {git = "https://github.com/Swannbm/django-sri"}
 
 [scripts]
 shell = "python manage.py shell"
