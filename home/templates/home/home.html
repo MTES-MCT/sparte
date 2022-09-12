@@ -1,13 +1,12 @@
 {% extends 'index.html' %}
 
 {% load static %}
+{% load sri %}
 
 {% block pagetitle %}Accueil{% endblock %}
 
 {% block headers %}
-  <link rel="stylesheet"
-        href="{% static 'home/css/home.css' %}"
-        nonce="{{ CSP_NONCE }}"/>
+{% sri_static "home/css/home.css" %}
 {% endblock headers %}
 
 <!-- Hide breadcrumbs on home page -->

@@ -13,7 +13,7 @@ Rapport artificialisation
 {% endblock %}
 
 {% block headers %}
-<link href="{% static 'project/css/project.css' %}" rel="stylesheet" nonce="{{ CSP_NONCE }}" />
+{% sri_static "project/css/project.css" %}
 {% endblock %}
 
 {% block content %}
