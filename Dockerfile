@@ -1,7 +1,5 @@
 FROM python:3.9
 
-ENV STAGE=$stage
-
 LABEL maintainer="swann.bouviermuller@gmail.com"
 LABEL vendor="Innov & Code"
 
