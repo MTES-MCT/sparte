@@ -82,8 +82,8 @@
             </main>
         </div>
 
-        {% sri_static "dsfr/dist/dsfr/dsfr.module.min.js" %}
-        {% sri_static "dsfr/dist/dsfr/dsfr.nomodule.min.js" %}
+        <script crossorigin="anonymous" type="module" src="{% static 'dsfr/dist/dsfr/dsfr.module.min.js' %}" integrity="{% sri_integrity_static "dsfr/dist/dsfr/dsfr.module.min.js" %}"></script>
+        <script crossorigin="anonymous" nomodule src="{% static 'dsfr/dist/dsfr/dsfr.nomodule.min.js' %}" integrity="{% sri_integrity_static "dsfr/dist/dsfr/dsfr.nomodule.min.js" %}"></script>
         {% sri_static "js/jquery-3.6.0.min.js" %}
         {% sri_static "js/bootstrap.bundle.min.js" %}
 
