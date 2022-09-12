@@ -9,7 +9,7 @@ from django.urls import reverse_lazy
 from django.views.generic import DetailView
 
 from public_data.models import Cerema
-from utils.colors import get_yellow2red_gradient
+from utils.colors import get_yellow2red_gradient, get_dark_blue_gradient
 
 from project.models import Project
 from project.serializers import CitySpaceConsoMapSerializer, CityArtifMapSerializer
@@ -433,7 +433,7 @@ class CitySpaceConsoMapView(BaseThemeMap):
             )[1:]
         data = [
             {"value": v, "color": c.hex_l}
-            for v, c in zip(boundaries, get_yellow2red_gradient(len(boundaries)))
+            for v, c in zip(boundaries, get_dark_blue_gradient(len(boundaries)))
         ]
         return JsonResponse(data, safe=False)
 
