@@ -26,7 +26,7 @@ def create_from_public_key(
         land_ids=str(land.id),
         land_type=land.land_type,
         territory_name=land.name,
-        user=user,
+        user=user if user.is_authenticated else None,
     )
     project.set_success(save=True)
 
