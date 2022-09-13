@@ -81,7 +81,8 @@ Créer un diagnostic
                 <button type="submit" class="fr-btn ">Chercher</button>
             </div>
             <input type="hidden" name="selection" id="id_selection" value="">
-            <div class="accordion" id="filter-panels">
+
+            <div class="accordion mt-3" id="filter-panels">
                 <div class="accordion-item">
                     <div class="accordion-header" id="filter-heading">
                         <button class="accordion-button-custom{% if not form.cleaned_data.region %} collapsed{% endif %} fs-5 text-muted" type="button" data-bs-toggle="collapse" data-bs-target="#filter-collapse" aria-expanded="{% if form.cleaned_data.region %} true{% else %} false{% endif %}" aria-controls="filter-collapse">
