@@ -449,7 +449,12 @@ CSP_SCRIPT_SRC = [
     "https://code.highcharts.com",
     STATIC_URL,
 ]
-CSP_STYLE_SRC = ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net", STATIC_URL]
+CSP_STYLE_SRC = [
+    "'self'",
+    # "'unsafe-inline'",
+    "https://cdn.jsdelivr.net",
+    STATIC_URL,
+]
 CSP_IMG_SRC = ["'self'", "https://wxs.ign.fr", "data:", MEDIA_URL, STATIC_URL]
 CSP_UPGRADE_INSECURE_REQUESTS = not DEBUG
 CSP_INCLUDE_NONCE_IN = ["script-src", "style-src"]
