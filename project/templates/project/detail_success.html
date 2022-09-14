@@ -15,8 +15,106 @@ SPARTE
 
 
 {% block content %}
-<div class="row w-100 justify-content-center">
-    <ul class="list-inline text-center">
+<div class="fr-container">
+  <div class="fr-grid-row fr-grid-row--gutters">
+    <div class="fr-col-8">
+      <h1 class="fr-mb-2w">{{ project.name }}</h1>
+      <p class="fr-h6">Surface du territoire : {{ total_surface|floatformat:0 }} ha</p>
+    </div>
+    <div class="fr-col-4">
+      <a href="{% url 'project:report_download' project.pk %}" class="fr-btn float-end">Télécharger mon diagnostic [word]</a>
+    </div>
+  </div>
+
+  <nav>
+    <ul class="navigation-secondary fr-mb-5w">
+      <li class="active"><a href="#">Synthese</a></li>
+      <li><a href="#">Carte interactive</a></li>
+      <li><a href="#">Consommation</a></li>
+      <li><a href="#">Artificialisation</a></li>
+      <li><a href="#">Usage</a></li>
+      <li><a href="#">Couverture</a></li>
+    </ul>
+  </nav>
+
+  <div class="fr-grid-row fr-grid-row--gutters">
+    <div class="fr-col-4">
+      <div class="bg-color-grey fr-p-3w fr-mb-3w">
+        <a class="fr-link fr-link--sm float-end" href="{% url 'project:update' project.pk %}">Modifier</a>
+        <p class="fr-mb-0"><b>Titre du diagnostic</b></p>
+        <p>{{ project.name }}</p>
+
+
+        <p class="fr-mb-0"><b>Période demandée</b></p>
+        <p>De {{ project.analyse_start_date }} à {{ project.analyse_end_date }}</p>
+        <p class="fr-mb-0"><b>Maille d'analyse</b></p>
+        <p>-</p>
+        <hr>
+
+        <p class="fr-mb-0"><b>Millésimes OCSGE utilisés</b></p>
+        <p>Le plus ancien : {{ project.first_year_ocsge|stringformat:"i" }}
+        <br/>Le plus récent : {{ project.last_year_ocsge|stringformat:"i" }}</p>
+
+        <hr>
+        <a class="fr-link fr-link--sm float-end" href="{% url 'project:lookalike' project.id %}">Modifier</a>
+        <p class="fr-mb-0"><b>Territoires de comparaison</b></p>
+
+        {% if project.look_a_like %}
+            <div class="d-flex flex-column mt-2">
+            {% for land in project.get_look_a_like %}
+                <div class="w100">
+                    {{ land.name }}
+                    <a href="{% url 'project:lookalike' project.id %}?remove={{ land.public_key }}" class="float-end"><i class="bi bi-trash text-danger"></i></a>
+                </div>
+            {% endfor %}
+            </div>
+        {% else %}
+        <p class="text-muted">Aucun territoire.</p>
+        {% endif %}
+      </div>
+
+      {% if user.is_authenticated %}
+        <a class="fr-link" href="{% url 'project:delete' project.pk %}"><i class="bi bi-trash"></i> Supprimer</a>
+      {% endif %}
+    </div>
+
+
+    <div class="fr-col-8">
+      {% if claim_diagnostic %}
+        <div class="fr-notice fr-notice--info fr-mb-2w">
+          <div class="fr-container">
+              <div class="fr-notice__body">
+                  <!-- <p class="fr-notice__title">Label titre du bandeau d'information importante, avec un texte assez long, et un <a href='#' rel='noopener' target='_blank'>lien au fil du texte</a> lorem ipsum dolor sit lorem ipsum dolor sit.</p> -->
+
+                  {% if user.is_authenticated %}
+                    <p class="fr-notice__title">Le diagnostic n'est pas associé à votre compte, vous ne pourrez pas le retrouver lors de votre prochaine visite. Pour corriger cela :
+                      <a href="{% url 'project:claim' project.id %}">associez le diagnostic à votre compte</a>
+                    </p>
+                  {% else %}
+                    <p class="fr-notice__title">Vous êtes actuellement en mode "anonyme", pour reprendre votre travail lors de votre prochaine visite, vous serez obligé de recréer votre diagnostic (nom, description, territoires de comparaison et groupes de communes auront disparus). Vous pouvez créer un compte et ainsi conserver vos diagnostics et leur configuration. Vous pourrez également les partager avec d'autres utilisateurs.
+                        <a href="{% url 'users:signup' %}?next={% url 'project:claim' project.id %}">Créer un compte</a> (ou <a href="{% url 'users:signin' %}?next={% url 'project:claim' project.id %}">connectez vous</a>)
+                    </p>
+                  {% endif %}
+                  <button class="fr-btn--close fr-btn" title="Masquer le message" onclick="const notice = this.parentNode.parentNode.parentNode; notice.parentNode.removeChild(notice)">
+                      Masquer le message
+                  </button>
+              </div>
+          </div>
+        </div>
+      {% endif %}
+
+      <h2>Consommation</h2>
+      <h3>Bilan de la consommation d'espace</h3>
+      <a href="{% url 'project:report_conso' project.pk %}">Consulter le bilan de la consommation d'espace</a>
+    </div>
+
+</div>
+
+
+
+
+<!-- <div class="row w-100 justify-content-center"> -->
+    <!-- <ul class="list-inline text-center">
         <li class="list-inline-item">
             <a href="{% url 'project:update' project.pk %}">
                 <i class="bi bi-pencil"></i> Editer
@@ -29,9 +127,9 @@ SPARTE
             </a>
         </li>
         {% endif %}
-    </ul>
+    </ul> -->
 
-    <div class="col-8 bg-light p-3 rounded-5 border mt-1">
+    <!-- <div class="col-8 bg-light p-3 rounded-5 border mt-1">
         <h1 class="mb-5">{{ project.name }}</h1>
 
         {% if claim_diagnostic %}
@@ -173,8 +271,8 @@ SPARTE
             </div>
         </div>
 
-    </div>
-</div>
+    </div> -->
+<!-- </div> -->
 {% endblock %}
 
 {% block tagging %}

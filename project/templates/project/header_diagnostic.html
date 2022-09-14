@@ -1,0 +1,9 @@
+<div class="fr-grid-row fr-grid-row--gutters">
+  <div class="fr-col-8">
+    <h1 class="fr-mb-2w">{{ project.name }}</h1>
+    <p class="fr-h6">Surface du territoire : {{ total_surface|floatformat:0 }} ha</p>
+  </div>
+  <div class="fr-col-4">
+    <a href="{% url 'project:report_download' project.pk %}" class="fr-btn float-end">Télécharger mon diagnostic [word]</a>
+  </div>
+</div>
