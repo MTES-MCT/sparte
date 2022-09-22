@@ -39,15 +39,19 @@ class Command(BaseCommand):
             _, last_day = calendar.monthrange(year=start.year, month=start.month)
             end = date(day=last_day, month=start.month, year=start.year)
 
-        if isinstance(start, datetime):
-            start = timezone.make_aware(start)
-        if isinstance(end, datetime):
-            end = timezone.make_aware(end)
+        if not isinstance(start, datetime):
+            start = datetime(start.year, start.month, start.day)
+        if not isinstance(end, datetime):
+            end = datetime(end.year, end.month, end.day)
+        start = timezone.make_aware(start)
+        end = timezone.make_aware(end)
         logger.info("Start: %s", start)
         logger.info("End: %s", end)
 
         excel_file = export_dl_diag(start, end)
-        filename = f"stats_{start.strftime('%d%m%Y')}_{end.strftime('%d%m%Y')}.xlsx"
+        filename = (
+            f"diag_downloaded_{start.strftime('%d%m%Y')}_{end.strftime('%d%m%Y')}.xlsx"
+        )
         if options["local"]:
             with open(filename, "wb") as f:
                 f.write(excel_file.read())
