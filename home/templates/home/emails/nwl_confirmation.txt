@@ -1,0 +1,13 @@
+Bonjour,
+
+Afin de confirmer votre inscription à la newsletter de SPARTE, veuillez cliquer sur le lien ci-dessous:
+
+{{ url }}
+
+Si vous n'êtes pas à l'origine de la demande, vous pouvez simplement ignorer ce message.
+
+Cordialement
+--
+*L'équipe de SPARTE*
+Tel mobile : {{ phone_contact }}
+{{ sparte_url }}

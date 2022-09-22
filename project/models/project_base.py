@@ -2,6 +2,7 @@ import collections
 from decimal import Decimal
 import pandas as pd
 import traceback
+from typing import Literal
 
 from django.conf import settings
 from django.contrib.gis.db import models as gis_models
@@ -20,6 +21,7 @@ from public_data.models import (
     Cerema,
     Land,
     CommuneDiff,
+    CommunePop,
     CommuneSol,
     CouvertureSol,
     Departement,
@@ -253,6 +255,11 @@ class Project(BaseProject):
         upload_to=upload_in_project_folder, blank=True, null=True
     )
 
+    class Meta:
+        ordering = ["-created_date"]
+        verbose_name = "Diagnostic en ligne"
+        verbose_name_plural = "Diagnostics en lignes"
+
     @property
     def nb_years(self):
         return len(self.years)
@@ -378,12 +385,7 @@ class Project(BaseProject):
         if to_remove:
             self.remove_look_a_like(to_remove, many=True)
             self.save(update_fields=["look_a_like"])
-        return lands
-
-    def get_lands(self):
-        if self.look_a_like:
-            return [Land(public_key) for public_key in self.look_a_like.split(";")]
-        return list()
+        return sorted(lands, key=lambda x: x.name)
 
     # calculated fields
     # Following field contains calculated dict :
@@ -495,6 +497,24 @@ class Project(BaseProject):
             }
         return self._conso_per_year
 
+    def get_pop_change_per_year(
+        self, criteria: Literal["pop", "household"] = "pop"
+    ) -> dict():
+        cities = (
+            CommunePop.objects.filter(city__in=self.cities.all())
+            .filter(year__gte=self.analyse_start_date)
+            .filter(year__lte=self.analyse_end_date)
+            .values("year")
+            .annotate(pop_progression=Sum("pop_change"))
+            .annotate(household_progression=Sum("household_change"))
+            .order_by("year")
+        )
+        if criteria == "pop":
+            data = {str(city["year"]): city["pop_progression"] for city in cities}
+        else:
+            data = {str(city["year"]): city["household_progression"] for city in cities}
+        return {year: data.get(year, None) for year in self.years}
+
     def get_land_conso_per_year(self, level):
         """Return conso data aggregated by a specific level
         {
@@ -504,6 +524,13 @@ class Project(BaseProject):
                 "2017": 9,
             },
         }
+
+        Available level: any Cerema's field
+        * city_name
+        * epci_name
+        * dept_name
+        * region_name
+        * scot [experimental]
         """
         fields = Cerema.get_art_field(self.analyse_start_date, self.analyse_end_date)
         qs = self.get_cerema_cities()
@@ -523,33 +550,33 @@ class Project(BaseProject):
             },
         }
         """
-        qs = self.get_cerema_cities(group_name=group_name)
-        fields = Cerema.get_art_field(self.analyse_start_date, self.analyse_end_date)
-        return {
-            cerema_city.city_name: {
-                f"20{field[3:5]}": getattr(cerema_city, field) / 10000
-                for field in fields
-            }
-            for cerema_city in qs
-        }
+        return self.get_land_conso_per_year("city_name")
 
     def get_look_a_like_conso_per_year(self):
         """Return same data as get_conso_per_year but for land listed in
         look_a_like property"""
-        datas = dict()
-        if not self.look_a_like:
-            return datas
-        try:
-            keys = self.look_a_like.split(";")
-        except AttributeError:
-            keys = set()
-        for public_key in keys:
-            land = Land(public_key)
-            datas[land.name] = land.get_conso_per_year(
+        return {
+            land.name: land.get_conso_per_year(
                 self.analyse_start_date,
                 self.analyse_end_date,
             )
-        return datas
+            for land in self.get_look_a_like()
+        }
+
+    def get_look_a_like_pop_change_per_year(
+        self,
+        criteria: Literal["pop", "household"] = "pop",
+    ):
+        """Return same data as get_pop_per_year but for land listed in
+        look_a_like property"""
+        return {
+            land.name: land.get_pop_change_per_year(
+                self.analyse_start_date,
+                self.analyse_end_date,
+                criteria=criteria,
+            )
+            for land in self.get_look_a_like()
+        }
 
     def get_absolute_url(self):
         return reverse("project:detail", kwargs={"pk": self.pk})
@@ -805,7 +832,11 @@ class Project(BaseProject):
         if not land_type:
             land_type = self.land_type
         klass = AdminRef.get_class(land_type)
-        return klass.objects.filter(mpoly__touches=self.combined_emprise)
+        return (
+            klass.objects.all()
+            .filter(mpoly__touches=self.combined_emprise)
+            .order_by("name")
+        )
 
     def get_matrix(self, sol="couverture"):
         if sol == "usage":

@@ -3,7 +3,7 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse, exceptions
 from django.utils.html import format_html
 
-from .models import Project, Emprise, Plan, PlanEmprise, Request
+from .models import Project, Emprise, Request, ErrorTracking
 from .tasks import send_word_diagnostic, generate_word_diagnostic
 
 
@@ -28,52 +28,35 @@ class ProjectAdmin(admin.GeoModelAdmin):
     filter_horizontal = ("cities",)
 
 
-@admin.register(Emprise)
-class EmpriseAdmin(admin.GeoModelAdmin):
-    model = Emprise
+# @admin.register(Emprise)
+# class EmpriseAdmin(admin.GeoModelAdmin):
+#     model = Emprise
+#     list_display = (
+#         "id",
+#         "project",
+#     )
+#     search_fields = ("project",)
+
+
+class ErrorTrackingAdmin(admin.StackedInline):
+    model = ErrorTracking
     list_display = (
         "id",
-        "project",
+        "request",
+        "created_date",
     )
-    search_fields = ("project",)
-
-
-@admin.register(Plan)
-class PlanAdmin(admin.GeoModelAdmin):
-    model = Plan
-    list_display = (
-        "name",
-        "project",
-        "user",
-        "import_status",
-        "import_date",
-    )
-    list_filter = ("import_status",)
-    search_fields = (
-        "project",
-        "name",
-        "import_error",
-        "user",
-    )
-    ordering = ("name",)
-    change_form_template = "project/admin_detail.html"
-
-    def response_change(self, request, obj):
-        if "_reload-emprise-action" in request.POST:
-            # Trigger asynch task to reload emprise file
-            process_new_plan.delay(obj.id)
-            return HttpResponseRedirect(".")  # stay on the same detail page
-        return super().response_change(request, obj)
-
-
-@admin.register(PlanEmprise)
-class PlanEmpriseAdmin(admin.GeoModelAdmin):
-    model = PlanEmprise
-    list_display = (
+    readonly_fields = (
         "id",
-        "plan",
+        "request",
+        "created_date",
+        "exception",
     )
-    search_fields = ("plan",)
+    extra = 0
+    verbose_name = "Exception"
+    can_delete = False
+
+    def has_add_permission(self, request, obj):
+        return False
 
 
 @admin.register(Request)
@@ -87,6 +70,7 @@ class RequestAdmin(admin.ModelAdmin):
         "link_to_project",
     )
     search_fields = ("email",)
+    list_filter = ("done", "created_date", "sent_date")
     fieldsets = (
         (
             "Information personnelle",
@@ -98,6 +82,7 @@ class RequestAdmin(admin.ModelAdmin):
                     "function",
                     "email",
                     "link_to_user",
+                    "created_date",
                 )
             },
         ),
@@ -109,6 +94,7 @@ class RequestAdmin(admin.ModelAdmin):
             },
         ),
     )
+    inlines = [ErrorTrackingAdmin]
     readonly_fields = (
         "first_name",
         "last_name",

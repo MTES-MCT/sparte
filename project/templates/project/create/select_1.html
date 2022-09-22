@@ -18,7 +18,7 @@ Sélectionner un plan
 
         <p class="mb-5">
             Veuillez sélectionner un territoire à diagnostiquer. Vous pouvez sélectionner une région, un département ou un EPCI. Utilisez le formulaire ci-dessous pour réaliser votre sélection.
-            Vous pouvez aussi <a href="{% url 'project:select-city' %}">sélectionner une liste de communes</a>.
+            Vous pouvez aussi <a href="{% url 'project:create' %}">sélectionner une liste de communes</a>.
         </p>
 
         <div class="card border">
@@ -29,22 +29,24 @@ Sélectionner un plan
                 <form action="" method="get">
                     {% csrf_token %}
 
+                    <input type="hidden" name="next" value="{{ next }}"/>
+
                     <p class="fs-4 mt-3">
                     {% if region_form %}
                         <span class="fs-6">{{ region_form.region }}</span>
                     {% else %}
                         {{ region.name }}
-                        <a href="{% url 'project:select' %}"><i class="bi bi-x-circle-fill fs-6 ms-1"></i></a>
+                        <a href="{% url 'project:create' %}"><i class="bi bi-x-circle-fill fs-6 ms-1"></i></a>
                         >
                         {% if departement_form %}
                             <span class="fs-6">{{ departement_form.departement }}</span>
                         {% else %}
                             {{ departement.name}}
-                            <a href="{% url 'project:select' %}?region={{ region.id }}"><i class="bi bi-x-circle-fill fs-6 ms-1"></i></a>
+                            <a href="{% url 'project:create' %}?region={{ region.id }}"><i class="bi bi-x-circle-fill fs-6 ms-1"></i></a>
                             >
                             {% if epci %}
                                 {{ epci.name}}
-                                <a href="{% url 'project:select' %}?departement={{ departement.id }}"><i class="bi bi-x-circle-fill fs-6 ms-1"></i></a>
+                                <a href="{% url 'project:create' %}?departement={{ departement.id }}"><i class="bi bi-x-circle-fill fs-6 ms-1"></i></a>
                             {% else %}
                                 <span class="fs-6">{{ epci_form.epci }}</span> {{ epci_form.departement }}
                             {% endif %}
@@ -54,13 +56,21 @@ Sélectionner un plan
                 </form>
                     <p class="mt-5">
 
-                        <a href="{% url 'project:select' %}?see_diagnostic=True&departement={{ departement.id }}&region={{ region.id }}&epci={{ epci.id }}"
-                            {% if region or departement or epci %}
-                                class="fr-btn"
-                            {% else %}
-                                class="fr-btn fr-btn--secondary disabled"
-                            {% endif %}
-                        >Voir le diagnostic</a>
+                        <form action="" method="get">
+                            <input type="hidden" name="see_diagnostic" value="True"/>
+                            <input type="hidden" name="departement" value="{{ departement.id }}"/>
+                            <input type="hidden" name="region" value="{{ region.id }}"/>
+                            <input type="hidden" name="epci" value="{{ epci.id}}"/>
+                            <input type="hidden" name="next" value="{{ next }}"/>
+
+                            <a id="final-submit-btn" href="#"
+                                {% if region or departement or epci %}
+                                    class="fr-btn"
+                                {% else %}
+                                    class="fr-btn fr-btn--secondary disabled"
+                                {% endif %}
+                            >Voir le diagnostic</a>
+                        </form>
 
                     </p>
 
@@ -76,6 +86,7 @@ Sélectionner un plan
 $('#id_region').on('change', function(){ $(this).closest('form').submit() })
 $('#id_departement').on('change', function(){ $(this).closest('form').submit() })
 $('#id_epci').on('change', function(){ $(this).closest('form').submit() })
+$('#final-submit-btn').on('click', function(){ $(this).closest('form').submit() })
 </script>
 {% endblock %}
 

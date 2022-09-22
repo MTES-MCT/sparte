@@ -1,0 +1,213 @@
+{% extends 'index.html' %}
+
+{% load static %}
+{% load humanize %}
+{% load i18n %}
+{% load l10n %}
+{% load highcharts_tags %}
+{% load sri %}
+
+{% block pagetitle %}
+Rapport comparaison
+{% endblock %}
+
+{% block headers %}
+{% sri_static "project/css/project.css" %}
+{% endblock %}
+
+{% block content %}
+    <div class="px-4">
+        {% include "project/detail_menu.html" %}
+
+        <div class="bg-light rounded-5 border fr-container fr-py-3w">
+
+            <a href="{% url 'project:report_conso' project.pk %}" class="text-decoration-none"><i class="bi bi-arrow-left" aria-hidden="true"></i> Retour au rapport "Consommation"</a>
+
+            <div class="w-100 box p-4">
+                <h3>
+                    Consommation d'espace rapportée à la surface du territoire
+                </h3>
+
+                <div id="surface_chart"></div>
+
+                <table class="table table-striped table-sm table-borderless mt-5">
+                    <thead>
+                        <tr>
+                            <th scope="col">{{ col_name }}</th>
+                            <th scope="col" class="text-end">Surface</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for city_name, data in surface_table.items %}
+                        <tr>
+                            <th scope="row">{{ city_name }}</th>
+                            {% for year, val in data.items %}
+                            <td align="right">{{ val|floatformat:0 }} Ha</td>
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                <div id="conso_surface_chart" class="mt-5"></div>
+
+                <table class="table table-striped table-sm table-borderless mt-5">
+                    <thead>
+                        <tr>
+                            <th scope="col">{{ col_name }}</th>
+                            {% for year in project.years %}
+                            <th scope="col" class="text-end">{{ year }}</th>
+                            {% endfor %}
+                            <th scope="col" class="text-end">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for city_name, data in conso_surface_table.items %}
+                        <tr>
+                            <th scope="row">{{ city_name }}</th>
+                            {% for year, val in data.items %}
+                            <td align="right">{{ val|floatformat:1 }}</td>
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="w-100 box p-4">
+                <h3>
+                    Consommation d'espaces par nouvel habitant
+                </h3>
+
+                <p>Croisement des données des fichiers fonciers avec les données de l'INSEE</p>
+
+                <div id="pop_chart"></div>
+
+                <table class="table table-striped table-sm table-borderless mt-5">
+                    <thead>
+                        <tr>
+                            <th scope="col">{{ col_name }}</th>
+                            {% for year in project.years %}
+                            <th scope="col" class="text-end">{{ year }}</th>
+                            {% endfor %}
+                            <th scope="col" class="text-end">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for city_name, data in pop_table.items %}
+                        <tr>
+                            <th scope="row">{{ city_name }}</th>
+                            {% for year, val in data.items %}
+                            <td align="right">{{ val|floatformat:0 }}</td>
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                <div id="conso_pop_chart" class="mt-5"></div>
+
+                <table class="table table-striped table-sm table-borderless mt-5">
+                    <thead>
+                        <tr>
+                            <th scope="col" class="text-end">(en Hectares par habitant)</th>
+                            {% for year in project.years %}
+                            <th scope="col" class="text-end">{{ year }}</th>
+                            {% endfor %}
+                            <th scope="col" class="text-end">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for city_name, data in conso_pop_table.items %}
+                        <tr>
+                            <th scope="row">{{ city_name }}</th>
+                            {% for year, val in data.items %}
+                            <td align="right">{{ val|floatformat:2 }}</td>
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="w-100 box p-4">
+                <h3>
+                    Consommation d'espaces par ménages
+                </h3>
+
+                <p>Croisement des données des fichiers fonciers avec les données de l'INSEE</p>
+
+                <div id="household_chart"></div>
+
+                <table class="table table-striped table-sm table-borderless mt-5">
+                    <thead>
+                        <tr>
+                            <th scope="col">{{ col_name }}</th>
+                            {% for year in project.years %}
+                            <th scope="col" class="text-end">{{ year }}</th>
+                            {% endfor %}
+                            <th scope="col" class="text-end">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for city_name, data in household_table.items %}
+                        <tr>
+                            <th scope="row">{{ city_name }}</th>
+                            {% for year, val in data.items %}
+                            <td align="right">{{ val|floatformat:0 }}</td>
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                <div id="conso_household_chart" class="mt-5"></div>
+
+                <table class="table table-striped table-sm table-borderless mt-5">
+                    <thead>
+                        <tr>
+                            <th scope="col" class="text-end">(en Hectares par ménage)</th>
+                            {% for year in project.years %}
+                            <th scope="col" class="text-end">{{ year }}</th>
+                            {% endfor %}
+                            <th scope="col" class="text-end">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for city_name, data in conso_household_table.items %}
+                        <tr>
+                            <th scope="row">{{ city_name }}</th>
+                            {% for year, val in data.items %}
+                            <td align="right">{{ val|floatformat:2 }}</td>
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block bodyend %}
+{% localize off %}
+{% sri_static "highcharts/js/highcharts.js" %}
+{% sri_static "highcharts/js/exporting.js" %}
+{% french_translation %}
+{% display_chart 'pop_chart' pop_chart CSP_NONCE %}
+{% display_chart 'conso_pop_chart' conso_pop_chart CSP_NONCE %}
+{% display_chart 'household_chart' household_chart CSP_NONCE %}
+{% display_chart 'conso_household_chart' conso_household_chart CSP_NONCE %}
+{% display_chart 'surface_chart' surface_chart CSP_NONCE %}
+{% display_chart 'conso_surface_chart' conso_surface_chart CSP_NONCE %}
+{% endlocalize %}
+{% endblock %}
+
+{% block tagging %}
+<script language="javascript" nonce="{{ CSP_NONCE }}">
+$( window ).on('load', function () {
+    _paq.push(['trackEvent', 'Consultation diagnostic', 'Tableau de bord', 'Consommation relative'])
+})
+</script>
+{% endblock tagging %}
