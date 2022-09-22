@@ -19,9 +19,10 @@ function get(object, key, default_value) {
         return default_value
 }
 
+
 function get_info_label(name) {
     return (name == "area") ? "Surface (Ha)" :
-        (name == "artif_area") ? "Consommé (pdt diag.)" :
+        (name == "artif_area") ? "Consommé (pdt diag. Ha)" :
         (name == "artif_evo") ? "Artificialisation" :
         (name == "city") ? "Commune" :
         (name == "conso_1121_act") ? "Conso activité 11-21" :
@@ -39,7 +40,7 @@ function get_info_label(name) {
         (name == "map_color") ? "" :
         (name == "name") ? "Nom" :
         (name == "surface") ? "Surface (Ha)" :
-        (name == "surface_artif") ? "Artificialisée" :
+        (name == "surface_artif") ? "Artificialisée (Ha)" :
         (name == "us_new") ? "Nouveau usage" :
         (name == "us_old") ? "Ancien usage" :
         (name == "usage_2015") ? "Usage en 2015" :
@@ -173,7 +174,7 @@ function Carto(map_center, default_zoom) {
         this.info.addTo(this.map);
 
         // add legend div
-        // this.legend.addTo(this.map)
+        this.legend.addTo(this.map)
 
         geolayers.forEach(layer => this.add_geolayer(layer))
     }
@@ -243,15 +244,15 @@ function Carto(map_center, default_zoom) {
         this._info_div.innerHTML = html_content
     }
 
-    // this.legend.onAdd = (map) => {
-    //     // create a div with a class "legend"
-    //     this._info_legend = L.DomUtil.create('div', 'info legend');
-    //     return this._info_legend;
-    // }
+    this.legend.onAdd = (map) => {
+        // create a div with a class "legend"
+        this._info_legend = L.DomUtil.create('div', 'info legend');
+        return this._info_legend;
+    }
 
-    // this.legend.update = (html_content) => {
-    //     this._info_legend.innerHTML = html_content
-    // }
+    this.legend.update = (html_content) => {
+        this._info_legend.innerHTML = html_content
+    }
 }
 
 
@@ -286,6 +287,7 @@ function GeoLayer(name, url) {
     this.pane = 'level_5'
 
     // Initialiser avec un objet permettant une colorisation personnalisée
+    // value doit être la borne haute
     // this.scale = [
     //     {value: 100, color: '#ff0000'},  //   0 -> 100
     //     {value: 150, color: '#ff3300'},  // 101 -> 150
@@ -319,12 +321,12 @@ function GeoLayer(name, url) {
     this.get_color_from_scale = (feature) => {
         // get the property that will decide the color
         property_value = feature.properties[this.color_property_name]
-            // use provided scale and color
-            // return gray in case of unset
-        let item = this.scale.find((item) => property_value < item.value)
-            // si on a pas trouvé, on doit être sur la dernière valeur de scale
-            // donc le find n'est jamais vrai, on va donc récupérer la dernière
-            // valeur pour initialiser item
+        // use provided scale and color
+        // return gray in case of unset
+        let item = this.scale.find((item) => property_value <= item.value)
+        // si on a pas trouvé, on doit être sur la dernière valeur de scale
+        // donc le find n'est jamais vrai, on va donc récupérer la dernière
+        // valeur pour initialiser item
         item = item ? item : this.scale[this.scale.length - 1]
             // finalement, on renvoit la couleur
         return item.color
@@ -339,7 +341,7 @@ function GeoLayer(name, url) {
     this.style = (feature) => {
         return {
             fillColor: this.get_color(feature),
-            fillOpacity: 0.7,
+            fillOpacity: 0.5,
             weight: 1,
             opacity: 0.1,
             color: 'white',
@@ -356,6 +358,7 @@ function GeoLayer(name, url) {
 
     // surcharge to update content of info div (return empty string to not show info)
     this.info_txt = (properties) => {
+        let formater = new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 1 })
         let info = '<h4>' + this.name + '</h4>'
         let properties_names = Object.getOwnPropertyNames(properties)
         for (i = 0; i < properties_names.length; i++) {
@@ -363,18 +366,17 @@ function GeoLayer(name, url) {
             let label = get_info_label(property_name)
             if (label != "") {
                 let property_value = properties[property_name]
-                if (label == "Surface (Ha)" | label == "Consommé (pdt diag.)") {
-                    property_value = property_value.toFixed(1)
+                if (label == "Surface (Ha)" | label == "Consommé (pdt diag. Ha)" | label == "Artificialisée (Ha)") {
+                    property_value = formater.format(property_value)
                     info = info + `<b>${label}</b>: ${property_value}<br/>`
                 } else if (property_name == "artif_evo") {
                     info = info + `<b>${label}</b>:<br/>`
-                    info = info + `<table class="table table-striped table-sm"><thead><tr><th>Période</th><th>Artif</th><th>Renat</th></tr></thead><tbody>`
+                    info = info + `<table class="table table-striped table-sm"><thead><tr><th>Période</th><th>Artificialisée (ha)</th><th>Renaturée (ha)</th><th>Nette (ha)</th></tr></thead><tbody>`
                     for (j = 0; j < property_value.length; j++) {
-                        new_artif = property_value[j].new_artif
-                        new_natural = property_value[j].new_natural
                         info = info + `<tr><td>${property_value[j].year_old}-${property_value[j].year_new}</td>`
-                        info = info + `<td>${new_artif}</td>`
-                        info = info + `<td>${new_natural}</td></tr>`
+                        info = info + `<td>${formater.format(property_value[j].new_artif)}</td>`
+                        info = info + `<td>${formater.format(property_value[j].new_natural)}</td>`
+                        info = info + `<td>${formater.format(property_value[j].net_artif)}</td></tr>`
                     }
                     info = info + `</tbody></table>`
                 } else
@@ -384,30 +386,29 @@ function GeoLayer(name, url) {
         return info
     }
 
-    // surcharge to update content of legend div (return empty string to not show info)
-    // this.legend_txt = (feature) => {
-    //     if (this.scale == null)
-    //         return null
-    //     let property = this.color_property_name
-    //     let property_value = feature.properties[property]
-    //     let legend = '<h4>' + this.name + '</h4>'
-    //     let bold = false
-    //     let val = new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 1 }).format(property_value)
-    //     legend = legend + `Propriété utilisée: ${property} (${val})<br\>`
+    //surcharge to update content of legend div (return empty string to not show info)
+    this.legend_txt = (feature) => {
+        if (this.scale == null)
+            return null
+        let property = this.color_property_name
+        let property_value = feature.properties[property]
+        let legend = '<h4>' + this.name + '</h4>'
+        let formater = new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 1 })
+        legend = legend + `Propriété utilisée: ${get_info_label(property)} ${formater.format(property_value)} Ha<br\>`
 
-    //     for (i = 0; i < this.scale.length; i++) {
-    //         let color = this.scale[i].color
-    //         let value = this.scale[i].value
-    //         let next_value = i + 1 < this.scale.length ? this.scale[i + 1].value : '+'
-    //         if ((bold == false) && (i + 1 == this.scale.length || property_value < next_value)) {
-    //             legend = legend + `<i style="background:${color}"></i> <b>${value} &ndash; ${next_value}</b></br>`
-    //             bold = true
-    //         } else {
-    //             legend = legend + `<i style="background:${color}"></i> ${value} &ndash; ${next_value}</br>`
-    //         }
-    //     }
-    //     return legend
-    // }
+        let prev_value = 0
+        for (i = 0; i < this.scale.length; i++) {
+            let color = this.scale[i].color
+            legend = legend + `<svg class="me-2" width="18" height="18" xmlns="http://www.w3.org/2000/svg" version="1.1"><rect x="0" y="0" width="18" height="18" fill="${color}"/></svg>`
+            if ((prev_value < property_value) && (property_value <= this.scale[i].value || i+1 == this.scale.length)) {
+                legend = legend + `<b>${formater.format(prev_value)} &ndash; ${formater.format(this.scale[i].value)}</b></br>`
+            } else {
+                legend = legend + `${formater.format(prev_value)} &ndash; ${formater.format(this.scale[i].value)}</br>`
+            }
+            prev_value = this.scale[i].value
+        }
+        return legend
+    }
 
     // set the layer appearance, fetch the data and display it on the map
     this.add_to_map = (carto) => {
@@ -431,7 +432,7 @@ function GeoLayer(name, url) {
 
                             // mets à jour le div d'information
                             carto.info.update(this.info_txt(feature.properties))
-                                // carto.legend.update(this.legend_txt(feature))
+                            carto.legend.update(this.legend_txt(feature))
                         },
                         // on mousse out
                         mouseout: (e) => {
@@ -558,7 +559,7 @@ function GeoLayer(name, url) {
         let img = document.createElement("img")
         img.setAttribute("src", "/static/carto/img/loading-buffering.gif")
         img.setAttribute("class", "ms-1 d-none")
-        // img.setAttribute("style", "display: none;")
+            // img.setAttribute("style", "display: none;")
         img.setAttribute("width", "12")
         img.setAttribute("height", "12")
         this.loading_img = img

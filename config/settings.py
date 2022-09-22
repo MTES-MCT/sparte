@@ -21,7 +21,7 @@ from django.core.exceptions import ImproperlyConfigured
 from django.contrib.messages import constants as messages
 
 
-OFFICIAL_VERSION = "2.0"
+OFFICIAL_VERSION = "2.1"
 
 root = environ.Path(__file__) - 2  # get root of the project
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -78,6 +78,7 @@ THIRD_APPS = [
     "sri",
     "widget_tweaks",
     "dsfr",
+    "django_celery_results",
     # "django_docx_template",
 ]
 
@@ -99,7 +100,6 @@ INSTALLED_APPS = DJANGO_APPS + RESTFRAMEWORK_APPS + THIRD_APPS + PROJECT_APPS
 MIDDLEWARE = [
     "config.middlewares.LogIncomingRequest",
     "django.middleware.security.SecurityMiddleware",
-    "csp.middleware.CSPMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -107,6 +107,9 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
+
+if not DEBUG:
+    MIDDLEWARE.insert(2, "csp.middleware.CSPMiddleware")
 
 
 ROOT_URLCONF = "config.urls"
@@ -186,9 +189,8 @@ USE_TZ = True
 
 # Bucket S3 and filestorage
 # see https://django-storages.readthedocs.io/en/latest/
-
-# specify to django we use only S3 to store files
-DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 # credentials
 AWS_ACCESS_KEY_ID = env.str("AWS_ACCESS_KEY_ID", default="")
@@ -208,18 +210,16 @@ AWS_S3_SIGNATURE_VERSION = "s3v4"
 AWS_S3_CUSTOM_DOMAIN = f"{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com"
 AWS_S3_OBJECT_PARAMETERS = {"CacheControl": "max-age=86400"}
 
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/3.2/howto/static-files/
-
 STATICFILES_DIRS = [
     BASE_DIR / "static",
     # BASE_DIR / "htmlcov",
 ]
 
 USE_S3 = env.bool("USE_S3", default=False)
-
 if USE_S3:
+    # specify to django we use only S3 to store files
+    DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+
     STATIC_LOCATION = "staticfiles"
     STATIC_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/{STATIC_LOCATION}/"
     STATICFILES_STORAGE = "config.storages.StaticMediaStorage"
@@ -229,7 +229,7 @@ if USE_S3:
     DEFAULT_FILE_STORAGE = "config.storages.PublicMediaStorage"
 else:
     STATIC_URL = "/static/"
-    STATIC_ROOT = str(BASE_DIR / "staticroot")
+    STATIC_ROOT = BASE_DIR / "staticroot"
 
     MEDIA_URL = "/media/"
     MEDIA_ROOT = BASE_DIR / "media"
@@ -271,6 +271,7 @@ default_redis = "redis://redis:6379/0"
 CELERY_BROKER_URL = env.str("CELERY_BROKER_URL", default=default_redis)
 CELERY_RESULT_BACKEND = env.str("CELERY_RESULT_BACKEND", default=default_redis)
 CELERY_ACKS_LATE = True
+CELERY_RESULT_EXTENDED = True
 
 # django-debug-toolbar configuration
 
@@ -448,7 +449,12 @@ CSP_SCRIPT_SRC = [
     "https://code.highcharts.com",
     STATIC_URL,
 ]
-CSP_STYLE_SRC = ["'self'", "https://cdn.jsdelivr.net", STATIC_URL]
+CSP_STYLE_SRC = [
+    "'self'",
+    # "'unsafe-inline'",
+    "https://cdn.jsdelivr.net",
+    STATIC_URL,
+]
 CSP_IMG_SRC = ["'self'", "https://wxs.ign.fr", "data:", MEDIA_URL, STATIC_URL]
 CSP_UPGRADE_INSECURE_REQUESTS = not DEBUG
 CSP_INCLUDE_NONCE_IN = ["script-src", "style-src"]

@@ -26,9 +26,15 @@ class Chart:
     param = None
     name = None
     series = None
+    options = None
 
     def get_param(self):
         return copy.deepcopy(self.param)
+
+    def get_options(self, serie_name):
+        if not self.options:
+            return dict()
+        return self.options.get(serie_name, dict())
 
     def __init__(self):
         self.chart = self.get_param()
@@ -42,6 +48,9 @@ class Chart:
             "name": name,
             "data": [{"name": n, "y": y} for n, y in data.items()],
         }
+        # update options according to class configuration
+        serie.update(self.get_options(name))
+        # add class options
         serie.update(options)
         self.chart["series"].append(serie)
 

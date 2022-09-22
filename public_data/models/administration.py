@@ -26,12 +26,15 @@ Afin de se référer à un Land, on utilise un identifiant unique :
     COMMUNE_[ID]
 """
 import re
+from typing import Literal
 
 from django.contrib.gis.db import models
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db.models import Sum, Q
 from django.utils.functional import cached_property
+
+from utils.db import IntersectManager
 
 from .cerema import Cerema
 from .couverture_usage import CouvertureUsageMatrix
@@ -59,6 +62,10 @@ class AdminRef:
     )
 
     CHOICES_DICT = {key: value for key, value in CHOICES}
+
+    @classmethod
+    def get_label(cls, key):
+        return cls.CHOICES_DICT[key]
 
     @classmethod
     def get_form_choices(cls, status_list):
@@ -174,10 +181,8 @@ class LandMixin:
         return self.mpoly.transform(2154, clone=True).area / 10000
 
     @classmethod
-    def search(cls, needle):
-        qs = cls.objects.filter(name__icontains=needle)
-        qs = qs.order_by("name")
-        return qs
+    def search(cls, needle, region=None, departement=None, epci=None):
+        raise NotImplementedError("need to be overrided")
 
     def get_qs_cerema(self):
         raise NotImplementedError("need to be overrided")
@@ -185,11 +190,35 @@ class LandMixin:
     def get_cities(self):
         raise NotImplementedError("need to be overrided")
 
+    def get_pop_change_per_year(
+        self,
+        start: str = "2010",
+        end: str = "2020",
+        criteria: Literal["pop", "household"] = "pop",
+    ):
+        cities = (
+            CommunePop.objects.filter(city__in=self.get_cities())
+            .filter(year__gte=start, year__lte=end)
+            .values("year")
+            .annotate(pop_progression=Sum("pop_change"))
+            .annotate(household_progression=Sum("household_change"))
+            .order_by("year")
+        )
+        if criteria == "pop":
+            data = {city["year"]: city["pop_progression"] for city in cities}
+        else:
+            data = {city["year"]: city["household_progression"] for city in cities}
+        return {
+            str(year): data.get(year, None) for year in range(int(start), int(end) + 1)
+        }
+
 
 class Region(LandMixin, GetDataFromCeremaMixin, models.Model):
     source_id = models.CharField("Identifiant source", max_length=50)
     name = models.CharField("Nom", max_length=50)
     mpoly = models.MultiPolygonField()
+
+    objects = IntersectManager()
 
     land_type = AdminRef.REGION
     default_analysis_level = AdminRef.DEPARTEMENT
@@ -200,6 +229,14 @@ class Region(LandMixin, GetDataFromCeremaMixin, models.Model):
             for dept in self.departement_set.all()
             for millesime in dept.get_ocsge_millesimes()
         }
+
+    @classmethod
+    def search(cls, needle, region=None, departement=None, epci=None):
+        qs = cls.objects.filter(name__icontains=needle)
+        if region:
+            qs = qs.filter(id=region.id)
+        qs = qs.order_by("name")
+        return qs
 
     @property
     def is_artif_ready(self):
@@ -212,7 +249,7 @@ class Region(LandMixin, GetDataFromCeremaMixin, models.Model):
         return Cerema.objects.filter(region_id=self.source_id)
 
     def get_cities(self):
-        return list(Commune.objects.filter(departement__region=self))
+        return Commune.objects.filter(departement__region=self)
 
     def __str__(self):
         return self.name
@@ -228,6 +265,8 @@ class Departement(LandMixin, GetDataFromCeremaMixin, models.Model):
     name = models.CharField("Nom", max_length=50)
     mpoly = models.MultiPolygonField()
 
+    objects = IntersectManager()
+
     land_type = AdminRef.DEPARTEMENT
     default_analysis_level = AdminRef.EPCI
 
@@ -242,10 +281,20 @@ class Departement(LandMixin, GetDataFromCeremaMixin, models.Model):
         return Cerema.objects.filter(dept_id=self.source_id)
 
     def get_cities(self):
-        return list(self.commune_set.all())
+        return self.commune_set.all()
 
     def __str__(self):
         return self.name
+
+    @classmethod
+    def search(cls, needle, region=None, departement=None, epci=None):
+        qs = cls.objects.filter(name__icontains=needle)
+        if region:
+            qs = qs.filter(region=region)
+        if departement:
+            qs = qs.filter(id=departement.id)
+        qs = qs.order_by("name")
+        return qs
 
 
 class Epci(LandMixin, GetDataFromCeremaMixin, models.Model):
@@ -253,6 +302,8 @@ class Epci(LandMixin, GetDataFromCeremaMixin, models.Model):
     name = models.CharField("Nom", max_length=70)
     mpoly = models.MultiPolygonField()
     departements = models.ManyToManyField(Departement)
+
+    objects = IntersectManager()
 
     land_type = AdminRef.EPCI
     default_analysis_level = AdminRef.COMMUNE
@@ -275,10 +326,22 @@ class Epci(LandMixin, GetDataFromCeremaMixin, models.Model):
         return Cerema.objects.filter(epci_id=self.source_id)
 
     def get_cities(self):
-        return list(self.commune_set.all())
+        return self.commune_set.all()
 
     def __str__(self):
         return self.name
+
+    @classmethod
+    def search(cls, needle, region=None, departement=None, epci=None):
+        qs = cls.objects.filter(name__icontains=needle)
+        if region:
+            qs = qs.filter(departements__region=region)
+        if departement:
+            qs = qs.filter(departements__id=departement.id)
+        if epci:
+            qs = qs.filter(id=epci.id)
+        qs = qs.distinct().order_by("name")
+        return qs
 
 
 class Commune(DataColorationMixin, LandMixin, GetDataFromCeremaMixin, models.Model):
@@ -287,6 +350,9 @@ class Commune(DataColorationMixin, LandMixin, GetDataFromCeremaMixin, models.Mod
     departement = models.ForeignKey(Departement, on_delete=models.CASCADE)
     epci = models.ForeignKey(Epci, on_delete=models.CASCADE)
     mpoly = models.MultiPolygonField()
+
+    objects = IntersectManager()
+
     # Calculated fields
     map_color = models.CharField(
         "Couleur d'affichage", max_length=30, null=True, blank=True
@@ -328,8 +394,14 @@ class Commune(DataColorationMixin, LandMixin, GetDataFromCeremaMixin, models.Mod
         return [self]
 
     @classmethod
-    def search(cls, needle):
+    def search(cls, needle, region=None, departement=None, epci=None):
         qs = cls.objects.filter(Q(name__icontains=needle) | Q(insee__icontains=needle))
+        if region:
+            qs = qs.filter(departement__region=region)
+        if departement:
+            qs = qs.filter(departement=departement)
+        if epci:
+            qs = qs.filter(epci=epci)
         qs = qs.order_by("name")
         return qs
 
@@ -406,6 +478,20 @@ class CommuneSol(models.Model):
         ]
 
 
+class CommunePop(models.Model):
+    city = models.ForeignKey(
+        Commune, verbose_name="Commune", on_delete=models.CASCADE, related_name="pop"
+    )
+    year = models.IntegerField(
+        "Millésime",
+        validators=[MinValueValidator(2000), MaxValueValidator(2050)],
+    )
+    pop = models.IntegerField("Population", blank=True, null=True)
+    pop_change = models.IntegerField("Population", blank=True, null=True)
+    household = models.IntegerField("Nb ménages", blank=True, null=True)
+    household_change = models.IntegerField("Population", blank=True, null=True)
+
+
 class Land:
     """It's a generic class to work with Epci, Departement, Region or Commune.
     Like a proxy."""
@@ -466,9 +552,14 @@ class Land:
         return cls.Meta.subclasses[land_type.upper()]
 
     @classmethod
-    def search(cls, needle):
+    def search(cls, needle, region=None, departement=None, epci=None, search_for=None):
         """Search for a keyword on all land subclasses"""
+        if not search_for:
+            return dict()
         return {
-            name: subclass.search(needle)
+            name: subclass.search(
+                needle, region=region, departement=departement, epci=epci
+            )
             for name, subclass in cls.Meta.subclasses.items()
+            if name in search_for
         }

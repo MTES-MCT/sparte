@@ -14,37 +14,6 @@ Rapport consommation
 
 {% block headers %}
 {% sri_static "project/css/project.css" %}
-<style nonce="{{ CSP_NONCE }}">
-.plotband_blue{
-    fill: rgba(149, 206, 255, 0.1);
-    color: rgb(149, 206, 255);
-}
-
-.plotband_green{
-    fill: rgba(169, 255, 150, 0.1);
-    color: rgb(135, 204, 120);
-}
-
-.plotband_orange{
-    fill: rgba(255, 188, 117, 0.1);
-    color: rgb(255, 188, 117);
-}
-
-.plotband_pink{
-    fill: rgba(255, 117, 153, 0.1);
-    color: rgb(255, 117, 153);
-}
-
-.plotband_violet{
-    fill: rgba(153, 158, 255, 0.1);
-    color: rgb(153, 158, 255);
-}
-
-.plotband_gray {
-    fill: rgba(92, 92, 97, 0.1);
-    color: rgb(92, 92, 97);
-}
-</style>
 {% endblock %}
 
 {% block content %}
@@ -194,13 +163,12 @@ Rapport consommation
                     </a>
                     Comparaison avec les territoires voisins
                 </h3>
-                <div class="clearfix">
-                    <div class="form-check form-switch float-end">
-                        <label class="form-check-label" for="flexSwitchCheckDefault">Pondérer par la surface</label>
-                        <input class="form-check-input" type="checkbox" id="conso_territory_reltive" {% if relative %}CHECKED{% endif %}>
-                    </div>
-                </div>
                 <div id="chart_2" class="flex-fill"></div>
+                <p class="mt-5">
+                    <a href="{% url 'project:report_conso_relative' project.id %}">
+                        <strong>Voir aussi :</strong> toutes les comparaisons disponibles
+                    </a>
+                </p>
             </div>
 
             <div class="box scrollme-x p-4">

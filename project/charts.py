@@ -25,10 +25,14 @@ class ConsoComparisonChart(ProjectChart):
     def __init__(self, *args, **kwargs):
         self.relative = kwargs.pop("relative") if "relative" in kwargs else False
         super().__init__(*args, **kwargs)
+        if self.relative:
+            self.chart["title"]["text"] = "Consommation proportionnelle à la surface"
+            self.chart["yAxis"]["visible"] = False
+            self.chart["tooltip"] = {"enabled": False}
 
     def get_series(self):
         datas = dict()
-        for land in self.project.get_lands():
+        for land in self.project.get_look_a_like():
             coef = self.project.area / land.area if self.relative else 1
             datas[land.name] = land.get_conso_per_year(
                 self.project.analyse_start_date,
@@ -38,7 +42,6 @@ class ConsoComparisonChart(ProjectChart):
         return datas
 
     def add_series(self):
-        super().add_series()
         self.add_serie(
             self.project.name,
             self.project.get_conso_per_year(),
@@ -47,6 +50,7 @@ class ConsoComparisonChart(ProjectChart):
                 "dashStyle": "ShortDash",
             },
         )
+        super().add_series()
 
 
 class ConsoCommuneChart(ProjectChart):
@@ -718,11 +722,185 @@ class NetArtifComparaisonChart(ProjectChart):
         for data in self.get_series().values():
             for period, value in data.items():
                 total[period] += value
-        # self.add_serie(
-        #     self.project.name,
-        #     total,
-        #     **{
-        #         "color": "#ff0000",
-        #         "dashStyle": "ShortDash",
-        #     },
-        # )
+
+
+class PopChart(ProjectChart):
+    name = "Project population bar chart"
+    param = {
+        "chart": {"type": "column"},
+        "title": {"text": "Evolution de la population du territoire"},
+        "yAxis": {"title": {"text": "Evolution de la population"}},
+        "xAxis": {"type": "category"},
+        "legend": {"layout": "vertical", "align": "right", "verticalAlign": "middle"},
+        "series": [],
+    }
+
+    def get_options(self, serie_name):
+        if serie_name == self.project.name:
+            return {"color": "#ff0000"}
+        else:
+            return super().get_options(serie_name)
+
+    def get_series(self):
+        if not self.series:
+            self.series = {self.project.name: self.project.get_pop_change_per_year()}
+            self.series.update(self.project.get_look_a_like_pop_change_per_year())
+        return self.series
+
+
+class ConsoComparisonPopChart(ProjectChart):
+    name = "conso comparison"
+    param = {
+        "title": {
+            "text": (
+                "Consommation d'espace en fonction de l'évolution de la population du"
+                " territoire"
+            )
+        },
+        "yAxis": {"title": {"text": "Consommation par habitant (en ha)"}},
+        "xAxis": {"type": "category"},
+        "legend": {"layout": "vertical", "align": "right", "verticalAlign": "middle"},
+        "series": [],
+    }
+
+    def get_options(self, serie_name):
+        if serie_name == self.project.name:
+            return {"color": "#ff0000", "dashStyle": "ShortDash"}
+        else:
+            return super().get_options(serie_name)
+
+    def get_series(self):
+        if not self.series:
+            self.series = collections.defaultdict(lambda: dict())
+
+            self_pop = self.project.get_pop_change_per_year()
+            self_conso = self.project.get_conso_per_year()
+
+            data = self.series[self.project.name]
+            for year, pop_progression in self_pop.items():
+                if pop_progression:
+                    data[year] = self_conso[year] / pop_progression
+                else:
+                    data[year] = None
+
+            lands_conso = self.project.get_look_a_like_conso_per_year()
+            lands_pop = self.project.get_look_a_like_pop_change_per_year()
+            for land_name, land_data in lands_conso.items():
+                data = self.series[land_name]
+                land_pop = lands_pop[land_name]
+                for year, conso in land_data.items():
+                    if land_pop[year]:
+                        data[year] = conso / land_pop[year]
+                    else:
+                        data[year] = None
+        return self.series
+
+
+class HouseholdChart(ProjectChart):
+    name = "Project ménages bar chart"
+    param = {
+        "chart": {"type": "column"},
+        "title": {"text": "Evolution du nombre de ménages du territoire"},
+        "yAxis": {"title": {"text": "Evolution du nombre de ménages"}},
+        "xAxis": {"type": "category"},
+        "legend": {"layout": "vertical", "align": "right", "verticalAlign": "middle"},
+        "series": [],
+    }
+
+    def get_options(self, serie_name):
+        if serie_name == self.project.name:
+            return {"color": "#ff0000"}
+        else:
+            return super().get_options(serie_name)
+
+    def get_series(self):
+        if not self.series:
+            self.series = {
+                self.project.name: self.project.get_pop_change_per_year(
+                    criteria="household"
+                )
+            }
+            self.series.update(
+                self.project.get_look_a_like_pop_change_per_year(criteria="household")
+            )
+        return self.series
+
+
+class ConsoComparisonHouseholdChart(ProjectChart):
+    name = "conso comparison"
+    param = {
+        "title": {
+            "text": (
+                "Consommation d'espace en fonction de l'évolution du nombre de ménages"
+                " du territoire"
+            )
+        },
+        "yAxis": {"title": {"text": "Consommation par ménage (en ha)"}},
+        "xAxis": {"type": "category"},
+        "legend": {"layout": "vertical", "align": "right", "verticalAlign": "middle"},
+        "series": [],
+    }
+
+    def get_options(self, serie_name):
+        if serie_name == self.project.name:
+            return {"color": "#ff0000", "dashStyle": "ShortDash"}
+        else:
+            return super().get_options(serie_name)
+
+    def get_series(self):
+        if not self.series:
+            self.series = collections.defaultdict(lambda: dict())
+
+            self_pop = self.project.get_pop_change_per_year(criteria="household")
+            self_conso = self.project.get_conso_per_year()
+
+            data = self.series[self.project.name]
+            for year, pop_progression in self_pop.items():
+                if pop_progression:
+                    data[year] = self_conso[year] / pop_progression
+                else:
+                    data[year] = None
+
+            lands_conso = self.project.get_look_a_like_conso_per_year()
+            lands_pop = self.project.get_look_a_like_pop_change_per_year(
+                criteria="household"
+            )
+            for land_name, land_data in lands_conso.items():
+                data = self.series[land_name]
+                land_pop = lands_pop[land_name]
+                for year, conso in land_data.items():
+                    if land_pop[year]:
+                        data[year] = conso / land_pop[year]
+                    else:
+                        data[year] = None
+        return self.series
+
+
+class SurfaceChart(ProjectChart):
+    name = "Surface des territoires"
+    param = {
+        "chart": {"type": "column"},
+        "title": {"text": "Surface des territoires"},
+        "yAxis": {"title": {"text": "Surface (en ha)"}},
+        "xAxis": {"type": "category"},
+        "legend": {"layout": "vertical", "align": "right", "verticalAlign": "middle"},
+        "series": [],
+    }
+
+    def get_options(self, serie_name):
+        if serie_name == self.project.name:
+            return {"color": "#ff0000"}
+        else:
+            return super().get_options(serie_name)
+
+    def get_series(self):
+        if not self.series:
+            self.series = {self.project.name: {"surface": self.project.area}}
+            self.series.update(
+                {
+                    land.name: {"surface": land.area}
+                    for land in self.project.get_look_a_like()
+                }
+            )
+
+        return self.series

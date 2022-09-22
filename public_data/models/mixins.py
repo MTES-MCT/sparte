@@ -1,3 +1,4 @@
+from colour import Color
 import logging
 import numpy as np
 from pathlib import Path
@@ -8,7 +9,7 @@ from django.contrib.gis.utils import LayerMapping
 from django.core.exceptions import FieldDoesNotExist
 from django.db import connection
 
-from utils.colors import get_random_color, get_color_gradient, is_valid
+from utils.colors import get_random_color, get_onecolor_gradient, is_valid
 
 from public_data.storages import DataStorage
 
@@ -145,7 +146,8 @@ class DataColorationMixin:
         # hook for getting a color_name
         color_name = cls.get_color(color_name=color_name)
         # get a gradient of color
-        colours = get_color_gradient(color_name=color_name, scale=nb_colors)[::-1]
+
+        colours = get_onecolor_gradient(Color(color_name), nb_colors)[::-1]
 
         # add colors to the scale
         gradient = {

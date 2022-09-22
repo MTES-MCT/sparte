@@ -67,7 +67,22 @@ class ScalingoInterface:
         print(self.get_scalingo_run_cmd())
 
 
-@click.group()
+class AliasedGroup(click.Group):
+    """Alias `mep` to the last mep-xxx command available.
+    ..see:: Used in bin/post_compile"""
+
+    def get_command(self, ctx, cmd_name):
+        # Step one: bulitin commands as normal
+        if cmd_name == "mep":
+            # find last mep command
+            mep_cmd = [x for x in self.list_commands(ctx) if x.startswith("mep")]
+            mep_cmd.sort()
+            cmd_name = mep_cmd.pop()
+        return super().get_command(ctx, cmd_name)
+        # rv = click.Group.get_command(self, ctx, cmd_name)
+
+
+@click.command(cls=AliasedGroup)
 @click.option(
     "--env",
     default="staging",
@@ -171,6 +186,9 @@ def rebuild(ctx, klass=None):
     click.secho("Evaluate density of building in zone construite (async)", fg="cyan")
     connecter.manage_py("set_density")
 
+    click.secho("Load INSEE", fg="cyan")
+    connecter.manage_py("load_insee")
+
     click.secho("End", fg="cyan")
 
 
@@ -180,38 +198,6 @@ def migrate(ctx):
     """Trigger migrate command to update database"""
     connecter = ScalingoInterface(ctx.obj)
     connecter.manage_py("migrate")
-
-
-@cli.command()
-@click.pass_context
-def mep_140(ctx):
-    """Trigger all data transformation to successful MEP release 1.4.0"""
-    click.secho("Start migration v1.4.0", fg="cyan")
-    connecter = ScalingoInterface(ctx.obj)
-
-    click.secho("Set new artificial matrix", fg="cyan")
-    connecter.manage_py("build_matrix")
-
-    click.secho("Add new params (if any)", fg="cyan")
-    connecter.manage_py("load_param --file required_parameters.json")
-
-    click.secho("Build artificial area", fg="cyan")
-    connecter.manage_py("build_artificial_area --verbose")
-
-    click.secho("Reset diagnostic first and last millesime OCS GE", fg="cyan")
-    connecter.manage_py("reset_first_last")
-
-    click.secho("Add short label to couverture and usage", fg="cyan")
-    connecter.manage_py("correct_label_couv_usage")
-
-    click.secho("Build data for all communes", fg="cyan")
-    connecter.manage_py("build_commune_data")
-
-    click.secho("Evaluate density of building in zone construite (async)", fg="cyan")
-    connecter.detached = True
-    connecter.manage_py("set_density")
-
-    click.secho("End migration", fg="cyan")
 
 
 @cli.command()
@@ -246,6 +232,17 @@ def mep_200(ctx):
 
     click.secho("Add title, tagline and footer", fg="cyan")
     connecter.manage_py("add_title")
+
+
+@cli.command()
+@click.pass_context
+def mep_210(ctx):
+    """Trigger all data transformation to successful MEP release 1.6"""
+    click.secho("Start migration v1.6", fg="cyan")
+    connecter = ScalingoInterface(ctx.obj)
+
+    click.secho("Load INSEE", fg="cyan")
+    connecter.manage_py("load_insee")
 
 
 if __name__ == "__main__":

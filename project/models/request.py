@@ -4,7 +4,7 @@ from django.utils import timezone
 
 from users.models import User
 
-from .project import Project
+from project.models import Project
 
 
 def upload_in_project_folder(request: "Request", filename: str) -> str:
@@ -23,11 +23,11 @@ class Request(models.Model):
     )
     email = models.EmailField("E-mail")
     project = models.ForeignKey(
-        Project, on_delete=models.CASCADE, verbose_name="Projet"
+        Project, on_delete=models.SET_NULL, verbose_name="Projet", blank=True, null=True
     )
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
         verbose_name="demandeur",
         blank=True,
         null=True,
@@ -53,6 +53,8 @@ class Request(models.Model):
 
     class Meta:
         ordering = ["-created_date"]
+        verbose_name = "Demande d'un diagnostic"
+        verbose_name_plural = "Demandes de diagnostics"
 
     def __str__(self):
         return f"Demande de {self.first_name}"

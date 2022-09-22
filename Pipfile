@@ -3,7 +3,6 @@ python_version = "3.9"
 
 [dev-packages]
 black = "*"
-click = "*"
 django-debug-toolbar = "==3.2.1"
 django-extensions = "*"
 flake8 = "==3.9.2"
@@ -24,6 +23,7 @@ djt-csp = "*"
 [packages]
 boto3 = "*"
 celery = "==5.2.2"
+click = "*"
 colour = "*"
 dj-static = "*"
 django = "~=3.2"
@@ -46,11 +46,13 @@ django-app-parameter = "*"
 setuptools = "*"
 docxtpl = "*"
 django-csp = "*"
-django-sri = "*"
 django-dsfr = "*"
 geopandas = "*"
 matplotlib = "*"
 contextily = "*"
+jenkspy = "*"
+django-celery-results = "*"
+django-sri = {git = "https://github.com/Swannbm/django-sri"}
 
 [scripts]
 shell = "python manage.py shell"
