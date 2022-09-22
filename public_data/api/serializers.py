@@ -1,25 +1,7 @@
 from rest_framework_gis import serializers
 from rest_framework import serializers as s
 
-from public_data.models import (
-    Artificialisee2015to2018,
-    Artificielle2018,
-    Commune,
-    CommunesSybarval,
-    CouvertureSol,
-    Departement,
-    EnveloppeUrbaine2018,
-    Epci,
-    Ocsge,
-    OcsgeDiff,
-    Region,
-    Renaturee2018to2015,
-    Sybarval,
-    Voirie2018,
-    ZonesBaties2018,
-    UsageSol,
-    ZoneConstruite,
-)
+from public_data import models
 
 
 def get_label(code="", label=""):
@@ -28,49 +10,6 @@ def get_label(code="", label=""):
     if label is None:
         label = "inconnu"
     return f"{code} {label[:30]}"
-
-
-class Artificialisee2015to2018Serializer(serializers.GeoFeatureModelSerializer):
-    usage_2015 = s.SerializerMethodField()
-    usage_2018 = s.SerializerMethodField()
-    couverture_2015 = s.SerializerMethodField()
-    couverture_2018 = s.SerializerMethodField()
-
-    def get_usage_2015(self, obj):
-        return get_label(code=obj.us_2015, label=obj.us_2015_label)
-
-    def get_usage_2018(self, obj):
-        return get_label(code=obj.us_2018, label=obj.us_2018_label)
-
-    def get_couverture_2015(self, obj):
-        return get_label(code=obj.cs_2015, label=obj.cs_2015_label)
-
-    def get_couverture_2018(self, obj):
-        return get_label(code=obj.cs_2018, label=obj.cs_2018_label)
-
-    class Meta:
-        fields = (
-            "id",
-            "surface",
-            "usage_2015",
-            "usage_2018",
-            "couverture_2015",
-            "couverture_2018",
-        )
-        geo_field = "mpoly"
-        model = Artificialisee2015to2018
-
-
-class Artificielle2018Serializer(serializers.GeoFeatureModelSerializer):
-    # couverture = s.SerializerMethodField()
-
-    def get_couverture(self, obj):
-        return get_label(code=obj.couverture, label=obj.couverture_label)
-
-    class Meta:
-        fields = ("id", "surface")
-        geo_field = "mpoly"
-        model = Artificielle2018
 
 
 class CommuneSerializer(serializers.GeoFeatureModelSerializer):
@@ -87,40 +26,7 @@ class CommuneSerializer(serializers.GeoFeatureModelSerializer):
             "map_color",
         )
         geo_field = "mpoly"
-        model = Commune
-
-
-class CommunesSybarvalSerializer(serializers.GeoFeatureModelSerializer):
-    """Marker GeoJSON serializer."""
-
-    class Meta:
-        """Marker serializer meta class."""
-
-        fields = (
-            "nom",
-            "code_insee",
-            "arrondisst",
-            "depart",
-            "region",
-            "_nom_epci",
-            "_nom_scot",
-            "surface",
-            "d_brute_20",
-        )
-        geo_field = "mpoly"
-        model = CommunesSybarval
-
-
-class EnveloppeUrbaine2018Serializer(serializers.GeoFeatureModelSerializer):
-    couverture = s.SerializerMethodField()
-
-    def get_couverture(self, obj):
-        return get_label(code=obj.couverture, label=obj.couverture_label)
-
-    class Meta:
-        fields = ("id",)
-        geo_field = "mpoly"
-        model = EnveloppeUrbaine2018
+        model = models.Commune
 
 
 class OcsgeSerializer(serializers.GeoFeatureModelSerializer):
@@ -143,7 +49,7 @@ class OcsgeSerializer(serializers.GeoFeatureModelSerializer):
             "year",
         )
         geo_field = "mpoly"
-        model = Ocsge
+        model = models.Ocsge
 
 
 class OcsgeDiffSerializer(serializers.GeoFeatureModelSerializer):
@@ -160,90 +66,7 @@ class OcsgeDiffSerializer(serializers.GeoFeatureModelSerializer):
             "is_new_natural",
         )
         geo_field = "mpoly"
-        model = OcsgeDiff
-
-
-class Renaturee2018to2015Serializer(serializers.GeoFeatureModelSerializer):
-    usage_2015 = s.SerializerMethodField()
-    usage_2018 = s.SerializerMethodField()
-    couverture_2015 = s.SerializerMethodField()
-    couverture_2018 = s.SerializerMethodField()
-
-    def get_usage_2015(self, obj):
-        return get_label(code=obj.us_2015, label=obj.us_2015_label)
-
-    def get_usage_2018(self, obj):
-        return get_label(code=obj.us_2018, label=obj.us_2018_label)
-
-    def get_couverture_2015(self, obj):
-        return get_label(code=obj.cs_2015, label=obj.cs_2015_label)
-
-    def get_couverture_2018(self, obj):
-        return get_label(code=obj.cs_2018, label=obj.cs_2018_label)
-
-    class Meta:
-        fields = (
-            "id",
-            "surface",
-            "usage_2015",
-            "usage_2018",
-            "couverture_2015",
-            "couverture_2018",
-        )
-        geo_field = "mpoly"
-        model = Renaturee2018to2015
-
-
-class SybarvalSerializer(serializers.GeoFeatureModelSerializer):
-    class Meta:
-        fields = (
-            "id",
-            "surface",
-        )
-        geo_field = "mpoly"
-        model = Sybarval
-
-
-class Voirie2018Serializer(serializers.GeoFeatureModelSerializer):
-    couverture = s.SerializerMethodField()
-    usage = s.SerializerMethodField()
-
-    def get_couverture(self, obj):
-        return get_label(code=obj.couverture, label=obj.couverture_label)
-
-    def get_usage(self, obj):
-        return get_label(code=obj.usage, label=obj.usage_label)
-
-    class Meta:
-        fields = (
-            "id",
-            "surface",
-            "couverture",
-            "usage",
-        )
-        geo_field = "mpoly"
-        model = Voirie2018
-
-
-class ZonesBaties2018Serializer(serializers.GeoFeatureModelSerializer):
-    couverture = s.SerializerMethodField()
-    usage = s.SerializerMethodField()
-
-    def get_couverture(self, obj):
-        return get_label(code=obj.couverture, label=obj.couverture_label)
-
-    def get_usage(self, obj):
-        return get_label(code=obj.usage, label=obj.usage_label)
-
-    class Meta:
-        fields = (
-            "id",
-            "couverture",
-            "usage",
-            "surface",
-        )
-        geo_field = "mpoly"
-        model = ZonesBaties2018
+        model = models.OcsgeDiff
 
 
 class CouvertureSolSerializer(serializers.ModelSerializer):
@@ -254,7 +77,7 @@ class CouvertureSolSerializer(serializers.ModelSerializer):
             "code",
             "label",
         )
-        model = CouvertureSol
+        model = models.CouvertureSol
 
 
 class UsageSolSerializer(serializers.ModelSerializer):
@@ -265,7 +88,7 @@ class UsageSolSerializer(serializers.ModelSerializer):
             "code",
             "label",
         )
-        model = UsageSol
+        model = models.UsageSol
 
 
 class RegionSerializer(serializers.GeoFeatureModelSerializer):
@@ -274,7 +97,7 @@ class RegionSerializer(serializers.GeoFeatureModelSerializer):
             "id",
             "name",
         )
-        model = Region
+        model = models.Region
         geo_field = "mpoly"
 
 
@@ -286,7 +109,7 @@ class DepartementSerializer(serializers.GeoFeatureModelSerializer):
             "name",
             "region_id",
         )
-        model = Departement
+        model = models.Departement
         geo_field = "mpoly"
 
 
@@ -297,7 +120,7 @@ class EpciSerializer(serializers.GeoFeatureModelSerializer):
             "source_id",
             "name",
         )
-        model = Epci
+        model = models.Epci
         geo_field = "mpoly"
 
 
@@ -309,5 +132,5 @@ class ZoneConstruiteSerializer(serializers.GeoFeatureModelSerializer):
             "millesime",
             "year",
         )
-        model = ZoneConstruite()
+        model = models.ZoneConstruite
         geo_field = "mpoly"

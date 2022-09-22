@@ -71,6 +71,15 @@ Si vous souhaitez bypasser pre-commit hook (usefull pour ajouter des fichiers sh
 git commit --no-verify
 ```
 
+## Get production DB
+
+Sometimes, you need to fetch and install a Scalingo DB backup.
+
+1. Fetch backup from scalingo app > pg ressource > backup, download last backup (eg. 20220830000404_sparte_1396.tar.gz)
+2. Uncompress `tar -xf 20220830000404_sparte_1396.tar.gz`
+3. restore `pg_restore --clean --if-exists --no-owner --no-privileges --no-comments --dbname postgres://postgres:postgres@127.0.0.1:54321/postgres 20220830000404_sparte_1396.pgsql`
+
+
 ## The rocky river pattern
 
 In this project, we try to follow the rocky river pattern. Find below the order of our apps. Top app can't call below app (they don't know them)

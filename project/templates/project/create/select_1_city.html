@@ -39,7 +39,7 @@ Sélectionner une ville
                             {% for city in autocomplete_cities %}
                             <div class="w-100">
                                 {{ city.name }}
-                                <a href="{% url 'project:select-city' %}?add={{city.public_key}}&{{ selected_cities_url }}&needle={{ needle }}">
+                                <a href="{% url 'project:create' %}?add={{city.public_key}}&{{ selected_cities_url }}&needle={{ needle }}">
                                     <i class="bi bi-arrow-right-circle float-end text-success"></i>
                                 </a>
                             </div>
@@ -56,7 +56,7 @@ Sélectionner une ville
                             {% for city in selected_cities %}
                             <div class="w-100">
                                 {{ city.name }}
-                                <a href="{% url 'project:select-city' %}?remove={{city.public_key}}&{{ selected_cities_url }}">
+                                <a href="{% url 'project:create' %}?remove={{city.public_key}}&{{ selected_cities_url }}">
                                     <i class="bi bi-trash float-end text-danger"></i>
                                 </a>
                             </div>
@@ -65,7 +65,7 @@ Sélectionner une ville
                             {% endfor %}
                         </div>
                         <div class="text-center mt-3">
-                            <a class="fr-btn {% if not selected_cities %}fr-btn--secondary disabled{% else %}{% endif %}" href="{% url 'project:select-city' %}?{{ selected_cities_url }}&select=true" role="button">Sélectionner {{ selected_cities|length }} communes</a>
+                            <a class="fr-btn {% if not selected_cities %}fr-btn--secondary disabled{% else %}{% endif %}" href="{% url 'project:create' %}?{{ selected_cities_url }}&select=true" role="button">Sélectionner {{ selected_cities|length }} communes</a>
                         </div>
                     </div>
                 </div>

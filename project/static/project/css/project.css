@@ -95,3 +95,33 @@
 #group-model {
     display: none;
 }
+
+.plotband_blue{
+    fill: rgba(149, 206, 255, 0.1);
+    color: rgb(149, 206, 255);
+}
+
+.plotband_green{
+    fill: rgba(169, 255, 150, 0.1);
+    color: rgb(135, 204, 120);
+}
+
+.plotband_orange{
+    fill: rgba(255, 188, 117, 0.1);
+    color: rgb(255, 188, 117);
+}
+
+.plotband_pink{
+    fill: rgba(255, 117, 153, 0.1);
+    color: rgb(255, 117, 153);
+}
+
+.plotband_violet{
+    fill: rgba(153, 158, 255, 0.1);
+    color: rgb(153, 158, 255);
+}
+
+.plotband_gray {
+    fill: rgba(92, 92, 97, 0.1);
+    color: rgb(92, 92, 97);
+}

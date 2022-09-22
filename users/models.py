@@ -50,4 +50,4 @@ class User(AbstractUser):
         return self.email
 
     class Meta:
-        verbose_name = "Utilisateurs"
+        verbose_name = "Utilisateur"

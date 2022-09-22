@@ -1,0 +1,11 @@
+Bonjour l'équipe !
+
+Vous avez reçu une nouveau message envoyée depuis le formulaire de contact, envoyé de la part de {{ sender }}.
+
+Contenu de son message:
+---
+{{ content }}
+---
+
+A bientôt
+Alfred

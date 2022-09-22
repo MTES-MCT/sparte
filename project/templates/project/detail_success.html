@@ -3,13 +3,14 @@
 {% load static %}
 {% load crispy_forms_tags %}
 {% load project_tags %}
+{% load sri %}
 
 {% block pagetitle %}
 SPARTE
 {% endblock %}
 
 {% block headers %}
-<link href="{% static 'project/css/project.css' %}" rel="stylesheet" />
+{% sri_static "project/css/project.css" %}
 {% endblock %}
 
 
@@ -60,9 +61,11 @@ SPARTE
                             <li><i class="bi bi-arrow-right-short"></i>Zones artificialisées et renaturées sur la période</li>
                         </ul>
                     </div>
-                    <p>
-                        <a href="{% url 'project:theme-my-artif' project.pk %}">Comprendre mon artificialisation</a>
-                    </p>
+                    <ul>
+                        <li><a href="{% url 'project:theme-my-artif' project.pk %}">Comprendre L'évolution de l'artificialisation de mon territoire</a></li>
+                        <li><a href="{% url 'project:theme-city-conso' project.pk %}">Consommation des communes de mon territoire</a></li>
+                        <li><a href="{% url 'project:theme-city-artif' project.pk %}">Artificialisation des communes de mon territoire</a></li>
+                    </ul>
                 </div>
             </div>
             <div class="col">

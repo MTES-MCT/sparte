@@ -11,36 +11,9 @@ from rest_framework_gis import filters
 
 from utils.functions import decimal2float
 
-from public_data.models import (
-    ArtificialArea,
-    Artificialisee2015to2018,
-    Artificielle2018,
-    Commune,
-    CouvertureSol,
-    Departement,
-    Epci,
-    Ocsge,
-    OcsgeDiff,
-    Region,
-    Renaturee2018to2015,
-    UsageSol,
-    ZoneConstruite,
-)
+from public_data import models
 
-from .serializers import (
-    Artificialisee2015to2018Serializer,
-    Artificielle2018Serializer,
-    CommuneSerializer,
-    CouvertureSolSerializer,
-    DepartementSerializer,
-    EpciSerializer,
-    OcsgeSerializer,
-    OcsgeDiffSerializer,
-    RegionSerializer,
-    Renaturee2018to2015Serializer,
-    UsageSolSerializer,
-    ZoneConstruiteSerializer,
-)
+from . import serializers
 
 
 # OCSGE layers viewssets
@@ -53,9 +26,14 @@ class OptimizedMixins:
     optimized_geo_field = "st_AsGeoJSON(o.mpoly, 8)"
 
     def get_params(self, request):
-        bbox = request.query_params.get("in_bbox").split(",")
-        bbox = list(map(float, bbox))
-        year = int(request.query_params.get("year"))
+        bbox = request.query_params.get("in_bbox")
+        year = request.query_params.get("year")
+        if bbox is None or year is None:
+            raise ValueError(
+                f"bbox and year parameter must be set. bbox={bbox};year={year}"
+            )
+        bbox = list(map(float, bbox.split(",")))
+        year = int(year)
         return [year] + bbox  # /!\ order matter, see sql query below
 
     def get_sql_fields(self):
@@ -106,28 +84,38 @@ class OptimizedMixins:
 
     @action(detail=False)
     def optimized(self, request):
-        envelope = json.dumps(
-            {
-                "type": "FeatureCollection",
-                "crs": {"type": "name", "properties": {"name": "EPSG:4326"}},
-                "features": "-features-",
-            }
-        )
-        features = []
-        for row in self.get_data(request):
-            geojson = row.pop("geojson")
-            feature = json.dumps(
+        try:
+            envelope = json.dumps(
                 {
-                    "type": "Feature",
-                    "properties": self.clean_properties(row),
-                    "geometry": "-geometry-",
-                },
-                default=decimal2float,
+                    "type": "FeatureCollection",
+                    "crs": {"type": "name", "properties": {"name": "EPSG:4326"}},
+                    "features": "-features-",
+                }
             )
-            feature = feature.replace('"-geometry-"', geojson)
-            features.append(feature)
-        features = f" [{', '.join(features)}]"
-        envelope = envelope.replace('"-features-"', features)
+            features = []
+            for row in self.get_data(request):
+                geojson = row.pop("geojson")
+                feature = json.dumps(
+                    {
+                        "type": "Feature",
+                        "properties": self.clean_properties(row),
+                        "geometry": "-geometry-",
+                    },
+                    default=decimal2float,
+                )
+                feature = feature.replace('"-geometry-"', geojson)
+                features.append(feature)
+            features = f" [{', '.join(features)}]"
+            envelope = envelope.replace('"-features-"', features)
+        except ValueError as exc:
+            envelope = json.dumps(
+                {
+                    "error": {
+                        "type": "ValueError",
+                        "message": str(exc),
+                    }
+                }
+            )
         return HttpResponse(envelope, content_type="application/json")
 
 
@@ -151,19 +139,9 @@ class DataViewSet(viewsets.ReadOnlyModelViewSet):
         return Response(gradient)
 
 
-class Artificialisee2015to2018ViewSet(DataViewSet):
-    queryset = Artificialisee2015to2018.objects.all()
-    serializer_class = Artificialisee2015to2018Serializer
-
-
-class Artificielle2018ViewSet(DataViewSet):
-    queryset = Artificielle2018.objects.all()
-    serializer_class = Artificielle2018Serializer
-
-
 class OcsgeViewSet(OptimizedMixins, DataViewSet):
-    queryset = Ocsge.objects.all()
-    serializer_class = OcsgeSerializer
+    queryset = models.Ocsge.objects.all()
+    serializer_class = serializers.OcsgeSerializer
     optimized_fields = {
         # "o.id": "id",
         "o.couverture_label": "couverture_label",
@@ -193,10 +171,10 @@ class OcsgeViewSet(OptimizedMixins, DataViewSet):
 
     def get_sql_from(self):
         if self.request.query_params.get("color") == "usage":
-            table_name = UsageSol._meta.db_table
+            table_name = models.UsageSol._meta.db_table
             field = "usage"
         else:
-            table_name = CouvertureSol._meta.db_table
+            table_name = models.CouvertureSol._meta.db_table
             field = "couverture"
         return (
             f"FROM {self.queryset.model._meta.db_table} o "
@@ -205,14 +183,9 @@ class OcsgeViewSet(OptimizedMixins, DataViewSet):
         )
 
 
-class Renaturee2018to2015ViewSet(DataViewSet):
-    queryset = Renaturee2018to2015.objects.all()
-    serializer_class = Renaturee2018to2015Serializer
-
-
 class OcsgeDiffViewSet(OptimizedMixins, DataViewSet):
-    queryset = OcsgeDiff.objects.all()
-    serializer_class = OcsgeDiffSerializer
+    queryset = models.OcsgeDiff.objects.all()
+    serializer_class = serializers.OcsgeDiffSerializer
     optimized_fields = {
         # "o.id": "id",
         "CONCAT(cs_old, ' ', cs_old_label)": "cs_old",
@@ -246,8 +219,8 @@ class OcsgeDiffViewSet(OptimizedMixins, DataViewSet):
 
 
 class ZoneConstruiteViewSet(OptimizedMixins, DataViewSet):
-    queryset = ZoneConstruite.objects.all()
-    serializer_class = ZoneConstruiteSerializer
+    queryset = models.ZoneConstruite.objects.all()
+    serializer_class = serializers.ZoneConstruiteSerializer
     optimized_fields = {
         "id": "id",
         "surface": "surface",
@@ -257,8 +230,8 @@ class ZoneConstruiteViewSet(OptimizedMixins, DataViewSet):
 
 
 class ArtificialAreaViewSet(OptimizedMixins, DataViewSet):
-    queryset = ArtificialArea.objects.all()
-    serializer_class = OcsgeDiffSerializer
+    queryset = models.ArtificialArea.objects.all()
+    serializer_class = serializers.OcsgeDiffSerializer
     optimized_fields = {
         "o.id": "id",
         "c.name": "city",
@@ -269,7 +242,7 @@ class ArtificialAreaViewSet(OptimizedMixins, DataViewSet):
     def get_sql_from(self):
         return (
             f"from {self.queryset.model._meta.db_table} o "
-            f"inner join {Commune._meta.db_table} c "
+            f"inner join {models.Commune._meta.db_table} c "
             "on o.city_id = c.id"
         )
 
@@ -278,40 +251,40 @@ class ArtificialAreaViewSet(OptimizedMixins, DataViewSet):
 
 
 class UsageSolViewset(viewsets.ReadOnlyModelViewSet):
-    queryset = UsageSol.objects.all()
-    serializer_class = UsageSolSerializer
+    queryset = models.UsageSol.objects.all()
+    serializer_class = serializers.UsageSolSerializer
 
 
 class CouvertureSolViewset(viewsets.ReadOnlyModelViewSet):
-    queryset = CouvertureSol.objects.all()
-    serializer_class = CouvertureSolSerializer
+    queryset = models.CouvertureSol.objects.all()
+    serializer_class = serializers.CouvertureSolSerializer
 
 
 # Views for french adminisitrative territories
 
 
 class RegionViewSet(DataViewSet):
-    queryset = Region.objects.all()
-    serializer_class = RegionSerializer
+    queryset = models.Region.objects.all()
+    serializer_class = serializers.RegionSerializer
     geo_field = "mpoly"
 
 
 class DepartementViewSet(DataViewSet):
-    queryset = Departement.objects.all()
-    serializer_class = DepartementSerializer
+    queryset = models.Departement.objects.all()
+    serializer_class = serializers.DepartementSerializer
     geo_field = "mpoly"
 
 
 class EpciViewSet(DataViewSet):
     """EPCI view set."""
 
-    queryset = Epci.objects.all()
-    serializer_class = EpciSerializer
+    queryset = models.Epci.objects.all()
+    serializer_class = serializers.EpciSerializer
     geo_field = "mpoly"
 
 
 class CommuneViewSet(DataViewSet):
     """Commune view set."""
 
-    queryset = Commune.objects.all()
-    serializer_class = CommuneSerializer
+    queryset = models.Commune.objects.all()
+    serializer_class = serializers.CommuneSerializer

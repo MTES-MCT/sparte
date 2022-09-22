@@ -3,8 +3,6 @@ from rest_framework import routers
 
 from .api.views import (
     ArtificialAreaViewSet,
-    Artificialisee2015to2018ViewSet,
-    Artificielle2018ViewSet,
     CommuneViewSet,
     CouvertureSolViewset,
     DepartementViewSet,
@@ -12,7 +10,6 @@ from .api.views import (
     OcsgeViewSet,
     OcsgeDiffViewSet,
     RegionViewSet,
-    Renaturee2018to2015ViewSet,
     UsageSolViewset,
     ZoneConstruiteViewSet,
 )
@@ -29,10 +26,7 @@ urlpatterns = [
 
 
 router = routers.DefaultRouter()
-router.register(r"artificialisee/2015to2018", Artificialisee2015to2018ViewSet)
-router.register(r"artificielle/2018", Artificielle2018ViewSet)
 router.register(r"communes", CommuneViewSet)
-router.register(r"renaturee/2018to2015", Renaturee2018to2015ViewSet)
 router.register(r"referentiel/couverture-sol", CouvertureSolViewset)
 router.register(r"referentiel/usage-sol", UsageSolViewset)
 router.register(r"ocsge/general", OcsgeViewSet)

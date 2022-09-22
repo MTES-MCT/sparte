@@ -10,10 +10,9 @@ from rest_framework import viewsets
 from public_data.models import Commune, Cerema
 
 from .views.mixins import UserQuerysetOrPublicMixin
-from .models import Project, Emprise, PlanEmprise
+from .models import Project, Emprise
 from .serializers import (
     EmpriseSerializer,
-    PlanEmpriseSerializer,
     ProjectCommuneSerializer,
 )
 
@@ -35,12 +34,6 @@ class EmpriseViewSet(viewsets.ReadOnlyModelViewSet):
             raise ParseError("id parameter must be an int.")
 
         return self.queryset.filter(**{self.filter_field: id})
-
-
-class PlanEmpriseViewSet(EmpriseViewSet):
-    queryset = PlanEmprise.objects.all()
-    serializer_class = PlanEmpriseSerializer
-    filter_field = "plan_id"
 
 
 class ProjectViewSet(UserQuerysetOrPublicMixin, viewsets.ReadOnlyModelViewSet):

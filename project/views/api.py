@@ -34,9 +34,7 @@ class ProjectViewSet(UserQuerysetOrPublicMixin, viewsets.ReadOnlyModelViewSet):
         qs = Cerema.objects.annotate(artif_area=sum_function)
         queryset = Commune.objects.annotate(
             artif_area=Subquery(
-                Cerema.objects.filter(city_insee=OuterRef("insee")).values(
-                    "artif_area"
-                )[:1]
+                qs.filter(city_insee=OuterRef("insee")).values("artif_area")[:1]
             )
         )
         bbox = self.request.GET.get("bbox", None)

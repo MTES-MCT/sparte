@@ -13,7 +13,7 @@ Rapport artificialisation
 {% endblock %}
 
 {% block headers %}
-<link href="{% static 'project/css/project.css' %}" rel="stylesheet" nonce="{{ CSP_NONCE }}" />
+{% sri_static "project/css/project.css" %}
 {% endblock %}
 
 {% block content %}
@@ -224,7 +224,7 @@ Rapport artificialisation
 
         {% else %}
         <div class="box px-4 py-2 mb-4 mt-5">
-            <p class="my-1">Nous sommes désolé, mais votre territoire n'est pas encore couvert par l'OCSGE. Restez informer de son arrivée en vous abonnant à notre infolettre !</p>
+            <p class="my-1">Nous sommes désolé, mais votre territoire n'est pas encore couvert par l'OCSGE. Restez informer de son arrivée en vous abonnant à notre newsletter !</p>
         </div>
         {% endif %}
 
