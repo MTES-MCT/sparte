@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime
 from io import BytesIO
 import logging
 
@@ -69,7 +69,7 @@ def to_row(request: Request, headers: dict[str, str]) -> list:
     return list(result.values())
 
 
-def export_dl_diag(start: date, end: date) -> BytesIO:
+def export_dl_diag(start: datetime, end: datetime) -> BytesIO:
     """
     Contenu du fichier Excel:
     * 1 onglet
