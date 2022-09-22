@@ -1,0 +1,35 @@
+{% extends 'index.html' %}
+
+{% load static %}
+{% load sri %}
+
+{% block pagetitle %}
+Exports
+{% endblock %}
+
+
+{% block content %}
+<div class="row w-100 h-100 justify-content-center">
+    <div class=" col-12 col-md-10 col-lg-8">
+        <h2 class="my-5">
+            Exports
+        </h2>
+
+        <h4>Liste des diagnostics téléchargés mensuellement</h4>
+        <ul>
+            {% for excel_file in excel_file_list %}
+            <li><a href="{{ excel_file.url }}">{{ excel_file.name }}</a></li>
+            {% endfor %}
+        </ul>
+
+    </div>
+</div>
+{% endblock %}
+
+{% block tagging %}
+<script language="javascript" nonce="{{ CSP_NONCE }}">
+$( window ).on('load', function () {
+    _paq.push(['trackEvent', 'Consultation diagnostic', 'Mes diagnostics'])
+})
+{% endblock tagging %}
+</script>
