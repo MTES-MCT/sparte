@@ -318,7 +318,12 @@ class Project(BaseProject):
         return self.folder_name
 
     def is_artif(self):
-        return self.cities.filter(departement__is_artif_ready=True).exists()
+        """Check first if departement has OCSGE millesime (to speed up process),
+        secondly check if project emprise contains OCS GE data. Usefull for vendée
+        project"""
+        if not self.cities.filter(departement__is_artif_ready=True).exists():
+            return False
+        return Ocsge.objects.filter(mpoly__intersects=self.combined_emprise).exists()
 
     def get_ocsge_millesimes(self):
         """Return all OCS GE millésimes available within project cities and between
