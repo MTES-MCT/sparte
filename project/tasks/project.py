@@ -207,11 +207,11 @@ def generate_word_diagnostic(self, request_id):
         req.record_exception(exc)
         logger.error("Error while generating word: %s", exc)
     except Exception as exc:
-        self.retry(exc=exc, countdown=900)
         req.record_exception(exc)
         logger.error("Error while generating word: %s", exc)
+        self.retry(exc=exc, countdown=900)
     finally:
-        logger.info(f"End generate word for request={request_id}")
+        logger.info("End generate word for request=%d", request_id)
 
 
 @shared_task(bind=True, max_retries=5)
