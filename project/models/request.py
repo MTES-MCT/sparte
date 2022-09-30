@@ -47,9 +47,10 @@ class Request(models.Model):
         self.save(update_fields=["done", "sent_date"])
 
     def record_exception(self, exc):
-        from traceback.TracebackException import from_exception
+        import traceback
 
-        self.errors.create(exception=from_exception(exc))
+        stack = traceback.format_exception(type(exc), exc, exc.__traceback__)
+        self.errors.create(exception="\n".join(stack))
 
     class Meta:
         ordering = ["-created_date"]
