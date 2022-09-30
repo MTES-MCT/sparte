@@ -245,5 +245,13 @@ def mep_210(ctx):
     connecter.manage_py("load_insee")
 
 
+@cli.command()
+@click.pass_context
+def mep_220(ctx):
+    """Trigger all data transformation to successful MEP release 1.6"""
+    click.secho("Start migration v2.2", fg="cyan")
+    click.secho("Nothing to do yet", fg="cyan")
+
+
 if __name__ == "__main__":
     cli(obj={})
