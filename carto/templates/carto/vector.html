@@ -45,7 +45,8 @@ var usage = new L.tileLayer(
 		maxZoom : 16,
         attribution : "IGN-F/Geoportail",
 		tileSize : 256, // les tuiles du Géooportail font 256x256px
-        identifier: "OCSGE.USAGE.2019"
+        identifier: "OCSGE.USAGE.2019",
+        display: false
 	}
 )
 
@@ -61,14 +62,35 @@ var couverture = new L.tileLayer(
     }
 )
 
+couverture_style = {
+    {% for couv_sol in couv_sol_list %}
+    "{{ couv_sol.code_prefix }}": "{{ couv_sol.map_color }}",
+    {% endfor %}
+}
+
 var vectorStyles = {
     occupation_sol: function(properties, zoom) {
         console.log(properties)
-        return {
-            weight: 0.5,
-            color: "rgba(255,55,122,1)",
-            fillOpacity: 0.2,
-            opacity: 0.4
+        color = couverture_style[properties.code_cs]
+        if (color == "#3388fe")
+        {
+            return {
+                weight: 1,
+                color: "#ff0000",
+                fillcolor: color,
+                fillOpacity: 0.4,
+                fill: true
+            }
+        }
+        else
+        {
+            return {
+                weight: 0,
+                color: color,
+                fillcolor: color,
+                fillOpacity: 0.4,
+                fill: true
+            }
         }
     }
 }
@@ -99,19 +121,21 @@ var lmap = new L.map(
         center: new L.LatLng(43.68382284646206, 0.4771343996769177),
         zoom: 16,
         zoomControl: true,
-        layers: [ortho],
         minZoom: 6,
         maxZoom: 16
     }
 )
 
-L.control.layers(
-    {
-        "TMS: Usage": usage,
-        "TMS: Couverture": couverture,
-        "Ortho photo": ortho
-    }, null, { collapsed: false }
-).addTo(lmap)
+var baseMaps = {
+    "ortho": ortho,
+};
+
+var overlayMaps = {
+    "couverture": couverture,
+    "usage": usage,
+};
+
+var layerControl = L.control.layers(baseMaps, overlayMaps).addTo(lmap);
 
 </script>
 {% endlocalize %}
