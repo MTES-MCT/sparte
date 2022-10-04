@@ -520,7 +520,7 @@ class Project(BaseProject):
             data = {str(city["year"]): city["household_progression"] for city in cities}
         return {year: data.get(year, None) for year in self.years}
 
-    def get_land_conso_per_year(self, level):
+    def get_land_conso_per_year(self, level, group_name=None):
         """Return conso data aggregated by a specific level
         {
             "dept_name": {
@@ -538,7 +538,7 @@ class Project(BaseProject):
         * scot [experimental]
         """
         fields = Cerema.get_art_field(self.analyse_start_date, self.analyse_end_date)
-        qs = self.get_cerema_cities()
+        qs = self.get_cerema_cities(group_name=group_name)
         qs = qs.values(level)
         qs = qs.annotate(**{f"20{field[3:5]}": Sum(field) / 10000 for field in fields})
         return {row[level]: {year: row[year] for year in self.years} for row in qs}
@@ -555,7 +555,7 @@ class Project(BaseProject):
             },
         }
         """
-        return self.get_land_conso_per_year("city_name")
+        return self.get_land_conso_per_year("city_name", group_name=group_name)
 
     def get_look_a_like_conso_per_year(self):
         """Return same data as get_conso_per_year but for land listed in
