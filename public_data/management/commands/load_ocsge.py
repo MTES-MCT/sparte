@@ -276,11 +276,18 @@ class GersOcsgeDiff(AutoOcsgeDiff):
     #     "mpoly": "MULTIPOLYGON",
     # }
     # mapping provisoir avec les données erronées
+    # mapping = {
+    #     "cs_old": "CS_nouveau",
+    #     "us_old": "US_nouveau",
+    #     "cs_new": "CS_ancien",
+    #     "us_new": "US_ancien",
+    #     "mpoly": "MULTIPOLYGON",
+    # }
     mapping = {
-        "cs_old": "CS_nouveau",
-        "us_old": "US_nouveau",
-        "cs_new": "CS_ancien",
-        "us_new": "US_ancien",
+        "cs_old": "cs_avant",
+        "us_old": "us_avant",
+        "cs_new": "cs_apres",
+        "us_new": "us_apres",
         "mpoly": "MULTIPOLYGON",
     }
 
@@ -361,6 +368,11 @@ class Command(BaseCommand):
                 "if you want to completly restart tables including id, not compatible "
                 "with --item"
             ),
+        )
+        parser.add_argument(
+            "--describe",
+            action="store_true",
+            help="Show shape file features'",
         )
         parser.add_argument(
             "--no-verbose",
