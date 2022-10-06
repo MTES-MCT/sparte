@@ -89,9 +89,8 @@ The process is not stable yet. Use it with caution.
 4. Upload the zip in the bucket, in data folder.
 5. Trigger the loading with the command `python scripts/cmd.py --env prod load-ocsge --item .....`, replace ... by the item you want to load (following previous example it's `python scripts/cmd.py --env local load-ocsge --item GersOcsge2016`). Obviously test it in staging first.
 6. Update all precalculated data: build_commune_data, build_artificial_area, set_density
-
-Mettre à jour la page décrivant les données
-Mettre à jour les départements couverts par l'OCS GE
+7. Update official data origin in [gitbook](https://app.gitbook.com/o/-MMQU-ngAOgQAqCm4mf3/s/OgEtEJQsOvgZrMPdWEIo/)
+8. Update admin's [Départements](https://sparte.beta.gouv.fr/admin/public_data/departement/) if new OCS GE has been added
 
 Example, update Gers OCS GE with 2022-06 data:
 ```bash
