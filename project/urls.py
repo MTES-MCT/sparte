@@ -83,6 +83,8 @@ urlpatterns = [
         name="theme-city-artif",
     ),
     path("<int:pk>/delete/", views.ProjectDeleteView.as_view(), name="delete"),
+    # EXPORT
+    path("exports/", views.ExportListView.as_view(), name="excel"),
 ]
 
 
