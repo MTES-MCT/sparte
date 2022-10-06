@@ -267,27 +267,14 @@ class GersOcsgeDiff(AutoOcsgeDiff):
     _year_old = 2016
 
     shape_file_path = "gers_diff_2016_2019.zip"
-    # mapping cible
-    # mapping = {
-    #     "cs_new": "CS_nouveau",
-    #     "us_new": "US_nouveau",
-    #     "cs_old": "CS_ancien",
-    #     "us_old": "US_ancien",
-    #     "mpoly": "MULTIPOLYGON",
-    # }
-    # mapping provisoir avec les données erronées
-    # mapping = {
-    #     "cs_old": "CS_nouveau",
-    #     "us_old": "US_nouveau",
-    #     "cs_new": "CS_ancien",
-    #     "us_new": "US_ancien",
-    #     "mpoly": "MULTIPOLYGON",
-    # }
+    # Email du dev du 06.10.2022
+    # on fait la diff entre le plus récent et celui d'avant.
+    # avant = 2019, après = 2016
     mapping = {
-        "cs_old": "cs_avant",
-        "us_old": "us_avant",
-        "cs_new": "cs_apres",
-        "us_new": "us_apres",
+        "cs_old": "cs_apres",
+        "us_old": "us_apres",
+        "cs_new": "cs_avant",
+        "us_new": "us_avant",
         "mpoly": "MULTIPOLYGON",
     }
 
