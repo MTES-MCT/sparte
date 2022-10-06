@@ -102,5 +102,5 @@ python scripts/cmd.py --env local load-ocsge --item GersZoneConstruite2019
 python scripts/cmd.py --env local load-ocsge --item GersOcsgeDiff
 python scripts/cmd.py --env local run 'python manage.py build_commune_data --departement Gers'
 python scripts/cmd.py --env local run 'python manage.py build_artificial_area --departement Gers'
-python scripts/cmd.py --env local run 'python manage.py set_density --departement Gers'
+python scripts/cmd.py --env local run 'python manage.py set_density --reset --departement Gers'
 ```
