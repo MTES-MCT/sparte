@@ -148,6 +148,20 @@ def load_data(ctx, klass=None):
 
 
 @cli.command()
+@click.option("--item", type=str, help="upload data for a specific model")
+@click.pass_context
+def load_ocsge(ctx, item):
+    """Trigger management command public_data.load_ocsge scalingo."""
+    connecter = ScalingoInterface(ctx.obj)
+    connecter.manage_py(
+        "load_ocsge --no-verbose",
+        **{
+            "item": item,
+        },
+    )
+
+
+@cli.command()
 @click.pass_context
 def rebuild(ctx, klass=None):
     """Trigger management command public_data scalingo."""
