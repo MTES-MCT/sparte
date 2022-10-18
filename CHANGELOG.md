@@ -2,6 +2,20 @@
 
 Ce changelog suit la méthode "keep a changelog" disponible ici: [https://keepachangelog.com/en/1.0.0/](https://keepachangelog.com/en/1.0.0/)
 
+## [2.2.0] - non livrée
+
+### Modifié :
+- Modification du texte d'information en haut du rapport de consommation
+
+## [2.0.0]
+
+### Ajout :
+- Génération de cartes au format PNG
+- Utilisation d'un serveur d'export des graphiques Highcharts maison
+
+### Modifié :
+- Mise en oeuvre du [Design Système de l'état](https://www.systeme-de-design.gouv.fr/)
+
 ## [1.4.0] - 10.05.2022
 
 ### Ajout :
