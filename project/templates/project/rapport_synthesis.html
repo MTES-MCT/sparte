@@ -67,10 +67,12 @@ Synthèse
           </div>
         </div>
 
+
         <div class="fr-grid-row fr-grid-row--gutters">
           <div class="fr-col-12">
             <h3 class="fr-mt-3w">Bilan de l'artificialisation nette entre {{ diagnostic.analyse_start_date }} et {{ diagnostic.analyse_end_date }}</h3>
           </div>
+          {% if ocsge_available %}
           <div class="fr-col-12 fr-col-md-4">
             <div class="fr-callout">
               <p class="fr-callout__title">{{ net_artif|floatformat:0 }} ha</p>
@@ -96,7 +98,11 @@ Synthèse
             <a href="{% url 'project:report_artif' project.pk %}">Consulter le bilan de l'artificialisation nette entre {{ diagnostic.analyse_start_date }} et {{ diagnostic.analyse_end_date }}</a>
             <p class="mt-2"><strong>Objectif 2050 :</strong> Zéro Artificialisation Nette</p>
           </div>
+          {% else %}
+          <p class="text-muted fst-italic">Les rapports sur l'artificialisation, l'usage et la couverture des sols ne sont pas disponibles car ils dépendent des données OCS GE ; données en cours de production pour ce territoire.</p>
+          {% endif %}
         </div>
+
     </div>
 </div>
 {% endblock %}
