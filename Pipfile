@@ -36,7 +36,6 @@ django-storages = "*"
 djangorestframework = "~=3.12"
 djangorestframework-gis = "*"
 gunicorn = "*"
-numpy = "*"
 openpyxl = "~=3.0"
 pandas = "*"
 psycopg2 = "~=2.9"
@@ -53,6 +52,7 @@ contextily = "*"
 jenkspy = "*"
 django-celery-results = "*"
 django-sri = {git = "https://github.com/Swannbm/django-sri"}
+numpy = "*"
 
 [scripts]
 shell = "python manage.py shell"

@@ -1,6 +1,7 @@
 from colour import Color
 import logging
-import numpy as np
+
+# import numpy as np
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from zipfile import ZipFile
@@ -202,7 +203,7 @@ class DataColorationMixin:
         if not rows:
             return None
         else:
-            return np.percentile(rows, percentiles, interpolation="lower")
+            return 0  # np.percentile(rows, percentiles, interpolation="lower")
 
 
 class TruncateTableMixin:
