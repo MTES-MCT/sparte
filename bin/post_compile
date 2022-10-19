@@ -11,7 +11,9 @@ echo $PYTHONPATH
 echo "===========PATH==========="
 echo $PATH
 echo "===========PIP FREEZE==========="
-pip freeze
+/app/.scalingo/python/bin/python pip freeze
+echo "===========PIP FREEZE==========="
+/build/${REQUEST_ID}/.apt/usr/bin pip freeze
 
 # Execute structure migrations
 python manage.py migrate users
