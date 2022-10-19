@@ -35,6 +35,7 @@ urlpatterns = [
     path("users/", include("users.urls")),
     path("public/", include("public_data.urls")),
     path("project/", include("project.urls")),
+    path("carte/", include("carto.urls")),
     # use django's default views to handle password reseting process
     path(
         "accounts/reset/", auth_views.PasswordResetView.as_view(), name="password_reset"
