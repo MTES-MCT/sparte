@@ -19,7 +19,15 @@ from .mixins import GroupMixin
 class ProjectUpdateView(GroupMixin, UpdateView):
     model = Project
     template_name = "project/update.html"
-    fields = ["name", "description", "analyse_start_date", "analyse_end_date"]
+    fields = [
+        "name",
+        "territory_name",
+        "analyse_start_date",
+        "analyse_end_date",
+        "level",
+        "target_2031",
+        "is_public",
+    ]
     context_object_name = "project"
 
     def get_context_breadcrumbs(self):
@@ -28,6 +36,11 @@ class ProjectUpdateView(GroupMixin, UpdateView):
         return breadcrumbs
 
     def get_success_url(self):
+        if "next" in self.request.GET:
+            if self.request.GET["next"] == "report-conso":
+                url = reverse_lazy("project:report_conso", kwargs=self.kwargs)
+                url += "#projection-2031"
+                return url
         return reverse_lazy("project:detail", kwargs=self.kwargs)
 
 
