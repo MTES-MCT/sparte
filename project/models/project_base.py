@@ -8,7 +8,7 @@ from django.conf import settings
 from django.contrib.gis.db import models as gis_models
 from django.contrib.gis.db.models import Union, Extent
 from django.contrib.gis.db.models.functions import Centroid
-from django.core.validators import MinValueValidator
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 from django.db.models import Sum, F, Value, Q, Min, Max, Case, When
 from django.db.models.functions import Concat, Coalesce
@@ -162,19 +162,29 @@ class Project(BaseProject):
     ANALYZE_YEARS = [(str(y), str(y)) for y in range(2009, 2021)]
     LEVEL_CHOICES = AdminRef.CHOICES
 
-    is_public = models.BooleanField("Public", default=False)
+    is_public = models.BooleanField(
+        "Est publiquement accessible",
+        default=False,
+        help_text=(
+            "Si non coché, le diagnostic n'est accessible que par vous. Si coché "
+            "tous ceux qui ont l'URL peuvent y accéder. Utile pour partager le "
+            "diagnostic par e-mail à vos collègues par exemple."
+        ),
+    )
 
     analyse_start_date = models.CharField(
         "Année de début de période d'analyse",
         choices=ANALYZE_YEARS,
         default="2015",
         max_length=4,
+        help_text="Utile pour analyser votre territoire sur une période différente.",
     )
     analyse_end_date = models.CharField(
         "Année de fin de période d'analyse",
         choices=ANALYZE_YEARS,
         default="2018",
         max_length=4,
+        help_text="Utile pour analyser votre territoire sur une période différente.",
     )
     level = models.CharField(
         "Niveau d'analyse",
@@ -182,9 +192,9 @@ class Project(BaseProject):
         default="COMMUNE",
         max_length=7,
         help_text=(
-            "Utilisé lors de la création des rapports afin de déterminer le niveau "
-            "d'aggrégation des données à afficher. Si l'utilisateur a sélectionné "
-            "EPCI, alors les rapports doivent montrer des données EPCI par EPCI."
+            "Utilisé dans les rapports afin de déterminer le niveau "
+            "d'aggrégation des données à afficher. Si "
+            "EPCI est sélectionné, alors les rapports montre des données EPCI par EPCI."
         ),
     )
     land_type = models.CharField(
@@ -230,6 +240,17 @@ class Project(BaseProject):
         blank=True,
         null=True,
     )
+    target_2031 = models.IntegerField(
+        "Objectif 2031 (en %)",
+        validators=[MinValueValidator(0), MaxValueValidator(100)],
+        default=50,
+        help_text=(
+            "A date, l'objectif nationnal est de réduire de 50% la consommation "
+            "d'espace d'ici à 2031. Cet objectif doit être personnalisé localement "
+            "par les SRADDET. Vous pouvez changer l'objectif pour tester différents "
+            "scénarios."
+        ),
+    )
 
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
@@ -249,7 +270,14 @@ class Project(BaseProject):
 
     folder_name = models.CharField("Dossier", max_length=15, blank=True, null=True)
     territory_name = models.CharField(
-        "Territoire", max_length=250, blank=True, null=True
+        "Territoire",
+        max_length=250,
+        blank=True,
+        null=True,
+        help_text=(
+            "C'est le nom qui est utilisé pour désigner votre territoire, notamment "
+            "dans le rapport word."
+        ),
     )
     cover_image = models.ImageField(
         upload_to=upload_in_project_folder, blank=True, null=True
