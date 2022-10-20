@@ -216,29 +216,9 @@ class ObjectiveChart(ProjectChart):
             )
             series[0]["data"].append({"name": year, "y": val})
 
-        self.previsionnal = total / cpt
-        self.annual_objective_2031 = total / (cpt * 2)
-        self.annual_objective_2050 = total / (cpt * 4)
-
-        for year in range(int(year) + 1, 2021):
-            total += self.previsionnal
-            series[1]["data"].append(
-                {
-                    "name": str(year),
-                    "y": total,
-                    "progression": self.previsionnal,
-                    "color": "#2b2d2e",
-                }
-            )
-            series[0]["data"].append(
-                {
-                    "name": str(year),
-                    "y": self.previsionnal,
-                    "color": "#2b2d2e",
-                }
-            )
-
+        self.annual_objective_2031 = total * self.project.target_2031 / 1000
         self.total_real = total
+        self.annual_real = self.total_real / 10
 
         for year in range(int(year) + 1, 2031):
             total += self.annual_objective_2031
