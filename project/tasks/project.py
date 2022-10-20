@@ -70,7 +70,7 @@ def add_city_and_set_combined_emprise(self, project_id: int, public_keys: str) -
     except Exception as exc:
         self.retry(exc=exc, countdown=300)
         logger.error(exc)
-    logger.info("End add_city_and_set_combined_emprise")
+    logger.info("End add_city_and_set_combined_emprise, project_id=%d", project_id)
 
 
 @shared_task(bind=True, max_retries=5)
@@ -90,14 +90,13 @@ def find_first_and_last_ocsge(self, project_id: int) -> None:
     except Exception as exc:
         self.retry(exc=exc, countdown=300)
         logger.error(exc)
-    logger.info("End find_first_and_last_ocsge")
+    logger.info("End find_first_and_last_ocsge, project_id=%d", project_id)
 
 
 @shared_task
 def send_email_request_bilan(request_id):
     """Il faut envoyer 2 e-mails: 1 au demandeur et 1 à l'équipe SPARTE"""
-    logger.info("Start send_email_request_bilan")
-    logger.info("Request_id=%s", request_id)
+    logger.info("Start send_email_request_bilan, request_id=%s", request_id)
     request = Request.objects.get(pk=request_id)
     project_url = get_url_with_domain(request.project.get_absolute_url())
     relative_url = reverse(
@@ -114,7 +113,7 @@ def send_email_request_bilan(request_id):
             "request_url": get_url_with_domain(relative_url),
         },
     )
-    logger.info("End send_email_request_bilan")
+    logger.info("End send_email_request_bilan, request_id=%s", request_id)
 
 
 @shared_task(bind=True, max_retries=5)
@@ -135,7 +134,7 @@ def add_neighboors(self, project_id):
     except Exception as exc:
         self.retry(exc=exc, countdown=300)
         logger.error(exc)
-    logger.info("End add_neighboors")
+    logger.info("End add_neighboors, project_id=%d", project_id)
 
 
 @shared_task(bind=True, max_retries=5)
@@ -179,7 +178,8 @@ def generate_cover_image(self, project_id):
         plt.savefig(img_data, bbox_inches="tight")
         img_data.seek(0)
         diagnostic.cover_image.delete(save=False)
-        diagnostic.cover_image.save(f"cover_{project_id}.png", img_data, save=True)
+        diagnostic.cover_image.save(f"cover_{project_id}.png", img_data, save=False)
+        diagnostic.save(update_fields=["cover_image"])
         plt.close()
     except Project.DoesNotExist as exc:
         self.retry(exc=exc, countdown=300)
@@ -187,7 +187,7 @@ def generate_cover_image(self, project_id):
     except Exception as exc:
         self.retry(exc=exc, countdown=300)
         logger.error(exc)
-    logger.info("End generate_cover_image")
+    logger.info("End generate_cover_image, project_id=%d", project_id)
 
 
 @shared_task(bind=True, max_retries=5)
