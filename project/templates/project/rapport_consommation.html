@@ -67,9 +67,12 @@ Rapport consommation
 
 
             <div class="w-100 box p-4">
-                <h3>
-                    Projection 2031 selon la trajectoire ZAN
-                </h3>
+                <div class="clearfix">
+                    <div class="float-end">Objectif 2031: <a href="{% url 'project:update' project.pk %}?next=report-conso" class="fr-btn fr-btn--tertiary fr-btn--sm">{{ project.target_2031 }} %</a></div>
+                    <h3 id="projection-2031">
+                        Projection 2031 selon la trajectoire ZAN
+                    </h3>
+                </div>
 
                 <div id="objective_chart" class=""></div>
 
@@ -79,12 +82,9 @@ Rapport consommation
                 <p class="my-0">
                     <span class="text-muted"><em>1er jan. 2011 - 31 déc. 2020, 10 ans</em></span>
                 </p>
-                <p class="my-0">
-                    L'ensemble des données officielles n'étant pas encore disponible, l'année 2020 est une consommation prévisionnelle (en gris dans le graphique). La consommation prévisionnelle est la moyenne de la consommation réelle (en bleu).
-                </p>
                 <p class="mt-2 mb-4">
-                    Consommation cumulée de référence (réelle + prévisionnelle) : {{ objective_chart.total_real|floatformat:1 }} ha
-                    <br/>Consommation annuelle de référence : {{ objective_chart.previsionnal|floatformat:1 }} ha
+                    Consommation cumulée de référence : {{ objective_chart.total_real|floatformat:1 }} ha
+                    <br/>Consommation annuelle de référence : {{ objective_chart.annual_real|floatformat:1 }} ha
                 </p>
 
                 <p class="my-0">
@@ -92,9 +92,14 @@ Rapport consommation
                 <p class="my-0">
                     <span class="text-muted"><em>1er jan. 2021 - 31 déc. 2030, 10 ans</em></span>
                 </p>
-                <p class="my-0">
+                <p class="mt-2">
                     Pendant la période de réduction, la loi prévoit que le territoire ne consomme que 50% de ce qui a été consommé pendant la période de référence. Par conséquent, la consommation cumulée du 1er janvier 2021 au 31 décembre 2030 doit être égale à la consommation du 1er janvier 2011 au 31 décembre 2020 divisée par 2.
                 </p>
+                {% if project.target_2031 != 50 %}
+                <p class="mt-2">
+                    Cependant, vous avez personnalisé l'objectif à {{ project.target_2031 }}%.
+                </p>
+                {% endif %}
                 <p class="mt-2 mb-4">
                     Objectif de consommation cumulée 2030 : {{ objective_chart.conso_2031|floatformat:1 }} ha
                     <br/>Consommation annuelle moyenne : {{ objective_chart.annual_objective_2031|floatformat:1 }} ha
@@ -107,7 +112,7 @@ Rapport consommation
                     <div class="float-end">
                         <div class="fr-btns-group fr-btns-group--inline">
                             <div class="dropdown me-2">
-                                <button class="fr-btn fr-btn--sm dropdown-toggle" type="button" id="dropdownMenuButton2" data-bs-toggle="dropdown" aria-expanded="false">
+                                <button class="fr-btn fr-btn--tertiary fr-btn--sm dropdown-toggle" type="button" id="dropdownMenuButton2" data-bs-toggle="dropdown" aria-expanded="false">
                                     Maille d'analyse
                                 </button>
                                 <ul class="dropdown-menu mt-2" aria-labelledby="dropdownMenuButton2">
@@ -125,7 +130,7 @@ Rapport consommation
                             </div>
 
                             <div class="dropdown">
-                                <button class="fr-btn fr-btn--sm dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                                <button class="fr-btn fr-btn--tertiary fr-btn--sm dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
                                     Sélection
                                 </button>
                                 <ul class="dropdown-menu mt-2" aria-labelledby="dropdownMenuButton1">
