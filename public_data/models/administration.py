@@ -556,6 +556,8 @@ class Land:
         """Search for a keyword on all land subclasses"""
         if not search_for:
             return dict()
+        elif search_for == "*":
+            search_for = cls.Meta.subclasses.keys()
         return {
             name: subclass.search(
                 needle, region=region, departement=departement, epci=epci
