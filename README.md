@@ -85,7 +85,7 @@ The process is not stable yet. Use it with caution.
 
 1. Download shape files from IGN's website [https://geoservices.ign.fr](https://geoservices.ign.fr) "ACCUEIL > CATALOGUE > OCS GE"
 2. Extract shape files and zip them by name, remove anysubfolder, the zip should contain only files
-3. Name zip file accordingly to expected name in [public_data/management/commands/load_ocsge.py](public_data/management/commands/load_ocsge.py). If you want to update 2016 Gers millesime, name it accordingly to what you will find in class **GersOcsge2016** and the property **shape_file_path** : gers_ocsge_2016.zip
+3. Name zip file accordingly to expected name in [public_data/management/commands/load_ocsge.py](public_data/management/commands/load_ocsge.py). If you want to update 2016 Gers millesime, name it accordingly to what you will find in class **GersOcsge2016** and the property **shape_file_path** (which is gers_ocsge_2016.zip when writhing those lines)
 4. Upload the zip in the bucket, in data folder.
 5. Trigger the loading with the command `python scripts/cmd.py --env prod load-ocsge --item .....`, replace ... by the item you want to load (following previous example it's `python scripts/cmd.py --env local load-ocsge --item GersOcsge2016`). Obviously test it in staging first.
 6. Update all precalculated data: build_commune_data, build_artificial_area, set_density
@@ -104,3 +104,9 @@ python scripts/cmd.py --env $ENV run 'python manage.py build_commune_data --depa
 python scripts/cmd.py --env $ENV run 'python manage.py build_artificial_area --departement Gers' && \
 python scripts/cmd.py --env $ENV run 'python manage.py set_density --reset --departement Gers'
 ```
+
+## Migration stack scalingo 18 => 20
+
+1. Remove PYTHONPATH from environment variables (through scalingo online dashboard)
+2. Migrate app's stack with CLI `scalingo --app sparte --region osc-secnum-fr1 stacks-set scalingo-20` and check success with `scalingo --app sparte --region osc-secnum-fr1 apps-info`
+3. Deploy
