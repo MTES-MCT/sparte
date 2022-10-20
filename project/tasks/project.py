@@ -126,11 +126,10 @@ def add_neighboors(self, project_id):
         logger.info("Fetched %d neighboors", qs.count())
         public_keys = [_.public_key for _ in qs]
         logger.info("Neighboors: %s", ", ".join([_.name for _ in qs]))
-        logger.info("public_keys: %s", ", ".join(public_keys))
+        # logger.info("public_keys: %s", ", ".join(public_keys))
         project.add_look_a_like(public_keys, many=True)
-        logger.info("Listed neighboors : %s", ", ".join(project.look_a_like))
+        logger.info("Listed neighboors : %s", project.look_a_like)
         project.save(update_fields=["look_a_like"])
-        logger.info("Listed neighboors : %s", ", ".join(project.look_a_like))
     except Project.DoesNotExist:
         logger.error(f"project_id={project_id} does not exist")
     except Exception as exc:
