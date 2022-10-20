@@ -123,7 +123,9 @@ def add_neighboors(self, project_id):
     try:
         project = Project.objects.get(pk=project_id)
         qs = project.get_neighbors()[:9]
+        logger.info("Fetched %d neighboors", qs.count())
         public_keys = [_.public_key for _ in qs]
+        logger.info("Neighboors: %s", ", ".join([_.name for _ in qs]))
         project.add_look_a_like(public_keys, many=True)
         project.save(update_fields=["look_a_like"])
     except Project.DoesNotExist:
