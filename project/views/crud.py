@@ -115,7 +115,7 @@ class ProjectAddLookALike(GroupMixin, DetailView):
         context = self.get_context_data(form=form)
         if form.is_valid():
             needle = form.cleaned_data["keyword"]
-            context["results"] = Land.search(needle)
+            context["results"] = Land.search(needle, search_for="*")
         return self.render_to_response(context)
 
 
