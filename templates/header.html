@@ -35,8 +35,8 @@
             <!-- login / mon compte -->
             {% if user.is_authenticated %}
             <li class="fr-nav__item ml-auto">
-                <button class="fr-nav__btn" aria-expanded="false" aria-controls="menu-774">Mon compte</button>
-                <div class="fr-collapse fr-menu" id="menu-774">
+                <button class="fr-nav__btn" aria-expanded="false" aria-controls="menu-mon-compte">Mon compte</button>
+                <div class="fr-collapse fr-menu" id="menu-mon-compte">
                     <ul class="fr-menu__list">
                         <li>
                           <a class="fr-nav__link" href="{% url 'project:list' %}">Mes diagnostics</a>
