@@ -75,10 +75,20 @@ Créer un diagnostic
             {% csrf_token %}
             <label class="visually-hidden" for="inlineFormInputGroupUsername">Mot clé</label>
 
-            <div class="input-group">
+            {% comment %} <div class="input-group">
                 <input type="text" name="keyword" class="form-control" id="id_keyword" value="{{ form.cleaned_data.keyword }}" placeholder="Saisissez le nom du territoire que vous recherchez">
                 <button type="submit" class="fr-btn "><i class="bi bi-search me-3"></i> Chercher</button>
-            </div>
+            </div> {% endcomment %}
+
+            <div class="fr-search-bar fr-search-bar--lg" id="search-2" role="search">
+                <label class="fr-label" for="search-787-input">
+                    Recherche
+                </label>
+                <input class="fr-input" placeholder="Saisissez le nom du territoire que vous recherchez" type="search" id="search-787-input" name="keyword" value="{{ form.cleaned_data.keyword }}">
+                <button class="fr-btn">
+                    Rechercher
+                </button>
+             </div>
 
             <input type="hidden" name="selection" id="id_selection" value="">
 
