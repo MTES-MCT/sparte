@@ -57,71 +57,6 @@ Rapport consommation
               </div>
             </div>
 
-            <div class="fr-grid-row fr-grid-row--gutters">
-              <div class="fr-col-12 fr-col-md-4">
-                <div class="fr-callout">
-                  <p class="fr-callout__title">+{{ objective_chart.total_real|floatformat:1 }} ha</p>
-                  <p>Consommation 2011-2020 <i class="bi bi-question-circle" data-toggle="tooltip" title="Données prévisionelles pour 2020" aria-hidden="true"></i></p>
-                </div>
-              </div>
-
-              <div class="fr-col-12 fr-col-md-4">
-                <div class="fr-callout">
-                  <p class="fr-callout__title">+{{ objective_chart.conso_2031|floatformat:1 }} ha</p>
-                  <p>Trajectoire 2021-2030 <i class="bi bi-question-circle" data-toggle="tooltip" title="Réduction de 50% par rapport à la décennie précédente" aria-hidden="true"></i></p>
-                </div>
-              </div>
-
-              <div class="fr-col-12 fr-col-md-4">
-                <div class="fr-callout">
-                  <p class="fr-callout__title">+{{ objective_chart.annual_objective_2031|floatformat:1 }} ha/an</p>
-                  <p>Trajectoire projetée annualisée</p>
-                </div>
-              </div>
-            </div>
-
-
-            <div class="w-100 box p-4">
-                <div class="clearfix">
-                    <div class="float-end">Objectif 2031: <a href="{% url 'project:update' project.pk %}?next=report-conso" class="fr-btn fr-btn--tertiary fr-btn--sm">{{ project.target_2031 }} %</a></div>
-                    <h3 id="projection-2031">
-                        Projection 2031 selon la trajectoire ZAN
-                    </h3>
-                </div>
-
-                <div id="objective_chart" class=""></div>
-
-                <p class="my-0">
-                    <strong>En <span class="plotband_blue">bleu</span> : période de référence</strong>
-                </p>
-                <p class="my-0">
-                    <span class="text-muted"><em>1er jan. 2011 - 31 déc. 2020, 10 ans</em></span>
-                </p>
-                <p class="mt-2 mb-4">
-                    Consommation cumulée de référence : {{ objective_chart.total_real|floatformat:1 }} ha
-                    <br/>Consommation annuelle de référence : {{ objective_chart.annual_real|floatformat:1 }} ha
-                </p>
-
-                <p class="my-0">
-                    <strong>En <span class="plotband_green">vert</span> : réduction de 50% </strong>
-                <p class="my-0">
-                    <span class="text-muted"><em>1er jan. 2021 - 31 déc. 2030, 10 ans</em></span>
-                </p>
-                <p class="mt-2">
-                    Pendant la période de réduction, la loi prévoit que le territoire ne consomme que 50% de ce qui a été consommé pendant la période de référence. Par conséquent, la consommation cumulée du 1er janvier 2021 au 31 décembre 2030 doit être égale à la consommation du 1er janvier 2011 au 31 décembre 2020 divisée par 2.
-                </p>
-                {% if project.target_2031 != 50 %}
-                <p class="mt-2">
-                    Cependant, vous avez personnalisé l'objectif à {{ project.target_2031 }}%.
-                </p>
-                {% endif %}
-                <p class="mt-2 mb-4">
-                    Objectif de consommation cumulée 2030 : {{ objective_chart.conso_2031|floatformat:1 }} ha
-                    <br/>Consommation annuelle moyenne : {{ objective_chart.annual_objective_2031|floatformat:1 }} ha
-                </p>
-            </div>
-
-
             <div class="w-100 box p-4">
                 <h3 class="clearfix" id="conso-annuelle">
                     <div class="float-end">
@@ -266,7 +201,7 @@ Rapport consommation
 {% display_chart 'chart_2' comparison_chart CSP_NONCE %}
 {% display_chart 'chart_determinant' determinant_per_year_chart CSP_NONCE %}
 {% display_chart 'pie_determinant' determinant_pie_chart CSP_NONCE %}
-{% display_chart 'objective_chart' objective_chart CSP_NONCE %}
+
 <script language="javascript" nonce="{{ CSP_NONCE }}">
 ///////////////////////////////
 // Select / unselect all
