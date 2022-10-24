@@ -4,17 +4,6 @@
 export LD_LIBRARY_PATH=/build/${REQUEST_ID}/.apt/usr/lib/x86_64-linux-gnu/blas/:/build/${REQUEST_ID}/.apt/usr/lib/x86_64-linux-gnu/lapack/:${LD_LIBRARY_PATH}
 export PROJ_LIB=/build/${REQUEST_ID}/.apt/usr/share/proj
 
-echo "===========PYTHON VERSION==========="
-/app/.scalingo/python/bin/python --version
-echo "===========PYTHON PATH==========="
-echo $PYTHONPATH
-echo "===========PATH==========="
-echo $PATH
-echo "===========PIP FREEZE==========="
-/app/.scalingo/python/bin/python -m pip freeze
-echo "===========PIP FREEZE==========="
-/build/${REQUEST_ID}/.apt/usr/bin -m pip freeze
-
 # Execute structure migrations
 python manage.py migrate users
 python manage.py migrate
