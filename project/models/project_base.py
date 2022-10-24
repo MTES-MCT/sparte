@@ -16,6 +16,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.functional import cached_property
 
+from config.storages import PublicMediaStorage
 from public_data.models.mixins import DataColorationMixin
 from public_data.models import (
     Cerema,
@@ -280,7 +281,10 @@ class Project(BaseProject):
         ),
     )
     cover_image = models.ImageField(
-        upload_to=upload_in_project_folder, blank=True, null=True
+        upload_to=upload_in_project_folder,
+        blank=True,
+        null=True,
+        storage=PublicMediaStorage(),
     )
 
     class Meta:
