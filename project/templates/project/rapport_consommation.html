@@ -23,7 +23,22 @@ Rapport consommation
         <div class="bg-light rounded-5 border fr-container fr-py-3w">
 
             <div class="box box-alert px-4 py-2 mb-4 mt-0">
-                <p>La période de référence de la loi Climat et Résilience concerne les 10 années précédent la promulgation de la loi, soit de l'année 2011 à l'année 2020. Les fichiers fonciers sont datés en millésimes, chaque millésime donnant l'état de l'information au premier janvier de l'année. Pour mesurer la consommation d'espace de l'année 2011 à l'année 2020, nous utilisons donc les millésimes 2011 (au 01/01/2011) à 2021 (au 01/01/2021), ces 11 millésimes nous permettant d'obtenir 10 mesures d'évolution.</p>
+                <p>Pour la mesure de la consommation des espaces NAF, l'Etat utilise les fichiers fonciers.</p>
+
+                <p>Ces données sont fournies tous les ans depuis 2009. Le dernier millésime de 2021 est la photographie du territoire au 1er janvier 2021, intégrant les évolutions réalisées au cours de l'année 2020.</p>
+
+                <p>Les données de l'INSEE sont également intégrées pour mettre en perspective la consommation d'espace vis à vis de l'évolution de la population et bientôt l'emploi.</p>
+
+                <p class="mb-0">Sommaire de la page</p>
+
+                <ul class="mt-0">
+                    <li><a href="#conso-annuelle">consommation annuelle du territoire : graphique et chiffres</a>,</li>
+                    <li><a href="#determinants-conso">déterminants de sa consommation d'espace : graphiques et chiffres</a>,</li>
+                    <li><a href="#territoires-de-comparaison">comparaison du territoire avec les territoires voisins</a>,</li>
+                    <li><a href="{% url 'project:report_conso_relative' project.id %}">comparaisons pondérées avec les données de l'INSEE (démographie, ménages...)</a></li>
+                </ul>
+
+                <p class="mt-5"><a href="https://artificialisation.developpement-durable.gouv.fr/bases-donnees/les-fichiers-fonciers" target="_blank" id="cerema-link">Plus d'informations sur les fichiers fonciers (source : Cerema)</a></p>
             </div>
 
             <div class="fr-grid-row fr-grid-row--gutters">
@@ -108,7 +123,7 @@ Rapport consommation
 
 
             <div class="w-100 box p-4">
-                <h3 class="clearfix">
+                <h3 class="clearfix" id="conso-annuelle">
                     <div class="float-end">
                         <div class="fr-btns-group fr-btns-group--inline">
                             <div class="dropdown me-2">
@@ -153,8 +168,7 @@ Rapport consommation
             </div>
 
             <div class="w-100 box p-4">
-                <a name="territoires-de-comparaison"></a>
-                <h3>
+                <h3 id="territoires-de-comparaison">
                     <a class="float-end"href="{% url 'project:lookalike' project.id %}?from=conso_report">
                         <i class="bi bi-plus-circle" data-toggle="tooltip" title="Ajouter un territoire de comparaison" aria-hidden="true"></i>
                     </a>
@@ -195,7 +209,7 @@ Rapport consommation
 
 
             <div class="w-100 box p-4">
-                <h3>Déterminants de la consommation</h3>
+                <h3 id="determinants-conso">Déterminants de la consommation</h3>
                 <div class="row">
                     <div class="col-4 border-end">
                         <div id="pie_determinant"></div>
@@ -313,10 +327,8 @@ $( window ).scroll(function() {
     }
 })
 
-$('#conso_territory_reltive').change(function() {
-    if (this.checked) {
-        _paq.push(['trackEvent', 'Consultation diagnostic', 'Option avancée', 'Pondération par la surface'])
-    }
+$( "#cerema-link" ).click(function() {
+    _paq.push(['trackEvent', 'Liens sortants', 'Site du Cérema', 'Depuis rapport conso'])
 })
 </script>
 {% endblock tagging %}
