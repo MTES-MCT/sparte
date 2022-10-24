@@ -492,3 +492,20 @@ class ProjectReportConsoRelativeView(ProjectReportBaseView):
         )
 
         return super().get_context_data(**kwargs)
+
+
+class ProjectReportTarget2031View(ProjectReportBaseView):
+    template_name = "project/report_target_2031.html"
+    breadcrumbs_title = "Rapport objectif 2031"
+
+    def get_context_data(self, **kwargs):
+        project = self.get_object()
+        objective_chart = charts.ObjectiveChart(project)
+        kwargs.update(
+            {
+                "active_page": "target_2031",
+                "objective_chart": objective_chart,
+            }
+        )
+
+        return super().get_context_data(**kwargs)
