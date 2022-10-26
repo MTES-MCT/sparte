@@ -99,8 +99,47 @@ Rapport consommation
                     Consommation annuelle des {% if level == "COMM" %}communes{% elif level == "EPCI" %}communes{% elif level == "DEPT" %}EPCI{% else %}départements{% endif %} du territoire
                 </h3>
 
-                <div id="chart" class="flex-fill"></div>
+                <div id="chart" class="flex-fill mb-5"></div>
+
+                <button class="fr-btn fr-btn--tertiary fr-btn--sm dropdown-toggle" type="button" data-bs-toggle="collapse" data-bs-target="#conso-annuel-data" aria-expanded="false" aria-controls="conso-annuel-data">
+                    Source des données, calcule, données
+                </button>
+                <div class="collapse fr-highlight" id="conso-annuel-data">
+                    <div>
+                        <h4 class="pt-3">Source de données</h4>
+                        <p>Données d'évolution des fichiers fonciers du Cérema issus des données MAJIC (Mise A Jour de l'Information Cadastrale) de la DGFIP, sur la période d'analyse (millésime min : 2009, millésime max : 2020)</p>
+                    </div>
+                    <div>
+                        <h4>Calcul</h4>
+                        <p>Consommation d'espaces NAF par année, par maille d'analyse du territoire de diagnostic</p>
+                    </div>
+                    <div>
+                        <h4>Données</h4>
+                        <table class="table table-striped table-sm table-borderless">
+                            <thead>
+                                <tr>
+                                    <th scope="col">{{ col_name }}</th>
+                                    {% for year in project.years %}
+                                    <th scope="col" class="text-end">{{ year }}</th>
+                                    {% endfor %}
+                                    <th scope="col" class="text-end">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for city_name, data in communes_data_table.items %}
+                                <tr>
+                                    <th scope="row">{{ city_name }}</th>
+                                    {% for year, val in data.items %}
+                                    <td align="right">+{{ val|floatformat:1 }}</td>
+                                    {% endfor %}
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
+
 
             <div class="w-100 box p-4">
                 <h3 id="territoires-de-comparaison">
@@ -115,37 +154,28 @@ Rapport consommation
                         <strong>Voir aussi :</strong> toutes les comparaisons disponibles
                     </a>
                 </p>
-            </div>
 
-            <div class="box scrollme-x p-4">
-                <h3 class="mb-3">Surface consommée (en ha) :</h3>
-                <table class="table table-striped table-sm table-borderless">
-                    <thead>
-                        <tr>
-                            <th scope="col">{{ col_name }}</th>
-                            {% for year in project.years %}
-                            <th scope="col" class="text-end">{{ year }}</th>
-                            {% endfor %}
-                            <th scope="col" class="text-end">Total</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for city_name, data in communes_data_table.items %}
-                        <tr>
-                            <th scope="row">{{ city_name }}</th>
-                            {% for year, val in data.items %}
-                            <td align="right">+{{ val|floatformat:1 }}</td>
-                            {% endfor %}
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+                <button class="fr-btn fr-btn--tertiary fr-btn--sm dropdown-toggle" type="button" data-bs-toggle="collapse" data-bs-target="#comparison-data" aria-expanded="false" aria-controls="comparison-data">
+                    Source des données, calcule
+                </button>
+                <div class="collapse fr-highlight" id="comparison-data">
+                    <div>
+                        <h4 class="pt-3">Source de données</h4>
+                        <p>Données d'évolution des fichiers fonciers du Cérema issus des données MAJIC (Mise A Jour de l'Information Cadastrale) de la DGFIP, sur la période d'analyse (millésime min : 2009, millésime max : 2020).</p>
+                    </div>
+                    <div>
+                        <h4>Calcul</h4>
+                        <p>Consommation d'espaces NAF par année, par maille d'analyse du territoire de diagnostic.</p>
+                    </div>
+                </div>
             </div>
 
 
             <div class="w-100 box p-4">
+
                 <h3 id="determinants-conso">Déterminants de la consommation</h3>
-                <div class="row">
+
+                <div class="row mb-5">
                     <div class="col-4 border-end">
                         <div id="pie_determinant"></div>
                     </div>
@@ -153,40 +183,47 @@ Rapport consommation
                         <div id="chart_determinant"></div>
                     </div>
                 </div>
+
+                <button class="fr-btn fr-btn--tertiary fr-btn--sm dropdown-toggle" type="button" data-bs-toggle="collapse" data-bs-target="#determinants-data" aria-expanded="false" aria-controls="determinants-data">
+                    Source des données, calcule, données
+                </button>
+                <div class="collapse fr-highlight" id="determinants-data">
+                    <div>
+                        <h4 class="pt-3">Source de données</h4>
+                        <p>Données d'évolution des fichiers fonciers du Cérema issus des données MAJIC (Mise A Jour de l'Information Cadastrale) de la DGFIP, sur la période d'analyse (millésime min : 2009, millésime max : 2020).</p>
+                    </div>
+                    <div>
+                        <h4>Calcul</h4>
+                        <p>Déterminants de la consommation d'espaces NAF, par année.</p>
+                    </div>
+                    <div>
+                        <h4>Données</h4>
+                        <table class="table table-striped table-sm table-borderless">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Déterminant</th>
+                                    {% for year in project.years %}
+                                    <th scope="col" class="text-end">{{ year }}</th>
+                                    {% endfor %}
+                                    <th scope="col" class="text-end">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for determinant_name, data in data_determinant.items %}
+                                <tr>
+                                    <th scope="row">{{ determinant_name }}</th>
+                                    {% for year, val in data.items %}
+                                    <td align="right">+{{ val|floatformat:1 }}</td>
+                                    {% endfor %}
+                                </tr>
+
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
 
-            <div class="box scrollme-x p-4">
-                <h3 class="mb-3">Déterminants de la consommation :</h3>
-                <table class="table table-striped table-sm table-borderless">
-                    <thead>
-                        <tr>
-                            <th scope="col">Déterminant</th>
-                            {% for year in project.years %}
-                            <th scope="col" class="text-end">{{ year }}</th>
-                            {% endfor %}
-                            <th scope="col" class="text-end">Total</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for determinant_name, data in data_determinant.items %}
-                        <tr>
-                            <th scope="row">{{ determinant_name }}</th>
-                            {% for year, val in data.items %}
-                            <td align="right">+{{ val|floatformat:1 }}</td>
-                            {% endfor %}
-                        </tr>
-
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-
-
-
-            <div class="box alert">
-                <h3>Provenance des données</h3>
-                La consommation d’espace est mesurée avec les fichiers fonciers qui font une description cadastrale du territoire.
-            </div>
         </div>
     </div>
 
