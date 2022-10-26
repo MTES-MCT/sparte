@@ -186,7 +186,19 @@ Rapport consommation
 
         <div class="w-100 box p-4">
 
-            <h3 id="determinants-conso">Déterminants de la consommation</h3>
+            <h3 id="determinants-conso">
+                <div class="float-end">
+                    <div class="fr-btns-group fr-btns-group--inline">
+                        <button type="button" class="fr-btn fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#determinantModal" data-toggle="tooltip" title="Astuces pour lire le graphique" aria-hidden="true">
+                            <i class="bi bi-question-circle"></i>
+                        </button>
+                    </div>
+                </div>
+
+                Déterminants de la consommation
+            </h3>
+
+
 
             <div class="row mb-5">
                 <div class="col-4 border-end">
@@ -251,6 +263,7 @@ Rapport consommation
             </div>
             <div class="modal-body">
                 <p>Pour réduire le nombre de territoires visibles dans le graphique, vous pouvez en masquer certains en cliquant sur eux dans la légende. Cliquez de nouveau dessus pour les ré-afficher.</p>
+                <p>Avec le bouton <i class="bi bi-list"></i>, vous pouvez afficher le graphique en pleine page ou le télécharger sous forme d'image (utilisez PNG si vous ne savez pas lequel choisir).</p>
                 <p>Avec le bouton sélection, vous pouvez tous les masquer d'un coup. Utile quand le nombre de territoire est important et que vous souhaitez n'en afficher que 2 ou 3.</p>
                 <p>Avec le bouton sélection, vous pouvez aussi inverser la sélectionn. Tous les visibles seront masqués et tous les invisibles seront affichés.</p>
                 <p>Le bouton maille d'analyse permet de changer le type de territoire afficher. Si vous analyser un département, vous pouvez afficher les communes à la place des EPCI (attention, la lisibilité du graphique devient médiocre lorsqu'on affiche trop de territoires simultanéments).</p>
@@ -269,8 +282,26 @@ Rapport consommation
             </div>
             <div class="modal-body">
                 <p>Pour réduire le nombre de territoires visibles dans le graphique, vous pouvez en masquer certains en cliquant sur eux dans la légende. Cliquez de nouveau dessus pour les ré-afficher.</p>
+                <p>Avec le bouton <i class="bi bi-list"></i>, vous pouvez afficher le graphique en pleine page ou le télécharger sous forme d'image (utilisez PNG si vous ne savez pas lequel choisir).</p>
                 <p>Avec le bouton <i class="bi bi-plus-circle"></i>, vous pouvez ajouter un territoire à ce graphique (voisin ou non).</p>
                 <p>Juste en dessous du graphique, un lien vous permet d'accéder à un rapport de comparaison avancé où nous croisons la consommation avec la population, le nombre de ménages, la surface...).</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="determinantModal" tabindex="-1" aria-labelledby="determinantLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="determinantLabel">Astuces - Comparaison avec les voisins</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Pour zoomer sur un déterminant en particulier, vous pouvez masquer les autres en cliquant sur eux dans la légende. Cliquez de nouveau dessus pour les ré-afficher.</p>
+                <p>Avec le bouton <i class="bi bi-list"></i>, vous pouvez afficher le graphique en pleine page ou le télécharger sous forme d'image (utilisez PNG si vous ne savez pas lequel choisir).</p>
             </div>
         </div>
     </div>
