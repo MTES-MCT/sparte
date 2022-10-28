@@ -192,6 +192,8 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
+DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+
 # credentials
 AWS_ACCESS_KEY_ID = env.str("AWS_ACCESS_KEY_ID", default="")
 AWS_SECRET_ACCESS_KEY = env.str("AWS_SECRET_ACCESS_KEY", default="")
@@ -215,24 +217,13 @@ STATICFILES_DIRS = [
     # BASE_DIR / "htmlcov",
 ]
 
-# USE_S3 = env.bool("USE_S3", default=False)
-# if USE_S3:
-#     # specify to django we use only S3 to store files
-#     DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
-
-#     STATIC_LOCATION = "staticfiles"
-#     STATIC_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/{STATIC_LOCATION}/"
-#     STATICFILES_STORAGE = "config.storages.StaticMediaStorage"
-
-#     PUBLIC_MEDIA_LOCATION = "media"
-#     MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/{PUBLIC_MEDIA_LOCATION}/"
-#     DEFAULT_FILE_STORAGE = "config.storages.PublicMediaStorage"
-# else:
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticroot"
 
-MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "media"
+
+PUBLIC_MEDIA_LOCATION = "media"
+MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/{PUBLIC_MEDIA_LOCATION}/"
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
