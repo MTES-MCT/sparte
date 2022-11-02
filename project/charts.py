@@ -144,7 +144,7 @@ class ObjectiveChart(ProjectChart):
                     "from": 9.5,
                     "to": 19.5,
                     "label": {
-                        "text": "Réduction de 50%",
+                        "text": "Projection 2031",
                         "style": {"color": "#87cc78", "fontWeight": "bold"},
                     },
                     "className": "plotband_green",
