@@ -209,7 +209,7 @@ AWS_S3_FILE_OVERWRITE = False
 # allow signed url to be accessed from all regions
 AWS_S3_SIGNATURE_VERSION = "s3v4"
 
-AWS_S3_CUSTOM_DOMAIN = f"{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com"
+# AWS_S3_CUSTOM_DOMAIN = f"{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com"
 AWS_S3_OBJECT_PARAMETERS = {"CacheControl": "max-age=86400"}
 
 STATICFILES_DIRS = [
@@ -222,7 +222,9 @@ STATIC_ROOT = BASE_DIR / "staticroot"
 
 
 PUBLIC_MEDIA_LOCATION = "media"
-MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/{PUBLIC_MEDIA_LOCATION}/"
+MEDIA_URL = (
+    f"https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/{PUBLIC_MEDIA_LOCATION}/"
+)
 
 
 # Default primary key field type
