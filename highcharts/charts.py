@@ -8,6 +8,7 @@ import string
 import tempfile
 
 from django.conf import settings
+from django.templatetags.static import static
 from django.utils.safestring import mark_safe
 from django.utils.text import slugify
 
@@ -29,7 +30,16 @@ class Chart:
     options = None
 
     def get_param(self):
-        return copy.deepcopy(self.param)
+        param = copy.deepcopy(self.param)
+        if "exporting" not in param:
+            param["exporting"] = {
+                "buttons": {
+                    "contextButton": {
+                        "symbol": f"url({static('img/file_download_icon_151366.png')})"
+                    }
+                }
+            }
+        return param
 
     def get_options(self, serie_name):
         if not self.options:
