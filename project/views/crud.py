@@ -13,6 +13,7 @@ from public_data.models import Land
 
 from project.forms import UploadShpForm, KeywordForm
 from project.models import Project
+from project import tasks
 from .mixins import GroupMixin
 
 
@@ -35,12 +36,17 @@ class ProjectUpdateView(GroupMixin, UpdateView):
         breadcrumbs.append({"href": None, "title": "Editer"})
         return breadcrumbs
 
+    def form_valid(self, form):
+        """If the form is valid, save the associated model."""
+        self.object = form.save()
+        # check that ocsge period is still between project period
+        tasks.find_first_and_last_ocsge.delay(self.object.id)
+        return HttpResponseRedirect(self.get_success_url())
+
     def get_success_url(self):
         if "next" in self.request.GET:
-            if self.request.GET["next"] == "report-conso":
-                url = reverse_lazy("project:report_conso", kwargs=self.kwargs)
-                url += "#projection-2031"
-                return url
+            if self.request.GET["next"] == "report-target-2031":
+                return reverse_lazy("project:report_target_2031", kwargs=self.kwargs)
         return reverse_lazy("project:detail", kwargs=self.kwargs)
 
 
