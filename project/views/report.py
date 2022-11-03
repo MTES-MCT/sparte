@@ -283,16 +283,22 @@ class ProjectReportSynthesisView(ProjectReportBaseView):
         total_surface = int(project.area * 100)
         progression_time_scoped = project.get_artif_progession_time_scoped()
         objective_chart = charts.ObjectiveChart(project)
-        kwargs = {
-            "diagnostic": project,
-            "active_page": "synthesis",
-            "total_surface": total_surface,
-            "new_artif": progression_time_scoped["new_artif"],
-            "new_natural": progression_time_scoped["new_natural"],
-            "net_artif": progression_time_scoped["net_artif"],
-            "objective_chart": objective_chart,
-        }
-        # project = self.get_object()
+        curent_conso = project.get_bilan_conso_time_scoped()
+        kwargs.update(
+            {
+                "diagnostic": project,
+                "active_page": "synthesis",
+                "total_surface": total_surface,
+                "new_artif": progression_time_scoped["new_artif"],
+                "new_natural": progression_time_scoped["new_natural"],
+                "net_artif": progression_time_scoped["net_artif"],
+                "objective_chart": objective_chart,
+                "current_conso": curent_conso,
+                "year_avg_conso": curent_conso / project.nb_years,
+                "first_millesime": str(project.first_year_ocsge),
+                "last_millesime": str(project.last_year_ocsge),
+            }
+        )
         return super().get_context_data(**kwargs)
 
 
