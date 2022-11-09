@@ -205,7 +205,7 @@ class DiagnosticSource(data_sources.DataSource):
                     width=170,
                 ),
                 "projection_zan_cumulee_ref": round(objective_chart.total_real, 1),
-                "projection_zan_annuelle_ref": round(objective_chart.previsionnal, 1),
+                "projection_zan_annuelle_ref": round(objective_chart.annual_real, 1),
                 "projection_zan_cumulee_objectif": round(objective_chart.conso_2031),
                 "projection_zan_annuelle_objectif": round(
                     objective_chart.annual_objective_2031

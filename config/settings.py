@@ -21,7 +21,7 @@ from django.core.exceptions import ImproperlyConfigured
 from django.contrib.messages import constants as messages
 
 
-OFFICIAL_VERSION = "2.1"
+OFFICIAL_VERSION = "2.2.0"
 
 root = environ.Path(__file__) - 2  # get root of the project
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -192,6 +192,8 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
+DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+
 # credentials
 AWS_ACCESS_KEY_ID = env.str("AWS_ACCESS_KEY_ID", default="")
 AWS_SECRET_ACCESS_KEY = env.str("AWS_SECRET_ACCESS_KEY", default="")
@@ -207,7 +209,7 @@ AWS_S3_FILE_OVERWRITE = False
 # allow signed url to be accessed from all regions
 AWS_S3_SIGNATURE_VERSION = "s3v4"
 
-AWS_S3_CUSTOM_DOMAIN = f"{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com"
+# AWS_S3_CUSTOM_DOMAIN = f"{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com"
 AWS_S3_OBJECT_PARAMETERS = {"CacheControl": "max-age=86400"}
 
 STATICFILES_DIRS = [
@@ -215,24 +217,15 @@ STATICFILES_DIRS = [
     # BASE_DIR / "htmlcov",
 ]
 
-USE_S3 = env.bool("USE_S3", default=False)
-if USE_S3:
-    # specify to django we use only S3 to store files
-    DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+STATIC_URL = "/static/"
+STATIC_ROOT = BASE_DIR / "staticroot"
 
-    STATIC_LOCATION = "staticfiles"
-    STATIC_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/{STATIC_LOCATION}/"
-    STATICFILES_STORAGE = "config.storages.StaticMediaStorage"
 
-    PUBLIC_MEDIA_LOCATION = "media"
-    MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/{PUBLIC_MEDIA_LOCATION}/"
-    DEFAULT_FILE_STORAGE = "config.storages.PublicMediaStorage"
-else:
-    STATIC_URL = "/static/"
-    STATIC_ROOT = BASE_DIR / "staticroot"
+PUBLIC_MEDIA_LOCATION = "media"
+MEDIA_URL = (
+    f"https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/{PUBLIC_MEDIA_LOCATION}/"
+)
 
-    MEDIA_URL = "/media/"
-    MEDIA_ROOT = BASE_DIR / "media"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field

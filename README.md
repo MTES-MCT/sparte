@@ -79,50 +79,34 @@ Sometimes, you need to fetch and install a Scalingo DB backup.
 2. Uncompress `tar -xf 20220830000404_sparte_1396.tar.gz`
 3. restore `pg_restore --clean --if-exists --no-owner --no-privileges --no-comments --dbname postgres://postgres:postgres@127.0.0.1:54321/postgres 20220830000404_sparte_1396.pgsql`
 
+## Update OCS GE
 
-## The rocky river pattern
+The process is not stable yet. Use it with caution.
 
-In this project, we try to follow the rocky river pattern. Find below the order of our apps. Top app can't call below app (they don't know them)
+1. Download shape files from IGN's website [https://geoservices.ign.fr](https://geoservices.ign.fr) "ACCUEIL > CATALOGUE > OCS GE"
+2. Extract shape files and zip them by name, remove anysubfolder, the zip should contain only files
+3. Name zip file accordingly to expected name in [public_data/management/commands/load_ocsge.py](public_data/management/commands/load_ocsge.py). If you want to update 2016 Gers millesime, name it accordingly to what you will find in class **GersOcsge2016** and the property **shape_file_path** (which is gers_ocsge_2016.zip when writhing those lines)
+4. Upload the zip in the bucket, in data folder.
+5. Trigger the loading with the command `python scripts/cmd.py --env prod load-ocsge --item .....`, replace ... by the item you want to load (following previous example it's `python scripts/cmd.py --env local load-ocsge --item GersOcsge2016`). Obviously test it in staging first.
+6. Update all precalculated data: build_commune_data, build_artificial_area, set_density
+7. Update official data origin in [gitbook](https://app.gitbook.com/o/-MMQU-ngAOgQAqCm4mf3/s/OgEtEJQsOvgZrMPdWEIo/)
+8. Update admin's [Départements](https://sparte.beta.gouv.fr/admin/public_data/departement/) if new OCS GE has been added
 
-```mermaid
-graph TD;
-  users-->public_data;
-  public_data-->Carto;
-  Carto-->project;
+Example, update Gers OCS GE with 2022-06 data:
+```bash
+export ENV='local'
+python scripts/cmd.py --env $ENV load-ocsge --item GersOcsge2016 && \
+python scripts/cmd.py --env $ENV load-ocsge --item GersOcsge2019 && \
+python scripts/cmd.py --env $ENV load-ocsge --item GersZoneConstruite2016 && \
+python scripts/cmd.py --env $ENV load-ocsge --item GersZoneConstruite2019 && \
+python scripts/cmd.py --env $ENV load-ocsge --item GersOcsgeDiff && \
+python scripts/cmd.py --env $ENV run 'python manage.py build_commune_data --departement Gers' && \
+python scripts/cmd.py --env $ENV run 'python manage.py build_artificial_area --departement Gers' && \
+python scripts/cmd.py --env $ENV run 'python manage.py set_density --reset --departement Gers'
 ```
 
-## Useful links
+## Migration stack scalingo 18 => 20
 
-About pytest:
-
-- https://pytest-django.readthedocs.io
-- https://docs.pytest.org/en/6.2.x/reference.html
-
-About customUser:
-
-- https://testdriven.io/blog/django-custom-user-model/
-
-Django settings & installation:
-
-- https://djangostars.com/blog/configuring-django-settings-best-practices/
-- https://django-environ.readthedocs.io
-- https://python-poetry.org/docs/cli/#add
-- https://github.com/makinacorpus/docker-geodjango
-
-Flake8 linting:
-
-- https://flake8.pycqa.org/en/3.1.1/user/options.html#cmdoption-flake8--exclude
-
-Dashboard layout (for inspiration):
-
-- https://appstack.bootlab.io/dashboard-default.html
-
-About colours and gradient :
-
-- https://github.com/vaab/colour/
-- https://medium.com/the-mvp/finally-a-definitive-way-to-make-gradients-beautiful-6b27af88f5f
-- https://hslpicker.com/#c0f/#e6ff00
-
-Tuto GeoDjango
-
-- https://www.paulox.net/2021/07/19/maps-with-django-part-2-geodjango-postgis-and-leaflet/
+1. Remove PYTHONPATH from environment variables (through scalingo online dashboard)
+2. Migrate app's stack with CLI `scalingo --app sparte --region osc-secnum-fr1 stacks-set scalingo-20` and check success with `scalingo --app sparte --region osc-secnum-fr1 apps-info`
+3. Deploy
