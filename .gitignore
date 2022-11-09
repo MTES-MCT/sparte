@@ -163,3 +163,4 @@ static/dsfr-v1.5.1/
 *.pgsql
 notebooks/*.xlsx
 *.tar.gz
+staticroot/*
