@@ -53,6 +53,8 @@ redis = "~=3.5"
 sentry-sdk = "*"
 setuptools = "*"
 django-sri = "*"
+matplotlib-scalebar = "*"
+mapclassify = "*"
 
 [scripts]
 shell = "python manage.py shell"
