@@ -283,16 +283,22 @@ class ProjectReportSynthesisView(ProjectReportBaseView):
         total_surface = int(project.area * 100)
         progression_time_scoped = project.get_artif_progession_time_scoped()
         objective_chart = charts.ObjectiveChart(project)
-        kwargs = {
-            "diagnostic": project,
-            "active_page": "synthesis",
-            "total_surface": total_surface,
-            "new_artif": progression_time_scoped["new_artif"],
-            "new_natural": progression_time_scoped["new_natural"],
-            "net_artif": progression_time_scoped["net_artif"],
-            "objective_chart": objective_chart,
-        }
-        # project = self.get_object()
+        curent_conso = project.get_bilan_conso_time_scoped()
+        kwargs.update(
+            {
+                "diagnostic": project,
+                "active_page": "synthesis",
+                "total_surface": total_surface,
+                "new_artif": progression_time_scoped["new_artif"],
+                "new_natural": progression_time_scoped["new_natural"],
+                "net_artif": progression_time_scoped["net_artif"],
+                "objective_chart": objective_chart,
+                "current_conso": curent_conso,
+                "year_avg_conso": curent_conso / project.nb_years,
+                "first_millesime": str(project.first_year_ocsge),
+                "last_millesime": str(project.last_year_ocsge),
+            }
+        )
         return super().get_context_data(**kwargs)
 
 
@@ -321,6 +327,7 @@ class ProjectReportArtifView(ProjectReportBaseView):
         last_millesime = project.last_year_ocsge
 
         artif_area = project.get_artif_area()
+        rate_artif_area = round(100 * float(artif_area) / float(total_surface))
 
         chart_evolution_artif = charts.EvolutionArtifChart(project)
         chart_waterfall = charts.WaterfallnArtifChart(project)
@@ -351,6 +358,7 @@ class ProjectReportArtifView(ProjectReportBaseView):
                 "first_millesime": str(first_millesime),
                 "last_millesime": str(last_millesime),
                 "artif_area": artif_area,
+                "rate_artif_area": rate_artif_area,
                 "new_artif": progression_time_scoped["new_artif"],
                 "new_natural": progression_time_scoped["new_natural"],
                 "net_artif": net_artif,
@@ -488,6 +496,23 @@ class ProjectReportConsoRelativeView(ProjectReportBaseView):
                 "conso_surface_table": add_total_line_column(
                     conso_surface_chart.get_series(), line=False
                 ),
+            }
+        )
+
+        return super().get_context_data(**kwargs)
+
+
+class ProjectReportTarget2031View(ProjectReportBaseView):
+    template_name = "project/report_target_2031.html"
+    breadcrumbs_title = "Rapport objectif 2031"
+
+    def get_context_data(self, **kwargs):
+        project = self.get_object()
+        objective_chart = charts.ObjectiveChart(project)
+        kwargs.update(
+            {
+                "active_page": "target_2031",
+                "objective_chart": objective_chart,
             }
         )
 
