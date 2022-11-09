@@ -17,229 +17,297 @@ Rapport consommation
 {% endblock %}
 
 {% block content %}
-    <div class="px-4">
-        {% include "project/detail_menu.html" %}
+<div class="px-4">
+    {% include "project/detail_menu.html" %}
 
-        <div class="bg-light rounded-5 border fr-container fr-py-3w">
+    <div class="bg-light rounded-5 border fr-container fr-py-3w">
 
-            <div class="box box-alert px-4 py-2 mb-4 mt-0">
-                <p>La période de référence de la loi Climat et Résilience concerne les 10 années précédent la promulgation de la loi, soit de l'année 2011 à l'année 2020. Les fichiers fonciers sont datés en millésimes, chaque millésime donnant l'état de l'information au premier janvier de l'année. Pour mesurer la consommation d'espace de l'année 2011 à l'année 2020, nous utilisons donc les millésimes 2011 (au 01/01/2011) à 2021 (au 01/01/2021), ces 11 millésimes nous permettant d'obtenir 10 mesures d'évolution.</p>
+        <div class="box box-alert px-4 py-2 mb-4 mt-0">
+            <p>Pour la mesure de la consommation des espaces NAF, l'Etat utilise les fichiers fonciers.</p>
+
+            <p>Ces données sont fournies tous les ans depuis 2009. Le dernier millésime de 2021 est la photographie du territoire au 1er janvier 2021, intégrant les évolutions réalisées au cours de l'année 2020.</p>
+
+            <p>Les données de l'INSEE sont également intégrées pour mettre en perspective la consommation d'espace vis à vis de l'évolution de la population et bientôt l'emploi.</p>
+
+            <p class="mb-0">Sommaire de la page</p>
+
+            <ul class="mt-0">
+                <li><a href="#conso-annuelle">consommation annuelle du territoire : graphique et chiffres</a>,</li>
+                <li><a href="#determinants-conso">déterminants de sa consommation d'espace : graphiques et chiffres</a>,</li>
+                <li><a href="#territoires-de-comparaison">comparaison du territoire avec les territoires voisins</a>,</li>
+                <li><a href="{% url 'project:report_conso_relative' project.id %}">comparaisons pondérées avec les données de l'INSEE (démographie, ménages...)</a></li>
+            </ul>
+
+            <p class="mt-5"><a href="https://artificialisation.developpement-durable.gouv.fr/bases-donnees/les-fichiers-fonciers" target="_blank" id="cerema-link">Plus d'informations sur les fichiers fonciers (source : Cerema)</a></p>
+        </div>
+
+        <div class="fr-grid-row fr-grid-row--gutters">
+            <div class="fr-col-12 fr-col-md-6">
+            <div class="fr-callout">
+                <p class="fr-callout__title">{{ total_surface|floatformat:0 }} ha</p>
+                <p>Surface du territoire</p>
+            </div>
             </div>
 
-            <div class="fr-grid-row fr-grid-row--gutters">
-              <div class="fr-col-12 fr-col-md-6">
-                <div class="fr-callout">
-                  <p class="fr-callout__title">{{ total_surface|floatformat:0 }} ha</p>
-                  <p>Surface du territoire</p>
-                </div>
-              </div>
-
-              <div class="fr-col-12 fr-col-md-6">
-                <div class="fr-callout">
-                  <p class="fr-callout__title">+{{ project_scope.consummed|floatformat:1 }} ha</p>
-                  <p>Consommation {{ project.analyse_start_date }} à {{ project.analyse_end_date }}</p>
-                </div>
-              </div>
+            <div class="fr-col-12 fr-col-md-6">
+            <div class="fr-callout">
+                <p class="fr-callout__title">+{{ project_scope.consummed|floatformat:1 }} ha</p>
+                <p>Consommation {{ project.analyse_start_date }} à {{ project.analyse_end_date }}</p>
             </div>
-
-            <div class="fr-grid-row fr-grid-row--gutters">
-              <div class="fr-col-12 fr-col-md-4">
-                <div class="fr-callout">
-                  <p class="fr-callout__title">+{{ objective_chart.total_real|floatformat:1 }} ha</p>
-                  <p>Consommation 2011-2020 <i class="bi bi-question-circle" data-toggle="tooltip" title="Données prévisionelles pour 2020" aria-hidden="true"></i></p>
-                </div>
-              </div>
-
-              <div class="fr-col-12 fr-col-md-4">
-                <div class="fr-callout">
-                  <p class="fr-callout__title">+{{ objective_chart.conso_2031|floatformat:1 }} ha</p>
-                  <p>Trajectoire 2021-2030 <i class="bi bi-question-circle" data-toggle="tooltip" title="Réduction de 50% par rapport à la décennie précédente" aria-hidden="true"></i></p>
-                </div>
-              </div>
-
-              <div class="fr-col-12 fr-col-md-4">
-                <div class="fr-callout">
-                  <p class="fr-callout__title">+{{ objective_chart.annual_objective_2031|floatformat:1 }} ha/an</p>
-                  <p>Trajectoire projetée annualisée</p>
-                </div>
-              </div>
             </div>
+        </div>
 
-
-            <div class="w-100 box p-4">
-                <div class="clearfix">
-                    <div class="float-end">Objectif 2031: <a href="{% url 'project:update' project.pk %}?next=report-conso" class="fr-btn fr-btn--tertiary fr-btn--sm">{{ project.target_2031 }} %</a></div>
-                    <h3 id="projection-2031">
-                        Projection 2031 selon la trajectoire ZAN
-                    </h3>
-                </div>
-
-                <div id="objective_chart" class=""></div>
-
-                <p class="my-0">
-                    <strong>En <span class="plotband_blue">bleu</span> : période de référence</strong>
-                </p>
-                <p class="my-0">
-                    <span class="text-muted"><em>1er jan. 2011 - 31 déc. 2020, 10 ans</em></span>
-                </p>
-                <p class="mt-2 mb-4">
-                    Consommation cumulée de référence : {{ objective_chart.total_real|floatformat:1 }} ha
-                    <br/>Consommation annuelle de référence : {{ objective_chart.annual_real|floatformat:1 }} ha
-                </p>
-
-                <p class="my-0">
-                    <strong>En <span class="plotband_green">vert</span> : réduction de 50% </strong>
-                <p class="my-0">
-                    <span class="text-muted"><em>1er jan. 2021 - 31 déc. 2030, 10 ans</em></span>
-                </p>
-                <p class="mt-2">
-                    Pendant la période de réduction, la loi prévoit que le territoire ne consomme que 50% de ce qui a été consommé pendant la période de référence. Par conséquent, la consommation cumulée du 1er janvier 2021 au 31 décembre 2030 doit être égale à la consommation du 1er janvier 2011 au 31 décembre 2020 divisée par 2.
-                </p>
-                {% if project.target_2031 != 50 %}
-                <p class="mt-2">
-                    Cependant, vous avez personnalisé l'objectif à {{ project.target_2031 }}%.
-                </p>
-                {% endif %}
-                <p class="mt-2 mb-4">
-                    Objectif de consommation cumulée 2030 : {{ objective_chart.conso_2031|floatformat:1 }} ha
-                    <br/>Consommation annuelle moyenne : {{ objective_chart.annual_objective_2031|floatformat:1 }} ha
-                </p>
-            </div>
-
-
-            <div class="w-100 box p-4">
-                <h3 class="clearfix">
-                    <div class="float-end">
-                        <div class="fr-btns-group fr-btns-group--inline">
-                            <div class="dropdown me-2">
-                                <button class="fr-btn fr-btn--tertiary fr-btn--sm dropdown-toggle" type="button" id="dropdownMenuButton2" data-bs-toggle="dropdown" aria-expanded="false">
-                                    Maille d'analyse
-                                </button>
-                                <ul class="dropdown-menu mt-2" aria-labelledby="dropdownMenuButton2">
-                                    <li><a class="dropdown-item {% if level == "COMM" %}active{% endif %}" href="{% url "project:report_conso" project.id %}?level_conso=COMMUNE">Communes</a></li>
-                                    {% if land_type in "DEPART_REGION_COMP" %}
-                                    <li><a class="dropdown-item {% if level == "EPCI" %}active{% endif %}" href="{% url "project:report_conso" project.id %}?level_conso=EPCI">EPCI</a></li>
-                                    {% endif %}
-                                    {% if land_type in "REGION_COMP" %}
-                                    <li><a class="dropdown-item {% if level == "DEPART" %}active{% endif %} " href="{% url "project:report_conso" project.id %}?level_conso=DEPART">Départements</a></li>
-                                    {% endif %}
-                                    {% if land_type in "COMP" %}
-                                    <li><a class="dropdown-item {% if level == "REGION" %}active{% endif %}" href="{% url "project:report_conso" project.id %}?level_conso=REGION">Régions</a></li>
-                                    {% endif %}
-                                </ul>
-                            </div>
-
-                            <div class="dropdown">
-                                <button class="fr-btn fr-btn--tertiary fr-btn--sm dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                                    Sélection
-                                </button>
-                                <ul class="dropdown-menu mt-2" aria-labelledby="dropdownMenuButton1">
-                                    <li><a id="check" class="dropdown-item" href="#" chart_target="chart">Tout</a></li>
-                                    <li><a id="uncheck" class="dropdown-item" href="#" chart_target="chart">Aucun</a></li>
-                                    <li><a id="reverse" class="dropdown-item" href="#" chart_target="chart">Inverser</a></li>
-                                    <li><h6 class="dropdown-header">Zoom sur un groupe de villes</h6></li>
-                                    {% for name in groups_names %}
-                                        <li><a class="dropdown-item" href="{% url 'project:report_city_group' project.id %}?group_name={{ name }}">{{ name }}</a></li>
-                                    {% endfor %}
-                                    <li><a class="dropdown-item" href="{% url 'project:report_city_group' project.id %}">Tous</a></li>
-                                </ul>
-                            </div>
+        <div class="w-100 box p-4">
+            <h3 class="clearfix" id="conso-annuelle">
+                <div class="float-end">
+                    <div class="fr-btns-group fr-btns-group--inline">
+                        <div class="dropdown me-2">
+                            <button class="fr-btn fr-btn--tertiary fr-btn--sm dropdown-toggle" type="button" id="dropdownMenuButton2" data-bs-toggle="dropdown" aria-expanded="false">
+                                Maille d'analyse
+                            </button>
+                            <ul class="dropdown-menu mt-2" aria-labelledby="dropdownMenuButton2">
+                                <li><a class="dropdown-item {% if level == "COMM" %}active{% endif %}" href="{% url "project:report_conso" project.id %}?level_conso=COMMUNE">Communes</a></li>
+                                {% if land_type in "DEPART_REGION_COMP" %}
+                                <li><a class="dropdown-item {% if level == "EPCI" %}active{% endif %}" href="{% url "project:report_conso" project.id %}?level_conso=EPCI">EPCI</a></li>
+                                {% endif %}
+                                {% if land_type in "REGION_COMP" %}
+                                <li><a class="dropdown-item {% if level == "DEPART" %}active{% endif %} " href="{% url "project:report_conso" project.id %}?level_conso=DEPART">Départements</a></li>
+                                {% endif %}
+                                {% if land_type in "COMP" %}
+                                <li><a class="dropdown-item {% if level == "REGION" %}active{% endif %}" href="{% url "project:report_conso" project.id %}?level_conso=REGION">Régions</a></li>
+                                {% endif %}
+                            </ul>
                         </div>
+
+                        <div class="dropdown">
+                            <button class="fr-btn fr-btn--tertiary fr-btn--sm dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                                Sélection
+                            </button>
+                            <ul class="dropdown-menu mt-2" aria-labelledby="dropdownMenuButton1">
+                                <li><a id="check" class="dropdown-item" href="#" chart_target="chart">Tout</a></li>
+                                <li><a id="uncheck" class="dropdown-item" href="#" chart_target="chart">Aucun</a></li>
+                                <li><a id="reverse" class="dropdown-item" href="#" chart_target="chart">Inverser</a></li>
+                                <li><h6 class="dropdown-header">Zoom sur un groupe de villes</h6></li>
+                                {% for name in groups_names %}
+                                    <li><a class="dropdown-item" href="{% url 'project:report_city_group' project.id %}?group_name={{ name }}">{{ name }}</a></li>
+                                {% endfor %}
+                                <li><a class="dropdown-item" href="{% url 'project:report_city_group' project.id %}">Tous</a></li>
+                            </ul>
+                        </div>
+
+                        <button type="button" class="fr-btn fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#consoAnnuelle" data-toggle="tooltip" title="Astuces pour lire le graphique" aria-hidden="true">
+                            <i class="bi bi-question-circle"></i>
+                        </button>
                     </div>
-                    Consommation annuelle des {% if level == "COMM" %}communes{% elif level == "EPCI" %}communes{% elif level == "DEPT" %}EPCI{% else %}départements{% endif %} du territoire
-                </h3>
+                </div>
+                Consommation annuelle des {% if level == "COMM" %}communes{% elif level == "EPCI" %}communes{% elif level == "DEPT" %}EPCI{% else %}départements{% endif %} du territoire
+            </h3>
 
-                <div id="chart" class="flex-fill"></div>
-            </div>
+            <div id="chart" class="flex-fill mb-5"></div>
 
-            <div class="w-100 box p-4">
-                <a name="territoires-de-comparaison"></a>
-                <h3>
-                    <a class="float-end"href="{% url 'project:lookalike' project.id %}?from=conso_report">
-                        <i class="bi bi-plus-circle" data-toggle="tooltip" title="Ajouter un territoire de comparaison" aria-hidden="true"></i>
-                    </a>
-                    Comparaison avec les territoires voisins
-                </h3>
-                <div id="chart_2" class="flex-fill"></div>
-                <p class="mt-5">
-                    <a href="{% url 'project:report_conso_relative' project.id %}">
-                        <strong>Voir aussi :</strong> toutes les comparaisons disponibles
-                    </a>
-                </p>
-            </div>
-
-            <div class="box scrollme-x p-4">
-                <h3 class="mb-3">Surface consommée (en ha) :</h3>
-                <table class="table table-striped table-sm table-borderless">
-                    <thead>
-                        <tr>
-                            <th scope="col">{{ col_name }}</th>
-                            {% for year in project.years %}
-                            <th scope="col" class="text-end">{{ year }}</th>
+            <button class="fr-btn fr-btn--tertiary fr-btn--sm dropdown-toggle rounded-pill" type="button" data-bs-toggle="collapse" data-bs-target="#conso-annuel-data" aria-expanded="false" aria-controls="conso-annuel-data">
+                Données
+            </button>
+            <div class="collapse fr-highlight" id="conso-annuel-data">
+                <div>
+                    <h4 class="pt-3">Source</h4>
+                    <p>Données d'évolution des fichiers fonciers du Cérema issus des données MAJIC (Mise A Jour de l'Information Cadastrale) de la DGFIP, sur la période d'analyse (millésime min : 2009, millésime max : 2021)</p>
+                </div>
+                <div>
+                    <h4>Calcul</h4>
+                    <p>Consommation d'espaces NAF par année, par maille d'analyse du territoire de diagnostic</p>
+                </div>
+                <div>
+                    <h4>Données</h4>
+                    <table class="table table-striped table-sm table-borderless">
+                        <thead>
+                            <tr>
+                                <th scope="col">{{ col_name }}</th>
+                                {% for year in project.years %}
+                                <th scope="col" class="text-end">{{ year }}</th>
+                                {% endfor %}
+                                <th scope="col" class="text-end">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for city_name, data in communes_data_table.items %}
+                            <tr>
+                                <th scope="row">{{ city_name }}</th>
+                                {% for year, val in data.items %}
+                                <td align="right">+{{ val|floatformat:1 }}</td>
+                                {% endfor %}
+                            </tr>
                             {% endfor %}
-                            <th scope="col" class="text-end">Total</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for city_name, data in communes_data_table.items %}
-                        <tr>
-                            <th scope="row">{{ city_name }}</th>
-                            {% for year, val in data.items %}
-                            <td align="right">+{{ val|floatformat:1 }}</td>
-                            {% endfor %}
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+                        </tbody>
+                    </table>
+                </div>
             </div>
+        </div>
 
 
-            <div class="w-100 box p-4">
-                <h3>Déterminants de la consommation</h3>
-                <div class="row">
-                    <div class="col-4 border-end">
-                        <div id="pie_determinant"></div>
+        <div class="w-100 box p-4">
+            <h3 id="territoires-de-comparaison">
+                <div class="float-end">
+                    <div class="fr-btns-group fr-btns-group--inline">
+                        <a class="fr-btn fr-btn--tertiary fr-btn--sm" href="{% url 'project:lookalike' project.id %}?from=conso_report" data-toggle="tooltip" title="Ajouter un territoire de comparaison" aria-hidden="true">
+                            <i class="bi bi-plus-circle"></i>
+                        </a>
+                        <button type="button" class="fr-btn fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#comparaisonVoisin" data-toggle="tooltip" title="Astuces pour lire le graphique" aria-hidden="true">
+                            <i class="bi bi-question-circle"></i>
+                        </button>
                     </div>
-                    <div class="col-8">
-                        <div id="chart_determinant"></div>
+                </div>
+
+
+                Comparaison avec les territoires voisins
+            </h3>
+            <div id="chart_2" class="flex-fill"></div>
+            <p class="mt-5">
+                <a href="{% url 'project:report_conso_relative' project.id %}">
+                    <strong>Voir aussi :</strong> toutes les comparaisons disponibles
+                </a>
+            </p>
+
+            <button class="fr-btn fr-btn--tertiary fr-btn--sm dropdown-toggle rounded-pill" type="button" data-bs-toggle="collapse" data-bs-target="#comparison-data" aria-expanded="false" aria-controls="comparison-data">
+                Données
+            </button>
+            <div class="collapse fr-highlight" id="comparison-data">
+                <div>
+                    <h4 class="pt-3">Source</h4>
+                    <p>Données d'évolution des fichiers fonciers du Cérema issus des données MAJIC (Mise A Jour de l'Information Cadastrale) de la DGFIP, sur la période d'analyse (millésime min : 2009, millésime max : 2021).</p>
+                </div>
+                <div>
+                    <h4>Calcul</h4>
+                    <p>Consommation d'espaces NAF par année, par maille d'analyse du territoire de diagnostic.</p>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="w-100 box p-4">
+
+            <h3 id="determinants-conso">
+                <div class="float-end">
+                    <div class="fr-btns-group fr-btns-group--inline">
+                        <button type="button" class="fr-btn fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#determinantModal" data-toggle="tooltip" title="Astuces pour lire le graphique" aria-hidden="true">
+                            <i class="bi bi-question-circle"></i>
+                        </button>
                     </div>
+                </div>
+
+                Déterminants de la consommation
+            </h3>
+
+
+
+            <div class="row mb-5">
+                <div class="col-4 border-end">
+                    <div id="pie_determinant"></div>
+                </div>
+                <div class="col-8">
+                    <div id="chart_determinant"></div>
                 </div>
             </div>
 
-            <div class="box scrollme-x p-4">
-                <h3 class="mb-3">Déterminants de la consommation :</h3>
-                <table class="table table-striped table-sm table-borderless">
-                    <thead>
-                        <tr>
-                            <th scope="col">Déterminant</th>
-                            {% for year in project.years %}
-                            <th scope="col" class="text-end">{{ year }}</th>
+            <button class="fr-btn fr-btn--tertiary fr-btn--sm dropdown-toggle rounded-pill" type="button" data-bs-toggle="collapse" data-bs-target="#determinants-data" aria-expanded="false" aria-controls="determinants-data">
+                Données
+            </button>
+            <div class="collapse fr-highlight" id="determinants-data">
+                <div>
+                    <h4 class="pt-3">Source</h4>
+                    <p>Données d'évolution des fichiers fonciers du Cérema issus des données MAJIC (Mise A Jour de l'Information Cadastrale) de la DGFIP, sur la période d'analyse (millésime min : 2009, millésime max : 2021).</p>
+                </div>
+                <div>
+                    <h4>Calcul</h4>
+                    <p>Déterminants de la consommation d'espaces NAF, par année.</p>
+                </div>
+                <div>
+                    <h4>Données</h4>
+                    <table class="table table-striped table-sm table-borderless">
+                        <thead>
+                            <tr>
+                                <th scope="col">Déterminant</th>
+                                {% for year in project.years %}
+                                <th scope="col" class="text-end">{{ year }}</th>
+                                {% endfor %}
+                                <th scope="col" class="text-end">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for determinant_name, data in data_determinant.items %}
+                            <tr>
+                                <th scope="row">{{ determinant_name }}</th>
+                                {% for year, val in data.items %}
+                                <td align="right">+{{ val|floatformat:1 }}</td>
+                                {% endfor %}
+                            </tr>
                             {% endfor %}
-                            <th scope="col" class="text-end">Total</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for determinant_name, data in data_determinant.items %}
-                        <tr>
-                            <th scope="row">{{ determinant_name }}</th>
-                            {% for year, val in data.items %}
-                            <td align="right">+{{ val|floatformat:1 }}</td>
-                            {% endfor %}
-                        </tr>
-
-                        {% endfor %}
-                    </tbody>
-                </table>
+                        </tbody>
+                    </table>
+                </div>
             </div>
+        </div>
+
+    </div>
+</div>
 
 
-
-            <div class="box alert">
-                <h3>Provenance des données</h3>
-                La consommation d’espace est mesurée avec les fichiers fonciers qui font une description cadastrale du territoire.
+<!-- Modal -->
+<div class="modal fade" id="consoAnnuelle" tabindex="-1" aria-labelledby="consoAnnuelleLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="consoAnnuelleLabel">Astuces - Consommation annuelle</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Pour réduire le nombre de territoires visibles dans le graphique, vous pouvez en masquer certains en cliquant sur eux dans la légende. Cliquez de nouveau dessus pour les ré-afficher.</p>
+                <p>Avec le bouton <i class="bi bi-list"></i>, vous pouvez afficher le graphique en pleine page ou le télécharger sous forme d'image (utilisez PNG si vous ne savez pas lequel choisir).</p>
+                <p>Avec le bouton sélection, vous pouvez tous les masquer d'un coup. Utile quand le nombre de territoire est important et que vous souhaitez n'en afficher que 2 ou 3.</p>
+                <p>Avec le bouton sélection, vous pouvez aussi inverser la sélectionn. Tous les visibles seront masqués et tous les invisibles seront affichés.</p>
+                <p>Le bouton maille d'analyse permet de changer le type de territoire afficher. Si vous analyser un département, vous pouvez afficher les communes à la place des EPCI (attention, la lisibilité du graphique devient médiocre lorsqu'on affiche trop de territoires simultanéments).</p>
             </div>
         </div>
     </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="comparaisonVoisin" tabindex="-1" aria-labelledby="comparaisonVoisinLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="comparaisonVoisinLabel">Astuces - Comparaison avec les voisins</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>La comparaison avec les voisins permet d'appréhender les dynamiques globales brutes de consommation d'espaces NAF et de les comparer entre elles.</p>
+                <p>Pour réduire le nombre de territoires visibles dans le graphique, vous pouvez en masquer certains en cliquant sur eux dans la légende. Cliquez de nouveau dessus pour les ré-afficher.</p>
+                <p>Avec le bouton <i class="bi bi-list"></i>, vous pouvez afficher le graphique en pleine page ou le télécharger sous forme d'image (utilisez PNG si vous ne savez pas lequel choisir).</p>
+                <p>Avec le bouton <i class="bi bi-plus-circle"></i>, vous pouvez ajouter un territoire à ce graphique (voisin ou non).</p>
+                <p>Juste en dessous du graphique, un lien vous permet d'accéder à un rapport de comparaison avancé où nous croisons la consommation avec la population, le nombre de ménages, la surface...).</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="determinantModal" tabindex="-1" aria-labelledby="determinantLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="determinantLabel">Astuces - Comparaison avec les voisins</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Le camembert permet d'identifier via les pourcentages la répartition des déterminants (habitat, activité, mixte) sur la période de la consommation d'espaces NAF. Le graphique met en perspective la répartition en ha des déterminants au fil des années.</p>
+                <p>Pour zoomer sur un déterminant en particulier, vous pouvez masquer les autres en cliquant sur eux dans la légende. Cliquez de nouveau dessus pour les ré-afficher.</p>
+                <p>Avec le bouton <i class="bi bi-list"></i>, vous pouvez afficher le graphique en pleine page ou le télécharger sous forme d'image (utilisez PNG si vous ne savez pas lequel choisir).</p>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 {% endblock %}
 
@@ -252,7 +320,7 @@ Rapport consommation
 {% display_chart 'chart_2' comparison_chart CSP_NONCE %}
 {% display_chart 'chart_determinant' determinant_per_year_chart CSP_NONCE %}
 {% display_chart 'pie_determinant' determinant_pie_chart CSP_NONCE %}
-{% display_chart 'objective_chart' objective_chart CSP_NONCE %}
+
 <script language="javascript" nonce="{{ CSP_NONCE }}">
 ///////////////////////////////
 // Select / unselect all
@@ -313,10 +381,8 @@ $( window ).scroll(function() {
     }
 })
 
-$('#conso_territory_reltive').change(function() {
-    if (this.checked) {
-        _paq.push(['trackEvent', 'Consultation diagnostic', 'Option avancée', 'Pondération par la surface'])
-    }
+$( "#cerema-link" ).click(function() {
+    _paq.push(['trackEvent', 'Liens sortants', 'Site du Cérema', 'Depuis rapport conso'])
 })
 </script>
 {% endblock tagging %}
