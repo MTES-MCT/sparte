@@ -41,14 +41,14 @@ Projection 2031
             <div class="fr-col-12 fr-col-md-4">
                 <div class="fr-callout">
                     <p class="fr-callout__title">+{{ objective_chart.total_real|floatformat:1 }} ha</p>
-                    <p>Consommation 2011-2020 <i class="bi bi-question-circle" data-toggle="tooltip" title="Données prévisionelles pour 2020" aria-hidden="true"></i></p>
+                    <p>Consommation 2011-2020</p>
                 </div>
             </div>
 
             <div class="fr-col-12 fr-col-md-4">
                 <div class="fr-callout">
                     <p class="fr-callout__title">+{{ objective_chart.conso_2031|floatformat:1 }} ha</p>
-                    <p>Trajectoire 2021-2030 <i class="bi bi-question-circle" data-toggle="tooltip" title="Réduction de 50% par rapport à la décennie précédente" aria-hidden="true"></i></p>
+                    <p>Trajectoire 2021-2030 <i class="bi bi-question-circle" data-toggle="tooltip" title="Réduction de {{ project.target_2031 }}% par rapport à la décennie précédente" aria-hidden="true"></i></p>
                 </div>
             </div>
 
@@ -83,16 +83,16 @@ Projection 2031
             </p>
 
             <p class="my-0">
-                <strong>En <span class="plotband_green">vert</span> : réduction de 50% </strong>
+                <strong>En <span class="plotband_green">vert</span> : projection 2031</strong>
             <p class="my-0">
                 <span class="text-muted"><em>1er jan. 2021 - 31 déc. 2030, 10 ans</em></span>
             </p>
             <p class="mt-2">
-                Pendant la période de réduction, la loi prévoit que  le territoire ne consomme que 50% de ce qui a été consommé pendant la  période de référence. Par conséquent, la consommation d'espaces NAF cumulée du 1er  janvier 2021 au 1er décembre 2031 doit être égale à moitié de la consommation d'espaces NAF du  1er janvier 2011 au 1er décembre 2021.
+                Pendant la période de réduction, la loi prévoit que chaque région ne consomme que 50% de ce qui a été consommé pendant la  période de référence.
             </p>
             {% if project.target_2031 != 50 %}
             <p class="mt-2">
-                Cependant, vous avez personnalisé l'objectif à {{ project.target_2031 }}%.
+                Vous avez personnalisé l'objectif de votre territoire à {{ project.target_2031 }}%.
             </p>
             {% endif %}
             <p class="mt-2 mb-4">
@@ -106,7 +106,7 @@ Projection 2031
             <div class="collapse fr-highlight" id="target-data">
                 <div>
                     <h4 class="pt-3">Source</h4>
-                    <p>fichiers fonciers du Cérema issus des données MAJIC (Mise A Jour de l'Information Cadastrale) de la DGFIP (millésime min : 2009, millésime max : 2020)</p>
+                    <p>Fichiers fonciers du Cérema issus des données MAJIC (Mise A Jour de l'Information Cadastrale) de la DGFIP (millésime min : 2009, millésime max : 2021)</p>
                 </div>
             </div>
         </div>
