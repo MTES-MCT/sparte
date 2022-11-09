@@ -2,6 +2,54 @@
 
 Ce changelog suit la méthode "keep a changelog" disponible ici: [https://keepachangelog.com/en/1.0.0/](https://keepachangelog.com/en/1.0.0/)
 
+## [2.2.0] - non livrée
+
+Contenu de cette version : https://app.clickup.com/14136489/v/l/6-204672970-1
+
+### Ajout :
+- Choisir le taux d'artificialisation cible 2031 pour son territoire
+- Test de l'utilisation des tuiles vecteurs
+- Pour l'équipe (staff) : télécharger des statistiques sur l'usage de la plateforme
+- Inscription à la newsletter
+- Formulaire de contact
+
+### Modifié :
+- Modification du texte d'information en haut du rapport de consommation
+- Simplifier la recherche d'une commune en séparant les termes de recherche selon l'espace (ainsi "Saint Laurent" fait ressortir tous les "Saint-Laurent")
+- Mise à jour des données OCS GE du Gers avec la version de juin 2022
+- Dans les rapports : désactivation des onglets utilisant les données OCS GE quand c'est un territoire non couvert
+- Modification du texte d'introduction du rapport d'Artificialisation
+
+
+## [2.1.3] - 2022.10.20
+
+### Corrigé :
+- Ajout d'un territoire de comparaison par un utilisateur
+- Perte des territoires de comparaison initiaux à cause de la concurrence des traitements
+
+## [2.1.2] - 2022.10.04
+
+### Corrigé :
+- Sélection et affichage d'un groupe de commune dans le rapport dédié
+
+## [2.1.1] - 2022.09.29
+
+### Corrigé :
+- Téléchargement d'un diagnostic concernant un territoire de Gironde mais n'ayant pas d'OCS GE
+
+## [2.1.0] - 2022.09.22
+
+Non détaillé.
+
+## [2.0.0] - livré
+
+### Ajout :
+- Génération de cartes au format PNG
+- Utilisation d'un serveur d'export des graphiques Highcharts maison
+
+### Modifié :
+- Mise en oeuvre du [Design Système de l'état](https://www.systeme-de-design.gouv.fr/)
+
 ## [1.4.0] - 10.05.2022
 
 ### Ajout :

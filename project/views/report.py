@@ -13,15 +13,24 @@ from project.utils import add_total_line_column
 from .mixins import GroupMixin, BreadCrumbMixin
 
 
-class ProjectReportConsoView(GroupMixin, DetailView):
-    queryset = Project.objects.all()
-    template_name = "project/rapport_consommation.html"
+class ProjectReportBaseView(GroupMixin, DetailView):
+    breadcrumbs_title = "To be set"
     context_object_name = "project"
+    queryset = Project.objects.all()
 
     def get_context_breadcrumbs(self):
         breadcrumbs = super().get_context_breadcrumbs()
-        breadcrumbs.append({"href": None, "title": "Rapport consommation"})
+        breadcrumbs.append({"href": None, "title": self.breadcrumbs_title})
         return breadcrumbs
+
+    def get_context_data(self, **kwargs):
+        kwargs["ocsge_available"] = self.object.is_artif()
+        return super().get_context_data(**kwargs)
+
+
+class ProjectReportConsoView(ProjectReportBaseView):
+    template_name = "project/rapport_consommation.html"
+    breadcrumbs_title = "Rapport consommation"
 
     def get_context_data(self, **kwargs):
         project = self.get_object()
@@ -89,24 +98,18 @@ class ProjectReportConsoView(GroupMixin, DetailView):
         return super().get_context_data(**kwargs)
 
 
-class ProjectReportCityGroupView(GroupMixin, DetailView):
-    queryset = Project.objects.all()
+class ProjectReportCityGroupView(ProjectReportBaseView):
     template_name = "project/report_city_group.html"
-    context_object_name = "project"
+    breadcrumbs_title = "Zoom groupes de villes"
 
     def get_context_breadcrumbs(self):
         project = self.get_object()
         breadcrumbs = super().get_context_breadcrumbs()
-        breadcrumbs += [
-            {
-                "href": reverse("project:report_conso", args=[project.id]),
-                "title": "Rapport consommation",
-            },
-            {
-                "href": None,
-                "title": "Zoom groupes de villes",
-            },
-        ]
+        crumb = {
+            "href": reverse("project:report_conso", args=[project.id]),
+            "title": "Rapport consommation",
+        }
+        breadcrumbs.insert(-1, crumb)
         return breadcrumbs
 
     def get_context_data(self, **kwargs):
@@ -184,15 +187,9 @@ class ProjectReportCityGroupView(GroupMixin, DetailView):
         return self.render_to_response(context)
 
 
-class ProjectReportCouvertureView(GroupMixin, DetailView):
-    queryset = Project.objects.all()
+class ProjectReportCouvertureView(ProjectReportBaseView):
     template_name = "project/rapport_usage.html"
-    context_object_name = "project"
-
-    def get_context_breadcrumbs(self):
-        breadcrumbs = super().get_context_breadcrumbs()
-        breadcrumbs.append({"href": None, "title": "Rapport couverture du sol"})
-        return breadcrumbs
+    breadcrumbs_title = "Rapport couverture du sol"
 
     def get_context_data(self, **kwargs):
         project = self.get_object()
@@ -202,11 +199,9 @@ class ProjectReportCouvertureView(GroupMixin, DetailView):
             "nom": "Couverture",
             "surface_territory": surface_territory,
             "active_page": "couverture",
-            "ocsge_available": True,
         }
 
         if not project.is_artif():
-            kwargs.update({"ocsge_available": False})
             return super().get_context_data(**kwargs)
 
         first_millesime = project.first_year_ocsge
@@ -236,15 +231,9 @@ class ProjectReportCouvertureView(GroupMixin, DetailView):
         return super().get_context_data(**kwargs)
 
 
-class ProjectReportUsageView(GroupMixin, DetailView):
-    queryset = Project.objects.all()
+class ProjectReportUsageView(ProjectReportBaseView):
     template_name = "project/rapport_usage.html"
-    context_object_name = "project"
-
-    def get_context_breadcrumbs(self):
-        breadcrumbs = super().get_context_breadcrumbs()
-        breadcrumbs.append({"href": None, "title": "Rapport usage"})
-        return breadcrumbs
+    breadcrumbs_title = "Rapport sur l'usage des sols"
 
     def get_context_data(self, **kwargs):
         project = self.get_object()
@@ -254,11 +243,9 @@ class ProjectReportUsageView(GroupMixin, DetailView):
             "nom": "Usage",
             "surface_territory": surface_territory,
             "active_page": "usage",
-            "ocsge_available": True,
         }
 
         if not project.is_artif():
-            kwargs.update({"ocsge_available": False})
             return super().get_context_data(**kwargs)
 
         first_millesime = project.first_year_ocsge
@@ -287,20 +274,9 @@ class ProjectReportUsageView(GroupMixin, DetailView):
         return super().get_context_data(**kwargs)
 
 
-class ProjectReportSynthesisView(GroupMixin, DetailView):
-    queryset = Project.objects.all()
+class ProjectReportSynthesisView(ProjectReportBaseView):
     template_name = "project/rapport_synthesis.html"
-    context_object_name = "project"
-
-    def get_context_breadcrumbs(self):
-        breadcrumbs = super().get_context_breadcrumbs()
-        breadcrumbs.append(
-            {
-                "href": None,
-                "title": "Synthèse consommation d'espace et artificialisation",
-            }
-        )
-        return breadcrumbs
+    breadcrumbs_title = "Synthèse consommation d'espace et artificialisation"
 
     def get_context_data(self, **kwargs):
         project = self.get_object()
@@ -320,20 +296,9 @@ class ProjectReportSynthesisView(GroupMixin, DetailView):
         return super().get_context_data(**kwargs)
 
 
-class ProjectReportArtifView(GroupMixin, DetailView):
-    queryset = Project.objects.all()
+class ProjectReportArtifView(ProjectReportBaseView):
     template_name = "project/rapport_artif.html"
-    context_object_name = "project"
-
-    def get_context_breadcrumbs(self):
-        breadcrumbs = super().get_context_breadcrumbs()
-        breadcrumbs.append(
-            {
-                "href": None,
-                "title": "Rapport artificialisation",
-            }
-        )
-        return breadcrumbs
+    breadcrumbs_title = "Rapport artificialisation"
 
     def get_context_data(self, **kwargs):
         project = self.get_object()
@@ -347,11 +312,9 @@ class ProjectReportArtifView(GroupMixin, DetailView):
             "diagnostic": project,
             "active_page": "artificialisation",
             "total_surface": total_surface,
-            "ocsge_available": True,
         }
 
         if not project.is_artif():
-            kwargs.update({"ocsge_available": False})
             return super().get_context_data(**kwargs)
 
         first_millesime = project.first_year_ocsge
@@ -447,6 +410,7 @@ class ProjectReportDownloadView(BreadCrumbMixin, CreateView):
                 "project": self.project,
                 "url_bilan": app_parameter.BILAN_EXAMPLE,
                 "active_page": "download",
+                "ocsge_available": self.project.is_artif(),
             }
         )
         return super().get_context_data(**kwargs)
@@ -487,15 +451,9 @@ class ProjectReportDownloadView(BreadCrumbMixin, CreateView):
         return HttpResponseRedirect(succes_url)
 
 
-class ProjectReportConsoRelativeView(GroupMixin, DetailView):
-    queryset = Project.objects.all()
+class ProjectReportConsoRelativeView(ProjectReportBaseView):
     template_name = "project/rapport_conso_relative.html"
-    context_object_name = "project"
-
-    def get_context_breadcrumbs(self):
-        breadcrumbs = super().get_context_breadcrumbs()
-        breadcrumbs.append({"href": None, "title": "Rapport consommation relative"})
-        return breadcrumbs
+    breadcrumbs_title = "Rapport consommation relative"
 
     def get_context_data(self, **kwargs):
         project = kwargs.get("object", self.get_object())
