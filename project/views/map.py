@@ -1,6 +1,5 @@
 from jenkspy import jenks_breaks
 
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.gis.geos import Polygon
 from django.db.models import Max, Sum, F, FloatField, Subquery, OuterRef
 from django.db.models.functions import Cast
