@@ -125,3 +125,7 @@
     fill: rgba(92, 92, 97, 0.1);
     color: rgb(92, 92, 97);
 }
+
+.dotted {
+    text-decoration: underline dotted;
+}
