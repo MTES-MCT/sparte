@@ -327,6 +327,7 @@ class ProjectReportArtifView(ProjectReportBaseView):
         last_millesime = project.last_year_ocsge
 
         artif_area = project.get_artif_area()
+        rate_artif_area = round(100 * float(artif_area) / float(total_surface))
 
         chart_evolution_artif = charts.EvolutionArtifChart(project)
         chart_waterfall = charts.WaterfallnArtifChart(project)
@@ -357,6 +358,7 @@ class ProjectReportArtifView(ProjectReportBaseView):
                 "first_millesime": str(first_millesime),
                 "last_millesime": str(last_millesime),
                 "artif_area": artif_area,
+                "rate_artif_area": rate_artif_area,
                 "new_artif": progression_time_scoped["new_artif"],
                 "new_natural": progression_time_scoped["new_natural"],
                 "net_artif": net_artif,
