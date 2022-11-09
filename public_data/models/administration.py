@@ -395,7 +395,12 @@ class Commune(DataColorationMixin, LandMixin, GetDataFromCeremaMixin, models.Mod
 
     @classmethod
     def search(cls, needle, region=None, departement=None, epci=None):
-        qs = cls.objects.filter(Q(name__icontains=needle) | Q(insee__icontains=needle))
+        if needle.isdigit():
+            qs = cls.objects.filter(insee__icontains=needle)
+        else:
+            qs = cls.objects.all()
+            for word in needle.split(" "):
+                qs = qs.filter(name__icontains=word)
         if region:
             qs = qs.filter(departement__region=region)
         if departement:

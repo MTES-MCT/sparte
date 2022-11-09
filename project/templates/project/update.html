@@ -4,22 +4,48 @@
 {% load crispy_forms_tags %}
 
 {% block pagetitle %}
- - nouveau projet
+Modifier
 {% endblock %}
 
 {% block headers %}
+<style nonce="{{ CSP_NONCE }}">
+form > div {
+    margin-top: 30px;
+    padding: 3px;
+}
+.div_highlight {
+    background-color: rgba(255,0,0,0.2);
+}
+#hint_id_is_public{
+    display: block;
+    width: 100%;
+}
+</style>
 {% endblock %}
 
 {% block content %}
 <div class="d-flex flex-column h-100 w-100 align-items-center justify-content-center">
-    <h2>Mettre à jour</h2>
+    <div class="col-lg-6 col-md-8 col-12">
+        <h2>Mettre à jour {{ project.name }}</h2>
 
-    <form action="" method="post">
-        {% csrf_token %}
-        {{ form|crispy }}
-        <button class="fr-btn mt-4" type="submit">Mettre à jour</button>
-        <a href="{% url 'project:detail' project.pk %}" class="fr-btn fr-btn--secondary mt-1">Annuler</a>
-    </form>
-
+        <form action="" method="post">
+            {% csrf_token %}
+            {{ form|crispy }}
+            <button class="fr-btn mt-4" type="submit">Mettre à jour</button>
+            <a href="{% url 'project:detail' project.pk %}" class="fr-btn fr-btn--secondary mt-1">Annuler</a>
+        </form>
+    </div>
 </div>
 {% endblock %}
+
+{% block bodyend %}
+<script language="javascript">
+const queryString = window.location.search
+const urlParams = new URLSearchParams(queryString)
+const next = urlParams.get('next')
+if (next == "report-conso"){
+    console.log("hello world")
+    $('#div_id_target_2031').addClass("div_highlight")
+}
+</script>
+{% endblock bodyend %}
