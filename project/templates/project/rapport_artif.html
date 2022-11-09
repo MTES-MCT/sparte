@@ -140,7 +140,7 @@ Rapport artificialisation
             <div class="collapse fr-highlight" id="artif-net-data">
                 <div>
                     <h4 class="pt-3">Source</h4>
-                    <p>données d'OCcupation des Sols à Grande Echelle (OCS GE) de l'IGN, sur la période d'analyse (millésime min : 2013, millésime max : 2019).</p>
+                    <p>Données d'OCcupation des Sols à Grande Echelle (OCS GE) de l'IGN, sur la période d'analyse.</p>
                 </div>
                 <div>
                     <h4>Calcul</h4>
@@ -185,7 +185,7 @@ Rapport artificialisation
             <div class="collapse fr-highlight" id="evolution-data">
                 <div>
                     <h4 class="pt-3">Source</h4>
-                    <p>données d'OCcupation des Sols à Grande Echelle (OCS GE) de l'IGN, sur la période d'analyse (millésime min : 2013, millésime max : 2019) traduite grâce à la matrice de passage.</p>
+                    <p>Données d'OCcupation des Sols à Grande Echelle (OCS GE) de l'IGN, sur la période d'analyse traduite grâce à la matrice de passage.</p>
                 </div>
                 <div>
                     <h4>Calcul</h4>
@@ -219,9 +219,7 @@ Rapport artificialisation
                     </table>
                 </div>
             </div>
-
         </div>
-
 
         <div class="box scrollme-x p-4" >
             <h3 class="mb-3">Détail de l'artificialisation :</h3>
@@ -294,11 +292,6 @@ Rapport artificialisation
             <p class="my-1">Nous sommes désolé, mais votre territoire n'est pas encore couvert par l'OCSGE. Restez informer de son arrivée en vous abonnant à notre newsletter !</p>
         </div>
         {% endif %}
-
-        <div class="box px-4 py-2">
-            <p>Sources:</p>
-            <p>L'artificialisation du sol a été définie dans le décret de nomenclature. Plus d'information sur <a href="{% url 'public_data:matrix' %}" target="_blank" rel="noopener">la page de la matrice</a> <i class="bi bi-box-arrow-up-right" aria-hidden="true"></i>.</p>
-        </div>
     </div>
 </div>
 {% endblock %}
