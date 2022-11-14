@@ -2,7 +2,18 @@
 
 Ce changelog suit la méthode "keep a changelog" disponible ici: [https://keepachangelog.com/en/1.0.0/](https://keepachangelog.com/en/1.0.0/)
 
-## [2.2.0] - non livrée
+## [2.3.0] - non livrée
+
+Contenu de cette version : https://app.clickup.com/14136489/v/l/li/204778717
+
+### Ajouté :
+- Nouveau rapport : objectif 2031
+
+### Modifié :
+- Modification de l'intro des rapports synthèse et consommation.
+- Masquer les tableaux de données dans les rapports
+
+## [2.2.0] - 2022.11.09
 
 Contenu de cette version : https://app.clickup.com/14136489/v/l/6-204672970-1
 
