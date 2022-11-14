@@ -22,17 +22,21 @@ Synthèse
     <div class="bg-light rounded-5 border fr-container fr-py-3w">
 
         <div class="box box-alert px-4 py-2 mb-4 mt-0">
-            <p>L'objectif ZAN (Zéro Artificialisation Nette) de la Loi Climat & Résilience recommande :</p>
+            <p>L'article 191 de la Loi Climat & Résilience exprime que :
+            <br/><i>« Afin d’atteindre l’objectif national d’absence de toute artificialisation nette des sols en 2050, le rythme de <strong>l’artificialisation des sols</strong> dans les dix années suivant la promulgation de la présente loi doit être tel que, sur cette période, <strong>la consommation totale d’espaces</strong> observée à l’échelle nationale soit inférieure à la moitié de celle observée sur les dix années précédant cette date. »</i></p>
+
+            <p>Informations clés à retenir sur la mise en œuvre:</p>
             <ul>
-                <li>entre 2021 et 2031, de diviser par 2 la consommation d'espace mesurée entre 2011 et 2021</li>
-                <li>d'ici 2050 : d'atteindre un taux d'artificialisation nette égal à 0, soit un équilibre entre artificialisation des sols et renaturation</li>
+                <li>Entre 2021 et 2031 à l'échelle de la région, il est demandé de diviser par 2  la consommation d'espaces Naturels, Agricoles et Forestiers mesurée entre 2011 et 2021.</li>
+                <li>D'ici février 2024, les SRADDET territorialiseront les objectifs de diminution pour chaque SCoT.</li>
             </ul>
-            <p>Les calculs de SPARTE utilisent en particulier 2 sources de données nationales :</p>
+
+            <p>SPARTE vous accompagne dans le suivi de ces nouvelles règles en produisant des indicateurs s'appuyant sur:</p>
             <ul>
-                <li>L'OCuppation des Sols à Grande Echelle (OCSGE)</li>
-                <li>Les fichiers fonciers fournis par le CEREMA</li>
+              <li>la base de données d'OCcupation des Sols à Grande Echelle (OCS GE) de l'IGN ;</li>
+              <li>les fichiers fonciers du Cérema issus des données MAJIC (Mise A Jour de l'Information Cadastrale) de la DGFIP ;</li>
+              <li>les données, en particulier du recensement, de l'INSEE</li>
             </ul>
-            <p>La page de synthèse reprend les indicateurs clés au regard de la trajectoire ZAN.</p>
         </div>
 
         <div class="fr-grid-row fr-grid-row--gutters">
@@ -44,9 +48,9 @@ Synthèse
           </div>
         </div>
 
-        <div class="fr-grid-row fr-grid-row--gutters">
+        <div class="fr-grid-row fr-grid-row--gutters mt-5">
           <div class="fr-col-12">
-            <h3 class="fr-mt-3w">Bilan de la consommation d'espace</h3>
+            <h3 class="fr-mt-3w">Estimation de la trajectoire 2031</h3>
           </div>
           <div class="fr-col-12 fr-col-md-6">
             <div class="fr-callout">
@@ -58,45 +62,73 @@ Synthèse
           <div class="fr-col-12 fr-col-md-6">
             <div class="fr-callout">
               <p class="fr-callout__title">+{{ objective_chart.conso_2031|floatformat:1 }} ha</p>
-              <p>Horizon 2030 pour la consommation d'espace</p>
+              <p>Consommation d'espace totale recommandée pour 2021-2031 sur la base d'une réduction de {{ diagnostic.target_2031 }}%</p>
             </div>
           </div>
 
           <div class="fr-col-12">
-            <a href="{% url 'project:report_conso' diagnostic.pk %}">Consulter le bilan de la consommation d'espace</a>
+            <a href="{% url 'project:report_target_2031' diagnostic.pk %}">Consulter l'objectif 2031</a>
           </div>
         </div>
 
 
-        <div class="fr-grid-row fr-grid-row--gutters">
+        <div class="fr-grid-row fr-grid-row--gutters mt-5">
+          <div class="fr-col-12">
+            <h3 class="fr-mt-3w">Bilan de la consommation d'espace</h3>
+          </div>
+          <div class="fr-col-12 fr-col-md-6">
+            <div class="fr-callout">
+              <p class="fr-callout__title">+{{ current_conso|floatformat:1 }} ha</p>
+              <p>Consommation d'espace {{ diagnostic.analyse_start_date }}-{{ diagnostic.analyse_end_date }}</p>
+            </div>
+          </div>
+
+          <div class="fr-col-12 fr-col-md-6">
+            <div class="fr-callout">
+              <p class="fr-callout__title">+{{ year_avg_conso|floatformat:1 }} ha</p>
+              <p>Consommation d'espace moyenne par an entre {{ diagnostic.analyse_start_date }}-{{ diagnostic.analyse_end_date }}</p>
+            </div>
+          </div>
+
+          <div class="fr-col-12">
+            <a href="{% url 'project:report_conso' diagnostic.pk %}">Consulter le bilan de consommation d'espaces</a>
+          </div>
+        </div>
+
+
+        <div class="fr-grid-row fr-grid-row--gutters mt-5">
           <div class="fr-col-12">
             <h3 class="fr-mt-3w">Bilan de l'artificialisation nette entre {{ diagnostic.analyse_start_date }} et {{ diagnostic.analyse_end_date }}</h3>
+            <p><strong>Objectif zéro artificialisation nette en 2050</strong></p>
+            {% if ocsge_available %}
+            <p>Sur la période demandée, l'OCS GE couvre de {{ first_millesime }} à {{ last_millesime }}.</p>
+            {% endif %}
           </div>
+
           {% if ocsge_available %}
           <div class="fr-col-12 fr-col-md-4">
             <div class="fr-callout">
               <p class="fr-callout__title">{{ net_artif|floatformat:0 }} ha</p>
-              <p>Artificialisation nette <i class="bi bi-question-circle" data-toggle="tooltip" title="= artificialisation - renaturation" aria-hidden="true"></i></p>
+              <p>Artificialisation nette sur la période <i class="bi bi-question-circle" data-toggle="tooltip" title="= artificialisation - renaturation" aria-hidden="true"></i></p>
             </div>
           </div>
 
           <div class="fr-col-12 fr-col-md-4">
             <div class="fr-callout">
-              <p class="fr-callout__title">+{{ trajectoire_2030|floatformat:1 }} ha</p>
-              <p>Total artificialisation</p>
+              <p class="fr-callout__title">+{{ new_artif|floatformat:1 }} ha</p>
+              <p>Total artificialisation sur la période</p>
             </div>
           </div>
 
           <div class="fr-col-12 fr-col-md-4">
             <div class="fr-callout">
-              <p class="fr-callout__title">+ {{ new_natural|floatformat:0 }} ha</p>
-              <p>Total renaturation</p>
+              <p class="fr-callout__title">+{{ new_natural|floatformat:0 }} ha</p>
+              <p>Total renaturation sur la période</p>
             </div>
           </div>
 
           <div class="fr-col-12">
-            <a href="{% url 'project:report_artif' project.pk %}">Consulter le bilan de l'artificialisation nette entre {{ diagnostic.analyse_start_date }} et {{ diagnostic.analyse_end_date }}</a>
-            <p class="mt-2"><strong>Objectif 2050 :</strong> Zéro Artificialisation Nette</p>
+            <a href="{% url 'project:report_artif' project.pk %}">Consulter le bilan de l'artificialisation</a>
           </div>
           {% else %}
           <p class="text-muted fst-italic">Les rapports sur l'artificialisation, l'usage et la couverture des sols ne sont pas disponibles car ils dépendent des données OCS GE ; données en cours de production pour ce territoire.</p>
