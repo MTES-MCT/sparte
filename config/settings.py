@@ -454,6 +454,16 @@ CSP_INCLUDE_NONCE_IN = ["script-src", "style-src"]
 CSP_FONT_SRC = ("'self'", "data:", "https://cdn.jsdelivr.net", STATIC_URL)
 CSP_CONNECT_SRC = ["https://stats.data.gouv.fr", "'self'"]
 
+
+# MAP SETTINGS
+
+ORTHOPHOTO_URL = (
+    "https://wxs.ign.fr/ortho/geoportail/wmts?"
+    "&REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0&TILEMATRIXSET=PM"
+    "&LAYER=ORTHOIMAGERY.ORTHOPHOTOS&STYLE=normal&FORMAT=image/jpeg"
+    "&TILECOL={x}&TILEROW={y}&TILEMATRIX={z}"
+)
+
 # LOGGING SETTINGS
 
 LOGGING_LEVEL = env.str("LOGGING_LEVEL", default="INFO")
