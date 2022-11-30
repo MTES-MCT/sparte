@@ -262,6 +262,7 @@ class Project(BaseProject):
         null=True,
         blank=True,
     )
+
     last_year_ocsge = models.IntegerField(
         "Dernier millésime OCSGE",
         validators=[MinValueValidator(2000)],
@@ -270,6 +271,7 @@ class Project(BaseProject):
     )
 
     folder_name = models.CharField("Dossier", max_length=15, blank=True, null=True)
+
     territory_name = models.CharField(
         "Territoire",
         max_length=250,
@@ -280,7 +282,29 @@ class Project(BaseProject):
             "dans le rapport word."
         ),
     )
+
     cover_image = models.ImageField(
+        upload_to=upload_in_project_folder,
+        blank=True,
+        null=True,
+        storage=PublicMediaStorage(),
+    )
+
+    theme_map_conso = models.ImageField(
+        upload_to=upload_in_project_folder,
+        blank=True,
+        null=True,
+        storage=PublicMediaStorage(),
+    )
+
+    theme_map_artif = models.ImageField(
+        upload_to=upload_in_project_folder,
+        blank=True,
+        null=True,
+        storage=PublicMediaStorage(),
+    )
+
+    theme_map_understand_artif = models.ImageField(
         upload_to=upload_in_project_folder,
         blank=True,
         null=True,
