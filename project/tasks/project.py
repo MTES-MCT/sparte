@@ -12,7 +12,6 @@ import logging
 import matplotlib.pyplot as plt
 from matplotlib_scalebar.scalebar import ScaleBar
 import shapely
-import traceback
 
 from django.conf import settings
 from django.db.models import F, Subquery, OuterRef, Q
@@ -354,7 +353,10 @@ def generate_theme_map_artif(self, project_id):
         img_data = get_img(
             queryset=qs,
             color="Blues",
-            title="Artificialisation d'espace des communes du territoire sur la période (en Ha)",
+            title=(
+                "Artificialisation d'espace des communes du territoire "
+                "sur la période (en Ha)"
+            ),
         )
 
         diagnostic.theme_map_artif.delete(save=False)
