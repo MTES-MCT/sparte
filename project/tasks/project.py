@@ -199,7 +199,7 @@ def generate_cover_image(self, project_id):
     logger.info("End generate_cover_image, project_id=%d", project_id)
 
 
-@shared_task(bind=True, max_retries=5)
+@shared_task(bind=True, max_retries=6)
 def generate_word_diagnostic(self, request_id):
     from django_docx_template.models import DocxTemplate
     from highcharts.charts import RateLimitExceededException
@@ -208,6 +208,9 @@ def generate_word_diagnostic(self, request_id):
     try:
         req = Request.objects.get(id=int(request_id))
         if not req.sent_file:
+            if not req.project.async_complete:
+                logger.warning("Not all async tasks are completed, retry later")
+                self.retry(countdown=(60 * 15))
             logger.info("Start generating word")
             template = DocxTemplate.objects.get(slug="template-bilan-1")
             buffer = template.merge(pk=req.project_id)
