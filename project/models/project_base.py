@@ -311,6 +311,26 @@ class Project(BaseProject):
         storage=PublicMediaStorage(),
     )
 
+    async_city_and_combined_emprise_done = models.BooleanField(default=False)
+    async_cover_image_done = models.BooleanField(default=False)
+    async_find_first_and_last_ocsge_done = models.BooleanField(default=False)
+    async_add_neighboors_done = models.BooleanField(default=False)
+    async_generate_theme_map_conso_done = models.BooleanField(default=False)
+    async_generate_theme_map_artif_done = models.BooleanField(default=False)
+    async_theme_map_understand_artif_done = models.BooleanField(default=False)
+
+    @property
+    def async_complete(self):
+        return (
+            self.async_city_and_combined_emprise_done
+            & self.async_cover_image_done
+            & self.async_find_first_and_last_ocsge_done
+            & self.async_add_neighboors_done
+            & self.async_generate_theme_map_conso_done
+            & self.async_generate_theme_map_artif_done
+            & self.async_theme_map_understand_artif_done
+        )
+
     class Meta:
         ordering = ["-created_date"]
         verbose_name = "Diagnostic en ligne"

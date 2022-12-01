@@ -37,6 +37,9 @@ def create_from_public_key(
             t.generate_cover_image.si(project.id),
             t.find_first_and_last_ocsge.si(project.id),
             t.add_neighboors.si(project.id),
+            t.generate_theme_map_conso.si(project.id),
+            t.generate_theme_map_artif.si(project.id),
+            t.generate_theme_map_understand_artif.si(project.id),
         ),
     ).apply_async()
 
