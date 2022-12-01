@@ -69,6 +69,8 @@ def add_city_and_set_combined_emprise(self, project_id: int, public_keys: str) -
             else:
                 combined_emprise = land.mpoly.union(combined_emprise)
         project.emprise_set.create(mpoly=fix_poly(combined_emprise))
+        project.async_city_and_combined_emprise_done = True
+        project.save(update_fields=["async_city_and_combined_emprise_done"])
     except Project.DoesNotExist:
         logger.error(f"project_id={project_id} does not exist")
     except Exception as exc:
@@ -86,9 +88,16 @@ def find_first_and_last_ocsge(self, project_id: int) -> None:
         result = project.get_first_last_millesime()
         project.first_year_ocsge = result["first"]
         project.last_year_ocsge = result["last"]
+        project.async_find_first_and_last_ocsge_done = True
         # be aware of several updating in parallele. update only selected fields
         # to avoid loose previously saved data
-        project.save(update_fields=["first_year_ocsge", "last_year_ocsge"])
+        project.save(
+            update_fields=[
+                "first_year_ocsge",
+                "last_year_ocsge",
+                "async_find_first_and_last_ocsge_done",
+            ]
+        )
     except Project.DoesNotExist:
         logger.error(f"project_id={project_id} does not exist")
     except Exception as exc:
@@ -132,7 +141,8 @@ def add_neighboors(self, project_id):
         # logger.info("public_keys: %s", ", ".join(public_keys))
         project.add_look_a_like(public_keys, many=True)
         logger.info("Listed neighboors : %s", project.look_a_like)
-        project.save(update_fields=["look_a_like"])
+        project.async_add_neighboors_done = True
+        project.save(update_fields=["look_a_like", "async_add_neighboors_done"])
     except Project.DoesNotExist:
         logger.error(f"project_id={project_id} does not exist")
     except Exception as exc:
@@ -173,10 +183,13 @@ def generate_cover_image(self, project_id):
         img_data = io.BytesIO()
         plt.savefig(img_data, bbox_inches="tight")
         img_data.seek(0)
+        plt.close()
+
         diagnostic.cover_image.delete(save=False)
         diagnostic.cover_image.save(f"cover_{project_id}.png", img_data, save=False)
-        diagnostic.save(update_fields=["cover_image"])
-        plt.close()
+        diagnostic.async_cover_image_done = True
+        diagnostic.save(update_fields=["cover_image", "async_cover_image_done"])
+
     except Project.DoesNotExist as exc:
         self.retry(exc=exc, countdown=300)
         logger.error(f"project_id={project_id} does not exist")
@@ -208,7 +221,7 @@ def generate_word_diagnostic(self, request_id):
         logger.error("Error while generating word: %s", exc)
     except Exception as exc:
         req.record_exception(exc)
-        logger.error("Error while generating word: %s", exc)
+        logger.exception(exc)
         self.retry(exc=exc, countdown=900)
     finally:
         logger.info("End generate word for request=%d", request_id)
@@ -309,7 +322,10 @@ def generate_theme_map_conso(self, project_id):
         diagnostic.theme_map_conso.save(
             f"theme_map_conso_{project_id}.png", img_data, save=False
         )
-        diagnostic.save(update_fields=["theme_map_conso"])
+        diagnostic.async_generate_theme_map_conso_done = True
+        diagnostic.save(
+            update_fields=["theme_map_conso", "async_generate_theme_map_conso_done"]
+        )
 
     except Project.DoesNotExist as exc:
         logger.error(f"project_id={project_id} does not exist")
@@ -342,8 +358,10 @@ def generate_theme_map_artif(self, project_id):
         diagnostic.theme_map_artif.save(
             f"theme_map_artif_{project_id}.png", img_data, save=False
         )
-        diagnostic.save(update_fields=["theme_map_artif"])
-        plt.close()
+        diagnostic.async_generate_theme_map_artif_done = True
+        diagnostic.save(
+            update_fields=["theme_map_artif", "async_generate_theme_map_artif_done"]
+        )
 
     except Project.DoesNotExist as exc:
         logger.error(f"project_id={project_id} does not exist")
@@ -407,7 +425,13 @@ def generate_theme_map_understand_artif(self, project_id):
         diagnostic.theme_map_understand_artif.save(
             f"theme_map_understand_artif_{project_id}.png", img_data, save=False
         )
-        diagnostic.save(update_fields=["theme_map_understand_artif"])
+        diagnostic.async_theme_map_understand_artif_done = True
+        diagnostic.save(
+            update_fields=[
+                "theme_map_understand_artif",
+                "async_theme_map_understand_artif_done",
+            ]
+        )
 
     except Project.DoesNotExist as exc:
         logger.error(f"project_id={project_id} does not exist")
