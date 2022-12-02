@@ -262,6 +262,7 @@ class Project(BaseProject):
         null=True,
         blank=True,
     )
+
     last_year_ocsge = models.IntegerField(
         "Dernier millésime OCSGE",
         validators=[MinValueValidator(2000)],
@@ -270,6 +271,7 @@ class Project(BaseProject):
     )
 
     folder_name = models.CharField("Dossier", max_length=15, blank=True, null=True)
+
     territory_name = models.CharField(
         "Territoire",
         max_length=250,
@@ -280,12 +282,54 @@ class Project(BaseProject):
             "dans le rapport word."
         ),
     )
+
     cover_image = models.ImageField(
         upload_to=upload_in_project_folder,
         blank=True,
         null=True,
         storage=PublicMediaStorage(),
     )
+
+    theme_map_conso = models.ImageField(
+        upload_to=upload_in_project_folder,
+        blank=True,
+        null=True,
+        storage=PublicMediaStorage(),
+    )
+
+    theme_map_artif = models.ImageField(
+        upload_to=upload_in_project_folder,
+        blank=True,
+        null=True,
+        storage=PublicMediaStorage(),
+    )
+
+    theme_map_understand_artif = models.ImageField(
+        upload_to=upload_in_project_folder,
+        blank=True,
+        null=True,
+        storage=PublicMediaStorage(),
+    )
+
+    async_city_and_combined_emprise_done = models.BooleanField(default=False)
+    async_cover_image_done = models.BooleanField(default=False)
+    async_find_first_and_last_ocsge_done = models.BooleanField(default=False)
+    async_add_neighboors_done = models.BooleanField(default=False)
+    async_generate_theme_map_conso_done = models.BooleanField(default=False)
+    async_generate_theme_map_artif_done = models.BooleanField(default=False)
+    async_theme_map_understand_artif_done = models.BooleanField(default=False)
+
+    @property
+    def async_complete(self):
+        return (
+            self.async_city_and_combined_emprise_done
+            & self.async_cover_image_done
+            & self.async_find_first_and_last_ocsge_done
+            & self.async_add_neighboors_done
+            & self.async_generate_theme_map_conso_done
+            & self.async_generate_theme_map_artif_done
+            & self.async_theme_map_understand_artif_done
+        )
 
     class Meta:
         ordering = ["-created_date"]

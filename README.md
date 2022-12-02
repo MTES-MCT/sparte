@@ -55,7 +55,6 @@ Variables d'environnement spécifique à Scalingo. Voir les valeurs sur Scalingo
 | GDAL_DATA | requis pour le buildpack qui install GeoDjango |
 | LD_LIBRARY_PATH | requis pour le buildpack qui install GeoDjango |
 | PROJ_LIB | requis pour le buildpack qui install GeoDjango |
-| PYTHONPATH | Non déterminé |
 | SCALINGO_POSTGRESQL_URL | Ajouté lorsque l'addon postgres est activé |
 | SCALINGO_REDIS_URL | Ajouté lorsque l'addon redis est activé |
 
