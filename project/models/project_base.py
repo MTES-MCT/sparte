@@ -446,7 +446,7 @@ class Project(BaseProject):
     @property
     def nb_look_a_like(self):
         try:
-            return len({_ for _ in self.look_a_like.split(";")})
+            return len({_ for _ in self.look_a_like.split(";") if _ != ""})
         except AttributeError:
             return 0
 
