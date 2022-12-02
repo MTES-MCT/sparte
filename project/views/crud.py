@@ -1,3 +1,5 @@
+import celery
+
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
 from django.shortcuts import redirect
@@ -39,8 +41,15 @@ class ProjectUpdateView(GroupMixin, UpdateView):
     def form_valid(self, form):
         """If the form is valid, save the associated model."""
         self.object = form.save()
-        # check that ocsge period is still between project period
-        tasks.find_first_and_last_ocsge.delay(self.object.id)
+        celery.chain(
+            # check that ocsge period is still between project period
+            tasks.find_first_and_last_ocsge.delay(self.object.id),
+            celery.group(
+                tasks.generate_theme_map_conso.si(self.objec.id),
+                tasks.generate_theme_map_artif.si(self.objec.id),
+                tasks.generate_theme_map_understand_artif.si(self.objec.id),
+            ),
+        )
         return HttpResponseRedirect(self.get_success_url())
 
     def get_success_url(self):
