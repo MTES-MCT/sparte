@@ -151,9 +151,13 @@ class RequestAdmin(admin.ModelAdmin):
             obj.sent_date = None
             obj.save()
             tasks.send_word_diagnostic.delay(obj.id)
+            msg = "Envoie du diagnostic en cours"
+            messages.add_message(request, messages.INFO, msg)
             return HttpResponseRedirect(".")
         elif "_generate-action" in request.POST:
             obj.sent_file.delete(save=True)
             tasks.generate_word_diagnostic.delay(obj.id)
+            msg = "Génération du diagnostic en cours"
+            messages.add_message(request, messages.INFO, msg)
             return HttpResponseRedirect(".")
         return super().response_change(request, obj)
