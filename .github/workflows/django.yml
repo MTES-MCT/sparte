@@ -42,7 +42,9 @@ jobs:
         python -m pipenv install --deploy --ignore-pipfile --dev
     - name: Run tests
       env:
-        SECRET: helloworld
+        SECRET: ${{ secrets.SECRET }}
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         DATABASE_URL: postgis://postgres:postgres@127.0.0.1:5432/postgres
         ENVIRONMENT: github
         DEBUG: 0
