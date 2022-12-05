@@ -15,16 +15,6 @@ from .models import DocxTemplate
 from . import utils
 
 
-@pytest.fixture(scope="session", autouse=True)
-def clean_media_dir():
-    # before all tests
-    yield
-    # Will be executed after the last test
-    for p in Path(settings.MEDIA_ROOT).iterdir():
-        if p.is_file():
-            p.unlink()
-
-
 class SimpleDataSource(data_sources.ModelDataSource):
     label = "A simple data source"
     url_args = {"person_id": "int"}
