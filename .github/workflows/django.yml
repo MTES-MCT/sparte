@@ -42,6 +42,7 @@ jobs:
         python -m pipenv install --deploy --ignore-pipfile --dev
     - name: Run tests
       env:
+        SECRET: helloworld
         DATABASE_URL: postgis://postgres:postgres@127.0.0.1:5432/postgres
         ENVIRONMENT: github
         DEBUG: 0
