@@ -46,7 +46,7 @@ class ContactForm(models.Model):
 
 
 class Newsletter(models.Model):
-    email = models.EmailField("Votre courriel")
+    email = models.EmailField("Courriel")
     created_date = models.DateTimeField(auto_now_add=True)
     confirm_token = models.CharField(max_length=25, unique=True)
     confirmation_date = models.DateTimeField(null=True, blank=True)
