@@ -56,7 +56,7 @@
             <!-- Page content-->
             <main class="p-0 flex-grow-1 d-flex flex-column" id="main">
                 {% if messages %}
-                    <div class="row justify-content-center w-100 my-0">
+                    <div class="row justify-content-center w-100 my-0 pt-3 pb-4">
                         <div class="col-12 col-md-8 col-lg-6">
                             {% for message in messages %}
                             <div class="alert alert-{{ message.tags }} alert-dismissible fade show my-1" role="alert">
@@ -67,6 +67,7 @@
                         </div>
                     </div>
                 {% endif %}
+
                 {% block carto %}
                 <div id="block-content">
                     {% block content %}
