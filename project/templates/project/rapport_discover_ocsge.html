@@ -1,0 +1,372 @@
+{% extends 'index.html' %}
+
+{% load static %}
+{% load project_tags %}
+{% load humanize %}
+{% load i18n %}
+{% load l10n %}
+{% load highcharts_tags %}
+{% load sri %}
+
+{% block pagetitle %}
+{{ nom }}
+{% endblock %}
+
+{% block headers %}
+{% sri_static "project/css/project.css" %}
+<style nonce="{{ CSP_NONCE }}">
+.tooltiped {
+    border-bottom:1px dashed #000;
+}
+{% for leaf in usa_leafs %}
+.{{ leaf.cleaned_code_prefix }} {
+    background-color: {{ leaf.map_color }};
+    color: {{ leaf.map_color }};
+    fill:  {{ leaf.map_color }};
+}
+{% endfor %}
+
+{% for leaf in couv_leafs %}
+.{{ leaf.cleaned_code_prefix }} {
+    background-color: {{ leaf.map_color }};
+    color: {{ leaf.map_color }};
+    fill:  {{ leaf.map_color }};
+}
+{% endfor %}
+#chart_couv_wheel, #chart_usa_wheel {
+    height: 500px;
+}
+
+.nomenclature {
+    list-style: none;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="px-4">
+    {% include "project/detail_menu.html" %}
+
+    <div class="bg-light rounded-5 border fr-container fr-py-3w">
+        <div class="box box-alert px-4 py-2 mb-4 mt-0">
+
+            <p>L'OCS GE est une base de données vectorielle pour la description de l’occupation du sol de l’ensemble du territoire métropolitain et des départements et régions d’outre-mer (DROM). Elle est un référentiel national, constituant un socle national, utilisable au niveau national et au niveau local notamment pour contribuer aux calculs d’indicateurs exigés par les documents d’urbanisme. Elle s’appuie sur un modèle ouvert séparant la couverture du sol et l’usage du sol (appelé modèle en 2 dimensions), une précision géométrique appuyée sur le Référentiel à Grande Échelle (RGE®) et une cohérence temporelle (notion de millésime) qui, par le biais de mises à jour à venir, permettra de quantifier et de qualifier les évolutions des espace</p>
+
+            <p>La couverture du sol est une vue « physionomique » du terrain. La description est une simple distinction des éléments structurant le paysage. Ex : Zones bâties.</p>
+
+            <p>L'usage du sol est une vue « anthropique du sol ». Il est  partagé en fonction du rôle que jouent les portions de terrain en tant  qu’occupation humaine. Dans l'OCSGE, l'usage US235 regroupe les objets de US2  (production secondaire), US3 (production tertiaire) et US5 (usage  résidentiel) de la nomenclature nationale quand la distinction entre ces usages n'est pas possible ou pas connue. Ex : Agriculture.</p>
+
+            <p>Chaque objet géographique de l'OCS GE porte ces deux informations. Ex : Zones bâties (couverture) et Agriculture (usage) décrivent des bâtiments agricoles.</p>
+
+            <button class="fr-btn fr-btn--tertiary fr-btn--sm dropdown-toggle rounded-pill" type="button" data-bs-toggle="collapse" data-bs-target="#conso-annuel-data" aria-expanded="false" aria-controls="conso-annuel-data">
+                Nomenclature double de l'OCS GE
+            </button>
+            <div class="collapse fr-highlight row" id="conso-annuel-data">
+                <div class="col">
+                    <h3>Nomenclature de l'Usage du sol</h3>
+                    <ul class="nomenclature">
+                    {% for leaf in usa_leafs %}
+                        <li><span class="{{ leaf.cleaned_code_prefix }}">uuu</span> {{ leaf.code_prefix }} - {{ leaf.label_short }}</li>
+                    {% endfor %}
+                    </ul>
+                </div>
+                <div class="col">
+                    <h3>Nomenclature de la Couverture du sol</h3>
+                    <ul class="nomenclature">
+                    {% for leaf in couv_leafs %}
+                        <li><span class="{{ leaf.cleaned_code_prefix }}">uuu</span> {{ leaf.code_prefix }} - {{ leaf.label_short }}</li>
+                    {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="fr-grid-row fr-grid-row--gutters mt-5">
+          <div class="fr-col-12 fr-col-md-6">
+            <div class="fr-callout">
+              <p class="fr-callout__title">{{ surface_territory|floatformat:0 }} ha</p>
+              <p>Surface du territoire</p>
+            </div>
+          </div>
+        </div>
+
+    {% if ocsge_available %}
+
+        <h1 class="mt-5">Couverture du sol</h1>
+
+        <div class="w-100 box p-4">
+            <h3>Répartition</h3>
+            <div class="row">
+                <div class="col-6 border-end">
+                    <div id="chart_couv_pie"></div>
+                </div>
+                <div class="col-6">
+                    <div id="chart_couv_prog"></div>
+                </div>
+            </div>
+
+            <button class="fr-btn fr-btn--tertiary fr-btn--sm dropdown-toggle rounded-pill" type="button" data-bs-toggle="collapse" data-bs-target="#repartition-data" aria-expanded="false" aria-controls="repartition-data">
+                Données
+            </button>
+            <div class="collapse fr-highlight" id="repartition-data">
+                <div>
+                    <h4 class="pt-3">Source</h4>
+                    <p>Données d'OCcupation des Sols à Grande Echelle (OCS GE) de l'IGN, sur la période d'analyse traduite grâce à la matrice de passage.</p>
+                </div>
+                <div>
+                    <h4>Données</h4>
+                    <strong>Progression de {{ first_millesime }} à {{ last_millesime }}</strong>
+                    <table class="table table-striped table-sm table-hover">
+                        <thead>
+                            <tr>
+                                <th scope="col">Code</th>
+                                <th scope="col">Libellé</th>
+                                <th scope="col" class="text-end">Surface {{ first_millesime }} (ha)</th>
+                                <th scope="col" class="text-end">Progression (ha)</th>
+                                <th scope="col" class="text-end">Surface {{ last_millesime }} (ha)</th>
+                                <th scope="col" class="text-end">Pourcentage {{ last_millesime }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in couv_progression_chart.get_series %}
+                            <tr {% if item.level == 1 %}class="fw-bold"{% endif %}>
+                                <th scope="row">{{ item.level|space }} {{ item.code }}</th>
+                                <td>{{ item.get_label_short }}</td>
+                                <td align="right">{{ item.surface_first|floatformat:1 }}</td>
+                                <td align="right">
+                                    {% if item.surface_diff == 0 %}-
+                                    {%else%}
+                                        {% if item.surface_diff > 0 %}+{% endif%}
+                                        {{ item.surface_diff|floatformat:2 }}
+                                    {% endif%}
+                                </td>
+                                <td align="right">{{ item.surface_last|floatformat:1 }}</td>
+                                <td align="right">{{ item.surface_last|percent:surface_territory }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="box scrollme-x p-4 table table-responsive">
+            <h3>Matrice de passage de {{ first_millesime }} à {{ last_millesime }} :</h3>
+
+            <div id="chart_couv_wheel"></div>
+
+
+            <button class="fr-btn fr-btn--tertiary fr-btn--sm dropdown-toggle rounded-pill" type="button" data-bs-toggle="collapse" data-bs-target="#matrice-data" aria-expanded="false" aria-controls="matrice-data">
+                Données
+            </button>
+            <div class="collapse fr-highlight" id="matrice-data">
+                <div>
+                    <h4 class="pt-3">Source</h4>
+                    <p>Données d'OCcupation des Sols à Grande Echelle (OCS GE) de l'IGN, sur la période d'analyse traduite grâce à la matrice de passage.</p>
+                </div>
+                <div>
+                    <h4>Données</h4>
+                    <p class="text-muted">En hectare (Ha).
+                        <br/>En ligne les anciens codes, en colonne les nouveaux codes.
+                    </p>
+                    <table class="table table-striped table-sm">
+                        <thead>
+                            <tr>
+                                <th scope="col"></th>
+                                {% for header in couv_matrix_headers %}
+                                <th scope="col" class="text-end">
+                                    <span class="tooltiped" data-toggle="tooltip" title="{{ header.label }}">
+                                        {{ header.code }}
+                                    </span>
+                                </th>
+                                {% endfor %}
+                                <th scope="col" class="text-end">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for name, data in couv_matrix_data.items %}
+                            <tr>
+                                <th scope="row">
+                                    {% if name.code %}
+                                    <span class="tooltiped" data-toggle="tooltip" title="{{ name.label }}">
+                                        {{ name.code }} {{ name.label_short }}
+                                    </span>
+                                    {% else %}
+                                        Total
+                                    {% endif %}
+                                </th>
+                                {% for title, val in data.items %}
+                                    <td align="right">
+                                        <span data-toggle="tooltip" title="Passage de {{ name.code }} à {{ title.code }}">
+                                            {{ val|floatformat:2 }}
+                                        </span>
+                                    </td>
+                                {% endfor %}
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+        <h1 class="mt-5">Usage du sol</h1>
+
+        <div class="w-100 box p-4">
+            <h3>Répartition</h3>
+            <div class="row">
+                <div class="col-6 border-end">
+                    <div id="chart_usa_pie"></div>
+                </div>
+                <div class="col-6">
+                    <div id="chart_usa_prog"></div>
+                </div>
+            </div>
+
+            <button class="fr-btn fr-btn--tertiary fr-btn--sm dropdown-toggle rounded-pill" type="button" data-bs-toggle="collapse" data-bs-target="#repartition-data" aria-expanded="false" aria-controls="repartition-data">
+                Données
+            </button>
+            <div class="collapse fr-highlight" id="repartition-data">
+                <div>
+                    <h4 class="pt-3">Source</h4>
+                    <p>Données d'OCcupation des Sols à Grande Echelle (OCS GE) de l'IGN, sur la période d'analyse traduite grâce à la matrice de passage.</p>
+                </div>
+                <div>
+                    <h4>Données</h4>
+                    <strong>Progression de {{ first_millesime }} à {{ last_millesime }}</strong>
+                    <table class="table table-striped table-sm table-hover">
+                        <thead>
+                            <tr>
+                                <th scope="col">Code</th>
+                                <th scope="col">Libellé</th>
+                                <th scope="col" class="text-end">Surface {{ first_millesime }} (ha)</th>
+                                <th scope="col" class="text-end">Progression (ha)</th>
+                                <th scope="col" class="text-end">Surface {{ last_millesime }} (ha)</th>
+                                <th scope="col" class="text-end">Pourcentage {{ last_millesime }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in usa_progression_chart.get_series %}
+                            <tr {% if item.level == 1 %}class="fw-bold"{% endif %}>
+                                <th scope="row">{{ item.level|space }} {{ item.code }}</th>
+                                <td>{{ item.get_label_short }}</td>
+                                <td align="right">{{ item.surface_first|floatformat:1 }}</td>
+                                <td align="right">
+                                    {% if item.surface_diff == 0 %}-
+                                    {%else%}
+                                        {% if item.surface_diff > 0 %}+{% endif%}
+                                        {{ item.surface_diff|floatformat:2 }}
+                                    {% endif%}
+                                </td>
+                                <td align="right">{{ item.surface_last|floatformat:1 }}</td>
+                                <td align="right">{{ item.surface_last|percent:surface_territory }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="box scrollme-x p-4 table table-responsive">
+            <h3>Matrice de passage de {{ first_millesime }} à {{ last_millesime }} :</h3>
+
+            <div id="chart_usa_wheel"></div>
+
+            <button class="fr-btn fr-btn--tertiary fr-btn--sm dropdown-toggle rounded-pill" type="button" data-bs-toggle="collapse" data-bs-target="#matrice-data" aria-expanded="false" aria-controls="matrice-data">
+                Données
+            </button>
+            <div class="collapse fr-highlight" id="matrice-data">
+                <div>
+                    <h4 class="pt-3">Source</h4>
+                    <p>Données d'OCcupation des Sols à Grande Echelle (OCS GE) de l'IGN, sur la période d'analyse traduite grâce à la matrice de passage.</p>
+                </div>
+                <div>
+                    <h4>Données</h4>
+                    <p class="text-muted">En hectare (Ha).
+                        <br/>En ligne les anciens codes, en colonne les nouveaux codes.
+                    </p>
+                    <table class="table table-striped table-sm">
+                        <thead>
+                            <tr>
+                                <th scope="col"></th>
+                                {% for header in usa_matrix_headers %}
+                                <th scope="col" class="text-end">
+                                    <span class="tooltiped" data-toggle="tooltip" title="{{ header.label }}">
+                                        {{ header.code }}
+                                    </span>
+                                </th>
+                                {% endfor %}
+                                <th scope="col" class="text-end">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for name, data in usa_matrix_data.items %}
+                            <tr>
+                                <th scope="row">
+                                    {% if name.code %}
+                                    <span class="tooltiped" data-toggle="tooltip" title="{{ name.label }}">
+                                        {{ name.code }} {{ name.label_short }}
+                                    </span>
+                                    {% else %}
+                                        Total
+                                    {% endif %}
+                                </th>
+                                {% for title, val in data.items %}
+                                    <td align="right">
+                                        <span data-toggle="tooltip" title="Passage de {{ name.code }} à {{ title.code }}">
+                                            {{ val|floatformat:2 }}
+                                        </span>
+                                    </td>
+                                {% endfor %}
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+    {% else %}
+        <div class="box px-4 py-2 mb-4 mt-5">
+            <p class="my-1">Nous sommes désolé, mais votre territoire n'est pas encore couvert par l'OCSGE. Restez informer de son arrivée en vous abonnant à notre newsletter !</p>
+        </div>
+    {% endif %}
+
+    </div>
+</div>
+{% endblock %}
+
+{% block bodyend %}
+{% localize off %}
+{% sri_static "highcharts/js/highcharts.js" %}
+{% sri_static "highcharts/js/exporting.js" %}
+{% sri_static "highcharts/js/sankey.js" %}
+{% sri_static "highcharts/js/dependency-wheel.js" %}
+{% french_translation %}
+{% display_chart 'chart_couv_pie' couv_pie_chart CSP_NONCE %}
+{% display_chart 'chart_couv_prog' couv_progression_chart CSP_NONCE %}
+{% display_chart 'chart_usa_pie' usa_pie_chart CSP_NONCE %}
+{% display_chart 'chart_usa_prog' usa_progression_chart CSP_NONCE %}
+{% display_chart 'chart_couv_wheel' couv_wheel_chart CSP_NONCE %}
+{% display_chart 'chart_usa_wheel' usa_whell_chart CSP_NONCE %}
+{% endlocalize %}
+{% endblock %}
+
+{% block tagging %}
+<script language="javascript" nonce="{{ CSP_NONCE }}">
+$( window ).on('load', function () {
+    _paq.push(['trackEvent', 'Consultation diagnostic', 'Tableau de bord', '{{ nom }}'])
+})
+
+var fired = false
+$( window ).scroll(function() {
+    if(fired == false && $( window ).scrollTop() + $( window ).height() > $( "#block-content" ).height() - 100) {
+        _paq.push(['trackEvent', 'Consultation diagnostic', 'Fin tableau de bord', '{{ nom }}'])
+        fired = true
+    }
+})
+</script>
+{% endblock tagging %}
