@@ -29,6 +29,10 @@ class BaseSol(models.Model):
         """
         return len(self.code.split("."))
 
+    @property
+    def cleaned_code_prefix(self):
+        return self.code_prefix.replace(".", "-")
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.cached_children = None
