@@ -226,6 +226,9 @@ def generate_word_diagnostic(self, request_id):
         self.retry(exc=exc, countdown=2 ** (self.request.retries + 10))
         req.record_exception(exc)
         logger.error("Error while generating word: %s", exc)
+    except Request.DoesNotExist() as exc:
+        logger.exception(exc)
+        logger.error("No retry")
     except Exception as exc:
         req.record_exception(exc)
         logger.exception(exc)
