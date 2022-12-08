@@ -1,8 +1,11 @@
 import collections
 
+from django.db.models import Sum, F, Value
+from django.db.models.functions import Concat
+
 from highcharts import charts
 
-from public_data.models import AdminRef
+from public_data.models import AdminRef, OcsgeDiff, CouvertureSol, UsageSol
 
 
 class ProjectChart(charts.Chart):
@@ -884,3 +887,90 @@ class SurfaceChart(ProjectChart):
             )
 
         return self.series
+
+
+class CouvWheelChart(ProjectChart):
+    name = "Matrice de passage de la couverture"
+    prefix = "cs"
+    name_sol = "couverture"
+    items = CouvertureSol.objects.all()
+    param = {
+        "title": {"text": ""},
+        "accessibility": {
+            "point": {
+                "valueDescriptionFormat": (
+                    "{index}. From {point.from} to {point.to}: {point.weight}."
+                )
+            }
+        },
+        "series": [],
+    }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.chart["title"]["text"] = self.name
+
+    def add_series(self):
+
+        self.chart["series"].append(
+            {
+                "keys": ["from", "to", "weight", "color"],
+                "data": self.get_data(),
+                "type": "dependencywheel",
+                "styledMode": True,
+                "dataLabels": {
+                    "align": "left",
+                    "crop": False,
+                    "inside": False,
+                    "color": "#333",
+                    "style": {"textOutline": "none"},
+                    "textPath": {"enabled": True},
+                    "distance": 10,
+                },
+                "size": "100%",
+                "nodes": [
+                    {
+                        "id": f"{_.code_prefix} {_.label_short}",
+                        "className": _.cleaned_code_prefix,
+                    }
+                    for _ in self.items
+                ],
+            }
+        )
+
+    def get_data(self):
+        self.data = (
+            OcsgeDiff.objects.intersect(self.project.combined_emprise)
+            .filter(
+                year_old__gte=self.project.analyse_start_date,
+                year_new__lte=self.project.analyse_end_date,
+            )
+            .annotate(
+                old_label=Concat(
+                    f"{self.prefix}_old",
+                    Value(" "),
+                    f"old_matrix__{self.name_sol}__label_short",
+                ),
+                new_label=Concat(
+                    f"{self.prefix}_new",
+                    Value(" "),
+                    f"new_matrix__{self.name_sol}__label_short",
+                ),
+                color=F(f"old_matrix__{self.name_sol}__map_color"),
+            )
+            .values("old_label", "new_label", "color")
+            .annotate(total=Sum("surface") / 10000)
+            .order_by("old_label", "new_label", "color")
+        )
+        return [
+            [_["old_label"], _["new_label"], round(_["total"], 2), _["color"]]
+            for _ in self.data
+            if _["old_label"] != _["new_label"]
+        ]
+
+
+class UsageWheelChart(CouvWheelChart):
+    name = "Matrice de passage de l'usage"
+    prefix = "us"
+    name_sol = "usage"
+    items = UsageSol.objects.all()

@@ -103,9 +103,3 @@ python scripts/cmd.py --env $ENV run 'python manage.py build_commune_data --depa
 python scripts/cmd.py --env $ENV run 'python manage.py build_artificial_area --departement Gers' && \
 python scripts/cmd.py --env $ENV run 'python manage.py set_density --reset --departement Gers'
 ```
-
-## Migration stack scalingo 18 => 20
-
-1. Remove PYTHONPATH from environment variables (through scalingo online dashboard)
-2. Migrate app's stack with CLI `scalingo --app sparte --region osc-secnum-fr1 stacks-set scalingo-20` and check success with `scalingo --app sparte --region osc-secnum-fr1 apps-info`
-3. Deploy
