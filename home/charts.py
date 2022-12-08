@@ -115,7 +115,9 @@ class UseOfReportPieChart(charts.Chart):
 
         if not self.series:
             self.end = date.today()
-            self.start = date(year=self.end.year - 1, month=self.end.month + 1, day=1)
+            self.start = date(
+                year=self.end.year - 1, month=(self.end.month % 12) + 1, day=1
+            )
             mato = Matomo(period=(self.start, self.end))
             re_map = re.compile(
                 r"(consommation|couverture|synthesis|usage|artificialisation|map)"
