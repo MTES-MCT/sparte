@@ -2,7 +2,27 @@
 
 Ce changelog suit la méthode "keep a changelog" disponible ici: [https://keepachangelog.com/en/1.0.0/](https://keepachangelog.com/en/1.0.0/)
 
-## [2.3.0] - non livrée
+## [2.3.4] - 2022.12.08
+
+### corrigé:
+- Corriger la page des statistiques en affichant le mois correcte
+
+## [2.3.3] - 2022.12.02
+
+### corrigé:
+- Permettre l'envoi par e-mail des diagnostics sans voisins
+
+## [2.3.2] - 2022.11.18
+
+### corrigé:
+- Corriger la taille des carte thématiques (revenir au plein écran)
+
+## [2.3.1] - 2022.11.15
+
+### corrigé:
+- Corriger la taille de la carte intéractive (revenir au plein écran)
+
+## [2.3.0] - 2022.11.14
 
 Contenu de cette version : https://app.clickup.com/14136489/v/l/li/204778717
 
