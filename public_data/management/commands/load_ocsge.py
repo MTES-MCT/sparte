@@ -12,6 +12,7 @@ from public_data.models import (
     Departement,
     Ocsge,
     OcsgeDiff,
+    Region,
     UsageSol,
     ZoneConstruite,
 )
@@ -34,7 +35,7 @@ for item in qs:
     MATRIX_LIST[key] = item
 GIRONDE = Departement.objects.get(name="Gironde")
 GERS = Departement.objects.get(name="Gers")
-
+BOURGOGNE_FRANCHE_COMTE = Region.objects.get(name="Bourgogne-Franche-Comté")
 
 # #######
 # ADD FUNCTION TO LOAD DATA
@@ -339,6 +340,182 @@ class GersZoneConstruite2019(GersZoneConstruite2016):
         proxy = True
 
 
+# ##########
+# BOURGOGNE FRANCHE COMTE
+# - Côte-d'Or (21)
+# - Doubs (25)
+# - Jura (39)
+# - Nièvre (58)
+# - Haute-Saône (70)
+# - Saône-et-Loire (71)
+# - Yonne (89)
+# - Territoire de Belfort (90)
+# ##########
+
+
+class OcsgeBourgogneFrancheComte(AutoLoadMixin, Ocsge):
+    year = 2010
+
+    class Meta:
+        proxy = True
+
+    def save(self, *args, **kwargs):
+        key = (self.couverture, self.usage)
+        self.matrix = MATRIX_LIST[key]
+        self.is_artificial = bool(self.matrix.is_artificial)
+        if self.matrix.couverture:
+            self.couverture_label = self.matrix.couverture.label
+        if self.matrix.usage:
+            self.usage_label = self.matrix.usage.label
+        self.year = self.__class__.year
+        return super().save(*args, **kwargs)
+
+    @classmethod
+    def clean_data(cls, clean_queryset=None):
+        """Delete only data with year=2015"""
+        # select only data covered by Gers
+        qs = cls.objects.filter(mpoly__intersects=BOURGOGNE_FRANCHE_COMTE.mpoly)
+        # only current millesime
+        qs = qs.filter(year=cls.year)
+        qs.delete()
+
+    mapping = {
+        "id_source": "ID",
+        "couverture": "CODE_CS",
+        "usage": "CODE_US",
+        "surface": "Shape_Area",
+        "mpoly": "MULTIPOLYGON",
+    }
+
+
+class OcsgeCotedor2010(OcsgeBourgogneFrancheComte):
+    class Meta:
+        proxy = True
+
+    shape_file_path = "cotedor_ocsge_2010.zip"
+    year = 2010
+
+
+class OcsgeCotedor2017(OcsgeBourgogneFrancheComte):
+    class Meta:
+        proxy = True
+
+    shape_file_path = "cotedor_ocsge_2017.zip"
+    year = 2017
+
+
+class OcsgeDoubs2010(OcsgeBourgogneFrancheComte):
+    class Meta:
+        proxy = True
+
+    shape_file_path = "doubs_ocsge_2010.zip"
+    year = 2010
+
+
+class OcsgeDoubs2017(OcsgeBourgogneFrancheComte):
+    class Meta:
+        proxy = True
+
+    shape_file_path = "doubs_ocsge_2017.zip"
+    year = 2017
+
+
+class OcsgeJura2010(OcsgeBourgogneFrancheComte):
+    class Meta:
+        proxy = True
+
+    shape_file_path = "jura_ocsge_2010.zip"
+    year = 2010
+
+
+class OcsgeJura2017(OcsgeBourgogneFrancheComte):
+    class Meta:
+        proxy = True
+
+    shape_file_path = "jura_ocsge_2017.zip"
+    year = 2017
+
+
+class OcsgeNievre2011(OcsgeBourgogneFrancheComte):
+    class Meta:
+        proxy = True
+
+    shape_file_path = "nievre_ocsge_2011.zip"
+    year = 2011
+
+
+class OcsgeNievre2017(OcsgeBourgogneFrancheComte):
+    class Meta:
+        proxy = True
+
+    shape_file_path = "nievre_ocsge_2017.zip"
+    year = 2017
+
+
+class OcsgeHauteSaone2011(OcsgeBourgogneFrancheComte):
+    class Meta:
+        proxy = True
+
+    shape_file_path = "haute_saone_ocsge_2011.zip"
+    year = 2011
+
+
+class OcsgeHauteSaone2017(OcsgeBourgogneFrancheComte):
+    class Meta:
+        proxy = True
+
+    shape_file_path = "haute_saone_ocsge_2017.zip"
+    year = 2017
+
+
+class OcsgeSaoneEtLoire2011(OcsgeBourgogneFrancheComte):
+    class Meta:
+        proxy = True
+
+    shape_file_path = "saone_et_loire_ocsge_2011.zip"
+    year = 2011
+
+
+class OcsgeSaoneEtLoire2018(OcsgeBourgogneFrancheComte):
+    class Meta:
+        proxy = True
+
+    shape_file_path = "saone_et_loire_ocsge_2018.zip"
+    year = 2018
+
+
+class OcsgeYonne2011(OcsgeBourgogneFrancheComte):
+    class Meta:
+        proxy = True
+
+    shape_file_path = "yonne_ocsge_2011.zip"
+    year = 2011
+
+
+class OcsgeYonne2018(OcsgeBourgogneFrancheComte):
+    class Meta:
+        proxy = True
+
+    shape_file_path = "yonne_ocsge_2018.zip"
+    year = 2018
+
+
+class OcsgeBelfort2010(OcsgeBourgogneFrancheComte):
+    class Meta:
+        proxy = True
+
+    shape_file_path = "territoire_de_belfort_ocsge_2010.zip"
+    year = 2010
+
+
+class OcsgeBelfort2017(OcsgeBourgogneFrancheComte):
+    class Meta:
+        proxy = True
+
+    shape_file_path = "territoire_de_belfort_ocsge_2017.zip"
+    year = 2017
+
+
 class Command(BaseCommand):
     help = "Load all data from OCS GE"
 
@@ -380,6 +557,22 @@ class Command(BaseCommand):
             GersOcsgeDiff,
             GersZoneConstruite2016,
             GersZoneConstruite2019,
+            OcsgeCotedor2010,
+            OcsgeCotedor2017,
+            OcsgeDoubs2010,
+            OcsgeDoubs2017,
+            OcsgeJura2010,
+            OcsgeJura2017,
+            OcsgeNievre2011,
+            OcsgeNievre2017,
+            OcsgeHauteSaone2011,
+            OcsgeHauteSaone2017,
+            OcsgeSaoneEtLoire2011,
+            OcsgeSaoneEtLoire2018,
+            OcsgeYonne2011,
+            OcsgeYonne2018,
+            OcsgeBelfort2010,
+            OcsgeBelfort2017,
         ]
         if options["item"]:
             self.load([i for i in item_list if i.__name__ == options["item"]])
