@@ -31,7 +31,7 @@ from typing import Literal
 from django.contrib.gis.db import models
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.validators import MinValueValidator, MaxValueValidator
-from django.db.models import Sum, Q
+from django.db.models import Sum
 from django.utils.functional import cached_property
 
 from utils.db import IntersectManager
