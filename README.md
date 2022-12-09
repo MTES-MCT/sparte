@@ -19,6 +19,10 @@ Le Service de Portrait de l’ARtificialisation des TErritoires (ou SPARTE) est 
 10. Copier les fichiers de données OCS GE et Cérema... sur votre bucket AWS
 11. Lancer l'installation des données `python scripts/cmd.py --env local rebuild`
 
+## Development Workflow
+1. Installer les dépendances front `npm install`
+2. Lancer le watch mode de Webpack `npm run dev` (Génère un nouveau bundle JS à chaque mise à jour du fichier ./assets/scripts/index.js)
+
 ### Variables d'environnement
 
 Pour une installation locale, ces valeurs doivent être dans le fichier .env à la racine du projet. Pour le déploiement sur scalingo, ces variables sont à ajouter dans la section "Environnement" du container.
