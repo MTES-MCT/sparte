@@ -87,6 +87,8 @@
         <script crossorigin="anonymous" nomodule src="{% static 'dsfr/dist/dsfr/dsfr.nomodule.min.js' %}" integrity="{% sri_integrity_static "dsfr/dist/dsfr/dsfr.nomodule.min.js" %}"></script>
         {% sri_static "js/jquery-3.6.0.min.js" %}
         {% sri_static "bootstrap522/js/bootstrap.bundle.min.js" %}
+        <!-- Webpack Bundle -->
+        {% sri_static "bundle.js" %}
 
         <script nonce="{{ CSP_NONCE }}">
         // initialize les tooltips
