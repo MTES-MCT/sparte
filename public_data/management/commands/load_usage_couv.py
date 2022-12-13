@@ -98,18 +98,6 @@ DATA_COUV = [
         "#ccf24d",
         44,
     ],
-    [47, "2.2.1.1", "Prairies", "Prairies", "#ccf24d", 45],
-    [48, "2.2.1.2", "Pelouses herbes rases", "Pelouses", "#ccf24d", 45],
-    [
-        51,
-        "2.2.1.3",  # Pas certain qu'elle existe cette couverture, demander doc.
-        "Formations herbacées inconnues",
-        "Formations herbacées inconnues",
-        "#ccf24d",
-        45,
-    ],
-    [49, "2.2.1.4", "Terres arables", "Terres arables", "#ccf24d", 45],
-    [50, "2.2.1.5", "Autres formations herbacées", "Autres herbacées", "#ccf24d", 45],
     [
         46,
         "2.2.2",
@@ -118,6 +106,20 @@ DATA_COUV = [
         "#cfc",
         44,
     ],
+    [47, "2.2.1.1", "Prairies", "Prairies", "#ccf24d", 45],
+    [48, "2.2.1.2", "Pelouses herbes rases", "Pelouses", "#ccf24d", 45],
+    [49, "2.2.1.4", "Terres arables", "Terres arables", "#ccf24d", 45],
+    [50, "2.2.1.5", "Autres formations herbacées", "Autres herbacées", "#ccf24d", 45],
+    [
+        51,
+        "2.2.1.3",  # Pas certain qu'elle existe cette couverture, demander doc.
+        "Formations herbacées inconnues",
+        "Formations herbacées inconnues",
+        "#ccf24d",
+        45,
+    ],
+    [52, "2.1.3.1", "Vignes", "Vignes", "#e68000", 43],
+    [53, "2.1.3.2", "Autres lianes", "Autres lianes", "#e68000", 43],
 ]
 DATA_USAGE = [
     [20, "1", "Production primaire", "Production primaire", "green", None],
@@ -145,18 +147,6 @@ DATA_USAGE = [
         None,
     ],
     [30, "4.1", "Réseaux de transport", "Réseaux de transport", "#c00", 29],
-    [39, "4.1.1", "Routier", "Routier", "#c00", 30],
-    [40, "4.1.2", "Ferré", "Ferré", "#5a5a5a", 30],
-    [41, "4.1.3", "Aérien", "Aérien", "#e6cce6", 30],
-    [42, "4.1.4", "Eau", "Eau", "#06f", 30],
-    [
-        43,
-        "4.1.5",
-        "Autres réseaux de transport",
-        "Autres réseaux de transport",
-        "#603",
-        30,
-    ],
     [
         31,
         "4.2",
@@ -179,6 +169,28 @@ DATA_USAGE = [
     [36, "6.2", "Zones abandonnées", "Zones abandonnées", "#404040", 34],
     [37, "6.3", "Sans usage", "Sans usage", "#f0f028", 34],
     [38, "6.6", "Usage Inconnu", "Usage Inconnu", "#fc0", 34],
+    [39, "4.1.1", "Routier", "Routier", "#c00", 30],
+    [40, "4.1.2", "Ferré", "Ferré", "#5a5a5a", 30],
+    [41, "4.1.3", "Aérien", "Aérien", "#e6cce6", 30],
+    [42, "4.1.4", "Eau", "Eau", "#06f", 30],
+    [
+        43,
+        "4.1.5",
+        "Autres réseaux de transport",
+        "Autres réseaux de transport",
+        "#603",
+        30,
+    ],
+    [
+        44,
+        "1.1.3",
+        "Surface agricole utilisée",
+        "Surface agricole utilisée",
+        "#ffffa8",
+        21,
+    ],
+    [45, "1.1.4", "Jachère", "Jachère", "#ffffa8", 21],
+    [46, "1.2.1.2", "Peupleraie", "Peupleraie", "green", 22],
 ]
 
 
@@ -210,7 +222,7 @@ class Command(BaseCommand):
             except klass.DoesNotExist:
                 item = klass(pk=row[0])
             item.code = row[1]
-            item.code_prefix = f"CS{row[1]}"
+            item.code_prefix = f"{klass.prefix}{row[1]}"
             item.label = row[2]
             item.label_short = row[3]
             item.map_color = row[4]
