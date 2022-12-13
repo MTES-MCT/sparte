@@ -565,9 +565,9 @@ class BourgogneFrancheComteOcsgeDiff1017(AutoOcsgeDiff):
 
     _year_new = 2017
     _year_old = 2010
-    departement_name = "Côte-d'Or"
+    departement_name = ""
 
-    shape_file_path = "gers_diff_2016_2019.zip"
+    shape_file_path = ""
     # Email du dev du 06.10.2022
     # on fait la diff entre le plus récent et celui d'avant.
     # avant = 2019, après = 2016
@@ -598,6 +598,76 @@ class CotedorOcsgeDiff1017(BourgogneFrancheComteOcsgeDiff1017):
     _year_old = 2010
     departement_name = "Côte-d'Or"
     shape_file_path = "cotedor_ocsgediff_1017.zip"
+
+
+class DoubsOcsgeDiff1017(BourgogneFrancheComteOcsgeDiff1017):
+    class Meta:
+        proxy = True
+
+    _year_new = 2017
+    _year_old = 2010
+    departement_name = "Doubs"
+    shape_file_path = "doubs_ocsgediff_1017.zip"
+
+
+class JuraOcsgeDiff1017(BourgogneFrancheComteOcsgeDiff1017):
+    class Meta:
+        proxy = True
+
+    _year_new = 2017
+    _year_old = 2010
+    departement_name = "Jura"
+    shape_file_path = "jura_ocsgediff_1017.zip"
+
+
+class NievreOcsgeDiff1017(BourgogneFrancheComteOcsgeDiff1017):
+    class Meta:
+        proxy = True
+
+    _year_new = 2017
+    _year_old = 2011
+    departement_name = "Nièvre"
+    shape_file_path = "nievre_ocsgediff_1117.zip"
+
+
+class HauteSaoneOcsgeDiff1017(BourgogneFrancheComteOcsgeDiff1017):
+    class Meta:
+        proxy = True
+
+    _year_new = 2017
+    _year_old = 2011
+    departement_name = "Haute-Saône"
+    shape_file_path = "hautdesaone_ocsgediff_1117.zip"
+
+
+class SaoneEtLoireOcsgeDiff1017(BourgogneFrancheComteOcsgeDiff1017):
+    class Meta:
+        proxy = True
+
+    _year_new = 2018
+    _year_old = 2011
+    departement_name = "Saône-et-Loire"
+    shape_file_path = "saoneetloire_ocsgediff_1118.zip"
+
+
+class YonneOcsgeDiff1118(BourgogneFrancheComteOcsgeDiff1017):
+    class Meta:
+        proxy = True
+
+    _year_new = 2018
+    _year_old = 2011
+    departement_name = "Yonne"
+    shape_file_path = "yonne_ocsgediff_1118.zip"
+
+
+class BelfortOcsgeDiff1017(BourgogneFrancheComteOcsgeDiff1017):
+    class Meta:
+        proxy = True
+
+    _year_new = 2017
+    _year_old = 2011
+    departement_name = "Territoire de Belfort"
+    shape_file_path = "territoire_de_belfort_ocsgediff_1017.zip"
 
 
 class Command(BaseCommand):
@@ -642,7 +712,7 @@ class Command(BaseCommand):
             GersZoneConstruite2016,
             GersZoneConstruite2019,
             CotedorOcsge2010,
-            CotedorOcsge2017,
+            # CotedorOcsge2017,
             DoubsOcsge2010,
             DoubsOcsge2017,
             JuraOcsge2010,
@@ -658,6 +728,13 @@ class Command(BaseCommand):
             BelfortOcsge2010,
             BelfortOcsge2017,
             CotedorOcsgeDiff1017,
+            DoubsOcsgeDiff1017,
+            JuraOcsgeDiff1017,
+            NievreOcsgeDiff1017,
+            HauteSaoneOcsgeDiff1017,
+            SaoneEtLoireOcsgeDiff1017,
+            YonneOcsgeDiff1118,
+            BelfortOcsgeDiff1017,
         ]
         if options["item"]:
             self.load([i for i in item_list if i.__name__ == options["item"]])
