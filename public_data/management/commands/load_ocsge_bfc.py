@@ -29,6 +29,7 @@ class Command(BaseCommand):
             "OcsgeYonne2018",
             "OcsgeBelfort2010",
             "OcsgeBelfort2017",
+            "CotedorOcsgeDiff1017",
         ]
         for item in items:
             call_command("load_ocsge", item=item, no_verbose=True)
