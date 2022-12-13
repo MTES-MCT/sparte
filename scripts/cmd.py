@@ -285,6 +285,10 @@ def mep_240(ctx):
     connecter.detached = True
     connecter.manage_py("load_ocsge_bfc")
 
+    click.secho("Update departement with OCS GE", fg="cyan")
+    connecter.detached = False
+    connecter.manage_py("setup_dept")
+
 
 if __name__ == "__main__":
     cli(obj={})
