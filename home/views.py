@@ -29,8 +29,9 @@ class HomeView(BreadCrumbMixin, FormView):
         self.object = form.save()
         send_nwl_confirmation.delay(self.object.id)
         return HttpResponse(
-            '<div class="fr-alert fr-alert--success fr-alert--sm">'
-            '<p>Votre inscription a été prise en compte. Vous allez recevoir un e-mail vous demandant de confirmer votre souhait.</p>'
+            '<div class="fade-in fr-alert fr-alert--success fr-alert--sm" role="alert">'
+            '<h3 class="fr-alert__title">Votre inscription a été prise en compte.</h3>'
+            '<p>Vous allez recevoir un e-mail vous demandant de confirmer votre souhait.</p>'
             '</div>'
         )
 
