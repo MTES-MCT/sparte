@@ -12,7 +12,6 @@ from public_data.models import (
     Departement,
     Ocsge,
     OcsgeDiff,
-    Region,
     UsageSol,
     ZoneConstruite,
 )
@@ -35,7 +34,7 @@ for item in qs:
     MATRIX_LIST[key] = item
 GIRONDE = Departement.objects.get(name="Gironde")
 GERS = Departement.objects.get(name="Gers")
-BOURGOGNE_FRANCHE_COMTE = Region.objects.get(name="Bourgogne-Franche-Comté")
+
 
 # #######
 # ADD FUNCTION TO LOAD DATA
@@ -373,11 +372,25 @@ class OcsgeBourgogneFrancheComte(AutoLoadMixin, Ocsge):
     @classmethod
     def clean_data(cls, clean_queryset=None):
         """Delete only data with year=2015"""
-        # select only data covered by Gers
-        qs = cls.objects.filter(mpoly__intersects=BOURGOGNE_FRANCHE_COMTE.mpoly)
-        # only current millesime
-        qs = qs.filter(year=cls.year)
+        # select only data covered by departement
+        dept = Departement.objects.get(name=cls.departement_name)
+        qs = (
+            cls.objects.all().filter(mpoly__intersects=dept.mpoly).filter(year=cls.year)
+        )
         qs.delete()
+
+    @classmethod
+    def calculate_fields(cls):
+        """Override if you need to calculate some fields after loading data.
+        By default, it will calculate label for couverture and usage if couverture_field
+        and usage_field are set with the name of the field containing code (cs.2.1.3)
+        """
+        cls.objects.all().filter(surface__isnull=True).update(
+            surface=Cast(
+                Area(Transform("mpoly", 2154)),
+                DecimalField(max_digits=15, decimal_places=4),
+            )
+        )
 
     mapping = {
         "id_source": "ID",
@@ -392,6 +405,7 @@ class OcsgeCotedor2010(OcsgeBourgogneFrancheComte):
     class Meta:
         proxy = True
 
+    departement_name = "Côte-d'Or"
     shape_file_path = "cotedor_ocsge_2010.zip"
     year = 2010
 
@@ -400,6 +414,7 @@ class OcsgeCotedor2017(OcsgeBourgogneFrancheComte):
     class Meta:
         proxy = True
 
+    departement_name = "Côte-d'Or"
     shape_file_path = "cotedor_ocsge_2017.zip"
     year = 2017
 
@@ -408,6 +423,7 @@ class OcsgeDoubs2010(OcsgeBourgogneFrancheComte):
     class Meta:
         proxy = True
 
+    departement_name = "Doubs"
     shape_file_path = "doubs_ocsge_2010.zip"
     year = 2010
 
@@ -416,6 +432,7 @@ class OcsgeDoubs2017(OcsgeBourgogneFrancheComte):
     class Meta:
         proxy = True
 
+    departement_name = "Doubs"
     shape_file_path = "doubs_ocsge_2017.zip"
     year = 2017
 
@@ -424,6 +441,7 @@ class OcsgeJura2010(OcsgeBourgogneFrancheComte):
     class Meta:
         proxy = True
 
+    departement_name = "Jura"
     shape_file_path = "jura_ocsge_2010.zip"
     year = 2010
 
@@ -432,14 +450,23 @@ class OcsgeJura2017(OcsgeBourgogneFrancheComte):
     class Meta:
         proxy = True
 
+    departement_name = "Jura"
     shape_file_path = "jura_ocsge_2017.zip"
     year = 2017
+
+    mapping = {
+        "id_source": "ID",
+        "couverture": "CODE_CS",
+        "usage": "CODE_US",
+        "mpoly": "MULTIPOLYGON",
+    }
 
 
 class OcsgeNievre2011(OcsgeBourgogneFrancheComte):
     class Meta:
         proxy = True
 
+    departement_name = "Nièvre"
     shape_file_path = "nievre_ocsge_2011.zip"
     year = 2011
 
@@ -448,6 +475,7 @@ class OcsgeNievre2017(OcsgeBourgogneFrancheComte):
     class Meta:
         proxy = True
 
+    departement_name = "Nièvre"
     shape_file_path = "nievre_ocsge_2017.zip"
     year = 2017
 
@@ -456,6 +484,7 @@ class OcsgeHauteSaone2011(OcsgeBourgogneFrancheComte):
     class Meta:
         proxy = True
 
+    departement_name = "Haute-Saône"
     shape_file_path = "haute_saone_ocsge_2011.zip"
     year = 2011
 
@@ -464,6 +493,7 @@ class OcsgeHauteSaone2017(OcsgeBourgogneFrancheComte):
     class Meta:
         proxy = True
 
+    departement_name = "Haute-Saône"
     shape_file_path = "haute_saone_ocsge_2017.zip"
     year = 2017
 
@@ -472,14 +502,23 @@ class OcsgeSaoneEtLoire2011(OcsgeBourgogneFrancheComte):
     class Meta:
         proxy = True
 
+    departement_name = "Saône-et-Loire"
     shape_file_path = "saone_et_loire_ocsge_2011.zip"
     year = 2011
+
+    mapping = {
+        "id_source": "ID",
+        "couverture": "CODE_CS",
+        "usage": "CODE_US",
+        "mpoly": "MULTIPOLYGON",
+    }
 
 
 class OcsgeSaoneEtLoire2018(OcsgeBourgogneFrancheComte):
     class Meta:
         proxy = True
 
+    departement_name = "Saône-et-Loire"
     shape_file_path = "saone_et_loire_ocsge_2018.zip"
     year = 2018
 
@@ -488,6 +527,7 @@ class OcsgeYonne2011(OcsgeBourgogneFrancheComte):
     class Meta:
         proxy = True
 
+    departement_name = "Yonne"
     shape_file_path = "yonne_ocsge_2011.zip"
     year = 2011
 
@@ -496,6 +536,7 @@ class OcsgeYonne2018(OcsgeBourgogneFrancheComte):
     class Meta:
         proxy = True
 
+    departement_name = "Yonne"
     shape_file_path = "yonne_ocsge_2018.zip"
     year = 2018
 
@@ -504,6 +545,7 @@ class OcsgeBelfort2010(OcsgeBourgogneFrancheComte):
     class Meta:
         proxy = True
 
+    departement_name = "Territoire de Belfort"
     shape_file_path = "territoire_de_belfort_ocsge_2010.zip"
     year = 2010
 
@@ -512,6 +554,7 @@ class OcsgeBelfort2017(OcsgeBourgogneFrancheComte):
     class Meta:
         proxy = True
 
+    departement_name = "Territoire de Belfort"
     shape_file_path = "territoire_de_belfort_ocsge_2017.zip"
     year = 2017
 
