@@ -1,7 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.db.models import F, Value
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.views.generic import TemplateView, CreateView, RedirectView, FormView
 
 from django_app_parameter import app_parameter
@@ -28,14 +28,11 @@ class HomeView(BreadCrumbMixin, FormView):
     def form_valid(self, form):
         self.object = form.save()
         send_nwl_confirmation.delay(self.object.id)
-        messages.success(
-            self.request,
-            (
-                "Votre inscription a été prise en compte. Vous allez recevoir un e-mail"
-                " vous demandant de confirmer votre souhait."
-            ),
+        return HttpResponse(
+            '<div class="fr-alert fr-alert--success fr-alert--sm">'
+            '<p>Votre inscription a été prise en compte. Vous allez recevoir un e-mail vous demandant de confirmer votre souhait.</p>'
+            '</div>'
         )
-        return HttpResponseRedirect(self.get_success_url())
 
 class AccessView(BreadCrumbMixin, TemplateView):
     template_name = "home/accessibilite.html"
