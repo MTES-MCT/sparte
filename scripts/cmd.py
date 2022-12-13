@@ -279,5 +279,21 @@ def mep_250(ctx):
     click.secho("Nothing", fg="cyan")
 
 
+@cli.command()
+@click.pass_context
+def mep_240(ctx):
+    """Trigger all data transformation to successful MEP release 1.6"""
+    click.secho("Start migration v2.4", fg="cyan")
+    connecter = ScalingoInterface(ctx.obj)
+
+    click.secho("Add new couvertures", fg="cyan")
+    connecter.manage_py("load_usage_couv")
+    connecter.manage_py("build_matrix")
+
+    click.secho("Add BFC's OCS GE", fg="cyan")
+    connecter.detached = True
+    connecter.manage_py("load_ocsge_bfc")
+
+
 if __name__ == "__main__":
     cli(obj={})
