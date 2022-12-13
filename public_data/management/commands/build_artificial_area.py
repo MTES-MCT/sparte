@@ -38,7 +38,7 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-        logger.info("Start build cities data")
+        logger.info("Start build artificial area")
         self.verbose = options["verbose"]
         if options["insee"]:
             self.process_one(options["insee"])
@@ -48,7 +48,7 @@ class Command(BaseCommand):
             self.process_region(options["region"])
         else:
             self.process_all()
-        logger.info("End building cities data")
+        logger.info("End build artificial area")
 
     def process_all(self):
         logger.info("Processing all cities")
