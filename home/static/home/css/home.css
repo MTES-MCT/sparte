@@ -20,6 +20,11 @@
     height: 350px;
 }
 
+/* Remove Footer margin-top on homepage */
+.home #footer {
+    margin-top: 0 !important;
+}
+
 /* Fade-in transition */
 .fade-in {
     opacity: 1;
