@@ -352,7 +352,7 @@ class GersZoneConstruite2019(GersZoneConstruite2016):
 # ##########
 
 
-class OcsgeBourgogneFrancheComte(AutoLoadMixin, Ocsge):
+class BourgogneFrancheComteOcsge(AutoLoadMixin, Ocsge):
     year = 2010
 
     class Meta:
@@ -401,7 +401,7 @@ class OcsgeBourgogneFrancheComte(AutoLoadMixin, Ocsge):
     }
 
 
-class OcsgeCotedor2010(OcsgeBourgogneFrancheComte):
+class CotedorOcsge2010(BourgogneFrancheComteOcsge):
     class Meta:
         proxy = True
 
@@ -410,7 +410,7 @@ class OcsgeCotedor2010(OcsgeBourgogneFrancheComte):
     year = 2010
 
 
-class OcsgeCotedor2017(OcsgeBourgogneFrancheComte):
+class CotedorOcsge2017(BourgogneFrancheComteOcsge):
     class Meta:
         proxy = True
 
@@ -419,7 +419,7 @@ class OcsgeCotedor2017(OcsgeBourgogneFrancheComte):
     year = 2017
 
 
-class OcsgeDoubs2010(OcsgeBourgogneFrancheComte):
+class DoubsOcsge2010(BourgogneFrancheComteOcsge):
     class Meta:
         proxy = True
 
@@ -428,7 +428,7 @@ class OcsgeDoubs2010(OcsgeBourgogneFrancheComte):
     year = 2010
 
 
-class OcsgeDoubs2017(OcsgeBourgogneFrancheComte):
+class DoubsOcsge2017(BourgogneFrancheComteOcsge):
     class Meta:
         proxy = True
 
@@ -437,7 +437,7 @@ class OcsgeDoubs2017(OcsgeBourgogneFrancheComte):
     year = 2017
 
 
-class OcsgeJura2010(OcsgeBourgogneFrancheComte):
+class JuraOcsge2010(BourgogneFrancheComteOcsge):
     class Meta:
         proxy = True
 
@@ -446,7 +446,7 @@ class OcsgeJura2010(OcsgeBourgogneFrancheComte):
     year = 2010
 
 
-class OcsgeJura2017(OcsgeBourgogneFrancheComte):
+class JuraOcsge2017(BourgogneFrancheComteOcsge):
     class Meta:
         proxy = True
 
@@ -462,7 +462,7 @@ class OcsgeJura2017(OcsgeBourgogneFrancheComte):
     }
 
 
-class OcsgeNievre2011(OcsgeBourgogneFrancheComte):
+class NievreOcsge2011(BourgogneFrancheComteOcsge):
     class Meta:
         proxy = True
 
@@ -471,7 +471,7 @@ class OcsgeNievre2011(OcsgeBourgogneFrancheComte):
     year = 2011
 
 
-class OcsgeNievre2017(OcsgeBourgogneFrancheComte):
+class NievreOcsge2017(BourgogneFrancheComteOcsge):
     class Meta:
         proxy = True
 
@@ -480,7 +480,7 @@ class OcsgeNievre2017(OcsgeBourgogneFrancheComte):
     year = 2017
 
 
-class OcsgeHauteSaone2011(OcsgeBourgogneFrancheComte):
+class HauteSaoneOcsge2011(BourgogneFrancheComteOcsge):
     class Meta:
         proxy = True
 
@@ -489,7 +489,7 @@ class OcsgeHauteSaone2011(OcsgeBourgogneFrancheComte):
     year = 2011
 
 
-class OcsgeHauteSaone2017(OcsgeBourgogneFrancheComte):
+class HauteSaoneOcsge2017(BourgogneFrancheComteOcsge):
     class Meta:
         proxy = True
 
@@ -498,7 +498,7 @@ class OcsgeHauteSaone2017(OcsgeBourgogneFrancheComte):
     year = 2017
 
 
-class OcsgeSaoneEtLoire2011(OcsgeBourgogneFrancheComte):
+class SaoneEtLoireOcsge2011(BourgogneFrancheComteOcsge):
     class Meta:
         proxy = True
 
@@ -514,7 +514,7 @@ class OcsgeSaoneEtLoire2011(OcsgeBourgogneFrancheComte):
     }
 
 
-class OcsgeSaoneEtLoire2018(OcsgeBourgogneFrancheComte):
+class SaoneEtLoireOcsge2018(BourgogneFrancheComteOcsge):
     class Meta:
         proxy = True
 
@@ -523,7 +523,7 @@ class OcsgeSaoneEtLoire2018(OcsgeBourgogneFrancheComte):
     year = 2018
 
 
-class OcsgeYonne2011(OcsgeBourgogneFrancheComte):
+class YonneOcsge2011(BourgogneFrancheComteOcsge):
     class Meta:
         proxy = True
 
@@ -532,7 +532,7 @@ class OcsgeYonne2011(OcsgeBourgogneFrancheComte):
     year = 2011
 
 
-class OcsgeYonne2018(OcsgeBourgogneFrancheComte):
+class YonneOcsge2018(BourgogneFrancheComteOcsge):
     class Meta:
         proxy = True
 
@@ -541,7 +541,7 @@ class OcsgeYonne2018(OcsgeBourgogneFrancheComte):
     year = 2018
 
 
-class OcsgeBelfort2010(OcsgeBourgogneFrancheComte):
+class BelfortOcsge2010(BourgogneFrancheComteOcsge):
     class Meta:
         proxy = True
 
@@ -550,13 +550,54 @@ class OcsgeBelfort2010(OcsgeBourgogneFrancheComte):
     year = 2010
 
 
-class OcsgeBelfort2017(OcsgeBourgogneFrancheComte):
+class BelfortOcsge2017(BourgogneFrancheComteOcsge):
     class Meta:
         proxy = True
 
     departement_name = "Territoire de Belfort"
     shape_file_path = "territoire_de_belfort_ocsge_2017.zip"
     year = 2017
+
+
+class BourgogneFrancheComteOcsgeDiff1017(AutoOcsgeDiff):
+    class Meta:
+        proxy = True
+
+    _year_new = 2017
+    _year_old = 2010
+    departement_name = "Côte-d'Or"
+
+    shape_file_path = "gers_diff_2016_2019.zip"
+    # Email du dev du 06.10.2022
+    # on fait la diff entre le plus récent et celui d'avant.
+    # avant = 2019, après = 2016
+    mapping = {
+        "cs_old": "cs_apres",
+        "us_old": "us_apres",
+        "cs_new": "cs_avant",
+        "us_new": "us_avant",
+        "surface": "Shape_Area",
+        "mpoly": "MULTIPOLYGON",
+    }
+
+    @classmethod
+    def clean_data(cls, clean_queryset=None):
+        # select only data covered by Gers
+        dept = Departement.objects.get(name=cls.departement_name)
+        qs = cls.objects.filter(mpoly__intersects=dept.mpoly)
+        # only current millesime
+        qs = qs.filter(year_new=cls._year_new, year_old=cls._year_old)
+        qs.delete()
+
+
+class CotedorOcsgeDiff1017(BourgogneFrancheComteOcsgeDiff1017):
+    class Meta:
+        proxy = True
+
+    _year_new = 2017
+    _year_old = 2010
+    departement_name = "Côte-d'Or"
+    shape_file_path = "cotedor_ocsgediff_1017.zip"
 
 
 class Command(BaseCommand):
@@ -600,22 +641,23 @@ class Command(BaseCommand):
             GersOcsgeDiff,
             GersZoneConstruite2016,
             GersZoneConstruite2019,
-            OcsgeCotedor2010,
-            OcsgeCotedor2017,
-            OcsgeDoubs2010,
-            OcsgeDoubs2017,
-            OcsgeJura2010,
-            OcsgeJura2017,
-            OcsgeNievre2011,
-            OcsgeNievre2017,
-            OcsgeHauteSaone2011,
-            OcsgeHauteSaone2017,
-            OcsgeSaoneEtLoire2011,
-            OcsgeSaoneEtLoire2018,
-            OcsgeYonne2011,
-            OcsgeYonne2018,
-            OcsgeBelfort2010,
-            OcsgeBelfort2017,
+            CotedorOcsge2010,
+            CotedorOcsge2017,
+            DoubsOcsge2010,
+            DoubsOcsge2017,
+            JuraOcsge2010,
+            JuraOcsge2017,
+            NievreOcsge2011,
+            NievreOcsge2017,
+            HauteSaoneOcsge2011,
+            HauteSaoneOcsge2017,
+            SaoneEtLoireOcsge2011,
+            SaoneEtLoireOcsge2018,
+            YonneOcsge2011,
+            YonneOcsge2018,
+            BelfortOcsge2010,
+            BelfortOcsge2017,
+            CotedorOcsgeDiff1017,
         ]
         if options["item"]:
             self.load([i for i in item_list if i.__name__ == options["item"]])
