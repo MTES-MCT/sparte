@@ -277,17 +277,9 @@ def mep_240(ctx):
     click.secho("Start migration v2.4", fg="cyan")
     connecter = ScalingoInterface(ctx.obj)
 
-    click.secho("Add new couvertures", fg="cyan")
-    connecter.manage_py("load_usage_couv")
-    connecter.manage_py("build_matrix")
-
     click.secho("Add BFC's OCS GE", fg="cyan")
     connecter.detached = True
-    connecter.manage_py("load_ocsge_bfc")
-
-    click.secho("Update departement with OCS GE", fg="cyan")
-    connecter.detached = False
-    connecter.manage_py("setup_dept")
+    connecter.manage_py("load_ocsge_bfc", options={"verbose": ""})
 
 
 if __name__ == "__main__":
