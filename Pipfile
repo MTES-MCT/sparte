@@ -55,6 +55,3 @@ setuptools = "*"
 django-sri = "*"
 matplotlib-scalebar = "*"
 mapclassify = "*"
-
-[scripts]
-shell = "python manage.py shell"
