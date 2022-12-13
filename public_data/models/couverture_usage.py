@@ -79,6 +79,7 @@ class BaseSol(models.Model):
 
 
 class UsageSol(BaseSol):
+    prefix = "US"
     parent = models.ForeignKey(
         "UsageSol",
         blank=True,
@@ -115,6 +116,7 @@ class UsageSol(BaseSol):
 
 
 class CouvertureSol(BaseSol):
+    prefix = "CS"
     parent = models.ForeignKey(
         "CouvertureSol",
         blank=True,
