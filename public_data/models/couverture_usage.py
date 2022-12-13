@@ -198,8 +198,8 @@ class CouvertureUsageMatrix(models.Model):
             self.is_natural = True
 
     def __str__(self):
-        us = self.usage.code_prefix
-        cs = self.couverture.code_prefix
+        us = self.usage.code_prefix if self.usage else "None"
+        cs = self.couverture.code_prefix if self.couverture else "None"
         a = "a" if self.is_artificial else ""
         c = "c" if self.is_consumed else ""
         n = "n" if self.is_natural else ""
