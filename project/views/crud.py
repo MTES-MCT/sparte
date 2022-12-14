@@ -41,7 +41,7 @@ class ProjectUpdateView(GroupMixin, UpdateView):
                 tasks.generate_theme_map_artif.si(self.object.id),
                 tasks.generate_theme_map_understand_artif.si(self.object.id),
             ),
-        )
+        ).apply_async()
         return HttpResponseRedirect(self.get_success_url())
 
     def get_success_url(self):

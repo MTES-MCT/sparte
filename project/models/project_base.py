@@ -677,7 +677,7 @@ class Project(BaseProject):
     def get_artif_area(self):
         """Return artificial surface total for all city inside diagnostic"""
         result = self.cities.all().aggregate(total=Sum("surface_artif"))
-        return result["total"]
+        return result["total"] or 0
 
     def get_artif_progession_time_scoped(self):
         """Return example: {"new_artif": 12, "new_natural": 2: "net_artif": 10}"""

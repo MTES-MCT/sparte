@@ -1,3 +1,5 @@
+from decimal import InvalidOperation
+
 from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.urls import reverse, reverse_lazy
@@ -354,7 +356,7 @@ class ProjectReportArtifView(ProjectReportBaseView):
             net_artif_rate = 100 * net_artif / (artif_area - net_artif)
             # show + on front of net_artif
             net_artif = f"+{net_artif}" if net_artif > 0 else str(net_artif)
-        except TypeError:
+        except (TypeError, InvalidOperation):
             net_artif_rate = 0
             net_artif = "0"
 
