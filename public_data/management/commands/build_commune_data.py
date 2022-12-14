@@ -10,6 +10,7 @@ from public_data.models import (
     Commune,
     CommuneDiff,
     CommuneSol,
+    Region,
     Departement,
     Ocsge,
     OcsgeDiff,
