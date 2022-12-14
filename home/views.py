@@ -20,20 +20,13 @@ class TestView(TemplateView):
     template_name = "home/test.html"
 
 
-class HomeView(BreadCrumbMixin, FormView):
+class HomeView(BreadCrumbMixin, TemplateView):
     template_name = "home/home.html"
-    form_class = NewsletterForm
-    success_url = "/"
 
-    def form_valid(self, form):
-        self.object = form.save()
-        send_nwl_confirmation.delay(self.object.id)
-        return HttpResponse(
-            '<div class="fade-in fr-alert fr-alert--success fr-alert--sm" role="alert">'
-            '<h3 class="fr-alert__title">Votre inscription a été prise en compte.</h3>'
-            '<p>Vous allez recevoir un e-mail vous demandant de confirmer votre souhait.</p>'
-            '</div>'
-        )
+    def get_context_data(self, **kwargs):
+        kwargs["form"] = NewsletterForm()
+        return super().get_context_data(**kwargs)
+
 
 class AccessView(BreadCrumbMixin, TemplateView):
     template_name = "home/accessibilite.html"
@@ -83,6 +76,16 @@ class ContactView(CreateView):
             self.request, "Votre message a été envoyé à l'équipe de SPARTE."
         )
         return HttpResponseRedirect(self.get_success_url())
+
+
+class NewsletterSubscriptionView(FormView):
+    template_name = "home/partials/newsletter_confirm_subscription.html"
+    form_class = NewsletterForm
+
+    def form_valid(self, form):
+        self.object = form.save()
+        send_nwl_confirmation.delay(self.object.id)
+        return self.render_to_response(self.get_context_data())
 
 
 class NewsLetterConfirmationView(RedirectView):
