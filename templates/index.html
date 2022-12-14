@@ -28,7 +28,7 @@
         <!-- matomo -->
         {% tracking_code %}
     </head>
-    <body>
+    <body class="{% block body_class %}{% endblock %}">
         <!-- Page content wrapper-->
         <div id="page-content-wrapper" class="d-flex flex-column h-100">
             <!-- Top navigation-->
