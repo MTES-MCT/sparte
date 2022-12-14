@@ -1,14 +1,10 @@
-import Alpine from 'alpinejs'
+import Alpine from 'alpinejs';
 
 // Add Alpine object to the window scope
-window.Alpine = Alpine
+window.Alpine = Alpine;
 
 // initialize Alpine
-Alpine.start()
+Alpine.start();
 
 // import HTMX and inject it into the window scope
 window.htmx = require('htmx.org');
-
-window.addEventListener('load', () => {
-    console.log('Webpack bundle created')
-}); 
