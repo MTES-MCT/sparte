@@ -21,7 +21,7 @@ Le Service de Portrait de l’ARtificialisation des TErritoires (ou SPARTE) est 
 
 ## Development Workflow
 1. Installer les dépendances front `npm install`
-2. Lancer le watch mode de Webpack `npm run dev` (Génère un nouveau bundle JS à chaque mise à jour du fichier ./assets/scripts/index.js)
+2. Lancer le watch mode de Webpack `npm run watch` (Génère un nouveau bundle JS production-ready à chaque mise à jour du fichier ./assets/scripts/index.js)
 
 ### Variables d'environnement
 
