@@ -1,5 +1,4 @@
 {% extends 'index.html' %}
-{% block body_class %}home{% endblock %}
 
 {% load static %}
 {% load sri %}
@@ -9,6 +8,8 @@
 {% block headers %}
 {% sri_static "home/css/home.css" %}
 {% endblock headers %}
+
+{% block body_class %}home{% endblock %}
 
 <!-- Hide breadcrumbs on home page -->
 {% block breadcrumbs %}
