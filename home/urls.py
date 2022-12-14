@@ -17,6 +17,11 @@ urlpatterns = [
     path("robots.txt", views.RobotView.as_view(), name="robots"),
     path("contact", views.ContactView.as_view(), name="contact"),
     path(
+        "newsletter/inscription",
+        views.NewsletterSubscriptionView.as_view(),
+        name="nwl-subscription",
+    ),
+    path(
         "newsletter/confirmation/<slug:token>",
         views.NewsLetterConfirmationView.as_view(),
         name="nwl-confirmation",
