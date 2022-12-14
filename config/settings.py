@@ -47,7 +47,7 @@ SECRET_KEY = env.str("SECRET")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env.bool("DEBUG", default=False)
-USE_SRI = env.bool("USE_SRI", default=False)
+USE_SRI = env.bool("USE_SRI", default=False) or not DEBUG
 
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["127.0.0.1", "localhost"])
 
@@ -108,7 +108,8 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-if not DEBUG:
+USE_CSP = env.bool("USE_CSP", default=False) or not DEBUG
+if USE_CSP:
     MIDDLEWARE.insert(2, "csp.middleware.CSPMiddleware")
 
 
@@ -435,6 +436,7 @@ MATOMO_ACTIVATE = env.bool("MATOMO_ACTIVATE", default=False)
 # SECURITY - Content Security Header Policy
 # https://django-csp.readthedocs.io
 
+CSP_UPGRADE_INSECURE_REQUESTS = not DEBUG
 CSP_DEFAULT_SRC = ["'self'"]
 CSP_SCRIPT_SRC = [
     "'self'",
@@ -449,7 +451,6 @@ CSP_STYLE_SRC = [
     STATIC_URL,
 ]
 CSP_IMG_SRC = ["'self'", "https://wxs.ign.fr", "data:", MEDIA_URL, STATIC_URL]
-CSP_UPGRADE_INSECURE_REQUESTS = not DEBUG
 CSP_INCLUDE_NONCE_IN = ["script-src", "style-src"]
 CSP_FONT_SRC = ("'self'", "data:", "https://cdn.jsdelivr.net", STATIC_URL)
 CSP_CONNECT_SRC = ["https://stats.data.gouv.fr", "'self'"]
