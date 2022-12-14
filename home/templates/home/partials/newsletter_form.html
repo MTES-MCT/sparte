@@ -1,0 +1,32 @@
+<div class="fr-follow">
+  <div class="fr-container">
+    <div class="fr-grid-row">
+      <div class="fr-col-12">
+        <div class="fr-follow__newsletter">
+          <div>
+            <h2 class="fr-h5">Abonnez-vous à notre lettre d’information</h2>
+            <p class="fr-text--sm">Ne ratez rien de notre actualité.</p>
+          </div>
+          <div>
+            <form hx-post="{% url 'home:nwl-subscription' %}">
+              {% csrf_token %}
+              <div class="fr-input-group">
+                <label class="fr-label" for="newsletter-email">
+                  Votre adresse électronique (ex. : nom@domaine.fr)
+                </label>
+                <div class="fr-input-wrap fr-input-wrap--addon">
+                  <input class="fr-input" title="Votre adresse électronique (ex. : nom@domaine.fr)" autocomplete="email" attributes="[object Object]" aria-describedby="newsletter-email-hint-text newsletter-email-messages" placeholder="Votre adresse électronique (ex. : nom@domaine.fr)" id="newsletter-email" type="email" name="email">
+                  <button class="fr-btn" id="newsletter-button" title="S'abonner à notre lettre d’information" type="submit">
+                    S'abonner
+                  </button>
+                </div>
+                <div class="fr-messages-group" id="newsletter-email-messages" aria-live="assertive"></div>
+              </div>
+              <p id="newsletter-email-hint-text" class="fr-hint-text">En renseignant votre adresse électronique, vous acceptez de recevoir nos actualités par courriel. Vous pouvez vous désinscrire à tout moment à l’aide des liens de désinscription ou en nous contactant.</p>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
