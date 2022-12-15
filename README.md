@@ -21,7 +21,7 @@ Le Service de Portrait de l’ARtificialisation des TErritoires (ou SPARTE) est 
 
 ## Development Workflow
 1. Installer les dépendances front `npm install`
-2. Lancer le watch mode de Webpack `npm run dev` (Génère un nouveau bundle JS à chaque mise à jour du fichier ./assets/scripts/index.js)
+2. Lancer le watch mode de Webpack `npm run watch` (Génère un nouveau bundle JS production-ready à chaque mise à jour du fichier ./assets/scripts/index.js)
 
 ### Variables d'environnement
 
@@ -50,6 +50,7 @@ Pour une installation locale, ces valeurs doivent être dans le fichier .env à 
 | MATOMO_TOKEN | Token pour envoyer les données à Matomo |  |
 | MATOMO_ACTIVATE | Détermine si des infos doivent être envoyé à Matomo | 0 |
 | USE_SRI | Active l'utilisation des SRI même lorsque debug = 1 | 1 |
+| USE_CSP | Active l'utilisation des CSP même lorsque debug = 1 | 1 |
 
 Variables d'environnement spécifique à Scalingo. Voir les valeurs sur Scalingo.
 
