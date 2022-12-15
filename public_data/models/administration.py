@@ -48,6 +48,7 @@ class LandException(BaseException):
 class AdminRef:
     REGION = "REGION"
     DEPARTEMENT = "DEPART"
+    SCORT = "SCOT"
     EPCI = "EPCI"
     COMMUNE = "COMM"
     SCOT = "SCOT"
@@ -57,6 +58,7 @@ class AdminRef:
         (COMMUNE, "Commune"),
         (EPCI, "EPCI"),
         (DEPARTEMENT, "Département"),
+        (SCOT, "Scot"),
         (REGION, "Région"),
         (COMPOSITE, "Composite"),
     )
@@ -88,7 +90,7 @@ class AdminRef:
         elif name == cls.COMMUNE:
             return Commune
         elif name == cls.SCOT:
-            pass
+            return Scot
         raise AttributeError(f"{name} is not an administrative layer")
 
     @classmethod
@@ -96,6 +98,7 @@ class AdminRef:
         default_analysis = {
             cls.COMMUNE: cls.COMMUNE,
             cls.EPCI: cls.COMMUNE,
+            cls.SCOT: cls.EPCI,
             cls.DEPARTEMENT: cls.EPCI,
             cls.REGION: cls.DEPARTEMENT,
             cls.COMPOSITE: cls.COMMUNE,
@@ -116,6 +119,10 @@ class AdminRef:
         available = {
             cls.COMMUNE: [cls.COMMUNE],
             cls.EPCI: [cls.COMMUNE],
+            cls.SCOT: [
+                cls.COMMUNE,
+                cls.EPCI,
+            ],
             cls.DEPARTEMENT: [
                 cls.COMMUNE,
                 cls.EPCI,
@@ -149,6 +156,8 @@ class AdminRef:
             return cls.COMMUNE
         elif cls.EPCI in type_list:
             return cls.EPCI
+        elif cls.SCOT in type_list:
+            return cls.SCOT
         elif cls.DEPARTEMENT in type_list:
             return cls.DEPARTEMENT
         elif cls.REGION in type_list:
@@ -297,6 +306,57 @@ class Departement(LandMixin, GetDataFromCeremaMixin, models.Model):
         return qs
 
 
+class Scot(LandMixin, GetDataFromCeremaMixin, models.Model):
+    name = models.CharField("Nom", max_length=50)
+    mpoly = models.MultiPolygonField(null=True, blank=True)
+    region = models.ForeignKey(Region, on_delete=models.PROTECT)
+    departement = models.ForeignKey(Departement, on_delete=models.PROTECT)
+    is_inter_departement = models.BooleanField(default=False)
+    state_statut = models.CharField(max_length=250)
+    detailed_state_statut = models.CharField(max_length=250)
+    date_published_perimeter = models.DateField(
+        "Publication du périmètre", blank=True, null=True
+    )
+    date_acting = models.DateField("Engagement", blank=True, null=True)
+    date_stop = models.DateField("Arrêt du projet", blank=True, null=True)
+    date_validation = models.DateField("Approbation", blank=True, null=True)
+    date_end = models.DateField("Fin échéance", blank=True, null=True)
+    is_ene_law = models.BooleanField(default=False)
+    scot_type = models.CharField(max_length=250)
+    siren = models.CharField(max_length=12)
+
+    objects = IntersectManager()
+
+    land_type = AdminRef.SCOT
+    default_analysis_level = AdminRef.EPCI
+
+    # def get_ocsge_millesimes(self) -> set:
+    #     """Return the list of all OCSGE millesimes (years) available for this dept."""
+    #     if not self.ocsge_millesimes:
+    #         return list()
+    #     matches = re.finditer(r"([\d]{4,4})", self.ocsge_millesimes)
+    #     return {int(m.group(0)) for m in matches}
+
+    # def get_qs_cerema(self):
+    #     return Cerema.objects.filter(dept_id=self.source_id)
+
+    def get_cities(self):
+        return self.commune_set.all()
+
+    def __str__(self):
+        return f"SCOT {self.name.upper()}"
+
+    # @classmethod
+    # def search(cls, needle, region=None, departement=None, epci=None):
+    #     qs = cls.objects.filter(name__icontains=needle)
+    #     if region:
+    #         qs = qs.filter(region=region)
+    #     if departement:
+    #         qs = qs.filter(id=departement.id)
+    #     qs = qs.order_by("name")
+    #     return qs
+
+
 class Epci(LandMixin, GetDataFromCeremaMixin, models.Model):
     source_id = models.CharField("Identifiant source", max_length=50)
     name = models.CharField("Nom", max_length=70)
@@ -347,8 +407,9 @@ class Epci(LandMixin, GetDataFromCeremaMixin, models.Model):
 class Commune(DataColorationMixin, LandMixin, GetDataFromCeremaMixin, models.Model):
     insee = models.CharField("Code INSEE", max_length=7)
     name = models.CharField("Nom", max_length=50)
-    departement = models.ForeignKey(Departement, on_delete=models.CASCADE)
-    epci = models.ForeignKey(Epci, on_delete=models.CASCADE)
+    departement = models.ForeignKey(Departement, on_delete=models.PROTECT)
+    epci = models.ForeignKey(Epci, on_delete=models.PROTECT)
+    scot = models.ForeignKey(Scot, on_delete=models.PROTECT, blank=True, null=True)
     mpoly = models.MultiPolygonField()
 
     objects = IntersectManager()
