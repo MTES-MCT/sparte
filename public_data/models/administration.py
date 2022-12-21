@@ -307,13 +307,13 @@ class Departement(LandMixin, GetDataFromCeremaMixin, models.Model):
 
 
 class Scot(LandMixin, GetDataFromCeremaMixin, models.Model):
-    name = models.CharField("Nom", max_length=50)
+    name = models.CharField("Nom", max_length=250)
     mpoly = models.MultiPolygonField(null=True, blank=True)
     region = models.ForeignKey(Region, on_delete=models.PROTECT)
     departement = models.ForeignKey(Departement, on_delete=models.PROTECT)
-    is_inter_departement = models.BooleanField(default=False)
-    state_statut = models.CharField(max_length=250)
-    detailed_state_statut = models.CharField(max_length=250)
+    is_inter_departement = models.BooleanField("interdépartemental", default=False)
+    state_statut = models.CharField("Libellé Etat simplifié", max_length=250)
+    detailed_state_statut = models.CharField("Libellé Etat détaillé", max_length=250)
     date_published_perimeter = models.DateField(
         "Publication du périmètre", blank=True, null=True
     )
@@ -321,9 +321,9 @@ class Scot(LandMixin, GetDataFromCeremaMixin, models.Model):
     date_stop = models.DateField("Arrêt du projet", blank=True, null=True)
     date_validation = models.DateField("Approbation", blank=True, null=True)
     date_end = models.DateField("Fin échéance", blank=True, null=True)
-    is_ene_law = models.BooleanField(default=False)
-    scot_type = models.CharField(max_length=250)
-    siren = models.CharField(max_length=12)
+    is_ene_law = models.BooleanField("Intégration disposition loi ENE", default=False)
+    scot_type = models.CharField("Type", max_length=250)
+    siren = models.CharField("Siren", max_length=12)
 
     objects = IntersectManager()
 

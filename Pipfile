@@ -19,6 +19,7 @@ pytest-cov = "*"
 pytest-github-actions-annotate-failures = "*"
 bandit = "*"
 djt-csp = "*"
+tqdm = "*"
 
 [packages]
 boto3 = "*"
