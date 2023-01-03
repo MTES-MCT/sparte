@@ -19,9 +19,9 @@ Le Service de Portrait de l’ARtificialisation des TErritoires (ou SPARTE) est 
 10. Copier les fichiers de données OCS GE et Cérema... sur votre bucket AWS
 11. Lancer l'installation des données `python scripts/cmd.py --env local rebuild`
 
-## Development Workflow
+## Frontend
 1. Installer les dépendances front `npm install`
-2. Lancer le watch mode de Webpack `npm run watch` (Génère un nouveau bundle JS production-ready à chaque mise à jour du fichier ./assets/scripts/index.js)
+2. Lancer le build du bundle `npm run build:dev` ou `npm run build:prod` (Génère un nouveau bundle à chaque mise à jour du fichier ./assets/scripts/index.js)
 
 ### Variables d'environnement
 

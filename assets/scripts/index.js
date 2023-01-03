@@ -1,10 +1,11 @@
+// Import Alpine
 import Alpine from 'alpinejs';
-
 // Add Alpine object to the window scope
 window.Alpine = Alpine;
-
-// initialize Alpine
+// Initialize Alpine
 Alpine.start();
 
-// import HTMX and inject it into the window scope
+// Import HTMX and inject it into the window scope
 window.htmx = require('htmx.org');
+// Fix CSP inline style
+window.htmx.config.includeIndicatorStyles = false;
