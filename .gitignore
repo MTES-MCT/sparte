@@ -167,3 +167,6 @@ static/dsfr-v1.5.1/
 notebooks/*.xlsx
 *.tar.gz
 staticroot/*
+
+#sourcemap
+static/bundle.js.map
