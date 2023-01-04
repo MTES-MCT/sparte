@@ -1,3 +1,9 @@
+// Import styles
+import '/assets/styles/index.css';
+
+// Import dsfr
+import '@gouvfr/dsfr/dist/dsfr.module.min.js';
+
 // Import Alpine
 import Alpine from 'alpinejs';
 // Add Alpine object to the window scope
