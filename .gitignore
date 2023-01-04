@@ -166,6 +166,3 @@ carto/media/ref_plan/
 notebooks/*.xlsx
 *.tar.gz
 staticroot/*
-
-#sourcemap
-static/bundle.js.map
