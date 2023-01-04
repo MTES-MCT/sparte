@@ -162,7 +162,6 @@ carto/media/ref_plan/
 # Identifier file
 *.Identifier
 
-static/dsfr-v1.5.1/
 *.pgsql
 notebooks/*.xlsx
 *.tar.gz

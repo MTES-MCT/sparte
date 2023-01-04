@@ -77,7 +77,6 @@ THIRD_APPS = [
     "django_app_parameter",
     "sri",
     "widget_tweaks",
-    "dsfr",
     "django_celery_results",
     # "django_docx_template",
 ]
@@ -119,7 +118,6 @@ TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         "DIRS": [
-            BASE_DIR / "dsfr/templates",
             BASE_DIR / "templates",
         ],
         "APP_DIRS": True,
@@ -132,7 +130,6 @@ TEMPLATES = [
                 "users.context_processors.add_connected_user_to_context",
                 "django_app_parameter.context_processors.add_global_parameter_context",
                 "csp.context_processors.nonce",
-                "dsfr.context_processors.site_config",
             ],
         },
     },
