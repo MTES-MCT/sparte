@@ -17,10 +17,11 @@ Synthèse
 
 {% block content %}
 <div class="px-4">
+    {% include "project/partials/report_title.html" with title=diagnostic surface=total_surface %}
+    
     {% include "project/detail_menu.html" %}
 
     <div class="bg-light rounded-5 border fr-container fr-py-3w">
-
         <div class="box box-alert px-4 py-2 mb-4 mt-0">
             <p>L'article 191 de la Loi Climat & Résilience exprime que :
             <br/><i>« Afin d’atteindre l’objectif national d’absence de toute artificialisation nette des sols en 2050, le rythme de <strong>l’artificialisation des sols</strong> dans les dix années suivant la promulgation de la présente loi doit être tel que, sur cette période, <strong>la consommation totale d’espaces</strong> observée à l’échelle nationale soit inférieure à la moitié de celle observée sur les dix années précédant cette date. »</i></p>
