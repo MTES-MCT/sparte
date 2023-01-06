@@ -1,9 +1,10 @@
 @import '@gouvfr/dsfr/dist/dsfr.min.css';
+@import '@gouvfr/dsfr/dist/utility/icons/icons-system/icons-system.min.css';
 
 /*
-Fix breadcrumb icon position
+Fix link icon position
 */
-.fr-breadcrumb__list li:not(:first-child):before {
+.fr-breadcrumb__link::before, .fr-link::after {
     position: relative;
     top: 5px;
 }
