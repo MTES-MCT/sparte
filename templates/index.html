@@ -87,7 +87,9 @@
         <script nonce="{{ CSP_NONCE }}">
         // initialize les tooltips
         $(function () {
-            $('[data-toggle="tooltip"]').tooltip()
+            $('[data-toggle="tooltip"]').tooltip({
+                trigger: 'hover'
+            })
         })
         </script>
         <!-- subtemplate footer injection -->
