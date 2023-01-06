@@ -388,3 +388,11 @@ Fix link icon position
     position: relative;
     top: 5px;
 }
+
+/*
+Fix nav extra margin
+*/
+.fr-nav__list {
+    margin: 0;
+}
+
