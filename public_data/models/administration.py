@@ -48,10 +48,9 @@ class LandException(BaseException):
 class AdminRef:
     REGION = "REGION"
     DEPARTEMENT = "DEPART"
-    SCORT = "SCOT"
+    SCOT = "SCOT"
     EPCI = "EPCI"
     COMMUNE = "COMM"
-    SCOT = "SCOT"
     COMPOSITE = "COMP"
 
     CHOICES = (
@@ -337,8 +336,8 @@ class Scot(LandMixin, GetDataFromCeremaMixin, models.Model):
     #     matches = re.finditer(r"([\d]{4,4})", self.ocsge_millesimes)
     #     return {int(m.group(0)) for m in matches}
 
-    # def get_qs_cerema(self):
-    #     return Cerema.objects.filter(dept_id=self.source_id)
+    def get_qs_cerema(self):
+        return Cerema.objects.filter(city_insee__in=self.commune_set.values("insee"))
 
     def get_cities(self):
         return self.commune_set.all()
@@ -346,15 +345,15 @@ class Scot(LandMixin, GetDataFromCeremaMixin, models.Model):
     def __str__(self):
         return f"SCOT {self.name.upper()}"
 
-    # @classmethod
-    # def search(cls, needle, region=None, departement=None, epci=None):
-    #     qs = cls.objects.filter(name__icontains=needle)
-    #     if region:
-    #         qs = qs.filter(region=region)
-    #     if departement:
-    #         qs = qs.filter(id=departement.id)
-    #     qs = qs.order_by("name")
-    #     return qs
+    @classmethod
+    def search(cls, needle, region=None, departement=None, epci=None):
+        qs = cls.objects.filter(name__icontains=needle)
+        if region:
+            qs = qs.filter(region=region)
+        if departement:
+            qs = qs.filter(id=departement.id)
+        qs = qs.order_by("name")
+        return qs
 
 
 class Epci(LandMixin, GetDataFromCeremaMixin, models.Model):
@@ -566,6 +565,7 @@ class Land:
         subclasses = {
             AdminRef.COMMUNE: Commune,
             AdminRef.EPCI: Epci,
+            AdminRef.SCOT: Scot,
             AdminRef.DEPARTEMENT: Departement,
             AdminRef.REGION: Region,
         }
