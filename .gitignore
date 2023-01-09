@@ -166,3 +166,4 @@ carto/media/ref_plan/
 notebooks/*.xlsx
 *.tar.gz
 staticroot/*
+public_data/static/SSCH*
