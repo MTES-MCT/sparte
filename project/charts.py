@@ -251,7 +251,7 @@ class DeterminantPerYearChart(ProjectChart):
         "chart": {"type": "column"},
         "title": {"text": "Par an"},
         "yAxis": {
-            "title": {"text": "Consommé (en ha)"},
+            "title": {"text": "Consommation annuelle (en ha)"},
             "stackLabels": {"enabled": True, "format": "{total:,.1f}"},
         },
         "tooltip": {
