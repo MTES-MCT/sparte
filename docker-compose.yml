@@ -46,7 +46,7 @@ services:
 
   jupyter:
     image: sparte/backend:latest
-    command: python manage.py shell_plus --notebook
+    command: jupyter nbextension enable --py widgetsnbextension && python manage.py shell_plus --notebook
     volumes:
       - .:/app
     env_file: .env
