@@ -8,6 +8,7 @@ from tqdm.notebook import tqdm
 
 from public_data.models import Scot, Region, Departement, Commune
 from public_data.storages import DataStorage
+from utils.db import fix_poly
 
 
 logger = logging.getLogger("management.commands")
@@ -84,4 +85,5 @@ class Command(BaseCommand):
         logger.info("calculate_scot_mpoly_field")
         qs = Commune.objects.values("scot__id").annotate(union_mpoly=Union("mpoly"))
         for row in tqdm(qs, total=qs.count()):
-            Scot.objects.filter(id=row["scot__id"]).update(mpoly=row["union_mpoly"])
+            scot_mpoly = fix_poly(row["union_mpoly"])
+            Scot.objects.filter(id=row["scot__id"]).update(mpoly=scot_mpoly)

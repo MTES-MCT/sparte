@@ -34,6 +34,7 @@ class SelectTerritoryForm(forms.Form):
     )
     search_region = forms.BooleanField(required=False, initial=True)
     search_departement = forms.BooleanField(required=False, initial=True)
+    search_scot = forms.BooleanField(required=False, initial=True)
     search_epci = forms.BooleanField(required=False, initial=True)
     search_commune = forms.BooleanField(required=False, initial=True)
 
