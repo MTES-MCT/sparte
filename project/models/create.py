@@ -56,7 +56,7 @@ def create_from_public_key_list(
 ) -> Project:
     """Create a project from a list of public_keys"""
 
-    raise NotImplementedError("TODO update codce")
+    raise NotImplementedError("TODO update code when used")  # NOSONAR
 
     # if there is on ly one public_key, use the dedicated function
     if len(public_key_list) == 1:
