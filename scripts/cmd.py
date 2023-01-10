@@ -264,6 +264,7 @@ def mep_210(ctx):
 def mep_220(ctx):
     """Trigger all data transformation to successful MEP release 2.4"""
     click.secho("Start migration v2.4", fg="cyan")
+    connecter = ScalingoInterface(ctx.obj)
 
     click.secho("Load SCoT", fg="cyan")
     connecter.manage_py("load_scot")
