@@ -311,6 +311,19 @@ class ProjectReportSynthesisView(ProjectReportBaseView):
                 "year_avg_conso": curent_conso / project.nb_years,
                 "first_millesime": str(project.first_year_ocsge),
                 "last_millesime": str(project.last_year_ocsge),
+                "information_synthesis_1": "<p class='fr-text--sm mb-3'>L'article 191 de la Loi Climat & Résilience exprime que :</p>" +
+                    "<p class='fr-text--sm mb-3'><i>« Afin d’atteindre l’objectif national d’absence de toute artificialisation nette des sols en 2050, le rythme de <strong>l’artificialisation des sols</strong> dans les dix années suivant la promulgation de la présente loi doit être tel que, sur cette période, <strong>la consommation totale d’espaces</strong> observée à l’échelle nationale soit inférieure à la moitié de celle observée sur les dix années précédant cette date.»</i></p>" +
+                    "<p class='fr-text--sm mb-3'>Informations clés à retenir sur la mise en œuvre:</p>" +
+                    "<ul class='fr-text--sm'>" +
+                    "<li>Entre 2021 et 2031 à l'échelle de la région, il est demandé de diviser par 2  la consommation d'espaces Naturels, Agricoles et Forestiers mesurée entre 2011 et 2021.</li>" +
+                    "<li>D'ici février 2024, les SRADDET territorialiseront les objectifs de diminution pour chaque SCoT.</li>" +
+                    "</ul>" +
+                    "<p class='fr-text--sm mb-3'>SPARTE vous accompagne dans le suivi de ces nouvelles règles en produisant des indicateurs s'appuyant sur:</p>" +
+                    "<ul class='fr-text--sm mb-0'>" +
+                    "<li>la base de données d'OCcupation des Sols à Grande Echelle (OCS GE) de l'IGN ;</li>" +
+                    "<li>les fichiers fonciers du Cérema issus des données MAJIC (Mise A Jour de l'Information Cadastrale) de la DGFIP ;</li>" +
+                    "<li>les données, en particulier du recensement, de l'INSEE</li>" +
+                    "</ul>",
             }
         )
         return super().get_context_data(**kwargs)
