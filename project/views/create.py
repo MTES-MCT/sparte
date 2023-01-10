@@ -55,6 +55,8 @@ class CreateProjectViews(BreadCrumbMixin, FormView):
                 search_for.append(AdminRef.EPCI)
             if form.cleaned_data["search_commune"]:
                 search_for.append(AdminRef.COMMUNE)
+            if form.cleaned_data["search_scot"]:
+                search_for.append(AdminRef.SCOT)
             needle = form.cleaned_data["keyword"]
             if needle == "*":
                 needle = ""
