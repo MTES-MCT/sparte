@@ -2,6 +2,20 @@
 
 Ce changelog suit la méthode "keep a changelog" disponible ici: [https://keepachangelog.com/en/1.0.0/](https://keepachangelog.com/en/1.0.0/)
 
+
+## [2.4.0] - Non livré
+
+### Ajouté :
+* Carte thématique consommation d'espace dans le bilan word
+* Sélectionner un SCoT lors de la création d'un diagnostic
+
+### Modifié :
+* Réduction de la taille du header
+* Utiliser le DSFR pour le bloc newsletter
+* Améliorer le rapport "Découvrir l'OCS GE"
+* Améliorer le rapport objectif 2031
+
+
 ## [2.3.4] - 2022.12.08
 
 ### corrigé:

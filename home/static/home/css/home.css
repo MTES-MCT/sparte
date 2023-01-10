@@ -42,3 +42,8 @@
         opacity: 1;
     }
 }
+
+/* Fix menu mon compte position */
+#menu-mon-compte {
+    right: 0;
+}
