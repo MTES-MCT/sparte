@@ -39,7 +39,7 @@ urlpatterns = [
     path(
         "<int:pk>/tableau-de-bord/découvrir-l-ocsge",
         views.ProjectReportDicoverOcsgeView.as_view(),
-        name="report_couverture",
+        name="report_discover",
     ),
     path(
         "<int:pk>/tableau-de-bord/usage",

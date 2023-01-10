@@ -251,7 +251,7 @@ class DeterminantPerYearChart(ProjectChart):
         "chart": {"type": "column"},
         "title": {"text": "Par an"},
         "yAxis": {
-            "title": {"text": "Consommé (en ha)"},
+            "title": {"text": "Consommation annuelle (en ha)"},
             "stackLabels": {"enabled": True, "format": "{total:,.1f}"},
         },
         "tooltip": {
@@ -445,7 +445,7 @@ class CouvertureSolPieChart(ProjectChart):
     name = "Sol usage and couverture pie chart"
     param = {
         "chart": {"type": "pie"},
-        "title": {"text": "Dernier millésime", "floating": True},
+        "title": {"text": "Répartition en [DERNIER MILLESIME]", "floating": True},
         "yAxis": {
             "title": {"text": "Consommé (en ha)"},
             "stackLabels": {"enabled": True, "format": "{total:,.1f}"},
@@ -468,6 +468,9 @@ class CouvertureSolPieChart(ProjectChart):
     def __init__(self, project):
         self.millesime = project.last_year_ocsge
         super().__init__(project)
+        self.chart["title"]["text"] = self.chart["title"]["text"].replace(
+            "[DERNIER MILLESIME]", str(self.millesime)
+        )
 
     def get_series(self):
         if not self.series:
@@ -528,7 +531,10 @@ class CouvertureSolProgressionChart(ProjectChart):
 
     def get_series(self):
         if not self.series:
-            title = f"Progression de {self.first_millesime} à {self.last_millesime}"
+            title = (
+                f"Evolution de la couverture des sols de {self.first_millesime} à "
+                f"{self.last_millesime}"
+            )
             self.chart["title"]["text"] = title
             self.series = self.project.get_base_sol_progression(
                 self.first_millesime, self.last_millesime, sol=self._sol
@@ -892,6 +898,10 @@ class SurfaceChart(ProjectChart):
 class CouvWheelChart(ProjectChart):
     name = "Matrice de passage de la couverture"
     prefix = "cs"
+    title = (
+        "Matrice d'évolution de la couverture de [PREMIER MILLESIME] à "
+        "[DERNIER MILLESIME]"
+    )
     name_sol = "couverture"
     items = CouvertureSol.objects.all()
     param = {
@@ -908,10 +918,12 @@ class CouvWheelChart(ProjectChart):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.chart["title"]["text"] = self.name
+        title = self.title
+        title = title.replace("[PREMIER MILLESIME]", str(self.project.first_year_ocsge))
+        title = title.replace("[DERNIER MILLESIME]", str(self.project.last_year_ocsge))
+        self.chart["title"]["text"] = title
 
     def add_series(self):
-
         self.chart["series"].append(
             {
                 "keys": ["from", "to", "weight", "color"],
@@ -971,6 +983,9 @@ class CouvWheelChart(ProjectChart):
 
 class UsageWheelChart(CouvWheelChart):
     name = "Matrice de passage de l'usage"
+    title = (
+        "Matrice d'évolution de l'usage de [PREMIER MILLESIME] à [DERNIER MILLESIME]"
+    )
     prefix = "us"
     name_sol = "usage"
     items = UsageSol.objects.all()
