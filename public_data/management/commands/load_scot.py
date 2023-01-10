@@ -4,8 +4,6 @@ import pandas as pd
 from django.contrib.gis.db.models import Union
 from django.core.management.base import BaseCommand
 
-from tqdm.notebook import tqdm
-
 from public_data.models import Scot, Region, Departement, Commune
 from public_data.storages import DataStorage
 from utils.db import fix_poly
@@ -44,7 +42,7 @@ class Command(BaseCommand):
         logger.info("End loading SCoTs")
 
     def create_or_update_scot(self):
-        for index, row in tqdm(self.df_scot.iterrows(), total=len(self.df_scot.index)):
+        for _, row in self.df_scot.iterrows():
             if row["Région"] not in self.region_list:
                 # ignore DOMTOM
                 continue
@@ -71,7 +69,7 @@ class Command(BaseCommand):
 
     def link_commune_to_scot(self):
         logger.info("link_commune_to_scot")
-        for index, row in tqdm(self.df_city.iterrows(), total=len(self.df_city.index)):
+        for _, row in self.df_city.iterrows():
             try:
                 if row["id"] in self.scot_id_list:
                     # keep only cities in keeped SCoT (ie. remove islands)
@@ -84,6 +82,6 @@ class Command(BaseCommand):
     def calculate_scot_mpoly_field(self):
         logger.info("calculate_scot_mpoly_field")
         qs = Commune.objects.values("scot__id").annotate(union_mpoly=Union("mpoly"))
-        for row in tqdm(qs, total=qs.count()):
+        for row in qs:
             scot_mpoly = fix_poly(row["union_mpoly"])
             Scot.objects.filter(id=row["scot__id"]).update(mpoly=scot_mpoly)
