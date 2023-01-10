@@ -15,3 +15,6 @@ Alpine.start();
 window.htmx = require('htmx.org');
 // Fix CSP inline style
 window.htmx.config.includeIndicatorStyles = false;
+
+// Import fr-callout-read-more
+import '/assets/scripts/fr-callout-read-more.js';
