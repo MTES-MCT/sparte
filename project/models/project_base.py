@@ -857,57 +857,54 @@ class Project(BaseProject):
         return item_list
 
     def get_detail_artif(self):
-        qs = OcsgeDiff.objects.intersect(self.combined_emprise)
-        # sélection
-        qs = qs.filter(
-            year_old__gte=self.analyse_start_date,
-            year_new__lte=self.analyse_end_date,
+        return (
+            OcsgeDiff.objects.intersect(self.combined_emprise)
+            .filter(
+                year_old__gte=self.analyse_start_date,
+                year_new__lte=self.analyse_end_date,
+            )
+            .filter(Q(is_new_artif=True) | Q(is_new_natural=True))
+            .annotate(
+                code_prefix=Case(
+                    When(
+                        is_new_artif=True, then=F("new_matrix__couverture__code_prefix")
+                    ),
+                    default=F("old_matrix__couverture__code_prefix"),
+                ),
+                label=Case(
+                    When(is_new_artif=True, then=F("new_matrix__couverture__label")),
+                    default=F("old_matrix__couverture__label"),
+                ),
+                label_short=Case(
+                    When(
+                        is_new_artif=True, then=F("new_matrix__couverture__label_short")
+                    ),
+                    default=F("old_matrix__couverture__label_short"),
+                ),
+            )
+            .values("code_prefix", "label", "label_short")
+            .annotate(
+                artif=cast_sum("intersection_area", filter=Q(is_new_artif=True)),
+                renat=cast_sum("intersection_area", filter=Q(is_new_natural=True)),
+            )
         )
-        qs = qs.filter(Q(is_new_artif=True) | Q(is_new_natural=True))
-        qs = qs.annotate(
-            code_prefix=Case(
-                When(is_new_artif=True, then=F("new_matrix__couverture__code_prefix")),
-                default=F("old_matrix__couverture__code_prefix"),
-            ),
-            label=Case(
-                When(is_new_artif=True, then=F("new_matrix__couverture__label")),
-                default=F("old_matrix__couverture__label"),
-            ),
-            label_short=Case(
-                When(is_new_artif=True, then=F("new_matrix__couverture__label_short")),
-                default=F("old_matrix__couverture__label_short"),
-            ),
-        )
-        qs = qs.values("code_prefix", "label", "label_short")
-        qs = qs.annotate(
-            artif=cast_sum("intersection_area", filter=Q(is_new_artif=True)),
-            renat=cast_sum("intersection_area", filter=Q(is_new_natural=True)),
-        )
-        return qs
 
     def get_base_sol_artif(self, sol="couverture"):
-        qs = CommuneSol.objects.filter(
-            city__in=self.cities.all(),
-            year=self.last_year_ocsge,
-            matrix__is_artificial=True,
+        return (
+            CommuneSol.objects.filter(
+                city__in=self.cities.all(),
+                year=self.last_year_ocsge,
+                matrix__is_artificial=True,
+            )
+            .annotate(
+                code_prefix=F(f"matrix__{sol}__code_prefix"),
+                label=F(f"matrix__{sol}__label"),
+                label_short=F(f"matrix__{sol}__label_short"),
+                map_color=F(f"matrix__{sol}__map_color"),
+            )
+            .values("code_prefix", "label", "label_short", "map_color")
+            .annotate(surface=Sum("surface"))
         )
-        if sol == "couverture":
-            qs = qs.annotate(
-                code_prefix=F("matrix__couverture__code_prefix"),
-                label=F("matrix__couverture__label"),
-                label_short=F("matrix__couverture__label_short"),
-                map_color=F("matrix__couverture__map_color"),
-            )
-        else:
-            qs = qs.annotate(
-                code_prefix=F("matrix__usage__code_prefix"),
-                label=F("matrix__usage__label"),
-                label_short=F("matrix__usage__label_short"),
-                map_color=F("matrix__usage__map_color"),
-            )
-        qs = qs.values("code_prefix", "label", "label_short", "map_color")
-        qs = qs.annotate(surface=Sum("surface"))
-        return qs
 
     def get_neighbors(self, land_type=None):
         if not land_type:
