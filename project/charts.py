@@ -589,7 +589,18 @@ class DetailArtifChart(ProjectChart):
 
     def get_series(self):
         if not self.series:
-            self.series = self.project.get_detail_artif()
+            self.series = list(self.project.get_detail_artif())
+            if "CS1.1.2.2" not in [s["code_prefix"] for s in self.series]:
+                required_couv = CouvertureSol.objects.get(code="1.1.2.2")
+                self.series.append(
+                    {
+                        "code_prefix": required_couv.code_prefix,
+                        "label": required_couv.label,
+                        "label_short": required_couv.label_short,
+                        "artif": 0,
+                        "renat": 0,
+                    }
+                )
         return self.series
 
     def add_series(self):
