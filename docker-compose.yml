@@ -88,23 +88,30 @@ services:
       - app-network
     restart: on-failure
 
+  worker-beat:
+    image: sparte/backend:latest
+    working_dir: /app
+    volumes:
+      - .:/app
+    command: celery -A config.celery beat --loglevel=debug
+    env_file: .env
+    environment:
+      - DATABASE_URL=postgis://postgres:postgres@db:5432/postgres
+      - CELERY_BROKER_URL=redis://redis:6379/0
+    depends_on:
+      - db
+      - redis
+    networks:
+      - app-network
+    restart: on-failure
+
+
 networks:
   app-network:
     driver: bridge
 
 volumes:
   db_data:
-
-  # worker-beat:
-  #   build: .
-  #   working_dir: /app
-  #   command: celery -A config.celery beat --loglevel=info
-  #   env_file: .env
-  #   depends_on:
-  #     - redis
-  #   networks:
-  #     - app-network
-  #   restart: on-failure
 
   # flower:
   #   image: mher/flower
