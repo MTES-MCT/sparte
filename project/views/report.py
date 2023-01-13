@@ -538,8 +538,17 @@ class ProjectReportTarget2031View(ProjectReportBaseView):
         objective_chart = charts.ObjectiveChart(project)
         kwargs.update(
             {
+                "diagnostic": project,
                 "active_page": "target_2031",
                 "objective_chart": objective_chart,
+                "information_target_2031": "<p class='fr-text--sm mb-3'>La Loi Climat & Résilience recommande :</p>" +
+                    "<ul class='fr-text--sm'>" +
+                    "<li>entre 2021 et 2031 à l'échelle régionale, de diviser par 2  la consommation d'espaces Naturels, Agricoles et Forestiers mesurée entre 2011 et 2021 ;</li>" +
+                    "<li>d'ici février 2024, que les SRADDET territorialisent les objectifs de diminution pour chaque SCoT.</li>" +
+                    "</ul>" +
+                    "<p class='fr-text--sm mb-3'>En attente de territorialisation des objectifs de la loi Climat & Résilience, SPARTE fait une première simulation à l'échelle du territoire de diagnostic en divisant par 2 la consommation d'espaces par rapport au bilan 2011-2021.</p>" +
+                    "<p class='fr-text--sm mb-3'>Pour la mesure de la consommation d'espaces NAF, l'Etat utilise les fichiers fonciers.</p>" +
+                    "<p class='fr-text--sm mb-3'>Ces données sont fournies tous les ans depuis 2009. Le dernier millésime de 2021 est la photographie du territoire au 1er janvier 2021, intégrant les évolutions réalisées au cours de l'année 2020.</p>",
             }
         )
 
