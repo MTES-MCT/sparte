@@ -33,7 +33,13 @@ app.autodiscover_tasks(lambda: [n.name for n in apps.get_app_configs()])
 app.conf.timezone = "UTC"
 
 
+@app.on_after_configure.connect
+def setup_periodic_tasks(sender, **kwargs):
+    # Print beat is alive every 60 seconds.
+    sender.add_periodic_task(60.0, log.s("Celery beat is alive"), name="alive")
+
+
 @app.task
-def log():
+def log(message):
     # start logging
-    logger.info("Hello world")
+    logger.info(message)
