@@ -106,20 +106,20 @@ DATA_COUV = [
         "#cfc",
         44,
     ],
-    [47, "2.2.1.1", "Prairies", "Prairies", "#ccf24d", 45],
-    [48, "2.2.1.2", "Pelouses herbes rases", "Pelouses", "#ccf24d", 45],
-    [49, "2.2.1.4", "Terres arables", "Terres arables", "#ccf24d", 45],
-    [50, "2.2.1.5", "Autres formations herbacées", "Autres herbacées", "#ccf24d", 45],
-    [
-        51,
-        "2.2.1.3",  # Pas certain qu'elle existe cette couverture, demander doc.
-        "Formations herbacées inconnues",
-        "Formations herbacées inconnues",
-        "#ccf24d",
-        45,
-    ],
-    [52, "2.1.3.1", "Vignes", "Vignes", "#e68000", 43],
-    [53, "2.1.3.2", "Autres lianes", "Autres lianes", "#e68000", 43],
+    # [47, "2.2.1.1", "Prairies", "Prairies", "#ccf24d", 45],
+    # [48, "2.2.1.2", "Pelouses herbes rases", "Pelouses", "#ccf24d", 45],
+    # [49, "2.2.1.4", "Terres arables", "Terres arables", "#ccf24d", 45],
+    # [50, "2.2.1.5", "Autres formations herbacées", "Autres herbacées", "#ccf24d", 45],
+    # [
+    #     51,
+    #     "2.2.1.3",  # Pas certain qu'elle existe cette couverture, demander doc.
+    #     "Formations herbacées inconnues",
+    #     "Formations herbacées inconnues",
+    #     "#ccf24d",
+    #     45,
+    # ],
+    # [52, "2.1.3.1", "Vignes", "Vignes", "#e68000", 43],
+    # [53, "2.1.3.2", "Autres lianes", "Autres lianes", "#e68000", 43],
 ]
 DATA_USAGE = [
     [20, "1", "Production primaire", "Production primaire", "green", None],
@@ -181,16 +181,16 @@ DATA_USAGE = [
         "#603",
         30,
     ],
-    [
-        44,
-        "1.1.3",
-        "Surface agricole utilisée",
-        "Surface agricole utilisée",
-        "#ffffa8",
-        21,
-    ],
-    [45, "1.1.4", "Jachère", "Jachère", "#ffffa8", 21],
-    [46, "1.2.1.2", "Peupleraie", "Peupleraie", "green", 22],
+    # [
+    #     44,
+    #     "1.1.3",
+    #     "Surface agricole utilisée",
+    #     "Surface agricole utilisée",
+    #     "#ffffa8",
+    #     21,
+    # ],
+    # [45, "1.1.4", "Jachère", "Jachère", "#ffffa8", 21],
+    # [46, "1.2.1.2", "Peupleraie", "Peupleraie", "green", 22],
 ]
 
 
