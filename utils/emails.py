@@ -6,7 +6,6 @@ from requests import post, exceptions
 
 from typing import Any, Dict, List, Literal, Optional
 
-
 logger = logging.getLogger(__name__)
 
 
