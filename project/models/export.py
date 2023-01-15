@@ -1,15 +1,14 @@
+import logging
 from datetime import date, datetime
 from io import BytesIO
-import logging
 
 from django.urls import reverse
 from openpyxl import Workbook
 from openpyxl.styles import Font
 
 from project.models import Request
-from public_data.models import Epci, Departement, Region
+from public_data.models import Departement, Epci, Region
 from utils.functions import get_url_with_domain
-
 
 logger = logging.getLogger("management.commands")
 

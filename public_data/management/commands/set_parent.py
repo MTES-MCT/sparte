@@ -4,7 +4,6 @@ from django.core.management.base import BaseCommand
 
 from public_data.models import CouvertureSol, UsageSol
 
-
 logging.basicConfig(level=logging.INFO)
 
 

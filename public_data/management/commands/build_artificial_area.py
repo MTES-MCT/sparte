@@ -1,13 +1,12 @@
 import logging
 
 from django.contrib.gis.db.models import Union
-from django.contrib.gis.db.models.functions import Intersection, Area, Transform
+from django.contrib.gis.db.models.functions import Area, Intersection, Transform
 from django.core.management.base import BaseCommand
-from django.db.models import Sum, Q
+from django.db.models import Q, Sum
 
-from public_data.models import Commune, Departement, Region, Ocsge, ArtificialArea
+from public_data.models import ArtificialArea, Commune, Departement, Ocsge, Region
 from utils.db import fix_poly
-
 
 logger = logging.getLogger("management.commands")
 

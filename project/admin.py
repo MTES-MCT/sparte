@@ -1,12 +1,11 @@
 from django.contrib import messages
 from django.contrib.gis import admin
 from django.http import HttpResponseRedirect
-from django.urls import reverse, exceptions
+from django.urls import exceptions, reverse
 from django.utils.html import format_html
 
-
-from .models import Project, Request, ErrorTracking
 from . import tasks
+from .models import ErrorTracking, Project, Request
 
 
 @admin.register(Project)

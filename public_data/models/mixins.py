@@ -1,18 +1,16 @@
-from colour import Color
 import logging
-import numpy as np
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from zipfile import ZipFile
 
+import numpy as np
+from colour import Color
 from django.contrib.gis.utils import LayerMapping
 from django.core.exceptions import FieldDoesNotExist
 from django.db import connection
 
-from utils.colors import get_random_color, get_onecolor_gradient, is_valid
-
 from public_data.storages import DataStorage
-
+from utils.colors import get_onecolor_gradient, get_random_color, is_valid
 
 logger = logging.getLogger(__name__)
 

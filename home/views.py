@@ -2,8 +2,7 @@ from django.contrib import messages
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.db.models import F, Value
 from django.http import HttpResponseRedirect
-from django.views.generic import TemplateView, CreateView, RedirectView, FormView
-
+from django.views.generic import CreateView, FormView, RedirectView, TemplateView
 from django_app_parameter import app_parameter
 
 from project.models import Request
@@ -11,8 +10,8 @@ from users.models import User
 from utils.views_mixins import BreadCrumbMixin
 
 from . import charts
-from .models import ContactForm, Newsletter
 from .forms import NewsletterForm
+from .models import ContactForm, Newsletter
 from .tasks import send_contact_form, send_nwl_confirmation, send_nwl_final
 
 

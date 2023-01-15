@@ -1,37 +1,36 @@
 import collections
-from decimal import Decimal
-import pandas as pd
 import traceback
+from decimal import Decimal
 from typing import Literal
 
+import pandas as pd
 from django.conf import settings
 from django.contrib.gis.db import models as gis_models
-from django.contrib.gis.db.models import Union, Extent
+from django.contrib.gis.db.models import Extent, Union
 from django.contrib.gis.db.models.functions import Centroid
-from django.core.validators import MinValueValidator, MaxValueValidator
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
-from django.db.models import Sum, F, Value, Q, Min, Max, Case, When
-from django.db.models.functions import Concat, Coalesce
+from django.db.models import Case, F, Max, Min, Q, Sum, Value, When
+from django.db.models.functions import Coalesce, Concat
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.functional import cached_property
 
 from config.storages import PublicMediaStorage
-from public_data.models.mixins import DataColorationMixin
 from public_data.models import (
+    AdminRef,
     Cerema,
-    Land,
     CommuneDiff,
     CommunePop,
     CommuneSol,
     CouvertureSol,
     Departement,
+    Land,
     Ocsge,
     OcsgeDiff,
-    AdminRef,
     UsageSol,
 )
-
+from public_data.models.mixins import DataColorationMixin
 from utils.db import cast_sum
 
 from .utils import user_directory_path

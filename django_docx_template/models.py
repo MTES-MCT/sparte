@@ -1,18 +1,17 @@
+import random
 from datetime import datetime
 from io import BytesIO
 from pydoc import locate
-import random
 
 from django.conf import settings
 from django.db import models
 from django.urls import reverse
 from django.utils.functional import cached_property
 from django.utils.text import slugify
-
 from docxtpl import DocxTemplate as DocxEngine
 
+from .data_sources import ConverterMixin, DataSource
 from .utils import import_from_string, merge_url_parts
-from .data_sources import DataSource, ConverterMixin
 
 
 def upload_to_hook(instance: "DocxTemplate", filename: str) -> str:

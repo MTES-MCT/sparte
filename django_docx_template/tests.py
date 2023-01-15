@@ -2,17 +2,16 @@
 
 """
 from io import BytesIO
-import pytest
 from pathlib import Path
 
+import pytest
 from django.conf import settings
 
 # from django.core.exceptions import ImproperlyConfigured
 from django.core.files.uploadedfile import SimpleUploadedFile
 
-from . import data_sources
+from . import data_sources, utils
 from .models import DocxTemplate
-from . import utils
 
 
 class SimpleDataSource(data_sources.ModelDataSource):
@@ -141,7 +140,7 @@ class TestHyperLink:
         assert hyperlink.text == "Make a search on Google"
 
     def test_convert(self):
-        from docxtpl import RichText, DocxTemplate
+        from docxtpl import DocxTemplate, RichText
 
         docx_engine = DocxTemplate("django_docx_template/test_doc.docx")
         hyperlink = data_sources.HyperLink(

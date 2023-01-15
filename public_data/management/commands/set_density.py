@@ -4,8 +4,7 @@ import time
 from django.core.management.base import BaseCommand
 from django.db.models import Q
 
-from public_data.models import ZoneConstruite, Departement
-
+from public_data.models import Departement, ZoneConstruite
 
 logger = logging.getLogger("management.commands")
 

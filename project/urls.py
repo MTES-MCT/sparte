@@ -4,7 +4,6 @@ from rest_framework import routers
 from . import views
 from .api_views import EmpriseViewSet, ProjectViewSet
 
-
 app_name = "project"
 
 
