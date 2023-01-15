@@ -4,26 +4,29 @@ Asyn tasks runned by Celery
 Below functions are dedicated to loading a project data and pre calculate
 all the indicators required to speedup process
 """
-from celery import shared_task
-import contextily as cx
-import geopandas
+
 import io
 import logging
+from datetime import timedelta
+
+import contextily as cx
+import geopandas
 import matplotlib.pyplot as plt
-from matplotlib_scalebar.scalebar import ScaleBar
 import shapely
-
+from celery import shared_task
 from django.conf import settings
-from django.db.models import F, Subquery, OuterRef, Q
+from django.db.models import F, OuterRef, Q, Subquery
 from django.urls import reverse
+from django.utils import timezone
 from django_app_parameter import app_parameter
+from matplotlib_scalebar.scalebar import ScaleBar
 
+from project.models import Project, Request
+from public_data.models import ArtificialArea, Cerema, Land, OcsgeDiff
 from utils.db import fix_poly
 from utils.emails import send_template_email
 from utils.functions import get_url_with_domain
-from project.models import Project, Request
-from public_data.models import Land, Cerema, OcsgeDiff, ArtificialArea
-
+from utils.mattermost import Mattermost
 
 logger = logging.getLogger(__name__)
 
@@ -462,3 +465,30 @@ def generate_theme_map_understand_artif(self, project_id):
         logger.info(
             "End generate_theme_map_understand_artif, project_id=%d", project_id
         )
+
+
+@shared_task
+def alert_on_blocked_diagnostic():
+    stamp = timezone.now() - timedelta(hours=1)
+    qs = Request.objects.filter(done=False, created_date__lt=stamp)
+    total = qs.count()
+    if total > 0:
+        if (
+            settings.ALERT_DIAG_MEDIUM in ["mattermost", "both"]
+            and settings.ALERT_DIAG_MATTERMOST_RECIPIENTS
+        ):
+            for recipient in settings.ALERT_DIAG_MATTERMOST_RECIPIENTS:
+                Mattermost(
+                    f":exclamation: il y a {total} diagnostics bloqués !",
+                    channel=recipient,
+                ).send()
+        if (
+            settings.ALERT_DIAG_MEDIUM in ["email", "both"]
+            and settings.ALERT_DIAG_EMAIL_RECIPIENTS
+        ):
+            send_template_email(
+                "Diagnostics bloqués",
+                settings.ALERT_DIAG_EMAIL_RECIPIENTS,
+                "project/emails/blocked_diagnostic",
+                context={"total": total},
+            )
