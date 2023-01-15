@@ -10,16 +10,15 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 hello world
 """
-import environ
 from pathlib import Path
+
+import environ
 import pkg_resources
 import sentry_sdk
+from django.contrib.messages import constants as messages
+from django.core.exceptions import ImproperlyConfigured
 from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.redis import RedisIntegration
-
-from django.core.exceptions import ImproperlyConfigured
-from django.contrib.messages import constants as messages
-
 
 OFFICIAL_VERSION = "2.4.0"
 
@@ -361,6 +360,8 @@ elif EMAIL_ENGINE == "mailjet":
 
 DEFAULT_FROM_EMAIL = env.str("DEFAULT_FROM_EMAIL", default="johndoe@email.com")
 
+# Jupyter configuration
+
 # used by ./manage.py shell_plus --notebook
 if "django-extensions" in {pkg.key for pkg in pkg_resources.working_set}:
     INSTALLED_APPS += [
@@ -460,6 +461,21 @@ ORTHOPHOTO_URL = (
     "&REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0&TILEMATRIXSET=PM"
     "&LAYER=ORTHOIMAGERY.ORTHOPHOTOS&STYLE=normal&FORMAT=image/jpeg"
     "&TILECOL={x}&TILEROW={y}&TILEMATRIX={z}"
+)
+
+# MATTERMOST SETTINGS
+
+# the webhook needs to be generated in mattermost and is linked to a active account
+MATTERMOST_URL = env.str("MATTERMOST_WEBHOOK", default=None)
+
+# ALERT DIAGNOSTICS BLOCKED
+
+ALERT_DIAG_MEDIUM = env.str("ALERT_DIAG_MEDIUM", default="both")
+if ALERT_DIAG_MEDIUM not in ["mattermost", "email", "both"]:
+    raise ImproperlyConfigured("ALERT_DIAG_MEDIUM needs to be correctly set")
+ALERT_DIAG_EMAIL_RECIPIENTS = env.list("ALERT_DIAG_EMAIL_RECIPIENTS", default=[])
+ALERT_DIAG_MATTERMOST_RECIPIENTS = env.list(
+    "ALERT_DIAG_MATTERMOST_RECIPIENTS", default=[]
 )
 
 # LOGGING SETTINGS
