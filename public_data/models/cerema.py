@@ -14,7 +14,6 @@ https://cerema.app.box.com/v/pnb-action7-indicateurs-ff/folder/149684581362
 La description précise des données est disponible dans un PDF dans lien ci-dessus
 """
 from django.contrib.gis.db import models
-
 from django.db.models import F
 
 from .mixins import DataColorationMixin

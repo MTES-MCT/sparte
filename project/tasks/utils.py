@@ -4,13 +4,12 @@ import tempfile
 from pathlib import Path
 from zipfile import ZipFile
 
-from django.contrib.gis.db.models.functions import Intersection, Area, Transform
+from django.contrib.gis.db.models.functions import Area, Intersection, Transform
 from django.contrib.gis.gdal import DataSource
 from django.contrib.gis.utils import LayerMapping
 from django.db.models import F
 
 from public_data.models import Commune
-
 
 logger = logging.getLogger(__name__)
 

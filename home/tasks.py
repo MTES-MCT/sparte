@@ -1,11 +1,11 @@
-from celery import shared_task
 import logging
+
+from celery import shared_task
 from django_app_parameter import app_parameter
 
 from utils.emails import send_template_email
 
 from .models import ContactForm, Newsletter
-
 
 logger = logging.getLogger(__name__)
 

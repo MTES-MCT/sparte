@@ -1,11 +1,10 @@
 import collections
 
-from django.db.models import Sum, F, Value
+from django.db.models import F, Sum, Value
 from django.db.models.functions import Concat
 
 from highcharts import charts
-
-from public_data.models import AdminRef, OcsgeDiff, CouvertureSol, UsageSol
+from public_data.models import AdminRef, CouvertureSol, OcsgeDiff, UsageSol
 
 
 class ProjectChart(charts.Chart):

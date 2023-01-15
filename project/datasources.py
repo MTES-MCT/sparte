@@ -2,7 +2,6 @@ import os
 import tempfile
 
 from django_docx_template import data_sources
-
 from utils.functions import get_url_with_domain
 
 from . import charts

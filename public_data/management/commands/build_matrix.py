@@ -3,8 +3,7 @@ import logging
 from django.core.management.base import BaseCommand
 from django.db.models import Q
 
-from public_data.models import CouvertureUsageMatrix, CouvertureSol, UsageSol
-
+from public_data.models import CouvertureSol, CouvertureUsageMatrix, UsageSol
 
 logger = logging.getLogger("management.commands")
 

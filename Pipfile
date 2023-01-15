@@ -20,6 +20,7 @@ pytest-github-actions-annotate-failures = "*"
 bandit = "*"
 djt-csp = "*"
 tqdm = "*"
+isort = "*"
 
 [packages]
 boto3 = "*"

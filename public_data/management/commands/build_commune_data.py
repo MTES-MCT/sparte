@@ -1,21 +1,18 @@
 import logging
 
 from django.core.management.base import BaseCommand
-from django.db.models import Q, F
-
-from utils.db import cast_sum
-
+from django.db.models import F, Q
 
 from public_data.models import (
     Commune,
     CommuneDiff,
     CommuneSol,
-    Region,
     Departement,
     Ocsge,
     OcsgeDiff,
+    Region,
 )
-
+from utils.db import cast_sum
 
 logger = logging.getLogger("management.commands")
 

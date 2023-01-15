@@ -1,17 +1,16 @@
-from jenkspy import jenks_breaks
-
 from django.contrib.gis.geos import Polygon
-from django.db.models import Max, Sum, F, FloatField, Subquery, OuterRef
+from django.db.models import F, FloatField, Max, OuterRef, Subquery, Sum
 from django.db.models.functions import Cast
 from django.http import JsonResponse
 from django.urls import reverse_lazy
 from django.views.generic import DetailView
-
-from public_data.models import Cerema
-from utils.colors import get_yellow2red_gradient, get_dark_blue_gradient
+from jenkspy import jenks_breaks
 
 from project.models import Project
-from project.serializers import CitySpaceConsoMapSerializer, CityArtifMapSerializer
+from project.serializers import CityArtifMapSerializer, CitySpaceConsoMapSerializer
+from public_data.models import Cerema
+from utils.colors import get_dark_blue_gradient, get_yellow2red_gradient
+
 from .mixins import GroupMixin
 
 

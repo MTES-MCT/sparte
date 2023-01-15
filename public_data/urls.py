@@ -7,15 +7,13 @@ from .api.views import (
     CouvertureSolViewset,
     DepartementViewSet,
     EpciViewSet,
-    OcsgeViewSet,
     OcsgeDiffViewSet,
+    OcsgeViewSet,
     RegionViewSet,
     UsageSolViewset,
     ZoneConstruiteViewSet,
 )
-
 from .views import DisplayMatrix
-
 
 app_name = "public_data"
 

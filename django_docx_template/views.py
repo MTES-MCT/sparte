@@ -2,21 +2,21 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import FileResponse
+from django.shortcuts import get_object_or_404, redirect
+from django.urls import reverse, reverse_lazy
 from django.views.generic import (
-    View,
-    TemplateView,
-    DetailView,
-    ListView,
     CreateView,
     DeleteView,
+    DetailView,
+    ListView,
+    TemplateView,
     UpdateView,
+    View,
 )
-from django.shortcuts import redirect, get_object_or_404
-from django.urls import reverse_lazy, reverse
 
 from .forms import TemplateForm
 from .models import DocxTemplate
-from .utils import import_from_string, get_all_data_sources
+from .utils import get_all_data_sources, import_from_string
 
 
 class BaseTemplateMixin:

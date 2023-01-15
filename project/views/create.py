@@ -1,13 +1,12 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import redirect, get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from django.views.generic import FormView, RedirectView
-
-from public_data.models import Land, AdminRef
-from utils.views_mixins import BreadCrumbMixin
 
 from project.forms import SelectTerritoryForm
 from project.models import Project, create_from_public_key
+from public_data.models import AdminRef, Land
+from utils.views_mixins import BreadCrumbMixin
 
 
 class ClaimProjectView(LoginRequiredMixin, RedirectView):
