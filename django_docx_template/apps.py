@@ -3,7 +3,6 @@ import logging
 from django.apps import AppConfig
 from django.urls import path
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -13,9 +12,9 @@ class DjangoDocxTemplateConfig(AppConfig):
 
     def ready(self):
         try:
+            from . import views
             from .models import DocxTemplate
             from .urls import urlpatterns
-            from . import views
 
             for template in DocxTemplate.objects.all():
                 urlpatterns.append(

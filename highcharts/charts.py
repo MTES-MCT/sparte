@@ -1,12 +1,12 @@
 import base64
 import copy
 import json
-import random
 import os
-import requests
+import random
 import string
 import tempfile
 
+import requests
 from django.conf import settings
 from django.templatetags.static import static
 from django.utils.safestring import mark_safe

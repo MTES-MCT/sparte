@@ -1,6 +1,7 @@
 """ Contains all logic to create a project """
-import celery
 from typing import List
+
+import celery
 
 from project import tasks as t
 from project.models import Project

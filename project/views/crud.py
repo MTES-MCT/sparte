@@ -1,15 +1,9 @@
 import celery
-
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
 from django.shortcuts import redirect
-from django.urls import reverse_lazy, reverse
-from django.views.generic import (
-    ListView,
-    DetailView,
-    DeleteView,
-    UpdateView,
-)
+from django.urls import reverse, reverse_lazy
+from django.views.generic import DeleteView, DetailView, ListView, UpdateView
 
 from public_data.models import Land
 

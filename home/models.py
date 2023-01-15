@@ -1,6 +1,6 @@
-from random import choices
 import string
 import traceback
+from random import choices
 
 from django.db import models
 from django.urls import reverse

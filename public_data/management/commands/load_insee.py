@@ -1,12 +1,11 @@
 import logging
-from openpyxl import load_workbook
 
 from django.core.management.base import BaseCommand
+from openpyxl import load_workbook
 
 from public_data.models import Commune, CommunePop
 from public_data.models.mixins import TruncateTableMixin
 from public_data.storages import DataStorage
-
 
 logger = logging.getLogger("management.commands")
 

@@ -1,7 +1,7 @@
 # from django.db.models import Subquery, OuterRef, Count
 from rest_framework import viewsets
 
-from project.models import Request, Emprise
+from project.models import Emprise, Request
 from public_data.models import Region
 from utils.colors import get_blue_gradient
 

@@ -1,12 +1,10 @@
 import logging
+from pathlib import Path
 
 from django.contrib.gis.gdal import DataSource
 
 # from django.contrib.gis.utils import LayerMapping
 from django.core.management.base import BaseCommand, CommandError
-
-from pathlib import Path
-
 
 logging.basicConfig(level=logging.INFO)
 

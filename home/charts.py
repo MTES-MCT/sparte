@@ -1,8 +1,8 @@
+import re
 from collections import defaultdict
 from datetime import date
-import re
 
-from django.db.models import Count, CharField, Func, F, Value
+from django.db.models import CharField, Count, F, Func, Value
 
 from highcharts import charts
 from project.models import Project, Request

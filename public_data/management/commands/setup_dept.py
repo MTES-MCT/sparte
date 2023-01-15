@@ -4,7 +4,6 @@ from django.core.management.base import BaseCommand
 
 from public_data.models import Departement
 
-
 logger = logging.getLogger("management.commands")
 
 config = {

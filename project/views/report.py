@@ -3,18 +3,15 @@ from decimal import InvalidOperation
 from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.urls import reverse, reverse_lazy
-from django.views.generic import DetailView, CreateView
-
+from django.views.generic import CreateView, DetailView
 from django_app_parameter import app_parameter
 
-from public_data.models import UsageSol, CouvertureSol
-
-from project import charts
-from project.models import Project, Request, ProjectCommune
-from project import tasks
+from project import charts, tasks
+from project.models import Project, ProjectCommune, Request
 from project.utils import add_total_line_column
+from public_data.models import CouvertureSol, UsageSol
 
-from .mixins import GroupMixin, BreadCrumbMixin
+from .mixins import BreadCrumbMixin, GroupMixin
 
 
 class ProjectReportBaseView(GroupMixin, DetailView):

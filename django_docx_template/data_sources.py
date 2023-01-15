@@ -1,11 +1,11 @@
-from docxtpl import InlineImage, RichText
-from docx.shared import Mm
-from inspect import getmembers
 import itertools
+from inspect import getmembers
 from pathlib import Path
 
 from django.core.exceptions import ImproperlyConfigured
 from django.db.models import F
+from docx.shared import Mm
+from docxtpl import InlineImage, RichText
 
 
 class Field:

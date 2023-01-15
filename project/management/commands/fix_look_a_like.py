@@ -6,7 +6,6 @@ from django.db.models.functions import Replace
 
 from project.models import Project
 
-
 logger = logging.getLogger("management.commands")
 
 

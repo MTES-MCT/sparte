@@ -16,7 +16,6 @@ from public_data.models import (
     ZoneConstruite,
 )
 
-
 logger = logging.getLogger("management.commands")
 
 
@@ -702,39 +701,42 @@ class Command(BaseCommand):
         logger.info("Load OCSGE")
         self.verbose = not options["no_verbose"]
         item_list = [
+            # BASSIN D'ARCACHON #####
             ArcachonOcsge2018,
             ArcachonOcsge2015,
             ArcachonArtif,
             ArcachonRenat,
+            # GERS #####
             GersOcsge2016,
             GersOcsge2019,
             GersOcsgeDiff,
             GersZoneConstruite2016,
             GersZoneConstruite2019,
-            CotedorOcsge2010,
+            # BOURGOGNE FRANCHE COMTE #####
+            # CotedorOcsge2010,
             # CotedorOcsge2017,
-            DoubsOcsge2010,
-            DoubsOcsge2017,
-            JuraOcsge2010,
-            JuraOcsge2017,
-            NievreOcsge2011,
-            NievreOcsge2017,
-            HauteSaoneOcsge2011,
-            HauteSaoneOcsge2017,
-            SaoneEtLoireOcsge2011,
-            SaoneEtLoireOcsge2018,
-            YonneOcsge2011,
-            YonneOcsge2018,
-            BelfortOcsge2010,
-            BelfortOcsge2017,
-            CotedorOcsgeDiff1017,
-            DoubsOcsgeDiff1017,
-            JuraOcsgeDiff1017,
-            NievreOcsgeDiff1017,
-            HauteSaoneOcsgeDiff1017,
-            SaoneEtLoireOcsgeDiff1017,
-            YonneOcsgeDiff1118,
-            BelfortOcsgeDiff1017,
+            # DoubsOcsge2010,
+            # DoubsOcsge2017,
+            # JuraOcsge2010,
+            # JuraOcsge2017,
+            # NievreOcsge2011,
+            # NievreOcsge2017,
+            # HauteSaoneOcsge2011,
+            # HauteSaoneOcsge2017,
+            # SaoneEtLoireOcsge2011,
+            # SaoneEtLoireOcsge2018,
+            # YonneOcsge2011,
+            # YonneOcsge2018,
+            # BelfortOcsge2010,
+            # BelfortOcsge2017,
+            # CotedorOcsgeDiff1017,
+            # DoubsOcsgeDiff1017,
+            # JuraOcsgeDiff1017,
+            # NievreOcsgeDiff1017,
+            # HauteSaoneOcsgeDiff1017,
+            # SaoneEtLoireOcsgeDiff1017,
+            # YonneOcsgeDiff1118,
+            # BelfortOcsgeDiff1017,
         ]
         if options["item"]:
             self.load([i for i in item_list if i.__name__ == options["item"]])
