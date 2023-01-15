@@ -1,0 +1,6 @@
+Bonjour,
+
+Il y a {total} diagnostics bloqués.
+
+Cordialement
+Alfred
