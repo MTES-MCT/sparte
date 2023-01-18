@@ -3,8 +3,7 @@ from typing import List
 
 import celery
 
-from project import tasks as t
-from project.models import Project
+from .project_base import Project
 from public_data.models import AdminRef, Land
 from users.models import User
 
@@ -16,6 +15,8 @@ def create_from_public_key(
     user: User = None,
 ) -> Project:
     """Create a project from one only public_key"""
+    from project import tasks as t
+
     land = Land(public_key)
     level = AdminRef.get_analysis_default_level(public_key.split("_")[0])
     project = Project(
@@ -58,6 +59,8 @@ def create_from_public_key_list(
     """Create a project from a list of public_keys"""
 
     raise NotImplementedError("TODO update code when used")  # NOSONAR
+
+    from project import tasks as t
 
     # if there is on ly one public_key, use the dedicated function
     if len(public_key_list) == 1:
