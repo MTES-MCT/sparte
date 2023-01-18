@@ -22,6 +22,11 @@ SPARTE
                 <i class="bi bi-pencil"></i> Editer
             </a>
         </li>
+        <li class="list-inline-item">
+            <a href="{% url 'project:export-excel' project.pk %}">
+                <i class="bi bi-file"></i> Exporter vers Excel
+            </a>
+        </li>
         {% if user.is_authenticated %}
         <li class="list-inline-item">
             <a href="{% url 'project:delete' project.pk %}">

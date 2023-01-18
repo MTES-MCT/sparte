@@ -1,10 +1,16 @@
+import openpyxl
+import pandas as pd
 import re
 from datetime import datetime
 
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import F
 from django.views.generic import TemplateView
 
+from project.models.project_base import Project
 from project.storages import ExportStorage
+from utils.excel import write_sheet
+from public_data import CommunePop
 
 
 class ExportListView(LoginRequiredMixin, TemplateView):
@@ -25,3 +31,52 @@ class ExportListView(LoginRequiredMixin, TemplateView):
                     }
                 )
         return super().get_context_data(**kwargs)
+
+
+class ExportExcelView(LoginRequiredMixin, TemplateView):
+    template_name = "project/export/excel.html"
+
+    def get(self, request, *args, **kwargs):
+        project = Project.objects.get(pk=kwargs["pk"])
+        workbook = openpyxl.Workbook()
+
+        qs = (
+            CommunePop.objects.filter(city__in=project.cities.all())
+            .annotate(city_name=F("city__name"))
+            .values("city_name", "year", "pop_change")
+        )
+        df = (
+            pd.DataFrame(qs, columns=["city_name", "year", "pop_change"])
+            .fillna("")
+            .pivot(columns=["year"], index=["city_name"], values="pop_change")
+        )
+        headers = [
+            "Code INSEE",
+            "Commune",
+            "EPCI",
+            "SCoT",
+            "Département",
+            "Région",
+        ] + list(df.columns)
+
+        # qs = project.get_pop_change_per_year("pop")
+        # df = (
+        #     pd.DataFrame(qs)
+        #     .fillna("")
+        #     .pivot(index=index, columns=column, values="total")
+        #     .fillna(0)
+        # )
+        # data = [r for r in ]
+        # write_sheet(
+        #     workbook,
+        #     data=data,
+        #     headers=[
+        #         "Code INSEE",
+        #         "Commune",
+        #         "EPCI",
+        #         "SCoT",
+        #         "Département",
+        #         "Région",
+        #     ],
+        #     sheet_name="Population",
+        # )
