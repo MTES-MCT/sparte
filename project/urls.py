@@ -89,6 +89,7 @@ urlpatterns = [
     path("<int:pk>/delete/", views.ProjectDeleteView.as_view(), name="delete"),
     # EXPORT
     path("exports/", views.ExportListView.as_view(), name="excel"),
+    path("<int:pk>/export-excel", views.ExportExcelView.as_view(), name="export-excel"),
 ]
 
 
