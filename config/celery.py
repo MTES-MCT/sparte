@@ -42,7 +42,7 @@ app.conf.beat_schedule = {
     },
     "alerte-blocked-diagnostic": {
         "task": "project.tasks.project.alert_on_blocked_diagnostic",
-        "schedule": crontab(minute="*/1"),
+        "schedule": crontab(minute="0", hour="8,12,16"),
     },
 }
 
