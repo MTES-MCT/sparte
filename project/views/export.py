@@ -1,4 +1,3 @@
-import openpyxl
 import pandas as pd
 import re
 from datetime import datetime
@@ -9,8 +8,9 @@ from django.views.generic import TemplateView
 
 from project.models.project_base import Project
 from project.storages import ExportStorage
-from utils.excel import write_sheet
-from public_data import CommunePop
+
+# from utils.excel import write_sheet
+from public_data.models import CommunePop
 
 
 class ExportListView(LoginRequiredMixin, TemplateView):
@@ -38,45 +38,39 @@ class ExportExcelView(LoginRequiredMixin, TemplateView):
 
     def get(self, request, *args, **kwargs):
         project = Project.objects.get(pk=kwargs["pk"])
-        workbook = openpyxl.Workbook()
+        writer = pd.ExcelWriter("pandas_multiple.xlsx", engine="xlsxwriter")
+        self.add_population_sheet(project, writer)
 
+    def add_population_sheet(self, project, writer):
+        headers = [
+            "city_name",
+            "insee",
+            "epci",
+            "scot",
+            "dept",
+            "region",
+            "year",
+            "pop_change",
+        ]
         qs = (
             CommunePop.objects.filter(city__in=project.cities.all())
-            .annotate(city_name=F("city__name"))
-            .values("city_name", "year", "pop_change")
+            .annotate(
+                city_name=F("city__name"),
+                insee=F("city__insee"),
+                epci=F("city__epci__name"),
+                scot=F("city__scot__name"),
+                dept=F("city__departement__name"),
+                region=F("city__departement__region__name"),
+            )
+            .values(*headers)
         )
         df = (
-            pd.DataFrame(qs, columns=["city_name", "year", "pop_change"])
+            pd.DataFrame(qs, columns=headers)
             .fillna("")
-            .pivot(columns=["year"], index=["city_name"], values="pop_change")
+            .pivot(
+                columns=["year"],
+                index=headers[:6],
+                values="pop_change",
+            )
         )
-        headers = [
-            "Code INSEE",
-            "Commune",
-            "EPCI",
-            "SCoT",
-            "Département",
-            "Région",
-        ] + list(df.columns)
-
-        # qs = project.get_pop_change_per_year("pop")
-        # df = (
-        #     pd.DataFrame(qs)
-        #     .fillna("")
-        #     .pivot(index=index, columns=column, values="total")
-        #     .fillna(0)
-        # )
-        # data = [r for r in ]
-        # write_sheet(
-        #     workbook,
-        #     data=data,
-        #     headers=[
-        #         "Code INSEE",
-        #         "Commune",
-        #         "EPCI",
-        #         "SCoT",
-        #         "Département",
-        #         "Région",
-        #     ],
-        #     sheet_name="Population",
-        # )
+        df.to_excel(writer, sheet_name="Population")
