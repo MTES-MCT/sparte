@@ -90,7 +90,11 @@ class Command(BaseCommand):
 
     def calculate_scot_mpoly_field(self):
         logger.info("calculate_scot_mpoly_field")
-        qs = Commune.objects.values("scot__id").annotate(union_mpoly=Union("mpoly"))
+        qs = (
+            Commune.objects.values("scot__id")
+            .annotate(union_mpoly=Union("mpoly"))
+            .order_by("scot__id")
+        )
         for row in qs:
             scot_mpoly = fix_poly(row["union_mpoly"])
             Scot.objects.filter(id=row["scot__id"]).update(mpoly=scot_mpoly)
