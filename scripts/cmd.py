@@ -184,6 +184,7 @@ def rebuild(ctx, klass=None):
 
     click.secho("build administrative territory", fg="cyan")
     connecter.manage_py("build_administrative_layers")
+    connecter.manage_py("load_scot")
 
     click.secho("Trigger OVS GE data loading", fg="cyan")
     connecter.manage_py("load_ocsge --no-verbose --truncate")
