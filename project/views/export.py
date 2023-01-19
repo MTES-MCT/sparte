@@ -4,7 +4,8 @@ import re
 from datetime import datetime
 
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import F
+from django.db.models import F, Value, CharField, Sum
+from django.db.models.functions import Concat
 from django.http import FileResponse
 from django.views.generic import TemplateView, View
 
@@ -12,7 +13,7 @@ from project.models.project_base import Project
 from project.storages import ExportStorage
 
 # from utils.excel import write_sheet
-from public_data.models import Cerema, CommunePop
+from public_data.models import Cerema, CommunePop, CommuneDiff, CommuneSol
 
 
 class ExportListView(LoginRequiredMixin, TemplateView):
@@ -71,6 +72,7 @@ class ExportExcelView(LoginRequiredMixin, View):
             self.add_population_sheet()
             self.add_menages_sheet()
             self.add_conso_sheet()
+            self.add_artif_sheet()
         buffer.seek(0)
         return buffer
 
@@ -139,7 +141,7 @@ class ExportExcelView(LoginRequiredMixin, View):
         ]
         qs = CommunePop.objects.filter(city__in=self.project.cities.all())
         df = self.generate_dataframe(config, qs)
-        df.to_excel(self.writer, sheet_name="Ménages")
+        df.astype(float).to_excel(self.writer, sheet_name="Ménages")
 
     def add_conso_sheet(self):
         """
@@ -184,4 +186,109 @@ class ExportExcelView(LoginRequiredMixin, View):
             .values(*config.keys())
         )
         df = pd.DataFrame(qs, columns=config.keys()).fillna(0.0)
-        df.to_excel(self.writer, sheet_name="Conso d'espace")
+        df = df.set_index(["Commune", "Insee", "EPCI", "Département", "Région"])
+        df.astype(float).to_excel(self.writer, sheet_name="Conso d'espace")
+
+    def add_artif_sheet(self):
+        """
+        Onglet 4 (si dispo) : Artificialisation
+            Code insee de la commune
+            Nom de la commune
+            Nom de l'epci
+            (si dispo) Nom du SCoT
+            Nom du département
+            Nom de la région
+            Plus ancien millésime
+            Plus récent millésime
+            Surface artificielle dernier millésime
+            Pour chaque différentiel (entre 2 millésimes) :
+                artificialisation
+                renaturation
+                artificialisation nette
+                taux d'artificialisation nette (artif nette / surface du territoire)
+        """
+        qs = (
+            CommuneSol.objects.filter(city__in=self.project.cities.all())
+            .annotate(
+                Commune=F("city__name"),
+                Insee=F("city__insee"),
+                EPCI=F("city__epci__name"),
+                # "SCoT": "city__scot__name",
+                Département=F("city__departement__name"),
+                Région=F("city__departement__region__name"),
+            )
+            .filter(matrix__is_artificial=True)
+            .values("Commune", "Insee", "EPCI", "Département", "Région")
+            .annotate(Surface_artificielle_dernier_millésime=Sum("surface"))
+            .order_by("Commune", "Insee", "EPCI", "Département", "Région")
+        )
+        df = pd.DataFrame(
+            qs,
+            columns=[
+                "Commune",
+                "Insee",
+                "EPCI",
+                "Département",
+                "Région",
+                "Surface_artificielle_dernier_millésime",
+            ],
+        ).fillna(0.0)
+        df = df.set_index(["Commune", "Insee", "EPCI", "Département", "Région"])
+        qs2 = (
+            CommuneDiff.objects.filter(city__in=self.project.cities.all())
+            .filter(year_old__gte=self.project.analyse_start_date)
+            .filter(year_old__lte=self.project.analyse_end_date)
+            .annotate(
+                Commune=F("city__name"),
+                Insee=F("city__insee"),
+                EPCI=F("city__epci__name"),
+                # "SCoT": "city__scot__name",
+                Département=F("city__departement__name"),
+                Région=F("city__departement__region__name"),
+                Différentiel=Concat(
+                    "year_old", Value("-"), "year_new", output_field=CharField()
+                ),
+                Artificialisation=F("new_artif"),
+                Renaturation=F("new_natural"),
+                Artificialisation_nette=F("net_artif"),
+            )
+            .values(
+                "Commune",
+                "Insee",
+                "EPCI",
+                "Département",
+                "Région",
+                "Différentiel",
+                "Artificialisation",
+                "Renaturation",
+                "Artificialisation_nette",
+            )
+        )
+        df2 = (
+            pd.DataFrame(
+                qs2,
+                columns=[
+                    "Commune",
+                    "Insee",
+                    "EPCI",
+                    "Département",
+                    "Région",
+                    "Différentiel",
+                    "Artificialisation",
+                    "Renaturation",
+                    "Artificialisation_nette",
+                ],
+            )
+            .fillna(0.0)
+            .pivot(
+                columns=["Différentiel"],
+                index=["Commune", "Insee", "EPCI", "Département", "Région"],
+                values=[
+                    "Artificialisation",
+                    "Renaturation",
+                    "Artificialisation_nette",
+                ],
+            )
+        )
+        df = df.merge(df2, left_index=True, right_index=True)
+        df.astype(float).to_excel(self.writer, sheet_name="Artificialisation")
