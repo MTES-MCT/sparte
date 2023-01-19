@@ -22,11 +22,6 @@ SPARTE
                 <i class="bi bi-pencil"></i> Editer
             </a>
         </li>
-        <li class="list-inline-item">
-            <a href="{% url 'project:export-excel' project.pk %}">
-                <i class="bi bi-file"></i> Exporter vers Excel
-            </a>
-        </li>
         {% if user.is_authenticated %}
         <li class="list-inline-item">
             <a href="{% url 'project:delete' project.pk %}">
@@ -97,6 +92,11 @@ SPARTE
                     <div class="mt-2">
                         <ul class="list-unstyled">
                             <li><i class="bi bi-arrow-right-short"></i>synthèse du diagnostic de votre territoire</li>
+                            <li>
+                                <a href="{% url 'project:export-excel' project.pk %}">
+                                    <i class="bi bi-file-earmark-excel"></i> Exporter vers Excel
+                                </a>
+                            </li>
                         </ul>
                     </div>
                 </div>
