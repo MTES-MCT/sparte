@@ -4,7 +4,7 @@ import re
 from datetime import datetime
 
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import F, Value, CharField, Sum, Q
+from django.db.models import F, Value, CharField, Sum
 from django.db.models.functions import Concat
 from django.http import FileResponse
 from django.views.generic import TemplateView, View
