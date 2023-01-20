@@ -30,7 +30,6 @@ class Command(BaseCommand):
         self.dept_list = {d.name: d for d in Departement.objects.all()}
         with DataStorage().open("scote_et_communes.xlsx") as file_stream:
             self.df_scot = pd.read_excel(file_stream, sheet_name="Liste des SCoT")
-            self.df_scot = self.df_scot.dropna()
             self.df_city = pd.read_excel(file_stream, sheet_name="Communes Scot")
 
     def handle(self, *args, **options):
@@ -43,6 +42,12 @@ class Command(BaseCommand):
 
     def create_or_update_scot(self):
         for _, row in self.df_scot.iterrows():
+
+            def replace_nat(item):
+                if not pd.isnull(item):
+                    return item
+                return None
+
             if row["Région"] not in self.region_list:
                 # ignore DOMTOM
                 continue
@@ -56,15 +61,18 @@ class Command(BaseCommand):
             scot.is_inter_departement = row["interdépartemental (Oui/non)"] == "Oui"
             scot.state_statut = row["Libellé Etat simplifié"]
             scot.detailed_state_statut = row["Libellé Etat détaillé\n"]
-            scot.date_published_perimeter = row["publication du Pèrimetre"]
-            scot.date_acting = row["engagement"]
-            scot.date_stop = row["Arrêt de projet"]
-            scot.date_validation = row["approbation"]
-            scot.date_end = row["Fin échéance"]
+            scot.date_published_perimeter = replace_nat(row["publication du Pèrimetre"])
+            scot.date_acting = replace_nat(row["engagement"])
+            scot.date_stop = replace_nat(row["Arrêt de projet"])
+            scot.date_validation = replace_nat(row["approbation"])
+            scot.date_end = replace_nat(row["Fin échéance"])
             scot.is_ene_law = row["Intégration disposition loi ENE"] == "Oui"
             scot.scot_type = row["Type"]
             scot.siren = row["Siren"]
-            scot.save()
+            try:
+                scot.save()
+            except ValueError as e:
+                print(e)
             self.scot_id_list.append(scot.id)
 
     def link_commune_to_scot(self):
