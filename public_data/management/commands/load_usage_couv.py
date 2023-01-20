@@ -157,8 +157,8 @@ DATA_USAGE = [
     [
         32,
         "4.3",
-        "Réseaux d’utilité publique",
-        "Réseaux d’utilité publique",
+        "Réseaux d'utilité publique",
+        "Réseaux d'utilité publique",
         "#ff4b00",
         29,
     ],
@@ -211,6 +211,8 @@ class Command(BaseCommand):
         self.load(DATA_COUV, CouvertureSol)
         logger.info("Process usage")
         self.load(DATA_USAGE, UsageSol)
+        logger.info("set is key")
+        self.set_is_key()
         logger.info("End uploading CSV usage and couverture")
 
     def load(self, DATA, klass):
@@ -230,3 +232,11 @@ class Command(BaseCommand):
             mapping_parent |= {row[0]: item}
             item.save()
             logger.debug("Done %s", item)
+
+    def set_is_key(self):
+        CouvertureSol.objects.filter(code__in=["1.1", "1.2", "2.1", "2.2"]).update(
+            is_key=True
+        )
+        UsageSol.objects.filter(code__in=["1", "235", "2", "3", "4", "5", "6"]).update(
+            is_key=True
+        )
