@@ -16,6 +16,7 @@ class BaseSol(models.Model):
         "Libellé court", max_length=50, blank=True, null=True
     )
     map_color = models.CharField("Couleur", max_length=8, blank=True, null=True)
+    is_key = models.BooleanField("Est déterminant", default=False)
 
     def get_label_short(self):
         if not self.label_short:
