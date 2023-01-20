@@ -4,7 +4,7 @@ import re
 from datetime import datetime
 
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import F, Value, CharField, Sum
+from django.db.models import F, Value, CharField, Sum, Q
 from django.db.models.functions import Concat
 from django.http import FileResponse
 from django.views.generic import TemplateView, View
@@ -72,7 +72,9 @@ class ExportExcelView(LoginRequiredMixin, View):
             self.add_population_sheet()
             self.add_menages_sheet()
             self.add_conso_sheet()
-            self.add_artif_sheet()
+            if self.project.is_artif():
+                self.add_artif_sheet()
+                self.add_detail_artif_sheet()
         buffer.seek(0)
         return buffer
 
@@ -292,3 +294,90 @@ class ExportExcelView(LoginRequiredMixin, View):
         )
         df = df.merge(df2, left_index=True, right_index=True)
         df.astype(float).to_excel(self.writer, sheet_name="Artificialisation")
+
+    def add_detail_artif_sheet(self):
+        """Onglet 5 (si dispo) : Détail de l'artificialisation
+        Code insee de la commune
+        Nom de la commune
+        Nom de l'epci
+        (si dispo) Nom du SCoT
+        Nom du département
+        Nom de la région
+        Plus ancien millésime
+        Plus récent millésime
+        pour chaque couverture clé:
+            Artificialisation
+            Renaturation
+        Pour chaque usage clé:
+            Artificialisation
+            Renaturation
+        """
+        config = [
+            {"name": "Commune", "db": "city__name", "type": "index"},
+            {"name": "Insee", "db": "city__insee", "type": "index"},
+            {"name": "EPCI", "db": "city__epci__name", "type": "index"},
+            {"name": "SCoT", "db": "city__scot__name", "type": "index"},
+            {"name": "Département", "db": "city__departement__name", "type": "index"},
+            {
+                "name": "Région",
+                "db": "city__departement__region__name",
+                "type": "index",
+            },
+            {"name": "Année", "db": "year", "type": "columns"},
+            {
+                "name": "Code",
+                "db": "matrix__couverture__code_prefix",
+                "type": "columns",
+            },
+            {
+                "name": "Libellé",
+                "db": "matrix__couverture__label_short",
+                "type": "columns",
+            },
+        ]
+        qs1 = (
+            CommuneSol.objects.filter(
+                city__in=self.project.cities.all(),
+                year__gte=self.project.analyse_start_date,
+                year__lte=self.project.analyse_end_date,
+            )
+            .annotate(**{_["name"]: F(_["db"]) for _ in config})
+            .values(*[_["name"] for _ in config])
+            .annotate(surface=Sum("surface"))
+            .order_by(*[_["name"] for _ in config])
+        )
+        # usage
+        config[7] = {
+            "name": "Code",
+            "db": "matrix__usage__code_prefix",
+            "type": "columns",
+        }
+        config[8] = {
+            "name": "Libellé",
+            "db": "matrix__usage__label_short",
+            "type": "columns",
+        }
+        qs2 = (
+            CommuneSol.objects.filter(
+                city__in=self.project.cities.all(),
+                year__gte=self.project.analyse_start_date,
+                year__lte=self.project.analyse_end_date,
+            )
+            .annotate(**{_["name"]: F(_["db"]) for _ in config})
+            .values(*[_["name"] for _ in config])
+            .annotate(surface=Sum("surface"))
+            .order_by(*[_["name"] for _ in config])
+        )
+        qs = qs1.union(qs2)
+        df = (
+            pd.DataFrame(qs, columns=["surface"] + [_["name"] for _ in config])
+            .pivot(
+                columns=[_["name"] for _ in config if _["type"] == "columns"],
+                index=[_["name"] for _ in config if _["type"] == "index"],
+                values=["surface"],
+            )
+            .fillna(0.0)
+        )
+        cols = sorted(list(df.columns.values), key=lambda x: f"{x[1]}{x[2]}")
+        df = df[cols]
+        df.astype(float).to_excel(self.writer, sheet_name="Couverture et usage")
