@@ -2,7 +2,17 @@
     <div class="d-flex justify-content-between">
         <div>
             <h1 class="mb-3">{{ title }}</h1>
-            <p>Surface du territoire: <strong>{{ surface|floatformat:0 }} ha</strong></p>
+            <ul class="fr-tags-group">
+                <li>
+                    <p class="fr-tag fr-tag--sm">Surface du territoire:&nbsp;<strong>{{ surface|floatformat:0 }} ha</strong></p>
+                </li>
+                <li>
+                    <p class="fr-tag fr-tag--sm">Période demandée:&nbsp;<strong>De {{ project.analyse_start_date }} à {{ project.analyse_end_date }}</strong></p>
+                </li>
+                <li>
+                    <p class="fr-tag fr-tag--sm">Maille d'analyse:&nbsp;<strong>{{ level_plain_text }}</strong></p>
+                </li>
+            </ul>
         </div>
         <div>
             <button class="fr-btn mt-2" data-toggle="tooltip" title="Word" aria-hidden="true" data-fr-opened="false" aria-controls="fr-modal-download">
