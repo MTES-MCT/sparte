@@ -25,7 +25,7 @@ Projection 2031
     <div class="fr-container fr-py-3w">
         {% include "project/partials/report_informations.html" with content=information_target_2031 id="target_2031_1" %}
 
-        <div class="fr-grid-row fr-grid-row--gutters mt-5">
+        <div class="fr-grid-row fr-grid-row--gutters fr-mt-7w">
             <div class="fr-col-12 fr-col-md-4 fr-grid-row">
                 <div class="fr-callout w-100">
                     <p class="fr-callout__title">+{{ objective_chart.total_real|floatformat:1 }} ha</p>
@@ -46,7 +46,7 @@ Projection 2031
             </div>
         </div>
 
-        <div class="mt-5">
+        <div class="fr-mt-7w">
             <div class="d-flex justify-content-between">
                 <h3>Projection 2031 avec un objectif de réduction de 50%</h3>
                 <div>Personnaliser l'objectif 2031 : <a href="{% url 'project:update' project.pk %}?next=report-target-2031" class="fr-btn fr-btn--tertiary fr-btn--sm">{{ project.target_2031 }}%</a></div>
@@ -94,16 +94,6 @@ Projection 2031
                     </div>
                 </div>
             </div>
-
-            {% comment %} <div class="fr-callout mt-4 fr-p-2w">
-                <button class="fr-btn fr-btn--secondary fr-btn--sm mt-0" aria-expanded="false" aria-controls="target-data">Données</button>
-                <div class="fr-collapse" id="target-data">
-                    <div class="mt-3">
-                        <strong>Source</strong>
-                        <p>Fichiers fonciers du Cérema issus des données MAJIC (Mise A Jour de l'Information Cadastrale) de la DGFIP (millésime min : 2009, millésime max : 2021)</p>
-                    </div>
-                </div>
-            </div> {% endcomment %}
         </div>
     </div>
 </div>
