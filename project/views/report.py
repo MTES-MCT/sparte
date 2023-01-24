@@ -67,6 +67,7 @@ class ProjectReportConsoView(ProjectReportBaseView):
 
         kwargs.update(
             {
+                "diagnostic": project,
                 "total_surface": project.area,
                 "land_type": project.land_type or "COMP",
                 "active_page": "consommation",
@@ -100,6 +101,10 @@ class ProjectReportConsoView(ProjectReportBaseView):
                 "groups_names": groups_names,
                 "level": level,
                 "objective_chart": objective_chart,
+                "information_conso_1": "<p class='fr-text--sm mb-3'>Pour la mesure de la consommation des espaces NAF, l'Etat utilise les fichiers fonciers.</p>" +
+                    "<p class='fr-text--sm mb-3'>Ces données sont fournies tous les ans depuis 2009. Le dernier millésime de 2021 est la photographie du territoire au 1er janvier 2021, intégrant les évolutions réalisées au cours de l'année 2020.</p>" +
+                    "<p class='fr-text--sm mb-3'>Les données de l'INSEE sont également intégrées pour mettre en perspective la consommation d'espace vis à vis de l'évolution de la population et bientôt l'emploi.</p>" +
+                    "<p class='fr-text--sm mb-3'><a href='https://artificialisation.developpement-durable.gouv.fr/bases-donnees/les-fichiers-fonciers' target='_blank' id='cerema-link'>Plus d'informations sur les fichiers fonciers (source : Cerema)</a></p>"
             }
         )
 
