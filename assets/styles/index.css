@@ -15,3 +15,31 @@ Fix nav extra margin
 .fr-nav__list {
     margin: 0;
 }
+
+/*
+Custom dropdown
+*/
+.custom-dropdown {
+    padding: 0;
+}
+
+.custom-dropdown .dropdown-menu  {
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    filter: drop-shadow(var(--overlap-shadow));
+}
+
+.custom-dropdown .dropdown-menu > li {
+    padding: 0;
+}
+
+.custom-dropdown .dropdown-menu .fr-nav__link {
+    box-shadow: 0 calc(-1rem - 1px) 0 -1rem var(--border-default-grey);
+    padding: 0.75rem 1rem;
+    background-image: none;
+}
+
+.custom-dropdown .dropdown-menu .fr-nav__link[aria-current]:before  {
+    left: 0;
+}
