@@ -333,7 +333,8 @@ Rapport consommation
 // Select / unselect all
 ///////////////////////////////
 
-$('#check').click(function(){
+$('#check').click(function(e) {
+    e.preventDefault();
     let div_id = $(this).attr('chart_target');
     let chart = $("#" + div_id).highcharts();
     $(chart.series).each(function(){
@@ -342,7 +343,8 @@ $('#check').click(function(){
     chart.redraw()
 })
 
-$('#uncheck').click(function(){
+$('#uncheck').click(function(e) {
+    e.preventDefault();
     let div_id = $(this).attr('chart_target')
     let chart = $("#" + div_id).highcharts()
     //chart.series.forEach(serie => serie.hide())
@@ -352,7 +354,8 @@ $('#uncheck').click(function(){
     chart.redraw()
 })
 
-$('#reverse').click(function(){
+$('#reverse').click(function(e){
+    e.preventDefault();
     let div_id = $(this).attr('chart_target');
     let chart = $("#" + div_id).highcharts();
     $(chart.series).each(function(){
