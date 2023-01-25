@@ -271,6 +271,14 @@ def mep_240(ctx):
     connecter.manage_py("load_scot")
 
 
+@cli.command()
+@click.pass_context
+def mep_250(ctx):
+    """Trigger all data transformation to successful MEP release 2.4"""
+    click.secho("Start migration v2.5", fg="cyan")
+    click.secho("Nothing", fg="cyan")
+
+
 # @cli.command()
 # @click.pass_context
 # def mep_240(ctx):
