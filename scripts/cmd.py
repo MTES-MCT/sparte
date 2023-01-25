@@ -193,7 +193,7 @@ def rebuild(ctx, klass=None):
     connecter.manage_py("build_commune_data")
 
     click.secho("Set available millesimes", fg="cyan")
-    connecter.manage_py("set_dept_millesimes")
+    connecter.manage_py("setup_dept")
 
     click.secho("Build artificial area", fg="cyan")
     connecter.manage_py("build_artificial_area")
