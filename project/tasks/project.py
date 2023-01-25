@@ -223,9 +223,9 @@ def generate_word_diagnostic(self, request_id):
             logger.info("Word created and saved")
         return request_id
     except RateLimitExceededException as exc:
-        self.retry(exc=exc, countdown=2 ** (self.request.retries + 10))
         req.record_exception(exc)
         logger.error("Error while generating word: %s", exc)
+        self.retry(exc=exc, countdown=2 ** (self.request.retries + 10))
     except Request.DoesNotExist() as exc:
         logger.exception(exc)
         logger.error("No retry")
