@@ -210,7 +210,11 @@ def generate_word_diagnostic(self, request_id):
     logger.info(f"Start generate word for request={request_id}")
     try:
         req = Request.objects.get(id=int(request_id))
-        if not req.sent_file:
+        if not req.project:
+            exc = Exception("Project does not exist")
+            req.record_exception(exc)
+            logger.error("Error while generating word: %s", exc)
+        elif not req.sent_file:
             if not req.project.async_complete:
                 raise WaitAsyncTaskException(
                     "Not all async tasks are completed, retry later"
