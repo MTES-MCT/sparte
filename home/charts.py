@@ -88,7 +88,10 @@ class UseOfReportPieChart(charts.Chart):
             "title": {"text": "Ouverture"},
             "stackLabels": {"enabled": True, "format": "{total:,.1f}"},
         },
-        "tooltip": {"enabled": False, "pointFormat": "{point.name}: {point.y}"},
+        "tooltip": {
+            "enabled": False,
+            "pointFormat": "{point.name}: {point.percentage:.1f}",
+        },
         "xAxis": {"type": "category"},
         "legend": {"layout": "horizontal", "align": "center", "verticalAlign": "top"},
         "plotOptions": {
@@ -97,7 +100,7 @@ class UseOfReportPieChart(charts.Chart):
                 "cursor": "pointer",
                 "dataLabels": {
                     "enabled": True,
-                    "format": "<b>{point.name}</b>: {point.y}",
+                    "format": "<b>{point.name}</b>: {point.percentage:.1f} %",
                 },
             }
         },
@@ -141,7 +144,10 @@ class OrganismPieChart(charts.Chart):
             "title": {"text": "Ouverture"},
             "stackLabels": {"enabled": True, "format": "{total:,.1f}"},
         },
-        "tooltip": {"enabled": False, "pointFormat": "{point.name}: {point.y}"},
+        "tooltip": {
+            "enabled": False,
+            "pointFormat": "{point.name}: {point.percentage:.1f}",
+        },
         "xAxis": {"type": "category"},
         "legend": {"layout": "horizontal", "align": "center", "verticalAlign": "top"},
         "plotOptions": {
@@ -150,7 +156,7 @@ class OrganismPieChart(charts.Chart):
                 "cursor": "pointer",
                 "dataLabels": {
                     "enabled": True,
-                    "format": "<b>{point.name}</b>: {point.y}",
+                    "format": "<b>{point.name}</b>: {point.percentage:.1f} %",
                 },
             }
         },
