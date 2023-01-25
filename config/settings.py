@@ -76,7 +76,7 @@ THIRD_APPS = [
     "crispy_forms",
     "django_app_parameter",
     "sri",
-    "widget_tweaks",
+    # "widget_tweaks",
     "django_celery_results",
     # "django_docx_template",
 ]
