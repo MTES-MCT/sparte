@@ -18,136 +18,114 @@ Rapport artificialisation
 
 {% block content %}
 <div class="px-4">
+    {% include "project/partials/report_title.html" with title=diagnostic surface=diagnostic.area %}
+
     {% include "project/detail_menu.html" %}
 
-    <div class="bg-light rounded-5 border fr-container fr-py-3w">
+    <div class="fr-container fr-py-3w">
+        {% include "project/partials/report_informations.html" with content=information_artif_1 id="artif_1" %}
 
-        <div class="box box-alert px-4 py-2 mb-4 mt-0">
-            L’article 192 de la Loi Climat & Résilience votée en août 2021 définit l'artificialisation comme « une surface dont les sols sont :
-            <ul>
-                <li>soit imperméabilisés en raison du bâti ou d'un revêtement,</li>
-                <li>soit stabilisés et compactés,</li>
-                <li>soit constitués de matériaux composites »</li>
-            </ul>
-            Elle se traduit dans l’OCS GE nationale comme la somme des  objets anthropisés dans la description de la couverture des sols.
-
-            <p>SPARTE applique ici un croisement des données de l'OCS GE pour définir l'artificialisation conformément aux attendus de la loi Climat & Résilience, et au décret "nomenclature de l'artificialisation des sols" <i class="bi bi-info-circle" data-toggle="tooltip" title="Décret n° 2022-763 du 29 avril 2022 relatif à la nomenclature de l'artificialisation des sols pour la fixation et le suivi des objectifs dans les documents de planification et d'urbanisme" aria-hidden="true"></i>.</p>
-
-
-            <p class="fw-bold mb-0">Définition de l'artificialisation des sols</p>
-            <p>La nomenclature précise que les surfaces dont les sols sont soit imperméabilisés en raison du bâti ou d'un revêtement, soit stabilisés et compactés, soit constitués de matériaux composites sont qualifiées de surfaces artificialisées. De même, les surfaces végétalisées herbacées (c'est-à-dire non ligneuses) et qui sont à usage résidentiel, de production secondaire ou tertiaire, ou d'infrastructures, sont considérées comme artificialisées, y compris lorsqu'elles sont en chantier ou à l'état d'abandon.</p>
-
-            <button class="fr-btn fr-btn--tertiary fr-btn--sm dropdown-toggle rounded-pill" type="button" data-bs-toggle="collapse" data-bs-target="#conso-annuel-data" aria-expanded="false" aria-controls="conso-annuel-data">
-                Matrice de passage
-            </button>
-            <div class="collapse fr-highlight" id="conso-annuel-data">
-                <img src="{% static 'project/img/ocs_ge_matrice_passage.png' %}" class="w-100" />
-            </div>
-        </div>
-
-        <div class="fr-grid-row fr-grid-row--gutters">
-          <div class="fr-col-12 fr-col-md-4">
-            <div class="fr-callout">
-              <p class="fr-callout__title">{{ total_surface|floatformat:0 }} ha</p>
-              <p>Surface du territoire</p>
-            </div>
-          </div>
-
-          {% if ocsge_available %}
-          <div class="fr-col-12 fr-col-md-4">
-            <div class="fr-callout">
-              <p class="fr-callout__title">{{ artif_area|floatformat:0 }} ha</p>
-              <p>
-                <span class="dotted" data-toggle="tooltip" title="Surface des zones artificielles, c'est-à-dire les espaces répondant à la définition de la loi Climat et Résilience et à ses décrets d'application à une date donnée." aria-hidden="true">Surfaces artificialisées</span> en {{ last_millesime }}</p>
-            </div>
-          </div>
-
-          <div class="fr-col-12 fr-col-md-4">
-            <div class="fr-callout">
-              <p class="fr-callout__title">{{ rate_artif_area|floatformat:0 }}%</p>
-              <p>Taux de surfaces artificialisées</p>
-            </div>
-          </div>
-          {% endif %}
-        </div>
-
-        {% if ocsge_available %}
-        <div class="fr-grid-row fr-grid-row--gutters">
-          <div class="fr-col-12">
-            <h3 class="fr-mt-3w">Evolution en volume sur la période de {{ diagnostic.analyse_start_date }} à {{ diagnostic.analyse_end_date }}</h3>
-            <p>Sur la période demandée, l'OCS GE couvre de {{ first_millesime }} à {{ last_millesime }}.</p>
-          </div>
-
-          <div class="fr-col-12 fr-col-md-6  fr-col-lg-3">
-            <div class="fr-callout">
-              <p class="fr-callout__title">{{ new_artif|floatformat:0 }} ha</p>
-              <p><span class="dotted" data-toggle="tooltip" title="C'est la mutation d'un espace entre deux dates qui le transforme de zone non artificielle en zone artificielle." aria-hidden="true">Artificialisation</span></p>
-            </div>
-          </div>
-
-          <div class="fr-col-12 fr-col-md-6 fr-col-lg-3">
-            <div class="fr-callout">
-              <p class="fr-callout__title">{{ new_natural|floatformat:0 }} ha</p>
-              <p><span class="dotted" data-toggle="tooltip" title="C'est la mutation d'un espace entre deux dates qui le transforme de zone artificielle en zone non artificielle." aria-hidden="true">Renaturation</span></p>
-            </div>
-          </div>
-
-          <div class="fr-col-12 fr-col-md-6 fr-col-lg-3">
-            <div class="fr-callout">
-              <p class="fr-callout__title">{{ net_artif|floatformat:0 }} ha</p>
-              <p>
-                <span class="dotted" data-toggle="tooltip" title="C'est la différence entre la somme des surfaces des zones artificialisées et renaturées entre deux dates." aria-hidden="true">Artificialisation nette</span></p>
-            </div>
-          </div>
-
-          <div class="fr-col-12 fr-col-md-6 fr-col-lg-3">
-            <div class="fr-callout">
-              <p class="fr-callout__title">{{ net_artif_rate|floatformat:0 }} %</p>
-              <p><span class="dotted" data-toggle="tooltip" title="C'est le rapport entre l'artificialisation nette et la surface des zones artificialisées." aria-hidden="true">Taux d'artificialisation nette</span></p>
-            </div>
-          </div>
-        </div>
-
-        <div class="w-100 box p-4">
-            <h3>
-                <div class="float-end">
-                    <div class="dropdown me-2">
-                        <button class="fr-btn dropdown-toggle" type="button" id="dropdownMenuButton2" data-bs-toggle="dropdown" aria-expanded="false">
-                            Maille d'analyse
-                        </button>
-                        <ul class="dropdown-menu mt-2" aria-labelledby="dropdownMenuButton2">
-                            <li><a class="dropdown-item {% if level == "COMM" %}active{% endif %}" href="{% url "project:report_artif" project.id %}?level_conso=COMMUNE">Communes</a></li>
-                            {% if land_type in "DEPART_REGION_COMP" %}
-                            <li><a class="dropdown-item {% if level == "EPCI" %}active{% endif %}" href="{% url "project:report_artif" project.id %}?level_conso=EPCI">EPCI</a></li>
-                            {% endif %}
-                            {% if land_type in "REGION_COMP" %}
-                            <li><a class="dropdown-item {% if level == "DEPART" %}active{% endif %} " href="{% url "project:report_artif" project.id %}?level_conso=DEPART">Départements</a></li>
-                            {% endif %}
-                            {% if land_type in "COMP" %}
-                            <li><a class="dropdown-item {% if level == "REGION" %}active{% endif %}" href="{% url "project:report_artif" project.id %}?level_conso=REGION">Régions</a></li>
-                            {% endif %}
-                        </ul>
+        <div class="fr-mt-7w">
+            <div class="fr-grid-row fr-grid-row--gutters">
+                <div class="fr-col-12 fr-col-md-4 fr-grid-row">
+                    <div class="fr-callout w-100">
+                    <p class="fr-callout__title">{{ total_surface|floatformat:0 }} ha</p>
+                    <p>Surface du territoire</p>
                     </div>
                 </div>
-                Artificialisation nette
-            </h3>
+                <div class="fr-col-12 fr-col-md-4 fr-grid-row">
+                    <div class="fr-callout w-100">
+                    <p class="fr-callout__title">{{ artif_area|floatformat:0 }} ha</p>
+                    <p><span class="dotted" data-toggle="tooltip" title="Surface des zones artificielles, c'est-à-dire les espaces répondant à la définition de la loi Climat et Résilience et à ses décrets d'application à une date donnée." aria-hidden="true">Surfaces artificialisées</span> en {{ last_millesime }}</p>
+                    </div>
+                </div>
+                <div class="fr-col-12 fr-col-md-4 fr-grid-row">
+                    <div class="fr-callout w-100">
+                    <p class="fr-callout__title">{{ rate_artif_area|floatformat:0 }}%</p>
+                    <p>Taux de surfaces artificialisées</p>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-            <div id="chart_comparison" class="flex-fill"></div>
+        <div class="fr-mt-12w">
+            <h2>Evolution en volume sur la période de {{ diagnostic.analyse_start_date }} à {{ diagnostic.analyse_end_date }}</h2>
+            <p>Sur la période demandée, l'OCS GE couvre de {{ first_millesime }} à {{ last_millesime }}.</p>
+            <div class="fr-grid-row fr-grid-row--gutters">
+              <div class="fr-col-12 fr-col-md-6 fr-col-lg-3 fr-grid-row">
+                <div class="fr-callout w-100">
+                  <p class="fr-callout__title">{{ new_artif|floatformat:0 }} ha</p>
+                  <p><span class="dotted" data-toggle="tooltip" title="C'est la mutation d'un espace entre deux dates qui le transforme de zone non artificielle en zone artificielle." aria-hidden="true">Artificialisation</span></p>
+                </div>
+              </div>
+              <div class="fr-col-12 fr-col-md-6 fr-col-lg-3 fr-grid-row">
+                <div class="fr-callout w-100">
+                  <p class="fr-callout__title">{{ new_natural|floatformat:0 }} ha</p>
+                  <p><span class="dotted" data-toggle="tooltip" title="C'est la mutation d'un espace entre deux dates qui le transforme de zone artificielle en zone non artificielle." aria-hidden="true">Renaturation</span></p>
+                </div>
+              </div>
+              <div class="fr-col-12 fr-col-md-6 fr-col-lg-3 fr-grid-row">
+                <div class="fr-callout w-100">
+                  <p class="fr-callout__title">{{ net_artif|floatformat:0 }} ha</p>
+                  <span class="dotted" data-toggle="tooltip" title="C'est la différence entre la somme des surfaces des zones artificialisées et renaturées entre deux dates." aria-hidden="true">Artificialisation nette</span></p>
+                </div>
+              </div>
+              <div class="fr-col-12 fr-col-md-6 fr-col-lg-3 fr-grid-row">
+                <div class="fr-callout w-100">
+                  <p class="fr-callout__title">{{ net_artif_rate|floatformat:0 }} %</p>
+                  <p><span class="dotted" data-toggle="tooltip" title="C'est le rapport entre l'artificialisation nette et la surface des zones artificialisées." aria-hidden="true">Taux d'artificialisation nette</span></p>
+                </div>
+              </div>
+            </div>
+        </div>
 
-            <button class="fr-btn fr-btn--tertiary fr-btn--sm dropdown-toggle rounded-pill" type="button" data-bs-toggle="collapse" data-bs-target="#artif-net-data" aria-expanded="false" aria-controls="artif-net-data">
-                Données
-            </button>
-            <div class="collapse fr-highlight" id="artif-net-data">
-                <div>
-                    <h4 class="pt-3">Source</h4>
+        <div class="fr-mt-12w">
+            <div class="fr-grid-row fr-mb-2w">
+                <h3 class="fr-col-12 fr-col-lg-8" id="conso-annuelle">Consommation annuelle des {% if level == "COMM" %}communes{% elif level == "EPCI" %}communes{% elif level == "DEPT" %}EPCI{% else %}départements{% endif %} du territoire</h3>
+                <div class="fr-col-12 fr-col-lg-4">
+                    <div class="d-flex justify-content-end align-items-center">
+                        <div class="dropdown custom-dropdown fr-mr-2w">
+                            <button class="fr-btn fr-btn--tertiary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill" data-bs-toggle="dropdown" aria-expanded="false">
+                                Maille d'analyse
+                            </button>
+                          
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <a class="fr-nav__link" {% if level == "COMM" %} aria-current="true"{% endif %} href="{% url "project:report_artif" project.id %}?level_conso=COMMUNE">Communes</a>
+                                </li>
+                                {% if land_type in "DEPART_REGION_COMP" %}
+                                <li>
+                                    <a class="fr-nav__link" {% if level == "EPCI" %} aria-current="true"{% endif %} href="{% url "project:report_artif" project.id %}?level_conso=EPCI">EPCI</a>
+                                </li>
+                                {% endif %}
+                                {% if land_type in "REGION_COMP" %}
+                                <li>
+                                    <a class="fr-nav__link" {% if level == "DEPART" %} aria-current="true"{% endif %} href="{% url "project:report_artif" project.id %}?level_conso=DEPART">Départements</a>
+                                </li>
+                                {% endif %}
+                                {% if land_type in "COMP" %}
+                                <li>
+                                    <a class="fr-nav__link" {% if level == "REGION" %} aria-current="true"{% endif %} href="{% url "project:report_artif" project.id %}?level_conso=REGION">Régions</a>
+                                </li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="chart_comparison" class="border fr-p-3w fr-pt-5w"></div>
+
+            <div class="fr-callout bg-white fr-p-2w mt-4">
+                <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data-1">Données</button>
+                <div class="fr-collapse" id="target-data-1">
+                    <h6 class="fr-mt-2w">Source</h6>
                     <p>Données d'OCcupation des Sols à Grande Echelle (OCS GE) de l'IGN, sur la période d'analyse.</p>
-                </div>
-                <div>
-                    <h4>Calcul</h4>
+
+                    <h6 class="fr-mt-2w">Calcul</h6>
                     <p>OCS GE traduite grâce à la matrice de passage.</p>
-                </div>
-                <div>
-                    <h4>Données</h4>
+ 
+                    <h6 class="fr-mt-2w">Données</h6>
                     <table class="table table-striped table-sm table-borderless mt-5">
                         <thead>
                             <tr>
@@ -171,31 +149,23 @@ Rapport artificialisation
                     </table>
                 </div>
             </div>
-
-
         </div>
 
-        <div class="w-100 box p-4">
+        <div class="fr-mt-12w">
             <h3>Evolution</h3>
-            <div id="chart_waterfall" class="flex-fill"></div>
 
-            <button class="fr-btn fr-btn--tertiary fr-btn--sm dropdown-toggle rounded-pill" type="button" data-bs-toggle="collapse" data-bs-target="#evolution-data" aria-expanded="false" aria-controls="evolution-data">
-                Données
-            </button>
-            <div class="collapse fr-highlight" id="evolution-data">
-                <div>
-                    <h4 class="pt-3">Source</h4>
+            <div id="chart_waterfall" class="border fr-p-3w fr-pt-5w"></div>
+
+            <div class="fr-callout bg-white fr-p-2w mt-4">
+                <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data-2">Données</button>
+                <div class="fr-collapse" id="target-data-2">
+                    <h6 class="fr-mt-2w">Source</h6>
                     <p>Données d'OCcupation des Sols à Grande Echelle (OCS GE) de l'IGN, sur la période d'analyse traduite grâce à la matrice de passage.</p>
-                </div>
-                <div>
-                    <h4>Calcul</h4>
+
+                    <h6 class="fr-mt-2w">Calcul</h6>
                     <p>Artificialisation sur la période - renaturation sur la période.</p>
-                </div>
-                <div>
-                    <h4>Données</h4>
-                    <p class="text-muted">En hectare (Ha).
-                        <br/>En ligne les anciens codes, en colonne les nouveaux codes.
-                    </p>
+
+                    <h6 class="fr-mt-2w">Données</h6>
                     <table class="table table-striped table-sm table-borderless">
                         <thead>
                             <tr>
@@ -221,38 +191,32 @@ Rapport artificialisation
             </div>
         </div>
 
-        <div class="box scrollme-x p-4" >
-            <h3 class="mb-3">Détail de l'artificialisation :</h3>
-            <div class="row border-bottom mb-3">
-                <div class="col-4 border-end">
+        <div class="fr-mt-12w">
+            <h3>Détail de l'artificialisation :</h3>
+
+            <div class="border fr-p-3w fr-grid-row graph-group-container">
+                <div class="fr-col-12 fr-col-lg-4">
                     <div id="couv_artif_sol"></div>
                 </div>
-                <div class="col-4 border-end">
+                <div class="fr-col-12 fr-col-lg-4">
                     <div id="usage_artif_sol"></div>
                 </div>
-                <div class="col-4">
+                <div class="fr-col-12 fr-col-lg-4">
                     <div id="detail_artif_chart"></div>
                 </div>
             </div>
 
-            <button class="fr-btn fr-btn--tertiary fr-btn--sm dropdown-toggle rounded-pill" type="button" data-bs-toggle="collapse" data-bs-target="#detail-data" aria-expanded="false" aria-controls="detail-data">
-                Données
-            </button>
-            <div class="collapse fr-highlight" id="detail-data">
-                <div>
-                    <h4 class="pt-3">Source</h4>
+            <div class="fr-callout bg-white fr-p-2w mt-4">
+                <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data-3">Données</button>
+                <div class="fr-collapse" id="target-data-3">
+                    <h6 class="fr-mt-2w">Source</h6>
                     <p>données d'OCcupation des Sols à Grande Echelle (OCS GE) de l'IGN, sur la période d'analyse (millésime min : 2013, millésime max : 2019).</p>
-                </div>
-                <div>
-                    <h4>Calcul</h4>
-                    <p> OCS GE traduite grâce à la matrice de passage.
-                    </p>
-                </div>
-                <div>
-                    <h4>Données</h4>
-                    <p class="text-muted">En hectare (Ha).
-                        <br/>En ligne les anciens codes, en colonne les nouveaux codes.
-                    </p>
+
+                    <h6 class="fr-mt-2w">Calcul</h6>
+                    <p>OCS GE traduite grâce à la matrice de passage.</p>
+
+                    <h6 class="fr-mt-2w">Données</h6>
+                    <p>En hectare (Ha).</p>
                     <table class="table table-striped table-sm table-borderless">
                         <thead>
                             <tr>
@@ -284,14 +248,7 @@ Rapport artificialisation
                     </table>
                 </div>
             </div>
-
         </div>
-
-        {% else %}
-        <div class="box px-4 py-2 mb-4 mt-5">
-            <p class="my-1">Nous sommes désolé, mais votre territoire n'est pas encore couvert par l'OCSGE. Restez informer de son arrivée en vous abonnant à notre newsletter !</p>
-        </div>
-        {% endif %}
     </div>
 </div>
 {% endblock %}
