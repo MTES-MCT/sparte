@@ -424,3 +424,32 @@ Custom dropdown
     left: 0;
 }
 
+/*
+Graph groups
+*/
+.graph-group-container > div {
+    padding: 2rem 0;
+}
+
+.graph-group-container > div:not(:last-child) {
+    border-bottom: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color);
+}
+
+.graph-group-container > div:first-child {
+    padding-top: 0;
+}
+
+.graph-group-container > div:last-child {
+    padding-bottom: 0;
+}
+
+@media (min-width: 62em) {
+    .graph-group-container > div {
+        border-bottom: none !important;
+        padding: 0;
+    }
+
+    .graph-group-container > div:not(:last-child) {
+        border-right: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color)!important;
+    }
+}
