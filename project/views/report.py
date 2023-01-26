@@ -4,6 +4,8 @@ from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.urls import reverse, reverse_lazy
 from django.views.generic import CreateView, DetailView
+from django.templatetags.static import static
+
 from django_app_parameter import app_parameter
 
 from project import charts, tasks
@@ -391,7 +393,7 @@ class ProjectReportArtifView(ProjectReportBaseView):
 
         couv_artif_sol = charts.ArtifCouvSolPieChart(project)
         usage_artif_sol = charts.ArtifUsageSolPieChart(project)
-
+        
         kwargs.update(
             {
                 "first_millesime": str(first_millesime),
@@ -422,6 +424,17 @@ class ProjectReportArtifView(ProjectReportBaseView):
                 ),
                 "level": level,
                 "chart_waterfall": chart_waterfall,
+                "information_artif_1": "<p class='fr-text--sm mb-3'>L’article 192 de la Loi Climat & Résilience votée en août 2021 définit l'artificialisation comme « une surface dont les sols sont :</p>" +
+                    "<ul class='fr-text--sm mb-3'>" +
+                    "<li>soit imperméabilisés en raison du bâti ou d'un revêtement,</li>" +
+                    "<li>soit stabilisés et compactés,</li>" +
+                    "<li>soit constitués de matériaux composites »</li>" +
+                    "</ul>" +
+                    "<p class='fr-text--sm mb-3'>Elle se traduit dans l’OCS GE nationale comme la somme des  objets anthropisés dans la description de la couverture des sols.</p>" +
+                    "<p class='fr-text--sm mb-3'>SPARTE applique ici un croisement des données de l'OCS GE pour définir l'artificialisation conformément aux attendus de la loi Climat & Résilience, et au décret « nomenclature de l'artificialisation des sols» <small>(Décret n° 2022-763 du 29 avril 2022 relatif à la nomenclature de l'artificialisation des sols pour la fixation et le suivi des objectifs dans les documents de planification et d'urbanisme)</small>.</p>" +
+                    "<p class='fr-text--sm mb-3'><strong>Définition de l'artificialisation des sols</strong></p>" +
+                    "<p class='fr-text--sm mb-3'>La nomenclature précise que les surfaces dont les sols sont soit imperméabilisés en raison du bâti ou d'un revêtement, soit stabilisés et compactés, soit constitués de matériaux composites sont qualifiées de surfaces artificialisées. De même, les surfaces végétalisées herbacées (c'est-à-dire non ligneuses) et qui sont à usage résidentiel, de production secondaire ou tertiaire, ou d'infrastructures, sont considérées comme artificialisées, y compris lorsqu'elles sont en chantier ou à l'état d'abandon.</p>" +
+                    "<img src='%s' class='w-100' />" % (static('project/img/ocs_ge_matrice_passage.png')),
             }
         )
 
