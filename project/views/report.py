@@ -532,6 +532,7 @@ class ProjectReportConsoRelativeView(ProjectReportBaseView):
 
         kwargs.update(
             {
+                "diagnostic": project,
                 "active_page": "consommation",
                 "pop_chart": pop_chart,
                 "pop_table": add_total_line_column(pop_chart.get_series(), line=False),
@@ -553,6 +554,7 @@ class ProjectReportConsoRelativeView(ProjectReportBaseView):
                 "conso_surface_table": add_total_line_column(
                     conso_surface_chart.get_series(), line=False
                 ),
+                "information_conso_relative_1": "<p class='fr-text--sm mb-3'>Mise en perspective de la consommation d'espaces NAF du territoire avec des données externes (INSEE) et par comparaison avec ses voisins.</p>",
             }
         )
 
