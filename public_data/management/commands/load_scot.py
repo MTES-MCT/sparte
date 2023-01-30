@@ -3,8 +3,9 @@ import pandas as pd
 
 from django.contrib.gis.db.models import Union
 from django.core.management.base import BaseCommand
+from django.db import connection
 
-from public_data.models import Scot, Region, Departement, Commune
+from public_data.models import Scot, Region, Departement, Commune, Cerema
 from public_data.storages import DataStorage
 from utils.db import fix_poly
 
@@ -38,6 +39,7 @@ class Command(BaseCommand):
         self.create_or_update_scot()
         self.link_commune_to_scot()
         self.calculate_scot_mpoly_field()
+        self.update_cerema()
         logger.info("End loading SCoTs")
 
     def create_or_update_scot(self):
@@ -93,3 +95,20 @@ class Command(BaseCommand):
         for row in qs:
             scot_mpoly = fix_poly(row["union_mpoly"])
             Scot.objects.filter(id=row["scot__id"]).update(mpoly=scot_mpoly)
+
+    def update_cerema(self):
+        """Update Cerema's scot field with correct name accordingly of what we have done
+        before"""
+        Cerema.objects.all().update(scot=None)
+        query = """
+            UPDATE public_data_cerema c
+            SET scot = t.scot
+            FROM (
+            SELECT pc.insee AS city_insee, ps.name AS scot
+            FROM public_data_scot ps
+            INNER JOIN public_data_commune pc ON ps.id = pc.scot_id
+            ) t
+            WHERE c.city_insee = t.city_insee;
+        """
+        with connection.cursor() as cursor:
+            cursor.execute(query)

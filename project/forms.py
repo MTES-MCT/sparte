@@ -1,6 +1,6 @@
 from django import forms
 
-from public_data.models import Region, Departement, Epci
+from public_data.models import Region, Departement, Epci, AdminRef
 from project.models import Project
 from project.tasks import process_project_with_shape
 
@@ -74,3 +74,23 @@ class EpciForm(forms.Form):
         # dep = Departement.objects.get(pk=self.departement_id)
         self.fields["departement"].initial = self.departement_id
         self.fields["epci"].widget.attrs.update({"class": "form-control-with-carret"})
+
+
+class UpdateProjectForm(forms.ModelForm):
+    class Meta:
+        model = Project
+        fields = [
+            "name",
+            "territory_name",
+            "analyse_start_date",
+            "analyse_end_date",
+            "level",
+            "target_2031",
+            "is_public",
+        ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance and self.instance.land_type:
+            choices = AdminRef.get_available_analysis_level(self.instance.land_type)
+            self.fields["level"].choices = [(c, AdminRef.get_label(c)) for c in choices]
