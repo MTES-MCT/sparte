@@ -69,10 +69,7 @@ class ConsoCommuneChart(ProjectChart):
     }
 
     def __init__(self, *args, **kwargs):
-        try:
-            self.level = kwargs.pop("level")
-        except KeyError:
-            self.level = AdminRef.COMMUNE
+        self.level = kwargs.pop("level", AdminRef.COMMUNE)
         super().__init__(*args, **kwargs)
 
     def get_legend_for_paper(self):
@@ -91,6 +88,8 @@ class ConsoCommuneChart(ProjectChart):
                 self.series = self.project.get_land_conso_per_year("region_name")
             elif self.level == "DEPART":
                 self.series = self.project.get_land_conso_per_year("dept_name")
+            elif self.level == "SCOT":
+                self.series = self.project.get_land_conso_per_year("scot")
             elif self.level == "EPCI":
                 self.series = self.project.get_land_conso_per_year("epci_name")
             else:
