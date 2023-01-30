@@ -57,7 +57,7 @@ class AdminRef:
         (COMMUNE, "Commune"),
         (EPCI, "EPCI"),
         (DEPARTEMENT, "Département"),
-        (SCOT, "Scot"),
+        (SCOT, "SCoT"),
         (REGION, "Région"),
         (COMPOSITE, "Composite"),
     )
