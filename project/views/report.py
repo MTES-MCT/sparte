@@ -457,25 +457,10 @@ class ProjectReportDownloadView(BreadCrumbMixin, CreateView):
         "email",
     ]
 
-    def get_context_breadcrumbs(self):
-        breadcrumbs = super().get_context_breadcrumbs() + [
-            {"href": reverse_lazy("project:list"), "title": "Mes diagnostics"},
-            {
-                "href": reverse_lazy("project:detail", kwargs={"pk": self.project.id}),
-                "title": self.project.name,
-            },
-            {"href": None, "title": "Téléchargement du bilan"},
-        ]
-        return breadcrumbs
-
     def get_context_data(self, **kwargs):
-        self.project = Project.objects.get(pk=self.kwargs["pk"])
         kwargs.update(
             {
-                "project": self.project,
-                "url_bilan": app_parameter.BILAN_EXAMPLE,
-                "active_page": "download",
-                "ocsge_available": self.project.is_artif(),
+                "project": Project.objects.get(pk=self.kwargs["pk"]),
             }
         )
         return super().get_context_data(**kwargs)
@@ -505,15 +490,7 @@ class ProjectReportDownloadView(BreadCrumbMixin, CreateView):
         tasks.generate_word_diagnostic.apply_async(
             (new_request.id,), link=tasks.send_word_diagnostic.s()
         )
-        messages.success(
-            self.request,
-            (
-                "Votre demande de bilan a été enregistrée, un e-mail de confirmation "
-                "vous a été envoyé."
-            ),
-        )
-        succes_url = new_request.project.get_absolute_url()
-        return HttpResponseRedirect(succes_url)
+        return self.render_to_response(self.get_context_data(success_message=True))
 
 
 class ProjectReportConsoRelativeView(ProjectReportBaseView):
