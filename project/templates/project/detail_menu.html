@@ -16,9 +16,6 @@
             <li class="fr-nav__item"{% if not ocsge_available %} data-toggle="tooltip" title="OCS GE n'est pas disponible pour ce territoire" aria-hidden="true"{% endif %}>
                 <a class="fr-nav__link {% if not ocsge_available %} disabled{% endif %}" {% if not ocsge_available %} role="link" aria-disabled="true"{% else %} href="{% url 'project:report_couverture' project.pk %}"{% endif %} {% if active_page == 'discover' %} aria-current="true"{% endif %}>Découvrir l'OCSGE</a>
             </li>
-            <li class="fr-nav__item">
-                <a class="fr-nav__link" {% if active_page == 'download' %}aria-current="true"{% endif %} href="{% url 'project:report_download' project.pk %}">Bilan téléchargeable</a>
-            </li>
         </ul>
     </nav>
 </div>    
