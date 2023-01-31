@@ -1,64 +1,41 @@
-{% extends 'index.html' %}
-
-{% load static %}
-{% load project_tags %}
-{% load humanize %}
-{% load i18n %}
-{% load l10n %}
 {% load crispy_forms_tags %}
-{% load sri %}
-
-{% block pagetitle %}
-Télécharger le bilan
-{% endblock %}
-
-{% block headers %}
-{% sri_static "project/css/project.css" %}
-{% endblock %}
-
-{% block content %}
-<div class="px-4">
-    {% include "project/detail_menu.html" %}
-
-    <div class="bg-light rounded-5 border fr-container fr-py-3w">
-        <h3>Recevoir le bilan par e-mail</h3>
-
-        <p>Pour recevoir le bilan du <em>{{ project.get_territory_name }}</em> au format Word, veuillez compléter le formulaire ci-dessous.
-        <br/>Une fois validé, vous recevrez sous quelques minutes le document par e-mail.</p>
-
-        <div class="w-100 row justify-content-center">
-            <div class="box p-4 col-12 col-md-6 col-lg-5">
 
 
-                <form action="" method="post">
-                    {% csrf_token %}
-                    {{ form|crispy }}
-                    <button id="dl_btn" class="fr-btn mt-5" type="submit">Recevoir</button>
-                </form>
-            </div>
-        </div>
+{% if success_message %}
+    <div class="fade-in fr-alert fr-alert--success fr-alert--sm" role="alert">
+        <h3 class="fr-alert__title">Votre demande a été prise en compte.</h3>
+        <p>D'ici à quelques minutes, vous allez recevoir un e-mail contenant votre diagnostic.</p>
+        <p>N'hésitez pas à nous faire part de vos impressions et de vos suggestions d'amélioration en utilisant notre <a href="{% url 'home:contact' %}">formulaire de contact</a>.</p>
     </div>
-</div>
-{% endblock %}
+{% else %}
+    <form hx-post="{% url 'project:report_download' project.pk %}">
+        <p>Pour recevoir le <strong>{{ title }}</strong> au format Word, veuillez compléter le formulaire ci-dessous. Une fois validé, vous recevrez sous quelques minutes le document par e-mail.</p>
 
+        {% csrf_token %}
+        {{ form|crispy }}
 
-{% block tagging %}
-<script language="javascript" nonce="{{ CSP_NONCE }}">
-$( window ).on('load', function () {
-    _paq.push(['trackEvent', 'Consultation diagnostic', 'Tableau de bord', 'Téléchargement'])
-})
+        <ul class="fr-btns-group fr-btns-group--right fr-btns-group--inline-lg fr-mt-2w">
+            <li>
+                <button class="fr-btn fr-btn--secondary" >
+                    Annuler
+                </button>
+            </li>
+            <li>
+                <button id="dl_btn" class="fr-btn" type="submit">
+                    Recevoir
+                </button>
+            </li>
+        </ul>
+    </form>
 
-
-$( "#dl_btn" ).click(function() {
-    _paq.push(['trackEvent', 'Consultation diagnostic', 'Télécharger'])
-})
-
-var fired = false
-$( window ).scroll(function() {
-    if(fired == false && $( window ).scrollTop() + $( window ).height() > $( "#block-content" ).height() - 100) {
-        _paq.push(['trackEvent', 'Consultation diagnostic', 'Fin tableau de bord', 'Téléchargement'])
-        fired = true
-    }
-})
-</script>
-{% endblock tagging %}
+    <script language="javascript" nonce="{{ CSP_NONCE }}">
+        $( window ).on('load', function () {
+            _paq.push(['trackEvent', 'Consultation diagnostic', 'Tableau de bord', 'Téléchargement'])
+        })
+        
+        
+        $( "#dl_btn" ).click(function() {
+            _paq.push(['trackEvent', 'Consultation diagnostic', 'Télécharger'])
+        })
+    </script>    
+{% endif %}
