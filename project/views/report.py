@@ -28,13 +28,6 @@ class ProjectReportBaseView(GroupMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         kwargs["ocsge_available"] = self.object.is_artif()
-        levels = {
-            "COMM": "Commune",
-            "EPCI": "EPCI",
-            "DEPART": "Département",
-            "REGION": "Région",
-        }
-        kwargs["level_plain_text"] = levels[self.get_object().level]
         return super().get_context_data(**kwargs)
 
 

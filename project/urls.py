@@ -17,7 +17,7 @@ urlpatterns = [
     # REPORT
     # MAP
     path("", views.ProjectListView.as_view(), name="list"),
-    path("<int:pk>/", views.ProjectDetailView.as_view(), name="detail"),
+    path("<int:pk>/", views.ProjectReportSynthesisView.as_view(), name="detail"),
     path("<int:pk>/ajouter", views.ClaimProjectView.as_view(), name="claim"),
     path("<int:pk>/edit", views.ProjectUpdateView.as_view(), name="update"),
     path(

@@ -1,15 +1,17 @@
 import celery
 from django.contrib.auth.mixins import LoginRequiredMixin
+
 from django.http import HttpResponseRedirect
 from django.shortcuts import redirect
 from django.urls import reverse, reverse_lazy
 from django.views.generic import DeleteView, DetailView, ListView, UpdateView
 
+from project import tasks
+from project.forms import KeywordForm, UploadShpForm, UpdateProjectForm
+from project.models import Project
 from public_data.models import Land
 
-from project.forms import UploadShpForm, KeywordForm, UpdateProjectForm
-from project.models import Project
-from project import tasks
+from utils.views import RedirectURLMixin
 from .mixins import GroupMixin
 
 
@@ -18,6 +20,17 @@ class ProjectUpdateView(GroupMixin, UpdateView):
     template_name = "project/update.html"
     form_class = UpdateProjectForm
     context_object_name = "project"
+
+    def get_context_data(self, **kwargs):
+        project = self.get_object()
+
+        kwargs.update(
+            {
+                "diagnostic": project,
+                "active_page": "update",
+            }
+        )
+        return super().get_context_data(**kwargs)
 
     def get_context_breadcrumbs(self):
         breadcrumbs = super().get_context_breadcrumbs()
@@ -42,7 +55,7 @@ class ProjectUpdateView(GroupMixin, UpdateView):
         if "next" in self.request.GET:
             if self.request.GET["next"] == "report-target-2031":
                 return reverse_lazy("project:report_target_2031", kwargs=self.kwargs)
-        return reverse_lazy("project:detail", kwargs=self.kwargs)
+        return reverse_lazy("project:update", kwargs=self.kwargs)
 
 
 class ProjectDeleteView(GroupMixin, LoginRequiredMixin, DeleteView):
@@ -56,10 +69,14 @@ class ProjectDeleteView(GroupMixin, LoginRequiredMixin, DeleteView):
         return breadcrumbs
 
 
-class ProjectAddLookALike(GroupMixin, DetailView):
+class ProjectAddLookALike(GroupMixin, RedirectURLMixin, DetailView):
     model = Project
     template_name = "project/add_look_a_like.html"
     context_object_name = "project"
+
+    def get_default_redirect_url(self):
+        """Return the default redirect URL."""
+        return reverse("project:lookalike", kwargs=self.kwargs)
 
     def get_context_breadcrumbs(self):
         breadcrumbs = super().get_context_breadcrumbs()
@@ -91,19 +108,14 @@ class ProjectAddLookALike(GroupMixin, DetailView):
                 # use land.public_key to avoid injection
                 project.add_look_a_like(land.public_key)
                 project.save()
-                page_from = self.request.GET.get("from", None)
-                if page_from == "conso_report":
-                    url = reverse("project:report_conso", kwargs={"pk": project.id})
-                    return redirect(f"{url}#territoires-de-comparaison")
-                else:
-                    return redirect(project)
+                return self.get_success_url()
             except Exception:
                 return super().get(request, *args, **kwargs)
         rm_public_key = request.GET.get("remove", None)
         if rm_public_key:
             project.remove_look_a_like(rm_public_key)
             project.save()
-            return redirect(project)
+            return self.get_success_url()
         return super().get(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
