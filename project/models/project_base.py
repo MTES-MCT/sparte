@@ -197,6 +197,11 @@ class Project(BaseProject):
             "EPCI est sélectionné, alors les rapports montre des données EPCI par EPCI."
         ),
     )
+    
+    @property
+    def level_label(self):
+        return AdminRef.get_label(self.level)
+    
     land_type = models.CharField(
         "Type de territoire",
         choices=LEVEL_CHOICES,
