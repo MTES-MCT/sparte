@@ -57,7 +57,7 @@ class AdminRef:
         (COMMUNE, "Commune"),
         (EPCI, "EPCI"),
         (DEPARTEMENT, "Département"),
-        (SCOT, "Scot"),
+        (SCOT, "SCoT"),
         (REGION, "Région"),
         (COMPOSITE, "Composite"),
     )
@@ -98,7 +98,7 @@ class AdminRef:
             cls.COMMUNE: cls.COMMUNE,
             cls.EPCI: cls.COMMUNE,
             cls.SCOT: cls.EPCI,
-            cls.DEPARTEMENT: cls.EPCI,
+            cls.DEPARTEMENT: cls.SCOT,
             cls.REGION: cls.DEPARTEMENT,
             cls.COMPOSITE: cls.COMMUNE,
         }
@@ -125,15 +125,18 @@ class AdminRef:
             cls.DEPARTEMENT: [
                 cls.COMMUNE,
                 cls.EPCI,
+                cls.SCOT,
             ],
             cls.REGION: [
                 cls.COMMUNE,
                 cls.EPCI,
+                cls.SCOT,
                 cls.DEPARTEMENT,
             ],
             cls.COMPOSITE: [
                 cls.COMMUNE,
                 cls.EPCI,
+                cls.SCOT,
                 cls.DEPARTEMENT,
                 cls.REGION,
             ],

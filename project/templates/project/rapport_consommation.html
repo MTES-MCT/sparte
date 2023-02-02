@@ -67,8 +67,11 @@ Rapport consommation
                             </button>
                             <ul class="dropdown-menu mt-2" aria-labelledby="dropdownMenuButton2">
                                 <li><a class="dropdown-item {% if level == "COMM" %}active{% endif %}" href="{% url "project:report_conso" project.id %}?level_conso=COMMUNE">Communes</a></li>
-                                {% if land_type in "DEPART_REGION_COMP" %}
+                                {% if land_type in "DEPART_REGION_COMP_SCOT" %}
                                 <li><a class="dropdown-item {% if level == "EPCI" %}active{% endif %}" href="{% url "project:report_conso" project.id %}?level_conso=EPCI">EPCI</a></li>
+                                {% endif %}
+                                {% if land_type in "DEPART_REGION_COMP" %}
+                                <li><a class="dropdown-item {% if level == "SCOT" %}active{% endif %}" href="{% url "project:report_conso" project.id %}?level_conso=SCOT">Scot</a></li>
                                 {% endif %}
                                 {% if land_type in "REGION_COMP" %}
                                 <li><a class="dropdown-item {% if level == "DEPART" %}active{% endif %} " href="{% url "project:report_conso" project.id %}?level_conso=DEPART">Départements</a></li>

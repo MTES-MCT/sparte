@@ -13,7 +13,7 @@ from django.views.generic import (
 
 from public_data.models import Land
 
-from project.forms import UploadShpForm, KeywordForm
+from project.forms import UploadShpForm, KeywordForm, UpdateProjectForm
 from project.models import Project
 from project import tasks
 from .mixins import GroupMixin
@@ -22,15 +22,7 @@ from .mixins import GroupMixin
 class ProjectUpdateView(GroupMixin, UpdateView):
     model = Project
     template_name = "project/update.html"
-    fields = [
-        "name",
-        "territory_name",
-        "analyse_start_date",
-        "analyse_end_date",
-        "level",
-        "target_2031",
-        "is_public",
-    ]
+    form_class = UpdateProjectForm
     context_object_name = "project"
 
     def get_context_breadcrumbs(self):

@@ -50,22 +50,16 @@ SPARTE
             <div class="col">
                 <div class="d-flex flex-column box mt-0 p-4 justify-content-center h-100">
                     <div class="text-center">
-                        <a href="{% url 'project:map' project.pk %}" data-toggle="tooltip" title="Carte intéractive">
-                            <i class="bi bi-map"></i>
-                            <br/><strong>Carte interactive</strong>
-                        </a>
+                        <i class="bi bi-map"></i>
+                        <br/><strong>Cartes interactive</strong>
                     </div>
                     <div class="mt-2">
                         <ul class="list-unstyled">
-                            <li><i class="bi bi-arrow-right-short"></i>Zones artificielles</li>
-                            <li><i class="bi bi-arrow-right-short"></i>Zones artificialisées et renaturées sur la période</li>
+                            <li><i class="bi bi-arrow-right-short"></i><a href="{% url 'project:theme-my-artif' project.pk %}">Comprendre L'évolution de l'artificialisation de mon territoire</a></li>
+                            <li><i class="bi bi-arrow-right-short"></i><a href="{% url 'project:theme-city-conso' project.pk %}">Consommation des communes de mon territoire</a></li>
+                            <li><i class="bi bi-arrow-right-short"></i><a href="{% url 'project:theme-city-artif' project.pk %}">Artificialisation des communes de mon territoire</a></li>
                         </ul>
                     </div>
-                    <ul>
-                        <li><a href="{% url 'project:theme-my-artif' project.pk %}">Comprendre L'évolution de l'artificialisation de mon territoire</a></li>
-                        <li><a href="{% url 'project:theme-city-conso' project.pk %}">Consommation des communes de mon territoire</a></li>
-                        <li><a href="{% url 'project:theme-city-artif' project.pk %}">Artificialisation des communes de mon territoire</a></li>
-                    </ul>
                 </div>
             </div>
             <div class="col">
