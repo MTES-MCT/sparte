@@ -42,7 +42,7 @@ class ProjectMapView(GroupMixin, DetailView):
                         "url": reverse_lazy(
                             "project:project-communes", args=[self.object.id]
                         ),
-                        "display": False,
+                        "display": False,  # afficher par défaut ou non
                         "level": "2",
                         "style": "style_communes",
                     },
