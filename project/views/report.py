@@ -96,10 +96,6 @@ class ProjectReportConsoView(ProjectReportBaseView):
                 "groups_names": groups_names,
                 "level": level,
                 "objective_chart": objective_chart,
-                "information_conso_1": "<p class='fr-text--sm mb-3'>Pour la mesure de la consommation des espaces NAF, l'Etat utilise les fichiers fonciers.</p>" +
-                    "<p class='fr-text--sm mb-3'>Ces données sont fournies tous les ans depuis 2009. Le dernier millésime de 2021 est la photographie du territoire au 1er janvier 2021, intégrant les évolutions réalisées au cours de l'année 2020.</p>" +
-                    "<p class='fr-text--sm mb-3'>Les données de l'INSEE sont également intégrées pour mettre en perspective la consommation d'espace vis à vis de l'évolution de la population et bientôt l'emploi.</p>" +
-                    "<p class='fr-text--sm mb-3'><a href='https://artificialisation.developpement-durable.gouv.fr/bases-donnees/les-fichiers-fonciers' target='_blank' id='cerema-link'>Plus d'informations sur les fichiers fonciers (source : Cerema)</a></p>"
             }
         )
 
@@ -208,10 +204,6 @@ class ProjectReportDicoverOcsgeView(ProjectReportBaseView):
             "nom": "Rapport découvrir l'OCS GE",
             "surface_territory": surface_territory,
             "active_page": "discover",
-            "information_ocsge_1": "<p class='fr-text--sm mb-3'>L'OCS GE est une base de données vectorielle pour la description de l’occupation du sol de l’ensemble du territoire métropolitain et des départements et régions d’outre-mer (DROM). Elle est un référentiel national, constituant un socle national, utilisable au niveau national et au niveau local notamment pour contribuer aux calculs d’indicateurs exigés par les documents d’urbanisme. Elle s’appuie sur un modèle ouvert séparant la couverture du sol et l’usage du sol (appelé modèle en 2 dimensions), une précision géométrique appuyée sur le Référentiel à Grande Échelle (RGE®) et une cohérence temporelle (notion de millésime) qui, par le biais de mises à jour à venir, permettra de quantifier et de qualifier les évolutions des espaces.</p>" +
-                "<p class='fr-text--sm mb-3'>La couverture du sol est une vue « physionomique » du terrain. La description est une simple distinction des éléments structurant le paysage. Ex : Zones bâties.</p>" +
-                "<p class='fr-text--sm mb-3'>L'usage du sol est une vue « anthropique du sol ». Il est  partagé en fonction du rôle que jouent les portions de terrain en tant  qu’occupation humaine. Dans l'OCSGE, l'usage US235 regroupe les objets de US2  (production secondaire), US3 (production tertiaire) et US5 (usage  résidentiel) de la nomenclature nationale quand la distinction entre ces usages n'est pas possible ou pas connue. Ex : Agriculture.</p>" +
-                "<p class='fr-text--sm mb-3'>Chaque objet géographique de l'OCS GE porte ces deux informations. Ex : Zones bâties (couverture) et Agriculture (usage) décrivent des bâtiments agricoles.</p>",
         }
 
         if not project.is_artif():
@@ -323,19 +315,6 @@ class ProjectReportSynthesisView(ProjectReportBaseView):
                 "year_avg_conso": curent_conso / project.nb_years,
                 "first_millesime": str(project.first_year_ocsge),
                 "last_millesime": str(project.last_year_ocsge),
-                "information_synthesis_1": "<p class='fr-text--sm mb-3'>L'article 191 de la Loi Climat & Résilience exprime que :</p>" +
-                    "<p class='fr-text--sm mb-3'><i>« Afin d’atteindre l’objectif national d’absence de toute artificialisation nette des sols en 2050, le rythme de <strong>l’artificialisation des sols</strong> dans les dix années suivant la promulgation de la présente loi doit être tel que, sur cette période, <strong>la consommation totale d’espaces</strong> observée à l’échelle nationale soit inférieure à la moitié de celle observée sur les dix années précédant cette date.»</i></p>" +
-                    "<p class='fr-text--sm mb-3'>Informations clés à retenir sur la mise en œuvre:</p>" +
-                    "<ul class='fr-text--sm'>" +
-                    "<li>Entre 2021 et 2031 à l'échelle de la région, il est demandé de diviser par 2  la consommation d'espaces Naturels, Agricoles et Forestiers mesurée entre 2011 et 2021.</li>" +
-                    "<li>D'ici février 2024, les SRADDET territorialiseront les objectifs de diminution pour chaque SCoT.</li>" +
-                    "</ul>" +
-                    "<p class='fr-text--sm mb-3'>SPARTE vous accompagne dans le suivi de ces nouvelles règles en produisant des indicateurs s'appuyant sur:</p>" +
-                    "<ul class='fr-text--sm mb-0'>" +
-                    "<li>la base de données d'OCcupation des Sols à Grande Echelle (OCS GE) de l'IGN ;</li>" +
-                    "<li>les fichiers fonciers du Cérema issus des données MAJIC (Mise A Jour de l'Information Cadastrale) de la DGFIP ;</li>" +
-                    "<li>les données, en particulier du recensement, de l'INSEE</li>" +
-                    "</ul>",
             }
         )
         return super().get_context_data(**kwargs)
@@ -422,17 +401,6 @@ class ProjectReportArtifView(ProjectReportBaseView):
                 ),
                 "level": level,
                 "chart_waterfall": chart_waterfall,
-                "information_artif_1": "<p class='fr-text--sm mb-3'>L’article 192 de la Loi Climat & Résilience votée en août 2021 définit l'artificialisation comme « une surface dont les sols sont :</p>" +
-                    "<ul class='fr-text--sm mb-3'>" +
-                    "<li>soit imperméabilisés en raison du bâti ou d'un revêtement,</li>" +
-                    "<li>soit stabilisés et compactés,</li>" +
-                    "<li>soit constitués de matériaux composites »</li>" +
-                    "</ul>" +
-                    "<p class='fr-text--sm mb-3'>Elle se traduit dans l’OCS GE nationale comme la somme des  objets anthropisés dans la description de la couverture des sols.</p>" +
-                    "<p class='fr-text--sm mb-3'>SPARTE applique ici un croisement des données de l'OCS GE pour définir l'artificialisation conformément aux attendus de la loi Climat & Résilience, et au décret « nomenclature de l'artificialisation des sols» <small>(Décret n° 2022-763 du 29 avril 2022 relatif à la nomenclature de l'artificialisation des sols pour la fixation et le suivi des objectifs dans les documents de planification et d'urbanisme)</small>.</p>" +
-                    "<p class='fr-text--sm mb-3'><strong>Définition de l'artificialisation des sols</strong></p>" +
-                    "<p class='fr-text--sm mb-3'>La nomenclature précise que les surfaces dont les sols sont soit imperméabilisés en raison du bâti ou d'un revêtement, soit stabilisés et compactés, soit constitués de matériaux composites sont qualifiées de surfaces artificialisées. De même, les surfaces végétalisées herbacées (c'est-à-dire non ligneuses) et qui sont à usage résidentiel, de production secondaire ou tertiaire, ou d'infrastructures, sont considérées comme artificialisées, y compris lorsqu'elles sont en chantier ou à l'état d'abandon.</p>" +
-                    "<img src='%s' class='w-100' />" % (static('project/img/ocs_ge_matrice_passage.png')),
             }
         )
 
@@ -524,7 +492,6 @@ class ProjectReportConsoRelativeView(ProjectReportBaseView):
                 "conso_surface_table": add_total_line_column(
                     conso_surface_chart.get_series(), line=False
                 ),
-                "information_conso_relative_1": "<p class='fr-text--sm mb-3'>Mise en perspective de la consommation d'espaces NAF du territoire avec des données externes (INSEE) et par comparaison avec ses voisins.</p>",
             }
         )
 
@@ -543,14 +510,6 @@ class ProjectReportTarget2031View(ProjectReportBaseView):
                 "diagnostic": project,
                 "active_page": "target_2031",
                 "objective_chart": objective_chart,
-                "information_target_2031": "<p class='fr-text--sm mb-3'>La Loi Climat & Résilience recommande :</p>" +
-                    "<ul class='fr-text--sm'>" +
-                    "<li>entre 2021 et 2031 à l'échelle régionale, de diviser par 2  la consommation d'espaces Naturels, Agricoles et Forestiers mesurée entre 2011 et 2021 ;</li>" +
-                    "<li>d'ici février 2024, que les SRADDET territorialisent les objectifs de diminution pour chaque SCoT.</li>" +
-                    "</ul>" +
-                    "<p class='fr-text--sm mb-3'>En attente de territorialisation des objectifs de la loi Climat & Résilience, SPARTE fait une première simulation à l'échelle du territoire de diagnostic en divisant par 2 la consommation d'espaces par rapport au bilan 2011-2021.</p>" +
-                    "<p class='fr-text--sm mb-3'>Pour la mesure de la consommation d'espaces NAF, l'Etat utilise les fichiers fonciers.</p>" +
-                    "<p class='fr-text--sm mb-3'>Ces données sont fournies tous les ans depuis 2009. Le dernier millésime de 2021 est la photographie du territoire au 1er janvier 2021, intégrant les évolutions réalisées au cours de l'année 2020.</p>",
             }
         )
 
