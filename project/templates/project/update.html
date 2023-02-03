@@ -36,48 +36,61 @@ form > div {
 
     {% include "project/detail_menu.html" %}
 
-    <div class="d-flex flex-column h-100 w-100 align-items-center justify-content-center">
-        <div class="col-lg-6 col-md-8 col-12">
-            <h2>Mettre à jour {{ project.name }}</h2>
-    
-            <form action="" method="post">
-                {% csrf_token %}
-                {{ form|crispy }}
-                <button class="fr-btn mt-4" type="submit">Mettre à jour</button>
-                <a href="{% url 'project:detail' project.pk %}" class="fr-btn fr-btn--secondary mt-1">Annuler</a><li class="list-inline-item">
-                <a href="{% url 'project:delete' project.pk %}">
-                    <i class="bi bi-trash"></i> Supprimer
-                </a>
-                </li>
-            </form>
+    <div class="fr-container">
+        <div class="d-flex flex-column align-items-center">
+            <div class="fr-col-12 fr-col-lg-8">
+                <form action="" method="post">
+                    {% csrf_token %}
+                    {{ form|crispy }}
+                    <div class="d-flex fr-mt-4w">
+                        <div class="flex-grow-1">
+                            <a href="{% url 'project:delete' project.pk %}" class="fr-btn fr-btn--secondary text-danger">
+                                Supprimer
+                            </a>
+                        </div>
+                        <div class="fr-mr-2w">
+                            <button class="fr-btn" type="submit">
+                                Mettre à jour
+                            </button>
+                        </div>
+                        <div>
+                            <a href="{% url 'project:detail' project.pk %}" class="fr-btn fr-btn--secondary">
+                                Annuler
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 
-    <div class="box p-4 mt-1 flex-grow-1">
-        <div  class="fw-bold">
-            <a class="float-end" href="{% url 'project:lookalike' project.id %}">
-                <i class="bi bi-plus-circle"></i>
-            </a>
-            Territoires de comparaison
-        </div>
-        {% if project.look_a_like %}
-            <div class="d-flex flex-column mt-2">
-            {% for land in project.get_look_a_like %}
-                <div class="w100">
-                    {{ land.name }}
-                    <a href="{% url 'project:lookalike' project.id %}?remove={{ land.public_key }}&next={% url 'project:update' project.id %}" class="float-end"><i class="bi bi-trash text-danger"></i></a>
-                </div>
-            {% endfor %}
+    <div class="fr-container fr-my-7w">
+        <div class="fr-col-12 fr-col-lg-8 m-auto fr-pt-5w border-top">
+            <div  class="fw-bold">
+                <a class="float-end" href="{% url 'project:lookalike' project.id %}">
+                    <i class="bi bi-plus-circle"></i>
+                </a>
+                Territoires de comparaison
             </div>
-        {% else %}
-        <p class="text-muted">Aucun territoire.</p>
-        {% endif %}
+            {% if project.look_a_like %}
+                <div class="d-flex flex-column mt-2">
+                {% for land in project.get_look_a_like %}
+                    <div class="w100">
+                        {{ land.name }}
+                        <a href="{% url 'project:lookalike' project.id %}?remove={{ land.public_key }}&next={% url 'project:update' project.id %}" class="float-end"><i class="bi bi-trash text-danger"></i></a>
+                    </div>
+                {% endfor %}
+                </div>
+            {% else %}
+            <p class="text-muted">Aucun territoire.</p>
+            {% endif %}
+        </div>
     </div>
 </div>
 {% endblock %}
 
 {% block bodyend %}
-<script language="javascript">
+<script language="javascript" nonce="{{ CSP_NONCE }}">
 const queryString = window.location.search
 const urlParams = new URLSearchParams(queryString)
 const next = urlParams.get('next')
