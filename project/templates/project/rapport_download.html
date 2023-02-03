@@ -9,7 +9,7 @@
     </div>
 {% else %}
     <form hx-post="{% url 'project:report_download' project.pk %}">
-        <p>Pour recevoir le <strong>{{ title }}</strong> au format Word, veuillez compléter le formulaire ci-dessous. Une fois validé, vous recevrez sous quelques minutes le document par e-mail.</p>
+        <p>Pour recevoir le diagnostic au format Word, veuillez compléter le formulaire ci-dessous. Une fois validé, vous recevrez sous quelques minutes le document par e-mail.</p>
 
         {% csrf_token %}
         {{ form|crispy }}
