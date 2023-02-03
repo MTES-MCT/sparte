@@ -19,9 +19,6 @@ form > div {
     margin-top: 30px;
     padding: 3px;
 }
-.div_highlight {
-    background-color: rgba(255,0,0,0.2);
-}
 #hint_id_is_public{
     display: block;
     width: 100%;
@@ -95,8 +92,7 @@ const queryString = window.location.search
 const urlParams = new URLSearchParams(queryString)
 const next = urlParams.get('next')
 if (next == "report-target-2031"){
-    console.log("hello world")
-    $('#div_id_target_2031').addClass("div_highlight")
+    $('#id_target_2031').focus()
 }
 </script>
 {% endblock bodyend %}
