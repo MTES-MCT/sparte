@@ -587,7 +587,7 @@ class Land:
         try:
             self.land = klass.objects.get(pk=int(self.id))
         except ObjectDoesNotExist as e:
-            raise Exception(f"Public key '{id}' unknown") from e
+            raise LandException(f"Public key '{id}' unknown") from e
 
     def get_conso_per_year(self, start="2010", end="2020", coef=1):
         return self.land.get_conso_per_year(start, end, coef)

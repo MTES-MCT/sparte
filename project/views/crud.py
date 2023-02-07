@@ -4,11 +4,12 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
 from django.urls import reverse, reverse_lazy
 from django.views.generic import DeleteView, DetailView, ListView, UpdateView
+from django.views.generic.edit import FormMixin
 
 from project import tasks
 from project.forms import KeywordForm, UploadShpForm, UpdateProjectForm
 from project.models import Project
-from public_data.models import Land
+from public_data.models import Land, LandException
 
 from utils.views_mixins import RedirectURLMixin
 from .mixins import GroupMixin
@@ -68,40 +69,16 @@ class ProjectDeleteView(GroupMixin, LoginRequiredMixin, DeleteView):
         return breadcrumbs
 
 
-class ProjectAddLookALike(GroupMixin, RedirectURLMixin, DetailView):
+class ProjectAddLookALike(GroupMixin, RedirectURLMixin, FormMixin, DetailView):
     model = Project
     template_name = "project/add_look_a_like.html"
     context_object_name = "project"
+    form_class = KeywordForm
 
-    def get_default_redirect_url(self):
-        """Return the default redirect URL."""
-        return reverse("project:lookalike", kwargs=self.kwargs)
-
-    def get_context_breadcrumbs(self):
-        breadcrumbs = super().get_context_breadcrumbs()
-        breadcrumbs.append(
-            {
-                "href": reverse_lazy("project:update", kwargs=self.kwargs),
-                "title": "Paramètres",
-            }
-        )
-        breadcrumbs.append(
-            {"href": None, "title": "Ajouter un territoire de comparaison"}
-        )
-        return breadcrumbs
-
-    def get_form(self):
-        if self.request.method in ("POST", "PUT"):
-            return KeywordForm(data=self.request.POST)
-        else:
-            return KeywordForm()
-
-    def get_context_data(self, **kwargs):
-        if "form" not in kwargs:
-            kwargs["form"] = self.get_form()
-        if "from" in self.request.GET:
-            kwargs["from"] = f"from={self.request.GET['from']}"
-        return super().get_context_data(**kwargs)
+    def form_valid(self, form):
+        """If the form is valid, redirect to the supplied URL."""
+        kwargs = {"results": Land.search(form.cleaned_data["keyword"], search_for="*")}
+        return self.render_to_response(self.get_context_data(**kwargs))
 
     def get(self, request, *args, **kwargs):
         add_public_key = request.GET.get("add", None)
@@ -113,23 +90,36 @@ class ProjectAddLookALike(GroupMixin, RedirectURLMixin, DetailView):
                 # use land.public_key to avoid injection
                 project.add_look_a_like(land.public_key)
                 project.save()
-                return self.get_success_url()
-            except Exception:
-                return super().get(request, *args, **kwargs)
+                return HttpResponseRedirect(self.get_success_url())
+            except LandException:
+                pass
         return super().get(request, *args, **kwargs)
+
+    def get_context_breadcrumbs(self):
+        breadcrumbs = super().get_context_breadcrumbs()
+        breadcrumbs += [
+            {
+                "href": reverse_lazy("project:update", kwargs=self.kwargs),
+                "title": "Paramètres",
+            },
+            {"href": None, "title": "Ajouter un territoire de comparaison"},
+        ]
+        return breadcrumbs
+
+    def get_context_data(self, **kwargs):
+        kwargs["next"] = self.request.GET.get("next", None)
+        return super().get_context_data(**kwargs)
 
     def post(self, request, *args, **kwargs):
         """
         Handle POST requests: instantiate a form instance with the passed
         POST variables and then check if it's valid.
         """
-        self.object = self.get_object()
         form = self.get_form()
-        context = self.get_context_data(form=form)
         if form.is_valid():
-            needle = form.cleaned_data["keyword"]
-            context["results"] = Land.search(needle, search_for="*")
-        return self.render_to_response(context)
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(form)
 
 
 class ProjectRemoveLookALike(GroupMixin, RedirectURLMixin, DetailView):
