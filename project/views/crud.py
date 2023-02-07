@@ -2,7 +2,6 @@ import celery
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from django.http import HttpResponseRedirect
-from django.shortcuts import redirect
 from django.urls import reverse, reverse_lazy
 from django.views.generic import DeleteView, DetailView, ListView, UpdateView
 
@@ -11,7 +10,7 @@ from project.forms import KeywordForm, UploadShpForm, UpdateProjectForm
 from project.models import Project
 from public_data.models import Land
 
-from utils.views import RedirectURLMixin
+from utils.views_mixins import RedirectURLMixin
 from .mixins import GroupMixin
 
 
@@ -81,6 +80,12 @@ class ProjectAddLookALike(GroupMixin, RedirectURLMixin, DetailView):
     def get_context_breadcrumbs(self):
         breadcrumbs = super().get_context_breadcrumbs()
         breadcrumbs.append(
+            {
+                "href": reverse_lazy("project:update", kwargs=self.kwargs),
+                "title": "Paramètres",
+            }
+        )
+        breadcrumbs.append(
             {"href": None, "title": "Ajouter un territoire de comparaison"}
         )
         return breadcrumbs
@@ -111,11 +116,6 @@ class ProjectAddLookALike(GroupMixin, RedirectURLMixin, DetailView):
                 return self.get_success_url()
             except Exception:
                 return super().get(request, *args, **kwargs)
-        rm_public_key = request.GET.get("remove", None)
-        if rm_public_key:
-            project.remove_look_a_like(rm_public_key)
-            project.save()
-            return self.get_success_url()
         return super().get(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
@@ -130,6 +130,22 @@ class ProjectAddLookALike(GroupMixin, RedirectURLMixin, DetailView):
             needle = form.cleaned_data["keyword"]
             context["results"] = Land.search(needle, search_for="*")
         return self.render_to_response(context)
+
+
+class ProjectRemoveLookALike(GroupMixin, RedirectURLMixin, DetailView):
+    """Remove a look a like from the project.
+
+    Providing a next page in the url parameter is required.
+    """
+
+    model = Project
+
+    def get(self, request, *args, **kwargs):
+        project = self.get_object()
+        public_key = self.kwargs["public_key"]
+        project.remove_look_a_like(public_key)
+        project.save()
+        return HttpResponseRedirect(self.get_success_url())
 
 
 class ProjectListView(GroupMixin, LoginRequiredMixin, ListView):
