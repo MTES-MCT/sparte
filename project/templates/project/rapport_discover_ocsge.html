@@ -49,7 +49,7 @@
 
     {% include "project/detail_menu.html" %}
 
-    <div class="fr-container fr-py-3w">        
+    <div class="fr-container fr-py-3w">
         <div class="fr-callout fr-callout--brown-caramel fr-fi-information-line fr-callout-read-more">
             <div class="fr-callout-read-more__excerpt">
                 <p class="fr-text--sm mb-3">L'OCS GE est une base de données vectorielle pour la description de l’occupation du sol de l’ensemble du territoire métropolitain et des départements et régions d’outre-mer (DROM). Elle est un référentiel national, constituant un socle national, utilisable au niveau national et au niveau local notamment pour contribuer aux calculs d’indicateurs exigés par les documents d’urbanisme. Elle s’appuie sur un modèle ouvert séparant la couverture du sol et l’usage du sol (appelé modèle en 2 dimensions), une précision géométrique appuyée sur le Référentiel à Grande Échelle (RGE®) et une cohérence temporelle (notion de millésime) qui, par le biais de mises à jour à venir, permettra de quantifier et de qualifier les évolutions des espaces.</p>
@@ -78,7 +78,7 @@
                     </div>
                 </div>
             </div>
-        
+
             <button class="fr-btn fr-btn--secondary fr-btn--sm fr-callout-read-more__btn" aria-expanded="false" aria-controls="ocsge_1">
                 Lire plus
             </button>
@@ -147,66 +147,67 @@
 
             <div id="chart_couv_wheel" class="border fr-p-3w fr-pt-5w"></div>
 
-            <button class="fr-btn fr-btn--tertiary fr-btn--sm dropdown-toggle rounded-pill" type="button" data-bs-toggle="collapse" data-bs-target="#couv-matrice-data" aria-expanded="false" aria-controls="couv-matrice-data">
-                Données
-            </button>
-            <div class="collapse fr-highlight" id="couv-matrice-data">
-                <div>
-                    <h4 class="pt-3">Source</h4>
-                    <p>Données d'OCcupation des Sols à Grande Echelle (OCS GE) de l'IGN, sur la période d'analyse traduite grâce à la matrice de passage.</p>
-                </div>
-                <div>
-                    <h4 class="pt-3">Calcul</h4>
-                    <p>Donnée brute, sans calcul.</p>
-                </div>
-                <div>
-                    <h4>Données</h4>
-                    <p class="text-muted">En hectare (Ha).
-                        <br/>les lignes la indiquent la couverture {{ first_millesime }} et les colonnes indiquent la couverture {{ last_millesime }}. Par conséquent, à l'intersection se trouve la superficie qui est passée d'une couverture l'autre.
-                    </p>
-                    <h6 class="fr-mt-2w">Calcul</h6>
-                    <p>Artificialisation sur la période - renaturation sur la période.</p>
+            <div class="fr-callout bg-white fr-p-2w mt-4">
+                <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="couv-matrice-data">Données</button>
 
-                    <h6 class="fr-mt-2w">Données</h6>
-                    <p>En hectare (Ha).</p>
+                <div class="fr-collapse" id="couv-matrice-data">
+                    <div>
+                        <h4 class="pt-3">Source</h4>
+                        <p>Données d'OCcupation des Sols à Grande Echelle (OCS GE) de l'IGN, sur la période d'analyse traduite grâce à la matrice de passage.</p>
+                    </div>
+                    <div>
+                        <h4 class="pt-3">Calcul</h4>
+                        <p>Donnée brute, sans calcul.</p>
+                    </div>
+                    <div>
+                        <h4>Données</h4>
+                        <p class="text-muted">En hectare (Ha).
+                            <br/>les lignes la indiquent la couverture {{ first_millesime }} et les colonnes indiquent la couverture {{ last_millesime }}. Par conséquent, à l'intersection se trouve la superficie qui est passée d'une couverture l'autre.
+                        </p>
+                        <h6 class="fr-mt-2w">Calcul</h6>
+                        <p>Artificialisation sur la période - renaturation sur la période.</p>
 
-                    <table class="table table-striped table-sm">
-                        <thead>
-                            <tr>
-                                <th scope="col"></th>
-                                {% for header in couv_matrix_headers %}
-                                <th scope="col" class="text-end">
-                                    <span class="tooltiped" data-toggle="tooltip" title="{{ header.label }}">
-                                        {{ header.code }}
-                                    </span>
-                                </th>
-                                {% endfor %}
-                                <th scope="col" class="text-end">Total</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for name, data in couv_matrix_data.items %}
-                            <tr>
-                                <th scope="row">
-                                    {% if name.code %}
-                                    <span class="tooltiped" data-toggle="tooltip" title="{{ name.label }}">
-                                        {{ name.code }} {{ name.label_short }}
-                                    </span>
-                                    {% else %}
-                                        Total
-                                    {% endif %}
-                                </th>
-                                {% for title, val in data.items %}
-                                    <td align="right">
-                                        <span data-toggle="tooltip" title="Passage de {{ name.code }} à {{ title.code }}">
-                                            {{ val|floatformat:2 }}
+                        <h6 class="fr-mt-2w">Données</h6>
+                        <p>En hectare (Ha).</p>
+
+                        <table class="table table-striped table-sm">
+                            <thead>
+                                <tr>
+                                    <th scope="col"></th>
+                                    {% for header in couv_matrix_headers %}
+                                    <th scope="col" class="text-end">
+                                        <span class="tooltiped" data-toggle="tooltip" title="{{ header.label }}">
+                                            {{ header.code }}
                                         </span>
-                                    </td>
+                                    </th>
+                                    {% endfor %}
+                                    <th scope="col" class="text-end">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for name, data in couv_matrix_data.items %}
+                                <tr>
+                                    <th scope="row">
+                                        {% if name.code %}
+                                        <span class="tooltiped" data-toggle="tooltip" title="{{ name.label }}">
+                                            {{ name.code }} {{ name.label_short }}
+                                        </span>
+                                        {% else %}
+                                            Total
+                                        {% endif %}
+                                    </th>
+                                    {% for title, val in data.items %}
+                                        <td align="right">
+                                            <span data-toggle="tooltip" title="Passage de {{ name.code }} à {{ title.code }}">
+                                                {{ val|floatformat:2 }}
+                                            </span>
+                                        </td>
+                                    {% endfor %}
+                                </tr>
                                 {% endfor %}
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
