@@ -21,9 +21,12 @@ urlpatterns = [
     path("<int:pk>/ajouter", views.ClaimProjectView.as_view(), name="claim"),
     path("<int:pk>/edit", views.ProjectUpdateView.as_view(), name="update"),
     path(
-        "<int:pk>/ajouter/voisins",
-        views.ProjectAddLookALike.as_view(),
-        name="lookalike",
+        "<int:pk>/ajouter-voisin", views.ProjectAddLookALike.as_view(), name="lookalike"
+    ),
+    path(
+        "<int:pk>/retirer-voisin/<slug:public_key>",
+        views.ProjectRemoveLookALike.as_view(),
+        name="rm-lookalike",
     ),
     path(
         "<int:pk>/tableau-de-bord/consommation",
