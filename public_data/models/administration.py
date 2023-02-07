@@ -182,7 +182,9 @@ class GetDataFromCeremaMixin:
 
 
 class LandMixin:
-    @property
+    """Interface to work seemlessly with all administration's level."""
+
+    @cached_property
     def public_key(self):
         return f"{self.land_type}_{self.id}"
 
@@ -193,9 +195,6 @@ class LandMixin:
 
     @classmethod
     def search(cls, needle, region=None, departement=None, epci=None):
-        raise NotImplementedError("need to be overrided")
-
-    def get_qs_cerema(self):
         raise NotImplementedError("need to be overrided")
 
     def get_cities(self):
@@ -279,7 +278,7 @@ class Departement(LandMixin, GetDataFromCeremaMixin, models.Model):
     objects = IntersectManager()
 
     land_type = AdminRef.DEPARTEMENT
-    default_analysis_level = AdminRef.EPCI
+    default_analysis_level = AdminRef.SCOT
 
     def get_ocsge_millesimes(self) -> set:
         """Return the list of all OCSGE millesimes (years) available for this dept."""
