@@ -63,7 +63,7 @@ form > div {
 
     <div class="fr-container fr-my-7w">
         <div class="fr-col-12 fr-col-lg-8 m-auto fr-pt-5w border-top">
-            <div  class="fw-bold">
+            <div class="fw-bold" id="comparison-territories">
                 <a class="float-end" href="{% url 'project:lookalike' project.id %}">
                     <i class="bi bi-plus-circle"></i>
                 </a>
@@ -74,7 +74,7 @@ form > div {
                 {% for land in project.get_look_a_like %}
                     <div class="w100">
                         {{ land.name }}
-                        <a href="{% url 'project:lookalike' project.id %}?remove={{ land.public_key }}&next={% url 'project:update' project.id %}" class="float-end"><i class="bi bi-trash text-danger"></i></a>
+                        <a href="{% url 'project:rm-lookalike' project.id land.public_key %}?next={% url 'project:update' project.id %}#comparison-territories" class="float-end"><i class="bi bi-trash text-danger"></i></a>
                     </div>
                 {% endfor %}
                 </div>
