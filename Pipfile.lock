@@ -2779,6 +2779,13 @@
             ],
             "version": "==1.2.0"
         },
+        "uri-template": {
+            "hashes": [
+                "sha256:934e4d09d108b70eb8a24410af8615294d09d279ce0e7cbcdaef1bd21f932b06",
+                "sha256:f1699c77b73b925cf4937eae31ab282a86dc885c333f2e942513f08f691fc7db"
+            ],
+            "version": "==1.2.0"
+        },
         "virtualenv": {
             "hashes": [
                 "sha256:ce3b1684d6e1a20a3e5ed36795a97dfc6af29bc3970ca8dab93e11ac6094b3c4",
