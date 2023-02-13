@@ -2,7 +2,7 @@ import celery
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from django.http import HttpResponseRedirect
-from django.urls import reverse, reverse_lazy
+from django.urls import reverse_lazy
 from django.views.generic import DeleteView, DetailView, ListView, UpdateView
 from django.views.generic.edit import FormMixin
 
@@ -75,6 +75,13 @@ class ProjectAddLookALike(GroupMixin, RedirectURLMixin, FormMixin, DetailView):
     context_object_name = "project"
     form_class = KeywordForm
 
+    def get_success_url(self):
+        """Add anchor to url if provided in GET parameters."""
+        anchor = self.request.GET.get("anchor", None)
+        if anchor:
+            return f"{super().get_success_url()}#{anchor}"
+        return super().get_success_url()
+
     def form_valid(self, form):
         """If the form is valid, redirect to the supplied URL."""
         kwargs = {"results": Land.search(form.cleaned_data["keyword"], search_for="*")}
@@ -108,6 +115,7 @@ class ProjectAddLookALike(GroupMixin, RedirectURLMixin, FormMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         kwargs["next"] = self.request.GET.get("next", None)
+        kwargs["anchor"] = self.request.GET.get("anchor", None)
         return super().get_context_data(**kwargs)
 
     def post(self, request, *args, **kwargs):
@@ -129,6 +137,13 @@ class ProjectRemoveLookALike(GroupMixin, RedirectURLMixin, DetailView):
     """
 
     model = Project
+
+    def get_success_url(self):
+        """Add anchor to url if provided in GET parameters."""
+        anchor = self.request.GET.get("anchor", None)
+        if anchor:
+            return f"{super().get_success_url()}#{anchor}"
+        return super().get_success_url()
 
     def get(self, request, *args, **kwargs):
         project = self.get_object()

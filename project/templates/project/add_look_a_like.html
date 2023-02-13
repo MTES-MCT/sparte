@@ -15,10 +15,10 @@ Ajouter un territoire de comparaison
     <div class="col-12 col-md-8 col-lg-6">
 
         <h2 class="my-5">Ajouter un territoire de comparaison
-            <a href="{{ next }}#territoires-de-comparaison" class="float-end text-danger"><i class="bi bi-x-circle"></i></a>
+            <a href="{{ next }}{% if anchor %}#{{ anchor}}{% endif %}" class="float-end text-danger"><i class="bi bi-x-circle"></i></a>
         </h2>
 
-        <form action="?next={{ next }}" class="row align-items-center" method="post">
+        <form action="?next={{ next }}&anchor={{ anchor}}" class="row align-items-center" method="post">
             {% csrf_token %}
             <label class="visually-hidden" for="inlineFormInputGroupUsername">Mot clé</label>
             <div class="input-group">
@@ -47,7 +47,7 @@ Ajouter un territoire de comparaison
                         <div class="card-body d-flex flex-column">
                             {% for result in data %}
                                 <div>
-                                    <a href="?add={{ result.public_key }}&next={{ next }}"><i class="bi bi-plus-circle"></i></a>
+                                    <a href="?add={{ result.public_key }}&next={{ next }}&anchor={{ anchor}}"><i class="bi bi-plus-circle"></i></a>
                                     {{ result.name }}
                                 </div>
                             {% endfor %}
