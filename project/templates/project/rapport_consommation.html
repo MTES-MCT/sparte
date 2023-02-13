@@ -184,7 +184,7 @@ Rapport consommation
                 <h3 class="fr-col-12 fr-col-lg-8" id="territoires-de-comparaison">Comparaison avec les territoires voisins</h3>
                 <div class="fr-col-12 fr-col-lg-4">
                     <div class="d-flex justify-content-end align-items-center">
-                        <a class="fr-mr-2w fr-btn fr-icon-add-circle-line fr-btn--tertiary fr-btn--sm" href="{% url 'project:lookalike' project.id %}?next={% url 'project:report_conso' project.id %}#territoires-de-comparaison" data-toggle="tooltip" title="Ajouter un territoire de comparaison" aria-hidden="true"></a>
+                        <a class="fr-mr-2w fr-btn fr-icon-add-circle-line fr-btn--tertiary fr-btn--sm" href="{% url 'project:lookalike' project.id %}?next={% url 'project:report_conso' project.id %}&anchor=territoires-de-comparaison" data-toggle="tooltip" title="Ajouter un territoire de comparaison" aria-hidden="true"></a>
                         <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#comparaisonVoisin" data-toggle="tooltip" title="Astuces pour lire le graphique" aria-hidden="true"></button>
                     </div>
                 </div>
