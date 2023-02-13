@@ -48,7 +48,7 @@ Ajouter un territoire de comparaison
                             {% for result in data %}
                                 <div>
                                     <a href="?add={{ result.public_key }}&next={{ next }}&anchor={{ anchor}}"><i class="bi bi-plus-circle"></i></a>
-                                    {{ result.name }}
+                                    {{ result.name }} {% if result.insee %}({{ result.insee }}){% endif %}
                                 </div>
                             {% endfor %}
                         </div>
