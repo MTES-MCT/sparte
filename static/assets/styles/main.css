@@ -481,3 +481,25 @@ Loader
     87.5%{background-position:calc(0*100%/2) 100%, calc(1*100%/2) 100%, calc(2*100%/2) 100%}
     100% {background-position:calc(0*100%/2) 100%, calc(1*100%/2) 100%, calc(2*100%/2) 100%}
 }
+
+/*
+Form labels
+*/
+.control-label {
+    color: var(--text-label-grey);
+    display: block;
+    font-size: 1rem;
+    line-height: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.help-block {
+    font-size: .75rem;
+    line-height: 1.25rem;
+    margin-bottom: 0;
+    margin-top: 1rem;
+}
+
+form .control-group {
+    margin-top: 25px;
+}
