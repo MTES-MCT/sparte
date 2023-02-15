@@ -35,7 +35,13 @@ class Chart:
             param["exporting"] = {
                 "buttons": {
                     "contextButton": {
-                        "symbol": f"url({static('img/file_download_icon_151366.png')})"
+                        "symbol": f"url({static('img/settings-5-line.svg')})",
+                        "symbolSize": 22,
+                        "symbolX": 23,
+                        "symbolY": 23,
+                        "symbolStrokeWidth": 1,
+                        "symbolFill": '#a4edba',
+                        "symbolStroke": '#330033'
                     }
                 }
             }
