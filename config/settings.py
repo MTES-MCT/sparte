@@ -253,8 +253,18 @@ IMPORT_EXPORT_USE_TRANSACTIONS = True
 # Crispy configuration
 # https://django-crispy-forms.readthedocs.io/en/latest/index.html
 # set default rendering
-CRISPY_TEMPLATE_PACK = "bootstrap4"
-
+# CRISPY_TEMPLATE_PACK = "bootstrap4"
+CRISPY_CLASS_CONVERTERS = {
+    "textinput": "fr-input",
+    "urlinput": "fr-input",
+    "numberinput": "fr-input",
+    "emailinput": "fr-input",
+    "dateinput": "fr-input",
+    "textarea": "fr-input",
+    "passwordinput": "fr-input",
+    "select": "fr-select",
+    "label": "fr-label"
+}
 
 # Celery configuration
 default_redis = "redis://redis:6379/0"
