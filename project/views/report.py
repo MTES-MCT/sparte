@@ -32,7 +32,7 @@ class ProjectReportBaseView(GroupMixin, DetailView):
 
 
 class ProjectReportConsoView(ProjectReportBaseView):
-    template_name = "project/rapport_consommation.html"
+    template_name = "project/report_consommation.html"
     breadcrumbs_title = "Rapport consommation"
 
     def get_context_data(self, **kwargs):
@@ -192,7 +192,7 @@ class ProjectReportCityGroupView(ProjectReportBaseView):
 
 
 class ProjectReportDicoverOcsgeView(ProjectReportBaseView):
-    template_name = "project/rapport_discover_ocsge.html"
+    template_name = "project/report_discover_ocsge.html"
     breadcrumbs_title = "Rapport découvrir l'OCS GE"
 
     def get_context_data(self, **kwargs):
@@ -250,7 +250,7 @@ class ProjectReportDicoverOcsgeView(ProjectReportBaseView):
 
 
 class ProjectReportUsageView(ProjectReportBaseView):
-    template_name = "project/rapport_usage.html"
+    template_name = "project/report_usage.html"
     breadcrumbs_title = "Rapport sur l'usage des sols"
 
     def get_context_data(self, **kwargs):
@@ -293,7 +293,7 @@ class ProjectReportUsageView(ProjectReportBaseView):
 
 
 class ProjectReportSynthesisView(ProjectReportBaseView):
-    template_name = "project/rapport_synthesis.html"
+    template_name = "project/report_synthesis.html"
     breadcrumbs_title = "Synthèse consommation d'espace et artificialisation"
 
     def get_context_data(self, **kwargs):
@@ -321,7 +321,7 @@ class ProjectReportSynthesisView(ProjectReportBaseView):
 
 
 class ProjectReportArtifView(ProjectReportBaseView):
-    template_name = "project/rapport_artif.html"
+    template_name = "project/report_artif.html"
     breadcrumbs_title = "Rapport artificialisation"
 
     def get_context_data(self, **kwargs):
@@ -370,7 +370,7 @@ class ProjectReportArtifView(ProjectReportBaseView):
 
         couv_artif_sol = charts.ArtifCouvSolPieChart(project)
         usage_artif_sol = charts.ArtifUsageSolPieChart(project)
-        
+
         kwargs.update(
             {
                 "first_millesime": str(first_millesime),
@@ -409,7 +409,7 @@ class ProjectReportArtifView(ProjectReportBaseView):
 
 class ProjectReportDownloadView(BreadCrumbMixin, CreateView):
     model = Request
-    template_name = "project/rapport_download.html"
+    template_name = "project/report_download.html"
     fields = [
         "first_name",
         "last_name",
@@ -455,7 +455,7 @@ class ProjectReportDownloadView(BreadCrumbMixin, CreateView):
 
 
 class ProjectReportConsoRelativeView(ProjectReportBaseView):
-    template_name = "project/rapport_conso_relative.html"
+    template_name = "project/report_conso_relative.html"
     breadcrumbs_title = "Rapport consommation relative"
 
     def get_context_data(self, **kwargs):
