@@ -142,7 +142,7 @@ class RequestAdmin(admin.ModelAdmin):
 
     link_to_project.short_description = "Projet"
 
-    change_form_template = "project/admin_request_detail.html"
+    change_form_template = "project/admin/request_detail.html"
 
     def response_change(self, request, obj):
         if "_send-action" in request.POST:
