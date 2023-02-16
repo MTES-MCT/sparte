@@ -73,6 +73,7 @@ RESTFRAMEWORK_APPS = [
 THIRD_APPS = [
     "import_export",
     "crispy_forms",
+    "crispy_bootstrap5",
     "django_app_parameter",
     "sri",
     # "widget_tweaks",
@@ -253,7 +254,8 @@ IMPORT_EXPORT_USE_TRANSACTIONS = True
 # Crispy configuration
 # https://django-crispy-forms.readthedocs.io/en/latest/index.html
 # set default rendering
-# CRISPY_TEMPLATE_PACK = "bootstrap4"
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+CRISPY_TEMPLATE_PACK = "bootstrap5"
 CRISPY_CLASS_CONVERTERS = {
     "textinput": "fr-input",
     "urlinput": "fr-input",
@@ -263,7 +265,7 @@ CRISPY_CLASS_CONVERTERS = {
     "textarea": "fr-input",
     "passwordinput": "fr-input",
     "select": "fr-select",
-    "label": "fr-label"
+    "label": "fr-label",
 }
 
 # Celery configuration
