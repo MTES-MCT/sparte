@@ -13,6 +13,12 @@ urlpatterns = [
     # ### PROJECTS ###
     # CREATE
     path("nouveau", views.CreateProjectViews.as_view(), name="create"),
+    path("<int:pk>/en-construction", views.SplashScreenView.as_view(), name="splash"),
+    path(
+        "<int:pk>/en-construction/progress",
+        views.SplashProgressionView.as_view(),
+        name="splash-progress",
+    ),
     # CRUD
     # REPORT
     # MAP

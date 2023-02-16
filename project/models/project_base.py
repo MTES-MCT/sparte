@@ -158,7 +158,6 @@ class CityGroup:
 
 
 class Project(BaseProject):
-
     ANALYZE_YEARS = [(str(y), str(y)) for y in range(2009, 2021)]
     LEVEL_CHOICES = AdminRef.CHOICES
 
@@ -197,11 +196,11 @@ class Project(BaseProject):
             "EPCI est sélectionné, alors les rapports montre des données EPCI par EPCI."
         ),
     )
-    
+
     @property
     def level_label(self):
         return AdminRef.get_label(self.level)
-    
+
     land_type = models.CharField(
         "Type de territoire",
         choices=LEVEL_CHOICES,
@@ -964,7 +963,6 @@ class Project(BaseProject):
 
 
 class Emprise(DataColorationMixin, gis_models.Model):
-
     # DataColorationMixin properties that need to be set when heritating
     default_property = "id"
     default_color = "blue"
