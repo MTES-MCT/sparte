@@ -5,7 +5,7 @@ from django.contrib.gis.db.models import Union
 from django.core.management.base import BaseCommand
 from django.db import connection
 
-from public_data.models import Scot, Region, Departement, Commune, Cerema
+from public_data.models import Cerema, Commune, Departement, Region, Scot
 from public_data.storages import DataStorage
 from utils.db import fix_poly
 
