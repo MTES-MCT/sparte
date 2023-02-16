@@ -3,7 +3,8 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
+from django.utils import timezone
 from django.views.generic import (
     DeleteView,
     DetailView,
@@ -93,7 +94,7 @@ class CreateProjectViews(BreadCrumbMixin, FormView):
             if self.request.GET.get("next") == "download":
                 return redirect("project:report_download", pk=project.id)
             else:
-                return redirect(project)
+                return redirect("project:splash", pk=project.id)
 
 
 class ProjectUpdateView(GroupMixin, UpdateView):
@@ -251,3 +252,45 @@ class ProjectListView(GroupMixin, LoginRequiredMixin, ListView):
                 except FileNotFoundError:
                     project.cover_image = None
         return qs
+
+
+class SplashScreenView(GroupMixin, LoginRequiredMixin, DetailView):
+    model = Project
+    template_name = "project/create/splash_screen.html"
+    context_object_name = "diagnostic"
+
+    def get_context_breadcrumbs(self):
+        breadcrumbs = super().get_context_breadcrumbs()
+        breadcrumbs += [
+            {"href": None, "title": "Création du diagnostic"},
+        ]
+        return breadcrumbs
+
+
+class SplashProgressionView(GroupMixin, LoginRequiredMixin, DetailView):
+    model = Project
+    template_name = "project/create/fragment_splash_progress.html"
+    context_object_name = "diagnostic"
+
+    def dispatch(self, *args, **kwargs):
+        response = super().dispatch(*args, **kwargs)
+        if (
+            self.object.async_city_and_combined_emprise_done
+            and self.object.async_add_neighboors_done
+        ):
+            response["HX-Redirect"] = reverse("project:detail", kwargs=self.kwargs)
+        return response
+
+    def get_context_data(self, **kwargs):
+        o = self.object
+        kwargs["steps"] = {
+            "Liste des communes du territoire": o.async_city_and_combined_emprise_done,
+            "Image de couverture": o.async_cover_image_done,
+            "Période de l'OCSGE": o.async_find_first_and_last_ocsge_done,
+            "Territoires de comparaison": o.async_add_neighboors_done,
+            "Carte de la consommation d'espace": o.async_generate_theme_map_conso_done,
+            "Carte de l'artificialisation": o.async_generate_theme_map_artif_done,
+            "Carte comprendre l'artificialisation": o.async_theme_map_understand_artif_done,
+        }
+        kwargs["last_update"] = timezone.now()
+        return super().get_context_data(**kwargs)
