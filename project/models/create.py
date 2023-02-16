@@ -3,9 +3,10 @@ from typing import List
 
 import celery
 
-from .project_base import Project
 from public_data.models import AdminRef, Land
 from users.models import User
+
+from .project_base import Project
 
 
 def create_from_public_key(

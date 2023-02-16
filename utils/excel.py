@@ -1,6 +1,7 @@
+from typing import Any, List
+
 from openpyxl import Workbook
 from openpyxl.styles import Font
-from typing import Any, List
 
 
 class LineSizeException(Exception):

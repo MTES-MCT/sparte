@@ -1,10 +1,10 @@
 import io
-import pandas as pd
 import re
 from datetime import datetime
 
+import pandas as pd
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import F, Value, CharField, Sum
+from django.db.models import CharField, F, Sum, Value
 from django.db.models.functions import Concat
 from django.http import FileResponse
 from django.views.generic import TemplateView, View
@@ -13,7 +13,7 @@ from project.models.project_base import Project
 from project.storages import ExportStorage
 
 # from utils.excel import write_sheet
-from public_data.models import Cerema, CommunePop, CommuneDiff, CommuneSol
+from public_data.models import Cerema, CommuneDiff, CommunePop, CommuneSol
 
 
 class ExportListView(LoginRequiredMixin, TemplateView):

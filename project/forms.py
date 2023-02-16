@@ -1,8 +1,8 @@
 from django import forms
 
-from public_data.models import Region, Departement, Epci, AdminRef
 from project.models import Project
 from project.tasks import process_project_with_shape
+from public_data.models import AdminRef, Departement, Epci, Region
 
 
 class UploadShpForm(forms.Form):

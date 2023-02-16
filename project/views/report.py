@@ -2,10 +2,9 @@ from decimal import InvalidOperation
 
 from django.contrib import messages
 from django.http import HttpResponseRedirect
+from django.templatetags.static import static
 from django.urls import reverse, reverse_lazy
 from django.views.generic import CreateView, DetailView
-from django.templatetags.static import static
-
 from django_app_parameter import app_parameter
 
 from project import charts, tasks
