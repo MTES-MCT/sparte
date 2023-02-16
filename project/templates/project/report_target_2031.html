@@ -20,7 +20,7 @@ Projection 2031
 <div class="px-4">
     {% include "project/partials/report_title.html" with title=diagnostic surface=diagnostic.area %}
 
-    {% include "project/detail_menu.html" %}
+    {% include "project/report_menu.html" %}
 
     <div class="fr-container fr-py-3w">
         <div class="fr-callout fr-callout--brown-caramel fr-fi-information-line fr-callout-read-more">
@@ -41,12 +41,12 @@ Projection 2031
                 <p class="fr-text--sm mb-3">Pour la mesure de la consommation d'espaces NAF, l'Etat utilise les fichiers fonciers.</p>
                 <p class="fr-text--sm mb-3">Ces données sont fournies tous les ans depuis 2009. Le dernier millésime de 2021 est la photographie du territoire au 1er janvier 2021, intégrant les évolutions réalisées au cours de l'année 2020.</p>
             </div>
-        
+
             <button class="fr-btn fr-btn--secondary fr-btn--sm fr-callout-read-more__btn" aria-expanded="false" aria-controls="target_2031_1">
                 Lire plus
             </button>
         </div>
-        
+
 
         <div class="fr-grid-row fr-grid-row--gutters fr-mt-7w">
             <div class="fr-col-12 fr-col-md-4 fr-grid-row">
@@ -99,7 +99,7 @@ Projection 2031
             </div>
 
             <div class="mt-4">Pendant la période de réduction, la loi prévoit que chaque région ne consomme que 50% de ce qui a été consommé pendant la  période de référence.</div>
-            
+
             {% if project.target_2031 != 50 %}
                 <div class="fr-alert fr-alert--info fr-alert--sm mt-3">
                     <p>Vous avez personnalisé l'objectif de votre territoire à {{ project.target_2031 }}%.</p>

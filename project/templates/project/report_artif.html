@@ -20,7 +20,7 @@ Rapport artificialisation
 <div class="px-4">
     {% include "project/partials/report_title.html" with title=diagnostic surface=diagnostic.area %}
 
-    {% include "project/detail_menu.html" %}
+    {% include "project/report_menu.html" %}
 
     <div class="fr-container fr-py-3w">
         <div class="fr-callout fr-callout--brown-caramel fr-fi-information-line fr-callout-read-more">
@@ -45,7 +45,7 @@ Rapport artificialisation
                 <p class="fr-text--sm mb-3">La nomenclature précise que les surfaces dont les sols sont soit imperméabilisés en raison du bâti ou d'un revêtement, soit stabilisés et compactés, soit constitués de matériaux composites sont qualifiées de surfaces artificialisées. De même, les surfaces végétalisées herbacées (c'est-à-dire non ligneuses) et qui sont à usage résidentiel, de production secondaire ou tertiaire, ou d'infrastructures, sont considérées comme artificialisées, y compris lorsqu'elles sont en chantier ou à l'état d'abandon.</p>
                 <img src="{% static 'project/img/ocs_ge_matrice_passage.png' %}" class="w-100" />
             </div>
-        
+
             <button class="fr-btn fr-btn--secondary fr-btn--sm fr-callout-read-more__btn" aria-expanded="false" aria-controls="artif_1">
                 Lire plus
             </button>
@@ -114,7 +114,7 @@ Rapport artificialisation
                             <button class="fr-btn fr-btn--tertiary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill" data-bs-toggle="dropdown" aria-expanded="false">
                                 Maille d'analyse
                             </button>
-                          
+
                             <ul class="dropdown-menu">
                                 <li>
                                     <a class="fr-nav__link" {% if level == "COMM" %} aria-current="true"{% endif %} href="{% url "project:report_artif" project.id %}?level_conso=COMMUNE">Communes</a>
@@ -150,7 +150,7 @@ Rapport artificialisation
 
                     <h6 class="fr-mt-2w">Calcul</h6>
                     <p>OCS GE traduite grâce à la matrice de passage.</p>
- 
+
                     <h6 class="fr-mt-2w">Données</h6>
                     <table class="table table-striped table-sm table-borderless mt-5">
                         <thead>
