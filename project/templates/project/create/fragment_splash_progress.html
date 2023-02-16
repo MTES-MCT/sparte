@@ -1,5 +1,5 @@
 
-<div hx-get="{% url 'project:splash-progress' diagnostic.id %}" hx-trigger="load" hx-swap="outerHTML">
+<div hx-get="{% url 'project:splash-progress' diagnostic.id %}" hx-trigger="load delay:5s" hx-swap="outerHTML">
     <ul>
         {% for step in steps.items %}
             <li><i class="bi
