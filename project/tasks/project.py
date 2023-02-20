@@ -24,7 +24,7 @@ from matplotlib_scalebar.scalebar import ScaleBar
 from project.models import Project, Request
 from public_data.models import ArtificialArea, Cerema, Land, OcsgeDiff
 from utils.db import fix_poly
-from utils.emails import send_template_email
+from utils.emails import send_template_email, SibTemplateEmail
 from utils.functions import get_url_with_domain
 from utils.mattermost import Mattermost
 
@@ -110,24 +110,32 @@ def find_first_and_last_ocsge(self, project_id: int) -> None:
 
 @shared_task
 def send_email_request_bilan(request_id):
-    """Il faut envoyer 2 e-mails: 1 au demandeur et 1 à l'équipe SPARTE"""
+    """Alerte envoyée à l'équipe SPARTE pour les avertir d'une demande de Diagnostic."""
     logger.info("Start send_email_request_bilan, request_id=%s", request_id)
     request = Request.objects.get(pk=request_id)
-    project_url = get_url_with_domain(request.project.get_absolute_url())
-    relative_url = reverse(
-        "admin:project_request_change", kwargs={"object_id": request.id}
+    diagnostic = request.project
+    project_url = get_url_with_domain(reverse("project:detail", args=[diagnostic.id]))
+    relative_url = get_url_with_domain(
+        reverse("admin:project_request_change", kwargs={"object_id": request.id})
     )
-    send_template_email(
+    image_url = "https://creative-assets.mailinblue.com/editor/image_placeholder.png"
+    if diagnostic.cover_image:
+        image_url = diagnostic.cover_image.url
+    email = SibTemplateEmail(
+        template_id=1,
         subject=f"Demande de bilan - {request.email} - {request.project.name}",
-        recipients=[app_parameter.TEAM_EMAIL],
-        template_name="project/emails/dl_diagnostic_team",
-        context={
-            "project": request.project,
-            "request": request,
+        recipients=[{"name": "Team SPARTE", "email": app_parameter.TEAM_EMAIL}],
+        params={
+            "diagnostic_name": diagnostic.name,
+            "user_email": request.email,
+            "user_organism": request.organism,
+            "user_function": request.function,
+            "admin_request": relative_url,
+            "image_url": image_url,
             "project_url": project_url,
-            "request_url": get_url_with_domain(relative_url),
         },
     )
+    logger.info("result=%s", email.send())
     logger.info("End send_email_request_bilan, request_id=%s", request_id)
 
 

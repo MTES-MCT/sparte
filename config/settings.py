@@ -349,26 +349,14 @@ To set MailJet configuration, please add environment variables:
 """
 
 EMAIL_ENGINE = env.str("EMAIL_ENGINE", default="local")
-
-available_engines = ["local", "mailjet"]
-if EMAIL_ENGINE not in available_engines:
+if EMAIL_ENGINE not in ["local", "sendinblue"]:
     raise ImproperlyConfigured("E-mail backend needs to be correctly set")
-
-
-if EMAIL_ENGINE == "local":
+elif EMAIL_ENGINE == "local":
     EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
     emails_dirpath = BASE_DIR / "emails"
     EMAIL_FILE_PATH = env.str("EMAIL_FILE_PATH", default=emails_dirpath)
-
-elif EMAIL_ENGINE == "mailjet":
-    INSTALLED_APPS += [
-        "anymail",
-    ]
-    EMAIL_BACKEND = "anymail.backends.mailjet.EmailBackend"
-    ANYMAIL = {
-        "MAILJET_API_KEY": env.str("MAILJET_ID"),
-        "MAILJET_SECRET_KEY": env.str("MAILJET_SECRET"),
-    }
+else:
+    SENDINBLUE_API_KEY = env.str("API_KEY_SENDINBLUE")
 
 DEFAULT_FROM_EMAIL = env.str("DEFAULT_FROM_EMAIL", default="johndoe@email.com")
 
