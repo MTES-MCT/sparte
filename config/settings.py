@@ -353,10 +353,10 @@ if EMAIL_ENGINE not in ["local", "sendinblue"]:
     raise ImproperlyConfigured("E-mail backend needs to be correctly set")
 elif EMAIL_ENGINE == "local":
     EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
-    emails_dirpath = BASE_DIR / "emails"
-    EMAIL_FILE_PATH = env.str("EMAIL_FILE_PATH", default=emails_dirpath)
-else:
-    SENDINBLUE_API_KEY = env.str("API_KEY_SENDINBLUE")
+
+EMAIL_FILE_PATH = env.str("EMAIL_FILE_PATH", default=BASE_DIR / "emails")
+SENDINBLUE_API_KEY = env.str("API_KEY_SENDINBLUE")
+
 
 DEFAULT_FROM_EMAIL = env.str("DEFAULT_FROM_EMAIL", default="johndoe@email.com")
 
