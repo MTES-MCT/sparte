@@ -1363,6 +1363,13 @@
             "markers": "python_version >= '3.7'",
             "version": "==2.0.1"
         },
+        "sib-api-v3-sdk": {
+            "hashes": [
+                "sha256:5c7cee4504132e512f7dd8d068c9d0c4b9654984e09939e749bbe8e3805bbf19"
+            ],
+            "index": "pypi",
+            "version": "==7.5.0"
+        },
         "six": {
             "hashes": [
                 "sha256:1e61c37477a1626458e36f7b1d82aa5c9b094fa4802892072e49de9c60c4c926",
