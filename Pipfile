@@ -21,6 +21,8 @@ bandit = "*"
 djt-csp = "*"
 tqdm = "*"
 isort = "*"
+mypy = "*"
+types-requests = "*"
 
 [packages]
 boto3 = "*"
@@ -57,3 +59,4 @@ django-sri = "*"
 matplotlib-scalebar = "*"
 mapclassify = "*"
 crispy-bootstrap5 = "*"
+sib-api-v3-sdk = "*"
