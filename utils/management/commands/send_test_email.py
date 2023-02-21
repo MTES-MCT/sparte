@@ -1,11 +1,9 @@
 from django.core.management.base import BaseCommand
-from django.conf import settings
 from django.urls import reverse
-from django_app_parameter import app_parameter
 
-from utils.emails import send_template_email, SendInBlueEmail, SibTemplateEmail
+from utils.emails import SibTemplateEmail
 from utils.functions import get_url_with_domain
-from project.models import Project, Request
+from project.models import Request
 
 
 class Command(BaseCommand):

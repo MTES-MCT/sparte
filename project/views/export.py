@@ -39,8 +39,8 @@ class ExportListView(LoginRequiredMixin, TemplateView):
 class ExportExcelView(LoginRequiredMixin, View):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.project: Project = None
-        self.writer: pd.ExcelWriter = None
+        self.project = None
+        self.writer = None
         self.default_config = [
             {"name": "Commune", "db": "city__name", "type": "index"},
             {"name": "Insee", "db": "city__insee", "type": "index"},
@@ -66,7 +66,7 @@ class ExportExcelView(LoginRequiredMixin, View):
             filename=f"données du diagnostic {self.project.name}.xlsx",
         )
 
-    def get_excel_as_buffer(self) -> io.BytesIO():
+    def get_excel_as_buffer(self) -> io.BytesIO:
         buffer = io.BytesIO()
         with pd.ExcelWriter(buffer, engine="openpyxl") as self.writer:
             self.add_population_sheet()
