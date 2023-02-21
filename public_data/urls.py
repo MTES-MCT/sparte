@@ -33,7 +33,6 @@ router.register(r"ocsge/general", OcsgeViewSet)
 router.register(r"ocsge/diff", OcsgeDiffViewSet)
 router.register(r"ocsge/zones-construites", ZoneConstruiteViewSet)
 router.register(r"ocsge/zones-artificielles", ArtificialAreaViewSet)
-
 router.register(r"referentiel/region", RegionViewSet)
 router.register(r"referentiel/departement", DepartementViewSet)
 router.register(r"referentiel/epci", EpciViewSet)

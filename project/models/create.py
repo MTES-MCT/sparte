@@ -34,9 +34,14 @@ def create_from_public_key(
     celery.chain(
         t.add_city_and_set_combined_emprise.si(project.id, public_key),
         celery.group(
-            t.generate_cover_image.si(project.id),
             t.find_first_and_last_ocsge.si(project.id),
             t.add_neighboors.si(project.id),
+        ),
+        celery.group(
+            t.generate_cover_image.si(project.id),
+            t.generate_theme_map_conso.si(project.id),
+            t.generate_theme_map_artif.si(project.id),
+            t.generate_theme_map_understand_artif.si(project.id),
         ),
     ).apply_async()
 
@@ -50,6 +55,9 @@ def create_from_public_key_list(
     user: User = None,
 ) -> Project:
     """Create a project from a list of public_keys"""
+
+    raise NotImplementedError("TODO update code when used")  # NOSONAR
+
     # if there is on ly one public_key, use the dedicated function
     if len(public_key_list) == 1:
         return create_from_public_key(

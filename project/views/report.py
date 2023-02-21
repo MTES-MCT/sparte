@@ -5,6 +5,8 @@ from django.views.generic import DetailView, CreateView
 
 from django_app_parameter import app_parameter
 
+from public_data.models import UsageSol, CouvertureSol
+
 from project import charts
 from project.models import Project, Request, ProjectCommune
 from project import tasks
@@ -187,44 +189,57 @@ class ProjectReportCityGroupView(ProjectReportBaseView):
         return self.render_to_response(context)
 
 
-class ProjectReportCouvertureView(ProjectReportBaseView):
-    template_name = "project/rapport_usage.html"
-    breadcrumbs_title = "Rapport couverture du sol"
+class ProjectReportDicoverOcsgeView(ProjectReportBaseView):
+    template_name = "project/rapport_discover_ocsge.html"
+    breadcrumbs_title = "Rapport découvrir l'OCS GE"
 
     def get_context_data(self, **kwargs):
         project = self.get_object()
 
         surface_territory = project.area
         kwargs = {
-            "nom": "Couverture",
+            "nom": "Rapport découvrir l'OCS GE",
             "surface_territory": surface_territory,
-            "active_page": "couverture",
+            "active_page": "discover",
         }
 
         if not project.is_artif():
             return super().get_context_data(**kwargs)
 
-        first_millesime = project.first_year_ocsge
-        last_millesime = project.last_year_ocsge
-
-        pie_chart = charts.CouvertureSolPieChart(project)
-        progression_chart = charts.CouvertureSolProgressionChart(project)
-
         kwargs.update(
             {
-                "first_millesime": str(first_millesime),
-                "last_millesime": str(last_millesime),
-                "pie_chart": pie_chart,
-                "progression_chart": progression_chart,
+                "first_millesime": str(project.first_year_ocsge),
+                "last_millesime": str(project.last_year_ocsge),
+                "couv_pie_chart": charts.CouvertureSolPieChart(project),
+                "couv_progression_chart": charts.CouvertureSolProgressionChart(project),
+                "usa_pie_chart": charts.UsageSolPieChart(project),
+                "usa_progression_chart": charts.UsageSolProgressionChart(project),
+                "usa_leafs": UsageSol.get_leafs(),
+                "couv_leafs": CouvertureSol.get_leafs(),
             }
         )
 
-        matrix_data = project.get_matrix(sol="couverture")
-        if matrix_data:
+        # Couverture
+
+        couv_matrix_data = project.get_matrix(sol="couverture")
+        if couv_matrix_data:
             kwargs.update(
                 {
-                    "matrix_data": add_total_line_column(matrix_data),
-                    "matrix_headers": list(matrix_data.values())[0].keys(),
+                    "couv_matrix_data": add_total_line_column(couv_matrix_data),
+                    "couv_matrix_headers": list(couv_matrix_data.values())[0].keys(),
+                    "couv_wheel_chart": charts.CouvWheelChart(project),
+                }
+            )
+
+        # Usage
+
+        usa_matrix_data = project.get_matrix(sol="usage")
+        if usa_matrix_data:
+            kwargs.update(
+                {
+                    "usa_matrix_data": add_total_line_column(usa_matrix_data),
+                    "usa_matrix_headers": list(usa_matrix_data.values())[0].keys(),
+                    "usa_whell_chart": charts.UsageWheelChart(project),
                 }
             )
 

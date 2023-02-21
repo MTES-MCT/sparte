@@ -76,6 +76,17 @@ class DiagnosticSource(data_sources.DataSource):
     model = Project
     url_args = {"pk": "int"}
 
+    def prep_image(self, field, height=None, width=None):
+        if field:
+            try:
+                fd, img_path = tempfile.mkstemp(suffix=".png", text=False)
+                os.write(fd, field.open().read())
+                os.close(fd)
+                return data_sources.Image(img_path, width=width, height=height)
+            except FileNotFoundError:
+                pass
+        return ""
+
     def get_file_name(self):
         """You can overide this method to set a specific filename to files generated
         with this datasource.If this method raise AttributeError, the name will be set
@@ -100,18 +111,15 @@ class DiagnosticSource(data_sources.DataSource):
             ),
             # deprecated
             "project": project,
+            "photo_emprise": self.prep_image(project.cover_image, height=110),
+            "carte_consommation": self.prep_image(project.theme_map_conso, width=170),
+            "carte_artificialisation": self.prep_image(
+                project.theme_map_artif, width=170
+            ),
+            "carte_comprendre_artificialisation": self.prep_image(
+                project.theme_map_understand_artif, width=170
+            ),
         }
-
-        if project.cover_image:
-            try:
-                fd, img_path = tempfile.mkstemp(suffix=".png", text=False)
-                os.write(fd, project.cover_image.open().read())
-                os.close(fd)
-                context.update(
-                    {"photo_emprise": data_sources.Image(img_path, height=110)}
-                )
-            except FileNotFoundError:
-                pass
 
         target_2031_consumption = project.get_bilan_conso()
         current_conso = project.get_bilan_conso_time_scoped()

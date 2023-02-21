@@ -2,7 +2,7 @@ from django.contrib import messages
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.db.models import F, Value
 from django.http import HttpResponseRedirect
-from django.views.generic import TemplateView, CreateView, RedirectView
+from django.views.generic import TemplateView, CreateView, RedirectView, FormView
 
 from django_app_parameter import app_parameter
 
@@ -12,6 +12,7 @@ from utils.views_mixins import BreadCrumbMixin
 
 from . import charts
 from .models import ContactForm, Newsletter
+from .forms import NewsletterForm
 from .tasks import send_contact_form, send_nwl_confirmation, send_nwl_final
 
 
@@ -21,6 +22,10 @@ class TestView(TemplateView):
 
 class HomeView(BreadCrumbMixin, TemplateView):
     template_name = "home/home.html"
+
+    def get_context_data(self, **kwargs):
+        kwargs["form"] = NewsletterForm()
+        return super().get_context_data(**kwargs)
 
 
 class AccessView(BreadCrumbMixin, TemplateView):
@@ -73,23 +78,14 @@ class ContactView(CreateView):
         return HttpResponseRedirect(self.get_success_url())
 
 
-class NewsletterCreateView(CreateView):
-    model = Newsletter
-    template_name = "home/newsletter.html"
-    success_url = "/"
-    fields = ["email"]
+class NewsletterSubscriptionView(FormView):
+    template_name = "home/partials/newsletter_confirm_subscription.html"
+    form_class = NewsletterForm
 
     def form_valid(self, form):
         self.object = form.save()
         send_nwl_confirmation.delay(self.object.id)
-        messages.success(
-            self.request,
-            (
-                "Votre inscription a été prise en compte. Vous allez recevoir un e-mail"
-                " vous demandant de confirmer votre souhait."
-            ),
-        )
-        return HttpResponseRedirect(self.get_success_url())
+        return self.render_to_response(self.get_context_data())
 
 
 class NewsLetterConfirmationView(RedirectView):

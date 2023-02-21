@@ -19,3 +19,31 @@
 .height-350px {
     height: 350px;
 }
+
+/* Remove Footer margin-top on homepage */
+.home #footer {
+    margin-top: 0 !important;
+}
+
+/* Fade-in transition */
+.fade-in {
+    opacity: 1;
+    animation-name: fadeInOpacity;
+    animation-iteration-count: 1;
+    animation-timing-function: ease-in;
+    animation-duration: .3s;
+}
+
+@keyframes fadeInOpacity {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+/* Fix menu mon compte position */
+#menu-mon-compte {
+    right: 0;
+}
