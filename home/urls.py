@@ -18,7 +18,7 @@ urlpatterns = [
     path("contact", views.ContactView.as_view(), name="contact"),
     path(
         "newsletter/inscription",
-        views.NewsletterCreateView.as_view(),
+        views.NewsletterSubscriptionView.as_view(),
         name="nwl-subscription",
     ),
     path(

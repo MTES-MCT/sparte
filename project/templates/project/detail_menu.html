@@ -12,10 +12,7 @@
         <a class="nav-link{% if active_page == 'artificialisation' %} active bg-light{% endif %}{% if not ocsge_available %} disabled{% endif %}" href="{% url 'project:report_artif' project.pk %}">Artificialisation</a>
     </li>
     <li class="nav-item pb-0"{% if not ocsge_available %} data-toggle="tooltip" title="OCS GE n'est pas disponible pour ce territoire" aria-hidden="true"{% endif %}>
-        <a class="nav-link{% if active_page == 'usage' %} active bg-light{% endif %}{% if not ocsge_available %} disabled{% endif %}" href="{% url 'project:report_usage' project.pk %}">Usage</a>
-    </li>
-    <li class="nav-item pb-0"{% if not ocsge_available %} data-toggle="tooltip" title="OCS GE n'est pas disponible pour ce territoire" aria-hidden="true"{% endif %}>
-        <a class="nav-link{% if active_page == 'couverture' %} active bg-light{% endif %}{% if not ocsge_available %} disabled{% endif %}" href="{% url 'project:report_couverture' project.pk %}">Couverture</a>
+        <a class="nav-link{% if active_page == 'discover' %} active bg-light{% endif %}{% if not ocsge_available %} disabled{% endif %}" href="{% url 'project:report_discover' project.pk %}">Découvrir l'OCSGE</a>
     </li>
     <li class="nav-item pb-0">
         <a class="nav-link{% if active_page == 'download' %} active bg-light{% endif %}" href="{% url 'project:report_download' project.pk %}">Bilan téléchargeable</a>

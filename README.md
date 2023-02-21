@@ -19,6 +19,10 @@ Le Service de Portrait de l’ARtificialisation des TErritoires (ou SPARTE) est 
 10. Copier les fichiers de données OCS GE et Cérema... sur votre bucket AWS
 11. Lancer l'installation des données `python scripts/cmd.py --env local rebuild`
 
+## Frontend
+1. Installer les dépendances front `npm install`
+2. Lancer le build du bundle `npm run build:dev` ou `npm run build:prod` (Génère un nouveau bundle à chaque mise à jour du fichier ./assets/scripts/index.js)
+
 ### Variables d'environnement
 
 Pour une installation locale, ces valeurs doivent être dans le fichier .env à la racine du projet. Pour le déploiement sur scalingo, ces variables sont à ajouter dans la section "Environnement" du container.
@@ -46,6 +50,7 @@ Pour une installation locale, ces valeurs doivent être dans le fichier .env à 
 | MATOMO_TOKEN | Token pour envoyer les données à Matomo |  |
 | MATOMO_ACTIVATE | Détermine si des infos doivent être envoyé à Matomo | 0 |
 | USE_SRI | Active l'utilisation des SRI même lorsque debug = 1 | 1 |
+| USE_CSP | Active l'utilisation des CSP même lorsque debug = 1 | 1 |
 
 Variables d'environnement spécifique à Scalingo. Voir les valeurs sur Scalingo.
 
@@ -55,7 +60,6 @@ Variables d'environnement spécifique à Scalingo. Voir les valeurs sur Scalingo
 | GDAL_DATA | requis pour le buildpack qui install GeoDjango |
 | LD_LIBRARY_PATH | requis pour le buildpack qui install GeoDjango |
 | PROJ_LIB | requis pour le buildpack qui install GeoDjango |
-| PYTHONPATH | Non déterminé |
 | SCALINGO_POSTGRESQL_URL | Ajouté lorsque l'addon postgres est activé |
 | SCALINGO_REDIS_URL | Ajouté lorsque l'addon redis est activé |
 
@@ -104,9 +108,3 @@ python scripts/cmd.py --env $ENV run 'python manage.py build_commune_data --depa
 python scripts/cmd.py --env $ENV run 'python manage.py build_artificial_area --departement Gers' && \
 python scripts/cmd.py --env $ENV run 'python manage.py set_density --reset --departement Gers'
 ```
-
-## Migration stack scalingo 18 => 20
-
-1. Remove PYTHONPATH from environment variables (through scalingo online dashboard)
-2. Migrate app's stack with CLI `scalingo --app sparte --region osc-secnum-fr1 stacks-set scalingo-20` and check success with `scalingo --app sparte --region osc-secnum-fr1 apps-info`
-3. Deploy

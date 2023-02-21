@@ -1,3 +1,6 @@
+.DS_Store
+node_modules
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -159,8 +162,9 @@ carto/media/ref_plan/
 # Identifier file
 *.Identifier
 
-static/dsfr-v1.5.1/
 *.pgsql
 notebooks/*.xlsx
 *.tar.gz
 staticroot/*
+public_data/static/SSCH*
+diff_bfc_*

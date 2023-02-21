@@ -262,6 +262,7 @@ class Project(BaseProject):
         null=True,
         blank=True,
     )
+
     last_year_ocsge = models.IntegerField(
         "Dernier millésime OCSGE",
         validators=[MinValueValidator(2000)],
@@ -270,6 +271,7 @@ class Project(BaseProject):
     )
 
     folder_name = models.CharField("Dossier", max_length=15, blank=True, null=True)
+
     territory_name = models.CharField(
         "Territoire",
         max_length=250,
@@ -280,12 +282,54 @@ class Project(BaseProject):
             "dans le rapport word."
         ),
     )
+
     cover_image = models.ImageField(
         upload_to=upload_in_project_folder,
         blank=True,
         null=True,
         storage=PublicMediaStorage(),
     )
+
+    theme_map_conso = models.ImageField(
+        upload_to=upload_in_project_folder,
+        blank=True,
+        null=True,
+        storage=PublicMediaStorage(),
+    )
+
+    theme_map_artif = models.ImageField(
+        upload_to=upload_in_project_folder,
+        blank=True,
+        null=True,
+        storage=PublicMediaStorage(),
+    )
+
+    theme_map_understand_artif = models.ImageField(
+        upload_to=upload_in_project_folder,
+        blank=True,
+        null=True,
+        storage=PublicMediaStorage(),
+    )
+
+    async_city_and_combined_emprise_done = models.BooleanField(default=False)
+    async_cover_image_done = models.BooleanField(default=False)
+    async_find_first_and_last_ocsge_done = models.BooleanField(default=False)
+    async_add_neighboors_done = models.BooleanField(default=False)
+    async_generate_theme_map_conso_done = models.BooleanField(default=False)
+    async_generate_theme_map_artif_done = models.BooleanField(default=False)
+    async_theme_map_understand_artif_done = models.BooleanField(default=False)
+
+    @property
+    def async_complete(self):
+        return (
+            self.async_city_and_combined_emprise_done
+            & self.async_cover_image_done
+            & self.async_find_first_and_last_ocsge_done
+            & self.async_add_neighboors_done
+            & self.async_generate_theme_map_conso_done
+            & self.async_generate_theme_map_artif_done
+            & self.async_theme_map_understand_artif_done
+        )
 
     class Meta:
         ordering = ["-created_date"]
@@ -813,57 +857,54 @@ class Project(BaseProject):
         return item_list
 
     def get_detail_artif(self):
-        qs = OcsgeDiff.objects.intersect(self.combined_emprise)
-        # sélection
-        qs = qs.filter(
-            year_old__gte=self.analyse_start_date,
-            year_new__lte=self.analyse_end_date,
+        return (
+            OcsgeDiff.objects.intersect(self.combined_emprise)
+            .filter(
+                year_old__gte=self.analyse_start_date,
+                year_new__lte=self.analyse_end_date,
+            )
+            .filter(Q(is_new_artif=True) | Q(is_new_natural=True))
+            .annotate(
+                code_prefix=Case(
+                    When(
+                        is_new_artif=True, then=F("new_matrix__couverture__code_prefix")
+                    ),
+                    default=F("old_matrix__couverture__code_prefix"),
+                ),
+                label=Case(
+                    When(is_new_artif=True, then=F("new_matrix__couverture__label")),
+                    default=F("old_matrix__couverture__label"),
+                ),
+                label_short=Case(
+                    When(
+                        is_new_artif=True, then=F("new_matrix__couverture__label_short")
+                    ),
+                    default=F("old_matrix__couverture__label_short"),
+                ),
+            )
+            .values("code_prefix", "label", "label_short")
+            .annotate(
+                artif=cast_sum("intersection_area", filter=Q(is_new_artif=True)),
+                renat=cast_sum("intersection_area", filter=Q(is_new_natural=True)),
+            )
         )
-        qs = qs.filter(Q(is_new_artif=True) | Q(is_new_natural=True))
-        qs = qs.annotate(
-            code_prefix=Case(
-                When(is_new_artif=True, then=F("new_matrix__couverture__code_prefix")),
-                default=F("old_matrix__couverture__code_prefix"),
-            ),
-            label=Case(
-                When(is_new_artif=True, then=F("new_matrix__couverture__label")),
-                default=F("old_matrix__couverture__label"),
-            ),
-            label_short=Case(
-                When(is_new_artif=True, then=F("new_matrix__couverture__label_short")),
-                default=F("old_matrix__couverture__label_short"),
-            ),
-        )
-        qs = qs.values("code_prefix", "label", "label_short")
-        qs = qs.annotate(
-            artif=cast_sum("intersection_area", filter=Q(is_new_artif=True)),
-            renat=cast_sum("intersection_area", filter=Q(is_new_natural=True)),
-        )
-        return qs
 
     def get_base_sol_artif(self, sol="couverture"):
-        qs = CommuneSol.objects.filter(
-            city__in=self.cities.all(),
-            year=self.last_year_ocsge,
-            matrix__is_artificial=True,
+        return (
+            CommuneSol.objects.filter(
+                city__in=self.cities.all(),
+                year=self.last_year_ocsge,
+                matrix__is_artificial=True,
+            )
+            .annotate(
+                code_prefix=F(f"matrix__{sol}__code_prefix"),
+                label=F(f"matrix__{sol}__label"),
+                label_short=F(f"matrix__{sol}__label_short"),
+                map_color=F(f"matrix__{sol}__map_color"),
+            )
+            .values("code_prefix", "label", "label_short", "map_color")
+            .annotate(surface=Sum("surface"))
         )
-        if sol == "couverture":
-            qs = qs.annotate(
-                code_prefix=F("matrix__couverture__code_prefix"),
-                label=F("matrix__couverture__label"),
-                label_short=F("matrix__couverture__label_short"),
-                map_color=F("matrix__couverture__map_color"),
-            )
-        else:
-            qs = qs.annotate(
-                code_prefix=F("matrix__usage__code_prefix"),
-                label=F("matrix__usage__label"),
-                label_short=F("matrix__usage__label_short"),
-                map_color=F("matrix__usage__map_color"),
-            )
-        qs = qs.values("code_prefix", "label", "label_short", "map_color")
-        qs = qs.annotate(surface=Sum("surface"))
-        return qs
 
     def get_neighbors(self, land_type=None):
         if not land_type:

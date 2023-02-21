@@ -1,10 +1,12 @@
+from django.contrib import messages
 from django.contrib.gis import admin
 from django.http import HttpResponseRedirect
 from django.urls import reverse, exceptions
 from django.utils.html import format_html
 
-from .models import Project, Emprise, Request, ErrorTracking
-from .tasks import send_word_diagnostic, generate_word_diagnostic
+
+from .models import Project, Request, ErrorTracking
+from . import tasks
 
 
 @admin.register(Project)
@@ -26,16 +28,30 @@ class ProjectAdmin(admin.GeoModelAdmin):
     )
     ordering = ("name",)
     filter_horizontal = ("cities",)
+    change_form_template = "project/admin/project_detail.html"
 
-
-# @admin.register(Emprise)
-# class EmpriseAdmin(admin.GeoModelAdmin):
-#     model = Emprise
-#     list_display = (
-#         "id",
-#         "project",
-#     )
-#     search_fields = ("project",)
+    def response_change(self, request, obj):
+        if "_generate-conso-map" in request.POST:
+            tasks.generate_theme_map_conso.delay(obj.id)
+            msg = "Génération de la carte thématique de la consommation en cours"
+            messages.add_message(request, messages.INFO, msg)
+            return HttpResponseRedirect(".")
+        elif "_generate-artif-map" in request.POST:
+            tasks.generate_theme_map_artif.delay(obj.id)
+            msg = "Génération de la carte thématique de l'artificialisation en cours"
+            messages.add_message(request, messages.INFO, msg)
+            return HttpResponseRedirect(".")
+        elif "_generate-understand-artif-map" in request.POST:
+            tasks.generate_theme_map_understand_artif.delay(obj.id)
+            msg = "Génération de la carte thématique Comprendre Son Artif. en cours"
+            messages.add_message(request, messages.INFO, msg)
+            return HttpResponseRedirect(".")
+        elif "_generate-cover" in request.POST:
+            tasks.generate_cover_image.delay(obj.id)
+            msg = "Génération de l'image de couverture en cours"
+            messages.add_message(request, messages.INFO, msg)
+            return HttpResponseRedirect(".")
+        return super().response_change(request, obj)
 
 
 class ErrorTrackingAdmin(admin.StackedInline):
@@ -134,10 +150,14 @@ class RequestAdmin(admin.ModelAdmin):
             obj.done = False
             obj.sent_date = None
             obj.save()
-            send_word_diagnostic.delay(obj.id)
+            tasks.send_word_diagnostic.delay(obj.id)
+            msg = "Envoie du diagnostic en cours"
+            messages.add_message(request, messages.INFO, msg)
             return HttpResponseRedirect(".")
         elif "_generate-action" in request.POST:
             obj.sent_file.delete(save=True)
-            generate_word_diagnostic.delay(obj.id)
+            tasks.generate_word_diagnostic.delay(obj.id)
+            msg = "Génération du diagnostic en cours"
+            messages.add_message(request, messages.INFO, msg)
             return HttpResponseRedirect(".")
         return super().response_change(request, obj)
