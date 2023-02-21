@@ -1,7 +1,7 @@
 import collections
 import traceback
 from decimal import Decimal
-from typing import Literal
+from typing import Dict, List, Literal
 
 import pandas as pd
 from django.conf import settings
@@ -30,6 +30,7 @@ from public_data.models import (
     OcsgeDiff,
     UsageSol,
 )
+from public_data.models.administration import Commune
 from public_data.models.mixins import DataColorationMixin
 from utils.db import cast_sum
 
@@ -148,9 +149,9 @@ class ProjectCommune(models.Model):
 class CityGroup:
     def __init__(self, name: str):
         self.name = name
-        self.cities = list()
+        self.cities: List[Commune] = list()
 
-    def append(self, project_commune: ProjectCommune):
+    def append(self, project_commune: ProjectCommune) -> None:
         self.cities.append(project_commune.commune)
 
     def __str__(self) -> str:
@@ -583,7 +584,7 @@ class Project(BaseProject):
 
     def get_pop_change_per_year(
         self, criteria: Literal["pop", "household"] = "pop"
-    ) -> dict():
+    ) -> Dict:
         cities = (
             CommunePop.objects.filter(city__in=self.cities.all())
             .filter(year__gte=self.analyse_start_date)

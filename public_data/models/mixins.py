@@ -1,6 +1,7 @@
 import logging
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from typing import Dict
 from zipfile import ZipFile
 
 import numpy as np
@@ -31,7 +32,7 @@ class AutoLoadMixin:
     couverture_field = None
     usage_field = None
     shape_file_path = Path()
-    mapping = dict()
+    mapping: Dict[str, str] = {}
 
     def before_save(self):
         """Hook to set data before saving"""
@@ -132,7 +133,7 @@ class DataColorationMixin:
 
     # DataColorationMixin properties that need to be set when heritating
     default_property = "surface"  # need to be set correctly to work
-    default_color = None
+    default_color: str = ""
 
     @classmethod
     def get_gradient(cls, color_name=None, property_name=None):
