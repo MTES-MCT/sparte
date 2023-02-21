@@ -41,7 +41,21 @@ jobs:
         python -m pipenv install --deploy --ignore-pipfile --dev
     - name: Run tests
       env:
+        SECRET: ${{ secrets.SECRET }}
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         DATABASE_URL: postgis://postgres:postgres@127.0.0.1:5432/postgres
-        SECRET: publicbadsecretthatshouldnotbeusedelsewhere_wink_
+        ENVIRONMENT: github
+        DEBUG: 0
+        DOMAIN_URL: http://localhost:8080/
+        CELERY_BROKER_URL: redis://127.0.0.1:6379/0
+        CELERY_RESULT_BACKEND: django-db
+        AWS_STORAGE_BUCKET_NAME: sparte-staging
+        AWS_S3_REGION_NAME: eu-west-3
+        AWS_LOCATION: github
+        EMAIL_ENGINE: local
+        DEFAULT_FROM_EMAIL: contact@anonymous.com
+        MATOMO_ACTIVATE: 0
+        HIGHCHART_SERVER: http://localhost:8090/
       run: |
         pipenv run pytest -vv

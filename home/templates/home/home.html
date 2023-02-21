@@ -9,6 +9,8 @@
 {% sri_static "home/css/home.css" %}
 {% endblock headers %}
 
+{% block body_class %}home{% endblock %}
+
 <!-- Hide breadcrumbs on home page -->
 {% block breadcrumbs %}
 {% endblock breadcrumbs %}
@@ -105,20 +107,13 @@
           </div>
         </section>
       </div>
-      <a href="{% url 'project:create' %}" class="fr-btn">Créer un diagnostic</a> <!-- <a href="{% url 'project:create' %}?next=download" class="fr-btn ms-3">Télécharger un diagnostic</a> -->
+      <a href="{% url 'project:create' %}" class="fr-btn"  id="btn-voir-diag-2">Créer un diagnostic</a> <!-- <a href="{% url 'project:create' %}?next=download" class="fr-btn ms-3">Télécharger un diagnostic</a> -->
     </div>
   </div>
 </div>
 
 
-<div class="bg-color-neutral">
-  <div class="fr-container">
-    <div class="d-grid gap-2 d-flex justify-content-center py-4">
-      <a id="btn-sub-nwl" href="{% url 'home:nwl-subscription' %}" class="fr-btn me-5">S'inscrire à la newsletter</a>
-      <a id="btn-contact-form" href="{% url 'home:contact' %}" class="fr-btn fr-btn--secondary">Nous écrire</a>
-    </div>
-  </div>
-</div>
+{% include  "home/partials/newsletter_form.html" %}
 
 
 {% endblock %}
@@ -132,12 +127,16 @@ $( "#btn-voir-diag-1" ).click(function() {
     _paq.push(['trackEvent', 'CTA', 'Voir mon diagnostic', 'CTA0001'])
 })
 
-$( "#btn-sub-nwl" ).click(function() {
+$( "#newsletter-email" ).click(function() {
   _paq.push(['trackEvent', 'CTA', "S'inscrire à la newsletter", 'CTA0002'])
 })
 
 $( "#btn-contact-form" ).click(function() {
   _paq.push(['trackEvent', 'CTA', 'Nous écrire', 'CTA0003'])
+})
+
+$( "#btn-voir-diag-2" ).click(function() {
+  _paq.push(['trackEvent', 'CTA', 'Créer mon diagnostic', 'CTA0004'])
 })
 </script>
 {% endblock tagging %}

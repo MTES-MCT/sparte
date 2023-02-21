@@ -1,8 +1,11 @@
 import collections
 
+from django.db.models import Sum, F, Value
+from django.db.models.functions import Concat
+
 from highcharts import charts
 
-from public_data.models import AdminRef
+from public_data.models import AdminRef, OcsgeDiff, CouvertureSol, UsageSol
 
 
 class ProjectChart(charts.Chart):
@@ -66,10 +69,7 @@ class ConsoCommuneChart(ProjectChart):
     }
 
     def __init__(self, *args, **kwargs):
-        try:
-            self.level = kwargs.pop("level")
-        except KeyError:
-            self.level = AdminRef.COMMUNE
+        self.level = kwargs.pop("level", AdminRef.COMMUNE)
         super().__init__(*args, **kwargs)
 
     def get_legend_for_paper(self):
@@ -88,6 +88,8 @@ class ConsoCommuneChart(ProjectChart):
                 self.series = self.project.get_land_conso_per_year("region_name")
             elif self.level == "DEPART":
                 self.series = self.project.get_land_conso_per_year("dept_name")
+            elif self.level == "SCOT":
+                self.series = self.project.get_land_conso_per_year("scot")
             elif self.level == "EPCI":
                 self.series = self.project.get_land_conso_per_year("epci_name")
             else:
@@ -248,7 +250,7 @@ class DeterminantPerYearChart(ProjectChart):
         "chart": {"type": "column"},
         "title": {"text": "Par an"},
         "yAxis": {
-            "title": {"text": "Consommé (en ha)"},
+            "title": {"text": "Consommation annuelle (en ha)"},
             "stackLabels": {"enabled": True, "format": "{total:,.1f}"},
         },
         "tooltip": {
@@ -442,7 +444,7 @@ class CouvertureSolPieChart(ProjectChart):
     name = "Sol usage and couverture pie chart"
     param = {
         "chart": {"type": "pie"},
-        "title": {"text": "Dernier millésime", "floating": True},
+        "title": {"text": "Répartition en [DERNIER MILLESIME]", "floating": True},
         "yAxis": {
             "title": {"text": "Consommé (en ha)"},
             "stackLabels": {"enabled": True, "format": "{total:,.1f}"},
@@ -465,6 +467,9 @@ class CouvertureSolPieChart(ProjectChart):
     def __init__(self, project):
         self.millesime = project.last_year_ocsge
         super().__init__(project)
+        self.chart["title"]["text"] = self.chart["title"]["text"].replace(
+            "[DERNIER MILLESIME]", str(self.millesime)
+        )
 
     def get_series(self):
         if not self.series:
@@ -525,7 +530,10 @@ class CouvertureSolProgressionChart(ProjectChart):
 
     def get_series(self):
         if not self.series:
-            title = f"Progression de {self.first_millesime} à {self.last_millesime}"
+            title = (
+                f"Evolution de la couverture des sols de {self.first_millesime} à "
+                f"{self.last_millesime}"
+            )
             self.chart["title"]["text"] = title
             self.series = self.project.get_base_sol_progression(
                 self.first_millesime, self.last_millesime, sol=self._sol
@@ -580,7 +588,18 @@ class DetailArtifChart(ProjectChart):
 
     def get_series(self):
         if not self.series:
-            self.series = self.project.get_detail_artif()
+            self.series = list(self.project.get_detail_artif())
+            if "CS1.1.2.2" not in [s["code_prefix"] for s in self.series]:
+                required_couv = CouvertureSol.objects.get(code="1.1.2.2")
+                self.series.append(
+                    {
+                        "code_prefix": required_couv.code_prefix,
+                        "label": required_couv.label,
+                        "label_short": required_couv.label_short,
+                        "artif": 0,
+                        "renat": 0,
+                    }
+                )
         return self.series
 
     def add_series(self):
@@ -884,3 +903,99 @@ class SurfaceChart(ProjectChart):
             )
 
         return self.series
+
+
+class CouvWheelChart(ProjectChart):
+    name = "Matrice de passage de la couverture"
+    prefix = "cs"
+    title = (
+        "Matrice d'évolution de la couverture de [PREMIER MILLESIME] à "
+        "[DERNIER MILLESIME]"
+    )
+    name_sol = "couverture"
+    items = CouvertureSol.objects.all()
+    param = {
+        "title": {"text": ""},
+        "accessibility": {
+            "point": {
+                "valueDescriptionFormat": (
+                    "{index}. From {point.from} to {point.to}: {point.weight}."
+                )
+            }
+        },
+        "series": [],
+    }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        title = self.title
+        title = title.replace("[PREMIER MILLESIME]", str(self.project.first_year_ocsge))
+        title = title.replace("[DERNIER MILLESIME]", str(self.project.last_year_ocsge))
+        self.chart["title"]["text"] = title
+
+    def add_series(self):
+        self.chart["series"].append(
+            {
+                "keys": ["from", "to", "weight", "color"],
+                "data": self.get_data(),
+                "type": "dependencywheel",
+                "styledMode": True,
+                "dataLabels": {
+                    "align": "left",
+                    "crop": False,
+                    "inside": False,
+                    "color": "#333",
+                    "style": {"textOutline": "none"},
+                    "textPath": {"enabled": True},
+                    "distance": 10,
+                },
+                "size": "100%",
+                "nodes": [
+                    {
+                        "id": f"{_.code_prefix} {_.label_short}",
+                        "className": _.cleaned_code_prefix,
+                    }
+                    for _ in self.items
+                ],
+            }
+        )
+
+    def get_data(self):
+        self.data = (
+            OcsgeDiff.objects.intersect(self.project.combined_emprise)
+            .filter(
+                year_old__gte=self.project.analyse_start_date,
+                year_new__lte=self.project.analyse_end_date,
+            )
+            .annotate(
+                old_label=Concat(
+                    f"{self.prefix}_old",
+                    Value(" "),
+                    f"old_matrix__{self.name_sol}__label_short",
+                ),
+                new_label=Concat(
+                    f"{self.prefix}_new",
+                    Value(" "),
+                    f"new_matrix__{self.name_sol}__label_short",
+                ),
+                color=F(f"old_matrix__{self.name_sol}__map_color"),
+            )
+            .values("old_label", "new_label", "color")
+            .annotate(total=Sum("surface") / 10000)
+            .order_by("old_label", "new_label", "color")
+        )
+        return [
+            [_["old_label"], _["new_label"], round(_["total"], 2), _["color"]]
+            for _ in self.data
+            if _["old_label"] != _["new_label"]
+        ]
+
+
+class UsageWheelChart(CouvWheelChart):
+    name = "Matrice de passage de l'usage"
+    title = (
+        "Matrice d'évolution de l'usage de [PREMIER MILLESIME] à [DERNIER MILLESIME]"
+    )
+    prefix = "us"
+    name_sol = "usage"
+    items = UsageSol.objects.all()

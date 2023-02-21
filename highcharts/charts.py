@@ -123,7 +123,7 @@ class Chart:
             raise ChartGenerationException(json.dumps(data, default=decimal2float))
         if r.content.startswith(b'{"message":"Too many requests, you have been rate l'):
             raise RateLimitExceededException()
-        return r.content
+        return r.content + b"==="
 
     def get_temp_image(self):
         b64_content = self.request_b64_image_from_server()

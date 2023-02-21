@@ -1,0 +1,21 @@
+{
+  "name": "sparte",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build:dev": "webpack --watch --mode development",
+    "build:prod": "webpack --watch --mode production"
+  },
+  "devDependencies": {
+    "@gouvfr/dsfr": "^1.8.5",
+    "css-loader": "^6.7.3",
+    "mini-css-extract-plugin": "^2.7.2",
+    "webpack": "^5.75.0",
+    "webpack-bundle-analyzer": "^4.7.0",
+    "webpack-cli": "^5.0.1"
+  },
+  "dependencies": {
+    "alpinejs": "^3.10.5",
+    "htmx.org": "^1.8.4"
+  }
+}

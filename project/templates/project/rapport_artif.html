@@ -227,10 +227,10 @@ Rapport artificialisation
                 <div class="col-4 border-end">
                     <div id="couv_artif_sol"></div>
                 </div>
-                <div class="col-4">
+                <div class="col-4 border-end">
                     <div id="usage_artif_sol"></div>
                 </div>
-                <div class="col-4 border-end">
+                <div class="col-4">
                     <div id="detail_artif_chart"></div>
                 </div>
             </div>
@@ -302,7 +302,6 @@ Rapport artificialisation
 {% sri_static "highcharts/js/highcharts-more.js" %}
 {% sri_static "highcharts/js/exporting.js" %}
 {% french_translation %}
-{% display_chart 'chart_evolution_artif' chart_evolution_artif CSP_NONCE %}
 {% display_chart 'detail_artif_chart' detail_artif_chart CSP_NONCE %}
 {% display_chart 'couv_artif_sol' couv_artif_sol CSP_NONCE %}
 {% display_chart 'usage_artif_sol' usage_artif_sol CSP_NONCE %}
