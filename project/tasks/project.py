@@ -32,24 +32,6 @@ from utils.mattermost import Mattermost
 logger = logging.getLogger(__name__)
 
 
-@shared_task
-def process_project_with_shape(project_id: int):
-    """Prep project when emprise is set from a shape file"""
-    raise DeprecationWarning("taks.process_project: Do not use anymore")
-
-
-@shared_task
-def build_emprise_from_city(project_id: int):
-    """Triggered if no shape file has been provided"""
-    raise DeprecationWarning("taks.process_project: Do not use anymore")
-
-
-@shared_task
-def process_project(project_id: int):
-    """Will trigger correct processing according to emprise's origine"""
-    raise DeprecationWarning("taks.process_project: Do not use anymore")
-
-
 @shared_task(bind=True, max_retries=5)
 def add_city_and_set_combined_emprise(self, project_id: int, public_keys: str) -> None:
     """Do a Union() on all mpoly lands and set project combined emprise
@@ -255,6 +237,11 @@ def generate_word_diagnostic(self, request_id):
 
 @shared_task(bind=True, max_retries=5)
 def send_word_diagnostic(self, request_id):
+    """
+    Paramètres de l'e-mail dans SendInBlue:
+    - diagnostic_url : lien pour télécharger le diagnostic
+    - ocsge_available : booléen pour savoir si le diagnostic est disponible sur OCSGE, SendInBlue test seulement s'il est vide (OCS GE disponible)
+    """
     from utils.emails import prep_email
 
     logger.info(f"Start send word for request={request_id}")

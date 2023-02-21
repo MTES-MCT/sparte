@@ -317,7 +317,6 @@ if DEBUG:
         pass
 
 
-
 # DJANGO DOCX TEMPLATES
 DJANGO_DOCX_TEMPLATES = {
     "data_sources": [
