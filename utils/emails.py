@@ -1,4 +1,5 @@
 import logging
+from optparse import Option
 
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
@@ -68,6 +69,22 @@ def prep_email(subject, recipients, template_name, context=None, expeditor=None)
     msg.attach_alternative(html_content, "text/html")
     return msg
 
+
+class LocalLockMixin:
+    def get_text_content(self):
+        return (
+            f"Send email with template id = {self.template_id}\n\n"
+            "Parameters:\n"
+            "\n".join([f"{k}={v}" for k, v in self.params.items()])
+        )
+
+    def send(self):
+        if settings.EMAIL_ENGINE == "sendinblue":
+            return super().send()
+        msg = EmailMultiAlternatives(
+            self.subject, self.get_text_content(), "no sender", [_["email"] for _ in self.recipients]
+        )
+        msg.send()
 
 class Email:
     def __init__(
@@ -167,21 +184,6 @@ class SendInBlueSMS:  # pylint: disable=R0903
             raise exc
 
 
-class LocalLockMixin:
-    def send(self):
-        if settings.EMAIL_ENGINE == "sendinblue":
-            return super().send()
-        text = (
-            f"Send email with template id = {self.template_id}\n\n"
-            "Parameters:\n"
-            "\n".join([f"{k}={v}" for k, v in self.params.items()])
-        )
-        msg = EmailMultiAlternatives(
-            self.subject, text, "no sender", [_["email"] for _ in self.recipients]
-        )
-        msg.send()
-
-
 class SibTemplateEmail(LocalLockMixin):
     expected_params: List[str] = []
 
@@ -191,12 +193,14 @@ class SibTemplateEmail(LocalLockMixin):
         subject: str,
         recipients: Optional[List[Dict[Literal["email", "name"], str]]] = None,
         params: Optional[Dict[str, Any]] = None,
+        attachements: Optional[List[Dict[Literal["url", "name", "content"], str]]] = None,
     ):
         self.url = "https://api.sendinblue.com/v3/smtp/email"
         self.template_id = template_id
         self.subject = subject
         self.recipients = recipients or []
         self.params = params or {}
+        self.attachments = attachements or {}
 
     def get_params(self) -> Dict[str, str]:
         if self.expected_params:
