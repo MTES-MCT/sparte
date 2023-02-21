@@ -20,7 +20,6 @@ services:
       - "6379:6379"
     networks:
       - app-network
-    restart: on-failure
 
   app:
     build: .
@@ -86,7 +85,6 @@ services:
       - redis
     networks:
       - app-network
-    restart: on-failure
 
   worker-beat:
     image: sparte/backend:latest
@@ -103,7 +101,6 @@ services:
       - redis
     networks:
       - app-network
-    restart: on-failure
 
 
 networks:
@@ -122,4 +119,3 @@ volumes:
   #     - app-network
   #   ports:
   #     - 8887:8887
-  #   restart: on-failure
