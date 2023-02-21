@@ -8,6 +8,7 @@ all the indicators required to speedup process
 import io
 import logging
 from datetime import timedelta
+from typing import Any, Dict, Literal
 
 import contextily as cx
 import geopandas
@@ -287,7 +288,7 @@ def to_shapely_polygons(mpoly):
 
 
 def get_img(queryset, color: str, title: str) -> io.BytesIO:
-    data = {"level": [], "geometry": []}
+    data: Dict[Literal["level", "geometry"], Any] = {"level": [], "geometry": []}
     for row in queryset:
         data["geometry"].append(to_shapely_polygons(row.mpoly))
         data["level"].append(float(row.level) if row.level else 0)
