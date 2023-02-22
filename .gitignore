@@ -140,9 +140,6 @@ dmypy.json
 # Cython debug symbols
 cython_debug/
 
-# configuration of visual studio code
-.vscode/*
-
 # file to test stuff
 test.py
 
