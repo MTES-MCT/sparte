@@ -37,7 +37,7 @@ app.conf.beat_schedule = {
     # Executes every Monday morning at 7:30 a.m.
     "alive-every-minute": {
         "task": "config.celery.log",
-        "schedule": crontab(minute="*/1"),
+        "schedule": crontab(minute="*/15"),
         "args": ("I am alive",),
     },
     "alerte-blocked-diagnostic": {
