@@ -79,9 +79,9 @@ git commit --no-verify
 
 Sometimes, you need to fetch and install a Scalingo DB backup.
 
-1. Fetch backup from scalingo app > pg ressource > backup, download last backup (eg. 20220830000404_sparte_1396.tar.gz)
+1. Fetch backup from scalingo app > ressources > pg dashboard > backup, download last backup (eg. 20220830000404_sparte_1396.tar.gz)
 2. Uncompress `tar -xf 20220830000404_sparte_1396.tar.gz`
-3. restore `pg_restore --clean --if-exists --no-owner --no-privileges --no-comments --dbname postgres://postgres:postgres@127.0.0.1:54321/postgres 20220830000404_sparte_1396.pgsql`
+3. restore `pg_restore --clean --if-exists --no-owner --no-privileges --no-comments --dbname postgres://postgres:postgres@127.0.0.1:5432/postgres 20220830000404_sparte_1396.pgsql`
 
 ## Update OCS GE
 
