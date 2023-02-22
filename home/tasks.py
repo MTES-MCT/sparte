@@ -59,10 +59,7 @@ def send_nwl_final(newsletter_id):
     logger.info("newsletter_id=%s", newsletter_id)
     nwl = Newsletter.objects.get(pk=newsletter_id)
     try:
-        email = SibTemplateEmail(
-            template_id=2,
-            recipients=[{"email": nwl.email}],
-        )
+        email = SibTemplateEmail(template_id=2, recipients=[{"email": nwl.email}])
         logger.info(email.send())
     except Exception as exc:  # noqa: E722, B001
         logger.error("Failing sending nwl final")
