@@ -24,9 +24,11 @@ services:
   app:
     build: .
     image: sparte/backend:latest
-    command: python manage.py runserver 0.0.0.0:8080
+    # command: python manage.py runserver 0.0.0.0:8080
     # required to attach vsc to the container and run debug
     # command: tail -F anything
+    # command: ["sh", "-c", "python /tmp/debugpy --wait-for-client --listen 0.0.0.0:5678 manage.py runserver 0.0.0.0:8080 --nothreading --noreload"]
+    command: ["sh", "-c", "python /tmp/debugpy --listen 0.0.0.0:5678 manage.py runserver 0.0.0.0:8080 --nothreading --noreload"]
     volumes:
       - .:/app
     env_file: .env
@@ -37,6 +39,7 @@ services:
       - USE_S3=0
     ports:
       - "8080:8080"
+      - "5678:5678"
     depends_on:
       - db
       - redis
@@ -79,6 +82,7 @@ services:
     environment:
       - DATABASE_URL=postgis://postgres:postgres@db:5432/postgres
       - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
       - HIGHCHART_SERVER=http://highchart:8090/
     depends_on:
       - db
@@ -96,6 +100,7 @@ services:
     environment:
       - DATABASE_URL=postgis://postgres:postgres@db:5432/postgres
       - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
     depends_on:
       - db
       - redis
