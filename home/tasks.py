@@ -3,7 +3,7 @@ import logging
 from celery import shared_task
 from django_app_parameter import app_parameter
 
-from utils.emails import send_template_email
+from utils.emails import SibTemplateEmail
 
 from .models import ContactForm, Newsletter
 
@@ -16,18 +16,19 @@ def send_contact_form(contact_form_id):
     logger.info("contact_email_id=%s", contact_form_id)
     contact_form = ContactForm.objects.get(pk=contact_form_id)
     try:
-        send_template_email(
-            subject=f"Formulaire de contact - {contact_form.email}",
-            recipients=[app_parameter.TEAM_EMAIL],
-            template_name="home/emails/contact_form",
-            context={
-                "content": contact_form.content,
+        email = SibTemplateEmail(
+            template_id=9,
+            recipients=[{"Name": "Equipe Sparte", "email": app_parameter.TEAM_EMAIL}],
+            params={
                 "content_html": contact_form.content.replace("\n", "<br/>"),
+                "sender": contact_form.email,
             },
         )
+        logger.info(email.send())
         contact_form.success()
-    except:  # noqa: E722, B001
+    except Exception as exc:  # noqa: E722, B001
         logger.error("Failing sending email")
+        logger.exception(exc)
         contact_form.handle_exception()
     finally:
         logger.info("End send contact email to bilan SPARTE team")
@@ -39,14 +40,15 @@ def send_nwl_confirmation(newsletter_id):
     logger.info("newsletter_id=%s", newsletter_id)
     nwl = Newsletter.objects.get(pk=newsletter_id)
     try:
-        send_template_email(
-            subject="Confirmez votre inscription à la newsletter de SPARTE",
-            recipients=[nwl.email],
-            template_name="home/emails/nwl_confirmation",
-            context={"url": nwl.get_confirmation_url()},
+        email = SibTemplateEmail(
+            template_id=7,
+            recipients=[{"email": nwl.email}],
+            params={"url": nwl.get_confirmation_url()},
         )
-    except:  # noqa: E722, B001
+        logger.info(email.send())
+    except Exception as exc:  # noqa: E722, B001
         logger.error("Failing sending nwl confirmation")
+        logger.exception(exc)
     finally:
         logger.info("End send newsletter subscription confirmation")
 
@@ -57,12 +59,13 @@ def send_nwl_final(newsletter_id):
     logger.info("newsletter_id=%s", newsletter_id)
     nwl = Newsletter.objects.get(pk=newsletter_id)
     try:
-        send_template_email(
-            subject="Vous êtes inscrit à la newsletter de SPARTE",
-            recipients=[nwl.email],
-            template_name="home/emails/nwl_finale",
+        email = SibTemplateEmail(
+            template_id=2,
+            recipients=[{"email": nwl.email}],
         )
-    except:  # noqa: E722, B001
-        logger.error("Failing sending nwl confirmation")
+        logger.info(email.send())
+    except Exception as exc:  # noqa: E722, B001
+        logger.error("Failing sending nwl final")
+        logger.exception(exc)
     finally:
         logger.info("End send newsletter subscription confirmation")
