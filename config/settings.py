@@ -76,9 +76,6 @@ THIRD_APPS = [
     "crispy_bootstrap5",
     "django_app_parameter",
     "sri",
-    # "widget_tweaks",
-    "django_celery_results",
-    # "django_docx_template",
 ]
 
 # upper app should not communicate with lower ones
