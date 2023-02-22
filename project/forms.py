@@ -1,19 +1,7 @@
 from django import forms
 
 from project.models import Project
-from project.tasks import process_project_with_shape
 from public_data.models import AdminRef, Departement, Epci, Region
-
-
-class UploadShpForm(forms.Form):
-    shape_zip = forms.FileField()
-
-    def save(self, project):
-        project.shape_file = self.cleaned_data["shape_zip"]
-        project.import_status = Project.Status.PENDING
-        project.emprise_origin = Project.EmpriseOrigin.FROM_SHP
-        project.save()
-        process_project_with_shape.delay(project.id)
 
 
 class KeywordForm(forms.Form):
@@ -60,20 +48,6 @@ class SelectTerritoryForm(forms.Form):
                 self.fields["epci"].queryset = epci_qs
             except Departement.DoesNotExist:
                 pass
-
-
-class EpciForm(forms.Form):
-    departement = forms.CharField(widget=forms.HiddenInput())
-
-    def __init__(self, *args, **kwargs):
-        self.departement_id = kwargs.pop("departement_id")
-        super().__init__(*args, **kwargs)
-        qs = Epci.objects.filter(departements__id=self.departement_id)
-        qs = qs.order_by("name")
-        self.fields["epci"].queryset = qs
-        # dep = Departement.objects.get(pk=self.departement_id)
-        self.fields["departement"].initial = self.departement_id
-        self.fields["epci"].widget.attrs.update({"class": "form-control-with-carret"})
 
 
 class UpdateProjectForm(forms.ModelForm):
