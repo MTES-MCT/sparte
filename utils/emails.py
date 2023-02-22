@@ -1,5 +1,4 @@
 import logging
-from optparse import Option
 
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
@@ -85,6 +84,7 @@ class LocalLockMixin:
             self.subject, self.get_text_content(), "no sender", [_["email"] for _ in self.recipients]
         )
         msg.send()
+
 
 class Email:
     def __init__(
@@ -190,7 +190,7 @@ class SibTemplateEmail(LocalLockMixin):
     def __init__(
         self,
         template_id: int,
-        subject: str,
+        subject: Optional[str] = None,
         recipients: Optional[List[Dict[Literal["email", "name"], str]]] = None,
         params: Optional[Dict[str, Any]] = None,
         attachements: Optional[List[Dict[Literal["url", "name", "content"], str]]] = None,
@@ -200,7 +200,7 @@ class SibTemplateEmail(LocalLockMixin):
         self.subject = subject
         self.recipients = recipients or []
         self.params = params or {}
-        self.attachments = attachements or {}
+        self.attachments = attachements or []
 
     def get_params(self) -> Dict[str, str]:
         if self.expected_params:
@@ -211,10 +211,11 @@ class SibTemplateEmail(LocalLockMixin):
     def get_payload(self) -> Dict[str, Any]:
         payload = {
             "templateId": self.template_id,
-            "subject": self.subject,
             "to": self.recipients,
             "params": self.get_params(),
         }
+        if self.subject:
+            payload["subject"] = self.subject
         return payload
 
     def get_headers(self) -> Dict[str, str]:

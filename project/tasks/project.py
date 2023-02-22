@@ -106,7 +106,6 @@ def send_email_request_bilan(request_id):
         image_url = diagnostic.cover_image.url
     email = SibTemplateEmail(
         template_id=1,
-        subject=f"Demande de bilan - {request.email} - {request.project.name}",
         recipients=[{"name": "Team SPARTE", "email": app_parameter.TEAM_EMAIL}],
         params={
             "diagnostic_name": diagnostic.name,
@@ -240,24 +239,23 @@ def send_word_diagnostic(self, request_id):
     """
     Paramètres de l'e-mail dans SendInBlue:
     - diagnostic_url : lien pour télécharger le diagnostic
-    - ocsge_available : booléen pour savoir si le diagnostic est disponible sur OCSGE, SendInBlue test seulement s'il est vide (OCS GE disponible)
+    - ocsge_available : booléen pour savoir si le diagnostic est disponible sur OCSGE, SendInBlue test seulement s'il
+      est vide (OCS GE disponible)
     """
-    from utils.emails import prep_email
-
     logger.info(f"Start send word for request={request_id}")
     try:
         req = Request.objects.select_related("project").get(id=int(request_id))
-        filename = req.sent_file.name.split("/")[-1]
-        buffer = req.sent_file.open().read()
-        # sending email
-        msg = prep_email(
-            "Bilan issu de SPARTE",
-            [req.email],
-            "project/emails/send_diagnostic",
-            context={"request": req, "ocsge_available": req.project.is_artif()},
+        email = SibTemplateEmail(
+            template_id=8,
+            recipients=[{"name": f"{req.first_name} {req.last_name}", "email": req.email}],
+            params={
+                "diagnostic_name": req.project.name,
+                "image_url": req.project.cover_image.url,
+                "ocsge_available": "" if req.project.is_artif() else "display",
+                "diagnostic_url": req.sent_file.url,
+            }
         )
-        msg.attach(filename, buffer)
-        msg.send()
+        logger.info(email.send())
         logger.info("Email sent with success")
         req.sent()
         logger.info("Saving request state done")
