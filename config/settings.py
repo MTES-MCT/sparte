@@ -266,9 +266,8 @@ CRISPY_CLASS_CONVERTERS = {
 }
 
 # Celery configuration
-default_redis = "redis://redis:6379/0"
-CELERY_BROKER_URL = env.str("CELERY_BROKER_URL", default=default_redis)
-CELERY_RESULT_BACKEND = env.str("CELERY_RESULT_BACKEND", default=default_redis)
+CELERY_BROKER_URL = env.str("CELERY_BROKER_URL")
+CELERY_RESULT_BACKEND = env.str("CELERY_RESULT_BACKEND")
 CELERY_ACKS_LATE = True
 CELERY_RESULT_EXTENDED = True
 
