@@ -1,0 +1,42 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "type": "docker-run",
+        "label": "docker-run: debug",
+        "dependsOn": ["docker-build"],
+        "dockerRun": {
+          "containerName": "SPARTE_DEBUG",
+          "image": "sparte_debug:latest",
+          "env": {
+            "DATABASE_URL": "postgis://postgres:postgres@127.0.0.1:5432/postgres",
+          },
+          "volumes": [
+            {
+              "containerPath": "/app",
+              "localPath": "${workspaceFolder}"
+            }
+          ],
+          "ports": [
+            {
+              "containerPort": 8000,
+              "hostPort": 8000
+            }
+          ]
+        },
+        "python": {
+          "args": ["runserver", "0.0.0.0:8000"],
+          "file": "manage.py"
+        }
+      },
+      {
+        "label": "docker-build",
+        "type": "docker-build",
+        "dockerBuild": {
+          "context": "${workspaceFolder}",
+          "dockerfile": "${workspaceFolder}/Dockerfile.debug",
+          "tag": "sparte_debug:latest"
+        }
+      }
+    ]
+  }
