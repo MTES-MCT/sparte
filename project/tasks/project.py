@@ -27,7 +27,7 @@ from public_data.models import ArtificialArea, Cerema, Land, OcsgeDiff
 from utils.db import fix_poly
 from utils.emails import SibTemplateEmail
 from utils.functions import get_url_with_domain
-from utils.mattermost import Mattermost
+from utils.mattermost import BlockedDiagnostic
 
 logger = logging.getLogger(__name__)
 
@@ -472,6 +472,16 @@ def alert_on_blocked_diagnostic():
     qs = Request.objects.filter(done=False, created_date__lt=stamp).order_by(
         "created_date", "project__name"
     )
+    diagnostic_list = [
+        {
+            "name": _.project.name if _.project else "Projet supprimé",
+            "date": _.created_date.strftime("%d-%m-%Y"),
+            "url": get_url_with_domain(
+                reverse("admin:project_request_change", args=[_.id])
+            ),
+        }
+        for _ in qs
+    ]
     total = qs.count()
     if total > 0:
         if (
@@ -479,9 +489,12 @@ def alert_on_blocked_diagnostic():
             and settings.ALERT_DIAG_MATTERMOST_RECIPIENTS
         ):
             for recipient in settings.ALERT_DIAG_MATTERMOST_RECIPIENTS:
-                Mattermost(
-                    f":exclamation: il y a {total} diagnostics bloqués !",
+                BlockedDiagnostic(
                     channel=recipient,
+                    data=[
+                        [_["date"], f'[{_["name"][:45]}]({_["url"]})']
+                        for _ in diagnostic_list
+                    ],
                 ).send()
         if (
             settings.ALERT_DIAG_MEDIUM in ["email", "both"]
@@ -492,14 +505,7 @@ def alert_on_blocked_diagnostic():
                 recipients=[{"email": _} for _ in settings.ALERT_DIAG_EMAIL_RECIPIENTS],
                 params={
                     "qte_diagnostics": total,
-                    "diagnostic_list": [
-                        {
-                            "name": _.project.name if _.project else "Projet supprimé",
-                            "date": _.created_date.strftime("%d-%m-%Y"),
-                            "url": get_url_with_domain(reverse("admin:project_request_change", args=[_.id])),
-                        }
-                        for _ in qs
-                    ],
+                    "diagnostic_list": diagnostic_list,
                 },
             )
             logger.info(email.send())

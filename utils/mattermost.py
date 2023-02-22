@@ -1,5 +1,6 @@
 import time
-from typing import List
+from typing import List, Union
+from pyparsing import Optional
 
 import requests
 from django.conf import settings
@@ -9,7 +10,7 @@ class MattermostException(Exception):
     pass
 
 
-def format_table(data: List[List[str]], headers: List[str] = None) -> str:
+def format_table(data: List[List[str]], headers: Union[List[str], None] = None) -> str:
     content = ""
     if headers:
         content += f"| {' | '.join(headers)} |\n"
@@ -20,7 +21,7 @@ def format_table(data: List[List[str]], headers: List[str] = None) -> str:
 
 
 class Mattermost:
-    def __init__(self, msg: str, channel: str = None) -> bool:
+    def __init__(self, msg: str, channel: Union[str, None] = None):
         self.msg = msg
         self.url = settings.MATTERMOST_URL
         self.information = ""
@@ -50,3 +51,17 @@ class SwannPrivate(Mattermost):
 
     def __init__(self, *args, **kwargs):
         super().__init__(channel="@Swann", *args, **kwargs)
+
+
+class BlockedDiagnostic(Mattermost):
+    """Send message to inform that some diagnostics are blocked"""
+
+    def __init__(self, channel: str, data: List[List[str]]):
+        super().__init__(
+            msg=f":exclamation: il y a {len(data)} diagnostics bloqués !",
+            channel=channel,
+        )
+        self.information = format_table(
+            data=data,
+            headers=["Date", "Diagnostic"],
+        )
