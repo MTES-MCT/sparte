@@ -21,6 +21,7 @@ bandit = "*"
 isort = "*"
 mypy = "*"
 types-requests = "*"
+types-setuptools = "*"
 
 [packages]
 boto3 = "*"
@@ -55,5 +56,3 @@ django-sri = "*"
 matplotlib-scalebar = "*"
 mapclassify = "*"
 crispy-bootstrap5 = "*"
-sib-api-v3-sdk = "*"
-types-setuptools = "*"

@@ -2,12 +2,8 @@ import logging
 
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
-from django.template.loader import get_template
-from django_app_parameter import app_parameter
 from requests import post, exceptions
 
-import sib_api_v3_sdk as sib  # type: ignore
-from sib_api_v3_sdk.rest import ApiException  # type: ignore
 from typing import Any, Dict, List, Literal, Optional
 
 
@@ -84,31 +80,5 @@ class SibTemplateEmail(LocalLockMixin):
         except exceptions.HTTPError as exc:
             logger.error(f"Exception when sending SendInBlue email: {exc}")
             logger.error(response.text)
-            logger.exception(exc)
-            raise exc
-
-
-class SendInBlueSMS:  # pylint: disable=R0903
-    def __init__(self, recipient="", content="") -> None:
-        self.recipient = recipient
-        self.content = content
-        if not self.recipient or not self.content:
-            raise ValueError("recipient and content must not be empty")
-        configuration = sib.Configuration()
-        configuration.api_key["api-key"] = settings.SENDINBLUE_API_KEY
-        self.api_instance = sib.TransactionalSMSApi(sib.ApiClient(configuration))
-
-    def send(self) -> None:
-        sms = sib.SendTransacSms(
-            type="transactional",
-            sender="MyProxiteam",
-            recipient=self.recipient,
-            content=self.content,
-        )
-        try:
-            api_response = self.api_instance.send_transac_sms(sms)
-            logger.debug(api_response)
-        except ApiException as exc:
-            logger.error(f"Exception when sending SendInBlue SMS: {exc}")
             logger.exception(exc)
             raise exc
