@@ -54,9 +54,10 @@ class SibTemplateEmail(LocalLockMixin):
     def get_payload(self) -> Dict[str, Any]:
         payload = {
             "templateId": self.template_id,
-            "to": self.recipients,
-            "params": self.get_params(),
+            "to": self.recipients
         }
+        if self.params:
+            payload["params"] = self.get_params()
         if self.subject:
             payload["subject"] = self.subject
         return payload
