@@ -25,7 +25,7 @@ from matplotlib_scalebar.scalebar import ScaleBar
 from project.models import Project, Request
 from public_data.models import ArtificialArea, Cerema, Land, OcsgeDiff
 from utils.db import fix_poly
-from utils.emails import send_template_email, SibTemplateEmail
+from utils.emails import SibTemplateEmail
 from utils.functions import get_url_with_domain
 from utils.mattermost import Mattermost
 
@@ -247,13 +247,15 @@ def send_word_diagnostic(self, request_id):
         req = Request.objects.select_related("project").get(id=int(request_id))
         email = SibTemplateEmail(
             template_id=8,
-            recipients=[{"name": f"{req.first_name} {req.last_name}", "email": req.email}],
+            recipients=[
+                {"name": f"{req.first_name} {req.last_name}", "email": req.email}
+            ],
             params={
                 "diagnostic_name": req.project.name,
                 "image_url": req.project.cover_image.url,
                 "ocsge_available": "" if req.project.is_artif() else "display",
                 "diagnostic_url": req.sent_file.url,
-            }
+            },
         )
         logger.info(email.send())
         logger.info("Email sent with success")
@@ -463,8 +465,13 @@ def generate_theme_map_understand_artif(self, project_id):
 
 @shared_task
 def alert_on_blocked_diagnostic():
+    # set to done request with no project
+    Request.objects.filter(done=False, project__isnull=True).update(done=True)
+    # select request undone from more than 1 hour
     stamp = timezone.now() - timedelta(hours=1)
-    qs = Request.objects.filter(done=False, created_date__lt=stamp)
+    qs = Request.objects.filter(done=False, created_date__lt=stamp).order_by(
+        "created_date", "project__name"
+    )
     total = qs.count()
     if total > 0:
         if (
@@ -480,9 +487,19 @@ def alert_on_blocked_diagnostic():
             settings.ALERT_DIAG_MEDIUM in ["email", "both"]
             and settings.ALERT_DIAG_EMAIL_RECIPIENTS
         ):
-            send_template_email(
-                "Diagnostics bloqués",
-                settings.ALERT_DIAG_EMAIL_RECIPIENTS,
-                "project/emails/blocked_diagnostic",
-                context={"total": total},
+            email = SibTemplateEmail(
+                template_id=10,
+                recipients=[{"email": _} for _ in settings.ALERT_DIAG_EMAIL_RECIPIENTS],
+                params={
+                    "qte_diagnostics": total,
+                    "diagnostic_list": [
+                        {
+                            "name": _.project.name if _.project else "Projet supprimé",
+                            "date": _.created_date.strftime("%d-%m-%Y"),
+                            "url": get_url_with_domain(reverse("admin:project_request_change", args=[_.id])),
+                        }
+                        for _ in qs
+                    ],
+                },
             )
+            logger.info(email.send())
