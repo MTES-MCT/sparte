@@ -189,7 +189,7 @@
                 "sha256:a0713dc7a1de3f06bc0df5a9567ad19ead2d3d5689b434768a6145bff77c0667",
                 "sha256:f184f0d851d96b6d29297354ed981b7dd71df7ff500d82fa6d11f0856bee8035"
             ],
-            "markers": "python_version < '4' and python_full_version >= '3.6.2'",
+            "markers": "python_version < '4.0' and python_full_version >= '3.6.2'",
             "version": "==0.3.0"
         },
         "click-plugins": {
@@ -211,7 +211,7 @@
                 "sha256:a4bc13d623356b373c2c27c53dbd9c68cae5d526270bfa71f6c6fa69669c6b27",
                 "sha256:c1ca117dbce1fe20a5809dc96f01e1c2840f6dcc939b3ddbb1111bf330ba82df"
             ],
-            "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3' and python_version < '4'",
+            "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3' and python_version < '4.0'",
             "version": "==0.7.2"
         },
         "colour": {
@@ -1238,7 +1238,7 @@
                 "sha256:64299f4909223da747622c030b781c0d7811e359c37124b4bd368fb8c6518baa",
                 "sha256:98b1b2782e3c6c4904938b84c0eb932721069dfdb9134313beff7c83c2df24bf"
             ],
-            "markers": "python_version >= '3.7' and python_version < '4'",
+            "markers": "python_version >= '3.7' and python_version < '4.0'",
             "version": "==2.28.2"
         },
         "s3transfer": {
@@ -2847,6 +2847,13 @@
             ],
             "version": "==0.2.1"
         },
+        "types-docutils": {
+            "hashes": [
+                "sha256:a334a703a8688910d0869464f1f6f8bd330d75843bdab4f893547bfb29417a01",
+                "sha256:b7e182f371cbe20828a8750ffb150219968452445946f66f33778b08e81c7d89"
+            ],
+            "version": "==0.19.1.6"
+        },
         "types-requests": {
             "hashes": [
                 "sha256:a05e4c7bc967518fba5789c341ea8b0c942776ee474c7873129a61161978e586",
@@ -2862,6 +2869,14 @@
             ],
             "index": "pypi",
             "version": "==67.6.0.5"
+        },
+        "types-setuptools": {
+            "hashes": [
+                "sha256:c3ad0d029f7cf66a568b100dc89c0202637839a4ed08a08cb56559f5a43ce2d9",
+                "sha256:d5da93fba1f91c039cc896e529c605b63c310086fe3311b74875af8c84935f8f"
+            ],
+            "index": "pypi",
+            "version": "==67.4.0.1"
         },
         "types-urllib3": {
             "hashes": [
