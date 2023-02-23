@@ -10,7 +10,9 @@ from django.conf import settings
 # from django.core.exceptions import ImproperlyConfigured
 from django.core.files.uploadedfile import SimpleUploadedFile
 
-from . import data_sources, utils
+from ..utils import data_sources
+
+from . import utils
 from .models import DocxTemplate
 
 

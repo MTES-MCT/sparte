@@ -9,31 +9,6 @@ from docx.shared import Mm
 from docxtpl import InlineImage, RichText
 
 
-class Field:
-    data_type: Callable = str
-    data_label: str = "Not provided"
-
-    def __init__(self, help=None, examples=None, source=None):
-        self.help = help
-        if isinstance(examples, list):
-            self.examples = [str(e) for e in examples]
-        else:
-            self.examples = str(examples)
-        self.source = source
-
-    def to_str(self, value):
-        return str(value)
-
-
-class CharField(Field):
-    data_type: Callable = str
-    data_label = "String"
-
-
-class IntField(Field):
-    data_type = int
-    data_label = "Integer"
-
 
 class ConverterMixin:
     """Interface to find which context element needs to be converted"""
