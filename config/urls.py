@@ -56,6 +56,7 @@ urlpatterns = [
         name="password_reset_complete",
     ),
     path("docx/", include("django_docx_template.urls")),
+    path("word/", include("diagnostic_word.urls")),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

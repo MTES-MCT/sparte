@@ -10,7 +10,7 @@ from django.utils.functional import cached_property
 from django.utils.text import slugify
 from docxtpl import DocxTemplate as DocxEngine
 
-from .data_sources import ConverterMixin, DataSource
+from ..utils.data_sources import ConverterMixin, DataSource
 from .utils import import_from_string, merge_url_parts
 
 
@@ -72,7 +72,7 @@ class DocxTemplate(models.Model):
                 context_copy[key] = item
         return context_copy
 
-    def _merge(self, context: dict()) -> BytesIO:
+    def _merge(self, context) -> BytesIO:
         """Load actual docx file and merge all fields. Return the final doc as BytesIO."""
         docx_engine = DocxEngine(self.docx)
         converted_context = self._convert_context(docx_engine, context)

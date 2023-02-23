@@ -1,13 +1,15 @@
-import os
-import tempfile
-from typing import Any, Dict, Union
+from io import BytesIO
+from pathlib import Path
+from typing import Any, Dict, Optional
+from django.db import models
+from django.urls import reverse
+from docx.shared import Mm
+from docxtpl import DocxTemplate, InlineImage, RichText
 
-from utils import data_sources
+from project import charts
+from project.models.project_base import Project
+from project.utils import add_total_line_column
 from utils.functions import get_url_with_domain
-
-from . import charts
-from .models import Project
-from .utils import add_total_line_column
 
 
 class SolInterface:
@@ -70,81 +72,97 @@ class ReprDetailArtif:
             self.renat_percent = "N/A"
 
 
-class DiagnosticSource(data_sources.DataSource):
-    # properties
-    label = "Données pour publier un rapport de diagnostic"
-    model = Project
-    url_args = {"pk": "int"}
+class WordTemplate(models.Model):
+    """TODO : faire une migration pour migrer l'ancien model et ne pas avoir à faire de createview"""
 
-    def prep_image(self, field, height=None, width=None) -> Union[data_sources.Image, str]:
-        if field:
-            try:
-                fd, img_path = tempfile.mkstemp(suffix=".png", text=False)
-                os.write(fd, field.open().read())
-                os.close(fd)
-                return data_sources.Image(img_path, width=width, height=height)
-            except FileNotFoundError:
-                pass
-        return ""
+    slug = models.SlugField("Slug", primary_key=True)
+    description = models.TextField("Description")
+    docx = models.FileField("Modèle Word", upload_to="word_templates")
+    last_update = models.DateTimeField("Dernière mise à jour", auto_now=True)
 
-    def get_file_name(self):
-        """You can overide this method to set a specific filename to files generated
-        with this datasource.If this method raise AttributeError, the name will be set
-        with TemplateDocx rules."""
-        return (
-            f"{self.project.name} - {self.project.analyse_start_date} à "
-            f"{self.project.analyse_end_date} - issu de SPARTE.docx"
+    def get_absolute_url(self):
+        return reverse("word_template:update", args={"slug": self.slug})
+
+    def merge(self, project_id: int) -> BytesIO:
+        """Load actual docx file and merge all fields. Return the final doc as BytesIO."""
+        self.project = Project.objects.get(pk=project_id)
+        self.template_file = DocxTemplate(self.docx)
+        context = self.get_context_data()
+        self.template_file.render(context)
+        buffer = BytesIO()
+        self.template_file.save(buffer)
+        buffer.seek(0)
+        return buffer
+
+    def prep_image(
+        self, img_path: str, width: Optional[int] = None, height: Optional[int] = None
+    ) -> InlineImage:
+        if not Path(img_path).is_file():
+            raise ValueError("Provided path is not a file")
+        return InlineImage(
+            self.template_file,
+            img_path,
+            width=Mm(width) if width else None,
+            height=Mm(height) if height else None,
         )
 
-    def get_context_data(self, **keys: Dict[str, Any]) -> Dict[str, Any]:
-        project = Project.objects.get(pk=keys["pk"])
-        self.project = project
-        surface_territory = project.area
+    def prep_link(self, link: str, text: Optional[str] = None) -> RichText:
+        if not text:
+            text = link
+        rt = RichText()
+        rt.add(text, url_id=self.template_file.build_url_id(link))
+        return rt
+
+    def get_context_data(self) -> Dict[str, Any]:
+        surface_territory = self.project.area
         context = {
-            "diagnostic": project,
-            "nom_territoire": project.get_territory_name(),
+            "diagnostic": self.project,
+            "nom_territoire": self.project.get_territory_name(),
             "surface_totale": str(round(surface_territory, 2)),
             "ocsge_is_available": False,
             "periode_differente_zan": (
-                project.analyse_start_date != "2011"
-                or project.analyse_end_date != "2020"
+                self.project.analyse_start_date != "2011"
+                or self.project.analyse_end_date != "2020"
             ),
-            # deprecated
-            "project": project,
-            "photo_emprise": self.prep_image(project.cover_image, height=110),
-            "nb_communes": project.cities.count(),
-            "carte_consommation": self.prep_image(project.theme_map_conso, width=170),
+            "project": self.project,
+            "photo_emprise": self.prep_image(self.project.cover_image, height=110),
+            "nb_communes": self.project.cities.count(),
+            "carte_consommation": self.prep_image(
+                self.project.theme_map_conso, width=170
+            ),
             "carte_artificialisation": self.prep_image(
-                project.theme_map_artif, width=170
+                self.project.theme_map_artif, width=170
             ),
             "carte_comprendre_artificialisation": self.prep_image(
-                project.theme_map_understand_artif, width=170
+                self.project.theme_map_understand_artif, width=170
             ),
         }
 
-        target_2031_consumption = project.get_bilan_conso()
-        current_conso = project.get_bilan_conso_time_scoped()
+        target_2031_consumption = self.project.get_bilan_conso()
+        current_conso = self.project.get_bilan_conso_time_scoped()
 
         # Consommation des communes
-        chart_conso_cities = charts.ConsoCommuneChart(project, level=project.level)
+        chart_conso_cities = charts.ConsoCommuneChart(
+            self.project, level=self.project.level
+        )
 
         # comparison charts
-        nb_neighbors = project.nb_look_a_like
+        nb_neighbors = self.project.nb_look_a_like
         voisins = list()
         if nb_neighbors > 0:
-            comparison_chart = charts.ConsoComparisonChart(project, relative=False)
+            comparison_chart = charts.ConsoComparisonChart(self.project, relative=False)
             comparison_relative_chart = charts.ConsoComparisonChart(
-                project, relative=True
+                self.project, relative=True
             )
-            voisins = project.get_look_a_like()
+            voisins = self.project.get_look_a_like()
             context.update(
                 {
                     "voisins": voisins,
-                    "comparison_chart": data_sources.Image(
+                    "comparison_chart": self.prep_image(
                         comparison_chart.get_temp_image(),
                         width=170,
                     ),
-                    "comparison_relative_chart": data_sources.Image(
+                    "comparison_relative_chart": self.prep_image(
                         comparison_relative_chart.get_temp_image(),
                         width=170,
                     ),
@@ -155,12 +173,12 @@ class DiagnosticSource(data_sources.DataSource):
             )
 
         # Déterminants
-        det_chart = charts.DeterminantPerYearChart(project)
-        pie_det_chart = charts.DeterminantPieChart(project)
+        det_chart = charts.DeterminantPerYearChart(self.project)
+        pie_det_chart = charts.DeterminantPieChart(self.project)
 
         # déterminant table, add total line and column
-        det_data_table: Dict = dict()
-        total: Dict = dict()
+        det_data_table: Dict = {}
+        total: Dict = {}
         for name, data in det_chart.get_series().items():
             det_data_table[name] = data.copy()
             det_data_table[name]["total"] = sum(data.values())
@@ -170,14 +188,14 @@ class DiagnosticSource(data_sources.DataSource):
         det_data_table["Total"] = total
 
         # projection ZAN 2031
-        objective_chart = charts.ObjectiveChart(project)
+        objective_chart = charts.ObjectiveChart(self.project)
 
-        url_diag = get_url_with_domain(project.get_absolute_url())
+        url_diag = get_url_with_domain(self.project.get_absolute_url())
 
         context.update(
             {
                 "nb_voisins": nb_neighbors,
-                "url_clickable": data_sources.HyperLink(url_diag),
+                "url_clickable": self.prep_link(link=url_diag),
                 "url": url_diag,
                 "communes_data_table": add_total_line_column(
                     chart_conso_cities.get_series()
@@ -190,26 +208,26 @@ class DiagnosticSource(data_sources.DataSource):
                 "target_2031_target": target_2031_consumption / 2,
                 "target_2031_annual_forecast": target_2031_consumption / 20,
                 "project_scope_consumed": current_conso,
-                "project_scope_annual_avg": current_conso / project.nb_years,
-                "project_scope_nb_years": project.nb_years,
-                "project_scope_nb_years_before_31": project.nb_years_before_2031,
-                "project_scope_forecast_2031": project.nb_years_before_2031
+                "project_scope_annual_avg": current_conso / self.project.nb_years,
+                "project_scope_nb_years": self.project.nb_years,
+                "project_scope_nb_years_before_31": self.project.nb_years_before_2031,
+                "project_scope_forecast_2031": self.project.nb_years_before_2031
                 * current_conso
-                / project.nb_years,
+                / self.project.nb_years,
                 # charts
-                "chart_conso_communes": data_sources.Image(
+                "chart_conso_communes": self.prep_image(
                     chart_conso_cities.get_temp_image(),
                     width=170,
                 ),
-                "chart_determinants": data_sources.Image(
+                "chart_determinants": self.prep_image(
                     det_chart.get_temp_image(),
                     width=170,
                 ),
-                "pie_chart_determinants": data_sources.Image(
+                "pie_chart_determinants": self.prep_image(
                     pie_det_chart.get_temp_image(),
                     width=140,
                 ),
-                "projection_zan_2031": data_sources.Image(
+                "projection_zan_2031": self.prep_image(
                     objective_chart.get_temp_image(),
                     width=170,
                 ),
@@ -222,12 +240,12 @@ class DiagnosticSource(data_sources.DataSource):
             }
         )
 
-        if project.is_artif():
+        if self.project.is_artif():
             context.update(
                 {
                     "ocsge_is_available": True,
-                    "debut_ocsge": str(project.first_year_ocsge),
-                    "fin_ocsge": str(project.last_year_ocsge),
+                    "debut_ocsge": str(self.project.first_year_ocsge),
+                    "fin_ocsge": str(self.project.last_year_ocsge),
                     "usage_matrix_data": dict(),
                     "usage_matrix_headers": dict(),
                     "couverture_matrix_data": dict(),
@@ -236,17 +254,17 @@ class DiagnosticSource(data_sources.DataSource):
             )
 
             SolInterface.surface_territory = surface_territory
-            donut_usage = charts.UsageSolPieChart(project)
-            graphique_usage = charts.UsageSolProgressionChart(project)
+            donut_usage = charts.UsageSolPieChart(self.project)
+            graphique_usage = charts.UsageSolProgressionChart(self.project)
             usage_data = [SolInterface(i) for i in graphique_usage.get_series()]
 
             context.update(
                 {
-                    "donut_usage": data_sources.Image(
+                    "donut_usage": self.prep_image(
                         donut_usage.get_temp_image(),
                         width=140,
                     ),
-                    "graphique_usage": data_sources.Image(
+                    "graphique_usage": self.prep_image(
                         graphique_usage.get_temp_image(),
                         width=170,
                     ),
@@ -254,7 +272,7 @@ class DiagnosticSource(data_sources.DataSource):
                 }
             )
 
-            usage_matrix_data = project.get_matrix(sol="usage")
+            usage_matrix_data = self.project.get_matrix(sol="usage")
             if usage_matrix_data:
                 headers = list(list(usage_matrix_data.values())[0].keys()) + ["Total"]
                 context.update(
@@ -264,18 +282,18 @@ class DiagnosticSource(data_sources.DataSource):
                     }
                 )
 
-            donut_couverture = charts.CouvertureSolPieChart(project)
-            graphique_couverture = charts.CouvertureSolProgressionChart(project)
+            donut_couverture = charts.CouvertureSolPieChart(self.project)
+            graphique_couverture = charts.CouvertureSolProgressionChart(self.project)
             couverture_data = [
                 SolInterface(i) for i in graphique_couverture.get_series()
             ]
             context.update(
                 {
-                    "donut_couverture": data_sources.Image(
+                    "donut_couverture": self.prep_image(
                         donut_couverture.get_temp_image(),
                         width=140,
                     ),
-                    "graphique_couverture": data_sources.Image(
+                    "graphique_couverture": self.prep_image(
                         graphique_couverture.get_temp_image(),
                         width=170,
                     ),
@@ -283,7 +301,7 @@ class DiagnosticSource(data_sources.DataSource):
                 }
             )
 
-            couverture_matrix_data = project.get_matrix(sol="couverture")
+            couverture_matrix_data = self.project.get_matrix(sol="couverture")
             if couverture_matrix_data:
                 headers = list(list(couverture_matrix_data.values())[0].keys()) + [
                     "Total"
@@ -297,16 +315,16 @@ class DiagnosticSource(data_sources.DataSource):
                     }
                 )
             # paragraphe 3.2.1
-            chart_waterfall = charts.WaterfallnArtifChart(project)
+            chart_waterfall = charts.WaterfallnArtifChart(self.project)
             waterfall_series = chart_waterfall.get_series()
-            total_artif = project.get_artif_area()
+            total_artif = self.project.get_artif_area()
             artif_net = waterfall_series["net_artif"]
             artificialisation = waterfall_series["new_artif"]
             renaturation = waterfall_series["new_natural"]
             context.update(
                 {
                     "surface_artificielle": str(round(total_artif, 2)),
-                    "graphique_artificialisation_nette": data_sources.Image(
+                    "graphique_artificialisation_nette": self.prep_image(
                         chart_waterfall.get_temp_image(),
                         width=170,
                     ),
@@ -319,7 +337,7 @@ class DiagnosticSource(data_sources.DataSource):
                 }
             )
             # paragraphe 3.2.2
-            detail_artif_chart = charts.DetailArtifChart(project)
+            detail_artif_chart = charts.DetailArtifChart(self.project)
             ReprDetailArtif.total_artif = artificialisation
             ReprDetailArtif.total_renat = renaturation
 
@@ -336,7 +354,7 @@ class DiagnosticSource(data_sources.DataSource):
                     "tableau_artificialisation_par_couverture": [
                         ReprDetailArtif(i) for i in detail_artif_chart.get_series()
                     ],
-                    "graphique_artificialisation_par_couverture": data_sources.Image(
+                    "graphique_artificialisation_par_couverture": self.prep_image(
                         detail_artif_chart.get_temp_image(),
                         width=170,
                     ),
@@ -344,13 +362,13 @@ class DiagnosticSource(data_sources.DataSource):
             )
             # paragraphe 3.2.3
             chart_comparison = charts.NetArtifComparaisonChart(
-                project, level=project.level
+                self.project, level=self.project.level
             )
             table_comparison = add_total_line_column(chart_comparison.get_series())
             header_comparison = list(list(table_comparison.values())[0].keys())
             context.update(
                 {
-                    "graphique_evolution_artif": data_sources.Image(
+                    "graphique_evolution_artif": self.prep_image(
                         chart_comparison.get_temp_image(),
                         width=170,
                     ),
@@ -359,15 +377,15 @@ class DiagnosticSource(data_sources.DataSource):
                 }
             )
             # paragraphe 3.2.4
-            couv_artif_sol = charts.ArtifCouvSolPieChart(project)
-            usage_artif_sol = charts.ArtifUsageSolPieChart(project)
+            couv_artif_sol = charts.ArtifCouvSolPieChart(self.project)
+            usage_artif_sol = charts.ArtifUsageSolPieChart(self.project)
             context.update(
                 {
-                    "graphique_determinant_couv_artif": data_sources.Image(
+                    "graphique_determinant_couv_artif": self.prep_image(
                         couv_artif_sol.get_temp_image(),
                         width=170,
                     ),
-                    "graphique_determinant_usage_artif": data_sources.Image(
+                    "graphique_determinant_usage_artif": self.prep_image(
                         usage_artif_sol.get_temp_image(),
                         width=170,
                     ),
