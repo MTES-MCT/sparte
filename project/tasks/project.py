@@ -22,7 +22,7 @@ from django.utils import timezone
 from django_app_parameter import app_parameter
 from matplotlib_scalebar.scalebar import ScaleBar
 
-from diagnostic_word.domains import Renderer
+from diagnostic_word.renderers import Renderer
 from project.models import Project, Request
 from public_data.models import ArtificialArea, Cerema, Land, OcsgeDiff
 from utils.db import fix_poly
