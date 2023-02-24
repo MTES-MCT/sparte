@@ -22,6 +22,7 @@ from django.utils import timezone
 from django_app_parameter import app_parameter
 from matplotlib_scalebar.scalebar import ScaleBar
 
+from diagnostic_word.domains import Renderer
 from project.models import Project, Request
 from public_data.models import ArtificialArea, Cerema, Land, OcsgeDiff
 from utils.db import fix_poly
@@ -195,38 +196,45 @@ class WaitAsyncTaskException(Exception):
     pass
 
 
+class WordAlreadySentException(Exception):
+    pass
+
+
 @shared_task(bind=True, max_retries=6)
 def generate_word_diagnostic(self, request_id):
-    from django_docx_template.models import DocxTemplate
     from highcharts.charts import RateLimitExceededException
 
     logger.info(f"Start generate word for request={request_id}")
     try:
-        req = Request.objects.get(id=int(request_id))
+        req = Request.objects.select_related("project").get(id=int(request_id))
+
         if not req.project:
-            exc = Exception("Project does not exist")
-            req.record_exception(exc)
-            logger.error("Error while generating word: %s", exc)
-        elif not req.sent_file:
-            if not req.project.async_complete:
-                raise WaitAsyncTaskException(
-                    "Not all async tasks are completed, retry later"
-                )
-            logger.info("Start generating word")
-            template = DocxTemplate.objects.get(slug="template-bilan-1")
-            buffer = template.merge(pk=req.project_id)
-            filename = template.get_file_name()
+            raise Project.DoesNotExist("Project does not exist")
+        elif not req.project.async_complete:
+            msg = "Not all async tasks are completed, retry later"
+            raise WaitAsyncTaskException(msg)
+        elif req.sent_file:
+            raise WordAlreadySentException("Word already sent")
+
+        logger.info("Start generating word")
+        with Renderer(project=req.project, word_template_slug="template-bilan-1") as renderer:
+            context = renderer.get_context_data()
+            buffer = renderer.render_to_docx(context=context)
+            filename = renderer.get_file_name()
             req.sent_file.save(filename, buffer, save=True)
             logger.info("Word created and saved")
-        return request_id
-    except RateLimitExceededException as exc:
+            return request_id
+
+    except (RateLimitExceededException, Project.DoesNotExist, WaitAsyncTaskException, WordAlreadySentException) as exc:
         req.record_exception(exc)
         logger.error("Error while generating word: %s", exc)
+        logger.exception(exc)
         self.retry(exc=exc, countdown=2 ** (self.request.retries + 10))
     except Request.DoesNotExist as exc:
+        logger.error("Request doesn't not exist, no retry.")
         logger.exception(exc)
-        logger.error("No retry")
     except Exception as exc:
+        logger.error("Unknow exception, please investigate.")
         req.record_exception(exc)
         logger.exception(exc)
         self.retry(exc=exc, countdown=900)
