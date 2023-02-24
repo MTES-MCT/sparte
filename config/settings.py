@@ -80,7 +80,6 @@ THIRD_APPS = [
 
 # upper app should not communicate with lower ones
 PROJECT_APPS = [
-    "django_docx_template",
     "utils.apps.UtilsConfig",
     "users.apps.UsersConfig",
     "carto.apps.CartoConfig",
@@ -314,15 +313,8 @@ if DEBUG:
         pass
 
 
-# DJANGO DOCX TEMPLATES
-DJANGO_DOCX_TEMPLATES = {
-    "data_sources": [
-        "project.datasources.DiagnosticSource",
-    ],
-    "base_template": "index.html",
-}
-
 # Configuration for highchart
+
 HIGHCHART_SERVER = env.str("HIGHCHART_SERVER", default="https://export.highcharts.com/")
 
 # EMAIL
