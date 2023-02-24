@@ -167,7 +167,7 @@ def generate_cover_image(self, project_id):
 
         fig, ax = plt.subplots(figsize=(60, 10))
         plt.axis("off")
-        fig.set_dpi(150)
+        fig.set_dpi(72)
 
         gdf_emprise.buffer(250000).plot(ax=ax, facecolor="none", edgecolor="none")
         gdf_emprise.plot(ax=ax, facecolor="none", edgecolor="yellow")
