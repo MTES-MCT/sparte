@@ -55,7 +55,6 @@ urlpatterns = [
         auth_views.PasswordResetCompleteView.as_view(),
         name="password_reset_complete",
     ),
-    path("docx/", include("django_docx_template.urls")),
     path("word/", include("diagnostic_word.urls")),
 ]
 
