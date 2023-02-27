@@ -1,7 +1,8 @@
 import os
+from pathlib import Path
 import tempfile
 from io import BytesIO
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, Union
 
 from django.db.models import ImageField
 from docx.shared import Mm
@@ -12,6 +13,14 @@ from project.models import Project
 from project import charts
 from project.utils import add_total_line_column
 from utils.functions import get_url_with_domain
+
+
+def save_to_local_temp_image(field: ImageField) -> Path:
+    """Save an image to a temporary file and return its path."""
+    fd, img_path = tempfile.mkstemp(suffix=".png", text=False)
+    os.write(fd, field.open().read())
+    os.close(fd)
+    return Path(img_path)
 
 
 class SolInterface:
@@ -97,12 +106,15 @@ class Renderer:
         return buffer
 
     def prep_image(
-        self, field: ImageField, width: Optional[int] = None, height: Optional[int] = None
+        self, field: Union[ImageField, str, Path], width: Optional[int] = None, height: Optional[int] = None
     ) -> InlineImage:
         """Prepare an image to be inserted in the docx file."""
-        fd, img_path = tempfile.mkstemp(suffix=".png", text=False)
-        os.write(fd, field.open().read())
-        os.close(fd)
+        if isinstance(field, ImageField):
+            img_path = save_to_local_temp_image(field)
+        elif isinstance(field, str):
+            img_path = Path(field)
+        else:
+            img_path = field
         return InlineImage(
             self.engine,
             img_path,
@@ -130,7 +142,7 @@ class Renderer:
                 or diagnostic.analyse_end_date != "2020"
             ),
             "project": diagnostic,
-            "photo_emprise": self.prep_image(diagnostic.cover_image.name, height=110),
+            "photo_emprise": self.prep_image(diagnostic.cover_image, height=110),
             "nb_communes": diagnostic.cities.count(),
             "carte_consommation": self.prep_image(
                 diagnostic.theme_map_conso, width=170
