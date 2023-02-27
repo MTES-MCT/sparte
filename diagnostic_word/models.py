@@ -13,3 +13,11 @@ class WordTemplate(models.Model):
 
     def get_absolute_url(self):
         return reverse("word_template:update", args={"slug": self.slug})
+
+    def __str__(self):
+        return self.slug
+
+    class Meta:
+        verbose_name = "Modèle Word"
+        verbose_name_plural = "Modèles Word"
+        ordering = ["slug"]
