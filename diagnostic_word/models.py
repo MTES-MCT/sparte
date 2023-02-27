@@ -3,7 +3,6 @@ from django.urls import reverse
 
 
 class WordTemplate(models.Model):
-    """TODO : faire une migration pour migrer l'ancien model et ne pas avoir à faire de createview"""
 
     slug = models.SlugField("Slug", primary_key=True)
     description = models.TextField("Description")
