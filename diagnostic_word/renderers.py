@@ -1,6 +1,9 @@
+import os
+import tempfile
 from io import BytesIO
-from pathlib import Path
 from typing import Any, Dict, Optional
+
+from django.db.models import ImageField
 from docx.shared import Mm
 from docxtpl import DocxTemplate, InlineImage, RichText
 
@@ -94,10 +97,12 @@ class Renderer:
         return buffer
 
     def prep_image(
-        self, img_path: str, width: Optional[int] = None, height: Optional[int] = None
+        self, field: ImageField, width: Optional[int] = None, height: Optional[int] = None
     ) -> InlineImage:
-        if not Path(img_path).is_file():
-            raise ValueError("Provided path is not a file")
+        """Prepare an image to be inserted in the docx file."""
+        fd, img_path = tempfile.mkstemp(suffix=".png", text=False)
+        os.write(fd, field.open().read())
+        os.close(fd)
         return InlineImage(
             self.engine,
             img_path,
@@ -125,7 +130,7 @@ class Renderer:
                 or diagnostic.analyse_end_date != "2020"
             ),
             "project": diagnostic,
-            "photo_emprise": self.prep_image(diagnostic.cover_image, height=110),
+            "photo_emprise": self.prep_image(diagnostic.cover_image.name, height=110),
             "nb_communes": diagnostic.cities.count(),
             "carte_consommation": self.prep_image(
                 diagnostic.theme_map_conso, width=170
