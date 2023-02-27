@@ -14,7 +14,7 @@ def forwards(apps, schema_editor):
         slug="template-bilan-1",
         description="Modèle Word pour générer le diagnostic téléchargeable",
         docx=old_docx,
-        filename_mask="{diagnostic_name} - {start_date:%d-%m-%Y} à {end_date:%d-%m-%Y} - issu de SPARTE.docx",
+        filename_mask="{diagnostic_name} - {start_date} à {end_date} - issu de SPARTE.docx",
     )
 
 
