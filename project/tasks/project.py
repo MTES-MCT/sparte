@@ -262,7 +262,7 @@ def send_word_diagnostic(self, request_id):
                 "diagnostic_name": req.project.name,
                 "image_url": req.project.cover_image.url,
                 "ocsge_available": "" if req.project.is_artif() else "display",
-                "diagnostic_url": req.sent_file.url,
+                "diagnostic_url": get_url_with_domain(reverse("project:word_download", args=[req.id])),
             },
         )
         logger.info(email.send())
@@ -270,9 +270,10 @@ def send_word_diagnostic(self, request_id):
         req.sent()
         logger.info("Saving request state done")
     except Exception as exc:
-        self.retry(exc=exc, countdown=2 ** (self.request.retries + 10))
         req.record_exception(exc)
         logger.error("Error while sending email, error: %s", exc)
+        logger.exception(exc)
+        self.retry(exc=exc, countdown=2 ** (self.request.retries + 10))
     finally:
         logger.info(f"End send word for request={request_id}")
 

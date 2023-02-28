@@ -9,17 +9,6 @@
 <div class="d-flex justify-content-center mt-5">
     <div class="col-12 col-md-5 col-lg-4">
 
-        {% if next %}
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                {% if user.is_authenticated %}
-                Vous n'avez pas accès à cette page, vos droits sont insuffisants.
-                {% else %}
-                Merci de vous connecter pour voir cette page.
-                {% endif %}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        {% endif %}
-
         <h1 class="mb-5 fw-bold text-center">Connexion</h1>
 
         <form {% if next %}action="?next={{ next }}" {% endif %}method="post">
