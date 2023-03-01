@@ -398,6 +398,7 @@ class ProjectReportArtifView(ProjectReportBaseView):
                 ),
                 "level": level,
                 "chart_waterfall": chart_waterfall,
+                "nb_communes": project.cities.count(),
             }
         )
 
