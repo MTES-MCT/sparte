@@ -110,6 +110,7 @@ Rapport artificialisation
             </div>
         </div>
 
+        {% if nb_communes > 1 %}
         <div class="fr-mt-12w">
             <h3 id="conso-annuelle">Consommation annuelle des {% if level == "COMM" %}communes{% elif level == "EPCI" %}communes{% elif level == "DEPT" %}EPCI{% else %}départements{% endif %} du territoire</h3>
 
@@ -215,6 +216,7 @@ Rapport artificialisation
                 </div>
             </div>
         </div>
+        {% endif %}
 
         <div class="fr-mt-12w">
             <h3>Evolution</h3>
