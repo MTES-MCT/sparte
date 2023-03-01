@@ -54,7 +54,10 @@ Rapport consommation
                     <a class="fr-summary__link" href="#territoires-de-comparaison">comparaison du territoire avec les territoires voisins</a>
                 </li>
                 <li>
-                    <a class="fr-summary__link" href="{% url 'project:report_conso_relative' project.id %}">comparaisons pondérées avec les données de l'INSEE (démographie, ménages...)</a>
+                    <a class="fr-summary__link" href="#conso-relative-surface-anchor">consommation d'espace rapportée à la surface du territoire</a>
+                </li>
+                <li>
+                    <a class="fr-summary__link" href="#conso-relative-pop-anchor">Consommation d'espaces par nouvel habitant</a>
                 </li>
             </ol>
         </nav>
@@ -182,35 +185,6 @@ Rapport consommation
 
         <div class="fr-mt-7w">
             <div class="fr-grid-row fr-mb-2w">
-                <h3 class="fr-col-12 fr-col-lg-8" id="territoires-de-comparaison">Comparaison avec les territoires voisins</h3>
-                <div class="fr-col-12 fr-col-lg-4">
-                    <div class="d-flex justify-content-end align-items-center">
-                        <a class="fr-mr-2w fr-btn fr-icon-add-circle-line fr-btn--tertiary fr-btn--sm" href="{% url 'project:lookalike' project.id %}?next={% url 'project:report_conso' project.id %}&anchor=territoires-de-comparaison" data-toggle="tooltip" title="Ajouter un territoire de comparaison" aria-hidden="true"></a>
-                        <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#comparaisonVoisin" data-toggle="tooltip" title="Astuces pour lire le graphique" aria-hidden="true"></button>
-                    </div>
-                </div>
-            </div>
-
-            <div id="chart_2" class="border fr-p-3w fr-pt-5w"></div>
-
-            <p class="fr-mt-2w">
-                <a class="fr-link" href="{% url 'project:report_conso_relative' project.id %}">Voir aussi: toutes les comparaisons disponibles</a>
-            </p>
-
-            <div class="fr-callout bg-white fr-p-2w mt-4">
-                <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data-2">Données</button>
-                <div class="fr-collapse" id="target-data-2">
-                    <h6 class="fr-mt-2w">Source</h6>
-                    <p>Données d'évolution des fichiers fonciers du Cérema issus des données MAJIC (Mise A Jour de l'Information Cadastrale) de la DGFIP, sur la période d'analyse (millésime min : 2009, millésime max : 2021).</p>
-
-                    <h6 class="fr-mt-2w">Calcul</h6>
-                    <p>Consommation d'espaces NAF par année, par maille d'analyse du territoire de diagnostic.</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="fr-mt-7w">
-            <div class="fr-grid-row fr-mb-2w">
                 <h3 class="fr-col-12 fr-col-lg-8" id="determinants-conso">Déterminants de la consommation</h3>
                 <div class="fr-col-12 fr-col-lg-4">
                     <div class="d-flex justify-content-end align-items-center">
@@ -263,13 +237,50 @@ Rapport consommation
             </div>
         </div>
 
+        <div class="fr-mt-7w">
+            <div class="fr-grid-row fr-mb-2w">
+                <h3 class="fr-col-12 fr-col-lg-8" id="territoires-de-comparaison">Comparaison avec les territoires voisins</h3>
+                <div class="fr-col-12 fr-col-lg-4">
+                    <div class="d-flex justify-content-end align-items-center">
+                        <a class="fr-mr-2w fr-btn fr-icon-add-circle-line fr-btn--tertiary fr-btn--sm" href="{% url 'project:lookalike' project.id %}?next={% url 'project:report_conso' project.id %}&anchor=territoires-de-comparaison" data-toggle="tooltip" title="Ajouter un territoire de comparaison" aria-hidden="true"></a>
+                        <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#comparaisonVoisin" data-toggle="tooltip" title="Astuces pour lire le graphique" aria-hidden="true"></button>
+                    </div>
+                </div>
+            </div>
 
-        <div class="fr-mt-7w" hx-get="{% url 'project:relative-surface' project.id %}" hx-trigger="revealed" hx-target="#conso-relative-surface">
+            <div id="chart_2" class="border fr-p-3w fr-pt-5w"></div>
+
+            <p class="fr-mt-2w">
+                <a class="fr-link" href="{% url 'project:report_conso_relative' project.id %}">Voir aussi: toutes les comparaisons disponibles</a>
+            </p>
+
+            <div class="fr-callout bg-white fr-p-2w mt-4">
+                <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data-2">Données</button>
+                <div class="fr-collapse" id="target-data-2">
+                    <h6 class="fr-mt-2w">Source</h6>
+                    <p>Données d'évolution des fichiers fonciers du Cérema issus des données MAJIC (Mise A Jour de l'Information Cadastrale) de la DGFIP, sur la période d'analyse (millésime min : 2009, millésime max : 2021).</p>
+
+                    <h6 class="fr-mt-2w">Calcul</h6>
+                    <p>Consommation d'espaces NAF par année, par maille d'analyse du territoire de diagnostic.</p>
+                </div>
+            </div>
+        </div>
+
+
+        <div id="conso-relative-surface-anchor" class="fr-mt-7w" hx-get="{% url 'project:relative-surface' project.id %}" hx-trigger="revealed">
             <h3>Consommation d'espace rapportée à la surface du territoire</h3>
 
             <!-- TODO Sofian ajouter skeletton -->
-            <div id="conso-relative-surface">Chargement des graphiques en cours...</div>
+            <div>Chargement des graphiques en cours...</div>
         </div>
+
+        <div id="conso-relative-pop-anchor" class="fr-mt-7w" hx-get="{% url 'project:relative-pop' project.id %}" hx-trigger="revealed">
+            <h3 class="fr-col-12 fr-col-lg-8">Consommation d'espaces par nouvel habitant</h3>
+
+            <!-- TODO Sofian ajouter skeletton -->
+            <div>Chargement des graphiques en cours...</div>
+        </div>
+        
 
     </div>
 </div>

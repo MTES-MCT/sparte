@@ -551,3 +551,25 @@ class ConsoRelativeSurfaceChart(UserQuerysetOrPublicMixin, DetailView):
             }
         )
         return super().get_context_data(**kwargs)
+
+
+class ConsoRelativePopChart(UserQuerysetOrPublicMixin, DetailView):
+    context_object_name = "project"
+    queryset = Project.objects.all()
+    template_name = "project/partials/pop_comparison_conso.html"
+
+    def get_context_data(self, **kwargs):
+        conso_pop_chart = charts.ConsoComparisonPopChart(self.object)
+        pop_chart = charts.PopChart(self.object)
+        kwargs.update(
+            {
+                "diagnostic": self.object,
+                "pop_chart": pop_chart,
+                "pop_table": pop_chart.get_series(),
+                "conso_pop_chart": conso_pop_chart,
+                "conso_pop_table": add_total_line_column(
+                    conso_pop_chart.get_series(), line=False
+                ),
+            }
+        )
+        return super().get_context_data(**kwargs)
