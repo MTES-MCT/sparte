@@ -10,7 +10,7 @@ from project.models import Project, ProjectCommune, Request
 from project.utils import add_total_line_column
 from public_data.models import CouvertureSol, UsageSol
 
-from .mixins import BreadCrumbMixin, GroupMixin
+from .mixins import BreadCrumbMixin, GroupMixin, UserQuerysetOrPublicMixin
 
 
 class ProjectReportBaseView(GroupMixin, DetailView):
@@ -529,3 +529,25 @@ class DownloadWordView(TemplateView):
         if request.user.id == req.user_id:
             return HttpResponseRedirect(req.sent_file.url)
         return super().get(request, *args, **kwargs)
+
+
+class ConsoRelativeSurfaceChart(UserQuerysetOrPublicMixin, DetailView):
+    context_object_name = "project"
+    queryset = Project.objects.all()
+    template_name = "project/partials/surface_comparison_conso.html"
+
+    def get_context_data(self, **kwargs):
+        indicateur_chart = charts.SurfaceChart(self.object)
+        comparison_chart = charts.ConsoComparisonChart(self.object, relative=True)
+        kwargs.update(
+            {
+                "diagnostic": self.object,
+                "indicateur_chart": indicateur_chart,
+                "indicateur_table": indicateur_chart.get_series(),
+                "comparison_chart": comparison_chart,
+                "comparison_table": add_total_line_column(
+                    comparison_chart.get_series(), line=False
+                ),
+            }
+        )
+        return super().get_context_data(**kwargs)

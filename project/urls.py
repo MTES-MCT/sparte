@@ -74,6 +74,12 @@ urlpatterns = [
         views.ProjectReportTarget2031View.as_view(),
         name="report_target_2031",
     ),
+    # REPORT PARTIALS
+    path(
+        "<int:pk>/tableau-de-bord/consommation-relative/surface",
+        views.ConsoRelativeSurfaceChart.as_view(),
+        name="relative-surface",
+    ),
     # MAP
     path("<int:pk>/map", views.ProjectMapView.as_view(), name="map"),
     path(
