@@ -111,7 +111,7 @@ Rapport artificialisation
         </div>
 
         <div class="fr-mt-12w">
-            <h3 class="fr-col-12 fr-col-lg-8" id="conso-annuelle">Consommation annuelle des {% if level == "COMM" %}communes{% elif level == "EPCI" %}communes{% elif level == "DEPT" %}EPCI{% else %}départements{% endif %} du territoire</h3>
+            <h3 id="conso-annuelle">Consommation annuelle des {% if level == "COMM" %}communes{% elif level == "EPCI" %}communes{% elif level == "DEPT" %}EPCI{% else %}départements{% endif %} du territoire</h3>
 
             <div class="fr-grid-row fr-grid-row--gutters">
                 <div class="fr-col-12 fr-col-lg-8">
@@ -219,7 +219,46 @@ Rapport artificialisation
         <div class="fr-mt-12w">
             <h3>Evolution</h3>
 
-            <div id="chart_waterfall" class="border fr-p-3w fr-pt-5w"></div>
+            <div class="fr-grid-row fr-grid-row--gutters">
+                <div class="fr-col-12 fr-col-lg-8">
+                    <div class="border fr-p-2w">
+                        <div class="d-flex justify-content-end align-items-center fr-mb-2w">    
+                            <div class="dropdown custom-dropdown fr-mr-2w" data-toggle="tooltip" title="Exporter le graphique">
+                                <button class="fr-btn fr-icon-download-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="dropdown" aria-expanded="false"></button>
+    
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <a class="fr-nav__link export-waterfall" href="#" data-type="image/png">PNG</a>
+                                    </li>
+                                    <li>
+                                        <a class="fr-nav__link export-waterfall" href="#" data-type="image/jpeg">JPEG</a>
+                                    </li>
+                                    <li>
+                                        <a class="fr-nav__link export-waterfall" href="#" data-type="application/pdf">PDF</a>
+                                    </li>
+                                    <li>
+                                        <a class="fr-nav__link export-waterfall" href="#" data-type="image/svg+xml">Vectoriel</a>
+                                    </li>
+                                </ul>
+                            </div>
+    
+                            <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm" id="fs-waterfall" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
+                        </div>
+                        <div id="chart_waterfall"></div>
+                    </div>
+                </div>
+                <div class="fr-col-12 fr-col-lg-4">
+                  <div class="border theme-map-image-container h-100 fr-p-2w d-flex flex-column align-items-center justify-content-between">
+                      <div class="d-flex justify-content-end align-items-center w-100 fr-mb-2w">
+                          <a href="{% url 'project:theme-my-artif' project.pk %}" target="_blank">
+                              <button class="fr-btn fr-icon-external-link-line fr-btn--tertiary fr-btn--sm"></button>
+                          </a>
+                      </div>
+                      <p class="fw-bold">Carte comprendre l'artificialisation de son territoire</p>
+                      <img src="{{ project.theme_map_understand_artif.url }}" alt="Carte comprendre l'artificialisation de son territoire">
+                  </div>
+                </div>
+            </div>
 
             <div class="fr-callout bg-white fr-p-2w mt-4">
                 <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data-2">Données</button>
@@ -331,19 +370,37 @@ Rapport artificialisation
 {% display_chart 'chart_waterfall' chart_waterfall CSP_NONCE %}
 
 <script language="javascript" nonce="{{ CSP_NONCE }}">
-    const chartDom = document.getElementById('chart_comparison');
-    const chart = Highcharts.charts[Highcharts.attr(chartDom, 'data-highcharts-chart')]
+    const chartComparisonDom = document.getElementById('chart_comparison');
+    const chartComparison = Highcharts.charts[Highcharts.attr(chartComparisonDom, 'data-highcharts-chart')]
 
-    // Trigger full screen chart conso
+    // Trigger full screen chart comparison
     document.getElementById('fs-comparison').addEventListener('click', () => {
-        chart.fullscreen.toggle();
+        chartComparison.fullscreen.toggle();
     });
 
-    // Export chart conso
+    // Export chart comparison
     document.querySelectorAll('.export-comparison').forEach( button => {
         button.onclick = function (e) {
             e.preventDefault();
-            chart.exportChart({
+            chartComparison.exportChart({
+                type: button.dataset.type
+            });
+        }
+    });
+
+    const chartWaterfallDom = document.getElementById('chart_waterfall');
+    const chartWaterfall = Highcharts.charts[Highcharts.attr(chartWaterfallDom, 'data-highcharts-chart')]
+
+    // Trigger full screen chart waterfall
+    document.getElementById('fs-waterfall').addEventListener('click', () => {
+        chartWaterfall.fullscreen.toggle();
+    });
+
+    // Export chart waterfall
+    document.querySelectorAll('.export-waterfall').forEach( button => {
+        button.onclick = function (e) {
+            e.preventDefault();
+            chartWaterfall.exportChart({
                 type: button.dataset.type
             });
         }
