@@ -51,24 +51,29 @@ Rapport artificialisation
             </button>
         </div>
 
-        <div class="fr-mt-7w">
-            <div class="fr-grid-row fr-grid-row--gutters">
-                <div class="fr-col-12 fr-col-md-4 fr-grid-row">
-                    <div class="fr-callout w-100">
-                    <p class="fr-callout__title">{{ total_surface|floatformat:0 }} ha</p>
-                    <p>Surface du territoire</p>
+        <div class="fr-mt-12w">
+
+            <h2>Etat des lieux du territoire au dernier millésime</h2>
+
+            <div class="fr-mt-7w">
+                <div class="fr-grid-row fr-grid-row--gutters">
+                    <div class="fr-col-12 fr-col-md-4 fr-grid-row">
+                        <div class="fr-callout w-100">
+                        <p class="fr-callout__title">{{ total_surface|floatformat:0 }} ha</p>
+                        <p>Surface du territoire</p>
+                        </div>
                     </div>
-                </div>
-                <div class="fr-col-12 fr-col-md-4 fr-grid-row">
-                    <div class="fr-callout w-100">
-                    <p class="fr-callout__title">{{ artif_area|floatformat:0 }} ha</p>
-                    <p><span class="dotted" data-toggle="tooltip" title="Surface des zones artificielles, c'est-à-dire les espaces répondant à la définition de la loi Climat et Résilience et à ses décrets d'application à une date donnée." aria-hidden="true">Surfaces artificialisées</span> en {{ last_millesime }}</p>
+                    <div class="fr-col-12 fr-col-md-4 fr-grid-row">
+                        <div class="fr-callout w-100">
+                        <p class="fr-callout__title">{{ artif_area|floatformat:0 }} ha</p>
+                        <p><span class="dotted" data-toggle="tooltip" title="Surface des zones artificielles, c'est-à-dire les espaces répondant à la définition de la loi Climat et Résilience et à ses décrets d'application à une date donnée." aria-hidden="true">Surfaces artificialisées</span> en {{ last_millesime }}</p>
+                        </div>
                     </div>
-                </div>
-                <div class="fr-col-12 fr-col-md-4 fr-grid-row">
-                    <div class="fr-callout w-100">
-                    <p class="fr-callout__title">{{ rate_artif_area|floatformat:0 }}%</p>
-                    <p>Taux de surfaces artificialisées</p>
+                    <div class="fr-col-12 fr-col-md-4 fr-grid-row">
+                        <div class="fr-callout w-100">
+                        <p class="fr-callout__title">{{ rate_artif_area|floatformat:0 }}%</p>
+                        <p>Taux de surfaces artificialisées</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -93,7 +98,7 @@ Rapport artificialisation
               <div class="fr-col-12 fr-col-md-6 fr-col-lg-3 fr-grid-row">
                 <div class="fr-callout w-100">
                   <p class="fr-callout__title">{{ net_artif|floatformat:0 }} ha</p>
-                  <span class="dotted" data-toggle="tooltip" title="C'est la différence entre la somme des surfaces des zones artificialisées et renaturées entre deux dates." aria-hidden="true">Artificialisation nette</span></p>
+                  <span class="dotted" data-toggle="tooltip" title="C'est la différence entre les surfaces des zones artificialisées et renaturées." aria-hidden="true">Artificialisation nette</span></p>
                 </div>
               </div>
               <div class="fr-col-12 fr-col-md-6 fr-col-lg-3 fr-grid-row">
