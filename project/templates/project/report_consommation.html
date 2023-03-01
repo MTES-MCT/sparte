@@ -14,6 +14,7 @@ Rapport consommation
 
 {% block headers %}
 {% sri_static "project/css/project.css" %}
+<meta name="htmx-config" content='{"inlineScriptNonce":"{{ CSP_NONCE }}"}'>
 {% endblock %}
 
 {% block content %}
@@ -261,6 +262,15 @@ Rapport consommation
                 </div>
             </div>
         </div>
+
+
+        <div class="fr-mt-7w" hx-get="{% url 'project:relative-surface' project.id %}" hx-trigger="revealed" hx-target="#conso-relative-surface">
+            <h3>Consommation d'espace rapportée à la surface du territoire</h3>
+
+            <!-- TODO Sofian ajouter skeletton -->
+            <div id="conso-relative-surface">Chargement des graphiques en cours...</div>
+        </div>
+
     </div>
 </div>
 
@@ -381,11 +391,6 @@ $('#reverse').click(function(e){
     chart.redraw()
 })
 
-$('#conso_territory_reltive').change(function() {
-    url = '{% url "project:report_conso" project.id %}?relative=' + this.checked
-    url = url + '#territoires-de-comparaison'
-    window.location.replace(url)
-})
 </script>
 {% endlocalize %}
 {% endblock %}
