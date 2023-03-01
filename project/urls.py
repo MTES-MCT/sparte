@@ -80,6 +80,11 @@ urlpatterns = [
         views.ConsoRelativeSurfaceChart.as_view(),
         name="relative-surface",
     ),
+    path(
+        "<int:pk>/tableau-de-bord/consommation-relative/population",
+        views.ConsoRelativePopChart.as_view(),
+        name="relative-pop",
+    ),
     # MAP
     path("<int:pk>/map", views.ProjectMapView.as_view(), name="map"),
     path(
