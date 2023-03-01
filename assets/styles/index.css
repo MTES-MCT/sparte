@@ -1,5 +1,6 @@
 @import '@gouvfr/dsfr/dist/dsfr.min.css';
 @import '@gouvfr/dsfr/dist/utility/icons/icons-system/icons-system.min.css';
+@import '@gouvfr/dsfr/dist/utility/icons/icons-design/icons-design.min.css';
 
 /*
 Fix link icon position
@@ -122,4 +123,20 @@ Form labels
 
 form .control-group {
     margin-top: 25px;
+}
+
+/*
+Theme map
+*/
+.theme-map-image-container img {
+    width: 100%;
+    height: auto;
+}
+
+.theme-map-image-container a {
+    background-image: none;
+}
+
+.theme-map-image-container [target=_blank]:after {
+    content: none;
 }
