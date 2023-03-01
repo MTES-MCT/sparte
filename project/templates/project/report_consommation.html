@@ -275,21 +275,46 @@ Rapport consommation
             <h3>Consommation d'espace rapportée à la surface du territoire</h3>
 
             <!-- TODO Sofian ajouter skeletton -->
-            <div>Chargement des graphiques en cours...</div>
+            <div class="fr-notice fr-notice--info htmx-indicator">
+                <div class="fr-container">
+                    <div class="fr-notice__body">
+                        <p class="fr-notice__title">
+                            <img src="{% static 'img/three-dots-loader.svg' %}">
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
         </div>
 
         <div id="conso-relative-pop-anchor" class="fr-mt-7w" hx-get="{% url 'project:relative-pop' project.id %}" hx-trigger="revealed">
             <h3 class="fr-col-12 fr-col-lg-8">Consommation d'espaces par nouvel habitant</h3>
 
             <!-- TODO Sofian ajouter skeletton -->
-            <div>Chargement des graphiques en cours...</div>
+            <div class="fr-notice fr-notice--info htmx-indicator">
+                <div class="fr-container">
+                    <div class="fr-notice__body">
+                        <p class="fr-notice__title">
+                            <img src="{% static 'img/three-dots-loader.svg' %}">
+                        </p>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div id="conso-relative-household-anchor" class="fr-mt-7w" hx-get="{% url 'project:relative-household' project.id %}" hx-trigger="revealed">
             <h3 class="fr-col-12 fr-col-lg-8">Consommation d'espaces par ménages</h3>
 
             <!-- TODO Sofian ajouter skeletton -->
-            <div>Chargement des graphiques en cours...</div>
+            <div class="fr-notice fr-notice--info htmx-indicator">
+                <div class="fr-container">
+                    <div class="fr-notice__body">
+                        <p class="fr-notice__title">
+                            <img src="{% static 'img/three-dots-loader.svg' %}">
+                        </p>
+                    </div>
+                </div>
+            </div>
         </div>
         
     </div>
