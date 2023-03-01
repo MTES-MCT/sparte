@@ -93,6 +93,7 @@ class ProjectReportConsoView(ProjectReportBaseView):
                 "groups_names": groups_names,
                 "level": level,
                 "objective_chart": objective_chart,
+                "nb_communes": project.cities.count(),
             }
         )
 
