@@ -46,7 +46,7 @@ SECRET_KEY = env.str("SECRET")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env.bool("DEBUG", default=False)
-USE_SRI = env.bool("USE_SRI", default=False) or not DEBUG
+USE_SRI = env.bool("USE_SRI", default=not DEBUG)
 
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["127.0.0.1", "localhost"])
 
@@ -103,10 +103,6 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
-
-USE_CSP = env.bool("USE_CSP", default=False) or not DEBUG
-if USE_CSP:
-    MIDDLEWARE.insert(2, "csp.middleware.CSPMiddleware")
 
 
 ROOT_URLCONF = "config.urls"
@@ -420,6 +416,10 @@ MATOMO_ACTIVATE = env.bool("MATOMO_ACTIVATE", default=False)
 
 # SECURITY - Content Security Header Policy
 # https://django-csp.readthedocs.io
+
+USE_CSP = env.bool("USE_CSP", default=not DEBUG)
+if USE_CSP:
+    MIDDLEWARE.insert(2, "csp.middleware.CSPMiddleware")
 
 CSP_UPGRADE_INSECURE_REQUESTS = not DEBUG
 CSP_DEFAULT_SRC = ["'self'"]
