@@ -573,3 +573,25 @@ class ConsoRelativePopChart(UserQuerysetOrPublicMixin, DetailView):
             }
         )
         return super().get_context_data(**kwargs)
+
+
+class ConsoRelativeHouseholdChart(UserQuerysetOrPublicMixin, DetailView):
+    context_object_name = "project"
+    queryset = Project.objects.all()
+    template_name = "project/partials/household_comparison_conso.html"
+
+    def get_context_data(self, **kwargs):
+        household_chart = charts.HouseholdChart(self.object)
+        conso_household_chart = charts.ConsoComparisonHouseholdChart(self.object)
+        kwargs.update(
+            {
+                "diagnostic": self.object,
+                "household_chart": household_chart,
+                "household_table": household_chart.get_series(),
+                "conso_household_chart": conso_household_chart,
+                "conso_household_table": add_total_line_column(
+                    conso_household_chart.get_series(), line=False
+                ),
+            }
+        )
+        return super().get_context_data(**kwargs)

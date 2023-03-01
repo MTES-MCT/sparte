@@ -59,6 +59,10 @@ Rapport consommation
                 <li>
                     <a class="fr-summary__link" href="#conso-relative-pop-anchor">Consommation d'espaces par nouvel habitant</a>
                 </li>
+
+                <li>
+                    <a class="fr-summary__link" href="#conso-relative-household-anchor">Consommation d'espaces par ménages</a>
+                </li>
             </ol>
         </nav>
 
@@ -280,8 +284,14 @@ Rapport consommation
             <!-- TODO Sofian ajouter skeletton -->
             <div>Chargement des graphiques en cours...</div>
         </div>
-        
 
+        <div id="conso-relative-household-anchor" class="fr-mt-7w" hx-get="{% url 'project:relative-household' project.id %}" hx-trigger="revealed">
+            <h3 class="fr-col-12 fr-col-lg-8">Consommation d'espaces par ménages</h3>
+
+            <!-- TODO Sofian ajouter skeletton -->
+            <div>Chargement des graphiques en cours...</div>
+        </div>
+        
     </div>
 </div>
 
