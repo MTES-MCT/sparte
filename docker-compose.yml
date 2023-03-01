@@ -38,8 +38,8 @@ services:
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
       - USE_S3=0
     ports:
-      - "8080:8080"
       - "5678:5678"
+      - "8080:8080"
     depends_on:
       - db
       - redis
@@ -58,13 +58,16 @@ services:
       - DATABASE_URL=postgis://postgres:postgres@db:5432/postgres
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    depends_on:
+      - db
+      - redis
     ports:
       - 8888:8888
     networks:
       - app-network
 
   highchart:
-    image: sparte/highchart-export-server:13
+    image: swannbm/scalingo-highcharts-export-server:13
     command: highcharts-export-server --enableServer 1 --port 8090
     ports:
       - "8090:8090"
