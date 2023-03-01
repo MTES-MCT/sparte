@@ -1,0 +1,70 @@
+{% load highcharts_tags %}
+
+<div id="indicateur_chart" class="border fr-p-3w fr-pt-5w"></div>
+
+<div class="fr-callout bg-white fr-p-2w mt-4">
+    <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="surface-data">Données</button>
+    <div class="fr-collapse" id="surface-data">
+        <h6 class="fr-mt-2w">Source</h6>
+        <p>Données d'évolution des fichiers fonciers du Cérema issus des données MAJIC (Mise A Jour de l'Information Cadastrale) de la DGFIP, sur la période d'analyse (millésime min : 2009, millésime max : 2021)</p>
+
+        <h6 class="fr-mt-2w">Calcul</h6>
+        <p>Calcul de l'air après projection <a href="https://epsg.io/2154" target="_blank">EPSG:2154 - Lambert 93</a></p>
+
+        <h6 class="fr-mt-2w">Données</h6>
+        <table class="table table-striped table-sm table-borderless">
+            <thead>
+                <tr>
+                    <th scope="col"></th>
+                    <th scope="col" class="text-end">Surface</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for city_name, data in indicateur_table.items %}
+                <tr>
+                    <th scope="row">{{ city_name }}</th>
+                    {% for year, val in data.items %}
+                    <td align="right">{{ val|floatformat:0 }} Ha</td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div id="comparison_chart" class="border fr-p-3w fr-pt-5w"></div>
+
+<div class="fr-callout bg-white fr-p-2w mt-4">
+    <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="surface-relative-comparison-data">Données</button>
+    <div class="fr-collapse" id="surface-relative-comparison-data">
+        <h6 class="fr-mt-2w">Calcul</h6>
+        <p>La consommation de chaque territoire est divisée par sa propre surface puis multiplié par la surface de votre territoire.</p>
+
+        <h6 class="fr-mt-2w">Données</h6>
+        <table class="table table-striped table-sm table-borderless">
+            <thead>
+                <tr>
+                    <th scope="col"></th>
+                    {% for year in diagnostic.years %}
+                    <th scope="col" class="text-end">{{ year }}</th>
+                    {% endfor %}
+                    <th scope="col" class="text-end">Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for city_name, data in comparison_table.items %}
+                <tr>
+                    <th scope="row">{{ city_name }}</th>
+                    {% for year, val in data.items %}
+                    <td align="right">{{ val|floatformat:1 }}</td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% display_chart 'indicateur_chart' indicateur_chart CSP_NONCE %}
+{% display_chart 'comparison_chart' comparison_chart CSP_NONCE %}
