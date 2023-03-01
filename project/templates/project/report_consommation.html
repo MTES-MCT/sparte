@@ -82,10 +82,12 @@ Rapport consommation
         </div>
 
         <div class="fr-mt-7w">
-            <div class="fr-grid-row fr-mb-2w">
-                <h3 class="fr-col-12 fr-col-lg-8" id="conso-annuelle">Consommation d'espaces sur le territoire</h3>
-                <div class="fr-col-12 fr-col-lg-4">
-                    <div class="d-flex justify-content-end align-items-center">
+            <h3 class="fr-col-12 fr-col-lg-8" id="conso-annuelle">Consommation d'espaces sur le territoire</h3>
+
+            <div class="fr-grid-row fr-grid-row--gutters">
+              <div class="fr-col-12 fr-col-lg-8">
+                <div class="border fr-p-2w">
+                    <div class="d-flex justify-content-end align-items-center fr-mb-2w">
                         <div class="dropdown custom-dropdown fr-mr-2w">
                             <button class="fr-btn fr-btn--tertiary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill" data-bs-toggle="dropdown" aria-expanded="false">
                                 Maille d'analyse
@@ -145,12 +147,44 @@ Rapport consommation
                             </ul>
                         </div>
 
-                        <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#consoAnnuelle" data-toggle="tooltip" title="Astuces pour lire le graphique" aria-hidden="true"></button>
-                    </div>
-                </div>
-            </div>
+                        <div class="dropdown custom-dropdown fr-mr-2w" data-toggle="tooltip" title="Exporter le graphique">
+                            <button class="fr-btn fr-icon-download-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="dropdown" aria-expanded="false"></button>
 
-            <div id="chart" class="border fr-p-3w fr-pt-5w"></div>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <a class="fr-nav__link export-conso" href="#" data-type="image/png">PNG</a>
+                                </li>
+                                <li>
+                                    <a class="fr-nav__link export-conso" href="#" data-type="image/jpeg">JPEG</a>
+                                </li>
+                                <li>
+                                    <a class="fr-nav__link export-conso" href="#" data-type="application/pdf">PDF</a>
+                                </li>
+                                <li>
+                                    <a class="fr-nav__link export-conso" href="#" data-type="image/svg+xml">Vectoriel</a>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm fr-mr-2w" id="fs-conso" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
+
+                        <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#consoAnnuelle" data-toggle="tooltip" title="Astuces pour lire le graphique"></button>
+                    </div>
+                    <div id="chart"></div>
+                </div>
+              </div>
+              <div class="fr-col-12 fr-col-lg-4">
+                <div class="border theme-map-image-container h-100 fr-p-2w d-flex flex-column align-items-center justify-content-between">
+                    <div class="d-flex justify-content-end align-items-center w-100 fr-mb-2w">
+                        <a href="{% url 'project:theme-city-conso' project.pk %}" target="_blank">
+                            <button class="fr-btn fr-icon-external-link-line fr-btn--tertiary fr-btn--sm"></button>
+                        </a>
+                    </div>
+                    <p class="fw-bold">Carte consommation d'espaces des communes du territoire sur la période (en Ha)</p>
+                    <img src="{{ project.theme_map_conso.url }}" alt="Carte consommation d'espace des communes du territoire sur la période (en Ha)">
+                </div>
+              </div>
+            </div>
 
             <div class="fr-callout bg-white fr-p-2w mt-4">
                 <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data-1">Données</button>
@@ -331,7 +365,7 @@ Rapport consommation
             <div class="fr-modal__content">
                 <h1 id="fr-modal-2-title" class="fr-modal__title" id="consoAnnuelleLabel">
                     <span class="fr-fi-arrow-right-line fr-fi--lg"></span>
-                    Astuces - Consommation annuelle
+                    Astuces - Graphique consommation d'espaces sur le territoire
                 </h1>
                 <p class="fr-text--sm">Pour réduire le nombre de territoires visibles dans le graphique, vous pouvez en masquer certains en cliquant sur eux dans la légende. Cliquez de nouveau dessus pour les ré-afficher.</p>
                 <p class="fr-text--sm">Avec le bouton <i class="bi bi-list"></i>, vous pouvez afficher le graphique en pleine page ou le télécharger sous forme d'image (utilisez PNG si vous ne savez pas lequel choisir).</p>
@@ -398,45 +432,62 @@ Rapport consommation
 {% display_chart 'pie_determinant' determinant_pie_chart CSP_NONCE %}
 
 <script language="javascript" nonce="{{ CSP_NONCE }}">
-///////////////////////////////
-// Select / unselect all
-///////////////////////////////
+    const chartDom = document.getElementById('chart');
+    const chart = Highcharts.charts[Highcharts.attr(chartDom, 'data-highcharts-chart')]
 
-$('#check').click(function(e) {
-    e.preventDefault();
-    let div_id = $(this).attr('chart_target');
-    let chart = $("#" + div_id).highcharts();
-    $(chart.series).each(function(){
-        this.setVisible(true, false)
-    })
-    chart.redraw()
-})
+    // Trigger full screen chart conso
+    document.getElementById('fs-conso').addEventListener('click', () => {
+        chart.fullscreen.toggle();
+    });
 
-$('#uncheck').click(function(e) {
-    e.preventDefault();
-    let div_id = $(this).attr('chart_target')
-    let chart = $("#" + div_id).highcharts()
-    //chart.series.forEach(serie => serie.hide())
-    $(chart.series).each(function(){
-        this.setVisible(false, false)
-    })
-    chart.redraw()
-})
-
-$('#reverse').click(function(e){
-    e.preventDefault();
-    let div_id = $(this).attr('chart_target');
-    let chart = $("#" + div_id).highcharts();
-    $(chart.series).each(function(){
-        if (this.visible){
-            this.setVisible(false, false)
-        }else{
-            this.setVisible(true, false)
+    // Export chart conso
+    document.querySelectorAll('.export-conso').forEach( button => {
+        button.onclick = function (e) {
+            e.preventDefault();
+            chart.exportChart({
+                type: button.dataset.type
+            });
         }
-    })
-    chart.redraw()
-})
+    });
 
+    ///////////////////////////////
+    // Select / unselect all
+    ///////////////////////////////
+
+    $('#check').click(function(e) {
+        e.preventDefault();
+        let div_id = $(this).attr('chart_target');
+        let chart = $("#" + div_id).highcharts();
+        $(chart.series).each(function(){
+            this.setVisible(true, false)
+        })
+        chart.redraw()
+    })
+
+    $('#uncheck').click(function(e) {
+        e.preventDefault();
+        let div_id = $(this).attr('chart_target')
+        let chart = $("#" + div_id).highcharts()
+        //chart.series.forEach(serie => serie.hide())
+        $(chart.series).each(function(){
+            this.setVisible(false, false)
+        })
+        chart.redraw()
+    })
+
+    $('#reverse').click(function(e){
+        e.preventDefault();
+        let div_id = $(this).attr('chart_target');
+        let chart = $("#" + div_id).highcharts();
+        $(chart.series).each(function(){
+            if (this.visible){
+                this.setVisible(false, false)
+            }else{
+                this.setVisible(true, false)
+            }
+        })
+        chart.redraw()
+    })
 </script>
 {% endlocalize %}
 {% endblock %}
