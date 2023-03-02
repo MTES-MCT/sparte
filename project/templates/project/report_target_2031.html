@@ -76,7 +76,31 @@ Projection 2031
             </div>
             <p>Objectif 2031, réduction de 50% de la consommation d'espaces NAF par rapport à la somme des 10 dernières années (2011-2021)</p>
 
-            <div id="objective_chart" class="border"></div>
+            <div class="border fr-p-2w">
+                <div class="d-flex justify-content-end align-items-center fr-mb-2w">
+                    <div class="dropdown custom-dropdown fr-mr-2w" data-toggle="tooltip" title="Exporter le graphique">
+                        <button class="fr-btn fr-icon-download-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="dropdown" aria-expanded="false"></button>
+
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="fr-nav__link export-chart" href="#" data-chart-target="objective_chart" data-type="image/png">PNG</a>
+                            </li>
+                            <li>
+                                <a class="fr-nav__link export-chart" href="#" data-chart-target="objective_chart" data-type="image/jpeg">JPEG</a>
+                            </li>
+                            <li>
+                                <a class="fr-nav__link export-chart" href="#" data-chart-target="objective_chart" data-type="application/pdf">PDF</a>
+                            </li>
+                            <li>
+                                <a class="fr-nav__link export-chart" href="#" data-chart-target="objective_chart" data-type="image/svg+xml">Vectoriel</a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm fullscreen-chart" data-chart-target="objective_chart" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
+                </div>
+                <div id="objective_chart"></div>
+            </div>
 
             <div class="mt-4 fr-grid-row">
                 <div class="fr-col-12 fr-col-lg-6">

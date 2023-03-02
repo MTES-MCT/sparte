@@ -82,7 +82,7 @@ Rapport consommation
         </div>
 
         <div class="fr-mt-7w">
-            <h3 class="fr-col-12 fr-col-lg-8" id="conso-annuelle">Consommation d'espaces sur le territoire</h3>
+            <h3 id="conso-annuelle">Consommation d'espaces sur le territoire</h3>
 
             <div class="fr-grid-row fr-grid-row--gutters">
                 <div class="fr-col-12{% if nb_communes > 1 %} fr-col-lg-8{% endif %}">
@@ -152,21 +152,21 @@ Rapport consommation
 
                                 <ul class="dropdown-menu">
                                     <li>
-                                        <a class="fr-nav__link export-conso" href="#" data-type="image/png">PNG</a>
+                                        <a class="fr-nav__link export-chart" href="#" data-chart-target="chart" data-type="image/png">PNG</a>
                                     </li>
                                     <li>
-                                        <a class="fr-nav__link export-conso" href="#" data-type="image/jpeg">JPEG</a>
+                                        <a class="fr-nav__link export-chart" href="#" data-chart-target="chart" data-type="image/jpeg">JPEG</a>
                                     </li>
                                     <li>
-                                        <a class="fr-nav__link export-conso" href="#" data-type="application/pdf">PDF</a>
+                                        <a class="fr-nav__link export-chart" href="#" data-chart-target="chart" data-type="application/pdf">PDF</a>
                                     </li>
                                     <li>
-                                        <a class="fr-nav__link export-conso" href="#" data-type="image/svg+xml">Vectoriel</a>
+                                        <a class="fr-nav__link export-chart" href="#" data-chart-target="chart" data-type="image/svg+xml">Vectoriel</a>
                                     </li>
                                 </ul>
                             </div>
 
-                            <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm fr-mr-2w" id="fs-conso" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
+                            <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm fr-mr-2w fullscreen-chart" data-chart-target="chart" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
 
                             <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#consoAnnuelle" data-toggle="tooltip" title="Astuces pour lire le graphique"></button>
                         </div>
@@ -224,21 +224,66 @@ Rapport consommation
         </div>
 
         <div class="fr-mt-7w">
-            <div class="fr-grid-row fr-mb-2w">
-                <h3 class="fr-col-12 fr-col-lg-8" id="determinants-conso">Déterminants de la consommation</h3>
+            <h3 id="determinants-conso">Déterminants de la consommation</h3>
+
+            <div class="fr-grid-row fr-grid-row--gutters">
                 <div class="fr-col-12 fr-col-lg-4">
-                    <div class="d-flex justify-content-end align-items-center">
-                        <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#determinantModal" data-toggle="tooltip" title="Astuces pour lire le graphique" aria-hidden="true"></button>
+                    <div class="border fr-p-2w">
+                        <div class="d-flex justify-content-end align-items-center fr-mb-2w">
+                            <div class="dropdown custom-dropdown fr-mr-2w" data-toggle="tooltip" title="Exporter le graphique">
+                                <button class="fr-btn fr-icon-download-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="dropdown" aria-expanded="false"></button>
+    
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <a class="fr-nav__link export-chart" href="#" data-chart-target="pie_determinant" data-type="image/png">PNG</a>
+                                    </li>
+                                    <li>
+                                        <a class="fr-nav__link export-chart" href="#" data-chart-target="pie_determinant" data-type="image/jpeg">JPEG</a>
+                                    </li>
+                                    <li>
+                                        <a class="fr-nav__link export-chart" href="#" data-chart-target="pie_determinant" data-type="application/pdf">PDF</a>
+                                    </li>
+                                    <li>
+                                        <a class="fr-nav__link export-chart" href="#" data-chart-target="pie_determinant" data-type="image/svg+xml">Vectoriel</a>
+                                    </li>
+                                </ul>
+                            </div>
+    
+                            <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm fr-mr-2w fullscreen-chart" data-chart-target="pie_determinant" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
+
+                            <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#determinantModal" data-toggle="tooltip" title="Astuces pour lire le graphique" aria-hidden="true"></button>
+                        </div>
+                        <div id="pie_determinant"></div>
                     </div>
                 </div>
-            </div>
-
-            <div class="border fr-p-3w fr-pt-5w fr-grid-row">
-                <div class="fr-col-12 fr-col-lg-4 border-end">
-                    <div id="pie_determinant"></div>
-                </div>
                 <div class="fr-col-12 fr-col-lg-8">
-                    <div id="chart_determinant"></div>
+                    <div class="border fr-p-2w">
+                        <div class="d-flex justify-content-end align-items-center fr-mb-2w">
+                            <div class="dropdown custom-dropdown fr-mr-2w" data-toggle="tooltip" title="Exporter le graphique">
+                                <button class="fr-btn fr-icon-download-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="dropdown" aria-expanded="false"></button>
+    
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_determinant" data-type="image/png">PNG</a>
+                                    </li>
+                                    <li>
+                                        <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_determinant" data-type="image/jpeg">JPEG</a>
+                                    </li>
+                                    <li>
+                                        <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_determinant" data-type="application/pdf">PDF</a>
+                                    </li>
+                                    <li>
+                                        <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_determinant" data-type="image/svg+xml">Vectoriel</a>
+                                    </li>
+                                </ul>
+                            </div>
+    
+                            <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm fr-mr-2w fullscreen-chart" data-chart-target="chart_determinant" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
+
+                            <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#determinantModal" data-toggle="tooltip" title="Astuces pour lire le graphique" aria-hidden="true"></button>
+                        </div>
+                        <div id="chart_determinant"></div>
+                    </div>
                 </div>
             </div>
 
@@ -278,17 +323,37 @@ Rapport consommation
         </div>
 
         <div class="fr-mt-7w">
-            <div class="fr-grid-row fr-mb-2w">
-                <h3 class="fr-col-12 fr-col-lg-8" id="territoires-de-comparaison">Comparaison avec les territoires voisins</h3>
-                <div class="fr-col-12 fr-col-lg-4">
-                    <div class="d-flex justify-content-end align-items-center">
-                        <a class="fr-mr-2w fr-btn fr-icon-add-circle-line fr-btn--tertiary fr-btn--sm" href="{% url 'project:lookalike' project.id %}?next={% url 'project:report_conso' project.id %}&anchor=territoires-de-comparaison" data-toggle="tooltip" title="Ajouter un territoire de comparaison" aria-hidden="true"></a>
-                        <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#comparaisonVoisin" data-toggle="tooltip" title="Astuces pour lire le graphique" aria-hidden="true"></button>
-                    </div>
-                </div>
-            </div>
+            <h3 id="territoires-de-comparaison">Comparaison avec les territoires voisins</h3>
 
-            <div id="chart_2" class="border fr-p-3w fr-pt-5w"></div>
+            <div class="border fr-p-2w">
+                <div class="d-flex justify-content-end align-items-center fr-mb-2w">
+                    <a class="fr-mr-2w fr-btn fr-icon-add-circle-line fr-btn--tertiary fr-btn--sm" href="{% url 'project:lookalike' project.id %}?next={% url 'project:report_conso' project.id %}&anchor=territoires-de-comparaison" data-toggle="tooltip" title="Ajouter un territoire de comparaison" aria-hidden="true"></a>
+
+                    <div class="dropdown custom-dropdown fr-mr-2w" data-toggle="tooltip" title="Exporter le graphique">
+                        <button class="fr-btn fr-icon-download-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="dropdown" aria-expanded="false"></button>
+
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_2" data-type="image/png">PNG</a>
+                            </li>
+                            <li>
+                                <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_2" data-type="image/jpeg">JPEG</a>
+                            </li>
+                            <li>
+                                <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_2" data-type="application/pdf">PDF</a>
+                            </li>
+                            <li>
+                                <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_2" data-type="image/svg+xml">Vectoriel</a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm fr-mr-2w fullscreen-chart" data-chart-target="chart_2" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
+                    
+                    <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#comparaisonVoisin" data-toggle="tooltip" title="Astuces pour lire le graphique" aria-hidden="true"></button>
+                </div>
+                <div id="chart_2"></div>
+            </div>
 
             <p class="fr-mt-2w">
                 <a class="fr-link" href="{% url 'project:report_conso_relative' project.id %}">Voir aussi: toutes les comparaisons disponibles</a>
@@ -434,24 +499,6 @@ Rapport consommation
 {% display_chart 'pie_determinant' determinant_pie_chart CSP_NONCE %}
 
 <script language="javascript" nonce="{{ CSP_NONCE }}">
-    const chartDom = document.getElementById('chart');
-    const chart = Highcharts.charts[Highcharts.attr(chartDom, 'data-highcharts-chart')]
-
-    // Trigger full screen chart conso
-    document.getElementById('fs-conso').addEventListener('click', () => {
-        chart.fullscreen.toggle();
-    });
-
-    // Export chart conso
-    document.querySelectorAll('.export-conso').forEach( button => {
-        button.onclick = function (e) {
-            e.preventDefault();
-            chart.exportChart({
-                type: button.dataset.type
-            });
-        }
-    });
-
     ///////////////////////////////
     // Select / unselect all
     ///////////////////////////////

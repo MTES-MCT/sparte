@@ -31,6 +31,8 @@ class Chart:
 
     def get_param(self):
         param = copy.deepcopy(self.param)
+        param["navigation"] = {"buttonOptions": {"enabled": False}}
+        param["credits"] = {"enabled": False}
         if "exporting" not in param:
             param["exporting"] = {
                 "buttons": {

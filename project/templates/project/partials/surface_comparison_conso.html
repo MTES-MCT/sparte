@@ -2,7 +2,31 @@
 
 <h3>Consommation d'espace rapportée à la surface du territoire</h3>
 
-<div id="indicateur_chart" class="border fr-p-3w fr-pt-5w"></div>
+<div class="border fr-p-2w">
+    <div class="d-flex justify-content-end align-items-center fr-mb-2w">
+        <div class="dropdown custom-dropdown fr-mr-2w" data-toggle="tooltip" title="Exporter le graphique">
+            <button class="fr-btn fr-icon-download-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="dropdown" aria-expanded="false"></button>
+
+            <ul class="dropdown-menu">
+                <li>
+                    <a class="fr-nav__link export-chart" href="#" data-chart-target="indicateur_chart" data-type="image/png">PNG</a>
+                </li>
+                <li>
+                    <a class="fr-nav__link export-chart" href="#" data-chart-target="indicateur_chart" data-type="image/jpeg">JPEG</a>
+                </li>
+                <li>
+                    <a class="fr-nav__link export-chart" href="#" data-chart-target="indicateur_chart" data-type="application/pdf">PDF</a>
+                </li>
+                <li>
+                    <a class="fr-nav__link export-chart" href="#" data-chart-target="indicateur_chart" data-type="image/svg+xml">Vectoriel</a>
+                </li>
+            </ul>
+        </div>
+
+        <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm fullscreen-chart" data-chart-target="indicateur_chart" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
+    </div>
+    <div id="indicateur_chart"></div>
+</div>
 
 <div class="fr-callout bg-white fr-p-2w mt-4">
     <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="surface-data">Données</button>
@@ -35,7 +59,31 @@
     </div>
 </div>
 
-<div id="comparison_chart" class="border fr-p-3w fr-pt-5w"></div>
+<div class="border fr-p-2w">
+    <div class="d-flex justify-content-end align-items-center fr-mb-2w">
+        <div class="dropdown custom-dropdown fr-mr-2w" data-toggle="tooltip" title="Exporter le graphique">
+            <button class="fr-btn fr-icon-download-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="dropdown" aria-expanded="false"></button>
+
+            <ul class="dropdown-menu">
+                <li>
+                    <a class="fr-nav__link export-chart" href="#" data-chart-target="comparison_chart" data-type="image/png">PNG</a>
+                </li>
+                <li>
+                    <a class="fr-nav__link export-chart" href="#" data-chart-target="comparison_chart" data-type="image/jpeg">JPEG</a>
+                </li>
+                <li>
+                    <a class="fr-nav__link export-chart" href="#" data-chart-target="comparison_chart" data-type="application/pdf">PDF</a>
+                </li>
+                <li>
+                    <a class="fr-nav__link export-chart" href="#" data-chart-target="comparison_chart" data-type="image/svg+xml">Vectoriel</a>
+                </li>
+            </ul>
+        </div>
+
+        <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm fullscreen-chart" data-chart-target="comparison_chart" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
+    </div>
+    <div id="comparison_chart"></div>
+</div>
 
 <div class="fr-callout bg-white fr-p-2w mt-4">
     <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="surface-relative-comparison-data">Données</button>
