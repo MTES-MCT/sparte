@@ -65,11 +65,6 @@ class ConsoCommuneChart(ProjectChart):
         "legend": {"layout": "vertical", "align": "right", "verticalAlign": "bottom", "padding": 3, "margin": 25, "itemMarginTop": 1, "itemMarginBottom": 1},
         "plotOptions": {"area": {"stacking": "normal"}},
         "series": [],
-        "navigation": {
-            "buttonOptions": {
-                "enabled": False
-            }
-        }
     }
 
     def __init__(self, *args, **kwargs):

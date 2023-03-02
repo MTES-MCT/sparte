@@ -1,34 +1,38 @@
 {% load highcharts_tags %}
 
-<div class="fr-grid-row fr-mb-2w">
-    <h3 class="fr-col-12 fr-col-lg-8">Consommation d'espaces par nouvel habitant</h3>
-    <div class="fr-col-12 fr-col-lg-4">
-        <div class="d-flex justify-content-end align-items-center">
-            <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#pop-astuce" data-toggle="tooltip" title="Astuces pour lire le graphique" aria-hidden="true"></button>
-        </div>
-        <!-- Modal -->
-        <div class="modal fade" id="pop-astuce" tabindex="-1" aria-labelledby="pop-astuce-label" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
-                <div class="fr-modal__body">
-                    <div class="fr-modal__header">
-                        <button class="fr-link--close fr-link" data-bs-dismiss="modal" aria-label="Close">Fermer</button>
-                    </div>
-                    <div class="fr-modal__content">
-                        <h1 id="fr-modal-2-title" class="fr-modal__title" id="pop-astuce-label">
-                            <span class="fr-fi-arrow-right-line fr-fi--lg"></span>
-                            Astuces - Consommation d'espaces par nouvel habitant
-                        </h1>
-                        <p class="fr-text--sm">Analyser la sobriété foncière en comparant le volume d'ha consommé par habitant. Si un territoire est négatif, il a consommé alors qu'il a perdu de la population.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+<div class="fr-mb-2w">
+    <h3>Consommation d'espaces par nouvel habitant</h3>
 </div>
 
 <p>Mise en perspective de la consommation d'espace avec les données de l'INSEE.</p>
 
-<div id="pop_chart" class="border fr-p-3w fr-pt-5w"></div>
+<div class="border fr-p-2w">
+    <div class="d-flex justify-content-end align-items-center fr-mb-2w">
+        <div class="dropdown custom-dropdown fr-mr-2w" data-toggle="tooltip" title="Exporter le graphique">
+            <button class="fr-btn fr-icon-download-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="dropdown" aria-expanded="false"></button>
+
+            <ul class="dropdown-menu">
+                <li>
+                    <a class="fr-nav__link export-chart" href="#" data-chart-target="pop_chart" data-type="image/png">PNG</a>
+                </li>
+                <li>
+                    <a class="fr-nav__link export-chart" href="#" data-chart-target="pop_chart" data-type="image/jpeg">JPEG</a>
+                </li>
+                <li>
+                    <a class="fr-nav__link export-chart" href="#" data-chart-target="pop_chart" data-type="application/pdf">PDF</a>
+                </li>
+                <li>
+                    <a class="fr-nav__link export-chart" href="#" data-chart-target="pop_chart" data-type="image/svg+xml">Vectoriel</a>
+                </li>
+            </ul>
+        </div>
+
+        <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm fr-mr-2w fullscreen-chart" data-chart-target="pop_chart" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
+
+        <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#pop-astuce" data-toggle="tooltip" title="Astuces pour lire le graphique" aria-hidden="true"></button>
+    </div>
+    <div id="pop_chart"></div>
+</div>
 {% display_chart 'pop_chart' pop_chart CSP_NONCE %}
 
 <div class="fr-callout bg-white fr-p-2w mt-4">
@@ -62,7 +66,33 @@
     </div>
 </div>
 
-<div id="conso_pop_chart" class="border fr-p-3w fr-pt-5w"></div>
+<div class="border fr-p-2w">
+    <div class="d-flex justify-content-end align-items-center fr-mb-2w">
+        <div class="dropdown custom-dropdown fr-mr-2w" data-toggle="tooltip" title="Exporter le graphique">
+            <button class="fr-btn fr-icon-download-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="dropdown" aria-expanded="false"></button>
+
+            <ul class="dropdown-menu">
+                <li>
+                    <a class="fr-nav__link export-chart" href="#" data-chart-target="conso_pop_chart" data-type="image/png">PNG</a>
+                </li>
+                <li>
+                    <a class="fr-nav__link export-chart" href="#" data-chart-target="conso_pop_chart" data-type="image/jpeg">JPEG</a>
+                </li>
+                <li>
+                    <a class="fr-nav__link export-chart" href="#" data-chart-target="conso_pop_chart" data-type="application/pdf">PDF</a>
+                </li>
+                <li>
+                    <a class="fr-nav__link export-chart" href="#" data-chart-target="conso_pop_chart" data-type="image/svg+xml">Vectoriel</a>
+                </li>
+            </ul>
+        </div>
+
+        <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm fr-mr-2w fullscreen-chart" data-chart-target="conso_pop_chart" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
+
+        <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#pop-astuce" data-toggle="tooltip" title="Astuces pour lire le graphique" aria-hidden="true"></button>
+    </div>
+    <div id="conso_pop_chart"></div>
+</div>
 {% display_chart 'conso_pop_chart' conso_pop_chart CSP_NONCE %}
 
 <div class="fr-callout bg-white fr-p-2w mt-4">
@@ -99,5 +129,23 @@
                 {% endfor %}
             </tbody>
         </table>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="pop-astuce" tabindex="-1" aria-labelledby="pop-astuce-label" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+        <div class="fr-modal__body">
+            <div class="fr-modal__header">
+                <button class="fr-link--close fr-link" data-bs-dismiss="modal" aria-label="Close">Fermer</button>
+            </div>
+            <div class="fr-modal__content">
+                <h1 id="fr-modal-2-title" class="fr-modal__title" id="pop-astuce-label">
+                    <span class="fr-fi-arrow-right-line fr-fi--lg"></span>
+                    Astuces - Consommation d'espaces par nouvel habitant
+                </h1>
+                <p class="fr-text--sm">Analyser la sobriété foncière en comparant le volume d'ha consommé par habitant. Si un territoire est négatif, il a consommé alors qu'il a perdu de la population.</p>
+            </div>
+        </div>
     </div>
 </div>
