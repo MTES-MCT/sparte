@@ -58,11 +58,14 @@
                                           <a class="fr-nav__link" href="{% url 'admin:diagnostic_word_wordtemplate_change' 'template-bilan-1' %}">Modèles Word du diagnostic</a>
                                         </li>
                                         <li>
-                                          <a class="fr-nav__link" href="{% url 'home:all-emails' %}"> Liste des e-mails</a>
+                                          <a class="fr-nav__link" href="{% url 'home:all-emails' %}">Liste des e-mails</a>
                                         </li>
                                         <li>
-                                          <a class="fr-nav__link" href="{% url 'project:excel' %}"> Export Excel</a>
+                                          <a class="fr-nav__link" href="{% url 'project:excel' %}">Export Excel</a>
                                         </li>
+                                        <li>
+                                            <a class="fr-nav__link" href="{{ METABASE_URL }}" target="_blank">Metabase</a>
+                                          </li>
                                         {% endif %}
                                         <li>
                                             <a class="fr-nav__link" href="{% url 'users:signout' %}" target="_self">Déconnexion</a>
