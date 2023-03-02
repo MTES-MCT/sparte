@@ -88,6 +88,7 @@ PROJECT_APPS = [
     "diagnostic_word.apps.DiagnosticWordConfig",
     "home.apps.HomeConfig",
     "highcharts.apps.HighchartsConfig",
+    "metabase.apps.MetabaseConfig",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + RESTFRAMEWORK_APPS + THIRD_APPS + PROJECT_APPS
