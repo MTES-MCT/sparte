@@ -79,6 +79,15 @@ Synthèse
         <div>
           <a class="fr-link" href="{% url 'project:report_target_2031' diagnostic.pk %}">Consulter l'objectif 2031</a>
         </div>
+        <div class="fr-callout bg-white fr-p-2w mt-4">
+          <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data-1">Données</button>
+          <div class="fr-collapse" id="target-data-1">
+              <h6 class="fr-mt-2w">Source</h6>
+              <p>Données d'évolution des fichiers fonciers du Cérema issus des données MAJIC (Mise A Jour de l'Information Cadastrale) de la DGFIP (millésime min : 2009, millésime max : 2020).</p>
+              <h6 class="fr-mt-2w">Calcul</h6>
+              <p>La consommation 2021-2031 doit être la moitié de celle de 2011-2021.</p>
+          </div>
+        </div>
       </div>
 
       <div class="fr-mt-12w">
@@ -100,6 +109,15 @@ Synthèse
         </div>
         <div>
           <a class="fr-link" href="{% url 'project:report_conso' diagnostic.pk %}">Consulter le bilan de consommation d'espace</a>
+        </div>
+        <div class="fr-callout bg-white fr-p-2w mt-4">
+          <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data-2">Données</button>
+          <div class="fr-collapse" id="target-data-2">
+              <h6 class="fr-mt-2w">Source</h6>
+              <p>Données d'évolution des fichiers fonciers du Cérema issus des données MAJIC (Mise A Jour de l'Information Cadastrale) de la DGFIP (millésime min : 2009, millésime max : 2020).</p>
+              <h6 class="fr-mt-2w">Calcul</h6>
+              <p>Les données du Cérema donnent la consommation d'espaces NAF par année, par déterminant et par commune.</p>
+          </div>
         </div>
       </div>
 
@@ -131,6 +149,15 @@ Synthèse
         </div>
         <div>
           <a class="fr-link" href="{% url 'project:report_artif' project.pk %}">Consulter le bilan de l'artificialisation</a>
+        </div>
+        <div class="fr-callout bg-white fr-p-2w mt-4">
+          <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data-3">Données</button>
+          <div class="fr-collapse" id="target-data-3">
+              <h6 class="fr-mt-2w">Source</h6>
+              <p>OCS GE (millésime min : 2013, millésime max : 2019).</p>
+              <h6 class="fr-mt-2w">Calcul</h6>
+              <p>L'artificialisation nette = artificialisation - renaturation sur la période.</p>
+          </div>
         </div>
       </div>
       {% endif %}
