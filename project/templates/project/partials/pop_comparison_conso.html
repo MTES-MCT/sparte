@@ -1,8 +1,6 @@
 {% load highcharts_tags %}
 
-<div class="fr-mb-2w">
-    <h3>Consommation d'espaces par nouvel habitant</h3>
-</div>
+<h3>Consommation d'espaces par nouvel habitant</h3>
 
 <p>Mise en perspective de la consommation d'espace avec les données de l'INSEE.</p>
 
@@ -36,8 +34,8 @@
 {% display_chart 'pop_chart' pop_chart CSP_NONCE %}
 
 <div class="fr-callout bg-white fr-p-2w mt-4">
-    <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data-3">Données</button>
-    <div class="fr-collapse" id="target-data-3">
+    <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data-pop-conso">Données</button>
+    <div class="fr-collapse" id="target-data-pop-conso">
         <h6 class="fr-mt-2w">Source</h6>
         <p>Recensement de la population (RP) de l'INSEE, sur la période d'analyse (millésime min : 2006, millésime max : 2019)  : <a href="https://www.insee.fr/fr/statistiques/3698339" target="_blank" rel="noreferrer noopener">L'historique des populations communales</a> (colonnes PMUN06 à PMUN19)</p>
 
