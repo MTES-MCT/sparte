@@ -147,24 +147,24 @@ Rapport artificialisation
     
                             <div class="dropdown custom-dropdown fr-mr-2w" data-toggle="tooltip" title="Exporter le graphique">
                                 <button class="fr-btn fr-icon-download-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="dropdown" aria-expanded="false"></button>
-    
+        
                                 <ul class="dropdown-menu">
                                     <li>
-                                        <a class="fr-nav__link export-comparison" href="#" data-type="image/png">PNG</a>
+                                        <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_comparison" data-type="image/png">PNG</a>
                                     </li>
                                     <li>
-                                        <a class="fr-nav__link export-comparison" href="#" data-type="image/jpeg">JPEG</a>
+                                        <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_comparison" data-type="image/jpeg">JPEG</a>
                                     </li>
                                     <li>
-                                        <a class="fr-nav__link export-comparison" href="#" data-type="application/pdf">PDF</a>
+                                        <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_comparison" data-type="application/pdf">PDF</a>
                                     </li>
                                     <li>
-                                        <a class="fr-nav__link export-comparison" href="#" data-type="image/svg+xml">Vectoriel</a>
+                                        <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_comparison" data-type="image/svg+xml">Vectoriel</a>
                                     </li>
                                 </ul>
                             </div>
     
-                            <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm" id="fs-comparison" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
+                            <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm fullscreen-chart" data-chart-target="chart_comparison" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
                         </div>
                         <div id="chart_comparison"></div>
                     </div>
@@ -227,24 +227,24 @@ Rapport artificialisation
                         <div class="d-flex justify-content-end align-items-center fr-mb-2w">    
                             <div class="dropdown custom-dropdown fr-mr-2w" data-toggle="tooltip" title="Exporter le graphique">
                                 <button class="fr-btn fr-icon-download-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="dropdown" aria-expanded="false"></button>
-    
+        
                                 <ul class="dropdown-menu">
                                     <li>
-                                        <a class="fr-nav__link export-waterfall" href="#" data-type="image/png">PNG</a>
+                                        <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_waterfall" data-type="image/png">PNG</a>
                                     </li>
                                     <li>
-                                        <a class="fr-nav__link export-waterfall" href="#" data-type="image/jpeg">JPEG</a>
+                                        <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_waterfall" data-type="image/jpeg">JPEG</a>
                                     </li>
                                     <li>
-                                        <a class="fr-nav__link export-waterfall" href="#" data-type="application/pdf">PDF</a>
+                                        <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_waterfall" data-type="application/pdf">PDF</a>
                                     </li>
                                     <li>
-                                        <a class="fr-nav__link export-waterfall" href="#" data-type="image/svg+xml">Vectoriel</a>
+                                        <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_waterfall" data-type="image/svg+xml">Vectoriel</a>
                                     </li>
                                 </ul>
                             </div>
     
-                            <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm" id="fs-waterfall" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
+                            <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm fullscreen-chart" data-chart-target="chart_waterfall" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
                         </div>
                         <div id="chart_waterfall"></div>
                     </div>
@@ -371,43 +371,6 @@ Rapport artificialisation
 {% display_chart 'chart_comparison' chart_comparison CSP_NONCE %}
 {% display_chart 'chart_waterfall' chart_waterfall CSP_NONCE %}
 
-<script language="javascript" nonce="{{ CSP_NONCE }}">
-    const chartComparisonDom = document.getElementById('chart_comparison');
-    const chartComparison = Highcharts.charts[Highcharts.attr(chartComparisonDom, 'data-highcharts-chart')]
-
-    // Trigger full screen chart comparison
-    document.getElementById('fs-comparison').addEventListener('click', () => {
-        chartComparison.fullscreen.toggle();
-    });
-
-    // Export chart comparison
-    document.querySelectorAll('.export-comparison').forEach( button => {
-        button.onclick = function (e) {
-            e.preventDefault();
-            chartComparison.exportChart({
-                type: button.dataset.type
-            });
-        }
-    });
-
-    const chartWaterfallDom = document.getElementById('chart_waterfall');
-    const chartWaterfall = Highcharts.charts[Highcharts.attr(chartWaterfallDom, 'data-highcharts-chart')]
-
-    // Trigger full screen chart waterfall
-    document.getElementById('fs-waterfall').addEventListener('click', () => {
-        chartWaterfall.fullscreen.toggle();
-    });
-
-    // Export chart waterfall
-    document.querySelectorAll('.export-waterfall').forEach( button => {
-        button.onclick = function (e) {
-            e.preventDefault();
-            chartWaterfall.exportChart({
-                type: button.dataset.type
-            });
-        }
-    });
-</script>
 {% endlocalize %}
 {% endblock %}
 
