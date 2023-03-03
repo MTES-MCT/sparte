@@ -11,22 +11,18 @@ from .models import ErrorTracking, Project, Request
 @admin.register(Project)
 class ProjectAdmin(admin.GeoModelAdmin):
     model = Project
+    list_select_related = ("user",)
     list_display = (
         "name",
         "user",
         "analyse_start_date",
         "analyse_end_date",
-        "import_status",
-        "import_date",
     )
-    list_filter = ("import_status",)
     search_fields = (
         "name",
-        "import_error",
         "user__email",
     )
-    ordering = ("name",)
-    filter_horizontal = ("cities",)
+    # filter_horizontal = ("cities",)
     change_form_template = "project/admin/project_detail.html"
 
     def response_change(self, request, obj):
@@ -131,7 +127,7 @@ class RequestAdmin(admin.ModelAdmin):
         else:
             return format_html("Demande anonyme")
 
-    link_to_user.short_description = "Utilisateur"
+    link_to_user.short_description = "Utilisateur"  # type: ignore
 
     def link_to_project(self, obj):
         try:
@@ -140,7 +136,7 @@ class RequestAdmin(admin.ModelAdmin):
         except exceptions.NoReverseMatch:
             return format_html("Diagnostic inconnu")
 
-    link_to_project.short_description = "Projet"
+    link_to_project.short_description = "Projet"  # type: ignore
 
     change_form_template = "project/admin/request_detail.html"
 
