@@ -25,7 +25,7 @@ class RateLimitExceededException(Exception):
 
 class Chart:
     param = None
-    name = None
+    name: str = ""
     series = None
     options = None
 
