@@ -95,7 +95,7 @@ class StatDiagnostic(models.Model):
         try:
             od = cls.get_or_create(instance)
             od.update_with_project(instance)
-            if kwargs.get("update_fields") == ["async_city_and_combined_emprise_done"]:
+            if kwargs.get("update_fields") == {"async_city_and_combined_emprise_done"}:
                 # only when async add_city_and_set_combined_emprise end successfully
                 od.update_locations(instance)
             od.save()
