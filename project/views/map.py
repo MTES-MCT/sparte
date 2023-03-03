@@ -431,7 +431,7 @@ class CitySpaceConsoMapView(BaseThemeMap):
             )[1:]
         data = [
             {"value": v, "color": c.hex_l}
-            for v, c in zip(boundaries, get_dark_blue_gradient(len(boundaries)))
+            for v, c in zip(boundaries, get_yellow2red_gradient(len(boundaries)))
         ]
         return JsonResponse(data, safe=False)
 
@@ -467,7 +467,7 @@ class CityArtifMapView(BaseThemeMap):
             boundaries = jenks_breaks(boundaries, n_classes=self.scale_size)[1:]
         data = [
             {"value": v, "color": c.hex_l}
-            for v, c in zip(boundaries, get_yellow2red_gradient(len(boundaries)))
+            for v, c in zip(boundaries, get_dark_blue_gradient(len(boundaries)))
         ]
         return JsonResponse(data, safe=False)
 
