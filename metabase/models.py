@@ -5,7 +5,7 @@ from django.db import models
 
 # from django.dispatch import receiver
 
-from project.models import Project
+from project.models import Project, Request
 from public_data.models import Epci, Scot, Departement, Region
 
 logger = logging.getLogger(__name__)
@@ -41,83 +41,76 @@ class StatDiagnostic(models.Model):
         verbose_name = "Statistique"
         ordering = ["-created_date"]
 
-    @staticmethod
-    def receiver_project_post_save(instance, created, **kwargs):
-        """Create or update StatDiagnostic when a Project is created or updated.
-        Ensure that exception are catched to avoid breaking user doings."""
-        try:
-            StatDiagnostic.process_post_save(instance, created, **kwargs)
-        except Exception as exc:
-            logger.error("Error in StatDiagnostic.receiver_project_post_save: %s", exc)
-            logger.exception(exc)
+    def update_with_project(self, project: Project) -> None:
+        self.is_anonymouse = False if project.user else True
+        self.is_public = project.is_public
+        self.start_date = datetime(year=int(project.analyse_start_date), month=1, day=1).date()
+        self.end_date = datetime(year=int(project.analyse_end_date), month=12, day=31).date()
+        self.analysis_level = project.level or ""
 
-    @staticmethod
-    def process_post_save(instance, created, **kwargs):
-        """First create or update StatDiagnostic, then update locations if signal come from
-        add_city_and_set_combined_emprise async task."""
-        od = StatDiagnostic.create_or_update(instance, created)
-        # only when async add_city_and_set_combined_emprise end successfully
-        if kwargs.get("update_fields") == ["async_city_and_combined_emprise_done"]:
-            StatDiagnostic.update_locations(instance, od)
+    def update_with_request(self, request: Request) -> None:
+        if not self.is_downaloaded:
+            self.is_downaloaded = True
+            self.date_first_download = request.created_date
+            self.save()
 
-    @staticmethod
-    def create_or_update(instance, created) -> "StatDiagnostic":
-        if created:
-            od = StatDiagnostic(
-                project=instance,
-                created_date=instance.created_date,
-                link=instance.get_absolute_url(),
-                administrative_level=instance.land_type or "",
-            )
-        else:
-            od = StatDiagnostic.objects.get(project=instance)
-        od.is_anonymouse = (True if instance.user else False,)
-        od.is_public = (instance.is_public,)
-        od.start_date = (
-            datetime(year=instance.analyse_start_date, month=1, day=1).date(),
-        )
-        od.end_date = (
-            datetime(year=instance.analyse_end_date, month=12, day=31).date(),
-        )
-        od.analysis_level = instance.level or ""
-        od.save()
-        return od
-
-    @staticmethod
-    def update_locations(instance, od):
-        city_list = instance.cities.all()
+    def update_locations(self, project: Project) -> None:
+        city_list = project.cities.all()
         qte = city_list.count()
         if qte > 0:
             if qte == 1:
-                city = instance.cities.first()
-                od.city = f"{city.name} ({city.insee})"
+                city = project.cities.first()
+                self.city = f"{city.name} ({city.insee})"
             epci_list = Epci.objects.filter(commune__in=city_list).distinct()
             if epci_list.count() == 1:
-                od.epci = epci_list.first().name
+                self.epci = epci_list.first().name
             scot_list = Scot.objects.filter(commune__in=city_list).distinct()
             if scot_list.count() == 1:
-                od.scot = scot_list.first().name
+                self.scot = scot_list.first().name
             dept_list = Departement.objects.filter(commune__in=city_list).distinct()
             if dept_list.count() == 1:
-                od.departement = dept_list.first().name
+                self.departement = dept_list.first().name
             reg_list = Region.objects.filter(
                 departement__commune__in=city_list
             ).distinct()
             if reg_list.count() == 1:
-                od.region = reg_list.first().name
-            od.save()
+                self.region = reg_list.first().name
 
-    @staticmethod
-    def receiver_request_post_save(instance, created, **kwargs):
+    @classmethod
+    def get_or_create(cls, project: Project) -> "StatDiagnostic":
+        try:
+            return StatDiagnostic.objects.get(project=project)
+        except StatDiagnostic.DoesNotExist:
+            return StatDiagnostic(
+                project=project,
+                created_date=project.created_date,
+                link=project.get_absolute_url(),
+                administrative_level=project.land_type or "",
+            )
+
+    @classmethod
+    def receiver_project_post_save(cls, instance: Project, created: bool, **kwargs) -> None:
+        """Create or update StatDiagnostic when a Project is created or updated.
+        Ensure that exception are catched to avoid breaking user doings."""
+        try:
+            od = cls.get_or_create(instance)
+            od.update_with_project(instance)
+            if kwargs.get("update_fields") == ["async_city_and_combined_emprise_done"]:
+                # only when async add_city_and_set_combined_emprise end successfully
+                od.update_locations(instance)
+            od.save()
+        except Exception as exc:
+            logger.error("Error in StatDiagnostic.receiver_project_post_save: %s", exc)
+            logger.exception(exc)
+
+    @classmethod
+    def receiver_request_post_save(cls, instance, created, **kwargs):
         """Update StatDiagnostic when a Project is downloaded.
         Ensure that exception are catched to avoid breaking user doings."""
         try:
             if created:
-                od = StatDiagnostic.objects.get(project=instance)
-                if not od.is_downaloaded:
-                    od.is_downaloaded = True
-                    od.date_first_download = instance.created_date
-                    od.save()
+                od = cls.get_or_create(instance.project)
+                od.update_with_request(instance)
         except Exception as exc:
             logger.error("Error in StatDiagnostic.receiver_request_post_save: %s", exc)
             logger.exception(exc)
