@@ -22,13 +22,26 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         if options.get("truncate"):
             self.truncate()
+        self.do_project()
+        self.do_request()
+
+    def do_project(self):
         total = Project.objects.count()
         # Save project and request to trigger signal that will create or update StatDiagnostic
         for i, project in enumerate(Project.objects.order_by("-created_date")):
             project.save(update_fields=["async_city_and_combined_emprise_done"])
-            for request in Request.objects.filter(project=project):
-                request.save()
-            logger.info(f"%d/%d - %d%%", i, total, 100 * i / total)
+            logger.info("Project %d %d/%d - %d%%", project.id, i, total, 100 * i / total)
+
+    def do_request(self):
+        total = Request.objects.count()
+        # Save project and request to trigger signal that will create or update StatDiagnostic
+        for i, req in enumerate(Request.objects.order_by("-created_date")):
+            try:
+                od = StatDiagnostic.objects.get(project_id=req.project_id)
+                od.update_with_request(req)
+                logger.info("Request %d %d/%d - %d%%", req.id, i, total, 100 * i / total)
+            except StatDiagnostic.DoesNotExist:
+                pass
 
     def truncate(self):
         query = f"TRUNCATE TABLE '{StatDiagnostic._meta.db_table}' RESTART IDENTITY"
