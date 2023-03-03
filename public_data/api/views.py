@@ -239,24 +239,24 @@ class ArtificialAreaViewSet(OptimizedMixins, DataViewSet):
         "o.surface": "surface",
         "o.year": "year",
     }
+    optimized_geo_field = "st_AsGeoJSON(ST_Intersection(o.mpoly, t.geom), 8)"
 
     def get_sql_from(self):
         return (
             f"from {self.queryset.model._meta.db_table} o "
             f"inner join {models.Commune._meta.db_table} c "
-            "on o.city_id = c.id"
+            "on o.city_id = c.id, "
+            "(SELECT ST_Union(mpoly) as geom FROM project_emprise WHERE project_id = %s) as t"
         )
 
     def get_sql_where(self):
         return (
-            "where ST_Intersects(o.mpoly, ("
-            "    SELECT ST_Union(mpoly) FROM project_emprise WHERE project_id = %s"
-            "))"
+            "where ST_Intersects(o.mpoly, t.geom) "
+            "    and ST_Area(ST_Transform(ST_Intersection(o.mpoly, t.geom), 2154)) > 0.5"
         )
 
     def get_params(self, request):
         return [request.query_params.get("project_id")]
-
 
 
 # Views for referentials Couverture and Usage
