@@ -31,7 +31,7 @@ class Command(BaseCommand):
             logger.info(f"%d/%d - %d%%", i, total, 100 * i / total)
 
     def truncate(self):
-        query = f'TRUNCATE TABLE "{StatDiagnostic._meta.db_table}" RESTART IDENTITY'
+        query = f"TRUNCATE TABLE '{StatDiagnostic._meta.db_table}' RESTART IDENTITY"
         with connection.cursor() as cursor:
             cursor.execute(query)
         logger.info("Truncate done.")
