@@ -282,15 +282,15 @@ class SplashProgressionView(GroupMixin, LoginRequiredMixin, DetailView):
         return response
 
     def get_context_data(self, **kwargs):
-        o = self.object
-        kwargs["steps"] = {
-            "Liste des communes du territoire": o.async_city_and_combined_emprise_done,
-            "Image de couverture": o.async_cover_image_done,
-            "Période de l'OCSGE": o.async_find_first_and_last_ocsge_done,
-            "Territoires de comparaison": o.async_add_neighboors_done,
-            "Carte de la consommation d'espace": o.async_generate_theme_map_conso_done,
-            "Carte de l'artificialisation": o.async_generate_theme_map_artif_done,
-            "Carte comprendre l'artificialisation": o.async_theme_map_understand_artif_done,
-        }
+        # o = self.object
+        # kwargs["steps"] = {
+        #     "Liste des communes du territoire": o.async_city_and_combined_emprise_done,
+        #     "Image de couverture": o.async_cover_image_done,
+        #     "Période de l'OCSGE": o.async_find_first_and_last_ocsge_done,
+        #     "Territoires de comparaison": o.async_add_neighboors_done,
+        #     "Carte de la consommation d'espace": o.async_generate_theme_map_conso_done,
+        #     "Carte de l'artificialisation": o.async_generate_theme_map_artif_done,
+        #     "Carte comprendre l'artificialisation": o.async_theme_map_understand_artif_done,
+        # }
         kwargs["last_update"] = timezone.now()
         return super().get_context_data(**kwargs)
