@@ -5,33 +5,9 @@
 <p>Mise en perspective de la consommation d'espace avec les données de l'INSEE.</p>
 
 <div class="border fr-p-2w">
-    <div class="d-flex justify-content-end align-items-center fr-mb-2w">
-        <div class="dropdown custom-dropdown fr-mr-2w" data-toggle="tooltip" title="Exporter le graphique">
-            <button class="fr-btn fr-icon-download-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="dropdown" aria-expanded="false"></button>
-
-            <ul class="dropdown-menu">
-                <li>
-                    <a class="fr-nav__link export-chart" href="#" data-chart-target="household_chart" data-type="image/png">PNG</a>
-                </li>
-                <li>
-                    <a class="fr-nav__link export-chart" href="#" data-chart-target="household_chart" data-type="image/jpeg">JPEG</a>
-                </li>
-                <li>
-                    <a class="fr-nav__link export-chart" href="#" data-chart-target="household_chart" data-type="application/pdf">PDF</a>
-                </li>
-                <li>
-                    <a class="fr-nav__link export-chart" href="#" data-chart-target="household_chart" data-type="image/svg+xml">Vectoriel</a>
-                </li>
-            </ul>
-        </div>
-
-        <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm fr-mr-2w fullscreen-chart" data-chart-target="household_chart" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
-
-        <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#menage-astuce" data-toggle="tooltip" title="Astuces pour lire le graphique" aria-hidden="true"></button>
-    </div>
-    <div id="household_chart"></div>
+    {% display_chart_test 'household_chart' household_chart CSP_NONCE %}
 </div>
-{% display_chart 'household_chart' household_chart CSP_NONCE %}
+
 
 <div class="fr-callout bg-white fr-p-2w mt-4">
     <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data-5">Données</button>
