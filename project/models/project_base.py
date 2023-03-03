@@ -134,7 +134,6 @@ class BaseProject(models.Model):
             self.save()
 
     class Meta:
-        ordering = ["name"]
         abstract = True
 
 
