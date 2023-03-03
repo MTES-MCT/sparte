@@ -7,6 +7,7 @@ from django.db import models
 
 from project.models import Project, Request
 from public_data.models import Epci, Scot, Departement, Region
+from utils.functions import get_url_with_domain
 
 logger = logging.getLogger(__name__)
 
@@ -84,7 +85,7 @@ class StatDiagnostic(models.Model):
             return StatDiagnostic(
                 project=project,
                 created_date=project.created_date,
-                link=project.get_absolute_url(),
+                link=get_url_with_domain(project.get_absolute_url()),
                 administrative_level=project.land_type or "",
             )
 
