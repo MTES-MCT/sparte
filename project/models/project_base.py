@@ -859,7 +859,7 @@ class Project(BaseProject):
             item.surface_diff = item.surface_last - item.surface_first
         return item_list
 
-    def get_detail_artif(self):
+    def get_detail_artif(self, sol: Literal["couverture", "usage"]):
         return (
             OcsgeDiff.objects.intersect(self.combined_emprise)
             .filter(
@@ -870,19 +870,19 @@ class Project(BaseProject):
             .annotate(
                 code_prefix=Case(
                     When(
-                        is_new_artif=True, then=F("new_matrix__couverture__code_prefix")
+                        is_new_artif=True, then=F(f"new_matrix__{sol}__code_prefix")
                     ),
-                    default=F("old_matrix__couverture__code_prefix"),
+                    default=F(f"old_matrix__{sol}__code_prefix"),
                 ),
                 label=Case(
-                    When(is_new_artif=True, then=F("new_matrix__couverture__label")),
-                    default=F("old_matrix__couverture__label"),
+                    When(is_new_artif=True, then=F(f"new_matrix__{sol}__label")),
+                    default=F(f"old_matrix__{sol}__label"),
                 ),
                 label_short=Case(
                     When(
-                        is_new_artif=True, then=F("new_matrix__couverture__label_short")
+                        is_new_artif=True, then=F(f"new_matrix__{sol}__label_short")
                     ),
-                    default=F("old_matrix__couverture__label_short"),
+                    default=F(f"old_matrix__{sol}__label_short"),
                 ),
             )
             .values("code_prefix", "label", "label_short")
