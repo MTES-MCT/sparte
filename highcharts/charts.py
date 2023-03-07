@@ -33,20 +33,6 @@ class Chart:
         param = copy.deepcopy(self.param)
         param["navigation"] = {"buttonOptions": {"enabled": False}}
         param["credits"] = {"enabled": False}
-        if "exporting" not in param:
-            param["exporting"] = {
-                "buttons": {
-                    "contextButton": {
-                        "symbol": f"url({static('img/settings-5-line.svg')})",
-                        "symbolSize": 22,
-                        "symbolX": 23,
-                        "symbolY": 23,
-                        "symbolStrokeWidth": 1,
-                        "symbolFill": '#a4edba',
-                        "symbolStroke": '#330033'
-                    }
-                }
-            }
         return param
 
     def get_options(self, serie_name):
