@@ -4,7 +4,6 @@ from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.views.generic import CreateView, DetailView, TemplateView
-from isort import code
 
 from project import charts, tasks
 from project.models import Project, ProjectCommune, Request
