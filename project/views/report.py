@@ -364,7 +364,8 @@ class ProjectReportArtifView(ProjectReportBaseView):
 
         chart_comparison = charts.NetArtifComparaisonChart(project, level=level)
 
-        detail_artif_chart = charts.DetailArtifChart(project)
+        detail_couv_artif_chart = charts.DetailCouvArtifChart(project)
+        detail_usage_artif_chart = charts.DetailUsageArtifChart(project)
 
         couv_artif_sol = charts.ArtifCouvSolPieChart(project)
         usage_artif_sol = charts.ArtifUsageSolPieChart(project)
@@ -384,13 +385,15 @@ class ProjectReportArtifView(ProjectReportBaseView):
                     table_evolution_artif, line=False
                 ),
                 "headers_evolution_artif": headers_evolution_artif,
-                "detail_artif_chart": detail_artif_chart,
+                "detail_artif_chart": detail_couv_artif_chart,
+                
                 "detail_total_artif": sum(
-                    _["artif"] for _ in detail_artif_chart.get_series()
+                    _["artif"] for _ in detail_couv_artif_chart.get_series()
                 ),
                 "detail_total_renat": sum(
-                    _["renat"] for _ in detail_artif_chart.get_series()
+                    _["renat"] for _ in detail_couv_artif_chart.get_series()
                 ),
+                "detail_usage_artif_chart": detail_usage_artif_chart,
                 "couv_artif_sol": couv_artif_sol,
                 "usage_artif_sol": usage_artif_sol,
                 "chart_comparison": chart_comparison,

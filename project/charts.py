@@ -561,7 +561,7 @@ class UsageSolProgressionChart(CouvertureSolProgressionChart):
     _sol = "usage"
 
 
-class DetailArtifChart(ProjectChart):
+class DetailCouvArtifChart(ProjectChart):
     name = "Progression des principaux postes de la couverture du sol"
     param = {
         "chart": {"type": "column", "alignThresholds": True},
@@ -587,7 +587,7 @@ class DetailArtifChart(ProjectChart):
 
     def get_series(self):
         if not self.series:
-            self.series = list(self.project.get_detail_artif())
+            self.series = list(self.project.get_detail_artif(sol="couverture"))
             if "CS1.1.2.2" not in [s["code_prefix"] for s in self.series]:
                 required_couv = CouvertureSol.objects.get(code="1.1.2.2")
                 self.series.append(
@@ -607,10 +607,10 @@ class DetailArtifChart(ProjectChart):
                 "name": "Artificialisation",
                 "data": [
                     {
-                        "name": couv["code_prefix"],
-                        "y": couv["artif"],
+                        "name": item["code_prefix"],
+                        "y": item["artif"],
                     }
-                    for couv in self.get_series()
+                    for item in self.get_series()
                 ],
             }
         )
@@ -619,13 +619,22 @@ class DetailArtifChart(ProjectChart):
                 "name": "Renaturation",
                 "data": [
                     {
-                        "name": couv["code_prefix"],
-                        "y": couv["renat"],
+                        "name": item["code_prefix"],
+                        "y": item["renat"],
                     }
-                    for couv in self.get_series()
+                    for item in self.get_series()
                 ],
             }
         )
+
+
+class DetailUsageArtifChart(DetailCouvArtifChart):
+    name = "Progression des principaux postes de l'usage du sol"
+
+    def get_series(self):
+        if not self.series:
+            self.series = list(self.project.get_detail_artif(sol="usage"))
+        return self.series
 
 
 class ArtifCouvSolPieChart(ProjectChart):
