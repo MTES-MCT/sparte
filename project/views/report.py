@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.views.generic import CreateView, DetailView, TemplateView
+from isort import code
 
 from project import charts, tasks
 from project.models import Project, ProjectCommune, Request
@@ -370,6 +371,20 @@ class ProjectReportArtifView(ProjectReportBaseView):
         couv_artif_sol = charts.ArtifCouvSolPieChart(project)
         usage_artif_sol = charts.ArtifUsageSolPieChart(project)
 
+        detail_couv_artif_table = detail_couv_artif_chart.get_series()
+        for i in range(len(detail_couv_artif_table)):
+            for row in couv_artif_sol.get_series():
+                if row["code_prefix"] == detail_couv_artif_table[i]["code_prefix"]:
+                    detail_couv_artif_table[i]["last_millesime"] = row["surface"]
+                    break
+
+        detail_usage_artif_table = detail_usage_artif_chart.get_series()
+        for usage_row in detail_usage_artif_table:
+            for row in usage_artif_sol.get_series():
+                if row["code_prefix"] == usage_row["code_prefix"]:
+                    usage_row["last_millesime"] = row["surface"]
+                    break
+
         kwargs.update(
             {
                 "first_millesime": str(first_millesime),
@@ -385,8 +400,9 @@ class ProjectReportArtifView(ProjectReportBaseView):
                     table_evolution_artif, line=False
                 ),
                 "headers_evolution_artif": headers_evolution_artif,
-                "detail_artif_chart": detail_couv_artif_chart,
-                
+                "detail_couv_artif_chart": detail_couv_artif_chart,
+                "detail_couv_artif_table": detail_couv_artif_table,
+                "detail_usage_artif_table": detail_usage_artif_table,
                 "detail_total_artif": sum(
                     _["artif"] for _ in detail_couv_artif_chart.get_series()
                 ),
