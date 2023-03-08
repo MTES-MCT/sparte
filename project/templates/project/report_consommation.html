@@ -182,7 +182,11 @@ Rapport consommation
                             </a>
                         </div>
                         <p class="fw-bold">Carte consommation d'espaces des communes du territoire sur la période (en Ha)</p>
+                        {% if project.theme_map_conso %}
                         <img src="{{ project.theme_map_conso.url }}" alt="Carte consommation d'espaces des communes du territoire sur la période (en Ha)">
+                        {% else %}
+                        <div class="skeleton-loader"></div>
+                        {% endif %}
                     </div>
                 </div>
                {% endif %} 

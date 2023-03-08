@@ -482,15 +482,41 @@ Loader
 }
 
 @keyframes m {
-    0%   {background-position:calc(0*100%/2) 100%, calc(1*100%/2) 100%, calc(2*100%/2) 100%}
-    12.5%{background-position:calc(0*100%/2) 0   , calc(1*100%/2) 100%, calc(2*100%/2) 100%}
-    25%  {background-position:calc(0*100%/2) 0   , calc(1*100%/2) 0   , calc(2*100%/2) 100%}
-    37.5%{background-position:calc(0*100%/2) 0   , calc(1*100%/2) 0   , calc(2*100%/2) 0   }
-    50%  {background-position:calc(0*100%/2) 0   , calc(1*100%/2) 0   , calc(2*100%/2) 0   }
-    62.5%{background-position:calc(0*100%/2) 100%, calc(1*100%/2) 0   , calc(2*100%/2) 0   }
-    75%  {background-position:calc(0*100%/2) 100%, calc(1*100%/2) 100%, calc(2*100%/2) 0   }
-    87.5%{background-position:calc(0*100%/2) 100%, calc(1*100%/2) 100%, calc(2*100%/2) 100%}
-    100% {background-position:calc(0*100%/2) 100%, calc(1*100%/2) 100%, calc(2*100%/2) 100%}
+    0% {
+        background-position: calc(0*100%/2) 100%, calc(1*100%/2) 100%, calc(2*100%/2) 100%
+    }
+
+    12.5% {
+        background-position: calc(0*100%/2) 0, calc(1*100%/2) 100%, calc(2*100%/2) 100%
+    }
+
+    25% {
+        background-position: calc(0*100%/2) 0, calc(1*100%/2) 0, calc(2*100%/2) 100%
+    }
+
+    37.5% {
+        background-position: calc(0*100%/2) 0, calc(1*100%/2) 0, calc(2*100%/2) 0
+    }
+
+    50% {
+        background-position: calc(0*100%/2) 0, calc(1*100%/2) 0, calc(2*100%/2) 0
+    }
+
+    62.5% {
+        background-position: calc(0*100%/2) 100%, calc(1*100%/2) 0, calc(2*100%/2) 0
+    }
+
+    75% {
+        background-position: calc(0*100%/2) 100%, calc(1*100%/2) 100%, calc(2*100%/2) 0
+    }
+
+    87.5% {
+        background-position: calc(0*100%/2) 100%, calc(1*100%/2) 100%, calc(2*100%/2) 100%
+    }
+
+    100% {
+        background-position: calc(0*100%/2) 100%, calc(1*100%/2) 100%, calc(2*100%/2) 100%
+    }
 }
 
 /*
@@ -529,4 +555,43 @@ Theme map
 
 .theme-map-image-container [target=_blank]:after {
     content: none;
+}
+
+/*
+Skeleton loader
+*/
+.skeleton-loader {
+    width: 100%;
+    height: 100%;
+    background-color: #DDDBDD;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    position: relative;
+}
+
+.skeleton-loader::after {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    transform: translateX(-100%);
+    background-image: linear-gradient(90deg, rgba(255, 255, 255, 0) 0, rgba(255, 255, 255, 0.2) 20%, rgba(255, 255, 255, 0.5) 60%, rgba(255, 255, 255, 0));
+    -webkit-animation: shimmer 2s infinite;
+    animation: shimmer 2s infinite;
+    content: "";
+}
+
+@-webkit-keyframes shimmer {
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+@keyframes shimmer {
+    100% {
+        transform: translateX(100%);
+    }
 }
