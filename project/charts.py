@@ -654,7 +654,24 @@ class DetailUsageArtifChart(DetailCouvArtifChart):
 
     def get_series(self):
         if not self.series:
-            self.series = list(self.project.get_detail_artif(sol="usage"))
+            data = {}
+            for row in list(self.project.get_detail_artif(sol="usage")):
+                code = row["code_prefix"].split(".")[0]
+                if code not in data:
+                    data[code] = {"artif": 0, "renat": 0}
+                data[code]["artif"] += row["artif"]
+                data[code]["renat"] += row["renat"]
+            usage_list = {u.code_prefix: u for u in UsageSol.objects.all() if u.level == 1}
+            self.series = [
+                {
+                    "code_prefix": code,
+                    "label": usage_list[code].label,
+                    "label_short": usage_list[code].label_short,
+                    "artif": values["artif"],
+                    "renat": values["renat"],
+                }
+                for code, values in data.items()
+            ]
         return self.series
 
 
@@ -721,6 +738,27 @@ class ArtifUsageSolPieChart(ArtifCouvSolPieChart):
         self.chart["title"][
             "text"
         ] = f"Surfaces artificialisée par type d'usage en {self.millesime}"
+
+    def get_series(self):
+        if not self.series:
+            data = {}
+            for row in list(super().get_series()):
+                code = row["code_prefix"].split(".")[0]
+                if code not in data:
+                    data[code] = 0
+                data[code] += row["surface"]
+            usage_list = {u.code_prefix: u for u in UsageSol.objects.all() if u.code_prefix in data}
+            self.series = [
+                {
+                    "code_prefix": code,
+                    "label": usage_list[code].label,
+                    "label_short": usage_list[code].label_short,
+                    "map_color": usage_list[code].map_color,
+                    "surface": value,
+                }
+                for code, value in data.items()
+            ]
+        return self.series
 
 
 class NetArtifComparaisonChart(ProjectChart):
