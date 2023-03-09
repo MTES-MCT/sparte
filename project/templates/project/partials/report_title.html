@@ -20,11 +20,11 @@
                 Télécharger mon diagnostic
             </button>
 
-            <ul class="dropdown-menu">
+            <ul class="dropdown-menu w-100">
                 <li>
-                    <button hx-get="{% url 'project:report_download' project.pk %}" hx-target="#fr-modal__form" class="fr-nav__link" id="fr-modal-download-word" data-fr-opened="false" aria-controls="fr-modal-download-word">
+                    <a class="fr-nav__link" hx-get="{% url 'project:report_download' project.pk %}" hx-target="#fr-modal__form" href="#" id="fr-modal-download-word" data-fr-opened="false" aria-controls="fr-modal-download-word">
                         Word
-                    </button>
+                    </a>
                 </li>
                 <li>
                     <a class="fr-nav__link" href="{% url 'project:export-excel' project.pk %}">
