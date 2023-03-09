@@ -14,32 +14,50 @@
                 </li>
             </ul>
         </div>
-        <div>
-            <button hx-get="{% url 'project:report_download' project.pk %}" hx-target="#fr-modal__form" class="fr-btn mt-2" data-toggle="tooltip" title="Word" aria-hidden="true" data-fr-opened="false" aria-controls="fr-modal-download">
+
+        <div class="dropdown custom-dropdown mt-2">
+            <button class="fr-btn" data-bs-toggle="dropdown" aria-expanded="false">
                 Télécharger mon diagnostic
             </button>
+
+            <ul class="dropdown-menu">
+                <li>
+                    <button hx-get="{% url 'project:report_download' project.pk %}" hx-target="#fr-modal__form" class="fr-nav__link" id="fr-modal-download-word" data-fr-opened="false" aria-controls="fr-modal-download-word">
+                        Word
+                    </button>
+                </li>
+                <li>
+                    <a class="fr-nav__link" href="{% url 'project:export-excel' project.pk %}">
+                        Excel
+                    </a>
+                </li>
+            </ul>
         </div>
     </div>
 </div>
 
-<dialog aria-labelledby="fr-modal-2-title" id="fr-modal-download" class="fr-modal" role="dialog" >
+<dialog aria-labelledby="fr-modal-2-title" id="fr-modal-download-word" class="fr-modal" role="dialog" >
     <div class="fr-container fr-container--fluid fr-container-md">
         <div class="fr-grid-row fr-grid-row--center">
             <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
                 <div class="fr-modal__body">
                     <div class="fr-modal__header">
-                        <button class="fr-link--close fr-link" aria-controls="fr-modal-download">Fermer</button>
+                        <button class="fr-link--close fr-link" aria-controls="fr-modal-download-word">Fermer</button>
                     </div>
                     <div class="fr-modal__content">
                         <h1 id="fr-modal-2-title" class="fr-modal__title">
                             Recevoir le diagnostic par e-mail
                         </h1>
-                        <div id="fr-modal__form">
-                            <div class="fr-custom-loader"></div>
-                        </div>
+                        <div id="fr-modal__form"></div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </dialog>
+
+<script language="javascript" nonce="{{ CSP_NONCE }}">
+    document.getElementById("fr-modal-download-word").onclick = () => {
+        document.getElementById("fr-modal__form").innerHTML = "<div class='fr-custom-loader'></div>";
+    }
+</script>
