@@ -705,7 +705,7 @@ class ArtifCouvSolPieChart(ProjectChart):
         super().__init__(project)
         self.chart["title"][
             "text"
-        ] = f"Surfaces artificialisée par type de couverture en {self.millesime}"
+        ] = f"Surfaces artificialisées par type de couverture en {self.millesime}"
 
     def get_series(self):
         if not self.series:
@@ -737,7 +737,7 @@ class ArtifUsageSolPieChart(ArtifCouvSolPieChart):
         super().__init__(*args, **kwargs)
         self.chart["title"][
             "text"
-        ] = f"Surfaces artificialisée par type d'usage en {self.millesime}"
+        ] = f"Surfaces artificialisées par type d'usage en {self.millesime}"
 
     def get_series(self):
         if not self.series:
