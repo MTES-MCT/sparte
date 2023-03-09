@@ -1,9 +1,11 @@
 import collections
+from typing import Dict, List
 
 from django.db.models import F, Sum, Value
 from django.db.models.functions import Concat
 
 from highcharts import charts
+from project.models.project_base import Project
 from public_data.models import AdminRef, CouvertureSol, OcsgeDiff, UsageSol
 
 
@@ -62,7 +64,15 @@ class ConsoCommuneChart(ProjectChart):
         "title": {"text": ""},
         "yAxis": {"title": {"text": "Consommé (en ha)"}},
         "xAxis": {"type": "category"},
-        "legend": {"layout": "vertical", "align": "right", "verticalAlign": "bottom", "padding": 3, "margin": 25, "itemMarginTop": 1, "itemMarginBottom": 1},
+        "legend": {
+            "layout": "vertical",
+            "align": "right",
+            "verticalAlign": "bottom",
+            "padding": 3,
+            "margin": 25,
+            "itemMarginTop": 1,
+            "itemMarginBottom": 1,
+        },
         "plotOptions": {"area": {"stacking": "normal"}},
         "series": [],
     }
@@ -580,12 +590,16 @@ class DetailCouvArtifChart(ProjectChart):
         "series": [],
     }
 
-    def __init__(self, project):
+    def __init__(self, project: Project):
         self.first_millesime = project.first_year_ocsge
         self.last_millesime = project.last_year_ocsge
         super().__init__(project)
+        self.chart["title"]["text"] = (
+            f"Evolution des surfaces artificielles par type de couverture de {self.first_millesime} à "
+            f"{self.last_millesime}"
+        )
 
-    def get_series(self):
+    def get_series(self) -> List[Dict]:
         if not self.series:
             self.series = list(self.project.get_detail_artif(sol="couverture"))
             if "CS1.1.2.2" not in [s["code_prefix"] for s in self.series]:
@@ -601,7 +615,7 @@ class DetailCouvArtifChart(ProjectChart):
                 )
         return self.series
 
-    def add_series(self):
+    def add_series(self, *args, **kwargs) -> None:
         self.chart["series"].append(
             {
                 "name": "Artificialisation",
@@ -630,6 +644,13 @@ class DetailCouvArtifChart(ProjectChart):
 
 class DetailUsageArtifChart(DetailCouvArtifChart):
     name = "Progression des principaux postes de l'usage du sol"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.chart["title"]["text"] = (
+            f"Evolution des surfaces artificielles par type d'usage de {self.first_millesime} à "
+            f"{self.last_millesime}"
+        )
 
     def get_series(self):
         if not self.series:
@@ -662,9 +683,12 @@ class ArtifCouvSolPieChart(ProjectChart):
         "series": [],
     }
 
-    def __init__(self, project):
+    def __init__(self, project: Project):
         self.millesime = project.last_year_ocsge
         super().__init__(project)
+        self.chart["title"][
+            "text"
+        ] = f"Surfaces artificialisée par type de couverture en {self.millesime}"
 
     def get_series(self):
         if not self.series:
@@ -691,6 +715,12 @@ class ArtifCouvSolPieChart(ProjectChart):
 
 class ArtifUsageSolPieChart(ArtifCouvSolPieChart):
     _sol = "usage"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.chart["title"][
+            "text"
+        ] = f"Surfaces artificialisée par type d'usage en {self.millesime}"
 
 
 class NetArtifComparaisonChart(ProjectChart):
