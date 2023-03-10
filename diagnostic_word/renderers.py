@@ -355,7 +355,7 @@ class Renderer:
                 }
             )
             # paragraphe 3.2.2
-            detail_artif_chart = charts.DetailArtifChart(diagnostic)
+            detail_artif_chart = charts.DetailCouvArtifChart(diagnostic)
             ReprDetailArtif.total_artif = artificialisation
             ReprDetailArtif.total_renat = renaturation
 
