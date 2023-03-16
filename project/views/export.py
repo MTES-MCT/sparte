@@ -237,8 +237,8 @@ class ExportExcelView(View):
             )
             .values("Commune", "Insee", "EPCI", "SCoT", "Département", "Région")
             .annotate(
-                {
-                    "Surface artificielle dernier millésime": Sum("surface"),
+                **{
+                    "Surface_artificielle_dernier_millésime": Sum("surface"),
                     "Différentiel": Value(self.project.last_year_ocsge),
                 }
             )
