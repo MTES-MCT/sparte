@@ -36,7 +36,7 @@ class ExportListView(LoginRequiredMixin, TemplateView):
         return super().get_context_data(**kwargs)
 
 
-class ExportExcelView(LoginRequiredMixin, View):
+class ExportExcelView(View):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.project = None
@@ -165,7 +165,7 @@ class ExportExcelView(LoginRequiredMixin, View):
             "Commune": "city_name",
             "Insee": "city_insee",
             "EPCI": "epci_name",
-            # "SCoT": "city__scot__name",
+            "SCoT": "scot",
             "Département": "dept_name",
             "Région": "region_name",
         }
@@ -188,7 +188,7 @@ class ExportExcelView(LoginRequiredMixin, View):
             .values(*config.keys())
         )
         df = pd.DataFrame(qs, columns=config.keys()).fillna(0.0)
-        df = df.set_index(["Commune", "Insee", "EPCI", "Département", "Région"])
+        df = df.set_index(["Commune", "Insee", "EPCI", "SCoT", "Département", "Région"])
         df.astype(float).to_excel(self.writer, sheet_name="Conso d'espace")
 
     def add_artif_sheet(self):
@@ -209,33 +209,62 @@ class ExportExcelView(LoginRequiredMixin, View):
                 artificialisation nette
                 taux d'artificialisation nette (artif nette / surface du territoire)
         """
+        # config = [
+        #     {"name": "Commune", "db": "city__name", "type": "index"},
+        #     {"name": "Insee", "db": "city__insee", "type": "index"},
+        #     {"name": "EPCI", "db": "city__epci__name", "type": "index"},
+        #     {"name": "SCoT", "db": "city__scot__name", "type": "index"},
+        #     {"name": "Département", "db": "city__departement__name", "type": "index"},
+        #     {
+        #         "name": "Région",
+        #         "db": "city__departement__region__name",
+        #         "type": "index",
+        #     },
+        #     {"name": "Surface_artificielle_dernier_millésime", "db": Sum("surface"), "type": "values"},
+        #     {"name": "Différentiel", "db": Value(self.project.analyse_end_date), "type": "columns"},
+        # ]
         qs = (
-            CommuneSol.objects.filter(city__in=self.project.cities.all())
+            CommuneSol.objects.filter(
+                city__in=self.project.cities.all(), matrix__is_artificial=True
+            )
             .annotate(
                 Commune=F("city__name"),
                 Insee=F("city__insee"),
                 EPCI=F("city__epci__name"),
-                # "SCoT": "city__scot__name",
+                SCoT=F("city__scot__name"),
                 Département=F("city__departement__name"),
                 Région=F("city__departement__region__name"),
             )
-            .filter(matrix__is_artificial=True)
-            .values("Commune", "Insee", "EPCI", "Département", "Région")
-            .annotate(Surface_artificielle_dernier_millésime=Sum("surface"))
-            .order_by("Commune", "Insee", "EPCI", "Département", "Région")
+            .values("Commune", "Insee", "EPCI", "SCoT", "Département", "Région")
+            .annotate(
+                {
+                    "Surface artificielle dernier millésime": Sum("surface"),
+                    "Différentiel": Value(self.project.last_year_ocsge),
+                }
+            )
+            .order_by("Commune", "Insee", "EPCI", "SCoT", "Département", "Région")
         )
-        df = pd.DataFrame(
-            qs,
-            columns=[
-                "Commune",
-                "Insee",
-                "EPCI",
-                "Département",
-                "Région",
-                "Surface_artificielle_dernier_millésime",
-            ],
-        ).fillna(0.0)
-        df = df.set_index(["Commune", "Insee", "EPCI", "Département", "Région"])
+        df = (
+            pd.DataFrame(
+                qs,
+                columns=[
+                    "Commune",
+                    "Insee",
+                    "EPCI",
+                    "SCoT",
+                    "Département",
+                    "Région",
+                    "Différentiel",
+                    "Surface artificielle dernier millésime",
+                ],
+            )
+            .fillna(0.0)
+            .pivot(
+                columns=["Différentiel"],
+                index=["Commune", "Insee", "EPCI", "SCoT", "Département", "Région"],
+                values=["Surface artificielle dernier millésime"],
+            )
+        )
         qs2 = (
             CommuneDiff.objects.filter(city__in=self.project.cities.all())
             .filter(year_old__gte=self.project.analyse_start_date)
@@ -244,7 +273,7 @@ class ExportExcelView(LoginRequiredMixin, View):
                 Commune=F("city__name"),
                 Insee=F("city__insee"),
                 EPCI=F("city__epci__name"),
-                # "SCoT": "city__scot__name",
+                SCoT=F("city__scot__name"),
                 Département=F("city__departement__name"),
                 Région=F("city__departement__region__name"),
                 Différentiel=Concat(
@@ -258,6 +287,7 @@ class ExportExcelView(LoginRequiredMixin, View):
                 "Commune",
                 "Insee",
                 "EPCI",
+                "SCoT",
                 "Département",
                 "Région",
                 "Différentiel",
@@ -273,6 +303,7 @@ class ExportExcelView(LoginRequiredMixin, View):
                     "Commune",
                     "Insee",
                     "EPCI",
+                    "SCoT",
                     "Département",
                     "Région",
                     "Différentiel",
@@ -284,7 +315,7 @@ class ExportExcelView(LoginRequiredMixin, View):
             .fillna(0.0)
             .pivot(
                 columns=["Différentiel"],
-                index=["Commune", "Insee", "EPCI", "Département", "Région"],
+                index=["Commune", "Insee", "EPCI", "SCoT", "Département", "Région"],
                 values=[
                     "Artificialisation",
                     "Renaturation",
