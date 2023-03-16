@@ -654,25 +654,21 @@ class DetailUsageArtifChart(DetailCouvArtifChart):
 
     def get_series(self):
         if not self.series:
-            data = {}
-            for row in list(self.project.get_detail_artif(sol="usage")):
-                code = row["code_prefix"].split(".")[0]
-                if code not in data:
-                    data[code] = {"artif": 0, "renat": 0}
-                data[code]["artif"] += row["artif"]
-                data[code]["renat"] += row["renat"]
-            usage_list = {u.code_prefix: u for u in UsageSol.objects.all() if u.level == 1}
-            self.series = [
-                {
-                    "code_prefix": code,
-                    "label": usage_list[code].label,
-                    "label_short": usage_list[code].label_short,
-                    "artif": values["artif"],
-                    "renat": values["renat"],
+            self.series = {  # TODO : tester que toutes les USAGES niveau 1 s'affichent.
+                u.code_prefix: {
+                    "code_prefix": u.code_prefix,
+                    "label": u.label,
+                    "label_short": u.label_short,
+                    "artif": 0,
+                    "renat": 0,
                 }
-                for code, values in data.items()
-            ]
-        return self.series
+                for u in UsageSol.objects.order_by("code_prefix") if u.level == 1
+            }
+            for row in self.project.get_detail_artif(sol="usage"):
+                code = row["code_prefix"].split(".")[0]
+                self.series[code]["artif"] += row["artif"]
+                self.series[code]["renat"] += row["renat"]
+        return list(self.series.values())
 
 
 class ArtifCouvSolPieChart(ProjectChart):
