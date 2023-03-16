@@ -372,6 +372,7 @@ class ProjectReportArtifView(ProjectReportBaseView):
 
         detail_couv_artif_table = detail_couv_artif_chart.get_series()
         for i in range(len(detail_couv_artif_table)):
+            detail_couv_artif_table[i]["last_millesime"] = 0
             for row in couv_artif_sol.get_series():
                 if row["code_prefix"] == detail_couv_artif_table[i]["code_prefix"]:
                     detail_couv_artif_table[i]["last_millesime"] = row["surface"]
@@ -379,6 +380,7 @@ class ProjectReportArtifView(ProjectReportBaseView):
 
         detail_usage_artif_table = detail_usage_artif_chart.get_series()
         for usage_row in detail_usage_artif_table:
+            usage_row["last_millesime"] = 0
             for row in usage_artif_sol.get_series():
                 if row["code_prefix"] == usage_row["code_prefix"]:
                     usage_row["last_millesime"] = row["surface"]
