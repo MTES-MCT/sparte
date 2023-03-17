@@ -209,113 +209,91 @@ class ExportExcelView(View):
                 artificialisation nette
                 taux d'artificialisation nette (artif nette / surface du territoire)
         """
-        # config = [
-        #     {"name": "Commune", "db": "city__name", "type": "index"},
-        #     {"name": "Insee", "db": "city__insee", "type": "index"},
-        #     {"name": "EPCI", "db": "city__epci__name", "type": "index"},
-        #     {"name": "SCoT", "db": "city__scot__name", "type": "index"},
-        #     {"name": "Département", "db": "city__departement__name", "type": "index"},
-        #     {
-        #         "name": "Région",
-        #         "db": "city__departement__region__name",
-        #         "type": "index",
-        #     },
-        #     {"name": "Surface_artificielle_dernier_millésime", "db": Sum("surface"), "type": "values"},
-        #     {"name": "Différentiel", "db": Value(self.project.analyse_end_date), "type": "columns"},
-        # ]
+        config = [
+            {"name": "Insee", "db": F("city__insee"), "type": "index"},
+            {"name": "Commune", "db": F("city__name"), "type": "index"},
+            {"name": "EPCI", "db": F("city__epci__name"), "type": "index"},
+            {"name": "SCoT", "db": F("city__scot__name"), "type": "index"},
+            {
+                "name": "Département",
+                "db": F("city__departement__name"),
+                "type": "index",
+            },
+            {
+                "name": "Région",
+                "db": F("city__departement__region__name"),
+                "type": "index",
+            },
+            {
+                "name": "Plus_ancien_millésime",
+                "db": Value(self.project.first_year_ocsge),
+                "type": "index",
+            },
+            {
+                "name": "Plus_récent_millésime",
+                "db": Value(self.project.last_year_ocsge),
+                "type": "index",
+            },
+            {
+                "name": "Différentiel",
+                "db": Value(self.project.last_year_ocsge),
+                "type": "columns",
+            },
+        ]
         qs = (
             CommuneSol.objects.filter(
-                city__in=self.project.cities.all(), matrix__is_artificial=True
+                city__in=self.project.cities.all(),
+                matrix__is_artificial=True,
+                year=self.project.last_year_ocsge,
             )
-            .annotate(
-                Commune=F("city__name"),
-                Insee=F("city__insee"),
-                EPCI=F("city__epci__name"),
-                SCoT=F("city__scot__name"),
-                Département=F("city__departement__name"),
-                Région=F("city__departement__region__name"),
-            )
-            .values("Commune", "Insee", "EPCI", "SCoT", "Département", "Région")
-            .annotate(
-                **{
-                    "Surface_artificielle_dernier_millésime": Sum("surface"),
-                    "Différentiel": Value(self.project.last_year_ocsge),
-                }
-            )
-            .order_by("Commune", "Insee", "EPCI", "SCoT", "Département", "Région")
+            .annotate(**{_["name"]: _["db"] for _ in config})
+            .values(*[_["name"] for _ in config])
+            .annotate(Surface_artificielle_dernier_millésime=Sum("surface"))
+            .order_by("Insee")
         )
         df = (
             pd.DataFrame(
                 qs,
                 columns=[
-                    "Commune",
-                    "Insee",
-                    "EPCI",
-                    "SCoT",
-                    "Département",
-                    "Région",
-                    "Différentiel",
-                    "Surface artificielle dernier millésime",
+                    *[_["name"] for _ in config],
+                    "Surface_artificielle_dernier_millésime",
                 ],
             )
             .fillna(0.0)
             .pivot(
-                columns=["Différentiel"],
-                index=["Commune", "Insee", "EPCI", "SCoT", "Département", "Région"],
-                values=["Surface artificielle dernier millésime"],
+                columns=[_["name"] for _ in config if _["type"] == "columns"],
+                index=[_["name"] for _ in config if _["type"] == "index"],
+                values=["Surface_artificielle_dernier_millésime"],
             )
         )
+        config[8]["db"] = Concat(
+            "year_old", Value("-"), "year_new", output_field=CharField()
+        )
         qs2 = (
-            CommuneDiff.objects.filter(city__in=self.project.cities.all())
-            .filter(year_old__gte=self.project.analyse_start_date)
-            .filter(year_old__lte=self.project.analyse_end_date)
+            CommuneDiff.objects.filter(
+                city__in=self.project.cities.all(),
+                year_old__gte=self.project.analyse_start_date,
+                year_old__lte=self.project.analyse_end_date,
+            )
             .annotate(
-                Commune=F("city__name"),
-                Insee=F("city__insee"),
-                EPCI=F("city__epci__name"),
-                SCoT=F("city__scot__name"),
-                Département=F("city__departement__name"),
-                Région=F("city__departement__region__name"),
-                Différentiel=Concat(
-                    "year_old", Value("-"), "year_new", output_field=CharField()
-                ),
+                **{_["name"]: _["db"] for _ in config},
                 Artificialisation=F("new_artif"),
                 Renaturation=F("new_natural"),
                 Artificialisation_nette=F("net_artif"),
             )
             .values(
-                "Commune",
-                "Insee",
-                "EPCI",
-                "SCoT",
-                "Département",
-                "Région",
-                "Différentiel",
+                *[_["name"] for _ in config],
                 "Artificialisation",
                 "Renaturation",
                 "Artificialisation_nette",
             )
         )
         df2 = (
-            pd.DataFrame(
-                qs2,
-                columns=[
-                    "Commune",
-                    "Insee",
-                    "EPCI",
-                    "SCoT",
-                    "Département",
-                    "Région",
-                    "Différentiel",
-                    "Artificialisation",
-                    "Renaturation",
-                    "Artificialisation_nette",
-                ],
-            )
+            pd.DataFrame(qs2)
             .fillna(0.0)
             .pivot(
-                columns=["Différentiel"],
-                index=["Commune", "Insee", "EPCI", "SCoT", "Département", "Région"],
+                columns=[_["name"] for _ in config if _["type"] == "columns"],
+                index=[_["name"] for _ in config if _["type"] == "index"],
                 values=[
                     "Artificialisation",
                     "Renaturation",
