@@ -254,7 +254,7 @@ class ProjectListView(GroupMixin, LoginRequiredMixin, ListView):
         return qs
 
 
-class SplashScreenView(GroupMixin, LoginRequiredMixin, DetailView):
+class SplashScreenView(GroupMixin, DetailView):
     model = Project
     template_name = "project/create/splash_screen.html"
     context_object_name = "diagnostic"
@@ -267,7 +267,7 @@ class SplashScreenView(GroupMixin, LoginRequiredMixin, DetailView):
         return breadcrumbs
 
 
-class SplashProgressionView(GroupMixin, LoginRequiredMixin, DetailView):
+class SplashProgressionView(GroupMixin, DetailView):
     model = Project
     template_name = "project/create/fragment_splash_progress.html"
     context_object_name = "diagnostic"
