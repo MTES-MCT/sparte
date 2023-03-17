@@ -344,26 +344,36 @@ class ExportExcelView(View):
             Renaturation
         """
         config = [
-            {"name": "Commune", "db": "city__name", "type": "index"},
-            {"name": "Insee", "db": "city__insee", "type": "index"},
-            {"name": "EPCI", "db": "city__epci__name", "type": "index"},
-            {"name": "SCoT", "db": "city__scot__name", "type": "index"},
-            {"name": "Département", "db": "city__departement__name", "type": "index"},
+            {"name": "Commune", "db": F("city__name"), "type": "index"},
+            {"name": "Insee", "db": F("city__insee"), "type": "index"},
+            {"name": "EPCI", "db": F("city__epci__name"), "type": "index"},
+            {"name": "SCoT", "db": F("city__scot__name"), "type": "index"},
+            {"name": "Département", "db": F("city__departement__name"), "type": "index"},
             {
                 "name": "Région",
-                "db": "city__departement__region__name",
+                "db": F("city__departement__region__name"),
                 "type": "index",
             },
-            {"name": "Année", "db": "year", "type": "columns"},
+            {"name": "Année", "db": F("year"), "type": "columns"},
             {
                 "name": "Code",
-                "db": "matrix__couverture__code_prefix",
+                "db": F("matrix__couverture__code_prefix"),
                 "type": "columns",
             },
             {
                 "name": "Libellé",
-                "db": "matrix__couverture__label_short",
+                "db": F("matrix__couverture__label_short"),
                 "type": "columns",
+            },
+            {
+                "name": "Plus_ancien_millésime",
+                "db": Value(self.project.first_year_ocsge),
+                "type": "index",
+            },
+            {
+                "name": "Plus_récent_millésime",
+                "db": Value(self.project.last_year_ocsge),
+                "type": "index",
             },
         ]
         qs1 = (
@@ -372,7 +382,7 @@ class ExportExcelView(View):
                 year__gte=self.project.analyse_start_date,
                 year__lte=self.project.analyse_end_date,
             )
-            .annotate(**{_["name"]: F(_["db"]) for _ in config})
+            .annotate(**{_["name"]: _["db"] for _ in config})
             .values(*[_["name"] for _ in config])
             .annotate(surface=Sum("surface"))
             .order_by(*[_["name"] for _ in config])
@@ -380,12 +390,12 @@ class ExportExcelView(View):
         # usage
         config[7] = {
             "name": "Code",
-            "db": "matrix__usage__code_prefix",
+            "db": F("matrix__usage__code_prefix"),
             "type": "columns",
         }
         config[8] = {
             "name": "Libellé",
-            "db": "matrix__usage__label_short",
+            "db": F("matrix__usage__label_short"),
             "type": "columns",
         }
         qs2 = (
@@ -394,7 +404,7 @@ class ExportExcelView(View):
                 year__gte=self.project.analyse_start_date,
                 year__lte=self.project.analyse_end_date,
             )
-            .annotate(**{_["name"]: F(_["db"]) for _ in config})
+            .annotate(**{_["name"]: _["db"] for _ in config})
             .values(*[_["name"] for _ in config])
             .annotate(surface=Sum("surface"))
             .order_by(*[_["name"] for _ in config])
