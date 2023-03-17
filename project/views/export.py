@@ -90,13 +90,13 @@ class ExportExcelView(View):
         "type" should be one of : columns, index or values
         """
         # preparation
-        anotations = {_["name"]: F(_["db"]) for _ in config}
+        annotations = {_["name"]: F(_["db"]) for _ in config}
         headers = [_["name"] for _ in config]
         columns = [_["name"] for _ in config if _["type"] == "columns"]
         index = [_["name"] for _ in config if _["type"] == "index"]
         values = [_["name"] for _ in config if _["type"] == "values"]
         # get data formated from queryset
-        qs = queryset.annotate(**anotations).values(*headers)
+        qs = queryset.annotate(**annotations).values(*headers)
         # add data to dataframe and make the pivot
         df = (
             pd.DataFrame(qs, columns=headers)
