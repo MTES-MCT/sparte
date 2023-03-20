@@ -4,7 +4,7 @@ from django.views.generic import TemplateView
 
 from utils.views_mixins import BreadCrumbMixin
 
-from .models import CouvertureUsageMatrix, UsageSol, CouvertureSol
+from .models import CouvertureSol, CouvertureUsageMatrix, UsageSol
 
 
 class DisplayMatrix(LoginRequiredMixin, BreadCrumbMixin, TemplateView):

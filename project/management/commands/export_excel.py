@@ -1,13 +1,12 @@
 import calendar
-from datetime import datetime, date
 import logging
+from datetime import date, datetime
 
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 
 from project.models.export import export_dl_diag
 from project.storages import ExportStorage
-
 
 logger = logging.getLogger("management.commands")
 

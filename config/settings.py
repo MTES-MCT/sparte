@@ -10,18 +10,17 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 hello world
 """
-import environ
 from pathlib import Path
+
+import environ
 import pkg_resources
 import sentry_sdk
+from django.contrib.messages import constants as messages
+from django.core.exceptions import ImproperlyConfigured
 from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.redis import RedisIntegration
 
-from django.core.exceptions import ImproperlyConfigured
-from django.contrib.messages import constants as messages
-
-
-OFFICIAL_VERSION = "2.4.0"
+OFFICIAL_VERSION = "2.5.1"
 
 root = environ.Path(__file__) - 2  # get root of the project
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -47,7 +46,7 @@ SECRET_KEY = env.str("SECRET")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env.bool("DEBUG", default=False)
-USE_SRI = env.bool("USE_SRI", default=False) or not DEBUG
+USE_SRI = env.bool("USE_SRI", default=not DEBUG)
 
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["127.0.0.1", "localhost"])
 
@@ -74,23 +73,22 @@ RESTFRAMEWORK_APPS = [
 THIRD_APPS = [
     "import_export",
     "crispy_forms",
+    "crispy_bootstrap5",
     "django_app_parameter",
     "sri",
-    # "widget_tweaks",
-    "django_celery_results",
-    # "django_docx_template",
 ]
 
 # upper app should not communicate with lower ones
 PROJECT_APPS = [
-    "django_docx_template",
     "utils.apps.UtilsConfig",
     "users.apps.UsersConfig",
     "carto.apps.CartoConfig",
     "public_data.apps.PublicDataConfig",
     "project.apps.ProjectConfig",
+    "diagnostic_word.apps.DiagnosticWordConfig",
     "home.apps.HomeConfig",
     "highcharts.apps.HighchartsConfig",
+    "metabase.apps.MetabaseConfig",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + RESTFRAMEWORK_APPS + THIRD_APPS + PROJECT_APPS
@@ -106,10 +104,6 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
-
-USE_CSP = env.bool("USE_CSP", default=False) or not DEBUG
-if USE_CSP:
-    MIDDLEWARE.insert(2, "csp.middleware.CSPMiddleware")
 
 
 ROOT_URLCONF = "config.urls"
@@ -190,7 +184,9 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
-DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+
+DEFAULT_FILE_STORAGE = "config.storages.DefaultStorage"
+
 
 # credentials
 AWS_ACCESS_KEY_ID = env.str("AWS_ACCESS_KEY_ID", default="")
@@ -254,13 +250,23 @@ IMPORT_EXPORT_USE_TRANSACTIONS = True
 # Crispy configuration
 # https://django-crispy-forms.readthedocs.io/en/latest/index.html
 # set default rendering
-CRISPY_TEMPLATE_PACK = "bootstrap4"
-
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+CRISPY_TEMPLATE_PACK = "bootstrap5"
+CRISPY_CLASS_CONVERTERS = {
+    "textinput": "fr-input",
+    "urlinput": "fr-input",
+    "numberinput": "fr-input",
+    "emailinput": "fr-input",
+    "dateinput": "fr-input",
+    "textarea": "fr-input",
+    "passwordinput": "fr-input",
+    "select": "fr-select",
+    "label": "fr-label",
+}
 
 # Celery configuration
-default_redis = "redis://redis:6379/0"
-CELERY_BROKER_URL = env.str("CELERY_BROKER_URL", default=default_redis)
-CELERY_RESULT_BACKEND = env.str("CELERY_RESULT_BACKEND", default=default_redis)
+CELERY_BROKER_URL = env.str("CELERY_BROKER_URL")
+CELERY_RESULT_BACKEND = env.str("CELERY_RESULT_BACKEND")
 CELERY_ACKS_LATE = True
 CELERY_RESULT_EXTENDED = True
 
@@ -279,6 +285,21 @@ if DEBUG:
             "debug_toolbar.middleware.DebugToolbarMiddleware",
         ]
 
+        DEBUG_TOOLBAR_PANELS = [
+            "debug_toolbar.panels.versions.VersionsPanel",
+            "debug_toolbar.panels.timer.TimerPanel",
+            "debug_toolbar.panels.settings.SettingsPanel",
+            "debug_toolbar.panels.profiling.ProfilingPanel",
+            "debug_toolbar.panels.headers.HeadersPanel",
+            "debug_toolbar.panels.request.RequestPanel",
+            "debug_toolbar.panels.sql.SQLPanel",
+            "debug_toolbar.panels.templates.TemplatesPanel",
+            "debug_toolbar.panels.staticfiles.StaticFilesPanel",
+            "debug_toolbar.panels.cache.CachePanel",
+            "debug_toolbar.panels.signals.SignalsPanel",
+            "debug_toolbar.panels.redirects.RedirectsPanel",
+        ]
+
         # bypass check of internal IPs
         def show_toolbar(request):
             return True
@@ -291,32 +312,8 @@ if DEBUG:
         pass
 
 
-DEBUG_TOOLBAR_PANELS = [
-    "debug_toolbar.panels.versions.VersionsPanel",
-    "debug_toolbar.panels.timer.TimerPanel",
-    "djt_csp.panel.SecurityPanel",
-    "debug_toolbar.panels.settings.SettingsPanel",
-    "debug_toolbar.panels.profiling.ProfilingPanel",
-    "debug_toolbar.panels.headers.HeadersPanel",
-    "debug_toolbar.panels.request.RequestPanel",
-    "debug_toolbar.panels.sql.SQLPanel",
-    "debug_toolbar.panels.templates.TemplatesPanel",
-    "debug_toolbar.panels.staticfiles.StaticFilesPanel",
-    "debug_toolbar.panels.cache.CachePanel",
-    "debug_toolbar.panels.signals.SignalsPanel",
-    "debug_toolbar.panels.redirects.RedirectsPanel",
-]
-
-
-# DJANGO DOCX TEMPLATES
-DJANGO_DOCX_TEMPLATES = {
-    "data_sources": [
-        "project.datasources.DiagnosticSource",
-    ],
-    "base_template": "index.html",
-}
-
 # Configuration for highchart
+
 HIGHCHART_SERVER = env.str("HIGHCHART_SERVER", default="https://export.highcharts.com/")
 
 # EMAIL
@@ -338,28 +335,18 @@ To set MailJet configuration, please add environment variables:
 """
 
 EMAIL_ENGINE = env.str("EMAIL_ENGINE", default="local")
-
-available_engines = ["local", "mailjet"]
-if EMAIL_ENGINE not in available_engines:
+if EMAIL_ENGINE not in ["local", "sendinblue"]:
     raise ImproperlyConfigured("E-mail backend needs to be correctly set")
-
-
-if EMAIL_ENGINE == "local":
+elif EMAIL_ENGINE == "local":
     EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
-    emails_dirpath = BASE_DIR / "emails"
-    EMAIL_FILE_PATH = env.str("EMAIL_FILE_PATH", default=emails_dirpath)
 
-elif EMAIL_ENGINE == "mailjet":
-    INSTALLED_APPS += [
-        "anymail",
-    ]
-    EMAIL_BACKEND = "anymail.backends.mailjet.EmailBackend"
-    ANYMAIL = {
-        "MAILJET_API_KEY": env.str("MAILJET_ID"),
-        "MAILJET_SECRET_KEY": env.str("MAILJET_SECRET"),
-    }
+EMAIL_FILE_PATH = env.str("EMAIL_FILE_PATH", default=BASE_DIR / "emails")
+SENDINBLUE_API_KEY = env.str("API_KEY_SENDINBLUE")
+
 
 DEFAULT_FROM_EMAIL = env.str("DEFAULT_FROM_EMAIL", default="johndoe@email.com")
+
+# Jupyter configuration
 
 # used by ./manage.py shell_plus --notebook
 if "django-extensions" in {pkg.key for pkg in pkg_resources.working_set}:
@@ -433,6 +420,10 @@ MATOMO_ACTIVATE = env.bool("MATOMO_ACTIVATE", default=False)
 # SECURITY - Content Security Header Policy
 # https://django-csp.readthedocs.io
 
+USE_CSP = env.bool("USE_CSP", default=not DEBUG)
+if USE_CSP:
+    MIDDLEWARE.insert(2, "csp.middleware.CSPMiddleware")
+
 CSP_UPGRADE_INSECURE_REQUESTS = not DEBUG
 CSP_DEFAULT_SRC = ["'self'"]
 CSP_SCRIPT_SRC = [
@@ -460,6 +451,21 @@ ORTHOPHOTO_URL = (
     "&REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0&TILEMATRIXSET=PM"
     "&LAYER=ORTHOIMAGERY.ORTHOPHOTOS&STYLE=normal&FORMAT=image/jpeg"
     "&TILECOL={x}&TILEROW={y}&TILEMATRIX={z}"
+)
+
+# MATTERMOST SETTINGS
+
+# the webhook needs to be generated in mattermost and is linked to a active account
+MATTERMOST_URL = env.str("MATTERMOST_WEBHOOK", default=None)
+
+# ALERT DIAGNOSTICS BLOCKED
+
+ALERT_DIAG_MEDIUM = env.str("ALERT_DIAG_MEDIUM", default="both")
+if ALERT_DIAG_MEDIUM not in ["mattermost", "email", "both"]:
+    raise ImproperlyConfigured("ALERT_DIAG_MEDIUM needs to be correctly set")
+ALERT_DIAG_EMAIL_RECIPIENTS = env.list("ALERT_DIAG_EMAIL_RECIPIENTS", default=[])
+ALERT_DIAG_MATTERMOST_RECIPIENTS = env.list(
+    "ALERT_DIAG_MATTERMOST_RECIPIENTS", default=[]
 )
 
 # LOGGING SETTINGS

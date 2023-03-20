@@ -1,18 +1,16 @@
+from decimal import InvalidOperation
+
 from django.contrib import messages
 from django.http import HttpResponseRedirect
-from django.urls import reverse, reverse_lazy
-from django.views.generic import DetailView, CreateView
+from django.urls import reverse
+from django.views.generic import CreateView, DetailView, TemplateView
 
-from django_app_parameter import app_parameter
-
-from public_data.models import UsageSol, CouvertureSol
-
-from project import charts
-from project.models import Project, Request, ProjectCommune
-from project import tasks
+from project import charts, tasks
+from project.models import Project, ProjectCommune, Request
 from project.utils import add_total_line_column
+from public_data.models import CouvertureSol, UsageSol
 
-from .mixins import GroupMixin, BreadCrumbMixin
+from .mixins import BreadCrumbMixin, GroupMixin, UserQuerysetOrPublicMixin
 
 
 class ProjectReportBaseView(GroupMixin, DetailView):
@@ -31,7 +29,7 @@ class ProjectReportBaseView(GroupMixin, DetailView):
 
 
 class ProjectReportConsoView(ProjectReportBaseView):
-    template_name = "project/rapport_consommation.html"
+    template_name = "project/report_consommation.html"
     breadcrumbs_title = "Rapport consommation"
 
     def get_context_data(self, **kwargs):
@@ -61,6 +59,7 @@ class ProjectReportConsoView(ProjectReportBaseView):
 
         kwargs.update(
             {
+                "diagnostic": project,
                 "total_surface": project.area,
                 "land_type": project.land_type or "COMP",
                 "active_page": "consommation",
@@ -94,6 +93,7 @@ class ProjectReportConsoView(ProjectReportBaseView):
                 "groups_names": groups_names,
                 "level": level,
                 "objective_chart": objective_chart,
+                "nb_communes": project.cities.count(),
             }
         )
 
@@ -190,7 +190,7 @@ class ProjectReportCityGroupView(ProjectReportBaseView):
 
 
 class ProjectReportDicoverOcsgeView(ProjectReportBaseView):
-    template_name = "project/rapport_discover_ocsge.html"
+    template_name = "project/report_discover_ocsge.html"
     breadcrumbs_title = "Rapport découvrir l'OCS GE"
 
     def get_context_data(self, **kwargs):
@@ -198,6 +198,7 @@ class ProjectReportDicoverOcsgeView(ProjectReportBaseView):
 
         surface_territory = project.area
         kwargs = {
+            "diagnostic": project,
             "nom": "Rapport découvrir l'OCS GE",
             "surface_territory": surface_territory,
             "active_page": "discover",
@@ -247,7 +248,7 @@ class ProjectReportDicoverOcsgeView(ProjectReportBaseView):
 
 
 class ProjectReportUsageView(ProjectReportBaseView):
-    template_name = "project/rapport_usage.html"
+    template_name = "project/report_usage.html"
     breadcrumbs_title = "Rapport sur l'usage des sols"
 
     def get_context_data(self, **kwargs):
@@ -290,7 +291,7 @@ class ProjectReportUsageView(ProjectReportBaseView):
 
 
 class ProjectReportSynthesisView(ProjectReportBaseView):
-    template_name = "project/rapport_synthesis.html"
+    template_name = "project/report_synthesis.html"
     breadcrumbs_title = "Synthèse consommation d'espace et artificialisation"
 
     def get_context_data(self, **kwargs):
@@ -318,7 +319,7 @@ class ProjectReportSynthesisView(ProjectReportBaseView):
 
 
 class ProjectReportArtifView(ProjectReportBaseView):
-    template_name = "project/rapport_artif.html"
+    template_name = "project/report_artif.html"
     breadcrumbs_title = "Rapport artificialisation"
 
     def get_context_data(self, **kwargs):
@@ -354,7 +355,7 @@ class ProjectReportArtifView(ProjectReportBaseView):
             net_artif_rate = 100 * net_artif / (artif_area - net_artif)
             # show + on front of net_artif
             net_artif = f"+{net_artif}" if net_artif > 0 else str(net_artif)
-        except TypeError:
+        except (TypeError, InvalidOperation):
             net_artif_rate = 0
             net_artif = "0"
 
@@ -363,10 +364,27 @@ class ProjectReportArtifView(ProjectReportBaseView):
 
         chart_comparison = charts.NetArtifComparaisonChart(project, level=level)
 
-        detail_artif_chart = charts.DetailArtifChart(project)
+        detail_couv_artif_chart = charts.DetailCouvArtifChart(project)
+        detail_usage_artif_chart = charts.DetailUsageArtifChart(project)
 
         couv_artif_sol = charts.ArtifCouvSolPieChart(project)
         usage_artif_sol = charts.ArtifUsageSolPieChart(project)
+
+        detail_couv_artif_table = detail_couv_artif_chart.get_series()
+        for i in range(len(detail_couv_artif_table)):
+            detail_couv_artif_table[i]["last_millesime"] = 0
+            for row in couv_artif_sol.get_series():
+                if row["code_prefix"] == detail_couv_artif_table[i]["code_prefix"]:
+                    detail_couv_artif_table[i]["last_millesime"] = row["surface"]
+                    break
+
+        detail_usage_artif_table = detail_usage_artif_chart.get_series()
+        for usage_row in detail_usage_artif_table:
+            usage_row["last_millesime"] = 0
+            for row in usage_artif_sol.get_series():
+                if row["code_prefix"] == usage_row["code_prefix"]:
+                    usage_row["last_millesime"] = row["surface"]
+                    break
 
         kwargs.update(
             {
@@ -383,13 +401,16 @@ class ProjectReportArtifView(ProjectReportBaseView):
                     table_evolution_artif, line=False
                 ),
                 "headers_evolution_artif": headers_evolution_artif,
-                "detail_artif_chart": detail_artif_chart,
+                "detail_couv_artif_chart": detail_couv_artif_chart,
+                "detail_couv_artif_table": detail_couv_artif_table,
+                "detail_usage_artif_table": detail_usage_artif_table,
                 "detail_total_artif": sum(
-                    _["artif"] for _ in detail_artif_chart.get_series()
+                    _["artif"] for _ in detail_couv_artif_chart.get_series()
                 ),
                 "detail_total_renat": sum(
-                    _["renat"] for _ in detail_artif_chart.get_series()
+                    _["renat"] for _ in detail_couv_artif_chart.get_series()
                 ),
+                "detail_usage_artif_chart": detail_usage_artif_chart,
                 "couv_artif_sol": couv_artif_sol,
                 "usage_artif_sol": usage_artif_sol,
                 "chart_comparison": chart_comparison,
@@ -398,6 +419,7 @@ class ProjectReportArtifView(ProjectReportBaseView):
                 ),
                 "level": level,
                 "chart_waterfall": chart_waterfall,
+                "nb_communes": project.cities.count(),
             }
         )
 
@@ -406,7 +428,7 @@ class ProjectReportArtifView(ProjectReportBaseView):
 
 class ProjectReportDownloadView(BreadCrumbMixin, CreateView):
     model = Request
-    template_name = "project/rapport_download.html"
+    template_name = "project/report_download.html"
     fields = [
         "first_name",
         "last_name",
@@ -415,25 +437,10 @@ class ProjectReportDownloadView(BreadCrumbMixin, CreateView):
         "email",
     ]
 
-    def get_context_breadcrumbs(self):
-        breadcrumbs = super().get_context_breadcrumbs() + [
-            {"href": reverse_lazy("project:list"), "title": "Mes diagnostics"},
-            {
-                "href": reverse_lazy("project:detail", kwargs={"pk": self.project.id}),
-                "title": self.project.name,
-            },
-            {"href": None, "title": "Téléchargement du bilan"},
-        ]
-        return breadcrumbs
-
     def get_context_data(self, **kwargs):
-        self.project = Project.objects.get(pk=self.kwargs["pk"])
         kwargs.update(
             {
-                "project": self.project,
-                "url_bilan": app_parameter.BILAN_EXAMPLE,
-                "active_page": "download",
-                "ocsge_available": self.project.is_artif(),
+                "project": Project.objects.get(pk=self.kwargs["pk"]),
             }
         )
         return super().get_context_data(**kwargs)
@@ -463,19 +470,11 @@ class ProjectReportDownloadView(BreadCrumbMixin, CreateView):
         tasks.generate_word_diagnostic.apply_async(
             (new_request.id,), link=tasks.send_word_diagnostic.s()
         )
-        messages.success(
-            self.request,
-            (
-                "Votre demande de bilan a été enregistrée, un e-mail de confirmation "
-                "vous a été envoyé."
-            ),
-        )
-        succes_url = new_request.project.get_absolute_url()
-        return HttpResponseRedirect(succes_url)
+        return self.render_to_response(self.get_context_data(success_message=True))
 
 
 class ProjectReportConsoRelativeView(ProjectReportBaseView):
-    template_name = "project/rapport_conso_relative.html"
+    template_name = "project/report_conso_relative.html"
     breadcrumbs_title = "Rapport consommation relative"
 
     def get_context_data(self, **kwargs):
@@ -490,6 +489,7 @@ class ProjectReportConsoRelativeView(ProjectReportBaseView):
 
         kwargs.update(
             {
+                "diagnostic": project,
                 "active_page": "consommation",
                 "pop_chart": pop_chart,
                 "pop_table": add_total_line_column(pop_chart.get_series(), line=False),
@@ -526,9 +526,94 @@ class ProjectReportTarget2031View(ProjectReportBaseView):
         objective_chart = charts.ObjectiveChart(project)
         kwargs.update(
             {
+                "diagnostic": project,
                 "active_page": "target_2031",
                 "objective_chart": objective_chart,
             }
         )
 
+        return super().get_context_data(**kwargs)
+
+
+class DownloadWordView(TemplateView):
+    template_name = "project/error_download_word.html"
+
+    def get(self, request, *args, **kwargs):
+        """Redirect vers le fichier word du diagnostic si: le diagnostic est public ou est associé à l'utilisateur
+        connecté. Sinon, affiche une page d'erreur."""
+        req = Request.objects.get(pk=self.kwargs["request_id"])
+        if req.project and req.project.is_public:  # le diagnostic est public
+            return HttpResponseRedirect(req.sent_file.url)
+        # le diagnostic n'est pas public, on vérifie que l'utilisateur connecté est bien le propriétaire du diagnostic
+        if request.user.is_anonymous:
+            messages.info(request, "Vous essayez d'accéder à un document privé. Veuillez vous connecter.")
+            return HttpResponseRedirect(f"{reverse('users:signin')}?next={request.path}")
+        if request.user.id == req.user_id:
+            return HttpResponseRedirect(req.sent_file.url)
+        return super().get(request, *args, **kwargs)
+
+
+class ConsoRelativeSurfaceChart(UserQuerysetOrPublicMixin, DetailView):
+    context_object_name = "project"
+    queryset = Project.objects.all()
+    template_name = "project/partials/surface_comparison_conso.html"
+
+    def get_context_data(self, **kwargs):
+        indicateur_chart = charts.SurfaceChart(self.object)
+        comparison_chart = charts.ConsoComparisonChart(self.object, relative=True)
+        kwargs.update(
+            {
+                "diagnostic": self.object,
+                "indicateur_chart": indicateur_chart,
+                "indicateur_table": indicateur_chart.get_series(),
+                "comparison_chart": comparison_chart,
+                "comparison_table": add_total_line_column(
+                    comparison_chart.get_series(), line=False
+                ),
+            }
+        )
+        return super().get_context_data(**kwargs)
+
+
+class ConsoRelativePopChart(UserQuerysetOrPublicMixin, DetailView):
+    context_object_name = "project"
+    queryset = Project.objects.all()
+    template_name = "project/partials/pop_comparison_conso.html"
+
+    def get_context_data(self, **kwargs):
+        conso_pop_chart = charts.ConsoComparisonPopChart(self.object)
+        pop_chart = charts.PopChart(self.object)
+        kwargs.update(
+            {
+                "diagnostic": self.object,
+                "pop_chart": pop_chart,
+                "pop_table": pop_chart.get_series(),
+                "conso_pop_chart": conso_pop_chart,
+                "conso_pop_table": add_total_line_column(
+                    conso_pop_chart.get_series(), line=False
+                ),
+            }
+        )
+        return super().get_context_data(**kwargs)
+
+
+class ConsoRelativeHouseholdChart(UserQuerysetOrPublicMixin, DetailView):
+    context_object_name = "project"
+    queryset = Project.objects.all()
+    template_name = "project/partials/household_comparison_conso.html"
+
+    def get_context_data(self, **kwargs):
+        household_chart = charts.HouseholdChart(self.object)
+        conso_household_chart = charts.ConsoComparisonHouseholdChart(self.object)
+        kwargs.update(
+            {
+                "diagnostic": self.object,
+                "household_chart": household_chart,
+                "household_table": household_chart.get_series(),
+                "conso_household_chart": conso_household_chart,
+                "conso_household_table": add_total_line_column(
+                    conso_household_chart.get_series(), line=False
+                ),
+            }
+        )
         return super().get_context_data(**kwargs)

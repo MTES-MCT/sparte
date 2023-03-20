@@ -1,10 +1,7 @@
 import logging
 
 from django.core.management.base import BaseCommand
-from django.db.models import Q, F
-
-from utils.db import cast_sum
-
+from django.db.models import F, Q
 
 from public_data.models import (
     Commune,
@@ -13,8 +10,9 @@ from public_data.models import (
     Departement,
     Ocsge,
     OcsgeDiff,
+    Region,
 )
-
+from utils.db import cast_sum
 
 logger = logging.getLogger("management.commands")
 
@@ -34,6 +32,11 @@ class Command(BaseCommand):
             help="name of a specific departement",
         )
         parser.add_argument(
+            "--region",
+            type=str,
+            help="name of region",
+        )
+        parser.add_argument(
             "--verbose",
             action="store_true",
             help="display city processed",
@@ -46,6 +49,8 @@ class Command(BaseCommand):
             self.process_one(options["insee"])
         elif options["departement"]:
             self.process_departement(options["departement"])
+        elif options["region"]:
+            self.process_departement(options["region"])
         else:
             self.process_all()
         logger.info("End building cities data")
@@ -62,6 +67,18 @@ class Command(BaseCommand):
         logger.info("Processing all cities")
         qs = Commune.objects.all().order_by("insee")
         self.process_multi(qs)
+
+    def process_region(self, region_name):
+        logger.info("Processing a region with name= %s", region_name)
+        qs = Region.objects.filter(
+            Q(source_id=region_name) | Q(name__icontains=region_name)
+        )
+        if not qs.exists():
+            logger.warning("No region found")
+            return
+        region = qs.first()
+        logger.info("Région: %s (%s)", region.name, region.source_id)
+        self.process_multi(region.get_cities().order_by("name"))
 
     def process_departement(self, departement):
         qs = Departement.objects.filter(

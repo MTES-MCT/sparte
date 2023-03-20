@@ -18,96 +18,124 @@ Projection 2031
 
 {% block content %}
 <div class="px-4">
-    {% include "project/detail_menu.html" %}
+    {% include "project/partials/report_title.html" with title=diagnostic surface=diagnostic.area %}
 
-    <div class="bg-light rounded-5 border fr-container fr-py-3w">
+    {% include "project/report_menu.html" %}
 
-        <div class="box box-alert px-4 py-2 mb-4 mt-0">
-            <p>La Loi Climat & Résilience recommande :</p>
+    <div class="fr-container fr-py-3w">
+        <div class="fr-callout fr-callout--brown-caramel fr-fi-information-line fr-callout-read-more">
+            <div class="fr-callout-read-more__excerpt">
+                <p class="fr-text--sm mb-3">La Loi Climat & Résilience recommande :</p>
+                <ul class="fr-text--sm">
+                    <li>entre 2021 et 2031 à l'échelle régionale, de diviser par 2  la consommation d'espaces Naturels, Agricoles et Forestiers mesurée entre 2011 et 2021 ;</li>
+                    <li>d'ici février 2024, que les SRADDET territorialisent les objectifs de diminution pour chaque SCoT.</li>
+                </ul>
+            </div>
+            <div class="fr-callout-read-more__text" id="target_2031_1" hidden>
+                <p class="fr-text--sm mb-3">La Loi Climat & Résilience recommande :</p>
+                <ul class="fr-text--sm">
+                    <li>entre 2021 et 2031 à l'échelle régionale, de diviser par 2  la consommation d'espaces Naturels, Agricoles et Forestiers mesurée entre 2011 et 2021 ;</li>
+                    <li>d'ici février 2024, que les SRADDET territorialisent les objectifs de diminution pour chaque SCoT.</li>
+                </ul>
+                <p class="fr-text--sm mb-3">En attente de territorialisation des objectifs de la loi Climat & Résilience, SPARTE fait une première simulation à l'échelle du territoire de diagnostic en divisant par 2 la consommation d'espaces par rapport au bilan 2011-2021.</p>
+                <p class="fr-text--sm mb-3">Pour la mesure de la consommation d'espaces NAF, l'Etat utilise les fichiers fonciers.</p>
+                <p class="fr-text--sm mb-3">Ces données sont fournies tous les ans depuis 2009. Le dernier millésime de 2021 est la photographie du territoire au 1er janvier 2021, intégrant les évolutions réalisées au cours de l'année 2020.</p>
+            </div>
 
-            <ul>
-                <li>entre 2021 et 2031 à l'échelle régionale, de diviser par 2  la consommation d'espaces Naturels, Agricoles et Forestiers mesurée entre 2011 et 2021 ;</li>
-                <li>d'ici février 2024, que les SRADDET territorialisent les objectifs de diminution pour chaque SCoT.</li>
-            </ul>
-
-            <p>En attente de territorialisation des objectifs de la loi Climat & Résilience, SPARTE fait une première simulation à l'échelle du territoire de diagnostic en divisant par 2 la consommation d'espaces par rapport au bilan 2011-2021.</p>
-
-            <p>Pour la mesure de la consommation d'espaces NAF, l'Etat utilise les fichiers fonciers.</p>
-
-            <p>Ces données sont fournies tous les ans depuis 2009. Le dernier millésime de 2021 est la photographie du territoire au 1er janvier 2021, intégrant les évolutions réalisées au cours de l'année 2020.</p>
+            <button class="fr-btn fr-btn--secondary fr-btn--sm fr-callout-read-more__btn" aria-expanded="false" aria-controls="target_2031_1">
+                Lire plus
+            </button>
         </div>
 
-        <div class="fr-grid-row fr-grid-row--gutters">
-            <div class="fr-col-12 fr-col-md-4">
-                <div class="fr-callout">
+
+        <div class="fr-grid-row fr-grid-row--gutters fr-mt-7w">
+            <div class="fr-col-12 fr-col-md-4 fr-grid-row">
+                <div class="fr-callout w-100">
                     <p class="fr-callout__title">+{{ objective_chart.total_real|floatformat:1 }} ha</p>
                     <p>Consommation 2011-2020</p>
                 </div>
             </div>
-
-            <div class="fr-col-12 fr-col-md-4">
-                <div class="fr-callout">
+            <div class="fr-col-12 fr-col-md-4 fr-grid-row">
+                <div class="fr-callout w-100">
                     <p class="fr-callout__title">+{{ objective_chart.conso_2031|floatformat:1 }} ha</p>
                     <p>Trajectoire 2021-2030 <i class="bi bi-question-circle" data-toggle="tooltip" title="Réduction de {{ project.target_2031 }}% par rapport à la décennie précédente" aria-hidden="true"></i></p>
                 </div>
             </div>
-
-            <div class="fr-col-12 fr-col-md-4">
-                <div class="fr-callout">
+            <div class="fr-col-12 fr-col-md-4 fr-grid-row">
+                <div class="fr-callout w-100">
                     <p class="fr-callout__title">+{{ objective_chart.annual_objective_2031|floatformat:1 }} ha/an</p>
                     <p>Trajectoire projetée annualisée</p>
                 </div>
             </div>
         </div>
 
-        <div class="w-100 box p-4">
-            <div class="clearfix">
-                <div class="float-end">Personnaliser l'objectif 2031 : <a href="{% url 'project:update' project.pk %}?next=report-target-2031" class="fr-btn fr-btn--tertiary fr-btn--sm">{{ project.target_2031 }}%</a></div>
-                <h3 id="projection-2031">
-                    Projection 2031 avec un objectif de réduction de 50%
-                </h3>
-                <p>La consommation d'espaces NAF entre 2021 et 2031 est estimée par défaut à 50% (aujourd'hui à l'échelle de la région) de celle mesurée entre 2011 et 2021, vous pouvez changer ce pourcentage.</p>
+        <div class="fr-mt-7w">
+            <div class="d-flex justify-content-between">
+                <h3>Projection 2031 avec un objectif de réduction de 50%</h3>
+                <div>Personnaliser l'objectif 2031 : <a href="{% url 'project:update' project.pk %}?next=report-target-2031" class="fr-btn fr-btn--tertiary fr-btn--sm">{{ project.target_2031 }}%</a></div>
+            </div>
+            <p>Objectif 2031, réduction de 50% de la consommation d'espaces NAF par rapport à la somme des 10 dernières années (2011-2021)</p>
+
+            <div class="border fr-p-2w">
+                <div class="d-flex justify-content-end align-items-center fr-mb-2w">
+                    <div class="dropdown custom-dropdown fr-mr-2w" data-toggle="tooltip" title="Exporter le graphique">
+                        <button class="fr-btn fr-icon-download-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="dropdown" aria-expanded="false"></button>
+
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="fr-nav__link export-chart" href="#" data-chart-target="objective_chart" data-type="image/png">PNG</a>
+                            </li>
+                            <li>
+                                <a class="fr-nav__link export-chart" href="#" data-chart-target="objective_chart" data-type="image/jpeg">JPEG</a>
+                            </li>
+                            <li>
+                                <a class="fr-nav__link export-chart" href="#" data-chart-target="objective_chart" data-type="application/pdf">PDF</a>
+                            </li>
+                            <li>
+                                <a class="fr-nav__link export-chart" href="#" data-chart-target="objective_chart" data-type="image/svg+xml">Vectoriel</a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm fullscreen-chart" data-chart-target="objective_chart" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
+                </div>
+                <div id="objective_chart"></div>
             </div>
 
-            <div id="objective_chart" class=""></div>
+            <div class="mt-4 fr-grid-row">
+                <div class="fr-col-12 fr-col-lg-6">
+                    <div>
+                        <strong class="plotband_blue">Période de référence</strong>
+                    </div>
+                    <div class="text-muted fr-text--sm mb-0"><em>1er jan. 2011 - 31 déc. 2020, 10 ans</em></div>
+                    <div>Consommation cumulée de référence : {{ objective_chart.total_real|floatformat:1 }} ha</div>
+                    <div>Consommation annuelle de référence : {{ objective_chart.annual_real|floatformat:1 }} ha</div>
+                </div>
 
-            <p class="mt-5 my-0">
-                <strong>En <span class="plotband_blue">bleu</span> : période de référence</strong>
-            </p>
-            <p class="my-0">
-                <span class="text-muted"><em>1er jan. 2011 - 31 déc. 2020, 10 ans</em></span>
-            </p>
-            <p class="mt-2 mb-4">
-                Consommation cumulée de référence : {{ objective_chart.total_real|floatformat:1 }} ha
-                <br/>Consommation annuelle de référence : {{ objective_chart.annual_real|floatformat:1 }} ha
-            </p>
+                <div class="fr-col-12 fr-col-lg-6">
+                    <div>
+                        <strong class="plotband_green">Projection 2031</strong>
+                    </div>
+                    <div class="text-muted fr-text--sm mb-0"><em>1er jan. 2021 - 31 déc. 2030, 10 ans</em></div>
+                    <div>Objectif de consommation cumulée 2030 : {{ objective_chart.conso_2031|floatformat:1 }} ha</div>
+                    <div>Objectif de consommation d'espaces NAF annuelle moyenne : {{ objective_chart.annual_objective_2031|floatformat:1 }} ha</div>
+                </div>
+            </div>
 
-            <p class="my-0">
-                <strong>En <span class="plotband_green">vert</span> : projection 2031</strong>
-            <p class="my-0">
-                <span class="text-muted"><em>1er jan. 2021 - 31 déc. 2030, 10 ans</em></span>
-            </p>
-            <p class="mt-2">
-                Pendant la période de réduction, la loi prévoit que chaque région ne consomme que 50% de ce qui a été consommé pendant la  période de référence.
-            </p>
+            <div class="mt-4">Pendant la période de réduction, la loi prévoit que chaque région ne consomme que 50% de ce qui a été consommé pendant la  période de référence.</div>
+
             {% if project.target_2031 != 50 %}
-            <p class="mt-2">
-                Vous avez personnalisé l'objectif de votre territoire à {{ project.target_2031 }}%.
-            </p>
+                <div class="fr-alert fr-alert--info fr-alert--sm mt-3">
+                    <p>Vous avez personnalisé l'objectif de votre territoire à {{ project.target_2031 }}%.</p>
+                </div>
             {% endif %}
-            <p class="mt-2 mb-4">
-                Objectif de consommation cumulée 2030 : {{ objective_chart.conso_2031|floatformat:1 }} ha
-                <br/>Objectif de consommation d'espaces NAF annuelle moyenne : {{ objective_chart.annual_objective_2031|floatformat:1 }} ha
-            </p>
 
-            <button class="fr-btn fr-btn--tertiary fr-btn--sm dropdown-toggle rounded-pill" type="button" data-bs-toggle="collapse" data-bs-target="#target-data" aria-expanded="false" aria-controls="target-data">
-                Données
-            </button>
-            <div class="collapse fr-highlight" id="target-data">
-                <div>
-                    <h4 class="pt-3">Source</h4>
+            <div class="fr-callout bg-white fr-p-2w mt-4">
+                <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data">Données</button>
+                <div class="fr-collapse" id="target-data">
+                    <h6 class="fr-mt-2w">Source</h6>
                     <p>Fichiers fonciers du Cérema issus des données MAJIC (Mise A Jour de l'Information Cadastrale) de la DGFIP (millésime min : 2009, millésime max : 2021)</p>
-                    <h4 class="pt-3">Calcul</h4>
+                    <h6 class="fr-mt-2w">Calcul</h6>
                     <p>Les données du Cérema donnent la consommation d'espaces NAF par année, pour le territoire choisi.</p>
                 </div>
             </div>

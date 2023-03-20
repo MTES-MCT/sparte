@@ -21,18 +21,17 @@ problème de performance
 
 """
 from django.contrib.gis.db import models
-from django.contrib.gis.db.models.functions import Intersection, Area, Transform
-from django.core.validators import MinValueValidator, MaxValueValidator
+from django.contrib.gis.db.models.functions import Area, Intersection, Transform
+from django.core.validators import MaxValueValidator, MinValueValidator
 
 # from django.db import connection
-from django.db.models import Sum, DecimalField
+from django.db.models import DecimalField, Sum
 from django.db.models.functions import Coalesce
 
 from utils.db import IntersectManager
 
-from .mixins import DataColorationMixin, TruncateTableMixin
-
 from .couverture_usage import CouvertureUsageMatrix
+from .mixins import DataColorationMixin, TruncateTableMixin
 
 
 class Ocsge(TruncateTableMixin, DataColorationMixin, models.Model):

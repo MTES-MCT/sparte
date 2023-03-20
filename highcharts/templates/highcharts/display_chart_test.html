@@ -1,0 +1,58 @@
+<div class="d-flex justify-content-end align-items-center fr-mb-2w">
+    {% block before_buttons %}{% endblock %}
+
+    <div class="dropdown custom-dropdown fr-mr-2w" data-toggle="tooltip" title="Exporter le graphique">
+        <button class="fr-btn fr-icon-download-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="dropdown" aria-expanded="false"></button>
+
+        <ul class="dropdown-menu">
+            <li>
+                <a class="fr-nav__link export-chart" href="#" data-chart-target="{{ autogenrated_id }}" data-type="image/png">PNG</a>
+            </li>
+            <li>
+                <a class="fr-nav__link export-chart" href="#" data-chart-target="{{ autogenrated_id }}" data-type="image/jpeg">JPEG</a>
+            </li>
+            <li>
+                <a class="fr-nav__link export-chart" href="#" data-chart-target="{{ autogenrated_id }}" data-type="application/pdf">PDF</a>
+            </li>
+            <li>
+                <a class="fr-nav__link export-chart" href="#" data-chart-target="{{ autogenrated_id }}" data-type="image/svg+xml">Vectoriel</a>
+            </li>
+        </ul>
+    </div>
+
+
+    <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm fr-mr-2w fullscreen-chart" data-chart-target="{{ autogenrated_id }}" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
+
+    <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#menage-astuce" data-toggle="tooltip" title="Astuces pour lire le graphique" aria-hidden="true"></button>
+
+    {% block after_buttons %}{% endblock %}
+
+</div>
+
+<div id="{{ autogenrated_id }}"></div>
+
+<!-- affichage du chart {{ chart_name}} -->
+<script language="javascript" nonce="{{ CSP_NONCE }}">
+{{ js_name }} = new Highcharts.chart(
+    {{ autogenrated_id }},
+    JSON.parse('{{ json_options }}'),
+)
+</script>
+
+<!-- Modal -->
+<div class="modal fade" id="{{ autogenrated_id }}-astuce" tabindex="-1" aria-labelledby="{{ autogenrated_id }}-astuce-label" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+        <div class="fr-modal__body">
+            <div class="fr-modal__header">
+                <button class="fr-link--close fr-link" data-bs-dismiss="modal" aria-label="Close">Fermer</button>
+            </div>
+            <div class="fr-modal__content">
+                <h1 id="fr-modal-2-title" class="fr-modal__title" id="{{ autogenrated_id }}-astuce-label">
+                    <span class="fr-fi-arrow-right-line fr-fi--lg"></span>
+                    Astuces - Comparaison d'espace des ménages
+                </h1>
+                <p>L'évolution des ménages permet d'analyser plus finement la dynamique du territoire, plus révélatrice des tendances en besoin d'urbanisation.</p>
+            </div>
+        </div>
+    </div>
+</div>

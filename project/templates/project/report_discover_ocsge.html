@@ -1,0 +1,499 @@
+{% extends 'index.html' %}
+
+{% load static %}
+{% load project_tags %}
+{% load humanize %}
+{% load i18n %}
+{% load l10n %}
+{% load highcharts_tags %}
+{% load sri %}
+
+{% block pagetitle %}
+{{ nom }}
+{% endblock %}
+
+{% block headers %}
+{% sri_static "project/css/project.css" %}
+<style nonce="{{ CSP_NONCE }}">
+.tooltiped {
+    border-bottom:1px dashed #000;
+}
+{% for leaf in usa_leafs %}
+.{{ leaf.cleaned_code_prefix }} {
+    background-color: {{ leaf.map_color }};
+    color: {{ leaf.map_color }};
+    fill:  {{ leaf.map_color }};
+}
+{% endfor %}
+
+{% for leaf in couv_leafs %}
+.{{ leaf.cleaned_code_prefix }} {
+    background-color: {{ leaf.map_color }};
+    color: {{ leaf.map_color }};
+    fill:  {{ leaf.map_color }};
+}
+{% endfor %}
+#chart_couv_wheel, #chart_usa_wheel {
+    height: 500px;
+}
+
+.nomenclature {
+    list-style: none;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="px-4">
+    {% include "project/partials/report_title.html" with title=diagnostic surface=surface_territory %}
+
+    {% include "project/report_menu.html" %}
+
+    <div class="fr-container fr-py-3w">
+        <div class="fr-callout fr-callout--brown-caramel fr-fi-information-line fr-callout-read-more">
+            <div class="fr-callout-read-more__excerpt">
+                <p class="fr-text--sm mb-3">L'OCS GE est une base de données vectorielle pour la description de l’occupation du sol de l’ensemble du territoire métropolitain et des départements et régions d’outre-mer (DROM). Elle est un référentiel national, constituant un socle national, utilisable au niveau national et au niveau local notamment pour contribuer aux calculs d’indicateurs exigés par les documents d’urbanisme. Elle s’appuie sur un modèle ouvert séparant la couverture du sol et l’usage du sol (appelé modèle en 2 dimensions), une précision géométrique appuyée sur le Référentiel à Grande Échelle (RGE®) et une cohérence temporelle (notion de millésime) qui, par le biais de mises à jour à venir, permettra de quantifier et de qualifier les évolutions des espaces.</p>
+            </div>
+            <div class="fr-callout-read-more__text" id="ocsge_1" hidden>
+                <p class="fr-text--sm mb-3">L'OCS GE est une base de données vectorielle pour la description de l’occupation du sol de l’ensemble du territoire métropolitain et des départements et régions d’outre-mer (DROM). Elle est un référentiel national, constituant un socle national, utilisable au niveau national et au niveau local notamment pour contribuer aux calculs d’indicateurs exigés par les documents d’urbanisme. Elle s’appuie sur un modèle ouvert séparant la couverture du sol et l’usage du sol (appelé modèle en 2 dimensions), une précision géométrique appuyée sur le Référentiel à Grande Échelle (RGE®) et une cohérence temporelle (notion de millésime) qui, par le biais de mises à jour à venir, permettra de quantifier et de qualifier les évolutions des espaces.</p>
+                <p class="fr-text--sm mb-3">La couverture du sol est une vue « physionomique » du terrain. La description est une simple distinction des éléments structurant le paysage. Ex : Zones bâties.</p>
+                <p class="fr-text--sm mb-3">L'usage du sol est une vue « anthropique du sol ». Il est  partagé en fonction du rôle que jouent les portions de terrain en tant  qu’occupation humaine. Dans l'OCSGE, l'usage US235 regroupe les objets de US2  (production secondaire), US3 (production tertiaire) et US5 (usage  résidentiel) de la nomenclature nationale quand la distinction entre ces usages n'est pas possible ou pas connue. Ex : Agriculture.</p>
+                <p class="fr-text--sm mb-3">Chaque objet géographique de l'OCS GE porte ces deux informations. Ex : Zones bâties (couverture) et Agriculture (usage) décrivent des bâtiments agricoles.</p>
+                <div class="mt-4 fr-grid-row">
+                    <div class="fr-col-12 fr-col-lg-6">
+                        <h4>Nomenclature de l'Usage du sol</h4>
+                        <ul class="nomenclature">
+                        {% for leaf in usa_leafs %}
+                            <li><span class="{{ leaf.cleaned_code_prefix }}">uuu</span> {{ leaf.code_prefix }} - {{ leaf.label_short }}</li>
+                        {% endfor %}
+                        </ul>
+                    </div>
+                    <div class="fr-col-12 fr-col-lg-6">
+                        <h4>Nomenclature de la Couverture du sol</h4>
+                        <ul class="nomenclature">
+                        {% for leaf in couv_leafs %}
+                            <li><span class="{{ leaf.cleaned_code_prefix }}">uuu</span> {{ leaf.code_prefix }} - {{ leaf.label_short }}</li>
+                        {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <button class="fr-btn fr-btn--secondary fr-btn--sm fr-callout-read-more__btn" aria-expanded="false" aria-controls="ocsge_1">
+                Lire plus
+            </button>
+        </div>
+
+        <div class="fr-mt-7w">
+            <h2>Couverture du sol</h2>
+            <h3>Répartition</h3>
+
+            <div class="fr-grid-row fr-grid-row--gutters">
+                <div class="fr-col-12 fr-col-lg-6">
+                    <div class="border fr-p-2w">
+                        <div class="d-flex justify-content-end align-items-center fr-mb-2w">
+                            <div class="dropdown custom-dropdown fr-mr-2w" data-toggle="tooltip" title="Exporter le graphique">
+                                <button class="fr-btn fr-icon-download-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="dropdown" aria-expanded="false"></button>
+        
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_couv_pie" data-type="image/png">PNG</a>
+                                    </li>
+                                    <li>
+                                        <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_couv_pie" data-type="image/jpeg">JPEG</a>
+                                    </li>
+                                    <li>
+                                        <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_couv_pie" data-type="application/pdf">PDF</a>
+                                    </li>
+                                    <li>
+                                        <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_couv_pie" data-type="image/svg+xml">Vectoriel</a>
+                                    </li>
+                                </ul>
+                            </div>
+        
+                            <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm fullscreen-chart" data-chart-target="chart_couv_pie" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
+                        </div>
+                        <div id="chart_couv_pie"></div>
+                    </div>
+                </div>
+                <div class="fr-col-12 fr-col-lg-6">
+                    <div class="border fr-p-2w">
+                        <div class="d-flex justify-content-end align-items-center fr-mb-2w">
+                            <div class="dropdown custom-dropdown fr-mr-2w" data-toggle="tooltip" title="Exporter le graphique">
+                                <button class="fr-btn fr-icon-download-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="dropdown" aria-expanded="false"></button>
+        
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_couv_prog" data-type="image/png">PNG</a>
+                                    </li>
+                                    <li>
+                                        <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_couv_prog" data-type="image/jpeg">JPEG</a>
+                                    </li>
+                                    <li>
+                                        <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_couv_prog" data-type="application/pdf">PDF</a>
+                                    </li>
+                                    <li>
+                                        <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_couv_prog" data-type="image/svg+xml">Vectoriel</a>
+                                    </li>
+                                </ul>
+                            </div>
+        
+                            <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm fullscreen-chart" data-chart-target="chart_couv_prog" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
+                        </div>
+                        <div id="chart_couv_prog"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="fr-callout bg-white fr-p-2w mt-4">
+                <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data-1">Données</button>
+                <div class="fr-collapse" id="target-data-1">
+                    <h6 class="fr-mt-2w">Source</h6>
+                    <p>Données d'Occupation des Sols à Grande Echelle (OCS GE) de l'IGN, sur la période d'analyse traduite grâce à la matrice de passage.</p>
+
+                    <h6 class="fr-mt-2w">Calcul</h6>
+                    <p>Données brutes, sans calcul.</p>
+
+                    <h6 class="fr-mt-2w">Données</h6>
+                    <strong>Progression de {{ first_millesime }} à {{ last_millesime }}</strong>
+                    <table class="table table-striped table-sm table-hover">
+                        <thead>
+                            <tr>
+                                <th scope="col">Code</th>
+                                <th scope="col">Libellé</th>
+                                <th scope="col" class="text-end">Surface {{ first_millesime }} (ha)</th>
+                                <th scope="col" class="text-end">Evolution (ha)</th>
+                                <th scope="col" class="text-end">Surface {{ last_millesime }} (ha)</th>
+                                <th scope="col" class="text-end">Surface {{ last_millesime }} (%)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in couv_progression_chart.get_series %}
+                            <tr {% if item.level == 1 %}class="fw-bold"{% endif %}>
+                                <th scope="row">{{ item.level|space }} {{ item.code }}</th>
+                                <td>{{ item.get_label_short }}</td>
+                                <td align="right">{{ item.surface_first|floatformat:1 }}</td>
+                                <td align="right">
+                                    {% if item.surface_diff == 0 %}-
+                                    {%else%}
+                                        {% if item.surface_diff > 0 %}+{% endif%}
+                                        {{ item.surface_diff|floatformat:2 }}
+                                    {% endif%}
+                                </td>
+                                <td align="right">{{ item.surface_last|floatformat:1 }}</td>
+                                <td align="right">{{ item.surface_last|percent:surface_territory }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="fr-mt-7w">
+            <h3>Matrice de passage de {{ first_millesime }} à {{ last_millesime }} :</h3>
+
+            <div class="border fr-p-2w">
+                <div class="d-flex justify-content-end align-items-center fr-mb-2w">
+                    <div class="dropdown custom-dropdown fr-mr-2w" data-toggle="tooltip" title="Exporter le graphique">
+                        <button class="fr-btn fr-icon-download-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="dropdown" aria-expanded="false"></button>
+
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_couv_wheel" data-type="image/png">PNG</a>
+                            </li>
+                            <li>
+                                <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_couv_wheel" data-type="image/jpeg">JPEG</a>
+                            </li>
+                            <li>
+                                <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_couv_wheel" data-type="application/pdf">PDF</a>
+                            </li>
+                            <li>
+                                <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_couv_wheel" data-type="image/svg+xml">Vectoriel</a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm fullscreen-chart" data-chart-target="chart_couv_wheel" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
+                </div>
+                <div id="chart_couv_wheel"></div>
+            </div>
+
+            <div class="fr-callout bg-white fr-p-2w mt-4">
+                <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="couv-matrice-data">Données</button>
+
+                <div class="fr-collapse" id="couv-matrice-data">
+                    <h6 class="fr-mt-2w">Source</h6>
+                    <p>Données d'OCcupation des Sols à Grande Echelle (OCS GE) de l'IGN, sur la période d'analyse traduite grâce à la matrice de passage.</p>
+
+                    <h6 class="fr-mt-2w">Calcul</h6>
+                    <p>Données brutes, sans calcul.</p>
+
+                    <h6 class="fr-mt-2w">Données</h6>
+                    <p class="text-muted">En hectare (Ha).</p>
+                    <p class="text-muted">Les lignes indiquent la couverture {{ first_millesime }} et les colonnes indiquent la couverture {{ last_millesime }}. Par conséquent, à l'intersection se trouve la superficie qui est passée d'une couverture l'autre.</p>
+
+                    <table class="table table-striped table-sm">
+                        <thead>
+                            <tr>
+                                <th scope="col"></th>
+                                {% for header in couv_matrix_headers %}
+                                <th scope="col" class="text-end">
+                                    <span class="tooltiped" data-toggle="tooltip" title="{{ header.label }}">
+                                        {{ header.code }}
+                                    </span>
+                                </th>
+                                {% endfor %}
+                                <th scope="col" class="text-end">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for name, data in couv_matrix_data.items %}
+                            <tr>
+                                <th scope="row">
+                                    {% if name.code %}
+                                    <span class="tooltiped" data-toggle="tooltip" title="{{ name.label }}">
+                                        {{ name.code }} {{ name.label_short }}
+                                    </span>
+                                    {% else %}
+                                        Total
+                                    {% endif %}
+                                </th>
+                                {% for title, val in data.items %}
+                                    <td align="right">
+                                        <span data-toggle="tooltip" title="Passage de {{ name.code }} à {{ title.code }}">
+                                            {{ val|floatformat:2 }}
+                                        </span>
+                                    </td>
+                                {% endfor %}
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="fr-mt-12w">
+            <h2>Usage du sol</h2>
+            <h3>Répartition</h3>
+
+            <div class="fr-grid-row fr-grid-row--gutters">
+                <div class="fr-col-12 fr-col-lg-6">
+                    <div class="border fr-p-2w">
+                        <div class="d-flex justify-content-end align-items-center fr-mb-2w">
+                            <div class="dropdown custom-dropdown fr-mr-2w" data-toggle="tooltip" title="Exporter le graphique">
+                                <button class="fr-btn fr-icon-download-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="dropdown" aria-expanded="false"></button>
+        
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_usa_pie" data-type="image/png">PNG</a>
+                                    </li>
+                                    <li>
+                                        <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_usa_pie" data-type="image/jpeg">JPEG</a>
+                                    </li>
+                                    <li>
+                                        <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_usa_pie" data-type="application/pdf">PDF</a>
+                                    </li>
+                                    <li>
+                                        <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_usa_pie" data-type="image/svg+xml">Vectoriel</a>
+                                    </li>
+                                </ul>
+                            </div>
+        
+                            <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm fullscreen-chart" data-chart-target="chart_usa_pie" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
+                        </div>
+                        <div id="chart_usa_pie"></div>
+                    </div>
+                </div>
+                <div class="fr-col-12 fr-col-lg-6">
+                    <div class="border fr-p-2w">
+                        <div class="d-flex justify-content-end align-items-center fr-mb-2w">
+                            <div class="dropdown custom-dropdown fr-mr-2w" data-toggle="tooltip" title="Exporter le graphique">
+                                <button class="fr-btn fr-icon-download-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="dropdown" aria-expanded="false"></button>
+        
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_usa_prog" data-type="image/png">PNG</a>
+                                    </li>
+                                    <li>
+                                        <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_usa_prog" data-type="image/jpeg">JPEG</a>
+                                    </li>
+                                    <li>
+                                        <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_usa_prog" data-type="application/pdf">PDF</a>
+                                    </li>
+                                    <li>
+                                        <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_usa_prog" data-type="image/svg+xml">Vectoriel</a>
+                                    </li>
+                                </ul>
+                            </div>
+        
+                            <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm fullscreen-chart" data-chart-target="chart_usa_prog" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
+                        </div>
+                        <div id="chart_usa_prog"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="fr-callout bg-white fr-p-2w mt-4">
+                <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data-3">Données</button>
+                <div class="fr-collapse" id="target-data-3">
+                    <h6 class="fr-mt-2w">Source</h6>
+                    <p>Données d'Occupation des Sols à Grande Echelle (OCS GE) de l'IGN, sur la période d'analyse traduite grâce à la matrice de passage.</p>
+
+                    <h6 class="fr-mt-2w">Calcul</h6>
+                    <p>Données brutes, sans calcul.</p>
+
+                    <h6 class="fr-mt-2w">Données</h6>
+                    <strong>Progression de {{ first_millesime }} à {{ last_millesime }}</strong>
+                    <table class="table table-striped table-sm table-hover">
+                        <thead>
+                            <tr>
+                                <th scope="col">Code</th>
+                                <th scope="col">Libellé</th>
+                                <th scope="col" class="text-end">Surface {{ first_millesime }} (ha)</th>
+                                <th scope="col" class="text-end">Evolution (ha)</th>
+                                <th scope="col" class="text-end">Surface {{ last_millesime }} (ha)</th>
+                                <th scope="col" class="text-end">Surface {{ last_millesime }} (%)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in usa_progression_chart.get_series %}
+                            <tr {% if item.level == 1 %}class="fw-bold"{% endif %}>
+                                <th scope="row">{{ item.level|space }} {{ item.code }}</th>
+                                <td>{{ item.get_label_short }}</td>
+                                <td align="right">{{ item.surface_first|floatformat:1 }}</td>
+                                <td align="right">
+                                    {% if item.surface_diff == 0 %}-
+                                    {%else%}
+                                        {% if item.surface_diff > 0 %}+{% endif%}
+                                        {{ item.surface_diff|floatformat:2 }}
+                                    {% endif%}
+                                </td>
+                                <td align="right">{{ item.surface_last|floatformat:1 }}</td>
+                                <td align="right">{{ item.surface_last|percent:surface_territory }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="fr-mt-7w">
+            <h3>Matrice de passage de {{ first_millesime }} à {{ last_millesime }} :</h3>
+
+            <div class="border fr-p-2w">
+                <div class="d-flex justify-content-end align-items-center fr-mb-2w">
+                    <div class="dropdown custom-dropdown fr-mr-2w" data-toggle="tooltip" title="Exporter le graphique">
+                        <button class="fr-btn fr-icon-download-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="dropdown" aria-expanded="false"></button>
+
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_usa_wheel" data-type="image/png">PNG</a>
+                            </li>
+                            <li>
+                                <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_usa_wheel" data-type="image/jpeg">JPEG</a>
+                            </li>
+                            <li>
+                                <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_usa_wheel" data-type="application/pdf">PDF</a>
+                            </li>
+                            <li>
+                                <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_usa_wheel" data-type="image/svg+xml">Vectoriel</a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm fullscreen-chart" data-chart-target="chart_usa_wheel" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
+                </div>
+                <div id="chart_usa_wheel"></div>
+            </div>
+
+            <div class="fr-callout bg-white fr-p-2w mt-4">
+                <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data-4">Données</button>
+                <div class="fr-collapse" id="target-data-4">
+                    <h6 class="fr-mt-2w">Source</h6>
+                    <p>Données d'Occupation des Sols à Grande Echelle (OCS GE) de l'IGN, sur la période d'analyse traduite grâce à la matrice de passage.</p>
+
+                    <h6 class="fr-mt-2w">Calcul</h6>
+                    <p>Artificialisation sur la période - renaturation sur la période.</p>
+
+                    <h6 class="fr-mt-2w">Données</h6>
+                    <p class="text-muted">En hectare (Ha).</p>
+                    <p>Les lignes indiquent l'usage {{ first_millesime }} et les colonnes indiquent l'usage {{ last_millesime }}. Par conséquent, à l'intersection se trouve la superficie qui est passée d'une couverture l'autre.</p>
+
+                    <table class="table table-striped table-sm">
+                        <thead>
+                            <tr>
+                                <th scope="col"></th>
+                                {% for header in usa_matrix_headers %}
+                                <th scope="col" class="text-end">
+                                    <span class="tooltiped" data-toggle="tooltip" title="{{ header.label }}">
+                                        {{ header.code }}
+                                    </span>
+                                </th>
+                                {% endfor %}
+                                <th scope="col" class="text-end">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for name, data in usa_matrix_data.items %}
+                            <tr>
+                                <th scope="row">
+                                    {% if name.code %}
+                                    <span class="tooltiped" data-toggle="tooltip" title="{{ name.label }}">
+                                        {{ name.code }} {{ name.label_short }}
+                                    </span>
+                                    {% else %}
+                                        Total
+                                    {% endif %}
+                                </th>
+                                {% for title, val in data.items %}
+                                    <td align="right">
+                                        <span data-toggle="tooltip" title="Passage de {{ name.code }} à {{ title.code }}">
+                                            {{ val|floatformat:2 }}
+                                        </span>
+                                    </td>
+                                {% endfor %}
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block bodyend %}
+{% localize off %}
+{% sri_static "highcharts/js/highcharts.js" %}
+{% sri_static "highcharts/js/exporting.js" %}
+{% sri_static "highcharts/js/sankey.js" %}
+{% sri_static "highcharts/js/dependency-wheel.js" %}
+{% french_translation %}
+{% display_chart 'chart_couv_pie' couv_pie_chart CSP_NONCE %}
+{% display_chart 'chart_couv_prog' couv_progression_chart CSP_NONCE %}
+{% display_chart 'chart_usa_pie' usa_pie_chart CSP_NONCE %}
+{% display_chart 'chart_usa_prog' usa_progression_chart CSP_NONCE %}
+{% display_chart 'chart_couv_wheel' couv_wheel_chart CSP_NONCE %}
+{% display_chart 'chart_usa_wheel' usa_whell_chart CSP_NONCE %}
+{% endlocalize %}
+{% endblock %}
+
+{% block tagging %}
+<script language="javascript" nonce="{{ CSP_NONCE }}">
+$( window ).on('load', function () {
+    _paq.push(['trackEvent', 'Consultation diagnostic', 'Tableau de bord', '{{ nom }}'])
+})
+
+var fired = false
+$( window ).scroll(function() {
+    if(fired == false && $( window ).scrollTop() + $( window ).height() > $( "#block-content" ).height() - 100) {
+        _paq.push(['trackEvent', 'Consultation diagnostic', 'Fin tableau de bord', '{{ nom }}'])
+        fired = true
+    }
+})
+</script>
+{% endblock tagging %}

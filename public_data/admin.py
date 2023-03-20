@@ -1,16 +1,15 @@
 from django.contrib.gis import admin
-
 from import_export import resources
 from import_export.admin import ImportExportMixin
 
 from .models import (
+    Cerema,
     Commune,
     CouvertureSol,
     CouvertureUsageMatrix,
     Departement,
     Epci,
     Ocsge,
-    Cerema,
     Region,
     UsageSol,
 )

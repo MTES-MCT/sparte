@@ -16,7 +16,6 @@ from public_data.models import (
     ZoneConstruite,
 )
 
-
 logger = logging.getLogger("management.commands")
 
 
@@ -339,6 +338,337 @@ class GersZoneConstruite2019(GersZoneConstruite2016):
         proxy = True
 
 
+# ##########
+# BOURGOGNE FRANCHE COMTE
+# - Côte-d'Or (21)
+# - Doubs (25)
+# - Jura (39)
+# - Nièvre (58)
+# - Haute-Saône (70)
+# - Saône-et-Loire (71)
+# - Yonne (89)
+# - Territoire de Belfort (90)
+# ##########
+
+
+class BourgogneFrancheComteOcsge(AutoLoadMixin, Ocsge):
+    year = 2010
+
+    class Meta:
+        proxy = True
+
+    def save(self, *args, **kwargs):
+        key = (self.couverture, self.usage)
+        self.matrix = MATRIX_LIST[key]
+        self.is_artificial = bool(self.matrix.is_artificial)
+        if self.matrix.couverture:
+            self.couverture_label = self.matrix.couverture.label
+        if self.matrix.usage:
+            self.usage_label = self.matrix.usage.label
+        self.year = self.__class__.year
+        return super().save(*args, **kwargs)
+
+    @classmethod
+    def clean_data(cls, clean_queryset=None):
+        """Delete only data with year=2015"""
+        # select only data covered by departement
+        dept = Departement.objects.get(name=cls.departement_name)
+        qs = (
+            cls.objects.all().filter(mpoly__intersects=dept.mpoly).filter(year=cls.year)
+        )
+        qs.delete()
+
+    @classmethod
+    def calculate_fields(cls):
+        """Override if you need to calculate some fields after loading data.
+        By default, it will calculate label for couverture and usage if couverture_field
+        and usage_field are set with the name of the field containing code (cs.2.1.3)
+        """
+        cls.objects.all().filter(surface__isnull=True).update(
+            surface=Cast(
+                Area(Transform("mpoly", 2154)),
+                DecimalField(max_digits=15, decimal_places=4),
+            )
+        )
+
+    mapping = {
+        "id_source": "ID",
+        "couverture": "CODE_CS",
+        "usage": "CODE_US",
+        "surface": "Shape_Area",
+        "mpoly": "MULTIPOLYGON",
+    }
+
+
+class CotedorOcsge2010(BourgogneFrancheComteOcsge):
+    class Meta:
+        proxy = True
+
+    departement_name = "Côte-d'Or"
+    shape_file_path = "cotedor_ocsge_2010.zip"
+    year = 2010
+
+
+class CotedorOcsge2017(BourgogneFrancheComteOcsge):
+    class Meta:
+        proxy = True
+
+    departement_name = "Côte-d'Or"
+    shape_file_path = "cotedor_ocsge_2017.zip"
+    year = 2017
+
+
+class DoubsOcsge2010(BourgogneFrancheComteOcsge):
+    class Meta:
+        proxy = True
+
+    departement_name = "Doubs"
+    shape_file_path = "doubs_ocsge_2010.zip"
+    year = 2010
+
+
+class DoubsOcsge2017(BourgogneFrancheComteOcsge):
+    class Meta:
+        proxy = True
+
+    departement_name = "Doubs"
+    shape_file_path = "doubs_ocsge_2017.zip"
+    year = 2017
+
+
+class JuraOcsge2010(BourgogneFrancheComteOcsge):
+    class Meta:
+        proxy = True
+
+    departement_name = "Jura"
+    shape_file_path = "jura_ocsge_2010.zip"
+    year = 2010
+
+
+class JuraOcsge2017(BourgogneFrancheComteOcsge):
+    class Meta:
+        proxy = True
+
+    departement_name = "Jura"
+    shape_file_path = "jura_ocsge_2017.zip"
+    year = 2017
+
+    mapping = {
+        "id_source": "ID",
+        "couverture": "CODE_CS",
+        "usage": "CODE_US",
+        "mpoly": "MULTIPOLYGON",
+    }
+
+
+class NievreOcsge2011(BourgogneFrancheComteOcsge):
+    class Meta:
+        proxy = True
+
+    departement_name = "Nièvre"
+    shape_file_path = "nievre_ocsge_2011.zip"
+    year = 2011
+
+
+class NievreOcsge2017(BourgogneFrancheComteOcsge):
+    class Meta:
+        proxy = True
+
+    departement_name = "Nièvre"
+    shape_file_path = "nievre_ocsge_2017.zip"
+    year = 2017
+
+
+class HauteSaoneOcsge2011(BourgogneFrancheComteOcsge):
+    class Meta:
+        proxy = True
+
+    departement_name = "Haute-Saône"
+    shape_file_path = "haute_saone_ocsge_2011.zip"
+    year = 2011
+
+
+class HauteSaoneOcsge2017(BourgogneFrancheComteOcsge):
+    class Meta:
+        proxy = True
+
+    departement_name = "Haute-Saône"
+    shape_file_path = "haute_saone_ocsge_2017.zip"
+    year = 2017
+
+
+class SaoneEtLoireOcsge2011(BourgogneFrancheComteOcsge):
+    class Meta:
+        proxy = True
+
+    departement_name = "Saône-et-Loire"
+    shape_file_path = "saone_et_loire_ocsge_2011.zip"
+    year = 2011
+
+    mapping = {
+        "id_source": "ID",
+        "couverture": "CODE_CS",
+        "usage": "CODE_US",
+        "mpoly": "MULTIPOLYGON",
+    }
+
+
+class SaoneEtLoireOcsge2018(BourgogneFrancheComteOcsge):
+    class Meta:
+        proxy = True
+
+    departement_name = "Saône-et-Loire"
+    shape_file_path = "saone_et_loire_ocsge_2018.zip"
+    year = 2018
+
+
+class YonneOcsge2011(BourgogneFrancheComteOcsge):
+    class Meta:
+        proxy = True
+
+    departement_name = "Yonne"
+    shape_file_path = "yonne_ocsge_2011.zip"
+    year = 2011
+
+
+class YonneOcsge2018(BourgogneFrancheComteOcsge):
+    class Meta:
+        proxy = True
+
+    departement_name = "Yonne"
+    shape_file_path = "yonne_ocsge_2018.zip"
+    year = 2018
+
+
+class BelfortOcsge2010(BourgogneFrancheComteOcsge):
+    class Meta:
+        proxy = True
+
+    departement_name = "Territoire de Belfort"
+    shape_file_path = "territoire_de_belfort_ocsge_2010.zip"
+    year = 2010
+
+
+class BelfortOcsge2017(BourgogneFrancheComteOcsge):
+    class Meta:
+        proxy = True
+
+    departement_name = "Territoire de Belfort"
+    shape_file_path = "territoire_de_belfort_ocsge_2017.zip"
+    year = 2017
+
+
+class BourgogneFrancheComteOcsgeDiff1017(AutoOcsgeDiff):
+    class Meta:
+        proxy = True
+
+    _year_new = 2017
+    _year_old = 2010
+    departement_name = ""
+
+    shape_file_path = ""
+    # Email du dev du 06.10.2022
+    # on fait la diff entre le plus récent et celui d'avant.
+    # avant = 2019, après = 2016
+    mapping = {
+        "cs_old": "cs_apres",
+        "us_old": "us_apres",
+        "cs_new": "cs_avant",
+        "us_new": "us_avant",
+        "surface": "Shape_Area",
+        "mpoly": "MULTIPOLYGON",
+    }
+
+    @classmethod
+    def clean_data(cls, clean_queryset=None):
+        # select only data covered by Gers
+        dept = Departement.objects.get(name=cls.departement_name)
+        qs = cls.objects.filter(mpoly__intersects=dept.mpoly)
+        # only current millesime
+        qs = qs.filter(year_new=cls._year_new, year_old=cls._year_old)
+        qs.delete()
+
+
+class CotedorOcsgeDiff1017(BourgogneFrancheComteOcsgeDiff1017):
+    class Meta:
+        proxy = True
+
+    _year_new = 2017
+    _year_old = 2010
+    departement_name = "Côte-d'Or"
+    shape_file_path = "cotedor_ocsgediff_1017.zip"
+
+
+class DoubsOcsgeDiff1017(BourgogneFrancheComteOcsgeDiff1017):
+    class Meta:
+        proxy = True
+
+    _year_new = 2017
+    _year_old = 2010
+    departement_name = "Doubs"
+    shape_file_path = "doubs_ocsgediff_1017.zip"
+
+
+class JuraOcsgeDiff1017(BourgogneFrancheComteOcsgeDiff1017):
+    class Meta:
+        proxy = True
+
+    _year_new = 2017
+    _year_old = 2010
+    departement_name = "Jura"
+    shape_file_path = "jura_ocsgediff_1017.zip"
+
+
+class NievreOcsgeDiff1017(BourgogneFrancheComteOcsgeDiff1017):
+    class Meta:
+        proxy = True
+
+    _year_new = 2017
+    _year_old = 2011
+    departement_name = "Nièvre"
+    shape_file_path = "nievre_ocsgediff_1117.zip"
+
+
+class HauteSaoneOcsgeDiff1017(BourgogneFrancheComteOcsgeDiff1017):
+    class Meta:
+        proxy = True
+
+    _year_new = 2017
+    _year_old = 2011
+    departement_name = "Haute-Saône"
+    shape_file_path = "hautdesaone_ocsgediff_1117.zip"
+
+
+class SaoneEtLoireOcsgeDiff1017(BourgogneFrancheComteOcsgeDiff1017):
+    class Meta:
+        proxy = True
+
+    _year_new = 2018
+    _year_old = 2011
+    departement_name = "Saône-et-Loire"
+    shape_file_path = "saoneetloire_ocsgediff_1118.zip"
+
+
+class YonneOcsgeDiff1118(BourgogneFrancheComteOcsgeDiff1017):
+    class Meta:
+        proxy = True
+
+    _year_new = 2018
+    _year_old = 2011
+    departement_name = "Yonne"
+    shape_file_path = "yonne_ocsgediff_1118.zip"
+
+
+class BelfortOcsgeDiff1017(BourgogneFrancheComteOcsgeDiff1017):
+    class Meta:
+        proxy = True
+
+    _year_new = 2017
+    _year_old = 2011
+    departement_name = "Territoire de Belfort"
+    shape_file_path = "territoire_de_belfort_ocsgediff_1017.zip"
+
+
 class Command(BaseCommand):
     help = "Load all data from OCS GE"
 
@@ -371,15 +701,42 @@ class Command(BaseCommand):
         logger.info("Load OCSGE")
         self.verbose = not options["no_verbose"]
         item_list = [
+            # BASSIN D'ARCACHON #####
             ArcachonOcsge2018,
             ArcachonOcsge2015,
             ArcachonArtif,
             ArcachonRenat,
+            # GERS #####
             GersOcsge2016,
             GersOcsge2019,
             GersOcsgeDiff,
             GersZoneConstruite2016,
             GersZoneConstruite2019,
+            # BOURGOGNE FRANCHE COMTE #####
+            # CotedorOcsge2010,
+            # CotedorOcsge2017,
+            # DoubsOcsge2010,
+            # DoubsOcsge2017,
+            # JuraOcsge2010,
+            # JuraOcsge2017,
+            # NievreOcsge2011,
+            # NievreOcsge2017,
+            # HauteSaoneOcsge2011,
+            # HauteSaoneOcsge2017,
+            # SaoneEtLoireOcsge2011,
+            # SaoneEtLoireOcsge2018,
+            # YonneOcsge2011,
+            # YonneOcsge2018,
+            # BelfortOcsge2010,
+            # BelfortOcsge2017,
+            # CotedorOcsgeDiff1017,
+            # DoubsOcsgeDiff1017,
+            # JuraOcsgeDiff1017,
+            # NievreOcsgeDiff1017,
+            # HauteSaoneOcsgeDiff1017,
+            # SaoneEtLoireOcsgeDiff1017,
+            # YonneOcsgeDiff1118,
+            # BelfortOcsgeDiff1017,
         ]
         if options["item"]:
             self.load([i for i in item_list if i.__name__ == options["item"]])

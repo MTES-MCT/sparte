@@ -41,5 +41,12 @@
         "slug": "PHONE_CONTACT",
         "value_type": "STR",
         "value": "+33 6 07 33 56 19"
+    },
+    {
+        "name": "URL vers métabase",
+        "slug": "METABASE_URL",
+        "value_type": "STR",
+        "value": "https://sparte-metabase.osc-secnum-fr1.scalingo.io/",
+        "is_global": true
     }
 ]

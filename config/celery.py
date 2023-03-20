@@ -5,13 +5,13 @@ https://docs.celeryproject.org/en/stable/django/first-steps-with-django.html
 
 """
 from __future__ import absolute_import
+
 import os
 
 from celery import Celery
+from celery.schedules import crontab
 from celery.utils.log import get_task_logger
-
 from django.apps import apps
-
 
 logger = get_task_logger(__name__)
 
@@ -33,7 +33,21 @@ app.autodiscover_tasks(lambda: [n.name for n in apps.get_app_configs()])
 app.conf.timezone = "UTC"
 
 
+app.conf.beat_schedule = {
+    # Executes every Monday morning at 7:30 a.m.
+    "alive-every-minute": {
+        "task": "config.celery.log",
+        "schedule": crontab(minute="*/15"),
+        "args": ("I am alive",),
+    },
+    "alerte-blocked-diagnostic": {
+        "task": "project.tasks.project.alert_on_blocked_diagnostic",
+        "schedule": crontab(minute="0", hour="8,12,16"),
+    },
+}
+
+
 @app.task
-def log():
+def log(message):
     # start logging
-    logger.info("Hello world")
+    logger.info(message)
