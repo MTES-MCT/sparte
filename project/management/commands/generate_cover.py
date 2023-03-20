@@ -1,8 +1,7 @@
 import logging
-
-from django.core.management.base import BaseCommand
 from time import sleep
 
+from django.core.management.base import BaseCommand
 from django.db.models import Q
 
 from project.models import Project

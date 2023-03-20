@@ -1,0 +1,19 @@
+{% extends 'index.html' %}
+
+{% block pagetitle %}Construction du diagnostic{% endblock %}
+
+{% block content %}
+
+<div class="d-flex justify-content-center mt-5">
+    <div class="col-12 col-md-5 col-lg-4">
+
+        <h1 class="mb-5 fw-bold text-center">Votre diagnostic est en cours de préparation</h1>
+
+        <div class="fr-custom-loader"></div>
+
+        <div hx-get="{% url 'project:splash-progress' diagnostic.id %}" hx-trigger="load" hx-swap="outerHTML"></div>
+
+    </div>
+</div>
+
+{% endblock %}

@@ -1,20 +1,16 @@
 """Public data API views."""
 from django.contrib.gis.geos import Polygon
-from django.db.models import Subquery, OuterRef, F
+from django.db.models import F, OuterRef, Subquery
 from django.http import JsonResponse
-
+from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.exceptions import ParseError
-from rest_framework import viewsets
 
-from public_data.models import Commune, Cerema
+from public_data.models import Cerema, Commune
 
+from .models import Emprise, Project
+from .serializers import EmpriseSerializer, ProjectCommuneSerializer
 from .views.mixins import UserQuerysetOrPublicMixin
-from .models import Project, Emprise
-from .serializers import (
-    EmpriseSerializer,
-    ProjectCommuneSerializer,
-)
 
 
 class EmpriseViewSet(viewsets.ReadOnlyModelViewSet):

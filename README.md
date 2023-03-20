@@ -29,26 +29,30 @@ Pour une installation locale, ces valeurs doivent être dans le fichier .env à 
 
 | Nom | description | valeur locale |
 |-----|-------------|---------------|
-| SECRET | salt pour django |  |
-| DEBUG | salt pour django | 1 |
-| DATABASE_URL | chaîne pour se connecter à la base de données Postgresql + gis | postgis://postgres:postgres@127.0.0.1:54321/postgres |
+| ALERT_DIAG_MEDIUM | Comment envoyer les alertes des diagnostics bloqués: mattermost, email, both | |
+| ALERT_DIAG_EMAIL_RECIPIENTS | Liste des adresses e-mails auxuqelles envoyées les alertes diagnostics bloqués | 127.0.0.1,localhost |
+| ALERT_DIAG_MATTERMOST_RECIPIENTS | channel (~sparte) ou personne (@swann) à qui envoyer un message direct de diagnostics bloqués | 127.0.0.1,localhost |
 | ALLOWED_HOSTS | urls qui peuvent se connecter au site web | 127.0.0.1,localhost |
-| CELERY_BROKER_URL | chaîne pour se connecter à redis | redis://127.0.0.1:6379/0 |
-| CELERY_RESULT_BACKEND | chaîne pour se connecter à redis | redis://127.0.0.1:6379/0 |
-| ENVIRONMENT | indique sur quel environnement est exécuté l'app. Choix possibles: local, staging, prod | local |
-| ALLOWED_HOSTS | les noms de domaines utilisables | 127.0.0.1,localhost |
-| DOMAIN_URL | l'url sur laquelle est branchée l'application | http://localhost:8080/ |
+| API_KEY_SENDINBLUE | Clé api de sendinblue | |
 | AWS_ACCESS_KEY_ID | compte AWS pour stocker les données |  |
+| AWS_LOCATION | prefix pour ne pas avoir de collisions entre les instances de l'app | local |
+| AWS_S3_REGION_NAME | région de AWS | eu-west-3 |
 | AWS_SECRET_ACCESS_KEY | secret pour se connecter à AWS |  |
 | AWS_STORAGE_BUCKET_NAME | nom du bucket de stockage | sparte-staging |
-| AWS_S3_REGION_NAME | région de AWS | eu-west-3 |
-| AWS_LOCATION | prefix pour ne pas avoir de collisions entre les instances de l'app | local |
-| EMAIL_ENGINE | indique à l'application le backend à utiliser pour envoyer les e-mails. 2 choix disponibles : mailjet, local | local |
-| MAILJET_ID | ID pour se connecter au compte mailjet |  |
-| MAILJET_SECRET | secret pour se connecter au compte mailjet |  |
+| CELERY_BROKER_URL | chaîne pour se connecter à redis | redis://127.0.0.1:6379/0 |
+| CELERY_RESULT_BACKEND | chaîne pour se connecter à redis | redis://127.0.0.1:6379/0 |
+| DATABASE_URL | chaîne pour se connecter à la base de données Postgresql + gis | postgis://postgres:postgres@127.0.0.1:54321/postgres |
+| DEBUG | activer ou non les messages détaillés d'erreur | 1 |
+| DEBUG_TOOLBAR | activer la barre de debug de Django | 1 |
 | DEFAULT_FROM_EMAIL |  | swann.bouviermuller@gmail.com |
-| MATOMO_TOKEN | Token pour envoyer les données à Matomo |  |
+| DOMAIN_URL | l'url sur laquelle est branchée l'application | http://localhost:8080/ |
+| EMAIL_ENGINE | indique à l'application le backend à utiliser pour envoyer les e-mails. 2 choix disponibles : sendinblue, local | local |
+| ENVIRONMENT | indique sur quel environnement est exécuté l'app. Choix possibles: local, staging, prod | local |
+| HIGHCHART_SERVER | ulr pour accéder au serveur générant des images à partir de paramètres Highcharts | https://highcharts-export.osc-fr1.scalingo.io |
+| MATTERMOST_WEBHOOK | Webhook personnel pour envoyer des messages dans Mattermost | https://mattermost.incubateur.net/hooks/uak581f8bidyxp5td67rurj5sh |
 | MATOMO_ACTIVATE | Détermine si des infos doivent être envoyé à Matomo | 0 |
+| MATOMO_TOKEN | Token pour envoyer les données à Matomo |  |
+| SECRET | salt pour django | |
 | USE_SRI | Active l'utilisation des SRI même lorsque debug = 1 | 1 |
 | USE_CSP | Active l'utilisation des CSP même lorsque debug = 1 | 1 |
 
@@ -79,9 +83,9 @@ git commit --no-verify
 
 Sometimes, you need to fetch and install a Scalingo DB backup.
 
-1. Fetch backup from scalingo app > pg ressource > backup, download last backup (eg. 20220830000404_sparte_1396.tar.gz)
+1. Fetch backup from scalingo app > ressources > pg dashboard > backup, download last backup (eg. 20220830000404_sparte_1396.tar.gz)
 2. Uncompress `tar -xf 20220830000404_sparte_1396.tar.gz`
-3. restore `pg_restore --clean --if-exists --no-owner --no-privileges --no-comments --dbname postgres://postgres:postgres@127.0.0.1:54321/postgres 20220830000404_sparte_1396.pgsql`
+3. restore `pg_restore --clean --if-exists --no-owner --no-privileges --no-comments --dbname postgres://postgres:postgres@127.0.0.1:5432/postgres 20220830000404_sparte_1396.pgsql`
 
 ## Update OCS GE
 

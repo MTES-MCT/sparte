@@ -1,0 +1,63 @@
+<div class="fr-container">
+    <div class="d-flex justify-content-between">
+        <div>
+            <h1 class="mb-3">{{ title }}</h1>
+            <ul class="fr-tags-group">
+                <li>
+                    <p class="fr-tag fr-tag--sm">Surface du territoire:&nbsp;<strong>{{ surface|floatformat:0 }} ha</strong></p>
+                </li>
+                <li>
+                    <p class="fr-tag fr-tag--sm">Période demandée:&nbsp;<strong>De {{ project.analyse_start_date }} à {{ project.analyse_end_date }}</strong></p>
+                </li>
+                <li>
+                    <p class="fr-tag fr-tag--sm">Maille d'analyse:&nbsp;<strong>{{ project.level_label }}</strong></p>
+                </li>
+            </ul>
+        </div>
+
+        <div class="dropdown custom-dropdown mt-2">
+            <button class="fr-btn" data-bs-toggle="dropdown" aria-expanded="false">
+                Télécharger mon diagnostic
+            </button>
+
+            <ul class="dropdown-menu w-100">
+                <li>
+                    <a class="fr-nav__link" hx-get="{% url 'project:report_download' project.pk %}" hx-target="#fr-modal__form" href="#" id="fr-modal-download-word" data-fr-opened="false" aria-controls="fr-modal-download-word">
+                        Word
+                    </a>
+                </li>
+                <li>
+                    <a class="fr-nav__link" href="{% url 'project:export-excel' project.pk %}">
+                        Excel
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<dialog aria-labelledby="fr-modal-2-title" id="fr-modal-download-word" class="fr-modal" role="dialog" >
+    <div class="fr-container fr-container--fluid fr-container-md">
+        <div class="fr-grid-row fr-grid-row--center">
+            <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+                <div class="fr-modal__body">
+                    <div class="fr-modal__header">
+                        <button class="fr-link--close fr-link" aria-controls="fr-modal-download-word">Fermer</button>
+                    </div>
+                    <div class="fr-modal__content">
+                        <h1 id="fr-modal-2-title" class="fr-modal__title">
+                            Recevoir le diagnostic par e-mail
+                        </h1>
+                        <div id="fr-modal__form"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</dialog>
+
+<script language="javascript" nonce="{{ CSP_NONCE }}">
+    document.getElementById("fr-modal-download-word").onclick = () => {
+        document.getElementById("fr-modal__form").innerHTML = "<div class='fr-custom-loader'></div>";
+    }
+</script>

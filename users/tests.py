@@ -3,7 +3,6 @@ Test file for all functionnality of users package
 Should be ignored by security pluggins
 """
 import pytest
-
 from django.contrib.auth import get_user_model
 from django.utils import timezone
 

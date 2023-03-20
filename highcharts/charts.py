@@ -1,14 +1,14 @@
 import base64
 import copy
 import json
-import random
 import os
-import requests
+import random
 import string
 import tempfile
+from typing import Any, Dict, List
 
+import requests
 from django.conf import settings
-from django.templatetags.static import static
 from django.utils.safestring import mark_safe
 from django.utils.text import slugify
 
@@ -24,36 +24,28 @@ class RateLimitExceededException(Exception):
 
 
 class Chart:
-    param = None
-    name = None
-    series = None
-    options = None
+    param: Dict[str, Any] = {}
+    name: str = ""
+    series: List[Dict[str, Any]] = []
+    options: Dict[str, Any] = {}
 
-    def get_param(self):
+    def get_param(self) -> Dict[str, Any]:
         param = copy.deepcopy(self.param)
-        if "exporting" not in param:
-            param["exporting"] = {
-                "buttons": {
-                    "contextButton": {
-                        "symbol": f"url({static('img/file_download_icon_151366.png')})"
-                    }
-                }
-            }
+        param["navigation"] = {"buttonOptions": {"enabled": False}}
+        param["credits"] = {"enabled": False}
         return param
 
-    def get_options(self, serie_name):
-        if not self.options:
-            return dict()
+    def get_options(self, serie_name) -> Dict[str, Any]:
         return self.options.get(serie_name, dict())
 
     def __init__(self):
         self.chart = self.get_param()
         self.add_series()
 
-    def get_series(self):
+    def get_series(self) -> List[Dict[str, Any]]:
         return self.series
 
-    def add_serie(self, name, data, **options):
+    def add_serie(self, name, data, **options) -> None:
         serie = {
             "name": name,
             "data": [{"name": n, "y": y} for n, y in data.items()],
@@ -64,7 +56,7 @@ class Chart:
         serie.update(options)
         self.chart["series"].append(serie)
 
-    def add_series(self, series=None, **options):
+    def add_series(self, series=None, **options) -> None:
         """
         series : {
             "serie_1_name": {"point_name": "value", "point_name_2": "value", ...},
@@ -76,12 +68,12 @@ class Chart:
         for serie_name, data in series.items():
             self.add_serie(serie_name, data, **options)
 
-    def dumps(self):
+    def dumps(self) -> str:
         chart_dumped = json.dumps(self.chart, default=decimal2float)
         chart_dumped = chart_dumped.replace("'", "\\'")
         return mark_safe(chart_dumped)  # nosec
 
-    def get_name(self):
+    def get_name(self) -> str:
         if not self.name:
             try:
                 self.name = self.chart["title"]["text"]
@@ -93,17 +85,17 @@ class Chart:
             )
         return self.name
 
-    def get_js_name(self):
+    def get_js_name(self) -> str:
         return slugify(self.get_name()).replace("-", "_")
 
-    def get_legend_for_paper(self):
+    def get_legend_for_paper(self) -> Dict[str, Any]:
         return {
             "layout": "vertical",
             "align": "center",
             "verticalAlign": "bottom",
         }
 
-    def request_b64_image_from_server(self):
+    def request_b64_image_from_server(self) -> bytes:
         json_option = copy.deepcopy(self.chart)
         json_option["legend"] = self.get_legend_for_paper()
         data = {
@@ -125,7 +117,7 @@ class Chart:
             raise RateLimitExceededException()
         return r.content + b"==="
 
-    def get_temp_image(self):
+    def get_temp_image(self) -> str:
         b64_content = self.request_b64_image_from_server()
         fd, img_path = tempfile.mkstemp(suffix=".png", text=False)
         os.write(fd, base64.decodebytes(b64_content))

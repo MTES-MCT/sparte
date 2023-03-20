@@ -1,0 +1,41 @@
+{% load crispy_forms_tags %}
+
+
+{% if success_message %}
+    <div class="fade-in fr-alert fr-alert--success fr-alert--sm" role="alert">
+        <h3 class="fr-alert__title">Votre demande a été prise en compte.</h3>
+        <p>D'ici à quelques minutes, vous allez recevoir un e-mail contenant votre diagnostic.</p>
+        <p>N'hésitez pas à nous faire part de vos impressions et de vos suggestions d'amélioration en utilisant notre <a href="{% url 'home:contact' %}">formulaire de contact</a>.</p>
+    </div>
+{% else %}
+    <form hx-post="{% url 'project:report_download' project.pk %}">
+        <p>Pour recevoir le diagnostic au format Word, veuillez compléter le formulaire ci-dessous. Une fois validé, vous recevrez sous quelques minutes le document par e-mail.</p>
+
+        {% csrf_token %}
+        {{ form|crispy }}
+
+        <ul class="fr-btns-group fr-btns-group--right fr-btns-group--inline-lg fr-mt-2w">
+            <li>
+                <button class="fr-btn fr-btn--secondary" type="button" aria-controls="fr-modal-download">
+                    Annuler
+                </button>
+            </li>
+            <li>
+                <button id="dl_btn" class="fr-btn" type="submit">
+                    Recevoir
+                </button>
+            </li>
+        </ul>
+    </form>
+
+    <script language="javascript" nonce="{{ CSP_NONCE }}">
+        $( window ).on('load', function () {
+            _paq.push(['trackEvent', 'Consultation diagnostic', 'Tableau de bord', 'Téléchargement'])
+        })
+
+
+        $( "#dl_btn" ).click(function() {
+            _paq.push(['trackEvent', 'Consultation diagnostic', 'Télécharger'])
+        })
+    </script>
+{% endif %}

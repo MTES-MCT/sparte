@@ -1,16 +1,14 @@
 from django.contrib.gis.geos import Polygon
-from django.db.models import Subquery, OuterRef, F
+from django.db.models import F, OuterRef, Subquery
 from django.http import JsonResponse
-
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework_gis import filters
 
-from public_data.models import Commune, Cerema
-
 from project.mixins import UserQuerysetOrPublicMixin
 from project.models import Project
 from project.serializers import ProjectCommuneSerializer
+from public_data.models import Cerema, Commune
 
 
 class ProjectViewSet(UserQuerysetOrPublicMixin, viewsets.ReadOnlyModelViewSet):

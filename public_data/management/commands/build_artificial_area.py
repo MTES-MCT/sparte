@@ -1,13 +1,12 @@
 import logging
 
 from django.contrib.gis.db.models import Union
-from django.contrib.gis.db.models.functions import Intersection, Area, Transform
+from django.contrib.gis.db.models.functions import Area, Intersection, Transform
 from django.core.management.base import BaseCommand
-from django.db.models import Sum, Q
+from django.db.models import Q, Sum
 
-from public_data.models import Commune, Departement, Ocsge, ArtificialArea
+from public_data.models import ArtificialArea, Commune, Departement, Ocsge, Region
 from utils.db import fix_poly
-
 
 logger = logging.getLogger("management.commands")
 
@@ -24,7 +23,12 @@ class Command(BaseCommand):
         parser.add_argument(
             "--departement",
             type=str,
-            help="insee code of a particular city",
+            help="name of a departement",
+        )
+        parser.add_argument(
+            "--region",
+            type=str,
+            help="name of region",
         )
         parser.add_argument(
             "--verbose",
@@ -33,15 +37,17 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-        logger.info("Start build cities data")
+        logger.info("Start build artificial area")
         self.verbose = options["verbose"]
         if options["insee"]:
             self.process_one(options["insee"])
         elif options["departement"]:
             self.process_departement(options["departement"])
+        elif options["region"]:
+            self.process_region(options["region"])
         else:
             self.process_all()
-        logger.info("End building cities data")
+        logger.info("End build artificial area")
 
     def process_all(self):
         logger.info("Processing all cities")
@@ -66,6 +72,18 @@ class Command(BaseCommand):
             logger.warning("Code insee unknown")
             return
         self.process(qs[:1])
+
+    def process_region(self, region_name):
+        logger.info("Processing a region with name= %s", region_name)
+        qs = Region.objects.filter(
+            Q(source_id=region_name) | Q(name__icontains=region_name)
+        )
+        if not qs.exists():
+            logger.warning("No region found")
+            return
+        region = qs.first()
+        logger.info("Région: %s (%s)", region.name, region.source_id)
+        self.process(region.get_cities().order_by("name"))
 
     def process(self, queryset):
         queryset = queryset.order_by("insee")

@@ -1,0 +1,16 @@
+
+<div hx-get="{% url 'project:splash-progress' diagnostic.id %}" hx-trigger="load delay:5s" hx-swap="outerHTML">
+    <!--<ul>
+        {% for step in steps.items %}
+            <li><i class="bi
+                {% if step.1 %}
+                    bi-check2-circle text-success
+                {% else %}
+                    bi-hourglass-split text-warning
+                {% endif %}
+                "></i>
+                 {{ step.0 }}</li>
+        {% endfor %}
+    </ul>-->
+    <div class="mt-5 w-100 text-end text-muted fw-lighter fst-italic">Dernière mise à jour: {{ last_update|date:"H:i:s" }}</div>
+</div>

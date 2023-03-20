@@ -5,7 +5,6 @@ from django.core.management.base import BaseCommand
 from project.models import Project
 from project.tasks import find_first_and_last_ocsge
 
-
 logger = logging.getLogger("management.commands")
 
 

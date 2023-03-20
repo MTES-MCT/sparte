@@ -2,8 +2,8 @@ import base64
 
 from django.core.management.base import BaseCommand
 
-from project.models import Project
 from project.charts import ConsoCommuneChart, DeterminantPieChart
+from project.models import Project
 
 
 class Command(BaseCommand):

@@ -1,22 +1,100 @@
 import celery
-
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
-from django.shortcuts import redirect
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy, reverse
+from django.utils import timezone
 from django.views.generic import (
-    ListView,
-    DetailView,
     DeleteView,
+    DetailView,
+    FormView,
+    ListView,
+    RedirectView,
     UpdateView,
 )
+from django.views.generic.edit import FormMixin
 
-from public_data.models import Land
-
-from project.forms import UploadShpForm, KeywordForm, UpdateProjectForm
-from project.models import Project
 from project import tasks
+from project.forms import KeywordForm, SelectTerritoryForm, UpdateProjectForm
+from project.models import Project, create_from_public_key
+from public_data.models import AdminRef, Land, LandException
+from utils.views_mixins import BreadCrumbMixin, RedirectURLMixin
+
 from .mixins import GroupMixin
+
+
+class ClaimProjectView(LoginRequiredMixin, RedirectView):
+    def get(self, request, *args, **kwargs):
+        project = get_object_or_404(Project, pk=self.kwargs["pk"])
+        self.url = project.get_absolute_url()
+        if project.user is not None:
+            messages.error(
+                request, "Erreur : ce diagnostic est appartient déjà à quelqu'un"
+            )
+        else:
+            messages.success(
+                request,
+                "Vous pouvez retrouver ce diagnostic en utilisant le menu Diagnostic > Ouvrir",
+            )
+            project.user = request.user
+            project.save()
+        return super().get(request, *args, **kwargs)
+
+
+class CreateProjectViews(BreadCrumbMixin, FormView):
+    template_name = "project/create/select_3.html"
+    form_class = SelectTerritoryForm
+
+    def get_context_breadcrumbs(self):
+        breadcrumbs = super().get_context_breadcrumbs()
+        breadcrumbs.append(
+            {"title": "Nouveau diagnostic"},
+        )
+        return breadcrumbs
+
+    def get_context_data(self, **kwargs):
+        kwargs.update({"next": self.request.GET.get("next", "")})
+        return super().get_context_data(**kwargs)
+
+    def form_valid(self, form):
+        """If the form is valid, redirect to the supplied URL."""
+        if not form.cleaned_data["selection"]:
+            search_for = []
+            if form.cleaned_data["search_region"]:
+                search_for.append(AdminRef.REGION)
+            if form.cleaned_data["search_departement"]:
+                search_for.append(AdminRef.DEPARTEMENT)
+            if form.cleaned_data["search_epci"]:
+                search_for.append(AdminRef.EPCI)
+            if form.cleaned_data["search_commune"]:
+                search_for.append(AdminRef.COMMUNE)
+            if form.cleaned_data["search_scot"]:
+                search_for.append(AdminRef.SCOT)
+            needle = form.cleaned_data["keyword"]
+            if needle == "*":
+                needle = ""
+            results = Land.search(
+                needle,
+                region=form.cleaned_data["region"],
+                departement=form.cleaned_data["departement"],
+                epci=form.cleaned_data["epci"],
+                search_for=search_for,
+            )
+            kwargs = {
+                "results": {AdminRef.get_label(k): v for k, v in results.items()},
+                "form": form,
+            }
+            return self.render_to_response(self.get_context_data(**kwargs))
+        else:
+            project = create_from_public_key(
+                form.cleaned_data["selection"], user=self.request.user
+            )
+
+            if self.request.GET.get("next") == "download":
+                return redirect("project:report_download", pk=project.id)
+            else:
+                return redirect("project:splash", pk=project.id)
 
 
 class ProjectUpdateView(GroupMixin, UpdateView):
@@ -24,6 +102,17 @@ class ProjectUpdateView(GroupMixin, UpdateView):
     template_name = "project/update.html"
     form_class = UpdateProjectForm
     context_object_name = "project"
+
+    def get_context_data(self, **kwargs):
+        project = self.get_object()
+
+        kwargs.update(
+            {
+                "diagnostic": project,
+                "active_page": "update",
+            }
+        )
+        return super().get_context_data(**kwargs)
 
     def get_context_breadcrumbs(self):
         breadcrumbs = super().get_context_breadcrumbs()
@@ -41,14 +130,14 @@ class ProjectUpdateView(GroupMixin, UpdateView):
                 tasks.generate_theme_map_artif.si(self.object.id),
                 tasks.generate_theme_map_understand_artif.si(self.object.id),
             ),
-        )
+        ).apply_async()
         return HttpResponseRedirect(self.get_success_url())
 
     def get_success_url(self):
         if "next" in self.request.GET:
             if self.request.GET["next"] == "report-target-2031":
                 return reverse_lazy("project:report_target_2031", kwargs=self.kwargs)
-        return reverse_lazy("project:detail", kwargs=self.kwargs)
+        return reverse_lazy("project:update", kwargs=self.kwargs)
 
 
 class ProjectDeleteView(GroupMixin, LoginRequiredMixin, DeleteView):
@@ -62,30 +151,23 @@ class ProjectDeleteView(GroupMixin, LoginRequiredMixin, DeleteView):
         return breadcrumbs
 
 
-class ProjectAddLookALike(GroupMixin, DetailView):
+class ProjectAddLookALike(GroupMixin, RedirectURLMixin, FormMixin, DetailView):
     model = Project
     template_name = "project/add_look_a_like.html"
     context_object_name = "project"
+    form_class = KeywordForm
 
-    def get_context_breadcrumbs(self):
-        breadcrumbs = super().get_context_breadcrumbs()
-        breadcrumbs.append(
-            {"href": None, "title": "Ajouter un territoire de comparaison"}
-        )
-        return breadcrumbs
+    def get_success_url(self):
+        """Add anchor to url if provided in GET parameters."""
+        anchor = self.request.GET.get("anchor", None)
+        if anchor:
+            return f"{super().get_success_url()}#{anchor}"
+        return super().get_success_url()
 
-    def get_form(self):
-        if self.request.method in ("POST", "PUT"):
-            return KeywordForm(data=self.request.POST)
-        else:
-            return KeywordForm()
-
-    def get_context_data(self, **kwargs):
-        if "form" not in kwargs:
-            kwargs["form"] = self.get_form()
-        if "from" in self.request.GET:
-            kwargs["from"] = f"from={self.request.GET['from']}"
-        return super().get_context_data(**kwargs)
+    def form_valid(self, form):
+        """If the form is valid, redirect to the supplied URL."""
+        kwargs = {"results": Land.search(form.cleaned_data["keyword"], search_for="*")}
+        return self.render_to_response(self.get_context_data(**kwargs))
 
     def get(self, request, *args, **kwargs):
         add_public_key = request.GET.get("add", None)
@@ -97,33 +179,60 @@ class ProjectAddLookALike(GroupMixin, DetailView):
                 # use land.public_key to avoid injection
                 project.add_look_a_like(land.public_key)
                 project.save()
-                page_from = self.request.GET.get("from", None)
-                if page_from == "conso_report":
-                    url = reverse("project:report_conso", kwargs={"pk": project.id})
-                    return redirect(f"{url}#territoires-de-comparaison")
-                else:
-                    return redirect(project)
-            except Exception:
-                return super().get(request, *args, **kwargs)
-        rm_public_key = request.GET.get("remove", None)
-        if rm_public_key:
-            project.remove_look_a_like(rm_public_key)
-            project.save()
-            return redirect(project)
+                return HttpResponseRedirect(self.get_success_url())
+            except LandException:
+                pass
         return super().get(request, *args, **kwargs)
+
+    def get_context_breadcrumbs(self):
+        breadcrumbs = super().get_context_breadcrumbs()
+        breadcrumbs += [
+            {
+                "href": reverse_lazy("project:update", kwargs=self.kwargs),
+                "title": "Paramètres",
+            },
+            {"href": None, "title": "Ajouter un territoire de comparaison"},
+        ]
+        return breadcrumbs
+
+    def get_context_data(self, **kwargs):
+        kwargs["next"] = self.request.GET.get("next", None)
+        kwargs["anchor"] = self.request.GET.get("anchor", None)
+        return super().get_context_data(**kwargs)
 
     def post(self, request, *args, **kwargs):
         """
         Handle POST requests: instantiate a form instance with the passed
         POST variables and then check if it's valid.
         """
-        self.object = self.get_object()
         form = self.get_form()
-        context = self.get_context_data(form=form)
         if form.is_valid():
-            needle = form.cleaned_data["keyword"]
-            context["results"] = Land.search(needle, search_for="*")
-        return self.render_to_response(context)
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(form)
+
+
+class ProjectRemoveLookALike(GroupMixin, RedirectURLMixin, DetailView):
+    """Remove a look a like from the project.
+
+    Providing a next page in the url parameter is required.
+    """
+
+    model = Project
+
+    def get_success_url(self):
+        """Add anchor to url if provided in GET parameters."""
+        anchor = self.request.GET.get("anchor", None)
+        if anchor:
+            return f"{super().get_success_url()}#{anchor}"
+        return super().get_success_url()
+
+    def get(self, request, *args, **kwargs):
+        project = self.get_object()
+        public_key = self.kwargs["public_key"]
+        project.remove_look_a_like(public_key)
+        project.save()
+        return HttpResponseRedirect(self.get_success_url())
 
 
 class ProjectListView(GroupMixin, LoginRequiredMixin, ListView):
@@ -145,102 +254,43 @@ class ProjectListView(GroupMixin, LoginRequiredMixin, ListView):
         return qs
 
 
-class ProjectDetailView(GroupMixin, DetailView):
-    queryset = Project.objects.all()
+class SplashScreenView(GroupMixin, DetailView):
+    model = Project
+    template_name = "project/create/splash_screen.html"
+    context_object_name = "diagnostic"
 
-    def dispatch(self, request, *args, **kwargs):
-        """
-        Use the correct view according to Project status (kind of router)
-        * MISSING => display a page to get the emprise from the user
-        * PENDING => display a waiting message, calculation in progress
-        * SUCCESS => display available option (report, pdf, carto...)
-        * FAILED => display error message and advize to reload the emprise
-
-        1. fetch project instance from DB
-        2. according to import_status value build view callable
-        3. error cases check (view is still None)
-        4. call view rendering with request object
-
-        RQ: this seems to be subefficient because object will be loaded several
-        time, two views have to be initialized.... Probably a better pattern
-        exists.
-        """
-        view = None
-        project = self.get_object()  # step 1
-
-        # step 2. normal cases
-        if project.import_status == Project.Status.MISSING:
-            view = ProjectNoShpView.as_view()
-        elif project.import_status == Project.Status.PENDING:
-            view = ProjectPendingView.as_view()
-        elif project.import_status == Project.Status.SUCCESS:
-            view = ProjectSuccessView.as_view()
-        elif project.import_status == Project.Status.FAILED:
-            view = ProjectFailedView.as_view()
-
-        # step 3. error management
-        if not view:
-            if not project.import_status:
-                # TODO add message that status is Null
-                pass
-            else:
-                # TODO add a message with unkown status
-                pass
-            # send on missing emprise
-            view = ProjectNoShpView.as_view()
-
-        # step 4. render correct view according to import_status
-        return view(request, *args, **kwargs)
+    def get_context_breadcrumbs(self):
+        breadcrumbs = super().get_context_breadcrumbs()
+        breadcrumbs += [
+            {"href": None, "title": "Création du diagnostic"},
+        ]
+        return breadcrumbs
 
 
-class ProjectNoShpView(GroupMixin, DetailView):
-    queryset = Project.objects.all()
-    template_name = "project/detail_add_shp.html"
+class SplashProgressionView(GroupMixin, DetailView):
+    model = Project
+    template_name = "project/create/fragment_splash_progress.html"
+    context_object_name = "diagnostic"
 
-    def form_valid(self):
-        id = self.get_object().id
-        url = reverse_lazy("project:detail", kwargs={"pk": id})
-        return HttpResponseRedirect(url)
-
-    def get_forms(self):
-        if self.request.method in ("POST", "PUT"):
-            return {
-                "shp_form": UploadShpForm(self.request.POST, self.request.FILES),
-            }
-        else:
-            return {
-                "shp_form": UploadShpForm(),
-            }
+    def dispatch(self, *args, **kwargs):
+        response = super().dispatch(*args, **kwargs)
+        if (
+            self.object.async_city_and_combined_emprise_done
+            and self.object.async_add_neighboors_done
+        ):
+            response["HX-Redirect"] = reverse("project:detail", kwargs=self.kwargs)
+        return response
 
     def get_context_data(self, **kwargs):
-        context = self.get_forms()
-        return super().get_context_data(**context)
-
-    def post(self, request, *args, **kwargs):
-        for form in self.get_forms().values():
-            if form.is_valid():
-                form.save(project=self.get_object())
-                # one form was valid, let's got to success url
-                return self.form_valid()
-        # no forms are valid, display them again
-        return self.get(request, *args, **kwargs)
-
-
-class ProjectPendingView(GroupMixin, DetailView):
-    queryset = Project.objects.all()
-    template_name = "project/detail_pending.html"
-
-
-class ProjectSuccessView(GroupMixin, DetailView):
-    queryset = Project.objects.all()
-    template_name = "project/detail_success.html"
-
-    def get_context_data(self, **kwargs):
-        kwargs["claim_diagnostic"] = self.object.user is None
-        kwargs["analysis_artif"] = self.object.is_artif
+        # o = self.object
+        # kwargs["steps"] = {
+        #     "Liste des communes du territoire": o.async_city_and_combined_emprise_done,
+        #     "Image de couverture": o.async_cover_image_done,
+        #     "Période de l'OCSGE": o.async_find_first_and_last_ocsge_done,
+        #     "Territoires de comparaison": o.async_add_neighboors_done,
+        #     "Carte de la consommation d'espace": o.async_generate_theme_map_conso_done,
+        #     "Carte de l'artificialisation": o.async_generate_theme_map_artif_done,
+        #     "Carte comprendre l'artificialisation": o.async_theme_map_understand_artif_done,
+        # }
+        kwargs["last_update"] = timezone.now()
         return super().get_context_data(**kwargs)
-
-
-class ProjectFailedView(GroupMixin, DetailView):
-    queryset = Project.objects.all()
-    template_name = "project/detail_failed.html"

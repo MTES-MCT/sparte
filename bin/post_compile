@@ -15,4 +15,5 @@ python manage.py load_param --no-update --file required_parameters.json
 python scripts/cmd.py --env local mep
 
 # collect static
+npm run build:prod
 python manage.py collectstatic --noinput

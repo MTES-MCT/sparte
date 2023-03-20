@@ -1,17 +1,16 @@
-from jenkspy import jenks_breaks
-
 from django.contrib.gis.geos import Polygon
-from django.db.models import Max, Sum, F, FloatField, Subquery, OuterRef
+from django.db.models import F, FloatField, Max, OuterRef, Subquery, Sum
 from django.db.models.functions import Cast
 from django.http import JsonResponse
 from django.urls import reverse_lazy
 from django.views.generic import DetailView
-
-from public_data.models import Cerema
-from utils.colors import get_yellow2red_gradient, get_dark_blue_gradient
+from jenkspy import jenks_breaks
 
 from project.models import Project
-from project.serializers import CitySpaceConsoMapSerializer, CityArtifMapSerializer
+from project.serializers import CityArtifMapSerializer, CitySpaceConsoMapSerializer
+from public_data.models import Cerema
+from utils.colors import get_dark_blue_gradient, get_yellow2red_gradient
+
 from .mixins import GroupMixin
 
 
@@ -346,7 +345,7 @@ class MyArtifMapView(BaseThemeMap):
                 "url": (
                     f'{reverse_lazy("public_data:ocsgediff-optimized")}'
                     f"?year_old={years['old']}&year_new={years['new']}"
-                    f"&is_new_artif=true"
+                    f"&is_new_artif=true&project_id={self.object.id}"
                 ),
                 "display": True,
                 "style": "get_color_for_ocsge_diff",
@@ -357,7 +356,7 @@ class MyArtifMapView(BaseThemeMap):
                 "url": (
                     f'{reverse_lazy("public_data:ocsgediff-optimized")}'
                     f"?year_old={years['old']}&year_new={years['new']}"
-                    "&is_new_natural=true"
+                    f"&is_new_natural=true&project_id={self.object.id}"
                 ),
                 "display": True,
                 "style": "get_color_for_ocsge_diff",
@@ -367,7 +366,7 @@ class MyArtifMapView(BaseThemeMap):
                 "name": "Zones artificielles",
                 "url": (
                     f'{reverse_lazy("public_data:artificialarea-optimized")}'
-                    f"?year={years['new']}"
+                    f"?year={years['new']}&project_id={self.object.id}"
                 ),
                 "display": True,
                 "style": "style_zone_artificielle",
@@ -432,7 +431,7 @@ class CitySpaceConsoMapView(BaseThemeMap):
             )[1:]
         data = [
             {"value": v, "color": c.hex_l}
-            for v, c in zip(boundaries, get_dark_blue_gradient(len(boundaries)))
+            for v, c in zip(boundaries, get_yellow2red_gradient(len(boundaries)))
         ]
         return JsonResponse(data, safe=False)
 
@@ -468,7 +467,7 @@ class CityArtifMapView(BaseThemeMap):
             boundaries = jenks_breaks(boundaries, n_classes=self.scale_size)[1:]
         data = [
             {"value": v, "color": c.hex_l}
-            for v, c in zip(boundaries, get_yellow2red_gradient(len(boundaries)))
+            for v, c in zip(boundaries, get_dark_blue_gradient(len(boundaries)))
         ]
         return JsonResponse(data, safe=False)
 

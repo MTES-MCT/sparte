@@ -20,14 +20,15 @@ services:
       - "6379:6379"
     networks:
       - app-network
-    restart: on-failure
 
   app:
     build: .
     image: sparte/backend:latest
-    command: python manage.py runserver 0.0.0.0:8080
+    # command: python manage.py runserver 0.0.0.0:8080
     # required to attach vsc to the container and run debug
     # command: tail -F anything
+    # command: ["sh", "-c", "python /tmp/debugpy --wait-for-client --listen 0.0.0.0:5678 manage.py runserver 0.0.0.0:8080 --nothreading --noreload"]
+    command: ["sh", "-c", "python /tmp/debugpy --listen 0.0.0.0:5678 manage.py runserver 0.0.0.0:8080 --nothreading"]
     volumes:
       - .:/app
     env_file: .env
@@ -37,6 +38,7 @@ services:
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
       - USE_S3=0
     ports:
+      - "5678:5678"
       - "8080:8080"
     depends_on:
       - db
@@ -46,7 +48,7 @@ services:
 
   jupyter:
     image: sparte/backend:latest
-    command: jupyter nbextension enable --py widgetsnbextension && python manage.py shell_plus --notebook
+    command: python manage.py shell_plus --notebook
     volumes:
       - .:/app
     env_file: .env
@@ -56,13 +58,16 @@ services:
       - DATABASE_URL=postgis://postgres:postgres@db:5432/postgres
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    depends_on:
+      - db
+      - redis
     ports:
       - 8888:8888
     networks:
       - app-network
 
   highchart:
-    image: sparte/highchart-export-server:13
+    image: swannbm/scalingo-highcharts-export-server:13
     command: highcharts-export-server --enableServer 1 --port 8090
     ports:
       - "8090:8090"
@@ -80,13 +85,31 @@ services:
     environment:
       - DATABASE_URL=postgis://postgres:postgres@db:5432/postgres
       - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
       - HIGHCHART_SERVER=http://highchart:8090/
     depends_on:
       - db
       - redis
     networks:
       - app-network
-    restart: on-failure
+
+  worker-beat:
+    image: sparte/backend:latest
+    working_dir: /app
+    volumes:
+      - .:/app
+    command: celery -A config.celery beat --loglevel=debug
+    env_file: .env
+    environment:
+      - DATABASE_URL=postgis://postgres:postgres@db:5432/postgres
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    depends_on:
+      - db
+      - redis
+    networks:
+      - app-network
+
 
 networks:
   app-network:
@@ -94,17 +117,6 @@ networks:
 
 volumes:
   db_data:
-
-  # worker-beat:
-  #   build: .
-  #   working_dir: /app
-  #   command: celery -A config.celery beat --loglevel=info
-  #   env_file: .env
-  #   depends_on:
-  #     - redis
-  #   networks:
-  #     - app-network
-  #   restart: on-failure
 
   # flower:
   #   image: mher/flower
@@ -115,4 +127,3 @@ volumes:
   #     - app-network
   #   ports:
   #     - 8887:8887
-  #   restart: on-failure

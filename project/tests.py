@@ -1,12 +1,11 @@
-import pytest
 import re
 
-from django.contrib.gis.geos import Polygon, MultiPolygon
+import pytest
+from django.contrib.gis.geos import MultiPolygon, Polygon
 
 from users.tests import users  # noqa: F401
 
-from .models import Project, Emprise, user_directory_path
-
+from .models import Emprise, Project, user_directory_path
 
 BIG_SQUARE = MultiPolygon(
     [Polygon.from_bbox((43, -1, 44, 0))],

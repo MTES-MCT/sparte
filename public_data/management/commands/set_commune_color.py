@@ -2,10 +2,8 @@ import logging
 
 from django.core.management.base import BaseCommand
 
-from utils.colors import get_blue_gradient
-
 from public_data.models import Commune
-
+from utils.colors import get_blue_gradient
 
 logging.basicConfig(level=logging.INFO)
 

@@ -3,18 +3,15 @@ import json
 
 from django.db import connection
 from django.http import HttpResponse
-
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework_gis import filters
 
+from public_data import models
 from utils.functions import decimal2float
 
-from public_data import models
-
 from . import serializers
-
 
 # OCSGE layers viewssets
 
@@ -196,7 +193,7 @@ class OcsgeDiffViewSet(OptimizedMixins, DataViewSet):
         "year_old": "year_old",
         "is_new_artif": "is_new_artif",
         "is_new_natural": "is_new_natural",
-        "surface": "surface",
+        "surface / 10000": "surface",
     }
 
     def get_sql_where(self):
@@ -205,17 +202,21 @@ class OcsgeDiffViewSet(OptimizedMixins, DataViewSet):
             "    and mpoly && ST_MakeEnvelope(%s, %s, %s, %s, 4326) "
             "    and is_new_artif = %s "
             "    and is_new_natural = %s "
+            "    and ST_Intersects(mpoly, ("
+            "        SELECT ST_Union(mpoly) FROM project_emprise WHERE project_id = %s"
+            "    ))"
         )
 
     def get_params(self, request):
+        project_id = request.query_params.get("project_id")
         bbox = request.query_params.get("in_bbox").split(",")
         bbox = list(map(float, bbox))
         year_old = int(request.query_params.get("year_old"))
         year_new = int(request.query_params.get("year_new"))
         is_new_artif = bool(request.query_params.get("is_new_artif", False))
         is_new_natural = bool(request.query_params.get("is_new_natural", False))
-        # /!\ order matter, see sql query below
-        return [year_new, year_old] + bbox + [is_new_artif, is_new_natural]
+        # /!\ order matter, see sql query
+        return [year_new, year_old] + bbox + [is_new_artif, is_new_natural, project_id]
 
 
 class ZoneConstruiteViewSet(OptimizedMixins, DataViewSet):
@@ -238,13 +239,24 @@ class ArtificialAreaViewSet(OptimizedMixins, DataViewSet):
         "o.surface": "surface",
         "o.year": "year",
     }
+    optimized_geo_field = "st_AsGeoJSON(ST_Intersection(o.mpoly, t.geom), 8)"
 
     def get_sql_from(self):
         return (
             f"from {self.queryset.model._meta.db_table} o "
             f"inner join {models.Commune._meta.db_table} c "
-            "on o.city_id = c.id"
+            "on o.city_id = c.id, "
+            "(SELECT ST_Union(mpoly) as geom FROM project_emprise WHERE project_id = %s) as t"
         )
+
+    def get_sql_where(self):
+        return (
+            "where ST_Intersects(o.mpoly, t.geom) "
+            "    and ST_Area(ST_Transform(ST_Intersection(o.mpoly, t.geom), 2154)) > 0.5"
+        )
+
+    def get_params(self, request):
+        return [request.query_params.get("project_id")]
 
 
 # Views for referentials Couverture and Usage

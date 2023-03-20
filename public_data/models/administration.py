@@ -30,8 +30,8 @@ from typing import Literal
 
 from django.contrib.gis.db import models
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.validators import MinValueValidator, MaxValueValidator
-from django.db.models import Sum, Q
+from django.core.validators import MaxValueValidator, MinValueValidator
+from django.db.models import Sum
 from django.utils.functional import cached_property
 
 from utils.db import IntersectManager
@@ -182,7 +182,9 @@ class GetDataFromCeremaMixin:
 
 
 class LandMixin:
-    @property
+    """Interface to work seemlessly with all administration's level."""
+
+    @cached_property
     def public_key(self):
         return f"{self.land_type}_{self.id}"
 
@@ -193,9 +195,6 @@ class LandMixin:
 
     @classmethod
     def search(cls, needle, region=None, departement=None, epci=None):
-        raise NotImplementedError("need to be overrided")
-
-    def get_qs_cerema(self):
         raise NotImplementedError("need to be overrided")
 
     def get_cities(self):
@@ -279,7 +278,7 @@ class Departement(LandMixin, GetDataFromCeremaMixin, models.Model):
     objects = IntersectManager()
 
     land_type = AdminRef.DEPARTEMENT
-    default_analysis_level = AdminRef.EPCI
+    default_analysis_level = AdminRef.SCOT
 
     def get_ocsge_millesimes(self) -> set:
         """Return the list of all OCSGE millesimes (years) available for this dept."""
@@ -588,7 +587,7 @@ class Land:
         try:
             self.land = klass.objects.get(pk=int(self.id))
         except ObjectDoesNotExist as e:
-            raise Exception(f"Public key '{id}' unknown") from e
+            raise LandException(f"Public key '{id}' unknown") from e
 
     def get_conso_per_year(self, start="2010", end="2020", coef=1):
         return self.land.get_conso_per_year(start, end, coef)

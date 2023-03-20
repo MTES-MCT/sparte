@@ -1,11 +1,12 @@
 import collections
+from typing import Dict, List
 
-from django.db.models import Sum, F, Value
+from django.db.models import F, Sum, Value
 from django.db.models.functions import Concat
 
 from highcharts import charts
-
-from public_data.models import AdminRef, OcsgeDiff, CouvertureSol, UsageSol
+from project.models.project_base import Project
+from public_data.models import AdminRef, CouvertureSol, OcsgeDiff, UsageSol
 
 
 class ProjectChart(charts.Chart):
@@ -63,7 +64,15 @@ class ConsoCommuneChart(ProjectChart):
         "title": {"text": ""},
         "yAxis": {"title": {"text": "Consommé (en ha)"}},
         "xAxis": {"type": "category"},
-        "legend": {"layout": "vertical", "align": "right", "verticalAlign": "top"},
+        "legend": {
+            "layout": "vertical",
+            "align": "right",
+            "verticalAlign": "bottom",
+            "padding": 3,
+            "margin": 25,
+            "itemMarginTop": 1,
+            "itemMarginBottom": 1,
+        },
         "plotOptions": {"area": {"stacking": "normal"}},
         "series": [],
     }
@@ -562,7 +571,7 @@ class UsageSolProgressionChart(CouvertureSolProgressionChart):
     _sol = "usage"
 
 
-class DetailArtifChart(ProjectChart):
+class DetailCouvArtifChart(ProjectChart):
     name = "Progression des principaux postes de la couverture du sol"
     param = {
         "chart": {"type": "column", "alignThresholds": True},
@@ -581,14 +590,18 @@ class DetailArtifChart(ProjectChart):
         "series": [],
     }
 
-    def __init__(self, project):
+    def __init__(self, project: Project):
         self.first_millesime = project.first_year_ocsge
         self.last_millesime = project.last_year_ocsge
         super().__init__(project)
+        self.chart["title"]["text"] = (
+            f"Evolution des surfaces artificielles par type de couverture de {self.first_millesime} à "
+            f"{self.last_millesime}"
+        )
 
-    def get_series(self):
+    def get_series(self) -> List[Dict]:
         if not self.series:
-            self.series = list(self.project.get_detail_artif())
+            self.series = list(self.project.get_detail_artif(sol="couverture"))
             if "CS1.1.2.2" not in [s["code_prefix"] for s in self.series]:
                 required_couv = CouvertureSol.objects.get(code="1.1.2.2")
                 self.series.append(
@@ -602,16 +615,16 @@ class DetailArtifChart(ProjectChart):
                 )
         return self.series
 
-    def add_series(self):
+    def add_series(self, *args, **kwargs) -> None:
         self.chart["series"].append(
             {
                 "name": "Artificialisation",
                 "data": [
                     {
-                        "name": couv["code_prefix"],
-                        "y": couv["artif"],
+                        "name": item["code_prefix"],
+                        "y": item["artif"],
                     }
-                    for couv in self.get_series()
+                    for item in self.get_series()
                 ],
             }
         )
@@ -620,13 +633,42 @@ class DetailArtifChart(ProjectChart):
                 "name": "Renaturation",
                 "data": [
                     {
-                        "name": couv["code_prefix"],
-                        "y": couv["renat"],
+                        "name": item["code_prefix"],
+                        "y": item["renat"],
                     }
-                    for couv in self.get_series()
+                    for item in self.get_series()
                 ],
             }
         )
+
+
+class DetailUsageArtifChart(DetailCouvArtifChart):
+    name = "Progression des principaux postes de l'usage du sol"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.chart["title"]["text"] = (
+            f"Evolution des surfaces artificielles par type d'usage de {self.first_millesime} à "
+            f"{self.last_millesime}"
+        )
+
+    def get_series(self):
+        if not self.series:
+            self.series = {  # TODO : tester que toutes les USAGES niveau 1 s'affichent.
+                u.code_prefix: {
+                    "code_prefix": u.code_prefix,
+                    "label": u.label,
+                    "label_short": u.label_short,
+                    "artif": 0,
+                    "renat": 0,
+                }
+                for u in UsageSol.objects.order_by("code_prefix") if u.level == 1
+            }
+            for row in self.project.get_detail_artif(sol="usage"):
+                code = row["code_prefix"].split(".")[0]
+                self.series[code]["artif"] += row["artif"]
+                self.series[code]["renat"] += row["renat"]
+        return list(self.series.values())
 
 
 class ArtifCouvSolPieChart(ProjectChart):
@@ -654,9 +696,12 @@ class ArtifCouvSolPieChart(ProjectChart):
         "series": [],
     }
 
-    def __init__(self, project):
+    def __init__(self, project: Project):
         self.millesime = project.last_year_ocsge
         super().__init__(project)
+        self.chart["title"][
+            "text"
+        ] = f"Surfaces artificialisées par type de couverture en {self.millesime}"
 
     def get_series(self):
         if not self.series:
@@ -683,6 +728,33 @@ class ArtifCouvSolPieChart(ProjectChart):
 
 class ArtifUsageSolPieChart(ArtifCouvSolPieChart):
     _sol = "usage"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.chart["title"][
+            "text"
+        ] = f"Surfaces artificialisées par type d'usage en {self.millesime}"
+
+    def get_series(self):
+        if not self.series:
+            data = {}
+            for row in list(super().get_series()):
+                code = row["code_prefix"].split(".")[0]
+                if code not in data:
+                    data[code] = 0
+                data[code] += row["surface"]
+            usage_list = {u.code_prefix: u for u in UsageSol.objects.all() if u.code_prefix in data}
+            self.series = [
+                {
+                    "code_prefix": code,
+                    "label": usage_list[code].label,
+                    "label_short": usage_list[code].label_short,
+                    "map_color": usage_list[code].map_color,
+                    "surface": value,
+                }
+                for code, value in data.items()
+            ]
+        return self.series
 
 
 class NetArtifComparaisonChart(ProjectChart):

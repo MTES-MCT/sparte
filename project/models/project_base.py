@@ -1,37 +1,37 @@
 import collections
-from decimal import Decimal
-import pandas as pd
 import traceback
-from typing import Literal
+from decimal import Decimal
+from typing import Dict, List, Literal
 
+import pandas as pd
 from django.conf import settings
 from django.contrib.gis.db import models as gis_models
-from django.contrib.gis.db.models import Union, Extent
+from django.contrib.gis.db.models import Extent, Union
 from django.contrib.gis.db.models.functions import Centroid
-from django.core.validators import MinValueValidator, MaxValueValidator
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
-from django.db.models import Sum, F, Value, Q, Min, Max, Case, When
-from django.db.models.functions import Concat, Coalesce
+from django.db.models import Case, F, Max, Min, Q, Sum, Value, When
+from django.db.models.functions import Coalesce, Concat
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.functional import cached_property
 
 from config.storages import PublicMediaStorage
-from public_data.models.mixins import DataColorationMixin
 from public_data.models import (
+    AdminRef,
     Cerema,
-    Land,
     CommuneDiff,
     CommunePop,
     CommuneSol,
     CouvertureSol,
     Departement,
+    Land,
     Ocsge,
     OcsgeDiff,
-    AdminRef,
     UsageSol,
 )
-
+from public_data.models.administration import Commune
+from public_data.models.mixins import DataColorationMixin
 from utils.db import cast_sum
 
 from .utils import user_directory_path
@@ -134,7 +134,6 @@ class BaseProject(models.Model):
             self.save()
 
     class Meta:
-        ordering = ["name"]
         abstract = True
 
 
@@ -149,9 +148,9 @@ class ProjectCommune(models.Model):
 class CityGroup:
     def __init__(self, name: str):
         self.name = name
-        self.cities = list()
+        self.cities: List[Commune] = list()
 
-    def append(self, project_commune: ProjectCommune):
+    def append(self, project_commune: ProjectCommune) -> None:
         self.cities.append(project_commune.commune)
 
     def __str__(self) -> str:
@@ -159,7 +158,6 @@ class CityGroup:
 
 
 class Project(BaseProject):
-
     ANALYZE_YEARS = [(str(y), str(y)) for y in range(2009, 2021)]
     LEVEL_CHOICES = AdminRef.CHOICES
 
@@ -198,6 +196,11 @@ class Project(BaseProject):
             "EPCI est sélectionné, alors les rapports montre des données EPCI par EPCI."
         ),
     )
+
+    @property
+    def level_label(self):
+        return AdminRef.get_label(self.level)
+
     land_type = models.CharField(
         "Type de territoire",
         choices=LEVEL_CHOICES,
@@ -580,7 +583,7 @@ class Project(BaseProject):
 
     def get_pop_change_per_year(
         self, criteria: Literal["pop", "household"] = "pop"
-    ) -> dict():
+    ) -> Dict:
         cities = (
             CommunePop.objects.filter(city__in=self.cities.all())
             .filter(year__gte=self.analyse_start_date)
@@ -677,7 +680,7 @@ class Project(BaseProject):
     def get_artif_area(self):
         """Return artificial surface total for all city inside diagnostic"""
         result = self.cities.all().aggregate(total=Sum("surface_artif"))
-        return result["total"]
+        return result["total"] or 0
 
     def get_artif_progession_time_scoped(self):
         """Return example: {"new_artif": 12, "new_natural": 2: "net_artif": 10}"""
@@ -856,7 +859,7 @@ class Project(BaseProject):
             item.surface_diff = item.surface_last - item.surface_first
         return item_list
 
-    def get_detail_artif(self):
+    def get_detail_artif(self, sol: Literal["couverture", "usage"]):
         return (
             OcsgeDiff.objects.intersect(self.combined_emprise)
             .filter(
@@ -867,19 +870,19 @@ class Project(BaseProject):
             .annotate(
                 code_prefix=Case(
                     When(
-                        is_new_artif=True, then=F("new_matrix__couverture__code_prefix")
+                        is_new_artif=True, then=F(f"new_matrix__{sol}__code_prefix")
                     ),
-                    default=F("old_matrix__couverture__code_prefix"),
+                    default=F(f"old_matrix__{sol}__code_prefix"),
                 ),
                 label=Case(
-                    When(is_new_artif=True, then=F("new_matrix__couverture__label")),
-                    default=F("old_matrix__couverture__label"),
+                    When(is_new_artif=True, then=F(f"new_matrix__{sol}__label")),
+                    default=F(f"old_matrix__{sol}__label"),
                 ),
                 label_short=Case(
                     When(
-                        is_new_artif=True, then=F("new_matrix__couverture__label_short")
+                        is_new_artif=True, then=F(f"new_matrix__{sol}__label_short")
                     ),
-                    default=F("old_matrix__couverture__label_short"),
+                    default=F(f"old_matrix__{sol}__label_short"),
                 ),
             )
             .values("code_prefix", "label", "label_short")
@@ -960,7 +963,6 @@ class Project(BaseProject):
 
 
 class Emprise(DataColorationMixin, gis_models.Model):
-
     # DataColorationMixin properties that need to be set when heritating
     default_property = "id"
     default_color = "blue"
