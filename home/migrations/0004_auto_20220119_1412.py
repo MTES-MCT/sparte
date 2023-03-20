@@ -3,7 +3,6 @@
 from django.db import migrations
 from django.utils.text import slugify
 
-
 TITLE = "Les données utilisées"
 MD_CONTENT = """
 Cette section est en construction, mais vous pouvez déjà y trouver des informations

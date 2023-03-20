@@ -1,0 +1,540 @@
+{% extends 'index.html' %}
+
+{% load static %}
+{% load project_tags %}
+{% load humanize %}
+{% load i18n %}
+{% load l10n %}
+{% load highcharts_tags %}
+{% load sri %}
+
+{% block pagetitle %}
+Rapport consommation
+{% endblock %}
+
+{% block headers %}
+{% sri_static "project/css/project.css" %}
+<meta name="htmx-config" content='{"inlineScriptNonce":"{{ CSP_NONCE }}"}'>
+{% endblock %}
+
+{% block content %}
+<div class="px-4">
+    {% include "project/partials/report_title.html" with title=diagnostic surface=diagnostic.area %}
+
+    {% include "project/report_menu.html" %}
+
+    <div class="fr-container fr-py-3w">
+        <div class="fr-callout fr-callout--brown-caramel fr-fi-information-line fr-callout-read-more">
+            <div class="fr-callout-read-more__excerpt">
+                <p class="fr-text--sm mb-3">Pour la mesure de la consommation des espaces NAF, l'Etat utilise les fichiers fonciers.</p>
+                <p class="fr-text--sm mb-3">Ces données sont fournies tous les ans depuis 2009. Le dernier millésime de 2021 est la photographie du territoire au 1er janvier 2021, intégrant les évolutions réalisées au cours de l'année 2020.</p>
+            </div>
+            <div class="fr-callout-read-more__text" id="conso_1" hidden>
+                <p class="fr-text--sm mb-3">Pour la mesure de la consommation des espaces NAF, l'Etat utilise les fichiers fonciers.</p>
+                <p class="fr-text--sm mb-3">Ces données sont fournies tous les ans depuis 2009. Le dernier millésime de 2021 est la photographie du territoire au 1er janvier 2021, intégrant les évolutions réalisées au cours de l'année 2020.</p>
+                <p class="fr-text--sm mb-3">Les données de l'INSEE sont également intégrées pour mettre en perspective la consommation d'espace vis à vis de l'évolution de la population et bientôt l'emploi.</p>
+                <p class="fr-text--sm mb-3"><a href="https://artificialisation.developpement-durable.gouv.fr/bases-donnees/les-fichiers-fonciers" target="_blank" id="cerema-link">Plus d'informations sur les fichiers fonciers (source : Cerema)</a></p>
+            </div>
+
+            <button class="fr-btn fr-btn--secondary fr-btn--sm fr-callout-read-more__btn" aria-expanded="false" aria-controls="conso_1">
+                Lire plus
+            </button>
+        </div>
+
+        <nav class="fr-summary" role="navigation" aria-labelledby="fr-summary-title">
+            <p class="fr-summary__title" id="fr-summary-title">Sommaire de la page</p>
+            <ol class="fr-summary__list">
+                <li>
+                    <a class="fr-summary__link" href="#conso-annuelle">Consommation annuelle du territoire : graphique et chiffres</a>
+                </li>
+                <li>
+                    <a class="fr-summary__link" href="#determinants-conso">Déterminants de sa consommation d'espace : graphiques et chiffres</a>
+                </li>
+                <li>
+                    <a class="fr-summary__link" href="#territoires-de-comparaison">Comparaison du territoire avec les territoires voisins</a>
+                </li>
+                <li>
+                    <a class="fr-summary__link" href="#conso-relative-surface-anchor">Consommation d'espace rapportée à la surface du territoire</a>
+                </li>
+                <li>
+                    <a class="fr-summary__link" href="#conso-relative-pop-anchor">Consommation d'espaces par nouvel habitant</a>
+                </li>
+
+                <li>
+                    <a class="fr-summary__link" href="#conso-relative-household-anchor">Consommation d'espaces par ménages</a>
+                </li>
+            </ol>
+        </nav>
+
+        <div class="fr-grid-row fr-grid-row--gutters fr-mt-7w">
+            <div class="fr-col-12 fr-col-md-6 fr-grid-row">
+                <div class="fr-callout w-100">
+                    <p class="fr-callout__title">{{ total_surface|floatformat:0 }} ha</p>
+                    <p>Surface du territoire</p>
+                </div>
+            </div>
+            <div class="fr-col-12 fr-col-md-6 fr-grid-row">
+                <div class="fr-callout w-100">
+                    <p class="fr-callout__title">+{{ project_scope.consummed|floatformat:1 }} ha</p>
+                    <p>Consommation {{ project.analyse_start_date }} à {{ project.analyse_end_date }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="fr-mt-7w">
+            <h3 id="conso-annuelle">Consommation d'espaces sur le territoire</h3>
+
+            <div class="fr-grid-row fr-grid-row--gutters">
+                <div class="fr-col-12{% if nb_communes > 1 %} fr-col-lg-8{% endif %}">
+                    <div class="border fr-p-2w h-100">
+                        <div class="d-flex justify-content-end align-items-center fr-mb-2w">
+                            <div class="dropdown custom-dropdown fr-mr-2w">
+                                <button class="fr-btn fr-btn--tertiary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Maille d'analyse
+                                </button>
+
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <a class="fr-nav__link" {% if level == "COMM" %} aria-current="true"{% endif %} href="{% url "project:report_conso" project.id %}?level_conso=COMMUNE">Communes</a>
+                                    </li>
+                                    {% if land_type in "DEPART_REGION_COMP" %}
+                                    <li>
+                                        <a class="fr-nav__link" {% if level == "EPCI" %} aria-current="true"{% endif %} href="{% url "project:report_conso" project.id %}?level_conso=EPCI">EPCI</a>
+                                    </li>
+                                    {% endif %}
+                                    {% if land_type in "DEPART_REGION_COMP" %}
+                                    <li><a class="dropdown-item {% if level == "SCOT" %}active{% endif %}" href="{% url "project:report_conso" project.id %}?level_conso=SCOT">Scot</a></li>
+                                    {% endif %}
+                                    {% if land_type in "REGION_COMP" %}
+                                    <li>
+                                        <a class="fr-nav__link" {% if level == "DEPART" %} aria-current="true"{% endif %}  href="{% url "project:report_conso" project.id %}?level_conso=DEPART">Départements</a>
+                                    </li>
+                                    {% endif %}
+                                    {% if land_type in "COMP" %}
+                                    <li>
+                                        <a class="fr-nav__link" {% if level == "REGION" %} aria-current="true"{% endif %} href="{% url "project:report_conso" project.id %}?level_conso=REGION">Régions</a>
+                                    </li>
+                                    {% endif %}
+                                </ul>
+                            </div>
+
+                            <div class="dropdown custom-dropdown fr-mr-2w">
+                                <button class="fr-btn fr-btn--tertiary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Sélection
+                                </button>
+
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <a id="check" class="fr-nav__link" href="#" chart_target="chart">Tout</a>
+                                    </li>
+                                    <li>
+                                        <a id="uncheck" class="fr-nav__link" href="#" chart_target="chart">Aucun</a>
+                                    </li>
+                                    <li>
+                                        <a id="reverse" class="fr-nav__link" href="#" chart_target="chart">Inverser</a>
+                                    </li>
+                                    <li>
+                                        <h6 class="dropdown-header">Zoom sur un groupe de villes</h6>
+                                    </li>
+                                    {% for name in groups_names %}
+                                        <li>
+                                            <a class="fr-nav__link" href="{% url 'project:report_city_group' project.id %}?group_name={{ name }}">{{ name }}</a>
+                                        </li>
+                                    {% endfor %}
+                                    <li>
+                                        <a class="fr-nav__link" href="{% url 'project:report_city_group' project.id %}">Tous</a>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <div class="dropdown custom-dropdown fr-mr-2w" data-toggle="tooltip" title="Exporter le graphique">
+                                <button class="fr-btn fr-icon-download-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="dropdown" aria-expanded="false"></button>
+
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <a class="fr-nav__link export-chart" href="#" data-chart-target="chart" data-type="image/png">PNG</a>
+                                    </li>
+                                    <li>
+                                        <a class="fr-nav__link export-chart" href="#" data-chart-target="chart" data-type="image/jpeg">JPEG</a>
+                                    </li>
+                                    <li>
+                                        <a class="fr-nav__link export-chart" href="#" data-chart-target="chart" data-type="application/pdf">PDF</a>
+                                    </li>
+                                    <li>
+                                        <a class="fr-nav__link export-chart" href="#" data-chart-target="chart" data-type="image/svg+xml">Vectoriel</a>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm fr-mr-2w fullscreen-chart" data-chart-target="chart" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
+
+                            <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#consoAnnuelle" data-toggle="tooltip" title="Astuces pour lire le graphique"></button>
+                        </div>
+                        <div id="chart"></div>
+                    </div>
+                </div>
+                {% if nb_communes > 1 %}
+                <div class="fr-col-12 fr-col-lg-4">
+                    <div class="border theme-map-image-container h-100 fr-p-2w d-flex flex-column align-items-center justify-content-between">
+                        <div class="d-flex justify-content-end align-items-center w-100 fr-mb-2w">
+                            <a href="{% url 'project:theme-city-conso' project.pk %}" target="_blank">
+                                <button class="fr-btn fr-icon-external-link-line fr-btn--tertiary fr-btn--sm"></button>
+                            </a>
+                        </div>
+                        <p class="fw-bold">Carte consommation d'espaces des communes du territoire sur la période (en Ha)</p>
+                        {% if project.theme_map_conso %}
+                        <img src="{{ project.theme_map_conso.url }}" alt="Carte consommation d'espaces des communes du territoire sur la période (en Ha)">
+                        {% else %}
+                        <div class="skeleton-loader"></div>
+                        {% endif %}
+                    </div>
+                </div>
+               {% endif %} 
+            </div>
+
+            <div class="fr-callout bg-white fr-p-2w mt-4">
+                <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data-1">Données</button>
+                <div class="fr-collapse" id="target-data-1">
+                    <h6 class="fr-mt-2w">Source</h6>
+                    <p>Données d'évolution des fichiers fonciers du Cérema issus des données MAJIC (Mise A Jour de l'Information Cadastrale) de la DGFIP, sur la période d'analyse (millésime min : 2009, millésime max : 2021)</p>
+
+                    <h6 class="fr-mt-2w">Calcul</h6>
+                    <p>Consommation d'espaces NAF par année, par maille d'analyse du territoire de diagnostic</p>
+
+                    <h6 class="fr-mt-2w">Données</h6>
+                    <table class="table table-striped table-sm table-borderless">
+                        <thead>
+                            <tr>
+                                <th scope="col">{{ col_name }}</th>
+                                {% for year in project.years %}
+                                <th scope="col" class="text-end">{{ year }}</th>
+                                {% endfor %}
+                                <th scope="col" class="text-end">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for city_name, data in communes_data_table.items %}
+                            <tr>
+                                <th scope="row">{{ city_name }}</th>
+                                {% for year, val in data.items %}
+                                <td align="right">+{{ val|floatformat:1 }}</td>
+                                {% endfor %}
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="fr-mt-7w">
+            <h3 id="determinants-conso">Déterminants de la consommation</h3>
+
+            <div class="fr-grid-row fr-grid-row--gutters">
+                <div class="fr-col-12 fr-col-lg-4">
+                    <div class="border fr-p-2w">
+                        <div class="d-flex justify-content-end align-items-center fr-mb-2w">
+                            <div class="dropdown custom-dropdown fr-mr-2w" data-toggle="tooltip" title="Exporter le graphique">
+                                <button class="fr-btn fr-icon-download-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="dropdown" aria-expanded="false"></button>
+    
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <a class="fr-nav__link export-chart" href="#" data-chart-target="pie_determinant" data-type="image/png">PNG</a>
+                                    </li>
+                                    <li>
+                                        <a class="fr-nav__link export-chart" href="#" data-chart-target="pie_determinant" data-type="image/jpeg">JPEG</a>
+                                    </li>
+                                    <li>
+                                        <a class="fr-nav__link export-chart" href="#" data-chart-target="pie_determinant" data-type="application/pdf">PDF</a>
+                                    </li>
+                                    <li>
+                                        <a class="fr-nav__link export-chart" href="#" data-chart-target="pie_determinant" data-type="image/svg+xml">Vectoriel</a>
+                                    </li>
+                                </ul>
+                            </div>
+    
+                            <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm fr-mr-2w fullscreen-chart" data-chart-target="pie_determinant" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
+
+                            <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#determinantModal" data-toggle="tooltip" title="Astuces pour lire le graphique" aria-hidden="true"></button>
+                        </div>
+                        <div id="pie_determinant"></div>
+                    </div>
+                </div>
+                <div class="fr-col-12 fr-col-lg-8">
+                    <div class="border fr-p-2w">
+                        <div class="d-flex justify-content-end align-items-center fr-mb-2w">
+                            <div class="dropdown custom-dropdown fr-mr-2w" data-toggle="tooltip" title="Exporter le graphique">
+                                <button class="fr-btn fr-icon-download-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="dropdown" aria-expanded="false"></button>
+    
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_determinant" data-type="image/png">PNG</a>
+                                    </li>
+                                    <li>
+                                        <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_determinant" data-type="image/jpeg">JPEG</a>
+                                    </li>
+                                    <li>
+                                        <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_determinant" data-type="application/pdf">PDF</a>
+                                    </li>
+                                    <li>
+                                        <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_determinant" data-type="image/svg+xml">Vectoriel</a>
+                                    </li>
+                                </ul>
+                            </div>
+    
+                            <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm fr-mr-2w fullscreen-chart" data-chart-target="chart_determinant" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
+
+                            <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#determinantModal" data-toggle="tooltip" title="Astuces pour lire le graphique" aria-hidden="true"></button>
+                        </div>
+                        <div id="chart_determinant"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="fr-callout bg-white fr-p-2w mt-4">
+                <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data-3">Données</button>
+                <div class="fr-collapse" id="target-data-3">
+                    <h6 class="fr-mt-2w">Source</h6>
+                    <p>Données d'évolution des fichiers fonciers du Cérema issus des données MAJIC (Mise A Jour de l'Information Cadastrale) de la DGFIP, sur la période d'analyse (millésime min : 2009, millésime max : 2021).</p>
+
+                    <h6 class="fr-mt-2w">Calcul</h6>
+                    <p>Déterminants de la consommation d'espaces NAF, par année.</p>
+
+                    <h6 class="fr-mt-2w">Données</h6>
+                    <table class="table table-striped table-sm table-borderless">
+                        <thead>
+                            <tr>
+                                <th scope="col">Déterminant</th>
+                                {% for year in project.years %}
+                                <th scope="col" class="text-end">{{ year }}</th>
+                                {% endfor %}
+                                <th scope="col" class="text-end">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for determinant_name, data in data_determinant.items %}
+                            <tr>
+                                <th scope="row">{{ determinant_name }}</th>
+                                {% for year, val in data.items %}
+                                <td align="right">+{{ val|floatformat:1 }}</td>
+                                {% endfor %}
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="fr-mt-7w">
+            <h3 id="territoires-de-comparaison">Comparaison avec les territoires voisins</h3>
+
+            <div class="border fr-p-2w">
+                <div class="d-flex justify-content-end align-items-center fr-mb-2w">
+                    <a class="fr-mr-2w fr-btn fr-icon-add-circle-line fr-btn--tertiary fr-btn--sm" href="{% url 'project:lookalike' project.id %}?next={% url 'project:report_conso' project.id %}&anchor=territoires-de-comparaison" data-toggle="tooltip" title="Ajouter un territoire de comparaison" aria-hidden="true"></a>
+
+                    <div class="dropdown custom-dropdown fr-mr-2w" data-toggle="tooltip" title="Exporter le graphique">
+                        <button class="fr-btn fr-icon-download-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="dropdown" aria-expanded="false"></button>
+
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_2" data-type="image/png">PNG</a>
+                            </li>
+                            <li>
+                                <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_2" data-type="image/jpeg">JPEG</a>
+                            </li>
+                            <li>
+                                <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_2" data-type="application/pdf">PDF</a>
+                            </li>
+                            <li>
+                                <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_2" data-type="image/svg+xml">Vectoriel</a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm fr-mr-2w fullscreen-chart" data-chart-target="chart_2" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
+                    
+                    <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#comparaisonVoisin" data-toggle="tooltip" title="Astuces pour lire le graphique" aria-hidden="true"></button>
+                </div>
+                <div id="chart_2"></div>
+            </div>
+
+            <div class="fr-callout bg-white fr-p-2w mt-4">
+                <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data-2">Données</button>
+                <div class="fr-collapse" id="target-data-2">
+                    <h6 class="fr-mt-2w">Source</h6>
+                    <p>Données d'évolution des fichiers fonciers du Cérema issus des données MAJIC (Mise A Jour de l'Information Cadastrale) de la DGFIP, sur la période d'analyse (millésime min : 2009, millésime max : 2021).</p>
+
+                    <h6 class="fr-mt-2w">Calcul</h6>
+                    <p>Consommation d'espaces NAF par année, par maille d'analyse du territoire de diagnostic.</p>
+                </div>
+            </div>
+        </div>
+
+
+        <div id="conso-relative-surface-anchor" class="fr-mt-7w" hx-get="{% url 'project:relative-surface' project.id %}" hx-trigger="revealed">
+            <h3>Consommation d'espace rapportée à la surface du territoire</h3>
+
+            <!-- TODO Sofian ajouter skeletton -->
+            <div class="fr-custom-loader"></div>
+            
+        </div>
+
+        <div id="conso-relative-pop-anchor" class="fr-mt-7w" hx-get="{% url 'project:relative-pop' project.id %}" hx-trigger="revealed">
+            <h3>Consommation d'espaces par nouvel habitant</h3>
+
+            <!-- TODO Sofian ajouter skeletton -->
+            <div class="fr-custom-loader"></div>
+        </div>
+
+        <div id="conso-relative-household-anchor" class="fr-mt-7w" hx-get="{% url 'project:relative-household' project.id %}" hx-trigger="revealed">
+            <h3>Consommation d'espaces par ménages</h3>
+
+            <!-- TODO Sofian ajouter skeletton -->
+            <div class="fr-custom-loader"></div>
+        </div>
+        
+    </div>
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="consoAnnuelle" tabindex="-1" aria-labelledby="consoAnnuelleLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+        <div class="fr-modal__body">
+            <div class="fr-modal__header">
+                <button class="fr-link--close fr-link" data-bs-dismiss="modal" aria-label="Close">Fermer</button>
+            </div>
+            <div class="fr-modal__content">
+                <h1 id="fr-modal-2-title" class="fr-modal__title" id="consoAnnuelleLabel">
+                    <span class="fr-fi-arrow-right-line fr-fi--lg"></span>
+                    Astuces - Graphique consommation d'espaces sur le territoire
+                </h1>
+                <p class="fr-text--sm">Pour réduire le nombre de territoires visibles dans le graphique, vous pouvez en masquer certains en cliquant sur eux dans la légende. Cliquez de nouveau dessus pour les ré-afficher.</p>
+                <p class="fr-text--sm">Avec le bouton sélection, vous pouvez tous les masquer d'un coup. Utile quand le nombre de territoires est important et que vous souhaitez n'en afficher que 2 ou 3.</p>
+                <p class="fr-text--sm">Avec le bouton sélection, vous pouvez aussi inverser la sélection. Tous les visibles seront masqués et tous les invisibles seront affichés.</p>
+                <p class="fr-text--sm">Avec le bouton <span class="fr-icon-drag-move-2-line fr-icon--sm" aria-hidden="true"></span>, vous pouvez afficher le graphique en plein écran.</p>
+                <p class="fr-text--sm">Avec le bouton <span class="fr-icon-download-line fr-icon--sm" aria-hidden="true"></span>, vous pouvez télécharger le graphique sous forme d'image (utilisez PNG si vous ne savez pas lequel choisir).</p>
+                <p class="fr-text--sm">Le bouton maille d'analyse permet de changer le type de territoire afficher. Si vous analyser un département, vous pouvez afficher les communes à la place des EPCI (attention, la lisibilité du graphique devient médiocre lorsqu'on affiche trop de territoires simultanéments).</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="comparaisonVoisin" tabindex="-1" aria-labelledby="comparaisonVoisinLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+        <div class="fr-modal__body">
+            <div class="fr-modal__header">
+                <button class="fr-link--close fr-link" data-bs-dismiss="modal" aria-label="Close">Fermer</button>
+            </div>
+            <div class="fr-modal__content">
+                <h1 id="fr-modal-2-title" class="fr-modal__title" id="comparaisonVoisinLabel">
+                    <span class="fr-fi-arrow-right-line fr-fi--lg"></span>
+                    Astuces - Comparaison avec les voisins
+                </h1>
+                <p class="fr-text--sm">La comparaison avec les voisins permet d'appréhender les dynamiques globales brutes de consommation d'espaces NAF et de les comparer entre elles.</p>
+                <p class="fr-text--sm">Pour réduire le nombre de territoires visibles dans le graphique, vous pouvez en masquer certains en cliquant sur eux dans la légende. Cliquez de nouveau dessus pour les ré-afficher.</p>
+                <p class="fr-text--sm">Avec le bouton <span class="fr-icon-drag-move-2-line fr-icon--sm" aria-hidden="true"></span>, vous pouvez afficher le graphique en plein écran.</p>
+                <p class="fr-text--sm">Avec le bouton <span class="fr-icon-download-line fr-icon--sm" aria-hidden="true"></span>, vous pouvez télécharger le graphique sous forme d'image (utilisez PNG si vous ne savez pas lequel choisir).</p>
+                <p class="fr-text--sm">Avec le bouton <i class="bi bi-plus-circle"></i>, vous pouvez ajouter un territoire à ce graphique (voisin ou non).</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="determinantModal" tabindex="-1" aria-labelledby="determinantLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+        <div class="fr-modal__body">
+            <div class="fr-modal__header">
+                <button class="fr-link--close fr-link" data-bs-dismiss="modal" aria-label="Close">Fermer</button>
+            </div>
+            <div class="fr-modal__content">
+                <h1 id="fr-modal-2-title" class="fr-modal__title" id="determinantLabel">
+                    <span class="fr-fi-arrow-right-line fr-fi--lg"></span>
+                    Astuces - Déterminants de la consommation
+                </h1>
+                <p class="fr-text--sm">Le camembert permet d'identifier via les pourcentages la répartition des déterminants (habitat, activité, mixte) sur la période de la consommation d'espaces NAF. Le graphique met en perspective la répartition en ha des déterminants au fil des années.</p>
+                <p class="fr-text--sm">Pour zoomer sur un déterminant en particulier, vous pouvez masquer les autres en cliquant sur eux dans la légende. Cliquez de nouveau dessus pour les ré-afficher.</p>
+                <p class="fr-text--sm">Avec le bouton <span class="fr-icon-drag-move-2-line fr-icon--sm" aria-hidden="true"></span>, vous pouvez afficher le graphique en plein écran.</p>
+                <p class="fr-text--sm">Avec le bouton <span class="fr-icon-download-line fr-icon--sm" aria-hidden="true"></span>, vous pouvez télécharger le graphique sous forme d'image (utilisez PNG si vous ne savez pas lequel choisir).</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block bodyend %}
+{% localize off %}
+{% sri_static "highcharts/js/highcharts.js" %}
+{% sri_static "highcharts/js/exporting.js" %}
+{% french_translation %}
+{% display_chart 'chart' commune_chart CSP_NONCE %}
+{% display_chart 'chart_2' comparison_chart CSP_NONCE %}
+{% display_chart 'chart_determinant' determinant_per_year_chart CSP_NONCE %}
+{% display_chart 'pie_determinant' determinant_pie_chart CSP_NONCE %}
+
+<script language="javascript" nonce="{{ CSP_NONCE }}">
+    ///////////////////////////////
+    // Select / unselect all
+    ///////////////////////////////
+
+    $('#check').click(function(e) {
+        e.preventDefault();
+        let div_id = $(this).attr('chart_target');
+        let chart = $("#" + div_id).highcharts();
+        $(chart.series).each(function(){
+            this.setVisible(true, false)
+        })
+        chart.redraw()
+    })
+
+    $('#uncheck').click(function(e) {
+        e.preventDefault();
+        let div_id = $(this).attr('chart_target')
+        let chart = $("#" + div_id).highcharts()
+        //chart.series.forEach(serie => serie.hide())
+        $(chart.series).each(function(){
+            this.setVisible(false, false)
+        })
+        chart.redraw()
+    })
+
+    $('#reverse').click(function(e){
+        e.preventDefault();
+        let div_id = $(this).attr('chart_target');
+        let chart = $("#" + div_id).highcharts();
+        $(chart.series).each(function(){
+            if (this.visible){
+                this.setVisible(false, false)
+            }else{
+                this.setVisible(true, false)
+            }
+        })
+        chart.redraw()
+    })
+</script>
+{% endlocalize %}
+{% endblock %}
+
+{% block tagging %}
+<script language="javascript" nonce="{{ CSP_NONCE }}">
+$( window ).on('load', function () {
+    _paq.push(['trackEvent', 'Consultation diagnostic', 'Tableau de bord', 'Consommation'])
+})
+
+var fired = false
+$( window ).scroll(function() {
+    if(fired == false && $( window ).scrollTop() + $( window ).height() > $( "#block-content" ).height() - 100) {
+        _paq.push(['trackEvent', 'Consultation diagnostic', 'Fin tableau de bord', 'Consommation'])
+        fired = true
+    }
+})
+
+$( "#cerema-link" ).click(function() {
+    _paq.push(['trackEvent', 'Liens sortants', 'Site du Cérema', 'Depuis rapport conso'])
+})
+</script>
+{% endblock tagging %}

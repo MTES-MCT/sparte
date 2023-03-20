@@ -3,9 +3,8 @@ import logging
 from django.core.management.base import BaseCommand
 from django.db.models import F
 
-from public_data.models.mixins import AutoLoadMixin, TruncateTableMixin
 from public_data.models import Cerema
-
+from public_data.models.mixins import AutoLoadMixin, TruncateTableMixin
 
 logger = logging.getLogger("management.commands")
 

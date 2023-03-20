@@ -7,7 +7,7 @@
                         <div class="fr-header__logo">
                             <p class="fr-logo">
                                 République
-                                <br>officiel
+                                <br>Française
                             </p>
                         </div>
                         <div class="fr-header__navbar">
@@ -55,17 +55,17 @@
                                           <a class="fr-nav__link" href="{% url 'public_data:matrix' %}">Matrice</a>
                                         </li>
                                         <li>
-                                          <a class="fr-nav__link" href="{% url 'docx_template:list' %}"> Modèles de document</a>
+                                          <a class="fr-nav__link" href="{% url 'admin:diagnostic_word_wordtemplate_change' 'template-bilan-1' %}">Modèles Word du diagnostic</a>
                                         </li>
                                         <li>
-                                          <a class="fr-nav__link" href="{% url 'docx_template:data_source_list' %}"> Sources de données</a>
+                                          <a class="fr-nav__link" href="{% url 'home:all-emails' %}">Liste des e-mails</a>
                                         </li>
                                         <li>
-                                          <a class="fr-nav__link" href="{% url 'home:all-emails' %}"> Liste des e-mails</a>
+                                          <a class="fr-nav__link" href="{% url 'project:excel' %}">Export Excel</a>
                                         </li>
                                         <li>
-                                          <a class="fr-nav__link" href="{% url 'project:excel' %}"> Export Excel</a>
-                                        </li>
+                                            <a class="fr-nav__link" href="{{ METABASE_URL }}" target="_blank">Metabase</a>
+                                          </li>
                                         {% endif %}
                                         <li>
                                             <a class="fr-nav__link" href="{% url 'users:signout' %}" target="_self">Déconnexion</a>

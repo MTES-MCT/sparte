@@ -1,6 +1,6 @@
-from colour import Color, RGB_TO_COLOR_NAMES
 from random import choice
 
+from colour import RGB_TO_COLOR_NAMES, Color
 
 ALL_COLORS = [_ for t in RGB_TO_COLOR_NAMES.items() for _ in t[1]]
 

@@ -3,7 +3,15 @@
 Ce changelog suit la méthode "keep a changelog" disponible ici: [https://keepachangelog.com/en/1.0.0/](https://keepachangelog.com/en/1.0.0/)
 
 
-## [2.4.0] - Non livré
+## [2.5.0] - Non livré
+
+### Ajouté :
+
+### Modifié :
+
+### corrigé:
+
+## [2.4.0] - 2023.02.21
 
 ### Ajouté :
 * Carte thématique consommation d'espace dans le bilan word

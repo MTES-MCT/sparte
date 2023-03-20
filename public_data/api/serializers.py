@@ -1,5 +1,5 @@
-from rest_framework_gis import serializers
 from rest_framework import serializers as s
+from rest_framework_gis import serializers
 
 from public_data import models
 

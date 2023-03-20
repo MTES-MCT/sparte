@@ -3,7 +3,6 @@ from pydoc import locate
 
 from celery import shared_task
 
-
 logging.basicConfig(level=logging.INFO)
 
 

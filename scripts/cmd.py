@@ -1,6 +1,6 @@
-import click
 import asyncio
 
+import click
 
 ENVS = {
     "local": dict(),
@@ -184,6 +184,7 @@ def rebuild(ctx, klass=None):
 
     click.secho("build administrative territory", fg="cyan")
     connecter.manage_py("build_administrative_layers")
+    connecter.manage_py("load_scot")
 
     click.secho("Trigger OVS GE data loading", fg="cyan")
     connecter.manage_py("load_ocsge --no-verbose --truncate")
@@ -192,7 +193,7 @@ def rebuild(ctx, klass=None):
     connecter.manage_py("build_commune_data")
 
     click.secho("Set available millesimes", fg="cyan")
-    connecter.manage_py("set_dept_millesimes")
+    connecter.manage_py("setup_dept")
 
     click.secho("Build artificial area", fg="cyan")
     connecter.manage_py("build_artificial_area")
@@ -268,6 +269,14 @@ def mep_240(ctx):
 
     click.secho("Load SCoT", fg="cyan")
     connecter.manage_py("load_scot")
+
+
+@cli.command()
+@click.pass_context
+def mep_250(ctx):
+    """Trigger all data transformation to successful MEP release 2.4"""
+    click.secho("Start migration v2.5", fg="cyan")
+    click.secho("Nothing", fg="cyan")
 
 
 if __name__ == "__main__":

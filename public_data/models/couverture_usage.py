@@ -12,8 +12,11 @@ class BaseSol(models.Model):
     code_prefix = models.CharField("Nomenclature préfixée", max_length=10, unique=True)
     code = models.CharField("Nomenclature", max_length=8, unique=True)
     label = models.CharField("Libellé", max_length=250)
-    label_short = models.CharField("Libellé", max_length=50, blank=True, null=True)
+    label_short = models.CharField(
+        "Libellé court", max_length=50, blank=True, null=True
+    )
     map_color = models.CharField("Couleur", max_length=8, blank=True, null=True)
+    is_key = models.BooleanField("Est déterminant", default=False)
 
     def get_label_short(self):
         if not self.label_short:
@@ -77,6 +80,7 @@ class BaseSol(models.Model):
 
 
 class UsageSol(BaseSol):
+    prefix = "US"
     parent = models.ForeignKey(
         "UsageSol",
         blank=True,
@@ -113,6 +117,7 @@ class UsageSol(BaseSol):
 
 
 class CouvertureSol(BaseSol):
+    prefix = "CS"
     parent = models.ForeignKey(
         "CouvertureSol",
         blank=True,
@@ -194,8 +199,8 @@ class CouvertureUsageMatrix(models.Model):
             self.is_natural = True
 
     def __str__(self):
-        us = self.usage.code_prefix
-        cs = self.couverture.code_prefix
+        us = self.usage.code_prefix if self.usage else "None"
+        cs = self.couverture.code_prefix if self.couverture else "None"
         a = "a" if self.is_artificial else ""
         c = "c" if self.is_consumed else ""
         n = "n" if self.is_natural else ""

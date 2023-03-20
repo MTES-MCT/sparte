@@ -4,46 +4,33 @@ Asyn tasks runned by Celery
 Below functions are dedicated to loading a project data and pre calculate
 all the indicators required to speedup process
 """
-from celery import shared_task
-import contextily as cx
-import geopandas
+
 import io
 import logging
+from datetime import timedelta
+from typing import Any, Dict, Literal
+
+import contextily as cx
+import geopandas
 import matplotlib.pyplot as plt
-from matplotlib_scalebar.scalebar import ScaleBar
 import shapely
-
+from celery import shared_task
 from django.conf import settings
-from django.db.models import F, Subquery, OuterRef, Q
+from django.db.models import F, OuterRef, Q, Subquery
 from django.urls import reverse
+from django.utils import timezone
 from django_app_parameter import app_parameter
+from matplotlib_scalebar.scalebar import ScaleBar
 
-from utils.db import fix_poly
-from utils.emails import send_template_email
-from utils.functions import get_url_with_domain
+from diagnostic_word.renderers import Renderer
 from project.models import Project, Request
-from public_data.models import Land, Cerema, OcsgeDiff, ArtificialArea
-
+from public_data.models import ArtificialArea, Cerema, Land, OcsgeDiff
+from utils.db import fix_poly
+from utils.emails import SibTemplateEmail
+from utils.functions import get_url_with_domain
+from utils.mattermost import BlockedDiagnostic
 
 logger = logging.getLogger(__name__)
-
-
-@shared_task
-def process_project_with_shape(project_id: int):
-    """Prep project when emprise is set from a shape file"""
-    raise DeprecationWarning("taks.process_project: Do not use anymore")
-
-
-@shared_task
-def build_emprise_from_city(project_id: int):
-    """Triggered if no shape file has been provided"""
-    raise DeprecationWarning("taks.process_project: Do not use anymore")
-
-
-@shared_task
-def process_project(project_id: int):
-    """Will trigger correct processing according to emprise's origine"""
-    raise DeprecationWarning("taks.process_project: Do not use anymore")
 
 
 @shared_task(bind=True, max_retries=5)
@@ -107,24 +94,31 @@ def find_first_and_last_ocsge(self, project_id: int) -> None:
 
 @shared_task
 def send_email_request_bilan(request_id):
-    """Il faut envoyer 2 e-mails: 1 au demandeur et 1 à l'équipe SPARTE"""
+    """Alerte envoyée à l'équipe SPARTE pour les avertir d'une demande de Diagnostic."""
     logger.info("Start send_email_request_bilan, request_id=%s", request_id)
     request = Request.objects.get(pk=request_id)
-    project_url = get_url_with_domain(request.project.get_absolute_url())
-    relative_url = reverse(
-        "admin:project_request_change", kwargs={"object_id": request.id}
+    diagnostic = request.project
+    project_url = get_url_with_domain(reverse("project:detail", args=[diagnostic.id]))
+    relative_url = get_url_with_domain(
+        reverse("admin:project_request_change", kwargs={"object_id": request.id})
     )
-    send_template_email(
-        subject=f"Demande de bilan - {request.email} - {request.project.name}",
-        recipients=[app_parameter.TEAM_EMAIL],
-        template_name="project/emails/dl_diagnostic_team",
-        context={
-            "project": request.project,
-            "request": request,
+    image_url = "https://creative-assets.mailinblue.com/editor/image_placeholder.png"
+    if diagnostic.cover_image:
+        image_url = diagnostic.cover_image.url
+    email = SibTemplateEmail(
+        template_id=1,
+        recipients=[{"name": "Team SPARTE", "email": app_parameter.TEAM_EMAIL}],
+        params={
+            "diagnostic_name": diagnostic.name,
+            "user_email": request.email,
+            "user_organism": request.organism,
+            "user_function": request.function,
+            "admin_request": relative_url,
+            "image_url": image_url,
             "project_url": project_url,
-            "request_url": get_url_with_domain(relative_url),
         },
     )
+    logger.info("result=%s", email.send())
     logger.info("End send_email_request_bilan, request_id=%s", request_id)
 
 
@@ -173,7 +167,7 @@ def generate_cover_image(self, project_id):
 
         fig, ax = plt.subplots(figsize=(60, 10))
         plt.axis("off")
-        fig.set_dpi(150)
+        fig.set_dpi(72)
 
         gdf_emprise.buffer(250000).plot(ax=ax, facecolor="none", edgecolor="none")
         gdf_emprise.plot(ax=ax, facecolor="none", edgecolor="yellow")
@@ -202,38 +196,45 @@ class WaitAsyncTaskException(Exception):
     pass
 
 
+class WordAlreadySentException(Exception):
+    pass
+
+
 @shared_task(bind=True, max_retries=6)
 def generate_word_diagnostic(self, request_id):
-    from django_docx_template.models import DocxTemplate
     from highcharts.charts import RateLimitExceededException
 
     logger.info(f"Start generate word for request={request_id}")
     try:
-        req = Request.objects.get(id=int(request_id))
+        req = Request.objects.select_related("project").get(id=int(request_id))
+
         if not req.project:
-            exc = Exception("Project does not exist")
-            req.record_exception(exc)
-            logger.error("Error while generating word: %s", exc)
-        elif not req.sent_file:
-            if not req.project.async_complete:
-                raise WaitAsyncTaskException(
-                    "Not all async tasks are completed, retry later"
-                )
-            logger.info("Start generating word")
-            template = DocxTemplate.objects.get(slug="template-bilan-1")
-            buffer = template.merge(pk=req.project_id)
-            filename = template.get_file_name()
+            raise Project.DoesNotExist("Project does not exist")
+        elif not req.project.async_complete:
+            msg = "Not all async tasks are completed, retry later"
+            raise WaitAsyncTaskException(msg)
+        elif req.sent_file:
+            raise WordAlreadySentException("Word already sent")
+
+        logger.info("Start generating word")
+        with Renderer(project=req.project, word_template_slug="template-bilan-1") as renderer:
+            context = renderer.get_context_data()
+            buffer = renderer.render_to_docx(context=context)
+            filename = renderer.get_file_name()
             req.sent_file.save(filename, buffer, save=True)
             logger.info("Word created and saved")
-        return request_id
-    except RateLimitExceededException as exc:
+            return request_id
+
+    except (RateLimitExceededException, Project.DoesNotExist, WaitAsyncTaskException, WordAlreadySentException) as exc:
         req.record_exception(exc)
         logger.error("Error while generating word: %s", exc)
+        logger.exception(exc)
         self.retry(exc=exc, countdown=2 ** (self.request.retries + 10))
     except Request.DoesNotExist as exc:
+        logger.error("Request doesn't not exist, no retry.")
         logger.exception(exc)
-        logger.error("No retry")
     except Exception as exc:
+        logger.error("Unknow exception, please investigate.")
         req.record_exception(exc)
         logger.exception(exc)
         self.retry(exc=exc, countdown=900)
@@ -243,29 +244,36 @@ def generate_word_diagnostic(self, request_id):
 
 @shared_task(bind=True, max_retries=5)
 def send_word_diagnostic(self, request_id):
-    from utils.emails import prep_email
-
+    """
+    Paramètres de l'e-mail dans SendInBlue:
+    - diagnostic_url : lien pour télécharger le diagnostic
+    - ocsge_available : booléen pour savoir si le diagnostic est disponible sur OCSGE, SendInBlue test seulement s'il
+      est vide (OCS GE disponible)
+    """
     logger.info(f"Start send word for request={request_id}")
     try:
         req = Request.objects.select_related("project").get(id=int(request_id))
-        filename = req.sent_file.name.split("/")[-1]
-        buffer = req.sent_file.open().read()
-        # sending email
-        msg = prep_email(
-            "Bilan issu de SPARTE",
-            [req.email],
-            "project/emails/send_diagnostic",
-            context={"request": req, "ocsge_available": req.project.is_artif()},
+        email = SibTemplateEmail(
+            template_id=8,
+            recipients=[
+                {"name": f"{req.first_name} {req.last_name}", "email": req.email}
+            ],
+            params={
+                "diagnostic_name": req.project.name,
+                "image_url": req.project.cover_image.url,
+                "ocsge_available": "" if req.project.is_artif() else "display",
+                "diagnostic_url": get_url_with_domain(reverse("project:word_download", args=[req.id])),
+            },
         )
-        msg.attach(filename, buffer)
-        msg.send()
+        logger.info(email.send())
         logger.info("Email sent with success")
         req.sent()
         logger.info("Saving request state done")
     except Exception as exc:
-        self.retry(exc=exc, countdown=2 ** (self.request.retries + 10))
         req.record_exception(exc)
         logger.error("Error while sending email, error: %s", exc)
+        logger.exception(exc)
+        self.retry(exc=exc, countdown=2 ** (self.request.retries + 10))
     finally:
         logger.info(f"End send word for request={request_id}")
 
@@ -276,7 +284,7 @@ def to_shapely_polygons(mpoly):
 
 
 def get_img(queryset, color: str, title: str) -> io.BytesIO:
-    data = {"level": [], "geometry": []}
+    data: Dict[Literal["level", "geometry"], Any] = {"level": [], "geometry": []}
     for row in queryset:
         data["geometry"].append(to_shapely_polygons(row.mpoly))
         data["level"].append(float(row.level) if row.level else 0)
@@ -462,3 +470,51 @@ def generate_theme_map_understand_artif(self, project_id):
         logger.info(
             "End generate_theme_map_understand_artif, project_id=%d", project_id
         )
+
+
+@shared_task
+def alert_on_blocked_diagnostic():
+    # set to done request with no project
+    Request.objects.filter(done=False, project__isnull=True).update(done=True)
+    # select request undone from more than 1 hour
+    stamp = timezone.now() - timedelta(hours=1)
+    qs = Request.objects.filter(done=False, created_date__lt=stamp).order_by(
+        "created_date", "project__name"
+    )
+    diagnostic_list = [
+        {
+            "name": _.project.name if _.project else "Projet supprimé",
+            "date": _.created_date.strftime("%d-%m-%Y"),
+            "url": get_url_with_domain(
+                reverse("admin:project_request_change", args=[_.id])
+            ),
+        }
+        for _ in qs
+    ]
+    total = qs.count()
+    if total > 0:
+        if (
+            settings.ALERT_DIAG_MEDIUM in ["mattermost", "both"]
+            and settings.ALERT_DIAG_MATTERMOST_RECIPIENTS
+        ):
+            for recipient in settings.ALERT_DIAG_MATTERMOST_RECIPIENTS:
+                BlockedDiagnostic(
+                    channel=recipient,
+                    data=[
+                        [_["date"], f'[{_["name"][:45]}]({_["url"]})']
+                        for _ in diagnostic_list
+                    ],
+                ).send()
+        if (
+            settings.ALERT_DIAG_MEDIUM in ["email", "both"]
+            and settings.ALERT_DIAG_EMAIL_RECIPIENTS
+        ):
+            email = SibTemplateEmail(
+                template_id=10,
+                recipients=[{"email": _} for _ in settings.ALERT_DIAG_EMAIL_RECIPIENTS],
+                params={
+                    "qte_diagnostics": total,
+                    "diagnostic_list": diagnostic_list,
+                },
+            )
+            logger.info(email.send())

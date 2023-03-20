@@ -1,18 +1,17 @@
-from colour import Color
 import logging
-import numpy as np
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from typing import Dict
 from zipfile import ZipFile
 
+import numpy as np
+from colour import Color
 from django.contrib.gis.utils import LayerMapping
 from django.core.exceptions import FieldDoesNotExist
 from django.db import connection
 
-from utils.colors import get_random_color, get_onecolor_gradient, is_valid
-
 from public_data.storages import DataStorage
-
+from utils.colors import get_onecolor_gradient, get_random_color, is_valid
 
 logger = logging.getLogger(__name__)
 
@@ -33,7 +32,7 @@ class AutoLoadMixin:
     couverture_field = None
     usage_field = None
     shape_file_path = Path()
-    mapping = dict()
+    mapping: Dict[str, str] = {}
 
     def before_save(self):
         """Hook to set data before saving"""
@@ -134,7 +133,7 @@ class DataColorationMixin:
 
     # DataColorationMixin properties that need to be set when heritating
     default_property = "surface"  # need to be set correctly to work
-    default_color = None
+    default_color: str = ""
 
     @classmethod
     def get_gradient(cls, color_name=None, property_name=None):

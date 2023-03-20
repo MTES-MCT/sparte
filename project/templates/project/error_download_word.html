@@ -1,0 +1,25 @@
+{% extends 'index.html' %}
+
+{% load static %}
+{% load sri %}
+
+{% block pagetitle %}
+Diagnostic innaccessible
+{% endblock %}
+
+{% block content %}
+<div class="row w-100 h-100 justify-content-center">
+    <div class=" col-12 col-md-10 col-lg-8">
+        <h1 class="my-5">
+            Autorisation insuffisante
+        </h1>
+        <p>
+            Le diagnostic que vous avez demandé est en accès restreint et vous n'avez pas les autorisations suffisantes.
+        </p>
+        <p>
+            Nous vous invitons à créer votre propre diagnostic afin de le télécharger :
+            <br/><a class="fr-btn mt-5" href="{% url 'project:create' %}" role="button">Nouveau diagnostic</a>
+        </p>
+    </div>
+</div>
+{% endblock %}

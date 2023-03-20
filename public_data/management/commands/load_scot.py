@@ -1,14 +1,13 @@
 import logging
-import pandas as pd
 
+import pandas as pd
 from django.contrib.gis.db.models import Union
 from django.core.management.base import BaseCommand
 from django.db import connection
 
-from public_data.models import Scot, Region, Departement, Commune, Cerema
+from public_data.models import Cerema, Commune, Departement, Region, Scot
 from public_data.storages import DataStorage
 from utils.db import fix_poly
-
 
 logger = logging.getLogger("management.commands")
 
@@ -91,7 +90,11 @@ class Command(BaseCommand):
 
     def calculate_scot_mpoly_field(self):
         logger.info("calculate_scot_mpoly_field")
-        qs = Commune.objects.values("scot__id").annotate(union_mpoly=Union("mpoly"))
+        qs = (
+            Commune.objects.values("scot__id")
+            .annotate(union_mpoly=Union("mpoly"))
+            .order_by("scot__id")
+        )
         for row in qs:
             scot_mpoly = fix_poly(row["union_mpoly"])
             Scot.objects.filter(id=row["scot__id"]).update(mpoly=scot_mpoly)

@@ -1,12 +1,10 @@
 from storages.backends.s3boto3 import S3Boto3Storage
 
 
-class StaticMediaStorage(S3Boto3Storage):
-    """Enable access to data folder at root of the bucket."""
+class DefaultStorage(S3Boto3Storage):
+    """Default in case of hook is needed."""
 
-    location = "staticfiles"
-    default_acl = "public-read"
-    file_overwrite = True
+    pass
 
 
 class PublicMediaStorage(S3Boto3Storage):
@@ -15,3 +13,4 @@ class PublicMediaStorage(S3Boto3Storage):
     location = "media"
     default_acl = "public-read"
     file_overwrite = False
+    querystring_auth = False
