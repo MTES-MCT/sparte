@@ -133,6 +133,10 @@ class CouvertureSol(BaseSol):
     )
 
     @classmethod
+    def get_couv_nomenclature(cls):
+        return cls.objects.all()
+    
+    @classmethod
     def get_leafs(cls):
         return cls.objects.filter(
             code__in=[
