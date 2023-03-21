@@ -35,6 +35,10 @@ class BaseSol(models.Model):
     @property
     def cleaned_code_prefix(self):
         return self.code_prefix.replace(".", "-")
+    
+    @property
+    def code_prefix_class(self):
+        return self.code_prefix.replace(".", "_")
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -90,6 +94,10 @@ class UsageSol(BaseSol):
     )
 
     @classmethod
+    def get_usage_nomenclature(cls):
+        return cls.objects.all()
+    
+    @classmethod
     def get_leafs(cls):
         return cls.objects.filter(
             code__in=[
@@ -97,9 +105,7 @@ class UsageSol(BaseSol):
                 "1.2",
                 "1.3",
                 "1.4",
-                "2",
-                "3",
-                "5",
+                "1.5",
                 "235",
                 "4.1.1",
                 "4.1.2",
@@ -126,6 +132,10 @@ class CouvertureSol(BaseSol):
         related_name="children",
     )
 
+    @classmethod
+    def get_couv_nomenclature(cls):
+        return cls.objects.all()
+    
     @classmethod
     def get_leafs(cls):
         return cls.objects.filter(
