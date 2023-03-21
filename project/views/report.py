@@ -218,6 +218,7 @@ class ProjectReportDicoverOcsgeView(ProjectReportBaseView):
                 "usa_leafs": UsageSol.get_leafs(),
                 "usage_nomenclature": {item.code_prefix_class: item for item in UsageSol.get_usage_nomenclature()},
                 "couv_leafs": CouvertureSol.get_leafs(),
+                "couv_nomenclature": {item.code_prefix_class: item for item in CouvertureSol.get_couv_nomenclature()},
             }
         )
 
