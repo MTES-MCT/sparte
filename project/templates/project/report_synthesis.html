@@ -66,13 +66,13 @@ Synthèse
           <div class="fr-col-12 fr-col-md-6 fr-grid-row">
             <div class="fr-callout w-100">
               <p class="fr-callout__title">+{{ objective_chart.total_real|floatformat:1 }} ha</p>
-              <p>Bilan consommation d'espace 2011-2020</p>
+              <p>Bilan consommation d'espaces 2011-2020</p>
             </div>
           </div>
           <div class="fr-col-12 fr-col-md-6 fr-grid-row">
             <div class="fr-callout w-100">
               <p class="fr-callout__title">+{{ objective_chart.conso_2031|floatformat:1 }} ha</p>
-              <p>Consommation d'espace totale recommandée pour 2021-2031 sur la base d'une réduction de {{ diagnostic.target_2031 }}%</p>
+              <p>Consommation d'espaces totale recommandée pour 2021-2031 sur la base d'une réduction de {{ diagnostic.target_2031 }}%</p>
             </div>
           </div>
         </div>
@@ -92,23 +92,23 @@ Synthèse
 
       <div class="fr-mt-12w">
         <h2>Consommation</h2>
-        <h4>Bilan de la consommation d'espace</h4>
+        <h4>Bilan de la consommation d'espaces</h4>
         <div class="fr-grid-row fr-grid-row--gutters">
           <div class="fr-col-12 fr-col-md-6 fr-grid-row">
             <div class="fr-callout w-100">
               <p class="fr-callout__title">+{{ current_conso|floatformat:1 }} ha</p>
-              <p>Consommation d'espace {{ diagnostic.analyse_start_date }}-{{ diagnostic.analyse_end_date }}</p>
+              <p>Consommation d'espaces {{ diagnostic.analyse_start_date }}-{{ diagnostic.analyse_end_date }}</p>
             </div>
           </div>
           <div class="fr-col-12 fr-col-md-6 fr-grid-row">
             <div class="fr-callout w-100">
               <p class="fr-callout__title">+{{ year_avg_conso|floatformat:1 }} ha</p>
-              <p>Consommation d'espace moyenne par an entre {{ diagnostic.analyse_start_date }}-{{ diagnostic.analyse_end_date }}</p>
+              <p>Consommation d'espaces moyenne par an entre {{ diagnostic.analyse_start_date }}-{{ diagnostic.analyse_end_date }}</p>
             </div>
           </div>
         </div>
         <div>
-          <a class="fr-link" href="{% url 'project:report_conso' diagnostic.pk %}">Consulter le bilan de consommation d'espace</a>
+          <a class="fr-link" href="{% url 'project:report_conso' diagnostic.pk %}">Consulter le bilan de consommation d'espaces</a>
         </div>
         <div class="fr-callout bg-white fr-p-2w mt-4">
           <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data-2">Données</button>
