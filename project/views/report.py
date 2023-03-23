@@ -294,7 +294,7 @@ class ProjectReportUsageView(ProjectReportBaseView):
 
 class ProjectReportSynthesisView(ProjectReportBaseView):
     template_name = "project/report_synthesis.html"
-    breadcrumbs_title = "Synthèse consommation d'espace et artificialisation"
+    breadcrumbs_title = "Synthèse consommation d'espaces et artificialisation"
 
     def get_context_data(self, **kwargs):
         project = self.get_object()
