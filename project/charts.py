@@ -824,7 +824,7 @@ class ConsoComparisonPopChart(ProjectChart):
     param = {
         "title": {
             "text": (
-                "Consommation d'espace en fonction de l'évolution de la population du"
+                "Consommation d'espaces en fonction de l'évolution de la population du"
                 " territoire"
             )
         },
@@ -902,7 +902,7 @@ class ConsoComparisonHouseholdChart(ProjectChart):
     param = {
         "title": {
             "text": (
-                "Consommation d'espace en fonction de l'évolution du nombre de ménages"
+                "Consommation d'espaces en fonction de l'évolution du nombre de ménages"
                 " du territoire"
             )
         },
