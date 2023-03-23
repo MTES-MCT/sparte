@@ -377,7 +377,7 @@ class MyArtifMapView(BaseThemeMap):
 
 
 class CitySpaceConsoMapView(BaseThemeMap):
-    title = "Consommation d'espace des communes de mon territoire"
+    title = "Consommation d'espaces des communes de mon territoire"
     url_name = "theme-city-conso"
 
     def get_layers_list(self, *layers):
