@@ -36,25 +36,6 @@ urlpatterns = [
     path("public/", include("public_data.urls")),
     path("project/", include("project.urls")),
     path("carte/", include("carto.urls")),
-    # use django's default views to handle password reseting process
-    path(
-        "accounts/reset/", auth_views.PasswordResetView.as_view(), name="password_reset"
-    ),
-    path(
-        "accounts/reset/sent/",
-        auth_views.PasswordResetDoneView.as_view(),
-        name="password_reset_done",
-    ),
-    path(
-        "accounts/reset/<uidb64>/<token>/",
-        auth_views.PasswordResetConfirmView.as_view(),
-        name="password_reset_confirm",
-    ),
-    path(
-        "accounts/reset/done/",
-        auth_views.PasswordResetCompleteView.as_view(),
-        name="password_reset_complete",
-    ),
     path("word/", include("diagnostic_word.urls")),
 ]
 
