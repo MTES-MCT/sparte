@@ -12,6 +12,25 @@ from utils.functions import get_url_with_domain
 logger = logging.getLogger(__name__)
 
 
+GROUP_ORGANISM = {
+    "AGENCE": "bureaux d'études",
+    "AMENAG": "bureaux d'études",
+    "ASSOCI": "Grand public",
+    "BUREAU": "bureaux d'études",
+    "COMMUN": "collectivités",
+    "DDT": "Services de l'Etat",
+    "DEPART": "collectivités",
+    "DREAL": "Services de l'Etat",
+    "EPCI": "collectivités",
+    "EPF": "Services de l'Etat",
+    "GIP": "bureaux d'études",
+    "PARTIC": "Grand public",
+    "REGION": "collectivités",
+    "SCOT": "collectivités",
+    "AUTRE": "AUTRE",
+}
+
+
 class StatDiagnostic(models.Model):
     project = models.OneToOneField(
         Project, on_delete=models.CASCADE, verbose_name="Diagnostic d'origine"
@@ -34,8 +53,15 @@ class StatDiagnostic(models.Model):
     region = models.CharField("Région", max_length=255, blank=True, null=True)
 
     is_downaloaded = models.BooleanField("A été téléchargé", default=False)
+    request = models.ForeignKey(
+        Request, on_delete=models.SET_NULL, null=True, blank=True
+    )
     date_first_download = models.DateTimeField(
         "Date du premier téléchargement", null=True, blank=True
+    )
+    organism = models.CharField("Organisme", max_length=255, blank=True, null=True)
+    group_organism = models.CharField(
+        "Groupe d'organisme", max_length=50, blank=True, null=True
     )
 
     class Meta:
@@ -45,13 +71,20 @@ class StatDiagnostic(models.Model):
     def update_with_project(self, project: Project) -> None:
         self.is_anonymouse = False if project.user else True
         self.is_public = project.is_public
-        self.start_date = datetime(year=int(project.analyse_start_date), month=1, day=1).date()
-        self.end_date = datetime(year=int(project.analyse_end_date), month=12, day=31).date()
+        self.start_date = datetime(
+            year=int(project.analyse_start_date), month=1, day=1
+        ).date()
+        self.end_date = datetime(
+            year=int(project.analyse_end_date), month=12, day=31
+        ).date()
         self.analysis_level = project.level or ""
 
     def update_with_request(self, request: Request) -> None:
         if not self.is_downaloaded:
             self.is_downaloaded = True
+            self.request = request
+            self.organism = request.organism
+            self.group_organism = GROUP_ORGANISM.get(request.organism, "AUTRE")
             self.date_first_download = request.created_date
             self.save()
 
@@ -90,7 +123,9 @@ class StatDiagnostic(models.Model):
             )
 
     @classmethod
-    def receiver_project_post_save(cls, instance: Project, created: bool, **kwargs) -> None:
+    def receiver_project_post_save(
+        cls, instance: Project, created: bool, **kwargs
+    ) -> None:
         """Create or update StatDiagnostic when a Project is created or updated.
         Ensure that exception are catched to avoid breaking user doings."""
         try:
