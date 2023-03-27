@@ -6,7 +6,6 @@ from django.db import models
 # from django.dispatch import receiver
 
 from project.models import Project, Request
-from public_data.models import Epci, Scot, Departement, Region
 from utils.functions import get_url_with_domain
 
 logger = logging.getLogger(__name__)
@@ -69,7 +68,7 @@ class StatDiagnostic(models.Model):
         ordering = ["-created_date"]
 
     def update_with_project(self, project: Project) -> None:
-        self.is_anonymouse = False if project.user else True
+        self.is_anonymouse = False if project.user_id else True
         self.is_public = project.is_public
         self.start_date = datetime(
             year=int(project.analyse_start_date), month=1, day=1
@@ -89,26 +88,37 @@ class StatDiagnostic(models.Model):
             self.save()
 
     def update_locations(self, project: Project) -> None:
-        city_list = project.cities.all()
-        qte = city_list.count()
-        if qte > 0:
-            if qte == 1:
-                city = project.cities.first()
-                self.city = f"{city.name} ({city.insee})"
-            epci_list = Epci.objects.filter(commune__in=city_list).distinct()
-            if epci_list.count() == 1:
-                self.epci = epci_list.first().name
-            scot_list = Scot.objects.filter(commune__in=city_list).distinct()
-            if scot_list.count() == 1:
-                self.scot = scot_list.first().name
-            dept_list = Departement.objects.filter(commune__in=city_list).distinct()
-            if dept_list.count() == 1:
-                self.departement = dept_list.first().name
-            reg_list = Region.objects.filter(
-                departement__commune__in=city_list
-            ).distinct()
-            if reg_list.count() == 1:
-                self.region = reg_list.first().name
+        qs = project.cities.all().select_related("epci", "departement", "scot", "departement__region")
+
+        city_set = set()
+        epci_set = set()
+        scot_set = set()
+        departement_set = set()
+        region_set = set()
+        for city in qs:
+            city_set.add(city)
+            epci_set.add(city.epci)
+            scot_set.add(city.scot)
+            departement_set.add(city.departement)
+            region_set.add(city.departement.region)
+
+        if len(city_set) == 1:
+            city = next(iter(city_set))
+            self.city = f"{city.name} ({city.insee})"
+
+        if len(epci_set) == 1:
+            self.epci = next(iter(epci_set)).name
+
+        if len(scot_set) == 1:
+            scot = next(iter(scot_set))
+            if scot:
+                self.scot = scot.name
+
+        if len(departement_set) == 1:
+            self.departement = next(iter(departement_set)).name
+
+        if len(region_set) == 1:
+            self.region = next(iter(region_set)).name
 
     @classmethod
     def get_or_create(cls, project: Project) -> "StatDiagnostic":
