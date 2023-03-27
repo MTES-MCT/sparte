@@ -1,4 +1,5 @@
 import logging
+from cProfile import Profile
 from django.core.management.base import BaseCommand
 from django.db import connection
 from psycopg2 import OperationalError
@@ -19,8 +20,21 @@ class Command(BaseCommand):
             action="store_true",
             help="Execute a truncate before starting the update",
         )
+        parser.add_argument(
+            "--profile",
+            action="store_true",
+            help="Profile execution",
+        )
 
     def handle(self, *args, **options):
+        if options['profile']:
+            profiler = Profile()
+            profiler.runcall(self._handle, *args, **options)
+            profiler.dump_stats("cprofile.stats")
+        else:
+            self._handle(*args, **options)
+
+    def _handle(self, *args, **options):
         if options.get("truncate"):
             self.truncate()
         self.do_project()
