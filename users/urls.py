@@ -21,7 +21,8 @@ urlpatterns = [
     path(
         "password-reset/",
         PasswordResetView.as_view(
-            email_template_name="users/password_reset_email.html",
+            email_template_name="users/password_reset_email.txt",
+            html_email_template_name="users/password_reset_email.html",
             success_url = reverse_lazy('users:password_reset_done'),
             extra_email_context={"DOMAIN_URL": settings.DOMAIN_URL.strip("/")},
             template_name="users/password_reset.html",
