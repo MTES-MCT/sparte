@@ -1,6 +1,7 @@
 import logging
 from django.core.management.base import BaseCommand
 from django.db import connection
+from psycopg2 import OperationalError
 
 from metabase.models import StatDiagnostic
 from project.models import Project, Request
