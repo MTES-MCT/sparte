@@ -1,6 +1,7 @@
 import logging
 from django.core.management.base import BaseCommand
 from django.db import connection
+from psycopg2 import OperationalError
 
 from metabase.models import StatDiagnostic
 from project.models import Project, Request
@@ -26,11 +27,19 @@ class Command(BaseCommand):
         self.do_request()
 
     def do_project(self):
-        total = Project.objects.count()
+        qs = (
+            Project.objects.exclude(id__in=StatDiagnostic.objects.values("project_id")).order_by("-created_date")
+        )
+        total = qs.count()
         # Save project and request to trigger signal that will create or update StatDiagnostic
-        for i, project in enumerate(Project.objects.order_by("-created_date")):
-            project.save(update_fields=["async_city_and_combined_emprise_done"])
-            logger.info("Project %d %d/%d - %d%%", project.id, i, total, 100 * i / total)
+        for i, project in enumerate(qs):
+            try:
+                project.save(update_fields=["async_city_and_combined_emprise_done"])
+                logger.info("Project %d %d/%d - %d%%", project.id, i, total, 100 * i / total)
+            except OperationalError as exc:
+                logger.error("Error in StatDiagnostic.receiver_project_post_save: %s", exc)
+                logger.exception(exc)
+                logger.error("Process continue...")
 
     def do_request(self):
         total = Request.objects.count()
@@ -44,7 +53,7 @@ class Command(BaseCommand):
                 pass
 
     def truncate(self):
-        query = f"TRUNCATE TABLE '{StatDiagnostic._meta.db_table}' RESTART IDENTITY"
+        query = f"TRUNCATE TABLE {StatDiagnostic._meta.db_table} RESTART IDENTITY"
         with connection.cursor() as cursor:
             cursor.execute(query)
         logger.info("Truncate done.")
