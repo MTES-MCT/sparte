@@ -34,8 +34,15 @@ class StatDiagnostic(models.Model):
     region = models.CharField("Région", max_length=255, blank=True, null=True)
 
     is_downaloaded = models.BooleanField("A été téléchargé", default=False)
+    request = models.ForeignKey(
+        Request, on_delete=models.SET_NULL, null=True, blank=True
+    )
     date_first_download = models.DateTimeField(
         "Date du premier téléchargement", null=True, blank=True
+    )
+    organism = models.CharField("Organisme", max_length=255, blank=True, null=True)
+    group_organism = models.CharField(
+        "Groupe d'organisme", max_length=50, blank=True, null=True
     )
 
     class Meta:
