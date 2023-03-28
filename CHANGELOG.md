@@ -3,11 +3,26 @@
 Ce changelog suit la méthode "keep a changelog" disponible ici: [https://keepachangelog.com/en/1.0.0/](https://keepachangelog.com/en/1.0.0/)
 
 
-## [2.5.0] - Non livré
+## [2.5.2] - 2023.03.28
 
 ### Ajouté :
+* Reporting dans Metabase
+
+
+## [2.5.1] - 2023.03.20
+
+### Ajouté :
+* Nouvelle page d'accueil d'un diagnostic
+* Export Excel des données d'un diagnostic
+* Bouton "Exporter" dans l'ensemble des pages du tableau de bord
+* Alerte lorsque des diagnostics word sont non-envoyés
 
 ### Modifié :
+* Améliorations des titres et textes des rapports
+* Mettre en oeuvre le Design Système France (DSFr) dans la page contact, connexion...
+* Refonte des e-mails, migration vers SerndInBlue, mise en oeuvre des "templates"
+* Uniformisation des boutons d'action autour des graphiques
+* Fusionner la page consommation et la page consommation relative dans le tableau de bord
 
 ### corrigé:
 
