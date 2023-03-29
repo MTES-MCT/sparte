@@ -15,6 +15,7 @@ from django.db.models.functions import Coalesce, Concat
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.functional import cached_property
+from simple_history.models import HistoricalRecords
 
 from config.storages import PublicMediaStorage
 from public_data.models import (
@@ -321,6 +322,8 @@ class Project(BaseProject):
     async_generate_theme_map_conso_done = models.BooleanField(default=False)
     async_generate_theme_map_artif_done = models.BooleanField(default=False)
     async_theme_map_understand_artif_done = models.BooleanField(default=False)
+
+    history = HistoricalRecords()
 
     @property
     def async_complete(self):
