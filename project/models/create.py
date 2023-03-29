@@ -13,7 +13,7 @@ def create_from_public_key(
     public_key: str,
     start: str = "2011",
     end: str = "2020",
-    user: User = None,
+    user: User | None = None,
 ) -> Project:
     """Create a project from one only public_key"""
     from project import tasks as t
@@ -29,7 +29,7 @@ def create_from_public_key(
         land_ids=str(land.id),
         land_type=land.land_type,
         territory_name=land.name,
-        user=user if user.is_authenticated else None,
+        user=user if user and user.is_authenticated else None,
     )
     project.set_success(save=True)
 
@@ -55,7 +55,7 @@ def create_from_public_key_list(
     public_key_list: List[str],
     start: str = "2011",
     end: str = "2020",
-    user: User = None,
+    user: User | None = None,
 ) -> Project:
     """Create a project from a list of public_keys"""
 
