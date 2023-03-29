@@ -1,4 +1,5 @@
 import collections
+import logging
 import traceback
 from decimal import Decimal
 from typing import Dict, List, Literal
@@ -36,6 +37,8 @@ from public_data.models.mixins import DataColorationMixin
 from utils.db import cast_sum
 
 from .utils import user_directory_path
+
+logger = logging.getLogger(__name__)
 
 
 class ProjectNotSaved(BaseException):
@@ -381,6 +384,32 @@ class Project(BaseProject):
     def delete(self):
         self.cover_image.delete(save=False)
         return super().delete()
+
+    def to_string(self):
+        return "&".join(
+            f"{f}={str(getattr(self, f))}"
+            for f in [
+                "async_city_and_combined_emprise_done",
+                "async_cover_image_done",
+                "async_find_first_and_last_ocsge_done",
+                "async_add_neighboors_done",
+                "async_generate_theme_map_conso_done",
+                "async_generate_theme_map_artif_done",
+                "async_theme_map_understand_artif_done",
+                "analyse_start_date",
+                "analyse_end_date",
+                "look_a_like",
+                "cover_image",
+                "theme_map_conso",
+                "theme_map_artif",
+                "theme_map_understand_artif",
+            ]
+        )
+
+    def save(self, *args, **kwargs):
+        logger.info("Saving project %d: update_fields=%s", self.id, str(kwargs.get("update_fields", [])))
+        logger.info("Saving project %d: %s", self.id, self.to_string())
+        super().save(*args, **kwargs)
 
     def get_territory_name(self):
         if self.territory_name:
@@ -872,9 +901,7 @@ class Project(BaseProject):
             .filter(Q(is_new_artif=True) | Q(is_new_natural=True))
             .annotate(
                 code_prefix=Case(
-                    When(
-                        is_new_artif=True, then=F(f"new_matrix__{sol}__code_prefix")
-                    ),
+                    When(is_new_artif=True, then=F(f"new_matrix__{sol}__code_prefix")),
                     default=F(f"old_matrix__{sol}__code_prefix"),
                 ),
                 label=Case(
@@ -882,9 +909,7 @@ class Project(BaseProject):
                     default=F(f"old_matrix__{sol}__label"),
                 ),
                 label_short=Case(
-                    When(
-                        is_new_artif=True, then=F(f"new_matrix__{sol}__label_short")
-                    ),
+                    When(is_new_artif=True, then=F(f"new_matrix__{sol}__label_short")),
                     default=F(f"old_matrix__{sol}__label_short"),
                 ),
             )
