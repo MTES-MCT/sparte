@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.db import models
 from django.utils import timezone
+from simple_history.models import HistoricalRecords
 
 from project.models import Project
 from users.models import User
@@ -39,6 +40,7 @@ class Request(models.Model):
     sent_file = models.FileField(
         upload_to=upload_in_project_folder, null=True, blank=True
     )
+    history = HistoricalRecords()
 
     def sent(self):
         self.done = True

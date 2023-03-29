@@ -3,13 +3,14 @@ from django.contrib.gis import admin
 from django.http import HttpResponseRedirect
 from django.urls import exceptions, reverse
 from django.utils.html import format_html
+from simple_history.admin import SimpleHistoryAdmin
 
 from . import tasks
 from .models import ErrorTracking, Project, Request
 
 
 @admin.register(Project)
-class ProjectAdmin(admin.GeoModelAdmin):
+class ProjectAdmin(SimpleHistoryAdmin):
     model = Project
     list_select_related = ("user",)
     list_display = (
@@ -24,6 +25,15 @@ class ProjectAdmin(admin.GeoModelAdmin):
     )
     # filter_horizontal = ("cities",)
     change_form_template = "project/admin/project_detail.html"
+    history_list_display = [
+        "async_city_and_combined_emprise_done",
+        "async_cover_image_done",
+        "async_find_first_and_last_ocsge_done",
+        "async_add_neighboors_done",
+        "async_generate_theme_map_conso_done",
+        "async_generate_theme_map_artif_done",
+        "async_theme_map_understand_artif_done",
+    ]
 
     def response_change(self, request, obj):
         if "_generate-conso-map" in request.POST:
