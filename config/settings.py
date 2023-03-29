@@ -76,6 +76,7 @@ THIRD_APPS = [
     "crispy_bootstrap5",
     "django_app_parameter",
     "sri",
+    "simple_history",
 ]
 
 # upper app should not communicate with lower ones
@@ -103,6 +104,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "simple_history.middleware.HistoryRequestMiddleware",
 ]
 
 
