@@ -16,6 +16,7 @@ import matplotlib.pyplot as plt
 import shapely
 from celery import shared_task
 from django.conf import settings
+from django.db import transaction
 from django.db.models import F, OuterRef, Q, Subquery
 from django.urls import reverse
 from django.utils import timezone
@@ -31,6 +32,39 @@ from utils.functions import get_url_with_domain
 from utils.mattermost import BlockedDiagnostic
 
 logger = logging.getLogger(__name__)
+
+
+def race_protection_save(project_id: int, fields: Dict[str, Any]) -> None:
+    with transaction.atomic():
+        fields_name = list(fields.keys())
+        diagnostic = (
+            Project.objects.select_for_update().only(*fields_name).get(pk=project_id)
+        )
+        for name, value in fields.items():
+            setattr(diagnostic, name, value)
+        diagnostic._change_reason = "async"
+        diagnostic.save(update_fields=fields_name)
+
+
+def race_protection_save_map(
+    project_id: int,
+    field_flag_name: str,
+    field_img_name: str,
+    img_name: str,
+    img_data: io.BytesIO,
+) -> None:
+    with transaction.atomic():
+        diagnostic = (
+            Project.objects.select_for_update()
+            .only(field_img_name, field_flag_name)
+            .get(pk=project_id)
+        )
+        field_img = getattr(diagnostic, field_img_name)
+        field_img.delete(save=False)
+        field_img.save(img_name, img_data, save=False)
+        setattr(diagnostic, field_flag_name, True)
+        diagnostic._change_reason = "async"
+        diagnostic.save(update_fields=[field_img_name, field_flag_name])
 
 
 @shared_task(bind=True, max_retries=5)
@@ -55,14 +89,16 @@ def add_city_and_set_combined_emprise(self, project_id: int, public_keys: str) -
             else:
                 combined_emprise = land.mpoly.union(combined_emprise)
         project.emprise_set.create(mpoly=fix_poly(combined_emprise))
-        project.async_city_and_combined_emprise_done = True
-        project.save(update_fields=["async_city_and_combined_emprise_done"])
+
+        race_protection_save(project_id, {"async_city_and_combined_emprise_done": True})
     except Project.DoesNotExist:
         logger.error(f"project_id={project_id} does not exist")
     except Exception as exc:
-        self.retry(exc=exc, countdown=300)
         logger.error(exc)
-    logger.info("End add_city_and_set_combined_emprise, project_id=%d", project_id)
+        logger.exception(exc)
+        self.retry(exc=exc, countdown=60)
+    finally:
+        logger.info("End add_city_and_set_combined_emprise, project_id=%d", project_id)
 
 
 @shared_task(bind=True, max_retries=5)
@@ -70,26 +106,23 @@ def find_first_and_last_ocsge(self, project_id: int) -> None:
     """Use associated cities to find departements and available OCSGE millesime"""
     logger.info("Start find_first_and_last_ocsge id=%d", project_id)
     try:
-        project = Project.objects.get(pk=project_id)
-        result = project.get_first_last_millesime()
-        project.first_year_ocsge = result["first"]
-        project.last_year_ocsge = result["last"]
-        project.async_find_first_and_last_ocsge_done = True
-        # be aware of several updating in parallele. update only selected fields
-        # to avoid loose previously saved data
-        project.save(
-            update_fields=[
-                "first_year_ocsge",
-                "last_year_ocsge",
-                "async_find_first_and_last_ocsge_done",
-            ]
+        result = Project.objects.get(pk=project_id).get_first_last_millesime()
+        race_protection_save(
+            project_id,
+            {
+                "first_year_ocsge": result["first"],
+                "last_year_ocsge": result["last"],
+                "async_find_first_and_last_ocsge_done": True,
+            },
         )
     except Project.DoesNotExist:
         logger.error(f"project_id={project_id} does not exist")
     except Exception as exc:
-        self.retry(exc=exc, countdown=300)
         logger.error(exc)
-    logger.info("End find_first_and_last_ocsge, project_id=%d", project_id)
+        logger.exception(exc)
+        self.retry(exc=exc, countdown=300)
+    finally:
+        logger.info("End find_first_and_last_ocsge, project_id=%d", project_id)
 
 
 @shared_task
@@ -131,17 +164,24 @@ def add_neighboors(self, project_id):
         logger.info("Fetched %d neighboors", qs.count())
         public_keys = [_.public_key for _ in qs]
         logger.info("Neighboors: %s", ", ".join([_.name for _ in qs]))
-        # logger.info("public_keys: %s", ", ".join(public_keys))
         project.add_look_a_like(public_keys, many=True)
         logger.info("Listed neighboors : %s", project.look_a_like)
-        project.async_add_neighboors_done = True
-        project.save(update_fields=["look_a_like", "async_add_neighboors_done"])
+
+        race_protection_save(
+            project_id,
+            {
+                "look_a_like": project.look_a_like,
+                "async_add_neighboors_done": True,
+            },
+        )
     except Project.DoesNotExist:
         logger.error(f"project_id={project_id} does not exist")
     except Exception as exc:
-        self.retry(exc=exc, countdown=300)
         logger.error(exc)
-    logger.info("End add_neighboors, project_id=%d", project_id)
+        logger.exception(exc)
+        self.retry(exc=exc, countdown=300)
+    finally:
+        logger.info("End add_neighboors, project_id=%d", project_id)
 
 
 @shared_task(bind=True, max_retries=5)
@@ -178,18 +218,23 @@ def generate_cover_image(self, project_id):
         img_data.seek(0)
         plt.close()
 
-        diagnostic.cover_image.delete(save=False)
-        diagnostic.cover_image.save(f"cover_{project_id}.png", img_data, save=False)
-        diagnostic.async_cover_image_done = True
-        diagnostic.save(update_fields=["cover_image", "async_cover_image_done"])
+        race_protection_save_map(
+            diagnostic.pk,
+            "async_cover_image_done",
+            "cover_image",
+            f"cover_{project_id}.png",
+            img_data,
+        )
 
     except Project.DoesNotExist as exc:
-        self.retry(exc=exc, countdown=300)
         logger.error(f"project_id={project_id} does not exist")
-    except Exception as exc:
         self.retry(exc=exc, countdown=300)
+    except Exception as exc:
         logger.error(exc)
-    logger.info("End generate_cover_image, project_id=%d", project_id)
+        logger.exception(exc)
+        self.retry(exc=exc, countdown=300)
+    finally:
+        logger.info("End generate_cover_image, project_id=%d", project_id)
 
 
 class WaitAsyncTaskException(Exception):
@@ -217,7 +262,9 @@ def generate_word_diagnostic(self, request_id):
             raise WordAlreadySentException("Word already sent")
 
         logger.info("Start generating word")
-        with Renderer(project=req.project, word_template_slug="template-bilan-1") as renderer:
+        with Renderer(
+            project=req.project, word_template_slug="template-bilan-1"
+        ) as renderer:
             context = renderer.get_context_data()
             buffer = renderer.render_to_docx(context=context)
             filename = renderer.get_file_name()
@@ -225,7 +272,12 @@ def generate_word_diagnostic(self, request_id):
             logger.info("Word created and saved")
             return request_id
 
-    except (RateLimitExceededException, Project.DoesNotExist, WaitAsyncTaskException, WordAlreadySentException) as exc:
+    except (
+        RateLimitExceededException,
+        Project.DoesNotExist,
+        WaitAsyncTaskException,
+        WordAlreadySentException,
+    ) as exc:
         req.record_exception(exc)
         logger.error("Error while generating word: %s", exc)
         logger.exception(exc)
@@ -262,7 +314,9 @@ def send_word_diagnostic(self, request_id):
                 "diagnostic_name": req.project.name,
                 "image_url": req.project.cover_image.url,
                 "ocsge_available": "" if req.project.is_artif() else "display",
-                "diagnostic_url": get_url_with_domain(reverse("project:word_download", args=[req.id])),
+                "diagnostic_url": get_url_with_domain(
+                    reverse("project:word_download", args=[req.id])
+                ),
             },
         )
         logger.info(email.send())
@@ -340,21 +394,19 @@ def generate_theme_map_conso(self, project_id):
             title="Consommation d'espaces des communes du territoire sur la période (en Ha)",
         )
 
-        diagnostic.theme_map_conso.delete(save=False)
-        diagnostic.theme_map_conso.save(
-            f"theme_map_conso_{project_id}.png", img_data, save=False
-        )
-        diagnostic.async_generate_theme_map_conso_done = True
-        diagnostic.save(
-            update_fields=["theme_map_conso", "async_generate_theme_map_conso_done"]
+        race_protection_save_map(
+            diagnostic.pk,
+            "async_generate_theme_map_conso_done",
+            "theme_map_conso",
+            f"theme_map_conso_{project_id}.png",
+            img_data,
         )
 
-    except Project.DoesNotExist as exc:
+    except Project.DoesNotExist:
         logger.error(f"project_id={project_id} does not exist")
-        logger.exception(exc)
-        self.retry(exc=exc, countdown=300)
 
     except Exception as exc:
+        logger.error(exc)
         logger.exception(exc)
         self.retry(exc=exc, countdown=300)
 
@@ -379,20 +431,19 @@ def generate_theme_map_artif(self, project_id):
             ),
         )
 
-        diagnostic.theme_map_artif.delete(save=False)
-        diagnostic.theme_map_artif.save(
-            f"theme_map_artif_{project_id}.png", img_data, save=False
-        )
-        diagnostic.async_generate_theme_map_artif_done = True
-        diagnostic.save(
-            update_fields=["theme_map_artif", "async_generate_theme_map_artif_done"]
+        race_protection_save_map(
+            diagnostic.pk,
+            "async_generate_theme_map_artif_done",
+            "theme_map_artif",
+            f"theme_map_artif_{project_id}.png",
+            img_data,
         )
 
-    except Project.DoesNotExist as exc:
+    except Project.DoesNotExist:
         logger.error(f"project_id={project_id} does not exist")
-        self.retry(exc=exc, countdown=300)
 
     except Exception as exc:
+        logger.error(exc)
         logger.exception(exc)
         self.retry(exc=exc, countdown=300)
 
@@ -446,23 +497,19 @@ def generate_theme_map_understand_artif(self, project_id):
         plt.close()
         img_data.seek(0)
 
-        diagnostic.theme_map_understand_artif.delete(save=False)
-        diagnostic.theme_map_understand_artif.save(
-            f"theme_map_understand_artif_{project_id}.png", img_data, save=False
-        )
-        diagnostic.async_theme_map_understand_artif_done = True
-        diagnostic.save(
-            update_fields=[
-                "theme_map_understand_artif",
-                "async_theme_map_understand_artif_done",
-            ]
+        race_protection_save_map(
+            diagnostic.pk,
+            "async_theme_map_understand_artif_done",
+            "theme_map_understand_artif",
+            f"theme_map_understand_artif_{project_id}.png",
+            img_data,
         )
 
-    except Project.DoesNotExist as exc:
+    except Project.DoesNotExist:
         logger.error(f"project_id={project_id} does not exist")
-        self.retry(exc=exc, countdown=300)
 
     except Exception as exc:
+        logger.error(exc)
         logger.exception(exc)
         self.retry(exc=exc, countdown=300)
 
@@ -472,49 +519,60 @@ def generate_theme_map_understand_artif(self, project_id):
         )
 
 
-@shared_task
-def alert_on_blocked_diagnostic():
-    # set to done request with no project
-    Request.objects.filter(done=False, project__isnull=True).update(done=True)
-    # select request undone from more than 1 hour
-    stamp = timezone.now() - timedelta(hours=1)
-    qs = Request.objects.filter(done=False, created_date__lt=stamp).order_by(
-        "created_date", "project__name"
-    )
-    diagnostic_list = [
-        {
-            "name": _.project.name if _.project else "Projet supprimé",
-            "date": _.created_date.strftime("%d-%m-%Y"),
-            "url": get_url_with_domain(
-                reverse("admin:project_request_change", args=[_.id])
-            ),
-        }
-        for _ in qs
-    ]
-    total = qs.count()
-    if total > 0:
-        if (
-            settings.ALERT_DIAG_MEDIUM in ["mattermost", "both"]
-            and settings.ALERT_DIAG_MATTERMOST_RECIPIENTS
-        ):
-            for recipient in settings.ALERT_DIAG_MATTERMOST_RECIPIENTS:
-                BlockedDiagnostic(
-                    channel=recipient,
-                    data=[
-                        [_["date"], f'[{_["name"][:45]}]({_["url"]})']
-                        for _ in diagnostic_list
+@shared_task(bind=True, max_retries=5)
+def alert_on_blocked_diagnostic(self):
+    logger.info("Start alert_on_blocked_diagnostic")
+    try:
+        # set to done request with no project
+        Request.objects.filter(done=False, project__isnull=True).update(done=True)
+        # select request undone from more than 1 hour
+        stamp = timezone.now() - timedelta(hours=1)
+        qs = Request.objects.filter(done=False, created_date__lt=stamp).order_by(
+            "created_date", "project__name"
+        )
+        diagnostic_list = [
+            {
+                "name": _.project.name if _.project else "Projet supprimé",
+                "date": _.created_date.strftime("%d-%m-%Y"),
+                "url": get_url_with_domain(
+                    reverse("admin:project_request_change", args=[_.id])
+                ),
+            }
+            for _ in qs
+        ]
+        total = qs.count()
+        if total > 0:
+            if (
+                settings.ALERT_DIAG_MEDIUM in ["mattermost", "both"]
+                and settings.ALERT_DIAG_MATTERMOST_RECIPIENTS
+            ):
+                for recipient in settings.ALERT_DIAG_MATTERMOST_RECIPIENTS:
+                    BlockedDiagnostic(
+                        channel=recipient,
+                        data=[
+                            [_["date"], f'[{_["name"][:45]}]({_["url"]})']
+                            for _ in diagnostic_list
+                        ],
+                    ).send()
+            if (
+                settings.ALERT_DIAG_MEDIUM in ["email", "both"]
+                and settings.ALERT_DIAG_EMAIL_RECIPIENTS
+            ):
+                email = SibTemplateEmail(
+                    template_id=10,
+                    recipients=[
+                        {"email": _} for _ in settings.ALERT_DIAG_EMAIL_RECIPIENTS
                     ],
-                ).send()
-        if (
-            settings.ALERT_DIAG_MEDIUM in ["email", "both"]
-            and settings.ALERT_DIAG_EMAIL_RECIPIENTS
-        ):
-            email = SibTemplateEmail(
-                template_id=10,
-                recipients=[{"email": _} for _ in settings.ALERT_DIAG_EMAIL_RECIPIENTS],
-                params={
-                    "qte_diagnostics": total,
-                    "diagnostic_list": diagnostic_list,
-                },
-            )
-            logger.info(email.send())
+                    params={
+                        "qte_diagnostics": total,
+                        "diagnostic_list": diagnostic_list,
+                    },
+                )
+                logger.info(email.send())
+    except Exception as exc:
+        logger.error(exc)
+        logger.exception(exc)
+        self.retry(exc=exc, countdown=60)
+
+    finally:
+        logger.info("End alert_on_blocked_diagnostic")
