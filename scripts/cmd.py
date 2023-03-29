@@ -154,6 +154,15 @@ def arun(ctx, user_cmd):
 
 
 @cli.command()
+@click.argument("id_list", nargs=-1, type=int)
+@click.pass_context
+def project_history(ctx, id_list):
+    id_arg = " ".join([str(i) for i in id_list])
+    cmd = f"project_history {id_arg}"
+    ScalingoInterface(ctx.obj).manage_py(cmd)
+
+
+@cli.command()
 @click.option("--filter", type=str, help="filter logs using an expression")
 @click.pass_context
 def logs(ctx, filter):
