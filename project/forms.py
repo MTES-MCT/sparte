@@ -27,7 +27,6 @@ class SelectTerritoryForm(forms.Form):
     search_commune = forms.BooleanField(required=False, initial=True)
 
     def __init__(self, *args, **kwargs):
-
         super().__init__(*args, **kwargs)
 
         self.fields["region"].widget.attrs.update({"class": "adv-item"})
@@ -68,3 +67,7 @@ class UpdateProjectForm(forms.ModelForm):
         if self.instance and self.instance.land_type:
             choices = AdminRef.get_available_analysis_level(self.instance.land_type)
             self.fields["level"].choices = [(c, AdminRef.get_label(c)) for c in choices]
+
+    def save(self, *args, **kwargs):
+        self.instance._change_reason = "update_project"
+        return super().save(*args, **kwargs)

@@ -31,6 +31,7 @@ def create_from_public_key(
         territory_name=land.name,
         user=user if user and user.is_authenticated else None,
     )
+    project._change_reason = "create_from_public_key"
     project.set_success(save=True)
 
     # use celery to speedup user experience
