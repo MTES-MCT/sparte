@@ -154,7 +154,7 @@ def arun(ctx, user_cmd):
 
 
 @cli.command()
-@click.option("--filter")
+@click.option("--filter", type=str, help="filter logs using an expression")
 @click.pass_context
 def logs(ctx, filter):
     options = {}
@@ -184,12 +184,7 @@ def load_data(ctx, klass=None):
 def load_ocsge(ctx, item):
     """Trigger management command public_data.load_ocsge scalingo."""
     connecter = ScalingoInterface(ctx.obj)
-    connecter.manage_py(
-        "load_ocsge --no-verbose",
-        **{
-            "item": item,
-        },
-    )
+    connecter.manage_py("load_ocsge --no-verbose", **{"item": item})
 
 
 @cli.command()
