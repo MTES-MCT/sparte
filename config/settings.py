@@ -383,7 +383,7 @@ NUMBER_GROUPING = 3
 
 # SENTRY
 if ENVIRONMENT != "local":
-    sentry_sdk.init(
+    sentry_sdk.init(  # type: ignore
         # dsn="https://a227bee32f4f41c2a60e9292ce4d033e@o548798.ingest.sentry.io/6068271",
         dsn="https://b40bb226b8a148fdafff102baf5abf34@sentry.incubateur.net/21",
         integrations=[
