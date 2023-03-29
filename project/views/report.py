@@ -467,6 +467,7 @@ class ProjectReportDownloadView(BreadCrumbMixin, CreateView):
         if self.request.user.is_authenticated:
             form.instance.user = self.request.user
         form.instance.project = Project.objects.get(pk=self.kwargs["pk"])
+        form.instance._change_reason = "New request"
         new_request = form.save()
         tasks.send_email_request_bilan.delay(new_request.id)
         tasks.generate_word_diagnostic.apply_async(

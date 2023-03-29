@@ -40,6 +40,7 @@ class ClaimProjectView(LoginRequiredMixin, RedirectView):
                 "Vous pouvez retrouver ce diagnostic en utilisant le menu Diagnostic > Ouvrir",
             )
             project.user = request.user
+            project._change_reason = "Claim"
             project.save()
         return super().get(request, *args, **kwargs)
 
@@ -180,7 +181,8 @@ class ProjectAddLookALike(GroupMixin, RedirectURLMixin, FormMixin, DetailView):
                 land = Land(add_public_key)
                 # use land.public_key to avoid injection
                 project.add_look_a_like(land.public_key)
-                project.save()
+                project._change_reason = "add look a like"
+                project.save(update_fields=["look_a_like"])
                 return HttpResponseRedirect(self.get_success_url())
             except LandException:
                 pass
@@ -233,7 +235,8 @@ class ProjectRemoveLookALike(GroupMixin, RedirectURLMixin, DetailView):
         project = self.get_object()
         public_key = self.kwargs["public_key"]
         project.remove_look_a_like(public_key)
-        project.save()
+        project._change_reason = "Remove look a like"
+        project.save(update_fields=["look_a_like"])
         return HttpResponseRedirect(self.get_success_url())
 
 
@@ -284,15 +287,5 @@ class SplashProgressionView(GroupMixin, DetailView):
         return response
 
     def get_context_data(self, **kwargs):
-        # o = self.object
-        # kwargs["steps"] = {
-        #     "Liste des communes du territoire": o.async_city_and_combined_emprise_done,
-        #     "Image de couverture": o.async_cover_image_done,
-        #     "Période de l'OCSGE": o.async_find_first_and_last_ocsge_done,
-        #     "Territoires de comparaison": o.async_add_neighboors_done,
-        #     "Carte de la consommation d'espace": o.async_generate_theme_map_conso_done,
-        #     "Carte de l'artificialisation": o.async_generate_theme_map_artif_done,
-        #     "Carte comprendre l'artificialisation": o.async_theme_map_understand_artif_done,
-        # }
         kwargs["last_update"] = timezone.now()
         return super().get_context_data(**kwargs)
