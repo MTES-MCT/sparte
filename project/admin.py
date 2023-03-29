@@ -111,7 +111,7 @@ class RequestAdmin(admin.ModelAdmin):
             "Réponse",
             {
                 "description": "Suivre le traitement de la demande",
-                "fields": ("link_to_project", "sent_file", "sent_date", "done"),
+                "fields": ("link_to_project", "link_to_project_admin", "sent_file", "sent_date", "done"),
             },
         ),
     )
@@ -126,6 +126,7 @@ class RequestAdmin(admin.ModelAdmin):
         "user",
         "link_to_user",
         "link_to_project",
+        "link_to_project_admin",
         "created_date",
         "updated_date",
     )
@@ -145,8 +146,15 @@ class RequestAdmin(admin.ModelAdmin):
             return format_html(f'<a href="{link}">Accès à la fiche</a>')
         except exceptions.NoReverseMatch:
             return format_html("Diagnostic inconnu")
+    link_to_project.short_description = "Projet public"  # type: ignore
 
-    link_to_project.short_description = "Projet"  # type: ignore
+    def link_to_project_admin(self, obj):
+        try:
+            link = reverse("admin:project_project_change", args=[obj.project_id])
+            return format_html(f'<a href="{link}">Accès à la dans l\'admin</a>')
+        except exceptions.NoReverseMatch:
+            return format_html("Diagnostic inconnu")
+    link_to_project.short_description = "Projet admin"  # type: ignore
 
     change_form_template = "project/admin/request_detail.html"
 
