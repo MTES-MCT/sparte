@@ -22,9 +22,14 @@ class ScalingoInterface:
         self.region = ENVS[self.env_name].get("region", None)
         self.detached = ctx_obj["DETACHED"]
 
-    def get_scalingo_run_cmd(self) -> str:
+    def get_scalingo_prefix_cmd(self) -> str:
         """Return the line to execute the command on scalingo remote app"""
         cmd = f"scalingo --app {self.app} --region {self.region}"
+        return cmd
+
+    def get_scalingo_run_cmd(self) -> str:
+        """Return the line to execute the command on scalingo remote app"""
+        cmd = self.get_scalingo_prefix_cmd()
         if self.detached:
             return f"{cmd} run -d"
         return f"{cmd} run"
@@ -46,6 +51,22 @@ class ScalingoInterface:
                 print(buf.decode(), end="")
             except UnicodeDecodeError:
                 print("decode error")
+
+    def logs(self, **options):
+        """Display log of the remote app"""
+        cmd = self.get_scalingo_prefix_cmd()
+        cmd += " logs -f"
+        for name, val in options.items():
+            if len(name) == 1:
+                cmd += f" -{name}"
+            else:
+                cmd += f" --{name}"
+            if val:
+                cmd += f" {val}"
+        if self.env_name == "local":
+            raise ValueError("No logs on local environment")
+        else:
+            asyncio.run(self.async_run(cmd))
 
     def run(self, cmd):
         """If it is not local, add scalingo prefix to execute the command remotly,
@@ -130,6 +151,16 @@ def arun(ctx, user_cmd):
     connecter = ScalingoInterface(ctx.obj)
     connecter.detached = True
     connecter.run(user_cmd)
+
+
+@cli.command()
+@click.option("--filter")
+@click.pass_context
+def logs(ctx, filter):
+    options = {}
+    if filter:
+        options["filter"] = filter
+    ScalingoInterface(ctx.obj).logs(**options)
 
 
 @cli.command()
