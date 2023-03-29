@@ -425,6 +425,7 @@ class Project(BaseProject):
             )
         if not self.folder_name:
             self.folder_name = f"diag_{self.id:>06}"
+            self._change_reason = "set folder_name"
             self.save(update_fields=["folder_name"])
         return self.folder_name
 
