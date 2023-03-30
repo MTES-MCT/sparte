@@ -10,17 +10,23 @@ Mes diagnostics
 {% block content %}
 <div class="px-4">
     <div class="fr-container">
-        <h1>Mes diagnostics</h1>
+        <div class="d-flex justify-content-between align-items-center fr-mb-2w">
+            <h1>Mes diagnostics</h1>
+            <div class="fr-search-bar" id="header-search" role="search">
+                <input class="fr-input" placeholder="Rechercher" type="search" id="filter-diagnostic-list-input">
+                <button class="fr-btn" title="Rechercher"></button>
+             </div>
+        </div>
     </div>
 
     <div class="fr-container">
         <div class="fr-grid-row fr-grid-row--gutters">
             {% for project in projects %}
-            <div class="fr-col-12 fr-col-md-12">
+            <div class="fr-col-12 fr-col-md-12 project-list-item">
                 <div class="fr-card fr-card--horizontal fr-card--horizontal-tier">
                     <div class="fr-card__body">
                         <div class="fr-card__content">
-                            <h3 class="fr-card__title">
+                            <h3 class="fr-card__title project-list-item-key" data-key="{{ project.name }}">
                                 {{ project.name }}
                             </h3>
                             <div class="fr-card__end">
