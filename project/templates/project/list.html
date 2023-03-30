@@ -7,49 +7,71 @@
 Mes diagnostics
 {% endblock %}
 
-
-{% block headers %}
-{% sri_static "project/css/project.css" %}
-{% sri_static "js/masonry.pkgd.min.js" %}
-
-{% endblock %}
-
 {% block content %}
-<div class="row w-100 h-100 justify-content-center">
-    <div class=" col-12 col-md-10 col-lg-8">
-        <h2 class="my-5">
-            Mes diagnostics
-        </h2>
+<div class="px-4">
+    <div class="fr-container">
+        <h1>Mes diagnostics</h1>
+    </div>
 
-        <div class="grid" data-masonry='{ "itemSelector": ".grid-item", "columnWidth": 300 }'>
+    <div class="fr-container">
+        <div class="fr-grid-row fr-grid-row--gutters">
             {% for project in projects %}
+            <div class="fr-col-12 fr-col-md-12">
+                <div class="fr-card fr-card--horizontal fr-card--horizontal-tier">
+                    <div class="fr-card__body">
+                        <div class="fr-card__content">
+                            <h3 class="fr-card__title">
+                                {{ project.name }}
+                            </h3>
+                            <div class="fr-card__end">
+                                <ul class="fr-tags-group">
+                                    <li>
+                                        <p class="fr-tag fr-tag--sm">Surface du territoire:&nbsp;<strong>{{ project.area|floatformat:0 }} ha</strong></p>
+                                    </li>
+                                    <li>
+                                        <p class="fr-tag fr-tag--sm">Période demandée:&nbsp;<strong>De {{ project.analyse_start_date }} à {{ project.analyse_end_date }}</strong></p>
+                                    </li>
+                                    <li>
+                                        <p class="fr-tag fr-tag--sm">Maille d'analyse:&nbsp;<strong>{{ project.level_label }}</strong></p>
+                                    </li>
+                                    {% if project.is_artif %}
+                                    <li>
+                                        <p class="fr-tag fr-tag--sm fr-tag--success"><strong>OCSGE</strong><span class="fr-icon-success-fill fr-icon--sm fr-ml-1v" aria-hidden="true"></span></p>
+                                    </li>
+                                    {% endif %}
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="fr-card__footer">
+                            <div class="d-flex">
+                                <a href="{% url 'project:detail' project.id %}" class="fr-mr-2w fr-link--text-decoration-none">
+                                    <button class="fr-btn fr-btn--secondary fr-btn--icon-right fr-icon-arrow-right-line">
+                                        Diagnostic
+                                    </button>
+                                </a>
 
-            <div class="grid-item">
-                <div class="card m-3">
-                    {% if project.cover_image %}
-                        <img src="{{ project.cover_image.url }}" width="{{ project.prop_width }}" height="{{ project.prop_height }}" />
-                    {% else %}
-                        <svg class="bd-placeholder-img card-img-top" width="100%" height="140" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Image cap" preserveAspectRatio="xMidYMid slice" focusable="false">
-                            <title>Placeholder</title>
-                            <rect width="100%" height="100%" fill="#868e96"></rect>
-                            <text x="30%" y="50%" fill="#dee2e6" dy=".3em">Photo à venir</text>
-                        </svg>
-                    {% endif %}
-                    <div class="card-body">
-                    <p class="card-title"><a href="{% url 'project:detail' project.id %}" class="stretched-link">{{ project.name }}</a></p>
-                    <p class="card-text">{{ project.description }}</p>
-                    <p class="text-muted">{{ project.analyse_start_date }} - {{ project.analyse_end_date }}</p>
+                                <a href="{% url 'project:detail' project.id %}" class="fr-link--text-decoration-none">
+                                    <button class="fr-btn fr-btn--secondary fr-btn--icon-right fr-icon-arrow-right-line">
+                                        Piloter sa trajectoire
+                                    </button>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="fr-card__header">
+                        <div class="fr-card__img">
+                            {% if project.cover_image %}
+                            <img  class="fr-responsive-img" src="{{ project.cover_image.url }}" alt="Couverture diagnostic">
+                            {% else %}
+                            <div class="skeleton-loader"></div>
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
             </div>
-
             {% empty %}
             <p class="text-muted">Vous n'avez aucun diagnostic.</p>
             {% endfor %}
-        </div>
-
-        <div>
-            <a class="fr-btn mt-5" href="{% url 'project:create' %}" role="button">Nouveau diagnostic</a>
         </div>
     </div>
 </div>

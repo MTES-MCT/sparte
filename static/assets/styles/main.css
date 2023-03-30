@@ -595,3 +595,21 @@ Skeleton loader
         transform: translateX(100%);
     }
 }
+
+/*
+fr Tag success
+*/
+.fr-tag--success {
+    background-color: #b8fec9;
+    background-color: var(--background-contrast-success);
+    color: #18753c;
+    color: var(--text-default-success);
+}
+
+
+/*
+Custom links
+*/
+.fr-link--text-decoration-none {
+    background-image: none;
+}
