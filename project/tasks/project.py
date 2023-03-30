@@ -249,7 +249,7 @@ class WordAlreadySentException(Exception):
 def generate_word_diagnostic(self, request_id):
     from highcharts.charts import RateLimitExceededException
 
-    logger.info(f"Start generate word for request={request_id}")
+    logger.info(f"Start generate word for request_id={request_id}")
     try:
         req = Request.objects.select_related("project").get(id=int(request_id))
 
@@ -302,7 +302,7 @@ def send_word_diagnostic(self, request_id):
     - ocsge_available : booléen pour savoir si le diagnostic est disponible sur OCSGE, SendInBlue test seulement s'il
       est vide (OCS GE disponible)
     """
-    logger.info(f"Start send word for request={request_id}")
+    logger.info(f"Start send word for request_id={request_id}")
     try:
         req = Request.objects.select_related("project").get(id=int(request_id))
         email = SibTemplateEmail(
