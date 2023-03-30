@@ -80,15 +80,30 @@ class ErrorTrackingAdmin(admin.StackedInline):
         return False
 
 
+@admin.action(description="Regénérer et renvoyer les diagnostics sélectionnés")
+def resend_request(modeladmin, request, queryset):  # pylint: disable=unused-argument
+    messages.info(
+        request,
+        f"Régénération et renvoit de {queryset.count()} demandes de diagnostics.",
+    )
+    for request in queryset:
+        tasks.generate_word_diagnostic.apply_async(
+            (request.id,), link=tasks.send_word_diagnostic.s()
+        )
+
+
 @admin.register(Request)
 class RequestAdmin(admin.ModelAdmin):
     model = Request
+    actions = [resend_request]
     list_display = (
         "email",
         "created_date",
         "link_to_user",
         "sent_date",
+        "project_id",
         "link_to_project",
+        "link_to_project_admin",
     )
     search_fields = ("email",)
     list_filter = ("done", "created_date", "sent_date")
@@ -111,7 +126,14 @@ class RequestAdmin(admin.ModelAdmin):
             "Réponse",
             {
                 "description": "Suivre le traitement de la demande",
-                "fields": ("link_to_project", "link_to_project_admin", "sent_file", "sent_date", "done"),
+                "fields": (
+                    "project_id",
+                    "link_to_project",
+                    "link_to_project_admin",
+                    "sent_file",
+                    "sent_date",
+                    "done",
+                ),
             },
         ),
     )
@@ -129,6 +151,7 @@ class RequestAdmin(admin.ModelAdmin):
         "link_to_project_admin",
         "created_date",
         "updated_date",
+        "project_id",
     )
 
     def link_to_user(self, obj):
@@ -146,6 +169,7 @@ class RequestAdmin(admin.ModelAdmin):
             return format_html(f'<a href="{link}">Accès à la fiche</a>')
         except exceptions.NoReverseMatch:
             return format_html("Diagnostic inconnu")
+
     link_to_project.short_description = "Projet public"  # type: ignore
 
     def link_to_project_admin(self, obj):
@@ -154,6 +178,7 @@ class RequestAdmin(admin.ModelAdmin):
             return format_html(f'<a href="{link}">Accès à la dans l\'admin</a>')
         except exceptions.NoReverseMatch:
             return format_html("Diagnostic inconnu")
+
     link_to_project.short_description = "Projet admin"  # type: ignore
 
     change_form_template = "project/admin/request_detail.html"
