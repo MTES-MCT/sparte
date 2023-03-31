@@ -5,3 +5,13 @@
     {{ form|crispy }}
     <button class="fr-btn mt-2" type="submit">Modifier la période</button>
 </form>
+
+<div id="conso-input">
+
+    <form hx-post="{% url 'project:trajectory-consumption' project.pk start end %}" hx-swap="outerHTML">
+        {% csrf_token %}
+        {{ form_consumption|crispy }}
+        <button class="fr-btn mt-2" type="submit">Afficher la trajectoire</button>
+    </form>
+
+</div>
