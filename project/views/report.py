@@ -1,4 +1,5 @@
 from decimal import InvalidOperation
+from functools import cached_property
 
 from django.contrib import messages
 from django.http import HttpResponse, HttpResponseRedirect
@@ -217,9 +218,15 @@ class ProjectReportDicoverOcsgeView(ProjectReportBaseView):
                 "usa_pie_chart": charts.UsageSolPieChart(project),
                 "usa_progression_chart": charts.UsageSolProgressionChart(project),
                 "usa_leafs": UsageSol.get_leafs(),
-                "usage_nomenclature": {item.code_prefix_class: item for item in UsageSol.get_usage_nomenclature()},
+                "usage_nomenclature": {
+                    item.code_prefix_class: item
+                    for item in UsageSol.get_usage_nomenclature()
+                },
                 "couv_leafs": CouvertureSol.get_leafs(),
-                "couv_nomenclature": {item.code_prefix_class: item for item in CouvertureSol.get_couv_nomenclature()},
+                "couv_nomenclature": {
+                    item.code_prefix_class: item
+                    for item in CouvertureSol.get_couv_nomenclature()
+                },
             }
         )
 
@@ -483,12 +490,10 @@ class ProjectReportTrajectoryView(ProjectReportBaseView):
 
     def get_context_data(self, **kwargs):
         diagnostic = self.get_object()
-        objective_chart = charts.ObjectiveChart(diagnostic)
         kwargs.update(
             {
                 "diagnostic": diagnostic,
                 "active_page": "trajectory",
-                "objective_chart": objective_chart,
                 "form_period": SelectYearPeriodForm(),
             }
         )
@@ -509,23 +514,41 @@ class ProjectReportTrajectoryPeriodView(FormView):
         context |= {
             "start": form.cleaned_data["start"],
             "end": form.cleaned_data["end"],
-            "form_consumption": SetSpaceConsumationForm(start=form.cleaned_data["start"], end=form.cleaned_data["end"]),
+            "form_consumption": SetSpaceConsumationForm(
+                start=form.cleaned_data["start"], end=form.cleaned_data["end"]
+            ),
         }
         return self.render_to_response(context)
 
 
 class ProjectReportTrajectoryConsumptionView(FormView):
     template_name = "project/partials/set_year_consumption.html"
-    class_name = SetSpaceConsumationForm
+    form_class = SetSpaceConsumationForm
+
+    @cached_property
+    def diagnostic(self):
+        return Project.objects.get(pk=self.kwargs["pk"])
 
     def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        kwargs.update({"start": self.kwargs["start"], "end": self.kwargs["end"]})
+        kwargs = super().get_form_kwargs() | {
+            "start": self.kwargs["start"],
+            "end": self.kwargs["end"],
+        }
         return kwargs
 
+    def get_context_data(self, **kwargs):
+        kwargs |= {
+            "project": self.diagnostic,
+            "start": self.kwargs["start"],
+            "end": self.kwargs["end"],
+        }
+        return super().get_context_data(**kwargs)
+
     def form_valid(self, form: SelectYearPeriodForm) -> HttpResponse:
-        messages.info(self.request, "Form is valid")
-        return self.render_to_response(self.get_context_data(form=form))
+        context = self.get_context_data(form=form) | {
+            "trajectory_chart": charts.ObjectiveChart(self.diagnostic),
+        }
+        return self.render_to_response(context)
 
 
 class ProjectReportTarget2031View(ProjectReportBaseView):
@@ -557,8 +580,13 @@ class DownloadWordView(TemplateView):
             return HttpResponseRedirect(req.sent_file.url)
         # le diagnostic n'est pas public, on vérifie que l'utilisateur connecté est bien le propriétaire du diagnostic
         if request.user.is_anonymous:
-            messages.info(request, "Vous essayez d'accéder à un document privé. Veuillez vous connecter.")
-            return HttpResponseRedirect(f"{reverse('users:signin')}?next={request.path}")
+            messages.info(
+                request,
+                "Vous essayez d'accéder à un document privé. Veuillez vous connecter.",
+            )
+            return HttpResponseRedirect(
+                f"{reverse('users:signin')}?next={request.path}"
+            )
         if request.user.id == req.user_id:
             return HttpResponseRedirect(req.sent_file.url)
         return super().get(request, *args, **kwargs)
