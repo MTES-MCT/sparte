@@ -8,7 +8,7 @@
                 <a class="fr-nav__link" {% if active_page == 'target_2031' %} aria-current="true"{% endif %} href="{% url 'project:report_target_2031' project.pk %}">Objectif 2031</a>
             </li>
             <li class="fr-nav__item">
-                <a class="fr-nav__link" {% if active_page == 'trajectory' %} aria-current="true"{% endif %} href="{% url 'project:trajectory' project.pk %}">Trajectoires</a>
+                <a class="fr-nav__link" {% if active_page == 'trajectory' %} aria-current="true"{% endif %} href="{% url 'trajectory:home' project.pk %}">Trajectoires</a>
             </li>
             <li class="fr-nav__item">
                 <a class="fr-nav__link" {% if active_page == 'consommation' %} aria-current="true"{% endif %} href="{% url 'project:report_conso' project.pk %}">Consommation</a>

@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import include, path
 from rest_framework import routers
 
 from . import views
@@ -65,21 +65,6 @@ urlpatterns = [
         name="report_city_group",
     ),
     path(
-        "<int:pk>/tableau-de-bord/trajectoires",
-        views.ProjectReportTrajectoryView.as_view(),
-        name="trajectory",
-    ),
-    path(
-        "<int:pk>/tableau-de-bord/trajectoires/selectionne-période",
-        views.ProjectReportTrajectoryPeriodView.as_view(),
-        name="trajectory-period",
-    ),
-    path(
-        "<int:pk>/tableau-de-bord/trajectoires/consommation/<int:start>/<int:end>",
-        views.ProjectReportTrajectoryConsumptionView.as_view(),
-        name="trajectory-consumption",
-    ),
-    path(
         "<int:pk>/tableau-de-bord/objectif-2031",
         views.ProjectReportTarget2031View.as_view(),
         name="report_target_2031",
@@ -131,6 +116,8 @@ urlpatterns = [
     # EXPORT
     path("exports/", views.ExportListView.as_view(), name="excel"),
     path("<int:pk>/export-excel", views.ExportExcelView.as_view(), name="export-excel"),
+    # SUB APPS
+    path("<int:pk>/trajectoires", include("trajectory.urls")),
 ]
 
 
