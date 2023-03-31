@@ -82,13 +82,14 @@ THIRD_APPS = [
 # upper app should not communicate with lower ones
 PROJECT_APPS = [
     "utils.apps.UtilsConfig",
+    "highcharts.apps.HighchartsConfig",
     "users.apps.UsersConfig",
     "carto.apps.CartoConfig",
     "public_data.apps.PublicDataConfig",
     "project.apps.ProjectConfig",
+    "trajectory.apps.TrajectoryConfig",
     "diagnostic_word.apps.DiagnosticWordConfig",
     "home.apps.HomeConfig",
-    "highcharts.apps.HighchartsConfig",
     "metabase.apps.MetabaseConfig",
 ]
 
