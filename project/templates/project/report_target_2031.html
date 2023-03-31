@@ -13,6 +13,7 @@ Projection 2031
 {% endblock %}
 
 {% block headers %}
+<meta name="htmx-config" content='{"inlineScriptNonce":"{{ CSP_NONCE }}"}'>
 {% sri_static "project/css/project.css" %}
 {% endblock %}
 
@@ -74,11 +75,13 @@ Projection 2031
                 <h3>Projection 2031 avec un objectif de réduction de 50%</h3>
                 <div>Personnaliser l'objectif 2031 : <a id="btn-change-objective" href="{% url 'project:update' project.pk %}?next=report-target-2031" class="fr-btn fr-btn--tertiary fr-btn--sm">{{ project.target_2031 }}%</a></div>
             </div>
-            <p>Objectif 2031, réduction de 50% de la consommation d'espaces NAF par rapport à la somme des 10 dernières années (2011-2021)</p>
+            <p>Objectif 2031, réduction de {{ project.target_2031 }}% de la consommation d'espaces NAF par rapport à la somme des 10 dernières années (2011-2021)</p>
 
             <div class="border fr-p-2w">
                 <div class="d-flex justify-content-end align-items-center fr-mb-2w">
-                    <div class="dropdown custom-dropdown fr-mr-2w" data-toggle="tooltip" title="Exporter le graphique">
+                    <button class="fr-btn fr-btn--tertiary fr-btn--sm fr-ml-2w" data-bs-toggle="modal" data-bs-target="#setTarget" data-toggle="tooltip" title="Astuces pour lire le graphique" aria-hidden="true" hx-get="{% url 'project:set_target_2031' project.pk %}" hx-target="#setTargetForm">Personnaliser mon objectif 2031</button>
+
+                    <div class="dropdown custom-dropdown fr-ml-2w" data-toggle="tooltip" title="Exporter le graphique">
                         <button class="fr-btn fr-icon-download-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="dropdown" aria-expanded="false"></button>
 
                         <ul class="dropdown-menu">
@@ -97,9 +100,11 @@ Projection 2031
                         </ul>
                     </div>
 
-                    <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm fullscreen-chart" data-chart-target="objective_chart" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
+                    <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm fr-ml-2w fullscreen-chart" data-chart-target="objective_chart" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
                 </div>
-                <div id="objective_chart"></div>
+                <div id="objective-chart-container">
+                    <div id="objective_chart"></div>
+                </div>
             </div>
 
             <div class="mt-4 fr-grid-row">
@@ -138,6 +143,23 @@ Projection 2031
                     <h6 class="fr-mt-2w">Calcul</h6>
                     <p>Les données du Cérema donnent la consommation d'espaces NAF par année, pour le territoire choisi.</p>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="setTarget" tabindex="-1" aria-labelledby="setTargetLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+        <div class="fr-modal__body">
+            <div class="fr-modal__header">
+                <button class="fr-link--close fr-link" data-bs-dismiss="modal" aria-label="Close">Fermer</button>
+            </div>
+            <div class="fr-modal__content">
+                <h1 id="fr-modal-2-title" class="fr-modal__title" id="setTargetLabel">
+                    Personnaliser mon objectif 2031
+                </h1>
+                <div id="setTargetForm"></div>
             </div>
         </div>
     </div>
