@@ -1,11 +1,12 @@
 from decimal import InvalidOperation
 
 from django.contrib import messages
-from django.http import HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
-from django.views.generic import CreateView, DetailView, TemplateView
+from django.views.generic import CreateView, DetailView, TemplateView, FormView
 
 from project import charts, tasks
+from project.forms import SelectYearPeriodForm, SetSpaceConsumationForm
 from project.models import Project, ProjectCommune, Request
 from project.utils import add_total_line_column
 from public_data.models import CouvertureSol, UsageSol
@@ -476,48 +477,49 @@ class ProjectReportDownloadView(BreadCrumbMixin, CreateView):
         return self.render_to_response(self.get_context_data(success_message=True))
 
 
-class ProjectReportConsoRelativeView(ProjectReportBaseView):
-    template_name = "project/report_conso_relative.html"
-    breadcrumbs_title = "Rapport consommation relative"
+class ProjectReportTrajectoryView(ProjectReportBaseView):
+    template_name = "project/report_trajectory.html"
+    breadcrumbs_title = "Rapport trajectoires"
 
     def get_context_data(self, **kwargs):
-        project = kwargs.get("object", self.get_object())
-
-        conso_pop_chart = charts.ConsoComparisonPopChart(project)
-        pop_chart = charts.PopChart(project)
-        household_chart = charts.HouseholdChart(project)
-        conso_household_chart = charts.ConsoComparisonHouseholdChart(project)
-        surface_chart = charts.SurfaceChart(project)
-        conso_surface_chart = charts.ConsoComparisonChart(project, relative=True)
-
+        diagnostic = self.get_object()
+        objective_chart = charts.ObjectiveChart(diagnostic)
         kwargs.update(
             {
-                "diagnostic": project,
-                "active_page": "consommation",
-                "pop_chart": pop_chart,
-                "pop_table": add_total_line_column(pop_chart.get_series(), line=False),
-                "conso_pop_chart": conso_pop_chart,
-                "conso_pop_table": add_total_line_column(
-                    conso_pop_chart.get_series(), line=False
-                ),
-                "household_chart": household_chart,
-                "household_table": add_total_line_column(
-                    household_chart.get_series(), line=False
-                ),
-                "conso_household_chart": conso_household_chart,
-                "conso_household_table": add_total_line_column(
-                    conso_household_chart.get_series(), line=False
-                ),
-                "surface_chart": surface_chart,
-                "surface_table": surface_chart.get_series(),
-                "conso_surface_chart": conso_surface_chart,
-                "conso_surface_table": add_total_line_column(
-                    conso_surface_chart.get_series(), line=False
-                ),
+                "diagnostic": diagnostic,
+                "active_page": "trajectory",
+                "objective_chart": objective_chart,
+                "form_period": SelectYearPeriodForm(),
             }
         )
 
         return super().get_context_data(**kwargs)
+
+
+class ProjectReportTrajectoryPeriodView(FormView):
+    template_name = "project/partials/select_year_period.html"
+    form_class = SelectYearPeriodForm
+
+    def get_context_data(self, **kwargs):
+        kwargs["project"] = Project.objects.get(pk=self.kwargs["pk"])
+        return super().get_context_data(**kwargs)
+
+    def form_valid(self, form: SelectYearPeriodForm) -> HttpResponse:
+        return self.render_to_response(self.get_context_data(form=form))
+
+
+class ProjectReportTrajectoryConsumptionView(FormView):
+    template_name = "project/partials/set_year_consumption.html"
+    class_name = SetSpaceConsumationForm
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs.update({"start": self.kwargs["start"], "end": self.kwargs["end"]})
+        return kwargs
+
+    def form_valid(self, form: SelectYearPeriodForm) -> HttpResponse:
+        messages.info(self.request, "Form is valid")
+        return self.render_to_response(self.get_context_data(form=form))
 
 
 class ProjectReportTarget2031View(ProjectReportBaseView):
