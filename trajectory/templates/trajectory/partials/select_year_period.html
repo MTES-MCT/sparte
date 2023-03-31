@@ -1,6 +1,6 @@
 {% load crispy_forms_tags %}
 
-<form hx-post="{% url 'project:trajectory-period' project.pk %}" hx-swap="outerHTML">
+<form hx-post="{% url 'project:trajectory:partial-form-period' project.pk %}" hx-swap="outerHTML">
     {% csrf_token %}
     {{ form|crispy }}
     <button class="fr-btn mt-2" type="submit">Modifier la période</button>
@@ -8,7 +8,7 @@
 
 <div id="conso-input">
 
-    <form hx-post="{% url 'project:trajectory-consumption' project.pk start end %}" hx-swap="outerHTML">
+    <form hx-post="{% url 'project:trajectory:partial-form-consumption' project.pk start end %}" hx-swap="outerHTML">
         {% csrf_token %}
         {{ form_consumption|crispy }}
         <button class="fr-btn mt-2" type="submit">Afficher la trajectoire</button>

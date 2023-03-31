@@ -1,13 +1,11 @@
 from decimal import InvalidOperation
-from functools import cached_property
 
 from django.contrib import messages
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponseRedirect
 from django.urls import reverse
-from django.views.generic import CreateView, DetailView, TemplateView, FormView
+from django.views.generic import CreateView, DetailView, TemplateView
 
 from project import charts, tasks
-from project.forms import SelectYearPeriodForm, SetSpaceConsumationForm
 from project.models import Project, ProjectCommune, Request
 from project.utils import add_total_line_column
 from public_data.models import CouvertureSol, UsageSol
