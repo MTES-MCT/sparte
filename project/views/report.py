@@ -505,7 +505,13 @@ class ProjectReportTrajectoryPeriodView(FormView):
         return super().get_context_data(**kwargs)
 
     def form_valid(self, form: SelectYearPeriodForm) -> HttpResponse:
-        return self.render_to_response(self.get_context_data(form=form))
+        context = self.get_context_data(form=form)
+        context |= {
+            "start": form.cleaned_data["start"],
+            "end": form.cleaned_data["end"],
+            "form_consumption": SetSpaceConsumationForm(start=form.cleaned_data["start"], end=form.cleaned_data["end"]),
+        }
+        return self.render_to_response(context)
 
 
 class ProjectReportTrajectoryConsumptionView(FormView):
