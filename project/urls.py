@@ -65,9 +65,19 @@ urlpatterns = [
         name="report_city_group",
     ),
     path(
-        "<int:pk>/tableau-de-bord/consommation-relative",
-        views.ProjectReportConsoRelativeView.as_view(),
-        name="report_conso_relative",
+        "<int:pk>/tableau-de-bord/trajectoires",
+        views.ProjectReportTrajectoryView.as_view(),
+        name="trajectory",
+    ),
+    path(
+        "<int:pk>/tableau-de-bord/trajectoires/selectionne-période",
+        views.ProjectReportTrajectoryPeriodView.as_view(),
+        name="trajectory-period",
+    ),
+    path(
+        "<int:pk>/tableau-de-bord/trajectoires/consommation/<int:start>/<int:end>",
+        views.ProjectReportTrajectoryConsumptionView.as_view(),
+        name="trajectory-consumption",
     ),
     path(
         "<int:pk>/tableau-de-bord/objectif-2031",
