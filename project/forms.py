@@ -96,4 +96,4 @@ class SetSpaceConsumationForm(forms.Form):
         self.start = start
         self.end = end
         for i in range(self.start, self.end):
-            self.fields[f'year_{i}'] = forms.IntegerField(min_value=0, default=0, required=True)
+            self.fields[f'year_{i}'] = forms.IntegerField(label=f"Consommation {i}", min_value=0, initial=0, required=True)
