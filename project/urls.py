@@ -83,6 +83,11 @@ urlpatterns = [
         views.ConsoRelativeHouseholdChart.as_view(),
         name="relative-household",
     ),
+    path(
+        "<int:pk>/set-target-2031",
+        views.SetTargetView.as_view(),
+        name="set_target_2031",
+    ),
     # MAP
     path("<int:pk>/map", views.ProjectMapView.as_view(), name="map"),
     path(
