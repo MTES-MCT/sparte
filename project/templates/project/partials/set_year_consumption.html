@@ -1,0 +1,7 @@
+{% load crispy_forms_tags %}
+
+<form hx-post="{% url 'project:trajectory-period' project.pk %}" hx-swap="outerHTML">
+    {% csrf_token %}
+    {{ form_period|crispy }}
+    <button class="fr-btn mt-2" type="submit">Modifier la période</button>
+</form>
