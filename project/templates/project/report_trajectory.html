@@ -1,0 +1,105 @@
+{% extends 'index.html' %}
+
+{% load static %}
+{% load project_tags %}
+{% load humanize %}
+{% load i18n %}
+{% load l10n %}
+{% load highcharts_tags %}
+{% load sri %}
+{% load crispy_forms_tags %}
+
+{% block pagetitle %}
+Trajectoires
+{% endblock %}
+
+{% block content %}
+<div class="px-4">
+    {% include "project/partials/report_title.html" with title=diagnostic surface=diagnostic.area %}
+
+    {% include "project/report_menu.html" %}
+
+    <div class="fr-container fr-py-3w">
+        <div class="fr-callout fr-callout--brown-caramel fr-fi-information-line">
+            <p class="fr-text--sm mb-3">Comment fonctionne cet écran ?</p>
+            <p class="fr-text--sm">
+                Cet écran affiche votre trajectoire de consommation d'espaces prévisionnelles année par année (en Ha).
+                <br/>Pour commencer, veuillez sélectionner une période puis saisir les surfaces consommées pour chaque année.
+            </p>
+        </div>
+
+        
+
+        <div class="fr-mt-7w">
+            <div class="border fr-p-2w">
+                <div class="d-flex justify-content-end align-items-center fr-mb-2w">
+                    <div class="fr-mr-2w"><a href="{% url 'project:update' project.pk %}?next=report-target-2031" class="fr-btn fr-btn--tertiary fr-btn--sm">Personnaliser l'objectif 2031 : {{ project.target_2031 }}%</a></div>
+
+                    <div class="dropdown custom-dropdown fr-mr-2w" data-toggle="tooltip" title="Exporter le graphique">
+                        <button class="fr-btn fr-icon-download-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="dropdown" aria-expanded="false"></button>
+
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="fr-nav__link export-chart" href="#" data-chart-target="objective_chart" data-type="image/png">PNG</a>
+                            </li>
+                            <li>
+                                <a class="fr-nav__link export-chart" href="#" data-chart-target="objective_chart" data-type="image/jpeg">JPEG</a>
+                            </li>
+                            <li>
+                                <a class="fr-nav__link export-chart" href="#" data-chart-target="objective_chart" data-type="application/pdf">PDF</a>
+                            </li>
+                            <li>
+                                <a class="fr-nav__link export-chart" href="#" data-chart-target="objective_chart" data-type="image/svg+xml">Vectoriel</a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm fullscreen-chart" data-chart-target="objective_chart" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
+                </div>
+                <div id="objective_chart"></div>
+            </div>
+            
+        </div>
+
+        <div id="conso-select-period">
+            <form hx-post="{% url 'project:trajectory-period' project.pk %}" hx-swap="outerHTML">
+                {% csrf_token %}
+                {{ form_period|crispy }}
+                <button class="fr-btn mt-2" type="submit">Saisir sa consommation année par année</button>
+            </form>
+        </div>
+
+        <div id="conso-input">
+
+        </div>
+
+
+
+    </div>
+</div>
+{% endblock %}
+
+{% block bodyend %}
+{% localize off %}
+{% sri_static "highcharts/js/highcharts.js" %}
+{% sri_static "highcharts/js/exporting.js" %}
+{% french_translation %}
+{% display_chart 'objective_chart' objective_chart CSP_NONCE %}
+{% endlocalize %}
+{% endblock %}
+
+{% block tagging %}
+<script language="javascript" nonce="{{ CSP_NONCE }}">
+$( window ).on('load', function () {
+    _paq.push(['trackEvent', 'Consultation diagnostic', 'Tableau de bord', 'Trajectoire'])
+})
+
+var fired = false
+$( window ).scroll(function() {
+    if(fired == false && $( window ).scrollTop() + $( window ).height() > $( "#block-content" ).height() - 100) {
+        _paq.push(['trackEvent', 'Consultation diagnostic', 'Fin tableau de bord', 'Trajectoire'])
+        fired = true
+    }
+})
+</script>
+{% endblock tagging %}
