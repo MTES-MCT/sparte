@@ -11,7 +11,7 @@ from trajectory.forms import SelectYearPeriodForm, SetSpaceConsumationForm
 
 
 class ProjectReportTrajectoryView(ProjectReportBaseView):
-    template_name = "project/report_trajectory.html"
+    template_name = "trajectory/report_trajectory.html"
     breadcrumbs_title = "Rapport trajectoires"
 
     def get_context_data(self, **kwargs):
@@ -28,7 +28,7 @@ class ProjectReportTrajectoryView(ProjectReportBaseView):
 
 
 class ProjectReportTrajectoryPeriodView(FormView):
-    template_name = "project/partials/select_year_period.html"
+    template_name = "trajectory/partials/select_year_period.html"
     form_class = SelectYearPeriodForm
 
     def get_context_data(self, **kwargs):
@@ -48,7 +48,7 @@ class ProjectReportTrajectoryPeriodView(FormView):
 
 
 class ProjectReportTrajectoryConsumptionView(FormView):
-    template_name = "project/partials/set_year_consumption.html"
+    template_name = "trajectory/partials/set_year_consumption.html"
     form_class = SetSpaceConsumationForm
 
     @cached_property
