@@ -251,7 +251,7 @@ class Project(BaseProject):
         validators=[MinValueValidator(0), MaxValueValidator(100)],
         default=50,
         help_text=(
-            "A date, l'objectif nationnal est de réduire de 50% la consommation "
+            "A date, l'objectif national est de réduire de 50% la consommation "
             "d'espace d'ici à 2031. Cet objectif doit être personnalisé localement "
             "par les SRADDET. Vous pouvez changer l'objectif pour tester différents "
             "scénarios."
