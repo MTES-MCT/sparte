@@ -13,6 +13,10 @@
 Trajectoires
 {% endblock %}
 
+{% block headers %}
+<meta name="htmx-config" content='{"inlineScriptNonce":"{{ CSP_NONCE }}"}'>
+{% endblock %}
+
 {% block content %}
 <div class="px-4">
     {% include "project/partials/report_title.html" with title=diagnostic surface=diagnostic.area %}
@@ -56,7 +60,7 @@ Trajectoires
 
                     <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm fullscreen-chart" data-chart-target="objective_chart" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
                 </div>
-                <div id="objective_chart"></div>
+                <div id="trajectory-chart-placeholder" class="skeleton-loader">skeleton me</div>
             </div>
             
         </div>
@@ -78,7 +82,6 @@ Trajectoires
 {% sri_static "highcharts/js/highcharts.js" %}
 {% sri_static "highcharts/js/exporting.js" %}
 {% french_translation %}
-{% display_chart 'objective_chart' objective_chart CSP_NONCE %}
 {% endlocalize %}
 {% endblock %}
 
