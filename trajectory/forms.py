@@ -29,13 +29,9 @@ class SelectYearPeriodForm(forms.Form):
 
 
 class UpdateTrajectoryForm(forms.Form):
-    def __init__(self, trajectory: Trajectory, start: int, end: int, *args, **kwargs):
+    def __init__(self, trajectory: Trajectory, *args, **kwargs):
         self.trajectory = trajectory
-        self.trajectory.start = start
-        self.trajectory.end = end
-
         super().__init__(*args, **kwargs)
-
         for year, val in self.trajectory.get_value_per_year().items():
             self.fields[f"year_{year}"] = forms.IntegerField(
                 label=f"Consommation {year}", min_value=0, initial=val, required=True
@@ -52,7 +48,7 @@ class UpdateTrajectoryForm(forms.Form):
 class UpdateProjectTrajectoryForm(UpdateTrajectoryForm):
     def __init__(self, project: Project, start: int, end: int, *args, **kwargs):
         self.project = project
-        super().__init__(self.get_trajectory(start, end), start, end, *args, **kwargs)
+        super().__init__(self.get_trajectory(start, end), *args, **kwargs)
 
     def get_trajectory(self, start: int, end: int):
         trajectory = self.project.trajectory_set.all().first()

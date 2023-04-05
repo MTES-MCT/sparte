@@ -17,7 +17,7 @@ urlpatterns = [
         name="partial-form-period",
     ),
     path(
-        "consommation/<int:start>/<int:end>",
+        "consommation",
         views.ProjectReportTrajectoryConsumptionView.as_view(),
         name="partial-form-consumption",
     ),
