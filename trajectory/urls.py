@@ -12,12 +12,12 @@ urlpatterns = [
         name="home",
     ),
     path(
-        "/selectionne-période",
+        "selectionne-période",
         views.ProjectReportTrajectoryPeriodView.as_view(),
         name="partial-form-period",
     ),
     path(
-        "/consommation/<int:start>/<int:end>",
+        "consommation/<int:start>/<int:end>",
         views.ProjectReportTrajectoryConsumptionView.as_view(),
         name="partial-form-consumption",
     ),
