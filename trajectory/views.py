@@ -70,7 +70,17 @@ class ProjectReportTrajectoryConsumptionView(FormView):
         }
         return super().get_context_data(**kwargs)
 
+    def save(self, form):
+        trajectory = self.diagnostic.trajectory_set.all().first()
+        if not trajectory:
+            trajectory = self.diagnostic.trajectory_set.create(name="Trajectoire 1")
+        trajectory.start = self.kwargs["start"]
+        trajectory.end = self.kwargs["end"]
+        trajectory.data = form.cleaned_data
+        trajectory.save()
+
     def form_valid(self, form: SelectYearPeriodForm) -> HttpResponse:
+        self.save(form)
         context = self.get_context_data(form=form) | {
             "trajectory_chart": charts.ObjectiveChart(self.diagnostic),
         }
