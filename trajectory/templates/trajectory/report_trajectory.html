@@ -73,6 +73,16 @@ Trajectoires
             </form>
         </div>
 
+        <div id="conso-input">
+            {% if form_year %}
+            <form hx-post="{% url 'project:trajectory:partial-form-consumption' project.pk %}" hx-swap="outerHTML">
+                    {% csrf_token %}
+                    {{ form_year|crispy }}
+                    <button class="fr-btn mt-2" type="submit">Saisir sa consommation année par année</button>
+                </form>
+            {% endif %}
+        </div>
+
     </div>
 </div>
 {% endblock %}

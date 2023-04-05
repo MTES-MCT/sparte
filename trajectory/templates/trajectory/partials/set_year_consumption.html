@@ -1,7 +1,7 @@
 {% load crispy_forms_tags %}
 {% load highcharts_tags %}
 
-<form hx-post="{% url 'project:trajectory:partial-form-consumption' project.pk start end %}" hx-swap="outerHTML">
+<form hx-post="{% url 'project:trajectory:partial-form-consumption' project.pk %}" hx-swap="outerHTML">
     {% csrf_token %}
     {{ form|crispy }}
     <button class="fr-btn mt-2" type="submit">Afficher la trajectoire</button>
