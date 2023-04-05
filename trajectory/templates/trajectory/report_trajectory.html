@@ -60,7 +60,13 @@ Trajectoires
 
                     <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm fullscreen-chart" data-chart-target="objective_chart" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
                 </div>
-                <div id="trajectory-chart-placeholder" class="skeleton-loader">skeleton me</div>
+                {% if trajectory_chart %}
+                    <div id="trajectory-chart-placeholder" hx-swap-oob="true">
+                        <div id="trajectory_chart"></div>
+                    </div>
+                {% else %}
+                    <div id="trajectory-chart-placeholder" class="skeleton-loader">skeleton me</div>
+                {% endif %}
             </div>
             
         </div>
@@ -92,6 +98,9 @@ Trajectoires
 {% sri_static "highcharts/js/highcharts.js" %}
 {% sri_static "highcharts/js/exporting.js" %}
 {% french_translation %}
+{% if trajectory_chart %}
+{% display_chart 'trajectory_chart' trajectory_chart CSP_NONCE %}
+{% endif %}
 {% endlocalize %}
 {% endblock %}
 

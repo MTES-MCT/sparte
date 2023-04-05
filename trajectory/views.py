@@ -8,7 +8,11 @@ from project import charts
 from project.models import Project
 from project.views import ProjectReportBaseView
 
-from trajectory.forms import SelectYearPeriodForm, UpdateProjectTrajectoryForm, UpdateTrajectoryForm
+from trajectory.forms import (
+    SelectYearPeriodForm,
+    UpdateProjectTrajectoryForm,
+    UpdateTrajectoryForm,
+)
 from trajectory.models import Trajectory
 
 
@@ -16,7 +20,9 @@ class ProjectReportTrajectoryView(ProjectReportBaseView):
     template_name = "trajectory/report_trajectory.html"
     breadcrumbs_title = "Rapport trajectoires"
 
-    def get_select_year_form(self, trajectory: Trajectory | None = None) -> SelectYearPeriodForm:
+    def get_select_year_form(
+        self, trajectory: Trajectory | None = None
+    ) -> SelectYearPeriodForm:
         if trajectory:
             initial = {
                 "start": trajectory.start,
@@ -37,9 +43,12 @@ class ProjectReportTrajectoryView(ProjectReportBaseView):
             }
         )
         if trajectory:
-            kwargs["form_year"] = UpdateProjectTrajectoryForm(
-                diagnostic, trajectory.start, trajectory.end
-            )
+            kwargs |= {
+                "form_year": UpdateProjectTrajectoryForm(
+                    diagnostic, trajectory.start, trajectory.end
+                ),
+                "trajectory_chart": charts.ObjectiveChart(diagnostic),
+            }
         return super().get_context_data(**kwargs)
 
 
