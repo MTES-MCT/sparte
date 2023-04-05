@@ -66,7 +66,10 @@ class AdminRef:
 
     @classmethod
     def get_label(cls, key):
-        return cls.CHOICES_DICT[key]
+        try:
+            return cls.CHOICES_DICT[key]
+        except KeyError:
+            return key
 
     @classmethod
     def get_form_choices(cls, status_list):
