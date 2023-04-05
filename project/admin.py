@@ -56,6 +56,11 @@ class ProjectAdmin(SimpleHistoryAdmin):
             msg = "Génération de l'image de couverture en cours"
             messages.add_message(request, messages.INFO, msg)
             return HttpResponseRedirect(".")
+        elif "_check-async" in request.POST:
+            tasks.rerun_missing_async.delay(obj.id)
+            msg = "Vérification complète de la construction du diagnostic en cours"
+            messages.add_message(request, messages.INFO, msg)
+            return HttpResponseRedirect(".")
         return super().response_change(request, obj)
 
 
