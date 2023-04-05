@@ -1,4 +1,5 @@
 from functools import cached_property
+from typing import Any, Dict
 
 from django.http import HttpResponse
 from django.views.generic import FormView
@@ -7,7 +8,7 @@ from project import charts
 from project.models import Project
 from project.views import ProjectReportBaseView
 
-from trajectory.forms import SelectYearPeriodForm, SetSpaceConsumationForm
+from trajectory.forms import SelectYearPeriodForm, UpdateProjectTrajectoryForm
 
 
 class ProjectReportTrajectoryView(ProjectReportBaseView):
@@ -31,8 +32,22 @@ class ProjectReportTrajectoryPeriodView(FormView):
     template_name = "trajectory/partials/select_year_period.html"
     form_class = SelectYearPeriodForm
 
+    @cached_property
+    def diagnostic(self):
+        return Project.objects.get(pk=self.kwargs["pk"])
+
+    def get_initial(self) -> Dict[str, Any]:
+        kwargs_initial = super().get_initial()
+        trajectory = self.diagnostic.trajectory_set.all().first()
+        if trajectory:
+            kwargs_initial |= {
+                "start": trajectory.start,
+                "end": trajectory.end,
+            }
+        return kwargs_initial
+
     def get_context_data(self, **kwargs):
-        kwargs["project"] = Project.objects.get(pk=self.kwargs["pk"])
+        kwargs["project"] = self.diagnostic
         return super().get_context_data(**kwargs)
 
     def form_valid(self, form: SelectYearPeriodForm) -> HttpResponse:
@@ -40,8 +55,8 @@ class ProjectReportTrajectoryPeriodView(FormView):
         context |= {
             "start": form.cleaned_data["start"],
             "end": form.cleaned_data["end"],
-            "form_consumption": SetSpaceConsumationForm(
-                start=form.cleaned_data["start"], end=form.cleaned_data["end"]
+            "form_consumption": UpdateProjectTrajectoryForm(
+                project=self.diagnostic, start=form.cleaned_data["start"], end=form.cleaned_data["end"]
             ),
         }
         return self.render_to_response(context)
@@ -49,7 +64,7 @@ class ProjectReportTrajectoryPeriodView(FormView):
 
 class ProjectReportTrajectoryConsumptionView(FormView):
     template_name = "trajectory/partials/set_year_consumption.html"
-    form_class = SetSpaceConsumationForm
+    form_class = UpdateProjectTrajectoryForm
 
     @cached_property
     def diagnostic(self):
@@ -57,6 +72,7 @@ class ProjectReportTrajectoryConsumptionView(FormView):
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs() | {
+            "project": self.diagnostic,
             "start": self.kwargs["start"],
             "end": self.kwargs["end"],
         }
@@ -70,17 +86,8 @@ class ProjectReportTrajectoryConsumptionView(FormView):
         }
         return super().get_context_data(**kwargs)
 
-    def save(self, form):
-        trajectory = self.diagnostic.trajectory_set.all().first()
-        if not trajectory:
-            trajectory = self.diagnostic.trajectory_set.create(name="Trajectoire 1")
-        trajectory.start = self.kwargs["start"]
-        trajectory.end = self.kwargs["end"]
-        trajectory.data = form.cleaned_data
-        trajectory.save()
-
     def form_valid(self, form: SelectYearPeriodForm) -> HttpResponse:
-        self.save(form)
+        form.save()
         context = self.get_context_data(form=form) | {
             "trajectory_chart": charts.ObjectiveChart(self.diagnostic),
         }
