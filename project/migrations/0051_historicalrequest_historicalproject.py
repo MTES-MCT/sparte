@@ -19,17 +19,13 @@ class Migration(migrations.Migration):
             fields=[
                 (
                     "id",
-                    models.BigIntegerField(
-                        auto_created=True, blank=True, db_index=True, verbose_name="ID"
-                    ),
+                    models.BigIntegerField(auto_created=True, blank=True, db_index=True, verbose_name="ID"),
                 ),
                 ("first_name", models.CharField(max_length=150, verbose_name="Prénom")),
                 ("last_name", models.CharField(max_length=150, verbose_name="Nom")),
                 (
                     "function",
-                    models.CharField(
-                        max_length=250, null=True, verbose_name="Fonction"
-                    ),
+                    models.CharField(max_length=250, null=True, verbose_name="Fonction"),
                 ),
                 (
                     "organism",
@@ -61,9 +57,7 @@ class Migration(migrations.Migration):
                 ("updated_date", models.DateTimeField(blank=True, editable=False)),
                 (
                     "sent_date",
-                    models.DateTimeField(
-                        blank=True, null=True, verbose_name="date d'envoi"
-                    ),
+                    models.DateTimeField(blank=True, null=True, verbose_name="date d'envoi"),
                 ),
                 (
                     "done",
@@ -127,9 +121,7 @@ class Migration(migrations.Migration):
             fields=[
                 (
                     "id",
-                    models.BigIntegerField(
-                        auto_created=True, blank=True, db_index=True, verbose_name="ID"
-                    ),
+                    models.BigIntegerField(auto_created=True, blank=True, db_index=True, verbose_name="ID"),
                 ),
                 (
                     "emprise_origin",
@@ -169,9 +161,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "import_date",
-                    models.DateTimeField(
-                        blank=True, null=True, verbose_name="Date et heure d'import"
-                    ),
+                    models.DateTimeField(blank=True, null=True, verbose_name="Date et heure d'import"),
                 ),
                 (
                     "import_status",
@@ -331,9 +321,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "folder_name",
-                    models.CharField(
-                        blank=True, max_length=15, null=True, verbose_name="Dossier"
-                    ),
+                    models.CharField(blank=True, max_length=15, null=True, verbose_name="Dossier"),
                 ),
                 (
                     "territory_name",

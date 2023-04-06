@@ -12,9 +12,7 @@ class BaseSol(models.Model):
     code_prefix = models.CharField("Nomenclature préfixée", max_length=10, unique=True)
     code = models.CharField("Nomenclature", max_length=8, unique=True)
     label = models.CharField("Libellé", max_length=250)
-    label_short = models.CharField(
-        "Libellé court", max_length=50, blank=True, null=True
-    )
+    label_short = models.CharField("Libellé court", max_length=50, blank=True, null=True)
     map_color = models.CharField("Couleur", max_length=8, blank=True, null=True)
     is_key = models.BooleanField("Est déterminant", default=False)
 
@@ -35,7 +33,7 @@ class BaseSol(models.Model):
     @property
     def cleaned_code_prefix(self):
         return self.code_prefix.replace(".", "-")
-    
+
     @property
     def code_prefix_class(self):
         return self.code_prefix.replace(".", "_")
@@ -96,7 +94,7 @@ class UsageSol(BaseSol):
     @classmethod
     def get_usage_nomenclature(cls):
         return cls.objects.all()
-    
+
     @classmethod
     def get_leafs(cls):
         return cls.objects.filter(
@@ -135,7 +133,7 @@ class CouvertureSol(BaseSol):
     @classmethod
     def get_couv_nomenclature(cls):
         return cls.objects.all()
-    
+
     @classmethod
     def get_leafs(cls):
         return cls.objects.filter(
@@ -166,15 +164,9 @@ class CouvertureUsageMatrix(models.Model):
         ARTIF_NOT_CONSUMED = "ARTIF_NOT_CONSU", "Artificiel non consommé"
         NONE = "NONE", "Non renseigné"
 
-    couverture = models.ForeignKey(
-        "CouvertureSol", on_delete=models.PROTECT, blank=True, null=True
-    )
-    usage = models.ForeignKey(
-        "UsageSol", on_delete=models.PROTECT, blank=True, null=True
-    )
-    is_artificial = models.BooleanField(
-        "Artificiel", default=False, blank=True, null=True
-    )
+    couverture = models.ForeignKey("CouvertureSol", on_delete=models.PROTECT, blank=True, null=True)
+    usage = models.ForeignKey("UsageSol", on_delete=models.PROTECT, blank=True, null=True)
+    is_artificial = models.BooleanField("Artificiel", default=False, blank=True, null=True)
     is_consumed = models.BooleanField("Consommé", default=None, blank=True, null=True)
     is_natural = models.BooleanField("Naturel", default=None, blank=True, null=True)
     label = models.CharField(
@@ -186,9 +178,7 @@ class CouvertureUsageMatrix(models.Model):
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(
-                fields=["couverture", "usage"], name="matrix-couverture-usage-unique"
-            ),
+            models.UniqueConstraint(fields=["couverture", "usage"], name="matrix-couverture-usage-unique"),
         ]
         indexes = [
             models.Index(fields=["is_artificial"], name="matrix-is_artificial-index"),

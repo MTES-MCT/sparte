@@ -9,7 +9,6 @@ import public_data.models.mixins
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("public_data", "0063_auto_20220513_0833"),
     ]
@@ -43,9 +42,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "surface",
-                    models.DecimalField(
-                        decimal_places=4, max_digits=15, verbose_name="surface"
-                    ),
+                    models.DecimalField(decimal_places=4, max_digits=15, verbose_name="surface"),
                 ),
                 (
                     "city",

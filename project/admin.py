@@ -92,9 +92,7 @@ def resend_request(modeladmin, request, queryset):  # pylint: disable=unused-arg
         f"Régénération et renvoit de {queryset.count()} demandes de diagnostics.",
     )
     for request in queryset:
-        tasks.generate_word_diagnostic.apply_async(
-            (request.id,), link=tasks.send_word_diagnostic.s()
-        )
+        tasks.generate_word_diagnostic.apply_async((request.id,), link=tasks.send_word_diagnostic.s())
 
 
 @admin.register(Request)

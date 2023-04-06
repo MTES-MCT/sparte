@@ -80,9 +80,7 @@ class Chart:
             except KeyError:
                 pass
         if not self.name:
-            self.name = "".join(
-                random.choice(string.ascii_lowercase) for i in range(12)
-            )
+            self.name = "".join(random.choice(string.ascii_lowercase) for i in range(12))
         return self.name
 
     def get_js_name(self) -> str:

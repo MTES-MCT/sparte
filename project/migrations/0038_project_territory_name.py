@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("project", "0037_auto_20220729_1046"),
     ]
@@ -13,8 +12,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="project",
             name="territory_name",
-            field=models.CharField(
-                blank=True, max_length=15, null=True, verbose_name="Territoire"
-            ),
+            field=models.CharField(blank=True, max_length=15, null=True, verbose_name="Territoire"),
         ),
     ]

@@ -7,7 +7,6 @@ import project.models.project_base
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("project", "0046_auto_20221024_1048"),
     ]

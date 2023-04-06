@@ -16,7 +16,6 @@ def set_usage(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("public_data", "0015_ocsge2015_map_color"),
     ]
@@ -37,9 +36,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name="couverturesol",
             name="code_prefix",
-            field=models.CharField(
-                max_length=10, unique=True, verbose_name="Nomenclature préfixée"
-            ),
+            field=models.CharField(max_length=10, unique=True, verbose_name="Nomenclature préfixée"),
         ),
         migrations.AddField(
             model_name="usagesol",
@@ -55,8 +52,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name="usagesol",
             name="code_prefix",
-            field=models.CharField(
-                max_length=10, unique=True, verbose_name="Nomenclature préfixée"
-            ),
+            field=models.CharField(max_length=10, unique=True, verbose_name="Nomenclature préfixée"),
         ),
     ]

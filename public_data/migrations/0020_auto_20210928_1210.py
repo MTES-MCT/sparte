@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("public_data", "0019_ocsge2018"),
     ]
@@ -35,9 +34,7 @@ class Migration(migrations.Migration):
         ),
         migrations.AddIndex(
             model_name="ocsge2015",
-            index=models.Index(
-                fields=["couverture"], name="public_data_couvert_99b082_idx"
-            ),
+            index=models.Index(fields=["couverture"], name="public_data_couvert_99b082_idx"),
         ),
         migrations.AddIndex(
             model_name="ocsge2015",
@@ -45,9 +42,7 @@ class Migration(migrations.Migration):
         ),
         migrations.AddIndex(
             model_name="ocsge2018",
-            index=models.Index(
-                fields=["couverture"], name="public_data_couvert_9b2e27_idx"
-            ),
+            index=models.Index(fields=["couverture"], name="public_data_couvert_9b2e27_idx"),
         ),
         migrations.AddIndex(
             model_name="ocsge2018",

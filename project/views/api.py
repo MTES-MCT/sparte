@@ -21,19 +21,10 @@ class ProjectViewSet(UserQuerysetOrPublicMixin, viewsets.ReadOnlyModelViewSet):
     @action(detail=True, methods=["get"])
     def communes(self, request):
         project = self.get_object()
-        sum_function = sum(
-            [
-                F(f)
-                for f in Cerema.get_art_field(
-                    project.analyse_start_date, project.analyse_end_date
-                )
-            ]
-        )
+        sum_function = sum([F(f) for f in Cerema.get_art_field(project.analyse_start_date, project.analyse_end_date)])
         qs = Cerema.objects.annotate(artif_area=sum_function)
         queryset = Commune.objects.annotate(
-            artif_area=Subquery(
-                qs.filter(city_insee=OuterRef("insee")).values("artif_area")[:1]
-            )
+            artif_area=Subquery(qs.filter(city_insee=OuterRef("insee")).values("artif_area")[:1])
         )
         bbox = self.request.GET.get("bbox", None)
         if bbox is not None and len(bbox) > 0:

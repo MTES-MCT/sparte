@@ -31,9 +31,7 @@ class ClaimProjectView(LoginRequiredMixin, RedirectView):
         project = get_object_or_404(Project, pk=self.kwargs["pk"])
         self.url = project.get_absolute_url()
         if project.user is not None:
-            messages.error(
-                request, "Erreur : ce diagnostic est appartient déjà à quelqu'un"
-            )
+            messages.error(request, "Erreur : ce diagnostic est appartient déjà à quelqu'un")
         else:
             messages.success(
                 request,
@@ -90,9 +88,7 @@ class CreateProjectViews(BreadCrumbMixin, FormView):
             }
             return self.render_to_response(self.get_context_data(**kwargs))
         else:
-            project = create_from_public_key(
-                form.cleaned_data["selection"], user=self.request.user
-            )
+            project = create_from_public_key(form.cleaned_data["selection"], user=self.request.user)
 
             if self.request.GET.get("next") == "download":
                 return redirect("project:report_download", pk=project.id)
@@ -251,9 +247,7 @@ class ProjectListView(GroupMixin, LoginRequiredMixin, ListView):
             if project.cover_image:
                 try:
                     project.prop_width = 266
-                    project.prop_height = (
-                        project.cover_image.height * 266 / project.cover_image.width
-                    )
+                    project.prop_height = project.cover_image.height * 266 / project.cover_image.width
                 except FileNotFoundError:
                     project.cover_image = None
         return qs
@@ -279,10 +273,7 @@ class SplashProgressionView(GroupMixin, DetailView):
 
     def dispatch(self, *args, **kwargs):
         response = super().dispatch(*args, **kwargs)
-        if (
-            self.object.async_city_and_combined_emprise_done
-            and self.object.async_add_neighboors_done
-        ):
+        if self.object.async_city_and_combined_emprise_done and self.object.async_add_neighboors_done:
             response["HX-Redirect"] = reverse("project:detail", kwargs=self.kwargs)
         return response
 

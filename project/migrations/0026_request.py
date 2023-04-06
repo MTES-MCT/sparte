@@ -6,7 +6,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
         ("project", "0025_auto_20220120_1235"),
@@ -29,9 +28,7 @@ class Migration(migrations.Migration):
                 ("last_name", models.CharField(max_length=150, verbose_name="Nom")),
                 (
                     "function",
-                    models.CharField(
-                        max_length=250, null=True, verbose_name="Fonction"
-                    ),
+                    models.CharField(max_length=250, null=True, verbose_name="Fonction"),
                 ),
                 (
                     "organism",
@@ -63,9 +60,7 @@ class Migration(migrations.Migration):
                 ("updated_date", models.DateTimeField(auto_now=True)),
                 (
                     "sent_date",
-                    models.DateTimeField(
-                        blank=True, null=True, verbose_name="date d'envoi"
-                    ),
+                    models.DateTimeField(blank=True, null=True, verbose_name="date d'envoi"),
                 ),
                 (
                     "done",

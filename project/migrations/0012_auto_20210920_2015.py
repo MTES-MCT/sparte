@@ -10,7 +10,6 @@ import public_data.models.mixins
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
         ("project", "0011_alter_emprise_project"),
@@ -53,9 +52,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "import_date",
-                    models.DateTimeField(
-                        blank=True, null=True, verbose_name="Date et heure d'import"
-                    ),
+                    models.DateTimeField(blank=True, null=True, verbose_name="Date et heure d'import"),
                 ),
                 (
                     "import_status",
@@ -73,9 +70,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "supplier_email",
-                    models.EmailField(
-                        blank=True, max_length=254, verbose_name="Email du prestataire"
-                    ),
+                    models.EmailField(blank=True, max_length=254, verbose_name="Email du prestataire"),
                 ),
                 (
                     "project",
@@ -135,21 +130,15 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "surface",
-                    models.IntegerField(
-                        blank=True, null=True, verbose_name="Surface (ha)"
-                    ),
+                    models.IntegerField(blank=True, null=True, verbose_name="Surface (ha)"),
                 ),
                 (
                     "us_code",
-                    models.CharField(
-                        blank=True, max_length=10, verbose_name="Code usage du sol"
-                    ),
+                    models.CharField(blank=True, max_length=10, verbose_name="Code usage du sol"),
                 ),
                 (
                     "cs_code",
-                    models.CharField(
-                        blank=True, max_length=10, verbose_name="Code couverture du sol"
-                    ),
+                    models.CharField(blank=True, max_length=10, verbose_name="Code couverture du sol"),
                 ),
                 (
                     "prev_surface_artificial",
@@ -185,9 +174,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "plan",
-                    models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE, to="project.plan"
-                    ),
+                    models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="project.plan"),
                 ),
             ],
             options={

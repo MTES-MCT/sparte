@@ -18,9 +18,7 @@ class ContactForm(models.Model):
     email = models.EmailField("Votre courriel")
     content = models.TextField("Votre message")
 
-    status = models.CharField(
-        max_length=10, choices=StatusChoices.choices, default=StatusChoices.PENDING
-    )
+    status = models.CharField(max_length=10, choices=StatusChoices.choices, default=StatusChoices.PENDING)
     created_date = models.DateTimeField(auto_now_add=True)
     processed_date = models.DateTimeField(null=True, blank=True)
     error = models.TextField(null=True, blank=True)
@@ -62,9 +60,7 @@ class Newsletter(models.Model):
         return "".join(choices(alphabet, k=25))
 
     def get_confirmation_url(self):
-        return get_url_with_domain(
-            reverse("home:nwl-confirmation", kwargs={"token": self.confirm_token})
-        )
+        return get_url_with_domain(reverse("home:nwl-confirmation", kwargs={"token": self.confirm_token}))
 
     def confirm(self):
         self.confirmation_date = timezone.now()

@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("public_data", "0060_auto_20220512_1303"),
     ]
@@ -12,9 +11,7 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AddIndex(
             model_name="communesol",
-            index=models.Index(
-                fields=["city", "matrix", "year"], name="communesol-triplet-index"
-            ),
+            index=models.Index(fields=["city", "matrix", "year"], name="communesol-triplet-index"),
         ),
         migrations.AddIndex(
             model_name="communesol",
@@ -30,14 +27,10 @@ class Migration(migrations.Migration):
         ),
         migrations.AddIndex(
             model_name="couvertureusagematrix",
-            index=models.Index(
-                fields=["is_artificial"], name="matrix-is_artificial-index"
-            ),
+            index=models.Index(fields=["is_artificial"], name="matrix-is_artificial-index"),
         ),
         migrations.AddConstraint(
             model_name="couvertureusagematrix",
-            constraint=models.UniqueConstraint(
-                fields=("couverture", "usage"), name="matrix-couverture-usage-unique"
-            ),
+            constraint=models.UniqueConstraint(fields=("couverture", "usage"), name="matrix-couverture-usage-unique"),
         ),
     ]

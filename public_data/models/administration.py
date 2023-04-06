@@ -221,9 +221,7 @@ class LandMixin:
             data = {city["year"]: city["pop_progression"] for city in cities}
         else:
             data = {city["year"]: city["household_progression"] for city in cities}
-        return {
-            str(year): data.get(year, None) for year in range(int(start), int(end) + 1)
-        }
+        return {str(year): data.get(year, None) for year in range(int(start), int(end) + 1)}
 
 
 class Region(LandMixin, GetDataFromCeremaMixin, models.Model):
@@ -237,11 +235,7 @@ class Region(LandMixin, GetDataFromCeremaMixin, models.Model):
     default_analysis_level = AdminRef.DEPARTEMENT
 
     def get_ocsge_millesimes(self) -> set:
-        return {
-            millesime
-            for dept in self.departement_set.all()
-            for millesime in dept.get_ocsge_millesimes()
-        }
+        return {millesime for dept in self.departement_set.all() for millesime in dept.get_ocsge_millesimes()}
 
     @classmethod
     def search(cls, needle, region=None, departement=None, epci=None):
@@ -272,9 +266,7 @@ class Departement(LandMixin, GetDataFromCeremaMixin, models.Model):
     source_id = models.CharField("Identifiant source", max_length=50)
     region = models.ForeignKey(Region, on_delete=models.CASCADE)
     is_artif_ready = models.BooleanField("Données artif disponibles", default=False)
-    ocsge_millesimes = models.CharField(
-        "Millesimes OCSGE dispo", max_length=100, null=True
-    )
+    ocsge_millesimes = models.CharField("Millesimes OCSGE dispo", max_length=100, null=True)
     name = models.CharField("Nom", max_length=50)
     mpoly = models.MultiPolygonField()
 
@@ -318,9 +310,7 @@ class Scot(LandMixin, GetDataFromCeremaMixin, models.Model):
     is_inter_departement = models.BooleanField("interdépartemental", default=False)
     state_statut = models.CharField("Libellé Etat simplifié", max_length=250)
     detailed_state_statut = models.CharField("Libellé Etat détaillé", max_length=250)
-    date_published_perimeter = models.DateField(
-        "Publication du périmètre", blank=True, null=True
-    )
+    date_published_perimeter = models.DateField("Publication du périmètre", blank=True, null=True)
     date_acting = models.DateField("Engagement", blank=True, null=True)
     date_stop = models.DateField("Arrêt du projet", blank=True, null=True)
     date_validation = models.DateField("Approbation", blank=True, null=True)
@@ -373,11 +363,7 @@ class Epci(LandMixin, GetDataFromCeremaMixin, models.Model):
     default_analysis_level = AdminRef.COMMUNE
 
     def get_ocsge_millesimes(self) -> set:
-        return {
-            millesime
-            for dept in self.departements.all()
-            for millesime in dept.get_ocsge_millesimes()
-        }
+        return {millesime for dept in self.departements.all() for millesime in dept.get_ocsge_millesimes()}
 
     @property
     def is_artif_ready(self):
@@ -419,9 +405,7 @@ class Commune(DataColorationMixin, LandMixin, GetDataFromCeremaMixin, models.Mod
     objects = IntersectManager()
 
     # Calculated fields
-    map_color = models.CharField(
-        "Couleur d'affichage", max_length=30, null=True, blank=True
-    )
+    map_color = models.CharField("Couleur d'affichage", max_length=30, null=True, blank=True)
     last_millesime = models.IntegerField(
         "Dernier millésime disponible",
         validators=[MinValueValidator(2000), MaxValueValidator(2050)],
@@ -533,15 +517,11 @@ class CommuneSol(models.Model):
         validators=[MinValueValidator(2000), MaxValueValidator(2050)],
     )
     matrix = models.ForeignKey(CouvertureUsageMatrix, on_delete=models.CASCADE)
-    surface = models.DecimalField(
-        "Surface", max_digits=15, decimal_places=4, blank=True, null=True
-    )
+    surface = models.DecimalField("Surface", max_digits=15, decimal_places=4, blank=True, null=True)
 
     class Meta:
         indexes = [
-            models.Index(
-                name="communesol-triplet-index", fields=["city", "matrix", "year"]
-            ),
+            models.Index(name="communesol-triplet-index", fields=["city", "matrix", "year"]),
             models.Index(name="communesol-city-index", fields=["city"]),
             models.Index(name="communesol-year-index", fields=["year"]),
             models.Index(name="communesol-matrix-index", fields=["matrix"]),
@@ -549,9 +529,7 @@ class CommuneSol(models.Model):
 
 
 class CommunePop(models.Model):
-    city = models.ForeignKey(
-        Commune, verbose_name="Commune", on_delete=models.CASCADE, related_name="pop"
-    )
+    city = models.ForeignKey(Commune, verbose_name="Commune", on_delete=models.CASCADE, related_name="pop")
     year = models.IntegerField(
         "Millésime",
         validators=[MinValueValidator(2000), MaxValueValidator(2050)],
@@ -630,9 +608,7 @@ class Land:
         elif search_for == "*":
             search_for = cls.Meta.subclasses.keys()
         return {
-            name: subclass.search(
-                needle, region=region, departement=departement, epci=epci
-            )
+            name: subclass.search(needle, region=region, departement=departement, epci=epci)
             for name, subclass in cls.Meta.subclasses.items()
             if name in search_for
         }

@@ -58,10 +58,7 @@ class ExportExcelView(View):
         self.project = Project.objects.get(pk=kwargs["pk"])
         return FileResponse(
             self.get_excel_as_buffer(),
-            content_type=(
-                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;"
-                "charset=utf-8"
-            ),
+            content_type=("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;" "charset=utf-8"),
             as_attachment=True,
             filename=f"données du diagnostic {self.project.name}.xlsx",
         )
@@ -98,11 +95,7 @@ class ExportExcelView(View):
         # get data formated from queryset
         qs = queryset.annotate(**annotations).values(*headers)
         # add data to dataframe and make the pivot
-        df = (
-            pd.DataFrame(qs, columns=headers)
-            .fillna(0.0)
-            .pivot(columns=columns, index=index, values=values)
-        )
+        df = pd.DataFrame(qs, columns=headers).fillna(0.0).pivot(columns=columns, index=index, values=values)
         return df
 
     def add_population_sheet(self) -> None:
@@ -266,9 +259,7 @@ class ExportExcelView(View):
                 values=["Surface_artificielle_dernier_millésime"],
             )
         )
-        config[8]["db"] = Concat(
-            "year_old", Value("-"), "year_new", output_field=CharField()
-        )
+        config[8]["db"] = Concat("year_old", Value("-"), "year_new", output_field=CharField())
         qs2 = (
             CommuneDiff.objects.filter(
                 city__in=self.project.cities.all(),

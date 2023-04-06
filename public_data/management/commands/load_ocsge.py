@@ -20,9 +20,7 @@ logger = logging.getLogger("management.commands")
 
 
 USAGE_LIST = {usage.code_prefix: usage for usage in UsageSol.objects.all()}
-COUVERTURE_LIST = {
-    couverture.code_prefix: couverture for couverture in CouvertureSol.objects.all()
-}
+COUVERTURE_LIST = {couverture.code_prefix: couverture for couverture in CouvertureSol.objects.all()}
 MATRIX_LIST = dict()
 qs = CouvertureUsageMatrix.objects.all().select_related("usage", "couverture")
 for item in qs:
@@ -373,9 +371,7 @@ class BourgogneFrancheComteOcsge(AutoLoadMixin, Ocsge):
         """Delete only data with year=2015"""
         # select only data covered by departement
         dept = Departement.objects.get(name=cls.departement_name)
-        qs = (
-            cls.objects.all().filter(mpoly__intersects=dept.mpoly).filter(year=cls.year)
-        )
+        qs = cls.objects.all().filter(mpoly__intersects=dept.mpoly).filter(year=cls.year)
         qs.delete()
 
     @classmethod
@@ -681,10 +677,7 @@ class Command(BaseCommand):
         parser.add_argument(
             "--truncate",
             action="store_true",
-            help=(
-                "if you want to completly restart tables including id, not compatible "
-                "with --item"
-            ),
+            help=("if you want to completly restart tables including id, not compatible " "with --item"),
         )
         parser.add_argument(
             "--describe",

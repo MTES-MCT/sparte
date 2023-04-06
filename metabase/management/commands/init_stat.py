@@ -27,7 +27,7 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-        if options['profile']:
+        if options["profile"]:
             profiler = Profile()
             profiler.runcall(self._handle, *args, **options)
             profiler.dump_stats("cprofile.stats")
@@ -41,9 +41,7 @@ class Command(BaseCommand):
         self.do_request()
 
     def do_project(self):
-        qs = (
-            Project.objects.exclude(id__in=StatDiagnostic.objects.values("project_id")).order_by("-created_date")
-        )
+        qs = Project.objects.exclude(id__in=StatDiagnostic.objects.values("project_id")).order_by("-created_date")
         total = qs.count()
         # Save project and request to trigger signal that will create or update StatDiagnostic
         for i, project in enumerate(qs):

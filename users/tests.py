@@ -41,9 +41,7 @@ def users(db):
 class TestUsers:
     def test_create_user(self):
         User = get_user_model()
-        user = User.objects.create_user(  # nosec
-            email="normal@user.com", password="foo"
-        )
+        user = User.objects.create_user(email="normal@user.com", password="foo")  # nosec
         assert user.email == "normal@user.com"
         assert str(user) == "normal@user.com"
         assert user.is_active
@@ -73,9 +71,7 @@ class TestUsers:
 
     def test_superuser(self):
         User = get_user_model()
-        user = User.objects.create_superuser(  # nosec
-            email="normal@user.com", password="foo"
-        )
+        user = User.objects.create_superuser(email="normal@user.com", password="foo")  # nosec
         assert user.is_active
         assert user.is_staff
         assert user.is_superuser
