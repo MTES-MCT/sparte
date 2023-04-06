@@ -5,21 +5,22 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('project', '0050_auto_20230224_1306'),
-        ('metabase', '0003_auto_20230302_1508'),
+        ("project", "0050_auto_20230224_1306"),
+        ("metabase", "0003_auto_20230302_1508"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='statdiagnostic',
-            name='organism',
-            field=models.CharField(blank=True, max_length=255, null=True, verbose_name='Organisme'),
+            model_name="statdiagnostic",
+            name="organism",
+            field=models.CharField(blank=True, max_length=255, null=True, verbose_name="Organisme"),
         ),
         migrations.AddField(
-            model_name='statdiagnostic',
-            name='request',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='project.request'),
+            model_name="statdiagnostic",
+            name="request",
+            field=models.ForeignKey(
+                blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to="project.request"
+            ),
         ),
     ]

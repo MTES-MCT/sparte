@@ -34,9 +34,7 @@ class User(AbstractUser):
         choices=ORGANISMS.choices,
         default=ORGANISMS.COMMUNE,
     )
-    organism_group = models.CharField(
-        "Groupe d'organisme", max_length=250, blank=True, null=True
-    )
+    organism_group = models.CharField("Groupe d'organisme", max_length=250, blank=True, null=True)
     function = models.CharField("Fonction", max_length=250)
 
     USERNAME_FIELD = "email"

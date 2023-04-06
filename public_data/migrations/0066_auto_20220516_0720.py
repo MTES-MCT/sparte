@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("public_data", "0065_alter_artificialarea_city"),
     ]
@@ -20,14 +19,10 @@ class Migration(migrations.Migration):
         ),
         migrations.AddIndex(
             model_name="artificialarea",
-            index=models.Index(
-                fields=["city", "year"], name="public_data_city_id_26b070_idx"
-            ),
+            index=models.Index(fields=["city", "year"], name="public_data_city_id_26b070_idx"),
         ),
         migrations.AddConstraint(
             model_name="artificialarea",
-            constraint=models.UniqueConstraint(
-                fields=("city", "year"), name="artificialarea-city-year-unique"
-            ),
+            constraint=models.UniqueConstraint(fields=("city", "year"), name="artificialarea-city-year-unique"),
         ),
     ]

@@ -25,9 +25,7 @@ urlpatterns = [
     path("<int:pk>/ajouter", views.ClaimProjectView.as_view(), name="claim"),
     path("<int:pk>/edit", views.ProjectUpdateView.as_view(), name="update"),
     path("<int:pk>/delete/", views.ProjectDeleteView.as_view(), name="delete"),
-    path(
-        "<int:pk>/ajouter-voisin", views.ProjectAddLookALike.as_view(), name="lookalike"
-    ),
+    path("<int:pk>/ajouter-voisin", views.ProjectAddLookALike.as_view(), name="lookalike"),
     path(
         "<int:pk>/retirer-voisin/<slug:public_key>",
         views.ProjectRemoveLookALike.as_view(),

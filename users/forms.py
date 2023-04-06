@@ -21,9 +21,7 @@ class CustomUserChangeForm(UserChangeForm):
 
 
 class SignupForm(forms.ModelForm):
-    password1 = forms.CharField(
-        label="Mot de passe", widget=forms.PasswordInput(), max_length=50
-    )
+    password1 = forms.CharField(label="Mot de passe", widget=forms.PasswordInput(), max_length=50)
     password2 = forms.CharField(
         label="Confirmer le mot de passe",
         widget=forms.PasswordInput(),
@@ -74,15 +72,9 @@ class SigninForm(AuthenticationForm):
 
 
 class UpdatePasswordForm(forms.Form):
-    old_password = forms.CharField(
-        label="Ancien mot de passe", widget=forms.PasswordInput()
-    )
-    new_password = forms.CharField(
-        label="Nouveau mot de passe", widget=forms.PasswordInput()
-    )
-    new_password2 = forms.CharField(
-        label="Répétez votre nouveau mot de passe", widget=forms.PasswordInput()
-    )
+    old_password = forms.CharField(label="Ancien mot de passe", widget=forms.PasswordInput())
+    new_password = forms.CharField(label="Nouveau mot de passe", widget=forms.PasswordInput())
+    new_password2 = forms.CharField(label="Répétez votre nouveau mot de passe", widget=forms.PasswordInput())
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop("user")

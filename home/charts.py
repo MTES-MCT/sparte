@@ -70,9 +70,7 @@ class DiagAndDownloadChart(charts.Chart):
                 .order_by("date")
             )
             self.series = {
-                "Utilisateurs inscris": {
-                    row["date"]: row["total"] for row in qs_account
-                },
+                "Utilisateurs inscris": {row["date"]: row["total"] for row in qs_account},
                 "Diagnostics créés": {row["date"]: row["total"] for row in qs_created},
                 "Diagnostics téléchargés": {row["date"]: row["total"] for row in qs_dl},
             }
@@ -118,13 +116,9 @@ class UseOfReportPieChart(charts.Chart):
 
         if not self.series:
             self.end = date.today()
-            self.start = date(
-                year=self.end.year - 1, month=(self.end.month % 12) + 1, day=1
-            )
+            self.start = date(year=self.end.year - 1, month=(self.end.month % 12) + 1, day=1)
             mato = Matomo(period=(self.start, self.end))
-            re_map = re.compile(
-                r"(consommation|couverture|synthesis|usage|artificialisation|map)"
-            )
+            re_map = re.compile(r"(consommation|couverture|synthesis|usage|artificialisation|map)")
             self.series = defaultdict(lambda: 0)
             for row in mato.request():
                 match = re_map.search(row["label"])
@@ -175,10 +169,7 @@ class OrganismPieChart(charts.Chart):
                 self._name: {
                     self.t(row[self._field]): row["total"]
                     for row in (
-                        Request.objects.all()
-                        .values(self._field)
-                        .annotate(total=Count("id"))
-                        .order_by(self._field)
+                        Request.objects.all().values(self._field).annotate(total=Count("id")).order_by(self._field)
                     )
                 }
             }

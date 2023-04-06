@@ -8,9 +8,7 @@ class LineSizeException(Exception):
     pass
 
 
-def write_sheet(
-    wb: Workbook, headers: List[str], data: List[Any], sheet_name: str = None
-) -> None:
+def write_sheet(wb: Workbook, headers: List[str], data: List[Any], sheet_name: str = None) -> None:
     if not sheet_name:
         sheet_name = "Sans nom"
     sheet = wb.create_sheet(sheet_name)

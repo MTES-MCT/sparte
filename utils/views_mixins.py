@@ -38,9 +38,7 @@ class RedirectURLMixin:
 
     def get_redirect_url(self):
         """Return the user-originating redirect URL if it's safe."""
-        redirect_to = self.request.POST.get(
-            self.redirect_field_name, self.request.GET.get(self.redirect_field_name)
-        )
+        redirect_to = self.request.POST.get(self.redirect_field_name, self.request.GET.get(self.redirect_field_name))
         return redirect_to if redirect_to else ""
 
     def get_default_redirect_url(self):

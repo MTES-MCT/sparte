@@ -7,7 +7,6 @@ import public_data.models.mixins
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("public_data", "0018_auto_20210926_2332"),
     ]
@@ -49,21 +48,15 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "source",
-                    models.CharField(
-                        blank=True, max_length=254, null=True, verbose_name="Source"
-                    ),
+                    models.CharField(blank=True, max_length=254, null=True, verbose_name="Source"),
                 ),
                 (
                     "origine",
-                    models.CharField(
-                        blank=True, max_length=254, null=True, verbose_name="Origine"
-                    ),
+                    models.CharField(blank=True, max_length=254, null=True, verbose_name="Origine"),
                 ),
                 (
                     "origine2",
-                    models.CharField(
-                        blank=True, max_length=254, null=True, verbose_name="Origine1"
-                    ),
+                    models.CharField(blank=True, max_length=254, null=True, verbose_name="Origine1"),
                 ),
                 (
                     "ossature",
@@ -98,9 +91,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "map_color",
-                    models.CharField(
-                        blank=True, max_length=8, null=True, verbose_name="Couleur"
-                    ),
+                    models.CharField(blank=True, max_length=8, null=True, verbose_name="Couleur"),
                 ),
                 (
                     "mpoly",

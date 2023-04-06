@@ -23,7 +23,7 @@ urlpatterns = [
         PasswordResetView.as_view(
             email_template_name="users/password_reset_email.txt",
             html_email_template_name="users/password_reset_email.html",
-            success_url = reverse_lazy('users:password_reset_done'),
+            success_url=reverse_lazy("users:password_reset_done"),
             extra_email_context={"DOMAIN_URL": settings.DOMAIN_URL.strip("/")},
             template_name="users/password_reset.html",
         ),
@@ -33,7 +33,7 @@ urlpatterns = [
         "password-reset/done/",
         PasswordResetDoneView.as_view(
             template_name="users/password_reset_done.html",
-            ),
+        ),
         name="password_reset_done",
     ),
     path(

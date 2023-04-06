@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("public_data", "0007_auto_20210816_1724"),
         ("project", "0004_auto_20210824_0125"),
@@ -14,16 +13,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="project",
             name="cities",
-            field=models.ManyToManyField(
-                to="public_data.CommunesSybarval", verbose_name="cities"
-            ),
+            field=models.ManyToManyField(to="public_data.CommunesSybarval", verbose_name="cities"),
         ),
         migrations.AddField(
             model_name="project",
             name="is_manually_linked",
-            field=models.BooleanField(
-                default=False, verbose_name="Is manually linked to cities"
-            ),
+            field=models.BooleanField(default=False, verbose_name="Is manually linked to cities"),
         ),
         migrations.AlterField(
             model_name="project",

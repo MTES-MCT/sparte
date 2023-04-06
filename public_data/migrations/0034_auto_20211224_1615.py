@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("public_data", "0033_departement_epci_region"),
     ]
@@ -18,9 +17,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name="departement",
             name="is_artif_ready",
-            field=models.BooleanField(
-                default=False, verbose_name="Données artif disponibles"
-            ),
+            field=models.BooleanField(default=False, verbose_name="Données artif disponibles"),
         ),
         migrations.AlterField(
             model_name="departement",

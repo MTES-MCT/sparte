@@ -7,9 +7,7 @@ from .models import Commune, CommunePop
 # from .validators import MinValueValidator, MaxValueValidator
 
 
-SQUARE = MultiPolygon(
-    [((2.2, 4.2), (5.2, 4.2), (5.2, 6.6), (2.2, 6.6), (2.2, 4.2))], srid=4326
-)
+SQUARE = MultiPolygon([((2.2, 4.2), (5.2, 4.2), (5.2, 6.6), (2.2, 6.6), (2.2, 4.2))], srid=4326)
 
 
 @pytest.fixture

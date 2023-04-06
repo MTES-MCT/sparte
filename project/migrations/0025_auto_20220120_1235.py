@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("project", "0024_alter_project_look_a_like"),
     ]
@@ -14,9 +13,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="project",
             name="created_date",
-            field=models.DateTimeField(
-                auto_now_add=True, default=django.utils.timezone.now
-            ),
+            field=models.DateTimeField(auto_now_add=True, default=django.utils.timezone.now),
             preserve_default=False,
         ),
         migrations.AddField(

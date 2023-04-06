@@ -94,9 +94,7 @@ class Command(BaseCommand):
         epcis = {e.source_id: e for e in Epci.objects.all()}
         qs = Cerema.objects.all().order_by("city_insee")
         paginator = Paginator(qs, 1000)
-        logger.info(
-            "%d Communes found in %d pages", paginator.count, paginator.num_pages
-        )
+        logger.info("%d Communes found in %d pages", paginator.count, paginator.num_pages)
         for page in paginator.page_range:
             Commune.objects.bulk_create(
                 (

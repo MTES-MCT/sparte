@@ -66,9 +66,7 @@ def create_from_public_key_list(
 
     # if there is on ly one public_key, use the dedicated function
     if len(public_key_list) == 1:
-        return create_from_public_key(
-            public_key_list[0], start=start, end=end, user=user
-        )
+        return create_from_public_key(public_key_list[0], start=start, end=end, user=user)
 
     lands = Land.get_lands(public_key_list)
     land_type = AdminRef.get_admin_level({p.split("_")[0] for p in public_key_list})

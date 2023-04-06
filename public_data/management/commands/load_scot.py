@@ -18,14 +18,10 @@ class Command(BaseCommand):
     def init_data(self):
         self.scot_id_list = list()
         self.region_list = {r.name: r for r in Region.objects.all()} | {
-            "Bourgogne-Franche-Comte": Region.objects.get(
-                name="Bourgogne-Franche-Comté"
-            ),
+            "Bourgogne-Franche-Comte": Region.objects.get(name="Bourgogne-Franche-Comté"),
             "Ile-de-France": Region.objects.get(name="Île-de-France"),
             "Auvergne-Rhone-Alpes": Region.objects.get(name="Auvergne-Rhône-Alpes"),
-            "Provence-Alpes-Cote d'Azur": Region.objects.get(
-                name="Provence-Alpes-Côte d'Azur"
-            ),
+            "Provence-Alpes-Cote d'Azur": Region.objects.get(name="Provence-Alpes-Côte d'Azur"),
         }
         self.dept_list = {d.name: d for d in Departement.objects.all()}
         with DataStorage().open("scote_et_communes.xlsx") as file_stream:
@@ -90,11 +86,7 @@ class Command(BaseCommand):
 
     def calculate_scot_mpoly_field(self):
         logger.info("calculate_scot_mpoly_field")
-        qs = (
-            Commune.objects.values("scot__id")
-            .annotate(union_mpoly=Union("mpoly"))
-            .order_by("scot__id")
-        )
+        qs = Commune.objects.values("scot__id").annotate(union_mpoly=Union("mpoly")).order_by("scot__id")
         for row in qs:
             scot_mpoly = fix_poly(row["union_mpoly"])
             Scot.objects.filter(id=row["scot__id"]).update(mpoly=scot_mpoly)

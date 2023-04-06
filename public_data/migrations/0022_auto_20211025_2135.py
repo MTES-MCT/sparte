@@ -8,7 +8,6 @@ import public_data.models.mixins
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("public_data", "0021_voirie2018_usage_label"),
     ]
@@ -50,21 +49,15 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "source",
-                    models.CharField(
-                        blank=True, max_length=254, null=True, verbose_name="Source"
-                    ),
+                    models.CharField(blank=True, max_length=254, null=True, verbose_name="Source"),
                 ),
                 (
                     "origine",
-                    models.CharField(
-                        blank=True, max_length=254, null=True, verbose_name="Origine"
-                    ),
+                    models.CharField(blank=True, max_length=254, null=True, verbose_name="Origine"),
                 ),
                 (
                     "origine2",
-                    models.CharField(
-                        blank=True, max_length=254, null=True, verbose_name="Origine1"
-                    ),
+                    models.CharField(blank=True, max_length=254, null=True, verbose_name="Origine1"),
                 ),
                 (
                     "ossature",
@@ -109,9 +102,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "map_color",
-                    models.CharField(
-                        blank=True, max_length=8, null=True, verbose_name="Couleur"
-                    ),
+                    models.CharField(blank=True, max_length=8, null=True, verbose_name="Couleur"),
                 ),
                 (
                     "mpoly",
@@ -132,9 +123,7 @@ class Migration(migrations.Migration):
         ),
         migrations.AddIndex(
             model_name="ocsge",
-            index=models.Index(
-                fields=["couverture"], name="public_data_couvert_aadf19_idx"
-            ),
+            index=models.Index(fields=["couverture"], name="public_data_couvert_aadf19_idx"),
         ),
         migrations.AddIndex(
             model_name="ocsge",

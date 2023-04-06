@@ -8,7 +8,6 @@ import project.models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
         ("public_data", "0008_artifcommune"),
@@ -43,16 +42,12 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name="project",
             name="cities",
-            field=models.ManyToManyField(
-                blank=True, to="public_data.ArtifCommune", verbose_name="Communes"
-            ),
+            field=models.ManyToManyField(blank=True, to="public_data.ArtifCommune", verbose_name="Communes"),
         ),
         migrations.AlterField(
             model_name="project",
             name="import_date",
-            field=models.DateTimeField(
-                blank=True, null=True, verbose_name="Date et heure d'import"
-            ),
+            field=models.DateTimeField(blank=True, null=True, verbose_name="Date et heure d'import"),
         ),
         migrations.AlterField(
             model_name="project",

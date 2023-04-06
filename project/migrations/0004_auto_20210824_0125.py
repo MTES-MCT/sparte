@@ -8,7 +8,6 @@ import project.models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("project", "0003_rename_shape_files_project_shape_file"),
     ]
@@ -21,16 +20,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="project",
             name="import_date",
-            field=models.DateTimeField(
-                blank=True, null=True, verbose_name="import date & time"
-            ),
+            field=models.DateTimeField(blank=True, null=True, verbose_name="import date & time"),
         ),
         migrations.AddField(
             model_name="project",
             name="import_error",
-            field=models.TextField(
-                blank=True, null=True, verbose_name="shp file import error message"
-            ),
+            field=models.TextField(blank=True, null=True, verbose_name="shp file import error message"),
         ),
         migrations.AddField(
             model_name="project",
@@ -49,9 +44,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name="project",
             name="shape_file",
-            field=models.FileField(
-                upload_to=project.models.user_directory_path, verbose_name="shape files"
-            ),
+            field=models.FileField(upload_to=project.models.user_directory_path, verbose_name="shape files"),
         ),
         migrations.CreateModel(
             name="Emprise",

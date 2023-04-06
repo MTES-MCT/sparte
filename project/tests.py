@@ -60,7 +60,7 @@ class TestProject:
 
     def test_area(self, projects):
         project = Project.objects.get(name="COBAS")
-        expected_area = BIG_SQUARE.transform(2154, clone=True).area / 100 ** 2
+        expected_area = BIG_SQUARE.transform(2154, clone=True).area / 100**2
         assert project.area == expected_area
 
     def test_set_success(self, projects):
