@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("public_data", "0038_commune"),
         ("project", "0019_remove_project_cities"),
@@ -14,8 +13,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="project",
             name="cities",
-            field=models.ManyToManyField(
-                blank=True, to="public_data.Commune", verbose_name="Communes"
-            ),
+            field=models.ManyToManyField(blank=True, to="public_data.Commune", verbose_name="Communes"),
         ),
     ]

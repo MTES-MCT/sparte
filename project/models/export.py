@@ -17,19 +17,13 @@ def to_row(request: Request, headers: dict[str, str]) -> list:
     result = {k: "" for k in headers}
     result.update(
         {
-            "Date de création": request.created_date.replace(tzinfo=None)
-            if request.created_date
-            else "",
-            "Date d'envoi": request.sent_date.replace(tzinfo=None)
-            if request.sent_date
-            else "",
+            "Date de création": request.created_date.replace(tzinfo=None) if request.created_date else "",
+            "Date d'envoi": request.sent_date.replace(tzinfo=None) if request.sent_date else "",
             "Organisme": request.organism,
             "Fonction": request.function,
             "Utilisateur inscris": "non",
             "Lien vers la fiche de la demande": get_url_with_domain(
-                reverse(
-                    "admin:project_request_change", kwargs={"object_id": request.id}
-                )
+                reverse("admin:project_request_change", kwargs={"object_id": request.id})
             ),
         }
     )
@@ -41,9 +35,7 @@ def to_row(request: Request, headers: dict[str, str]) -> list:
                 "Maille d'analyse": request.project.level or "",
                 "Date de début": int(request.project.analyse_start_date),
                 "Date de fin": int(request.project.analyse_end_date),
-                "Lien vers le diagnostic": get_url_with_domain(
-                    request.project.get_absolute_url()
-                ),
+                "Lien vers le diagnostic": get_url_with_domain(request.project.get_absolute_url()),
             }
         )
         qs_cities = request.project.cities.all()

@@ -11,15 +11,9 @@ class KeywordForm(forms.Form):
 class SelectTerritoryForm(forms.Form):
     keyword = forms.CharField(label="Mot clé")
     selection = forms.CharField(required=False)
-    region = forms.ModelChoiceField(
-        queryset=Region.objects.all().order_by("name"), required=False
-    )
-    departement = forms.ModelChoiceField(
-        queryset=Departement.objects.all().order_by("name"), required=False
-    )
-    epci = forms.ModelChoiceField(
-        queryset=Epci.objects.all().order_by("name"), required=False
-    )
+    region = forms.ModelChoiceField(queryset=Region.objects.all().order_by("name"), required=False)
+    departement = forms.ModelChoiceField(queryset=Departement.objects.all().order_by("name"), required=False)
+    epci = forms.ModelChoiceField(queryset=Epci.objects.all().order_by("name"), required=False)
     search_region = forms.BooleanField(required=False, initial=True)
     search_departement = forms.BooleanField(required=False, initial=True)
     search_scot = forms.BooleanField(required=False, initial=True)

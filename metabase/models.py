@@ -31,15 +31,11 @@ GROUP_ORGANISM = {
 
 
 class StatDiagnostic(models.Model):
-    project = models.OneToOneField(
-        Project, on_delete=models.CASCADE, verbose_name="Diagnostic d'origine"
-    )
+    project = models.OneToOneField(Project, on_delete=models.CASCADE, verbose_name="Diagnostic d'origine")
     created_date = models.DateTimeField("Date de création")
     is_anonymouse = models.BooleanField("Est anonyme", default=True)
     is_public = models.BooleanField("Est public", default=True)
-    administrative_level = models.CharField(
-        "Niveau administratif", max_length=255, blank=True, null=True
-    )
+    administrative_level = models.CharField("Niveau administratif", max_length=255, blank=True, null=True)
     analysis_level = models.CharField("Maille d'analyse", max_length=255)
     start_date = models.DateField("Date de début")
     end_date = models.DateField("Date de fin")
@@ -52,16 +48,10 @@ class StatDiagnostic(models.Model):
     region = models.CharField("Région", max_length=255, blank=True, null=True)
 
     is_downaloaded = models.BooleanField("A été téléchargé", default=False)
-    request = models.ForeignKey(
-        Request, on_delete=models.SET_NULL, null=True, blank=True
-    )
-    date_first_download = models.DateTimeField(
-        "Date du premier téléchargement", null=True, blank=True
-    )
+    request = models.ForeignKey(Request, on_delete=models.SET_NULL, null=True, blank=True)
+    date_first_download = models.DateTimeField("Date du premier téléchargement", null=True, blank=True)
     organism = models.CharField("Organisme", max_length=255, blank=True, null=True)
-    group_organism = models.CharField(
-        "Groupe d'organisme", max_length=50, blank=True, null=True
-    )
+    group_organism = models.CharField("Groupe d'organisme", max_length=50, blank=True, null=True)
 
     class Meta:
         verbose_name = "Statistique"
@@ -70,12 +60,8 @@ class StatDiagnostic(models.Model):
     def update_with_project(self, project: Project) -> None:
         self.is_anonymouse = False if project.user_id else True
         self.is_public = project.is_public
-        self.start_date = datetime(
-            year=int(project.analyse_start_date), month=1, day=1
-        ).date()
-        self.end_date = datetime(
-            year=int(project.analyse_end_date), month=12, day=31
-        ).date()
+        self.start_date = datetime(year=int(project.analyse_start_date), month=1, day=1).date()
+        self.end_date = datetime(year=int(project.analyse_end_date), month=12, day=31).date()
         self.analysis_level = project.level or ""
 
     def update_with_request(self, request: Request) -> None:
@@ -133,9 +119,7 @@ class StatDiagnostic(models.Model):
             )
 
     @classmethod
-    def receiver_project_post_save(
-        cls, instance: Project, created: bool, **kwargs
-    ) -> None:
+    def receiver_project_post_save(cls, instance: Project, created: bool, **kwargs) -> None:
         """Create or update StatDiagnostic when a Project is created or updated.
         Ensure that exception are catched to avoid breaking user doings."""
         try:

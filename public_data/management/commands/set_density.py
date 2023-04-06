@@ -21,10 +21,7 @@ class Command(BaseCommand):
         parser.add_argument(
             "--reset",
             action="store_true",
-            help=(
-                "if you want to completly restart tables including id, not compatible "
-                "with --item"
-            ),
+            help=("if you want to completly restart tables including id, not compatible " "with --item"),
         )
 
     def handle(self, *args, **options):

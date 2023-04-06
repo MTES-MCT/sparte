@@ -173,9 +173,7 @@ def logs(ctx, filter):
 
 
 @cli.command()
-@click.option(
-    "--klass", default=None, type=str, help="upload data for a specific model"
-)
+@click.option("--klass", default=None, type=str, help="upload data for a specific model")
 @click.pass_context
 def load_data(ctx, klass=None):
     """Trigger management command public_data scalingo."""

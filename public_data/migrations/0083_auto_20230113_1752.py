@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("public_data", "0082_auto_20221216_1746"),
     ]
@@ -13,15 +12,11 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name="couverturesol",
             name="label_short",
-            field=models.CharField(
-                blank=True, max_length=50, null=True, verbose_name="Libellé court"
-            ),
+            field=models.CharField(blank=True, max_length=50, null=True, verbose_name="Libellé court"),
         ),
         migrations.AlterField(
             model_name="usagesol",
             name="label_short",
-            field=models.CharField(
-                blank=True, max_length=50, null=True, verbose_name="Libellé court"
-            ),
+            field=models.CharField(blank=True, max_length=50, null=True, verbose_name="Libellé court"),
         ),
     ]

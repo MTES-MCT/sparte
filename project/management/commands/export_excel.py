@@ -48,9 +48,7 @@ class Command(BaseCommand):
         logger.info("End: %s", end)
 
         excel_file = export_dl_diag(start, end)
-        filename = (
-            f"diag_downloaded_{start.strftime('%d%m%Y')}_{end.strftime('%d%m%Y')}.xlsx"
-        )
+        filename = f"diag_downloaded_{start.strftime('%d%m%Y')}_{end.strftime('%d%m%Y')}.xlsx"
         if options["local"]:
             with open(filename, "wb") as f:
                 f.write(excel_file.read())

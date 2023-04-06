@@ -8,7 +8,6 @@ import project.models.project_base
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("project", "0045_project_target_2031"),
     ]

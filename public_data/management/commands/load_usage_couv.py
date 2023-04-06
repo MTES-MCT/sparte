@@ -234,9 +234,5 @@ class Command(BaseCommand):
             logger.debug("Done %s", item)
 
     def set_is_key(self):
-        CouvertureSol.objects.filter(code__in=["1.1", "1.2", "2.1", "2.2"]).update(
-            is_key=True
-        )
-        UsageSol.objects.filter(code__in=["1", "235", "2", "3", "4", "5", "6"]).update(
-            is_key=True
-        )
+        CouvertureSol.objects.filter(code__in=["1.1", "1.2", "2.1", "2.2"]).update(is_key=True)
+        UsageSol.objects.filter(code__in=["1", "235", "2", "3", "4", "5", "6"]).update(is_key=True)

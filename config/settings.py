@@ -219,9 +219,7 @@ STATIC_ROOT = str(BASE_DIR / "staticroot")
 
 
 PUBLIC_MEDIA_LOCATION = "media"
-MEDIA_URL = (
-    f"https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/{PUBLIC_MEDIA_LOCATION}/"
-)
+MEDIA_URL = f"https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/{PUBLIC_MEDIA_LOCATION}/"
 
 
 # Default primary key field type
@@ -368,9 +366,7 @@ if "django-extensions" in {pkg.key for pkg in pkg_resources.working_set}:
 # RESTRAMEWORK parameters
 # https://www.django-rest-framework.org
 
-REST_FRAMEWORK = {
-    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination"
-}
+REST_FRAMEWORK = {"DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination"}
 
 # FORMAT SETTINGS
 
@@ -467,9 +463,7 @@ ALERT_DIAG_MEDIUM = env.str("ALERT_DIAG_MEDIUM", default="both")
 if ALERT_DIAG_MEDIUM not in ["mattermost", "email", "both"]:
     raise ImproperlyConfigured("ALERT_DIAG_MEDIUM needs to be correctly set")
 ALERT_DIAG_EMAIL_RECIPIENTS = env.list("ALERT_DIAG_EMAIL_RECIPIENTS", default=[])
-ALERT_DIAG_MATTERMOST_RECIPIENTS = env.list(
-    "ALERT_DIAG_MATTERMOST_RECIPIENTS", default=[]
-)
+ALERT_DIAG_MATTERMOST_RECIPIENTS = env.list("ALERT_DIAG_MATTERMOST_RECIPIENTS", default=[])
 
 # LOGGING SETTINGS
 

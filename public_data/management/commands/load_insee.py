@@ -28,10 +28,7 @@ class Command(BaseCommand):
         with DataStorage().open(remote_file_path) as file_stream:
             wb = load_workbook(file_stream, data_only=True)
         ws = wb.active
-        return {
-            r[0]: dict(zip(headers, r))
-            for r in ws.iter_rows(min_row=2, max_col=len(headers), values_only=True)
-        }
+        return {r[0]: dict(zip(headers, r)) for r in ws.iter_rows(min_row=2, max_col=len(headers), values_only=True)}
 
     def get_pop_data(self):
         remote_file_path = "base-pop-historiques-1876-2019.xlsx"

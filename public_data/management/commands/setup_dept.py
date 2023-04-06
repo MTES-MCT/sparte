@@ -40,7 +40,5 @@ class Command(BaseCommand):
         if qte == len(config):
             logger.info("%d departement is artif ready", qte)
         else:
-            logger.error(
-                "%d departement with artif ready instead of %d", qte, len(config)
-            )
+            logger.error("%d departement with artif ready instead of %d", qte, len(config))
         logger.info("End setup departement OCSGE")

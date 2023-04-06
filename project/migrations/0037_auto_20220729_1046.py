@@ -6,7 +6,6 @@ import project.models.project_base
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("project", "0036_auto_20220728_1543"),
     ]
@@ -24,8 +23,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="project",
             name="folder_name",
-            field=models.CharField(
-                blank=True, max_length=15, null=True, verbose_name="Dossier"
-            ),
+            field=models.CharField(blank=True, max_length=15, null=True, verbose_name="Dossier"),
         ),
     ]

@@ -37,9 +37,7 @@ logger = logging.getLogger(__name__)
 def race_protection_save(project_id: int, fields: Dict[str, Any]) -> None:
     with transaction.atomic():
         fields_name = list(fields.keys())
-        diagnostic = (
-            Project.objects.select_for_update().only(*fields_name).get(pk=project_id)
-        )
+        diagnostic = Project.objects.select_for_update().only(*fields_name).get(pk=project_id)
         for name, value in fields.items():
             setattr(diagnostic, name, value)
         diagnostic._change_reason = "async"
@@ -54,11 +52,7 @@ def race_protection_save_map(
     img_data: io.BytesIO,
 ) -> None:
     with transaction.atomic():
-        diagnostic = (
-            Project.objects.select_for_update()
-            .only(field_img_name, field_flag_name)
-            .get(pk=project_id)
-        )
+        diagnostic = Project.objects.select_for_update().only(field_img_name, field_flag_name).get(pk=project_id)
         field_img = getattr(diagnostic, field_img_name)
         field_img.delete(save=False)
         field_img.save(img_name, img_data, save=False)
@@ -132,9 +126,7 @@ def send_email_request_bilan(request_id):
     request = Request.objects.get(pk=request_id)
     diagnostic = request.project
     project_url = get_url_with_domain(reverse("project:detail", args=[diagnostic.id]))
-    relative_url = get_url_with_domain(
-        reverse("admin:project_request_change", kwargs={"object_id": request.id})
-    )
+    relative_url = get_url_with_domain(reverse("admin:project_request_change", kwargs={"object_id": request.id}))
     image_url = "https://creative-assets.mailinblue.com/editor/image_placeholder.png"
     if diagnostic.cover_image:
         image_url = diagnostic.cover_image.url
@@ -262,9 +254,7 @@ def generate_word_diagnostic(self, request_id):
             raise WordAlreadySentException("Word already sent")
 
         logger.info("Start generating word")
-        with Renderer(
-            project=req.project, word_template_slug="template-bilan-1"
-        ) as renderer:
+        with Renderer(project=req.project, word_template_slug="template-bilan-1") as renderer:
             context = renderer.get_context_data()
             buffer = renderer.render_to_docx(context=context)
             filename = renderer.get_file_name()
@@ -307,16 +297,12 @@ def send_word_diagnostic(self, request_id):
         req = Request.objects.select_related("project").get(id=int(request_id))
         email = SibTemplateEmail(
             template_id=8,
-            recipients=[
-                {"name": f"{req.first_name} {req.last_name}", "email": req.email}
-            ],
+            recipients=[{"name": f"{req.first_name} {req.last_name}", "email": req.email}],
             params={
                 "diagnostic_name": req.project.name,
                 "image_url": req.project.cover_image.url,
                 "ocsge_available": "" if req.project.is_artif() else "display",
-                "diagnostic_url": get_url_with_domain(
-                    reverse("project:word_download", args=[req.id])
-                ),
+                "diagnostic_url": get_url_with_domain(reverse("project:word_download", args=[req.id])),
             },
         )
         logger.info(email.send())
@@ -377,15 +363,10 @@ def generate_theme_map_conso(self, project_id):
 
     try:
         diagnostic = Project.objects.get(id=int(project_id))
-        fields = Cerema.get_art_field(
-            diagnostic.analyse_start_date, diagnostic.analyse_end_date
-        )
+        fields = Cerema.get_art_field(diagnostic.analyse_start_date, diagnostic.analyse_end_date)
         sub_qs = Cerema.objects.annotate(conso=sum(F(f) for f in fields))
         qs = diagnostic.cities.all().annotate(
-            level=Subquery(
-                sub_qs.filter(city_insee=OuterRef("insee")).values("conso")[:1]
-            )
-            / 10000
+            level=Subquery(sub_qs.filter(city_insee=OuterRef("insee")).values("conso")[:1]) / 10000
         )
 
         img_data = get_img(
@@ -425,10 +406,7 @@ def generate_theme_map_artif(self, project_id):
         img_data = get_img(
             queryset=qs,
             color="Blues",
-            title=(
-                "Artificialisation d'espaces des communes du territoire "
-                "sur la période (en Ha)"
-            ),
+            title=("Artificialisation d'espaces des communes du territoire " "sur la période (en Ha)"),
         )
 
         race_protection_save_map(
@@ -514,9 +492,7 @@ def generate_theme_map_understand_artif(self, project_id):
         self.retry(exc=exc, countdown=300)
 
     finally:
-        logger.info(
-            "End generate_theme_map_understand_artif, project_id=%d", project_id
-        )
+        logger.info("End generate_theme_map_understand_artif, project_id=%d", project_id)
 
 
 @shared_task(bind=True, max_retries=5)
@@ -527,42 +503,27 @@ def alert_on_blocked_diagnostic(self):
         Request.objects.filter(done=False, project__isnull=True).update(done=True)
         # select request undone from more than 1 hour
         stamp = timezone.now() - timedelta(hours=1)
-        qs = Request.objects.filter(done=False, created_date__lt=stamp).order_by(
-            "created_date", "project__name"
-        )
+        qs = Request.objects.filter(done=False, created_date__lt=stamp).order_by("created_date", "project__name")
         diagnostic_list = [
             {
                 "name": _.project.name if _.project else "Projet supprimé",
                 "date": _.created_date.strftime("%d-%m-%Y"),
-                "url": get_url_with_domain(
-                    reverse("admin:project_request_change", args=[_.id])
-                ),
+                "url": get_url_with_domain(reverse("admin:project_request_change", args=[_.id])),
             }
             for _ in qs
         ]
         total = qs.count()
         if total > 0:
-            if (
-                settings.ALERT_DIAG_MEDIUM in ["mattermost", "both"]
-                and settings.ALERT_DIAG_MATTERMOST_RECIPIENTS
-            ):
+            if settings.ALERT_DIAG_MEDIUM in ["mattermost", "both"] and settings.ALERT_DIAG_MATTERMOST_RECIPIENTS:
                 for recipient in settings.ALERT_DIAG_MATTERMOST_RECIPIENTS:
                     BlockedDiagnostic(
                         channel=recipient,
-                        data=[
-                            [_["date"], f'[{_["name"][:45]}]({_["url"]})']
-                            for _ in diagnostic_list
-                        ],
+                        data=[[_["date"], f'[{_["name"][:45]}]({_["url"]})'] for _ in diagnostic_list],
                     ).send()
-            if (
-                settings.ALERT_DIAG_MEDIUM in ["email", "both"]
-                and settings.ALERT_DIAG_EMAIL_RECIPIENTS
-            ):
+            if settings.ALERT_DIAG_MEDIUM in ["email", "both"] and settings.ALERT_DIAG_EMAIL_RECIPIENTS:
                 email = SibTemplateEmail(
                     template_id=10,
-                    recipients=[
-                        {"email": _} for _ in settings.ALERT_DIAG_EMAIL_RECIPIENTS
-                    ],
+                    recipients=[{"email": _} for _ in settings.ALERT_DIAG_EMAIL_RECIPIENTS],
                     params={
                         "qte_diagnostics": total,
                         "diagnostic_list": diagnostic_list,

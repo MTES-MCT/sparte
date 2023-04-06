@@ -21,9 +21,5 @@ class Command(BaseCommand):
                 print(f"change reason: {record.history_change_reason}")
                 delta = record.diff_against(old_record)
                 for change in delta.changes:
-                    print(
-                        "    `{}` changed from '{}' to '{}'".format(
-                            change.field, change.old, change.new
-                        )
-                    )
+                    print("    `{}` changed from '{}' to '{}'".format(change.field, change.old, change.new))
             old_record = record
