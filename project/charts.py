@@ -138,9 +138,10 @@ class ObjectiveChart(ProjectChart):
         ],
         "xAxis": {
             "type": "category",
-            "categories": [str(i) for i in range(2011, 2031)],
+            # "categories": [str(i) for i in range(2011, 2031)],
             "plotBands": [
                 {
+                    "color": "#f4faff",
                     "from": -0.5,
                     "to": 9.5,
                     "label": {
@@ -150,6 +151,7 @@ class ObjectiveChart(ProjectChart):
                     "className": "plotband_blue",
                 },
                 {
+                    "color": "#f6fff4",
                     "from": 9.5,
                     "to": 19.5,
                     "label": {
