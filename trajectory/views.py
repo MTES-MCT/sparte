@@ -1,8 +1,7 @@
 from functools import cached_property
 from typing import Any, Callable, Dict
 
-from django.forms import Form
-from django.http import HttpResponse, HttpRequest
+from django.http import HttpResponse
 from django.views.generic import FormView
 
 from project import charts
