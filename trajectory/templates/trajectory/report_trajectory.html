@@ -60,33 +60,25 @@ Trajectoires
 
                     <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm fullscreen-chart" data-chart-target="objective_chart" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
                 </div>
+
                 {% if trajectory_chart %}
-                    <div id="trajectory-chart-placeholder" hx-swap-oob="true">
+                    <div id="trajectory-chart-placeholder">
                         <div id="trajectory_chart"></div>
                     </div>
                 {% else %}
                     <div id="trajectory-chart-placeholder" class="skeleton-loader">skeleton me</div>
                 {% endif %}
+
             </div>
             
         </div>
 
         <div id="conso-select-period">
-            <form hx-post="{% url 'project:trajectory:partial-form-period' project.pk %}" hx-swap="outerHTML">
-                {% csrf_token %}
-                {{ form_period|crispy }}
-                <button class="fr-btn mt-2" type="submit">Saisir sa consommation année par année</button>
-            </form>
+            {{ conso_select_period_html|safe }}
         </div>
 
         <div id="conso-input">
-            {% if form_year %}
-            <form hx-post="{% url 'project:trajectory:partial-form-consumption' project.pk %}" hx-swap="outerHTML">
-                    {% csrf_token %}
-                    {{ form_year|crispy }}
-                    <button class="fr-btn mt-2" type="submit">Saisir sa consommation année par année</button>
-                </form>
-            {% endif %}
+            {{ conso_input_html|safe }}
         </div>
 
     </div>

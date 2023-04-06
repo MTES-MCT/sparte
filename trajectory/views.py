@@ -1,7 +1,7 @@
 from functools import cached_property
-from typing import Any, Dict
+from typing import Any, Callable, Dict
 
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpRequest
 from django.views.generic import FormView
 
 from project import charts
@@ -10,49 +10,44 @@ from project.views import ProjectReportBaseView
 
 from trajectory.forms import (
     SelectYearPeriodForm,
-    UpdateProjectTrajectoryForm,
     UpdateTrajectoryForm,
 )
-from trajectory.models import Trajectory
+
+
+class SubViewMixin:
+    @classmethod
+    def html(cls, method: str, request: HttpRequest, kwargs: Dict) -> str:
+        view = cls(request=request, kwargs=kwargs)  # type: ignore
+        action = getattr(view, method)
+        response = action(request, **kwargs).render()
+        return response.content.decode("utf-8")
+
+    @classmethod
+    def get_html(cls, request: HttpRequest, kwargs: Dict) -> str:
+        return cls.html("get", request, kwargs)
 
 
 class ProjectReportTrajectoryView(ProjectReportBaseView):
     template_name = "trajectory/report_trajectory.html"
     breadcrumbs_title = "Rapport trajectoires"
 
-    def get_select_year_form(
-        self, trajectory: Trajectory | None = None
-    ) -> SelectYearPeriodForm:
-        if trajectory:
-            initial = {
-                "start": trajectory.start,
-                "end": trajectory.end,
-            }
-        else:
-            initial = {}
-        return SelectYearPeriodForm(initial=initial)
-
     def get_context_data(self, **kwargs) -> Dict[str, Any]:
         diagnostic = self.get_object()
-        trajectory = diagnostic.trajectory_set.all().first()
+        input_period = ProjectReportTrajectoryPeriodView.get_html(self.request, self.kwargs)
+        input_consumption = ProjectReportTrajectoryConsumptionView.get_html(self.request, self.kwargs)
         kwargs.update(
             {
                 "diagnostic": diagnostic,
                 "active_page": "trajectory",
-                "form_period": self.get_select_year_form(trajectory),
-            }
-        )
-        if trajectory:
-            kwargs |= {
-                "form_year": UpdateProjectTrajectoryForm(
-                    diagnostic, trajectory.start, trajectory.end
-                ),
+                "conso_select_period_html": input_period,
+                "conso_input_html": input_consumption,
                 "trajectory_chart": charts.ObjectiveChart(diagnostic),
             }
+        )
         return super().get_context_data(**kwargs)
 
 
-class ProjectReportTrajectoryPeriodView(FormView):
+class ProjectReportTrajectoryPeriodView(SubViewMixin, FormView):
     template_name = "trajectory/partials/select_year_period.html"
     form_class = SelectYearPeriodForm
 
@@ -67,6 +62,11 @@ class ProjectReportTrajectoryPeriodView(FormView):
             kwargs_initial |= {
                 "start": trajectory.start,
                 "end": trajectory.end,
+            }
+        else:
+            kwargs_initial |= {
+                "start": 2021,
+                "end": 2031,
             }
         return kwargs_initial
 
@@ -96,7 +96,7 @@ class ProjectReportTrajectoryPeriodView(FormView):
         return self.render_to_response(context)
 
 
-class ProjectReportTrajectoryConsumptionView(FormView):
+class ProjectReportTrajectoryConsumptionView(SubViewMixin, FormView):
     template_name = "trajectory/partials/set_year_consumption.html"
     form_class = UpdateTrajectoryForm
 
@@ -109,6 +109,12 @@ class ProjectReportTrajectoryConsumptionView(FormView):
             "trajectory": self.diagnostic.trajectory_set.all().first(),
         }
         return kwargs
+
+    def get_form(self, form_class: Callable | None = None) -> UpdateTrajectoryForm | None:
+        try:
+            return super().get_form(form_class=form_class)
+        except AttributeError:
+            return None
 
     def get_context_data(self, **kwargs):
         kwargs |= {"project": self.diagnostic}

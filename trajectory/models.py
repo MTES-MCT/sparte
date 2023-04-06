@@ -17,7 +17,7 @@ class Trajectory(models.Model):
         return {y: self.data.get(str(y), 0) for y in range(self.start, self.end + 1)}
 
     class Meta:
-        ordering = ['name', 'start', 'end']
+        ordering = ["name", "start", "end"]
 
     def __str__(self):
         return self.name

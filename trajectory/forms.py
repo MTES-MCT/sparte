@@ -20,9 +20,7 @@ class SelectYearPeriodForm(forms.Form):
     def clean(self) -> Dict[str, Any]:
         cleaned_data = super().clean()
         if cleaned_data.get("start") > cleaned_data.get("end"):
-            self.add_error(
-                "end", "L'année de fin doit être supérieur à l'année de début"
-            )
+            self.add_error("end", "L'année de fin doit être supérieur à l'année de début")
         elif cleaned_data.get("end") == cleaned_data.get("start"):
             self.add_error("end", "Vous devez sélectionner au moins 1 an")
         return cleaned_data
@@ -53,7 +51,5 @@ class UpdateProjectTrajectoryForm(UpdateTrajectoryForm):
     def get_trajectory(self, start: int, end: int):
         trajectory = self.project.trajectory_set.all().first()
         if not trajectory:
-            trajectory = self.project.trajectory_set.create(
-                name="Trajectoire 1", start=start, end=end, data={}
-            )
+            trajectory = self.project.trajectory_set.create(name="Trajectoire 1", start=start, end=end, data={})
         return trajectory
