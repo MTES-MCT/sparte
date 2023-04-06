@@ -3,15 +3,11 @@
 <form hx-post="{% url 'project:trajectory:partial-form-period' project.pk %}" hx-swap="outerHTML">
     {% csrf_token %}
     {{ form|crispy }}
-    <button class="fr-btn mt-2" type="submit">Modifier la période</button>
+    <button class="fr-btn mt-2" type="submit">Modifier la période de la trajectoire</button>
 </form>
 
-<div id="conso-input" hx-swap-oob="true">
-
-    <form hx-post="{% url 'project:trajectory:partial-form-consumption' project.pk %}" hx-swap="outerHTML">
-        {% csrf_token %}
-        {{ form_consumption|crispy }}
-        <button class="fr-btn mt-2" type="submit">Afficher la trajectoire</button>
-    </form>
-
-</div>
+{% if form_consumption %}
+    <div id="conso-input" hx-swap-oob="true">
+        {% include "trajectory/partials/set_year_consumption.html" with form=form_consumption project=project %}
+    </div>
+{% endif %}
