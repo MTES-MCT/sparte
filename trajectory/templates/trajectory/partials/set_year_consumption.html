@@ -1,13 +1,20 @@
 {% load crispy_forms_tags %}
-{% load highcharts_tags %}
 
-<form hx-post="{% url 'project:trajectory:partial-form-consumption' project.pk %}" hx-swap="outerHTML">
-    {% csrf_token %}
-    {{ form|crispy }}
-    <button class="fr-btn mt-2" type="submit">Afficher la trajectoire</button>
-</form>
+{% if form %}
+    <form hx-post="{% url 'project:trajectory:partial-form-consumption' project.pk %}" hx-swap="outerHTML">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <button class="fr-btn mt-2" type="submit">Afficher la trajectoire</button>
+    </form>
+{% else %}
+    <p class="text-muted">Commencez par renseigner une période.</p>
+{% endif %}
 
-<div id="trajectory-chart-placeholder" hx-swap-oob="true">
-    <div id="trajectory_chart"></div>
-    {% display_chart 'trajectory_chart' trajectory_chart CSP_NONCE %}
-</div>
+{% if trajectory_chart %}
+    {% load highcharts_tags %}
+
+    <div id="trajectory-chart-placeholder" hx-swap-oob="true">
+        <div id="trajectory_chart"></div>
+        {% display_chart 'trajectory_chart' trajectory_chart CSP_NONCE %}
+    </div>
+{% endif %}
