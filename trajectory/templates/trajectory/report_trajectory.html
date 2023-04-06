@@ -73,12 +73,12 @@ Trajectoires
             
         </div>
 
-        <div id="conso-select-period">
-            {{ conso_select_period_html|safe }}
+        <div id="conso-select-period" class="mb-5">
+            {% include "trajectory/partials/select_year_period.html" with form=form_period project=project %}
         </div>
 
-        <div id="conso-input">
-            {{ conso_input_html|safe }}
+        <div id="conso-input" class="mt-5">
+            {% include "trajectory/partials/set_year_consumption.html" with form=form_consumption project=project %}
         </div>
 
     </div>
