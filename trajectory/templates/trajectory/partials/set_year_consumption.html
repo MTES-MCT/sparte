@@ -4,6 +4,7 @@
     <form hx-post="{% url 'project:trajectory:partial-form-consumption' project.pk %}" hx-swap="outerHTML">
         {% csrf_token %}
         {{ form|crispy }}
+        <!-- TODO @Sofian: au clic, pourrais-tu déplacer la vue vers le graphique ? -->
         <button class="fr-btn mt-2" type="submit">Afficher la trajectoire</button>
     </form>
 {% else %}
