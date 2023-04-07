@@ -1,24 +1,13 @@
 {% load crispy_forms_tags %}
-{% load highcharts_tags %}
 
-{% if success_message %}
-    <div class="fade-in fr-alert fr-alert--success fr-alert--sm" role="alert">
-        <h3 class="fr-alert__title">Votre objectif 2031 a été mis à jour.</h3>
-    </div>
-    <div id="objective-chart-container" hx-swap-oob="true">
-        <div id="objective_chart"></div>
-        {% display_chart 'objective_chart' objective_chart CSP_NONCE %}
-    </div>
-{% else %}
-    <form hx-post="{% url 'project:set_target_2031' project.pk %}">
-        {% csrf_token %}
-        {{ form|crispy }}
-        <ul class="fr-btns-group fr-btns-group--right fr-btns-group--inline-lg fr-mt-2w">
-            <li>
-                <button id="dl_btn" class="fr-btn" type="submit">
-                    Enregistrer
-                </button>
-            </li>
-        </ul>
-    </form>
-{% endif %}
+<form hx-post="{% url 'project:set_target_2031' project.pk %}">
+    {% csrf_token %}
+    {{ form|crispy }}
+    <ul class="fr-btns-group fr-btns-group--right fr-btns-group--inline-lg fr-mt-2w">
+        <li>
+            <button id="dl_btn" class="fr-btn" type="submit">
+                Enregistrer
+            </button>
+        </li>
+    </ul>
+</form>
