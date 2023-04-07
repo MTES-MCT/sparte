@@ -16,7 +16,7 @@ from django.views.generic import (
 )
 from django.views.generic.edit import FormMixin
 
-from project import charts, tasks
+from project import tasks
 from project.forms import KeywordForm, SelectTerritoryForm, UpdateProjectForm
 from project.models import Project, create_from_public_key
 from public_data.models import AdminRef, Land, LandException
@@ -105,11 +105,7 @@ class SetTargetView(UpdateView):
     
     def form_valid(self, form):
         self.object = form.save()
-        context = self.get_context_data() | {
-            "success_message": True,
-            "objective_chart": charts.ObjectiveChart(self.get_object()),
-        }
-        return self.render_to_response(context)
+        return self.render_to_response(self.get_context_data())
     
 class ProjectUpdateView(GroupMixin, UpdateView):
     model = Project
