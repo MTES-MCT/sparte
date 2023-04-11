@@ -142,8 +142,8 @@ class ObjectiveChart(ProjectChart):
             "plotBands": [
                 {
                     "color": "#f4faff",
-                    "from": -0.5,
-                    "to": 9.5,
+                    "from": 2011,
+                    "to": 2021,
                     "label": {
                         "text": "Période de référence",
                         "style": {"color": "#95ceff", "fontWeight": "bold"},
@@ -152,8 +152,8 @@ class ObjectiveChart(ProjectChart):
                 },
                 {
                     "color": "#f6fff4",
-                    "from": 9.5,
-                    "to": 19.5,
+                    "from": 2022,
+                    "to": 2031,
                     "label": {
                         "text": "Projection 2031",
                         "style": {"color": "#87cc78", "fontWeight": "bold"},
