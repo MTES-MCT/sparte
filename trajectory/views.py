@@ -4,7 +4,7 @@ from typing import Any, Callable, Dict
 from django.http import HttpResponse
 from django.views.generic import FormView
 
-from project import charts
+from trajectory import charts  # TrajectoryChart
 from project.models import Project
 from project.views import ProjectReportBaseView
 
@@ -27,10 +27,13 @@ class ProjectReportTrajectoryView(ProjectReportBaseView):
                 "diagnostic": diagnostic,
                 "active_page": "trajectory",
                 "form_period": form_period,
-                "form_consumption": form_consumption,
-                "trajectory_chart": charts.ObjectiveChart(diagnostic),
+                "initial_form_consumption": form_consumption,
             }
         )
+        try:
+            kwargs["trajectory_chart"] = charts.TrajectoryChart(diagnostic)
+        except charts.NoTrajectoryException:
+            pass
         return super().get_context_data(**kwargs)
 
 
@@ -77,14 +80,12 @@ class ProjectReportTrajectoryPeriodView(FormView):
         return trajectory
 
     def form_valid(self, form: SelectYearPeriodForm) -> HttpResponse:
-        self.get_or_create_trajectory(form.cleaned_data["start"], form.cleaned_data["end"])
+        trajectory = self.get_or_create_trajectory(form.cleaned_data["start"], form.cleaned_data["end"])
         kwargs = {
             "form": form,
             "start": form.cleaned_data["start"],
             "end": form.cleaned_data["end"],
-            "form_consumption": ProjectReportTrajectoryConsumptionView(
-                request=self.request, kwargs=self.kwargs
-            ).get_form(),
+            "form_consumption": UpdateTrajectoryForm(trajectory=trajectory),
         }
         return self.render_to_response(self.get_context_data(**kwargs))
 
@@ -116,6 +117,6 @@ class ProjectReportTrajectoryConsumptionView(FormView):
     def form_valid(self, form: UpdateTrajectoryForm) -> HttpResponse:
         form.save()
         context = self.get_context_data(form=form) | {
-            "trajectory_chart": charts.ObjectiveChart(self.diagnostic),
+            "trajectory_chart": charts.TrajectoryChart(self.diagnostic),
         }
         return self.render_to_response(context)
