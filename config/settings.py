@@ -412,8 +412,6 @@ if ENVIRONMENT != "local":
 
 
 # MATOMO
-
-MATOMO_TOKEN = env.str("MATOMO_TOKEN", default="")
 MATOMO_ACTIVATE = env.bool("MATOMO_ACTIVATE", default=False)
 
 # SECURITY - Content Security Header Policy
@@ -427,13 +425,12 @@ CSP_UPGRADE_INSECURE_REQUESTS = not DEBUG
 CSP_DEFAULT_SRC = ["'self'"]
 CSP_SCRIPT_SRC = [
     "'self'",
-    "https://stats.data.gouv.fr",
+    "https://stats.beta.gouv.fr",
     "https://code.highcharts.com",
     STATIC_URL,
 ]
 CSP_STYLE_SRC = [
     "'self'",
-    # "'unsafe-inline'",
     "https://cdn.jsdelivr.net",
     STATIC_URL,
 ]
