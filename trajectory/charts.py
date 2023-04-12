@@ -12,7 +12,7 @@ class TrajectoryChart(ObjectiveChart):
     def __init__(self, project: Project):
         self.trajectory = project.trajectory_set.all().first()
         if not self.trajectory:
-            raise NoTrajectoryException(f"Project id={self.project.id} has no trajectory")
+            raise NoTrajectoryException(f"Project id={project.id} has no trajectory")
         super().__init__(project)
         self.chart["chart"]["zoomType"] = "x"
         self.chart["xAxis"]["categories"] = [str(i) for i in range(self.trajectory.start, self.trajectory.end + 1)]
