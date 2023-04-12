@@ -555,15 +555,15 @@ def rerun_missing_async(project_id):
             #     ),
             # ).apply_async()
     logger.info("Start rerun_missing_async, project_id=%d", project_id)
-    try:
-        project = Project.objects.get(pk=project_id)
-        if project.async_city_and_combined_emprise_done:
-            logger.info("async_city_and_combined_emprise_done is True")
-        else:
+    # try:
+    #     project = Project.objects.get(pk=project_id)
+    #     if project.async_city_and_combined_emprise_done:
+    #         logger.info("async_city_and_combined_emprise_done is True")
+    #     else:
             
-            & self.async_cover_image_done
-            & self.async_find_first_and_last_ocsge_done
-            & self.async_add_neighboors_done
-            & self.async_generate_theme_map_conso_done
-            & self.async_generate_theme_map_artif_done
-            & self.async_theme_map_understand_artif_done
+    #         & self.async_cover_image_done
+    #         & self.async_find_first_and_last_ocsge_done
+    #         & self.async_add_neighboors_done
+    #         & self.async_generate_theme_map_conso_done
+    #         & self.async_generate_theme_map_artif_done
+    #         & self.async_theme_map_understand_artif_done
