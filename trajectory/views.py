@@ -53,11 +53,6 @@ class ProjectReportTrajectoryPeriodView(FormView):
                 "start": trajectory.start,
                 "end": trajectory.end,
             }
-        else:
-            kwargs_initial |= {
-                "start": 2021,
-                "end": 2031,
-            }
         return kwargs_initial
 
     def get_context_data(self, **kwargs):
