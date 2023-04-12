@@ -72,7 +72,7 @@ Projection 2031
         <div class="fr-mt-7w">
             <div class="d-flex justify-content-between">
                 <h3>Projection 2031 avec un objectif de réduction de 50%</h3>
-                <div>Personnaliser l'objectif 2031 : <a href="{% url 'project:update' project.pk %}?next=report-target-2031" class="fr-btn fr-btn--tertiary fr-btn--sm">{{ project.target_2031 }}%</a></div>
+                <div>Personnaliser l'objectif 2031 : <a id="btn-change-objective" href="{% url 'project:update' project.pk %}?next=report-target-2031" class="fr-btn fr-btn--tertiary fr-btn--sm">{{ project.target_2031 }}%</a></div>
             </div>
             <p>Objectif 2031, réduction de 50% de la consommation d'espaces NAF par rapport à la somme des 10 dernières années (2011-2021)</p>
 
@@ -165,6 +165,10 @@ $( window ).scroll(function() {
         _paq.push(['trackEvent', 'Consultation diagnostic', 'Fin tableau de bord', 'Objectif 2031'])
         fired = true
     }
+})
+
+$( "#btn-change-objective" ).click(function() {
+    _paq.push(['trackEvent', 'Consultation diagnostic', 'Bouton personnaliser', 'Objectif 2031'])
 })
 </script>
 {% endblock tagging %}
