@@ -542,25 +542,24 @@ def alert_on_blocked_diagnostic(self):
 @shared_task
 def rerun_missing_async(project_id):
     # celery.chain(
-            #     t.add_city_and_set_combined_emprise.si(project.id, public_key),
-            #     celery.group(
-            #         t.find_first_and_last_ocsge.si(project.id),
-            #         t.add_neighboors.si(project.id),
-            #     ),
-            #     celery.group(
-            #         t.generate_cover_image.si(project.id),
-            #         t.generate_theme_map_conso.si(project.id),
-            #         t.generate_theme_map_artif.si(project.id),
-            #         t.generate_theme_map_understand_artif.si(project.id),
-            #     ),
-            # ).apply_async()
+    #     t.add_city_and_set_combined_emprise.si(project.id, public_key),
+    #     celery.group(
+    #         t.find_first_and_last_ocsge.si(project.id),
+    #         t.add_neighboors.si(project.id),
+    #     ),
+    #     celery.group(
+    #         t.generate_cover_image.si(project.id),
+    #         t.generate_theme_map_conso.si(project.id),
+    #         t.generate_theme_map_artif.si(project.id),
+    #         t.generate_theme_map_understand_artif.si(project.id),
+    #     ),
+    # ).apply_async()
     logger.info("Start rerun_missing_async, project_id=%d", project_id)
     # try:
     #     project = Project.objects.get(pk=project_id)
     #     if project.async_city_and_combined_emprise_done:
     #         logger.info("async_city_and_combined_emprise_done is True")
     #     else:
-            
     #         & self.async_cover_image_done
     #         & self.async_find_first_and_last_ocsge_done
     #         & self.async_add_neighboors_done
