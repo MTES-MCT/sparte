@@ -49,6 +49,8 @@ Projection 2031
         </div>
 
 
+        <h2>Consommation d'espaces NAF du territoire entre 2021 et 2020</h2>
+
         <div class="fr-grid-row fr-grid-row--gutters fr-mt-7w">
             <div class="fr-col-12 fr-col-md-4 fr-grid-row">
                 <div class="fr-callout w-100">
@@ -56,6 +58,21 @@ Projection 2031
                     <p>Consommation 2011-2020</p>
                 </div>
             </div>
+        </div>
+
+        <div class="fr-callout bg-white fr-p-2w mt-4">
+            <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data">Données</button>
+            <div class="fr-collapse" id="target-data">
+                <h6 class="fr-mt-2w">Source</h6>
+                <p>Fichiers fonciers du Cérema issus des données MAJIC (Mise A Jour de l'Information Cadastrale) de la DGFIP (millésime min : 2009, millésime max : 2021)</p>
+                <h6 class="fr-mt-2w">Calcul</h6>
+                <p>Les données du Cérema donnent la consommation d'espaces NAF par année, pour le territoire choisi.</p>
+            </div>
+        </div>
+
+        <h2>Objectif 2031</h2>
+
+        <div class="fr-grid-row fr-grid-row--gutters fr-mt-7w">
             <div class="fr-col-12 fr-col-md-4 fr-grid-row">
                 <div class="fr-callout w-100">
                     <p class="fr-callout__title">+{{ objective_chart.conso_2031|floatformat:1 }} ha</p>
@@ -72,7 +89,7 @@ Projection 2031
 
         <div class="fr-mt-7w">
             <div class="d-flex justify-content-between">
-                <h3>Projection 2031 avec un objectif de réduction de 50%</h3>
+                <h4>Projection 2031 avec un objectif de réduction de 50%</h4>
                 <div>Personnaliser l'objectif 2031 : <a id="btn-change-objective" href="{% url 'project:update' project.pk %}?next=report-target-2031" class="fr-btn fr-btn--tertiary fr-btn--sm">{{ project.target_2031 }}%</a></div>
             </div>
             <p>Objectif 2031, réduction de {{ project.target_2031 }}% de la consommation d'espaces NAF par rapport à la somme des 10 dernières années (2011-2021)</p>
@@ -133,15 +150,6 @@ Projection 2031
                 </div>
             {% endif %}
 
-            <div class="fr-callout bg-white fr-p-2w mt-4">
-                <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data">Données</button>
-                <div class="fr-collapse" id="target-data">
-                    <h6 class="fr-mt-2w">Source</h6>
-                    <p>Fichiers fonciers du Cérema issus des données MAJIC (Mise A Jour de l'Information Cadastrale) de la DGFIP (millésime min : 2009, millésime max : 2021)</p>
-                    <h6 class="fr-mt-2w">Calcul</h6>
-                    <p>Les données du Cérema donnent la consommation d'espaces NAF par année, pour le territoire choisi.</p>
-                </div>
-            </div>
         </div>
     </div>
 </div>
