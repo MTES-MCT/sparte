@@ -183,6 +183,14 @@ Projection 2031
 {% french_translation %}
 {% display_chart 'objective_chart' objective_chart CSP_NONCE %}
 {% endlocalize %}
+<script language="javascript" nonce="{{ CSP_NONCE }}">
+window.htmx.on("htmx:oobAfterSwap", () => {
+    const modal = bootstrap.Modal.getInstance(document.getElementById("setTarget"))
+    setTimeout(function () {
+        modal.hide()
+    }, 1200);
+})
+</script>
 {% endblock %}
 
 {% block tagging %}
