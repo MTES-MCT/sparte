@@ -2,7 +2,7 @@ import celery
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy, reverse
 from django.utils import timezone
@@ -16,7 +16,7 @@ from django.views.generic import (
 )
 from django.views.generic.edit import FormMixin
 
-from project import tasks
+from project import charts, tasks
 from project.forms import KeywordForm, SelectTerritoryForm, UpdateProjectForm
 from project.models import Project, create_from_public_key
 from public_data.models import AdminRef, Land, LandException
@@ -105,7 +105,11 @@ class SetTargetView(UpdateView):
     
     def form_valid(self, form):
         self.object = form.save()
-        return self.render_to_response(self.get_context_data())
+        context = self.get_context_data() | {
+            "success_message": True,
+            "objective_chart": charts.ObjectiveChart(self.get_object()),
+        }
+        return self.render_to_response(context)
     
 class ProjectUpdateView(GroupMixin, UpdateView):
     model = Project
