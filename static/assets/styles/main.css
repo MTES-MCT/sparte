@@ -632,3 +632,26 @@ Diagnostic list
     visibility: hidden;
 }
 
+/*
+Remove trajectory select year invalid input icon
+*/
+select[name=start].is-invalid, select[name=end].is-invalid {
+    border: none;
+    box-shadow: inset 0 -2px 0 0 var(--border-plain-error);
+}
+
+.invalid-feedback {
+    margin-bottom: 0;
+}
+
+.invalid-feedback > strong {
+    font-weight: 400 !important;
+}
+
+/*
+Margin trajectory conso
+*/
+.form-set-year-conso > div {
+    margin-right: 25px;
+    margin-bottom: 25px;
+}

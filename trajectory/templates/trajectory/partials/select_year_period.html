@@ -2,25 +2,19 @@
 
 <form hx-post="{% url 'project:trajectory:partial-form-period' project.pk %}" hx-swap="outerHTML">
     {% csrf_token %}
-    <div class="d-flex">
-        <div class="fr-mt-1w fr-mr-1w fr-mb-1w">De</div>
-        <div class="fr-input-group fr-m-0">
-            <div class="fr-input-wrap fr-icon-calendar-line">
-                {{ form.start|as_crispy_field }}
-            </div>
-        </div>
-        <div class="fr-m-1w">à</div>
-        <div class="fr-input-group fr-m-0">
-            <div class="fr-input-wrap fr-icon-calendar-line">
-                {{ form.end|as_crispy_field }}
-            </div>
-        </div>
+
+    <div>De</div>
+    {{ form.start|as_crispy_field }}
+    <div>à</div>
+    {{ form.end|as_crispy_field }}
+
+    <div class="d-flex justify-content-end">
+        <button class="fr-btn mt-2" type="submit">Enregistrer</button>
     </div>
-    <button class="fr-btn mt-2" type="submit">Modifier la période de la trajectoire</button>
 </form>
 
 {% if form_consumption %}
-    <div id="conso-input" hx-swap-oob="true">
+    <div id="conso-input-swapper" hx-swap-oob="true">
         {% include "trajectory/partials/set_year_consumption.html" with form=form_consumption project=project %}
     </div>
 {% endif %}
