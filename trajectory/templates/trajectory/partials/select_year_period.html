@@ -2,7 +2,20 @@
 
 <form hx-post="{% url 'project:trajectory:partial-form-period' project.pk %}" hx-swap="outerHTML">
     {% csrf_token %}
-    {{ form|crispy }}
+    <div class="d-flex">
+        <div class="fr-mt-1w fr-mr-1w fr-mb-1w">De</div>
+        <div class="fr-input-group fr-m-0">
+            <div class="fr-input-wrap fr-icon-calendar-line">
+                {{ form.start|as_crispy_field }}
+            </div>
+        </div>
+        <div class="fr-m-1w">à</div>
+        <div class="fr-input-group fr-m-0">
+            <div class="fr-input-wrap fr-icon-calendar-line">
+                {{ form.end|as_crispy_field }}
+            </div>
+        </div>
+    </div>
     <button class="fr-btn mt-2" type="submit">Modifier la période de la trajectoire</button>
 </form>
 

@@ -9,11 +9,13 @@ from trajectory.models import Trajectory
 
 class SelectYearPeriodForm(forms.Form):
     start = forms.IntegerField(
-        label="Année de début",
+        widget=forms.TextInput(attrs={'name': 'range-start'}),
+        label="",
         validators=[MinValueValidator(2000), MaxValueValidator(2075)],
     )
     end = forms.IntegerField(
-        label="Année de fin",
+        widget=forms.TextInput(attrs={'name': 'range-end'}),
+        label="",
         validators=[MinValueValidator(2000), MaxValueValidator(2075)],
     )
 

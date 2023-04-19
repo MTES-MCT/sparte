@@ -24,3 +24,7 @@ import '/assets/scripts/highcharts-custom-buttons.js';
 
 // Import filter diagnostic list
 import '/assets/scripts/filter-diagnostic-list.js';
+
+// Import DatePicker
+import 'vanillajs-datepicker/css/datepicker-bs5.css';
+import '/assets/scripts/trajectory-date-picker.js';
