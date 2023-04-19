@@ -109,7 +109,8 @@ Trajectoires
 
     window.htmx.on("htmx:oobAfterSwap", () => {
         const modal = bootstrap.Modal.getInstance(document.getElementById("setTrajectory"))
-        modal.hide()
+        if (modal)
+            modal.hide()
     })
 </script>
 {% endblock %}
