@@ -113,5 +113,6 @@ class ProjectReportTrajectoryConsumptionView(FormView):
         form.save()
         context = self.get_context_data(form=form) | {
             "trajectory_chart": charts.TrajectoryChart(self.diagnostic),
+            "success_message": True,
         }
         return self.render_to_response(context)

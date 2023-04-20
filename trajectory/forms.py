@@ -8,19 +8,24 @@ from trajectory.models import Trajectory
 
 
 class SelectYearPeriodForm(forms.Form):
-    start = forms.IntegerField(
-        label="Année de début",
-        validators=[MinValueValidator(2000), MaxValueValidator(2075)],
+    def year_choices():
+        return [(r,str(r)) for r in range(2000, 2075)]
+    
+    start = forms.TypedChoiceField(
+        choices=year_choices(),
+        label="",
+        validators=[MinValueValidator("2000"), MaxValueValidator("2075")],
     )
-    end = forms.IntegerField(
-        label="Année de fin",
-        validators=[MinValueValidator(2000), MaxValueValidator(2075)],
+    end = forms.TypedChoiceField(
+        choices=year_choices(),
+        label="",
+        validators=[MinValueValidator("2000"), MaxValueValidator("2075")],
     )
 
     def clean(self) -> Dict[str, Any]:
         cleaned_data = super().clean()
-        if cleaned_data.get("start", 2080) > cleaned_data.get("end", 1999):
-            self.add_error("end", "L'année de fin doit être supérieur à l'année de début")
+        if cleaned_data.get("start", "2080") > cleaned_data.get("end", "1999"):
+            self.add_error("end", "L'année de fin doit être supérieure à l'année de début")
         elif cleaned_data.get("end") == cleaned_data.get("start"):
             self.add_error("end", "Vous devez sélectionner au moins 1 an")
         return cleaned_data
