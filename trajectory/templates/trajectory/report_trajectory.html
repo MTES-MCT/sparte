@@ -107,10 +107,31 @@ Trajectoires
         document.getElementById("setTrajectoryForm").innerHTML = "<div class='fr-custom-loader'></div>"
     })
 
-    window.htmx.on("htmx:oobAfterSwap", () => {
-        const modal = bootstrap.Modal.getInstance(document.getElementById("setTrajectory"))
-        if (modal)
-            modal.hide()
+    window.htmx.on("htmx:oobAfterSwap", (e) => {
+        // Check swap target
+        if (e.detail.target.id === "conso-input-swapper") {
+            const modal = bootstrap.Modal.getInstance(document.getElementById("setTrajectory"))
+            if (modal) {
+                modal.hide()
+                // Wait for oob swap
+                setTimeout(() => {
+                    const formContainer = document.getElementById("conso-input-swapper")
+                    const firstInput = formContainer.getElementsByClassName('fr-input')[0]
+                    firstInput.focus()
+                }, 500)
+            }
+        }
+        else if (e.detail.target.id === "trajectory-chart-swapper") {
+            // Wait for oob swap
+            setTimeout(() => {
+                const chartContainer = document.getElementById("trajectory-chart-swapper")
+                const topPos = chartContainer.getBoundingClientRect().top + window.pageYOffset
+                window.scrollTo({
+                    top: topPos,
+                    behavior: 'smooth'
+                })
+            }, 500)
+        }
     })
 </script>
 {% endblock %}
