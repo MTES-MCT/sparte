@@ -39,6 +39,8 @@ Trajectoires
                     <div class="d-flex justify-content-end align-items-center fr-mb-2w">
                         <button class="fr-btn fr-btn fr-btn--sm fr-mr-2w" data-bs-toggle="modal" data-bs-target="#setTrajectory" aria-hidden="true" hx-get="{% url 'project:trajectory:partial-form-period' project.pk %}" hx-target="#setTrajectoryForm">Modifier la période de la trajectoire</button>
 
+                        <a href="{% url 'project:report_target_2031' project.pk %}" data-toggle="tooltip" title="Personnaliser mon objectif 2031" class="fr-btn fr-btn--tertiary fr-btn--sm fr-mr-2w">Personnaliser mon objectif: {{ project.target_2031 }}%</a>
+
                         <div class="dropdown custom-dropdown fr-mr-2w" data-toggle="tooltip" title="Exporter le graphique">
                             <button class="fr-btn fr-icon-download-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="dropdown" aria-expanded="false"></button>
 
