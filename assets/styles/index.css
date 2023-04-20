@@ -92,6 +92,20 @@ Loader
     animation: m 1s infinite;
 }
 
+.fr-custom-loader--button {
+    color: white;
+    width: 30px;
+    height: 12px;
+    --d: radial-gradient(farthest-side, currentColor 90%, #0000);
+    background: var(--d), var(--d), var(--d);
+    background-size: 7px 7px;
+    background-repeat: no-repeat;
+    animation: m 1s infinite;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
 @keyframes m {
     0% {
         background-position: calc(0*100%/2) 100%, calc(1*100%/2) 100%, calc(2*100%/2) 100%
@@ -254,4 +268,23 @@ Margin trajectory conso
 .form-set-year-conso > div {
     margin-right: 25px;
     margin-bottom: 25px;
+}
+
+/*
+HTMX Indicator loader
+*/
+.htmx-indicator {
+    opacity: 0;
+    display: none;
+    transition: opacity 500ms ease-in;
+}
+
+.htmx-request .htmx-indicator, .htmx-request.htmx-indicator {
+    opacity: 1;
+    display: block;
+}
+
+.htmx-request .htmx-indicator-placeholder, .htmx-request.htmx-indicator-placeholder {
+    opacity: 0;
+    visibility: hidden;
 }
