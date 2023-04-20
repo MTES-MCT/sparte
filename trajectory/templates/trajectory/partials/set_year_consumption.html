@@ -9,7 +9,7 @@
                 {% csrf_token %}
                 {{ form|crispy }}
             </div>
-            <button class="fr-btn" type="submit">Enregistrer et visualiser</button>
+            <button class="fr-btn position-relative" type="submit"><span class="htmx-indicator-placeholder">Enregistrer et visualiser</span><div class="fr-custom-loader--button htmx-indicator"></div></button>
         </form>
     </div>
 {% endif %}
