@@ -24,21 +24,19 @@ Trajectoires
     {% include "project/report_menu.html" %}
 
     <div class="fr-container fr-py-3w">
-        <div class="fr-callout fr-callout--brown-caramel fr-fi-information-line">
-            <p class="fr-text--sm mb-3 fr-text--bold">Comment fonctionne cet écran ?</p>
+        <div class="fr-alert fr-alert--info">
+            <div class="fr-alert__title">Comment fonctionne cet écran ?</div>
             <p class="fr-text--sm">
-                Cet écran affiche votre trajectoire de consommation d'espaces prévisionnelles année par année (en Ha).
-                <br/>Pour commencer, veuillez sélectionner une période puis saisir les surfaces consommées pour chaque année.
+                Cet écran vous permet de visualiser votre trajectoire en renseignant vos consommation d’espaces prévisionnelles année par année (en Ha).
+                <br/>Pour commencer, veuillez sélectionner une période, puis saisissez les surfaces consommées prévisionnelles pour chaque année.
             </p>
         </div>
-        
+
         <div id="trajectory-chart-swapper">
         {% if trajectory_chart %}
             <div class="fr-mt-7w">
                 <div class="border fr-p-2w">
                     <div class="d-flex justify-content-end align-items-center fr-mb-2w">
-                        <button class="fr-btn fr-btn fr-btn--sm fr-mr-2w" data-bs-toggle="modal" data-bs-target="#setTrajectory" aria-hidden="true" hx-get="{% url 'project:trajectory:partial-form-period' project.pk %}" hx-target="#setTrajectoryForm">Modifier la période de la trajectoire</button>
-
                         <a href="{% url 'project:report_target_2031' project.pk %}" data-toggle="tooltip" title="Personnaliser mon objectif 2031" class="fr-btn fr-btn--tertiary fr-btn--sm fr-mr-2w">Personnaliser mon objectif: {{ project.target_2031 }}%</a>
 
                         <div class="dropdown custom-dropdown fr-mr-2w" data-toggle="tooltip" title="Exporter le graphique">
@@ -69,8 +67,14 @@ Trajectoires
         {% endif %}
         </div>
 
-        <div id="conso-input-swapper">
-            {% include "trajectory/partials/set_year_consumption.html" with form=initial_form_consumption project=project %}
+        <div class="fr-mt-7w">
+            <h3>Configurer sa trajectoire</h3>
+
+            <button class="fr-btn fr-btn--tertiary" data-bs-toggle="modal" data-bs-target="#setTrajectory" aria-hidden="true" hx-get="{% url 'project:trajectory:partial-form-period' project.pk %}" hx-target="#setTrajectoryForm">Sélectionner une période</button>
+
+            <div id="conso-input-swapper">
+                {% include "trajectory/partials/set_year_consumption.html" with form=initial_form_consumption project=project %}
+            </div>
         </div>
     </div>
 </div>
@@ -84,7 +88,7 @@ Trajectoires
             </div>
             <div class="fr-modal__content">
                 <h1 id="fr-modal-2-title" class="fr-modal__title" id="setTrajectoryLabel">
-                    Modifier la période de la trajectoire
+                    Sélectionner une période
                 </h1>
                 <div id="setTrajectoryForm">
                     <div class="fr-custom-loader"></div>

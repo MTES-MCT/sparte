@@ -3,15 +3,15 @@
 {% if form %}
     <div class="fr-mt-4w">
         <form hx-post="{% url 'project:trajectory:partial-form-consumption' project.pk %}" hx-swap="outerHTML">
+            <p class="fr-text--sm">Renseignez vos surfaces consommées prévisionnelles pour chaque année (en Ha).</p>
+
             <div class="fr-grid-row form-set-year-conso">
                 {% csrf_token %}
                 {{ form|crispy }}
             </div>
-            <button class="fr-btn mt-2" type="submit">Afficher la trajectoire</button>
+            <button class="fr-btn" type="submit">Enregistrer et visualiser</button>
         </form>
     </div>
-{% else %}
-    <button class="fr-btn fr-btn fr-btn--sm fr-mr-2w" data-bs-toggle="modal" data-bs-target="#setTrajectory" aria-hidden="true" hx-get="{% url 'project:trajectory:partial-form-period' project.pk %}" hx-target="#setTrajectoryForm">Sélectionnez la période de la trajectoire</button>
 {% endif %}
 
 {% if success_message %}
@@ -21,8 +21,6 @@
         <div class="fr-mt-7w">
             <div class="border fr-p-2w">
                 <div class="d-flex justify-content-end align-items-center fr-mb-2w">
-                    <button class="fr-btn fr-btn fr-btn--sm fr-mr-2w" data-bs-toggle="modal" data-bs-target="#setTrajectory" aria-hidden="true" hx-get="{% url 'project:trajectory:partial-form-period' project.pk %}" hx-target="#setTrajectoryForm">Modifier la période de la trajectoire</button>
-
                     <a href="{% url 'project:report_target_2031' project.pk %}" data-toggle="tooltip" title="Personnaliser mon objectif 2031" class="fr-btn fr-btn--tertiary fr-btn--sm fr-mr-2w">Personnaliser mon objectif: {{ project.target_2031 }}%</a>
 
                     <div class="dropdown custom-dropdown fr-mr-2w" data-toggle="tooltip" title="Exporter le graphique">
