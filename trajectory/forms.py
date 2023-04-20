@@ -25,7 +25,7 @@ class SelectYearPeriodForm(forms.Form):
     def clean(self) -> Dict[str, Any]:
         cleaned_data = super().clean()
         if cleaned_data.get("start", "2080") > cleaned_data.get("end", "1999"):
-            self.add_error("end", "L'année de fin doit être supérieur à l'année de début")
+            self.add_error("end", "L'année de fin doit être supérieure à l'année de début")
         elif cleaned_data.get("end") == cleaned_data.get("start"):
             self.add_error("end", "Vous devez sélectionner au moins 1 an")
         return cleaned_data
