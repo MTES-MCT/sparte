@@ -689,3 +689,51 @@ HTMX Indicator loader
     visibility: hidden;
 }
 
+/*
+Home Page
+*/
+.section-blue {
+    background-color: #1D41FF;
+}
+
+.section-main {
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+}
+
+.section-main h1 {
+    color: white;
+}
+
+.section-main p {
+    color: var(--grey-1000-50);
+}
+
+#hero-anim-map-container {
+    position: absolute;
+    bottom: -38%;
+    right: 0;
+}
+
+#hero-anim-map {
+    transform: rotateZ(-23deg);
+    position: absolute;
+    bottom: 0;
+    right: -130px;
+    transition: all 0.4s ease-out;
+    -webkit-box-shadow: -4px -1px 11px -2px rgba(0,0,0,0.25); 
+    box-shadow: -4px -1px 11px -2px rgba(0,0,0,0.25);
+}
+
+.section-main:hover #hero-anim-map {
+    bottom: 0;
+    right: -100px;
+    transform: rotateZ(-24deg);
+}
+
+@media (max-width: 992px) {
+    #hero-anim-map-container  {
+        display: none;
+    }
+}
