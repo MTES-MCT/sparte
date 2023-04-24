@@ -24,63 +24,77 @@ Trajectoires
     {% include "project/report_menu.html" %}
 
     <div class="fr-container fr-py-3w">
-        <div class="fr-callout fr-callout--brown-caramel fr-fi-information-line">
-            <p class="fr-text--sm mb-3">Comment fonctionne cet écran ?</p>
+        <div class="fr-alert fr-alert--info">
+            <div class="fr-alert__title">Comment fonctionne cet écran ?</div>
             <p class="fr-text--sm">
-                Cet écran affiche votre trajectoire de consommation d'espaces prévisionnelles année par année (en Ha).
-                <br/>Pour commencer, veuillez sélectionner une période puis saisir les surfaces consommées pour chaque année.
+                Cet écran vous permet de visualiser votre trajectoire en renseignant vos consommations d’espaces prévisionnelles année par année (en Ha).
+                <br/>Pour commencer, veuillez sélectionner une période, puis saisissez les surfaces consommées prévisionnelles pour chaque année.
             </p>
         </div>
 
-        
+        <div id="trajectory-chart-swapper">
+        {% if trajectory_chart %}
+            <div class="fr-mt-7w">
+                <div class="border fr-p-2w">
+                    <div class="d-flex justify-content-end align-items-center fr-mb-2w">
+                        <a href="{% url 'project:report_target_2031' project.pk %}" data-toggle="tooltip" title="Personnaliser mon objectif 2031" class="fr-btn fr-btn--tertiary fr-btn--sm fr-mr-2w">Personnaliser mon objectif: {{ project.target_2031 }}%</a>
+
+                        <div class="dropdown custom-dropdown fr-mr-2w" data-toggle="tooltip" title="Exporter le graphique">
+                            <button class="fr-btn fr-icon-download-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="dropdown" aria-expanded="false"></button>
+
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <a class="fr-nav__link export-chart" href="#" data-chart-target="objective_chart" data-type="image/png">PNG</a>
+                                </li>
+                                <li>
+                                    <a class="fr-nav__link export-chart" href="#" data-chart-target="objective_chart" data-type="image/jpeg">JPEG</a>
+                                </li>
+                                <li>
+                                    <a class="fr-nav__link export-chart" href="#" data-chart-target="objective_chart" data-type="application/pdf">PDF</a>
+                                </li>
+                                <li>
+                                    <a class="fr-nav__link export-chart" href="#" data-chart-target="objective_chart" data-type="image/svg+xml">Vectoriel</a>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm fullscreen-chart" data-chart-target="trajectory_chart" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
+                    </div>
+
+                    <div id="trajectory_chart"></div>
+                </div>
+            </div>
+        {% endif %}
+        </div>
 
         <div class="fr-mt-7w">
-            <div class="border fr-p-2w">
-                <div class="d-flex justify-content-end align-items-center fr-mb-2w">
-                    <div class="fr-mr-2w"><a href="{% url 'project:update' project.pk %}?next=report-target-2031" class="fr-btn fr-btn--tertiary fr-btn--sm">Personnaliser l'objectif 2031 : {{ project.target_2031 }}%</a></div>
+            <h3>Configurer sa trajectoire</h3>
 
-                    <div class="dropdown custom-dropdown fr-mr-2w" data-toggle="tooltip" title="Exporter le graphique">
-                        <button class="fr-btn fr-icon-download-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="dropdown" aria-expanded="false"></button>
+            <button class="fr-btn fr-btn--tertiary" data-bs-toggle="modal" data-bs-target="#setTrajectory" aria-hidden="true" hx-get="{% url 'project:trajectory:partial-form-period' project.pk %}" hx-target="#setTrajectoryForm">Sélectionner une période</button>
 
-                        <ul class="dropdown-menu">
-                            <li>
-                                <a class="fr-nav__link export-chart" href="#" data-chart-target="objective_chart" data-type="image/png">PNG</a>
-                            </li>
-                            <li>
-                                <a class="fr-nav__link export-chart" href="#" data-chart-target="objective_chart" data-type="image/jpeg">JPEG</a>
-                            </li>
-                            <li>
-                                <a class="fr-nav__link export-chart" href="#" data-chart-target="objective_chart" data-type="application/pdf">PDF</a>
-                            </li>
-                            <li>
-                                <a class="fr-nav__link export-chart" href="#" data-chart-target="objective_chart" data-type="image/svg+xml">Vectoriel</a>
-                            </li>
-                        </ul>
-                    </div>
-
-                    <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm fullscreen-chart" data-chart-target="objective_chart" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
-                </div>
-
-                {% if trajectory_chart %}
-                    <div id="trajectory-chart-placeholder">
-                        <div id="trajectory_chart"></div>
-                    </div>
-                {% else %}
-                    <div id="trajectory-chart-placeholder" class="skeleton-loader">skeleton me</div>
-                {% endif %}
-
+            <div id="conso-input-swapper">
+                {% include "trajectory/partials/set_year_consumption.html" with form=initial_form_consumption project=project %}
             </div>
-            
         </div>
+    </div>
+</div>
 
-        <div id="conso-select-period" class="mb-5">
-            {% include "trajectory/partials/select_year_period.html" with form=form_period project=project %}
+<!-- Modal -->
+<div class="modal fade" id="setTrajectory" tabindex="-1" aria-labelledby="setTrajectoryLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+        <div class="fr-modal__body">
+            <div class="fr-modal__header">
+                <button class="fr-link--close fr-link" data-bs-dismiss="modal" aria-label="Close">Fermer</button>
+            </div>
+            <div class="fr-modal__content">
+                <h1 id="fr-modal-2-title" class="fr-modal__title" id="setTrajectoryLabel">
+                    Sélectionner une période
+                </h1>
+                <div id="setTrajectoryForm">
+                    <div class="fr-custom-loader"></div>
+                </div>
+            </div>
         </div>
-
-        <div id="conso-input" class="mt-5">
-            {% include "trajectory/partials/set_year_consumption.html" with form=initial_form_consumption project=project %}
-        </div>
-
     </div>
 </div>
 {% endblock %}
@@ -94,6 +108,38 @@ Trajectoires
     {% display_chart 'trajectory_chart' trajectory_chart CSP_NONCE %}
 {% endif %}
 {% endlocalize %}
+<script language="javascript" nonce="{{ CSP_NONCE }}">
+    window.htmx.on("hidden.bs.modal", () => {
+        document.getElementById("setTrajectoryForm").innerHTML = "<div class='fr-custom-loader'></div>"
+    })
+
+    window.htmx.on("htmx:oobAfterSwap", (e) => {
+        // Check swap target
+        if (e.detail.target.id === "conso-input-swapper") {
+            const modal = bootstrap.Modal.getInstance(document.getElementById("setTrajectory"))
+            if (modal) {
+                modal.hide()
+                // Wait for oob swap
+                setTimeout(() => {
+                    const formContainer = document.getElementById("conso-input-swapper")
+                    const firstInput = formContainer.getElementsByClassName('fr-input')[0]
+                    firstInput.focus()
+                }, 500)
+            }
+        }
+        else if (e.detail.target.id === "trajectory-chart-swapper") {
+            // Wait for oob swap
+            setTimeout(() => {
+                const chartContainer = document.getElementById("trajectory-chart-swapper")
+                const topPos = chartContainer.getBoundingClientRect().top + window.pageYOffset
+                window.scrollTo({
+                    top: topPos,
+                    behavior: 'smooth'
+                })
+            }, 500)
+        }
+    })
+</script>
 {% endblock %}
 
 {% block tagging %}
