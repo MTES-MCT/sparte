@@ -154,6 +154,17 @@ def arun(ctx, user_cmd):
 
 
 @cli.command()
+@click.argument(
+    "user_cmd",
+    nargs=1,
+)
+@click.pass_context
+def manage(ctx, user_cmd):
+    """Send a command to a remote host in detached mode."""
+    ScalingoInterface(ctx.obj).manage_py(user_cmd)
+
+
+@cli.command()
 @click.argument("id_list", nargs=-1, type=int)
 @click.pass_context
 def project_history(ctx, id_list):
