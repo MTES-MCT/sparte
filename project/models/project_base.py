@@ -8,15 +8,17 @@ import pandas as pd
 from django.conf import settings
 from django.contrib.gis.db import models as gis_models
 from django.contrib.gis.db.models import Extent, Union
-from django.contrib.gis.db.models.functions import Centroid
+from django.contrib.gis.db.models.functions import Centroid, Area
+from django.contrib.gis.geos import Polygon
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
-from django.db.models import Case, F, Max, Min, Q, Sum, Value, When
-from django.db.models.functions import Coalesce, Concat
+from django.db.models import Case, F, Max, Min, Q, Sum, Value, When, DecimalField
+from django.db.models.functions import Coalesce, Concat, Cast
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.functional import cached_property
 from simple_history.models import HistoricalRecords
+
 
 from config.storages import PublicMediaStorage
 from public_data.models import (
@@ -844,6 +846,7 @@ class Project(BaseProject):
         return item_list
 
     def get_detail_artif(self, sol: Literal["couverture", "usage"]):
+        Zero = Area(Polygon(((0, 0), (0, 0), (0, 0), (0, 0)), srid=2154))
         return (
             OcsgeDiff.objects.intersect(self.combined_emprise)
             .filter(
@@ -864,12 +867,15 @@ class Project(BaseProject):
                     When(is_new_artif=True, then=F(f"new_matrix__{sol}__label_short")),
                     default=F(f"old_matrix__{sol}__label_short"),
                 ),
+                area_artif=Case(When(is_new_artif=True, then=F("intersection_area")), default=Zero),
+                area_renat=Case(When(is_new_natural=True, then=F("intersection_area")), default=Zero),
             )
             .values("code_prefix", "label", "label_short")
             .annotate(
-                artif=cast_sum("intersection_area", filter=Q(is_new_artif=True)),
-                renat=cast_sum("intersection_area", filter=Q(is_new_natural=True)),
+                artif=Cast(Sum("area_artif"), DecimalField(max_digits=15, decimal_places=2)),
+                renat=Cast(Sum("area_renat"), DecimalField(max_digits=15, decimal_places=2)),
             )
+            .order_by("code_prefix", "label", "label_short")
         )
 
     def get_base_sol_artif(self, sol="couverture"):
