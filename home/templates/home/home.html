@@ -54,7 +54,7 @@
         <div class="fr-card">
           <div class="fr-card__body">
             <div class="fr-card__content">
-              <h3 class="fr-card__title">Analysez la consommation d’espaces NAF et l’artificialisation des sols via un diagnostic exportable</h3>
+              <h3 class="fr-card__title">Analysez la consommation d'espaces NAF et l'artificialisation des sols via un diagnostic exportable</h3>
               <p class="fr-card__desc">Graphiques, tableaux de données et cartes interactives avec les calculs recommandés par le décret.</p>
             </div>
           </div>
@@ -85,8 +85,13 @@
       <div class="fr-col-12 fr-col-md-6">
         <form action="{% url 'project:create' %}" method="post">
           {% csrf_token %}
+          <input type="hidden" name="search_region" value="on">
+          <input type="hidden" name="search_departement" value="on">
+          <input type="hidden" name="search_scot" value="on">
+          <input type="hidden" name="search_epci" value="on">
+          <input type="hidden" name="search_commune" value="on">
           <div class="fr-search-bar fr-search-bar--lg" role="search">
-            <input class="fr-input" placeholder="Saisissez le nom d'un territoire" type="search">
+            <input class="fr-input" placeholder="Saisissez le nom d'un territoire" type="search" name="keyword" >
             <button class="fr-btn">Rechercher</button>
           </div>
         </form>

@@ -2,7 +2,7 @@ import celery
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy, reverse
 from django.utils import timezone
@@ -99,10 +99,8 @@ class CreateProjectViews(BreadCrumbMixin, FormView):
 class SetTargetView(UpdateView):
     model = Project
     template_name = "project/partials/report_set_target_2031.html"
-    fields = [
-       "target_2031",
-    ]
-    
+    fields = ["target_2031"]
+
     def form_valid(self, form):
         self.object = form.save()
         context = self.get_context_data() | {
@@ -110,7 +108,8 @@ class SetTargetView(UpdateView):
             "objective_chart": charts.ObjectiveChart(self.get_object()),
         }
         return self.render_to_response(context)
-    
+
+
 class ProjectUpdateView(GroupMixin, UpdateView):
     model = Project
     template_name = "project/update.html"
