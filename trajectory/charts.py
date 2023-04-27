@@ -29,7 +29,7 @@ class TrajectoryChart(ObjectiveChart):
 
     def add_series(self) -> None:  # type: ignore
         super().add_series()
-        self.chart["series"].append(
+        self.series.append(
             {
                 "name": "Trajectoire",
                 "yAxis": 1,
@@ -46,9 +46,10 @@ class TrajectoryChart(ObjectiveChart):
             "data": [],
         }
         total = self.get_starting_cumulative_value()
-        for point in self.chart["series"][-1]["data"]:
+        for point in self.series[-1]["data"]:
             total += point["y"]
             cumulative_trajectory["data"].append({"name": point["name"], "y": total})  # type: ignore
+        self.series.append(cumulative_trajectory)
         self.chart["series"].append(cumulative_trajectory)
         self.reduce_series_to_trajectory()
 
@@ -57,3 +58,23 @@ class TrajectoryChart(ObjectiveChart):
             for i in range(len(serie["data"]) - 1, -1, -1):
                 if not (self.trajectory.start <= int(serie["data"][i]["name"]) <= self.trajectory.end):
                     del serie["data"][i]
+
+    def get_data_table(self):
+        real = {_["name"]: _["y"] for _ in self.series[0]["data"]}
+        added_real = {_["name"]: _["y"] for _ in self.series[1]["data"]}
+        objective = {_["name"]: _["y"] for _ in self.series[2]["data"]}
+        added_objective = {_["name"]: _["y"] for _ in self.series[3]["data"]}
+        trajectory = {_["name"]: _["y"] for _ in self.series[4]["data"]}
+        added_trajectory = {_["name"]: _["y"] for _ in self.series[5]["data"]}
+        years = set(real.keys()) | set(objective.keys()) | set(added_real.keys())
+        years |= set(added_objective.keys()) | set(trajectory.keys()) | set(added_trajectory.keys())
+        for year in sorted(years):
+            yield {
+                "year": year,
+                "real": real.get(year, "-"),
+                "added_real": added_real.get(year, "-"),
+                "objective": objective.get(year, "-"),
+                "added_objective": added_objective.get(year, "-"),
+                "trajectory": trajectory.get(year, "-"),
+                "added_trajectory": added_trajectory.get(year, "-"),
+            }
