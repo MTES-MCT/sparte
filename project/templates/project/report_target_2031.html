@@ -153,6 +153,44 @@ Projection 2031
                 {% endif %}
             </div>
         </div>
+
+        <div class="fr-callout bg-white fr-p-2w mt-4">
+            <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data-1">Données</button>
+            <div class="fr-collapse" id="target-data-1">
+                <h6 class="fr-mt-2w">Source</h6>
+                <p>Fichiers fonciers du Cérema issus des données MAJIC  (Mise A Jour de l'Information Cadastrale) de la DGFIP (millésime min :  2009, millésime max : 2021)</p>
+
+                <h6 class="fr-mt-2w">Calcul</h6>
+                <p>La consommation réelle annuelle et cumulée provient des données du Cérema. Elles donnent la consommation d'espaces NAF par année, pour le territoire choisi. </p>
+
+                <h6 class="fr-mt-2w">Données</h6>
+                
+                <table class="table table-striped table-sm table-hover">
+                    <thead>
+                        <tr>
+                            <th scope="col">Millésime</th>
+                            <th scope="col" class="text-end">Réelle (Ha)</th>
+                            <th scope="col" class="text-end">Réelle cumulée (Ha)</th>
+                            <th scope="col" class="text-end">Projection annualisée<br/>de l'objectif 2031 (Ha)</th>
+                            <th scope="col" class="text-end">Cumulé de la<br/>projection (Ha)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{ data_table }}
+                        {% for line in objective_chart.get_data_table %}
+                        <tr>
+                            <th scope="row">{{ line.year }}</th>
+                            <td align="right">{{ line.real|floatformat:1 }}</td>
+                            <td align="right">{{ line.added_real|floatformat:1 }}</td>
+                            <td align="right">{{ line.objective|floatformat:1 }}</td>
+                            <td align="right">{{ line.added_objective|floatformat:1 }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
     </div>
 </div>
 
