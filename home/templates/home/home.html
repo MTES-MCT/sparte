@@ -32,7 +32,7 @@
   </div>
 </section>
 
-<section class="fr-py-6w">
+<section class="fr-py-6w section-product">
   <div class="fr-container">
     <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--center fr-pt-6w">
       <div class="fr-col-12 fr-col-md-4">
@@ -100,11 +100,11 @@
   </div>
 </section>
 
-<section>
-  <div class="fr-container fr-py-5w">
-    <div class="fr-grid-row">
-      <div class="fr-col-md-8">
-        <h2 class="fr-mb-3w">Les implications de la loi climat et résilience</h2>
+<section class="fr-py-6w section-legal">
+  <div class="fr-container">
+    <h2>Les implications de la loi climat et résilience</h2>
+    <div class="fr-grid-row fr-grid-row--gutters">
+      <div class="fr-col-md-12">
         <p class="fr-pr-3w fw-bold"><span class="fr-icon-check-line fr-mr-1w" aria-hidden="true"></span>L'article 192 de la loi Climat et Résilience et ses décrets d'application incitent les collectivités à préserver leurs sols à travers 2 objectifs:</p>
         <ul class="fr-text--sm"> 
           <li>D'ici 2031 : diminution d'environ 50% du rythme de consommation d’espaces naturels, agricoles, et forestiers par rapport au bilan des 10 dernières années (2011-2021).</li>
@@ -117,9 +117,7 @@
           <li>un pilotage régulier, recommandé pour s'inscrire dans la trajectoire de la loi Climat et Résilience.</li>
         </ul>
       </div>
-      <div class="fr-col-md-4">
-        <img class="fr-responsive-img" alt="" src="{% static 'home/img/loi_climat_logo.png' %}" style="max-width: 400px" data-fr-js-ratio="true">
-      </div>
+      <div id="legal-anim-logo"></div>
     </div>
   </div>
 </section>
@@ -129,37 +127,33 @@
     <h2 class="text-center">D’où proviennent nos données ?</h2>
     <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--center fr-pt-6w">
       <div class="fr-col-12 fr-col-md-4">
-        <div class="fr-card fr-enlarge-link">
+        <div class="fr-card">
           <div class="fr-card__body">
             <div class="fr-card__content">
-              <h3 class="fr-card__title">
-                <a target="_blank" href="https://artificialisation.developpement-durable.gouv.fr/">Données d'évolution des fichiers fonciers produites par le Céréma</a>
-              </h3>
+              <h3 class="fr-card__title">Données d'évolution des fichiers fonciers produites par le Céréma</h3>
               <p class="fr-card__desc">Données issues de sources fiscales (DGFIP), et notamment de la taxe foncière puis enrichis par le Cerema. Disponible France entière et mis à jour chaque année. Production en co-maitrise d'ouvrage avec la DGALN (Direction Générale de l'Aménagement, du Logement et de la Nature).</p>
             </div>
           </div>
-          {% comment %} <div class="fr-card__header">
+          <div class="fr-card__header">
             <div class="fr-card__img">
-              <img class="fr-responsive-img" src="{% static 'home/img/OCSGE.png' %}" alt="">
+              <img class="fr-responsive-img" src="{% static 'home/img/cerema-logo.png' %}" alt="">
             </div>
-          </div> {% endcomment %}
+          </div>
         </div>
       </div>
       <div class="fr-col-12 fr-col-md-4">
-        <div class="fr-card fr-enlarge-link">
+        <div class="fr-card">
           <div class="fr-card__body">
             <div class="fr-card__content">
-              <h3 class="fr-card__title">
-                <a target="_blank" href="https://geoservices.ign.fr/ocsge">OCS GE (Occupation du Sol à Grande Echelle) produite par l'IGN</a>
-              </h3>
+              <h3 class="fr-card__title">OCS GE (Occupation du Sol à Grande Echelle) produite par l'IGN</h3>
               <p class="fr-card__desc">Base de données vectorielle de description de l’occupation et de l’usage du sol dont les unités minimales de cartographie sont de 200m2 pour le bâti et de 500m2 pour le reste en zone urbaine. Disponible France entière à horizon 2024 et mis à jour tous les 3 ans. Production en co-maitrise d'ouvrage avec la DGALN (Direction Générale de l'Aménagement, du Logement et de la Nature).</p>
             </div>
           </div>
-          {% comment %} <div class="fr-card__header">
+          <div class="fr-card__header">
             <div class="fr-card__img">
-              <img class="fr-responsive-img" src="{% static 'home/img/OCSGE.png' %}" alt="">
+              <img class="fr-responsive-img" src="{% static 'home/img/ign-logo.png' %}" alt="">
             </div>
-          </div> {% endcomment %}
+          </div>
         </div>
       </div>
       <div class="fr-col-12 fr-col-md-4">
@@ -170,11 +164,11 @@
               <p class="fr-card__desc">SPARTE propose des croisements avec les données de l'INSEE (population) et bientôt du Géoportail de l'urbanisme (PLU, PLUi).</p>
             </div>
           </div>
-          {% comment %} <div class="fr-card__header">
+          <div class="fr-card__header">
             <div class="fr-card__img">
-              <img class="fr-responsive-img" src="{% static 'home/img/OCSGE.png' %}" alt="">
+              <img class="fr-responsive-img" src="{% static 'home/img/insee-geo-portail-urbanisme-logo.png' %}" alt="">
             </div>
-          </div> {% endcomment %}
+          </div>
         </div>
       </div>
     </div>
