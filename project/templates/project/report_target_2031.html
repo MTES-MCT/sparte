@@ -77,7 +77,7 @@ Projection 2031
         <div class="fr-mt-12w">
             <div class="d-flex justify-content-between align-items-center fr-mb-2w">
                 <h2 class="fr-m-0">Objectif 2031</h2>
-                <button class="fr-btn fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#setTarget" data-toggle="tooltip" title="Personnaliser mon objectif 2031" aria-hidden="true" hx-get="{% url 'project:set_target_2031' project.pk %}" hx-target="#setTargetForm">Personnaliser mon objectif:&nbsp;<span id="button-swapper">{{ project.target_2031 }}</span>%</button>
+                <button id="btn-change-objective" class="fr-btn fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#setTarget" data-toggle="tooltip" title="Personnaliser mon objectif 2031" aria-hidden="true" hx-get="{% url 'project:set_target_2031' project.pk %}" hx-target="#setTargetForm">Personnaliser mon objectif:&nbsp;<span id="button-swapper">{{ project.target_2031 }}</span>%</button>
             </div>
 
             <p class="fr-mb-4w">Dans l'attente de la territorialisation des objectifs 2031 par les SRADDET, SPARTE vous propose d'estimer la réduction de votre consommation de territoire en personnalisant votre objectif à 2031. </p>
