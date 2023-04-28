@@ -231,6 +231,16 @@ fr Tag success
     color: var(--text-default-success);
 }
 
+.fr-tag--blue {
+    --idle: transparent;
+    --hover: var(--background-action-low-blue-france-hover);
+    --active: var(--background-action-low-blue-france-active);
+    background-color: #e3e3fd;
+    background-color: var(--background-action-low-blue-france);
+    color: #000091;
+    color: var(--text-action-high-blue-france);
+}
+
 
 /*
 Custom links
