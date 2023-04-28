@@ -86,28 +86,28 @@ Projection 2031
                 <div class="fr-col-12 fr-col-md-4 fr-grid-row">
                     <div class="fr-callout w-100">
                         <div class="d-flex fr-mb-1w">
-                            <p class="fr-callout__title">+{{ conso_2031_minus_10|floatformat:1 }} ha</p>
-                            <p class="fr-tag fr-tag--sm fr-tag--blue fr-ml-2w"><strong>+{{ conso_2031_annual_minus_10|floatformat:1 }} ha/an</strong></p>
+                            <p class="fr-callout__title">+<span id="objective-conso-minus-swapper">{{ conso_2031_minus_10|floatformat:1 }}</span> ha</p>
+                            <p class="fr-tag fr-tag--sm fr-tag--blue fr-ml-2w"><strong>+<span id="objective-conso-annual-minus-swapper">{{ conso_2031_annual_minus_10|floatformat:1 }}</span> ha/an</strong></p>
                         </div>
-                        <p class="fr-text--sm">Trajectoire 2021-2030 avec objectif {{ project.target_2031|add:-10 }}%</p>
+                        <p class="fr-text--sm">Trajectoire 2021-2030 avec objectif <span id="objective-minus-swapper">{{ project.target_2031|add:-10 }}</span>%</p>
                     </div>
                 </div>
                 <div class="fr-col-12 fr-col-md-4 fr-grid-row">
                     <div class="fr-callout w-100">
                         <div class="d-flex fr-mb-1w">
-                            <p class="fr-callout__title">+{{ objective_chart.conso_2031|floatformat:1 }} ha</p>
-                            <p class="fr-tag fr-tag--sm fr-tag--blue fr-ml-2w"><strong>+{{ objective_chart.annual_objective_2031|floatformat:1 }} ha/an</strong></p>
+                            <p class="fr-callout__title">+<span id="objective-conso-swapper">{{ objective_chart.conso_2031|floatformat:1 }}</span> ha</p>
+                            <p class="fr-tag fr-tag--sm fr-tag--blue fr-ml-2w"><strong>+<span id="objective-annual-swapper">{{ objective_chart.annual_objective_2031|floatformat:1 }}</span> ha/an</strong></p>
                         </div>
-                        <p class="fr-text--sm">Trajectoire 2021-2030 avec objectif {{ project.target_2031 }}%</p>
+                        <p class="fr-text--sm">Trajectoire 2021-2030 avec objectif <span id="objective-swapper">{{ project.target_2031 }}</span>%</p>
                     </div>
                 </div>
                 <div class="fr-col-12 fr-col-md-4 fr-grid-row">
                     <div class="fr-callout w-100">
                         <div class="d-flex fr-mb-1w">
-                            <p class="fr-callout__title">+{{ conso_2031_plus_10|floatformat:1 }} ha</p>
-                            <p class="fr-tag fr-tag--sm fr-tag--blue fr-ml-2w"><strong>+{{ conso_2031_annual_plus_10|floatformat:1 }} ha/an</strong></p>
+                            <p class="fr-callout__title">+<span id="objective-conso-plus-swapper">{{ conso_2031_plus_10|floatformat:1 }}</span> ha</p>
+                            <p class="fr-tag fr-tag--sm fr-tag--blue fr-ml-2w"><strong>+<span id="objective-conso-annual-plus-swapper">{{ conso_2031_annual_plus_10|floatformat:1 }}</span> ha/an</strong></p>
                         </div>
-                        <p class="fr-text--sm">Trajectoire 2021-2030 avec objectif {{ project.target_2031|add:10 }}%</p>
+                        <p class="fr-text--sm">Trajectoire 2021-2030 avec objectif <span id="objective-plus-swapper">{{ project.target_2031|add:10 }}</span>%</p>
                     </div>
                 </div>
             </div>
