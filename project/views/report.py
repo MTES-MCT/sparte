@@ -468,6 +468,10 @@ class ProjectReportTarget2031View(ProjectReportBaseView):
                 "diagnostic": project,
                 "active_page": "target_2031",
                 "objective_chart": objective_chart,
+                "conso_2031_minus_10": objective_chart.conso_2031 * 0.9,
+                "conso_2031_annual_minus_10": objective_chart.annual_objective_2031 * 0.9,
+                "conso_2031_plus_10": objective_chart.conso_2031 * 1.1,
+                "conso_2031_annual_plus_10": objective_chart.annual_objective_2031 * 1.1,
             }
         )
 
