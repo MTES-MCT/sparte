@@ -89,7 +89,7 @@ Projection 2031
                             <p class="fr-callout__title">+<span id="objective-conso-minus-swapper">{{ conso_2031_minus_10|floatformat:1 }}</span> ha</p>
                             <p class="fr-tag fr-tag--sm fr-tag--blue fr-ml-2w"><strong>+<span id="objective-conso-annual-minus-swapper">{{ conso_2031_annual_minus_10|floatformat:1 }}</span> ha/an</strong></p>
                         </div>
-                        <p class="fr-text--sm">Trajectoire 2021-2030 avec objectif <span id="objective-minus-swapper">{{ project.target_2031|add:-10 }}</span>%</p>
+                        <p class="fr-text--sm">Trajectoire à 2030 de la consommation cumulée avec un objectif de réduction de <span id="objective-minus-swapper">{{ project.target_2031|add:-10 }}</span>%</p>
                     </div>
                 </div>
                 <div class="fr-col-12 fr-col-md-4 fr-grid-row">
@@ -98,7 +98,7 @@ Projection 2031
                             <p class="fr-callout__title">+<span id="objective-conso-swapper">{{ objective_chart.conso_2031|floatformat:1 }}</span> ha</p>
                             <p class="fr-tag fr-tag--sm fr-tag--blue fr-ml-2w"><strong>+<span id="objective-annual-swapper">{{ objective_chart.annual_objective_2031|floatformat:1 }}</span> ha/an</strong></p>
                         </div>
-                        <p class="fr-text--sm">Trajectoire 2021-2030 avec objectif <span id="objective-swapper">{{ project.target_2031 }}</span>%</p>
+                        <p class="fr-text--sm">Trajectoire à 2030 de la consommation cumulée avec un objectif de réduction de <span id="objective-swapper">{{ project.target_2031 }}</span>%</p>
                     </div>
                 </div>
                 <div class="fr-col-12 fr-col-md-4 fr-grid-row">
@@ -107,7 +107,7 @@ Projection 2031
                             <p class="fr-callout__title">+<span id="objective-conso-plus-swapper">{{ conso_2031_plus_10|floatformat:1 }}</span> ha</p>
                             <p class="fr-tag fr-tag--sm fr-tag--blue fr-ml-2w"><strong>+<span id="objective-conso-annual-plus-swapper">{{ conso_2031_annual_plus_10|floatformat:1 }}</span> ha/an</strong></p>
                         </div>
-                        <p class="fr-text--sm">Trajectoire 2021-2030 avec objectif <span id="objective-plus-swapper">{{ project.target_2031|add:10 }}</span>%</p>
+                        <p class="fr-text--sm">Trajectoire à 2030 de la consommation cumulée avec un objectif de réduction de <span id="objective-plus-swapper">{{ project.target_2031|add:10 }}</span>%</p>
                     </div>
                 </div>
             </div>
@@ -134,6 +134,8 @@ Projection 2031
                     </div>
 
                     <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm fr-ml-2w fullscreen-chart" data-chart-target="objective_chart" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
+
+                    <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm fr-ml-2w" data-bs-toggle="modal" data-bs-target="#objectiveModal" data-toggle="tooltip" title="Astuces pour lire le graphique" aria-hidden="true"></button>
                 </div>
                 <div id="objective-chart-swapper">
                     <div id="objective_chart"></div>
@@ -223,6 +225,25 @@ Projection 2031
                 <div id="setTargetForm">
                     <div class="fr-custom-loader"></div>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="objectiveModal" tabindex="-1" aria-labelledby="objectiveLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+        <div class="fr-modal__body">
+            <div class="fr-modal__header">
+                <button class="fr-link--close fr-link" data-bs-dismiss="modal" aria-label="Close">Fermer</button>
+            </div>
+            <div class="fr-modal__content">
+                <h1 id="fr-modal-2-title" class="fr-modal__title" id="objectiveLabel">
+                    <span class="fr-fi-arrow-right-line fr-fi--lg"></span>
+                    Astuces - Objectif 2031
+                </h1>
+                <p class="fr-text--sm">Vous pouvez cliquer sur les légendes au-dessus du graphique afin de masquer ou d'afficher certaines données.</p>
+                <p class="fr-text--sm">Avec le bouton <span class="fr-icon-drag-move-2-line fr-icon--sm" aria-hidden="true"></span>, vous pouvez afficher le graphique en plein écran.</p>
+                <p class="fr-text--sm">Avec le bouton <span class="fr-icon-download-line fr-icon--sm" aria-hidden="true"></span>, vous pouvez télécharger le graphique sous forme d'image (utilisez PNG si vous ne savez pas lequel choisir).</p>
             </div>
         </div>
     </div>
