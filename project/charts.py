@@ -998,7 +998,7 @@ class CouvWheelChart(ProjectChart):
                 "nodes": [
                     {
                         "id": f"{_.code_prefix} {_.label_short}",
-                        "className": _.cleaned_code_prefix,
+                        "color": _.map_color,
                     }
                     for _ in self.items
                 ],
