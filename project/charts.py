@@ -247,8 +247,7 @@ class ObjectiveChart(ProjectChart):
 
         self.chart["yAxis"][0]["max"] = total * 1.2
 
-        for serie in self.series:
-            self.chart["series"].append(serie)
+        self.chart["series"] = self.series
 
     def get_data_table(self):
         real = {_["name"]: _["y"] for _ in self.series[0]["data"]}

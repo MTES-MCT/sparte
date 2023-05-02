@@ -50,7 +50,7 @@ class TrajectoryChart(ObjectiveChart):
             total += point["y"]
             cumulative_trajectory["data"].append({"name": point["name"], "y": total})  # type: ignore
         self.series.append(cumulative_trajectory)
-        self.chart["series"].append(cumulative_trajectory)
+        self.chart["series"] = self.series
         self.reduce_series_to_trajectory()
 
     def reduce_series_to_trajectory(self) -> None:
