@@ -1,4 +1,4 @@
-<table>
+<table class="table-usage-nomenclature">
     <tr>
         <td rowspan="5">
             <strong>{{ usage_nomenclature.US1.code_prefix }}</strong>
@@ -128,7 +128,7 @@
 </table>
 
 <style nonce="{{ CSP_NONCE }}">
-table td {
+table.table-usage-nomenclature td {
     background: #bababa;
     color: #fff;
     border: 2px solid #fff;
@@ -140,7 +140,7 @@ table td {
 }
 
 {% for leaf in usa_leafs %}
-.{{ leaf.code_prefix_class }} {
+table.table-usage-nomenclature .{{ leaf.code_prefix_class }} {
     background-color: {{ leaf.map_color }};
 }
 {% endfor %}
