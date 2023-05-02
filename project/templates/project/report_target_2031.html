@@ -77,7 +77,7 @@ Projection 2031
         <div class="fr-mt-12w">
             <div class="d-flex justify-content-between align-items-center fr-mb-2w">
                 <h2 class="fr-m-0">Objectif 2031</h2>
-                <button class="fr-btn fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#setTarget" data-toggle="tooltip" title="Personnaliser mon objectif 2031" aria-hidden="true" hx-get="{% url 'project:set_target_2031' project.pk %}" hx-target="#setTargetForm">Personnaliser mon objectif:&nbsp;<span id="button-swapper">{{ project.target_2031 }}</span>%</button>
+                <button id="btn-change-objective" class="fr-btn fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#setTarget" data-toggle="tooltip" title="Personnaliser mon objectif 2031" aria-hidden="true" hx-get="{% url 'project:set_target_2031' project.pk %}" hx-target="#setTargetForm">Personnaliser mon objectif:&nbsp;<span id="button-swapper">{{ project.target_2031 }}</span>%</button>
             </div>
 
             <p class="fr-mb-4w">Dans l'attente de la territorialisation des objectifs 2031 par les SRADDET, SPARTE vous propose d'estimer la réduction de votre consommation de territoire en personnalisant votre objectif à 2031. </p>
@@ -85,14 +85,29 @@ Projection 2031
             <div class="fr-grid-row fr-grid-row--gutters fr-mb-2w">
                 <div class="fr-col-12 fr-col-md-4 fr-grid-row">
                     <div class="fr-callout w-100">
-                        <p class="fr-callout__title">+<span id="objective-conso-swapper">{{ objective_chart.conso_2031|floatformat:1 }}</span> ha</p>
-                        <p>Trajectoire 2021-2030</p>
+                        <div class="d-flex fr-mb-1w">
+                            <p class="fr-callout__title">+<span id="objective-conso-minus-swapper">{{ conso_2031_minus_10|floatformat:1 }}</span> ha</p>
+                            <p class="fr-tag fr-tag--sm fr-tag--blue fr-ml-2w"><strong>+<span id="objective-conso-annual-minus-swapper">{{ conso_2031_annual_minus_10|floatformat:1 }}</span> ha/an</strong></p>
+                        </div>
+                        <p class="fr-text--sm">Trajectoire à 2030 de la consommation cumulée avec un objectif de réduction de <span id="objective-minus-swapper">{{ project.target_2031|add:-10 }}</span>%</p>
                     </div>
                 </div>
                 <div class="fr-col-12 fr-col-md-4 fr-grid-row">
                     <div class="fr-callout w-100">
-                        <p class="fr-callout__title">+<span id="objective-annual-swapper">{{ objective_chart.annual_objective_2031|floatformat:1 }}</span> ha/an</p>
-                        <p>Trajectoire projetée annualisée</p>
+                        <div class="d-flex fr-mb-1w">
+                            <p class="fr-callout__title">+<span id="objective-conso-swapper">{{ objective_chart.conso_2031|floatformat:1 }}</span> ha</p>
+                            <p class="fr-tag fr-tag--sm fr-tag--blue fr-ml-2w"><strong>+<span id="objective-annual-swapper">{{ objective_chart.annual_objective_2031|floatformat:1 }}</span> ha/an</strong></p>
+                        </div>
+                        <p class="fr-text--sm">Trajectoire à 2030 de la consommation cumulée avec un objectif de réduction de <span id="objective-swapper">{{ project.target_2031 }}</span>%</p>
+                    </div>
+                </div>
+                <div class="fr-col-12 fr-col-md-4 fr-grid-row">
+                    <div class="fr-callout w-100">
+                        <div class="d-flex fr-mb-1w">
+                            <p class="fr-callout__title">+<span id="objective-conso-plus-swapper">{{ conso_2031_plus_10|floatformat:1 }}</span> ha</p>
+                            <p class="fr-tag fr-tag--sm fr-tag--blue fr-ml-2w"><strong>+<span id="objective-conso-annual-plus-swapper">{{ conso_2031_annual_plus_10|floatformat:1 }}</span> ha/an</strong></p>
+                        </div>
+                        <p class="fr-text--sm">Trajectoire à 2030 de la consommation cumulée avec un objectif de réduction de <span id="objective-plus-swapper">{{ project.target_2031|add:10 }}</span>%</p>
                     </div>
                 </div>
             </div>
@@ -119,6 +134,8 @@ Projection 2031
                     </div>
 
                     <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm fr-ml-2w fullscreen-chart" data-chart-target="objective_chart" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
+
+                    <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm fr-ml-2w" data-bs-toggle="modal" data-bs-target="#objectiveModal" data-toggle="tooltip" title="Astuces pour lire le graphique" aria-hidden="true"></button>
                 </div>
                 <div id="objective-chart-swapper">
                     <div id="objective_chart"></div>
@@ -153,6 +170,44 @@ Projection 2031
                 {% endif %}
             </div>
         </div>
+
+        <div class="fr-callout bg-white fr-p-2w mt-4">
+            <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data-1">Données</button>
+            <div class="fr-collapse" id="target-data-1">
+                <h6 class="fr-mt-2w">Source</h6>
+                <p>Fichiers fonciers du Cérema issus des données MAJIC  (Mise A Jour de l'Information Cadastrale) de la DGFIP (millésime min :  2009, millésime max : 2021)</p>
+
+                <h6 class="fr-mt-2w">Calcul</h6>
+                <p>La consommation réelle annuelle et cumulée provient des données du Cérema. Elles donnent la consommation d'espaces NAF par année, pour le territoire choisi. </p>
+
+                <h6 class="fr-mt-2w">Données</h6>
+                
+                <table class="table table-striped table-sm table-hover">
+                    <thead>
+                        <tr>
+                            <th scope="col">Millésime</th>
+                            <th scope="col" class="text-end">Réelle (Ha)</th>
+                            <th scope="col" class="text-end">Réelle cumulée (Ha)</th>
+                            <th scope="col" class="text-end">Projection annualisée<br/>de l'objectif 2031 (Ha)</th>
+                            <th scope="col" class="text-end">Cumulé de la<br/>projection (Ha)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{ data_table }}
+                        {% for line in objective_chart.get_data_table %}
+                        <tr>
+                            <th scope="row">{{ line.year }}</th>
+                            <td align="right">{{ line.real|floatformat:1 }}</td>
+                            <td align="right">{{ line.added_real|floatformat:1 }}</td>
+                            <td align="right">{{ line.objective|floatformat:1 }}</td>
+                            <td align="right">{{ line.added_objective|floatformat:1 }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
     </div>
 </div>
 
@@ -170,6 +225,25 @@ Projection 2031
                 <div id="setTargetForm">
                     <div class="fr-custom-loader"></div>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="objectiveModal" tabindex="-1" aria-labelledby="objectiveLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+        <div class="fr-modal__body">
+            <div class="fr-modal__header">
+                <button class="fr-link--close fr-link" data-bs-dismiss="modal" aria-label="Close">Fermer</button>
+            </div>
+            <div class="fr-modal__content">
+                <h1 id="fr-modal-2-title" class="fr-modal__title" id="objectiveLabel">
+                    <span class="fr-fi-arrow-right-line fr-fi--lg"></span>
+                    Astuces - Objectif 2031
+                </h1>
+                <p class="fr-text--sm">Vous pouvez cliquer sur les légendes au-dessus du graphique afin de masquer ou d'afficher certaines données.</p>
+                <p class="fr-text--sm">Avec le bouton <span class="fr-icon-drag-move-2-line fr-icon--sm" aria-hidden="true"></span>, vous pouvez afficher le graphique en plein écran.</p>
+                <p class="fr-text--sm">Avec le bouton <span class="fr-icon-download-line fr-icon--sm" aria-hidden="true"></span>, vous pouvez télécharger le graphique sous forme d'image (utilisez PNG si vous ne savez pas lequel choisir).</p>
             </div>
         </div>
     </div>

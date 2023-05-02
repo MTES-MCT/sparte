@@ -231,6 +231,16 @@ fr Tag success
     color: var(--text-default-success);
 }
 
+.fr-tag--blue {
+    --idle: transparent;
+    --hover: var(--background-action-low-blue-france-hover);
+    --active: var(--background-action-low-blue-france-active);
+    background-color: #e3e3fd;
+    background-color: var(--background-action-low-blue-france);
+    color: #000091;
+    color: var(--text-action-high-blue-france);
+}
+
 
 /*
 Custom links
@@ -334,6 +344,29 @@ Home Page
 
 @media (max-width: 992px) {
     #hero-anim-map-container  {
+        display: none;
+    }
+}
+
+.section-legal {
+    position: relative;
+    background-color: #D6FFED;
+}
+
+#legal-anim-logo {
+    width: 170px;
+    height: 170px;
+    position: absolute;
+    right: 45px;
+    bottom: 45px;
+    background-image: url('/assets/images/loi-climat-et-resilience.svg');
+    background-repeat: no-repeat;
+    background-size: auto;
+    background-position: bottom 3% right 3%;
+}
+
+@media (max-width: 992px) {
+    #legal-anim-logo  {
         display: none;
     }
 }
