@@ -414,6 +414,9 @@ if ENVIRONMENT != "local":
 # MATOMO
 MATOMO_ACTIVATE = env.bool("MATOMO_ACTIVATE", default=False)
 
+# GOOGLE TAG ADWORDS
+GOOGLE_ADWORDS_ACTIVATE = env.bool("GOOGLE_ADWORDS_ACTIVATE", default=False)
+
 # SECURITY - Content Security Header Policy
 # https://django-csp.readthedocs.io
 
