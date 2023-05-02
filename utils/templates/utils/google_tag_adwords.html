@@ -1,0 +1,14 @@
+<!-- Google tag (gtag.js) -->
+{% if GOOGLE_ADWORDS_ACTIVATE %}
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-11157347812" nonce="{{ CSP_NONCE }}">
+</script>
+<script nonce="{{ CSP_NONCE }}">
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'AW-11157347812');
+</script>
+{% else %}
+<!-- Google tag is not activated, see GOOGLE_ADWORDS_ACTIVATE environment variable -->
+{% endif %}

@@ -103,9 +103,14 @@ class SetTargetView(UpdateView):
 
     def form_valid(self, form):
         self.object = form.save()
+        objective_chart = charts.ObjectiveChart(self.get_object())
         context = self.get_context_data() | {
             "success_message": True,
-            "objective_chart": charts.ObjectiveChart(self.get_object()),
+            "objective_chart": objective_chart,
+            "conso_2031_minus_10": objective_chart.conso_2031 * 0.9,
+            "conso_2031_annual_minus_10": objective_chart.annual_objective_2031 * 0.9,
+            "conso_2031_plus_10": objective_chart.conso_2031 * 1.1,
+            "conso_2031_annual_plus_10": objective_chart.annual_objective_2031 * 1.1,
         }
         return self.render_to_response(context)
 

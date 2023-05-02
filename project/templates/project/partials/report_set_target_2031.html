@@ -23,13 +23,20 @@
     <span id="button-swapper" hx-swap-oob="true">{{ project.target_2031 }}</span>
     <span id="objective-conso-swapper" hx-swap-oob="true">{{ objective_chart.conso_2031|floatformat:1 }}</span>
     <span id="objective-annual-swapper" hx-swap-oob="true">{{ objective_chart.annual_objective_2031|floatformat:1 }}</span>
+    <span id="objective-swapper" hx-swap-oob="true">{{ project.target_2031 }}</span>
+    <span id="objective-conso-minus-swapper" hx-swap-oob="true">{{ conso_2031_minus_10|floatformat:1 }}</span>
+    <span id="objective-conso-annual-minus-swapper" hx-swap-oob="true">{{ conso_2031_annual_minus_10|floatformat:1 }}</span>
+    <span id="objective-minus-swapper" hx-swap-oob="true">{{ project.target_2031|add:-10 }}</span>
+    <span id="objective-conso-plus-swapper" hx-swap-oob="true">{{ conso_2031_plus_10|floatformat:1 }}</span>
+    <span id="objective-conso-annual-plus-swapper" hx-swap-oob="true">{{ conso_2031_annual_plus_10|floatformat:1 }}</span>
+    <span id="objective-plus-swapper" hx-swap-oob="true">{{ project.target_2031|add:10 }}</span>
 {% else %}
     <form hx-post="{% url 'project:set_target_2031' project.pk %}">
         {% csrf_token %}
         {{ form|crispy }}
         <ul class="fr-btns-group fr-btns-group--right fr-btns-group--inline-lg fr-mt-2w">
             <li>
-                <button id="dl_btn" class="fr-btn" type="submit">
+                <button class="fr-btn" type="submit">
                     Enregistrer
                 </button>
             </li>
