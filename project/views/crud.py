@@ -15,6 +15,7 @@ from django.views.generic import (
     UpdateView,
 )
 from django.views.generic.edit import FormMixin
+from metabase.tasks import async_create_stat_for_project
 
 from project import charts, tasks
 from project.forms import KeywordForm, SelectTerritoryForm, UpdateProjectForm
@@ -148,6 +149,7 @@ class ProjectUpdateView(GroupMixin, UpdateView):
                 tasks.generate_theme_map_artif.si(self.object.id),
                 tasks.generate_theme_map_understand_artif.si(self.object.id),
             ),
+            async_create_stat_for_project.si(self.object.id, do_location=False),
         ).apply_async()
         return HttpResponseRedirect(self.get_success_url())
 
