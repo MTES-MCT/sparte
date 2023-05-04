@@ -26,7 +26,8 @@ class ProjectAdmin(SimpleHistoryAdmin):
     # filter_horizontal = ("cities",)
     change_form_template = "project/admin/project_detail.html"
     history_list_display = [
-        "async_city_and_combined_emprise_done",
+        "async_add_city_done",
+        "async_set_combined_emprise_done",
         "async_cover_image_done",
         "async_find_first_and_last_ocsge_done",
         "async_add_neighboors_done",
@@ -54,11 +55,6 @@ class ProjectAdmin(SimpleHistoryAdmin):
         elif "_generate-cover" in request.POST:
             tasks.generate_cover_image.delay(obj.id)
             msg = "Génération de l'image de couverture en cours"
-            messages.add_message(request, messages.INFO, msg)
-            return HttpResponseRedirect(".")
-        elif "_check-async" in request.POST:
-            tasks.rerun_missing_async.delay(obj.id)
-            msg = "Vérification complète de la construction du diagnostic en cours"
             messages.add_message(request, messages.INFO, msg)
             return HttpResponseRedirect(".")
         return super().response_change(request, obj)

@@ -315,7 +315,8 @@ class Project(BaseProject):
         storage=PublicMediaStorage(),
     )
 
-    async_city_and_combined_emprise_done = models.BooleanField(default=False)
+    async_add_city_done = models.BooleanField(default=False)
+    async_set_combined_emprise_done = models.BooleanField(default=False)
     async_cover_image_done = models.BooleanField(default=False)
     async_find_first_and_last_ocsge_done = models.BooleanField(default=False)
     async_add_neighboors_done = models.BooleanField(default=False)
@@ -328,7 +329,8 @@ class Project(BaseProject):
     @property
     def async_complete(self):
         return (
-            self.async_city_and_combined_emprise_done
+            self.async_add_city_done
+            & self.async_set_combined_emprise_done
             & self.async_cover_image_done
             & self.async_find_first_and_last_ocsge_done
             & self.async_add_neighboors_done
@@ -379,30 +381,8 @@ class Project(BaseProject):
         self.cover_image.delete(save=False)
         return super().delete()
 
-    def to_string(self):
-        return "&".join(
-            f"{f}={str(getattr(self, f))}"
-            for f in [
-                "async_city_and_combined_emprise_done",
-                "async_cover_image_done",
-                "async_find_first_and_last_ocsge_done",
-                "async_add_neighboors_done",
-                "async_generate_theme_map_conso_done",
-                "async_generate_theme_map_artif_done",
-                "async_theme_map_understand_artif_done",
-                "analyse_start_date",
-                "analyse_end_date",
-                "look_a_like",
-                "cover_image",
-                "theme_map_conso",
-                "theme_map_artif",
-                "theme_map_understand_artif",
-            ]
-        )
-
     def save(self, *args, **kwargs):
         logger.info("Saving project %d: update_fields=%s", self.id, str(kwargs.get("update_fields", [])))
-        logger.info("Saving project %d: %s", self.id, self.to_string())
         super().save(*args, **kwargs)
 
     def get_territory_name(self):
