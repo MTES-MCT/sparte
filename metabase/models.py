@@ -76,35 +76,21 @@ class StatDiagnostic(models.Model):
     def update_locations(self, project: Project) -> None:
         qs = project.cities.all().select_related("epci", "departement", "scot", "departement__region")
 
-        city_set = set()
-        epci_set = set()
-        scot_set = set()
-        departement_set = set()
-        region_set = set()
-        for city in qs:
-            city_set.add(city)
-            epci_set.add(city.epci)
-            scot_set.add(city.scot)
-            departement_set.add(city.departement)
-            region_set.add(city.departement.region)
-
-        if len(city_set) == 1:
-            city = next(iter(city_set))
+        if qs.count() == 1:
+            city = qs.first()
             self.city = f"{city.name} ({city.insee})"
 
-        if len(epci_set) == 1:
-            self.epci = next(iter(epci_set)).name
+        if qs.values("epci__name").distinct().count() == 1:
+            self.epci = qs.values("epci__name").distinct().first()['epci__name']
 
-        if len(scot_set) == 1:
-            scot = next(iter(scot_set))
-            if scot:
-                self.scot = scot.name
+        if qs.values("scot__name").distinct().count() == 1:
+            self.scot = qs.values("scot__name").distinct().first()['scot__name']
 
-        if len(departement_set) == 1:
-            self.departement = next(iter(departement_set)).name
+        if qs.values("departement__name").distinct().count() == 1:
+            self.departement = qs.values("departement__name").distinct().first()['departement__name']
 
-        if len(region_set) == 1:
-            self.region = next(iter(region_set)).name
+        if qs.values("departement__region__name").distinct().count() == 1:
+            self.region = qs.values("departement__region__name").distinct().first()["departement__region__name"]
 
     @classmethod
     def get_or_create(cls, project: Project) -> "StatDiagnostic":
@@ -126,9 +112,10 @@ class StatDiagnostic(models.Model):
             project = Project.objects.get(id=project_id)
             od = cls.get_or_create(project)
             od.update_with_project(project)
+            od.save()
             if do_location:
                 od.update_locations(project)
-            od.save()
+                od.save()
         except Project.DoesNotExist:
             logger.error("%d project does not exists, end stat.", project_id)
 
