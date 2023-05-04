@@ -468,6 +468,7 @@ ALERT_DIAG_MATTERMOST_RECIPIENTS = env.list("ALERT_DIAG_MATTERMOST_RECIPIENTS", 
 # LOGGING SETTINGS
 
 LOGGING_LEVEL = env.str("LOGGING_LEVEL", default="INFO")
+DB_LOGGING_LEVEL = env.str("DB_LOGGING_LEVEL", default="INFO")
 
 LOGGING = {
     "version": 1,
@@ -520,7 +521,7 @@ LOGGING = {
             "propagate": False,
         },
         'django.db.backends': {
-            'level': 'DEBUG',
+            'level': DB_LOGGING_LEVEL,
             'handlers': ['console'],
         },
     },
