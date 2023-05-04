@@ -3,6 +3,7 @@ from typing import List
 
 import celery
 
+from metabase.tasks import async_create_stat_for_project
 from public_data.models import AdminRef, Land
 from users.models import User
 
@@ -48,6 +49,8 @@ def create_from_public_key(
             t.generate_theme_map_artif.si(project.id),
             t.generate_theme_map_understand_artif.si(project.id),
         ),
+        # to not make user wait for other stuff, nuild metabase stat after all others tasks
+        async_create_stat_for_project.si(project.id, do_location=True),
     ).apply_async()
 
     return project
