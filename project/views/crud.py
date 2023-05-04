@@ -292,7 +292,11 @@ class SplashProgressionView(GroupMixin, DetailView):
 
     def dispatch(self, *args, **kwargs):
         response = super().dispatch(*args, **kwargs)
-        if self.object.async_city_and_combined_emprise_done and self.object.async_add_neighboors_done:
+        if (
+            self.object.async_add_city_done
+            and self.object.async_set_combined_emprise_done
+            and self.object.async_add_neighboors_done
+        ):
             response["HX-Redirect"] = reverse("project:detail", kwargs=self.kwargs)
         return response
 
