@@ -3,7 +3,6 @@ from typing import List
 
 import celery
 
-from metabase.tasks import async_create_stat_for_project
 from public_data.models import AdminRef, Land
 from users.models import User
 
@@ -17,6 +16,7 @@ def create_from_public_key(
     user: User | None = None,
 ) -> Project:
     """Create a project from one only public_key"""
+    from metabase.tasks import async_create_stat_for_project
     from project import tasks as t
 
     land = Land(public_key)

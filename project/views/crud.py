@@ -15,7 +15,6 @@ from django.views.generic import (
     UpdateView,
 )
 from django.views.generic.edit import FormMixin
-from metabase.tasks import async_create_stat_for_project
 
 from project import charts, tasks
 from project.forms import KeywordForm, SelectTerritoryForm, UpdateProjectForm
@@ -140,6 +139,8 @@ class ProjectUpdateView(GroupMixin, UpdateView):
 
     def form_valid(self, form):
         """If the form is valid, save the associated model."""
+        from metabase.tasks import async_create_stat_for_project
+
         self.object = form.save()
         celery.chain(
             # check that ocsge period is still between project period
