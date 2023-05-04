@@ -16,6 +16,7 @@ import matplotlib.pyplot as plt
 import shapely
 from celery import shared_task
 from django.conf import settings
+from django.contrib.gis.db.models import Union
 from django.db import transaction
 from django.db.models import F, OuterRef, Q, Subquery
 from django.urls import reverse
@@ -62,29 +63,22 @@ def race_protection_save_map(
 
 
 @shared_task(bind=True, max_retries=5)
-def add_city_and_set_combined_emprise(self, project_id: int, public_keys: str) -> None:
-    """Do a Union() on all mpoly lands and set project combined emprise
+def add_city(self, project_id: int, public_keys: str) -> None:
+    """List all cities of selected territories and add them to the project
 
     :param project_id: primary key to find Project
     :type project_id: integer
     :param public_keys: list of public keys separated by '-'
     :type public_keys: string
     """
-    logger.info("Start add_city_and_set_combined_emprise id=%d", project_id)
+    logger.info("Start add_city project_id==%d", project_id)
     logger.info("public_keys=%s", public_keys)
     try:
         project = Project.objects.get(pk=project_id)
-        combined_emprise = None
         lands = Land.get_lands(public_keys.split("-"))
         for land in lands:
             project.cities.add(*land.get_cities())
-            if not combined_emprise:
-                combined_emprise = land.mpoly
-            else:
-                combined_emprise = land.mpoly.union(combined_emprise)
-        project.emprise_set.create(mpoly=fix_poly(combined_emprise))
-
-        race_protection_save(project_id, {"async_city_and_combined_emprise_done": True})
+        race_protection_save(project_id, {"async_add_city_done": True})
     except Project.DoesNotExist:
         logger.error(f"project_id={project_id} does not exist")
     except Exception as exc:
@@ -92,7 +86,26 @@ def add_city_and_set_combined_emprise(self, project_id: int, public_keys: str) -
         logger.exception(exc)
         self.retry(exc=exc, countdown=60)
     finally:
-        logger.info("End add_city_and_set_combined_emprise, project_id=%d", project_id)
+        logger.info("End add_city project_id=%d", project_id)
+
+
+@shared_task(bind=True, max_retries=5)
+def set_combined_emprise(self, project_id: int) -> None:
+    """Use linked cities to create project emprise."""
+    logger.info("Start set_combined_emprise project_id==%d", project_id)
+    try:
+        project = Project.objects.get(pk=project_id)
+        combined_emprise = project.cities.all().aggregate(emprise=Union("mpoly"))
+        project.emprise_set.create(mpoly=fix_poly(combined_emprise['emprise']))
+        race_protection_save(project_id, {"async_set_combined_emprise_done": True})
+    except Project.DoesNotExist:
+        logger.error(f"project_id={project_id} does not exist")
+    except Exception as exc:
+        logger.error(exc)
+        logger.exception(exc)
+        self.retry(exc=exc, countdown=60)
+    finally:
+        logger.info("End set_combined_emprise project_id=%d", project_id)
 
 
 @shared_task(bind=True, max_retries=5)
@@ -537,32 +550,3 @@ def alert_on_blocked_diagnostic(self):
 
     finally:
         logger.info("End alert_on_blocked_diagnostic")
-
-
-@shared_task
-def rerun_missing_async(project_id):
-    # celery.chain(
-    #     t.add_city_and_set_combined_emprise.si(project.id, public_key),
-    #     celery.group(
-    #         t.find_first_and_last_ocsge.si(project.id),
-    #         t.add_neighboors.si(project.id),
-    #     ),
-    #     celery.group(
-    #         t.generate_cover_image.si(project.id),
-    #         t.generate_theme_map_conso.si(project.id),
-    #         t.generate_theme_map_artif.si(project.id),
-    #         t.generate_theme_map_understand_artif.si(project.id),
-    #     ),
-    # ).apply_async()
-    logger.info("Start rerun_missing_async, project_id=%d", project_id)
-    # try:
-    #     project = Project.objects.get(pk=project_id)
-    #     if project.async_city_and_combined_emprise_done:
-    #         logger.info("async_city_and_combined_emprise_done is True")
-    #     else:
-    #         & self.async_cover_image_done
-    #         & self.async_find_first_and_last_ocsge_done
-    #         & self.async_add_neighboors_done
-    #         & self.async_generate_theme_map_conso_done
-    #         & self.async_generate_theme_map_artif_done
-    #         & self.async_theme_map_understand_artif_done

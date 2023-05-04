@@ -36,7 +36,8 @@ def create_from_public_key(
 
     # use celery to speedup user experience
     celery.chain(
-        t.add_city_and_set_combined_emprise.si(project.id, public_key),
+        t.add_city.si(project.id, public_key),
+        t.set_combined_emprise.si(project.id),
         celery.group(
             t.find_first_and_last_ocsge.si(project.id),
             t.add_neighboors.si(project.id),
@@ -94,7 +95,8 @@ def create_from_public_key_list(
         jobs.append(t.add_neighboors.si(project.id))
 
     celery.chain(
-        t.add_city_and_set_combined_emprise.si(project.id, "-".join(public_key_list)),
+        t.add_city.si(project.id, "-".join(public_key_list)),
+        t.set_combined_emprise.si(project.id),
         celery.group(jobs),
     ).apply_async()
 

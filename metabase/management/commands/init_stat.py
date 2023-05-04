@@ -46,7 +46,7 @@ class Command(BaseCommand):
         # Save project and request to trigger signal that will create or update StatDiagnostic
         for i, project in enumerate(qs):
             try:
-                project.save(update_fields=["async_city_and_combined_emprise_done"])
+                project.save(update_fields=["async_add_city_done"])
                 logger.info("Project %d %d/%d - %d%%", project.id, i, total, 100 * i / total)
             except OperationalError as exc:
                 logger.error("Error in StatDiagnostic.receiver_project_post_save: %s", exc)
