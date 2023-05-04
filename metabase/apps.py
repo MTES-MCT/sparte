@@ -29,11 +29,12 @@ class MetabaseConfig(AppConfig):
     name = "metabase"
 
     def ready(self):
-        post_save.connect(
-            do_project_post_save,
-            sender="project.Project",
-            dispatch_uid="post_save_stat_diagnostic_for_project",
-        )
+        # disable because it's triggered too many times when building a project (each async task trigger it)
+        # post_save.connect(
+        #     do_project_post_save,
+        #     sender="project.Project",
+        #     dispatch_uid="post_save_stat_diagnostic_for_project",
+        # )
         post_save.connect(
             do_request_post_save,
             sender="project.Request",
