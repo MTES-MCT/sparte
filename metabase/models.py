@@ -119,28 +119,26 @@ class StatDiagnostic(models.Model):
             )
 
     @classmethod
-    def receiver_project_post_save(cls, instance: Project, created: bool, **kwargs) -> None:
+    def project_post_save(cls, project_id: int, do_location: bool) -> None:
         """Create or update StatDiagnostic when a Project is created or updated.
         Ensure that exception are catched to avoid breaking user doings."""
         try:
-            od = cls.get_or_create(instance)
-            od.update_with_project(instance)
-            if kwargs.get("update_fields") == {"async_add_city_done"}:
-                # only when async async_add_city_done end successfully
-                od.update_locations(instance)
+            project = Project.objects.get(id=project_id)
+            od = cls.get_or_create(project)
+            od.update_with_project(project)
+            if do_location:
+                od.update_locations(project)
             od.save()
-        except Exception as exc:
-            logger.error("Error in StatDiagnostic.receiver_project_post_save: %s", exc)
-            logger.exception(exc)
+        except Project.DoesNotExist:
+            logger.error("%d project does not exists, end stat.", project_id)
 
     @classmethod
-    def receiver_request_post_save(cls, instance, created, **kwargs):
+    def request_post_save(cls, request_id):
         """Update StatDiagnostic when a Project is downloaded.
         Ensure that exception are catched to avoid breaking user doings."""
         try:
-            if created:
-                od = cls.get_or_create(instance.project)
-                od.update_with_request(instance)
-        except Exception as exc:
-            logger.error("Error in StatDiagnostic.receiver_request_post_save: %s", exc)
-            logger.exception(exc)
+            req = Request.objects.get(id=request_id)
+            od = cls.get_or_create(req.project)
+            od.update_with_request(req)
+        except Request.DoesNotExist:
+            logger.error("%d request does not exists, end stat.", request_id)
