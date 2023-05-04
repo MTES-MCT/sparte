@@ -117,7 +117,10 @@ class BaseProject(models.Model):
 
     @cached_property
     def area(self):
-        return self.combined_emprise.transform(2154, clone=True).area / 10000
+        try:
+            return self.combined_emprise.transform(2154, clone=True).area / 10000
+        except AttributeError:
+            return 0
 
     def __str__(self):
         return self.name
