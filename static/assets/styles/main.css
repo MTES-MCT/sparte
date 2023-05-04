@@ -771,3 +771,34 @@ Home Page
     }
 }
 
+/*
+Header min version
+*/
+body.header-min .fr-logo__text {
+    display: none;
+}
+
+body.header-min .fr-header__logo .fr-logo:after {
+    content: none;
+}
+
+/*
+Page full width
+*/
+.full-width .fr-container {
+    max-width: 100%;
+}
+
+/*
+Breadcrumb min
+*/
+.breadcrumb-min .fr-breadcrumb {
+    margin: 0.8rem 0;
+}
+
+/*
+Leaflet
+*/
+.leaflet-control-zoom a {
+    background-image: none;
+}
