@@ -30,7 +30,7 @@ class ProjectReportBaseView(GroupMixin, DetailView):
         return breadcrumbs
 
     def get_context_data(self, **kwargs):
-        kwargs["ocsge_available"] = self.object.is_artif()
+        kwargs["ocsge_available"] = self.object.is_artif
         return super().get_context_data(**kwargs)
 
 
@@ -200,7 +200,7 @@ class ProjectReportDicoverOcsgeView(ProjectReportBaseView):
             "active_page": "discover",
         }
 
-        if not project.is_artif():
+        if not project.is_artif:
             return super().get_context_data(**kwargs)
 
         kwargs.update(
@@ -259,7 +259,7 @@ class ProjectReportUsageView(ProjectReportBaseView):
             "active_page": "usage",
         }
 
-        if not project.is_artif():
+        if not project.is_artif:
             return super().get_context_data(**kwargs)
 
         first_millesime = project.first_year_ocsge
@@ -334,7 +334,7 @@ class ProjectReportArtifView(ProjectReportBaseView):
             "total_surface": total_surface,
         }
 
-        if not project.is_artif():
+        if not project.is_artif:
             return super().get_context_data(**kwargs)
 
         first_millesime = project.first_year_ocsge
