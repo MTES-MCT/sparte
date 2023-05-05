@@ -1,6 +1,7 @@
 from decimal import InvalidOperation
 
 from django.contrib import messages
+from django.db import transaction
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.views.generic import CreateView, DetailView, TemplateView
@@ -17,6 +18,11 @@ class ProjectReportBaseView(GroupMixin, DetailView):
     breadcrumbs_title = "To be set"
     context_object_name = "project"
     queryset = Project.objects.all()
+
+    @transaction.non_atomic_requests
+    def dispatch(self, request, *args, **kwargs):
+        # with this, be careful when doing row modification, autocommit is disabled
+        return super().dispatch(request, *args, **kwargs)
 
     def get_context_breadcrumbs(self):
         breadcrumbs = super().get_context_breadcrumbs()
