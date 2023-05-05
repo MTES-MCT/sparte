@@ -20,7 +20,7 @@ class OptimizedMixins:
     optimized_fields = {
         "sql": "name",
     }
-    optimized_geo_field = "st_AsGeoJSON(o.mpoly, 8)"
+    optimized_geo_field = "st_AsGeoJSON(o.mpoly, 6, 0)"
 
     def get_params(self, request):
         bbox = request.query_params.get("in_bbox")
@@ -279,6 +279,12 @@ class RegionViewSet(DataViewSet):
 class DepartementViewSet(DataViewSet):
     queryset = models.Departement.objects.all()
     serializer_class = serializers.DepartementSerializer
+    geo_field = "mpoly"
+
+
+class ScotViewSet(DataViewSet):
+    queryset = models.Scot.objects.all()
+    serializer_class = serializers.ScotSerializer
     geo_field = "mpoly"
 
 

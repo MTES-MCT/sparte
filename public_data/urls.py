@@ -10,6 +10,7 @@ from .api.views import (
     OcsgeDiffViewSet,
     OcsgeViewSet,
     RegionViewSet,
+    ScotViewSet,
     UsageSolViewset,
     ZoneConstruiteViewSet,
 )
@@ -34,5 +35,6 @@ router.register(r"ocsge/zones-artificielles", ArtificialAreaViewSet)
 router.register(r"referentiel/region", RegionViewSet)
 router.register(r"referentiel/departement", DepartementViewSet)
 router.register(r"referentiel/epci", EpciViewSet)
+router.register(r"referentiel/scot", ScotViewSet)
 
 urlpatterns += router.urls
