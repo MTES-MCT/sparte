@@ -203,6 +203,49 @@ class ProjectMapView(GroupMixin, DetailView):
         return super().get_context_data(**kwargs)
 
 
+class MapV2View(GroupMixin, DetailView):
+    queryset = Project.objects.all()
+    template_name = "carto/map_V2.html"
+    context_object_name = "project"
+
+    def get_context_breadcrumbs(self):
+        breadcrumbs = super().get_context_breadcrumbs()
+        breadcrumbs.append({"href": None, "title": "Carte intéractive"})
+        return breadcrumbs
+
+    def get_context_data(self, **kwargs):
+        # UPGRADE: add center and zoom fields on project model
+        # values would be infered when emprise is loaded
+        center = self.object.get_centroid()
+        kwargs.update(
+            {
+                # center map on France
+                "carto_name": "Project",
+                "center_lat": center.y,
+                "center_lng": center.x,
+                "default_zoom": 10,
+                "layer_list": [
+                    {
+                        "name": "Communes",
+                        "url": reverse_lazy("project:project-communes", args=[self.object.id]),
+                        "display": False,  # afficher par défaut ou non
+                        "level": "2",
+                        "style": "style_communes",
+                    },
+                    {
+                        "name": "Emprise du projet",
+                        "url": reverse_lazy("project:emprise-list") + f"?id={self.object.pk}",
+                        "display": True,
+                        "style": "style_emprise",
+                        "fit_map": True,
+                        "level": "5",
+                    },
+                ],
+            }
+        )
+        return super().get_context_data(**kwargs)
+    
+    
 class BaseThemeMap(GroupMixin, DetailView):
     """This is a base class for thematic map. It group together layer definition, data
     provider and gradient provider.
@@ -375,8 +418,8 @@ class CitySpaceConsoMapView(BaseThemeMap):
 
 
 class CityArtifMapView(BaseThemeMap):
-    title = "Artificialisation des communes de mon territoire"
-    url_name = "theme-city-artif"
+    title = "Map v2"
+    url_name = "map-V2"
 
     def get_layers_list(self, *layers):
         layers = [
