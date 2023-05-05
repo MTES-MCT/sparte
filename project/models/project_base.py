@@ -406,6 +406,7 @@ class Project(BaseProject):
             self.save(update_fields=["folder_name"])
         return self.folder_name
 
+    @cached_property
     def is_artif(self):
         """Check first if departement has OCSGE millesime (to speed up process),
         secondly check if project emprise contains OCS GE data. Usefull for vendée
@@ -413,7 +414,7 @@ class Project(BaseProject):
         if self.cities.exclude(departement__source_id=33).filter(departement__is_artif_ready=True).exists():
             # au moins 1 département autre que la gironde avec Arcachon est artif_ready
             return True
-        elif self.cities.filter(departement__source_id=33).distinct().count() > 1:
+        elif self.cities.filter(departement__source_id=33).exists():
             # on a une ville du département de gironde, alors on vérifie si on est sur la couche de données d'arcachon
             geom = self.combined_emprise
             if geom:

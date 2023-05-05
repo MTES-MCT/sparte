@@ -314,7 +314,7 @@ def send_word_diagnostic(self, request_id):
             params={
                 "diagnostic_name": req.project.name,
                 "image_url": req.project.cover_image.url,
-                "ocsge_available": "" if req.project.is_artif() else "display",
+                "ocsge_available": "" if req.project.is_artif else "display",
                 "diagnostic_url": get_url_with_domain(reverse("project:word_download", args=[req.id])),
             },
         )
