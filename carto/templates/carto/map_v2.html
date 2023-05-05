@@ -45,6 +45,8 @@ html, body {
 new SparteMap ({
     targetElement: document.getElementById('mapid'),
     debug: true,
+    map_center: [{{ center_lat }}, {{ center_lng }}],
+    default_zoom: {{ default_zoom }},
 })
 {% comment %} carto.init(geolayers) {% endcomment %}
 </script>
