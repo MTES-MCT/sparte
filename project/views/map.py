@@ -370,7 +370,7 @@ class CitySpaceConsoMapView(BaseThemeMap):
             boundaries = sorted([i["conso"] for i in qs])
         else:
             boundaries = jenks_breaks([i["conso"] for i in qs], n_classes=self.scale_size)[1:]
-        data = [{"value": v, "color": c.hex_l} for v, c in zip(boundaries, get_yellow2red_gradient(len(boundaries)))]
+        data = [{"value": v, "color": c.hex_l} for v, c in zip(boundaries, get_dark_blue_gradient(len(boundaries)))]
         return JsonResponse(data, safe=False)
 
 
@@ -403,7 +403,7 @@ class CityArtifMapView(BaseThemeMap):
             boundaries = [1]
         elif len(boundaries) > self.scale_size:
             boundaries = jenks_breaks(boundaries, n_classes=self.scale_size)[1:]
-        data = [{"value": v, "color": c.hex_l} for v, c in zip(boundaries, get_dark_blue_gradient(len(boundaries)))]
+        data = [{"value": v, "color": c.hex_l} for v, c in zip(boundaries, get_yellow2red_gradient(len(boundaries)))]
         return JsonResponse(data, safe=False)
 
     def get_data(self):
