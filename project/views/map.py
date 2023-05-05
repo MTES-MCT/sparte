@@ -418,8 +418,8 @@ class CitySpaceConsoMapView(BaseThemeMap):
 
 
 class CityArtifMapView(BaseThemeMap):
-    title = "Map v2"
-    url_name = "map-V2"
+    title = "Artificialisation des communes de mon territoire"
+    url_name = "theme-city-artif"
 
     def get_layers_list(self, *layers):
         layers = [

@@ -1,0 +1,27 @@
+.mapV2_debug-panel {
+    position: absolute;
+    z-index: 9999;
+    bottom: 0;
+    left: 0;
+    background: white;
+    width: 500px;
+    padding: 15px;
+    font-size: 12px;
+    box-shadow: -1px 0px 13px -2px rgba(0,0,0,0.73);
+    opacity: 0.85;
+}
+
+.mapV2_datas-panel {
+    position: absolute;
+    z-index: 9999;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background: white;
+    width: 400px;
+    padding: 10px;
+    font-size: 12px;
+    box-shadow: -1px 0px 13px -2px rgba(0,0,0,0.73);
+    opacity: 0.85;
+    overflow-y: auto;
+}
