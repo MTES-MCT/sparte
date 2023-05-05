@@ -11,10 +11,6 @@ Carte V2 - {{ map_name }}
 {% endblock pagetitle %}
 
 {% block headers %}
-{% sri_static "carto/js/leaflet.js" %}
-{% sri_static "carto/css/leaflet.css" %}
-{% sri_static "carto/css/theme_map.css" %}
-{% sri_static "carto/js/map.js" %}
 <style nonce="{{ CSP_NONCE }}">
 html, body {
     height: 100% !important;
@@ -37,7 +33,7 @@ html, body {
 {% block bodyend %}
 {% localize off %}
 <script language="javascript" nonce="{{ CSP_NONCE }}">
-geolayers = [
+{% comment %} geolayers = [
 {% for layer in layer_list %}
     {
         {% for k, v in layer.items %}
@@ -45,9 +41,12 @@ geolayers = [
         {% endfor %}
     },
 {% endfor %}
-]
-let carto = new Carto ([{{ center_lat }}, {{ center_lng }}], {{ default_zoom }})
-carto.init(geolayers)
+] {% endcomment %}
+new SparteMap ({
+    targetElement: document.getElementById('mapid'),
+    debug: true,
+})
+{% comment %} carto.init(geolayers) {% endcomment %}
 </script>
 {% endlocalize %}
 {% endblock bodyend %}

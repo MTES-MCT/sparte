@@ -1,3 +1,7 @@
+/*********************
+ * TODO: WEBPACK Code splitting
+ ********************/
+
 // Import styles
 import '/assets/styles/index.css';
 
@@ -24,3 +28,6 @@ import '/assets/scripts/highcharts-custom-buttons.js';
 
 // Import filter diagnostic list
 import '/assets/scripts/filter-diagnostic-list.js';
+
+// Import map V2
+import '/assets/scripts/map_v2/index.js'
