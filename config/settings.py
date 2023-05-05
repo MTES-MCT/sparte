@@ -412,6 +412,7 @@ if ENVIRONMENT != "local":
 
 
 # MATOMO
+MATOMO_TOKEN = env.str("MATOMO_TOKEN", default="")
 MATOMO_ACTIVATE = env.bool("MATOMO_ACTIVATE", default=False)
 
 # GOOGLE TAG ADWORDS
