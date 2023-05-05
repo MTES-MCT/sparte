@@ -384,7 +384,7 @@ def generate_theme_map_conso(self, project_id):
 
         img_data = get_img(
             queryset=qs,
-            color="blues",
+            color="Blues",
             title="Consommation d'espaces des communes du territoire sur la période (en Ha)",
         )
 
