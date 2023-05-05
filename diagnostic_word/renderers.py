@@ -237,7 +237,7 @@ class Renderer:
             }
         )
 
-        if diagnostic.is_artif():
+        if diagnostic.is_artif:
             context.update(
                 {
                     "ocsge_is_available": True,
