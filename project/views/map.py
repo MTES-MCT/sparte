@@ -226,19 +226,47 @@ class MapV2View(GroupMixin, DetailView):
                 "default_zoom": 10,
                 "layer_list": [
                     {
-                        "name": "Communes",
-                        "url": reverse_lazy("project:project-communes", args=[self.object.id]),
-                        "display": False,  # afficher par défaut ou non
-                        "level": "2",
-                        "style": "style_communes",
-                    },
-                    {
                         "name": "Emprise du projet",
                         "url": reverse_lazy("project:emprise-list") + f"?id={self.object.pk}",
                         "display": True,
                         "style": "style_emprise",
                         "fit_map": True,
                         "level": "5",
+                    },
+                    {
+                        "name": "Communes",
+                        "url": reverse_lazy("project:project-communes", args=[self.object.id]),
+                        "display": False,
+                        "level": "2",
+                        "style": "style_communes",
+                    },
+                    {
+                        "name": "EPCI",
+                        "url": (f'{reverse_lazy("public_data:epci-list")}'),
+                        "display": False,
+                        "level": "2",
+                        "style": "style_communes",
+                    },
+                    {
+                        "name": "SCOT",
+                        "url": (f'{reverse_lazy("public_data:scot-list")}'),
+                        "display": False,
+                        "level": "2",
+                        "style": "style_communes",
+                    },
+                    {
+                        "name": "Départements",
+                        "url": (f'{reverse_lazy("public_data:departement-list")}'),
+                        "display": False,
+                        "level": "2",
+                        "style": "style_communes",
+                    },
+                    {
+                        "name": "Régions",
+                        "url": (f'{reverse_lazy("public_data:region-list")}'),
+                        "display": False,
+                        "level": "2",
+                        "style": "style_communes",
                     },
                 ],
             }

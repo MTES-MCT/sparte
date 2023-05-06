@@ -1060,7 +1060,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
 		}
 	}
 
-.mapV2_debug-panel {
+#mapV2__debug {
     position: absolute;
     z-index: 9999;
     bottom: 0;
@@ -1073,19 +1073,17 @@ svg.leaflet-image-layer.leaflet-interactive path {
     opacity: 0.85;
 }
 
-.mapV2_datas-panel {
-    position: absolute;
-    z-index: 9999;
-    top: 0;
-    right: 0;
-    bottom: 0;
+#mapV2__datas {
     background: white;
     width: 400px;
     padding: 10px;
     font-size: 12px;
-    box-shadow: -1px 0px 13px -2px rgba(0,0,0,0.73);
-    opacity: 0.85;
     overflow-y: auto;
+    border-top: 1px solid #EAEAEA;
+}
+
+.mapV2__geo-layer-selector input {
+    margin-right: 5px;
 }
 /*
 Fix link icon position

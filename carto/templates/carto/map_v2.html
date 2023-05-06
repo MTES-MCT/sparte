@@ -21,11 +21,10 @@ html, body {
 {% block body_class %}header-min full-width breadcrumb-min{% endblock %}
 
 {% block content %}
-<div id="local-container" class="d-flex h-100">
-    <div id="mapid" class="flex-grow-1"></div>
+<div id="mapV2__wrapper" class="d-flex h-100">
+    <div id="mapV2__container" class="flex-grow-1"></div>
+    <div id="mapV2__datas"></div>
 </div>
-
-<div id="layer_list"></div>
 {% endblock content %}
 
 {% block footer %}{% endblock footer %}
@@ -33,7 +32,7 @@ html, body {
 {% block bodyend %}
 {% localize off %}
 <script language="javascript" nonce="{{ CSP_NONCE }}">
-{% comment %} geolayers = [
+geoLayers = [
 {% for layer in layer_list %}
     {
         {% for k, v in layer.items %}
@@ -41,14 +40,14 @@ html, body {
         {% endfor %}
     },
 {% endfor %}
-] {% endcomment %}
+]
 new SparteMap ({
-    targetElement: document.getElementById('mapid'),
+    targetElement: document.getElementById('mapV2__container'),
     debug: true,
-    map_center: [{{ center_lat }}, {{ center_lng }}],
-    default_zoom: {{ default_zoom }},
+    mapCenter: [{{ center_lat }}, {{ center_lng }}],
+    defaultZoom: {{ default_zoom }},
+    geoLayers: geoLayers,
 })
-{% comment %} carto.init(geolayers) {% endcomment %}
 </script>
 {% endlocalize %}
 {% endblock bodyend %}

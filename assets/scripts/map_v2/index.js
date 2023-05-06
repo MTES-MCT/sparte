@@ -1,4 +1,5 @@
 import * as L from 'leaflet'
+import { polyStyle } from './utils.js'
 
 export default class SparteMap {
     constructor(_options = {}) {
@@ -6,8 +7,9 @@ export default class SparteMap {
 
         this.targetElement = _options.targetElement
         this.debug = _options.debug
-        this.map_center = _options.map_center
-        this.default_zoom = _options.default_zoom
+        this.mapCenter = _options.mapCenter
+        this.defaultZoom = _options.defaultZoom
+        this.geoLayers = _options.geoLayers
 
         if (!this.targetElement) {
             console.warn('Missing \'targetElement\' property')
@@ -16,6 +18,7 @@ export default class SparteMap {
 
         this.setConfig()
         this.setMap()
+        this.setGeoLayers()
         this.setDatasPanel()
 
         if (this.debug)
@@ -24,8 +27,8 @@ export default class SparteMap {
 
     setDebug() {
         this.debugPanel = document.createElement('div')
-        this.debugPanel.className = "mapV2_debug-panel"
-        this.debugPanel.innerHTML = "<strong>Mode Debug activé</strong>"
+        this.debugPanel.id = 'mapV2__debug'
+        this.debugPanel.innerHTML = '<strong>Mode Debug activé</strong>'
         this.targetElement.appendChild(this.debugPanel)
 
         // Display size
@@ -38,14 +41,14 @@ export default class SparteMap {
         this.debugPanel.appendChild(this.debugPanelBounding)
         this.map.on('moveend', () => {
             this.debugPanelBounding.innerHTML = `<strong>Bounds:</strong> SW ${this.map.getBounds().getSouthWest().toString()}, NE ${this.map.getBounds().getNorthEast().toString()}`
-        });
+        })
 
         // Display zoom level
         this.debugPanelZoom = document.createElement('div')
         this.debugPanel.appendChild(this.debugPanelZoom)
         this.map.on('zoomend', () => {
             this.debugPanelZoom.innerHTML = `<strong>Zoom level:</strong> ${this.map.getZoom()}`
-        });
+        })
     }
 
     setConfig() {
@@ -59,16 +62,16 @@ export default class SparteMap {
 
     setMap() {
         this.map = L.map(this.targetElement.id, {
-            center: this.map_center,
-            zoom: this.default_zoom,
+            center: this.mapCenter,
+            zoom: this.defaultZoom,
             minZoom: 6,
         })
 
         // Set max bounds
         let southWest = L.latLng(41.650542, -6.855469),
             northEast = L.latLng(51.830852, 13.359375),
-            bounds = L.latLngBounds(southWest, northEast);
-        this.map.setMaxBounds(bounds);
+            bounds = L.latLngBounds(southWest, northEast)
+        this.map.setMaxBounds(bounds)
 
         // Get IGN tiles
         L.tileLayer(
@@ -86,10 +89,61 @@ export default class SparteMap {
         ).addTo(this.map)
     }
 
+    setGeoLayers() {
+        console.log(this.geoLayers)
+        this.geoLayers.map(async (obj) => {
+            // Get GEO JSON for all layers
+            let response = await fetch(obj.url)
+
+            if (response.status === 200) {
+                let data = await response.json()
+
+                // Create GEO Layer pane
+                let GeoLayerPane = this.map.createPane(obj.name)
+                // Set GEO Layer pane order
+                GeoLayerPane.style.zIndex = 999 * obj.level
+                // Set GEO Layer pane default visibility
+                if (obj.display === 'False')
+                    GeoLayerPane.style.display = 'none'
+
+                // Add GEO JSON layer to map
+                L.geoJSON(data, { 
+                    style: polyStyle(data),
+                    pane: obj.name
+                }).addTo(this.map)
+            }
+        })
+    }
+
     setDatasPanel() {
-        this.datasPanel = document.createElement('div')
-        this.datasPanel.className = "mapV2_datas-panel"
-        this.targetElement.appendChild(this.datasPanel)
+        this.datasPanel = document.getElementById('mapV2__datas')
+
+        // Display geo layers selector
+        this.geoLayers.map((obj) => {
+            let container = document.createElement('div')
+            container.className = 'mapV2__geo-layer-selector'
+
+            let input = document.createElement('input')
+            input.type = 'checkbox'
+            input.name = obj.name
+            input.value = obj.name
+            input.id = obj.name
+            if (obj.display === 'True')
+                input.checked = true
+
+            let label = document.createElement('label')
+            label.htmlFor = obj.name
+            label.appendChild(document.createTextNode(obj.name))
+
+            // Add change event on input
+            input.addEventListener('change', (_event) => {
+                this.map.getPane(_event.target.value).style.display = _event.target.checked ? 'block' : 'none'
+            })
+
+            container.appendChild(input)
+            container.appendChild(label)
+            this.datasPanel.appendChild(container)
+        })
     }
 }
 
