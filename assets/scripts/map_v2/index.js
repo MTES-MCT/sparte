@@ -1,5 +1,5 @@
 import * as L from 'leaflet'
-import { polyStyle } from './utils.js'
+import geoLayersStyle from './geo-layers-style.json'
 
 export default class SparteMap {
     constructor(_options = {}) {
@@ -19,7 +19,6 @@ export default class SparteMap {
         this.setConfig()
         this.setMap()
         this.setGeoLayers()
-        this.setDatasPanel()
 
         if (this.debug)
             this.setDebug()
@@ -105,45 +104,46 @@ export default class SparteMap {
                 // Set GEO Layer pane default visibility
                 if (obj.display === 'False')
                     GeoLayerPane.style.display = 'none'
+                // Get GEO Layer style
+                const style = geoLayersStyle.find(el => el.key === obj.style)
 
                 // Add GEO JSON layer to map
-                L.geoJSON(data, { 
-                    style: polyStyle(data),
-                    pane: obj.name
+                L.geoJSON(data, {
+                    style: style,
+                    pane: obj.name,
                 }).addTo(this.map)
+
+                this.setGeoLayerSelector(obj)
             }
         })
     }
 
-    setDatasPanel() {
+    setGeoLayerSelector(geoLayer) {
         this.datasPanel = document.getElementById('mapV2__datas')
 
-        // Display geo layers selector
-        this.geoLayers.map((obj) => {
-            let container = document.createElement('div')
-            container.className = 'mapV2__geo-layer-selector'
+        let container = document.createElement('div')
+        container.className = 'mapV2__geo-layer-selector'
 
-            let input = document.createElement('input')
-            input.type = 'checkbox'
-            input.name = obj.name
-            input.value = obj.name
-            input.id = obj.name
-            if (obj.display === 'True')
-                input.checked = true
+        let input = document.createElement('input')
+        input.type = 'checkbox'
+        input.name = geoLayer.name
+        input.value = geoLayer.name
+        input.id = geoLayer.name
+        if (geoLayer.display === 'True')
+            input.checked = true
 
-            let label = document.createElement('label')
-            label.htmlFor = obj.name
-            label.appendChild(document.createTextNode(obj.name))
+        let label = document.createElement('label')
+        label.htmlFor = geoLayer.name
+        label.appendChild(document.createTextNode(geoLayer.name))
 
-            // Add change event on input
-            input.addEventListener('change', (_event) => {
-                this.map.getPane(_event.target.value).style.display = _event.target.checked ? 'block' : 'none'
-            })
-
-            container.appendChild(input)
-            container.appendChild(label)
-            this.datasPanel.appendChild(container)
+        // Add change event on input
+        input.addEventListener('change', (_event) => {
+            this.map.getPane(_event.target.value).style.display = _event.target.checked ? 'block' : 'none'
         })
+
+        container.appendChild(input)
+        container.appendChild(label)
+        this.datasPanel.appendChild(container)
     }
 }
 
