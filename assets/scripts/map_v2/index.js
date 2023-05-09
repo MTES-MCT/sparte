@@ -92,6 +92,10 @@ export default class SparteMap {
         console.log(this.geoLayers)
         this.geoLayers.map(async (obj) => {
             // Get GEO JSON for all layers
+            // TODO : ajouter le bbox et le zoom
+            var url = obj.url
+            url = url + `?in_bbox=${this.carto.map.getBounds().toBBoxString()}`
+            url = url + `&zoom=${this.carto.map.getZoom()}`
             let response = await fetch(obj.url)
 
             if (response.status === 200) {
