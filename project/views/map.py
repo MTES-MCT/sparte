@@ -258,7 +258,7 @@ class MapV2View(GroupMixin, DetailView):
                     {
                         "name": "Départements",
                         "url": (f'{reverse_lazy("public_data:departement-optimized")}'),
-                        "display": False,
+                        "display": True,
                         "level": "2",
                         "style": "style_departements",
                         "is_optimized": True,
@@ -266,7 +266,7 @@ class MapV2View(GroupMixin, DetailView):
                     {
                         "name": "Régions",
                         "url": (f'{reverse_lazy("public_data:region-optimized")}'),
-                        "display": False,
+                        "display": True,
                         "level": "3",
                         "style": "style_regions",
                         "is_optimized": True,
