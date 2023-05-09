@@ -60,6 +60,8 @@ export default class SparteMap {
     }
 
     setMap() {
+        this.datasPanel = document.getElementById('mapV2__datas')
+        
         this.map = L.map(this.targetElement.id, {
             center: this.mapCenter,
             zoom: this.defaultZoom,
@@ -86,10 +88,20 @@ export default class SparteMap {
                 service: 'WMTS'
             }
         ).addTo(this.map)
+
+        this.map.on('zoomend', () => {
+            this.layerGourpOptimized.clearLayers()
+            this.setGeoLayers()
+        })
     }
 
     setGeoLayers() {
-        console.log(this.geoLayers)
+        this.datasPanel.innerHTML = ""
+
+        // Create layer group Optimized
+        this.layerGourpOptimized = L.layerGroup()
+        this.layerGourpOptimized.addTo(this.map)
+
         this.geoLayers.map(async (obj) => {
             // Get GEO JSON for all layers
             let url = obj.url
@@ -111,22 +123,25 @@ export default class SparteMap {
                     const style = geoLayersStyle.find(el => el.key === obj.style)
 
                     // Add GEO JSON layer to map
-                    L.geoJSON(data, {
+                    const layer = L.geoJSON(data, {
                         style: style,
                         pane: obj.name,
-                    }).addTo(this.map)
+                    })
+                    
+                    if (obj.is_optimized === "True")
+                        this.layerGourpOptimized.addLayer(layer)
+                    else
+                        layer.addTo(this.map)
 
                     this.setGeoLayerSelector(obj)
                 })
                 .catch(function(error) {
-                    console.log(error);
-                });
+                    console.log(error)
+                })
         })
     }
 
     setGeoLayerSelector(geoLayer) {
-        this.datasPanel = document.getElementById('mapV2__datas')
-
         let container = document.createElement('div')
         container.className = 'mapV2__geo-layer-selector'
 
