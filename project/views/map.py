@@ -205,7 +205,7 @@ class ProjectMapView(GroupMixin, DetailView):
 
 class MapV2View(GroupMixin, DetailView):
     queryset = Project.objects.all()
-    template_name = "carto/map_V2.html"
+    template_name = "carto/map_v2.html"
     context_object_name = "project"
 
     def get_context_breadcrumbs(self):
