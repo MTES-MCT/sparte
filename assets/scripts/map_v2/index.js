@@ -92,33 +92,35 @@ export default class SparteMap {
         console.log(this.geoLayers)
         this.geoLayers.map(async (obj) => {
             // Get GEO JSON for all layers
-            // TODO : ajouter le bbox et le zoom
-            var url = obj.url
-            url = url + `?in_bbox=${this.carto.map.getBounds().toBBoxString()}`
-            url = url + `&zoom=${this.carto.map.getZoom()}`
-            let response = await fetch(obj.url)
+            let url = obj.url
+            if (obj.is_optimized === "True")
+                url += `?in_bbox=${this.map.getBounds().toBBoxString()}&zoom=${this.map.getZoom()}`
 
-            if (response.status === 200) {
-                let data = await response.json()
+            fetch(url)
+                .then((response) => {
+                    return response.json();
+                })
+                .then((data) => {
+                    let GeoLayerPane = this.map.createPane(obj.name)
+                    // Set GEO Layer pane order
+                    GeoLayerPane.style.zIndex = 999 * obj.level
+                    // Set GEO Layer pane default visibility
+                    if (obj.display === 'False')
+                        GeoLayerPane.style.display = 'none'
+                    // Get GEO Layer style
+                    const style = geoLayersStyle.find(el => el.key === obj.style)
 
-                // Create GEO Layer pane
-                let GeoLayerPane = this.map.createPane(obj.name)
-                // Set GEO Layer pane order
-                GeoLayerPane.style.zIndex = 999 * obj.level
-                // Set GEO Layer pane default visibility
-                if (obj.display === 'False')
-                    GeoLayerPane.style.display = 'none'
-                // Get GEO Layer style
-                const style = geoLayersStyle.find(el => el.key === obj.style)
+                    // Add GEO JSON layer to map
+                    L.geoJSON(data, {
+                        style: style,
+                        pane: obj.name,
+                    }).addTo(this.map)
 
-                // Add GEO JSON layer to map
-                L.geoJSON(data, {
-                    style: style,
-                    pane: obj.name,
-                }).addTo(this.map)
-
-                this.setGeoLayerSelector(obj)
-            }
+                    this.setGeoLayerSelector(obj)
+                })
+                .catch(function(error) {
+                    console.log(error);
+                });
         })
     }
 
