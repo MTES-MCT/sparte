@@ -232,6 +232,7 @@ class MapV2View(GroupMixin, DetailView):
                         "style": "style_emprise",
                         "fit_map": True,
                         "level": "5",
+                        "is_optimized": False,
                     },
                     # {
                     #     "name": "Communes",
@@ -260,6 +261,7 @@ class MapV2View(GroupMixin, DetailView):
                         "display": False,
                         "level": "2",
                         "style": "style_departements",
+                        "is_optimized": True,
                     },
                     {
                         "name": "Régions",
@@ -267,6 +269,7 @@ class MapV2View(GroupMixin, DetailView):
                         "display": False,
                         "level": "3",
                         "style": "style_regions",
+                        "is_optimized": True,
                     },
                 ],
             }
