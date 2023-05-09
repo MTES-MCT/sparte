@@ -1,5 +1,6 @@
 """Public data API views."""
 import json
+from argon2 import Type
 
 from django.db import connection
 from django.http import HttpResponse
@@ -31,8 +32,11 @@ class OptimizedMixins:
         year = int(year)
         return [year] + bbox  # /!\ order matter, see sql query below
 
+    def get_optimized_geo_field(self):
+        return self.optimized_geo_field
+
     def get_sql_fields(self):
-        return list(self.optimized_fields.keys()) + [self.optimized_geo_field]
+        return list(self.optimized_fields.keys()) + [self.get_optimized_geo_field()]
 
     def get_field_names(self):
         return list(self.optimized_fields.values()) + ["geojson"]
@@ -270,13 +274,47 @@ class CouvertureSolViewset(viewsets.ReadOnlyModelViewSet):
 # Views for french adminisitrative territories
 
 
-class RegionViewSet(DataViewSet):
+class RegionViewSet(OptimizedMixins, DataViewSet):
     queryset = models.Region.objects.all()
     serializer_class = serializers.RegionSerializer
     geo_field = "mpoly"
 
+    optimized_fields = {}
+    optimized_geo_field = "st_AsGeoJSON(o.mpoly, 6, 0)"
+    simplification = {
+        8: 0.00000001,
+        7: 0.000001,
+        6: 0.001,
+    }
 
-class DepartementViewSet(DataViewSet):
+    def get_params(self, request):
+        bbox = request.query_params.get("in_bbox")
+        if bbox is None:
+            raise ValueError(f"bbox parameter must be set. bbox={bbox}")
+        bbox = list(map(float, bbox.split(",")))
+        return bbox  # /!\ order matter, see sql query below
+
+    def get_optimized_geo_field(self):
+        try:
+            zoom = int(self.request.query_params.get("zoom"))
+        except TypeError:
+            raise ValueError("zoom parameter must be set.")
+        if zoom >= 9:
+            return "st_AsGeoJSON(o.mpoly, 6, 0)"
+        else:
+            simplify = 9 - zoom  # entre 1 et 3
+            if simplify == 1:
+                return "st_AsGeoJSON(ST_SimplifyPreserveTopology(o.mpoly, 0.00000001), 6, 0)"
+            elif simplify == 2:
+                return "st_AsGeoJSON(ST_SimplifyPreserveTopology(o.mpoly, 0.000001), 6, 0)"
+            else:
+                return "st_AsGeoJSON(ST_SimplifyPreserveTopology(o.mpoly, 0.001), 6, 0)"
+
+    def get_sql_where(self):
+        return "where o.mpoly && ST_MakeEnvelope(%s, %s, %s, %s, 4326)"
+
+
+class DepartementViewSet(OptimizedMixins, DataViewSet):
     queryset = models.Departement.objects.all()
     serializer_class = serializers.DepartementSerializer
     geo_field = "mpoly"
