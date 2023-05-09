@@ -32,7 +32,7 @@ html, body {
 {% block bodyend %}
 {% localize off %}
 <script language="javascript" nonce="{{ CSP_NONCE }}">
-geoLayers = [
+layerList = [
 {% for layer in layer_list %}
     {
         {% for k, v in layer.items %}
@@ -46,7 +46,7 @@ new SparteMap ({
     debug: true,
     mapCenter: [{{ center_lat }}, {{ center_lng }}],
     defaultZoom: {{ default_zoom }},
-    geoLayers: geoLayers,
+    layerList: layerList,
 })
 </script>
 {% endlocalize %}

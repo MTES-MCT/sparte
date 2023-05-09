@@ -1,15 +1,15 @@
 import * as L from 'leaflet'
-import geoLayersStyle from './geo-layers-style.json'
+import Layers from './layers.js'
 
 export default class SparteMap {
     constructor(_options = {}) {
-        window.SparteMap = this
+        window.sparteMap = this
 
         this.targetElement = _options.targetElement
         this.debug = _options.debug
         this.mapCenter = _options.mapCenter
         this.defaultZoom = _options.defaultZoom
-        this.geoLayers = _options.geoLayers
+        this.layerList = _options.layerList
 
         if (!this.targetElement) {
             console.warn('Missing \'targetElement\' property')
@@ -18,7 +18,7 @@ export default class SparteMap {
 
         this.setConfig()
         this.setMap()
-        this.setGeoLayers()
+        this.setLayers()
 
         if (this.debug)
             this.setDebug()
@@ -38,16 +38,10 @@ export default class SparteMap {
         // Display bounds
         this.debugPanelBounding = document.createElement('div')
         this.debugPanel.appendChild(this.debugPanelBounding)
-        this.map.on('moveend', () => {
-            this.debugPanelBounding.innerHTML = `<strong>Bounds:</strong> SW ${this.map.getBounds().getSouthWest().toString()}, NE ${this.map.getBounds().getNorthEast().toString()}`
-        })
 
         // Display zoom level
         this.debugPanelZoom = document.createElement('div')
         this.debugPanel.appendChild(this.debugPanelZoom)
-        this.map.on('zoomend', () => {
-            this.debugPanelZoom.innerHTML = `<strong>Zoom level:</strong> ${this.map.getZoom()}`
-        })
     }
 
     setConfig() {
@@ -60,8 +54,6 @@ export default class SparteMap {
     }
 
     setMap() {
-        this.datasPanel = document.getElementById('mapV2__datas')
-        
         this.map = L.map(this.targetElement.id, {
             center: this.mapCenter,
             zoom: this.defaultZoom,
@@ -90,81 +82,32 @@ export default class SparteMap {
         ).addTo(this.map)
 
         this.map.on('zoomend', () => {
-            this.layerGourpOptimized.clearLayers()
-            this.setGeoLayers()
+            this.zoomend()
+        })
+
+        this.map.on('moveend', () => {
+            this.moveend()
         })
     }
 
-    setGeoLayers() {
-        this.datasPanel.innerHTML = ""
-
-        // Create layer group Optimized
-        this.layerGourpOptimized = L.layerGroup()
-        this.layerGourpOptimized.addTo(this.map)
-
-        this.geoLayers.map(async (obj) => {
-            // Get GEO JSON for all layers
-            let url = obj.url
-            if (obj.is_optimized === "True")
-                url += `?in_bbox=${this.map.getBounds().toBBoxString()}&zoom=${this.map.getZoom()}`
-
-            fetch(url)
-                .then((response) => {
-                    return response.json()
-                })
-                .then((data) => {
-                    let GeoLayerPane = this.map.createPane(obj.name)
-                    // Set GEO Layer pane order
-                    GeoLayerPane.style.zIndex = 999 * obj.level
-                    // Set GEO Layer pane default visibility
-                    if (obj.display === 'False')
-                        GeoLayerPane.style.display = 'none'
-                    // Get GEO Layer style
-                    const style = geoLayersStyle.find(el => el.key === obj.style)
-
-                    // Add GEO JSON layer to map
-                    const layer = L.geoJSON(data, {
-                        style: style,
-                        pane: obj.name,
-                    })
-                    
-                    if (obj.is_optimized === "True")
-                        this.layerGourpOptimized.addLayer(layer)
-                    else
-                        layer.addTo(this.map)
-
-                    this.setGeoLayerSelector(obj)
-                })
-                .catch(function(error) {
-                    console.log(error)
-                })
-        })
+    setLayers() {
+        this.layers = new Layers()
     }
 
-    setGeoLayerSelector(geoLayer) {
-        let container = document.createElement('div')
-        container.className = 'mapV2__geo-layer-selector'
+    zoomend() {
+        if (this.layers)
+            this.layers.update()
 
-        let input = document.createElement('input')
-        input.type = 'checkbox'
-        input.name = geoLayer.name
-        input.value = geoLayer.name
-        input.id = geoLayer.name
-        if (geoLayer.display === 'True')
-            input.checked = true
+        if (this.debug)
+            this.debugPanelBounding.innerHTML = `<strong>Bounds:</strong> SW ${this.map.getBounds().getSouthWest().toString()}, NE ${this.map.getBounds().getNorthEast().toString()}`
+    }
 
-        let label = document.createElement('label')
-        label.htmlFor = geoLayer.name
-        label.appendChild(document.createTextNode(geoLayer.name))
+    moveend() {
+        if (this.layers)
+            this.layers.update()
 
-        // Add change event on input
-        input.addEventListener('change', (_event) => {
-            this.map.getPane(_event.target.value).style.display = _event.target.checked ? 'block' : 'none'
-        })
-
-        container.appendChild(input)
-        container.appendChild(label)
-        this.datasPanel.appendChild(container)
+        if (this.debug)
+            this.debugPanelZoom.innerHTML = `<strong>Zoom level:</strong> ${this.map.getZoom()}`
     }
 }
 
