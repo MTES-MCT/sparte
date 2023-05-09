@@ -98,7 +98,7 @@ export default class SparteMap {
 
             fetch(url)
                 .then((response) => {
-                    return response.json();
+                    return response.json()
                 })
                 .then((data) => {
                     let GeoLayerPane = this.map.createPane(obj.name)
