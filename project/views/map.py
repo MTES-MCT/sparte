@@ -256,24 +256,24 @@ class MapV2View(GroupMixin, DetailView):
                     # },
                     {
                         "name": "Départements",
-                        "url": (f'{reverse_lazy("public_data:departement-list")}'),
+                        "url": (f'{reverse_lazy("public_data:departement-optimized")}'),
                         "display": False,
                         "level": "2",
                         "style": "style_departements",
                     },
                     {
                         "name": "Régions",
-                        "url": (f'{reverse_lazy("public_data:region-list")}'),
+                        "url": (f'{reverse_lazy("public_data:region-optimized")}'),
                         "display": False,
-                        "level": "2",
+                        "level": "3",
                         "style": "style_regions",
                     },
                 ],
             }
         )
         return super().get_context_data(**kwargs)
-    
-    
+
+
 class BaseThemeMap(GroupMixin, DetailView):
     """This is a base class for thematic map. It group together layer definition, data
     provider and gradient provider.
