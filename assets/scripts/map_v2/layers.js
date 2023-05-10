@@ -14,6 +14,10 @@ export default class Layers {
         this.layers = []
 
         this.layerList.map(async (obj) => {
+            // Pass if not displayed
+            if (obj.display === "False")
+                return
+
             // Get GEO JSON for all layers
             let url = obj.url
             if (obj.is_optimized === "True")
@@ -88,12 +92,10 @@ export default class Layers {
 
     update() {
         this.layers.map((obj) => {
-            if (obj.options.display === 'False')
+            if (obj.options.display === 'False' || obj.options.is_optimized === "False")
                 return
             
-            let url = obj.options.url
-            if (obj.options.is_optimized === "True")
-                url += `?in_bbox=${this.map.getBounds().toBBoxString()}&zoom=${this.map.getZoom()}`
+            let url = `${obj.options.url}?in_bbox=${this.map.getBounds().toBBoxString()}&zoom=${this.map.getZoom()}`
     
             fetch(url)
                 .then((response) => {
