@@ -1,5 +1,6 @@
 import * as L from 'leaflet'
 import Layers from './layers.js'
+import { debounce } from './utils.js'
 
 export default class SparteMap {
     constructor(_options = {}) {
@@ -42,6 +43,11 @@ export default class SparteMap {
         // Display zoom level
         this.debugPanelZoom = document.createElement('div')
         this.debugPanel.appendChild(this.debugPanelZoom)
+
+        this.map.on('moveend', () => {
+            this.debugPanelZoom.innerHTML = `<strong>Zoom level:</strong> ${this.map.getZoom()}`
+            this.debugPanelBounding.innerHTML = `<strong>Bounds:</strong> SW ${this.map.getBounds().getSouthWest().toString()}, NE ${this.map.getBounds().getNorthEast().toString()}`
+        })
     }
 
     setConfig() {
@@ -81,33 +87,16 @@ export default class SparteMap {
             }
         ).addTo(this.map)
 
-        this.map.on('zoomend', () => {
-            this.zoomend()
-        })
-
-        this.map.on('moveend', () => {
-            this.moveend()
-        })
+        this.map.on('moveend', debounce(() => this.moveend(), 1000))
     }
 
     setLayers() {
         this.layers = new Layers()
     }
 
-    zoomend() {
-        if (this.layers)
-            this.layers.update()
-
-        if (this.debug)
-            this.debugPanelBounding.innerHTML = `<strong>Bounds:</strong> SW ${this.map.getBounds().getSouthWest().toString()}, NE ${this.map.getBounds().getNorthEast().toString()}`
-    }
-
     moveend() {
         if (this.layers)
             this.layers.update()
-
-        if (this.debug)
-            this.debugPanelZoom.innerHTML = `<strong>Zoom level:</strong> ${this.map.getZoom()}`
     }
 }
 

@@ -2,7 +2,7 @@
     {
         "key": "style_emprise",
         "fill": false,
-        "weight": 2,
+        "weight": 1,
         "opacity": 1,
         "color": "#FFFF00",
         "fillOpacity": 0
@@ -11,7 +11,7 @@
         "key": "style_departements",
         "fillColor": "#4ddab0",
         "fillOpacity": 0.1,
-        "weight": 0.5,
+        "weight": 1,
         "opacity": 1,
         "color": "#4ddab0"
     },
@@ -20,7 +20,7 @@
         "fillColor": "#e2d6c2",
         "fillOpacity": 0.1,
         "weight": 1,
-        "opacity": 0.7,
+        "opacity": 1,
         "color": "#e2d6c2"
     }
 ]
