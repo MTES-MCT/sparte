@@ -311,6 +311,14 @@ class MapV2View(GroupMixin, DetailView):
                         "level": "6",
                         "is_optimized": True,
                     },
+                    {
+                        "name": "Grille 1km",
+                        "url": f'{reverse_lazy("public_data:grid")}?gride_size=1',
+                        "display": True,
+                        "style": "style_communes",
+                        "level": "1",
+                        "is_optimized": True,
+                    },
                 ],
             }
         )
