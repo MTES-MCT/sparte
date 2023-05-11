@@ -1,6 +1,6 @@
 """Public data API views."""
 import json
-from argon2 import Type
+from typing import Dict
 
 from django.db import connection
 from django.http import HttpResponse
@@ -18,9 +18,7 @@ from . import serializers
 
 
 class OptimizedMixins:
-    optimized_fields = {
-        "sql": "name",
-    }
+    optimized_fields: Dict[str, str] = {}
     optimized_geo_field = "st_AsGeoJSON(o.mpoly, 6, 0)"
 
     def get_params(self, request):
@@ -113,6 +111,36 @@ class OptimizedMixins:
                 }
             )
         return HttpResponse(envelope, content_type="application/json")
+
+
+class ZoomSimplificationMixin:
+    start_zoom_simplification = 13
+
+    def get_zoom(self):
+        try:
+            return int(self.request.query_params.get("zoom"))
+        except TypeError:
+            raise ValueError("zoom parameter must be set.")
+
+    def get_params(self, request):
+        bbox = request.query_params.get("in_bbox")
+        if bbox is None:
+            raise ValueError(f"bbox parameter must be set. bbox={bbox}")
+        bbox = list(map(float, bbox.split(",")))
+        return bbox  # /!\ order matter, see sql query below
+
+    def get_optimized_geo_field(self):
+        zoom = self.get_zoom()
+        if zoom > self.start_zoom_simplification:
+            return "st_AsGeoJSON(o.mpoly, 6, 0)"
+        else:
+            a = ((0.05 - 0.00000001) / (6 - self.start_zoom_simplification))
+            b = 0.05 - a * 6
+            y = a * zoom + b
+            return f"st_AsGeoJSON(ST_SimplifyPreserveTopology(o.mpoly, {y}), 6, 0)"
+
+    def get_sql_where(self):
+        return "where o.mpoly && ST_MakeEnvelope(%s, %s, %s, %s, 4326)"
 
 
 class DataViewSet(viewsets.ReadOnlyModelViewSet):
@@ -274,103 +302,66 @@ class CouvertureSolViewset(viewsets.ReadOnlyModelViewSet):
 # Views for french adminisitrative territories
 
 
-class RegionViewSet(OptimizedMixins, DataViewSet):
+class RegionViewSet(ZoomSimplificationMixin, OptimizedMixins, DataViewSet):
     queryset = models.Region.objects.all()
     serializer_class = serializers.RegionSerializer
     geo_field = "mpoly"
-
     optimized_fields = {}
-    optimized_geo_field = "st_AsGeoJSON(o.mpoly, 6, 0)"
-    simplification = {
-        8: 0.00000001,
-        7: 0.000001,
-        6: 0.001,
-    }
-
-    def get_params(self, request):
-        bbox = request.query_params.get("in_bbox")
-        if bbox is None:
-            raise ValueError(f"bbox parameter must be set. bbox={bbox}")
-        bbox = list(map(float, bbox.split(",")))
-        return bbox  # /!\ order matter, see sql query below
-
-    def get_optimized_geo_field(self):
-        try:
-            zoom = int(self.request.query_params.get("zoom"))
-        except TypeError:
-            raise ValueError("zoom parameter must be set.")
-        if zoom >= 9:
-            return "st_AsGeoJSON(o.mpoly, 6, 0)"
-        else:
-            simplify = 9 - zoom  # entre 1 et 3
-            if simplify == 1:
-                return "st_AsGeoJSON(ST_SimplifyPreserveTopology(o.mpoly, 0.00000001), 6, 0)"
-            elif simplify == 2:
-                return "st_AsGeoJSON(ST_SimplifyPreserveTopology(o.mpoly, 0.000001), 6, 0)"
-            else:
-                return "st_AsGeoJSON(ST_SimplifyPreserveTopology(o.mpoly, 0.001), 6, 0)"
-
-    def get_sql_where(self):
-        return "where o.mpoly && ST_MakeEnvelope(%s, %s, %s, %s, 4326)"
+    start_zoom_simplification = 18
 
 
-class DepartementViewSet(OptimizedMixins, DataViewSet):
+
+class DepartementViewSet(ZoomSimplificationMixin, OptimizedMixins, DataViewSet):
     queryset = models.Departement.objects.all()
     serializer_class = serializers.DepartementSerializer
     geo_field = "mpoly"
-    
     optimized_fields = {}
-    optimized_geo_field = "st_AsGeoJSON(o.mpoly, 6, 0)"
-    simplification = {
-        8: 0.00000001,
-        7: 0.000001,
-        6: 0.001,
-    }
-
-    def get_params(self, request):
-        bbox = request.query_params.get("in_bbox")
-        if bbox is None:
-            raise ValueError(f"bbox parameter must be set. bbox={bbox}")
-        bbox = list(map(float, bbox.split(",")))
-        return bbox  # /!\ order matter, see sql query below
-
-    def get_optimized_geo_field(self):
-        try:
-            zoom = int(self.request.query_params.get("zoom"))
-        except TypeError:
-            raise ValueError("zoom parameter must be set.")
-        if zoom >= 9:
-            return "st_AsGeoJSON(o.mpoly, 6, 0)"
-        else:
-            simplify = 9 - zoom  # entre 1 et 3
-            if simplify == 1:
-                return "st_AsGeoJSON(ST_SimplifyPreserveTopology(o.mpoly, 0.00000001), 6, 0)"
-            elif simplify == 2:
-                return "st_AsGeoJSON(ST_SimplifyPreserveTopology(o.mpoly, 0.000001), 6, 0)"
-            else:
-                return "st_AsGeoJSON(ST_SimplifyPreserveTopology(o.mpoly, 0.001), 6, 0)"
-
-    def get_sql_where(self):
-        return "where o.mpoly && ST_MakeEnvelope(%s, %s, %s, %s, 4326)"
+    start_zoom_simplification = 18
 
 
-
-class ScotViewSet(DataViewSet):
+class ScotViewSet(ZoomSimplificationMixin, OptimizedMixins, DataViewSet):
     queryset = models.Scot.objects.all()
     serializer_class = serializers.ScotSerializer
     geo_field = "mpoly"
+    start_zoom_simplification = 18
 
 
-class EpciViewSet(DataViewSet):
+class EpciViewSet(ZoomSimplificationMixin, OptimizedMixins, DataViewSet):
     """EPCI view set."""
 
     queryset = models.Epci.objects.all()
     serializer_class = serializers.EpciSerializer
     geo_field = "mpoly"
 
+    def get_optimized_geo_field(self):
+        zoom = self.get_zoom()
+        if zoom >= 16:
+            return "st_AsGeoJSON(o.mpoly, 6, 0)"
+        elif zoom >= 13:
+            y = 0.0001
+        elif zoom >= 10:
+            y = 0.001
+        else:
+            y = 0.0075
+        return f"st_AsGeoJSON(ST_SimplifyPreserveTopology(o.mpoly, {y}), 6, 0)"
 
-class CommuneViewSet(DataViewSet):
+
+class CommuneViewSet(ZoomSimplificationMixin, OptimizedMixins, DataViewSet):
     """Commune view set."""
 
     queryset = models.Commune.objects.all()
     serializer_class = serializers.CommuneSerializer
+    geo_field = "mpoly"
+    optimized_fields = {}
+
+    def get_optimized_geo_field(self):
+        zoom = self.get_zoom()
+        if zoom >= 16:
+            return "st_AsGeoJSON(o.mpoly, 6, 0)"
+        elif zoom >= 13:
+            y = 0.0001
+        elif zoom >= 10:
+            y = 0.001
+        else:
+            y = 0.008
+        return f"st_AsGeoJSON(ST_SimplifyPreserveTopology(o.mpoly, {y}), 6, 0)"
