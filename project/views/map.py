@@ -286,7 +286,7 @@ class MapV2View(GroupMixin, DetailView):
                     {
                         "name": "OCSGE diff",
                         "url": f'{reverse_lazy("public_data:ocsgediff-optimized")}?year_old=2016&year_new=2019',
-                        "display": True,
+                        "display": False,
                         "level": "7",
                         "style": "style_communes",
                         "is_optimized": True,
@@ -298,9 +298,17 @@ class MapV2View(GroupMixin, DetailView):
                             f'{reverse_lazy("public_data:artificialarea-optimized")}'
                             f"?year=2016&project_id={self.object.id}"
                         ),
-                        "display": True,
-                        "level": "7",
+                        "display": False,
+                        "level": "5",
                         "style": "style_communes",
+                        "is_optimized": True,
+                    },
+                    {
+                        "name": "Zones construites",
+                        "url": f'{reverse_lazy("public_data:zoneconstruite-optimized")}?year=2019',
+                        "display": True,
+                        "style": "style_communes",
+                        "level": "6",
                         "is_optimized": True,
                     },
                 ],
