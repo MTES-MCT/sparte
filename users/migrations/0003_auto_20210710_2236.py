@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("users", "0002_auto_20210706_2214"),
     ]
@@ -24,8 +23,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="user",
             name="email_checked",
-            field=models.DateTimeField(
-                blank=True, null=True, verbose_name="email checked"
-            ),
+            field=models.DateTimeField(blank=True, null=True, verbose_name="email checked"),
         ),
     ]

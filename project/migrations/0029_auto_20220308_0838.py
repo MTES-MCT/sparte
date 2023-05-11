@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("public_data", "0042_alter_cerema_table"),
         ("project", "0028_auto_20220216_2144"),
@@ -17,14 +16,8 @@ class Migration(migrations.Migration):
                 # Old table name from checking with sqlmigrate, new table
                 # name from AuthorBook._meta.db_table.
                 migrations.RunSQL(
-                    sql=(
-                        "ALTER TABLE project_project_cities RENAME TO "
-                        "project_projectcommune"
-                    ),
-                    reverse_sql=(
-                        "ALTER TABLE project_projectcommune RENAME TO "
-                        "project_project_cities"
-                    ),
+                    sql=("ALTER TABLE project_project_cities RENAME TO " "project_projectcommune"),
+                    reverse_sql=("ALTER TABLE project_projectcommune RENAME TO " "project_project_cities"),
                 ),
             ],
             state_operations=[

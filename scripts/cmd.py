@@ -22,9 +22,14 @@ class ScalingoInterface:
         self.region = ENVS[self.env_name].get("region", None)
         self.detached = ctx_obj["DETACHED"]
 
-    def get_scalingo_run_cmd(self) -> str:
+    def get_scalingo_prefix_cmd(self) -> str:
         """Return the line to execute the command on scalingo remote app"""
         cmd = f"scalingo --app {self.app} --region {self.region}"
+        return cmd
+
+    def get_scalingo_run_cmd(self) -> str:
+        """Return the line to execute the command on scalingo remote app"""
+        cmd = self.get_scalingo_prefix_cmd()
         if self.detached:
             return f"{cmd} run -d"
         return f"{cmd} run"
@@ -46,6 +51,22 @@ class ScalingoInterface:
                 print(buf.decode(), end="")
             except UnicodeDecodeError:
                 print("decode error")
+
+    def logs(self, **options):
+        """Display log of the remote app"""
+        cmd = self.get_scalingo_prefix_cmd()
+        cmd += " logs -f"
+        for name, val in options.items():
+            if len(name) == 1:
+                cmd += f" -{name}"
+            else:
+                cmd += f" --{name}"
+            if val:
+                cmd += f" {val}"
+        if self.env_name == "local":
+            raise ValueError("No logs on local environment")
+        else:
+            asyncio.run(self.async_run(cmd))
 
     def run(self, cmd):
         """If it is not local, add scalingo prefix to execute the command remotly,
@@ -133,9 +154,37 @@ def arun(ctx, user_cmd):
 
 
 @cli.command()
-@click.option(
-    "--klass", default=None, type=str, help="upload data for a specific model"
+@click.argument(
+    "user_cmd",
+    nargs=1,
 )
+@click.pass_context
+def manage(ctx, user_cmd):
+    """Send a command to a remote host in detached mode."""
+    ScalingoInterface(ctx.obj).manage_py(user_cmd)
+
+
+@cli.command()
+@click.argument("id_list", nargs=-1, type=int)
+@click.pass_context
+def project_history(ctx, id_list):
+    id_arg = " ".join([str(i) for i in id_list])
+    cmd = f"project_history {id_arg}"
+    ScalingoInterface(ctx.obj).manage_py(cmd)
+
+
+@cli.command()
+@click.option("--filter", type=str, help="filter logs using an expression")
+@click.pass_context
+def logs(ctx, filter):
+    options = {}
+    if filter:
+        options["filter"] = filter
+    ScalingoInterface(ctx.obj).logs(**options)
+
+
+@cli.command()
+@click.option("--klass", default=None, type=str, help="upload data for a specific model")
 @click.pass_context
 def load_data(ctx, klass=None):
     """Trigger management command public_data scalingo."""
@@ -153,12 +202,7 @@ def load_data(ctx, klass=None):
 def load_ocsge(ctx, item):
     """Trigger management command public_data.load_ocsge scalingo."""
     connecter = ScalingoInterface(ctx.obj)
-    connecter.manage_py(
-        "load_ocsge --no-verbose",
-        **{
-            "item": item,
-        },
-    )
+    connecter.manage_py("load_ocsge --no-verbose", **{"item": item})
 
 
 @cli.command()
@@ -263,19 +307,24 @@ def mep_210(ctx):
 @cli.command()
 @click.pass_context
 def mep_240(ctx):
-    """Trigger all data transformation to successful MEP release 2.4"""
+    """Trigger all data transformation to successful MEP release 1.6"""
     click.secho("Start migration v2.4", fg="cyan")
     connecter = ScalingoInterface(ctx.obj)
 
-    click.secho("Load SCoT", fg="cyan")
-    connecter.manage_py("load_scot")
+    click.secho("Add new couvertures", fg="cyan")
+    connecter.manage_py("load_usage_couv")
+    connecter.manage_py("build_matrix")
+
+    click.secho("Add BFC's OCS GE", fg="cyan")
+    connecter.detached = True
+    connecter.manage_py("load_ocsge_bfc")
 
 
 @cli.command()
 @click.pass_context
-def mep_250(ctx):
+def mep_260(ctx):
     """Trigger all data transformation to successful MEP release 2.4"""
-    click.secho("Start migration v2.5", fg="cyan")
+    click.secho("Start migration v2.6", fg="cyan")
     click.secho("Nothing", fg="cyan")
 
 

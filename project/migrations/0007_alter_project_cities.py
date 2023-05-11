@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("public_data", "0008_artifcommune"),
         ("project", "0006_alter_project_cities"),
@@ -14,8 +13,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name="project",
             name="cities",
-            field=models.ManyToManyField(
-                blank=True, to="public_data.ArtifCommune", verbose_name="cities"
-            ),
+            field=models.ManyToManyField(blank=True, to="public_data.ArtifCommune", verbose_name="cities"),
         ),
     ]

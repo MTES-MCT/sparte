@@ -3,7 +3,6 @@ from django.urls import reverse
 
 
 class WordTemplate(models.Model):
-
     slug = models.SlugField("Slug", primary_key=True)
     description = models.TextField("Description")
     docx = models.FileField("Modèle Word", upload_to="word_templates")

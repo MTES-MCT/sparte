@@ -4,19 +4,18 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('users', '0009_alter_user_options'),
+        ("users", "0009_alter_user_options"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='user',
-            options={'ordering': ['email'], 'verbose_name': 'Utilisateur'},
+            name="user",
+            options={"ordering": ["email"], "verbose_name": "Utilisateur"},
         ),
         migrations.AddField(
-            model_name='user',
-            name='organism_group',
+            model_name="user",
+            name="organism_group",
             field=models.CharField(blank=True, max_length=250, null=True, verbose_name="Groupe d'organisme"),
         ),
     ]

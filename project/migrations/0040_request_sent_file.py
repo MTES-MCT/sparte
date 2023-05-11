@@ -6,7 +6,6 @@ import project.models.project_base
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("project", "0039_alter_project_territory_name"),
     ]

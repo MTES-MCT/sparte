@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("public_data", "0081_auto_20221215_1048"),
     ]
@@ -13,16 +12,12 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name="scot",
             name="detailed_state_statut",
-            field=models.CharField(
-                max_length=250, verbose_name="Libellé Etat détaillé"
-            ),
+            field=models.CharField(max_length=250, verbose_name="Libellé Etat détaillé"),
         ),
         migrations.AlterField(
             model_name="scot",
             name="is_ene_law",
-            field=models.BooleanField(
-                default=False, verbose_name="Intégration disposition loi ENE"
-            ),
+            field=models.BooleanField(default=False, verbose_name="Intégration disposition loi ENE"),
         ),
         migrations.AlterField(
             model_name="scot",
@@ -47,8 +42,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name="scot",
             name="state_statut",
-            field=models.CharField(
-                max_length=250, verbose_name="Libellé Etat simplifié"
-            ),
+            field=models.CharField(max_length=250, verbose_name="Libellé Etat simplifié"),
         ),
     ]

@@ -8,7 +8,6 @@ import public_data.models.administration
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("public_data", "0080_auto_20220826_1635"),
     ]
@@ -25,9 +24,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name="commune",
             name="epci",
-            field=models.ForeignKey(
-                on_delete=django.db.models.deletion.PROTECT, to="public_data.epci"
-            ),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to="public_data.epci"),
         ),
         migrations.CreateModel(
             name="Scot",
@@ -44,18 +41,14 @@ class Migration(migrations.Migration):
                 ("name", models.CharField(max_length=50, verbose_name="Nom")),
                 (
                     "mpoly",
-                    django.contrib.gis.db.models.fields.MultiPolygonField(
-                        blank=True, null=True, srid=4326
-                    ),
+                    django.contrib.gis.db.models.fields.MultiPolygonField(blank=True, null=True, srid=4326),
                 ),
                 ("is_inter_departement", models.BooleanField(default=False)),
                 ("state_statut", models.CharField(max_length=250)),
                 ("detailed_state_statut", models.CharField(max_length=250)),
                 (
                     "date_published_perimeter",
-                    models.DateField(
-                        blank=True, null=True, verbose_name="Publication du périmètre"
-                    ),
+                    models.DateField(blank=True, null=True, verbose_name="Publication du périmètre"),
                 ),
                 (
                     "date_acting",
@@ -63,9 +56,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "date_stop",
-                    models.DateField(
-                        blank=True, null=True, verbose_name="Arrêt du projet"
-                    ),
+                    models.DateField(blank=True, null=True, verbose_name="Arrêt du projet"),
                 ),
                 (
                     "date_validation",
@@ -73,9 +64,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "date_end",
-                    models.DateField(
-                        blank=True, null=True, verbose_name="Fin échéance"
-                    ),
+                    models.DateField(blank=True, null=True, verbose_name="Fin échéance"),
                 ),
                 ("is_ene_law", models.BooleanField(default=False)),
                 ("scot_type", models.CharField(max_length=250)),

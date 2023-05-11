@@ -55,7 +55,6 @@ def reverse(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("home", "0003_auto_20220105_2014"),
     ]

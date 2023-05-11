@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import include, path
 from rest_framework import routers
 
 from . import views
@@ -25,9 +25,7 @@ urlpatterns = [
     path("<int:pk>/ajouter", views.ClaimProjectView.as_view(), name="claim"),
     path("<int:pk>/edit", views.ProjectUpdateView.as_view(), name="update"),
     path("<int:pk>/delete/", views.ProjectDeleteView.as_view(), name="delete"),
-    path(
-        "<int:pk>/ajouter-voisin", views.ProjectAddLookALike.as_view(), name="lookalike"
-    ),
+    path("<int:pk>/ajouter-voisin", views.ProjectAddLookALike.as_view(), name="lookalike"),
     path(
         "<int:pk>/retirer-voisin/<slug:public_key>",
         views.ProjectRemoveLookALike.as_view(),
@@ -65,11 +63,6 @@ urlpatterns = [
         name="report_city_group",
     ),
     path(
-        "<int:pk>/tableau-de-bord/consommation-relative",
-        views.ProjectReportConsoRelativeView.as_view(),
-        name="report_conso_relative",
-    ),
-    path(
         "<int:pk>/tableau-de-bord/objectif-2031",
         views.ProjectReportTarget2031View.as_view(),
         name="report_target_2031",
@@ -89,6 +82,11 @@ urlpatterns = [
         "<int:pk>/tableau-de-bord/consommation-relative/ménages",
         views.ConsoRelativeHouseholdChart.as_view(),
         name="relative-household",
+    ),
+    path(
+        "<int:pk>/set-target-2031",
+        views.SetTargetView.as_view(),
+        name="set_target_2031",
     ),
     # MAP
     path("<int:pk>/map", views.ProjectMapView.as_view(), name="map"),
@@ -121,6 +119,8 @@ urlpatterns = [
     # EXPORT
     path("exports/", views.ExportListView.as_view(), name="excel"),
     path("<int:pk>/export-excel", views.ExportExcelView.as_view(), name="export-excel"),
+    # SUB APPS
+    path("<int:pk>/trajectoires", include("trajectory.urls", namespace="trajectory")),
 ]
 
 

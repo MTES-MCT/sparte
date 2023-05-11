@@ -7,7 +7,6 @@ import public_data.models.mixins
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("public_data", "0027_alter_couvertureusagematrix_label"),
     ]
@@ -28,9 +27,7 @@ class Migration(migrations.Migration):
                 ("fid", models.FloatField(verbose_name="fid")),
                 (
                     "iddep",
-                    models.CharField(
-                        max_length=255, null=True, verbose_name="département"
-                    ),
+                    models.CharField(max_length=255, null=True, verbose_name="département"),
                 ),
                 ("n0", models.CharField(max_length=255, null=True, verbose_name="n0")),
                 ("n1", models.CharField(max_length=255, null=True, verbose_name="n1")),
@@ -44,15 +41,11 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "l_idparn0",
-                    models.CharField(
-                        max_length=255, null=True, verbose_name="l_idparn0"
-                    ),
+                    models.CharField(max_length=255, null=True, verbose_name="l_idparn0"),
                 ),
                 (
                     "l_idparn1",
-                    models.CharField(
-                        max_length=255, null=True, verbose_name="l_idparn1"
-                    ),
+                    models.CharField(max_length=255, null=True, verbose_name="l_idparn1"),
                 ),
                 ("naf_arti", models.FloatField(verbose_name="arti_hab")),
                 ("arti_act", models.FloatField(verbose_name="arti_act")),

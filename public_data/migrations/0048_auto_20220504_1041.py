@@ -8,7 +8,6 @@ import public_data.models.mixins
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("public_data", "0047_ocsgediff"),
     ]

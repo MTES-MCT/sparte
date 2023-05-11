@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("public_data", "0007_auto_20210816_1724"),
     ]
@@ -26,9 +25,7 @@ class Migration(migrations.Migration):
                 ("insee", models.CharField(max_length=10, verbose_name="code INSEE")),
                 (
                     "surface",
-                    models.DecimalField(
-                        decimal_places=2, max_digits=8, verbose_name="surface (ha)"
-                    ),
+                    models.DecimalField(decimal_places=2, max_digits=8, verbose_name="surface (ha)"),
                 ),
                 (
                     "artif_before_2009",

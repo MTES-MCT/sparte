@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("public_data", "0064_artificialarea"),
     ]
@@ -14,8 +13,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name="artificialarea",
             name="city",
-            field=models.ForeignKey(
-                on_delete=django.db.models.deletion.CASCADE, to="public_data.commune"
-            ),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="public_data.commune"),
         ),
     ]

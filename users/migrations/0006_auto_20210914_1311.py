@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("users", "0005_remove_user_creation_date"),
     ]
@@ -18,9 +17,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name="user",
             name="email_checked",
-            field=models.DateTimeField(
-                blank=True, null=True, verbose_name="E-mail vérifie"
-            ),
+            field=models.DateTimeField(blank=True, null=True, verbose_name="E-mail vérifie"),
         ),
         migrations.AlterField(
             model_name="user",

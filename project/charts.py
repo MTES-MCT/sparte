@@ -102,9 +102,7 @@ class ConsoCommuneChart(ProjectChart):
             elif self.level == "EPCI":
                 self.series = self.project.get_land_conso_per_year("epci_name")
             else:
-                self.series = self.project.get_city_conso_per_year(
-                    group_name=self.group_name
-                )
+                self.series = self.project.get_city_conso_per_year(group_name=self.group_name)
         return self.series
 
     def add_series(self):
@@ -140,11 +138,12 @@ class ObjectiveChart(ProjectChart):
         ],
         "xAxis": {
             "type": "category",
-            "categories": [str(i) for i in range(2011, 2031)],
+            # "categories": [str(i) for i in range(2011, 2031)],
             "plotBands": [
                 {
-                    "from": -0.5,
-                    "to": 9.5,
+                    "color": "#f4faff",
+                    "from": 2011,
+                    "to": 2021,
                     "label": {
                         "text": "Période de référence",
                         "style": {"color": "#95ceff", "fontWeight": "bold"},
@@ -152,8 +151,9 @@ class ObjectiveChart(ProjectChart):
                     "className": "plotband_blue",
                 },
                 {
-                    "from": 9.5,
-                    "to": 19.5,
+                    "color": "#f6fff4",
+                    "from": 2022,
+                    "to": 2031,
                     "label": {
                         "text": "Projection 2031",
                         "style": {"color": "#87cc78", "fontWeight": "bold"},
@@ -181,7 +181,7 @@ class ObjectiveChart(ProjectChart):
         self.chart["series"].append(serie)
 
     def add_series(self):
-        series = [
+        self.series = [
             {
                 "name": "Conso. annuelle réelle",
                 "yAxis": 1,
@@ -218,39 +218,52 @@ class ObjectiveChart(ProjectChart):
         for year, val in self.project.get_bilan_conso_per_year().items():
             total += val
             cpt += 1
-            series[1]["data"].append(
+            self.series[1]["data"].append(
                 {
                     "name": year,
                     "y": total,
                     "progression": val,
                 }
             )
-            series[0]["data"].append({"name": year, "y": val})
+            self.series[0]["data"].append({"name": year, "y": val})
 
         self.annual_objective_2031 = total * self.project.target_2031 / 1000
         self.total_real = total
         self.annual_real = self.total_real / 10
 
-        for year in range(int(year) + 1, 2031):
+        for year in range(int(year) + 1, 2031):  # noqa: B020
             total += self.annual_objective_2031
-            series[3]["data"].append(
+            self.series[3]["data"].append(
                 {
                     "name": str(year),
                     "y": total,
                     "progression": self.annual_objective_2031,
                 }
             )
-            series[2]["data"].append(
-                {"name": str(year), "y": self.annual_objective_2031}
-            )
+            self.series[2]["data"].append({"name": str(year), "y": self.annual_objective_2031})
 
         self.conso_2031 = total - self.total_real
         self.total_2031 = total
 
         self.chart["yAxis"][0]["max"] = total * 1.2
 
-        for serie in series:
-            self.chart["series"].append(serie)
+        self.chart["series"] = self.series
+
+    def get_data_table(self):
+        real = {_["name"]: _["y"] for _ in self.series[0]["data"]}
+        added_real = {_["name"]: _["y"] for _ in self.series[1]["data"]}
+        objective = {_["name"]: _["y"] for _ in self.series[2]["data"]}
+        added_objective = {_["name"]: _["y"] for _ in self.series[3]["data"]}
+        years = set(real.keys()) | set(objective.keys()) | set(added_real.keys())
+        years |= set(added_objective.keys())
+        for year in sorted(years):
+            yield {
+                "year": year,
+                "real": real.get(year, "-"),
+                "added_real": added_real.get(year, "-"),
+                "objective": objective.get(year, "-"),
+                "added_objective": added_objective.get(year, "-"),
+            }
 
 
 class DeterminantPerYearChart(ProjectChart):
@@ -379,9 +392,7 @@ class EvolutionArtifChart(ProjectChart):
 
     def add_series(self):
         series = self.get_series()
-        self.add_serie(
-            "Artificialisation", series["Artificialisation"], color="#ff0000"
-        )
+        self.add_serie("Artificialisation", series["Artificialisation"], color="#ff0000")
         self.add_serie("Renaturation", series["Renaturation"], color="#00ff00")
         self.add_serie(
             "Artificialisation nette",
@@ -476,9 +487,7 @@ class CouvertureSolPieChart(ProjectChart):
     def __init__(self, project):
         self.millesime = project.last_year_ocsge
         super().__init__(project)
-        self.chart["title"]["text"] = self.chart["title"]["text"].replace(
-            "[DERNIER MILLESIME]", str(self.millesime)
-        )
+        self.chart["title"]["text"] = self.chart["title"]["text"].replace("[DERNIER MILLESIME]", str(self.millesime))
 
     def get_series(self):
         if not self.series:
@@ -539,10 +548,7 @@ class CouvertureSolProgressionChart(ProjectChart):
 
     def get_series(self):
         if not self.series:
-            title = (
-                f"Evolution de la couverture des sols de {self.first_millesime} à "
-                f"{self.last_millesime}"
-            )
+            title = f"Evolution de la couverture des sols de {self.first_millesime} à " f"{self.last_millesime}"
             self.chart["title"]["text"] = title
             self.series = self.project.get_base_sol_progression(
                 self.first_millesime, self.last_millesime, sol=self._sol
@@ -662,7 +668,8 @@ class DetailUsageArtifChart(DetailCouvArtifChart):
                     "artif": 0,
                     "renat": 0,
                 }
-                for u in UsageSol.objects.order_by("code_prefix") if u.level == 1
+                for u in UsageSol.objects.order_by("code_prefix")
+                if u.level == 1
             }
             for row in self.project.get_detail_artif(sol="usage"):
                 code = row["code_prefix"].split(".")[0]
@@ -699,9 +706,7 @@ class ArtifCouvSolPieChart(ProjectChart):
     def __init__(self, project: Project):
         self.millesime = project.last_year_ocsge
         super().__init__(project)
-        self.chart["title"][
-            "text"
-        ] = f"Surfaces artificialisées par type de couverture en {self.millesime}"
+        self.chart["title"]["text"] = f"Surfaces artificialisées par type de couverture en {self.millesime}"
 
     def get_series(self):
         if not self.series:
@@ -731,9 +736,7 @@ class ArtifUsageSolPieChart(ArtifCouvSolPieChart):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.chart["title"][
-            "text"
-        ] = f"Surfaces artificialisées par type d'usage en {self.millesime}"
+        self.chart["title"]["text"] = f"Surfaces artificialisées par type d'usage en {self.millesime}"
 
     def get_series(self):
         if not self.series:
@@ -822,12 +825,7 @@ class PopChart(ProjectChart):
 class ConsoComparisonPopChart(ProjectChart):
     name = "conso comparison"
     param = {
-        "title": {
-            "text": (
-                "Consommation d'espace en fonction de l'évolution de la population du"
-                " territoire"
-            )
-        },
+        "title": {"text": ("Consommation d'espaces en fonction de l'évolution de la population du" " territoire")},
         "yAxis": {"title": {"text": "Consommation par habitant (en ha)"}},
         "xAxis": {"type": "category"},
         "legend": {"layout": "vertical", "align": "right", "verticalAlign": "middle"},
@@ -886,26 +884,15 @@ class HouseholdChart(ProjectChart):
 
     def get_series(self):
         if not self.series:
-            self.series = {
-                self.project.name: self.project.get_pop_change_per_year(
-                    criteria="household"
-                )
-            }
-            self.series.update(
-                self.project.get_look_a_like_pop_change_per_year(criteria="household")
-            )
+            self.series = {self.project.name: self.project.get_pop_change_per_year(criteria="household")}
+            self.series.update(self.project.get_look_a_like_pop_change_per_year(criteria="household"))
         return self.series
 
 
 class ConsoComparisonHouseholdChart(ProjectChart):
     name = "conso comparison"
     param = {
-        "title": {
-            "text": (
-                "Consommation d'espace en fonction de l'évolution du nombre de ménages"
-                " du territoire"
-            )
-        },
+        "title": {"text": ("Consommation d'espaces en fonction de l'évolution du nombre de ménages" " du territoire")},
         "yAxis": {"title": {"text": "Consommation par ménage (en ha)"}},
         "xAxis": {"type": "category"},
         "legend": {"layout": "vertical", "align": "right", "verticalAlign": "middle"},
@@ -933,9 +920,7 @@ class ConsoComparisonHouseholdChart(ProjectChart):
                     data[year] = None
 
             lands_conso = self.project.get_look_a_like_conso_per_year()
-            lands_pop = self.project.get_look_a_like_pop_change_per_year(
-                criteria="household"
-            )
+            lands_pop = self.project.get_look_a_like_pop_change_per_year(criteria="household")
             for land_name, land_data in lands_conso.items():
                 data = self.series[land_name]
                 land_pop = lands_pop[land_name]
@@ -967,12 +952,7 @@ class SurfaceChart(ProjectChart):
     def get_series(self):
         if not self.series:
             self.series = {self.project.name: {"surface": self.project.area}}
-            self.series.update(
-                {
-                    land.name: {"surface": land.area}
-                    for land in self.project.get_look_a_like()
-                }
-            )
+            self.series.update({land.name: {"surface": land.area} for land in self.project.get_look_a_like()})
 
         return self.series
 
@@ -980,20 +960,13 @@ class SurfaceChart(ProjectChart):
 class CouvWheelChart(ProjectChart):
     name = "Matrice de passage de la couverture"
     prefix = "cs"
-    title = (
-        "Matrice d'évolution de la couverture de [PREMIER MILLESIME] à "
-        "[DERNIER MILLESIME]"
-    )
+    title = "Matrice d'évolution de la couverture de [PREMIER MILLESIME] à " "[DERNIER MILLESIME]"
     name_sol = "couverture"
     items = CouvertureSol.objects.all()
     param = {
         "title": {"text": ""},
         "accessibility": {
-            "point": {
-                "valueDescriptionFormat": (
-                    "{index}. From {point.from} to {point.to}: {point.weight}."
-                )
-            }
+            "point": {"valueDescriptionFormat": ("{index}. From {point.from} to {point.to}: {point.weight}.")}
         },
         "series": [],
     }
@@ -1025,7 +998,7 @@ class CouvWheelChart(ProjectChart):
                 "nodes": [
                     {
                         "id": f"{_.code_prefix} {_.label_short}",
-                        "className": _.cleaned_code_prefix,
+                        "color": _.map_color,
                     }
                     for _ in self.items
                 ],
@@ -1065,9 +1038,7 @@ class CouvWheelChart(ProjectChart):
 
 class UsageWheelChart(CouvWheelChart):
     name = "Matrice de passage de l'usage"
-    title = (
-        "Matrice d'évolution de l'usage de [PREMIER MILLESIME] à [DERNIER MILLESIME]"
-    )
+    title = "Matrice d'évolution de l'usage de [PREMIER MILLESIME] à [DERNIER MILLESIME]"
     prefix = "us"
     name_sol = "usage"
     items = UsageSol.objects.all()

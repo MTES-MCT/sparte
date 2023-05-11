@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("project", "0029_auto_20220308_0838"),
     ]
@@ -13,8 +12,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="projectcommune",
             name="group_name",
-            field=models.CharField(
-                blank=True, max_length=100, null=True, verbose_name="Nom du groupe"
-            ),
+            field=models.CharField(blank=True, max_length=100, null=True, verbose_name="Nom du groupe"),
         ),
     ]

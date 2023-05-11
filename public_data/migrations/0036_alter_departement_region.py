@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("public_data", "0035_rename_departement_epci_departements"),
     ]
@@ -14,8 +13,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name="departement",
             name="region",
-            field=models.ForeignKey(
-                on_delete=django.db.models.deletion.CASCADE, to="public_data.region"
-            ),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="public_data.region"),
         ),
     ]

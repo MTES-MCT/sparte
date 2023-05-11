@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("public_data", "0022_auto_20211025_2135"),
     ]
@@ -13,15 +12,11 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="couverturesol",
             name="map_color",
-            field=models.CharField(
-                blank=True, max_length=8, null=True, verbose_name="Couleur"
-            ),
+            field=models.CharField(blank=True, max_length=8, null=True, verbose_name="Couleur"),
         ),
         migrations.AddField(
             model_name="usagesol",
             name="map_color",
-            field=models.CharField(
-                blank=True, max_length=8, null=True, verbose_name="Couleur"
-            ),
+            field=models.CharField(blank=True, max_length=8, null=True, verbose_name="Couleur"),
         ),
     ]

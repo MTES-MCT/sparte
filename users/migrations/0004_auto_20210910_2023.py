@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("users", "0003_auto_20210710_2236"),
     ]
@@ -13,17 +12,13 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="user",
             name="function",
-            field=models.CharField(
-                default="Not available", max_length=250, verbose_name="Function"
-            ),
+            field=models.CharField(default="Not available", max_length=250, verbose_name="Function"),
             preserve_default=False,
         ),
         migrations.AddField(
             model_name="user",
             name="organism",
-            field=models.CharField(
-                default="Not available", max_length=250, verbose_name="Organism"
-            ),
+            field=models.CharField(default="Not available", max_length=250, verbose_name="Organism"),
             preserve_default=False,
         ),
     ]

@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('metabase', '0004_auto_20230324_1723'),
+        ("metabase", "0004_auto_20230324_1723"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='statdiagnostic',
-            name='group_organism',
+            model_name="statdiagnostic",
+            name="group_organism",
             field=models.CharField(blank=True, max_length=50, null=True, verbose_name="Groupe d'organisme"),
         ),
     ]

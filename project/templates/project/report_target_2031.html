@@ -13,6 +13,7 @@ Projection 2031
 {% endblock %}
 
 {% block headers %}
+<meta name="htmx-config" content='{"inlineScriptNonce":"{{ CSP_NONCE }}"}'>
 {% sri_static "project/css/project.css" %}
 {% endblock %}
 
@@ -25,60 +26,95 @@ Projection 2031
     <div class="fr-container fr-py-3w">
         <div class="fr-callout fr-callout--brown-caramel fr-fi-information-line fr-callout-read-more">
             <div class="fr-callout-read-more__excerpt">
-                <p class="fr-text--sm mb-3">La Loi Climat & Résilience recommande :</p>
-                <ul class="fr-text--sm">
-                    <li>entre 2021 et 2031 à l'échelle régionale, de diviser par 2  la consommation d'espaces Naturels, Agricoles et Forestiers mesurée entre 2011 et 2021 ;</li>
-                    <li>d'ici février 2024, que les SRADDET territorialisent les objectifs de diminution pour chaque SCoT.</li>
+                <p class="fr-text--sm">La Loi Climat & Résilience recommande :</p>
+                <ul class="fr-text--sm mb-3">
+                    <li>entre 2021 et 2031 <strong>à l'échelle régionale</strong>, de diviser par 2 la consommation d'espaces Naturels, Agricoles et Forestiers (NAF) mesurée entre 2011 et 2021 ;</li>
+                    <li>d'ici février 2024, que les SRADDET territorialisent les objectifs de diminution pour chaque SCoT, qui territorialiseront à l'échelle des EPCI et communes.</li>
                 </ul>
-            </div>
-            <div class="fr-callout-read-more__text" id="target_2031_1" hidden>
-                <p class="fr-text--sm mb-3">La Loi Climat & Résilience recommande :</p>
-                <ul class="fr-text--sm">
-                    <li>entre 2021 et 2031 à l'échelle régionale, de diviser par 2  la consommation d'espaces Naturels, Agricoles et Forestiers mesurée entre 2011 et 2021 ;</li>
-                    <li>d'ici février 2024, que les SRADDET territorialisent les objectifs de diminution pour chaque SCoT.</li>
-                </ul>
-                <p class="fr-text--sm mb-3">En attente de territorialisation des objectifs de la loi Climat & Résilience, SPARTE fait une première simulation à l'échelle du territoire de diagnostic en divisant par 2 la consommation d'espaces par rapport au bilan 2011-2021.</p>
-                <p class="fr-text--sm mb-3">Pour la mesure de la consommation d'espaces NAF, l'Etat utilise les fichiers fonciers.</p>
-                <p class="fr-text--sm mb-3">Ces données sont fournies tous les ans depuis 2009. Le dernier millésime de 2021 est la photographie du territoire au 1er janvier 2021, intégrant les évolutions réalisées au cours de l'année 2020.</p>
             </div>
 
+            <div class="fr-callout-read-more__text" id="target_2031_1" hidden>
+                <p class="fr-text--sm">La Loi Climat & Résilience recommande :</p>
+                <ul class="fr-text--sm mb-3">
+                    <li>entre 2021 et 2031 à l'échelle régionale, de diviser par 2 la consommation d'espaces Naturels, Agricoles et Forestiers (NAF) mesurée entre 2011 et 2021 ;</li>
+                    <li>d'ici février 2024, que les SRADDET territorialisent les objectifs de diminution pour chaque SCoT, qui territorialiseront à l'échelle des EPCI et communes.</li>
+                </ul>
+                <p class="fr-text--sm mb-3"><strong>Dans l'attente de cette territorialisation</strong> des objectifs 2031 par les SRADDET, SPARTE vous propose ci-dessous, une première estimation de la consommation d'espaces NAF à l'échelle du territoire de diagnostic. Pour cela SPARTE se base, comme recommandé par la loi Climat & Résilience, sur le bilan de la consommation cumulée des espaces NAF des années 2011 à 2021.</p>
+                <p class="fr-text--sm">Pour la mesure de la consommation d'espaces NAF, <strong>l'Etat utilise les fichiers fonciers</strong> :</p>
+                <ul class="fr-text--sm mb-3">
+                    <li>Ces données sont fournies tous les ans depuis 2009,</li>
+                    <li>Le dernier millésime de 2021 est la photographie du territoire au 1er janvier 2021, intégrant les évolutions réalisées au cours de l'année 2020.</li>
+                </ul>
+            </div>
             <button class="fr-btn fr-btn--secondary fr-btn--sm fr-callout-read-more__btn" aria-expanded="false" aria-controls="target_2031_1">
                 Lire plus
             </button>
         </div>
 
+        <div class="fr-mt-7w">
+            <h2>Consommation d'espaces NAF du territoire entre 2011 et 2020</h2>
 
-        <div class="fr-grid-row fr-grid-row--gutters fr-mt-7w">
-            <div class="fr-col-12 fr-col-md-4 fr-grid-row">
-                <div class="fr-callout w-100">
-                    <p class="fr-callout__title">+{{ objective_chart.total_real|floatformat:1 }} ha</p>
-                    <p>Consommation 2011-2020</p>
+            <div class="fr-grid-row fr-grid-row--gutters">
+                <div class="fr-col-12 fr-col-md-4 fr-grid-row">
+                    <div class="fr-callout w-100">
+                        <p class="fr-callout__title">+{{ objective_chart.total_real|floatformat:1 }} ha</p>
+                        <p>Consommation 2011-2020</p>
+                    </div>
                 </div>
             </div>
-            <div class="fr-col-12 fr-col-md-4 fr-grid-row">
-                <div class="fr-callout w-100">
-                    <p class="fr-callout__title">+{{ objective_chart.conso_2031|floatformat:1 }} ha</p>
-                    <p>Trajectoire 2021-2030 <i class="bi bi-question-circle" data-toggle="tooltip" title="Réduction de {{ project.target_2031 }}% par rapport à la décennie précédente" aria-hidden="true"></i></p>
-                </div>
-            </div>
-            <div class="fr-col-12 fr-col-md-4 fr-grid-row">
-                <div class="fr-callout w-100">
-                    <p class="fr-callout__title">+{{ objective_chart.annual_objective_2031|floatformat:1 }} ha/an</p>
-                    <p>Trajectoire projetée annualisée</p>
+
+            <div class="fr-callout bg-white fr-p-2w mt-4">
+                <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data">Données</button>
+                <div class="fr-collapse" id="target-data">
+                    <h6 class="fr-mt-2w">Source</h6>
+                    <p>Fichiers fonciers du Cérema issus des données MAJIC (Mise A Jour de l'Information Cadastrale) de la DGFIP (millésime min : 2009, millésime max : 2021)</p>
+                    <h6 class="fr-mt-2w">Calcul</h6>
+                    <p>Les données du Cérema donnent la consommation d'espaces NAF par année, pour le territoire choisi.</p>
                 </div>
             </div>
         </div>
 
-        <div class="fr-mt-7w">
-            <div class="d-flex justify-content-between">
-                <h3>Projection 2031 avec un objectif de réduction de 50%</h3>
-                <div>Personnaliser l'objectif 2031 : <a id="btn-change-objective" href="{% url 'project:update' project.pk %}?next=report-target-2031" class="fr-btn fr-btn--tertiary fr-btn--sm">{{ project.target_2031 }}%</a></div>
+        <div class="fr-mt-12w">
+            <div class="d-flex justify-content-between align-items-center fr-mb-2w">
+                <h2 class="fr-m-0">Objectif 2031</h2>
+                <button id="btn-change-objective" class="fr-btn fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#setTarget" data-toggle="tooltip" title="Personnaliser mon objectif 2031" aria-hidden="true" hx-get="{% url 'project:set_target_2031' project.pk %}" hx-target="#setTargetForm">Personnaliser mon objectif:&nbsp;<span id="button-swapper">{{ project.target_2031 }}</span>%</button>
             </div>
-            <p>Objectif 2031, réduction de 50% de la consommation d'espaces NAF par rapport à la somme des 10 dernières années (2011-2021)</p>
+
+            <p class="fr-mb-4w">Dans l'attente de la territorialisation des objectifs 2031 par les SRADDET, SPARTE vous propose d'estimer la réduction de votre consommation de territoire en personnalisant votre objectif à 2031. </p>
+
+            <div class="fr-grid-row fr-grid-row--gutters fr-mb-2w">
+                <div class="fr-col-12 fr-col-md-4 fr-grid-row">
+                    <div class="fr-callout w-100">
+                        <div class="d-flex fr-mb-1w">
+                            <p class="fr-callout__title">+<span id="objective-conso-minus-swapper">{{ conso_2031_minus_10|floatformat:1 }}</span> ha</p>
+                            <p class="fr-tag fr-tag--sm fr-tag--blue fr-ml-2w"><strong>+<span id="objective-conso-annual-minus-swapper">{{ conso_2031_annual_minus_10|floatformat:1 }}</span> ha/an</strong></p>
+                        </div>
+                        <p class="fr-text--sm">Trajectoire à 2030 de la consommation cumulée avec un objectif de réduction de <span id="objective-minus-swapper">{{ project.target_2031|add:-10 }}</span>%</p>
+                    </div>
+                </div>
+                <div class="fr-col-12 fr-col-md-4 fr-grid-row">
+                    <div class="fr-callout w-100">
+                        <div class="d-flex fr-mb-1w">
+                            <p class="fr-callout__title">+<span id="objective-conso-swapper">{{ objective_chart.conso_2031|floatformat:1 }}</span> ha</p>
+                            <p class="fr-tag fr-tag--sm fr-tag--blue fr-ml-2w"><strong>+<span id="objective-annual-swapper">{{ objective_chart.annual_objective_2031|floatformat:1 }}</span> ha/an</strong></p>
+                        </div>
+                        <p class="fr-text--sm">Trajectoire à 2030 de la consommation cumulée avec un objectif de réduction de <span id="objective-swapper">{{ project.target_2031 }}</span>%</p>
+                    </div>
+                </div>
+                <div class="fr-col-12 fr-col-md-4 fr-grid-row">
+                    <div class="fr-callout w-100">
+                        <div class="d-flex fr-mb-1w">
+                            <p class="fr-callout__title">+<span id="objective-conso-plus-swapper">{{ conso_2031_plus_10|floatformat:1 }}</span> ha</p>
+                            <p class="fr-tag fr-tag--sm fr-tag--blue fr-ml-2w"><strong>+<span id="objective-conso-annual-plus-swapper">{{ conso_2031_annual_plus_10|floatformat:1 }}</span> ha/an</strong></p>
+                        </div>
+                        <p class="fr-text--sm">Trajectoire à 2030 de la consommation cumulée avec un objectif de réduction de <span id="objective-plus-swapper">{{ project.target_2031|add:10 }}</span>%</p>
+                    </div>
+                </div>
+            </div>
 
             <div class="border fr-p-2w">
                 <div class="d-flex justify-content-end align-items-center fr-mb-2w">
-                    <div class="dropdown custom-dropdown fr-mr-2w" data-toggle="tooltip" title="Exporter le graphique">
+                    <div class="dropdown custom-dropdown fr-ml-2w" data-toggle="tooltip" title="Exporter le graphique">
                         <button class="fr-btn fr-icon-download-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="dropdown" aria-expanded="false"></button>
 
                         <ul class="dropdown-menu">
@@ -97,9 +133,13 @@ Projection 2031
                         </ul>
                     </div>
 
-                    <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm fullscreen-chart" data-chart-target="objective_chart" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
+                    <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm fr-ml-2w fullscreen-chart" data-chart-target="objective_chart" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
+
+                    <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm fr-ml-2w" data-bs-toggle="modal" data-bs-target="#objectiveModal" data-toggle="tooltip" title="Astuces pour lire le graphique" aria-hidden="true"></button>
                 </div>
-                <div id="objective_chart"></div>
+                <div id="objective-chart-swapper">
+                    <div id="objective_chart"></div>
+                </div>
             </div>
 
             <div class="mt-4 fr-grid-row">
@@ -122,22 +162,88 @@ Projection 2031
                 </div>
             </div>
 
-            <div class="mt-4">Pendant la période de réduction, la loi prévoit que chaque région ne consomme que 50% de ce qui a été consommé pendant la  période de référence.</div>
+            <div id="alert-swapper">
+                {% if project.target_2031 != 50 %}
+                    <div class="fr-alert fr-alert--info fr-alert--sm mt-3">
+                        <p>Vous avez personnalisé l'objectif de votre territoire à {{ project.target_2031 }}%.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
 
-            {% if project.target_2031 != 50 %}
-                <div class="fr-alert fr-alert--info fr-alert--sm mt-3">
-                    <p>Vous avez personnalisé l'objectif de votre territoire à {{ project.target_2031 }}%.</p>
-                </div>
-            {% endif %}
+        <div class="fr-callout bg-white fr-p-2w mt-4">
+            <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data-1">Données</button>
+            <div class="fr-collapse" id="target-data-1">
+                <h6 class="fr-mt-2w">Source</h6>
+                <p>Fichiers fonciers du Cérema issus des données MAJIC  (Mise A Jour de l'Information Cadastrale) de la DGFIP (millésime min :  2009, millésime max : 2021)</p>
 
-            <div class="fr-callout bg-white fr-p-2w mt-4">
-                <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data">Données</button>
-                <div class="fr-collapse" id="target-data">
-                    <h6 class="fr-mt-2w">Source</h6>
-                    <p>Fichiers fonciers du Cérema issus des données MAJIC (Mise A Jour de l'Information Cadastrale) de la DGFIP (millésime min : 2009, millésime max : 2021)</p>
-                    <h6 class="fr-mt-2w">Calcul</h6>
-                    <p>Les données du Cérema donnent la consommation d'espaces NAF par année, pour le territoire choisi.</p>
+                <h6 class="fr-mt-2w">Calcul</h6>
+                <p>La consommation réelle annuelle et cumulée provient des données du Cérema. Elles donnent la consommation d'espaces NAF par année, pour le territoire choisi. </p>
+
+                <h6 class="fr-mt-2w">Données</h6>
+                
+                <table class="table table-striped table-sm table-hover">
+                    <thead>
+                        <tr>
+                            <th scope="col">Millésime</th>
+                            <th scope="col" class="text-end">Réelle (Ha)</th>
+                            <th scope="col" class="text-end">Réelle cumulée (Ha)</th>
+                            <th scope="col" class="text-end">Projection annualisée<br/>de l'objectif 2031 (Ha)</th>
+                            <th scope="col" class="text-end">Cumulé de la<br/>projection (Ha)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{ data_table }}
+                        {% for line in objective_chart.get_data_table %}
+                        <tr>
+                            <th scope="row">{{ line.year }}</th>
+                            <td align="right">{{ line.real|floatformat:1 }}</td>
+                            <td align="right">{{ line.added_real|floatformat:1 }}</td>
+                            <td align="right">{{ line.objective|floatformat:1 }}</td>
+                            <td align="right">{{ line.added_objective|floatformat:1 }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="setTarget" tabindex="-1" aria-labelledby="setTargetLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+        <div class="fr-modal__body">
+            <div class="fr-modal__header">
+                <button class="fr-link--close fr-link" data-bs-dismiss="modal" aria-label="Close">Fermer</button>
+            </div>
+            <div class="fr-modal__content">
+                <h1 id="fr-modal-2-title" class="fr-modal__title" id="setTargetLabel">
+                    Personnaliser mon objectif 2031
+                </h1>
+                <div id="setTargetForm">
+                    <div class="fr-custom-loader"></div>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="objectiveModal" tabindex="-1" aria-labelledby="objectiveLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+        <div class="fr-modal__body">
+            <div class="fr-modal__header">
+                <button class="fr-link--close fr-link" data-bs-dismiss="modal" aria-label="Close">Fermer</button>
+            </div>
+            <div class="fr-modal__content">
+                <h1 id="fr-modal-2-title" class="fr-modal__title" id="objectiveLabel">
+                    <span class="fr-fi-arrow-right-line fr-fi--lg"></span>
+                    Astuces - Objectif 2031
+                </h1>
+                <p class="fr-text--sm">Vous pouvez cliquer sur les légendes au-dessus du graphique afin de masquer ou d'afficher certaines données.</p>
+                <p class="fr-text--sm">Avec le bouton <span class="fr-icon-drag-move-2-line fr-icon--sm" aria-hidden="true"></span>, vous pouvez afficher le graphique en plein écran.</p>
+                <p class="fr-text--sm">Avec le bouton <span class="fr-icon-download-line fr-icon--sm" aria-hidden="true"></span>, vous pouvez télécharger le graphique sous forme d'image (utilisez PNG si vous ne savez pas lequel choisir).</p>
             </div>
         </div>
     </div>
@@ -151,6 +257,14 @@ Projection 2031
 {% french_translation %}
 {% display_chart 'objective_chart' objective_chart CSP_NONCE %}
 {% endlocalize %}
+<script language="javascript" nonce="{{ CSP_NONCE }}">
+window.htmx.on("htmx:oobAfterSwap", () => {
+    const modal = bootstrap.Modal.getInstance(document.getElementById("setTarget"))
+    setTimeout(function () {
+        modal.hide()
+    }, 1200);
+})
+</script>
 {% endblock %}
 
 {% block tagging %}
