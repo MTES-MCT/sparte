@@ -31,15 +31,11 @@ GROUP_ORGANISM = {
 
 
 class StatDiagnostic(models.Model):
-    project = models.OneToOneField(
-        Project, on_delete=models.CASCADE, verbose_name="Diagnostic d'origine"
-    )
+    project = models.OneToOneField(Project, on_delete=models.CASCADE, verbose_name="Diagnostic d'origine")
     created_date = models.DateTimeField("Date de création")
     is_anonymouse = models.BooleanField("Est anonyme", default=True)
     is_public = models.BooleanField("Est public", default=True)
-    administrative_level = models.CharField(
-        "Niveau administratif", max_length=255, blank=True, null=True
-    )
+    administrative_level = models.CharField("Niveau administratif", max_length=255, blank=True, null=True)
     analysis_level = models.CharField("Maille d'analyse", max_length=255)
     start_date = models.DateField("Date de début")
     end_date = models.DateField("Date de fin")
@@ -52,16 +48,10 @@ class StatDiagnostic(models.Model):
     region = models.CharField("Région", max_length=255, blank=True, null=True)
 
     is_downaloaded = models.BooleanField("A été téléchargé", default=False)
-    request = models.ForeignKey(
-        Request, on_delete=models.SET_NULL, null=True, blank=True
-    )
-    date_first_download = models.DateTimeField(
-        "Date du premier téléchargement", null=True, blank=True
-    )
+    request = models.ForeignKey(Request, on_delete=models.SET_NULL, null=True, blank=True)
+    date_first_download = models.DateTimeField("Date du premier téléchargement", null=True, blank=True)
     organism = models.CharField("Organisme", max_length=255, blank=True, null=True)
-    group_organism = models.CharField(
-        "Groupe d'organisme", max_length=50, blank=True, null=True
-    )
+    group_organism = models.CharField("Groupe d'organisme", max_length=50, blank=True, null=True)
 
     class Meta:
         verbose_name = "Statistique"
@@ -70,12 +60,8 @@ class StatDiagnostic(models.Model):
     def update_with_project(self, project: Project) -> None:
         self.is_anonymouse = False if project.user_id else True
         self.is_public = project.is_public
-        self.start_date = datetime(
-            year=int(project.analyse_start_date), month=1, day=1
-        ).date()
-        self.end_date = datetime(
-            year=int(project.analyse_end_date), month=12, day=31
-        ).date()
+        self.start_date = datetime(year=int(project.analyse_start_date), month=1, day=1).date()
+        self.end_date = datetime(year=int(project.analyse_end_date), month=12, day=31).date()
         self.analysis_level = project.level or ""
 
     def update_with_request(self, request: Request) -> None:
@@ -90,35 +76,21 @@ class StatDiagnostic(models.Model):
     def update_locations(self, project: Project) -> None:
         qs = project.cities.all().select_related("epci", "departement", "scot", "departement__region")
 
-        city_set = set()
-        epci_set = set()
-        scot_set = set()
-        departement_set = set()
-        region_set = set()
-        for city in qs:
-            city_set.add(city)
-            epci_set.add(city.epci)
-            scot_set.add(city.scot)
-            departement_set.add(city.departement)
-            region_set.add(city.departement.region)
-
-        if len(city_set) == 1:
-            city = next(iter(city_set))
+        if qs.count() == 1:
+            city = qs.first()
             self.city = f"{city.name} ({city.insee})"
 
-        if len(epci_set) == 1:
-            self.epci = next(iter(epci_set)).name
+        if qs.values("epci__name").distinct().count() == 1:
+            self.epci = qs.values("epci__name").distinct().first()['epci__name']
 
-        if len(scot_set) == 1:
-            scot = next(iter(scot_set))
-            if scot:
-                self.scot = scot.name
+        if qs.values("scot__name").distinct().count() == 1:
+            self.scot = qs.values("scot__name").distinct().first()['scot__name']
 
-        if len(departement_set) == 1:
-            self.departement = next(iter(departement_set)).name
+        if qs.values("departement__name").distinct().count() == 1:
+            self.departement = qs.values("departement__name").distinct().first()['departement__name']
 
-        if len(region_set) == 1:
-            self.region = next(iter(region_set)).name
+        if qs.values("departement__region__name").distinct().count() == 1:
+            self.region = qs.values("departement__region__name").distinct().first()["departement__region__name"]
 
     @classmethod
     def get_or_create(cls, project: Project) -> "StatDiagnostic":
@@ -133,30 +105,27 @@ class StatDiagnostic(models.Model):
             )
 
     @classmethod
-    def receiver_project_post_save(
-        cls, instance: Project, created: bool, **kwargs
-    ) -> None:
+    def project_post_save(cls, project_id: int, do_location: bool) -> None:
         """Create or update StatDiagnostic when a Project is created or updated.
         Ensure that exception are catched to avoid breaking user doings."""
         try:
-            od = cls.get_or_create(instance)
-            od.update_with_project(instance)
-            if kwargs.get("update_fields") == {"async_city_and_combined_emprise_done"}:
-                # only when async add_city_and_set_combined_emprise end successfully
-                od.update_locations(instance)
+            project = Project.objects.get(id=project_id)
+            od = cls.get_or_create(project)
+            od.update_with_project(project)
             od.save()
-        except Exception as exc:
-            logger.error("Error in StatDiagnostic.receiver_project_post_save: %s", exc)
-            logger.exception(exc)
+            if do_location:
+                od.update_locations(project)
+                od.save()
+        except Project.DoesNotExist:
+            logger.error("%d project does not exists, end stat.", project_id)
 
     @classmethod
-    def receiver_request_post_save(cls, instance, created, **kwargs):
+    def request_post_save(cls, request_id):
         """Update StatDiagnostic when a Project is downloaded.
         Ensure that exception are catched to avoid breaking user doings."""
         try:
-            if created:
-                od = cls.get_or_create(instance.project)
-                od.update_with_request(instance)
-        except Exception as exc:
-            logger.error("Error in StatDiagnostic.receiver_request_post_save: %s", exc)
-            logger.exception(exc)
+            req = Request.objects.get(id=request_id)
+            od = cls.get_or_create(req.project)
+            od.update_with_request(req)
+        except Request.DoesNotExist:
+            logger.error("%d request does not exists, end stat.", request_id)

@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("public_data", "0053_rename_is_new_naf_ocsgediff_is_new_natural"),
     ]
@@ -38,8 +37,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name="commune",
             name="map_color",
-            field=models.CharField(
-                blank=True, max_length=30, null=True, verbose_name="Couleur d'affichage"
-            ),
+            field=models.CharField(blank=True, max_length=30, null=True, verbose_name="Couleur d'affichage"),
         ),
     ]

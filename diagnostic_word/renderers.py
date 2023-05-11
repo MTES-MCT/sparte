@@ -139,39 +139,28 @@ class Renderer:
             "surface_totale": str(round(surface_territory, 2)),
             "ocsge_is_available": False,
             "periode_differente_zan": (
-                diagnostic.analyse_start_date != "2011"
-                or diagnostic.analyse_end_date != "2020"
+                diagnostic.analyse_start_date != "2011" or diagnostic.analyse_end_date != "2020"
             ),
             "project": diagnostic,
             "photo_emprise": self.prep_image(diagnostic.cover_image, height=110),
             "nb_communes": diagnostic.cities.count(),
-            "carte_consommation": self.prep_image(
-                diagnostic.theme_map_conso, width=170
-            ),
-            "carte_artificialisation": self.prep_image(
-                diagnostic.theme_map_artif, width=170
-            ),
-            "carte_comprendre_artificialisation": self.prep_image(
-                diagnostic.theme_map_understand_artif, width=170
-            ),
+            "carte_consommation": self.prep_image(diagnostic.theme_map_conso, width=170),
+            "carte_artificialisation": self.prep_image(diagnostic.theme_map_artif, width=170),
+            "carte_comprendre_artificialisation": self.prep_image(diagnostic.theme_map_understand_artif, width=170),
         }
 
         target_2031_consumption = diagnostic.get_bilan_conso()
         current_conso = diagnostic.get_bilan_conso_time_scoped()
 
         # Consommation des communes
-        chart_conso_cities = charts.ConsoCommuneChart(
-            diagnostic, level=diagnostic.level
-        )
+        chart_conso_cities = charts.ConsoCommuneChart(diagnostic, level=diagnostic.level)
 
         # comparison charts
         nb_neighbors = diagnostic.nb_look_a_like
         voisins = list()
         if nb_neighbors > 0:
             comparison_chart = charts.ConsoComparisonChart(diagnostic, relative=False)
-            comparison_relative_chart = charts.ConsoComparisonChart(
-                diagnostic, relative=True
-            )
+            comparison_relative_chart = charts.ConsoComparisonChart(diagnostic, relative=True)
             voisins = diagnostic.get_look_a_like()
             context.update(
                 {
@@ -184,9 +173,7 @@ class Renderer:
                         comparison_relative_chart.get_temp_image(),
                         width=170,
                     ),
-                    "comparison_data_table": add_total_line_column(
-                        comparison_chart.get_series()
-                    ),
+                    "comparison_data_table": add_total_line_column(comparison_chart.get_series()),
                 }
             )
 
@@ -215,12 +202,8 @@ class Renderer:
                 "nb_voisins": nb_neighbors,
                 "url_clickable": self.prep_link(link=url_diag),
                 "url": url_diag,
-                "communes_data_table": add_total_line_column(
-                    chart_conso_cities.get_series()
-                ),
-                "determinants_data_table": add_total_line_column(
-                    det_chart.get_series()
-                ),
+                "communes_data_table": add_total_line_column(chart_conso_cities.get_series()),
+                "determinants_data_table": add_total_line_column(det_chart.get_series()),
                 "target_2031_consumed": target_2031_consumption,
                 "target_2031_annual_avg": target_2031_consumption / 10,
                 "target_2031_target": target_2031_consumption / 2,
@@ -229,9 +212,7 @@ class Renderer:
                 "project_scope_annual_avg": current_conso / diagnostic.nb_years,
                 "project_scope_nb_years": diagnostic.nb_years,
                 "project_scope_nb_years_before_31": diagnostic.nb_years_before_2031,
-                "project_scope_forecast_2031": diagnostic.nb_years_before_2031
-                * current_conso
-                / diagnostic.nb_years,
+                "project_scope_forecast_2031": diagnostic.nb_years_before_2031 * current_conso / diagnostic.nb_years,
                 # charts
                 "chart_conso_communes": self.prep_image(
                     chart_conso_cities.get_temp_image(),
@@ -252,13 +233,11 @@ class Renderer:
                 "projection_zan_cumulee_ref": round(objective_chart.total_real, 1),
                 "projection_zan_annuelle_ref": round(objective_chart.annual_real, 1),
                 "projection_zan_cumulee_objectif": round(objective_chart.conso_2031),
-                "projection_zan_annuelle_objectif": round(
-                    objective_chart.annual_objective_2031
-                ),
+                "projection_zan_annuelle_objectif": round(objective_chart.annual_objective_2031),
             }
         )
 
-        if diagnostic.is_artif():
+        if diagnostic.is_artif:
             context.update(
                 {
                     "ocsge_is_available": True,
@@ -302,9 +281,7 @@ class Renderer:
 
             donut_couverture = charts.CouvertureSolPieChart(diagnostic)
             graphique_couverture = charts.CouvertureSolProgressionChart(diagnostic)
-            couverture_data = [
-                SolInterface(i) for i in graphique_couverture.get_series()
-            ]
+            couverture_data = [SolInterface(i) for i in graphique_couverture.get_series()]
             context.update(
                 {
                     "donut_couverture": self.prep_image(
@@ -321,14 +298,10 @@ class Renderer:
 
             couverture_matrix_data = diagnostic.get_matrix(sol="couverture")
             if couverture_matrix_data:
-                headers = list(list(couverture_matrix_data.values())[0].keys()) + [
-                    "Total"
-                ]
+                headers = list(list(couverture_matrix_data.values())[0].keys()) + ["Total"]
                 context.update(
                     {
-                        "couverture_matrix_data": add_total_line_column(
-                            couverture_matrix_data
-                        ),
+                        "couverture_matrix_data": add_total_line_column(couverture_matrix_data),
                         "couverture_matrix_headers": headers,
                     }
                 )
@@ -349,9 +322,7 @@ class Renderer:
                     "artificialisation_nette": str(round(artif_net, 2)),
                     "artificialisation": str(round(artificialisation, 2)),
                     "renaturation": str(round(renaturation, 2)),
-                    "taux_artificialisation_nette": str(
-                        round(100 * artif_net / total_artif, 1)
-                    ),
+                    "taux_artificialisation_nette": str(round(100 * artif_net / total_artif, 1)),
                 }
             )
             # paragraphe 3.2.2
@@ -379,9 +350,7 @@ class Renderer:
                 }
             )
             # paragraphe 3.2.3
-            chart_comparison = charts.NetArtifComparaisonChart(
-                diagnostic, level=diagnostic.level
-            )
+            chart_comparison = charts.NetArtifComparaisonChart(diagnostic, level=diagnostic.level)
             table_comparison = add_total_line_column(chart_comparison.get_series())
             header_comparison = list(list(table_comparison.values())[0].keys())
             context.update(

@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("public_data", "0050_auto_20220509_0838"),
     ]
@@ -18,9 +17,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="ocsge",
             name="is_artificial",
-            field=models.BooleanField(
-                blank=True, null=True, verbose_name="Est artificiel"
-            ),
+            field=models.BooleanField(blank=True, null=True, verbose_name="Est artificiel"),
         ),
         migrations.AddField(
             model_name="ocsge",

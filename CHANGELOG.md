@@ -3,6 +3,17 @@
 Ce changelog suit la méthode "keep a changelog" disponible ici: [https://keepachangelog.com/en/1.0.0/](https://keepachangelog.com/en/1.0.0/)
 
 
+## [2.6] - Non livré
+
+### Ajouté :
+* Suivi des modifications d'un diagnostics et d'une demande de téléchargement
+
+### Modifié :
+* Passage de Python 3.9 à 3.10 et Django 3.2 à 4.1
+
+### Corrigé :
+
+
 ## [2.5.2] - 2023.03.28
 
 ### Ajouté :

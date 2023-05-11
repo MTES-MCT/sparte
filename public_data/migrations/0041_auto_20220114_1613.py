@@ -4,7 +4,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("public_data", "0040_rename_naf11art20_refplan_naf11art21"),
     ]

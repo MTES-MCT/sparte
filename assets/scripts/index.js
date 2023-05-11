@@ -21,3 +21,6 @@ import '/assets/scripts/fr-callout-read-more.js';
 
 // Import highcharts custom buttons
 import '/assets/scripts/highcharts-custom-buttons.js';
+
+// Import filter diagnostic list
+import '/assets/scripts/filter-diagnostic-list.js';

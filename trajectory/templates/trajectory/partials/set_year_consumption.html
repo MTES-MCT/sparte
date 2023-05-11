@@ -1,0 +1,53 @@
+{% load crispy_forms_tags %}
+
+{% if form %}
+    <div class="fr-mt-4w">
+        <form hx-post="{% url 'project:trajectory:partial-form-consumption' project.pk %}" hx-swap="outerHTML">
+            <p class="fr-text--sm">Renseignez vos surfaces consommées prévisionnelles pour chaque année (en Ha).</p>
+
+            <div class="fr-grid-row form-set-year-conso">
+                {% csrf_token %}
+                {{ form|crispy }}
+            </div>
+            <button class="fr-btn position-relative" type="submit"><span class="htmx-indicator-placeholder">Enregistrer et visualiser</span><div class="fr-custom-loader--button htmx-indicator"></div></button>
+        </form>
+    </div>
+{% endif %}
+
+{% if success_message %}
+    {% load highcharts_tags %}
+
+    <div id="trajectory-chart-swapper" hx-swap-oob="true">
+        <div class="fr-mt-7w">
+            <div class="border fr-p-2w">
+                <div class="d-flex justify-content-end align-items-center fr-mb-2w">
+                    <a href="{% url 'project:report_target_2031' project.pk %}" data-toggle="tooltip" title="Personnaliser mon objectif 2031" class="fr-btn fr-btn--tertiary fr-btn--sm fr-mr-2w">Personnaliser mon objectif: {{ project.target_2031 }}%</a>
+
+                    <div class="dropdown custom-dropdown fr-mr-2w" data-toggle="tooltip" title="Exporter le graphique">
+                        <button class="fr-btn fr-icon-download-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="dropdown" aria-expanded="false"></button>
+
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="fr-nav__link export-chart" href="#" data-chart-target="objective_chart" data-type="image/png">PNG</a>
+                            </li>
+                            <li>
+                                <a class="fr-nav__link export-chart" href="#" data-chart-target="objective_chart" data-type="image/jpeg">JPEG</a>
+                            </li>
+                            <li>
+                                <a class="fr-nav__link export-chart" href="#" data-chart-target="objective_chart" data-type="application/pdf">PDF</a>
+                            </li>
+                            <li>
+                                <a class="fr-nav__link export-chart" href="#" data-chart-target="objective_chart" data-type="image/svg+xml">Vectoriel</a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm fullscreen-chart" data-chart-target="objective_chart" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
+                </div>
+
+                <div id="trajectory_chart"></div>
+                {% display_chart 'trajectory_chart' trajectory_chart CSP_NONCE %}
+            </div>
+        </div>
+    </div>
+{% endif %}

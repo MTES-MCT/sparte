@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.db import models
 from django.utils import timezone
+from simple_history.models import HistoricalRecords
 
 from project.models import Project
 from users.models import User
@@ -21,9 +22,7 @@ class Request(models.Model):
         default=User.ORGANISMS.COMMUNE,
     )
     email = models.EmailField("E-mail")
-    project = models.ForeignKey(
-        Project, on_delete=models.SET_NULL, verbose_name="Projet", blank=True, null=True
-    )
+    project = models.ForeignKey(Project, on_delete=models.SET_NULL, verbose_name="Projet", blank=True, null=True)
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
@@ -36,9 +35,8 @@ class Request(models.Model):
     sent_date = models.DateTimeField("date d'envoi", null=True, blank=True)
     done = models.BooleanField("A été envoyé ?", default=False)
 
-    sent_file = models.FileField(
-        upload_to=upload_in_project_folder, null=True, blank=True
-    )
+    sent_file = models.FileField(upload_to=upload_in_project_folder, null=True, blank=True)
+    history = HistoricalRecords()
 
     def sent(self):
         self.done = True
@@ -61,8 +59,6 @@ class Request(models.Model):
 
 
 class ErrorTracking(models.Model):
-    request = models.ForeignKey(
-        Request, on_delete=models.CASCADE, related_name="errors"
-    )
+    request = models.ForeignKey(Request, on_delete=models.CASCADE, related_name="errors")
     created_date = models.DateTimeField(auto_now_add=True)
     exception = models.TextField()

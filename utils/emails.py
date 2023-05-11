@@ -6,7 +6,6 @@ from requests import post, exceptions
 
 from typing import Any, Dict, List, Literal, Optional
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -52,10 +51,7 @@ class SibTemplateEmail(LocalLockMixin):
             return self.params
 
     def get_payload(self) -> Dict[str, Any]:
-        payload = {
-            "templateId": self.template_id,
-            "to": self.recipients
-        }
+        payload = {"templateId": self.template_id, "to": self.recipients}
         if self.params:
             payload["params"] = self.get_params()
         if self.subject:

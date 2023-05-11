@@ -1,6 +1,7 @@
 import celery
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy, reverse
@@ -15,12 +16,13 @@ from django.views.generic import (
 )
 from django.views.generic.edit import FormMixin
 
-from project import tasks
+from project import charts, tasks
 from project.forms import KeywordForm, SelectTerritoryForm, UpdateProjectForm
 from project.models import Project, create_from_public_key
 from public_data.models import AdminRef, Land, LandException
 from utils.views_mixins import BreadCrumbMixin, RedirectURLMixin
 
+from utils.views import RedirectURLMixin
 from .mixins import GroupMixin
 
 
@@ -29,15 +31,14 @@ class ClaimProjectView(LoginRequiredMixin, RedirectView):
         project = get_object_or_404(Project, pk=self.kwargs["pk"])
         self.url = project.get_absolute_url()
         if project.user is not None:
-            messages.error(
-                request, "Erreur : ce diagnostic est appartient déjà à quelqu'un"
-            )
+            messages.error(request, "Erreur : ce diagnostic est appartient déjà à quelqu'un")
         else:
             messages.success(
                 request,
                 "Vous pouvez retrouver ce diagnostic en utilisant le menu Diagnostic > Ouvrir",
             )
             project.user = request.user
+            project._change_reason = "Claim"
             project.save()
         return super().get(request, *args, **kwargs)
 
@@ -87,14 +88,31 @@ class CreateProjectViews(BreadCrumbMixin, FormView):
             }
             return self.render_to_response(self.get_context_data(**kwargs))
         else:
-            project = create_from_public_key(
-                form.cleaned_data["selection"], user=self.request.user
-            )
+            project = create_from_public_key(form.cleaned_data["selection"], user=self.request.user)
 
             if self.request.GET.get("next") == "download":
                 return redirect("project:report_download", pk=project.id)
             else:
                 return redirect("project:splash", pk=project.id)
+
+
+class SetTargetView(UpdateView):
+    model = Project
+    template_name = "project/partials/report_set_target_2031.html"
+    fields = ["target_2031"]
+
+    def form_valid(self, form):
+        self.object = form.save()
+        objective_chart = charts.ObjectiveChart(self.get_object())
+        context = self.get_context_data() | {
+            "success_message": True,
+            "objective_chart": objective_chart,
+            "conso_2031_minus_10": objective_chart.conso_2031 * 0.9,
+            "conso_2031_annual_minus_10": objective_chart.annual_objective_2031 * 0.9,
+            "conso_2031_plus_10": objective_chart.conso_2031 * 1.1,
+            "conso_2031_annual_plus_10": objective_chart.annual_objective_2031 * 1.1,
+        }
+        return self.render_to_response(context)
 
 
 class ProjectUpdateView(GroupMixin, UpdateView):
@@ -121,6 +139,8 @@ class ProjectUpdateView(GroupMixin, UpdateView):
 
     def form_valid(self, form):
         """If the form is valid, save the associated model."""
+        from metabase.tasks import async_create_stat_for_project
+
         self.object = form.save()
         celery.chain(
             # check that ocsge period is still between project period
@@ -130,6 +150,7 @@ class ProjectUpdateView(GroupMixin, UpdateView):
                 tasks.generate_theme_map_artif.si(self.object.id),
                 tasks.generate_theme_map_understand_artif.si(self.object.id),
             ),
+            async_create_stat_for_project.si(self.object.id, do_location=False),
         ).apply_async()
         return HttpResponseRedirect(self.get_success_url())
 
@@ -178,7 +199,8 @@ class ProjectAddLookALike(GroupMixin, RedirectURLMixin, FormMixin, DetailView):
                 land = Land(add_public_key)
                 # use land.public_key to avoid injection
                 project.add_look_a_like(land.public_key)
-                project.save()
+                project._change_reason = "add look a like"
+                project.save(update_fields=["look_a_like"])
                 return HttpResponseRedirect(self.get_success_url())
             except LandException:
                 pass
@@ -231,7 +253,8 @@ class ProjectRemoveLookALike(GroupMixin, RedirectURLMixin, DetailView):
         project = self.get_object()
         public_key = self.kwargs["public_key"]
         project.remove_look_a_like(public_key)
-        project.save()
+        project._change_reason = "Remove look a like"
+        project.save(update_fields=["look_a_like"])
         return HttpResponseRedirect(self.get_success_url())
 
 
@@ -246,9 +269,7 @@ class ProjectListView(GroupMixin, LoginRequiredMixin, ListView):
             if project.cover_image:
                 try:
                     project.prop_width = 266
-                    project.prop_height = (
-                        project.cover_image.height * 266 / project.cover_image.width
-                    )
+                    project.prop_height = project.cover_image.height * 266 / project.cover_image.width
                 except FileNotFoundError:
                     project.cover_image = None
         return qs
@@ -275,22 +296,13 @@ class SplashProgressionView(GroupMixin, DetailView):
     def dispatch(self, *args, **kwargs):
         response = super().dispatch(*args, **kwargs)
         if (
-            self.object.async_city_and_combined_emprise_done
+            self.object.async_add_city_done
+            and self.object.async_set_combined_emprise_done
             and self.object.async_add_neighboors_done
         ):
             response["HX-Redirect"] = reverse("project:detail", kwargs=self.kwargs)
         return response
 
     def get_context_data(self, **kwargs):
-        # o = self.object
-        # kwargs["steps"] = {
-        #     "Liste des communes du territoire": o.async_city_and_combined_emprise_done,
-        #     "Image de couverture": o.async_cover_image_done,
-        #     "Période de l'OCSGE": o.async_find_first_and_last_ocsge_done,
-        #     "Territoires de comparaison": o.async_add_neighboors_done,
-        #     "Carte de la consommation d'espace": o.async_generate_theme_map_conso_done,
-        #     "Carte de l'artificialisation": o.async_generate_theme_map_artif_done,
-        #     "Carte comprendre l'artificialisation": o.async_theme_map_understand_artif_done,
-        # }
         kwargs["last_update"] = timezone.now()
         return super().get_context_data(**kwargs)

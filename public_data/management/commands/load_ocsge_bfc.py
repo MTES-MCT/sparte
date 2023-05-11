@@ -58,13 +58,9 @@ class Command(BaseCommand):
         call_command("setup_dept")
 
         logger.info("Build artificial area")
-        call_command(
-            "build_artificial_area", region="bourgogne", verbose=options["verbose"]
-        )
+        call_command("build_artificial_area", region="bourgogne", verbose=options["verbose"])
 
         logger.info("Pre calculate data at city level")
-        call_command(
-            "build_commune_data", region="bourgogne", verbose=options["verbose"]
-        )
+        call_command("build_commune_data", region="bourgogne", verbose=options["verbose"])
 
         logger.info("End load OCS GE of Bourgogne-Franche Comté")

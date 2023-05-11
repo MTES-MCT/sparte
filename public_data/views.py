@@ -23,9 +23,9 @@ class DisplayMatrix(LoginRequiredMixin, BreadCrumbMixin, TemplateView):
     def get_context_data(self, **kwargs):
         couvertures = CouvertureSol.get_leafs()
         usages = UsageSol.get_leafs()
-        qs = CouvertureUsageMatrix.objects.filter(
-            couverture__in=couvertures, usage__in=usages
-        ).order_by("usage__code", "couverture__code")
+        qs = CouvertureUsageMatrix.objects.filter(couverture__in=couvertures, usage__in=usages).order_by(
+            "usage__code", "couverture__code"
+        )
         qs = qs.select_related("usage", "couverture")
         kwargs = dict()
         for item in qs:

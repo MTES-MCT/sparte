@@ -40,12 +40,7 @@ class ProjectViewSet(UserQuerysetOrPublicMixin, viewsets.ReadOnlyModelViewSet):
     def communes(self, request, pk):
         project = self.get_object()
         sum_function = sum(
-            [
-                F(f) / 10000
-                for f in Cerema.get_art_field(
-                    project.analyse_start_date, project.analyse_end_date
-                )
-            ]
+            [F(f) / 10000 for f in Cerema.get_art_field(project.analyse_start_date, project.analyse_end_date)]
         )
         sub_cerema = Cerema.objects.annotate(artif_area=sum_function)
         sub_cerema = sub_cerema.filter(city_insee=OuterRef("insee"))

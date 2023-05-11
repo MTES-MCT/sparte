@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("public_data", "0038_commune"),
     ]
@@ -13,8 +12,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="departement",
             name="ocsge_millesimes",
-            field=models.CharField(
-                max_length=100, null=True, verbose_name="Millesimes OCSGE dispo"
-            ),
+            field=models.CharField(max_length=100, null=True, verbose_name="Millesimes OCSGE dispo"),
         ),
     ]

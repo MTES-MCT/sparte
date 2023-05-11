@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("public_data", "0049_zoneconstruite_surface"),
     ]
@@ -13,22 +12,16 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name="couvertureusagematrix",
             name="is_artificial",
-            field=models.BooleanField(
-                blank=True, default=False, null=True, verbose_name="Artificiel"
-            ),
+            field=models.BooleanField(blank=True, default=False, null=True, verbose_name="Artificiel"),
         ),
         migrations.AlterField(
             model_name="couvertureusagematrix",
             name="is_consumed",
-            field=models.BooleanField(
-                blank=True, default=None, null=True, verbose_name="Consommé"
-            ),
+            field=models.BooleanField(blank=True, default=None, null=True, verbose_name="Consommé"),
         ),
         migrations.AlterField(
             model_name="couvertureusagematrix",
             name="is_natural",
-            field=models.BooleanField(
-                blank=True, default=None, null=True, verbose_name="Naturel"
-            ),
+            field=models.BooleanField(blank=True, default=None, null=True, verbose_name="Naturel"),
         ),
     ]

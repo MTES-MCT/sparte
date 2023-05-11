@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("public_data", "0043_alter_cerema_city_insee"),
     ]
@@ -13,8 +12,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="commune",
             name="colour",
-            field=models.CharField(
-                blank=True, max_length=30, null=True, verbose_name="Couleur d'afficgage"
-            ),
+            field=models.CharField(blank=True, max_length=30, null=True, verbose_name="Couleur d'afficgage"),
         ),
     ]

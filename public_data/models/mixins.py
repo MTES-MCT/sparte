@@ -74,9 +74,7 @@ class AutoLoadMixin:
 
     @classmethod
     def clean_data(cls, clean_queryset=None):
-        raise NotImplementedError(
-            "Need to be overrided to delete old data before loading"
-        )
+        raise NotImplementedError("Need to be overrided to delete old data before loading")
 
     @classmethod
     def load(

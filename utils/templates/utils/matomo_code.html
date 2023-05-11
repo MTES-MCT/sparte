@@ -1,19 +1,23 @@
 <!-- Matomo -->
 <script nonce="{{ CSP_NONCE }}">
-var _paq = window._paq = window._paq || [];
-{% if DISPLAY %}
-/* tracker methods like "setCustomDimension" should be called before "trackPageView" */
-_paq.push(['trackPageView']);
-_paq.push(['enableLinkTracking']);
-(function() {
-    var u="https://stats.data.gouv.fr/";
-    _paq.push(['setTrackerUrl', u+'piwik.php']);
-    _paq.push(['setSiteId', '236']);
-    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-    g.async=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
-})();
-{% else %}
-// Not displayed, check DEBUG is FALSE or force activation with settings.MATOMO_ACTIVATE
-{% endif %}
+    var _paq = window._paq = window._paq || [];
+    /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
+    _paq.push(['trackPageView']);
+    _paq.push(['enableLinkTracking']);
+    {% if DISPLAY %}
+    (function() {
+        var u = "https://stats.beta.gouv.fr/";
+        _paq.push(['setTrackerUrl', u + 'matomo.php']);
+        _paq.push(['setSiteId', '17']);
+        var g = document.createElement('script');
+        var s = document.getElementsByTagName('script')[0];
+        g.async = true;
+        g.src = u + 'matomo.js';
+        s.parentNode.insertBefore(g, s);
+    })();
+    {% else %}
+    // Not displayed, check DEBUG is FALSE or force activation with settings.MATOMO_ACTIVATE
+    {% endif %}
 </script>
+<noscript><p><img src="https://stats.beta.gouv.fr/matomo.php?idsite=17&amp;rec=1" style="border:0;" alt="" /></p></noscript>
 <!-- End Matomo Code -->

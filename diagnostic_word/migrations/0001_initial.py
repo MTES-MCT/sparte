@@ -4,21 +4,19 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='WordTemplate',
+            name="WordTemplate",
             fields=[
-                ('slug', models.SlugField(primary_key=True, serialize=False, verbose_name='Slug')),
-                ('description', models.TextField(verbose_name='Description')),
-                ('docx', models.FileField(upload_to='word_templates', verbose_name='Modèle Word')),
-                ('last_update', models.DateTimeField(auto_now=True, verbose_name='Dernière mise à jour')),
-                ('filename_mask', models.CharField(default='', max_length=255, verbose_name='Nom du fichier')),
+                ("slug", models.SlugField(primary_key=True, serialize=False, verbose_name="Slug")),
+                ("description", models.TextField(verbose_name="Description")),
+                ("docx", models.FileField(upload_to="word_templates", verbose_name="Modèle Word")),
+                ("last_update", models.DateTimeField(auto_now=True, verbose_name="Dernière mise à jour")),
+                ("filename_mask", models.CharField(default="", max_length=255, verbose_name="Nom du fichier")),
             ],
         ),
     ]

@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("public_data", "0045_rename_colour_commune_map_color"),
     ]
@@ -13,23 +12,17 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="ocsge",
             name="code_or",
-            field=models.CharField(
-                blank=True, max_length=200, null=True, verbose_name="Code OR"
-            ),
+            field=models.CharField(blank=True, max_length=200, null=True, verbose_name="Code OR"),
         ),
         migrations.AddField(
             model_name="ocsge",
             name="id_origine",
-            field=models.CharField(
-                blank=True, max_length=200, null=True, verbose_name="ID origine"
-            ),
+            field=models.CharField(blank=True, max_length=200, null=True, verbose_name="ID origine"),
         ),
         migrations.AddField(
             model_name="ocsge",
             name="id_source",
-            field=models.CharField(
-                blank=True, max_length=200, null=True, verbose_name="ID source"
-            ),
+            field=models.CharField(blank=True, max_length=200, null=True, verbose_name="ID source"),
         ),
         migrations.AddField(
             model_name="ocsge",

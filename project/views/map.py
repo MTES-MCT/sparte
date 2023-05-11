@@ -38,17 +38,14 @@ class ProjectMapView(GroupMixin, DetailView):
                 "layer_list": [
                     {
                         "name": "Communes",
-                        "url": reverse_lazy(
-                            "project:project-communes", args=[self.object.id]
-                        ),
+                        "url": reverse_lazy("project:project-communes", args=[self.object.id]),
                         "display": False,  # afficher par défaut ou non
                         "level": "2",
                         "style": "style_communes",
                     },
                     {
                         "name": "Emprise du projet",
-                        "url": reverse_lazy("project:emprise-list")
-                        + f"?id={self.object.pk}",
+                        "url": reverse_lazy("project:emprise-list") + f"?id={self.object.pk}",
                         "display": True,
                         "style": "style_emprise",
                         "fit_map": True,
@@ -56,10 +53,7 @@ class ProjectMapView(GroupMixin, DetailView):
                     },
                     {
                         "name": "Arcachon: Couverture 2015",
-                        "url": (
-                            f'{reverse_lazy("public_data:ocsge-optimized")}'
-                            "?year=2015&color=couverture"
-                        ),
+                        "url": (f'{reverse_lazy("public_data:ocsge-optimized")}' "?year=2015&color=couverture"),
                         "display": False,
                         "color_property_name": "map_color",
                         "style": "get_color_from_property",
@@ -67,10 +61,7 @@ class ProjectMapView(GroupMixin, DetailView):
                     },
                     {
                         "name": "Arcachon: Couverture 2018",
-                        "url": (
-                            f'{reverse_lazy("public_data:ocsge-optimized")}'
-                            "?year=2018&color=couverture"
-                        ),
+                        "url": (f'{reverse_lazy("public_data:ocsge-optimized")}' "?year=2018&color=couverture"),
                         "display": False,
                         "color_property_name": "map_color",
                         "style": "get_color_from_property",
@@ -78,10 +69,7 @@ class ProjectMapView(GroupMixin, DetailView):
                     },
                     {
                         "name": "Arcachon: Usage 2015",
-                        "url": (
-                            f'{reverse_lazy("public_data:ocsge-optimized")}'
-                            "?year=2015&color=usage"
-                        ),
+                        "url": (f'{reverse_lazy("public_data:ocsge-optimized")}' "?year=2015&color=usage"),
                         "display": False,
                         "color_property_name": "map_color",
                         "style": "get_color_from_property",
@@ -89,10 +77,7 @@ class ProjectMapView(GroupMixin, DetailView):
                     },
                     {
                         "name": "Arcachon: Usage 2018",
-                        "url": (
-                            f'{reverse_lazy("public_data:ocsge-optimized")}'
-                            "?year=2018&color=usage"
-                        ),
+                        "url": (f'{reverse_lazy("public_data:ocsge-optimized")}' "?year=2018&color=usage"),
                         "display": False,
                         "color_property_name": "map_color",
                         "style": "get_color_from_property",
@@ -120,30 +105,21 @@ class ProjectMapView(GroupMixin, DetailView):
                     },
                     {
                         "name": "Arcachon: zones artificielles 2015",
-                        "url": (
-                            f'{reverse_lazy("public_data:artificialarea-optimized")}'
-                            "?year=2015"
-                        ),
+                        "url": (f'{reverse_lazy("public_data:artificialarea-optimized")}' "?year=2015"),
                         "display": False,
                         "level": "3",
                         "style": "style_zone_artificielle",
                     },
                     {
                         "name": "Arcachon: zones artificielles 2018",
-                        "url": (
-                            f'{reverse_lazy("public_data:artificialarea-optimized")}'
-                            "?year=2018"
-                        ),
+                        "url": (f'{reverse_lazy("public_data:artificialarea-optimized")}' "?year=2018"),
                         "display": False,
                         "level": "3",
                         "style": "style_zone_artificielle",
                     },
                     {
                         "name": "Gers: Couverture 2016",
-                        "url": (
-                            f'{reverse_lazy("public_data:ocsge-optimized")}'
-                            "?year=2016&color=couverture"
-                        ),
+                        "url": (f'{reverse_lazy("public_data:ocsge-optimized")}' "?year=2016&color=couverture"),
                         "display": False,
                         "color_property_name": "map_color",
                         "style": "get_color_from_property",
@@ -151,10 +127,7 @@ class ProjectMapView(GroupMixin, DetailView):
                     },
                     {
                         "name": "Gers: Couverture 2019",
-                        "url": (
-                            f'{reverse_lazy("public_data:ocsge-optimized")}'
-                            "?year=2019&color=couverture"
-                        ),
+                        "url": (f'{reverse_lazy("public_data:ocsge-optimized")}' "?year=2019&color=couverture"),
                         "display": False,
                         "color_property_name": "map_color",
                         "style": "get_color_from_property",
@@ -162,10 +135,7 @@ class ProjectMapView(GroupMixin, DetailView):
                     },
                     {
                         "name": "Gers: Usage 2016",
-                        "url": (
-                            f'{reverse_lazy("public_data:ocsge-optimized")}'
-                            "?year=2016&color=usage"
-                        ),
+                        "url": (f'{reverse_lazy("public_data:ocsge-optimized")}' "?year=2016&color=usage"),
                         "display": False,
                         "color_property_name": "map_color",
                         "style": "get_color_from_property",
@@ -173,10 +143,7 @@ class ProjectMapView(GroupMixin, DetailView):
                     },
                     {
                         "name": "Gers: Usage 2019",
-                        "url": (
-                            f'{reverse_lazy("public_data:ocsge-optimized")}'
-                            "?year=2019&color=usage"
-                        ),
+                        "url": (f'{reverse_lazy("public_data:ocsge-optimized")}' "?year=2019&color=usage"),
                         "display": False,
                         "color_property_name": "map_color",
                         "style": "get_color_from_property",
@@ -204,40 +171,28 @@ class ProjectMapView(GroupMixin, DetailView):
                     },
                     {
                         "name": "Gers: zones construites 2016",
-                        "url": (
-                            f'{reverse_lazy("public_data:zoneconstruite-optimized")}'
-                            "?year=2016"
-                        ),
+                        "url": (f'{reverse_lazy("public_data:zoneconstruite-optimized")}' "?year=2016"),
                         "display": False,
                         "style": "style_zone_artificielle",
                         "level": "3",
                     },
                     {
                         "name": "Gers: zones construites 2019",
-                        "url": (
-                            f'{reverse_lazy("public_data:zoneconstruite-optimized")}'
-                            "?year=2019"
-                        ),
+                        "url": (f'{reverse_lazy("public_data:zoneconstruite-optimized")}' "?year=2019"),
                         "display": False,
                         "style": "style_zone_artificielle",
                         "level": "3",
                     },
                     {
                         "name": "Gers: zones artificielles 2016",
-                        "url": (
-                            f'{reverse_lazy("public_data:artificialarea-optimized")}'
-                            "?year=2016"
-                        ),
+                        "url": (f'{reverse_lazy("public_data:artificialarea-optimized")}' "?year=2016"),
                         "display": False,
                         "style": "style_zone_artificielle",
                         "level": "3",
                     },
                     {
                         "name": "Gers: zones artificielles 2019",
-                        "url": (
-                            f'{reverse_lazy("public_data:artificialarea-optimized")}'
-                            "?year=2019"
-                        ),
+                        "url": (f'{reverse_lazy("public_data:artificialarea-optimized")}' "?year=2019"),
                         "display": False,
                         "style": "style_zone_artificielle",
                         "level": "3",
@@ -293,9 +248,7 @@ class BaseThemeMap(GroupMixin, DetailView):
         layers = [
             {
                 "name": "Emprise du projet",
-                "url": (
-                    f'{reverse_lazy("project:emprise-list")}' f"?id={self.object.pk}"
-                ),
+                "url": (f'{reverse_lazy("project:emprise-list")}' f"?id={self.object.pk}"),
                 "display": True,
                 "style": "style_emprise",
                 "fit_map": True,
@@ -334,10 +287,7 @@ class MyArtifMapView(BaseThemeMap):
 
     def get_layers_list(self, *layers):
         years = (
-            self.object.cities.all()
-            .first()
-            .communediff_set.all()
-            .aggregate(old=Max("year_old"), new=Max("year_new"))
+            self.object.cities.all().first().communediff_set.all().aggregate(old=Max("year_old"), new=Max("year_new"))
         )
         layers = list(layers) + [
             {
@@ -377,7 +327,7 @@ class MyArtifMapView(BaseThemeMap):
 
 
 class CitySpaceConsoMapView(BaseThemeMap):
-    title = "Consommation d'espace des communes de mon territoire"
+    title = "Consommation d'espaces des communes de mon territoire"
     url_name = "theme-city-conso"
 
     def get_layers_list(self, *layers):
@@ -395,15 +345,10 @@ class CitySpaceConsoMapView(BaseThemeMap):
 
     def get_data(self):
         project = self.get_object()
-        fields = Cerema.get_art_field(
-            project.analyse_start_date, project.analyse_end_date
-        )
+        fields = Cerema.get_art_field(project.analyse_start_date, project.analyse_end_date)
         qs = Cerema.objects.annotate(artif_area=sum(F(f) for f in fields))
         queryset = project.cities.all().annotate(
-            artif_area=Subquery(
-                qs.filter(city_insee=OuterRef("insee")).values("artif_area")[:1]
-            )
-            / 10000
+            artif_area=Subquery(qs.filter(city_insee=OuterRef("insee")).values("artif_area")[:1]) / 10000
         )
         bbox = self.request.GET.get("bbox", None)
         if bbox is not None and len(bbox) > 0:
@@ -413,9 +358,7 @@ class CitySpaceConsoMapView(BaseThemeMap):
         return JsonResponse(serializer.data, status=200)
 
     def get_gradient(self):
-        fields = Cerema.get_art_field(
-            self.object.analyse_start_date, self.object.analyse_end_date
-        )
+        fields = Cerema.get_art_field(self.object.analyse_start_date, self.object.analyse_end_date)
         qs = (
             self.object.get_cerema_cities()
             .annotate(conso=sum([F(f) for f in fields]) / 10000)
@@ -426,13 +369,8 @@ class CitySpaceConsoMapView(BaseThemeMap):
         if qs.count() <= self.scale_size:
             boundaries = sorted([i["conso"] for i in qs])
         else:
-            boundaries = jenks_breaks(
-                [i["conso"] for i in qs], n_classes=self.scale_size
-            )[1:]
-        data = [
-            {"value": v, "color": c.hex_l}
-            for v, c in zip(boundaries, get_yellow2red_gradient(len(boundaries)))
-        ]
+            boundaries = jenks_breaks([i["conso"] for i in qs], n_classes=self.scale_size)[1:]
+        data = [{"value": v, "color": c.hex_l} for v, c in zip(boundaries, get_dark_blue_gradient(len(boundaries)))]
         return JsonResponse(data, safe=False)
 
 
@@ -465,10 +403,7 @@ class CityArtifMapView(BaseThemeMap):
             boundaries = [1]
         elif len(boundaries) > self.scale_size:
             boundaries = jenks_breaks(boundaries, n_classes=self.scale_size)[1:]
-        data = [
-            {"value": v, "color": c.hex_l}
-            for v, c in zip(boundaries, get_dark_blue_gradient(len(boundaries)))
-        ]
+        data = [{"value": v, "color": c.hex_l} for v, c in zip(boundaries, get_yellow2red_gradient(len(boundaries)))]
         return JsonResponse(data, safe=False)
 
     def get_data(self):

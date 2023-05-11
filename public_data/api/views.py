@@ -20,15 +20,13 @@ class OptimizedMixins:
     optimized_fields = {
         "sql": "name",
     }
-    optimized_geo_field = "st_AsGeoJSON(o.mpoly, 8)"
+    optimized_geo_field = "st_AsGeoJSON(o.mpoly, 6, 0)"
 
     def get_params(self, request):
         bbox = request.query_params.get("in_bbox")
         year = request.query_params.get("year")
         if bbox is None or year is None:
-            raise ValueError(
-                f"bbox and year parameter must be set. bbox={bbox};year={year}"
-            )
+            raise ValueError(f"bbox and year parameter must be set. bbox={bbox};year={year}")
         bbox = list(map(float, bbox.split(",")))
         year = int(year)
         return [year] + bbox  # /!\ order matter, see sql query below
@@ -63,10 +61,7 @@ class OptimizedMixins:
         fields_names = self.get_field_names()
         with connection.cursor() as cursor:
             cursor.execute(query, params)
-            return [
-                {name: row[i] for i, name in enumerate(fields_names)}
-                for row in cursor.fetchall()
-            ]
+            return [{name: row[i] for i, name in enumerate(fields_names)} for row in cursor.fetchall()]
 
     def clean_properties(self, props):
         cleaned_props = dict()
@@ -284,6 +279,12 @@ class RegionViewSet(DataViewSet):
 class DepartementViewSet(DataViewSet):
     queryset = models.Departement.objects.all()
     serializer_class = serializers.DepartementSerializer
+    geo_field = "mpoly"
+
+
+class ScotViewSet(DataViewSet):
+    queryset = models.Scot.objects.all()
+    serializer_class = serializers.ScotSerializer
     geo_field = "mpoly"
 
 

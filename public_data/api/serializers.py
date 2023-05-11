@@ -113,6 +113,18 @@ class DepartementSerializer(serializers.GeoFeatureModelSerializer):
         geo_field = "mpoly"
 
 
+class ScotSerializer(serializers.GeoFeatureModelSerializer):
+    class Meta:
+        fields = (
+            "id",
+            "name",
+            "region_id",
+            "departement_id",
+        )
+        model = models.Scot
+        geo_field = "mpoly"
+
+
 class EpciSerializer(serializers.GeoFeatureModelSerializer):
     class Meta:
         fields = (

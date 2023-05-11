@@ -7,7 +7,6 @@ import public_data.models.mixins
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("public_data", "0011_auto_20210920_1954"),
     ]
@@ -27,15 +26,11 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "couverture",
-                    models.CharField(
-                        blank=True, max_length=254, verbose_name="Couverture du sol"
-                    ),
+                    models.CharField(blank=True, max_length=254, verbose_name="Couverture du sol"),
                 ),
                 (
                     "usage",
-                    models.CharField(
-                        blank=True, max_length=254, verbose_name="Usage du sol"
-                    ),
+                    models.CharField(blank=True, max_length=254, verbose_name="Usage du sol"),
                 ),
                 ("millesime", models.DateField(verbose_name="Millésime")),
                 (
@@ -44,15 +39,11 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "origine",
-                    models.CharField(
-                        blank=True, max_length=254, verbose_name="Origine"
-                    ),
+                    models.CharField(blank=True, max_length=254, verbose_name="Origine"),
                 ),
                 (
                     "origine2",
-                    models.CharField(
-                        blank=True, max_length=254, verbose_name="Origine1"
-                    ),
+                    models.CharField(blank=True, max_length=254, verbose_name="Origine1"),
                 ),
                 (
                     "ossature",
@@ -60,9 +51,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "commentaire",
-                    models.CharField(
-                        blank=True, max_length=254, verbose_name="Commentaire"
-                    ),
+                    models.CharField(blank=True, max_length=254, verbose_name="Commentaire"),
                 ),
                 (
                     "mpoly",
