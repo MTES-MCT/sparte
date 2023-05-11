@@ -44,6 +44,24 @@ export default class SparteMap {
         this.debugPanelZoom = document.createElement('div')
         this.debugPanel.appendChild(this.debugPanelZoom)
 
+        // Refresh layers option
+        this.debugPanelRefreshLayers = document.createElement('div')
+
+        this.debugPanelRefreshLayersCheckbox = document.createElement('input')
+        this.debugPanelRefreshLayersCheckbox.className = 'fr-mr-1w'
+        this.debugPanelRefreshLayersCheckbox.type = 'checkbox'
+        this.debugPanelRefreshLayersCheckbox.name = 'refresh'
+        this.debugPanelRefreshLayersCheckbox.value = 'refresh'
+        this.debugPanelRefreshLayersCheckbox.id = 'refresh'
+        this.debugPanelRefreshLayersCheckbox.checked = true
+
+        let label = document.createElement('label')
+        label.htmlFor = 'Refresh layers'
+        label.appendChild(document.createTextNode('refresh'))
+        this.debugPanelRefreshLayers.appendChild(this.debugPanelRefreshLayersCheckbox)
+        this.debugPanelRefreshLayers.appendChild(label)
+        this.debugPanel.appendChild(this.debugPanelRefreshLayers)
+
         this.map.on('moveend', () => {
             this.debugPanelZoom.innerHTML = `<strong>Zoom level:</strong> ${this.map.getZoom()}`
             this.debugPanelBounding.innerHTML = `<strong>Bounds:</strong> SW ${this.map.getBounds().getSouthWest().toString()}, NE ${this.map.getBounds().getNorthEast().toString()}`
@@ -95,7 +113,7 @@ export default class SparteMap {
     }
 
     moveend() {
-        if (this.layers)
+        if (this.layers && this.debugPanelRefreshLayersCheckbox.checked)
             this.layers.update()
     }
 }
