@@ -231,7 +231,7 @@ class MapV2View(GroupMixin, DetailView):
                         "display": True,
                         "style": "style_emprise",
                         "fit_map": True,
-                        "level": "6",
+                        "level": "7",
                         "is_optimized": False,
                     },
                     {
@@ -261,7 +261,7 @@ class MapV2View(GroupMixin, DetailView):
                     {
                         "name": "Départements",
                         "url": reverse_lazy("public_data:departement-optimized"),
-                        "display": False,
+                        "display": True,
                         "level": "4",
                         "style": "style_departements",
                         "is_optimized": True,
@@ -269,10 +269,19 @@ class MapV2View(GroupMixin, DetailView):
                     {
                         "name": "Régions",
                         "url": reverse_lazy("public_data:region-optimized"),
-                        "display": False,
+                        "display": True,
                         "level": "5",
                         "style": "style_regions",
                         "is_optimized": True,
+                    },
+                    {
+                        "name": "OCSGE",
+                        "url": f'{reverse_lazy("public_data:ocsge-optimized")}?year=2019',
+                        "display": True,
+                        "level": "6",
+                        "style": "style_communes",
+                        "is_optimized": True,
+                        "millesimes": ["2016", "2019"],
                     },
                 ],
             }
