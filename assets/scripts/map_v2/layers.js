@@ -95,8 +95,10 @@ export default class Layers {
             if (obj.options.display === 'False' || obj.options.is_optimized === "False")
                 return
             
-            let url = `${obj.options.url}?in_bbox=${this.map.getBounds().toBBoxString()}&zoom=${this.map.getZoom()}`
-    
+            let url = obj.options.url
+            url += url.includes("?") ? '&' : '?'
+            url += `in_bbox=${this.map.getBounds().toBBoxString()}&zoom=${this.map.getZoom()}`
+
             fetch(url)
                 .then((response) => {
                     return response.json()
