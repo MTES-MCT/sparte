@@ -227,6 +227,10 @@ class OcsgeDiffViewSet(ZoomSimplificationMixin, OptimizedMixins, DataViewSet):
     serializer_class = serializers.OcsgeDiffSerializer
     optimized_fields = {
         # "o.id": "id",
+        "cs_new": "couverture_new",
+        "cs_old": "couverture_old",
+        "us_new": "usage_new",
+        "us_old": "usage_old",
         "CONCAT(cs_old, ' ', cs_old_label)": "cs_old",
         "CONCAT(us_old, ' ', us_old_label)": "us_old",
         "CONCAT(cs_new, ' ', cs_new_label)": "cs_new",
@@ -238,27 +242,57 @@ class OcsgeDiffViewSet(ZoomSimplificationMixin, OptimizedMixins, DataViewSet):
         "surface / 10000": "surface",
     }
 
-    def get_sql_where(self):
-        return (
-            "where year_new = %s and year_old = %s "
-            "    and mpoly && ST_MakeEnvelope(%s, %s, %s, %s, 4326) "
-            "    and is_new_artif = %s "
-            "    and is_new_natural = %s "
-            "    and ST_Intersects(mpoly, ("
-            "        SELECT ST_Union(mpoly) FROM project_emprise WHERE project_id = %s"
-            "    ))"
-        )
+    min_zoom = 15
 
     def get_params(self, request):
-        project_id = request.query_params.get("project_id")
+
         bbox = request.query_params.get("in_bbox").split(",")
-        bbox = list(map(float, bbox))
-        year_old = int(request.query_params.get("year_old"))
-        year_new = int(request.query_params.get("year_new"))
-        is_new_artif = bool(request.query_params.get("is_new_artif", False))
-        is_new_natural = bool(request.query_params.get("is_new_natural", False))
-        # /!\ order matter, see sql query
-        return [year_new, year_old] + bbox + [is_new_artif, is_new_natural, project_id]
+        params = list(map(float, bbox))
+        params.append(int(request.query_params.get("year_new")))
+        params.append(int(request.query_params.get("year_old")))
+
+        if "is_new_artif" in request.query_params:
+            params.append(bool(request.query_params.get("is_new_artif")))
+        if "is_new_natural" in request.query_params:
+            params.append(bool(request.query_params.get("is_new_natural")))
+        if "project_id" in request.query_params:
+            params.append(request.query_params.get("project_id"))
+
+        # /!\ order matter, check sql query to know
+        return params
+
+    def get_sql_from(self):
+        return (
+            f"FROM {self.queryset.model._meta.db_table} o "
+            "INNER JOIN (SELECT ST_MakeEnvelope(%s, %s, %s, %s, 4326) as box) as b "
+            "ON ST_Intersects(o.mpoly, b.box) "
+        )
+
+    def get_sql_where(self):
+        where = "where year_new = %s and year_old = %s "
+        if "is_new_artif" in self.request.query_params:
+            where += "and is_new_artif = %s "
+        if "is_new_natural" in self.request.query_params:
+            where += "and is_new_natural = %s "
+        if "project_id" in self.request.query_params:
+            where += (
+                "and ST_Intersects(mpoly, ("
+                "    SELECT ST_Union(mpoly) FROM project_emprise WHERE project_id = %s"
+                "))"
+            )
+        return where
+
+    def get_optimized_geo_field(self):
+        zoom = self.get_zoom()
+        if zoom == 18:
+            y = 0
+        elif zoom == 17:
+            y = 0.00001
+        elif zoom == 16:
+            y = 0.00005
+        else:
+            y = 0.0001
+        return f"st_AsGeoJSON(ST_SimplifyPreserveTopology(ST_Intersection(mpoly, b.box), {y}), 6, 0)"
 
 
 class ZoneConstruiteViewSet(OptimizedMixins, DataViewSet):
