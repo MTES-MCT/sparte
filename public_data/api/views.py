@@ -294,7 +294,7 @@ class OcsgeDiffViewSet(ZoomSimplificationMixin, OptimizedMixins, DataViewSet):
         return f"st_AsGeoJSON(ST_SimplifyPreserveTopology(ST_Intersection(mpoly, b.box), {y}), 6, 0)"
 
 
-class ZoneConstruiteViewSet(OptimizedMixins, DataViewSet):
+class ZoneConstruiteViewSet(ZoomSimplificationMixin, OptimizedMixins, DataViewSet):
     queryset = models.ZoneConstruite.objects.all()
     serializer_class = serializers.ZoneConstruiteSerializer
     optimized_fields = {
@@ -303,6 +303,48 @@ class ZoneConstruiteViewSet(OptimizedMixins, DataViewSet):
         "year": "year",
         "built_density": "Densité",
     }
+
+    def get_params(self, request):
+        bbox = request.query_params.get("in_bbox").split(",")
+        params = list(map(float, bbox))
+        if "project_id" in request.query_params:
+            params.append(request.query_params.get("project_id"))
+        params.append(int(request.query_params.get("year")))
+        return params
+
+    def get_sql_from(self):
+        sql_from = [
+            f"FROM {self.queryset.model._meta.db_table} o",
+            "INNER JOIN (SELECT ST_MakeEnvelope(%s, %s, %s, %s, 4326) as box) as b",
+            "ON ST_Intersects(o.mpoly, b.box)",
+        ]
+        if "project_id" in self.request.query_params:
+            sql_from += [
+                "INNER JOIN (SELECT ST_Union(mpoly) as geom FROM project_emprise WHERE project_id = %s) as t",
+                "ON ST_Intersects(o.mpoly, t.geom)",
+            ]
+        return " ".join(sql_from)
+
+    def get_sql_where(self):
+        return "WHERE o.year = %s"
+
+    def get_optimized_geo_field(self):
+        zoom = self.get_zoom()
+        if zoom == 18:
+            y = 0
+        elif zoom == 17:
+            y = 0.00001
+        elif zoom == 16:
+            y = 0.00005
+        elif zoom == 15:
+            y = 0.0001
+        elif zoom == 14:
+            y = 0.0005
+        elif zoom == 13:
+            y = 0.00075
+        else:
+            y = 0.001
+        return f"st_AsGeoJSON(ST_SimplifyPreserveTopology(ST_Intersection(mpoly, b.box), {y}), 6, 0)"
 
 
 class ArtificialAreaViewSet(ZoomSimplificationMixin, OptimizedMixins, DataViewSet):
@@ -314,7 +356,7 @@ class ArtificialAreaViewSet(ZoomSimplificationMixin, OptimizedMixins, DataViewSe
         "o.surface": "surface",
         "o.year": "year",
     }
-    optimized_geo_field = "st_AsGeoJSON(ST_Intersection(o.mpoly, t.geom), 6)"
+
     min_zoom = 12
 
     def get_params(self, request):
@@ -322,6 +364,7 @@ class ArtificialAreaViewSet(ZoomSimplificationMixin, OptimizedMixins, DataViewSe
         params = list(map(float, bbox))
         if "project_id" in request.query_params:
             params.append(request.query_params.get("project_id"))
+        params.append(int(request.query_params.get("year")))
         return params
 
     def get_sql_from(self):
@@ -334,14 +377,12 @@ class ArtificialAreaViewSet(ZoomSimplificationMixin, OptimizedMixins, DataViewSe
         if "project_id" in self.request.query_params:
             sql_from += [
                 "INNER JOIN (SELECT ST_Union(mpoly) as geom FROM project_emprise WHERE project_id = %s) as t",
-                "ON ST_Intersects(o.mpoly, t.geom)"
+                "ON ST_Intersects(o.mpoly, t.geom)",
             ]
         return " ".join(sql_from)
 
     def get_sql_where(self):
-        return (
-            "where ST_Area(ST_Transform(ST_Intersection(o.mpoly, t.geom), 2154)) > 0.5"
-        )
+        return "WHERE ST_Area(ST_Transform(ST_Intersection(o.mpoly, t.geom), 2154)) > 0.5 AND o.year = %s"
 
     def get_optimized_geo_field(self):
         zoom = self.get_zoom()
