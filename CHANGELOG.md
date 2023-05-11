@@ -3,16 +3,29 @@
 Ce changelog suit la méthode "keep a changelog" disponible ici: [https://keepachangelog.com/en/1.0.0/](https://keepachangelog.com/en/1.0.0/)
 
 
-## [2.6] - Non livré
+## [4] La GPU - Non livré
 
 ### Ajouté :
-* Suivi des modifications d'un diagnostics et d'une demande de téléchargement
 
 ### Modifié :
-* Passage de Python 3.9 à 3.10 et Django 3.2 à 4.1
 
 ### Corrigé :
 
+## [3] - 2023.05.11
+
+### Ajouté :
+* Suivi des modifications d'un diagnostics et d'une demande de téléchargement
+* Nouvelle page d'accueil présentant la trajectoire
+* Nouvel onglet Trajectoire dans les tableaux de bords
+
+### Modifié :
+* Passage de Python 3.9 à 3.10 et Django 3.2 à 4.1
+* Liste des diagnostics améliorées
+
+### Corrigé :
+* Couleur des cartes artificialisation (rouge) et consommation (bleu)
+* Couleur du fond du graphique objectif 2031 dans l'export Word
+* Autres corrections
 
 ## [2.5.2] - 2023.03.28
 
