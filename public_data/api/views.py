@@ -123,8 +123,8 @@ class ZoomSimplificationMixin:
             raise ValueError("zoom parameter must be set.")
 
     def get_data(self, request):
-        if self.get_zoom >= self.min_zoom:
-            return self.get_data(request)
+        if self.get_zoom() >= self.min_zoom:
+            return super().get_data(request)
         return []
 
     def get_params(self, request):
@@ -158,17 +158,21 @@ class DataViewSet(viewsets.ReadOnlyModelViewSet):
         return Response(gradient)
 
 
-class OcsgeViewSet(OptimizedMixins, DataViewSet):
+class OcsgeViewSet(ZoomSimplificationMixin, OptimizedMixins, DataViewSet):
     queryset = models.Ocsge.objects.all()
     serializer_class = serializers.OcsgeSerializer
     optimized_fields = {
         # "o.id": "id",
         "o.couverture_label": "couverture_label",
+        "o.couverture": "code_couverture",
         "o.usage_label": "usage_label",
+        "o.usage": "code_usage",
         "t.map_color": "map_color",
         "o.surface": "surface",
         "o.year": "year",
     }
+
+    min_zoom = 13
 
     def get_queryset(self):
         """
@@ -201,8 +205,17 @@ class OcsgeViewSet(OptimizedMixins, DataViewSet):
             f"ON t.code_prefix = o.{field} "
         )
 
+    def get_optimized_geo_field(self):
+        zoom = self.get_zoom()
+        if zoom >= 16:
+            y = 0
+        else:
+            # y = 0.0001
+            y = 0.0068
+        return f"st_AsGeoJSON(ST_SimplifyPreserveTopology(o.mpoly, {y}), 6, 0)"
 
-class OcsgeDiffViewSet(OptimizedMixins, DataViewSet):
+
+class OcsgeDiffViewSet(ZoomSimplificationMixin, OptimizedMixins, DataViewSet):
     queryset = models.OcsgeDiff.objects.all()
     serializer_class = serializers.OcsgeDiffSerializer
     optimized_fields = {
@@ -306,13 +319,13 @@ class RegionViewSet(ZoomSimplificationMixin, OptimizedMixins, DataViewSet):
     def get_optimized_geo_field(self):
         zoom = self.get_zoom()
         if zoom >= 16:
-            return "st_AsGeoJSON(o.mpoly, 6, 0)"
+            y = 0
         elif zoom >= 13:
             y = 0.0001
         elif zoom >= 10:
             y = 0.001
         else:
-            y = 0.0075
+            y = 0.0068
         return f"st_AsGeoJSON(ST_SimplifyPreserveTopology(o.mpoly, {y}), 6, 0)"
 
 
@@ -325,13 +338,13 @@ class DepartementViewSet(ZoomSimplificationMixin, OptimizedMixins, DataViewSet):
     def get_optimized_geo_field(self):
         zoom = self.get_zoom()
         if zoom >= 16:
-            return "st_AsGeoJSON(o.mpoly, 6, 0)"
+            y = 0
         elif zoom >= 13:
             y = 0.0001
         elif zoom >= 10:
             y = 0.001
         else:
-            y = 0.0075
+            y = 0.0068
         return f"st_AsGeoJSON(ST_SimplifyPreserveTopology(o.mpoly, {y}), 6, 0)"
 
 
@@ -343,7 +356,7 @@ class ScotViewSet(ZoomSimplificationMixin, OptimizedMixins, DataViewSet):
     def get_optimized_geo_field(self):
         zoom = self.get_zoom()
         if zoom >= 16:
-            return "st_AsGeoJSON(o.mpoly, 6, 0)"
+            y = 0
         elif zoom >= 13:
             y = 0.0001
         elif zoom >= 10:
@@ -360,16 +373,18 @@ class EpciViewSet(ZoomSimplificationMixin, OptimizedMixins, DataViewSet):
     serializer_class = serializers.EpciSerializer
     geo_field = "mpoly"
 
+    min_zoom = 6
+
     def get_optimized_geo_field(self):
         zoom = self.get_zoom()
         if zoom >= 16:
-            return "st_AsGeoJSON(o.mpoly, 6, 0)"
+            y = 0
         elif zoom >= 13:
             y = 0.0001
         elif zoom >= 10:
             y = 0.001
         else:
-            y = 0.0075
+            y = 0.0075  # never send because min_zoom = 10
         return f"st_AsGeoJSON(ST_SimplifyPreserveTopology(o.mpoly, {y}), 6, 0)"
 
 
@@ -380,15 +395,16 @@ class CommuneViewSet(ZoomSimplificationMixin, OptimizedMixins, DataViewSet):
     serializer_class = serializers.CommuneSerializer
     geo_field = "mpoly"
     optimized_fields = {}
+    min_zoom = 10
 
     def get_optimized_geo_field(self):
         zoom = self.get_zoom()
         if zoom >= 16:
-            return "st_AsGeoJSON(o.mpoly, 6, 0)"
+            y = 0
         elif zoom >= 13:
             y = 0.0001
         elif zoom >= 10:
             y = 0.001
         else:
-            y = 0.008
+            y = 0.008  # never send because min_zoom = 10
         return f"st_AsGeoJSON(ST_SimplifyPreserveTopology(o.mpoly, {y}), 6, 0)"

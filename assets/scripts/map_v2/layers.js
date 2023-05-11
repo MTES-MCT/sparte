@@ -20,8 +20,8 @@ export default class Layers {
 
             // Get GEO JSON for all layers
             let url = obj.url
-            if (obj.is_optimized === "True")
-                url += `?in_bbox=${this.map.getBounds().toBBoxString()}&zoom=${this.map.getZoom()}`
+            url += url.includes("?") ? '&' : '?'
+            url += `in_bbox=${this.map.getBounds().toBBoxString()}&zoom=${this.map.getZoom()}`
 
             fetch(url)
                 .then((response) => {
