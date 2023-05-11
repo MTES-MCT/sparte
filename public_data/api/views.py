@@ -114,13 +114,18 @@ class OptimizedMixins:
 
 
 class ZoomSimplificationMixin:
-    start_zoom_simplification = 13
+    min_zoom = 6
 
     def get_zoom(self):
         try:
             return int(self.request.query_params.get("zoom"))
         except TypeError:
             raise ValueError("zoom parameter must be set.")
+
+    def get_data(self, request):
+        if self.get_zoom >= self.min_zoom:
+            return self.get_data(request)
+        return []
 
     def get_params(self, request):
         bbox = request.query_params.get("in_bbox")
