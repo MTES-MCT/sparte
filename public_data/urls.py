@@ -13,6 +13,7 @@ from .api.views import (
     ScotViewSet,
     UsageSolViewset,
     ZoneConstruiteViewSet,
+    grid_views,
 )
 from .views import DisplayMatrix
 
@@ -21,6 +22,7 @@ app_name = "public_data"
 
 urlpatterns = [
     path("matrix", DisplayMatrix.as_view(), name="matrix"),
+    path("grid", grid_views, name="grid")
 ]
 
 

@@ -5,7 +5,7 @@ from typing import Dict
 from django.db import connection
 from django.http import HttpResponse
 from rest_framework import viewsets
-from rest_framework.decorators import action
+from rest_framework.decorators import action, api_view
 from rest_framework.response import Response
 from rest_framework_gis import filters
 
@@ -511,3 +511,32 @@ class CommuneViewSet(ZoomSimplificationMixin, OptimizedMixins, DataViewSet):
         else:
             y = 0.008  # never send because min_zoom = 10
         return f"st_AsGeoJSON(ST_SimplifyPreserveTopology(o.mpoly, {y}), 6, 0)"
+
+
+@api_view(['GET'])
+def grid_views(request):
+    """Grid view set."""
+
+    params = [int(request.query_params.get("gride_size", "1000")) * 0.008983]
+    bbox = request.query_params.get("in_bbox").split(",")
+    params += list(map(float, bbox))
+
+    query = (
+        "SELECT st_AsGeoJSON(squares.geom, 6, 0) as mpoly "
+        "FROM ST_SquareGrid(%s, ST_MakeEnvelope(%s, %s, %s, %s, 4326)) AS squares"
+    )
+
+    with connection.cursor() as cursor:
+        cursor.execute(query, params)
+        geojson = {
+            "type": "FeatureCollection",
+            "crs": {"type": "name", "properties": {"name": "EPSG:4326"}},
+            "features": [
+                {
+                    "type": "Feature",
+                    "geometry": json.loads(row[0]),
+                } for row in cursor.fetchall()
+            ],
+        }
+
+    return Response(geojson)
