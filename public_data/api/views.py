@@ -167,12 +167,10 @@ class OcsgeViewSet(ZoomSimplificationMixin, OptimizedMixins, DataViewSet):
         "o.couverture": "code_couverture",
         "o.usage_label": "usage_label",
         "o.usage": "code_usage",
-        "t.map_color": "map_color",
         "o.surface": "surface",
         "o.year": "year",
     }
-
-    min_zoom = 13
+    min_zoom = 15
 
     def get_queryset(self):
         """
@@ -193,26 +191,35 @@ class OcsgeViewSet(ZoomSimplificationMixin, OptimizedMixins, DataViewSet):
         return value
 
     def get_sql_from(self):
-        if self.request.query_params.get("color") == "usage":
-            table_name = models.UsageSol._meta.db_table
-            field = "usage"
-        else:
-            table_name = models.CouvertureSol._meta.db_table
-            field = "couverture"
         return (
             f"FROM {self.queryset.model._meta.db_table} o "
-            f"INNER JOIN {table_name} t "
-            f"ON t.code_prefix = o.{field} "
+            "INNER JOIN (SELECT ST_MakeEnvelope(%s, %s, %s, %s, 4326) as box) as b "
+            "ON ST_Intersects(o.mpoly, b.box) "
         )
+
+    def get_sql_where(self):
+        return "where o.year = %s"
+
+    def get_params(self, request):
+        bbox = request.query_params.get("in_bbox")
+        year = request.query_params.get("year")
+        if bbox is None or year is None:
+            raise ValueError(f"bbox and year parameter must be set. bbox={bbox};year={year}")
+        bbox = list(map(float, bbox.split(",")))
+        year = int(year)
+        return bbox + [year]  # /!\ order matter, see sql query below
 
     def get_optimized_geo_field(self):
         zoom = self.get_zoom()
-        if zoom >= 16:
+        if zoom == 18:
             y = 0
+        elif zoom == 17:
+            y = 0.00001
+        elif zoom == 16:
+            y = 0.00005
         else:
-            # y = 0.0001
-            y = 0.0068
-        return f"st_AsGeoJSON(ST_SimplifyPreserveTopology(o.mpoly, {y}), 6, 0)"
+            y = 0.0001
+        return f"st_AsGeoJSON(ST_SimplifyPreserveTopology(ST_Intersection(mpoly, b.box), {y}), 6, 0)"
 
 
 class OcsgeDiffViewSet(ZoomSimplificationMixin, OptimizedMixins, DataViewSet):
