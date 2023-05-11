@@ -129,16 +129,6 @@ class ZoomSimplificationMixin:
         bbox = list(map(float, bbox.split(",")))
         return bbox  # /!\ order matter, see sql query below
 
-    def get_optimized_geo_field(self):
-        zoom = self.get_zoom()
-        if zoom > self.start_zoom_simplification:
-            return "st_AsGeoJSON(o.mpoly, 6, 0)"
-        else:
-            a = ((0.05 - 0.00000001) / (6 - self.start_zoom_simplification))
-            b = 0.05 - a * 6
-            y = a * zoom + b
-            return f"st_AsGeoJSON(ST_SimplifyPreserveTopology(o.mpoly, {y}), 6, 0)"
-
     def get_sql_where(self):
         return "where o.mpoly && ST_MakeEnvelope(%s, %s, %s, %s, 4326)"
 
@@ -307,8 +297,18 @@ class RegionViewSet(ZoomSimplificationMixin, OptimizedMixins, DataViewSet):
     serializer_class = serializers.RegionSerializer
     geo_field = "mpoly"
     optimized_fields = {}
-    start_zoom_simplification = 18
 
+    def get_optimized_geo_field(self):
+        zoom = self.get_zoom()
+        if zoom >= 16:
+            return "st_AsGeoJSON(o.mpoly, 6, 0)"
+        elif zoom >= 13:
+            y = 0.0001
+        elif zoom >= 10:
+            y = 0.001
+        else:
+            y = 0.0075
+        return f"st_AsGeoJSON(ST_SimplifyPreserveTopology(o.mpoly, {y}), 6, 0)"
 
 
 class DepartementViewSet(ZoomSimplificationMixin, OptimizedMixins, DataViewSet):
@@ -316,14 +316,36 @@ class DepartementViewSet(ZoomSimplificationMixin, OptimizedMixins, DataViewSet):
     serializer_class = serializers.DepartementSerializer
     geo_field = "mpoly"
     optimized_fields = {}
-    start_zoom_simplification = 18
+
+    def get_optimized_geo_field(self):
+        zoom = self.get_zoom()
+        if zoom >= 16:
+            return "st_AsGeoJSON(o.mpoly, 6, 0)"
+        elif zoom >= 13:
+            y = 0.0001
+        elif zoom >= 10:
+            y = 0.001
+        else:
+            y = 0.0075
+        return f"st_AsGeoJSON(ST_SimplifyPreserveTopology(o.mpoly, {y}), 6, 0)"
 
 
 class ScotViewSet(ZoomSimplificationMixin, OptimizedMixins, DataViewSet):
     queryset = models.Scot.objects.all()
     serializer_class = serializers.ScotSerializer
     geo_field = "mpoly"
-    start_zoom_simplification = 18
+
+    def get_optimized_geo_field(self):
+        zoom = self.get_zoom()
+        if zoom >= 16:
+            return "st_AsGeoJSON(o.mpoly, 6, 0)"
+        elif zoom >= 13:
+            y = 0.0001
+        elif zoom >= 10:
+            y = 0.001
+        else:
+            y = 0.0075
+        return f"st_AsGeoJSON(ST_SimplifyPreserveTopology(o.mpoly, {y}), 6, 0)"
 
 
 class EpciViewSet(ZoomSimplificationMixin, OptimizedMixins, DataViewSet):
