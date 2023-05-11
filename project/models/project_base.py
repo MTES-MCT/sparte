@@ -1,4 +1,5 @@
 import collections
+import logging
 import traceback
 from decimal import Decimal
 from typing import Dict, List, Literal
@@ -7,14 +8,17 @@ import pandas as pd
 from django.conf import settings
 from django.contrib.gis.db import models as gis_models
 from django.contrib.gis.db.models import Extent, Union
-from django.contrib.gis.db.models.functions import Centroid
+from django.contrib.gis.db.models.functions import Centroid, Area
+from django.contrib.gis.geos import Polygon
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
-from django.db.models import Case, F, Max, Min, Q, Sum, Value, When
-from django.db.models.functions import Coalesce, Concat
+from django.db.models import Case, F, Max, Min, Q, Sum, Value, When, DecimalField
+from django.db.models.functions import Coalesce, Concat, Cast
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.functional import cached_property
+from simple_history.models import HistoricalRecords
+
 
 from config.storages import PublicMediaStorage
 from public_data.models import (
@@ -35,6 +39,8 @@ from public_data.models.mixins import DataColorationMixin
 from utils.db import cast_sum
 
 from .utils import user_directory_path
+
+logger = logging.getLogger(__name__)
 
 
 class ProjectNotSaved(BaseException):
@@ -111,7 +117,10 @@ class BaseProject(models.Model):
 
     @cached_property
     def area(self):
-        return self.combined_emprise.transform(2154, clone=True).area / 10000
+        try:
+            return self.combined_emprise.transform(2154, clone=True).area / 10000
+        except AttributeError:
+            return 0
 
     def __str__(self):
         return self.name
@@ -140,9 +149,7 @@ class BaseProject(models.Model):
 class ProjectCommune(models.Model):
     project = models.ForeignKey("project.Project", on_delete=models.CASCADE)
     commune = models.ForeignKey("public_data.Commune", on_delete=models.PROTECT)
-    group_name = models.CharField(
-        "Nom du groupe", max_length=100, blank=True, null=True
-    )
+    group_name = models.CharField("Nom du groupe", max_length=100, blank=True, null=True)
 
 
 class CityGroup:
@@ -249,7 +256,7 @@ class Project(BaseProject):
         validators=[MinValueValidator(0), MaxValueValidator(100)],
         default=50,
         help_text=(
-            "A date, l'objectif nationnal est de réduire de 50% la consommation "
+            "A date, l'objectif national est de réduire de 50% la consommation "
             "d'espace d'ici à 2031. Cet objectif doit être personnalisé localement "
             "par les SRADDET. Vous pouvez changer l'objectif pour tester différents "
             "scénarios."
@@ -280,10 +287,7 @@ class Project(BaseProject):
         max_length=250,
         blank=True,
         null=True,
-        help_text=(
-            "C'est le nom qui est utilisé pour désigner votre territoire, notamment "
-            "dans le rapport word."
-        ),
+        help_text=("C'est le nom qui est utilisé pour désigner votre territoire, notamment " "dans le rapport word."),
     )
 
     cover_image = models.ImageField(
@@ -314,7 +318,8 @@ class Project(BaseProject):
         storage=PublicMediaStorage(),
     )
 
-    async_city_and_combined_emprise_done = models.BooleanField(default=False)
+    async_add_city_done = models.BooleanField(default=False)
+    async_set_combined_emprise_done = models.BooleanField(default=False)
     async_cover_image_done = models.BooleanField(default=False)
     async_find_first_and_last_ocsge_done = models.BooleanField(default=False)
     async_add_neighboors_done = models.BooleanField(default=False)
@@ -322,10 +327,13 @@ class Project(BaseProject):
     async_generate_theme_map_artif_done = models.BooleanField(default=False)
     async_theme_map_understand_artif_done = models.BooleanField(default=False)
 
+    history = HistoricalRecords()
+
     @property
     def async_complete(self):
         return (
-            self.async_city_and_combined_emprise_done
+            self.async_add_city_done
+            & self.async_set_combined_emprise_done
             & self.async_cover_image_done
             & self.async_find_first_and_last_ocsge_done
             & self.async_add_neighboors_done
@@ -367,10 +375,7 @@ class Project(BaseProject):
             qs = qs.select_related("commune")
             qs = qs.order_by("group_name", "commune__name")
             for project_commune in qs:
-                if (
-                    len(self._city_group_list) == 0
-                    or self._city_group_list[-1].name != project_commune.group_name
-                ):
+                if len(self._city_group_list) == 0 or self._city_group_list[-1].name != project_commune.group_name:
                     self._city_group_list.append(CityGroup(project_commune.group_name))
                 self._city_group_list[-1].append(project_commune)
         return self._city_group_list
@@ -378,6 +383,10 @@ class Project(BaseProject):
     def delete(self):
         self.cover_image.delete(save=False)
         return super().delete()
+
+    def save(self, *args, **kwargs):
+        logger.info("Saving project %d: update_fields=%s", self.id, str(kwargs.get("update_fields", [])))
+        super().save(*args, **kwargs)
 
     def get_territory_name(self):
         if self.territory_name:
@@ -393,31 +402,34 @@ class Project(BaseProject):
             )
         if not self.folder_name:
             self.folder_name = f"diag_{self.id:>06}"
+            self._change_reason = "set folder_name"
             self.save(update_fields=["folder_name"])
         return self.folder_name
 
+    @cached_property
     def is_artif(self):
         """Check first if departement has OCSGE millesime (to speed up process),
         secondly check if project emprise contains OCS GE data. Usefull for vendée
         project"""
-        if not self.cities.filter(departement__is_artif_ready=True).exists():
-            return False
-        return Ocsge.objects.filter(mpoly__intersects=self.combined_emprise).exists()
+        if self.cities.exclude(departement__source_id=33).filter(departement__is_artif_ready=True).exists():
+            # au moins 1 département autre que la gironde avec Arcachon est artif_ready
+            return True
+        elif self.cities.filter(departement__source_id=33).exists():
+            # on a une ville du département de gironde, alors on vérifie si on est sur la couche de données d'arcachon
+            geom = self.combined_emprise
+            if geom:
+                return Ocsge.objects.filter(mpoly__intersects=geom).exists()
+        # dans tous les autres cas il n'y a pas d'OCS GE
+        return False
 
     def get_ocsge_millesimes(self):
         """Return all OCS GE millésimes available within project cities and between
         project analyse ztart and end date"""
-        ids = self.cities.filter(departement__is_artif_ready=True).value_list(
-            "departement_id", flat=True
-        )
+        ids = self.cities.filter(departement__is_artif_ready=True).value_list("departement_id", flat=True)
         years = set()
         for dept in Departement.objects.filter(id__in=ids):
             years.update(dept.get_ocsge_millesimes())
-        return [
-            x
-            for x in years
-            if x <= self.analyse_end_date and x >= self.analyse_start_date
-        ]
+        return [x for x in years if x <= self.analyse_end_date and x >= self.analyse_start_date]
 
     def add_look_a_like(self, public_key, many=False):
         """Add a public_key to look a like keeping the field formated
@@ -532,18 +544,13 @@ class Project(BaseProject):
 
     def get_bilan_conso(self):
         """Return the space consummed between 2011 and 2020 in hectare"""
-        qs = self.get_cerema_cities().aggregate(
-            bilan=Coalesce(Sum("naf11art21"), float(0))
-        )
+        qs = self.get_cerema_cities().aggregate(bilan=Coalesce(Sum("naf11art21"), float(0)))
         return qs["bilan"] / 10000
 
     def get_bilan_conso_per_year(self):
         """Return the space consummed per year between 2011 and 2020"""
         qs = self.get_cerema_cities().aggregate(
-            **{
-                f"20{f[3:5]}": Sum(f) / 10000
-                for f in Cerema.get_art_field("2011", "2020")
-            }
+            **{f"20{f[3:5]}": Sum(f) / 10000 for f in Cerema.get_art_field("2011", "2020")}
         )
         return qs
 
@@ -569,9 +576,7 @@ class Project(BaseProject):
         """Return Cerema data for the project, transposed and named after year"""
         if not self._conso_per_year:
             qs = self.get_cerema_cities()
-            fields = Cerema.get_art_field(
-                self.analyse_start_date, self.analyse_end_date
-            )
+            fields = Cerema.get_art_field(self.analyse_start_date, self.analyse_end_date)
             args = (Sum(field) for field in fields)
             qs = qs.aggregate(*args)
             self._conso_per_year = {
@@ -581,9 +586,7 @@ class Project(BaseProject):
             }
         return self._conso_per_year
 
-    def get_pop_change_per_year(
-        self, criteria: Literal["pop", "household"] = "pop"
-    ) -> Dict:
+    def get_pop_change_per_year(self, criteria: Literal["pop", "household"] = "pop") -> Dict:
         cities = (
             CommunePop.objects.filter(city__in=self.cities.all())
             .filter(year__gte=self.analyse_start_date)
@@ -685,9 +688,7 @@ class Project(BaseProject):
     def get_artif_progession_time_scoped(self):
         """Return example: {"new_artif": 12, "new_natural": 2: "net_artif": 10}"""
         qs = CommuneDiff.objects.filter(city__in=self.cities.all())
-        qs = qs.filter(
-            year_old__gte=self.analyse_start_date, year_new__lte=self.analyse_end_date
-        )
+        qs = qs.filter(year_old__gte=self.analyse_start_date, year_new__lte=self.analyse_end_date)
         return qs.aggregate(
             new_artif=Coalesce(Sum("new_artif"), Decimal("0")),
             new_natural=Coalesce(Sum("new_natural"), Decimal("0")),
@@ -737,9 +738,7 @@ class Project(BaseProject):
             qs = qs.annotate(name=F("city__departement__region__name"))
         else:
             qs = qs.annotate(name=F("city__name"))
-        qs = qs.filter(
-            year_old__gte=self.analyse_start_date, year_new__lte=self.analyse_end_date
-        )
+        qs = qs.filter(year_old__gte=self.analyse_start_date, year_new__lte=self.analyse_end_date)
         qs = qs.annotate(
             period=Concat(
                 "year_old",
@@ -787,9 +786,7 @@ class Project(BaseProject):
         """return {"first": yyyy, "last": yyyy} which are the first and last
         OCS GE millesime completly included in diagnostic time frame"""
         qs = Ocsge.objects.filter(mpoly__intersects=self.combined_emprise)
-        qs = qs.filter(
-            year__gte=self.analyse_start_date, year__lte=self.analyse_end_date
-        )
+        qs = qs.filter(year__gte=self.analyse_start_date, year__lte=self.analyse_end_date)
         qs = qs.aggregate(first=Min("year"), last=Max("year"))
         return qs
 
@@ -807,18 +804,10 @@ class Project(BaseProject):
         data = list(qs)
         item_list = list(klass.objects.all().order_by("code"))
         for item in item_list:
-            item.surface = sum(
-                [
-                    _["surface"]
-                    for _ in data
-                    if _["code_prefix"].startswith(item.code_prefix)
-                ]
-            )
+            item.surface = sum([_["surface"] for _ in data if _["code_prefix"].startswith(item.code_prefix)])
         return item_list
 
-    def get_base_sol_progression(
-        self, first_millesime, last_millesime, sol="couverture"
-    ):
+    def get_base_sol_progression(self, first_millesime, last_millesime, sol="couverture"):
         if sol == "couverture":
             code_field = F("matrix__couverture__code_prefix")
             klass = CouvertureSol
@@ -826,17 +815,11 @@ class Project(BaseProject):
             code_field = F("matrix__usage__code_prefix")
             klass = UsageSol
 
-        qs = CommuneSol.objects.filter(
-            city__in=self.cities.all(), year__in=[first_millesime, last_millesime]
-        )
+        qs = CommuneSol.objects.filter(city__in=self.cities.all(), year__in=[first_millesime, last_millesime])
         qs = qs.annotate(code_prefix=code_field)
         qs = qs.values("code_prefix")
-        qs = qs.annotate(
-            surface_first=cast_sum("surface", filter=Q(year=first_millesime), divider=1)
-        )
-        qs = qs.annotate(
-            surface_last=cast_sum("surface", filter=Q(year=last_millesime), divider=1)
-        )
+        qs = qs.annotate(surface_first=cast_sum("surface", filter=Q(year=first_millesime), divider=1))
+        qs = qs.annotate(surface_last=cast_sum("surface", filter=Q(year=last_millesime), divider=1))
         data = list(qs)
         item_list = list(klass.objects.all().order_by("code"))
         for item in item_list:
@@ -844,22 +827,17 @@ class Project(BaseProject):
                 [
                     _["surface_first"]
                     for _ in data
-                    if _["code_prefix"]
-                    and _["code_prefix"].startswith(item.code_prefix)
+                    if _["code_prefix"] and _["code_prefix"].startswith(item.code_prefix)
                 ]
             )
             item.surface_last = sum(
-                [
-                    _["surface_last"]
-                    for _ in data
-                    if _["code_prefix"]
-                    and _["code_prefix"].startswith(item.code_prefix)
-                ]
+                [_["surface_last"] for _ in data if _["code_prefix"] and _["code_prefix"].startswith(item.code_prefix)]
             )
             item.surface_diff = item.surface_last - item.surface_first
         return item_list
 
     def get_detail_artif(self, sol: Literal["couverture", "usage"]):
+        Zero = Area(Polygon(((0, 0), (0, 0), (0, 0), (0, 0)), srid=2154))
         return (
             OcsgeDiff.objects.intersect(self.combined_emprise)
             .filter(
@@ -869,9 +847,7 @@ class Project(BaseProject):
             .filter(Q(is_new_artif=True) | Q(is_new_natural=True))
             .annotate(
                 code_prefix=Case(
-                    When(
-                        is_new_artif=True, then=F(f"new_matrix__{sol}__code_prefix")
-                    ),
+                    When(is_new_artif=True, then=F(f"new_matrix__{sol}__code_prefix")),
                     default=F(f"old_matrix__{sol}__code_prefix"),
                 ),
                 label=Case(
@@ -879,17 +855,18 @@ class Project(BaseProject):
                     default=F(f"old_matrix__{sol}__label"),
                 ),
                 label_short=Case(
-                    When(
-                        is_new_artif=True, then=F(f"new_matrix__{sol}__label_short")
-                    ),
+                    When(is_new_artif=True, then=F(f"new_matrix__{sol}__label_short")),
                     default=F(f"old_matrix__{sol}__label_short"),
                 ),
+                area_artif=Case(When(is_new_artif=True, then=F("intersection_area")), default=Zero),
+                area_renat=Case(When(is_new_natural=True, then=F("intersection_area")), default=Zero),
             )
             .values("code_prefix", "label", "label_short")
             .annotate(
-                artif=cast_sum("intersection_area", filter=Q(is_new_artif=True)),
-                renat=cast_sum("intersection_area", filter=Q(is_new_natural=True)),
+                artif=Cast(Sum("area_artif"), DecimalField(max_digits=15, decimal_places=2)),
+                renat=Cast(Sum("area_renat"), DecimalField(max_digits=15, decimal_places=2)),
             )
+            .order_by("code_prefix", "label", "label_short")
         )
 
     def get_base_sol_artif(self, sol="couverture"):
@@ -913,11 +890,7 @@ class Project(BaseProject):
         if not land_type:
             land_type = self.land_type
         klass = AdminRef.get_class(land_type)
-        return (
-            klass.objects.all()
-            .filter(mpoly__touches=self.combined_emprise)
-            .order_by("name")
-        )
+        return klass.objects.all().filter(mpoly__touches=self.combined_emprise).order_by("name")
 
     def get_matrix(self, sol="couverture"):
         if sol == "usage":
@@ -926,13 +899,7 @@ class Project(BaseProject):
         else:
             prefix = "cs"
             headers = {_.code: _ for _ in CouvertureSol.objects.all()}
-        headers.update(
-            {
-                "": CouvertureSol(
-                    id=0, code="N/A", label="Inconnu", label_short="Inconnu"
-                )
-            }
-        )
+        headers.update({"": CouvertureSol(id=0, code="N/A", label="Inconnu", label_short="Inconnu")})
         index = f"{prefix}_old"
         column = f"{prefix}_new"
         qs = (
@@ -946,12 +913,7 @@ class Project(BaseProject):
             .order_by(index, column)
         )
         if qs.exists():
-            df = (
-                pd.DataFrame(qs)
-                .fillna("")
-                .pivot(index=index, columns=column, values="total")
-                .fillna(0)
-            )
+            df = pd.DataFrame(qs).fillna("").pivot(index=index, columns=column, values="total").fillna(0)
 
             return {
                 headers[i[2:]]: {headers[c[2:]]: row[c] for c in df.columns}

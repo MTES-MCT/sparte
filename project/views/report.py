@@ -1,6 +1,7 @@
 from decimal import InvalidOperation
 
 from django.contrib import messages
+from django.db import transaction
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.views.generic import CreateView, DetailView, TemplateView
@@ -18,13 +19,18 @@ class ProjectReportBaseView(GroupMixin, DetailView):
     context_object_name = "project"
     queryset = Project.objects.all()
 
+    @transaction.non_atomic_requests
+    def dispatch(self, request, *args, **kwargs):
+        # with this, be careful when doing row modification, autocommit is disabled
+        return super().dispatch(request, *args, **kwargs)
+
     def get_context_breadcrumbs(self):
         breadcrumbs = super().get_context_breadcrumbs()
         breadcrumbs.append({"href": None, "title": self.breadcrumbs_title})
         return breadcrumbs
 
     def get_context_data(self, **kwargs):
-        kwargs["ocsge_available"] = self.object.is_artif()
+        kwargs["ocsge_available"] = self.object.is_artif
         return super().get_context_data(**kwargs)
 
 
@@ -74,21 +80,15 @@ class ProjectReportConsoView(ProjectReportBaseView):
                     "annual_avg": current_conso / project.nb_years,
                     "nb_years": project.nb_years,
                     "nb_years_before_31": project.nb_years_before_2031,
-                    "forecast_2031": project.nb_years_before_2031
-                    * current_conso
-                    / project.nb_years,
+                    "forecast_2031": project.nb_years_before_2031 * current_conso / project.nb_years,
                 },
                 # charts
                 "determinant_per_year_chart": det_chart,
-                "determinant_pie_chart": charts.DeterminantPieChart(
-                    project, series=det_chart.get_series()
-                ),
+                "determinant_pie_chart": charts.DeterminantPieChart(project, series=det_chart.get_series()),
                 "comparison_chart": comparison_chart,
                 "commune_chart": chart_conso_cities,
                 # tables
-                "communes_data_table": add_total_line_column(
-                    chart_conso_cities.get_series()
-                ),
+                "communes_data_table": add_total_line_column(chart_conso_cities.get_series()),
                 "data_determinant": add_total_line_column(det_chart.get_series()),
                 "groups_names": groups_names,
                 "level": level,
@@ -133,11 +133,7 @@ class ProjectReportCityGroupView(ProjectReportBaseView):
 
         def groups_with_name(city_group_list):
             """Return named group (exclude cities with group_name == None)"""
-            return [
-                city_group
-                for city_group in city_group_list
-                if city_group.name is not None
-            ]
+            return [city_group for city_group in city_group_list if city_group.name is not None]
 
         def groups_name(group):
             return set(_.name for _ in group if _.name is not None)
@@ -204,7 +200,7 @@ class ProjectReportDicoverOcsgeView(ProjectReportBaseView):
             "active_page": "discover",
         }
 
-        if not project.is_artif():
+        if not project.is_artif:
             return super().get_context_data(**kwargs)
 
         kwargs.update(
@@ -216,7 +212,9 @@ class ProjectReportDicoverOcsgeView(ProjectReportBaseView):
                 "usa_pie_chart": charts.UsageSolPieChart(project),
                 "usa_progression_chart": charts.UsageSolProgressionChart(project),
                 "usa_leafs": UsageSol.get_leafs(),
+                "usage_nomenclature": {item.code_prefix_class: item for item in UsageSol.get_usage_nomenclature()},
                 "couv_leafs": CouvertureSol.get_leafs(),
+                "couv_nomenclature": {item.code_prefix_class: item for item in CouvertureSol.get_couv_nomenclature()},
             }
         )
 
@@ -261,7 +259,7 @@ class ProjectReportUsageView(ProjectReportBaseView):
             "active_page": "usage",
         }
 
-        if not project.is_artif():
+        if not project.is_artif:
             return super().get_context_data(**kwargs)
 
         first_millesime = project.first_year_ocsge
@@ -292,7 +290,7 @@ class ProjectReportUsageView(ProjectReportBaseView):
 
 class ProjectReportSynthesisView(ProjectReportBaseView):
     template_name = "project/report_synthesis.html"
-    breadcrumbs_title = "Synthèse consommation d'espace et artificialisation"
+    breadcrumbs_title = "Synthèse consommation d'espaces et artificialisation"
 
     def get_context_data(self, **kwargs):
         project = self.get_object()
@@ -336,7 +334,7 @@ class ProjectReportArtifView(ProjectReportBaseView):
             "total_surface": total_surface,
         }
 
-        if not project.is_artif():
+        if not project.is_artif:
             return super().get_context_data(**kwargs)
 
         first_millesime = project.first_year_ocsge
@@ -397,26 +395,18 @@ class ProjectReportArtifView(ProjectReportBaseView):
                 "net_artif": net_artif,
                 "net_artif_rate": net_artif_rate,
                 "chart_evolution_artif": chart_evolution_artif,
-                "table_evolution_artif": add_total_line_column(
-                    table_evolution_artif, line=False
-                ),
+                "table_evolution_artif": add_total_line_column(table_evolution_artif, line=False),
                 "headers_evolution_artif": headers_evolution_artif,
                 "detail_couv_artif_chart": detail_couv_artif_chart,
                 "detail_couv_artif_table": detail_couv_artif_table,
                 "detail_usage_artif_table": detail_usage_artif_table,
-                "detail_total_artif": sum(
-                    _["artif"] for _ in detail_couv_artif_chart.get_series()
-                ),
-                "detail_total_renat": sum(
-                    _["renat"] for _ in detail_couv_artif_chart.get_series()
-                ),
+                "detail_total_artif": sum(_["artif"] for _ in detail_couv_artif_chart.get_series()),
+                "detail_total_renat": sum(_["renat"] for _ in detail_couv_artif_chart.get_series()),
                 "detail_usage_artif_chart": detail_usage_artif_chart,
                 "couv_artif_sol": couv_artif_sol,
                 "usage_artif_sol": usage_artif_sol,
                 "chart_comparison": chart_comparison,
-                "table_comparison": add_total_line_column(
-                    chart_comparison.get_series()
-                ),
+                "table_comparison": add_total_line_column(chart_comparison.get_series()),
                 "level": level,
                 "chart_waterfall": chart_waterfall,
                 "nb_communes": project.cities.count(),
@@ -465,56 +455,11 @@ class ProjectReportDownloadView(BreadCrumbMixin, CreateView):
         if self.request.user.is_authenticated:
             form.instance.user = self.request.user
         form.instance.project = Project.objects.get(pk=self.kwargs["pk"])
+        form.instance._change_reason = "New request"
         new_request = form.save()
         tasks.send_email_request_bilan.delay(new_request.id)
-        tasks.generate_word_diagnostic.apply_async(
-            (new_request.id,), link=tasks.send_word_diagnostic.s()
-        )
+        tasks.generate_word_diagnostic.apply_async((new_request.id,), link=tasks.send_word_diagnostic.s())
         return self.render_to_response(self.get_context_data(success_message=True))
-
-
-class ProjectReportConsoRelativeView(ProjectReportBaseView):
-    template_name = "project/report_conso_relative.html"
-    breadcrumbs_title = "Rapport consommation relative"
-
-    def get_context_data(self, **kwargs):
-        project = kwargs.get("object", self.get_object())
-
-        conso_pop_chart = charts.ConsoComparisonPopChart(project)
-        pop_chart = charts.PopChart(project)
-        household_chart = charts.HouseholdChart(project)
-        conso_household_chart = charts.ConsoComparisonHouseholdChart(project)
-        surface_chart = charts.SurfaceChart(project)
-        conso_surface_chart = charts.ConsoComparisonChart(project, relative=True)
-
-        kwargs.update(
-            {
-                "diagnostic": project,
-                "active_page": "consommation",
-                "pop_chart": pop_chart,
-                "pop_table": add_total_line_column(pop_chart.get_series(), line=False),
-                "conso_pop_chart": conso_pop_chart,
-                "conso_pop_table": add_total_line_column(
-                    conso_pop_chart.get_series(), line=False
-                ),
-                "household_chart": household_chart,
-                "household_table": add_total_line_column(
-                    household_chart.get_series(), line=False
-                ),
-                "conso_household_chart": conso_household_chart,
-                "conso_household_table": add_total_line_column(
-                    conso_household_chart.get_series(), line=False
-                ),
-                "surface_chart": surface_chart,
-                "surface_table": surface_chart.get_series(),
-                "conso_surface_chart": conso_surface_chart,
-                "conso_surface_table": add_total_line_column(
-                    conso_surface_chart.get_series(), line=False
-                ),
-            }
-        )
-
-        return super().get_context_data(**kwargs)
 
 
 class ProjectReportTarget2031View(ProjectReportBaseView):
@@ -529,6 +474,10 @@ class ProjectReportTarget2031View(ProjectReportBaseView):
                 "diagnostic": project,
                 "active_page": "target_2031",
                 "objective_chart": objective_chart,
+                "conso_2031_minus_10": objective_chart.conso_2031 * 0.9,
+                "conso_2031_annual_minus_10": objective_chart.annual_objective_2031 * 0.9,
+                "conso_2031_plus_10": objective_chart.conso_2031 * 1.1,
+                "conso_2031_annual_plus_10": objective_chart.annual_objective_2031 * 1.1,
             }
         )
 
@@ -546,7 +495,10 @@ class DownloadWordView(TemplateView):
             return HttpResponseRedirect(req.sent_file.url)
         # le diagnostic n'est pas public, on vérifie que l'utilisateur connecté est bien le propriétaire du diagnostic
         if request.user.is_anonymous:
-            messages.info(request, "Vous essayez d'accéder à un document privé. Veuillez vous connecter.")
+            messages.info(
+                request,
+                "Vous essayez d'accéder à un document privé. Veuillez vous connecter.",
+            )
             return HttpResponseRedirect(f"{reverse('users:signin')}?next={request.path}")
         if request.user.id == req.user_id:
             return HttpResponseRedirect(req.sent_file.url)
@@ -567,9 +519,7 @@ class ConsoRelativeSurfaceChart(UserQuerysetOrPublicMixin, DetailView):
                 "indicateur_chart": indicateur_chart,
                 "indicateur_table": indicateur_chart.get_series(),
                 "comparison_chart": comparison_chart,
-                "comparison_table": add_total_line_column(
-                    comparison_chart.get_series(), line=False
-                ),
+                "comparison_table": add_total_line_column(comparison_chart.get_series(), line=False),
             }
         )
         return super().get_context_data(**kwargs)
@@ -589,9 +539,7 @@ class ConsoRelativePopChart(UserQuerysetOrPublicMixin, DetailView):
                 "pop_chart": pop_chart,
                 "pop_table": pop_chart.get_series(),
                 "conso_pop_chart": conso_pop_chart,
-                "conso_pop_table": add_total_line_column(
-                    conso_pop_chart.get_series(), line=False
-                ),
+                "conso_pop_table": add_total_line_column(conso_pop_chart.get_series(), line=False),
             }
         )
         return super().get_context_data(**kwargs)
@@ -611,9 +559,7 @@ class ConsoRelativeHouseholdChart(UserQuerysetOrPublicMixin, DetailView):
                 "household_chart": household_chart,
                 "household_table": household_chart.get_series(),
                 "conso_household_chart": conso_household_chart,
-                "conso_household_table": add_total_line_column(
-                    conso_household_chart.get_series(), line=False
-                ),
+                "conso_household_table": add_total_line_column(conso_household_chart.get_series(), line=False),
             }
         )
         return super().get_context_data(**kwargs)

@@ -76,18 +76,20 @@ THIRD_APPS = [
     "crispy_bootstrap5",
     "django_app_parameter",
     "sri",
+    "simple_history",
 ]
 
 # upper app should not communicate with lower ones
 PROJECT_APPS = [
     "utils.apps.UtilsConfig",
+    "highcharts.apps.HighchartsConfig",
     "users.apps.UsersConfig",
     "carto.apps.CartoConfig",
     "public_data.apps.PublicDataConfig",
     "project.apps.ProjectConfig",
+    "trajectory.apps.TrajectoryConfig",
     "diagnostic_word.apps.DiagnosticWordConfig",
     "home.apps.HomeConfig",
-    "highcharts.apps.HighchartsConfig",
     "metabase.apps.MetabaseConfig",
 ]
 
@@ -103,6 +105,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "simple_history.middleware.HistoryRequestMiddleware",
 ]
 
 
@@ -216,9 +219,7 @@ STATIC_ROOT = str(BASE_DIR / "staticroot")
 
 
 PUBLIC_MEDIA_LOCATION = "media"
-MEDIA_URL = (
-    f"https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/{PUBLIC_MEDIA_LOCATION}/"
-)
+MEDIA_URL = f"https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/{PUBLIC_MEDIA_LOCATION}/"
 
 
 # Default primary key field type
@@ -365,9 +366,7 @@ if "django-extensions" in {pkg.key for pkg in pkg_resources.working_set}:
 # RESTRAMEWORK parameters
 # https://www.django-rest-framework.org
 
-REST_FRAMEWORK = {
-    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination"
-}
+REST_FRAMEWORK = {"DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination"}
 
 # FORMAT SETTINGS
 
@@ -381,7 +380,7 @@ NUMBER_GROUPING = 3
 
 # SENTRY
 if ENVIRONMENT != "local":
-    sentry_sdk.init(
+    sentry_sdk.init(  # type: ignore
         # dsn="https://a227bee32f4f41c2a60e9292ce4d033e@o548798.ingest.sentry.io/6068271",
         dsn="https://b40bb226b8a148fdafff102baf5abf34@sentry.incubateur.net/21",
         integrations=[
@@ -413,9 +412,11 @@ if ENVIRONMENT != "local":
 
 
 # MATOMO
-
 MATOMO_TOKEN = env.str("MATOMO_TOKEN", default="")
 MATOMO_ACTIVATE = env.bool("MATOMO_ACTIVATE", default=False)
+
+# GOOGLE TAG ADWORDS
+GOOGLE_ADWORDS_ACTIVATE = env.bool("GOOGLE_ADWORDS_ACTIVATE", default=False)
 
 # SECURITY - Content Security Header Policy
 # https://django-csp.readthedocs.io
@@ -428,13 +429,12 @@ CSP_UPGRADE_INSECURE_REQUESTS = not DEBUG
 CSP_DEFAULT_SRC = ["'self'"]
 CSP_SCRIPT_SRC = [
     "'self'",
-    "https://stats.data.gouv.fr",
+    "https://stats.beta.gouv.fr",
     "https://code.highcharts.com",
     STATIC_URL,
 ]
 CSP_STYLE_SRC = [
     "'self'",
-    # "'unsafe-inline'",
     "https://cdn.jsdelivr.net",
     STATIC_URL,
 ]
@@ -464,13 +464,12 @@ ALERT_DIAG_MEDIUM = env.str("ALERT_DIAG_MEDIUM", default="both")
 if ALERT_DIAG_MEDIUM not in ["mattermost", "email", "both"]:
     raise ImproperlyConfigured("ALERT_DIAG_MEDIUM needs to be correctly set")
 ALERT_DIAG_EMAIL_RECIPIENTS = env.list("ALERT_DIAG_EMAIL_RECIPIENTS", default=[])
-ALERT_DIAG_MATTERMOST_RECIPIENTS = env.list(
-    "ALERT_DIAG_MATTERMOST_RECIPIENTS", default=[]
-)
+ALERT_DIAG_MATTERMOST_RECIPIENTS = env.list("ALERT_DIAG_MATTERMOST_RECIPIENTS", default=[])
 
 # LOGGING SETTINGS
 
 LOGGING_LEVEL = env.str("LOGGING_LEVEL", default="INFO")
+DB_LOGGING_LEVEL = env.str("DB_LOGGING_LEVEL", default="INFO")
 
 LOGGING = {
     "version": 1,
@@ -521,6 +520,10 @@ LOGGING = {
             "handlers": ["console"],
             "level": LOGGING_LEVEL,
             "propagate": False,
+        },
+        'django.db.backends': {
+            'level': DB_LOGGING_LEVEL,
+            'handlers': ['console'],
         },
     },
 }

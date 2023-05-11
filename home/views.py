@@ -46,9 +46,7 @@ class StatsView(BreadCrumbMixin, TemplateView):
         kwargs = dict()
         kwargs["nb_dl_portrait"] = Request.objects.all().count() + 1
         kwargs["budget"] = app_parameter.BUDGET_CONSOMME
-        kwargs["cout_portrait"] = int(
-            round(kwargs["budget"] / kwargs["nb_dl_portrait"], 0)
-        )
+        kwargs["cout_portrait"] = int(round(kwargs["budget"] / kwargs["nb_dl_portrait"], 0))
         kwargs["diag_created_downloaded"] = charts.DiagAndDownloadChart()
         kwargs["report_pie"] = charts.UseOfReportPieChart()
         kwargs["date_budget"] = app_parameter.BUDGET_DATE
@@ -71,9 +69,7 @@ class ContactView(CreateView):
     def form_valid(self, form):
         self.object = form.save()
         send_contact_form.delay(self.object.id)
-        messages.success(
-            self.request, "Votre message a été envoyé à l'équipe de SPARTE."
-        )
+        messages.success(self.request, "Votre message a été envoyé à l'équipe de SPARTE.")
         return HttpResponseRedirect(self.get_success_url())
 
 
@@ -98,9 +94,7 @@ class NewsLetterConfirmationView(RedirectView):
             )
             send_nwl_final.delay(nwl.id)
         except Newsletter.DoesNotExist:
-            messages.error(
-                self.request, "Confirmation impossible, le jeton fourni est inconnu."
-            )
+            messages.error(self.request, "Confirmation impossible, le jeton fourni est inconnu.")
         return "/"
 
 
@@ -123,9 +117,7 @@ class AllEmailsView(UserPassesTestMixin, TemplateView):
                     email_list[email] = row
                 else:
                     if "created_date" in email_list[email]:
-                        row["created_date"] = min(
-                            row["created_date"], email_list[email]["created_date"]
-                        )
+                        row["created_date"] = min(row["created_date"], email_list[email]["created_date"])
                     email_list[email].update(row)
 
         merge(
@@ -136,13 +128,7 @@ class AllEmailsView(UserPassesTestMixin, TemplateView):
                 .values("email", "is_user", "created_date")
             )
         )
-        merge(
-            (
-                Request.objects.all()
-                .annotate(is_request=Value(True))
-                .values("email", "is_request", "created_date")
-            )
-        )
+        merge((Request.objects.all().annotate(is_request=Value(True)).values("email", "is_request", "created_date")))
         merge(
             (
                 ContactForm.objects.all()
@@ -150,13 +136,7 @@ class AllEmailsView(UserPassesTestMixin, TemplateView):
                 .values("email", "is_contact_form", "created_date")
             )
         )
-        merge(
-            (
-                Newsletter.objects.all()
-                .annotate(is_nwl=Value(True))
-                .values("email", "is_nwl", "created_date")
-            )
-        )
+        merge((Newsletter.objects.all().annotate(is_nwl=Value(True)).values("email", "is_nwl", "created_date")))
 
         kwargs.update({"email_list": email_list})
         return super().get_context_data(**kwargs)

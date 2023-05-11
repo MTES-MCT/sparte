@@ -35,27 +35,15 @@ from .mixins import DataColorationMixin, TruncateTableMixin
 
 
 class Ocsge(TruncateTableMixin, DataColorationMixin, models.Model):
-    couverture = models.CharField(
-        "Couverture du sol", max_length=254, blank=True, null=True
-    )
+    couverture = models.CharField("Couverture du sol", max_length=254, blank=True, null=True)
     usage = models.CharField("Usage du sol", max_length=254, blank=True, null=True)
     id_source = models.CharField("ID source", max_length=200, blank=True, null=True)
-    year = models.IntegerField(
-        "Année", validators=[MinValueValidator(2000), MaxValueValidator(2050)]
-    )
-    matrix = models.ForeignKey(
-        CouvertureUsageMatrix, on_delete=models.PROTECT, null=True, blank=True
-    )
-    couverture_label = models.CharField(
-        "Libellé couverture du sol", max_length=254, blank=True, null=True
-    )
-    usage_label = models.CharField(
-        "Libellé usage du sol", max_length=254, blank=True, null=True
-    )
+    year = models.IntegerField("Année", validators=[MinValueValidator(2000), MaxValueValidator(2050)])
+    matrix = models.ForeignKey(CouvertureUsageMatrix, on_delete=models.PROTECT, null=True, blank=True)
+    couverture_label = models.CharField("Libellé couverture du sol", max_length=254, blank=True, null=True)
+    usage_label = models.CharField("Libellé usage du sol", max_length=254, blank=True, null=True)
     is_artificial = models.BooleanField("Est artificiel", null=True, blank=True)
-    surface = models.DecimalField(
-        "surface", max_digits=15, decimal_places=4, blank=True, null=True
-    )
+    surface = models.DecimalField("surface", max_digits=15, decimal_places=4, blank=True, null=True)
 
     mpoly = models.MultiPolygonField()
 
@@ -96,38 +84,18 @@ class Ocsge(TruncateTableMixin, DataColorationMixin, models.Model):
 
 
 class OcsgeDiff(TruncateTableMixin, DataColorationMixin, models.Model):
-    year_old = models.IntegerField(
-        "Ancienne année", validators=[MinValueValidator(2000), MaxValueValidator(2050)]
-    )
-    year_new = models.IntegerField(
-        "Nouvelle année", validators=[MinValueValidator(2000), MaxValueValidator(2050)]
-    )
-    cs_new = models.CharField(
-        "Code nouvelle couverture", max_length=12, blank=True, null=True
-    )
-    cs_old = models.CharField(
-        "Code ancienne couverture", max_length=12, blank=True, null=True
-    )
-    us_new = models.CharField(
-        "Code nouveau usage", max_length=12, blank=True, null=True
-    )
+    year_old = models.IntegerField("Ancienne année", validators=[MinValueValidator(2000), MaxValueValidator(2050)])
+    year_new = models.IntegerField("Nouvelle année", validators=[MinValueValidator(2000), MaxValueValidator(2050)])
+    cs_new = models.CharField("Code nouvelle couverture", max_length=12, blank=True, null=True)
+    cs_old = models.CharField("Code ancienne couverture", max_length=12, blank=True, null=True)
+    us_new = models.CharField("Code nouveau usage", max_length=12, blank=True, null=True)
     us_old = models.CharField("Code ancien usage", max_length=12, blank=True, null=True)
     mpoly = models.MultiPolygonField()
-    surface = models.DecimalField(
-        "surface", max_digits=15, decimal_places=4, blank=True, null=True
-    )
-    cs_old_label = models.CharField(
-        "Ancienne couverture", max_length=254, blank=True, null=True
-    )
-    us_old_label = models.CharField(
-        "Ancien usage", max_length=254, blank=True, null=True
-    )
-    cs_new_label = models.CharField(
-        "Nouvelle couverture", max_length=254, blank=True, null=True
-    )
-    us_new_label = models.CharField(
-        "Nouveau usage", max_length=254, blank=True, null=True
-    )
+    surface = models.DecimalField("surface", max_digits=15, decimal_places=4, blank=True, null=True)
+    cs_old_label = models.CharField("Ancienne couverture", max_length=254, blank=True, null=True)
+    us_old_label = models.CharField("Ancien usage", max_length=254, blank=True, null=True)
+    cs_new_label = models.CharField("Nouvelle couverture", max_length=254, blank=True, null=True)
+    us_new_label = models.CharField("Nouveau usage", max_length=254, blank=True, null=True)
     old_is_artif = models.BooleanField(blank=True, null=True)
     new_is_artif = models.BooleanField(blank=True, null=True)
     is_new_artif = models.BooleanField(blank=True, null=True)
@@ -172,9 +140,7 @@ class ArtificialArea(TruncateTableMixin, DataColorationMixin, models.Model):
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(
-                fields=["city", "year"], name="artificialarea-city-year-unique"
-            ),
+            models.UniqueConstraint(fields=["city", "year"], name="artificialarea-city-year-unique"),
         ]
         indexes = [
             models.Index(fields=["year"]),
@@ -194,12 +160,8 @@ class ZoneConstruite(TruncateTableMixin, DataColorationMixin, models.Model):
         null=True,
         blank=True,
     )
-    surface = models.DecimalField(
-        "surface", max_digits=15, decimal_places=4, blank=True, null=True
-    )
-    built_density = models.DecimalField(
-        "Densité construite", max_digits=15, decimal_places=4, blank=True, null=True
-    )
+    surface = models.DecimalField("surface", max_digits=15, decimal_places=4, blank=True, null=True)
+    built_density = models.DecimalField("Densité construite", max_digits=15, decimal_places=4, blank=True, null=True)
 
     objects = IntersectManager()
 

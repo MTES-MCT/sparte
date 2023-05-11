@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("public_data", "0010_alter_usagesol_parent"),
     ]
@@ -23,30 +22,22 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name="artificialisee2015to2018",
             name="cs_2015",
-            field=models.CharField(
-                max_length=254, null=True, verbose_name="Couverture 2015"
-            ),
+            field=models.CharField(max_length=254, null=True, verbose_name="Couverture 2015"),
         ),
         migrations.AlterField(
             model_name="artificialisee2015to2018",
             name="cs_2018",
-            field=models.CharField(
-                max_length=254, null=True, verbose_name="Couverture 2018"
-            ),
+            field=models.CharField(max_length=254, null=True, verbose_name="Couverture 2018"),
         ),
         migrations.AlterField(
             model_name="artificialisee2015to2018",
             name="us_2015",
-            field=models.CharField(
-                max_length=254, null=True, verbose_name="Usage 2015"
-            ),
+            field=models.CharField(max_length=254, null=True, verbose_name="Usage 2015"),
         ),
         migrations.AlterField(
             model_name="artificialisee2015to2018",
             name="us_2018",
-            field=models.CharField(
-                max_length=254, null=True, verbose_name="Usage 2018"
-            ),
+            field=models.CharField(max_length=254, null=True, verbose_name="Usage 2018"),
         ),
         migrations.AlterField(
             model_name="artificielle2018",
@@ -121,16 +112,12 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name="couverturesol",
             name="code",
-            field=models.CharField(
-                max_length=8, unique=True, verbose_name="Nomenclature"
-            ),
+            field=models.CharField(max_length=8, unique=True, verbose_name="Nomenclature"),
         ),
         migrations.AlterField(
             model_name="enveloppeurbaine2018",
             name="couverture",
-            field=models.CharField(
-                max_length=254, null=True, verbose_name="Couverture"
-            ),
+            field=models.CharField(max_length=254, null=True, verbose_name="Couverture"),
         ),
         migrations.AlterField(
             model_name="enveloppeurbaine2018",
@@ -140,16 +127,12 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name="renaturee2018to2015",
             name="cs_2015",
-            field=models.CharField(
-                max_length=254, null=True, verbose_name="Couverture 2015"
-            ),
+            field=models.CharField(max_length=254, null=True, verbose_name="Couverture 2015"),
         ),
         migrations.AlterField(
             model_name="renaturee2018to2015",
             name="cs_2018",
-            field=models.CharField(
-                max_length=254, null=True, verbose_name="Couverture 2018"
-            ),
+            field=models.CharField(max_length=254, null=True, verbose_name="Couverture 2018"),
         ),
         migrations.AlterField(
             model_name="renaturee2018to2015",
@@ -159,16 +142,12 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name="renaturee2018to2015",
             name="us_2015",
-            field=models.CharField(
-                max_length=254, null=True, verbose_name="Usage 2015"
-            ),
+            field=models.CharField(max_length=254, null=True, verbose_name="Usage 2015"),
         ),
         migrations.AlterField(
             model_name="renaturee2018to2015",
             name="us_2018",
-            field=models.CharField(
-                max_length=254, null=True, verbose_name="Usage 2018"
-            ),
+            field=models.CharField(max_length=254, null=True, verbose_name="Usage 2018"),
         ),
         migrations.AlterField(
             model_name="sybarval",
@@ -178,16 +157,12 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name="usagesol",
             name="code",
-            field=models.CharField(
-                max_length=8, unique=True, verbose_name="Nomenclature"
-            ),
+            field=models.CharField(max_length=8, unique=True, verbose_name="Nomenclature"),
         ),
         migrations.AlterField(
             model_name="voirie2018",
             name="couverture",
-            field=models.CharField(
-                max_length=254, null=True, verbose_name="Couverture"
-            ),
+            field=models.CharField(max_length=254, null=True, verbose_name="Couverture"),
         ),
         migrations.AlterField(
             model_name="voirie2018",
@@ -202,9 +177,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name="zonesbaties2018",
             name="couverture",
-            field=models.CharField(
-                max_length=254, null=True, verbose_name="Couverture"
-            ),
+            field=models.CharField(max_length=254, null=True, verbose_name="Couverture"),
         ),
         migrations.AlterField(
             model_name="zonesbaties2018",

@@ -55,9 +55,7 @@ class Command(BaseCommand):
         self.process(qs)
 
     def process_departement(self, departement):
-        qs = Departement.objects.filter(
-            Q(source_id=departement) | Q(name__icontains=departement)
-        )
+        qs = Departement.objects.filter(Q(source_id=departement) | Q(name__icontains=departement))
         if not qs.exists():
             logger.warning("No departement found")
             return
@@ -75,9 +73,7 @@ class Command(BaseCommand):
 
     def process_region(self, region_name):
         logger.info("Processing a region with name= %s", region_name)
-        qs = Region.objects.filter(
-            Q(source_id=region_name) | Q(name__icontains=region_name)
-        )
+        qs = Region.objects.filter(Q(source_id=region_name) | Q(name__icontains=region_name))
         if not qs.exists():
             logger.warning("No region found")
             return

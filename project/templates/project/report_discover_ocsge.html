@@ -18,27 +18,9 @@
 .tooltiped {
     border-bottom:1px dashed #000;
 }
-{% for leaf in usa_leafs %}
-.{{ leaf.cleaned_code_prefix }} {
-    background-color: {{ leaf.map_color }};
-    color: {{ leaf.map_color }};
-    fill:  {{ leaf.map_color }};
-}
-{% endfor %}
 
-{% for leaf in couv_leafs %}
-.{{ leaf.cleaned_code_prefix }} {
-    background-color: {{ leaf.map_color }};
-    color: {{ leaf.map_color }};
-    fill:  {{ leaf.map_color }};
-}
-{% endfor %}
 #chart_couv_wheel, #chart_usa_wheel {
     height: 500px;
-}
-
-.nomenclature {
-    list-style: none;
 }
 </style>
 {% endblock %}
@@ -62,18 +44,11 @@
                 <div class="mt-4 fr-grid-row">
                     <div class="fr-col-12 fr-col-lg-6">
                         <h4>Nomenclature de l'Usage du sol</h4>
-                        <ul class="nomenclature">
-                        {% for leaf in usa_leafs %}
-                            <li><span class="{{ leaf.cleaned_code_prefix }}">uuu</span> {{ leaf.code_prefix }} - {{ leaf.label_short }}</li>
-                        {% endfor %}
-                        </ul>
+                        {% include "project/partials/nomenclature_usage_ocsge.html" %}
                     </div>
                     <div class="fr-col-12 fr-col-lg-6">
                         <h4>Nomenclature de la Couverture du sol</h4>
-                        <ul class="nomenclature">
-                        {% for leaf in couv_leafs %}
-                            <li><span class="{{ leaf.cleaned_code_prefix }}">uuu</span> {{ leaf.code_prefix }} - {{ leaf.label_short }}</li>
-                        {% endfor %}
+                        {% include "project/partials/nomenclature_couverture_ocsge.html" %}
                         </ul>
                     </div>
                 </div>

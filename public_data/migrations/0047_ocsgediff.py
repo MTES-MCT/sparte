@@ -8,7 +8,6 @@ import public_data.models.mixins
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("public_data", "0046_auto_20220425_1607"),
     ]
@@ -84,9 +83,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "oss_old",
-                    models.CharField(
-                        blank=True, max_length=200, null=True, verbose_name="Ancien OSS"
-                    ),
+                    models.CharField(blank=True, max_length=200, null=True, verbose_name="Ancien OSS"),
                 ),
                 (
                     "oss_new",

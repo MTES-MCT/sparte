@@ -1,6 +1,7 @@
 @import '@gouvfr/dsfr/dist/dsfr.min.css';
 @import '@gouvfr/dsfr/dist/utility/icons/icons-system/icons-system.min.css';
 @import '@gouvfr/dsfr/dist/utility/icons/icons-design/icons-design.min.css';
+@import '@gouvfr/dsfr/dist/utility/icons/icons-business/icons-business.min.css';
 
 /*
 Fix link icon position
@@ -89,6 +90,20 @@ Loader
     background-size: 14px 14px;
     background-repeat: no-repeat;
     animation: m 1s infinite;
+}
+
+.fr-custom-loader--button {
+    color: white;
+    width: 30px;
+    height: 12px;
+    --d: radial-gradient(farthest-side, currentColor 90%, #0000);
+    background: var(--d), var(--d), var(--d);
+    background-size: 7px 7px;
+    background-repeat: no-repeat;
+    animation: m 1s infinite;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
 }
 
 @keyframes m {
@@ -204,4 +219,186 @@ Skeleton loader
     100% {
         transform: translateX(100%);
     }
+}
+
+/*
+fr Tag success
+*/
+.fr-tag--success {
+    background-color: #b8fec9;
+    background-color: var(--background-contrast-success);
+    color: #18753c;
+    color: var(--text-default-success);
+}
+
+.fr-tag--blue {
+    --idle: transparent;
+    --hover: var(--background-action-low-blue-france-hover);
+    --active: var(--background-action-low-blue-france-active);
+    background-color: #e3e3fd;
+    background-color: var(--background-action-low-blue-france);
+    color: #000091;
+    color: var(--text-action-high-blue-france);
+}
+
+
+/*
+Custom links
+*/
+.fr-link--text-decoration-none {
+    background-image: none;
+}
+
+/*
+Diagnostic list
+*/
+#diagnostic-list-empty-message {
+    visibility: hidden;
+}
+
+/*
+Remove trajectory select year invalid input icon
+*/
+select[name=start].is-invalid, select[name=end].is-invalid {
+    border: none;
+    box-shadow: inset 0 -2px 0 0 var(--border-plain-error);
+}
+
+.invalid-feedback {
+    margin-bottom: 0;
+}
+
+.invalid-feedback > strong {
+    font-weight: 400 !important;
+}
+
+/*
+Margin trajectory conso
+*/
+.form-set-year-conso > div {
+    margin-right: 25px;
+    margin-bottom: 25px;
+}
+
+/*
+HTMX Indicator loader
+*/
+.htmx-indicator {
+    opacity: 0;
+    display: none;
+    transition: opacity 500ms ease-in;
+}
+
+.htmx-request .htmx-indicator, .htmx-request.htmx-indicator {
+    opacity: 1;
+    display: block;
+}
+
+.htmx-request .htmx-indicator-placeholder, .htmx-request.htmx-indicator-placeholder {
+    opacity: 0;
+    visibility: hidden;
+}
+
+/*
+Home Page
+*/
+.section-blue {
+    background-color: #1D41FF;
+}
+
+.section-main {
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+}
+
+.section-main h1 {
+    color: white;
+}
+
+.section-main p {
+    color: var(--grey-1000-50);
+}
+
+#hero-anim-map-container {
+    position: absolute;
+    bottom: -38%;
+    right: 0;
+}
+
+#hero-anim-map {
+    transform: rotateZ(-23deg);
+    position: absolute;
+    bottom: 0;
+    right: -130px;
+    transition: all 0.4s ease-out;
+    -webkit-box-shadow: -4px -1px 11px -2px rgba(0,0,0,0.25); 
+    box-shadow: -4px -1px 11px -2px rgba(0,0,0,0.25);
+}
+
+.section-main:hover #hero-anim-map {
+    bottom: 0;
+    right: -100px;
+    transform: rotateZ(-24deg);
+}
+
+@media (max-width: 992px) {
+    #hero-anim-map-container  {
+        display: none;
+    }
+}
+
+.section-legal {
+    position: relative;
+    background-color: #D6FFED;
+}
+
+#legal-anim-logo {
+    width: 170px;
+    height: 170px;
+    position: absolute;
+    right: 45px;
+    bottom: 45px;
+    background-image: url('/assets/images/loi-climat-et-resilience.svg');
+    background-repeat: no-repeat;
+    background-size: auto;
+    background-position: bottom 3% right 3%;
+}
+
+@media (max-width: 992px) {
+    #legal-anim-logo  {
+        display: none;
+    }
+}
+
+/*
+Header min version
+*/
+body.header-min .fr-logo__text {
+    display: none;
+}
+
+body.header-min .fr-header__logo .fr-logo:after {
+    content: none;
+}
+
+/*
+Page full width
+*/
+.full-width .fr-container {
+    max-width: 100%;
+}
+
+/*
+Breadcrumb min
+*/
+.breadcrumb-min .fr-breadcrumb {
+    margin: 0.8rem 0;
+}
+
+/*
+Leaflet
+*/
+.leaflet-control-zoom a {
+    background-image: none;
 }

@@ -23,6 +23,8 @@
         {% block headers %}{% endblock %}
         <!-- matomo -->
         {% tracking_code %}
+        <!-- google adwords -->
+        {% adwords_google_tag_code %}
     </head>
     <body class="{% block body_class %}{% endblock %}">
         <!-- Page content wrapper-->
@@ -50,7 +52,7 @@
             {% endblock breadcrumbs %}
 
             <!-- Page content-->
-            <main class="p-0 flex-grow-1 d-flex flex-column" id="main">
+            <main id="contenu" class="h-100">
                 {% if messages %}
                     <div class="row justify-content-center w-100 my-0 pt-3 pb-4">
                         <div class="col-12 col-md-8 col-lg-6">
@@ -64,12 +66,9 @@
                     </div>
                 {% endif %}
 
-                {% block carto %}
-                <div id="block-content">
-                    {% block content %}
-                    {% endblock %}
-                </div>
-                {% endblock carto %}
+                
+                {% block content %}
+                {% endblock %}
 
                 <!-- Footer-->
                 {% block footer %}

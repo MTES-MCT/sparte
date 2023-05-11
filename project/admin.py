@@ -3,13 +3,14 @@ from django.contrib.gis import admin
 from django.http import HttpResponseRedirect
 from django.urls import exceptions, reverse
 from django.utils.html import format_html
+from simple_history.admin import SimpleHistoryAdmin
 
 from . import tasks
 from .models import ErrorTracking, Project, Request
 
 
 @admin.register(Project)
-class ProjectAdmin(admin.GeoModelAdmin):
+class ProjectAdmin(SimpleHistoryAdmin):
     model = Project
     list_select_related = ("user",)
     list_display = (
@@ -24,6 +25,16 @@ class ProjectAdmin(admin.GeoModelAdmin):
     )
     # filter_horizontal = ("cities",)
     change_form_template = "project/admin/project_detail.html"
+    history_list_display = [
+        "async_add_city_done",
+        "async_set_combined_emprise_done",
+        "async_cover_image_done",
+        "async_find_first_and_last_ocsge_done",
+        "async_add_neighboors_done",
+        "async_generate_theme_map_conso_done",
+        "async_generate_theme_map_artif_done",
+        "async_theme_map_understand_artif_done",
+    ]
 
     def response_change(self, request, obj):
         if "_generate-conso-map" in request.POST:
@@ -70,15 +81,28 @@ class ErrorTrackingAdmin(admin.StackedInline):
         return False
 
 
+@admin.action(description="Regénérer et renvoyer les diagnostics sélectionnés")
+def resend_request(modeladmin, request, queryset):  # pylint: disable=unused-argument
+    messages.info(
+        request,
+        f"Régénération et renvoit de {queryset.count()} demandes de diagnostics.",
+    )
+    for request in queryset:
+        tasks.generate_word_diagnostic.apply_async((request.id,), link=tasks.send_word_diagnostic.s())
+
+
 @admin.register(Request)
 class RequestAdmin(admin.ModelAdmin):
     model = Request
+    actions = [resend_request]
     list_display = (
         "email",
         "created_date",
         "link_to_user",
         "sent_date",
+        "project_id",
         "link_to_project",
+        "link_to_project_admin",
     )
     search_fields = ("email",)
     list_filter = ("done", "created_date", "sent_date")
@@ -101,7 +125,14 @@ class RequestAdmin(admin.ModelAdmin):
             "Réponse",
             {
                 "description": "Suivre le traitement de la demande",
-                "fields": ("link_to_project", "sent_file", "sent_date", "done"),
+                "fields": (
+                    "project_id",
+                    "link_to_project",
+                    "link_to_project_admin",
+                    "sent_file",
+                    "sent_date",
+                    "done",
+                ),
             },
         ),
     )
@@ -116,8 +147,10 @@ class RequestAdmin(admin.ModelAdmin):
         "user",
         "link_to_user",
         "link_to_project",
+        "link_to_project_admin",
         "created_date",
         "updated_date",
+        "project_id",
     )
 
     def link_to_user(self, obj):
@@ -136,7 +169,16 @@ class RequestAdmin(admin.ModelAdmin):
         except exceptions.NoReverseMatch:
             return format_html("Diagnostic inconnu")
 
-    link_to_project.short_description = "Projet"  # type: ignore
+    link_to_project.short_description = "Projet public"  # type: ignore
+
+    def link_to_project_admin(self, obj):
+        try:
+            link = reverse("admin:project_project_change", args=[obj.project_id])
+            return format_html(f'<a href="{link}">Accès à la dans l\'admin</a>')
+        except exceptions.NoReverseMatch:
+            return format_html("Diagnostic inconnu")
+
+    link_to_project.short_description = "Projet admin"  # type: ignore
 
     change_form_template = "project/admin/request_detail.html"
 

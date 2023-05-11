@@ -7,7 +7,6 @@ import project.models.request
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("project", "0040_request_sent_file"),
     ]

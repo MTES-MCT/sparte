@@ -1,7 +1,6 @@
 from django.core.exceptions import ImproperlyConfigured
 from django.shortcuts import resolve_url
 from django.urls import reverse_lazy
-from django.utils.http import url_has_allowed_host_and_scheme
 
 
 class GetObjectMixin:
@@ -39,9 +38,7 @@ class RedirectURLMixin:
 
     def get_redirect_url(self):
         """Return the user-originating redirect URL if it's safe."""
-        redirect_to = self.request.POST.get(
-            self.redirect_field_name, self.request.GET.get(self.redirect_field_name)
-        )
+        redirect_to = self.request.POST.get(self.redirect_field_name, self.request.GET.get(self.redirect_field_name))
         return redirect_to if redirect_to else ""
 
     def get_default_redirect_url(self):

@@ -111,9 +111,7 @@ class LoadCerema(TruncateTableMixin, AutoLoadMixin, Cerema):
     }
 
     def __str__(self):
-        return (
-            f"{self.region_name}-{self.dept_name}-{self.city_name}({self.city_insee})"
-        )
+        return f"{self.region_name}-{self.dept_name}-{self.city_name}({self.city_insee})"
 
     @classmethod
     def calculate_fields(cls):
@@ -121,12 +119,8 @@ class LoadCerema(TruncateTableMixin, AutoLoadMixin, Cerema):
         fields = cls.get_art_field(2011, 2020)
         kwargs = {
             "naf11art21": sum([F(f) for f in fields]),
-            "art11hab21": sum(
-                [F(f.replace("art", "hab").replace("naf", "art")) for f in fields]
-            ),
-            "art11act21": sum(
-                [F(f.replace("art", "act").replace("naf", "art")) for f in fields]
-            ),
+            "art11hab21": sum([F(f.replace("art", "hab").replace("naf", "art")) for f in fields]),
+            "art11act21": sum([F(f.replace("art", "act").replace("naf", "art")) for f in fields]),
         }
         cls.objects.update(**kwargs)
 
