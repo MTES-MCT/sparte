@@ -277,7 +277,7 @@ class MapV2View(GroupMixin, DetailView):
                     {
                         "name": "OCSGE",
                         "url": f'{reverse_lazy("public_data:ocsge-optimized")}?year=2019',
-                        "display": False,
+                        "display": True,
                         "level": "6",
                         "style": "style_communes",
                         "is_optimized": True,

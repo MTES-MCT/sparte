@@ -97,6 +97,7 @@ INSTALLED_APPS = DJANGO_APPS + RESTFRAMEWORK_APPS + THIRD_APPS + PROJECT_APPS
 
 
 MIDDLEWARE = [
+    "django.middleware.gzip.GZipMiddleware",
     "config.middlewares.LogIncomingRequest",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -521,9 +522,9 @@ LOGGING = {
             "level": LOGGING_LEVEL,
             "propagate": False,
         },
-        'django.db.backends': {
-            'level': DB_LOGGING_LEVEL,
-            'handlers': ['console'],
+        "django.db.backends": {
+            "level": DB_LOGGING_LEVEL,
+            "handlers": ["console"],
         },
     },
 }
