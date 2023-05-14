@@ -1,5 +1,5 @@
 import * as L from 'leaflet'
-import Layers from './layers.js'
+import Layer from './layer.js'
 import { debounce } from './utils.js'
 
 export default class SparteMap {
@@ -47,21 +47,30 @@ export default class SparteMap {
         // Refresh layers option
         this.debugPanelRefreshLayers = document.createElement('div')
 
-        this.debugPanelRefreshLayersCheckbox = document.createElement('input')
-        this.debugPanelRefreshLayersCheckbox.className = 'fr-mr-1w'
-        this.debugPanelRefreshLayersCheckbox.type = 'checkbox'
-        this.debugPanelRefreshLayersCheckbox.name = 'refresh'
-        this.debugPanelRefreshLayersCheckbox.value = 'refresh'
-        this.debugPanelRefreshLayersCheckbox.id = 'refresh'
-        this.debugPanelRefreshLayersCheckbox.checked = true
+        this.refreshLayersControl = document.createElement('input')
+        this.refreshLayersControl.className = 'fr-mr-1w'
+        this.refreshLayersControl.type = 'checkbox'
+        this.refreshLayersControl.name = 'refresh'
+        this.refreshLayersControl.value = 'refresh'
+        this.refreshLayersControl.id = 'refresh'
+        this.refreshLayersControl.checked = true
 
         let label = document.createElement('label')
         label.htmlFor = 'Refresh layers'
         label.appendChild(document.createTextNode('refresh'))
-        this.debugPanelRefreshLayers.appendChild(this.debugPanelRefreshLayersCheckbox)
+        this.debugPanelRefreshLayers.appendChild(this.refreshLayersControl)
         this.debugPanelRefreshLayers.appendChild(label)
         this.debugPanel.appendChild(this.debugPanelRefreshLayers)
 
+        this.refreshLayersControl.addEventListener('change', (_event) => {
+            if (_event.target.checked) {
+                this.layers.map((_obj) => {
+                    _obj.update()
+                })
+            }
+        })
+
+        // Debug events tracking
         this.map.on('moveend', () => {
             this.debugPanelZoom.innerHTML = `<strong>Zoom level:</strong> ${this.map.getZoom()}`
             this.debugPanelBounding.innerHTML = `<strong>Bounds:</strong> SW ${this.map.getBounds().getSouthWest().toString()}, NE ${this.map.getBounds().getNorthEast().toString()}`
@@ -109,12 +118,19 @@ export default class SparteMap {
     }
 
     setLayers() {
-        this.layers = new Layers()
+        this.layers = []
+
+        this.layerList.map((_obj) => {
+            const layer = new Layer(_obj)
+            this.layers.push(layer)
+        })
     }
 
     moveend() {
-        if (this.layers && this.debugPanelRefreshLayersCheckbox.checked)
-            this.layers.update()
+        if (this.layers && this.refreshLayersControl.checked)
+            this.layers.map((_obj) => {
+                _obj.update()
+            })
     }
 }
 
