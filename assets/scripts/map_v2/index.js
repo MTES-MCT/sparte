@@ -100,7 +100,7 @@ export default class SparteMap {
 
         // Map controls
         // Position zoom control
-        this.map.zoomControl.setPosition('bottomleft')
+        // this.map.zoomControl.setPosition('bottomleft')
 
         // // Add toggle data panel control
         // let dataPanelToggleControl = L.Control.extend({
@@ -169,6 +169,9 @@ export default class SparteMap {
     moveend() {
         if (this.layers)
             this.layers.map((_obj) => {
+                if (this.debug && !this.refreshLayersControl.checked)
+                    return
+                
                 _obj.update()
             })
     }
