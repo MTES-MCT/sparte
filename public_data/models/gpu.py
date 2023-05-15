@@ -5,8 +5,10 @@ import csv
 
 from django.contrib.gis.db import models
 
+from utils.db import IntersectMixin
 
-class ZoneUrbaManager(models.Manager):
+
+class ZoneUrbaManager(IntersectMixin, models.Manager):
     def to_csv(self, stream):
         """Write queryset to a CSV file stream.
         E.g. stream = open(file_path, 'w', newline='')
@@ -49,5 +51,7 @@ class ZoneUrba(models.Model):
     urlfic = models.CharField("urlfic", max_length=178, blank=True, null=True)
     datappro = models.CharField("datappro", max_length=80, blank=True, null=True)
     datvalid = models.CharField("datvalid", max_length=80, blank=True, null=True)
+
+    objects = ZoneUrbaManager()
 
     mpoly = models.MultiPolygonField()
