@@ -56,12 +56,20 @@
         "color": "#f88e55"
     },
     {
-        "key": "style_ocsge",
-        "fillColor": "#f88e55",
-        "fillOpacity": 0.5,
-        "weight": 0.5,
+        "key": "style_ocsge_couv",
+        "fillColor": "#ffffff",
+        "fillOpacity": 0.7,
+        "weight": 0,
         "opacity": 1,
-        "color": "#f88e55"
+        "color": "#ffffff"
+    },
+    {
+        "key": "style_ocsge_usage",
+        "fillColor": "#ffffff",
+        "fillOpacity": 0.7,
+        "weight": 0,
+        "opacity": 1,
+        "color": "#ffffff"
     },
     {
         "key": "style_ocsge_diff",
