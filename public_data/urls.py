@@ -13,6 +13,7 @@ from .api.views import (
     ScotViewSet,
     UsageSolViewset,
     ZoneConstruiteViewSet,
+    ZoneUrbaViewSet,
     grid_views,
 )
 from .views import DisplayMatrix
@@ -38,5 +39,6 @@ router.register(r"referentiel/region", RegionViewSet)
 router.register(r"referentiel/departement", DepartementViewSet)
 router.register(r"referentiel/epci", EpciViewSet)
 router.register(r"referentiel/scot", ScotViewSet)
+router.register(r"referentiel/zones-urbaines", ZoneUrbaViewSet)
 
 urlpatterns += router.urls

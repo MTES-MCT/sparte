@@ -382,7 +382,7 @@ class ArtificialAreaViewSet(ZoomSimplificationMixin, OptimizedMixins, DataViewSe
         return " ".join(sql_from)
 
     def get_sql_where(self):
-        return "WHERE ST_Area(ST_Transform(ST_Intersection(o.mpoly, t.geom), 2154)) > 0.5 AND o.year = %s"
+        return "WHERE o.year = %s"
 
     def get_optimized_geo_field(self):
         zoom = self.get_zoom()
@@ -394,6 +394,61 @@ class ArtificialAreaViewSet(ZoomSimplificationMixin, OptimizedMixins, DataViewSe
             y = 0.00005
         else:
             y = 0.0001
+        return f"st_AsGeoJSON(ST_SimplifyPreserveTopology(ST_Intersection(o.mpoly, b.box), {y}), 6, 0)"
+
+
+class ZoneUrbaViewSet(ZoomSimplificationMixin, OptimizedMixins, DataViewSet):
+    queryset = models.ZoneUrba.objects.all()
+    serializer_class = serializers.ZoneUrbaSerializer
+    optimized_fields = {
+        "o.id": "id",
+        "o.libelle": "libelle",
+        "o.libelong": "libelong",
+        "o.typezone": "typezone",
+        "o.urlfic": "urlfic",
+        "o.datappro": "datappro",
+        "o.datvalid": "datvalid",
+    }
+
+    min_zoom = 10
+
+    def get_params(self, request):
+        bbox = request.query_params.get("in_bbox").split(",")
+        params = list(map(float, bbox))
+        if "project_id" in request.query_params:
+            params.append(request.query_params.get("project_id"))
+        return params
+
+    def get_sql_from(self):
+        sql_from = [
+            f"FROM {self.queryset.model._meta.db_table} o",
+            "INNER JOIN (SELECT ST_MakeEnvelope(%s, %s, %s, %s, 4326) as box) as b",
+            "ON ST_Intersects(o.mpoly, b.box)",
+        ]
+        if "project_id" in self.request.query_params:
+            sql_from += [
+                "INNER JOIN (SELECT ST_Union(mpoly) as geom FROM project_emprise WHERE project_id = %s) as t",
+                "ON ST_Intersects(o.mpoly, t.geom)",
+            ]
+        return " ".join(sql_from)
+
+    def get_sql_where(self):
+        return "where St_IsValid(mpoly) = true"
+
+    def get_optimized_geo_field(self):
+        zoom = self.get_zoom()
+        if zoom == 18:
+            y = 0
+        elif zoom == 17:
+            y = 0.00001
+        elif zoom == 16:
+            y = 0.00005
+        elif zoom >= 14:
+            y = 0.0001
+        elif zoom >= 12:
+            y = 0.0002
+        else:
+            y = 0.0005
         return f"st_AsGeoJSON(ST_SimplifyPreserveTopology(ST_Intersection(o.mpoly, b.box), {y}), 6, 0)"
 
 
