@@ -11,6 +11,8 @@ export default class SparteMap {
         this.mapCenter = _options.mapCenter
         this.defaultZoom = _options.defaultZoom
         this.layerList = _options.layerList
+        this.couv_leafs = _options.couv_leafs
+        this.usa_leafs = _options.usa_leafs
 
         if (!this.targetElement) {
             console.warn('Missing \'targetElement\' property')

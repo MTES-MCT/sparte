@@ -8,7 +8,7 @@ from jenkspy import jenks_breaks
 
 from project.models import Project
 from project.serializers import CityArtifMapSerializer, CitySpaceConsoMapSerializer
-from public_data.models import Cerema
+from public_data.models import Cerema, CouvertureSol, UsageSol
 from utils.colors import get_dark_blue_gradient, get_yellow2red_gradient
 
 from .mixins import GroupMixin
@@ -224,6 +224,8 @@ class MapV2View(GroupMixin, DetailView):
                 "center_lat": center.y,
                 "center_lng": center.x,
                 "default_zoom": 10,
+                "couv_leafs": CouvertureSol.get_leafs(),
+                "usa_leafs": UsageSol.get_leafs(),
                 "layer_list": [
                     {
                         "name": "Emprise du projet",
@@ -283,12 +285,25 @@ class MapV2View(GroupMixin, DetailView):
                         "zoom_available": [6, 7],
                     },
                     {
-                        "name": "OCSGE",
+                        "name": "OCSGE Couverture",
                         "url": reverse_lazy("public_data:ocsge-optimized"),
                         "url_params": {
                             "year": 2019,
                         },
-                        "style": "style_ocsge",
+                        "style": "style_ocsge_couv",
+                        "z_index": "6",
+                        "visible": 0,
+                        "is_optimized": 1,
+                        "millesimes": ["2016", "2019"],
+                        "zoom_available": [15, 16, 17, 18],
+                    },
+                    {
+                        "name": "OCSGE Usage",
+                        "url": reverse_lazy("public_data:ocsge-optimized"),
+                        "url_params": {
+                            "year": 2019,
+                        },
+                        "style": "style_ocsge_usage",
                         "z_index": "6",
                         "visible": 0,
                         "is_optimized": 1,
@@ -347,6 +362,7 @@ class MapV2View(GroupMixin, DetailView):
                         "zoom_available": [12, 13, 14, 15, 16, 17, 18],
                     },
                 ],
+                
             }
         )
         return super().get_context_data(**kwargs)

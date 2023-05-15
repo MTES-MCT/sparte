@@ -15,6 +15,8 @@ export default class Layer {
         this.zIndex = _options.z_index
         this.isOptimized = Boolean(Number(_options.is_optimized))
         this.isVisible = Boolean(Number(_options.visible))
+        this.couv_leafs = this.sparteMap.couv_leafs
+        this.usa_leafs = this.sparteMap.usa_leafs
 
         this.setLayer()
     }
@@ -37,14 +39,6 @@ export default class Layer {
             this.pane.style.display = 'block'
         }
     }
-
-    // overrideStyle() {
-    //     if (this.style === 'style_ocsge_diff' && this.data.) {
-    //         style = 
-    //     }
-
-    //     return style
-    // }
 
     getStyle(key) {
         return layerStyles.find(el => el.key === key)
@@ -88,8 +82,21 @@ export default class Layer {
                 if (this.style === 'style_ocsge_diff' && geoJsonFeature.properties.is_new_artif) {
                     style = this.getStyle('style_ocsge_diff__is_new_artif')
                 }
-                else if (this.style === 'style_ocsge_diff' && geoJsonFeature.properties.is_new_artif) {
+                
+                if (this.style === 'style_ocsge_diff' && geoJsonFeature.properties.is_new_artif) {
                     style = this.getStyle('style_ocsge_diff__is_new_natural')
+                }
+
+                if (this.style === 'style_ocsge_couv') {
+                    const leaf = this.couv_leafs.find(el => el.code_couverture == geoJsonFeature.properties.code_couverture.replaceAll('.', '_'))
+                    if (leaf)
+                        style.fillColor = style.color = leaf.map_color
+                }
+
+                if (this.style === 'style_ocsge_usage') {
+                    const leaf = this.usa_leafs.find(el => el.code_usage == geoJsonFeature.properties.code_usage.replaceAll('.', '_'))
+                    if (leaf)
+                        style.fillColor = style.color = leaf.map_color
                 }
 
                 return style
