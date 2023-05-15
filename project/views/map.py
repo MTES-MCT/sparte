@@ -8,7 +8,7 @@ from jenkspy import jenks_breaks
 
 from project.models import Project
 from project.serializers import CityArtifMapSerializer, CitySpaceConsoMapSerializer
-from public_data.models import Cerema
+from public_data.models import Cerema, CouvertureSol, UsageSol
 from utils.colors import get_dark_blue_gradient, get_yellow2red_gradient
 
 from .mixins import GroupMixin
@@ -196,6 +196,179 @@ class ProjectMapView(GroupMixin, DetailView):
                         "display": False,
                         "style": "style_zone_artificielle",
                         "level": "3",
+                    },
+                ],
+            }
+        )
+        return super().get_context_data(**kwargs)
+
+
+class MapV2View(GroupMixin, DetailView):
+    queryset = Project.objects.all()
+    template_name = "carto/map_v2.html"
+    context_object_name = "project"
+
+    def get_context_breadcrumbs(self):
+        breadcrumbs = super().get_context_breadcrumbs()
+        breadcrumbs.append({"href": None, "title": "Carte intéractive"})
+        return breadcrumbs
+
+    def get_context_data(self, **kwargs):
+        # UPGRADE: add center and zoom fields on project model
+        # values would be infered when emprise is loaded
+        center = self.object.get_centroid()
+        kwargs.update(
+            {
+                # center map on France
+                "carto_name": "Project",
+                "center_lat": center.y,
+                "center_lng": center.x,
+                "default_zoom": 10,
+                "couv_leafs": CouvertureSol.get_leafs(),
+                "usa_leafs": UsageSol.get_leafs(),
+                "layer_list": [
+                    {
+                        "name": "Emprise du projet",
+                        "url": reverse_lazy("project:emprise-list"),
+                        "url_params": {
+                            "id": self.object.pk,
+                        },
+                        "style": "style_emprise",
+                        "z_index": "10",
+                        "visible": 1,
+                        "is_optimized": 0,
+                        "zoom_available": [6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18],
+                    },
+                    {
+                        "name": "Limites administratives (Communes)",
+                        "url": reverse_lazy("public_data:commune-optimized"),
+                        "style": "style_communes",
+                        "z_index": "1",
+                        "visible": 1,
+                        "is_optimized": 1,
+                        "zoom_available": [12, 13, 14, 15, 16, 17, 18],
+                    },
+                    {
+                        "name": "Limites administratives (EPCI)",
+                        "url": reverse_lazy("public_data:epci-optimized"),
+                        "style": "style_epci",
+                        "z_index": "2",
+                        "visible": 1,
+                        "is_optimized": 1,
+                        "zoom_available": [10, 11],
+                    },
+                    {
+                        "name": "Limites administratives (SCOT)",
+                        "url": reverse_lazy("public_data:scot-optimized"),
+                        "style": "style_scot",
+                        "z_index": "3",
+                        "visible": 0,
+                        "is_optimized": 1,
+                        "zoom_available": [10],
+                    },
+                    {
+                        "name": "Limites administratives (Départements)",
+                        "url": reverse_lazy("public_data:departement-optimized"),
+                        "style": "style_departements",
+                        "z_index": "4",
+                        "visible": 1,
+                        "is_optimized": 1,
+                        "zoom_available": [8, 9],
+                    },
+                    {
+                        "name": "Limites administratives (Régions)",
+                        "url": reverse_lazy("public_data:region-optimized"),
+                        "style": "style_regions",
+                        "z_index": "5",
+                        "visible": 1,
+                        "is_optimized": 1,
+                        "zoom_available": [6, 7],
+                    },
+                    {
+                        "name": "OCSGE Couverture",
+                        "url": reverse_lazy("public_data:ocsge-optimized"),
+                        "url_params": {
+                            "year": 2019,
+                        },
+                        "style": "style_ocsge_couv",
+                        "z_index": "6",
+                        "visible": 0,
+                        "is_optimized": 1,
+                        "millesimes": ["2016", "2019"],
+                        "zoom_available": [15, 16, 17, 18],
+                    },
+                    {
+                        "name": "OCSGE Usage",
+                        "url": reverse_lazy("public_data:ocsge-optimized"),
+                        "url_params": {
+                            "year": 2019,
+                        },
+                        "style": "style_ocsge_usage",
+                        "z_index": "6",
+                        "visible": 0,
+                        "is_optimized": 1,
+                        "millesimes": ["2016", "2019"],
+                        "zoom_available": [15, 16, 17, 18],
+                    },
+                    {
+                        "name": "OCSGE diff",
+                        "url": reverse_lazy("public_data:ocsgediff-optimized"),
+                        "url_params": {
+                            "year_old": 2016,
+                            "year_new": 2019
+                        },
+                        "style": "style_ocsge_diff",
+                        "z_index": "7",
+                        "visible": 0,
+                        "is_optimized": 1,
+                        "millesimes": ["2016", "2019"],
+                        "zoom_available": [15, 16, 17, 18],
+                    },
+                    {
+                        "name": "Zones artificielles",
+                        "url": reverse_lazy("public_data:artificialarea-optimized"),
+                        "url_params": {
+                            "year": 2016,
+                            # "project_id": self.object.id
+                        },
+                        "style": "style_zone_artificielle",
+                        "z_index": "5",
+                        "visible": 0,
+                        "is_optimized": 1,
+                        "zoom_available": [12, 13, 14, 15, 16, 17, 18],
+                    },
+                    {
+                        "name": "Zones construites",
+                        "url": reverse_lazy("public_data:zoneconstruite-optimized"),
+                        "url_params": {
+                            "year": 2019,
+                        },
+                        "style": "style_zone_artificielle",
+                        "z_index": "6",
+                        "visible": 0,
+                        "is_optimized": 1,
+                        "zoom_available": [12, 13, 14, 15, 16, 17, 18],
+                    },
+                    {
+                        "name": "Grille 1km",
+                        "url": reverse_lazy("public_data:grid"),
+                        "url_params": {
+                            "gride_size": 1,
+                        },
+                        "style": "style_communes",
+                        "z_index": "1",
+                        "visible": 0,
+                        "is_optimized": 1,
+                        "zoom_available": [12, 13, 14, 15, 16, 17, 18],
+                    },
+                    {
+                        "name": "Zones urbaines",
+                        "url": reverse_lazy("public_data:zoneurba-optimized"),
+                        "style": "style_communes",
+                        "z_index": "5",
+                        "visible": 0,
+                        "is_optimized": 1,
+                        "zoom_available": list(range(10, 19)),
                     },
                 ],
             }

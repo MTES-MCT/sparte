@@ -1,10 +1,11 @@
 """Public data API views."""
 import json
+from typing import Dict
 
 from django.db import connection
 from django.http import HttpResponse
 from rest_framework import viewsets
-from rest_framework.decorators import action
+from rest_framework.decorators import action, api_view
 from rest_framework.response import Response
 from rest_framework_gis import filters
 
@@ -17,9 +18,7 @@ from . import serializers
 
 
 class OptimizedMixins:
-    optimized_fields = {
-        "sql": "name",
-    }
+    optimized_fields: Dict[str, str] = {}
     optimized_geo_field = "st_AsGeoJSON(o.mpoly, 6, 0)"
 
     def get_params(self, request):
@@ -31,8 +30,11 @@ class OptimizedMixins:
         year = int(year)
         return [year] + bbox  # /!\ order matter, see sql query below
 
+    def get_optimized_geo_field(self):
+        return self.optimized_geo_field
+
     def get_sql_fields(self):
-        return list(self.optimized_fields.keys()) + [self.optimized_geo_field]
+        return list(self.optimized_fields.keys()) + [self.get_optimized_geo_field()]
 
     def get_field_names(self):
         return list(self.optimized_fields.values()) + ["geojson"]
@@ -111,6 +113,31 @@ class OptimizedMixins:
         return HttpResponse(envelope, content_type="application/json")
 
 
+class ZoomSimplificationMixin:
+    min_zoom = 6
+
+    def get_zoom(self):
+        try:
+            return int(self.request.query_params.get("zoom"))
+        except TypeError:
+            raise ValueError("zoom parameter must be set.")
+
+    def get_data(self, request):
+        if self.get_zoom() >= self.min_zoom:
+            return super().get_data(request)
+        return []
+
+    def get_params(self, request):
+        bbox = request.query_params.get("in_bbox")
+        if bbox is None:
+            raise ValueError(f"bbox parameter must be set. bbox={bbox}")
+        bbox = list(map(float, bbox.split(",")))
+        return bbox  # /!\ order matter, see sql query below
+
+    def get_sql_where(self):
+        return "where o.mpoly && ST_MakeEnvelope(%s, %s, %s, %s, 4326)"
+
+
 class DataViewSet(viewsets.ReadOnlyModelViewSet):
     bbox_filter_field = "mpoly"
     bbox_filter_include_overlapping = True
@@ -131,17 +158,19 @@ class DataViewSet(viewsets.ReadOnlyModelViewSet):
         return Response(gradient)
 
 
-class OcsgeViewSet(OptimizedMixins, DataViewSet):
+class OcsgeViewSet(ZoomSimplificationMixin, OptimizedMixins, DataViewSet):
     queryset = models.Ocsge.objects.all()
     serializer_class = serializers.OcsgeSerializer
     optimized_fields = {
         # "o.id": "id",
         "o.couverture_label": "couverture_label",
+        "o.couverture": "code_couverture",
         "o.usage_label": "usage_label",
-        "t.map_color": "map_color",
+        "o.usage": "code_usage",
         "o.surface": "surface",
         "o.year": "year",
     }
+    min_zoom = 15
 
     def get_queryset(self):
         """
@@ -162,24 +191,46 @@ class OcsgeViewSet(OptimizedMixins, DataViewSet):
         return value
 
     def get_sql_from(self):
-        if self.request.query_params.get("color") == "usage":
-            table_name = models.UsageSol._meta.db_table
-            field = "usage"
-        else:
-            table_name = models.CouvertureSol._meta.db_table
-            field = "couverture"
         return (
             f"FROM {self.queryset.model._meta.db_table} o "
-            f"INNER JOIN {table_name} t "
-            f"ON t.code_prefix = o.{field} "
+            "INNER JOIN (SELECT ST_MakeEnvelope(%s, %s, %s, %s, 4326) as box) as b "
+            "ON ST_Intersects(o.mpoly, b.box) "
         )
 
+    def get_sql_where(self):
+        return "where o.year = %s"
 
-class OcsgeDiffViewSet(OptimizedMixins, DataViewSet):
+    def get_params(self, request):
+        bbox = request.query_params.get("in_bbox")
+        year = request.query_params.get("year")
+        if bbox is None or year is None:
+            raise ValueError(f"bbox and year parameter must be set. bbox={bbox};year={year}")
+        bbox = list(map(float, bbox.split(",")))
+        year = int(year)
+        return bbox + [year]  # /!\ order matter, see sql query below
+
+    def get_optimized_geo_field(self):
+        zoom = self.get_zoom()
+        if zoom == 18:
+            y = 0
+        elif zoom == 17:
+            y = 0.00001
+        elif zoom == 16:
+            y = 0.00005
+        else:
+            y = 0.0001
+        return f"st_AsGeoJSON(ST_SimplifyPreserveTopology(ST_Intersection(mpoly, b.box), {y}), 6, 0)"
+
+
+class OcsgeDiffViewSet(ZoomSimplificationMixin, OptimizedMixins, DataViewSet):
     queryset = models.OcsgeDiff.objects.all()
     serializer_class = serializers.OcsgeDiffSerializer
     optimized_fields = {
         # "o.id": "id",
+        "cs_new": "couverture_new",
+        "cs_old": "couverture_old",
+        "us_new": "usage_new",
+        "us_old": "usage_old",
         "CONCAT(cs_old, ' ', cs_old_label)": "cs_old",
         "CONCAT(us_old, ' ', us_old_label)": "us_old",
         "CONCAT(cs_new, ' ', cs_new_label)": "cs_new",
@@ -191,30 +242,59 @@ class OcsgeDiffViewSet(OptimizedMixins, DataViewSet):
         "surface / 10000": "surface",
     }
 
-    def get_sql_where(self):
-        return (
-            "where year_new = %s and year_old = %s "
-            "    and mpoly && ST_MakeEnvelope(%s, %s, %s, %s, 4326) "
-            "    and is_new_artif = %s "
-            "    and is_new_natural = %s "
-            "    and ST_Intersects(mpoly, ("
-            "        SELECT ST_Union(mpoly) FROM project_emprise WHERE project_id = %s"
-            "    ))"
-        )
+    min_zoom = 15
 
     def get_params(self, request):
-        project_id = request.query_params.get("project_id")
         bbox = request.query_params.get("in_bbox").split(",")
-        bbox = list(map(float, bbox))
-        year_old = int(request.query_params.get("year_old"))
-        year_new = int(request.query_params.get("year_new"))
-        is_new_artif = bool(request.query_params.get("is_new_artif", False))
-        is_new_natural = bool(request.query_params.get("is_new_natural", False))
-        # /!\ order matter, see sql query
-        return [year_new, year_old] + bbox + [is_new_artif, is_new_natural, project_id]
+        params = list(map(float, bbox))
+        params.append(int(request.query_params.get("year_new")))
+        params.append(int(request.query_params.get("year_old")))
+
+        if "is_new_artif" in request.query_params:
+            params.append(bool(request.query_params.get("is_new_artif")))
+        if "is_new_natural" in request.query_params:
+            params.append(bool(request.query_params.get("is_new_natural")))
+        if "project_id" in request.query_params:
+            params.append(request.query_params.get("project_id"))
+
+        # /!\ order matter, check sql query to know
+        return params
+
+    def get_sql_from(self):
+        return (
+            f"FROM {self.queryset.model._meta.db_table} o "
+            "INNER JOIN (SELECT ST_MakeEnvelope(%s, %s, %s, %s, 4326) as box) as b "
+            "ON ST_Intersects(o.mpoly, b.box) "
+        )
+
+    def get_sql_where(self):
+        where = "where year_new = %s and year_old = %s "
+        if "is_new_artif" in self.request.query_params:
+            where += "and is_new_artif = %s "
+        if "is_new_natural" in self.request.query_params:
+            where += "and is_new_natural = %s "
+        if "project_id" in self.request.query_params:
+            where += (
+                "and ST_Intersects(mpoly, ("
+                "    SELECT ST_Union(mpoly) FROM project_emprise WHERE project_id = %s"
+                "))"
+            )
+        return where
+
+    def get_optimized_geo_field(self):
+        zoom = self.get_zoom()
+        if zoom == 18:
+            y = 0
+        elif zoom == 17:
+            y = 0.00001
+        elif zoom == 16:
+            y = 0.00005
+        else:
+            y = 0.0001
+        return f"st_AsGeoJSON(ST_SimplifyPreserveTopology(ST_Intersection(mpoly, b.box), {y}), 6, 0)"
 
 
-class ZoneConstruiteViewSet(OptimizedMixins, DataViewSet):
+class ZoneConstruiteViewSet(ZoomSimplificationMixin, OptimizedMixins, DataViewSet):
     queryset = models.ZoneConstruite.objects.all()
     serializer_class = serializers.ZoneConstruiteSerializer
     optimized_fields = {
@@ -224,8 +304,50 @@ class ZoneConstruiteViewSet(OptimizedMixins, DataViewSet):
         "built_density": "Densité",
     }
 
+    def get_params(self, request):
+        bbox = request.query_params.get("in_bbox").split(",")
+        params = list(map(float, bbox))
+        if "project_id" in request.query_params:
+            params.append(request.query_params.get("project_id"))
+        params.append(int(request.query_params.get("year")))
+        return params
 
-class ArtificialAreaViewSet(OptimizedMixins, DataViewSet):
+    def get_sql_from(self):
+        sql_from = [
+            f"FROM {self.queryset.model._meta.db_table} o",
+            "INNER JOIN (SELECT ST_MakeEnvelope(%s, %s, %s, %s, 4326) as box) as b",
+            "ON ST_Intersects(o.mpoly, b.box)",
+        ]
+        if "project_id" in self.request.query_params:
+            sql_from += [
+                "INNER JOIN (SELECT ST_Union(mpoly) as geom FROM project_emprise WHERE project_id = %s) as t",
+                "ON ST_Intersects(o.mpoly, t.geom)",
+            ]
+        return " ".join(sql_from)
+
+    def get_sql_where(self):
+        return "WHERE o.year = %s"
+
+    def get_optimized_geo_field(self):
+        zoom = self.get_zoom()
+        if zoom == 18:
+            y = 0
+        elif zoom == 17:
+            y = 0.00001
+        elif zoom == 16:
+            y = 0.00005
+        elif zoom == 15:
+            y = 0.0001
+        elif zoom == 14:
+            y = 0.0005
+        elif zoom == 13:
+            y = 0.00075
+        else:
+            y = 0.001
+        return f"st_AsGeoJSON(ST_SimplifyPreserveTopology(ST_Intersection(mpoly, b.box), {y}), 6, 0)"
+
+
+class ArtificialAreaViewSet(ZoomSimplificationMixin, OptimizedMixins, DataViewSet):
     queryset = models.ArtificialArea.objects.all()
     serializer_class = serializers.OcsgeDiffSerializer
     optimized_fields = {
@@ -234,24 +356,100 @@ class ArtificialAreaViewSet(OptimizedMixins, DataViewSet):
         "o.surface": "surface",
         "o.year": "year",
     }
-    optimized_geo_field = "st_AsGeoJSON(ST_Intersection(o.mpoly, t.geom), 8)"
 
-    def get_sql_from(self):
-        return (
-            f"from {self.queryset.model._meta.db_table} o "
-            f"inner join {models.Commune._meta.db_table} c "
-            "on o.city_id = c.id, "
-            "(SELECT ST_Union(mpoly) as geom FROM project_emprise WHERE project_id = %s) as t"
-        )
-
-    def get_sql_where(self):
-        return (
-            "where ST_Intersects(o.mpoly, t.geom) "
-            "    and ST_Area(ST_Transform(ST_Intersection(o.mpoly, t.geom), 2154)) > 0.5"
-        )
+    min_zoom = 12
 
     def get_params(self, request):
-        return [request.query_params.get("project_id")]
+        bbox = request.query_params.get("in_bbox").split(",")
+        params = list(map(float, bbox))
+        if "project_id" in request.query_params:
+            params.append(request.query_params.get("project_id"))
+        params.append(int(request.query_params.get("year")))
+        return params
+
+    def get_sql_from(self):
+        sql_from = [
+            f"FROM {self.queryset.model._meta.db_table} o",
+            f"INNER JOIN {models.Commune._meta.db_table} c ON o.city_id = c.id",
+            "INNER JOIN (SELECT ST_MakeEnvelope(%s, %s, %s, %s, 4326) as box) as b",
+            "ON ST_Intersects(o.mpoly, b.box)",
+        ]
+        if "project_id" in self.request.query_params:
+            sql_from += [
+                "INNER JOIN (SELECT ST_Union(mpoly) as geom FROM project_emprise WHERE project_id = %s) as t",
+                "ON ST_Intersects(o.mpoly, t.geom)",
+            ]
+        return " ".join(sql_from)
+
+    def get_sql_where(self):
+        return "WHERE o.year = %s"
+
+    def get_optimized_geo_field(self):
+        zoom = self.get_zoom()
+        if zoom == 18:
+            y = 0
+        elif zoom == 17:
+            y = 0.00001
+        elif zoom == 16:
+            y = 0.00005
+        else:
+            y = 0.0001
+        return f"st_AsGeoJSON(ST_SimplifyPreserveTopology(ST_Intersection(o.mpoly, b.box), {y}), 6, 0)"
+
+
+class ZoneUrbaViewSet(ZoomSimplificationMixin, OptimizedMixins, DataViewSet):
+    queryset = models.ZoneUrba.objects.all()
+    serializer_class = serializers.ZoneUrbaSerializer
+    optimized_fields = {
+        "o.id": "id",
+        "o.libelle": "libelle",
+        "o.libelong": "libelong",
+        "o.typezone": "typezone",
+        "o.urlfic": "urlfic",
+        "o.datappro": "datappro",
+        "o.datvalid": "datvalid",
+    }
+
+    min_zoom = 10
+
+    def get_params(self, request):
+        bbox = request.query_params.get("in_bbox").split(",")
+        params = list(map(float, bbox))
+        if "project_id" in request.query_params:
+            params.append(request.query_params.get("project_id"))
+        return params
+
+    def get_sql_from(self):
+        sql_from = [
+            f"FROM {self.queryset.model._meta.db_table} o",
+            "INNER JOIN (SELECT ST_MakeEnvelope(%s, %s, %s, %s, 4326) as box) as b",
+            "ON ST_Intersects(o.mpoly, b.box)",
+        ]
+        if "project_id" in self.request.query_params:
+            sql_from += [
+                "INNER JOIN (SELECT ST_Union(mpoly) as geom FROM project_emprise WHERE project_id = %s) as t",
+                "ON ST_Intersects(o.mpoly, t.geom)",
+            ]
+        return " ".join(sql_from)
+
+    def get_sql_where(self):
+        return "where St_IsValid(mpoly) = true"
+
+    def get_optimized_geo_field(self):
+        zoom = self.get_zoom()
+        if zoom == 18:
+            y = 0
+        elif zoom == 17:
+            y = 0.00001
+        elif zoom == 16:
+            y = 0.00005
+        elif zoom >= 14:
+            y = 0.0001
+        elif zoom >= 12:
+            y = 0.0002
+        else:
+            y = 0.0005
+        return f"st_AsGeoJSON(ST_SimplifyPreserveTopology(ST_Intersection(o.mpoly, b.box), {y}), 6, 0)"
 
 
 # Views for referentials Couverture and Usage
@@ -270,34 +468,130 @@ class CouvertureSolViewset(viewsets.ReadOnlyModelViewSet):
 # Views for french adminisitrative territories
 
 
-class RegionViewSet(DataViewSet):
+class RegionViewSet(ZoomSimplificationMixin, OptimizedMixins, DataViewSet):
     queryset = models.Region.objects.all()
     serializer_class = serializers.RegionSerializer
     geo_field = "mpoly"
+    optimized_fields = {}
+
+    def get_optimized_geo_field(self):
+        zoom = self.get_zoom()
+        if zoom >= 16:
+            y = 0
+        elif zoom >= 13:
+            y = 0.0001
+        elif zoom >= 10:
+            y = 0.001
+        else:
+            y = 0.0068
+        return f"st_AsGeoJSON(ST_SimplifyPreserveTopology(o.mpoly, {y}), 6, 0)"
 
 
-class DepartementViewSet(DataViewSet):
+class DepartementViewSet(ZoomSimplificationMixin, OptimizedMixins, DataViewSet):
     queryset = models.Departement.objects.all()
     serializer_class = serializers.DepartementSerializer
     geo_field = "mpoly"
+    optimized_fields = {}
+
+    def get_optimized_geo_field(self):
+        zoom = self.get_zoom()
+        if zoom >= 16:
+            y = 0
+        elif zoom >= 13:
+            y = 0.0001
+        elif zoom >= 10:
+            y = 0.001
+        else:
+            y = 0.0068
+        return f"st_AsGeoJSON(ST_SimplifyPreserveTopology(o.mpoly, {y}), 6, 0)"
 
 
-class ScotViewSet(DataViewSet):
+class ScotViewSet(ZoomSimplificationMixin, OptimizedMixins, DataViewSet):
     queryset = models.Scot.objects.all()
     serializer_class = serializers.ScotSerializer
     geo_field = "mpoly"
 
+    def get_optimized_geo_field(self):
+        zoom = self.get_zoom()
+        if zoom >= 16:
+            y = 0
+        elif zoom >= 13:
+            y = 0.0001
+        elif zoom >= 10:
+            y = 0.001
+        else:
+            y = 0.0075
+        return f"st_AsGeoJSON(ST_SimplifyPreserveTopology(o.mpoly, {y}), 6, 0)"
 
-class EpciViewSet(DataViewSet):
+
+class EpciViewSet(ZoomSimplificationMixin, OptimizedMixins, DataViewSet):
     """EPCI view set."""
 
     queryset = models.Epci.objects.all()
     serializer_class = serializers.EpciSerializer
     geo_field = "mpoly"
 
+    min_zoom = 6
 
-class CommuneViewSet(DataViewSet):
+    def get_optimized_geo_field(self):
+        zoom = self.get_zoom()
+        if zoom >= 16:
+            y = 0
+        elif zoom >= 13:
+            y = 0.0001
+        elif zoom >= 10:
+            y = 0.001
+        else:
+            y = 0.0075  # never send because min_zoom = 10
+        return f"st_AsGeoJSON(ST_SimplifyPreserveTopology(o.mpoly, {y}), 6, 0)"
+
+
+class CommuneViewSet(ZoomSimplificationMixin, OptimizedMixins, DataViewSet):
     """Commune view set."""
 
     queryset = models.Commune.objects.all()
     serializer_class = serializers.CommuneSerializer
+    geo_field = "mpoly"
+    optimized_fields = {}
+    min_zoom = 10
+
+    def get_optimized_geo_field(self):
+        zoom = self.get_zoom()
+        if zoom >= 16:
+            y = 0
+        elif zoom >= 13:
+            y = 0.0001
+        elif zoom >= 10:
+            y = 0.001
+        else:
+            y = 0.008  # never send because min_zoom = 10
+        return f"st_AsGeoJSON(ST_SimplifyPreserveTopology(o.mpoly, {y}), 6, 0)"
+
+
+@api_view(['GET'])
+def grid_views(request):
+    """Grid view set."""
+
+    params = [int(request.query_params.get("gride_size", "1000")) * 0.008983]
+    bbox = request.query_params.get("in_bbox").split(",")
+    params += list(map(float, bbox))
+
+    query = (
+        "SELECT st_AsGeoJSON(squares.geom, 6, 0) as mpoly "
+        "FROM ST_SquareGrid(%s, ST_MakeEnvelope(%s, %s, %s, %s, 4326)) AS squares"
+    )
+
+    with connection.cursor() as cursor:
+        cursor.execute(query, params)
+        geojson = {
+            "type": "FeatureCollection",
+            "crs": {"type": "name", "properties": {"name": "EPSG:4326"}},
+            "features": [
+                {
+                    "type": "Feature",
+                    "geometry": json.loads(row[0]),
+                } for row in cursor.fetchall()
+            ],
+        }
+
+    return Response(geojson)

@@ -105,6 +105,11 @@ urlpatterns = [
         views.CityArtifMapView.as_view(),
         name="theme-city-artif",
     ),
+    path(
+        "<int:pk>/map-v2",
+        views.MapV2View.as_view(),
+        name="map-v2",
+    ),
     # DOWNLOAD
     path(
         "<int:pk>/tableau-de-bord/telechargement",

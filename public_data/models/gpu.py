@@ -1,39 +1,13 @@
 """
 Les zones urbaines fournies par le Géoportail de l'urbanisme
 """
-import csv
-
 from django.contrib.gis.db import models
 
 from utils.db import IntersectMixin
 
 
 class ZoneUrbaManager(IntersectMixin, models.Manager):
-    def to_csv(self, stream):
-        """Write queryset to a CSV file stream.
-        E.g. stream = open(file_path, 'w', newline='')
-        """
-        field_names = [
-            "gid",
-            "libelle",
-            "libelong",
-            "typezone",
-            "insee",
-            "idurba",
-            "idzone",
-            "lib_idzone",
-            "partition",
-            "destdomi",
-            "nomfic",
-            "urlfic",
-            "datappro",
-            "datvalid",
-            "mpoly",
-        ]
-        writer = csv.DictWriter(stream, fieldnames=field_names)
-        writer.writeheader()
-        for row in self.values(*field_names):
-            writer.writerow(row)
+    pass
 
 
 class ZoneUrba(models.Model):
