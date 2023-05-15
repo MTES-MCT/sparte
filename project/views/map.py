@@ -288,7 +288,7 @@ class MapV2View(GroupMixin, DetailView):
                         "url_params": {
                             "year": 2019,
                         },
-                        "style": "style_communes",
+                        "style": "style_ocsge",
                         "z_index": "6",
                         "visible": 0,
                         "is_optimized": 1,
@@ -302,7 +302,7 @@ class MapV2View(GroupMixin, DetailView):
                             "year_old": 2016,
                             "year_new": 2019
                         },
-                        "style": "style_communes",
+                        "style": "style_ocsge_diff",
                         "z_index": "7",
                         "visible": 0,
                         "is_optimized": 1,
@@ -316,7 +316,7 @@ class MapV2View(GroupMixin, DetailView):
                             "year": 2016,
                             "project_id": self.object.id
                         },
-                        "style": "style_communes",
+                        "style": "style_zone_artificielle",
                         "z_index": "5",
                         "visible": 0,
                         "is_optimized": 1,
@@ -328,7 +328,7 @@ class MapV2View(GroupMixin, DetailView):
                         "url_params": {
                             "year": 2019,
                         },
-                        "style": "style_communes",
+                        "style": "style_zone_artificielle",
                         "z_index": "6",
                         "visible": 0,
                         "is_optimized": 1,

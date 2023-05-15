@@ -38,18 +38,30 @@ export default class Layer {
         }
     }
 
+    // overrideStyle() {
+    //     if (this.style === 'style_ocsge_diff' && this.data.) {
+    //         style = 
+    //     }
+
+    //     return style
+    // }
+
+    getStyle(key) {
+        return layerStyles.find(el => el.key === key)
+    }
+
     async addData() {
         // Get data
         const url = this.getUrl()
 
         try {
             const response = await fetch(url)
-            const data = await response.json()
+            this.data = await response.json()
 
             // Remove data from layer
             this.layer.clearLayers()
             // Add new data to layer
-            this.layer.addData(data)
+            this.layer.addData(this.data)
 
             // Flag last data zoom
             this.lastDataZoom = this.map.getZoom()
@@ -66,12 +78,22 @@ export default class Layer {
         // Hide by default
         this.pane.style.display = 'none'
         
-        // Get layer style
-        const style = layerStyles.find(el => el.key === this.style)
-        
         // Create empty geoJSON layer
         let geoJSONLayer = L.geoJSON(null, {
-            style: style,
+            style: (geoJsonFeature) => {
+                // Get default style
+                let style = this.getStyle(this.style)
+
+                // Override style
+                if (this.style === 'style_ocsge_diff' && geoJsonFeature.properties.is_new_artif) {
+                    style = this.getStyle('style_ocsge_diff__is_new_artif')
+                }
+                else if (this.style === 'style_ocsge_diff' && geoJsonFeature.properties.is_new_artif) {
+                    style = this.getStyle('style_ocsge_diff__is_new_natural')
+                }
+
+                return style
+            },
             pane: this.slug,
         })
 
