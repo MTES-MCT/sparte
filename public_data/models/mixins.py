@@ -85,6 +85,7 @@ class AutoLoadMixin:
         clean_queryset=None,
         strict=True,
         silent=False,
+        encoding="utf-8",
     ):
         """
         Populate table with data from shapefile then calculate all fields
@@ -109,8 +110,8 @@ class AutoLoadMixin:
         cls.clean_data(clean_queryset=clean_queryset)
         logger.info("Load new data")
         # # load files
-        lm = LayerMapping(cls, shp_file, cls.mapping)
-        lm.save(strict=strict, silent=silent, verbose=verbose)
+        lm = LayerMapping(cls, shp_file, cls.mapping, encoding=encoding, transaction_mode="autocommit")
+        lm.save(strict=strict, silent=silent, verbose=verbose, progress=True)
         logger.info("Data loaded")
         logger.info("Calculate fields")
         try:
