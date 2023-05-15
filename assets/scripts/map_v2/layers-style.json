@@ -46,5 +46,45 @@
         "weight": 1,
         "opacity": 1,
         "color": "#e2d6c2"
+    },
+    {
+        "key": "style_zone_artificielle",
+        "fillColor": "#f88e55",
+        "fillOpacity": 0.5,
+        "weight": 0.5,
+        "opacity": 1,
+        "color": "#f88e55"
+    },
+    {
+        "key": "style_ocsge",
+        "fillColor": "#f88e55",
+        "fillOpacity": 0.5,
+        "weight": 0.5,
+        "opacity": 1,
+        "color": "#f88e55"
+    },
+    {
+        "key": "style_ocsge_diff",
+        "fillColor": "#ffffff",
+        "fillOpacity": 0.7,
+        "weight": 0,
+        "opacity": 1,
+        "color": "#ffffff"
+    },
+    {
+        "key": "style_ocsge_diff__is_new_artif",
+        "fillColor": "#ff0000",
+        "fillOpacity": 0.7,
+        "weight": 0,
+        "opacity": 1,
+        "color": "#ff0000"
+    },
+    {
+        "key": "style_ocsge_diff__is_new_natural",
+        "fillColor": "#00ff00",
+        "fillOpacity": 0.7,
+        "weight": 0,
+        "opacity": 1,
+        "color": "#00ff00"
     }
 ]
