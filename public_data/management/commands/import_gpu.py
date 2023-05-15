@@ -5,7 +5,7 @@ from django.contrib.gis.geos import GEOSGeometry
 from django.core.management.base import BaseCommand
 from django.db.models import Q
 
-from public_data.models import ZoneUrba2 as ZoneUrba, Departement
+from public_data.models import ZoneUrba, Departement
 from public_data.storages import DataStorage
 
 
