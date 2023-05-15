@@ -1,3 +1,4 @@
+import base64
 import codecs
 import csv
 import io
@@ -11,6 +12,13 @@ from public_data.storages import DataStorage
 
 
 logger = logging.getLogger("management.commands")
+
+
+def to_b64_utf8(words: str) -> str:
+    if words:
+        words = str(words)
+        return base64.b64encode(words.encode("utf-8")).decode("utf-8")
+    return ""
 
 
 class Command(BaseCommand):
@@ -61,13 +69,15 @@ class Command(BaseCommand):
         total = qs.count()
         logger.info("Exporting %d zones", total)
         for row in qs.values_list(*field_names):
-            writer.writerow(row)
+            writer.writerow(map(to_b64_utf8, row))
 
         filename = f"GPU/{dept.source_id}_{dept.name}.csv"
         # data = stream.getvalue().encode("utf-8")
         bcontent.seek(0)
         logger.info("Writing file to S3")
-        final_name = DataStorage().save(filename, bcontent)
+        storage = DataStorage()
+        storage.file_overwrite = True
+        final_name = storage.save(filename, bcontent)
         logger.info("File created: %s", final_name)
 
         logger.info("End exporting GPU")
