@@ -23,7 +23,11 @@ html, body {
 {% block content %}
 <div id="mapV2__wrapper" class="d-flex h-100">
     <div id="mapV2__container" class="flex-grow-1"></div>
-    <div id="mapV2__datas"></div>
+    <div id="mapV2__data">
+        <button id="mapV2__data-toggle-button">
+            <span class="fr-icon-arrow-right-s-line" aria-hidden="true"></span>
+        </button>
+    </div>
 </div>
 {% endblock content %}
 
@@ -62,7 +66,7 @@ usa_leafs = [
 
 new SparteMap ({
     targetElement: document.getElementById('mapV2__container'),
-    debug: true,
+    debug: false,
     mapCenter: [{{ center_lat }}, {{ center_lng }}],
     defaultZoom: {{ default_zoom }},
     layerList: layerList,

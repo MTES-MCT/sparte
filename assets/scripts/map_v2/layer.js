@@ -174,7 +174,7 @@ export default class Layer {
         container.appendChild(label)
 
         // Add checkbox control to panel
-        document.getElementById('mapV2__datas').appendChild(container)
+        document.getElementById('mapV2__data').appendChild(container)
     }
 
     async update() {

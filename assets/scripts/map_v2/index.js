@@ -13,6 +13,7 @@ export default class SparteMap {
         this.layerList = _options.layerList
         this.couv_leafs = _options.couv_leafs
         this.usa_leafs = _options.usa_leafs
+        this.isDataPanelOpen = _options.isDataPanelOpen || true
 
         if (!this.targetElement) {
             console.warn('Missing \'targetElement\' property')
@@ -22,6 +23,7 @@ export default class SparteMap {
         this.setConfig()
         this.setMap()
         this.setLayers()
+        this.setDataPanel()
 
         if (this.debug)
             this.setDebug()
@@ -93,7 +95,33 @@ export default class SparteMap {
             center: this.mapCenter,
             zoom: this.defaultZoom,
             minZoom: 6,
+            doubleClickZoom: false,
         })
+
+        // Map controls
+        // Position zoom control
+        this.map.zoomControl.setPosition('bottomleft')
+
+        // // Add toggle data panel control
+        // let dataPanelToggleControl = L.Control.extend({
+        //     options: {
+        //         position: 'topleft'
+        //     },
+
+        //     onAdd: function () {
+        //         this.dataPanel = document.getElementById('mapV2__data')
+                
+        //         let container = L.DomUtil.create('button', 'fr-btn fr-icon-arrow-right-s-line')
+
+        //         container.onclick = function () {
+        //             this.dataPanel.classList.toggle('open')
+        //         }
+
+        //         return container
+        //     }
+        // })
+
+        // this.map.addControl(new dataPanelToggleControl())
 
         // Set max bounds
         let southWest = L.latLng(41.650542, -6.855469),
@@ -107,13 +135,13 @@ export default class SparteMap {
             '&REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0&TILEMATRIXSET=PM' +
             '&LAYER={ignLayer}&STYLE={style}&FORMAT={format}' +
             '&TILECOL={x}&TILEROW={y}&TILEMATRIX={z}', {
-                attribution: '<a target="_blank" href="https://www.geoportail.gouv.fr/">Geoportail France</a>',
-                ignApiKey: 'ortho',
-                ignLayer: 'ORTHOIMAGERY.ORTHOPHOTOS',
-                style: 'normal',
-                format: 'image/jpeg',
-                service: 'WMTS'
-            }
+            attribution: '<a target="_blank" href="https://www.geoportail.gouv.fr/">Geoportail France</a>',
+            ignApiKey: 'ortho',
+            ignLayer: 'ORTHOIMAGERY.ORTHOPHOTOS',
+            style: 'normal',
+            format: 'image/jpeg',
+            service: 'WMTS'
+        }
         ).addTo(this.map)
 
         this.map.on('moveend', debounce(() => this.moveend(), 1000))
@@ -128,8 +156,18 @@ export default class SparteMap {
         })
     }
 
+    setDataPanel() {
+        this.dataPanel = document.getElementById('mapV2__data')
+        if (this.isDataPanelOpen)
+            this.dataPanel.classList.add('open')
+        
+        document.getElementById('mapV2__data-toggle-button').addEventListener('click', async (_event) => {
+            this.dataPanel.classList.toggle('open')
+        })
+    }
+    
     moveend() {
-        if (this.layers && this.refreshLayersControl.checked)
+        if (this.layers)
             this.layers.map((_obj) => {
                 _obj.update()
             })
