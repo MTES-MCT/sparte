@@ -59,6 +59,16 @@ export default class Layer {
 
             // Flag last data zoom
             this.lastDataZoom = this.map.getZoom()
+
+            // create popup
+            this.layer.eachLayer((layer) => {
+                let data = ''
+                if (layer.feature.properties)
+                    Object.entries(layer.feature.properties).map(([key, value]) => data += `<strong>${key}</strong>: ${value}<br>`)
+                
+                if (data)
+                    layer.bindPopup(data)
+            })
         } catch(error) {
             console.log(error)
         }
@@ -68,7 +78,7 @@ export default class Layer {
         // Create pane
         this.pane = this.map.createPane(this.slug)
         // Set pane z-index
-        this.pane.style.zIndex = 999 * this.zIndex
+        this.pane.style.zIndex = 600 + parseInt(this.zIndex)
         // Hide by default
         this.pane.style.display = 'none'
         
