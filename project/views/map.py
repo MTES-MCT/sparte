@@ -329,7 +329,7 @@ class MapV2View(GroupMixin, DetailView):
                         "url": reverse_lazy("public_data:artificialarea-optimized"),
                         "url_params": {
                             "year": 2016,
-                            "project_id": self.object.id
+                            # "project_id": self.object.id
                         },
                         "style": "style_zone_artificielle",
                         "z_index": "5",
@@ -361,8 +361,16 @@ class MapV2View(GroupMixin, DetailView):
                         "is_optimized": 1,
                         "zoom_available": [12, 13, 14, 15, 16, 17, 18],
                     },
+                    {
+                        "name": "Zones urbaines",
+                        "url": reverse_lazy("public_data:zoneurba-optimized"),
+                        "style": "style_communes",
+                        "z_index": "5",
+                        "visible": 0,
+                        "is_optimized": 1,
+                        "zoom_available": list(range(10, 19)),
+                    },
                 ],
-                
             }
         )
         return super().get_context_data(**kwargs)
