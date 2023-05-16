@@ -422,6 +422,7 @@ class ZoneUrbaViewSet(ZoomSimplificationMixin, OptimizedMixins, DataViewSet):
         params = list(map(float, bbox))
         if "project_id" in request.query_params:
             params.append(request.query_params.get("project_id"))
+
         return params
 
     def get_sql_from(self):
@@ -438,7 +439,12 @@ class ZoneUrbaViewSet(ZoomSimplificationMixin, OptimizedMixins, DataViewSet):
         return " ".join(sql_from)
 
     def get_sql_where(self):
-        return "where St_IsValid(mpoly) = true"
+        where_parts = ["St_IsValid(mpoly) = true"]
+        if "type_zone" in self.request.query_params:
+            zones = [_.strip() for _ in self.request.query_params.get("type_zone").split(",")]
+            zones = [f"'{_}'" for _ in zones if _ in ["U", "Ah", "Nd", "A", "AUc", "N", "Nh", "AUs"]]
+            where_parts.append(f"o.typezone in ({', '.join(zones)})")
+        return f"where {' and '.join(where_parts)}"
 
     def get_optimized_geo_field(self):
         zoom = self.get_zoom()

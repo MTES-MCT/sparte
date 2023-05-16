@@ -342,7 +342,7 @@ class MapV2View(GroupMixin, DetailView):
                         "name": "Zones construites",
                         "url": reverse_lazy("public_data:zoneconstruite-optimized"),
                         "url_params": {
-                            "year": 2019,
+                            "year": 2019,  # choose between 2019 and 2016 for gers
                         },
                         "style": "style_zone_artificielle",
                         "z_index": "6",
@@ -365,6 +365,9 @@ class MapV2View(GroupMixin, DetailView):
                     {
                         "name": "Zones urbaines",
                         "url": reverse_lazy("public_data:zoneurba-optimized"),
+                        "url_params": {
+                            "type_zone": "U,Ah,Nd,A,AUc,N,Nh,AUs",
+                        },
                         "style": "style_communes",
                         "z_index": "5",
                         "visible": 0,
