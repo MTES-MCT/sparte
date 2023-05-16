@@ -1,8 +1,13 @@
 from decimal import InvalidOperation
+from typing import Any, Dict
 
 from django.contrib import messages
+from django.contrib.gis.db.models.functions import Area
+from django.contrib.gis.geos import Polygon
 from django.db import transaction
-from django.http import HttpResponseRedirect
+from django.db.models import Case, CharField, DecimalField, F, Q, Sum, Value, When
+from django.db.models.functions import Cast, Concat
+from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.views.generic import CreateView, DetailView, TemplateView
 
@@ -10,6 +15,8 @@ from project import charts, tasks
 from project.models import Project, ProjectCommune, Request
 from project.utils import add_total_line_column
 from public_data.models import CouvertureSol, UsageSol
+from public_data.models.gpu import ZoneUrba
+from public_data.models.ocsge import Ocsge, OcsgeDiff
 
 from .mixins import BreadCrumbMixin, GroupMixin, UserQuerysetOrPublicMixin
 
@@ -562,4 +569,90 @@ class ConsoRelativeHouseholdChart(UserQuerysetOrPublicMixin, DetailView):
                 "conso_household_table": add_total_line_column(conso_household_chart.get_series(), line=False),
             }
         )
+        return super().get_context_data(**kwargs)
+
+
+class ArtifZoneUrbaView(DetailView):
+    """Content of the pannel in Urba Area Explorator."""
+
+    context_object_name = "zone_urba"
+    queryset = ZoneUrba.objects.all()
+    template_name = "project/partials/artif_zone_urba.html"
+
+    def get_context_data(self, **kwargs):
+        diagnostic = Project.objects.get(pk=self.kwargs["project_id"])
+        zone_urba = self.get_object()
+        artif_area = (
+            Ocsge.objects.intersect(zone_urba.mpoly)
+            .filter(is_artificial=True)
+            .aggregate(area=Sum("intersection_area") / 10000)
+        )['area']
+        kwargs |= {
+            "diagnostic": diagnostic,
+            "zone_urba": zone_urba,
+            "surface": zone_urba.area,
+            "total_artif_area": artif_area,
+            "filling_artif_rate": int(artif_area * 100 / zone_urba.area),
+        }
+        return super().get_context_data(**kwargs)
+
+
+class ArtifNetChart(TemplateView):
+    template_name = "project/partials/artif_net_chart.html"
+
+    def get(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+        self.diagnostic = Project.objects.get(pk=self.kwargs["pk"])
+        self.zone_urba = None
+        if "zone_urba_id" in self.request.GET:
+            self.zone_urba = ZoneUrba.objects.get(pk=self.request.GET.get("zone_urba_id"))
+        return super().get(request, *args, **kwargs)
+
+    def get_data(self):
+        """Expected format :
+        [
+            {"period": "2013 - 2016", "new_artif": 12, "new_natural": 2: "net_artif": 10},
+            {"period": "2016 - 2019", "new_artif": 15, "new_natural": 7: "net_artif": 8},
+        ]
+        """
+        Zero = Area(Polygon(((0, 0), (0, 0), (0, 0), (0, 0)), srid=2154))
+        qs = (
+            OcsgeDiff.objects.intersect(self.zone_urba.mpoly)
+            .filter(
+                year_old__gte=self.diagnostic.first_year_ocsge,
+                year_new__lte=self.diagnostic.last_year_ocsge,
+            )
+            .filter(Q(is_new_artif=True) | Q(is_new_natural=True))
+            .annotate(
+                period=Cast(Concat("year_old", Value(" - "), "year_new"), CharField(max_length=15)),
+                area_artif=Case(When(is_new_artif=True, then=F("intersection_area")), default=Zero),
+                area_renat=Case(When(is_new_natural=True, then=F("intersection_area")), default=Zero),
+            )
+            .values("period")
+            .annotate(
+                new_artif=Cast(Sum("area_artif") / 10000, DecimalField(max_digits=15, decimal_places=2)),
+                new_nat=Cast(Sum("area_renat") / 10000, DecimalField(max_digits=15, decimal_places=2)),
+            )
+        )
+        return [
+            {
+                "period": _["period"],
+                "new_artif": _["new_artif"],
+                "new_natural": _["new_nat"],
+                "net_artif": _["new_artif"] - _["new_nat"],
+            }
+            for _ in qs
+        ]
+
+    def get_chart(self):
+        if self.zone_urba:
+            # return chart with data within ZoneUrba polygon
+            return charts.EvolutionArtifChart(self.diagnostic, get_data=self.get_data)
+        # return classical chart for complete project
+        return charts.EvolutionArtifChart(self.diagnostic)
+
+    def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
+        artif_net_chart = self.get_chart()
+        kwargs |= {
+            "artif_net_chart": artif_net_chart,
+        }
         return super().get_context_data(**kwargs)
