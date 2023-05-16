@@ -217,6 +217,7 @@ class MapV2View(GroupMixin, DetailView):
         # UPGRADE: add center and zoom fields on project model
         # values would be infered when emprise is loaded
         center = self.object.get_centroid()
+        available_millesimes = self.object.get_available_millesimes()
         kwargs.update(
             {
                 # center map on France
@@ -295,7 +296,7 @@ class MapV2View(GroupMixin, DetailView):
                         "z_index": "6",
                         "visible": 0,
                         "is_optimized": 1,
-                        "millesimes": ["2016", "2019"],
+                        "millesimes": available_millesimes,
                         "zoom_available": [15, 16, 17, 18],
                     },
                     {
@@ -308,7 +309,7 @@ class MapV2View(GroupMixin, DetailView):
                         "z_index": "6",
                         "visible": 0,
                         "is_optimized": 1,
-                        "millesimes": ["2016", "2019"],
+                        "millesimes": available_millesimes,
                         "zoom_available": [15, 16, 17, 18],
                     },
                     {
@@ -322,7 +323,7 @@ class MapV2View(GroupMixin, DetailView):
                         "z_index": "7",
                         "visible": 0,
                         "is_optimized": 1,
-                        "millesimes": ["2016", "2019"],
+                        "millesimes": available_millesimes,
                         "zoom_available": [15, 16, 17, 18],
                     },
                     {
@@ -366,12 +367,13 @@ class MapV2View(GroupMixin, DetailView):
                         "name": "Zones urbaines",
                         "url": reverse_lazy("public_data:zoneurba-optimized"),
                         "url_params": {
-                            "type_zone": "U,Ah,Nd,A,AUc,N,Nh,AUs",
+                            "type_zone": "AUc,AUs",
                         },
                         "style": "style_communes",
                         "z_index": "5",
                         "visible": 0,
                         "is_optimized": 1,
+                        "type_zone_available": ["U", "Ah", "Nd", "A", "AUc", "N", "Nh", "AUs"],
                         "zoom_available": list(range(10, 19)),
                     },
                 ],
