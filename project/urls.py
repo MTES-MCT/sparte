@@ -84,6 +84,11 @@ urlpatterns = [
         name="relative-household",
     ),
     path(
+        "<int:pk>/tableau-de-bord/artificialisation/évolution-nette",
+        views.ArtifNetChart.as_view(),
+        name="artif-net-chart",
+    ),
+    path(
         "<int:pk>/set-target-2031",
         views.SetTargetView.as_view(),
         name="set_target_2031",
@@ -109,6 +114,11 @@ urlpatterns = [
         "<int:pk>/map-v2",
         views.MapV2View.as_view(),
         name="map-v2",
+    ),
+    path(
+        "<int:project_id>/carte/detail-zone-urbaine/<int:pk>",
+        views.ArtifZoneUrbaView.as_view(),
+        name="map-pane-artif-zone-urba",
     ),
     # DOWNLOAD
     path(

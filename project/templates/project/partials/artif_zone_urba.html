@@ -1,0 +1,70 @@
+{% extends 'index.html' %}
+
+{% load static %}
+{% load project_tags %}
+{% load humanize %}
+{% load i18n %}
+{% load l10n %}
+{% load highcharts_tags %}
+{% load sri %}
+
+{% block pagetitle %}
+Test
+{% endblock %}
+
+{% block content %}
+
+<div>
+    <h1 class="mb-3">Détail de la zone urbaine</h1>
+    <ul class="fr-tags-group">
+        <li>
+            <p class="fr-tag fr-tag--sm">Surface de la zone:&nbsp;<strong>{{ surface|floatformat:0 }} ha</strong></p>
+        </li>
+        <li>
+            <p class="fr-tag fr-tag--sm">Période demandée:&nbsp;<strong>De {{ diagnostic.analyse_start_date }} à {{ diagnostic.analyse_end_date }}</strong></p>
+        </li>
+    </ul>
+    <p>Sur la période demandée, l'OCS GE couvre de {{ diagnostic.first_year_ocsge|stringformat:"s" }} à {{ diagnostic.last_year_ocsge|stringformat:"s" }}.</p>
+</div>
+
+
+<div class="fr-grid-row fr-grid-row--gutters">
+
+    <div class="fr-col-12 fr-col-md-4">
+        <div class="fr-callout">
+            <p class="fr-callout__title">{{ total_artif_area|floatformat:0 }} ha</p>
+            <p>Surface artificialisée en {{ diagnostic.last_year_ocsge|stringformat:"s" }}</p>
+        </div>
+    </div>
+
+    <div class="fr-col-12 fr-col-md-4">
+        <div class="fr-callout">
+            <p class="fr-callout__title">{{ filling_artif_rate|floatformat:0 }}%</p>
+            <p>Taux de remplissage en {{ diagnostic.last_year_ocsge|stringformat:"s" }}</p>
+        </div>
+    </div>
+
+</div>
+
+
+<div class="fr-mt-7w" hx-get="{% url 'project:artif-net-chart' diagnostic.id %}?zone_urba_id={{ zone_urba.id|stringformat:"s" }}" hx-trigger="revealed">
+    <h3>Artificialisation net entre {{ diagnostic.first_year_ocsge|stringformat:"s" }} et {{ diagnostic.last_year_ocsge|stringformat:"s" }}</h3>
+
+    <!-- TODO Sofian ajouter skeletton -->
+    <div class="fr-custom-loader"></div>
+    
+</div>
+
+{% endblock content %}
+
+
+{% block bodyend %}
+{% localize off %}
+
+{% sri_static "highcharts/js/highcharts.js" %}
+{% sri_static "highcharts/js/highcharts-more.js" %}
+{% sri_static "highcharts/js/exporting.js" %}
+{% french_translation %}
+
+{% endlocalize %}
+{% endblock %}
