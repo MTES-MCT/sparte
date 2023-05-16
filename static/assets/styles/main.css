@@ -1088,7 +1088,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
     right: 0;
     top: 0;
     height: 100%;
-    z-index: 9999;
+    z-index: 1000;
     transition: transform .5s ease;
     transform: translateX(100%);
     -webkit-transform: translateX(100%);
@@ -1141,6 +1141,19 @@ Fix nav extra margin
 */
 .fr-nav__list {
     margin: 0;
+}
+
+/*
+Header dropdown menu
+*/
+header.fr-header {
+    z-index: 1600;
+}
+
+#menu-mon-compte {
+    right: 0px;
+    margin: 0;
+    padding: 0;
 }
 
 /*
