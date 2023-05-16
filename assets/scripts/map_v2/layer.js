@@ -93,7 +93,7 @@ export default class Layer {
                     style = this.getStyle('style_ocsge_diff__is_new_artif')
                 }
                 
-                if (this.style === 'style_ocsge_diff' && geoJsonFeature.properties.is_new_artif) {
+                if (this.style === 'style_ocsge_diff' && geoJsonFeature.properties.is_new_natural) {
                     style = this.getStyle('style_ocsge_diff__is_new_natural')
                 }
 
