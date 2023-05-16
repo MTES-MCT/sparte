@@ -12,7 +12,7 @@ from django.contrib.gis.db.models.functions import Centroid, Area
 from django.contrib.gis.geos import MultiPolygon, Polygon
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
-from django.db.models import Case, F, Max, Min, Q, Sum, Value, When, DecimalField
+from django.db.models import Case, F, Q, Sum, Value, When, DecimalField
 from django.db.models.functions import Coalesce, Concat, Cast
 from django.urls import reverse
 from django.utils import timezone
