@@ -23,6 +23,15 @@ Test
         <li>
             <p class="fr-tag fr-tag--sm">Période demandée:&nbsp;<strong>De {{ diagnostic.analyse_start_date }} à {{ diagnostic.analyse_end_date }}</strong></p>
         </li>
+        <li>
+            <p class="fr-tag fr-tag--sm">Type de zone zone:&nbsp;<strong>{{ zone_urba.typezone }}</strong></p>
+        </li>
+        <li>
+            <p class="fr-tag fr-tag--sm">Libellé:&nbsp;<strong>{{ zone_urba.libelle }}</strong></p>
+        </li>
+        <li>
+            <p class="fr-tag fr-tag--sm">Libellé long:&nbsp;<strong>{{ zone_urba.libelong }}</strong></p>
+        </li>
     </ul>
     <p>Sur la période demandée, l'OCS GE couvre de {{ diagnostic.first_year_ocsge|stringformat:"s" }} à {{ diagnostic.last_year_ocsge|stringformat:"s" }}.</p>
 </div>
