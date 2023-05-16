@@ -376,6 +376,22 @@ class EvolutionArtifChart(ProjectChart):
         "series": [],
     }
 
+    def __init__(self, project, get_data=None):
+        """get_data is the function to fetch data, can be overriden for ZoneUrba for example."""
+        if get_data:
+            self.get_data = get_data
+        super().__init__(project, group_name=None)
+
+    def get_data(self):
+        """Should return data formated like this:
+        [
+            {"period": "2013 - 2016", "new_artif": 12, "new_natural": 2: "net_artif": 10},
+            {"period": "2016 - 2019", "new_artif": 15, "new_natural": 7: "net_artif": 8},
+        ]
+        default (for retro compatibility purpose) return data from project.get_artif_evolution()
+        """
+        return self.project.get_artif_evolution()
+
     def get_series(self):
         if not self.series:
             self.series = {
@@ -383,7 +399,7 @@ class EvolutionArtifChart(ProjectChart):
                 "Renaturation": dict(),
                 "Artificialisation nette": dict(),
             }
-            for prd in self.project.get_artif_evolution():
+            for prd in self.get_data():
                 key = prd["period"]
                 self.series["Artificialisation"][key] = prd["new_artif"]
                 self.series["Renaturation"][key] = prd["new_natural"]
