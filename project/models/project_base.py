@@ -9,7 +9,7 @@ from django.conf import settings
 from django.contrib.gis.db import models as gis_models
 from django.contrib.gis.db.models import Extent, Union
 from django.contrib.gis.db.models.functions import Centroid, Area
-from django.contrib.gis.geos import Polygon
+from django.contrib.gis.geos import MultiPolygon, Polygon
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import Case, F, Max, Min, Q, Sum, Value, When, DecimalField
@@ -836,10 +836,24 @@ class Project(BaseProject):
             item.surface_diff = item.surface_last - item.surface_first
         return item_list
 
-    def get_detail_artif(self, sol: Literal["couverture", "usage"]):
+    def get_detail_artif(self, sol: Literal["couverture", "usage"], geom: MultiPolygon | None = None):
+        """
+        [
+            {
+                "code_prefix": "CS1.1.1",
+                "label": "Zone Bâti (maison,...)",
+                "label_short": "Zone Bâti",
+                "artif": 1000.0,
+                "renat":  100.0,
+            },
+            {...}
+        ]
+        """
+        if not geom:
+            geom = self.combined_emprise
         Zero = Area(Polygon(((0, 0), (0, 0), (0, 0), (0, 0)), srid=2154))
         return (
-            OcsgeDiff.objects.intersect(self.combined_emprise)
+            OcsgeDiff.objects.intersect(geom)
             .filter(
                 year_old__gte=self.analyse_start_date,
                 year_new__lte=self.analyse_end_date,
@@ -861,15 +875,27 @@ class Project(BaseProject):
                 area_artif=Case(When(is_new_artif=True, then=F("intersection_area")), default=Zero),
                 area_renat=Case(When(is_new_natural=True, then=F("intersection_area")), default=Zero),
             )
+            .order_by("code_prefix", "label", "label_short")
             .values("code_prefix", "label", "label_short")
             .annotate(
                 artif=Cast(Sum("area_artif"), DecimalField(max_digits=15, decimal_places=2)),
                 renat=Cast(Sum("area_renat"), DecimalField(max_digits=15, decimal_places=2)),
             )
-            .order_by("code_prefix", "label", "label_short")
         )
 
     def get_base_sol_artif(self, sol="couverture"):
+        """
+        [
+            {
+                "code_prefix": "CS1.1.1",
+                "label": "Zone Bâti (maison,...)",
+                "label_short": "Zone Bâti",
+                "map_color": "#FF0000",
+                "surface": 1000.0,
+            },
+            {...}
+        ]
+        """
         return (
             CommuneSol.objects.filter(
                 city__in=self.cities.all(),
@@ -882,6 +908,7 @@ class Project(BaseProject):
                 label_short=F(f"matrix__{sol}__label_short"),
                 map_color=F(f"matrix__{sol}__map_color"),
             )
+            .order_by("code_prefix", "label", "label_short", "map_color")
             .values("code_prefix", "label", "label_short", "map_color")
             .annotate(surface=Sum("surface"))
         )

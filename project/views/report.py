@@ -586,7 +586,7 @@ class ArtifZoneUrbaView(DetailView):
             Ocsge.objects.intersect(zone_urba.mpoly)
             .filter(is_artificial=True)
             .aggregate(area=Sum("intersection_area") / 10000)
-        )['area']
+        )["area"]
         kwargs |= {
             "diagnostic": diagnostic,
             "zone_urba": zone_urba,
@@ -627,6 +627,7 @@ class ArtifNetChart(TemplateView):
                 area_artif=Case(When(is_new_artif=True, then=F("intersection_area")), default=Zero),
                 area_renat=Case(When(is_new_natural=True, then=F("intersection_area")), default=Zero),
             )
+            .order_by("period")
             .values("period")
             .annotate(
                 new_artif=Cast(Sum("area_artif") / 10000, DecimalField(max_digits=15, decimal_places=2)),
@@ -654,5 +655,76 @@ class ArtifNetChart(TemplateView):
         artif_net_chart = self.get_chart()
         kwargs |= {
             "artif_net_chart": artif_net_chart,
+        }
+        return super().get_context_data(**kwargs)
+
+
+class ArtifDetailCouvChart(TemplateView):
+    template_name = "project/partials/artif_detail_couv_chart.html"
+
+    def get(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+        self.diagnostic = Project.objects.get(pk=self.kwargs["pk"])
+        self.zone_urba = None
+        if "zone_urba_id" in self.request.GET:
+            self.zone_urba = ZoneUrba.objects.get(pk=self.request.GET.get("zone_urba_id"))
+        return super().get(request, *args, **kwargs)
+
+    def get_data(self):
+        """Expected format :
+        [
+            {
+                "code_prefix": "CS1.1.1",
+                "label": "Zone Bâti (maison,...)",
+                "label_short": "Zone Bâti",
+                "map_color": "#FF0000",
+                "surface": 1000.0,
+            },
+            {...}
+        ]
+        """
+        qs = (
+            Ocsge.objects.intersect(self.zone_urba.mpoly)
+            .filter(is_artificial=True, year=self.diagnostic.last_year_ocsge)
+            .annotate(
+                code_prefix=F("matrix__couverture__code_prefix"),
+                label=F("matrix__couverture__label"),
+                label_short=F("matrix__couverture__label_short"),
+                map_color=F("matrix__couverture__map_color"),
+            )
+            .order_by("code_prefix", "label", "label_short", "map_color")
+            .values("code_prefix", "label", "label_short", "map_color")
+            .annotate(surface=Sum("surface"))
+        )
+        return qs
+
+    def get_charts(self):
+        if self.zone_urba:
+            # return chart with data within ZoneUrba polygon
+            return (
+                charts.ArtifCouvSolPieChart(self.diagnostic, get_data=self.get_data),
+                charts.DetailCouvArtifChart(self.diagnostic, geom=self.zone_urba.mpoly),
+            )
+        # return classical chart for complete project
+        return (
+            charts.ArtifCouvSolPieChart(self.diagnostic),
+            charts.DetailCouvArtifChart(self.diagnostic),
+        )
+
+    def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
+        couv_artif_sol, detail_couv_artif_chart = self.get_charts()
+
+        detail_couv_artif_table = detail_couv_artif_chart.get_series()
+        for i in range(len(detail_couv_artif_table)):
+            detail_couv_artif_table[i]["last_millesime"] = 0
+            for row in couv_artif_sol.get_series():
+                if row["code_prefix"] == detail_couv_artif_table[i]["code_prefix"]:
+                    detail_couv_artif_table[i]["last_millesime"] = row["surface"]
+                    break
+        kwargs |= {
+            "couv_artif_sol": couv_artif_sol,
+            "detail_couv_artif_chart": detail_couv_artif_chart,
+            "detail_couv_artif_table": detail_couv_artif_table,
+            "detail_total_artif": sum(_["artif"] for _ in detail_couv_artif_chart.get_series()),
+            "detail_total_renat": sum(_["renat"] for _ in detail_couv_artif_chart.get_series()),
         }
         return super().get_context_data(**kwargs)

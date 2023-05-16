@@ -1,6 +1,7 @@
 import collections
 from typing import Dict, List
 
+from django.contrib.gis.geos import MultiPolygon
 from django.db.models import F, Sum, Value
 from django.db.models.functions import Concat
 
@@ -612,18 +613,34 @@ class DetailCouvArtifChart(ProjectChart):
         "series": [],
     }
 
-    def __init__(self, project: Project):
+    def __init__(self, project: Project, geom: MultiPolygon | None = None):
         self.first_millesime = project.first_year_ocsge
         self.last_millesime = project.last_year_ocsge
+        self.geom = geom
         super().__init__(project)
         self.chart["title"]["text"] = (
             f"Evolution des surfaces artificielles par type de couverture de {self.first_millesime} à "
             f"{self.last_millesime}"
         )
 
+    def get_data(self):
+        """Should return data formated like this:
+        [
+            {
+                "code_prefix": "CS1.1.1",
+                "label": "Zone Bâti (maison,...)",
+                "label_short": "Zone Bâti",
+                "map_color": "#FF0000",
+                "surface": 1000.0,
+            },
+            {...}
+        ]
+        """
+        return self.project.get_detail_artif(sol="couverture", geom=self.geom)
+
     def get_series(self) -> List[Dict]:
         if not self.series:
-            self.series = list(self.project.get_detail_artif(sol="couverture"))
+            self.series = list(self.get_data())
             if "CS1.1.2.2" not in [s["code_prefix"] for s in self.series]:
                 required_couv = CouvertureSol.objects.get(code="1.1.2.2")
                 self.series.append(
@@ -719,14 +736,31 @@ class ArtifCouvSolPieChart(ProjectChart):
         "series": [],
     }
 
-    def __init__(self, project: Project):
+    def __init__(self, project, get_data=None):
         self.millesime = project.last_year_ocsge
+        if get_data:
+            self.get_data = get_data
         super().__init__(project)
         self.chart["title"]["text"] = f"Surfaces artificialisées par type de couverture en {self.millesime}"
 
+    def get_data(self):
+        """Should return data formated like this:
+        [
+            {
+                "code_prefix": "CS1.1.1",
+                "label": "Zone Bâti (maison,...)",
+                "label_short": "Zone Bâti",
+                "map_color": "#FF0000",
+                "surface": 1000.0,
+            },
+            {...}
+        ]
+        """
+        return self.project.get_base_sol_artif(sol=self._sol)
+
     def get_series(self):
         if not self.series:
-            self.series = self.project.get_base_sol_artif(sol=self._sol)
+            self.series = self.get_data()
         return self.series
 
     def add_series(self):
