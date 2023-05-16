@@ -355,7 +355,7 @@ class EvolutionArtifChart(ProjectChart):
     name = "Evolution de l'artificialisation"
     param = {
         "chart": {"type": "column"},
-        "title": {"text": "Par commune"},
+        "title": {"text": "Artificialisation sur la période"},
         "yAxis": {
             "title": {"text": "Surface (en ha)"},
             "stackLabels": {"enabled": True, "format": "{total:,.1f}"},
@@ -684,8 +684,8 @@ class DetailCouvArtifChart(ProjectChart):
 class DetailUsageArtifChart(DetailCouvArtifChart):
     name = "Progression des principaux postes de l'usage du sol"
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, project: Project, geom: MultiPolygon | None = None):
+        super().__init__(project, geom=geom)
         self.chart["title"]["text"] = (
             f"Evolution des surfaces artificielles par type d'usage de {self.first_millesime} à "
             f"{self.last_millesime}"
@@ -704,7 +704,7 @@ class DetailUsageArtifChart(DetailCouvArtifChart):
                 for u in UsageSol.objects.order_by("code_prefix")
                 if u.level == 1
             }
-            for row in self.project.get_detail_artif(sol="usage"):
+            for row in self.project.get_detail_artif(sol="usage", geom=self.geom):
                 code = row["code_prefix"].split(".")[0]
                 self.series[code]["artif"] += row["artif"]
                 self.series[code]["renat"] += row["renat"]
