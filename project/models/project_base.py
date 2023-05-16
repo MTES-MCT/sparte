@@ -878,8 +878,8 @@ class Project(BaseProject):
             .order_by("code_prefix", "label", "label_short")
             .values("code_prefix", "label", "label_short")
             .annotate(
-                artif=Cast(Sum("area_artif"), DecimalField(max_digits=15, decimal_places=2)),
-                renat=Cast(Sum("area_renat"), DecimalField(max_digits=15, decimal_places=2)),
+                artif=Cast(Sum("area_artif") / 10000, DecimalField(max_digits=15, decimal_places=2)),
+                renat=Cast(Sum("area_renat") / 10000, DecimalField(max_digits=15, decimal_places=2)),
             )
         )
 

@@ -584,7 +584,7 @@ class ArtifZoneUrbaView(DetailView):
         zone_urba = self.get_object()
         artif_area = (
             Ocsge.objects.intersect(zone_urba.mpoly)
-            .filter(is_artificial=True)
+            .filter(is_artificial=True, year=diagnostic.last_year_ocsge)
             .aggregate(area=Sum("intersection_area") / 10000)
         )["area"]
         kwargs |= {
@@ -592,7 +592,7 @@ class ArtifZoneUrbaView(DetailView):
             "zone_urba": zone_urba,
             "surface": zone_urba.area,
             "total_artif_area": artif_area,
-            "filling_artif_rate": int(artif_area * 100 / zone_urba.area),
+            "filling_artif_rate": artif_area * 100 / zone_urba.area,
         }
         return super().get_context_data(**kwargs)
 
@@ -693,7 +693,7 @@ class ArtifDetailCouvChart(TemplateView):
             )
             .order_by("code_prefix", "label", "label_short", "map_color")
             .values("code_prefix", "label", "label_short", "map_color")
-            .annotate(surface=Sum("surface"))
+            .annotate(surface=Sum("intersection_area") / 10000)
         )
         return qs
 
@@ -726,5 +726,76 @@ class ArtifDetailCouvChart(TemplateView):
             "detail_couv_artif_table": detail_couv_artif_table,
             "detail_total_artif": sum(_["artif"] for _ in detail_couv_artif_chart.get_series()),
             "detail_total_renat": sum(_["renat"] for _ in detail_couv_artif_chart.get_series()),
+        }
+        return super().get_context_data(**kwargs)
+
+
+class ArtifDetailUsaChart(TemplateView):
+    template_name = "project/partials/artif_detail_usage_chart.html"
+
+    def get(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+        self.diagnostic = Project.objects.get(pk=self.kwargs["pk"])
+        self.zone_urba = None
+        if "zone_urba_id" in self.request.GET:
+            self.zone_urba = ZoneUrba.objects.get(pk=self.request.GET.get("zone_urba_id"))
+        return super().get(request, *args, **kwargs)
+
+    def get_data(self):
+        """Expected format :
+        [
+            {
+                "code_prefix": "CS1.1.1",
+                "label": "Zone Bâti (maison,...)",
+                "label_short": "Zone Bâti",
+                "map_color": "#FF0000",
+                "surface": 1000.0,
+            },
+            {...}
+        ]
+        """
+        qs = (
+            Ocsge.objects.intersect(self.zone_urba.mpoly)
+            .filter(is_artificial=True, year=self.diagnostic.last_year_ocsge)
+            .annotate(
+                code_prefix=F("matrix__usage__code_prefix"),
+                label=F("matrix__usage__label"),
+                label_short=F("matrix__usage__label_short"),
+                map_color=F("matrix__usage__map_color"),
+            )
+            .order_by("code_prefix", "label", "label_short", "map_color")
+            .values("code_prefix", "label", "label_short", "map_color")
+            .annotate(surface=Sum("intersection_area") / 10000)
+        )
+        return qs
+
+    def get_charts(self):
+        if self.zone_urba:
+            # return chart with data within ZoneUrba polygon
+            return (
+                charts.ArtifUsageSolPieChart(self.diagnostic, get_data=self.get_data),
+                charts.DetailUsageArtifChart(self.diagnostic, geom=self.zone_urba.mpoly),
+            )
+        # return classical chart for complete project
+        return (
+            charts.ArtifUsageSolPieChart(self.diagnostic),
+            charts.DetailUsageArtifChart(self.diagnostic),
+        )
+
+    def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
+        usage_artif_sol, detail_usage_artif_chart = self.get_charts()
+
+        detail_usage_artif_table = detail_usage_artif_chart.get_series()
+        for i in range(len(detail_usage_artif_table)):
+            detail_usage_artif_table[i]["last_millesime"] = 0
+            for row in usage_artif_sol.get_series():
+                if row["code_prefix"] == detail_usage_artif_table[i]["code_prefix"]:
+                    detail_usage_artif_table[i]["last_millesime"] = row["surface"]
+                    break
+        kwargs |= {
+            "usage_artif_sol": usage_artif_sol,
+            "detail_usage_artif_chart": detail_usage_artif_chart,
+            "detail_usage_artif_table": detail_usage_artif_table,
+            "detail_total_artif": sum(_["artif"] for _ in detail_usage_artif_chart.get_series()),
+            "detail_total_renat": sum(_["renat"] for _ in detail_usage_artif_chart.get_series()),
         }
         return super().get_context_data(**kwargs)

@@ -18,7 +18,7 @@ Test
     <h1 class="mb-3">Détail de la zone urbaine</h1>
     <ul class="fr-tags-group">
         <li>
-            <p class="fr-tag fr-tag--sm">Surface de la zone:&nbsp;<strong>{{ surface|floatformat:0 }} ha</strong></p>
+            <p class="fr-tag fr-tag--sm">Surface de la zone:&nbsp;<strong>{{ surface|floatformat:1 }} ha</strong></p>
         </li>
         <li>
             <p class="fr-tag fr-tag--sm">Période demandée:&nbsp;<strong>De {{ diagnostic.analyse_start_date }} à {{ diagnostic.analyse_end_date }}</strong></p>
@@ -32,14 +32,14 @@ Test
 
     <div class="fr-col-12 fr-col-md-4">
         <div class="fr-callout">
-            <p class="fr-callout__title">{{ total_artif_area|floatformat:0 }} ha</p>
+            <p class="fr-callout__title">{{ total_artif_area|floatformat:1 }} ha</p>
             <p>Surface artificialisée en {{ diagnostic.last_year_ocsge|stringformat:"s" }}</p>
         </div>
     </div>
 
     <div class="fr-col-12 fr-col-md-4">
         <div class="fr-callout">
-            <p class="fr-callout__title">{{ filling_artif_rate|floatformat:0 }}%</p>
+            <p class="fr-callout__title">{{ filling_artif_rate|floatformat:1 }}%</p>
             <p>Taux de remplissage en {{ diagnostic.last_year_ocsge|stringformat:"s" }}</p>
         </div>
     </div>
@@ -57,9 +57,17 @@ Test
 
 
 <div class="fr-mt-7w">
-    <h2>Détails de l'artificialisation entre {{ first_millesime }} et {{ last_millesime }}</h2>
+    <h2>Détails de l'artificialisation entre {{ diagnostic.first_year_ocsge|stringformat:"s" }} et {{ diagnostic.last_year_ocsge|stringformat:"s" }}</h2>
+
+    <h3>Grandes familles de couverture des sols des espaces artificialisés</h3>
 
     <div hx-get="{% url 'project:artif-detail-couv-chart' diagnostic.id %}?zone_urba_id={{ zone_urba.id|stringformat:"s" }}" hx-trigger="revealed" hx-swap="outerHTML">
+        <div class="fr-custom-loader"></div>
+    </div>
+
+    <h3>Grandes familles d'usages du sol des espaces artificialisés</h3>
+
+    <div hx-get="{% url 'project:artif-detail-usa-chart' diagnostic.id %}?zone_urba_id={{ zone_urba.id|stringformat:"s" }}" hx-trigger="revealed" hx-swap="outerHTML">
         <div class="fr-custom-loader"></div>
     </div>
 
