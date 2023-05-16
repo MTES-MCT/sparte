@@ -89,6 +89,11 @@ urlpatterns = [
         name="artif-net-chart",
     ),
     path(
+        "<int:pk>/tableau-de-bord/artificialisation/détail-couverture",
+        views.ArtifDetailCouvChart.as_view(),
+        name="artif-detail-couv-chart",
+    ),
+    path(
         "<int:pk>/set-target-2031",
         views.SetTargetView.as_view(),
         name="set_target_2031",

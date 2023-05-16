@@ -55,6 +55,15 @@ Test
     
 </div>
 
+
+<div class="fr-mt-7w">
+    <h2>Détails de l'artificialisation entre {{ first_millesime }} et {{ last_millesime }}</h2>
+
+    <div hx-get="{% url 'project:artif-detail-couv-chart' diagnostic.id %}?zone_urba_id={{ zone_urba.id|stringformat:"s" }}" hx-trigger="revealed" hx-swap="outerHTML">
+        <div class="fr-custom-loader"></div>
+    </div>
+
+</div>
 {% endblock content %}
 
 
