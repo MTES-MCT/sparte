@@ -82,14 +82,14 @@ export default class Layer {
                 }
 
                 // Load data in data-panel
-                layer.on('click', async () => {
-                    if (layer.options.pane === "zones-urbaines") {
+                layer.on('click', () => {
+                    if (["zones-urbaines-u", "zones-urbaines-ah-nd-a-n-nh", "zones-urbaines-auc-aus"].includes(layer.options.pane)) {
                         const url = `/project/${this.projectId}/carte/detail-zone-urbaine/${layer.feature.properties.id}`
-                        const response = await fetch(url)
-                        const data = await response.text()
-                        console.log(data);
 
-                        document.getElementById('data-panel').innerHTML = data
+                        const htmxContent = `<div hx-get="${url}" hx-trigger="load"></div>`
+
+                        document.getElementById('data-panel').innerHTML = htmxContent
+                        htmx.process(document.getElementById('data-panel'))
                     }
                 })
             })
