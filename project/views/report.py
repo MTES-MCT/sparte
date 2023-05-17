@@ -800,3 +800,7 @@ class ArtifDetailUsaChart(TemplateView):
             "detail_total_renat": sum(_["renat"] for _ in detail_usage_artif_chart.get_series()),
         }
         return super().get_context_data(**kwargs)
+
+
+class TestView(TemplateView):
+    template_name = "project/test.html"
