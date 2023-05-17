@@ -6,12 +6,14 @@ export default class Layer {
     constructor(_options = {}) {
         this.sparteMap = window.sparteMap
         this.map = this.sparteMap.map
+        this.projectId = this.sparteMap.projectId
         this.name = _options.name
         this.slug = slugify(_options.name)
         this.style = _options.style
         this.zoomAvailable = JSON.parse(_options.zoom_available.replace(/\'/g, '"'))
         this.url = _options.url
         this.urlParams = _options.url_params ? JSON.parse(_options.url_params.replace(/\'/g, '"')) : {}
+        this.dataUrl = _options.dataUrl
         this.zIndex = _options.z_index
         this.isOptimized = Boolean(Number(_options.is_optimized))
         this.isVisible = Boolean(Number(_options.visible))
@@ -59,6 +61,38 @@ export default class Layer {
 
             // Flag last data zoom
             this.lastDataZoom = this.map.getZoom()
+
+            // create popup
+            this.layer.eachLayer((layer) => {
+                let data = ''
+                if (layer.feature.properties)
+                    Object.entries(layer.feature.properties).map(([key, value]) => data += `<strong>${key}</strong>: ${value}<br>`)
+                
+                // Show popup on mouse over 
+                if (data) {
+                    layer.bindPopup(data)
+                    
+                    layer.on('mouseover', function () {
+                        this.openPopup()
+                    })
+                    
+                    layer.on('mouseout', function () {
+                        this.closePopup()
+                    })
+                }
+
+                // Load data in data-panel
+                layer.on('click', () => {
+                    if (["zones-urbaines-u", "zones-urbaines-ah-nd-a-n-nh", "zones-urbaines-auc-aus"].includes(layer.options.pane)) {
+                        const url = `/project/${this.projectId}/carte/detail-zone-urbaine/${layer.feature.properties.id}`
+
+                        const htmxContent = `<div hx-get="${url}" hx-trigger="load"></div>`
+
+                        document.getElementById('data-panel').innerHTML = htmxContent
+                        htmx.process(document.getElementById('data-panel'))
+                    }
+                })
+            })
         } catch(error) {
             console.log(error)
         }
@@ -68,7 +102,7 @@ export default class Layer {
         // Create pane
         this.pane = this.map.createPane(this.slug)
         // Set pane z-index
-        this.pane.style.zIndex = 999 * this.zIndex
+        this.pane.style.zIndex = 600 + parseInt(this.zIndex)
         // Hide by default
         this.pane.style.display = 'none'
         
@@ -83,7 +117,7 @@ export default class Layer {
                     style = this.getStyle('style_ocsge_diff__is_new_artif')
                 }
                 
-                if (this.style === 'style_ocsge_diff' && geoJsonFeature.properties.is_new_artif) {
+                if (this.style === 'style_ocsge_diff' && geoJsonFeature.properties.is_new_natural) {
                     style = this.getStyle('style_ocsge_diff__is_new_natural')
                 }
 
@@ -174,7 +208,7 @@ export default class Layer {
         container.appendChild(label)
 
         // Add checkbox control to panel
-        document.getElementById('mapV2__datas').appendChild(container)
+        document.getElementById('layers-panel').appendChild(container)
     }
 
     async update() {

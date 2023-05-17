@@ -1,9 +1,11 @@
 {% extends 'index.html' %}
 
 {% load static %}
+{% load project_tags %}
 {% load humanize %}
 {% load i18n %}
 {% load l10n %}
+{% load highcharts_tags %}
 {% load sri %}
 
 {% block pagetitle %}
@@ -11,6 +13,7 @@ Carte V2 - {{ map_name }}
 {% endblock pagetitle %}
 
 {% block headers %}
+<meta name="htmx-config" content='{"inlineScriptNonce":"{{ CSP_NONCE }}"}'>
 <style nonce="{{ CSP_NONCE }}">
 html, body {
     height: 100% !important;
@@ -22,8 +25,26 @@ html, body {
 
 {% block content %}
 <div id="mapV2__wrapper" class="d-flex h-100">
-    <div id="mapV2__container" class="flex-grow-1"></div>
-    <div id="mapV2__datas"></div>
+    <div id="mapV2__container" class="flex-grow-1">
+        map
+    </div>
+
+    <div id="mapV2__panel" class="tabs">
+        <div class="tablist" role="tablist" aria-label="Paramètres de la carte">
+            <button role="tab" aria-selected="false" id="layers">
+                <i class="bi bi-layers"></i>
+            </button>
+            <button role="tab" aria-selected="false" id="data">
+                <i class="bi bi-bar-chart"></i>
+            </button>
+            <button role="tab" aria-selected="false" id="debug">
+                <i class="bi bi-bug"></i>
+            </button>
+        </div>
+        <div id="layers-panel" class="tab" role="tabpanel" aria-labelledby="layers" hidden></div>
+        <div id="data-panel" class="tab" role="tabpanel" aria-labelledby="data" hidden></div>
+        <div id="debug-panel" class="tab" role="tabpanel" aria-labelledby="debug" hidden></div>
+    </div>
 </div>
 {% endblock content %}
 
@@ -31,6 +52,11 @@ html, body {
 
 {% block bodyend %}
 {% localize off %}
+{% sri_static "highcharts/js/highcharts.js" %}
+{% sri_static "highcharts/js/highcharts-more.js" %}
+{% sri_static "highcharts/js/exporting.js" %}
+{% french_translation %}
+
 <script language="javascript" nonce="{{ CSP_NONCE }}">
 layerList = [
 {% for layer in layer_list %}
@@ -68,6 +94,7 @@ new SparteMap ({
     layerList: layerList,
     couv_leafs: couv_leafs,
     usa_leafs: usa_leafs,
+    projectId: {{ project_id }}
 })
 </script>
 {% endlocalize %}
