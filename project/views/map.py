@@ -218,6 +218,7 @@ class MapV2View(GroupMixin, DetailView):
         # values would be infered when emprise is loaded
         center = self.object.get_centroid()
         available_millesimes = self.object.get_available_millesimes(commit=True)
+        all_zoom = list(range(6, 19))
         kwargs.update(
             {
                 # center map on France
@@ -239,25 +240,25 @@ class MapV2View(GroupMixin, DetailView):
                         "z_index": "10",
                         "visible": 1,
                         "is_optimized": 0,
-                        "zoom_available": [6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18],
+                        "zoom_available": all_zoom,  # [6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18],
                     },
                     {
                         "name": "Limites administratives (Communes)",
                         "url": reverse_lazy("public_data:commune-optimized"),
                         "style": "style_communes",
                         "z_index": "1",
-                        "visible": 1,
+                        "visible": 0,
                         "is_optimized": 1,
-                        "zoom_available": [12, 13, 14, 15, 16, 17, 18],
+                        "zoom_available": all_zoom,  # [12, 13, 14, 15, 16, 17, 18],
                     },
                     {
                         "name": "Limites administratives (EPCI)",
                         "url": reverse_lazy("public_data:epci-optimized"),
                         "style": "style_epci",
                         "z_index": "2",
-                        "visible": 1,
+                        "visible": 0,
                         "is_optimized": 1,
-                        "zoom_available": [10, 11],
+                        "zoom_available": all_zoom,  # [10, 11],
                     },
                     {
                         "name": "Limites administratives (SCOT)",
@@ -266,16 +267,16 @@ class MapV2View(GroupMixin, DetailView):
                         "z_index": "3",
                         "visible": 0,
                         "is_optimized": 1,
-                        "zoom_available": [10],
+                        "zoom_available": all_zoom,  # [10],
                     },
                     {
                         "name": "Limites administratives (Départements)",
                         "url": reverse_lazy("public_data:departement-optimized"),
                         "style": "style_departements",
                         "z_index": "4",
-                        "visible": 1,
+                        "visible": 0,
                         "is_optimized": 1,
-                        "zoom_available": [8, 9],
+                        "zoom_available": all_zoom,  # [8, 9],
                     },
                     {
                         "name": "Limites administratives (Régions)",
@@ -284,20 +285,33 @@ class MapV2View(GroupMixin, DetailView):
                         "z_index": "5",
                         "visible": 1,
                         "is_optimized": 1,
-                        "zoom_available": [6, 7],
+                        "zoom_available": all_zoom,  # [6, 7],
                     },
                     {
                         "name": "OCSGE Couverture",
                         "url": reverse_lazy("public_data:ocsge-optimized"),
                         "url_params": {
                             "year": 2019,
+                        },
+                        "style": "style_ocsge_couv",
+                        "z_index": "6",
+                        "visible": 0,
+                        "is_optimized": 1,
+                        "millesimes": available_millesimes,
+                        "zoom_available": [15, 16, 17, 18],
+                    },
+                    {
+                        "name": "OCSGE Couverture zones artificielles 2016",
+                        "url": reverse_lazy("public_data:ocsge-optimized"),
+                        "url_params": {
+                            "year": 2016,
                             "is_artificial": 1,
                         },
                         "style": "style_ocsge_couv",
                         "z_index": "6",
                         "visible": 0,
                         "is_optimized": 1,
-                        # "millesimes": available_millesimes,
+                        "millesimes": available_millesimes,
                         "zoom_available": [15, 16, 17, 18],
                     },
                     {
@@ -310,7 +324,7 @@ class MapV2View(GroupMixin, DetailView):
                         "z_index": "6",
                         "visible": 0,
                         "is_optimized": 1,
-                        # "millesimes": available_millesimes,
+                        "millesimes": available_millesimes,
                         "zoom_available": [15, 16, 17, 18],
                     },
                     {
@@ -324,7 +338,7 @@ class MapV2View(GroupMixin, DetailView):
                         "z_index": "7",
                         "visible": 0,
                         "is_optimized": 1,
-                        # "millesimes": available_millesimes,
+                        "millesimes": available_millesimes,
                         "zoom_available": [15, 16, 17, 18],
                     },
                     {
@@ -352,23 +366,23 @@ class MapV2View(GroupMixin, DetailView):
                         "is_optimized": 1,
                         "zoom_available": [12, 13, 14, 15, 16, 17, 18],
                     },
+                    # {
+                    #     "name": "Grille 1km",
+                    #     "url": reverse_lazy("public_data:grid"),
+                    #     "url_params": {
+                    #         "gride_size": 1,
+                    #     },
+                    #     "style": "style_communes",
+                    #     "z_index": "1",
+                    #     "visible": 0,
+                    #     "is_optimized": 1,
+                    #     "zoom_available": [12, 13, 14, 15, 16, 17, 18],
+                    # },
                     {
-                        "name": "Grille 1km",
-                        "url": reverse_lazy("public_data:grid"),
-                        "url_params": {
-                            "gride_size": 1,
-                        },
-                        "style": "style_communes",
-                        "z_index": "1",
-                        "visible": 0,
-                        "is_optimized": 1,
-                        "zoom_available": [12, 13, 14, 15, 16, 17, 18],
-                    },
-                    {
-                        "name": "Zones urbaines",
+                        "name": "Zones urbaines [AUc, AUs]",
                         "url": reverse_lazy("public_data:zoneurba-optimized"),
                         "url_params": {
-                            "type_zone": "AUc,AUs",
+                            "type_zone": "AUc, AUs",
                         },
                         "url_data": "",
                         "style": "style_communes",
@@ -376,7 +390,35 @@ class MapV2View(GroupMixin, DetailView):
                         "visible": 0,
                         "is_optimized": 1,
                         "type_zone_available": ["U", "Ah", "Nd", "A", "AUc", "N", "Nh", "AUs"],
-                        "zoom_available": list(range(10, 19)),
+                        "zoom_available": [12, 13, 14, 15, 16, 17, 18],
+                    },
+                    {
+                        "name": "Zones urbaines [U]",
+                        "url": reverse_lazy("public_data:zoneurba-optimized"),
+                        "url_params": {
+                            "type_zone": "U",
+                        },
+                        "url_data": "",
+                        "style": "style_communes",
+                        "z_index": "5",
+                        "visible": 0,
+                        "is_optimized": 1,
+                        "type_zone_available": ["U", "Ah", "Nd", "A", "AUc", "N", "Nh", "AUs"],
+                        "zoom_available": [12, 13, 14, 15, 16, 17, 18],
+                    },
+                    {
+                        "name": "Zones urbaines [Ah, Nd, A, N, Nh]",
+                        "url": reverse_lazy("public_data:zoneurba-optimized"),
+                        "url_params": {
+                            "type_zone": "Ah, Nd, A, N, Nh",
+                        },
+                        "url_data": "",
+                        "style": "style_communes",
+                        "z_index": "5",
+                        "visible": 0,
+                        "is_optimized": 1,
+                        "type_zone_available": ["U", "Ah", "Nd", "A", "AUc", "N", "Nh", "AUs"],
+                        "zoom_available": [12, 13, 14, 15, 16, 17, 18],
                     },
                 ],
             }
