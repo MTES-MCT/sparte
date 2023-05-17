@@ -113,12 +113,14 @@ def find_first_and_last_ocsge(self, project_id: int) -> None:
     """Use associated cities to find departements and available OCSGE millesime"""
     logger.info("Start find_first_and_last_ocsge id=%d", project_id)
     try:
-        result = Project.objects.get(pk=project_id).get_first_last_millesime()
+        project = Project.objects.get(pk=project_id)
+        result = project.get_first_last_millesime()
         race_protection_save(
             project_id,
             {
                 "first_year_ocsge": result["first"],
                 "last_year_ocsge": result["last"],
+                "available_millesimes": project.available_millesimes,
                 "async_find_first_and_last_ocsge_done": True,
             },
         )
