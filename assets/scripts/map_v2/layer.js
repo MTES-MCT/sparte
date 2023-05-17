@@ -66,8 +66,17 @@ export default class Layer {
                 if (layer.feature.properties)
                     Object.entries(layer.feature.properties).map(([key, value]) => data += `<strong>${key}</strong>: ${value}<br>`)
                 
-                if (data)
+                if (data) {
                     layer.bindPopup(data)
+                    
+                    layer.on('mouseover', function () {
+                        this.openPopup()
+                    })
+                    
+                    layer.on('mouseout', function () {
+                        this.closePopup()
+                    })
+                }
             })
         } catch(error) {
             console.log(error)
@@ -184,7 +193,7 @@ export default class Layer {
         container.appendChild(label)
 
         // Add checkbox control to panel
-        document.getElementById('mapV2__data').appendChild(container)
+        document.getElementById('layers-panel').appendChild(container)
     }
 
     async update() {
