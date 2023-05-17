@@ -191,23 +191,28 @@ class OcsgeViewSet(ZoomSimplificationMixin, OptimizedMixins, DataViewSet):
         return value
 
     def get_sql_from(self):
-        return (
-            f"FROM {self.queryset.model._meta.db_table} o "
-            "INNER JOIN (SELECT ST_MakeEnvelope(%s, %s, %s, %s, 4326) as box) as b "
-            "ON ST_Intersects(o.mpoly, b.box) "
-        )
+        from_parts = [
+            f"FROM {self.queryset.model._meta.db_table} o",
+            "INNER JOIN (SELECT ST_MakeEnvelope(%s, %s, %s, %s, 4326) as box) as b ON ST_Intersects(o.mpoly, b.box)",
+        ]
+        return " ".join(from_parts)
 
     def get_sql_where(self):
-        return "where o.year = %s"
+        where_members = ["o.year = %s"]
+        if "is_artificial" in self.request.query_params:
+            where_members.append("o.is_artificial = %s")
+        return f'where {" and ".join(where_members)}'
 
     def get_params(self, request):
         bbox = request.query_params.get("in_bbox")
         year = request.query_params.get("year")
         if bbox is None or year is None:
             raise ValueError(f"bbox and year parameter must be set. bbox={bbox};year={year}")
-        bbox = list(map(float, bbox.split(",")))
-        year = int(year)
-        return bbox + [year]  # /!\ order matter, see sql query below
+        params = list(map(float, bbox.split(",")))
+        params.append(int(year))
+        if "is_artificial" in self.request.query_params:
+            params.append(bool(request.query_params.get("is_artificial")))
+        return params  # /!\ order matter, see sql query below
 
     def get_optimized_geo_field(self):
         zoom = self.get_zoom()
@@ -568,7 +573,7 @@ class CommuneViewSet(ZoomSimplificationMixin, OptimizedMixins, DataViewSet):
         return f"st_AsGeoJSON(ST_SimplifyPreserveTopology(o.mpoly, {y}), 6, 0)"
 
 
-@api_view(['GET'])
+@api_view(["GET"])
 def grid_views(request):
     """Grid view set."""
 
@@ -590,7 +595,8 @@ def grid_views(request):
                 {
                     "type": "Feature",
                     "geometry": json.loads(row[0]),
-                } for row in cursor.fetchall()
+                }
+                for row in cursor.fetchall()
             ],
         }
 
