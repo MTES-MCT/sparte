@@ -1103,6 +1103,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
     height: 100%;
     z-index: 1000;
     transition: all .5s ease;
+    overflow: auto;
 }
 /*
 Fix link icon position

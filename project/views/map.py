@@ -222,6 +222,7 @@ class MapV2View(GroupMixin, DetailView):
             {
                 # center map on France
                 "carto_name": "Project",
+                "project_id": self.object.pk,
                 "center_lat": center.y,
                 "center_lng": center.x,
                 "default_zoom": 10,
@@ -296,7 +297,7 @@ class MapV2View(GroupMixin, DetailView):
                         "z_index": "6",
                         "visible": 0,
                         "is_optimized": 1,
-                        "millesimes": available_millesimes,
+                        # "millesimes": available_millesimes,
                         "zoom_available": [15, 16, 17, 18],
                     },
                     {
@@ -309,7 +310,7 @@ class MapV2View(GroupMixin, DetailView):
                         "z_index": "6",
                         "visible": 0,
                         "is_optimized": 1,
-                        "millesimes": available_millesimes,
+                        # "millesimes": available_millesimes,
                         "zoom_available": [15, 16, 17, 18],
                     },
                     {
@@ -323,7 +324,7 @@ class MapV2View(GroupMixin, DetailView):
                         "z_index": "7",
                         "visible": 0,
                         "is_optimized": 1,
-                        "millesimes": available_millesimes,
+                        # "millesimes": available_millesimes,
                         "zoom_available": [15, 16, 17, 18],
                     },
                     {
@@ -369,6 +370,7 @@ class MapV2View(GroupMixin, DetailView):
                         "url_params": {
                             "type_zone": "AUc,AUs",
                         },
+                        "url_data": "",
                         "style": "style_communes",
                         "z_index": "5",
                         "visible": 0,

@@ -6,12 +6,14 @@ export default class Layer {
     constructor(_options = {}) {
         this.sparteMap = window.sparteMap
         this.map = this.sparteMap.map
+        this.projectId = this.sparteMap.projectId
         this.name = _options.name
         this.slug = slugify(_options.name)
         this.style = _options.style
         this.zoomAvailable = JSON.parse(_options.zoom_available.replace(/\'/g, '"'))
         this.url = _options.url
         this.urlParams = _options.url_params ? JSON.parse(_options.url_params.replace(/\'/g, '"')) : {}
+        this.dataUrl = _options.dataUrl
         this.zIndex = _options.z_index
         this.isOptimized = Boolean(Number(_options.is_optimized))
         this.isVisible = Boolean(Number(_options.visible))
@@ -66,6 +68,7 @@ export default class Layer {
                 if (layer.feature.properties)
                     Object.entries(layer.feature.properties).map(([key, value]) => data += `<strong>${key}</strong>: ${value}<br>`)
                 
+                // Show popup on mouse over 
                 if (data) {
                     layer.bindPopup(data)
                     
@@ -77,6 +80,18 @@ export default class Layer {
                         this.closePopup()
                     })
                 }
+
+                // Load data in data-panel
+                layer.on('click', async () => {
+                    if (layer.options.pane === "zones-urbaines") {
+                        const url = `/project/${this.projectId}/carte/detail-zone-urbaine/${layer.feature.properties.id}`
+                        const response = await fetch(url)
+                        const data = await response.text()
+                        console.log(data);
+
+                        document.getElementById('data-panel').innerHTML = data
+                    }
+                })
             })
         } catch(error) {
             console.log(error)
