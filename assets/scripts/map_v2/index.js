@@ -13,7 +13,6 @@ export default class SparteMap {
         this.layerList = _options.layerList
         this.couv_leafs = _options.couv_leafs
         this.usa_leafs = _options.usa_leafs
-        this.isDataPanelOpen = _options.isDataPanelOpen || true
 
         if (!this.targetElement) {
             console.warn('Missing \'targetElement\' property')
@@ -23,17 +22,15 @@ export default class SparteMap {
         this.setConfig()
         this.setMap()
         this.setLayers()
-        this.setDataPanel()
+        this.setPanel()
 
         if (this.debug)
             this.setDebug()
     }
 
     setDebug() {
-        this.debugPanel = document.createElement('div')
-        this.debugPanel.id = 'mapV2__debug'
+        this.debugPanel = document.getElementById("debug-panel")
         this.debugPanel.innerHTML = '<strong>Mode Debug activé</strong>'
-        this.targetElement.appendChild(this.debugPanel)
 
         // Display size
         this.debugPanelSize = document.createElement('div')
@@ -98,30 +95,8 @@ export default class SparteMap {
             doubleClickZoom: false,
         })
 
-        // Map controls
         // Position zoom control
         // this.map.zoomControl.setPosition('bottomleft')
-
-        // // Add toggle data panel control
-        // let dataPanelToggleControl = L.Control.extend({
-        //     options: {
-        //         position: 'topleft'
-        //     },
-
-        //     onAdd: function () {
-        //         this.dataPanel = document.getElementById('mapV2__data')
-                
-        //         let container = L.DomUtil.create('button', 'fr-btn fr-icon-arrow-right-s-line')
-
-        //         container.onclick = function () {
-        //             this.dataPanel.classList.toggle('open')
-        //         }
-
-        //         return container
-        //     }
-        // })
-
-        // this.map.addControl(new dataPanelToggleControl())
 
         // Set max bounds
         let southWest = L.latLng(41.650542, -6.855469),
@@ -156,14 +131,35 @@ export default class SparteMap {
         })
     }
 
-    setDataPanel() {
-        this.dataPanel = document.getElementById('mapV2__data')
-        if (this.isDataPanelOpen)
-            this.dataPanel.classList.add('open')
-        
-        document.getElementById('mapV2__data-toggle-button').addEventListener('click', async (_event) => {
-            this.dataPanel.classList.toggle('open')
-        })
+    setPanel() {
+        const tabs = document.querySelector('.tabs')
+        const tabButtons = tabs.querySelectorAll('[role="tab"]')
+        const tabPanels = tabs.querySelectorAll('[role="tabpanel"]')
+
+        tabButtons.forEach(button => button.addEventListener('click', (_event) => {
+            // find the associated tabPanel
+            const { id } = _event.currentTarget
+            const tabPanel = tabs.querySelector(`[aria-labelledby="${id}"]`)
+            const isAlreadyOpen = !tabPanel.hidden
+
+            // hide all tab panels
+            tabPanels.forEach(panel => {
+                panel.hidden = true
+            })
+
+            // mark all tabs as unselected
+            tabButtons.forEach(tab => {
+                tab.setAttribute('aria-selected', false)
+            })
+
+            if (!isAlreadyOpen) {
+                // mark the clicked tab as selected
+                _event.currentTarget.setAttribute('aria-selected', true)
+
+                // find the associated tabPanel and show it
+                tabPanel.hidden = false
+            }
+        }))
     }
     
     moveend() {

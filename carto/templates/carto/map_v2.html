@@ -22,11 +22,25 @@ html, body {
 
 {% block content %}
 <div id="mapV2__wrapper" class="d-flex h-100">
-    <div id="mapV2__container" class="flex-grow-1"></div>
-    <div id="mapV2__data">
-        <button id="mapV2__data-toggle-button">
-            <span class="fr-icon-arrow-right-s-line" aria-hidden="true"></span>
-        </button>
+    <div id="mapV2__container" class="flex-grow-1">
+        map
+    </div>
+
+    <div id="mapV2__panel" class="tabs">
+        <div class="tablist" role="tablist" aria-label="Paramètres de la carte">
+            <button role="tab" aria-selected="false" id="layers">
+                <i class="bi bi-layers"></i>
+            </button>
+            <button role="tab" aria-selected="false" id="data">
+                <i class="bi bi-bar-chart"></i>
+            </button>
+            <button role="tab" aria-selected="false" id="debug">
+                <i class="bi bi-bug"></i>
+            </button>
+        </div>
+        <div id="layers-panel" class="tab" role="tabpanel" aria-labelledby="layers" hidden></div>
+        <div id="data-panel" class="tab" role="tabpanel" aria-labelledby="data" hidden></div>
+        <div id="debug-panel" class="tab" role="tabpanel" aria-labelledby="debug" hidden></div>
     </div>
 </div>
 {% endblock content %}
