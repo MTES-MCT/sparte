@@ -1,0 +1,33 @@
+{% extends 'index.html' %}
+
+{% load static %}
+{% load project_tags %}
+{% load humanize %}
+{% load i18n %}
+{% load l10n %}
+{% load highcharts_tags %}
+{% load sri %}
+
+{% block pagetitle %}
+Stand alone view on fragment
+{% endblock %}
+
+{% block content %}
+
+    <h1>Stand alone view on fragment {{ fragment_template_name }}</h1>
+
+    {% include fragment_template_name %}
+
+{% endblock content %}
+
+
+{% block bodyend %}
+{% localize off %}
+
+{% sri_static "highcharts/js/highcharts.js" %}
+{% sri_static "highcharts/js/highcharts-more.js" %}
+{% sri_static "highcharts/js/exporting.js" %}
+{% french_translation %}
+
+{% endlocalize %}
+{% endblock %}

@@ -191,23 +191,28 @@ class OcsgeViewSet(ZoomSimplificationMixin, OptimizedMixins, DataViewSet):
         return value
 
     def get_sql_from(self):
-        return (
-            f"FROM {self.queryset.model._meta.db_table} o "
-            "INNER JOIN (SELECT ST_MakeEnvelope(%s, %s, %s, %s, 4326) as box) as b "
-            "ON ST_Intersects(o.mpoly, b.box) "
-        )
+        from_parts = [
+            f"FROM {self.queryset.model._meta.db_table} o",
+            "INNER JOIN (SELECT ST_MakeEnvelope(%s, %s, %s, %s, 4326) as box) as b ON ST_Intersects(o.mpoly, b.box)",
+        ]
+        return " ".join(from_parts)
 
     def get_sql_where(self):
-        return "where o.year = %s"
+        where_members = ["o.year = %s"]
+        if "is_artificial" in self.request.query_params:
+            where_members.append("o.is_artificial = %s")
+        return f'where {" and ".join(where_members)}'
 
     def get_params(self, request):
         bbox = request.query_params.get("in_bbox")
         year = request.query_params.get("year")
         if bbox is None or year is None:
             raise ValueError(f"bbox and year parameter must be set. bbox={bbox};year={year}")
-        bbox = list(map(float, bbox.split(",")))
-        year = int(year)
-        return bbox + [year]  # /!\ order matter, see sql query below
+        params = list(map(float, bbox.split(",")))
+        params.append(int(year))
+        if "is_artificial" in self.request.query_params:
+            params.append(bool(request.query_params.get("is_artificial")))
+        return params  # /!\ order matter, see sql query below
 
     def get_optimized_geo_field(self):
         zoom = self.get_zoom()
@@ -417,6 +422,7 @@ class ZoneUrbaViewSet(ZoomSimplificationMixin, OptimizedMixins, DataViewSet):
         params = list(map(float, bbox))
         if "project_id" in request.query_params:
             params.append(request.query_params.get("project_id"))
+
         return params
 
     def get_sql_from(self):
@@ -433,7 +439,12 @@ class ZoneUrbaViewSet(ZoomSimplificationMixin, OptimizedMixins, DataViewSet):
         return " ".join(sql_from)
 
     def get_sql_where(self):
-        return "where St_IsValid(mpoly) = true"
+        where_parts = ["St_IsValid(mpoly) = true"]
+        if "type_zone" in self.request.query_params:
+            zones = [_.strip() for _ in self.request.query_params.get("type_zone").split(",")]
+            zones = [f"'{_}'" for _ in zones if _ in ["U", "Ah", "Nd", "A", "AUc", "N", "Nh", "AUs"]]
+            where_parts.append(f"o.typezone in ({', '.join(zones)})")
+        return f"where {' and '.join(where_parts)}"
 
     def get_optimized_geo_field(self):
         zoom = self.get_zoom()
@@ -568,7 +579,7 @@ class CommuneViewSet(ZoomSimplificationMixin, OptimizedMixins, DataViewSet):
         return f"st_AsGeoJSON(ST_SimplifyPreserveTopology(o.mpoly, {y}), 6, 0)"
 
 
-@api_view(['GET'])
+@api_view(["GET"])
 def grid_views(request):
     """Grid view set."""
 
@@ -590,7 +601,8 @@ def grid_views(request):
                 {
                     "type": "Feature",
                     "geometry": json.loads(row[0]),
-                } for row in cursor.fetchall()
+                }
+                for row in cursor.fetchall()
             ],
         }
 
