@@ -217,7 +217,7 @@ class MapV2View(GroupMixin, DetailView):
         # UPGRADE: add center and zoom fields on project model
         # values would be infered when emprise is loaded
         center = self.object.get_centroid()
-        available_millesimes = self.object.get_available_millesimes()
+        available_millesimes = self.object.get_available_millesimes(commit=True)
         kwargs.update(
             {
                 # center map on France

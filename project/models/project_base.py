@@ -266,6 +266,14 @@ class Project(BaseProject):
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
 
+    available_millesimes = models.CharField(
+        "OCS GE disponibles",
+        max_length=255,
+        blank=True,
+        null=True,
+        help_text="Millésimes disponibles sur la période d'analyse du diagnostic.",
+    )
+
     first_year_ocsge = models.IntegerField(
         "Premier millésime OCSGE",
         validators=[MinValueValidator(2000)],
@@ -782,14 +790,21 @@ class Project(BaseProject):
         result = self.emprise_set.aggregate(center=Centroid(Union("mpoly")))
         return result["center"]
 
-    def get_available_millesimes(self):
-        return (
-            Ocsge.objects.intersect(self.combined_emprise)
-            .filter(year__gte=self.analyse_start_date, year__lte=self.analyse_end_date)
-            .order_by("year")
-            .distinct()
-            .values_list("year", flat=True)
-        )
+    def get_available_millesimes(self, commit=False):
+        if not self.available_millesimes:
+            self.available_millesimes = ",".join(
+                str(y)
+                for y in (
+                    Ocsge.objects.intersect(self.combined_emprise)
+                    .filter(year__gte=self.analyse_start_date, year__lte=self.analyse_end_date)
+                    .order_by("year")
+                    .distinct()
+                    .values_list("year", flat=True)
+                )
+            )
+            if commit:
+                self.save(update_fields=["available_millesimes"])
+        return [int(y) for y in self.available_millesimes.split(",")]
 
     def get_first_last_millesime(self):
         """return {"first": yyyy, "last": yyyy} which are the first and last
