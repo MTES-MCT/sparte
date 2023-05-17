@@ -32,7 +32,7 @@
 
 .tabs .tab {
     background: #ffffff;
-    width: 380px;
+    width: 420px;
     padding: 10px;
     font-size: 12px;
     position: absolute;
@@ -42,4 +42,14 @@
     z-index: 1000;
     transition: all .5s ease;
     overflow: auto;
+}
+
+#data-panel .fr-grid-row {
+    display: flex;
+    flex-direction: column;
+}
+
+#data-panel .fr-grid-row > div {
+    max-width: 100% !important;
+    width: 100%;
 }
