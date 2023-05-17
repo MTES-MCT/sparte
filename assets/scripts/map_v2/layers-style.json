@@ -94,5 +94,29 @@
         "weight": 0,
         "opacity": 1,
         "color": "#00ff00"
+    },
+    {
+        "key": "style_zone_urba_n",
+        "fillColor": "#68bd09",
+        "fillOpacity": 0.1,
+        "weight": 1,
+        "opacity": 1.5,
+        "color": "#68bd09"
+    },
+    {
+        "key": "style_zone_urba_u",
+        "fillColor": "#C70039",
+        "fillOpacity": 0.1,
+        "weight": 1,
+        "opacity": 1.5,
+        "color": "#C70039"
+    },
+    {
+        "key": "style_zone_urba_au",
+        "fillColor": "#1b5b9c",
+        "fillOpacity": 0.1,
+        "weight": 1,
+        "opacity": 1.5,
+        "color": "#1b5b9c"
     }
 ]

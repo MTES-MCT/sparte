@@ -1,9 +1,11 @@
 {% extends 'index.html' %}
 
 {% load static %}
+{% load project_tags %}
 {% load humanize %}
 {% load i18n %}
 {% load l10n %}
+{% load highcharts_tags %}
 {% load sri %}
 
 {% block pagetitle %}
@@ -11,6 +13,7 @@ Carte V2 - {{ map_name }}
 {% endblock pagetitle %}
 
 {% block headers %}
+<meta name="htmx-config" content='{"inlineScriptNonce":"{{ CSP_NONCE }}"}'>
 <style nonce="{{ CSP_NONCE }}">
 html, body {
     height: 100% !important;
@@ -49,6 +52,11 @@ html, body {
 
 {% block bodyend %}
 {% localize off %}
+{% sri_static "highcharts/js/highcharts.js" %}
+{% sri_static "highcharts/js/highcharts-more.js" %}
+{% sri_static "highcharts/js/exporting.js" %}
+{% french_translation %}
+
 <script language="javascript" nonce="{{ CSP_NONCE }}">
 layerList = [
 {% for layer in layer_list %}
@@ -86,6 +94,7 @@ new SparteMap ({
     layerList: layerList,
     couv_leafs: couv_leafs,
     usa_leafs: usa_leafs,
+    projectId: {{ project_id }}
 })
 </script>
 {% endlocalize %}
