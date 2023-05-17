@@ -17,6 +17,7 @@ from project.utils import add_total_line_column
 from public_data.models import CouvertureSol, UsageSol
 from public_data.models.gpu import ZoneUrba
 from public_data.models.ocsge import Ocsge, OcsgeDiff
+from utils.htmx import StandAloneMixin
 
 from .mixins import BreadCrumbMixin, GroupMixin, UserQuerysetOrPublicMixin
 
@@ -572,7 +573,7 @@ class ConsoRelativeHouseholdChart(UserQuerysetOrPublicMixin, DetailView):
         return super().get_context_data(**kwargs)
 
 
-class ArtifZoneUrbaView(DetailView):
+class ArtifZoneUrbaView(StandAloneMixin, DetailView):
     """Content of the pannel in Urba Area Explorator."""
 
     context_object_name = "zone_urba"
