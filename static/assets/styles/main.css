@@ -1060,30 +1060,49 @@ svg.leaflet-image-layer.leaflet-interactive path {
 		}
 	}
 
-#mapV2__debug {
-    position: absolute;
-    z-index: 9999;
-    bottom: 0;
-    left: 0;
-    background: white;
-    width: 500px;
-    padding: 15px;
-    font-size: 12px;
-    box-shadow: -1px 0px 13px -2px rgba(0,0,0,0.73);
-    opacity: 0.85;
-}
-
-#mapV2__datas {
-    background: white;
-    width: 400px;
-    padding: 10px;
-    font-size: 12px;
-    overflow-y: auto;
-    border-top: 1px solid #EAEAEA;
+#mapV2__wrapper {
+    position: relative;
 }
 
 .mapV2__controls input {
     margin-right: 5px;
+}
+
+.tabs .tablist {
+    width: 60px;
+    color: #ffffff;
+    background: #ffffff;
+}
+
+
+.tabs .tablist button {
+    list-style: none;
+    text-align: center;
+    padding: 16px 0;
+    font-size: 20px;
+    transition: all .3s ease;
+    color: #1D41FF;
+    cursor: pointer;
+    display: block;
+    width: 100%;
+}
+
+.tabs .tablist button:hover, .tabs .tablist button[aria-selected="true"] {
+    color: #ffffff;
+    background: #1D41FF;
+}
+
+.tabs .tab {
+    background: #ffffff;
+    width: 380px;
+    padding: 10px;
+    font-size: 12px;
+    position: absolute;
+    right: 60px;
+    top: 0;
+    height: 100%;
+    z-index: 1000;
+    transition: all .5s ease;
 }
 /*
 Fix link icon position
@@ -1099,6 +1118,19 @@ Fix nav extra margin
 */
 .fr-nav__list {
     margin: 0;
+}
+
+/*
+Header dropdown menu
+*/
+header.fr-header {
+    z-index: 1600;
+}
+
+#menu-mon-compte {
+    right: 0px;
+    margin: 0;
+    padding: 0;
 }
 
 /*

@@ -22,6 +22,19 @@ Fix nav extra margin
 }
 
 /*
+Header dropdown menu
+*/
+header.fr-header {
+    z-index: 1600;
+}
+
+#menu-mon-compte {
+    right: 0px;
+    margin: 0;
+    padding: 0;
+}
+
+/*
 Custom dropdown
 */
 .custom-dropdown {

@@ -22,16 +22,15 @@ export default class SparteMap {
         this.setConfig()
         this.setMap()
         this.setLayers()
+        this.setPanel()
 
         if (this.debug)
             this.setDebug()
     }
 
     setDebug() {
-        this.debugPanel = document.createElement('div')
-        this.debugPanel.id = 'mapV2__debug'
+        this.debugPanel = document.getElementById("debug-panel")
         this.debugPanel.innerHTML = '<strong>Mode Debug activé</strong>'
-        this.targetElement.appendChild(this.debugPanel)
 
         // Display size
         this.debugPanelSize = document.createElement('div')
@@ -93,7 +92,11 @@ export default class SparteMap {
             center: this.mapCenter,
             zoom: this.defaultZoom,
             minZoom: 6,
+            doubleClickZoom: false,
         })
+
+        // Position zoom control
+        // this.map.zoomControl.setPosition('bottomleft')
 
         // Set max bounds
         let southWest = L.latLng(41.650542, -6.855469),
@@ -107,13 +110,13 @@ export default class SparteMap {
             '&REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0&TILEMATRIXSET=PM' +
             '&LAYER={ignLayer}&STYLE={style}&FORMAT={format}' +
             '&TILECOL={x}&TILEROW={y}&TILEMATRIX={z}', {
-                attribution: '<a target="_blank" href="https://www.geoportail.gouv.fr/">Geoportail France</a>',
-                ignApiKey: 'ortho',
-                ignLayer: 'ORTHOIMAGERY.ORTHOPHOTOS',
-                style: 'normal',
-                format: 'image/jpeg',
-                service: 'WMTS'
-            }
+            attribution: '<a target="_blank" href="https://www.geoportail.gouv.fr/">Geoportail France</a>',
+            ignApiKey: 'ortho',
+            ignLayer: 'ORTHOIMAGERY.ORTHOPHOTOS',
+            style: 'normal',
+            format: 'image/jpeg',
+            service: 'WMTS'
+        }
         ).addTo(this.map)
 
         this.map.on('moveend', debounce(() => this.moveend(), 1000))
@@ -128,9 +131,43 @@ export default class SparteMap {
         })
     }
 
+    setPanel() {
+        const tabs = document.querySelector('.tabs')
+        const tabButtons = tabs.querySelectorAll('[role="tab"]')
+        const tabPanels = tabs.querySelectorAll('[role="tabpanel"]')
+
+        tabButtons.forEach(button => button.addEventListener('click', (_event) => {
+            // find the associated tabPanel
+            const { id } = _event.currentTarget
+            const tabPanel = tabs.querySelector(`[aria-labelledby="${id}"]`)
+            const isAlreadyOpen = !tabPanel.hidden
+
+            // hide all tab panels
+            tabPanels.forEach(panel => {
+                panel.hidden = true
+            })
+
+            // mark all tabs as unselected
+            tabButtons.forEach(tab => {
+                tab.setAttribute('aria-selected', false)
+            })
+
+            if (!isAlreadyOpen) {
+                // mark the clicked tab as selected
+                _event.currentTarget.setAttribute('aria-selected', true)
+
+                // find the associated tabPanel and show it
+                tabPanel.hidden = false
+            }
+        }))
+    }
+    
     moveend() {
-        if (this.layers && this.refreshLayersControl.checked)
+        if (this.layers)
             this.layers.map((_obj) => {
+                if (this.debug && !this.refreshLayersControl.checked)
+                    return
+                
                 _obj.update()
             })
     }
