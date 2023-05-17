@@ -40,7 +40,7 @@
 </div>
 
 
-<div class="fr-mt-7w" hx-get="{% url 'project:artif-net-chart' diagnostic.id %}?zone_urba_id={{ zone_urba.id|stringformat:"s" }}" hx-trigger="revealed">
+<div class="fr-mt-7w" hx-get="{% url 'project:artif-net-chart' diagnostic.id %}?zone_urba_id={{ zone_urba.id|stringformat:"s" }}" hx-trigger="load">
     <h3>Artificialisation net entre {{ diagnostic.first_year_ocsge|stringformat:"s" }} et {{ diagnostic.last_year_ocsge|stringformat:"s" }}</h3>
 
     <!-- TODO Sofian ajouter skeletton -->
@@ -54,13 +54,13 @@
 
     <h3>Grandes familles de couverture des sols des espaces artificialisés</h3>
 
-    <div hx-get="{% url 'project:artif-detail-couv-chart' diagnostic.id %}?zone_urba_id={{ zone_urba.id|stringformat:"s" }}" hx-trigger="revealed" hx-swap="outerHTML">
+    <div hx-get="{% url 'project:artif-detail-couv-chart' diagnostic.id %}?zone_urba_id={{ zone_urba.id|stringformat:"s" }}" hx-trigger="load 2s" hx-swap="outerHTML">
         <div class="fr-custom-loader"></div>
     </div>
 
     <h3>Grandes familles d'usages du sol des espaces artificialisés</h3>
 
-    <div hx-get="{% url 'project:artif-detail-usa-chart' diagnostic.id %}?zone_urba_id={{ zone_urba.id|stringformat:"s" }}" hx-trigger="revealed" hx-swap="outerHTML">
+    <div hx-get="{% url 'project:artif-detail-usa-chart' diagnostic.id %}?zone_urba_id={{ zone_urba.id|stringformat:"s" }}" hx-trigger="load 4s" hx-swap="outerHTML">
         <div class="fr-custom-loader"></div>
     </div>
 
