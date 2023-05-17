@@ -146,6 +146,7 @@ urlpatterns = [
     path("<int:pk>/export-excel", views.ExportExcelView.as_view(), name="export-excel"),
     # SUB APPS
     path("<int:pk>/trajectoires", include("trajectory.urls", namespace="trajectory")),
+    path("test", views.TestView.as_view(), name="test"),
 ]
 
 
