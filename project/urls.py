@@ -84,6 +84,21 @@ urlpatterns = [
         name="relative-household",
     ),
     path(
+        "<int:pk>/tableau-de-bord/artificialisation/évolution-nette",
+        views.ArtifNetChart.as_view(),
+        name="artif-net-chart",
+    ),
+    path(
+        "<int:pk>/tableau-de-bord/artificialisation/détail-couverture",
+        views.ArtifDetailCouvChart.as_view(),
+        name="artif-detail-couv-chart",
+    ),
+    path(
+        "<int:pk>/tableau-de-bord/artificialisation/détail-usage",
+        views.ArtifDetailUsaChart.as_view(),
+        name="artif-detail-usa-chart",
+    ),
+    path(
         "<int:pk>/set-target-2031",
         views.SetTargetView.as_view(),
         name="set_target_2031",
@@ -110,6 +125,11 @@ urlpatterns = [
         views.MapV2View.as_view(),
         name="map-v2",
     ),
+    path(
+        "<int:project_id>/carte/detail-zone-urbaine/<int:pk>",
+        views.ArtifZoneUrbaView.as_view(),
+        name="map-pane-artif-zone-urba",
+    ),
     # DOWNLOAD
     path(
         "<int:pk>/tableau-de-bord/telechargement",
@@ -126,6 +146,7 @@ urlpatterns = [
     path("<int:pk>/export-excel", views.ExportExcelView.as_view(), name="export-excel"),
     # SUB APPS
     path("<int:pk>/trajectoires", include("trajectory.urls", namespace="trajectory")),
+    path("test", views.TestView.as_view(), name="test"),
 ]
 
 

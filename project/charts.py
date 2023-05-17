@@ -1,6 +1,7 @@
 import collections
 from typing import Dict, List
 
+from django.contrib.gis.geos import MultiPolygon
 from django.db.models import F, Sum, Value
 from django.db.models.functions import Concat
 
@@ -354,7 +355,7 @@ class EvolutionArtifChart(ProjectChart):
     name = "Evolution de l'artificialisation"
     param = {
         "chart": {"type": "column"},
-        "title": {"text": "Par commune"},
+        "title": {"text": "Artificialisation sur la période"},
         "yAxis": {
             "title": {"text": "Surface (en ha)"},
             "stackLabels": {"enabled": True, "format": "{total:,.1f}"},
@@ -376,6 +377,22 @@ class EvolutionArtifChart(ProjectChart):
         "series": [],
     }
 
+    def __init__(self, project, get_data=None):
+        """get_data is the function to fetch data, can be overriden for ZoneUrba for example."""
+        if get_data:
+            self.get_data = get_data
+        super().__init__(project, group_name=None)
+
+    def get_data(self):
+        """Should return data formated like this:
+        [
+            {"period": "2013 - 2016", "new_artif": 12, "new_natural": 2: "net_artif": 10},
+            {"period": "2016 - 2019", "new_artif": 15, "new_natural": 7: "net_artif": 8},
+        ]
+        default (for retro compatibility purpose) return data from project.get_artif_evolution()
+        """
+        return self.project.get_artif_evolution()
+
     def get_series(self):
         if not self.series:
             self.series = {
@@ -383,7 +400,7 @@ class EvolutionArtifChart(ProjectChart):
                 "Renaturation": dict(),
                 "Artificialisation nette": dict(),
             }
-            for prd in self.project.get_artif_evolution():
+            for prd in self.get_data():
                 key = prd["period"]
                 self.series["Artificialisation"][key] = prd["new_artif"]
                 self.series["Renaturation"][key] = prd["new_natural"]
@@ -596,18 +613,34 @@ class DetailCouvArtifChart(ProjectChart):
         "series": [],
     }
 
-    def __init__(self, project: Project):
+    def __init__(self, project: Project, geom: MultiPolygon | None = None):
         self.first_millesime = project.first_year_ocsge
         self.last_millesime = project.last_year_ocsge
+        self.geom = geom
         super().__init__(project)
         self.chart["title"]["text"] = (
             f"Evolution des surfaces artificielles par type de couverture de {self.first_millesime} à "
             f"{self.last_millesime}"
         )
 
+    def get_data(self):
+        """Should return data formated like this:
+        [
+            {
+                "code_prefix": "CS1.1.1",
+                "label": "Zone Bâti (maison,...)",
+                "label_short": "Zone Bâti",
+                "map_color": "#FF0000",
+                "surface": 1000.0,
+            },
+            {...}
+        ]
+        """
+        return self.project.get_detail_artif(sol="couverture", geom=self.geom)
+
     def get_series(self) -> List[Dict]:
         if not self.series:
-            self.series = list(self.project.get_detail_artif(sol="couverture"))
+            self.series = list(self.get_data())
             if "CS1.1.2.2" not in [s["code_prefix"] for s in self.series]:
                 required_couv = CouvertureSol.objects.get(code="1.1.2.2")
                 self.series.append(
@@ -651,8 +684,8 @@ class DetailCouvArtifChart(ProjectChart):
 class DetailUsageArtifChart(DetailCouvArtifChart):
     name = "Progression des principaux postes de l'usage du sol"
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, project: Project, geom: MultiPolygon | None = None):
+        super().__init__(project, geom=geom)
         self.chart["title"]["text"] = (
             f"Evolution des surfaces artificielles par type d'usage de {self.first_millesime} à "
             f"{self.last_millesime}"
@@ -671,7 +704,7 @@ class DetailUsageArtifChart(DetailCouvArtifChart):
                 for u in UsageSol.objects.order_by("code_prefix")
                 if u.level == 1
             }
-            for row in self.project.get_detail_artif(sol="usage"):
+            for row in self.project.get_detail_artif(sol="usage", geom=self.geom):
                 code = row["code_prefix"].split(".")[0]
                 self.series[code]["artif"] += row["artif"]
                 self.series[code]["renat"] += row["renat"]
@@ -703,14 +736,31 @@ class ArtifCouvSolPieChart(ProjectChart):
         "series": [],
     }
 
-    def __init__(self, project: Project):
+    def __init__(self, project, get_data=None):
         self.millesime = project.last_year_ocsge
+        if get_data:
+            self.get_data = get_data
         super().__init__(project)
         self.chart["title"]["text"] = f"Surfaces artificialisées par type de couverture en {self.millesime}"
 
+    def get_data(self):
+        """Should return data formated like this:
+        [
+            {
+                "code_prefix": "CS1.1.1",
+                "label": "Zone Bâti (maison,...)",
+                "label_short": "Zone Bâti",
+                "map_color": "#FF0000",
+                "surface": 1000.0,
+            },
+            {...}
+        ]
+        """
+        return self.project.get_base_sol_artif(sol=self._sol)
+
     def get_series(self):
         if not self.series:
-            self.series = self.project.get_base_sol_artif(sol=self._sol)
+            self.series = self.get_data()
         return self.series
 
     def add_series(self):

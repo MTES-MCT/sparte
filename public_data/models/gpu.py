@@ -1,6 +1,7 @@
 """
 Les zones urbaines fournies par le Géoportail de l'urbanisme
 """
+from functools import cached_property
 from django.contrib.gis.db import models
 
 from utils.db import IntersectMixin
@@ -26,6 +27,10 @@ class ZoneUrba(models.Model):
     datappro = models.CharField("datappro", max_length=80, blank=True, null=True)
     datvalid = models.CharField("datvalid", max_length=80, blank=True, null=True)
 
+    mpoly = models.MultiPolygonField()
+
     objects = ZoneUrbaManager()
 
-    mpoly = models.MultiPolygonField()
+    @cached_property
+    def area(self):
+        return self.mpoly.transform(2154, clone=True).area / 100**2
