@@ -2,66 +2,43 @@
     position: relative;
 }
 
-#mapV2__debug {
-    position: absolute;
-    z-index: 9999;
-    bottom: 0;
-    left: 0;
-    background: white;
-    width: 500px;
-    padding: 15px;
-    font-size: 12px;
-    box-shadow: -1px 0px 13px -2px rgba(0,0,0,0.73);
-    opacity: 0.85;
-}
-
-#mapV2__data {
-    background: rgba(255, 255, 255, 0.92);
-    width: 400px;
-    padding: 10px;
-    font-size: 12px;
-    overflow: visible;
-    border-top: 1px solid #EAEAEA;
-    position: absolute;
-    right: 0;
-    top: 0;
-    height: 100%;
-    z-index: 1000;
-    transition: transform .5s ease;
-    transform: translateX(100%);
-    -webkit-transform: translateX(100%);
-}
-
-#mapV2__data.open {
-    transform: translateX(0%);
-    -webkit-transform: translateX(0%);
-}
-
 .mapV2__controls input {
     margin-right: 5px;
 }
 
-#mapV2__data-toggle-button {
-    padding: 8px;
+.tabs .tablist {
+    width: 60px;
+    color: #ffffff;
     background: #ffffff;
-    border-radius: 8px;
-    position: absolute;
-    left: -70px;
-    top: 20px;
+}
+
+
+.tabs .tablist button {
+    list-style: none;
+    text-align: center;
+    padding: 16px 0;
+    font-size: 20px;
+    transition: all .3s ease;
+    color: #1D41FF;
     cursor: pointer;
-    box-shadow: 0 6px 16px rgba(0,0,0,0.12);
-}
-
-#mapV2__data-toggle-button:hover {
-    background: #F7F7F7;
-}
-
-#mapV2__data #mapV2__data-toggle-button span {
     display: block;
-    transform: rotate(-180deg);
-    transition: transform .2s ease;
+    width: 100%;
 }
 
-#mapV2__data.open #mapV2__data-toggle-button span {
-    transform: rotate(0);
+.tabs .tablist button:hover, .tabs .tablist button[aria-selected="true"] {
+    color: #ffffff;
+    background: #1D41FF;
+}
+
+.tabs .tab {
+    background: #ffffff;
+    width: 380px;
+    padding: 10px;
+    font-size: 12px;
+    position: absolute;
+    right: 60px;
+    top: 0;
+    height: 100%;
+    z-index: 1000;
+    transition: all .5s ease;
 }
