@@ -1,7 +1,7 @@
 import * as L from 'leaflet'
 import { slugify } from './utils.js'
 import layerStyles from './layers-style.json'
-import { values } from 'htmx.org'
+import isEqual from 'lodash/isEqual'
 
 export default class Layer {
     constructor(_options = {}) {
@@ -20,6 +20,10 @@ export default class Layer {
         this.isVisible = Boolean(Number(_options.visible))
         this.couv_leafs = this.sparteMap.couv_leafs
         this.usa_leafs = this.sparteMap.usa_leafs
+
+        // Flags
+        this.lastDataBbox = null
+        this.lastDataUrlParams = {}
 
         this.setLayer()
     }
@@ -56,6 +60,8 @@ export default class Layer {
 
             // Flag last data bbox
             this.lastDataBbox = this.map.getBounds().toBBoxString()
+            // Flag last data url params
+            this.lastDataUrlParams = JSON.parse(JSON.stringify(this.urlParams))
 
             // create popup
             this.layer.eachLayer((layer) => {
@@ -173,7 +179,7 @@ export default class Layer {
     // Custom triggers
     async toggleVisibile (_value) {
         if (_value) {
-            if (!this.lastDataBbox || this.isOptimized && this.lastDataBbox !== this.map.getBounds().toBBoxString())
+            if (!this.lastDataBbox || this.isOptimized && this.lastDataBbox !== this.map.getBounds().toBBoxString() || this.isOptimized && !isEqual(this.urlParams, this.lastDataUrlParams))
                 await this.addData()
         }
 
@@ -206,6 +212,9 @@ export default class Layer {
 
     updateData (_value, _param) {
         this.urlParams[_param] = _value
+
+        if (!this.isVisible)
+            return
 
         this.addData()
     }
