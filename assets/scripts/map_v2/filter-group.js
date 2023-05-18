@@ -6,7 +6,7 @@ export default class FilterGroup {
         this.layers = this.sparteMap.layers
 
         this.group_name = _options.group_name
-        this.filters = _options.filters
+        this.filters = JSON.parse(_options.filters.replace(/\'/g, '"'))
 
         this.setFilterGroup()
     }

@@ -6,9 +6,8 @@ export default class Filter {
         this.triggers = _options.triggers
         this.type = _options.type
         this.options = _options.options
-        this.value = _options.value
+        this.value = [0, 1].includes(_options.value) ? Boolean(Number(_options.value)) : _options.value
         this.groupNode = groupNode
-
         this.setFilter()
     }
 
@@ -44,7 +43,7 @@ export default class Filter {
         button.addEventListener('click', (_event) => {
             button.querySelector('i').classList.toggle('bi-eye')
             button.querySelector('i').classList.toggle('bi-eye-slash')
-
+            
             this.value = !this.value
 
             // Triggers layer methods

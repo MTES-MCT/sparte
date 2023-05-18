@@ -445,6 +445,145 @@ class MapV2View(GroupMixin, DetailView):
                     #     "zoom_available": [12, 13, 14, 15, 16, 17, 18],
                     # },
                 ],
+                "filter_list": [
+                    {
+                        "group_name": "",
+                        "filters": [
+                            {
+                                "name": "Emprise du territoire",
+                                "type": "visible",
+                                "value": 1,
+                                "triggers": [
+                                    {
+                                        "method": "toggleVisibile",
+                                        "layer": "emprise-du-territoire"
+                                    }
+                                ]
+                            },
+                        ]
+                    },
+                    {
+                        "group_name": "",
+                        "filters": [
+                            {
+                                "name": "OCS GE",
+                                "type": "visible",
+                                "value": 1,
+                                "triggers": [
+                                    {
+                                        "method": "toggleVisibile",
+                                        "layer": "ocs-ge"
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "Nomemclature",
+                                "type": "select",
+                                "value": "style_ocsge_couv",
+                                "options": [
+                                    {
+                                        "name": "Couverture",
+                                        "value": "style_ocsge_couv",
+                                    },
+                                    {
+                                        "name": "Usage",
+                                        "value": "style_ocsge_usage",
+                                    }
+                                ],
+                                "triggers": [
+                                    {
+                                        "method": "toggleOCSGEStyle",
+                                        "layer": "ocs-ge"
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "Millésime",
+                                "type": "select",
+                                "value": 2019,
+                                "options": [
+                                    {
+                                        "name": 2016,
+                                        "value": 2016,
+                                    },
+                                    {
+                                        "name": 2019,
+                                        "value": 2019,
+                                    }
+                                ],
+                                "triggers": [
+                                    {
+                                        "method": "updateData",
+                                        "param": "year",
+                                        "layer": "ocs-ge"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "group_name": "",
+                        "filters": [
+                            {
+                                "name": "Zonages des documents d urbanisme",
+                                "type": "visible",
+                                "value": 1,
+                                "triggers": [
+                                    {
+                                        "method": "toggleVisibile",
+                                        "layer": "zones-urbaines"
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "",
+                                "type": "tag",
+                                "value": ["AUc", "AUs", "U", "Ah", "Nd", "A", "N", "Nh"],
+                                "options": [
+                                    {
+                                        "name": "U",
+                                        "value": "U",
+                                    },
+                                    {
+                                        "name": "Ah",
+                                        "value": "Ah",
+                                    },
+                                    {
+                                        "name": "Nd",
+                                        "value": "Nd",
+                                    },
+                                    {
+                                        "name": "A",
+                                        "value": "A",
+                                    },
+                                    {
+                                        "name": "AUc",
+                                        "value": "AUc",
+                                    },
+                                    {
+                                        "name": "N",
+                                        "value": "N",
+                                    },
+                                    {
+                                        "name": "Nh",
+                                        "value": "Nh",
+                                    },
+                                    {
+                                        "name": "AUs",
+                                        "value": "AUs",
+                                    }
+                                ],
+                                "triggers": [
+                                    {
+                                        "method": "updateData",
+                                        "param": "type_zone",
+                                        "layer": "zones-urbaines"
+                                    }
+                                ]
+                            }
+                        ],
+                    }
+                ]
             }
         )
         return super().get_context_data(**kwargs)
