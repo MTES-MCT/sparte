@@ -54,8 +54,8 @@ export default class Layer {
             // Add new data to layer
             this.layer.addData(this.data)
 
-            // Flag last data zoom
-            this.lastDataZoom = this.map.getZoom()
+            // Flag last data bbox
+            this.lastDataBbox = this.map.getBounds().toBBoxString()
 
             // create popup
             this.layer.eachLayer((layer) => {
@@ -173,7 +173,7 @@ export default class Layer {
     // Custom triggers
     async toggleVisibile (_value) {
         if (_value) {
-            if (!this.lastDataZoom || this.isOptimized && this.lastDataZoom !== this.map.getZoom())
+            if (!this.lastDataBbox || this.isOptimized && this.lastDataBbox !== this.map.getBounds().toBBoxString())
                 await this.addData()
         }
 
