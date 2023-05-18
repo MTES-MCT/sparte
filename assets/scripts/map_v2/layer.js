@@ -1,6 +1,7 @@
 import * as L from 'leaflet'
 import { slugify } from './utils.js'
 import layerStyles from './layers-style.json'
+import { values } from 'htmx.org'
 
 export default class Layer {
     constructor(_options = {}) {
@@ -27,17 +28,11 @@ export default class Layer {
         if (!this.layer) {
             // Create empty layer
             this.layer = this.createLayer().addTo(this.map)
-
-            // Create layer control
-            this.createLayerControl()
         }
-
-        // Set visibility
-        this.layerControl.disabled = !this.isZoomAvailable()
 
         if (this.isZoomAvailable() && this.isVisible) {
             await this.addData()
-            this.layerControl.checked = true
+            // this.layerControl.checked = true
             this.pane.style.display = 'block'
         }
     }
@@ -175,44 +170,48 @@ export default class Layer {
         return this.zoomAvailable.includes(zoom)
     }
 
-    createLayerControl() {
-        let container = document.createElement('div')
-        container.className = 'mapV2__controls'
+    // Custom triggers
+    async toggleVisibile (_value) {
+        if (_value) {
+            if (!this.lastDataZoom || this.isOptimized && this.lastDataZoom !== this.map.getZoom())
+                await this.addData()
+        }
 
-        let input = document.createElement('input')
-        input.type = 'checkbox'
-        input.name = this.slug 
-        input.value = this.slug 
-        input.id = this.slug 
-        input.disabled = true
-        input.checked = false
+        this.isVisible = _value
 
-        let label = document.createElement('label')
-        label.htmlFor = this.slug 
-        label.appendChild(document.createTextNode(this.name))
+        this.pane.style.display = _value ? 'block' : 'none'
+    }
 
-        this.layerControl = input
-        // Add change event on layer control
-        this.layerControl.addEventListener('change', async (_event) => {
-            if (_event.target.checked) {
-                if (!this.lastDataZoom || this.isOptimized && this.lastDataZoom !== this.map.getZoom())
-                    await this.addData()
+    toggleOCSGEStyle(_value) {
+        // Get default style
+        let style = this.getStyle(_value)
+
+        // Override default style
+        this.layer.eachLayer((_layer) => {  
+            if (_value === 'style_ocsge_couv') {
+                const leaf = this.couv_leafs.find(el => el.code_couverture == _layer.feature.properties.code_couverture.replaceAll('.', '_'))
+                if (leaf)
+                    style.fillColor = style.color = leaf.map_color
             }
-
-            this.isVisible = _event.target.checked
-
-            this.pane.style.display = _event.target.checked ? 'block' : 'none'
+    
+            if (_value === 'style_ocsge_usage') {
+                const leaf = this.usa_leafs.find(el => el.code_usage == _layer.feature.properties.code_usage.replaceAll('.', '_'))
+                if (leaf)
+                    style.fillColor = style.color = leaf.map_color
+            }
+  
+            _layer.setStyle(style) 
         })
+    }
 
-        container.appendChild(input)
-        container.appendChild(label)
+    updateData (_value, _param) {
+        this.urlParams[_param] = _value
 
-        // Add checkbox control to panel
-        document.getElementById('layers-panel').appendChild(container)
+        this.addData()
     }
 
     async update() {
-        this.layerControl.disabled = !this.isZoomAvailable()
+        // this.layerControl.disabled = !this.isZoomAvailable()
 
         if (!this.isOptimized)
             return
@@ -223,7 +222,7 @@ export default class Layer {
 
             this.pane.style.display = 'block'
 
-            this.layerControl.checked = true 
+            // this.layerControl.checked = true 
         }
         else {
             this.pane.style.display = 'none'         

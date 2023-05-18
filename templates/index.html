@@ -33,21 +33,23 @@
             {% include "header.html" %}
 
             {% block breadcrumbs %}
-            <div class="fr-container">
-              <nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
-                  <button class="fr-breadcrumb__button" aria-expanded="false" aria-controls="breadcrumb-1">Voir le fil d’Ariane</button>
-                  <div class="fr-collapse" id="breadcrumb-1">
-                      <ol class="fr-breadcrumb__list">
-                        {% for bread in breadcrumbs %}
-                            {% if bread.is_active %}
-                            <li class="fr-breadcrumb__link" aria-current="page">{{ bread.title}}</li>
-                            {% else %}
-                            <li class="fr-breadcrumb__link"><a href="{{ bread.href }}">{{ bread.title}}</a></li>
-                            {% endif %}
-                        {% endfor %}
-                      </ol>
-                  </div>
-              </nav>
+            <div class="custom-breadcrumb">
+                <div class="fr-container">
+                <nav role="navigation" class="fr-breadcrumb" aria-label="vous êtes ici :">
+                    <button class="fr-breadcrumb__button" aria-expanded="false" aria-controls="breadcrumb-1">Voir le fil d’Ariane</button>
+                    <div class="fr-collapse" id="breadcrumb-1">
+                        <ol class="fr-breadcrumb__list">
+                            {% for bread in breadcrumbs %}
+                                {% if bread.is_active %}
+                                <li class="fr-breadcrumb__link" aria-current="page">{{ bread.title}}</li>
+                                {% else %}
+                                <li class="fr-breadcrumb__link"><a href="{{ bread.href }}">{{ bread.title}}</a></li>
+                                {% endif %}
+                            {% endfor %}
+                        </ol>
+                    </div>
+                </nav>
+                </div>
             </div>
             {% endblock breadcrumbs %}
 

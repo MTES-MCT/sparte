@@ -1,5 +1,6 @@
 import * as L from 'leaflet'
 import Layer from './layer.js'
+import FilterGroup from './filter-group.js'
 import { debounce } from './utils.js'
 
 export default class SparteMap {
@@ -14,6 +15,145 @@ export default class SparteMap {
         this.couv_leafs = _options.couv_leafs
         this.usa_leafs = _options.usa_leafs
         this.projectId = _options.projectId
+        this.filterList = [
+            {
+                "group_name": "",
+                "filters": [
+                    {
+                        "name": "Emprise du territoire",
+                        "type": "visible",
+                        "value": true,
+                        "triggers": [
+                            {
+                                "method": "toggleVisibile",
+                                "layer": "emprise-du-territoire"
+                            }
+                        ]
+                    },
+                ]
+            },
+            {
+                "group_name": "",
+                "filters": [
+                    {
+                        "name": "OCS GE",
+                        "type": "visible",
+                        "value": true,
+                        "triggers": [
+                            {
+                                "method": "toggleVisibile",
+                                "layer": "ocs-ge"
+                            }
+                        ]
+                    },
+                    {
+                        "name": "Nomemclature",
+                        "type": "select",
+                        "value": "style_ocsge_couv",
+                        "options": [
+                            {
+                                "name": "Couverture",
+                                "value": "style_ocsge_couv",
+                            },
+                            {
+                                "name": "Usage",
+                                "value": "style_ocsge_usage",
+                            }
+                        ],
+                        "triggers": [
+                            {
+                                "method": "toggleOCSGEStyle",
+                                "layer": "ocs-ge"
+                            }
+                        ]
+                    },
+                    {
+                        "name": "Millésime",
+                        "type": "select",
+                        "value": 2019,
+                        "options": [
+                            {
+                                "name": 2016,
+                                "value": 2016,
+                            },
+                            {
+                                "name": 2019,
+                                "value": 2019,
+                            }
+                        ],
+                        "triggers": [
+                            {
+                                "method": "updateData",
+                                "param": "year",
+                                "layer": "ocs-ge"
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "group_name": "",
+                "filters": [
+                    {
+                        "name": "Zonages des documents d'urbanisme",
+                        "type": "visible",
+                        "value": true,
+                        "triggers": [
+                            {
+                                "method": "toggleVisibile",
+                                "layer": "zones-urbaines"
+                            }
+                        ]
+                    },
+                    {
+                        "name": "",
+                        "type": "tag",
+                        "value": ["AUc", "AUs", "U", "Ah", "Nd", "A", "N", "Nh"],
+                        "options": [
+                            {
+                                "name": "U",
+                                "value": "U",
+                            },
+                            {
+                                "name": "Ah",
+                                "value": "Ah",
+                            },
+                            {
+                                "name": "Nd",
+                                "value": "Nd",
+                            },
+                            {
+                                "name": "A",
+                                "value": "A",
+                            },
+                            {
+                                "name": "AUc",
+                                "value": "AUc",
+                            },
+                            {
+                                "name": "N",
+                                "value": "N",
+                            },
+                            {
+                                "name": "Nh",
+                                "value": "Nh",
+                            },
+                            {
+                                "name": "AUs",
+                                "value": "AUs",
+                            }
+                        ],
+                        "triggers": [
+                            {
+                                "method": "updateData",
+                                "param": "type_zone",
+                                "layer": "zones-urbaines"
+                            }
+                        ]
+                    }
+                ],
+            }
+        ]
 
         if (!this.targetElement) {
             console.warn('Missing \'targetElement\' property')
@@ -24,13 +164,14 @@ export default class SparteMap {
         this.setMap()
         this.setLayers()
         this.setPanel()
+        this.setFilters()
 
         if (this.debug)
             this.setDebug()
     }
 
     setDebug() {
-        this.debugPanel = document.getElementById("debug-panel")
+        this.debugPanel = document.getElementById("debug-tab")
         this.debugPanel.innerHTML = '<strong>Mode Debug activé</strong>'
 
         // Display size
@@ -123,15 +264,6 @@ export default class SparteMap {
         this.map.on('moveend', debounce(() => this.moveend(), 1000))
     }
 
-    setLayers() {
-        this.layers = []
-
-        this.layerList.map((_obj) => {
-            const layer = new Layer(_obj)
-            this.layers.push(layer)
-        })
-    }
-
     setPanel() {
         const tabs = document.querySelector('.tabs')
         const tabButtons = tabs.querySelectorAll('[role="tab"]')
@@ -162,7 +294,22 @@ export default class SparteMap {
             }
         }))
     }
-    
+
+    setLayers() {
+        this.layers = []
+
+        this.layerList.map((_obj) => {
+            const layer = new Layer(_obj)
+            this.layers.push(layer)
+        })
+    }
+
+    setFilters() {
+        this.filterList.map((_obj) => {
+            new FilterGroup(_obj)
+        })
+    }
+
     moveend() {
         if (this.layers)
             this.layers.map((_obj) => {
