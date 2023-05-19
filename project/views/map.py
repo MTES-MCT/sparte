@@ -247,9 +247,10 @@ class MapV2View(GroupMixin, DetailView):
                         "url": reverse_lazy("public_data:ocsge-optimized"),
                         "url_params": {
                             "year": 2019,
+                            "is_artificial": 1,
                         },
                         "style": "style_ocsge_couv",
-                        "z_index": "6",
+                        "z_index": "4",
                         "visible": 1,
                         "is_optimized": 1,
                         "zoom_available": [15, 16, 17, 18],
