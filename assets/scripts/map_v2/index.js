@@ -127,6 +127,7 @@ export default class SparteMap {
         this.map.on('moveend', debounce(() => this.moveend(), 1000))
     }
 
+    // Todo create panel JS Class
     setPanel() {
         const tabs = document.querySelector('.tabs')
         const tabButtons = tabs.querySelectorAll('[role="tab"]')

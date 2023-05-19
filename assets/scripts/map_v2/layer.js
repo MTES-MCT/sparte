@@ -87,13 +87,34 @@ export default class Layer {
 
                 // Load data in data-panel
                 layer.on('click', () => {
-                    if (["zones-urbaines-u", "zones-urbaines-ah-nd-a-n-nh", "zones-urbaines-auc-aus"].includes(layer.options.pane)) {
+                    if (["zones-urbaines", "zones-urbaines-u", "zones-urbaines-ah-nd-a-n-nh", "zones-urbaines-auc-aus"].includes(layer.options.pane)) {
                         const url = `/project/${this.projectId}/carte/detail-zone-urbaine/${layer.feature.properties.id}`
 
-                        const htmxContent = `<div hx-get="${url}" hx-trigger="load"></div>`
+                        const htmxContent = `<div hx-get="${url}" hx-trigger="load" class="tab-item"></div>`
 
-                        document.getElementById('data-panel').innerHTML = htmxContent
-                        htmx.process(document.getElementById('data-panel'))
+                        // TODO: create and use panel Class
+                        const tabs = document.querySelector('.tabs')
+                        const tabButtons = tabs.querySelectorAll('[role="tab"]')
+                        const tabPanels = tabs.querySelectorAll('[role="tabpanel"]')
+                        const button = document.getElementById('data')
+                        const tabPanel = document.getElementById('data-tab')
+
+                        // hide all tab panels
+                        tabPanels.forEach(panel => {
+                            panel.hidden = true
+                        })
+
+                        // mark all tabs as unselected
+                        tabButtons.forEach(tab => {
+                            tab.setAttribute('aria-selected', false)
+                        })
+
+                        // Show data tab
+                        button.setAttribute('aria-selected', true)
+                        tabPanel.hidden = false
+
+                        tabPanel.innerHTML = htmxContent
+                        htmx.process(tabPanel)
                     }
                 })
             })
