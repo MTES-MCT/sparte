@@ -217,7 +217,7 @@ export default class Layer {
         this.style = _value
 
         // Get default style
-        style = this.getStyle(_value)
+        let style = this.getStyle(_value)
 
         // Override default style
         this.layer.eachLayer((_layer) => {  
