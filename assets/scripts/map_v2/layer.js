@@ -1,6 +1,7 @@
 import * as L from 'leaflet'
 import { slugify } from './utils.js'
 import layerStyles from './layers-style.json'
+import isEqual from 'lodash/isEqual'
 
 export default class Layer {
     constructor(_options = {}) {
@@ -20,6 +21,12 @@ export default class Layer {
         this.couv_leafs = this.sparteMap.couv_leafs
         this.usa_leafs = this.sparteMap.usa_leafs
 
+        // Flags
+        this.lastDataBbox = null
+        this.lastDataUrlParams = {}
+
+        this.legendNode = document.getElementById('mapV2__legend')
+
         this.setLayer()
     }
 
@@ -27,17 +34,11 @@ export default class Layer {
         if (!this.layer) {
             // Create empty layer
             this.layer = this.createLayer().addTo(this.map)
-
-            // Create layer control
-            this.createLayerControl()
         }
-
-        // Set visibility
-        this.layerControl.disabled = !this.isZoomAvailable()
 
         if (this.isZoomAvailable() && this.isVisible) {
             await this.addData()
-            this.layerControl.checked = true
+            // this.layerControl.checked = true
             this.pane.style.display = 'block'
         }
     }
@@ -59,37 +60,61 @@ export default class Layer {
             // Add new data to layer
             this.layer.addData(this.data)
 
-            // Flag last data zoom
-            this.lastDataZoom = this.map.getZoom()
+            // Flag last data bbox
+            this.lastDataBbox = this.map.getBounds().toBBoxString()
+            // Flag last data url params
+            this.lastDataUrlParams = JSON.parse(JSON.stringify(this.urlParams))
 
             // create popup
             this.layer.eachLayer((layer) => {
-                let data = ''
+                let data = '<div class="d-flex align-items-center">'
                 if (layer.feature.properties)
-                    Object.entries(layer.feature.properties).map(([key, value]) => data += `<strong>${key}</strong>: ${value}<br>`)
-                
-                // Show popup on mouse over 
+                    Object.entries(layer.feature.properties).map(([key, value]) => data += `<div class="fr-mr-2w"><strong>${key}</strong>: ${value}</div>`)
+                data += '</div>'
+
+                // Display data in legend on mouse over 
                 if (data) {
-                    layer.bindPopup(data)
-                    
-                    layer.on('mouseover', function () {
-                        this.openPopup()
+                    layer.on('mouseover', () => {
+                        this.legendNode.innerHTML = data
+                        this.legendNode.style.opacity = 1
                     })
                     
-                    layer.on('mouseout', function () {
-                        this.closePopup()
+                    layer.on('mouseout', () => {
+                        this.legendNode.innerHTML = null
+                        this.legendNode.style.opacity = 0
                     })
                 }
 
                 // Load data in data-panel
                 layer.on('click', () => {
-                    if (["zones-urbaines-u", "zones-urbaines-ah-nd-a-n-nh", "zones-urbaines-auc-aus"].includes(layer.options.pane)) {
+                    if (["zones-urbaines", "zones-urbaines-u", "zones-urbaines-ah-nd-a-n-nh", "zones-urbaines-auc-aus"].includes(layer.options.pane)) {
                         const url = `/project/${this.projectId}/carte/detail-zone-urbaine/${layer.feature.properties.id}`
 
-                        const htmxContent = `<div hx-get="${url}" hx-trigger="load"></div>`
+                        const htmxContent = `<div hx-get="${url}" hx-trigger="load" class="tab-item"></div>`
 
-                        document.getElementById('data-panel').innerHTML = htmxContent
-                        htmx.process(document.getElementById('data-panel'))
+                        // TODO: create and use panel Class
+                        const tabs = document.querySelector('.tabs')
+                        const tabButtons = tabs.querySelectorAll('[role="tab"]')
+                        const tabPanels = tabs.querySelectorAll('[role="tabpanel"]')
+                        const button = document.getElementById('data')
+                        const tabPanel = document.getElementById('data-tab')
+
+                        // hide all tab panels
+                        tabPanels.forEach(panel => {
+                            panel.hidden = true
+                        })
+
+                        // mark all tabs as unselected
+                        tabButtons.forEach(tab => {
+                            tab.setAttribute('aria-selected', false)
+                        })
+
+                        // Show data tab
+                        button.setAttribute('aria-selected', true)
+                        tabPanel.hidden = false
+
+                        tabPanel.innerHTML = htmxContent
+                        htmx.process(tabPanel)
                     }
                 })
             })
@@ -175,44 +200,54 @@ export default class Layer {
         return this.zoomAvailable.includes(zoom)
     }
 
-    createLayerControl() {
-        let container = document.createElement('div')
-        container.className = 'mapV2__controls'
+    // Custom triggers
+    async toggleVisibile (_value) {
+        if (_value) {
+            if (!this.lastDataBbox || this.isOptimized && this.lastDataBbox !== this.map.getBounds().toBBoxString() || this.isOptimized && !isEqual(this.urlParams, this.lastDataUrlParams))
+                await this.addData()
+        }
 
-        let input = document.createElement('input')
-        input.type = 'checkbox'
-        input.name = this.slug 
-        input.value = this.slug 
-        input.id = this.slug 
-        input.disabled = true
-        input.checked = false
+        this.isVisible = _value
 
-        let label = document.createElement('label')
-        label.htmlFor = this.slug 
-        label.appendChild(document.createTextNode(this.name))
+        this.pane.style.display = _value ? 'block' : 'none'
+    }
 
-        this.layerControl = input
-        // Add change event on layer control
-        this.layerControl.addEventListener('change', async (_event) => {
-            if (_event.target.checked) {
-                if (!this.lastDataZoom || this.isOptimized && this.lastDataZoom !== this.map.getZoom())
-                    await this.addData()
+    toggleOCSGEStyle(_value) {
+        // Update layer default style
+        this.style = _value
+
+        // Get default style
+        style = this.getStyle(_value)
+
+        // Override default style
+        this.layer.eachLayer((_layer) => {  
+            if (_value === 'style_ocsge_couv') {
+                const leaf = this.couv_leafs.find(el => el.code_couverture == _layer.feature.properties.code_couverture.replaceAll('.', '_'))
+                if (leaf)
+                    style.fillColor = style.color = leaf.map_color
             }
-
-            this.isVisible = _event.target.checked
-
-            this.pane.style.display = _event.target.checked ? 'block' : 'none'
+    
+            if (_value === 'style_ocsge_usage') {
+                const leaf = this.usa_leafs.find(el => el.code_usage == _layer.feature.properties.code_usage.replaceAll('.', '_'))
+                if (leaf)
+                    style.fillColor = style.color = leaf.map_color
+            }
+  
+            _layer.setStyle(style) 
         })
+    }
 
-        container.appendChild(input)
-        container.appendChild(label)
+    updateData (_value, _param) {
+        this.urlParams[_param] = _value
 
-        // Add checkbox control to panel
-        document.getElementById('layers-panel').appendChild(container)
+        if (!this.isVisible)
+            return
+
+        this.addData()
     }
 
     async update() {
-        this.layerControl.disabled = !this.isZoomAvailable()
+        // this.layerControl.disabled = !this.isZoomAvailable()
 
         if (!this.isOptimized)
             return
@@ -223,7 +258,7 @@ export default class Layer {
 
             this.pane.style.display = 'block'
 
-            this.layerControl.checked = true 
+            // this.layerControl.checked = true 
         }
         else {
             this.pane.style.display = 'none'         

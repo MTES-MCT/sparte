@@ -1,5 +1,6 @@
 import * as L from 'leaflet'
 import Layer from './layer.js'
+import FilterGroup from './filter-group.js'
 import { debounce } from './utils.js'
 
 export default class SparteMap {
@@ -14,6 +15,7 @@ export default class SparteMap {
         this.couv_leafs = _options.couv_leafs
         this.usa_leafs = _options.usa_leafs
         this.projectId = _options.projectId
+        this.filterList = _options.filterList
 
         if (!this.targetElement) {
             console.warn('Missing \'targetElement\' property')
@@ -25,12 +27,18 @@ export default class SparteMap {
         this.setLayers()
         this.setPanel()
 
+        // Delay display filter
+        // TODO: display filter when layer is ready
+        setTimeout(() => {
+            this.setFilters()
+        }, 3000);
+
         if (this.debug)
             this.setDebug()
     }
 
     setDebug() {
-        this.debugPanel = document.getElementById("debug-panel")
+        this.debugPanel = document.getElementById("debug-tab")
         this.debugPanel.innerHTML = '<strong>Mode Debug activé</strong>'
 
         // Display size
@@ -94,6 +102,7 @@ export default class SparteMap {
             zoom: this.defaultZoom,
             minZoom: 6,
             doubleClickZoom: false,
+            attributionControl: false
         })
 
         // Position zoom control
@@ -123,15 +132,7 @@ export default class SparteMap {
         this.map.on('moveend', debounce(() => this.moveend(), 1000))
     }
 
-    setLayers() {
-        this.layers = []
-
-        this.layerList.map((_obj) => {
-            const layer = new Layer(_obj)
-            this.layers.push(layer)
-        })
-    }
-
+    // Todo create panel JS Class
     setPanel() {
         const tabs = document.querySelector('.tabs')
         const tabButtons = tabs.querySelectorAll('[role="tab"]')
@@ -162,7 +163,22 @@ export default class SparteMap {
             }
         }))
     }
-    
+
+    setLayers() {
+        this.layers = []
+
+        this.layerList.map((_obj) => {
+            const layer = new Layer(_obj)
+            this.layers.push(layer)
+        })
+    }
+
+    setFilters() {
+        this.filterList.map((_obj) => {
+            new FilterGroup(_obj)
+        })
+    }
+
     moveend() {
         if (this.layers)
             this.layers.map((_obj) => {
