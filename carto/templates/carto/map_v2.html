@@ -31,7 +31,7 @@ html, body {
 
     <div id="mapV2__panel" class="tabs">
         <div class="tablist" role="tablist" aria-label="Paramètres de la carte">
-            <button role="tab" aria-selected="true" id="layer">
+            <button role="tab" aria-selected="false" id="layer">
                 <i class="bi bi-layers"></i>
             </button>
             <button role="tab" aria-selected="false" id="data">
@@ -42,7 +42,7 @@ html, body {
             </button>
         </div>
 
-        <div id="layer-tab" class="tab" role="tabpanel" aria-labelledby="layer">
+        <div id="layer-tab" class="tab" role="tabpanel" aria-labelledby="layer" hidden>
             <div class="tab-title tab-item">Options des calques</div>
         </div>
         <div id="data-tab" class="tab" role="tabpanel" aria-labelledby="data" hidden></div>
