@@ -25,6 +25,8 @@ export default class Layer {
         this.lastDataBbox = null
         this.lastDataUrlParams = {}
 
+        this.legendNode = document.getElementById('mapV2__legend')
+
         this.setLayer()
     }
 
@@ -65,20 +67,21 @@ export default class Layer {
 
             // create popup
             this.layer.eachLayer((layer) => {
-                let data = ''
+                let data = '<div class="d-flex align-items-center">'
                 if (layer.feature.properties)
-                    Object.entries(layer.feature.properties).map(([key, value]) => data += `<strong>${key}</strong>: ${value}<br>`)
-                
-                // Show popup on mouse over 
+                    Object.entries(layer.feature.properties).map(([key, value]) => data += `<div class="fr-mr-2w"><strong>${key}</strong>: ${value}</div>`)
+                data += '</div>'
+
+                // Display data in legend on mouse over 
                 if (data) {
-                    layer.bindPopup(data)
-                    
-                    layer.on('mouseover', function () {
-                        this.openPopup()
+                    layer.on('mouseover', () => {
+                        this.legendNode.innerHTML = data
+                        this.legendNode.style.opacity = 1
                     })
                     
-                    layer.on('mouseout', function () {
-                        this.closePopup()
+                    layer.on('mouseout', () => {
+                        this.legendNode.innerHTML = null
+                        this.legendNode.style.opacity = 0
                     })
                 }
 

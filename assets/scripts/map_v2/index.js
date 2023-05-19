@@ -97,6 +97,7 @@ export default class SparteMap {
             zoom: this.defaultZoom,
             minZoom: 6,
             doubleClickZoom: false,
+            attributionControl: false
         })
 
         // Position zoom control
