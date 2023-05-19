@@ -223,6 +223,7 @@ class MapV2View(GroupMixin, DetailView):
             {
                 # center map on France
                 "carto_name": "Project",
+                "map_name": "Explorateur zones d'urbanismes",
                 "project_id": self.object.pk,
                 "center_lat": center.y,
                 "center_lng": center.x,
