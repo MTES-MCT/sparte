@@ -189,8 +189,11 @@ export default class Layer {
     }
 
     toggleOCSGEStyle(_value) {
+        // Update layer default style
+        this.style = _value
+
         // Get default style
-        let style = this.getStyle(_value)
+        style = this.getStyle(_value)
 
         // Override default style
         this.layer.eachLayer((_layer) => {  
