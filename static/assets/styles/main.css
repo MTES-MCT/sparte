@@ -1078,6 +1078,18 @@ svg.leaflet-image-layer.leaflet-interactive path {
     width: 100%;
 }
 
+#mapV2__legend {
+    background: #ffffff;
+    position: absolute;
+    bottom: 0;
+    height: 40px;
+    width: 100%;
+    z-index: 1000;
+    padding: 10px;
+    opacity: 0;
+    transition: opacity .3s ease;
+}
+
 /*
 Tabs
 */
@@ -1111,7 +1123,7 @@ Tabs
     position: absolute;
     right: 60px;
     top: 0;
-    height: 100%;
+    bottom: 40px;
     z-index: 1000;
     transition: all .5s ease;
     overflow: auto;
