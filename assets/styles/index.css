@@ -411,6 +411,10 @@ Breadcrumb min
     margin: 0.8rem 0;
 }
 
+.breadcrumb-min .custom-breadcrumb {
+    border-bottom: 1px solid #eaeaea;
+}
+
 /*
 Leaflet
 */

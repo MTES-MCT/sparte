@@ -2,7 +2,7 @@
     {
         "key": "style_emprise",
         "fill": false,
-        "weight": 1,
+        "weight": 1.8,
         "opacity": 1,
         "color": "#FFFF00",
         "fillOpacity": 0
@@ -113,10 +113,10 @@
     },
     {
         "key": "style_zone_urba_au",
-        "fillColor": "#1b5b9c",
-        "fillOpacity": 0.1,
-        "weight": 1,
-        "opacity": 1.5,
-        "color": "#1b5b9c"
+        "fillColor": "#1d41ff",
+        "fillOpacity": 0.2,
+        "weight": 1.5,
+        "opacity": 1,
+        "color": "#1d41ff"
     }
 ]

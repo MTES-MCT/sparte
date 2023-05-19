@@ -26,12 +26,12 @@ html, body {
 {% block content %}
 <div id="mapV2__wrapper" class="d-flex h-100">
     <div id="mapV2__container" class="flex-grow-1">
-        map
+        <div id="mapV2__legend"></div>
     </div>
 
     <div id="mapV2__panel" class="tabs">
         <div class="tablist" role="tablist" aria-label="Paramètres de la carte">
-            <button role="tab" aria-selected="false" id="layers">
+            <button role="tab" aria-selected="false" id="layer">
                 <i class="bi bi-layers"></i>
             </button>
             <button role="tab" aria-selected="false" id="data">
@@ -41,9 +41,12 @@ html, body {
                 <i class="bi bi-bug"></i>
             </button>
         </div>
-        <div id="layers-panel" class="tab" role="tabpanel" aria-labelledby="layers" hidden></div>
-        <div id="data-panel" class="tab" role="tabpanel" aria-labelledby="data" hidden></div>
-        <div id="debug-panel" class="tab" role="tabpanel" aria-labelledby="debug" hidden></div>
+
+        <div id="layer-tab" class="tab" role="tabpanel" aria-labelledby="layer" hidden>
+            <div class="tab-title tab-item">Options des calques</div>
+        </div>
+        <div id="data-tab" class="tab" role="tabpanel" aria-labelledby="data" hidden></div>
+        <div id="debug-tab" class="tab" role="tabpanel" aria-labelledby="debug" hidden></div>
     </div>
 </div>
 {% endblock content %}
@@ -62,6 +65,16 @@ layerList = [
 {% for layer in layer_list %}
     {
         {% for k, v in layer.items %}
+        {{ k }}: "{{ v|safe }}",
+        {% endfor %}
+    },
+{% endfor %}
+]
+
+filterList = [
+{% for filter in filter_list %}
+    {
+        {% for k, v in filter.items %}
         {{ k }}: "{{ v|safe }}",
         {% endfor %}
     },
@@ -92,6 +105,7 @@ new SparteMap ({
     mapCenter: [{{ center_lat }}, {{ center_lng }}],
     defaultZoom: {{ default_zoom }},
     layerList: layerList,
+    filterList: filterList,
     couv_leafs: couv_leafs,
     usa_leafs: usa_leafs,
     projectId: {{ project_id }}
