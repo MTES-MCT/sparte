@@ -26,7 +26,12 @@ export default class SparteMap {
         this.setMap()
         this.setLayers()
         this.setPanel()
-        this.setFilters()
+
+        // Delay display filter
+        // TODO: display filter when layer is ready
+        setTimeout(() => {
+            this.setFilters()
+        }, 3000);
 
         if (this.debug)
             this.setDebug()
