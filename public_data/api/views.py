@@ -413,6 +413,7 @@ class ZoneUrbaViewSet(ZoomSimplificationMixin, OptimizedMixins, DataViewSet):
         "o.urlfic": "urlfic",
         "o.datappro": "datappro",
         "o.datvalid": "datvalid",
+        "ST_AsEWKT((ST_MaximumInscribedCircle(o.mpoly)).center)": "label_center",
     }
 
     min_zoom = 10
