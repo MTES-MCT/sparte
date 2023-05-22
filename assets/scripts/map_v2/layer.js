@@ -81,6 +81,31 @@ export default class Layer {
                     Object.entries(layer.feature.properties).map(([key, value]) => data += `<div class="fr-mr-2w"><strong>${key}</strong>: ${value}</div>`)
                 data += '</div>'
 
+                // Add label
+                let label
+                if (this.showLabel) {
+                    // Extract label position
+                    let coords = layer.feature.properties.label_center.match(/\(.*?\)/g).map(x => x.replace(/[()]/g, "")).pop().split(' ');  
+                    coords = {
+                        lat: coords[1],
+                        lng: coords[0]
+                    }
+
+                    label = L.marker(coords, {
+                        icon: L.divIcon({
+                            className: 'map-label',
+                            html: layer.feature.properties.typezone,
+                            iconSize: [0, 0],
+                        })
+                    })
+            
+                    // Add label to label group
+                    this.labels.addLayer(label)
+            
+                    // Store label into layer
+                    layer.label = label
+                }
+
                 // Mouse events 
                 layer.on('mouseover', () => {
                     // Display data in legend
@@ -90,7 +115,10 @@ export default class Layer {
                     }
 
                     // Highlight style
-                    layer.setStyle(this.getStyle('style_highlight')) 
+                    layer.setStyle(this.getStyle('style_highlight'))
+
+                    if (this.showLabel)
+                        label._icon.style.color = '#ff7f00'
                 })
                 
                 layer.on('mouseout', () => {
@@ -124,7 +152,10 @@ export default class Layer {
                             style.fillColor = style.color = leaf.map_color
                     }
 
-                    layer.setStyle(style) 
+                    layer.setStyle(style)
+
+                    if (this.showLabel)
+                        label._icon.style.color = '#000000'
                 })
 
                 // Load data in data-panel
@@ -159,20 +190,6 @@ export default class Layer {
                         htmx.process(tabPanel)
                     }
                 })
-
-                // Add label
-                if (this.showLabel) {
-                    let label = L.marker(layer.getBounds().getCenter(), {
-                        icon: L.divIcon({
-                            className: 'map-label',
-                            html: layer.feature.properties.libelle,
-                            iconSize: [0, 0]
-                        })
-                    })
-
-                    // Add label to label group
-                    this.labels.addLayer(label)
-                }
             })
         } catch(error) {
             console.log(error)
