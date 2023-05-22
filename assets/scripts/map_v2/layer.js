@@ -81,18 +81,51 @@ export default class Layer {
                     Object.entries(layer.feature.properties).map(([key, value]) => data += `<div class="fr-mr-2w"><strong>${key}</strong>: ${value}</div>`)
                 data += '</div>'
 
-                // Display data in legend on mouse over 
-                if (data) {
-                    layer.on('mouseover', () => {
+                // Mouse events 
+                layer.on('mouseover', () => {
+                    // Display data in legend
+                    if (data) {
                         this.legendNode.innerHTML = data
                         this.legendNode.style.opacity = 1
-                    })
-                    
-                    layer.on('mouseout', () => {
+                    }
+
+                    // Highlight style
+                    layer.setStyle(this.getStyle('style_highlight')) 
+                })
+                
+                layer.on('mouseout', () => {
+                    // Display data in legend
+                    if (data) {
                         this.legendNode.innerHTML = null
                         this.legendNode.style.opacity = 0
-                    })
-                }
+                    }
+
+                    // Default style
+                    let style = this.getStyle(this.style)
+
+                    // Override style
+                    if (this.style === 'style_ocsge_diff' && layer.feature.properties.is_new_artif) {
+                        style = this.getStyle('style_ocsge_diff__is_new_artif')
+                    }
+                    
+                    if (this.style === 'style_ocsge_diff' && layer.feature.properties.is_new_natural) {
+                        style = this.getStyle('style_ocsge_diff__is_new_natural')
+                    }
+
+                    if (this.style === 'style_ocsge_couv') {
+                        const leaf = this.couv_leafs.find(el => el.code_couverture == layer.feature.properties.code_couverture.replaceAll('.', '_'))
+                        if (leaf)
+                            style.fillColor = style.color = leaf.map_color
+                    }
+
+                    if (this.style === 'style_ocsge_usage') {
+                        const leaf = this.usa_leafs.find(el => el.code_usage == layer.feature.properties.code_usage.replaceAll('.', '_'))
+                        if (leaf)
+                            style.fillColor = style.color = leaf.map_color
+                    }
+
+                    layer.setStyle(style) 
+                })
 
                 // Load data in data-panel
                 layer.on('click', () => {
