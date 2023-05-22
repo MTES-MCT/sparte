@@ -1,5 +1,13 @@
 [
     {
+        "key": "style_highlight",
+        "fillColor": "#ff921e",
+        "weight": 1.5,
+        "opacity": 1,
+        "color": "#ff921e",
+        "fillOpacity": 0.25
+    },
+    {
         "key": "style_emprise",
         "fill": false,
         "weight": 1.8,
@@ -58,7 +66,7 @@
     {
         "key": "style_ocsge_couv",
         "fillColor": "#ffffff",
-        "fillOpacity": 0.7,
+        "fillOpacity": 0.6,
         "weight": 0,
         "opacity": 1,
         "color": "#ffffff"
@@ -66,7 +74,7 @@
     {
         "key": "style_ocsge_usage",
         "fillColor": "#ffffff",
-        "fillOpacity": 0.7,
+        "fillOpacity": 0.6,
         "weight": 0,
         "opacity": 1,
         "color": "#ffffff"
