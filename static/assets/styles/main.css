@@ -1090,6 +1090,12 @@ svg.leaflet-image-layer.leaflet-interactive path {
     transition: opacity .3s ease;
 }
 
+.map-label {
+    color: #000000;
+    font-weight: bold;
+    z-index: 99999999;
+}
+
 /*
 Tabs
 */

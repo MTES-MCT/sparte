@@ -267,6 +267,7 @@ class MapV2View(GroupMixin, DetailView):
                         "visible": 1,
                         "is_optimized": 1,
                         "zoom_available": [12, 13, 14, 15, 16, 17, 18],
+                        "show_label": 1,
                     },
                     # {
                     #     "name": "Limites administratives (Communes)",
@@ -527,7 +528,7 @@ class MapV2View(GroupMixin, DetailView):
                         "group_name": "",
                         "filters": [
                             {
-                                "name": "Zonages des documents d urbanisme",
+                                "name": "Zonages des documents d&rsquo;urbanisme",
                                 "type": "visible",
                                 "value": 1,
                                 "triggers": [
