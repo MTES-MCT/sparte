@@ -20,10 +20,15 @@ export default class Layer {
         this.isVisible = Boolean(Number(_options.visible))
         this.couv_leafs = this.sparteMap.couv_leafs
         this.usa_leafs = this.sparteMap.usa_leafs
+        this.showLabel = _options.show_label
 
         // Flags
         this.lastDataBbox = null
         this.lastDataUrlParams = {}
+
+        // Set label group
+        if(this.showLabel)
+            this.labels = L.layerGroup().addTo(this.map)
 
         this.legendNode = document.getElementById('mapV2__legend')
 
@@ -64,6 +69,10 @@ export default class Layer {
             this.lastDataBbox = this.map.getBounds().toBBoxString()
             // Flag last data url params
             this.lastDataUrlParams = JSON.parse(JSON.stringify(this.urlParams))
+
+            // Clear label group
+            if(this.showLabel)
+                this.labels.clearLayers()
 
             // create popup
             this.layer.eachLayer((layer) => {
@@ -117,6 +126,20 @@ export default class Layer {
                         htmx.process(tabPanel)
                     }
                 })
+
+                // Add label
+                if (this.showLabel) {
+                    let label = L.marker(layer.getBounds().getCenter(), {
+                        icon: L.divIcon({
+                            className: 'map-label',
+                            html: layer.feature.properties.libelle,
+                            iconSize: [0, 0]
+                        })
+                    })
+
+                    // Add label to label group
+                    this.labels.addLayer(label)
+                }
             })
         } catch(error) {
             console.log(error)
@@ -127,7 +150,7 @@ export default class Layer {
         // Create pane
         this.pane = this.map.createPane(this.slug)
         // Set pane z-index
-        this.pane.style.zIndex = 600 + parseInt(this.zIndex)
+        this.pane.style.zIndex = 550 + parseInt(this.zIndex)
         // Hide by default
         this.pane.style.display = 'none'
         
