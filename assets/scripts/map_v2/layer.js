@@ -96,14 +96,12 @@ export default class Layer {
                             className: 'map-label',
                             html: layer.feature.properties.typezone,
                             iconSize: [0, 0],
-                        })
+                        }),
+                        interactive: false
                     })
             
                     // Add label to label group
                     this.labels.addLayer(label)
-            
-                    // Store label into layer
-                    layer.label = label
                 }
 
                 // Mouse events 
@@ -113,6 +111,8 @@ export default class Layer {
                         this.legendNode.innerHTML = data
                         this.legendNode.style.opacity = 1
                     }
+
+                    layer.bringToFront()
 
                     // Highlight style
                     layer.setStyle(this.getStyle('style_highlight'))
