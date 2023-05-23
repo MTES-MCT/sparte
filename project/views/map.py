@@ -267,7 +267,9 @@ class MapV2View(GroupMixin, DetailView):
                         "visible": 1,
                         "is_optimized": 1,
                         "zoom_available": [12, 13, 14, 15, 16, 17, 18],
-                        "show_label": 1,
+                        "label": {
+                            "key": "typezone"
+                        }
                     },
                     # {
                     #     "name": "Limites administratives (Communes)",

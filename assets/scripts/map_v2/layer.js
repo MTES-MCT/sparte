@@ -18,15 +18,15 @@ export default class Layer {
         this.zIndex = _options.z_index
         this.isOptimized = Boolean(Number(_options.is_optimized))
         this.isVisible = Boolean(Number(_options.visible))
-        this.showLabel = _options.show_label
+        this.label = _options.label ? JSON.parse(_options.label.replace(/\'/g, '"')) : null
 
         // Flags
         this.lastDataBbox = null
         this.lastDataUrlParams = {}
 
         // Set label group
-        if(this.showLabel)
-            this.labels = L.layerGroup().addTo(this.map)
+        if(this.label)
+            this.labelGroup = L.layerGroup().addTo(this.map)
 
         this.legendNode = document.getElementById('mapV2__legend')
         
@@ -44,10 +44,6 @@ export default class Layer {
             // this.layerControl.checked = true
             this.pane.style.display = 'block'
         }
-    }
-
-    getStyle(key) {
-        return layerStyles.find(el => el.key === key)
     }
 
     async addData() {
@@ -69,8 +65,8 @@ export default class Layer {
             this.lastDataUrlParams = JSON.parse(JSON.stringify(this.urlParams))
 
             // Clear label group
-            if(this.showLabel)
-                this.labels.clearLayers()
+            if(this.label)
+                this.labelGroup.clearLayers()
 
             // create popup
             this.layer.eachLayer((layer) => {
@@ -88,9 +84,9 @@ export default class Layer {
 
                 // Add label
                 let label
-                if (this.showLabel) {
+                if (this.label) {
                     // Extract label position
-                    let coords = layer.feature.properties.label_center.match(/\(.*?\)/g).map(x => x.replace(/[()]/g, "")).pop().split(' ');  
+                    let coords = layer.feature.properties?.label_center?.match(/\(.*?\)/g).map(x => x.replace(/[()]/g, "")).pop().split(' ') || layer.getBounds().getCenter();  
                     coords = {
                         lat: coords[1],
                         lng: coords[0]
@@ -99,14 +95,14 @@ export default class Layer {
                     label = L.marker(coords, {
                         icon: L.divIcon({
                             className: 'map-label',
-                            html: layer.feature.properties.typezone,
+                            html: layer.feature.properties[this.label.key],
                             iconSize: [0, 0],
                         }),
                         interactive: false
                     })
             
                     // Add label to label group
-                    this.labels.addLayer(label)
+                    this.labelGroup.addLayer(label)
                 }
 
                 // Mouse events 
@@ -122,7 +118,7 @@ export default class Layer {
                     // Highlight style
                     layer.setStyle(layer.styleInstance.highlight)
 
-                    if (this.showLabel)
+                    if (this.label)
                         label._icon.style.color = '#ffffff'
                 })
                 
@@ -135,7 +131,7 @@ export default class Layer {
 
                     layer.setStyle(layer.styleInstance.style)
 
-                    if (this.showLabel)
+                    if (this.label)
                         label._icon.style.color = '#000000'
                 })
 
