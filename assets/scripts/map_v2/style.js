@@ -34,7 +34,7 @@ export default class Style {
 
             if (this.styleKey === 'style_ocsge_usage')
                 leaf = this.usa_leafs.find(el => el.code_usage == this.feature.properties.code_usage.replaceAll('.', '_'))
-
+            
             this.style = { ...this.style, ...{ fillColor: leaf?.map_color, color: leaf?.map_color } }
         }
         else if (this.styleKey === 'style_ocsge_diff') {

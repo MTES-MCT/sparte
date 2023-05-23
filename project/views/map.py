@@ -486,7 +486,7 @@ class MapV2View(GroupMixin, DetailView):
                                 "options": [
                                     {
                                         "name": "Couverture",
-                                        "value": "style_ocsge_couv",
+                                        "value": "style_ocsge_couverture",
                                     },
                                     {
                                         "name": "Usage",
@@ -495,7 +495,7 @@ class MapV2View(GroupMixin, DetailView):
                                 ],
                                 "triggers": [
                                     {
-                                        "method": "toggleOCSGEStyle",
+                                        "method": "updateStyleKey",
                                         "layer": "ocs-ge"
                                     }
                                 ]
