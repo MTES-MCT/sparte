@@ -28,7 +28,8 @@ export default class Layer {
         if(this.label) {
             this.labelGroup = L.layerGroup().addTo(this.map)
             // Create pane
-            this.labelPane = this.map.createPane(`${this.slug}-label-pane`)
+            this.labelPane = this.map.createPane(`${this.slug}-label`)
+            this.labelPane.style.zIndex = 550 + parseInt(this.zIndex) + 1
         }
 
         this.legendNode = document.getElementById('mapV2__legend')
