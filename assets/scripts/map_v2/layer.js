@@ -74,12 +74,12 @@ export default class Layer {
 
             // create popup
             this.layer.eachLayer((layer) => {
-                let styleInstance = new Style({
+                layer.styleInstance = new Style({
                     styleKey: this.styleKey,
                     feature: layer.feature
                 })
 
-                layer.setStyle(styleInstance.style)
+                layer.setStyle(layer.styleInstance.style)
 
                 let data = '<div class="d-flex align-items-center">'
                 if (layer.feature.properties)
@@ -120,7 +120,7 @@ export default class Layer {
                     layer.bringToFront()
 
                     // Highlight style
-                    layer.setStyle(styleInstance.highlight)
+                    layer.setStyle(layer.styleInstance.highlight)
 
                     if (this.showLabel)
                         label._icon.style.color = '#ffffff'
@@ -133,7 +133,7 @@ export default class Layer {
                         this.legendNode.style.opacity = 0
                     }
 
-                    layer.setStyle(styleInstance.style)
+                    layer.setStyle(layer.styleInstance.style)
 
                     if (this.showLabel)
                         label._icon.style.color = '#000000'
@@ -239,29 +239,15 @@ export default class Layer {
         this.pane.style.display = _value ? 'block' : 'none'
     }
 
-    toggleOCSGEStyle(_value) {
-        // Update layer default style
-        this.style = _value
+    updateStyleKey(_value) {
+        // Update layer style key
+        this.styleKey = _value
 
-        // Get default style
-        let style = this.getStyle(_value)
-
-        // Override default style
-        this.layer.eachLayer((_layer) => {  
-            if (_value === 'style_ocsge_couv') {
-                const leaf = this.couv_leafs.find(el => el.code_couverture == _layer.feature.properties.code_couverture.replaceAll('.', '_'))
-                if (leaf)
-                    style.fillColor = style.color = leaf.map_color
-            }
-    
-            if (_value === 'style_ocsge_usage') {
-                const leaf = this.usa_leafs.find(el => el.code_usage == _layer.feature.properties.code_usage.replaceAll('.', '_'))
-                if (leaf)
-                    style.fillColor = style.color = leaf.map_color
-            }
-  
-            _layer.setStyle(style) 
-        })
+        // Update layer style
+        this.layer.eachLayer((_layer) => { 
+            _layer.styleInstance.updateKey(this.styleKey)
+            _layer.setStyle(_layer.styleInstance.style)
+        }) 
     }
 
     updateData (_value, _param) {
