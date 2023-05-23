@@ -237,7 +237,7 @@ class MapV2View(GroupMixin, DetailView):
                         "url_params": {
                             "id": self.object.pk,
                         },
-                        "style": "style_emprise",
+                        "style_key": "style_emprise",
                         "z_index": "10",
                         "visible": 1,
                         "is_optimized": 0,
@@ -250,7 +250,7 @@ class MapV2View(GroupMixin, DetailView):
                             "year": 2019,
                             "is_artificial": 1,
                         },
-                        "style": "style_ocsge_couv",
+                        "style_key": "style_ocsge_couverture",
                         "z_index": "4",
                         "visible": 1,
                         "is_optimized": 1,
@@ -262,7 +262,7 @@ class MapV2View(GroupMixin, DetailView):
                         "url_params": {
                             "type_zone": "AUc, AUs, Ah, Nd, A, N, Nh, U",
                         },
-                        "style": "style_zone_urba_au",
+                        "style_key": "style_zone_urbaines",
                         "z_index": "5",
                         "visible": 1,
                         "is_optimized": 1,
