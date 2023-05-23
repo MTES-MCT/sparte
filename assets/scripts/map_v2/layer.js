@@ -69,24 +69,24 @@ export default class Layer {
                 this.labelGroup.clearLayers()
 
             // create popup
-            this.layer.eachLayer((layer) => {
-                layer.styleInstance = new Style({
+            this.layer.eachLayer((_layer) => {
+                _layer.styleInstance = new Style({
                     styleKey: this.styleKey,
-                    feature: layer.feature
+                    feature: _layer.feature
                 })
 
-                layer.setStyle(layer.styleInstance.style)
+                _layer.setStyle(_layer.styleInstance.style)
 
                 let data = '<div class="d-flex align-items-center">'
-                if (layer.feature.properties)
-                    Object.entries(layer.feature.properties).map(([key, value]) => data += `<div class="fr-mr-2w"><strong>${key}</strong>: ${value}</div>`)
+                if (_layer.feature.properties)
+                    Object.entries(_layer.feature.properties).map(([key, value]) => data += `<div class="fr-mr-2w"><strong>${key}</strong>: ${value}</div>`)
                 data += '</div>'
 
                 // Add label
                 let label
                 if (this.label) {
                     // Extract label position
-                    let coords = layer.feature.properties?.label_center?.match(/\(.*?\)/g).map(x => x.replace(/[()]/g, "")).pop().split(' ') || layer.getBounds().getCenter();  
+                    let coords = _layer.feature.properties?.label_center?.match(/\(.*?\)/g).map(x => x.replace(/[()]/g, "")).pop().split(' ') || _layer.getBounds().getCenter();  
                     coords = {
                         lat: coords[1],
                         lng: coords[0]
@@ -95,7 +95,7 @@ export default class Layer {
                     label = L.marker(coords, {
                         icon: L.divIcon({
                             className: 'map-label',
-                            html: layer.feature.properties[this.label.key],
+                            html: _layer.feature.properties[this.label.key],
                             iconSize: [0, 0],
                         }),
                         interactive: false
@@ -103,42 +103,45 @@ export default class Layer {
             
                     // Add label to label group
                     this.labelGroup.addLayer(label)
+
+                    // Set label color
+                    label._icon.style.color = _layer.styleInstance.style.color
                 }
 
                 // Mouse events 
-                layer.on('mouseover', () => {
+                _layer.on('mouseover', () => {
                     // Display data in legend
                     if (data) {
                         this.legendNode.innerHTML = data
                         this.legendNode.style.opacity = 1
                     }
 
-                    layer.bringToFront()
+                    _layer.bringToFront()
 
                     // Highlight style
-                    layer.setStyle(layer.styleInstance.highlight)
+                    _layer.setStyle(_layer.styleInstance.highlight)
 
                     if (this.label)
                         label._icon.style.color = '#ffffff'
                 })
                 
-                layer.on('mouseout', () => {
+                _layer.on('mouseout', () => {
                     // Display data in legend
                     if (data) {
                         this.legendNode.innerHTML = null
                         this.legendNode.style.opacity = 0
                     }
 
-                    layer.setStyle(layer.styleInstance.style)
+                    _layer.setStyle(_layer.styleInstance.style)
 
                     if (this.label)
-                        label._icon.style.color = '#000000'
+                        label._icon.style.color = _layer.styleInstance.style.color
                 })
 
                 // Load data in data-panel
-                layer.on('click', () => {
-                    if (["zones-urbaines", "zones-urbaines-u", "zones-urbaines-ah-nd-a-n-nh", "zones-urbaines-auc-aus"].includes(layer.options.pane)) {
-                        const url = `/project/${this.projectId}/carte/detail-zone-urbaine/${layer.feature.properties.id}`
+                _layer.on('click', () => {
+                    if (["zones-urbaines", "zones-urbaines-u", "zones-urbaines-ah-nd-a-n-nh", "zones-urbaines-auc-aus"].includes(_layer.options.pane)) {
+                        const url = `/project/${this.projectId}/carte/detail-zone-urbaine/${_layer.feature.properties.id}`
 
                         const htmxContent = `<div hx-get="${url}" hx-trigger="load" class="tab-item"></div>`
 
