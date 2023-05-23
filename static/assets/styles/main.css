@@ -1093,6 +1093,11 @@ svg.leaflet-image-layer.leaflet-interactive path {
 .map-label {
     color: #000000;
     font-weight: bold;
+    transition: color .3s ease;
+}
+
+.leaflet-pane > svg path {
+    transition: opacity .3s ease, color .3s ease, fill-color .3s ease, fill-opacity .3s ease, stroke .3s ease, stroke-opacity .3s ease, stroke-width .3s ease;
 }
 
 /*
