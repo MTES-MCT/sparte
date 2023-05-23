@@ -1,11 +1,8 @@
 [
     {
         "key": "style_highlight",
-        "fillColor": "#ff921e",
-        "weight": 1.5,
         "opacity": 1,
-        "color": "#ff921e",
-        "fillOpacity": 0.25
+        "fillOpacity": 0.7
     },
     {
         "key": "style_emprise",
@@ -16,7 +13,7 @@
         "fillOpacity": 0
     },
     {
-        "key": "style_communes",
+        "key": "style_limites_administratives",
         "fillColor": "#4ddab0",
         "fillOpacity": 0.1,
         "weight": 1,
@@ -24,47 +21,7 @@
         "color": "#4ddab0"
     },
     {
-        "key": "style_departements",
-        "fillColor": "#4ddab0",
-        "fillOpacity": 0.1,
-        "weight": 1,
-        "opacity": 1,
-        "color": "#4ddab0"
-    },
-    {
-        "key": "style_regions",
-        "fillColor": "#e2d6c2",
-        "fillOpacity": 0.1,
-        "weight": 1,
-        "opacity": 1,
-        "color": "#e2d6c2"
-    },
-    {
-        "key": "style_scot",
-        "fillColor": "#4ddab0",
-        "fillOpacity": 0.1,
-        "weight": 1,
-        "opacity": 1,
-        "color": "#4ddab0"
-    },
-    {
-        "key": "style_epci",
-        "fillColor": "#e2d6c2",
-        "fillOpacity": 0.1,
-        "weight": 1,
-        "opacity": 1,
-        "color": "#e2d6c2"
-    },
-    {
-        "key": "style_zone_artificielle",
-        "fillColor": "#f88e55",
-        "fillOpacity": 0.5,
-        "weight": 0.5,
-        "opacity": 1,
-        "color": "#f88e55"
-    },
-    {
-        "key": "style_ocsge_couv",
+        "key": "style_ocsge_couverture",
         "fillColor": "#ffffff",
         "fillOpacity": 0.6,
         "weight": 0,
@@ -88,43 +45,34 @@
         "color": "#ffffff"
     },
     {
-        "key": "style_ocsge_diff__is_new_artif",
+        "key": "style_ocsge_diff__new_artif",
         "fillColor": "#ff0000",
-        "fillOpacity": 0.7,
-        "weight": 0,
-        "opacity": 1,
         "color": "#ff0000"
     },
     {
-        "key": "style_ocsge_diff__is_new_natural",
+        "key": "style_ocsge_diff__new_natural",
         "fillColor": "#00ff00",
-        "fillOpacity": 0.7,
-        "weight": 0,
-        "opacity": 1,
         "color": "#00ff00"
     },
     {
-        "key": "style_zone_urba_n",
-        "fillColor": "#68bd09",
+        "key": "style_zone_urbaines",
         "fillOpacity": 0.1,
         "weight": 1,
-        "opacity": 1.5,
+        "opacity": 1.5
+    },
+    {
+        "key": "style_zone_urbaines__n",
+        "fillColor": "#68bd09",
         "color": "#68bd09"
     },
     {
-        "key": "style_zone_urba_u",
+        "key": "style_zone_urbaines__u",
         "fillColor": "#C70039",
-        "fillOpacity": 0.1,
-        "weight": 1,
-        "opacity": 1.5,
         "color": "#C70039"
     },
     {
-        "key": "style_zone_urba_au",
+        "key": "style_zone_urbaines__au",
         "fillColor": "#1d41ff",
-        "fillOpacity": 0.2,
-        "weight": 1.5,
-        "opacity": 1,
         "color": "#1d41ff"
     }
 ]

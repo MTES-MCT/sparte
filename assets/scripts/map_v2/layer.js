@@ -1,7 +1,7 @@
 import * as L from 'leaflet'
 import { slugify } from './utils.js'
-import layerStyles from './layers-style.json'
 import isEqual from 'lodash/isEqual'
+import Style from './style.js'
 
 export default class Layer {
     constructor(_options = {}) {
@@ -10,7 +10,7 @@ export default class Layer {
         this.projectId = this.sparteMap.projectId
         this.name = _options.name
         this.slug = slugify(_options.name)
-        this.style = _options.style
+        this.styleKey = _options.style_key
         this.zoomAvailable = JSON.parse(_options.zoom_available.replace(/\'/g, '"'))
         this.url = _options.url
         this.urlParams = _options.url_params ? JSON.parse(_options.url_params.replace(/\'/g, '"')) : {}
@@ -18,8 +18,6 @@ export default class Layer {
         this.zIndex = _options.z_index
         this.isOptimized = Boolean(Number(_options.is_optimized))
         this.isVisible = Boolean(Number(_options.visible))
-        this.couv_leafs = this.sparteMap.couv_leafs
-        this.usa_leafs = this.sparteMap.usa_leafs
         this.showLabel = _options.show_label
 
         // Flags
@@ -31,7 +29,7 @@ export default class Layer {
             this.labels = L.layerGroup().addTo(this.map)
 
         this.legendNode = document.getElementById('mapV2__legend')
-
+        
         this.setLayer()
     }
 
@@ -76,6 +74,13 @@ export default class Layer {
 
             // create popup
             this.layer.eachLayer((layer) => {
+                let styleInstance = new Style({
+                    styleKey: this.styleKey,
+                    feature: layer.feature
+                })
+
+                layer.setStyle(styleInstance.style)
+
                 let data = '<div class="d-flex align-items-center">'
                 if (layer.feature.properties)
                     Object.entries(layer.feature.properties).map(([key, value]) => data += `<div class="fr-mr-2w"><strong>${key}</strong>: ${value}</div>`)
@@ -115,10 +120,10 @@ export default class Layer {
                     layer.bringToFront()
 
                     // Highlight style
-                    layer.setStyle(this.getStyle('style_highlight'))
+                    layer.setStyle(styleInstance.highlight)
 
                     if (this.showLabel)
-                        label._icon.style.color = '#ff7f00'
+                        label._icon.style.color = '#ffffff'
                 })
                 
                 layer.on('mouseout', () => {
@@ -128,31 +133,7 @@ export default class Layer {
                         this.legendNode.style.opacity = 0
                     }
 
-                    // Default style
-                    let style = this.getStyle(this.style)
-
-                    // Override style
-                    if (this.style === 'style_ocsge_diff' && layer.feature.properties.is_new_artif) {
-                        style = this.getStyle('style_ocsge_diff__is_new_artif')
-                    }
-                    
-                    if (this.style === 'style_ocsge_diff' && layer.feature.properties.is_new_natural) {
-                        style = this.getStyle('style_ocsge_diff__is_new_natural')
-                    }
-
-                    if (this.style === 'style_ocsge_couv') {
-                        const leaf = this.couv_leafs.find(el => el.code_couverture == layer.feature.properties.code_couverture.replaceAll('.', '_'))
-                        if (leaf)
-                            style.fillColor = style.color = leaf.map_color
-                    }
-
-                    if (this.style === 'style_ocsge_usage') {
-                        const leaf = this.usa_leafs.find(el => el.code_usage == layer.feature.properties.code_usage.replaceAll('.', '_'))
-                        if (leaf)
-                            style.fillColor = style.color = leaf.map_color
-                    }
-
-                    layer.setStyle(style)
+                    layer.setStyle(styleInstance.style)
 
                     if (this.showLabel)
                         label._icon.style.color = '#000000'
@@ -206,33 +187,6 @@ export default class Layer {
         
         // Create empty geoJSON layer
         let geoJSONLayer = L.geoJSON(null, {
-            style: (geoJsonFeature) => {
-                // Get default style
-                let style = this.getStyle(this.style)
-
-                // Override style
-                if (this.style === 'style_ocsge_diff' && geoJsonFeature.properties.is_new_artif) {
-                    style = this.getStyle('style_ocsge_diff__is_new_artif')
-                }
-                
-                if (this.style === 'style_ocsge_diff' && geoJsonFeature.properties.is_new_natural) {
-                    style = this.getStyle('style_ocsge_diff__is_new_natural')
-                }
-
-                if (this.style === 'style_ocsge_couv') {
-                    const leaf = this.couv_leafs.find(el => el.code_couverture == geoJsonFeature.properties.code_couverture.replaceAll('.', '_'))
-                    if (leaf)
-                        style.fillColor = style.color = leaf.map_color
-                }
-
-                if (this.style === 'style_ocsge_usage') {
-                    const leaf = this.usa_leafs.find(el => el.code_usage == geoJsonFeature.properties.code_usage.replaceAll('.', '_'))
-                    if (leaf)
-                        style.fillColor = style.color = leaf.map_color
-                }
-
-                return style
-            },
             pane: this.slug,
         })
 
