@@ -25,8 +25,11 @@ export default class Layer {
         this.lastDataUrlParams = {}
 
         // Set label group
-        if(this.label)
+        if(this.label) {
             this.labelGroup = L.layerGroup().addTo(this.map)
+            // Create pane
+            this.labelPane = this.map.createPane(`${this.slug}-label-pane`)
+        }
 
         this.legendNode = document.getElementById('mapV2__legend')
         
@@ -93,6 +96,7 @@ export default class Layer {
                     }
 
                     label = L.marker(coords, {
+                        pane: this.labelPane,
                         icon: L.divIcon({
                             className: 'map-label',
                             html: _layer.feature.properties[this.label.key],
@@ -236,6 +240,9 @@ export default class Layer {
         this.isVisible = _value
 
         this.pane.style.display = _value ? 'block' : 'none'
+
+        if (this.label)
+            this.labelPane.style.display = _value ? 'block' : 'none'
     }
 
     updateStyleKey(_value) {
