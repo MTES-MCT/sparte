@@ -14,7 +14,6 @@ export default class SparteMap {
         this.layerList = _options.layerList
         this.couv_leafs = _options.couv_leafs
         this.usa_leafs = _options.usa_leafs
-        this.projectId = _options.projectId
         this.filterList = _options.filterList
 
         if (!this.targetElement) {

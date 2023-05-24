@@ -233,7 +233,12 @@ class MapV2View(GroupMixin, DetailView):
                 "layer_list": [
                     {
                         "name": "Emprise du territoire",
-                        "url": reverse_lazy("project:emprise-list"),
+                        "url": [
+                            {
+                                "value": reverse_lazy("project:emprise-list"),
+                                "zoom_available": all_zoom,
+                            }
+                        ],
                         "url_params": {
                             "id": self.object.pk,
                         },
@@ -241,11 +246,17 @@ class MapV2View(GroupMixin, DetailView):
                         "z_index": "10",
                         "visible": 1,
                         "is_optimized": 0,
-                        "zoom_available": all_zoom,  # [6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18],
+                        "interactive": 0,
                     },
                     {
                         "name": "OCS GE",
                         "url": reverse_lazy("public_data:ocsge-optimized"),
+                        "url": [
+                            {
+                                "value": reverse_lazy("public_data:ocsge-optimized"),
+                                "zoom_available": list(range(15, 18)),
+                            }
+                        ],
                         "url_params": {
                             "year": 2019,
                             "is_artificial": 1,
@@ -254,11 +265,16 @@ class MapV2View(GroupMixin, DetailView):
                         "z_index": "4",
                         "visible": 1,
                         "is_optimized": 1,
-                        "zoom_available": [15, 16, 17, 18],
+                        "interactive": 1,
                     },
                     {
                         "name": "Zones urbaines",
-                        "url": reverse_lazy("public_data:zoneurba-optimized"),
+                        "url": [
+                            {
+                                "value": reverse_lazy("public_data:zoneurba-optimized"),
+                                "zoom_available": list(range(12, 18)),
+                            }
+                        ],
                         "url_params": {
                             "type_zone": "AUc, AUs, Ah, Nd, A, N, Nh, U",
                         },
@@ -266,189 +282,42 @@ class MapV2View(GroupMixin, DetailView):
                         "z_index": "5",
                         "visible": 1,
                         "is_optimized": 1,
-                        "zoom_available": [12, 13, 14, 15, 16, 17, 18],
+                        "interactive": 1,
                         "label": {
                             "key": "typezone"
                         }
                     },
-                    # {
-                    #     "name": "Limites administratives (Communes)",
-                    #     "url": reverse_lazy("public_data:commune-optimized"),
-                    #     "style": "style_communes",
-                    #     "z_index": "1",
-                    #     "visible": 0,
-                    #     "is_optimized": 1,
-                    #     "zoom_available": all_zoom,  # [12, 13, 14, 15, 16, 17, 18],
-                    # },
-                    # {
-                    #     "name": "Limites administratives (EPCI)",
-                    #     "url": reverse_lazy("public_data:epci-optimized"),
-                    #     "style": "style_epci",
-                    #     "z_index": "2",
-                    #     "visible": 0,
-                    #     "is_optimized": 1,
-                    #     "zoom_available": all_zoom,  # [10, 11],
-                    # },
-                    # {
-                    #     "name": "Limites administratives (SCOT)",
-                    #     "url": reverse_lazy("public_data:scot-optimized"),
-                    #     "style": "style_scot",
-                    #     "z_index": "3",
-                    #     "visible": 0,
-                    #     "is_optimized": 1,
-                    #     "zoom_available": all_zoom,  # [10],
-                    # },
-                    # {
-                    #     "name": "Limites administratives (Départements)",
-                    #     "url": reverse_lazy("public_data:departement-optimized"),
-                    #     "style": "style_departements",
-                    #     "z_index": "4",
-                    #     "visible": 0,
-                    #     "is_optimized": 1,
-                    #     "zoom_available": all_zoom,  # [8, 9],
-                    # },
-                    # {
-                    #     "name": "Limites administratives (Régions)",
-                    #     "url": reverse_lazy("public_data:region-optimized"),
-                    #     "style": "style_regions",
-                    #     "z_index": "5",
-                    #     "visible": 1,
-                    #     "is_optimized": 1,
-                    #     "zoom_available": all_zoom,  # [6, 7],
-                    # },
-                    # {
-                    #     "name": "OCSGE Couverture",
-                    #     "url": reverse_lazy("public_data:ocsge-optimized"),
-                    #     "url_params": {
-                    #         "year": 2019,
-                    #     },
-                    #     "style": "style_ocsge_couv",
-                    #     "z_index": "6",
-                    #     "visible": 0,
-                    #     "is_optimized": 1,
-                    #     "millesimes": available_millesimes,
-                    #     "zoom_available": [15, 16, 17, 18],
-                    # },
-                    # {
-                    #     "name": "OCSGE Couverture zones artificielles 2016",
-                    #     "url": reverse_lazy("public_data:ocsge-optimized"),
-                    #     "url_params": {
-                    #         "year": 2016,
-                    #         "is_artificial": 1,
-                    #     },
-                    #     "style": "style_ocsge_couv",
-                    #     "z_index": "6",
-                    #     "visible": 0,
-                    #     "is_optimized": 1,
-                    #     "millesimes": available_millesimes,
-                    #     "zoom_available": [15, 16, 17, 18],
-                    # },
-                    # {
-                    #     "name": "OCSGE Usage",
-                    #     "url": reverse_lazy("public_data:ocsge-optimized"),
-                    #     "url_params": {
-                    #         "year": 2019,
-                    #     },
-                    #     "style": "style_ocsge_usage",
-                    #     "z_index": "6",
-                    #     "visible": 0,
-                    #     "is_optimized": 1,
-                    #     "millesimes": available_millesimes,
-                    #     "zoom_available": [15, 16, 17, 18],
-                    # },
-                    # {
-                    #     "name": "OCSGE diff",
-                    #     "url": reverse_lazy("public_data:ocsgediff-optimized"),
-                    #     "url_params": {
-                    #         "year_old": 2016,
-                    #         "year_new": 2019
-                    #     },
-                    #     "style": "style_ocsge_diff",
-                    #     "z_index": "7",
-                    #     "visible": 0,
-                    #     "is_optimized": 1,
-                    #     "millesimes": available_millesimes,
-                    #     "zoom_available": [15, 16, 17, 18],
-                    # },
-                    # {
-                    #     "name": "Zones artificielles",
-                    #     "url": reverse_lazy("public_data:artificialarea-optimized"),
-                    #     "url_params": {
-                    #         "year": 2016,
-                    #         # "project_id": self.object.id
-                    #     },
-                    #     "style": "style_zone_artificielle",
-                    #     "z_index": "5",
-                    #     "visible": 0,
-                    #     "is_optimized": 1,
-                    #     "zoom_available": [12, 13, 14, 15, 16, 17, 18],
-                    # },
-                    # {
-                    #     "name": "Zones construites",
-                    #     "url": reverse_lazy("public_data:zoneconstruite-optimized"),
-                    #     "url_params": {
-                    #         "year": 2019,  # choose between 2019 and 2016 for gers
-                    #     },
-                    #     "style": "style_zone_artificielle",
-                    #     "z_index": "6",
-                    #     "visible": 0,
-                    #     "is_optimized": 1,
-                    #     "zoom_available": [12, 13, 14, 15, 16, 17, 18],
-                    # },
-                    # {
-                    #     "name": "Grille 1km",
-                    #     "url": reverse_lazy("public_data:grid"),
-                    #     "url_params": {
-                    #         "gride_size": 1,
-                    #     },
-                    #     "style": "style_communes",
-                    #     "z_index": "1",
-                    #     "visible": 0,
-                    #     "is_optimized": 1,
-                    #     "zoom_available": [12, 13, 14, 15, 16, 17, 18],
-                    # },
-                    # {
-                    #     "name": "Zones urbaines [AUc, AUs]",
-                    #     "url": reverse_lazy("public_data:zoneurba-optimized"),
-                    #     "url_params": {
-                    #         "type_zone": "AUc, AUs",
-                    #     },
-                    #     "url_data": "",
-                    #     "style": "style_zone_urba_au",
-                    #     "z_index": "5",
-                    #     "visible": 0,
-                    #     "is_optimized": 1,
-                    #     "type_zone_available": ["U", "Ah", "Nd", "A", "AUc", "N", "Nh", "AUs"],
-                    #     "zoom_available": [12, 13, 14, 15, 16, 17, 18],
-                    # },
-                    # {
-                    #     "name": "Zones urbaines [U]",
-                    #     "url": reverse_lazy("public_data:zoneurba-optimized"),
-                    #     "url_params": {
-                    #         "type_zone": "U",
-                    #     },
-                    #     "url_data": "",
-                    #     "style": "style_zone_urba_u",
-                    #     "z_index": "5",
-                    #     "visible": 0,
-                    #     "is_optimized": 1,
-                    #     "type_zone_available": ["U", "Ah", "Nd", "A", "AUc", "N", "Nh", "AUs"],
-                    #     "zoom_available": [12, 13, 14, 15, 16, 17, 18],
-                    # },
-                    # {
-                    #     "name": "Zones urbaines [Ah, Nd, A, N, Nh]",
-                    #     "url": reverse_lazy("public_data:zoneurba-optimized"),
-                    #     "url_params": {
-                    #         "type_zone": "Ah, Nd, A, N, Nh",
-                    #     },
-                    #     "url_data": "",
-                    #     "style": "style_zone_urba_n",
-                    #     "z_index": "5",
-                    #     "visible": 0,
-                    #     "is_optimized": 1,
-                    #     "type_zone_available": ["U", "Ah", "Nd", "A", "AUc", "N", "Nh", "AUs"],
-                    #     "zoom_available": [12, 13, 14, 15, 16, 17, 18],
-                    # },
+                    {
+                        "name": "Limites administratives",
+                        "url": reverse_lazy("public_data:region-optimized"),
+                        "url": [
+                            {
+                                "value": reverse_lazy("public_data:commune-optimized"),
+                                "zoom_available": [12, 13, 14, 15],
+                            },
+                            {
+                                "value": reverse_lazy("public_data:epci-optimized"),
+                                "zoom_available": [10, 11],
+                            },
+                            {
+                                "value": reverse_lazy("public_data:scot-optimized"),
+                                "zoom_available": [9],
+                            },
+                            {
+                                "value": reverse_lazy("public_data:departement-optimized"),
+                                "zoom_available": [8],
+                            },
+                            {
+                                "value": reverse_lazy("public_data:region-optimized"),
+                                "zoom_available": [6, 7],
+                            }
+                        ],
+                        "style_key": "style_limites_administratives",
+                        "z_index": "1",
+                        "visible": 1,
+                        "is_optimized": 1,
+                        "interactive": 0,
+                    },
                 ],
                 "filter_list": [
                     {
