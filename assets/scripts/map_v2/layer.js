@@ -11,14 +11,13 @@ export default class Layer {
         this.name = _options.name
         this.slug = slugify(_options.name)
         this.styleKey = _options.style_key
-        this.zoomAvailable = JSON.parse(_options.zoom_available.replace(/\'/g, '"'))
-        this.url = _options.url
+        this.url = JSON.parse(_options.url.replace(/\'/g, '"'))
         this.urlParams = _options.url_params ? JSON.parse(_options.url_params.replace(/\'/g, '"')) : {}
-        this.dataUrl = _options.dataUrl
         this.zIndex = _options.z_index
         this.isOptimized = Boolean(Number(_options.is_optimized))
         this.isVisible = Boolean(Number(_options.visible))
         this.label = _options.label ? JSON.parse(_options.label.replace(/\'/g, '"')) : null
+        this.interactive = Boolean(Number(_options.interactive))
 
         // Flags
         this.lastDataBbox = null
@@ -43,19 +42,16 @@ export default class Layer {
             this.layer = this.createLayer().addTo(this.map)
         }
 
-        if (this.isZoomAvailable() && this.isVisible) {
-            await this.addData()
-            // this.layerControl.checked = true
-            this.pane.style.display = 'block'
-        }
-    }
-
-    async addData() {
-        // Get data
+        // Get data url
         const url = this.getUrl()
 
+        if (url)
+            await this.addData(url)
+    }
+
+    async addData(_url) {
         try {
-            const response = await fetch(url)
+            const response = await fetch(_url)
             this.data = await response.json()
 
             // Remove data from layer
@@ -176,6 +172,9 @@ export default class Layer {
                     }
                 })
             })
+
+            // Display pane
+            this.pane.style.display = 'block'
         } catch(error) {
             console.log(error)
         }
@@ -192,6 +191,7 @@ export default class Layer {
         // Create empty geoJSON layer
         let geoJSONLayer = L.geoJSON(null, {
             pane: this.slug,
+            interactive: this.interactive
         })
 
         return geoJSONLayer
@@ -201,8 +201,11 @@ export default class Layer {
         const bbox = this.map.getBounds().toBBoxString()
         const zoom = this.map.getZoom()
 
-        // Base url
-        let url = this.url
+        // Get url based on zoom level
+        let url = this.url.find((_obj) => _obj.zoom_available.includes(zoom))?.value
+
+        if (!url)
+            return
 
         // Base params
         let params = {
@@ -225,17 +228,22 @@ export default class Layer {
         return url
     }
 
-    isZoomAvailable() {
-        const zoom = this.map.getZoom()
+    // isZoomAvailable() {
+    //     const zoom = this.map.getZoom()
 
-        return this.zoomAvailable.includes(zoom)
-    }
+    //     return this.zoomAvailable.includes(zoom)
+    // }
 
     // Custom triggers
     async toggleVisibile (_value) {
         if (_value) {
-            if (!this.lastDataBbox || this.isOptimized && this.lastDataBbox !== this.map.getBounds().toBBoxString() || this.isOptimized && !isEqual(this.urlParams, this.lastDataUrlParams))
-                await this.addData()
+            if (!this.lastDataBbox || this.isOptimized && this.lastDataBbox !== this.map.getBounds().toBBoxString() || this.isOptimized && !isEqual(this.urlParams, this.lastDataUrlParams)) {
+                // Get data url
+                const url = this.getUrl()
+
+                if (url)
+                    await this.addData(url)
+            }
         }
 
         this.isVisible = _value
@@ -273,10 +281,14 @@ export default class Layer {
             return
 
 
-        if (this.isOptimized && this.isZoomAvailable() && this.isVisible) {
-            await this.addData()
+        if (this.isOptimized && this.isVisible) {
+            // Get data url
+            const url = this.getUrl()
 
-            this.pane.style.display = 'block'
+            if (url)
+                await this.addData(url)
+            else
+                this.pane.style.display = 'none'  
 
             // this.layerControl.checked = true 
         }
