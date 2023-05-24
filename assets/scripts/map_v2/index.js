@@ -1,4 +1,5 @@
 import * as L from 'leaflet'
+import Tabs from './tabs.js'
 import Layer from './layer.js'
 import FilterGroup from './filter-group.js'
 import { debounce } from './utils.js'
@@ -15,6 +16,7 @@ export default class SparteMap {
         this.couv_leafs = _options.couv_leafs
         this.usa_leafs = _options.usa_leafs
         this.filterList = _options.filterList
+        this.projectId = _options.projectId
 
         if (!this.targetElement) {
             console.warn('Missing \'targetElement\' property')
@@ -22,9 +24,9 @@ export default class SparteMap {
         }
 
         this.setConfig()
+        this.setTabs()
         this.setMap()
         this.setLayers()
-        this.setPanel()
 
         // Delay display filter
         // TODO: display filter when layer is ready
@@ -131,36 +133,30 @@ export default class SparteMap {
         this.map.on('moveend', debounce(() => this.moveend(), 1000))
     }
 
-    // Todo create panel JS Class
-    setPanel() {
-        const tabs = document.querySelector('.tabs')
-        const tabButtons = tabs.querySelectorAll('[role="tab"]')
-        const tabPanels = tabs.querySelectorAll('[role="tabpanel"]')
-
-        tabButtons.forEach(button => button.addEventListener('click', (_event) => {
-            // find the associated tabPanel
-            const { id } = _event.currentTarget
-            const tabPanel = tabs.querySelector(`[aria-labelledby="${id}"]`)
-            const isAlreadyOpen = !tabPanel.hidden
-
-            // hide all tab panels
-            tabPanels.forEach(panel => {
-                panel.hidden = true
-            })
-
-            // mark all tabs as unselected
-            tabButtons.forEach(tab => {
-                tab.setAttribute('aria-selected', false)
-            })
-
-            if (!isAlreadyOpen) {
-                // mark the clicked tab as selected
-                _event.currentTarget.setAttribute('aria-selected', true)
-
-                // find the associated tabPanel and show it
-                tabPanel.hidden = false
+    setTabs() {
+        const tabList = [
+            {
+                id: 'layer',
+                iconClass: 'bi-layers',
+                title: 'Options des calques',
+            },
+            {
+                id: 'data',
+                iconClass: 'bi-bar-chart',
             }
-        }))
+        ]
+
+        if (this.debug)
+            tabList.push(
+                {
+                    id: 'debug',
+                    iconClass: 'bi-bug',
+                }
+            )
+
+        this.tabs = new Tabs({
+            tabList: tabList,
+        })
     }
 
     setLayers() {
