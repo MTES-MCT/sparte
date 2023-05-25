@@ -438,10 +438,18 @@ CSP_STYLE_SRC = [
     "https://cdn.jsdelivr.net",
     STATIC_URL,
 ]
-CSP_IMG_SRC = ["'self'", "https://wxs.ign.fr", "data:", MEDIA_URL, STATIC_URL]
+CSP_IMG_SRC = [
+    "'self'",
+    "https://wxs.ign.fr",
+    "data:",
+    MEDIA_URL,
+    STATIC_URL,
+    "https://www.google.com/",
+    "https://www.google.fr/",
+]
 CSP_INCLUDE_NONCE_IN = ["script-src", "style-src"]
 CSP_FONT_SRC = ("'self'", "data:", "https://cdn.jsdelivr.net", STATIC_URL)
-CSP_CONNECT_SRC = ["https://stats.data.gouv.fr", "'self'"]
+CSP_CONNECT_SRC = ["'self'", "https://stats.beta.gouv.fr"]
 
 
 # MAP SETTINGS
