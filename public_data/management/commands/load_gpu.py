@@ -1,11 +1,11 @@
 import logging
 from pathlib import Path
 
-# from django.contrib.gis.db.models.functions import Area, Transform
+from django.contrib.gis.db.models.functions import Area, Transform
 from django.core.management.base import BaseCommand
-
-# from django.db.models import DecimalField
-# from django.db.models.functions import Cast
+from django.db import connection
+from django.db.models import DecimalField
+from django.db.models.functions import Cast
 
 from public_data.models import (
     AutoLoadMixin,
@@ -64,6 +64,20 @@ class ZoneUrbaFrance(AutoLoadMixin, ZoneUrba):
         and usage_field are set with the name of the field containing code (cs.2.1.3)
         """
         # TODO : insee, surface
+        make_valid_mpoly_query = (
+            "UPDATE public_data_zoneurba pdz "
+            "SET mpoly = ST_Multi(ST_CollectionExtract(ST_MakeValid(mpoly), 3)) "
+            "WHERE ST_IsValid(mpoly) IS FALSE "
+            "    AND ST_IsValid(ST_MakeValid(mpoly))"
+        )
+        with connection.cursor() as cursor:
+            cursor.execute(make_valid_mpoly_query)
+        cls.objects.filter(surface__isnull=True).update(
+            area=Cast(
+                Area(Transform("mpoly", 2154)),
+                DecimalField(max_digits=15, decimal_places=4),
+            )
+        )
 
 
 class Command(BaseCommand):
