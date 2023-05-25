@@ -1,7 +1,6 @@
 """
 Les zones urbaines fournies par le Géoportail de l'urbanisme
 """
-from functools import cached_property
 from django.contrib.gis.db import models
 
 from utils.db import IntersectMixin
@@ -16,7 +15,7 @@ class ZoneUrba(models.Model):
     libelle = models.CharField("libelle", max_length=80, blank=True, null=True)
     libelong = models.CharField("libelong", max_length=254, blank=True, null=True)
     typezone = models.CharField("typezone", max_length=80, blank=True, null=True)
-    insee = models.CharField("insee", max_length=80, blank=True, null=True)
+    origin_insee = models.CharField("insee", max_length=80, blank=True, null=True)
     idurba = models.CharField("idurba", max_length=80, blank=True, null=True)
     idzone = models.CharField("idzone", max_length=80, blank=True, null=True)
     lib_idzone = models.CharField("lib_idzone", max_length=80, blank=True, null=True)
@@ -29,8 +28,9 @@ class ZoneUrba(models.Model):
 
     mpoly = models.MultiPolygonField()
 
-    objects = ZoneUrbaManager()
+    # calulated fields
+    insee = models.CharField("insee", max_length=10, blank=True, null=True)
+    area = models.DecimalField("area", max_digits=15, decimal_places=4, blank=True, null=True)
+    artificial_area = models.DecimalField("artificial_area", max_digits=15, decimal_places=4, blank=True, null=True)
 
-    @cached_property
-    def area(self):
-        return self.mpoly.transform(2154, clone=True).area / 100**2
+    objects = ZoneUrbaManager()
