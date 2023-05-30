@@ -2,12 +2,14 @@ export default class Filter {
     constructor(_options = {}, groupNode) {
         this.sparteMap = window.sparteMap
         this.layers = window.sparteMap.layers
+
         this.name = _options.name
         this.triggers = _options.triggers
         this.type = _options.type
         this.options = _options.options
-        this.value = [0, 1].includes(_options.value) ? Boolean(Number(_options.value)) : _options.value
+        this.value = _options.value === 'true' ? true : _options.value === 'false' ? false : _options.value
         this.groupNode = groupNode
+
         this.setFilter()
     }
 
@@ -22,9 +24,45 @@ export default class Filter {
             case 'tag':
                 this.groupNode.appendChild(this.CreateFilterTag())
                 break
+             case 'opacity':
+                this.groupNode.appendChild(this.CreateFilterOpacity())
+                break
             default:
-                console.log('Aucun filtre correspondant')
+                console.log(`Unknow filter type '${this.type}' for layer '${this.name}'`);
         }
+    }
+
+    CreateFilterOpacity() {
+        // Create filter node
+        let filter = document.createElement('div')
+        filter.classList.add('filter-group__filter')
+        if (this.name)
+            filter.innerHTML = this.name
+
+        // Create input range
+        let input = document.createElement('input')
+        input.type = 'range'
+        input.min = 0
+        input.max = 1
+        input.step = 0.1
+
+        // Add change event
+        input.addEventListener('input', (_event) => {
+            this.value = _event.target.value
+
+            // Triggers layer methods
+            this.triggers.map((_obj) => {
+                const layer = this.layers.find((__obj) => __obj.key === _obj.layer)
+                layer[`${_obj.method}`](this.value)
+            })
+        })
+
+        filter.appendChild(input)
+
+        // Set default value
+        input.value = this.value
+
+        return filter
     }
 
     CreateFilterVisible() {
@@ -48,7 +86,7 @@ export default class Filter {
 
             // Triggers layer methods
             this.triggers.map((_obj) => {
-                const layer = this.layers.find((__obj) => __obj.slug === _obj.layer)
+                const layer = this.layers.find((__obj) => __obj.key === _obj.layer)
                 layer[`${_obj.method}`](this.value)
             })
         })
@@ -84,7 +122,7 @@ export default class Filter {
 
             // Triggers layer methods
             this.triggers.map((_obj) => {
-                const layer = this.layers.find((__obj) => __obj.slug === _obj.layer)
+                const layer = this.layers.find((__obj) => __obj.key === _obj.layer)
                 layer[`${_obj.method}`](this.value, _obj.param)
             })
         })
@@ -121,7 +159,7 @@ export default class Filter {
                 
                 // Triggers layer methods
                 this.triggers.map((_obj) => {
-                    const layer = this.layers.find((__obj) => __obj.slug === _obj.layer)
+                    const layer = this.layers.find((__obj) => __obj.key === _obj.layer)
                     layer[`${_obj.method}`](this.value, _obj.param)
                 })
             })
