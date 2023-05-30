@@ -1,7 +1,7 @@
 import * as L from 'leaflet'
 import Tabs from './tabs.js'
-import Layer from './layer.js'
-import FilterGroup from './filter-group.js'
+import TileLayer from './tile-layer.js'
+import GeoJSONLayer from './geojson-layer.js'
 import { debounce } from './utils.js'
 
 export default class SparteMap {
@@ -15,7 +15,6 @@ export default class SparteMap {
         this.layerList = _options.layerList
         this.couv_leafs = _options.couv_leafs
         this.usa_leafs = _options.usa_leafs
-        this.filterList = _options.filterList
         this.projectId = _options.projectId
 
         if (!this.targetElement) {
@@ -27,12 +26,6 @@ export default class SparteMap {
         this.setTabs()
         this.setMap()
         this.setLayers()
-
-        // Delay display filter
-        // TODO: display filter when layer is ready
-        setTimeout(() => {
-            this.setFilters()
-        }, 3000);
 
         if (this.debug)
             this.setDebug()
@@ -115,21 +108,6 @@ export default class SparteMap {
             bounds = L.latLngBounds(southWest, northEast)
         this.map.setMaxBounds(bounds)
 
-        // Get IGN tiles
-        L.tileLayer(
-            'https://wxs.ign.fr/{ignApiKey}/geoportail/wmts?' +
-            '&REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0&TILEMATRIXSET=PM' +
-            '&LAYER={ignLayer}&STYLE={style}&FORMAT={format}' +
-            '&TILECOL={x}&TILEROW={y}&TILEMATRIX={z}', {
-            attribution: '<a target="_blank" href="https://www.geoportail.gouv.fr/">Geoportail France</a>',
-            ignApiKey: 'ortho',
-            ignLayer: 'ORTHOIMAGERY.ORTHOPHOTOS',
-            style: 'normal',
-            format: 'image/jpeg',
-            service: 'WMTS'
-        }
-        ).addTo(this.map)
-
         this.map.on('moveend', debounce(() => this.moveend(), 1000))
     }
 
@@ -163,14 +141,16 @@ export default class SparteMap {
         this.layers = []
 
         this.layerList.map((_obj) => {
-            const layer = new Layer(_obj)
-            this.layers.push(layer)
-        })
-    }
-
-    setFilters() {
-        this.filterList.map((_obj) => {
-            new FilterGroup(_obj)
+            switch (_obj.type) {
+                case 'tile':
+                    this.layers.push(new TileLayer(_obj))
+                    break;
+                case 'geojson':
+                    this.layers.push(new GeoJSONLayer(_obj))
+                    break;
+                default:
+                    console.log(`Missing layer type for layer ${_obj.name}`);
+            }
         })
     }
 
@@ -179,7 +159,7 @@ export default class SparteMap {
             this.layers.map((_obj) => {
                 if (this.debug && !this.refreshLayersControl.checked)
                     return
-                
+
                 _obj.update()
             })
     }

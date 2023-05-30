@@ -14,9 +14,11 @@
     },
     {
         "key": "style_limites_administratives",
+        "fill": false,
         "weight": 1.8,
         "opacity": 1,
-        "color": "#000000"
+        "color": "#000000",
+        "fillOpacity": 0
     },
     {
         "key": "style_ocsge_couverture",

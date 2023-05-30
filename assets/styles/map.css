@@ -59,7 +59,8 @@ Tabs
     width: 100%;
 }
 
-.tabs .tablist button:hover, .tabs .tablist button[aria-selected="true"] {
+.tabs .tablist button:hover,
+.tabs .tablist button[aria-selected="true"] {
     color: #1D41FF;
     background: #ffffff;
 }
@@ -79,16 +80,16 @@ Tabs
 
 .tabs .tab .tab-item {
     padding: 16px 20px;
-    padding-bottom: 10px;
 }
 
-.tabs .tab .tab-title  {
+.tabs .tab .tab-title {
     font-size: 14px;
     font-weight: bold;
 }
 
 .tabs .tab .filter-group {
     border-bottom: 1px solid #eaeaea;
+    position: relative;
 }
 
 .tabs .tab .filter-group .filter-group__filter {
@@ -98,6 +99,81 @@ Tabs
     margin-bottom: 15px;
 }
 
-.tabs .tab .filter-group .filter-group__filter:last-child  {
+.tabs .tab .filter-group .filter-group__filter:last-child {
     margin-bottom: 0px;
+}
+
+.tabs .tab .filter-group .filter-placeholder {
+    position: absolute;
+    background: rgba(18, 18, 255, 0.08);
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: 2;
+    backdrop-filter: blur(7px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity .3s ease;
+    text-align: center;
+}
+
+/*
+Range input
+*/
+input[type="range"] {
+    /* removing default appearance */
+    -webkit-appearance: none;
+    appearance: none;
+    /* creating a custom design */
+    width: 130px;
+    cursor: pointer;
+    outline: none;
+    /*  slider progress trick  */
+    overflow: hidden;
+    border-radius: 16px;
+}
+
+/* Track: webkit browsers */
+input[type="range"]::-webkit-slider-runnable-track {
+    height: 12px;
+    background: #ccc;
+    border-radius: 16px;
+}
+
+/* Track: Mozilla Firefox */
+input[type="range"]::-moz-range-track {
+    height: 12px;
+    background: #ccc;
+    border-radius: 16px;
+}
+
+/* Thumb: webkit */
+input[type="range"]::-webkit-slider-thumb {
+    /* removing default appearance */
+    -webkit-appearance: none;
+    appearance: none;
+    /* creating a custom design */
+    height: 12px;
+    width: 12px;
+    background-color: #fff;
+    border-radius: 50%;
+    border: 2px solid #000091;
+    /*  slider progress trick  */
+    box-shadow: -407px 0 0 400px #000091;
+}
+
+
+/* Thumb: Firefox */
+input[type="range"]::-moz-range-thumb {
+    height: 12px;
+    width: 12px;
+    background-color: #fff;
+    border-radius: 50%;
+    border: 1px solid #000091;
+    /*  slider progress trick  */
+    box-shadow: -407px 0 0 400px #000091;
 }
