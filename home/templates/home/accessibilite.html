@@ -3,7 +3,7 @@
 {% load static %}
 {% load sri %}
 
-{% block pagetitle %}Déclaration d’accessibilité{% endblock %}
+{% block pagetitle %}Déclaration d’accessibilité{% endblock pagetitle %}
 
 {% block headers %}
 {% sri_static "home/css/home.css" %}
@@ -53,7 +53,7 @@
         </p>
     </div>
 </div>
-{% endblock %}
+{% endblock content %}
 
 {% block tagging %}
 <script language="javascript" nonce="{{ CSP_NONCE }}">
