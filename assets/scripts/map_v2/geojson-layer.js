@@ -2,6 +2,7 @@ import * as L from 'leaflet'
 import Layer from './layer.js'
 import Style from './style.js'
 import isEqual from 'lodash/isEqual'
+import { debounce } from './utils.js'
 
 export default class GeoJSONLayer extends Layer {
     constructor(_options = {}) {
@@ -210,8 +211,8 @@ export default class GeoJSONLayer extends Layer {
             _layer.setStyle(_layer.styleInstance.style)
         })
     }
-
-    updateData(_value, _param) {
+    
+    updateData = debounce((_value, _param) => {
         this.urlParams[_param] = _value
 
         if (!this.isVisible)
@@ -219,7 +220,7 @@ export default class GeoJSONLayer extends Layer {
 
         this.clearLayer()
         this.setData()
-    }
+    }, 1000)
 
     async update() {
         this.filterGroup.togglePlaceholder(!this.isZoomAvailable())
