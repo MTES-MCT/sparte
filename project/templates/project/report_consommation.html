@@ -10,12 +10,12 @@
 
 {% block pagetitle %}
 Rapport consommation
-{% endblock %}
+{% endblock pagetitle %}
 
 {% block headers %}
 {% sri_static "project/css/project.css" %}
 <meta name="htmx-config" content='{"inlineScriptNonce":"{{ CSP_NONCE }}"}'>
-{% endblock %}
+{% endblock headers %}
 
 {% block content %}
 <div class="px-4">
@@ -371,7 +371,6 @@ Rapport consommation
             </div>
         </div>
 
-
         <div id="conso-relative-surface-anchor" class="fr-mt-7w" hx-get="{% url 'project:relative-surface' project.id %}" hx-trigger="revealed">
             <h3>Consommation d'espaces rapportée à la surface du territoire</h3>
 
@@ -406,7 +405,7 @@ Rapport consommation
                 <button class="fr-link--close fr-link" data-bs-dismiss="modal" aria-label="Close">Fermer</button>
             </div>
             <div class="fr-modal__content">
-                <h1 id="fr-modal-2-title" class="fr-modal__title" id="consoAnnuelleLabel">
+                <h1 class="fr-modal__title" id="consoAnnuelleLabel">
                     <span class="fr-fi-arrow-right-line fr-fi--lg"></span>
                     Astuces - Graphique consommation d'espaces sur le territoire
                 </h1>
@@ -429,7 +428,7 @@ Rapport consommation
                 <button class="fr-link--close fr-link" data-bs-dismiss="modal" aria-label="Close">Fermer</button>
             </div>
             <div class="fr-modal__content">
-                <h1 id="fr-modal-2-title" class="fr-modal__title" id="comparaisonVoisinLabel">
+                <h1 class="fr-modal__title" id="comparaisonVoisinLabel">
                     <span class="fr-fi-arrow-right-line fr-fi--lg"></span>
                     Astuces - Comparaison avec les voisins
                 </h1>
@@ -451,7 +450,7 @@ Rapport consommation
                 <button class="fr-link--close fr-link" data-bs-dismiss="modal" aria-label="Close">Fermer</button>
             </div>
             <div class="fr-modal__content">
-                <h1 id="fr-modal-2-title" class="fr-modal__title" id="determinantLabel">
+                <h1 class="fr-modal__title" id="determinantLabel">
                     <span class="fr-fi-arrow-right-line fr-fi--lg"></span>
                     Astuces - Déterminants de la consommation
                 </h1>
@@ -464,7 +463,7 @@ Rapport consommation
     </div>
 </div>
 
-{% endblock %}
+{% endblock content %}
 
 {% block bodyend %}
 {% localize off %}
@@ -517,7 +516,7 @@ Rapport consommation
     })
 </script>
 {% endlocalize %}
-{% endblock %}
+{% endblock bodyend %}
 
 {% block tagging %}
 <script language="javascript" nonce="{{ CSP_NONCE }}">
