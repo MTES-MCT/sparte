@@ -64,6 +64,8 @@ class ZoneUrbaFrance(AutoLoadMixin, ZoneUrba):
         and usage_field are set with the name of the field containing code (cs.2.1.3)
         """
         # TODO : insee, surface
+        logger.info("Calculate fields")
+        logger.info("Make mpoly valid")
         make_valid_mpoly_query = (
             "UPDATE public_data_zoneurba pdz "
             "SET mpoly = ST_Multi(ST_CollectionExtract(ST_MakeValid(mpoly), 3)) "
@@ -72,7 +74,8 @@ class ZoneUrbaFrance(AutoLoadMixin, ZoneUrba):
         )
         with connection.cursor() as cursor:
             cursor.execute(make_valid_mpoly_query)
-        cls.objects.filter(surface__isnull=True).update(
+        logger.info("Evaluate area")
+        cls.objects.filter(area__isnull=True).update(
             area=Cast(
                 Area(Transform("mpoly", 2154)),
                 DecimalField(max_digits=15, decimal_places=4),

@@ -822,3 +822,19 @@ class ArtifDetailUsaChart(TemplateView):
 
 class TestView(TemplateView):
     template_name = "project/test.html"
+
+
+class ProjectReportGpuView(ProjectReportBaseView):
+    template_name = "project/report_gpu.html"
+    breadcrumbs_title = "Rapport Zones d'urbanisme"
+
+    def get_context_data(self, **kwargs):
+        project = self.get_object()
+        kwargs.update(
+            {
+                "diagnostic": project,
+                "active_page": "gpu",
+            }
+        )
+
+        return super().get_context_data(**kwargs)
