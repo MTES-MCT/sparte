@@ -5,7 +5,7 @@
 
 {% block pagetitle %}
 Mes diagnostics
-{% endblock %}
+{% endblock pagetitle %}
 
 {% block content %}
 <div class="px-4">
@@ -87,7 +87,7 @@ Mes diagnostics
         <p id="diagnostic-list-empty-message" hidden>Il n'y a aucun diagnostic correspondant à votre recherche.</p>
     </div>
 </div>
-{% endblock %}
+{% endblock content %}
 
 {% block tagging %}
 <script language="javascript" nonce="{{ CSP_NONCE }}">

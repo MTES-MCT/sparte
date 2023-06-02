@@ -10,11 +10,11 @@
 
 {% block pagetitle %}
 Consommation des villes
-{% endblock %}
+{% endblock pagetitle %}
 
 {% block headers %}
 {% sri_static "project/css/project.css" %}
-{% endblock %}
+{% endblock headers %}
 
 {% block content %}
 {% sri_static "css/dragula.min.css" %}
@@ -166,7 +166,7 @@ Consommation des villes
         {% csrf_token %}
     </form>
 </div>
-{% endblock %}
+{% endblock content %}
 
 {% block bodyend %}
 {% localize off %}
@@ -223,7 +223,7 @@ $("#save-all").click(function(){
 {% display_chart 'chart_determinant' determinant_per_year_chart CSP_NONCE %}
 {% display_chart 'pie_determinant' determinant_pie_chart CSP_NONCE %}
 {% endlocalize %}
-{% endblock %}
+{% endblock bodyend %}
 
 {% block tagging %}
 <script language="javascript" nonce="{{ CSP_NONCE }}">

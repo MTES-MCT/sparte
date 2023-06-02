@@ -5,7 +5,7 @@
 
 {% block pagetitle %}
 Exports
-{% endblock %}
+{% endblock pagetitle %}
 
 {% block headers %}
 <style nonce="{{ CSP_NONCE }}">
@@ -17,11 +17,9 @@ Exports
     border-radius: 6px;
 }
 </style>
-{% endblock %}
-
+{% endblock headers %}
 
 {% block content %}
-
 <div class="row w-100 h-100 justify-content-center">
     <div class=" col-12 col-md-10 col-lg-8">
         <h2 class="my-5">
@@ -42,7 +40,7 @@ Exports
 
     </div>
 </div>
-{% endblock %}
+{% endblock content %}
 
 {% block tagging %}
 <script language="javascript" nonce="{{ CSP_NONCE }}">
