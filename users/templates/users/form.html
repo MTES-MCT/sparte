@@ -2,8 +2,6 @@
 
 {% load crispy_forms_tags %}
 
-{% block pagetitle %}{{ page_title }}{% endblock %}
-
 {% block content %}
 
 <div class="d-flex justify-content-center mt-5">
@@ -19,7 +17,7 @@
     </div>
 </div>
 
-{% endblock %}
+{% endblock content %}
 
 {% block tagging %}
 <script language="javascript" nonce="{{ CSP_NONCE }}">

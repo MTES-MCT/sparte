@@ -11,11 +11,11 @@
 
 {% block pagetitle %}
 Trajectoires
-{% endblock %}
+{% endblock pagetitle %}
 
 {% block headers %}
 <meta name="htmx-config" content='{"inlineScriptNonce":"{{ CSP_NONCE }}"}'>
-{% endblock %}
+{% endblock headers %}
 
 {% block content %}
 <div class="px-4">
@@ -129,7 +129,7 @@ Trajectoires
                 <button class="fr-link--close fr-link" data-bs-dismiss="modal" aria-label="Close">Fermer</button>
             </div>
             <div class="fr-modal__content">
-                <h1 id="fr-modal-2-title" class="fr-modal__title" id="setTrajectoryLabel">
+                <h1 class="fr-modal__title" id="setTrajectoryLabel">
                     Sélectionner une période
                 </h1>
                 <div id="setTrajectoryForm">
@@ -139,7 +139,7 @@ Trajectoires
         </div>
     </div>
 </div>
-{% endblock %}
+{% endblock content %}
 
 {% block bodyend %}
 {% localize off %}
@@ -182,7 +182,7 @@ Trajectoires
         }
     })
 </script>
-{% endblock %}
+{% endblock bodyend %}
 
 {% block tagging %}
 <script language="javascript" nonce="{{ CSP_NONCE }}">

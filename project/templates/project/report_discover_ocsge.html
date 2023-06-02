@@ -10,7 +10,7 @@
 
 {% block pagetitle %}
 {{ nom }}
-{% endblock %}
+{% endblock pagetitle %}
 
 {% block headers %}
 {% sri_static "project/css/project.css" %}
@@ -23,7 +23,7 @@
     height: 500px;
 }
 </style>
-{% endblock %}
+{% endblock headers %}
 
 {% block content %}
 <div class="px-4">
@@ -49,7 +49,6 @@
                     <div class="fr-col-12 fr-col-lg-6">
                         <h4>Nomenclature de la Couverture du sol</h4>
                         {% include "project/partials/nomenclature_couverture_ocsge.html" %}
-                        </ul>
                     </div>
                 </div>
             </div>
@@ -150,10 +149,10 @@
                                 <td align="right">{{ item.surface_first|floatformat:1 }}</td>
                                 <td align="right">
                                     {% if item.surface_diff == 0 %}-
-                                    {%else%}
-                                        {% if item.surface_diff > 0 %}+{% endif%}
+                                    {% else %}
+                                        {% if item.surface_diff > 0 %}+{% endif %}
                                         {{ item.surface_diff|floatformat:2 }}
-                                    {% endif%}
+                                    {% endif %}
                                 </td>
                                 <td align="right">{{ item.surface_last|floatformat:1 }}</td>
                                 <td align="right">{{ item.surface_last|percent:surface_territory }}</td>
@@ -340,10 +339,10 @@
                                 <td align="right">{{ item.surface_first|floatformat:1 }}</td>
                                 <td align="right">
                                     {% if item.surface_diff == 0 %}-
-                                    {%else%}
-                                        {% if item.surface_diff > 0 %}+{% endif%}
+                                    {% else %}
+                                        {% if item.surface_diff > 0 %}+{% endif %}
                                         {{ item.surface_diff|floatformat:2 }}
-                                    {% endif%}
+                                    {% endif %}
                                 </td>
                                 <td align="right">{{ item.surface_last|floatformat:1 }}</td>
                                 <td align="right">{{ item.surface_last|percent:surface_territory }}</td>
@@ -439,7 +438,7 @@
         </div>
     </div>
 </div>
-{% endblock %}
+{% endblock content %}
 
 {% block bodyend %}
 {% localize off %}
@@ -455,7 +454,7 @@
 {% display_chart 'chart_couv_wheel' couv_wheel_chart CSP_NONCE %}
 {% display_chart 'chart_usa_wheel' usa_whell_chart CSP_NONCE %}
 {% endlocalize %}
-{% endblock %}
+{% endblock bodyend %}
 
 {% block tagging %}
 <script language="javascript" nonce="{{ CSP_NONCE }}">
