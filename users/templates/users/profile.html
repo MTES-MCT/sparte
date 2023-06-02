@@ -2,7 +2,7 @@
 
 {% load crispy_forms_tags %}
 
-{% block pagetitle %}{{ page_title }}{% endblock %}
+{% block pagetitle %}{{ page_title }}{% endblock pagetitle %}
 
 {% block content %}
 
@@ -25,7 +25,7 @@
     </div>
 </div>
 
-{% endblock %}
+{% endblock content %}
 
 {% block tagging %}
 <script language="javascript" nonce="{{ CSP_NONCE }}">

@@ -9,11 +9,11 @@
 
 {% block pagetitle %}
 Synthèse
-{% endblock %}
+{% endblock pagetitle %}
 
 {% block headers %}
 {% sri_static "project/css/project.css" %}
-{% endblock %}
+{% endblock headers %}
 
 {% block content %}
 <div class="px-4">
@@ -47,7 +47,6 @@ Synthèse
           Lire plus
         </button>
       </div>
-
 
       {% if not ocsge_available %}
       <div class="fr-notice fr-notice--info">
@@ -163,7 +162,7 @@ Synthèse
       {% endif %}
     </div>
 </div>
-{% endblock %}
+{% endblock content %}
 
 {% block tagging %}
 <script language="javascript" nonce="{{ CSP_NONCE }}">
