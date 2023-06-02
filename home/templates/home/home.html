@@ -3,13 +3,13 @@
 {% load static %}
 {% load sri %}
 
-{% block pagetitle %}Accueil{% endblock %}
+{% block pagetitle %}Accueil{% endblock pagetitle %}
 
 {% block headers %}
 {% sri_static "home/css/home.css" %}
 {% endblock headers %}
 
-{% block body_class %}home{% endblock %}
+{% block body_class %}home{% endblock body_class %}
 
 <!-- Hide breadcrumbs on home page -->
 {% block breadcrumbs %}
@@ -175,9 +175,8 @@
   </div>
 </section>
 {% include  "home/partials/newsletter_form.html" %}
+{% endblock content %}
 
-
-{% endblock %}
 {% block tagging %}
   <script language="javascript" nonce="{{ CSP_NONCE }}">
 $( window ).on('load', function () {

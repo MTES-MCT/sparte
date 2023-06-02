@@ -3,7 +3,7 @@
 {% load static %}
 {% load sri %}
 
-{% block pagetitle %}Mentions légales{% endblock %}
+{% block pagetitle %}Mentions légales{% endblock pagetitle %}
 
 {% block headers %}
 {% sri_static "home/css/home.css" %}
@@ -27,7 +27,6 @@
         </ul>
 
         <p>Vous pouvez <a href="{% url 'home:contact' %}">nous contacter</a>.</p>
-
 
         <h2>Hébergement du service</h2>
 
