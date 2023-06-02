@@ -127,7 +127,7 @@ export default class Layer {
         this.layer.clearLayers()
 
         // Clear label group
-        if (this.label)
+        if (this.label && this.labelGroup && this.labelGroup.clearLayers)
             this.labelGroup.clearLayers()
     }
 }

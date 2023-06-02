@@ -109,6 +109,7 @@ export default class GeoJSONLayer extends Layer {
         // Get data
         const data = await this.getData()
 
+        this.clearLayer()
         this.layer.addData(data)
 
         this.setFlags()
@@ -190,7 +191,7 @@ export default class GeoJSONLayer extends Layer {
     async toggleLayer(_value) {
         if (_value) {
             if (!this.lastDataBbox || this.isOptimized && this.lastDataBbox !== this.map.getBounds().toBBoxString() || this.isOptimized && !isEqual(this.urlParams, this.lastDataUrlParams)) {
-                this.clearLayer()  
+                // this.clearLayer()  
                 await this.setData()
             }
         }
@@ -218,7 +219,7 @@ export default class GeoJSONLayer extends Layer {
         if (!this.isVisible)
             return
 
-        this.clearLayer()
+        // this.clearLayer()
         this.setData()
     }, 1000)
 
