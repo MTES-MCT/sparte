@@ -1,4 +1,4 @@
-import { slugify } from './utils.js'
+import { slugify, isEmpty } from './utils.js'
 import FilterGroup from './filter-group.js'
 
 const baseZIndex = 550
@@ -82,7 +82,7 @@ export default class Layer {
 
         // Loop through url params
         if (this.urlParams)
-            Object.entries(this.urlParams).map(([key, value]) => params = { ...params, [key]: value })
+            Object.entries(this.urlParams).map(([key, value]) => params = isEmpty(value) ? params : { ...params, [key]: value })
 
         // Build url
         Object.keys(params).map((key, index) => {

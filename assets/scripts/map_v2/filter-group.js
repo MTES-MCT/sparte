@@ -19,7 +19,7 @@ export default class FilterGroup {
         // Add placeholder div layer not available
         this.placeholderNode = document.createElement('div')
         this.placeholderNode.classList.add('filter-placeholder', 'tab-item')
-        this.placeholderNode.innerHTML = `Calque ${this.name} non disponible pour ce niveau de zoom.`
+        this.placeholderNode.innerHTML = `${this.name} non disponible pour ce niveau de zoom.`
         groupNode.appendChild(this.placeholderNode)
 
         Object.values(this.filters).map((_obj) => {
