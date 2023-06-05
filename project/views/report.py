@@ -492,6 +492,22 @@ class ProjectReportTarget2031View(ProjectReportBaseView):
         return super().get_context_data(**kwargs)
 
 
+class ProjectReportUrbanZonesView(ProjectReportBaseView):
+    template_name = "project/report_urban_zones.html"
+    breadcrumbs_title = "Rapport zonages d'urbanisme"
+
+    def get_context_data(self, **kwargs):
+        project = self.get_object()
+        kwargs.update(
+            {
+                "diagnostic": project,
+                "active_page": "urban_zones",
+            }
+        )
+
+        return super().get_context_data(**kwargs)
+    
+
 class DownloadWordView(TemplateView):
     template_name = "project/error_download_word.html"
 
