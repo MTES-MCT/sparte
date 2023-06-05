@@ -58,7 +58,7 @@
         "key": "style_zone_urbaines",
         "fillOpacity": 0.1,
         "weight": 1,
-        "opacity": 1.5
+        "opacity": 1
     },
     {
         "key": "style_zone_urbaines__n",

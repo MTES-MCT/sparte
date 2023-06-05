@@ -121,13 +121,4 @@ export default class Layer {
 
         this.pane.style.opacity = this.opacity
     }
-
-    clearLayer() {
-        // Remove data from layer
-        this.layer.clearLayers()
-
-        // Clear label group
-        if (this.label && this.labelGroup && this.labelGroup.clearLayers)
-            this.labelGroup.clearLayers()
-    }
 }

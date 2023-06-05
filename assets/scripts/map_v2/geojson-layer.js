@@ -23,6 +23,10 @@ export default class GeoJSONLayer extends Layer {
         // Create layer
         this.createLayer()
 
+        // Set labels
+        if (this.label)
+            this.setLabels()
+
         // Set data
         if (this.isVisible && this.isZoomAvailable()) {
             this.setData()
@@ -49,6 +53,33 @@ export default class GeoJSONLayer extends Layer {
 
             // Create legend
             let legend = this.createLegend(_layer)
+
+            // Create tooltip
+            if (["zones-urbaines"].includes(_layer.options.pane)) {
+                _layer.bindTooltip('Cliquer pour explorer', { 
+                    sticky: true,
+                    opacity: 0.9,
+                    offset: [15, 0]
+                })
+
+                // Load data in data-panel
+                _layer.on('click', (_event) => {
+                        // Center layer on map
+                        // const latlng = this.map.mouseEventToLatLng(_event.originalEvent)
+                        // this.map.panTo(latlng)
+
+                        const url = `/project/${this.projectId}/carte/detail-zone-urbaine/${_layer.feature.properties.id}`
+
+                        const htmxContent = `<div hx-get="${url}" hx-trigger="load" class="tab-item"><div class="fr-custom-loader-min htmx-indicator"></div></div>`
+
+                        let dataTab = this.tabs.getTab('data')
+                        if (dataTab.hidden)
+                            this.tabs.toggle('data')
+
+                        dataTab.innerHTML = htmxContent
+                        htmx.process(dataTab)
+                })
+            }
 
             // Mouse events 
             _layer.on('mouseover', () => {
@@ -77,22 +108,6 @@ export default class GeoJSONLayer extends Layer {
                 if (this.label)
                     label._icon.style.color = _layer.styleInstance.style.color
             })
-
-            // Load data in data-panel
-            _layer.on('click', () => {
-                if (["zones-urbaines"].includes(_layer.options.pane)) {
-                    const url = `/project/${this.projectId}/carte/detail-zone-urbaine/${_layer.feature.properties.id}`
-
-                    const htmxContent = `<div hx-get="${url}" hx-trigger="load" class="tab-item"><div class="fr-custom-loader-min htmx-indicator"></div></div>`
-
-                    let dataTab = this.tabs.getTab('data')
-                    if (dataTab.hidden)
-                        this.tabs.toggle('data')
-
-                    dataTab.innerHTML = htmxContent
-                    htmx.process(dataTab)
-                }
-            })
         })
     }
 
@@ -109,13 +124,12 @@ export default class GeoJSONLayer extends Layer {
         // Get data
         const data = await this.getData()
 
-        this.clearLayer()
-        this.layer.addData(data)
+        this.layer.clearLayers().addData(data)
 
         this.setFlags()
 
         if (this.label)
-            this.setLabels()
+            this.labelGroup.clearLayers()
 
         this.setFeatures()
     }
@@ -147,7 +161,8 @@ export default class GeoJSONLayer extends Layer {
                 html: _layer.feature.properties[this.label.key],
                 iconSize: [0, 0],
             }),
-            interactive: false
+            interactive: false,
+            bubblingMouseEvents: true,
         })
 
         // Add label to label group
