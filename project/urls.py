@@ -67,6 +67,11 @@ urlpatterns = [
         views.ProjectReportTarget2031View.as_view(),
         name="report_target_2031",
     ),
+    path(
+        "<int:pk>/tableau-de-bord/zonages-d-urbanisme",
+        views.ProjectReportUrbanZonesView.as_view(),
+        name="report_urban_zones",
+    ),
     # REPORT PARTIALS
     path(
         "<int:pk>/tableau-de-bord/consommation-relative/surface",
@@ -119,6 +124,11 @@ urlpatterns = [
         "<int:pk>/carte/artificialisation-villes-du-territoire",
         views.CityArtifMapView.as_view(),
         name="theme-city-artif",
+    ),
+    path(
+        "<int:pk>/carte/zonages-d-urbanisme",
+        views.UrbanZonesMapView.as_view(),
+        name="map-urban-zones",
     ),
     path(
         "<int:pk>/map-v2",
