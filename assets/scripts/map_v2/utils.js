@@ -29,3 +29,19 @@ export function slugify(str) {
 
 	return str
 }
+
+export function isEmpty(_value) {
+	return _value === undefined ||
+		_value === null ||
+		_value === NaN ||
+		(typeof _value === "object" && Object.keys(_value).length === 0) ||
+		(typeof _value === "string" && _value.trim().length === 0)
+}
+
+export function formatData(_type, _options, _value) {
+	const formatter = {
+		"number": (_options) => new Intl.NumberFormat(_options[0], { style: _options[1], unit: _options[2], maximumFractionDigits: _options[3] }).format(_value)
+	}
+
+	return formatter[_type]?.(_options) ?? "formatter not found"
+}
