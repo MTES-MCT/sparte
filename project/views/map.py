@@ -409,7 +409,7 @@ class MapV2View(GroupMixin, DetailView):
                             {
                                 "name": "",
                                 "type": "tag",
-                                "value": ["AUc", "AUs", "U", "Ah", "Nd", "A", "N", "Nh"],
+                                "value": ["AUc", "AUs", "U", "A", "N"],
                                 "options": [
                                     {
                                         "name": "AUc",
@@ -428,21 +428,9 @@ class MapV2View(GroupMixin, DetailView):
                                         "value": "A",
                                     },
                                     {
-                                        "name": "Ah",
-                                        "value": "Ah",
-                                    },
-                                    {
                                         "name": "N",
                                         "value": "N",
                                     },
-                                    {
-                                        "name": "Nd",
-                                        "value": "Nd",
-                                    },
-                                    {
-                                        "name": "Nh",
-                                        "value": "Nh",
-                                    }
                                 ],
                                 "triggers": [
                                     {
