@@ -238,7 +238,7 @@ class MapV2View(GroupMixin, DetailView):
                         "url": [
                             {
                                 "value": "https://wxs.ign.fr/ortho/geoportail/wmts",
-                                "zoom_available": all_zoom, # Tile layers should always have all zoom available for now
+                                "zoom_available": all_zoom,  # Tile layers should always have all zoom available for now
                             }
                         ],
                         "url_params": {
@@ -458,7 +458,6 @@ class MapV2View(GroupMixin, DetailView):
                         "name": "OCS GE",
                         "key": "ocs-ge",
                         "type": "geojson",
-                        "url": reverse_lazy("public_data:ocsge-optimized"),
                         "url": [
                             {
                                 "value": reverse_lazy("public_data:ocsge-optimized"),
@@ -484,11 +483,11 @@ class MapV2View(GroupMixin, DetailView):
                             },
                             {
                                 "name": "Libellé couverture",
-                                "key": "couverture_label"
+                                "key": "couverture_label_short"
                             },
                             {
                                 "name": "Libellé usage",
-                                "key": "usage_label"
+                                "key": "usage_label_short"
                             },
                             {
                                 "name": "Surface",

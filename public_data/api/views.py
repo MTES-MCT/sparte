@@ -169,6 +169,8 @@ class OcsgeViewSet(ZoomSimplificationMixin, OptimizedMixins, DataViewSet):
         "o.usage": "code_usage",
         "o.surface": "surface",
         "o.year": "year",
+        "pdcs.label_short": "couverture_label_short",
+        "pdus.label_short": "usage_label_short",
     }
     min_zoom = 15
 
@@ -194,6 +196,9 @@ class OcsgeViewSet(ZoomSimplificationMixin, OptimizedMixins, DataViewSet):
         from_parts = [
             f"FROM {self.queryset.model._meta.db_table} o",
             "INNER JOIN (SELECT ST_MakeEnvelope(%s, %s, %s, %s, 4326) as box) as b ON ST_Intersects(o.mpoly, b.box)",
+            "INNER JOIN public_data_couvertureusagematrix pdcum ON o.matrix_id = pdcum.id",
+            "INNER JOIN public_data_couverturesol pdcs ON pdcum.couverture_id = pdcs.id",
+            "INNER JOIN public_data_usagesol pdus ON pdcum.usage_id = pdus.id",
         ]
         return " ".join(from_parts)
 
