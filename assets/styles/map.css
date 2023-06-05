@@ -11,7 +11,7 @@
     flex-direction: column;
 }
 
-#data-tab .fr-grid-row > div {
+#data-tab .fr-grid-row>div {
     max-width: 100% !important;
     width: 100%;
 }
@@ -32,10 +32,30 @@
     color: #000000;
     font-weight: bold;
     transition: color .3s ease;
+    /* text-shadow: rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) 0.540302px 0.841471px 0px, rgb(255, 255, 255) -0.416147px 0.909297px 0px, rgb(255, 255, 255) -0.989992px 0.14112px 0px, rgb(255, 255, 255) -0.653644px -0.756802px 0px, rgb(255, 255, 255) 0.283662px -0.958924px 0px, rgb(255, 255, 255) 0.96017px -0.279415px 0px; */
 }
 
-.leaflet-pane > svg path {
+.leaflet-pane>svg path {
     transition: opacity .3s ease, color .3s ease, fill-color .3s ease, fill-opacity .3s ease, stroke .3s ease, stroke-opacity .3s ease, stroke-width .3s ease;
+}
+
+/*
+Custom leaflet tooltip
+*/
+.leaflet-tooltip {
+    color: #1D41FF;
+}
+
+.leaflet-tooltip-left:before {
+    content: none;
+}
+
+.leaflet-tooltip-right:before {
+    content: none;
+}
+
+path.leaflet-interactive:focus {
+    outline: none;
 }
 
 /*
