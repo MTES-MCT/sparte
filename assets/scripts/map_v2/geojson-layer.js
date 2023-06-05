@@ -130,15 +130,20 @@ export default class GeoJSONLayer extends Layer {
     async setData() {
         // Get data
         const data = await this.getData()
-
-        this.layer.clearLayers().addData(data)
-
+        
         this.setFlags()
+
+        // Clear layers
+        this.layer.clearLayers()
 
         if (this.label)
             this.labelGroup.clearLayers()
 
-        this.setFeatures()
+        // Set new data
+        if (data) {
+            this.layer.addData(data)
+            this.setFeatures()
+        }
     }
 
 
@@ -203,6 +208,9 @@ export default class GeoJSONLayer extends Layer {
         // Get url
         const url = this.getUrl()
 
+        if (!url)
+            return null
+
         try {
             const response = await fetch(url)
             const data = await response.json()
@@ -222,7 +230,6 @@ export default class GeoJSONLayer extends Layer {
     async toggleLayer(_value) {
         if (_value) {
             if (!this.lastDataBbox || this.isOptimized && this.lastDataBbox !== this.map.getBounds().toBBoxString() || this.isOptimized && !isEqual(this.urlParams, this.lastDataUrlParams)) {
-                // this.clearLayer()  
                 await this.setData()
             }
         }
@@ -250,7 +257,6 @@ export default class GeoJSONLayer extends Layer {
         if (!this.isVisible)
             return
 
-        // this.clearLayer()
         this.setData()
     }, 1000)
 
