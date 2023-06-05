@@ -51,16 +51,6 @@ layerList = [
 {% endfor %}
 ]
 
-filterList = [
-{% for filter in filter_list %}
-    {
-        {% for k, v in filter.items %}
-        {{ k }}: "{{ v|safe }}",
-        {% endfor %}
-    },
-{% endfor %}
-]
-
 couv_leafs = [
 {% for leaf in couv_leafs %}
     {
@@ -85,7 +75,6 @@ new SparteMap ({
     mapCenter: [{{ center_lat }}, {{ center_lng }}],
     defaultZoom: {{ default_zoom }},
     layerList: layerList,
-    filterList: filterList,
     couv_leafs: couv_leafs,
     usa_leafs: usa_leafs,
     projectId: {{ project_id }}
