@@ -19,12 +19,7 @@ export default class Style {
 
         // Override Style
         if (this.styleKey === 'style_zone_urbaines') {
-            if (['U'].includes(this.feature.properties.typezone))
-                this.style = { ...this.style, ...this.getStyle('style_zone_urbaines__u') }
-            else if (['AUc', 'AUs'].includes(this.feature.properties.typezone))
-                this.style = { ...this.style, ...this.getStyle('style_zone_urbaines__au') }
-            else if (['Ah', 'Nd', 'A', 'N', 'Nh'].includes(this.feature.properties.typezone))
-                this.style = { ...this.style, ...this.getStyle('style_zone_urbaines__n') }
+            this.style = { ...this.style, ...this.getStyle(`style_zone_urbaines__${this.feature.properties.typezone.toLowerCase()}`) }
         }
         else if (['style_ocsge_couverture', 'style_ocsge_usage'].includes(this.styleKey)) {
             let leaf

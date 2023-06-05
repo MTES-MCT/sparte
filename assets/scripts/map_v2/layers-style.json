@@ -2,7 +2,7 @@
     {
         "key": "style_highlight",
         "opacity": 1,
-        "fillOpacity": 0.7
+        "fillOpacity": 0.6
     },
     {
         "key": "style_emprise",
@@ -23,7 +23,7 @@
     {
         "key": "style_ocsge_couverture",
         "fillColor": "#ffffff",
-        "fillOpacity": 0.6,
+        "fillOpacity": 1,
         "weight": 0,
         "opacity": 1,
         "color": "#ffffff"
@@ -61,18 +61,28 @@
         "opacity": 1
     },
     {
+        "key": "style_zone_urbaines__a",
+        "fillColor": "rgb(255, 255, 0)",
+        "color": "rgb(255, 255, 0)"
+    },
+    {
+        "key": "style_zone_urbaines__auc",
+        "fillColor": "rgb(255, 101, 101)",
+        "color": "rgb(255, 101, 101)"
+    },
+    {
+        "key": "style_zone_urbaines__aus",
+        "fillColor": "rgb(254, 204, 190)",
+        "color": "rgb(254, 204, 190)"
+    },
+    {
         "key": "style_zone_urbaines__n",
-        "fillColor": "#68bd09",
-        "color": "#68bd09"
+        "fillColor": "rgb(86, 170, 2)",
+        "color": "rgb(86, 170, 2)"
     },
     {
         "key": "style_zone_urbaines__u",
-        "fillColor": "#C70039",
-        "color": "#C70039"
-    },
-    {
-        "key": "style_zone_urbaines__au",
-        "fillColor": "#1d41ff",
-        "color": "#1d41ff"
+        "fillColor": "rgb(230, 0, 0)",
+        "color": "rgb(230, 0, 0)"
     }
 ]

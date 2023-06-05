@@ -181,7 +181,7 @@ export default class GeoJSONLayer extends Layer {
         this.labelGroup.addLayer(label)
 
         // Set label color
-        label._icon.style.color = _layer.styleInstance.style.color
+        label._icon.style.color = _layer.styleInstance.style.fillColor
 
         return label
     }
