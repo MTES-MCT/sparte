@@ -254,6 +254,12 @@ class OcsgeDiffViewSet(ZoomSimplificationMixin, OptimizedMixins, DataViewSet):
 
     min_zoom = 15
 
+    def get_zoom(self):
+        try:
+            return super().get_zoom()
+        except ValueError:
+            return 18  # make old map work
+
     def get_params(self, request):
         bbox = request.query_params.get("in_bbox").split(",")
         params = list(map(float, bbox))
@@ -368,6 +374,12 @@ class ArtificialAreaViewSet(ZoomSimplificationMixin, OptimizedMixins, DataViewSe
     }
 
     min_zoom = 12
+
+    def get_zoom(self):
+        try:
+            return super().get_zoom()
+        except ValueError:
+            return 18  # make old map work
 
     def get_params(self, request):
         bbox = request.query_params.get("in_bbox").split(",")
