@@ -17,7 +17,7 @@
 }
 
 #mapV2__legend {
-    background: #ffffff;
+    background: rgba(255, 255, 255, 1);
     position: absolute;
     bottom: 0;
     height: 40px;
@@ -26,6 +26,10 @@
     padding: 10px;
     opacity: 0;
     transition: opacity .3s ease;
+}
+
+#mapV2__legend.visible {
+    opacity: 1;
 }
 
 .map-label {
