@@ -42,7 +42,7 @@ class MissingFile(Exception):
 
 
 class Command(BaseCommand):
-    help = "Load all data from OCS GE"
+    help = "Use file on S3 to import GPU data."
 
     def add_arguments(self, parser):
         parser.add_argument(
