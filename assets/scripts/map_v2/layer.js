@@ -70,6 +70,10 @@ export default class Layer {
     }
 
     getUrl() {
+        // Prevent return all zones urbaines if type_zone param is empty
+        if (this.key === "zones-urbaines" && this.urlParams.type_zone.length === 0)
+            return null
+
         let params = {}
         const bbox = this.map.getBounds().toBBoxString()
         const zoom = this.map.getZoom()
