@@ -17,6 +17,7 @@ export default class Layer {
         this.label = _options.label ? JSON.parse(_options.label.replace(/\'/g, '"')) : null
         this.url = JSON.parse(_options.url.replace(/\'/g, '"'))
         this.urlParams = _options.url_params ? JSON.parse(_options.url_params.replace(/\'/g, '"')) : {}
+        this.legend = _options.legend ? JSON.parse(_options.legend.replace(/\'/g, '"')) : []
         this.filters = _options.filters ? JSON.parse(_options.filters.replace(/\'/g, '"')) : []
 
         this.isOptimized = Boolean(Number(_options.is_optimized))
@@ -26,8 +27,9 @@ export default class Layer {
         this.isVisible = this.filters.find((_obj) => _obj.type === 'visible')?.value === 'true' ? true : this.filters.find((_obj) => _obj.type === 'visible')?.value === 'false' ? false : true
         this.opacity = this.filters.find((_obj) => _obj.type === 'opacity')?.value || 1
 
-        // Init legend Node
-        this.setLegend()
+        // Set legend
+        if (this.legend.length > 0)
+            this.setLegend()
     }
 
 

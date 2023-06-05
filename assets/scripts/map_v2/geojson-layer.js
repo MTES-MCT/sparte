@@ -2,7 +2,7 @@ import * as L from 'leaflet'
 import Layer from './layer.js'
 import Style from './style.js'
 import isEqual from 'lodash/isEqual'
-import { debounce } from './utils.js'
+import { debounce, formatData } from './utils.js'
 
 export default class GeoJSONLayer extends Layer {
     constructor(_options = {}) {
@@ -43,6 +43,9 @@ export default class GeoJSONLayer extends Layer {
 
     setFeatures() {
         this.layer.eachLayer((_layer) => {
+            // Define
+            let legend
+
             // Set feature layer style
             this.setStyleInstance(_layer)
 
@@ -51,42 +54,45 @@ export default class GeoJSONLayer extends Layer {
             if (this.label)
                 label = this.createLabel(_layer)
 
-            // Create legend
-            let legend = this.createLegend(_layer)
-
             // Create tooltip
             if (["zones-urbaines"].includes(_layer.options.pane)) {
-                _layer.bindTooltip('Cliquer pour explorer', { 
+                _layer.bindTooltip('Cliquer pour explorer', {
                     sticky: true,
                     opacity: 0.9,
                     offset: [15, 0]
                 })
-
-                // Load data in data-panel
-                _layer.on('click', (_event) => {
-                        // Center layer on map
-                        // const latlng = this.map.mouseEventToLatLng(_event.originalEvent)
-                        // this.map.panTo(latlng)
-
-                        const url = `/project/${this.projectId}/carte/detail-zone-urbaine/${_layer.feature.properties.id}`
-
-                        const htmxContent = `<div hx-get="${url}" hx-trigger="load" class="tab-item"><div class="fr-custom-loader-min htmx-indicator"></div></div>`
-
-                        let dataTab = this.tabs.getTab('data')
-                        if (dataTab.hidden)
-                            this.tabs.toggle('data')
-
-                        dataTab.innerHTML = htmxContent
-                        htmx.process(dataTab)
-                })
             }
+
+            _layer.on('click', (_event) => {
+                if (["zones-urbaines"].includes(_layer.options.pane)) {
+                    // Center layer on map
+                    // const latlng = this.map.mouseEventToLatLng(_event.originalEvent)
+                    // this.map.panTo(latlng)
+
+                    const url = `/project/${this.projectId}/carte/detail-zone-urbaine/${_layer.feature.properties.id}`
+
+                    const htmxContent = `<div hx-get="${url}" hx-trigger="load" class="tab-item"><div class="fr-custom-loader-min htmx-indicator"></div></div>`
+
+                    let dataTab = this.tabs.getTab('data')
+                    if (dataTab.hidden)
+                        this.tabs.toggle('data')
+
+                    dataTab.innerHTML = htmxContent
+                    htmx.process(dataTab)
+                }
+            })
 
             // Mouse events 
             _layer.on('mouseover', () => {
-                // Display legend
-                this.legendNode.innerHTML = legend
-                this.legendNode.style.opacity = 1
-                this.legendNode.style.visibility = 'visible'
+                // create legend
+                if (this.legend.length > 0)
+                    legend = this.createLegend(_layer)
+
+                if (legend) {
+                    // Display legend
+                    this.legendNode.innerHTML = legend
+                    this.legendNode.classList.add('visible')
+                }
 
                 _layer.bringToFront()
 
@@ -98,10 +104,11 @@ export default class GeoJSONLayer extends Layer {
             })
 
             _layer.on('mouseout', () => {
-                // Hide legend
-                this.legendNode.innerHTML = null
-                this.legendNode.style.opacity = 0
-                this.legendNode.style.visibility = 'hidden'
+                if (legend) {
+                    // Hide legend
+                    this.legendNode.innerHTML = null
+                    this.legendNode.classList.remove('visible')
+                }
 
                 _layer.setStyle(_layer.styleInstance.style)
 
@@ -142,7 +149,7 @@ export default class GeoJSONLayer extends Layer {
             pane: this.key,
             interactive: this.isInteractive
         })
-        
+
         this.layer.addTo(this.map)
     }
 
@@ -176,8 +183,17 @@ export default class GeoJSONLayer extends Layer {
 
     createLegend(_layer) {
         let legend = '<div class="d-flex align-items-center">'
-        if (_layer.feature.properties)
-            Object.entries(_layer.feature.properties).map(([key, value]) => legend += `<div class="fr-mr-2w"><strong>${key}</strong>: ${value}</div>`)
+
+        this.legend.map((_obj) => {
+            const value =
+                _layer.options.pane === "ocs-ge" && _layer.options.key === "style_ocsge_couverture" && (_obj.key === "code_usage" || _obj.key === "usage_label") || _layer.options.pane === "ocs-ge" && _layer.options.key === "style_ocsge_usage" && (_obj.key === "code_couverture" || _obj.key === "couverture_label") ? null
+                    : _obj.formatter ? formatData(_obj.formatter[0], _obj.formatter[1], _layer.feature.properties[_obj.key])
+                        : _layer.feature.properties[_obj.key]
+
+            if (value)
+                legend += `<div class="fr-mr-2w"><strong>${_obj.name}</strong>: ${value}</div>`
+        })
+
         legend += '</div>'
 
         return legend
@@ -227,7 +243,7 @@ export default class GeoJSONLayer extends Layer {
             _layer.setStyle(_layer.styleInstance.style)
         })
     }
-    
+
     updateData = debounce((_value, _param) => {
         this.urlParams[_param] = _value
 

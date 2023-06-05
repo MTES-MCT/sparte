@@ -331,6 +331,33 @@ class MapV2View(GroupMixin, DetailView):
                         "z_index": 4,
                         "is_optimized": 1,
                         "is_interactive": 1,
+                        "legend": [
+                            {
+                                "name": "Code couverture",
+                                "key": "code_couverture"
+                            },
+                            {
+                                "name": "Code usage",
+                                "key": "code_usage"
+                            },
+                            {
+                                "name": "Libellé couverture",
+                                "key": "couverture_label"
+                            },
+                            {
+                                "name": "Libellé usage",
+                                "key": "usage_label"
+                            },
+                            {
+                                "name": "Surface",
+                                "key": "surface",
+                                "formatter": ["number", ["fr-FR", "unit", "hectare", 2]]
+                            },
+                            {
+                                "name": "Millésime",
+                                "key": "year"
+                            }
+                        ],
                         "filters": [
                             {
                                 "name": "OCS GE",
@@ -408,6 +435,24 @@ class MapV2View(GroupMixin, DetailView):
                         "z_index": 5,
                         "is_optimized": 1,
                         "is_interactive": 1,
+                        "legend": [
+                            {
+                                "name": "ID",
+                                "key": "id"
+                            },
+                            {
+                                "name": "Libellé",
+                                "key": "libelle"
+                            },
+                            {
+                                "name": "Libellé long",
+                                "key": "libelong"
+                            },
+                            {
+                                "name": "Type de zone",
+                                "key": "typezone"
+                            }
+                        ],
                         "filters": [
                             {
                                 "name": "Zonages des documents d&rsquo;urbanisme",
