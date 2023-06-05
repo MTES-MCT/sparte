@@ -282,6 +282,50 @@ class MapV2View(GroupMixin, DetailView):
                         ]
                     },
                     {
+                        "name": "Limites administratives",
+                        "key": "limites-administratives",
+                        "type": "geojson",
+                        "url": [
+                            {
+                                "value": reverse_lazy("public_data:commune-optimized"),
+                                "zoom_available": [12, 13, 14, 15],
+                            },
+                            {
+                                "value": reverse_lazy("public_data:epci-optimized"),
+                                "zoom_available": [10, 11],
+                            },
+                            {
+                                "value": reverse_lazy("public_data:scot-optimized"),
+                                "zoom_available": [9],
+                            },
+                            {
+                                "value": reverse_lazy("public_data:departement-optimized"),
+                                "zoom_available": [8],
+                            },
+                            {
+                                "value": reverse_lazy("public_data:region-optimized"),
+                                "zoom_available": [6, 7],
+                            }
+                        ],
+                        "style_key": "style_limites_administratives",
+                        "z_index": 1,
+                        "is_optimized": 1,
+                        "is_interactive": 0,
+                        "filters": [
+                            {
+                                "name": "Limites administratives",
+                                "type": "visible",
+                                "value": "true",
+                                "triggers": [
+                                    {
+                                        "method": "toggleVisibile",
+                                        "layer": "limites-administratives"
+                                    }
+                                ]
+                            },
+                        ]
+                    },
+                    {
                         "name": "Emprise du territoire",
                         "key": "emprise-du-territoire",
                         "type": "geojson",
@@ -311,6 +355,104 @@ class MapV2View(GroupMixin, DetailView):
                                 ]
                             },
                         ]
+                    },
+                    {
+                        "name": "Zones urbaines",
+                        "key": "zones-urbaines",
+                        "type": "geojson",
+                        "url": [
+                            {
+                                "value": reverse_lazy("public_data:zoneurba-optimized"),
+                                "zoom_available": list(range(12, 18)),
+                            }
+                        ],
+                        "url_params": {
+                            "type_zone": "AUc, AUs, Ah, Nd, A, N, Nh, U",
+                        },
+                        "label": {
+                            "key": "typezone"
+                        },
+                        "style_key": "style_zone_urbaines",
+                        "z_index": 5,
+                        "is_optimized": 1,
+                        "is_interactive": 1,
+                        "legend": [
+                            {
+                                "name": "ID",
+                                "key": "id"
+                            },
+                            {
+                                "name": "Libellé",
+                                "key": "libelle"
+                            },
+                            {
+                                "name": "Libellé long",
+                                "key": "libelong"
+                            },
+                            {
+                                "name": "Type de zone",
+                                "key": "typezone"
+                            }
+                        ],
+                        "filters": [
+                            {
+                                "name": "Zonages des documents d&rsquo;urbanisme",
+                                "type": "visible",
+                                "value": "true",
+                                "triggers": [
+                                    {
+                                        "method": "toggleVisibile",
+                                        "layer": "zones-urbaines"
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "",
+                                "type": "tag",
+                                "value": ["AUc", "AUs", "U", "Ah", "Nd", "A", "N", "Nh"],
+                                "options": [
+                                    {
+                                        "name": "AUc",
+                                        "value": "AUc",
+                                    },
+                                    {
+                                        "name": "AUs",
+                                        "value": "AUs",
+                                    },
+                                    {
+                                        "name": "U",
+                                        "value": "U",
+                                    },
+                                    {
+                                        "name": "A",
+                                        "value": "A",
+                                    },
+                                    {
+                                        "name": "Ah",
+                                        "value": "Ah",
+                                    },
+                                    {
+                                        "name": "N",
+                                        "value": "N",
+                                    },
+                                    {
+                                        "name": "Nd",
+                                        "value": "Nd",
+                                    },
+                                    {
+                                        "name": "Nh",
+                                        "value": "Nh",
+                                    }
+                                ],
+                                "triggers": [
+                                    {
+                                        "method": "updateData",
+                                        "param": "type_zone",
+                                        "layer": "zones-urbaines"
+                                    }
+                                ]
+                            }
+                        ],
                     },
                     {
                         "name": "OCS GE",
@@ -413,148 +555,6 @@ class MapV2View(GroupMixin, DetailView):
                                     }
                                 ]
                             }
-                        ]
-                    },
-                    {
-                        "name": "Zones urbaines",
-                        "key": "zones-urbaines",
-                        "type": "geojson",
-                        "url": [
-                            {
-                                "value": reverse_lazy("public_data:zoneurba-optimized"),
-                                "zoom_available": list(range(12, 18)),
-                            }
-                        ],
-                        "url_params": {
-                            "type_zone": "AUc, AUs, Ah, Nd, A, N, Nh, U",
-                        },
-                        "label": {
-                            "key": "typezone"
-                        },
-                        "style_key": "style_zone_urbaines",
-                        "z_index": 5,
-                        "is_optimized": 1,
-                        "is_interactive": 1,
-                        "legend": [
-                            {
-                                "name": "ID",
-                                "key": "id"
-                            },
-                            {
-                                "name": "Libellé",
-                                "key": "libelle"
-                            },
-                            {
-                                "name": "Libellé long",
-                                "key": "libelong"
-                            },
-                            {
-                                "name": "Type de zone",
-                                "key": "typezone"
-                            }
-                        ],
-                        "filters": [
-                            {
-                                "name": "Zonages des documents d&rsquo;urbanisme",
-                                "type": "visible",
-                                "value": "true",
-                                "triggers": [
-                                    {
-                                        "method": "toggleVisibile",
-                                        "layer": "zones-urbaines"
-                                    }
-                                ]
-                            },
-                            {
-                                "name": "",
-                                "type": "tag",
-                                "value": ["AUc", "AUs", "U", "Ah", "Nd", "A", "N", "Nh"],
-                                "options": [
-                                    {
-                                        "name": "AUc",
-                                        "value": "AUc",
-                                    },
-                                    {
-                                        "name": "AUs",
-                                        "value": "AUs",
-                                    },
-                                    {
-                                        "name": "U",
-                                        "value": "U",
-                                    },
-                                    {
-                                        "name": "A",
-                                        "value": "A",
-                                    },
-                                    {
-                                        "name": "Ah",
-                                        "value": "Ah",
-                                    },
-                                    {
-                                        "name": "N",
-                                        "value": "N",
-                                    },
-                                    {
-                                        "name": "Nd",
-                                        "value": "Nd",
-                                    },
-                                    {
-                                        "name": "Nh",
-                                        "value": "Nh",
-                                    }
-                                ],
-                                "triggers": [
-                                    {
-                                        "method": "updateData",
-                                        "param": "type_zone",
-                                        "layer": "zones-urbaines"
-                                    }
-                                ]
-                            }
-                        ],
-                    },
-                    {
-                        "name": "Limites administratives",
-                        "key": "limites-administratives",
-                        "type": "geojson",
-                        "url": [
-                            {
-                                "value": reverse_lazy("public_data:commune-optimized"),
-                                "zoom_available": [12, 13, 14, 15],
-                            },
-                            {
-                                "value": reverse_lazy("public_data:epci-optimized"),
-                                "zoom_available": [10, 11],
-                            },
-                            {
-                                "value": reverse_lazy("public_data:scot-optimized"),
-                                "zoom_available": [9],
-                            },
-                            {
-                                "value": reverse_lazy("public_data:departement-optimized"),
-                                "zoom_available": [8],
-                            },
-                            {
-                                "value": reverse_lazy("public_data:region-optimized"),
-                                "zoom_available": [6, 7],
-                            }
-                        ],
-                        "style_key": "style_limites_administratives",
-                        "z_index": 1,
-                        "is_optimized": 1,
-                        "is_interactive": 0,
-                        "filters": [
-                            {
-                                "name": "Limites administratives",
-                                "type": "visible",
-                                "value": "true",
-                                "triggers": [
-                                    {
-                                        "method": "toggleVisibile",
-                                        "layer": "limites-administratives"
-                                    }
-                                ]
-                            },
                         ]
                     },
                 ],
