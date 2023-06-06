@@ -19,9 +19,6 @@
             <li class="fr-nav__item"{% if not project.is_artif %} data-toggle="tooltip" title="OCS GE n'est pas disponible pour ce territoire" aria-hidden="true"{% endif %}>
                 <a class="fr-nav__link {% if not project.is_artif %} disabled{% endif %}" {% if not project.is_artif %} role="link" aria-disabled="true"{% else %} href="{% url 'project:report_discover' project.pk %}"{% endif %} {% if active_page == 'discover' %} aria-current="true"{% endif %}>Découvrir l'OCSGE</a>
             </li>
-            <li class="fr-nav__item"{% if not project.is_artif %} data-toggle="tooltip" title="OCS GE n'est pas disponible pour ce territoire" aria-hidden="true"{% endif %}>
-                <a class="fr-nav__link {% if not project.is_artif %} disabled{% endif %}" {% if not project.is_artif %} role="link" aria-disabled="true"{% else %} href="{% url 'project:report_gpu' project.pk %}"{% endif %} {% if active_page == 'gpu' %} aria-current="true"{% endif %}>Zones d'urbanisme</a>
-            </li>
             <li class="fr-nav__item">
                 <a class="fr-nav__link" {% if active_page == 'urban_zones' %} aria-current="true"{% endif %} href="{% url 'project:report_urban_zones' project.pk %}">Zonages d'urbanisme</a>
             </li>

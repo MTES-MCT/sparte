@@ -4,7 +4,7 @@ from pathlib import Path
 from django.contrib.gis.db.models.functions import Area, Transform
 from django.core.management.base import BaseCommand
 from django.db import connection
-from django.db.models import DecimalField
+from django.db.models import DecimalField, F
 from django.db.models.functions import Cast
 
 from public_data.models import (
@@ -82,19 +82,16 @@ class ZoneUrbaFrance(AutoLoadMixin, ZoneUrba):
             )
         )
         logger.info("Clean typezone")
-        set_typezone_query = (
-            "UPDATE public_data_zoneurba pdz SET typezone = CASE "
-            "    WHEN origin_typezone = 'Nh' OR origin_typezone = 'Nd' THEN 'N'"
-            "    WHEN origin_typezone = 'Ah' THEN 'A'"
-            "    ELSE origin_typezone END;"
-        )
-        with connection.cursor() as cursor:
-            cursor.execute(set_typezone_query)
+        cls.objects.update(origin_typezone=F("typezone"))
+        cls.objects.filter(typezone__in=["Nh", "Nd"]).update(typezone="N")
+        cls.objects.filter(typezone="Ah").update(typezone="A")
         logger.info("Fill up table ZoneUrbaArtificialArea")
         artif_area_query = (
             "insert into public_data_artifareazoneurba (zone_urba_id, year, area) "
             "select pdz.id, pdo.year, ST_Area(ST_Transform(ST_Union(pdo.mpoly), 2154)) / 10000 as artificial_area "
-            "from public_data_zoneurba pdz inner join public_data_ocsge pdo on ST_Intersects(pdo.mpoly, pdz.mpoly) "
+            "from public_data_zoneurba pdz left join public_data_artifareazoneurba pda on pda.zone_urba_id = pdz.id "
+            "inner join public_data_ocsge pdo on ST_Intersects(pdo.mpoly, pdz.mpoly) "
+            "where pda.id is null "
             "group by pdz.id, pdo.year;"
         )
         with connection.cursor() as cursor:
