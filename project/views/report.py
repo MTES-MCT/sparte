@@ -604,6 +604,8 @@ class ArtifZoneUrbaView(StandAloneMixin, DetailView):
             .filter(is_artificial=True, year=diagnostic.last_year_ocsge)
             .aggregate(area=Sum("intersection_area") / 10000)
         )["area"]
+        if artif_area is None:
+            artif_area = 0
         kwargs |= {
             "diagnostic": diagnostic,
             "zone_urba": zone_urba,
