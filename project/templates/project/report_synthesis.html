@@ -167,13 +167,13 @@ Synthèse
 {% block tagging %}
 <script language="javascript" nonce="{{ CSP_NONCE }}">
 $( window ).on('load', function () {
-    _paq.push(['trackEvent', 'Consultation diagnostic', 'Tableau de bord', 'Synthèse'])
+    _paq.push(['trackEvent', '', '', 'open_dashboard_synthesis'])
 })
 
 var fired = false
 $( window ).scroll(function() {
     if(fired == false && $( window ).scrollTop() + $( window ).height() > $( "#block-content" ).height() - 100) {
-        _paq.push(['trackEvent', 'Consultation diagnostic', 'Fin tableau de bord', 'Synthèse'])
+        _paq.push(['trackEvent', '', '', 'end_dashboard_synthesis'])
         fired = true
     }
 })
