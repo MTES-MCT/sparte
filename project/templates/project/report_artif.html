@@ -1,4 +1,4 @@
-{% extends 'index.html' %}
+{% extends "index.html" %}
 
 {% load static %}
 {% load project_tags %}
@@ -10,11 +10,11 @@
 
 {% block pagetitle %}
 Rapport artificialisation
-{% endblock %}
+{% endblock pagetitle %}
 
 {% block headers %}
 {% sri_static "project/css/project.css" %}
-{% endblock %}
+{% endblock headers %}
 
 {% block content %}
 <div class="px-4">
@@ -98,7 +98,7 @@ Rapport artificialisation
               <div class="fr-col-12 fr-col-md-6 fr-col-lg-3 fr-grid-row">
                 <div class="fr-callout w-100">
                   <p class="fr-callout__title">{{ net_artif|floatformat:0 }} ha</p>
-                  <span class="dotted" data-toggle="tooltip" title="C'est la différence entre les surfaces des zones artificialisées et renaturées." aria-hidden="true">Artificialisation nette</span></p>
+                  <p><span class="dotted" data-toggle="tooltip" title="C'est la différence entre les surfaces des zones artificialisées et renaturées." aria-hidden="true">Artificialisation nette</span></p>
                 </div>
               </div>
               <div class="fr-col-12 fr-col-md-6 fr-col-lg-3 fr-grid-row">
@@ -542,7 +542,7 @@ Rapport artificialisation
                 <button class="fr-link--close fr-link" data-bs-dismiss="modal" aria-label="Close">Fermer</button>
             </div>
             <div class="fr-modal__content">
-                <h1 id="fr-modal-2-title" class="fr-modal__title" id="couvArtifSolLabel">
+                <h1 class="fr-modal__title" id="couvArtifSolLabel">
                     <span class="fr-fi-arrow-right-line fr-fi--lg"></span>
                     Astuces - Graphique couverture des sols
                 </h1>
@@ -562,7 +562,7 @@ Rapport artificialisation
                 <button class="fr-link--close fr-link" data-bs-dismiss="modal" aria-label="Close">Fermer</button>
             </div>
             <div class="fr-modal__content">
-                <h1 id="fr-modal-2-title" class="fr-modal__title" id="usageArtifSolLabel">
+                <h1 class="fr-modal__title" id="usageArtifSolLabel">
                     <span class="fr-fi-arrow-right-line fr-fi--lg"></span>
                     Astuces - Graphique grandes familles d'usages du sol des espaces artificialisés
                 </h1>
@@ -574,7 +574,7 @@ Rapport artificialisation
     </div>
 </div>
 
-{% endblock %}
+{% endblock content %}
 
 {% block bodyend %}
 {% localize off %}
@@ -590,7 +590,7 @@ Rapport artificialisation
 {% display_chart 'chart_waterfall' chart_waterfall CSP_NONCE %}
 
 {% endlocalize %}
-{% endblock %}
+{% endblock bodyend %}
 
 {% block tagging %}
 <script language="javascript" nonce="{{ CSP_NONCE }}">

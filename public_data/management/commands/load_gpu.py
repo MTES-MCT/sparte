@@ -1,11 +1,11 @@
 import logging
 from pathlib import Path
 
-# from django.contrib.gis.db.models.functions import Area, Transform
+from django.contrib.gis.db.models.functions import Area, Transform
 from django.core.management.base import BaseCommand
-
-# from django.db.models import DecimalField
-# from django.db.models.functions import Cast
+from django.db import connection
+from django.db.models import DecimalField, F
+from django.db.models.functions import Cast
 
 from public_data.models import (
     AutoLoadMixin,
@@ -36,11 +36,11 @@ class ZoneUrbaFrance(AutoLoadMixin, ZoneUrba):
         "partition": "partition",
         "libelle": "libelle",
         "libelong": "libelong",
-        "typezone": "typezone",
+        "origin_typezone": "typezone",
         "destdomi": "destdomi",
         "nomfic": "nomfic",
         "urlfic": "urlfic",
-        "insee": "insee",
+        "origin_insee": "insee",
         "datappro": "datappro",
         "datvalid": "datvalid",
         "idurba": "idurba",
@@ -63,28 +63,50 @@ class ZoneUrbaFrance(AutoLoadMixin, ZoneUrba):
         By default, it will calculate label for couverture and usage if couverture_field
         and usage_field are set with the name of the field containing code (cs.2.1.3)
         """
-        # TODO : insee, surface
+        # TODO : insee, surface, type_zone
+        logger.info("Calculate fields")
+        logger.info("Make mpoly valid")
+        make_valid_mpoly_query = (
+            "UPDATE public_data_zoneurba pdz "
+            "SET mpoly = ST_Multi(ST_CollectionExtract(ST_MakeValid(mpoly), 3)) "
+            "WHERE ST_IsValid(mpoly) IS FALSE "
+            "    AND ST_IsValid(ST_MakeValid(mpoly))"
+        )
+        with connection.cursor() as cursor:
+            cursor.execute(make_valid_mpoly_query)
+        logger.info("Evaluate area")
+        cls.objects.filter(area__isnull=True).update(
+            area=Cast(
+                Area(Transform("mpoly", 2154)),
+                DecimalField(max_digits=15, decimal_places=4),
+            )
+        )
+        logger.info("Clean typezone")
+        cls.objects.update(origin_typezone=F("typezone"))
+        cls.objects.filter(typezone__in=["Nh", "Nd"]).update(typezone="N")
+        cls.objects.filter(typezone="Ah").update(typezone="A")
+        logger.info("Fill up table ZoneUrbaArtificialArea")
+        artif_area_query = (
+            "insert into public_data_artifareazoneurba (zone_urba_id, year, area) "
+            "select pdz.id, pdo.year, ST_Area(ST_Transform(ST_Union(pdo.mpoly), 2154)) / 10000 as artificial_area "
+            "from public_data_zoneurba pdz left join public_data_artifareazoneurba pda on pda.zone_urba_id = pdz.id "
+            "inner join public_data_ocsge pdo on ST_Intersects(pdo.mpoly, pdz.mpoly) "
+            "where pda.id is null "
+            "group by pdz.id, pdo.year;"
+        )
+        with connection.cursor() as cursor:
+            cursor.execute(artif_area_query)
 
 
 class Command(BaseCommand):
     help = "Load all data from OCS GE"
 
     def add_arguments(self, parser):
-        # parser.add_argument(
-        #     "--item",
-        #     type=str,
-        #     help="item that you want to load ex: GersOcsge2016, ZoneConstruite2019...",
-        # )
         parser.add_argument(
             "--truncate",
             action="store_true",
-            help=("if you want to completly restart tables including id, not compatible " "with --item"),
+            help="if you want to completly restart tables including id, not compatible " "with --item",
         )
-        # parser.add_argument(
-        #     "--describe",
-        #     action="store_true",
-        #     help="Show shape file features'",
-        # )
         parser.add_argument(
             "--verbose",
             action="store_true",

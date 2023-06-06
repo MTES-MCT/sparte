@@ -1,4 +1,4 @@
-{% extends 'index.html' %}
+{% extends "index.html" %}
 
 {% load static %}
 {% load project_tags %}
@@ -10,12 +10,12 @@
 
 {% block pagetitle %}
 Projection 2031
-{% endblock %}
+{% endblock pagetitle %}
 
 {% block headers %}
 <meta name="htmx-config" content='{"inlineScriptNonce":"{{ CSP_NONCE }}"}'>
 {% sri_static "project/css/project.css" %}
-{% endblock %}
+{% endblock headers %}
 
 {% block content %}
 <div class="px-4">
@@ -219,7 +219,7 @@ Projection 2031
                 <button class="fr-link--close fr-link" data-bs-dismiss="modal" aria-label="Close">Fermer</button>
             </div>
             <div class="fr-modal__content">
-                <h1 id="fr-modal-2-title" class="fr-modal__title" id="setTargetLabel">
+                <h1 class="fr-modal__title" id="setTargetLabel">
                     Personnaliser mon objectif 2031
                 </h1>
                 <div id="setTargetForm">
@@ -237,7 +237,7 @@ Projection 2031
                 <button class="fr-link--close fr-link" data-bs-dismiss="modal" aria-label="Close">Fermer</button>
             </div>
             <div class="fr-modal__content">
-                <h1 id="fr-modal-2-title" class="fr-modal__title" id="objectiveLabel">
+                <h1 class="fr-modal__title" id="objectiveLabel">
                     <span class="fr-fi-arrow-right-line fr-fi--lg"></span>
                     Astuces - Objectif 2031
                 </h1>
@@ -248,7 +248,7 @@ Projection 2031
         </div>
     </div>
 </div>
-{% endblock %}
+{% endblock content %}
 
 {% block bodyend %}
 {% localize off %}
@@ -265,7 +265,7 @@ window.htmx.on("htmx:oobAfterSwap", () => {
     }, 1200);
 })
 </script>
-{% endblock %}
+{% endblock bodyend %}
 
 {% block tagging %}
 <script language="javascript" nonce="{{ CSP_NONCE }}">

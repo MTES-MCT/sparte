@@ -1,4 +1,4 @@
-{% extends 'index.html' %}
+{% extends "index.html" %}
 
 {% load static %}
 {% load humanize %}
@@ -7,7 +7,7 @@
 {% load highcharts_tags %}
 {% load sri %}
 
-{% block pagetitle %}Accueil{% endblock %}
+{% block pagetitle %}Accueil{% endblock pagetitle %}
 
 {% block headers %}
 {% sri_static "home/css/home.css" %}
@@ -62,13 +62,9 @@
             </div>
         </div>
 
-
-
-
-
         <h2 class="mt-5">Utilisation des rapports en ligne</h2>
         <p class="my-5">Ce graphique présente comment les usagers consultent les rapports en ligne (source Matomo, cookie d'analytic). Période sélectionnée : {{ report_pie.start }} - {{ report_pie.end }}.</p>
-        <div class="">
+        <div>
             <div id="report_pie"></div>
         </div>
     </div>
@@ -130,4 +126,4 @@ $.getJSON("{% url 'home:region-list' %}", function(data) {
 
 </script>
 {% endlocalize %}
-{% endblock %}
+{% endblock bodyend %}

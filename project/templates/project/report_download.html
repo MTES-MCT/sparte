@@ -30,12 +30,12 @@
 
     <script language="javascript" nonce="{{ CSP_NONCE }}">
         $( window ).on('load', function () {
-            _paq.push(['trackEvent', 'Consultation diagnostic', 'Tableau de bord', 'Téléchargement'])
+            _paq.push(['trackEvent', '', '', 'open_download_word_report_modal'])
         })
 
 
         $( "#dl_btn" ).click(function() {
-            _paq.push(['trackEvent', 'Consultation diagnostic', 'Télécharger'])
+            _paq.push(['trackEvent', '', '', 'download_word_report'])
         })
     </script>
 {% endif %}

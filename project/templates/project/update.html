@@ -1,4 +1,4 @@
-{% extends 'index.html' %}
+{% extends "index.html" %}
 
 {% load crispy_forms_tags %}
 {% load static %}
@@ -10,12 +10,11 @@
 
 {% block pagetitle %}
 Modifier
-{% endblock %}
+{% endblock pagetitle %}
 
 {% block headers %}
 {% sri_static "project/css/project.css" %}
-{% endblock %}
-
+{% endblock headers %}
 
 {% block content %}
 <div class="px-4">
@@ -74,7 +73,7 @@ Modifier
         </div>
     </div>
 </div>
-{% endblock %}
+{% endblock content %}
 
 {% block bodyend %}
 <script language="javascript" nonce="{{ CSP_NONCE }}">
