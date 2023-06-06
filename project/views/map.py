@@ -377,10 +377,10 @@ class MapV2View(GroupMixin, DetailView):
                         "is_optimized": 1,
                         "is_interactive": 1,
                         "legend": [
-                            {
-                                "name": "ID",
-                                "key": "id"
-                            },
+                            # {
+                            #     "name": "ID",
+                            #     "key": "id"
+                            # },
                             {
                                 "name": "Libellé",
                                 "key": "libelle"
@@ -724,10 +724,10 @@ class UrbanZonesMapView(GroupMixin, DetailView):
                         "is_optimized": 1,
                         "is_interactive": 1,
                         "legend": [
-                            {
-                                "name": "ID",
-                                "key": "id"
-                            },
+                            # {
+                            #     "name": "ID",
+                            #     "key": "id"
+                            # },
                             {
                                 "name": "Libellé",
                                 "key": "libelle"
@@ -895,7 +895,7 @@ class UrbanZonesMapView(GroupMixin, DetailView):
             }
         )
         return super().get_context_data(**kwargs)
-    
+
 
 class BaseThemeMap(GroupMixin, DetailView):
     """This is a base class for thematic map. It group together layer definition, data
