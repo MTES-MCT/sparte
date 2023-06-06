@@ -1,4 +1,4 @@
-{% extends 'index.html' %}
+{% extends "index.html" %}
 
 {% load static %}
 {% load project_tags %}
@@ -21,7 +21,7 @@ html, body {
 </style>
 {% endblock headers %}
 
-{% block body_class %}header-min full-width breadcrumb-min{% endblock %}
+{% block body_class %}header-min full-width breadcrumb-min{% endblock body_class %}
 
 {% block content %}
 <div id="mapV2__wrapper" class="d-flex h-100">

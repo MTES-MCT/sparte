@@ -5,6 +5,7 @@ from django.contrib.gis.geos import GEOSGeometry
 from django.core.management.base import BaseCommand
 from django.db.models import Q
 
+from public_data.management.commands.load_gpu import ZoneUrbaFrance
 from public_data.models import ZoneUrba, Departement
 from public_data.storages import DataStorage
 
@@ -42,7 +43,7 @@ class MissingFile(Exception):
 
 
 class Command(BaseCommand):
-    help = "Load all data from OCS GE"
+    help = "Use file on S3 to import GPU data."
 
     def add_arguments(self, parser):
         parser.add_argument(
@@ -80,7 +81,8 @@ class Command(BaseCommand):
             raise MissingFile("File does not exist, have you exported it first ?")
 
         logger.info("Delete previous data from this departement")
-        ZoneUrba.objects.intersect(dept.mpoly).delete()
+        zones = ZoneUrba.objects.intersect(dept.mpoly)
+        zones.delete()
 
         logger.info("Read data from file")
         s3_file = self.storage.open(filename, "r")
@@ -108,3 +110,6 @@ class Command(BaseCommand):
                 zones = []
         ZoneUrba.objects.bulk_create(zones)
         logger.info("Imported %i lines", i)
+
+        logger.info("Start calculating fields")
+        ZoneUrbaFrance.calculate_fields()

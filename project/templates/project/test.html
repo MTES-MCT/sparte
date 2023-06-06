@@ -1,4 +1,4 @@
-{% extends 'index.html' %}
+{% extends "index.html" %}
 
 {% load static %}
 {% load project_tags %}
@@ -8,19 +8,13 @@
 {% load highcharts_tags %}
 {% load sri %}
 
-
 {% block pagetitle %}
 Test
-{% endblock %}
-
-{% block headers %}
-{% endblock %}
+{% endblock pagetitle %}
 
 {% block content %}
 
 <button id="blue">Confirmer la suppression</button>
-
-
 
 <script language="javascript">
     document.getElementById("blue").addEventListener("click", function() {
@@ -35,7 +29,9 @@ Test
 </script>
 
 <div hx-get="{% url 'project:map-pane-artif-zone-urba' 1504 599878 %}" hx-trigger="click">Get it!</div>
+{% endblock content %}
 
+{% endblock bodyend %}
 {% localize off %}
 {% sri_static "highcharts/js/highcharts.js" %}
 {% sri_static "highcharts/js/exporting.js" %}
@@ -43,4 +39,4 @@ Test
 {% sri_static "highcharts/js/dependency-wheel.js" %}
 {% french_translation %}
 {% endlocalize %}
-{% endblock %}
+{% endblock bodyend %}

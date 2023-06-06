@@ -1,4 +1,4 @@
-{% extends 'index.html' %}
+{% extends "index.html" %}
 
 {% load static %}
 {% load project_tags %}
@@ -9,11 +9,11 @@
 
 {% block pagetitle %}
 Synthèse
-{% endblock %}
+{% endblock pagetitle %}
 
 {% block headers %}
 {% sri_static "project/css/project.css" %}
-{% endblock %}
+{% endblock headers %}
 
 {% block content %}
 <div class="px-4">
@@ -47,7 +47,6 @@ Synthèse
           Lire plus
         </button>
       </div>
-
 
       {% if not ocsge_available %}
       <div class="fr-notice fr-notice--info">
@@ -163,18 +162,18 @@ Synthèse
       {% endif %}
     </div>
 </div>
-{% endblock %}
+{% endblock content %}
 
 {% block tagging %}
 <script language="javascript" nonce="{{ CSP_NONCE }}">
 $( window ).on('load', function () {
-    _paq.push(['trackEvent', 'Consultation diagnostic', 'Tableau de bord', 'Synthèse'])
+    _paq.push(['trackEvent', '', '', 'open_dashboard_synthesis'])
 })
 
 var fired = false
 $( window ).scroll(function() {
     if(fired == false && $( window ).scrollTop() + $( window ).height() > $( "#block-content" ).height() - 100) {
-        _paq.push(['trackEvent', 'Consultation diagnostic', 'Fin tableau de bord', 'Synthèse'])
+        _paq.push(['trackEvent', '', '', 'end_dashboard_synthesis'])
         fired = true
     }
 })

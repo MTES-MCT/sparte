@@ -49,5 +49,10 @@
                 {% display_chart 'trajectory_chart' trajectory_chart CSP_NONCE %}
             </div>
         </div>
+        <script language="javascript" nonce="{{ CSP_NONCE }}">
+            $( window ).on('load', function () {
+                _paq.push(['trackEvent', '', '', 'display_trajectory_graph'])
+            })
+        </script>
     </div>
 {% endif %}

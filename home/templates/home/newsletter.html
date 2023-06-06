@@ -1,9 +1,9 @@
-{% extends 'index.html' %}
+{% extends "index.html" %}
 
 {% load static %}
 {% load crispy_forms_tags %}
 
-{% block pagetitle %}Formulaire de contact{% endblock %}
+{% block pagetitle %}Formulaire de contact{% endblock pagetitle %}
 
 {% block content %}
 <div class="d-flex justify-content-center">
@@ -16,7 +16,7 @@
         </form>
     </div>
 </div>
-{% endblock %}
+{% endblock content %}
 
 {% block tagging %}
 <script language="javascript" nonce="{{ CSP_NONCE }}">
