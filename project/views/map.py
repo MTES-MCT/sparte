@@ -232,229 +232,121 @@ class MapV2View(GroupMixin, DetailView):
                 "usa_leafs": UsageSol.get_leafs(),
                 "layer_list": [
                     {
+                        "name": "Fond de carte",
+                        "key": "fond-de-carte",
+                        "type": "tile",
+                        "url": [
+                            {
+                                "value": "https://wxs.ign.fr/ortho/geoportail/wmts",
+                                "zoom_available": all_zoom,  # Tile layers should always have all zoom available for now
+                            }
+                        ],
+                        "url_params": {
+                            "REQUEST": "GetTile",
+                            "SERVICE": "WMTS",
+                            "VERSION": "1.0.0",
+                            "TILEMATRIXSET": "PM",
+                            "LAYER": "ORTHOIMAGERY.ORTHOPHOTOS",
+                            "STYLE": "normal",
+                            "FORMAT": "image/jpeg",
+                            "TILECOL": "{x}",
+                            "TILEROW": "{y}",
+                            "TILEMATRIX": "{z}",
+                        },
+                        "z_index": 0,
+                        "is_optimized": 0,
+                        "is_interactive": 0,
+                        "filters": [
+                            {
+                                "name": "Fond de carte",
+                                "type": "visible",
+                                "value": "true",
+                                "triggers": [
+                                    {
+                                        "method": "toggleVisibile",
+                                        "layer": "fond-de-carte"
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "Visibilité du fond de carte",
+                                "type": "opacity",
+                                "value": 1,
+                                "triggers": [
+                                    {
+                                        "method": "changeOpacity",
+                                        "layer": "fond-de-carte"
+                                    }
+                                ]
+                            },
+                        ]
+                    },
+                    {
+                        "name": "Limites administratives",
+                        "key": "limites-administratives",
+                        "type": "geojson",
+                        "url": [
+                            {
+                                "value": reverse_lazy("public_data:commune-optimized"),
+                                "zoom_available": [12, 13, 14, 15],
+                            },
+                            {
+                                "value": reverse_lazy("public_data:epci-optimized"),
+                                "zoom_available": [10, 11],
+                            },
+                            {
+                                "value": reverse_lazy("public_data:scot-optimized"),
+                                "zoom_available": [9],
+                            },
+                            {
+                                "value": reverse_lazy("public_data:departement-optimized"),
+                                "zoom_available": [8],
+                            },
+                            {
+                                "value": reverse_lazy("public_data:region-optimized"),
+                                "zoom_available": [6, 7],
+                            }
+                        ],
+                        "style_key": "style_limites_administratives",
+                        "z_index": 1,
+                        "is_optimized": 1,
+                        "is_interactive": 0,
+                        "filters": [
+                            {
+                                "name": "Limites administratives",
+                                "type": "visible",
+                                "value": "true",
+                                "triggers": [
+                                    {
+                                        "method": "toggleVisibile",
+                                        "layer": "limites-administratives"
+                                    }
+                                ]
+                            },
+                        ]
+                    },
+                    {
                         "name": "Emprise du territoire",
-                        "url": reverse_lazy("project:emprise-list"),
+                        "key": "emprise-du-territoire",
+                        "type": "geojson",
+                        "url": [
+                            {
+                                "value": reverse_lazy("project:emprise-list"),
+                                "zoom_available": all_zoom,
+                            }
+                        ],
                         "url_params": {
                             "id": self.object.pk,
                         },
-                        "style": "style_emprise",
-                        "z_index": "10",
-                        "visible": 1,
+                        "style_key": "style_emprise",
+                        "z_index": 10,
                         "is_optimized": 0,
-                        "zoom_available": all_zoom,  # [6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18],
-                    },
-                    {
-                        "name": "OCS GE",
-                        "url": reverse_lazy("public_data:ocsge-optimized"),
-                        "url_params": {
-                            "year": 2019,
-                            "is_artificial": 1,
-                        },
-                        "style": "style_ocsge_couv",
-                        "z_index": "4",
-                        "visible": 1,
-                        "is_optimized": 1,
-                        "zoom_available": [15, 16, 17, 18],
-                    },
-                    {
-                        "name": "Zones urbaines",
-                        "url": reverse_lazy("public_data:zoneurba-optimized"),
-                        "url_params": {
-                            "type_zone": "AUc, AUs, Ah, Nd, A, N, Nh, U",
-                        },
-                        "style": "style_zone_urba_au",
-                        "z_index": "5",
-                        "visible": 1,
-                        "is_optimized": 1,
-                        "zoom_available": [12, 13, 14, 15, 16, 17, 18],
-                    },
-                    # {
-                    #     "name": "Limites administratives (Communes)",
-                    #     "url": reverse_lazy("public_data:commune-optimized"),
-                    #     "style": "style_communes",
-                    #     "z_index": "1",
-                    #     "visible": 0,
-                    #     "is_optimized": 1,
-                    #     "zoom_available": all_zoom,  # [12, 13, 14, 15, 16, 17, 18],
-                    # },
-                    # {
-                    #     "name": "Limites administratives (EPCI)",
-                    #     "url": reverse_lazy("public_data:epci-optimized"),
-                    #     "style": "style_epci",
-                    #     "z_index": "2",
-                    #     "visible": 0,
-                    #     "is_optimized": 1,
-                    #     "zoom_available": all_zoom,  # [10, 11],
-                    # },
-                    # {
-                    #     "name": "Limites administratives (SCOT)",
-                    #     "url": reverse_lazy("public_data:scot-optimized"),
-                    #     "style": "style_scot",
-                    #     "z_index": "3",
-                    #     "visible": 0,
-                    #     "is_optimized": 1,
-                    #     "zoom_available": all_zoom,  # [10],
-                    # },
-                    # {
-                    #     "name": "Limites administratives (Départements)",
-                    #     "url": reverse_lazy("public_data:departement-optimized"),
-                    #     "style": "style_departements",
-                    #     "z_index": "4",
-                    #     "visible": 0,
-                    #     "is_optimized": 1,
-                    #     "zoom_available": all_zoom,  # [8, 9],
-                    # },
-                    # {
-                    #     "name": "Limites administratives (Régions)",
-                    #     "url": reverse_lazy("public_data:region-optimized"),
-                    #     "style": "style_regions",
-                    #     "z_index": "5",
-                    #     "visible": 1,
-                    #     "is_optimized": 1,
-                    #     "zoom_available": all_zoom,  # [6, 7],
-                    # },
-                    # {
-                    #     "name": "OCSGE Couverture",
-                    #     "url": reverse_lazy("public_data:ocsge-optimized"),
-                    #     "url_params": {
-                    #         "year": 2019,
-                    #     },
-                    #     "style": "style_ocsge_couv",
-                    #     "z_index": "6",
-                    #     "visible": 0,
-                    #     "is_optimized": 1,
-                    #     "millesimes": available_millesimes,
-                    #     "zoom_available": [15, 16, 17, 18],
-                    # },
-                    # {
-                    #     "name": "OCSGE Couverture zones artificielles 2016",
-                    #     "url": reverse_lazy("public_data:ocsge-optimized"),
-                    #     "url_params": {
-                    #         "year": 2016,
-                    #         "is_artificial": 1,
-                    #     },
-                    #     "style": "style_ocsge_couv",
-                    #     "z_index": "6",
-                    #     "visible": 0,
-                    #     "is_optimized": 1,
-                    #     "millesimes": available_millesimes,
-                    #     "zoom_available": [15, 16, 17, 18],
-                    # },
-                    # {
-                    #     "name": "OCSGE Usage",
-                    #     "url": reverse_lazy("public_data:ocsge-optimized"),
-                    #     "url_params": {
-                    #         "year": 2019,
-                    #     },
-                    #     "style": "style_ocsge_usage",
-                    #     "z_index": "6",
-                    #     "visible": 0,
-                    #     "is_optimized": 1,
-                    #     "millesimes": available_millesimes,
-                    #     "zoom_available": [15, 16, 17, 18],
-                    # },
-                    # {
-                    #     "name": "OCSGE diff",
-                    #     "url": reverse_lazy("public_data:ocsgediff-optimized"),
-                    #     "url_params": {
-                    #         "year_old": 2016,
-                    #         "year_new": 2019
-                    #     },
-                    #     "style": "style_ocsge_diff",
-                    #     "z_index": "7",
-                    #     "visible": 0,
-                    #     "is_optimized": 1,
-                    #     "millesimes": available_millesimes,
-                    #     "zoom_available": [15, 16, 17, 18],
-                    # },
-                    # {
-                    #     "name": "Zones artificielles",
-                    #     "url": reverse_lazy("public_data:artificialarea-optimized"),
-                    #     "url_params": {
-                    #         "year": 2016,
-                    #         # "project_id": self.object.id
-                    #     },
-                    #     "style": "style_zone_artificielle",
-                    #     "z_index": "5",
-                    #     "visible": 0,
-                    #     "is_optimized": 1,
-                    #     "zoom_available": [12, 13, 14, 15, 16, 17, 18],
-                    # },
-                    # {
-                    #     "name": "Zones construites",
-                    #     "url": reverse_lazy("public_data:zoneconstruite-optimized"),
-                    #     "url_params": {
-                    #         "year": 2019,  # choose between 2019 and 2016 for gers
-                    #     },
-                    #     "style": "style_zone_artificielle",
-                    #     "z_index": "6",
-                    #     "visible": 0,
-                    #     "is_optimized": 1,
-                    #     "zoom_available": [12, 13, 14, 15, 16, 17, 18],
-                    # },
-                    # {
-                    #     "name": "Grille 1km",
-                    #     "url": reverse_lazy("public_data:grid"),
-                    #     "url_params": {
-                    #         "gride_size": 1,
-                    #     },
-                    #     "style": "style_communes",
-                    #     "z_index": "1",
-                    #     "visible": 0,
-                    #     "is_optimized": 1,
-                    #     "zoom_available": [12, 13, 14, 15, 16, 17, 18],
-                    # },
-                    # {
-                    #     "name": "Zones urbaines [AUc, AUs]",
-                    #     "url": reverse_lazy("public_data:zoneurba-optimized"),
-                    #     "url_params": {
-                    #         "type_zone": "AUc, AUs",
-                    #     },
-                    #     "url_data": "",
-                    #     "style": "style_zone_urba_au",
-                    #     "z_index": "5",
-                    #     "visible": 0,
-                    #     "is_optimized": 1,
-                    #     "type_zone_available": ["U", "Ah", "Nd", "A", "AUc", "N", "Nh", "AUs"],
-                    #     "zoom_available": [12, 13, 14, 15, 16, 17, 18],
-                    # },
-                    # {
-                    #     "name": "Zones urbaines [U]",
-                    #     "url": reverse_lazy("public_data:zoneurba-optimized"),
-                    #     "url_params": {
-                    #         "type_zone": "U",
-                    #     },
-                    #     "url_data": "",
-                    #     "style": "style_zone_urba_u",
-                    #     "z_index": "5",
-                    #     "visible": 0,
-                    #     "is_optimized": 1,
-                    #     "type_zone_available": ["U", "Ah", "Nd", "A", "AUc", "N", "Nh", "AUs"],
-                    #     "zoom_available": [12, 13, 14, 15, 16, 17, 18],
-                    # },
-                    # {
-                    #     "name": "Zones urbaines [Ah, Nd, A, N, Nh]",
-                    #     "url": reverse_lazy("public_data:zoneurba-optimized"),
-                    #     "url_params": {
-                    #         "type_zone": "Ah, Nd, A, N, Nh",
-                    #     },
-                    #     "url_data": "",
-                    #     "style": "style_zone_urba_n",
-                    #     "z_index": "5",
-                    #     "visible": 0,
-                    #     "is_optimized": 1,
-                    #     "type_zone_available": ["U", "Ah", "Nd", "A", "AUc", "N", "Nh", "AUs"],
-                    #     "zoom_available": [12, 13, 14, 15, 16, 17, 18],
-                    # },
-                ],
-                "filter_list": [
-                    {
-                        "group_name": "",
+                        "is_interactive": 0,
                         "filters": [
                             {
                                 "name": "Emprise du territoire",
                                 "type": "visible",
-                                "value": 1,
+                                "value": "true",
                                 "triggers": [
                                     {
                                         "method": "toggleVisibile",
@@ -465,12 +357,141 @@ class MapV2View(GroupMixin, DetailView):
                         ]
                     },
                     {
-                        "group_name": "",
+                        "name": "Zones urbaines",
+                        "key": "zones-urbaines",
+                        "type": "geojson",
+                        "url": [
+                            {
+                                "value": reverse_lazy("public_data:zoneurba-optimized"),
+                                "zoom_available": list(range(12, 19)),
+                            }
+                        ],
+                        "url_params": {
+                            "type_zone": "AUc, AUs, Ah, Nd, A, N, Nh, U",
+                        },
+                        "label": {
+                            "key": "typezone"
+                        },
+                        "style_key": "style_zone_urbaines",
+                        "z_index": 5,
+                        "is_optimized": 1,
+                        "is_interactive": 1,
+                        "legend": [
+                            # {
+                            #     "name": "ID",
+                            #     "key": "id"
+                            # },
+                            {
+                                "name": "Libellé",
+                                "key": "libelle"
+                            },
+                            {
+                                "name": "Libellé long",
+                                "key": "libelong"
+                            },
+                            {
+                                "name": "Type de zone",
+                                "key": "typezone"
+                            }
+                        ],
+                        "filters": [
+                            {
+                                "name": "Zonages des documents d&rsquo;urbanisme",
+                                "type": "visible",
+                                "value": "true",
+                                "triggers": [
+                                    {
+                                        "method": "toggleVisibile",
+                                        "layer": "zones-urbaines"
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "",
+                                "type": "tag",
+                                "value": ["AUc", "AUs", "U", "A", "N"],
+                                "options": [
+                                    {
+                                        "name": "AUc",
+                                        "value": "AUc",
+                                    },
+                                    {
+                                        "name": "AUs",
+                                        "value": "AUs",
+                                    },
+                                    {
+                                        "name": "U",
+                                        "value": "U",
+                                    },
+                                    {
+                                        "name": "A",
+                                        "value": "A",
+                                    },
+                                    {
+                                        "name": "N",
+                                        "value": "N",
+                                    },
+                                ],
+                                "triggers": [
+                                    {
+                                        "method": "updateData",
+                                        "param": "type_zone",
+                                        "layer": "zones-urbaines"
+                                    }
+                                ]
+                            }
+                        ],
+                    },
+                    {
+                        "name": "OCS GE",
+                        "key": "ocs-ge",
+                        "type": "geojson",
+                        "url": [
+                            {
+                                "value": reverse_lazy("public_data:ocsge-optimized"),
+                                "zoom_available": list(range(15, 19)),
+                            }
+                        ],
+                        "url_params": {
+                            "year": 2019,
+                            "is_artificial": 1,
+                        },
+                        "style_key": "style_ocsge_couverture",
+                        "z_index": 4,
+                        "is_optimized": 1,
+                        "is_interactive": 1,
+                        "legend": [
+                            {
+                                "name": "Code couverture",
+                                "key": "code_couverture"
+                            },
+                            {
+                                "name": "Code usage",
+                                "key": "code_usage"
+                            },
+                            {
+                                "name": "Libellé couverture",
+                                "key": "couverture_label_short"
+                            },
+                            {
+                                "name": "Libellé usage",
+                                "key": "usage_label_short"
+                            },
+                            {
+                                "name": "Surface",
+                                "key": "surface",
+                                "formatter": ["number", ["fr-FR", "unit", "hectare", 2]]
+                            },
+                            {
+                                "name": "Millésime",
+                                "key": "year"
+                            }
+                        ],
                         "filters": [
                             {
                                 "name": "OCS GE",
                                 "type": "visible",
-                                "value": 1,
+                                "value": "true",
                                 "triggers": [
                                     {
                                         "method": "toggleVisibile",
@@ -485,7 +506,7 @@ class MapV2View(GroupMixin, DetailView):
                                 "options": [
                                     {
                                         "name": "Couverture",
-                                        "value": "style_ocsge_couv",
+                                        "value": "style_ocsge_couverture",
                                     },
                                     {
                                         "name": "Usage",
@@ -494,7 +515,7 @@ class MapV2View(GroupMixin, DetailView):
                                 ],
                                 "triggers": [
                                     {
-                                        "method": "toggleOCSGEStyle",
+                                        "method": "updateStyleKey",
                                         "layer": "ocs-ge"
                                     }
                                 ]
@@ -523,13 +544,208 @@ class MapV2View(GroupMixin, DetailView):
                             }
                         ]
                     },
+                ],
+            }
+        )
+        return super().get_context_data(**kwargs)
+
+
+class UrbanZonesMapView(GroupMixin, DetailView):
+    queryset = Project.objects.all()
+    template_name = "carto/map_urban_zones.html"
+    context_object_name = "project"
+
+    def get_context_breadcrumbs(self):
+        breadcrumbs = super().get_context_breadcrumbs()
+        breadcrumbs.append({"href": None, "title": "Explorateur des zonages d'urbanisme"})
+        return breadcrumbs
+
+    def get_context_data(self, **kwargs):
+        # UPGRADE: add center and zoom fields on project model
+        # values would be infered when emprise is loaded
+        center = self.object.get_centroid()
+        # available_millesimes = self.object.get_available_millesimes(commit=True)
+        all_zoom = list(range(6, 19))
+        kwargs.update(
+            {
+                # center map on France
+                "carto_name": "Project",
+                "map_name": "Explorateur des zonages d'urbanisme",
+                "project_id": self.object.pk,
+                "center_lat": center.y,
+                "center_lng": center.x,
+                "default_zoom": 15,
+                "couv_leafs": CouvertureSol.get_leafs(),
+                "usa_leafs": UsageSol.get_leafs(),
+                "layer_list": [
                     {
-                        "group_name": "",
+                        "name": "Fond de carte",
+                        "key": "fond-de-carte",
+                        "type": "tile",
+                        "url": [
+                            {
+                                "value": "https://wxs.ign.fr/ortho/geoportail/wmts",
+                                "zoom_available": all_zoom,  # Tile layers should always have all zoom available for now
+                            }
+                        ],
+                        "url_params": {
+                            "REQUEST": "GetTile",
+                            "SERVICE": "WMTS",
+                            "VERSION": "1.0.0",
+                            "TILEMATRIXSET": "PM",
+                            "LAYER": "ORTHOIMAGERY.ORTHOPHOTOS",
+                            "STYLE": "normal",
+                            "FORMAT": "image/jpeg",
+                            "TILECOL": "{x}",
+                            "TILEROW": "{y}",
+                            "TILEMATRIX": "{z}",
+                        },
+                        "z_index": 0,
+                        "is_optimized": 0,
+                        "is_interactive": 0,
                         "filters": [
                             {
-                                "name": "Zonages des documents d urbanisme",
+                                "name": "Fond de carte",
                                 "type": "visible",
+                                "value": "true",
+                                "triggers": [
+                                    {
+                                        "method": "toggleVisibile",
+                                        "layer": "fond-de-carte"
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "Visibilité du fond de carte",
+                                "type": "opacity",
                                 "value": 1,
+                                "triggers": [
+                                    {
+                                        "method": "changeOpacity",
+                                        "layer": "fond-de-carte"
+                                    }
+                                ]
+                            },
+                        ]
+                    },
+                    {
+                        "name": "Limites administratives",
+                        "key": "limites-administratives",
+                        "type": "geojson",
+                        "url": [
+                            {
+                                "value": reverse_lazy("public_data:commune-optimized"),
+                                "zoom_available": [12, 13, 14, 15],
+                            },
+                            {
+                                "value": reverse_lazy("public_data:epci-optimized"),
+                                "zoom_available": [10, 11],
+                            },
+                            {
+                                "value": reverse_lazy("public_data:scot-optimized"),
+                                "zoom_available": [9],
+                            },
+                            {
+                                "value": reverse_lazy("public_data:departement-optimized"),
+                                "zoom_available": [8],
+                            },
+                            {
+                                "value": reverse_lazy("public_data:region-optimized"),
+                                "zoom_available": [6, 7],
+                            }
+                        ],
+                        "style_key": "style_limites_administratives",
+                        "z_index": 1,
+                        "is_optimized": 1,
+                        "is_interactive": 0,
+                        "filters": [
+                            {
+                                "name": "Limites administratives",
+                                "type": "visible",
+                                "value": "true",
+                                "triggers": [
+                                    {
+                                        "method": "toggleVisibile",
+                                        "layer": "limites-administratives"
+                                    }
+                                ]
+                            },
+                        ]
+                    },
+                    {
+                        "name": "Emprise du territoire",
+                        "key": "emprise-du-territoire",
+                        "type": "geojson",
+                        "url": [
+                            {
+                                "value": reverse_lazy("project:emprise-list"),
+                                "zoom_available": all_zoom,
+                            }
+                        ],
+                        "url_params": {
+                            "id": self.object.pk,
+                        },
+                        "style_key": "style_emprise",
+                        "z_index": 10,
+                        "is_optimized": 0,
+                        "is_interactive": 0,
+                        "filters": [
+                            {
+                                "name": "Emprise du territoire",
+                                "type": "visible",
+                                "value": "true",
+                                "triggers": [
+                                    {
+                                        "method": "toggleVisibile",
+                                        "layer": "emprise-du-territoire"
+                                    }
+                                ]
+                            },
+                        ]
+                    },
+                    {
+                        "name": "Zones urbaines",
+                        "key": "zones-urbaines",
+                        "type": "geojson",
+                        "url": [
+                            {
+                                "value": reverse_lazy("public_data:zoneurba-optimized"),
+                                "zoom_available": list(range(12, 19)),
+                            }
+                        ],
+                        "url_params": {
+                            "type_zone": "AUc, AUs, Ah, Nd, A, N, Nh, U",
+                        },
+                        "label": {
+                            "key": "typezone"
+                        },
+                        "style_key": "style_zone_urbaines",
+                        "z_index": 5,
+                        "is_optimized": 1,
+                        "is_interactive": 1,
+                        "legend": [
+                            # {
+                            #     "name": "ID",
+                            #     "key": "id"
+                            # },
+                            {
+                                "name": "Libellé",
+                                "key": "libelle"
+                            },
+                            {
+                                "name": "Libellé long",
+                                "key": "libelong"
+                            },
+                            {
+                                "name": "Type de zone",
+                                "key": "typezone"
+                            }
+                        ],
+                        "filters": [
+                            {
+                                "name": "Zonages des documents d&rsquo;urbanisme",
+                                "type": "visible",
+                                "value": "true",
                                 "triggers": [
                                     {
                                         "method": "toggleVisibile",
@@ -540,40 +756,28 @@ class MapV2View(GroupMixin, DetailView):
                             {
                                 "name": "",
                                 "type": "tag",
-                                "value": ["AUc", "AUs", "U", "Ah", "Nd", "A", "N", "Nh"],
+                                "value": ["AUc", "AUs", "U", "A", "N"],
                                 "options": [
+                                    {
+                                        "name": "AUc",
+                                        "value": "AUc",
+                                    },
+                                    {
+                                        "name": "AUs",
+                                        "value": "AUs",
+                                    },
                                     {
                                         "name": "U",
                                         "value": "U",
-                                    },
-                                    {
-                                        "name": "Ah",
-                                        "value": "Ah",
-                                    },
-                                    {
-                                        "name": "Nd",
-                                        "value": "Nd",
                                     },
                                     {
                                         "name": "A",
                                         "value": "A",
                                     },
                                     {
-                                        "name": "AUc",
-                                        "value": "AUc",
-                                    },
-                                    {
                                         "name": "N",
                                         "value": "N",
                                     },
-                                    {
-                                        "name": "Nh",
-                                        "value": "Nh",
-                                    },
-                                    {
-                                        "name": "AUs",
-                                        "value": "AUs",
-                                    }
                                 ],
                                 "triggers": [
                                     {
@@ -584,8 +788,110 @@ class MapV2View(GroupMixin, DetailView):
                                 ]
                             }
                         ],
-                    }
-                ]
+                    },
+                    {
+                        "name": "OCS GE",
+                        "key": "ocs-ge",
+                        "type": "geojson",
+                        "url": [
+                            {
+                                "value": reverse_lazy("public_data:ocsge-optimized"),
+                                "zoom_available": list(range(15, 19)),
+                            }
+                        ],
+                        "url_params": {
+                            "year": 2019,
+                            "is_artificial": 1,
+                        },
+                        "style_key": "style_ocsge_couverture",
+                        "z_index": 4,
+                        "is_optimized": 1,
+                        "is_interactive": 1,
+                        "legend": [
+                            {
+                                "name": "Code couverture",
+                                "key": "code_couverture"
+                            },
+                            {
+                                "name": "Code usage",
+                                "key": "code_usage"
+                            },
+                            {
+                                "name": "Libellé couverture",
+                                "key": "couverture_label_short"
+                            },
+                            {
+                                "name": "Libellé usage",
+                                "key": "usage_label_short"
+                            },
+                            {
+                                "name": "Surface",
+                                "key": "surface",
+                                "formatter": ["number", ["fr-FR", "unit", "hectare", 2]]
+                            },
+                            {
+                                "name": "Millésime",
+                                "key": "year"
+                            }
+                        ],
+                        "filters": [
+                            {
+                                "name": "OCS GE",
+                                "type": "visible",
+                                "value": "true",
+                                "triggers": [
+                                    {
+                                        "method": "toggleVisibile",
+                                        "layer": "ocs-ge"
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "Nomemclature",
+                                "type": "select",
+                                "value": "style_ocsge_couv",
+                                "options": [
+                                    {
+                                        "name": "Couverture",
+                                        "value": "style_ocsge_couverture",
+                                    },
+                                    {
+                                        "name": "Usage",
+                                        "value": "style_ocsge_usage",
+                                    }
+                                ],
+                                "triggers": [
+                                    {
+                                        "method": "updateStyleKey",
+                                        "layer": "ocs-ge"
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "Millésime",
+                                "type": "select",
+                                "value": 2019,
+                                "options": [
+                                    {
+                                        "name": 2016,
+                                        "value": 2016,
+                                    },
+                                    {
+                                        "name": 2019,
+                                        "value": 2019,
+                                    }
+                                ],
+                                "triggers": [
+                                    {
+                                        "method": "updateData",
+                                        "param": "year",
+                                        "layer": "ocs-ge"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                ],
             }
         )
         return super().get_context_data(**kwargs)

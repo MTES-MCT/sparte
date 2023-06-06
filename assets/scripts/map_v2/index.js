@@ -1,6 +1,7 @@
 import * as L from 'leaflet'
-import Layer from './layer.js'
-import FilterGroup from './filter-group.js'
+import Tabs from './tabs.js'
+import TileLayer from './tile-layer.js'
+import GeoJSONLayer from './geojson-layer.js'
 import { debounce } from './utils.js'
 
 export default class SparteMap {
@@ -15,7 +16,6 @@ export default class SparteMap {
         this.couv_leafs = _options.couv_leafs
         this.usa_leafs = _options.usa_leafs
         this.projectId = _options.projectId
-        this.filterList = _options.filterList
 
         if (!this.targetElement) {
             console.warn('Missing \'targetElement\' property')
@@ -23,15 +23,9 @@ export default class SparteMap {
         }
 
         this.setConfig()
+        this.setTabs()
         this.setMap()
         this.setLayers()
-        this.setPanel()
-
-        // Delay display filter
-        // TODO: display filter when layer is ready
-        setTimeout(() => {
-            this.setFilters()
-        }, 3000);
 
         if (this.debug)
             this.setDebug()
@@ -114,68 +108,49 @@ export default class SparteMap {
             bounds = L.latLngBounds(southWest, northEast)
         this.map.setMaxBounds(bounds)
 
-        // Get IGN tiles
-        L.tileLayer(
-            'https://wxs.ign.fr/{ignApiKey}/geoportail/wmts?' +
-            '&REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0&TILEMATRIXSET=PM' +
-            '&LAYER={ignLayer}&STYLE={style}&FORMAT={format}' +
-            '&TILECOL={x}&TILEROW={y}&TILEMATRIX={z}', {
-            attribution: '<a target="_blank" href="https://www.geoportail.gouv.fr/">Geoportail France</a>',
-            ignApiKey: 'ortho',
-            ignLayer: 'ORTHOIMAGERY.ORTHOPHOTOS',
-            style: 'normal',
-            format: 'image/jpeg',
-            service: 'WMTS'
-        }
-        ).addTo(this.map)
-
         this.map.on('moveend', debounce(() => this.moveend(), 1000))
     }
 
-    // Todo create panel JS Class
-    setPanel() {
-        const tabs = document.querySelector('.tabs')
-        const tabButtons = tabs.querySelectorAll('[role="tab"]')
-        const tabPanels = tabs.querySelectorAll('[role="tabpanel"]')
-
-        tabButtons.forEach(button => button.addEventListener('click', (_event) => {
-            // find the associated tabPanel
-            const { id } = _event.currentTarget
-            const tabPanel = tabs.querySelector(`[aria-labelledby="${id}"]`)
-            const isAlreadyOpen = !tabPanel.hidden
-
-            // hide all tab panels
-            tabPanels.forEach(panel => {
-                panel.hidden = true
-            })
-
-            // mark all tabs as unselected
-            tabButtons.forEach(tab => {
-                tab.setAttribute('aria-selected', false)
-            })
-
-            if (!isAlreadyOpen) {
-                // mark the clicked tab as selected
-                _event.currentTarget.setAttribute('aria-selected', true)
-
-                // find the associated tabPanel and show it
-                tabPanel.hidden = false
+    setTabs() {
+        const tabList = [
+            {
+                id: 'layer',
+                iconClass: 'bi-layers',
+                title: 'Options des calques',
+            },
+            {
+                id: 'data',
+                iconClass: 'bi-bar-chart',
             }
-        }))
+        ]
+
+        if (this.debug)
+            tabList.push(
+                {
+                    id: 'debug',
+                    iconClass: 'bi-bug',
+                }
+            )
+
+        this.tabs = new Tabs({
+            tabList: tabList,
+        })
     }
 
     setLayers() {
         this.layers = []
 
         this.layerList.map((_obj) => {
-            const layer = new Layer(_obj)
-            this.layers.push(layer)
-        })
-    }
-
-    setFilters() {
-        this.filterList.map((_obj) => {
-            new FilterGroup(_obj)
+            switch (_obj.type) {
+                case 'tile':
+                    this.layers.push(new TileLayer(_obj))
+                    break;
+                case 'geojson':
+                    this.layers.push(new GeoJSONLayer(_obj))
+                    break;
+                default:
+                    console.log(`Missing layer type for layer ${_obj.name}`);
+            }
         })
     }
 
@@ -184,7 +159,7 @@ export default class SparteMap {
             this.layers.map((_obj) => {
                 if (this.debug && !this.refreshLayersControl.checked)
                     return
-                
+
                 _obj.update()
             })
     }

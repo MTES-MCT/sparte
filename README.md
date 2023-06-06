@@ -112,3 +112,8 @@ python scripts/cmd.py --env $ENV run 'python manage.py build_commune_data --depa
 python scripts/cmd.py --env $ENV run 'python manage.py build_artificial_area --departement Gers' && \
 python scripts/cmd.py --env $ENV run 'python manage.py set_density --reset --departement Gers'
 ```
+
+MEP 4.0
+
+- Charger les zones urbaines du GERS : ./manage.py import_gpu --dept 32
+

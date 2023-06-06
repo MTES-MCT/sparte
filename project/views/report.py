@@ -492,6 +492,22 @@ class ProjectReportTarget2031View(ProjectReportBaseView):
         return super().get_context_data(**kwargs)
 
 
+class ProjectReportUrbanZonesView(ProjectReportBaseView):
+    template_name = "project/report_urban_zones.html"
+    breadcrumbs_title = "Rapport zonages d'urbanisme"
+
+    def get_context_data(self, **kwargs):
+        project = self.get_object()
+        kwargs.update(
+            {
+                "diagnostic": project,
+                "active_page": "urban_zones",
+            }
+        )
+
+        return super().get_context_data(**kwargs)
+    
+
 class DownloadWordView(TemplateView):
     template_name = "project/error_download_word.html"
 
@@ -588,12 +604,14 @@ class ArtifZoneUrbaView(StandAloneMixin, DetailView):
             .filter(is_artificial=True, year=diagnostic.last_year_ocsge)
             .aggregate(area=Sum("intersection_area") / 10000)
         )["area"]
+        if artif_area is None:
+            artif_area = 0
         kwargs |= {
             "diagnostic": diagnostic,
             "zone_urba": zone_urba,
             "surface": zone_urba.area,
             "total_artif_area": artif_area,
-            "filling_artif_rate": artif_area * 100 / zone_urba.area,
+            "filling_artif_rate": artif_area * 100 / float(zone_urba.area),
         }
         return super().get_context_data(**kwargs)
 
@@ -804,3 +822,19 @@ class ArtifDetailUsaChart(TemplateView):
 
 class TestView(TemplateView):
     template_name = "project/test.html"
+
+
+class ProjectReportGpuView(ProjectReportBaseView):
+    template_name = "project/report_gpu.html"
+    breadcrumbs_title = "Rapport Zones d'urbanisme"
+
+    def get_context_data(self, **kwargs):
+        project = self.get_object()
+        kwargs.update(
+            {
+                "diagnostic": project,
+                "active_page": "gpu",
+            }
+        )
+
+        return super().get_context_data(**kwargs)

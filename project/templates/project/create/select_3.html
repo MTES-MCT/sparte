@@ -1,11 +1,11 @@
-{% extends 'index.html' %}
+{% extends "index.html" %}
 
 {% load static %}
 {% load crispy_forms_tags %}
 
 {% block pagetitle %}
 Créer un diagnostic
-{% endblock %}
+{% endblock pagetitle %}
 
 {% block headers %}
 <style nonce="{{ CSP_NONCE }}">
@@ -63,7 +63,7 @@ Créer un diagnostic
     width: 100%;
 }
 </style>
-{% endblock %}
+{% endblock headers %}
 
 {% block content %}
 <div class="row w-100 justify-content-center">
@@ -186,11 +186,9 @@ Créer un diagnostic
             <div class="my-5">Commencez une recherche</div>
         {% endif %}
 
-
-
     </div>
 </div>
-{% endblock %}
+{% endblock content %}
 
 {% block bodyend %}
 <script language="javascript" nonce="{{ CSP_NONCE }}">
