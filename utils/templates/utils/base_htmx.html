@@ -1,4 +1,4 @@
-{% extends 'index.html' %}
+{% extends "index.html" %}
 
 {% load static %}
 {% load project_tags %}
@@ -10,7 +10,7 @@
 
 {% block pagetitle %}
 Stand alone view on fragment
-{% endblock %}
+{% endblock pagetitle %}
 
 {% block content %}
 
@@ -19,7 +19,6 @@ Stand alone view on fragment
     {% include fragment_template_name %}
 
 {% endblock content %}
-
 
 {% block bodyend %}
 {% localize off %}
@@ -30,4 +29,4 @@ Stand alone view on fragment
 {% french_translation %}
 
 {% endlocalize %}
-{% endblock %}
+{% endblock bodyend %}

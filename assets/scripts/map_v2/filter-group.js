@@ -1,12 +1,11 @@
 import Filter from './filter.js'
 
 export default class FilterGroup {
-    constructor(_options = {}) {
+    constructor(_options = {}, _name) {
         this.sparteMap = window.sparteMap
-        this.layers = this.sparteMap.layers
 
-        this.group_name = _options.group_name
-        this.filters = JSON.parse(_options.filters.replace(/\'/g, '"'))
+        this.filters = _options
+        this.name = _name
 
         this.setFilterGroup()
     }
@@ -17,17 +16,21 @@ export default class FilterGroup {
         let groupNode = document.createElement('div')
         groupNode.classList.add('filter-group', 'tab-item')
 
-        if (this.group_name) {
-            let groupNameNode = document.createElement('div')
-            groupNameNode.classList.add('filter-group--name')
-            groupNameNode.innerHTML = this.group_name
-            groupNode.appendChild(groupNameNode)
-        }
+        // Add placeholder div layer not available
+        this.placeholderNode = document.createElement('div')
+        this.placeholderNode.classList.add('filter-placeholder', 'tab-item')
+        this.placeholderNode.innerHTML = `${this.name} non disponible pour ce niveau de zoom.`
+        groupNode.appendChild(this.placeholderNode)
 
-        this.filters.map((_obj) => {
+        Object.values(this.filters).map((_obj) => {
             new Filter(_obj, groupNode)
         })
 
         tabNode.appendChild(groupNode)
+    }
+
+    togglePlaceholder(_value) {
+        this.placeholderNode.style.visibility = _value ? 'visible' : 'hidden'
+        this.placeholderNode.style.opacity = _value ? 1 : 0
     }
 }
