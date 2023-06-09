@@ -24,7 +24,7 @@ def trigger_error(request):
     division_by_zero = 1 / 0  # # noqa: F841
 
 
-admin.site.site_header = f"SPARTE administration v{settings.OFFICIAL_VERSION}"
+admin.site.site_header = f"Mon Diagnostic Artificialisation v{settings.OFFICIAL_VERSION}"
 
 
 urlpatterns = [
