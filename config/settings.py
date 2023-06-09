@@ -404,7 +404,7 @@ if ENVIRONMENT != "local":
         # environment variable, or infer a git commit
         # SHA as release, however you may want to set
         # something more human-readable.
-        release=f"Sparte@{OFFICIAL_VERSION}",
+        release=f"MonDiagArtif@{OFFICIAL_VERSION}",
         environment=ENVIRONMENT,
         debug=False,
         request_bodies="always",

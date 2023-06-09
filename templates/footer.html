@@ -2,7 +2,7 @@
   <div class="fr-container">
     <div class="fr-footer__body">
       <div class="fr-footer__brand fr-enlarge-link">
-        <a href="/" title="Retour à l’accueil">
+        <a href="/" title="Retour à l'accueil">
           {% block brand %}
             <p class="fr-logo" title="{{ SITE_CONFIG.footer_brand|default:'république française' }}">
               {{ SITE_CONFIG.footer_brand_html| default_if_none:'république<br />française' | safe }}
