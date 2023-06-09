@@ -124,7 +124,7 @@ DATA_USAGE = [
     [20, "1", "Production primaire", "Production primaire", "green", None],
     [21, "1.1", "Agriculture", "Agriculture", "#ffffa8", 20],
     [22, "1.2", "Sylviculture", "Sylviculture", "green", 20],
-    [23, "1.3", "Activités d’extraction", "Activités d’extraction", "#a600cc", 20],
+    [23, "1.3", "Activités d'extraction", "Activités d'extraction", "#a600cc", 20],
     [24, "1.4", "Pêche et aquaculture", "Pêche et aquaculture", "#009", 20],
     [25, "1.5", "Autre", "Autre", "#963", 20],
     [26, "2", "Secondaire", "Secondaire", "#e6004d", None],
