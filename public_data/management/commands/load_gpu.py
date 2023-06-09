@@ -77,7 +77,7 @@ class ZoneUrbaFrance(AutoLoadMixin, ZoneUrba):
         logger.info("Evaluate area")
         cls.objects.filter(area__isnull=True).update(
             area=Cast(
-                Area(Transform("mpoly", 2154)),
+                Area(Transform("mpoly", 2154)) / 10000,
                 DecimalField(max_digits=15, decimal_places=4),
             )
         )
