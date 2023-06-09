@@ -69,7 +69,7 @@ class ContactView(CreateView):
     def form_valid(self, form):
         self.object = form.save()
         send_contact_form.delay(self.object.id)
-        messages.success(self.request, "Votre message a été envoyé à l'équipe de SPARTE.")
+        messages.success(self.request, "Votre message a été envoyé à l'équipe de Mon Diagnostic Artificialisation.")
         return HttpResponseRedirect(self.get_success_url())
 
 
@@ -101,7 +101,7 @@ class NewsLetterConfirmationView(RedirectView):
 class AllEmailsView(UserPassesTestMixin, TemplateView):
     template_name = "home/all_emails.html"
     login_url = "users:signin"
-    permission_denied_message = "Vous devez faire partie de l'équipe SPARTE"
+    permission_denied_message = "Vous devez faire partie de l'équipe d'administration pour accéder à cette page."
 
     def test_func(self):
         """Only staff member should be able to see this page"""
