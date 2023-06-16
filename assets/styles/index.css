@@ -120,7 +120,7 @@ Loader
 }
 
 .fr-custom-loader--button {
-    color: white;
+    color: darkblue;
     width: 30px;
     height: 12px;
     --d: radial-gradient(farthest-side, currentColor 90%, #0000);
