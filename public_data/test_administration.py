@@ -4,7 +4,7 @@ from django.contrib.gis.geos import GEOSGeometry
 
 from public_data.models.administration import Departement, Epci, Region
 
-from .models import Commune, CommunePop
+from .models import Commune, CommunePop, Departement
 
 # from .validators import MinValueValidator, MaxValueValidator
 

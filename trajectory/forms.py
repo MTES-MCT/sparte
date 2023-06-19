@@ -7,10 +7,11 @@ from project.models import Project
 from trajectory.models import Trajectory
 
 
+def year_choices():
+    return [(r, str(r)) for r in range(2000, 2075)]
+
+
 class SelectYearPeriodForm(forms.Form):
-    def year_choices():
-        return [(r,str(r)) for r in range(2000, 2075)]
-    
     start = forms.TypedChoiceField(
         choices=year_choices(),
         label="",

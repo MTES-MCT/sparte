@@ -1,9 +1,7 @@
-import time
 from typing import List, Union
 
 import requests
 from django.conf import settings
-from pyparsing import Optional
 
 
 class MattermostException(Exception):
