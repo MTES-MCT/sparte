@@ -85,9 +85,10 @@ class ZoneUrbaFrance(AutoLoadMixin, ZoneUrba):
         logger.info("Fill up table ZoneUrbaArtificialArea")
         artif_area_query = (
             "insert into public_data_artifareazoneurba (zone_urba_id, year, area) "
-            "select pdz.id, pdo.year, ST_Area(ST_Transform(ST_Union(pdo.mpoly), 2154)) / 10000 as artificial_area "
+            "select pdz.id, pdo.year, ST_Area(ST_Transform(ST_Union(ST_Intersection(pdo.mpoly, pdz.mpoly)), 2154)) "
+            "/ 10000 as artificial_area "
             "from public_data_zoneurba pdz left join public_data_artifareazoneurba pda on pda.zone_urba_id = pdz.id "
-            "inner join public_data_ocsge pdo on ST_Intersects(pdo.mpoly, pdz.mpoly) "
+            "inner join public_data_ocsge pdo on ST_Intersects(pdo.mpoly, pdz.mpoly) and is_artificial = true "
             "where pda.id is null "
             "group by pdz.id, pdo.year;"
         )

@@ -15,7 +15,7 @@ from project import charts, tasks
 from project.models import Project, ProjectCommune, Request
 from project.utils import add_total_line_column
 from public_data.models import CouvertureSol, UsageSol
-from public_data.models.gpu import ZoneUrba
+from public_data.models.gpu import ZoneUrba, ArtifAreaZoneUrba
 from public_data.models.ocsge import Ocsge, OcsgeDiff
 from utils.htmx import StandAloneMixin
 
@@ -837,4 +837,50 @@ class ProjectReportGpuView(ProjectReportBaseView):
             }
         )
 
+        return super().get_context_data(**kwargs)
+
+
+class ProjectReportGpuZoneSynthesisTable(StandAloneMixin, TemplateView):
+    template_name = "project/partials/aggregated_zone_urba_table.html"
+
+    def get_context_data(self, **kwargs):
+        from django.db.models import Sum, Count
+
+        diagnostic = Project.objects.get(pk=self.kwargs["pk"])
+        qs = (
+            ArtifAreaZoneUrba.objects.filter(zone_urba__in=ZoneUrba.objects.intersect(diagnostic.combined_emprise))
+            .filter(year__in=[diagnostic.first_year_ocsge, diagnostic.last_year_ocsge])
+            .order_by("zone_urba__typezone", "year")
+            .values("zone_urba__typezone", "year")
+            .annotate(
+                artif_area=Sum("area"),
+                total_area=Sum("zone_urba__area"),
+                nb_zones=Count("zone_urba_id"),
+            )
+        )
+        zone_list = dict()
+        for row in qs:
+            if row["zone_urba__typezone"] not in zone_list:
+                zone_list[row["zone_urba__typezone"]] = {
+                    "type_zone": row["zone_urba__typezone"],
+                    "nb_zones": row["nb_zones"],
+                    "total_area": row["total_area"],
+                    "first_artif_area": 0.0,
+                    "last_artif_area": 0.0,
+                    "fill_up_rate": 0.0,
+                    "new_artif": 0.0,
+                }
+            if row["year"] == diagnostic.first_year_ocsge:
+                zone_list[row["zone_urba__typezone"]]["first_artif_area"] = row["artif_area"]
+            else:
+                zone_list[row["zone_urba__typezone"]]["last_artif_area"] = row["artif_area"]
+        for k in zone_list.keys():
+            zone_list[k]["fill_up_rate"] = 100 * zone_list[k]["last_artif_area"] / zone_list[k]["total_area"]
+            zone_list[k]["new_artif"] = zone_list[k]["last_artif_area"] - zone_list[k]["first_artif_area"]
+        kwargs |= {
+            "zone_list": zone_list.values(),
+            "diagnostic": diagnostic,
+            "first_year_ocsge": str(diagnostic.first_year_ocsge),
+            "last_year_ocsge": str(diagnostic.last_year_ocsge),
+        }
         return super().get_context_data(**kwargs)
