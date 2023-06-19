@@ -1,14 +1,13 @@
 from django.conf import settings
-from django.urls import path
-from django.urls import reverse_lazy
+from django.contrib.auth.views import (
+    PasswordResetCompleteView,
+    PasswordResetConfirmView,
+    PasswordResetDoneView,
+    PasswordResetView,
+)
+from django.urls import path, reverse_lazy
 
 from . import views
-from django.contrib.auth.views import (
-    PasswordResetView,
-    PasswordResetDoneView,
-    PasswordResetConfirmView,
-    PasswordResetCompleteView,
-)
 
 
 app_name = "users"

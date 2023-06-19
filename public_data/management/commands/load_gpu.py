@@ -7,10 +7,7 @@ from django.db import connection
 from django.db.models import DecimalField, F
 from django.db.models.functions import Cast
 
-from public_data.models import (
-    AutoLoadMixin,
-    ZoneUrba,
-)
+from public_data.models import AutoLoadMixin, ZoneUrba
 
 logger = logging.getLogger("management.commands")
 
