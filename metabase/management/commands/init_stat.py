@@ -1,5 +1,6 @@
 import logging
 from cProfile import Profile
+
 from django.core.management.base import BaseCommand
 from django.db import connection
 from psycopg2 import OperationalError

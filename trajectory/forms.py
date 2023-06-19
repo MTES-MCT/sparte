@@ -1,7 +1,7 @@
 from typing import Any, Dict
 
 from django import forms
-from django.core.validators import MinValueValidator, MaxValueValidator
+from django.core.validators import MaxValueValidator, MinValueValidator
 
 from project.models import Project
 from trajectory.models import Trajectory
