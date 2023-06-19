@@ -506,7 +506,7 @@ class ProjectReportUrbanZonesView(ProjectReportBaseView):
         )
 
         return super().get_context_data(**kwargs)
-    
+
 
 class DownloadWordView(TemplateView):
     template_name = "project/error_download_word.html"
