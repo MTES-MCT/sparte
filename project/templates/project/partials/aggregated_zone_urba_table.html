@@ -1,0 +1,28 @@
+<div class="fr-mt-7w">
+    <h3>Synthèses des zonages d'urbanime</h3>
+
+    <table>
+        <thead>
+            <tr>
+                <th scope="col">Type de zone</th>
+                <th scope="col">Nombre de zones</th>
+                <th scope="col">Surface totale</th>
+                <th scope="col">Surface artificielle ({{ last_year_ocsge }})</th>
+                <th scope="col">Taux de remplissage ({{ last_year_ocsge }})</th>
+                <th scope="col">Artificialisation<br/>({{ first_year_ocsge }} à {{ last_year_ocsge }})</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for zone in zone_list %}
+            <tr>
+                <th scope="row">{{ zone.type_zone }}</th>
+                <td align="right">{{ zone.nb_zones }}</td>
+                <td align="right">{{ zone.total_area|floatformat:1 }} Ha</td>
+                <td align="right">{{ zone.last_artif_area|floatformat:1 }} Ha</td>
+                <td align="right">{{ zone.fill_up_rate|floatformat:1 }}%</td>
+                <td align="right">{{ zone.new_artif|floatformat:1 }} Ha</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>

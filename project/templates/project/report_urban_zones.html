@@ -1,4 +1,4 @@
-{% extends 'index.html' %}
+{% extends "index.html" %}
 
 {% load static %}
 {% load project_tags %}
@@ -9,11 +9,7 @@
 
 {% block pagetitle %}
 Zonages d'urbanisme
-{% endblock %}
-
-{% block headers %}
-{% sri_static "project/css/project.css" %}
-{% endblock %}
+{% endblock pagetitle %}
 
 {% block content %}
 <div class="px-4">
@@ -33,9 +29,19 @@ Zonages d'urbanisme
                 </button>
             </a>
         </div>
+    
+
+        <div class="fr-mt-7w" hx-get="{% url 'project:synthesis-zone-urba-all' project.id %}" hx-trigger="load delay 2s" hx-swap="outerHTML">
+            <h3>Synthèses des zonages d'urbanime</h3>
+
+            <!-- TODO Sofian ajouter skeletton -->
+            <div class="fr-custom-loader"></div>
+        </div>
+
     </div>
+
 </div>
-{% endblock %}
+{% endblock content %}
 
 {% block tagging %}
 <script language="javascript" nonce="{{ CSP_NONCE }}">
