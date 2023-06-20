@@ -113,6 +113,24 @@ class OptimizedMixins:
         return HttpResponse(envelope, content_type="application/json")
 
 
+class OnlyBoundingBoxMixin:
+    optimized_geo_field = "st_AsGeoJSON(ST_Intersection(mpoly, b.box), 6, 0)"
+
+    def get_sql_from(self) -> str:
+        from_parts = [
+            super().get_sql_from(),
+            "INNER JOIN (SELECT ST_MakeEnvelope(%s, %s, %s, %s, 4326) as box) as b ON ST_Intersects(o.mpoly, b.box)",
+        ]
+        return " ".join(from_parts)
+
+    def get_params(self, request):
+        bbox = request.query_params.get("in_bbox")
+        if bbox is None:
+            raise ValueError(f"bbox parameter must be set. bbox={bbox}")
+        bbox = list(map(float, bbox.split(",")))
+        return bbox  # /!\ order matter, see sql query 'from' above
+
+
 class ZoomSimplificationMixin:
     min_zoom = 6
 
@@ -126,16 +144,6 @@ class ZoomSimplificationMixin:
         if self.get_zoom() >= self.min_zoom:
             return super().get_data(request)
         return []
-
-    def get_params(self, request):
-        bbox = request.query_params.get("in_bbox")
-        if bbox is None:
-            raise ValueError(f"bbox parameter must be set. bbox={bbox}")
-        bbox = list(map(float, bbox.split(",")))
-        return bbox  # /!\ order matter, see sql query below
-
-    def get_sql_where(self):
-        return "where o.mpoly && ST_MakeEnvelope(%s, %s, %s, %s, 4326)"
 
 
 class DataViewSet(viewsets.ReadOnlyModelViewSet):
@@ -158,7 +166,7 @@ class DataViewSet(viewsets.ReadOnlyModelViewSet):
         return Response(gradient)
 
 
-class OcsgeViewSet(ZoomSimplificationMixin, OptimizedMixins, DataViewSet):
+class OcsgeViewSet(OnlyBoundingBoxMixin, ZoomSimplificationMixin, OptimizedMixins, DataViewSet):
     queryset = models.Ocsge.objects.all()
     serializer_class = serializers.OcsgeSerializer
     optimized_fields = {
@@ -194,8 +202,7 @@ class OcsgeViewSet(ZoomSimplificationMixin, OptimizedMixins, DataViewSet):
 
     def get_sql_from(self):
         from_parts = [
-            f"FROM {self.queryset.model._meta.db_table} o",
-            "INNER JOIN (SELECT ST_MakeEnvelope(%s, %s, %s, %s, 4326) as box) as b ON ST_Intersects(o.mpoly, b.box)",
+            super().get_sql_from(),
             "INNER JOIN public_data_couvertureusagematrix pdcum ON o.matrix_id = pdcum.id",
             "INNER JOIN public_data_couverturesol pdcs ON pdcum.couverture_id = pdcs.id",
             "INNER JOIN public_data_usagesol pdus ON pdcum.usage_id = pdus.id",
@@ -219,20 +226,20 @@ class OcsgeViewSet(ZoomSimplificationMixin, OptimizedMixins, DataViewSet):
             params.append(bool(request.query_params.get("is_artificial")))
         return params  # /!\ order matter, see sql query below
 
-    def get_optimized_geo_field(self):
-        zoom = self.get_zoom()
-        if zoom == 18:
-            y = 0
-        elif zoom == 17:
-            y = 0.00001
-        elif zoom == 16:
-            y = 0.00005
-        else:
-            y = 0.0001
-        return f"st_AsGeoJSON(ST_SimplifyPreserveTopology(ST_Intersection(mpoly, b.box), {y}), 6, 0)"
+    # def get_optimized_geo_field(self):
+    #     zoom = self.get_zoom()
+    #     if zoom == 18:
+    #         y = 0
+    #     elif zoom == 17:
+    #         y = 0.00001
+    #     elif zoom == 16:
+    #         y = 0.00005
+    #     else:
+    #         y = 0.0001
+    #     return f"st_AsGeoJSON(ST_SimplifyPreserveTopology(ST_Intersection(mpoly, b.box), {y}), 6, 0)"
 
 
-class OcsgeDiffViewSet(ZoomSimplificationMixin, OptimizedMixins, DataViewSet):
+class OcsgeDiffViewSet(OnlyBoundingBoxMixin, ZoomSimplificationMixin, OptimizedMixins, DataViewSet):
     queryset = models.OcsgeDiff.objects.all()
     serializer_class = serializers.OcsgeDiffSerializer
     optimized_fields = {
@@ -297,20 +304,20 @@ class OcsgeDiffViewSet(ZoomSimplificationMixin, OptimizedMixins, DataViewSet):
             )
         return where
 
-    def get_optimized_geo_field(self):
-        zoom = self.get_zoom()
-        if zoom == 18:
-            y = 0
-        elif zoom == 17:
-            y = 0.00001
-        elif zoom == 16:
-            y = 0.00005
-        else:
-            y = 0.0001
-        return f"st_AsGeoJSON(ST_SimplifyPreserveTopology(ST_Intersection(mpoly, b.box), {y}), 6, 0)"
+    # def get_optimized_geo_field(self):
+    #     zoom = self.get_zoom()
+    #     if zoom == 18:
+    #         y = 0
+    #     elif zoom == 17:
+    #         y = 0.00001
+    #     elif zoom == 16:
+    #         y = 0.00005
+    #     else:
+    #         y = 0.0001
+    #     return f"st_AsGeoJSON(ST_SimplifyPreserveTopology(ST_Intersection(mpoly, b.box), {y}), 6, 0)"
 
 
-class ZoneConstruiteViewSet(ZoomSimplificationMixin, OptimizedMixins, DataViewSet):
+class ZoneConstruiteViewSet(OnlyBoundingBoxMixin, ZoomSimplificationMixin, OptimizedMixins, DataViewSet):
     queryset = models.ZoneConstruite.objects.all()
     serializer_class = serializers.ZoneConstruiteSerializer
     optimized_fields = {
@@ -344,26 +351,26 @@ class ZoneConstruiteViewSet(ZoomSimplificationMixin, OptimizedMixins, DataViewSe
     def get_sql_where(self):
         return "WHERE o.year = %s"
 
-    def get_optimized_geo_field(self):
-        zoom = self.get_zoom()
-        if zoom == 18:
-            y = 0
-        elif zoom == 17:
-            y = 0.00001
-        elif zoom == 16:
-            y = 0.00005
-        elif zoom == 15:
-            y = 0.0001
-        elif zoom == 14:
-            y = 0.0005
-        elif zoom == 13:
-            y = 0.00075
-        else:
-            y = 0.001
-        return f"st_AsGeoJSON(ST_SimplifyPreserveTopology(ST_Intersection(mpoly, b.box), {y}), 6, 0)"
+    # def get_optimized_geo_field(self):
+    #     zoom = self.get_zoom()
+    #     if zoom == 18:
+    #         y = 0
+    #     elif zoom == 17:
+    #         y = 0.00001
+    #     elif zoom == 16:
+    #         y = 0.00005
+    #     elif zoom == 15:
+    #         y = 0.0001
+    #     elif zoom == 14:
+    #         y = 0.0005
+    #     elif zoom == 13:
+    #         y = 0.00075
+    #     else:
+    #         y = 0.001
+    #     return f"st_AsGeoJSON(ST_SimplifyPreserveTopology(ST_Intersection(mpoly, b.box), {y}), 6, 0)"
 
 
-class ArtificialAreaViewSet(ZoomSimplificationMixin, OptimizedMixins, DataViewSet):
+class ArtificialAreaViewSet(OnlyBoundingBoxMixin, ZoomSimplificationMixin, OptimizedMixins, DataViewSet):
     queryset = models.ArtificialArea.objects.all()
     serializer_class = serializers.OcsgeDiffSerializer
     optimized_fields = {
@@ -406,20 +413,20 @@ class ArtificialAreaViewSet(ZoomSimplificationMixin, OptimizedMixins, DataViewSe
     def get_sql_where(self):
         return "WHERE o.year = %s"
 
-    def get_optimized_geo_field(self):
-        zoom = self.get_zoom()
-        if zoom == 18:
-            y = 0
-        elif zoom == 17:
-            y = 0.00001
-        elif zoom == 16:
-            y = 0.00005
-        else:
-            y = 0.0001
-        return f"st_AsGeoJSON(ST_SimplifyPreserveTopology(ST_Intersection(o.mpoly, b.box), {y}), 6, 0)"
+    # def get_optimized_geo_field(self):
+    #     zoom = self.get_zoom()
+    #     if zoom == 18:
+    #         y = 0
+    #     elif zoom == 17:
+    #         y = 0.00001
+    #     elif zoom == 16:
+    #         y = 0.00005
+    #     else:
+    #         y = 0.0001
+    #     return f"st_AsGeoJSON(ST_SimplifyPreserveTopology(ST_Intersection(o.mpoly, b.box), {y}), 6, 0)"
 
 
-class ZoneUrbaViewSet(ZoomSimplificationMixin, OptimizedMixins, DataViewSet):
+class ZoneUrbaViewSet(OnlyBoundingBoxMixin, ZoomSimplificationMixin, OptimizedMixins, DataViewSet):
     queryset = models.ZoneUrba.objects.all()
     serializer_class = serializers.ZoneUrbaSerializer
     optimized_fields = {
@@ -464,21 +471,21 @@ class ZoneUrbaViewSet(ZoomSimplificationMixin, OptimizedMixins, DataViewSet):
             where_parts.append(f"o.typezone in ({', '.join(zones)})")
         return f"where {' and '.join(where_parts)}"
 
-    def get_optimized_geo_field(self):
-        zoom = self.get_zoom()
-        if zoom == 18:
-            y = 0
-        elif zoom == 17:
-            y = 0.00001
-        elif zoom == 16:
-            y = 0.00005
-        elif zoom >= 14:
-            y = 0.0001
-        elif zoom >= 12:
-            y = 0.0002
-        else:
-            y = 0.0005
-        return f"st_AsGeoJSON(ST_SimplifyPreserveTopology(ST_Intersection(o.mpoly, b.box), {y}), 6, 0)"
+    # def get_optimized_geo_field(self):
+    #     zoom = self.get_zoom()
+    #     if zoom == 18:
+    #         y = 0
+    #     elif zoom == 17:
+    #         y = 0.00001
+    #     elif zoom == 16:
+    #         y = 0.00005
+    #     elif zoom >= 14:
+    #         y = 0.0001
+    #     elif zoom >= 12:
+    #         y = 0.0002
+    #     else:
+    #         y = 0.0005
+    #     return f"st_AsGeoJSON(ST_SimplifyPreserveTopology(ST_Intersection(o.mpoly, b.box), {y}), 6, 0)"
 
 
 # Views for referentials Couverture and Usage
@@ -497,63 +504,72 @@ class CouvertureSolViewset(viewsets.ReadOnlyModelViewSet):
 # Views for french adminisitrative territories
 
 
-class RegionViewSet(ZoomSimplificationMixin, OptimizedMixins, DataViewSet):
+class RegionViewSet(OnlyBoundingBoxMixin, ZoomSimplificationMixin, OptimizedMixins, DataViewSet):
     queryset = models.Region.objects.all()
     serializer_class = serializers.RegionSerializer
     geo_field = "mpoly"
     optimized_fields = {}
 
-    def get_optimized_geo_field(self):
-        zoom = self.get_zoom()
-        if zoom >= 16:
-            y = 0
-        elif zoom >= 13:
-            y = 0.00001
-        elif zoom >= 10:
-            y = 0.00005
-        else:
-            y = 0.0005
-        return f"st_AsGeoJSON(ST_SimplifyPreserveTopology(o.mpoly, {y}), 6, 0)"
+    # def get_optimized_geo_field(self):
+    #     zoom = self.get_zoom()
+    #     if zoom >= 16:
+    #         y = 0
+    #     elif zoom >= 13:
+    #         y = 0.00001
+    #     elif zoom >= 10:
+    #         y = 0.00005
+    #     else:
+    #         y = 0.0005
+    #     return f"st_AsGeoJSON(ST_SimplifyPreserveTopology(o.mpoly, {y}), 6, 0)"
+
+    def get_sql_where(self):
+        return ""
 
 
-class DepartementViewSet(ZoomSimplificationMixin, OptimizedMixins, DataViewSet):
+class DepartementViewSet(OnlyBoundingBoxMixin, ZoomSimplificationMixin, OptimizedMixins, DataViewSet):
     queryset = models.Departement.objects.all()
     serializer_class = serializers.DepartementSerializer
     geo_field = "mpoly"
     optimized_fields = {}
 
-    def get_optimized_geo_field(self):
-        zoom = self.get_zoom()
-        if zoom >= 16:
-            y = 0
-        elif zoom >= 13:
-            y = 0.00001
-        elif zoom >= 10:
-            y = 0.00005
-        else:
-            y = 0.0005
-        return f"st_AsGeoJSON(ST_SimplifyPreserveTopology(o.mpoly, {y}), 6, 0)"
+    # def get_optimized_geo_field(self):
+    #     zoom = self.get_zoom()
+    #     if zoom >= 16:
+    #         y = 0
+    #     elif zoom >= 13:
+    #         y = 0.00001
+    #     elif zoom >= 10:
+    #         y = 0.00005
+    #     else:
+    #         y = 0.0005
+    #     return f"st_AsGeoJSON(ST_SimplifyPreserveTopology(o.mpoly, {y}), 6, 0)"
+
+    def get_sql_where(self):
+        return ""
 
 
-class ScotViewSet(ZoomSimplificationMixin, OptimizedMixins, DataViewSet):
+class ScotViewSet(OnlyBoundingBoxMixin, ZoomSimplificationMixin, OptimizedMixins, DataViewSet):
     queryset = models.Scot.objects.all()
     serializer_class = serializers.ScotSerializer
     geo_field = "mpoly"
 
-    def get_optimized_geo_field(self):
-        zoom = self.get_zoom()
-        if zoom >= 16:
-            y = 0
-        elif zoom >= 13:
-            y = 0.00001
-        elif zoom >= 10:
-            y = 0.00005
-        else:
-            y = 0.0005
-        return f"st_AsGeoJSON(ST_SimplifyPreserveTopology(o.mpoly, {y}), 6, 0)"
+    # def get_optimized_geo_field(self):
+    #     zoom = self.get_zoom()
+    #     if zoom >= 16:
+    #         y = 0
+    #     elif zoom >= 13:
+    #         y = 0.00001
+    #     elif zoom >= 10:
+    #         y = 0.00005
+    #     else:
+    #         y = 0.0005
+    #     return f"st_AsGeoJSON(ST_SimplifyPreserveTopology(o.mpoly, {y}), 6, 0)"
+
+    def get_sql_where(self):
+        return ""
 
 
-class EpciViewSet(ZoomSimplificationMixin, OptimizedMixins, DataViewSet):
+class EpciViewSet(OnlyBoundingBoxMixin, ZoomSimplificationMixin, OptimizedMixins, DataViewSet):
     """EPCI view set."""
 
     queryset = models.Epci.objects.all()
@@ -562,20 +578,23 @@ class EpciViewSet(ZoomSimplificationMixin, OptimizedMixins, DataViewSet):
 
     min_zoom = 6
 
-    def get_optimized_geo_field(self):
-        zoom = self.get_zoom()
-        if zoom >= 16:
-            y = 0
-        elif zoom >= 13:
-            y = 0.00001
-        elif zoom >= 10:
-            y = 0.00005
-        else:
-            y = 0.0005  # never send because min_zoom = 10
-        return f"st_AsGeoJSON(ST_SimplifyPreserveTopology(o.mpoly, {y}), 6, 0)"
+    # def get_optimized_geo_field(self):
+    #     zoom = self.get_zoom()
+    #     if zoom >= 16:
+    #         y = 0
+    #     elif zoom >= 13:
+    #         y = 0.00001
+    #     elif zoom >= 10:
+    #         y = 0.00005
+    #     else:
+    #         y = 0.0005  # never send because min_zoom = 10
+    #     return f"st_AsGeoJSON(ST_SimplifyPreserveTopology(o.mpoly, {y}), 6, 0)"
+
+    def get_sql_where(self):
+        return ""
 
 
-class CommuneViewSet(ZoomSimplificationMixin, OptimizedMixins, DataViewSet):
+class CommuneViewSet(OnlyBoundingBoxMixin, ZoomSimplificationMixin, OptimizedMixins, DataViewSet):
     """Commune view set."""
 
     queryset = models.Commune.objects.all()
@@ -584,17 +603,20 @@ class CommuneViewSet(ZoomSimplificationMixin, OptimizedMixins, DataViewSet):
     optimized_fields = {}
     min_zoom = 10
 
-    def get_optimized_geo_field(self):
-        zoom = self.get_zoom()
-        if zoom >= 16:
-            y = 0
-        elif zoom >= 13:
-            y = 0.00001
-        elif zoom >= 10:
-            y = 0.00005
-        else:
-            y = 0.0005  # never send because min_zoom = 10
-        return f"st_AsGeoJSON(ST_SimplifyPreserveTopology(o.mpoly, {y}), 6, 0)"
+    # def get_optimized_geo_field(self):
+    #     zoom = self.get_zoom()
+    #     if zoom >= 16:
+    #         y = 0
+    #     elif zoom >= 13:
+    #         y = 0.00001
+    #     elif zoom >= 10:
+    #         y = 0.00005
+    #     else:
+    #         y = 0.0005  # never send because min_zoom = 10
+    #     return f"st_AsGeoJSON(ST_SimplifyPreserveTopology(o.mpoly, {y}), 6, 0)"
+
+    def get_sql_where(self):
+        return ""
 
 
 @api_view(["GET"])
