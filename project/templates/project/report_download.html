@@ -8,7 +8,7 @@
         <p>N'hésitez pas à nous faire part de vos impressions et de vos suggestions d'amélioration en utilisant notre <a href="{% url 'home:contact' %}">formulaire de contact</a>.</p>
     </div>
 {% else %}
-    <form hx-post="{% url 'project:report_download' project.pk %}">
+    <form hx-post="{% url 'project:report_download' project.pk %}" hx-ext="disable-element" hx-disable-element="#dl_btn">
         <p>Pour recevoir le diagnostic au format Word, veuillez compléter le formulaire ci-dessous. Une fois validé, vous recevrez sous quelques minutes le document par e-mail.</p>
 
         {% csrf_token %}
@@ -21,9 +21,7 @@
                 </button>
             </li>
             <li>
-                <button id="dl_btn" class="fr-btn" type="submit">
-                    Recevoir
-                </button>
+                <button id="dl_btn" class="fr-btn position-relative" type="submit"><span class="htmx-indicator-placeholder">Recevoir</span><div class="fr-custom-loader--button htmx-indicator"></div></button>
             </li>
         </ul>
     </form>
