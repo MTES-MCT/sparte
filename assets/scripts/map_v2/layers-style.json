@@ -1,0 +1,88 @@
+[
+    {
+        "key": "style_highlight",
+        "opacity": 1,
+        "fillOpacity": 0.6
+    },
+    {
+        "key": "style_emprise",
+        "fill": false,
+        "weight": 1.8,
+        "opacity": 1,
+        "color": "#FFFF00",
+        "fillOpacity": 0
+    },
+    {
+        "key": "style_limites_administratives",
+        "fill": false,
+        "weight": 1.8,
+        "opacity": 1,
+        "color": "#000000",
+        "fillOpacity": 0
+    },
+    {
+        "key": "style_ocsge_couverture",
+        "fillColor": "#ffffff",
+        "fillOpacity": 1,
+        "weight": 0,
+        "opacity": 1,
+        "color": "#ffffff"
+    },
+    {
+        "key": "style_ocsge_usage",
+        "fillColor": "#ffffff",
+        "fillOpacity": 0.6,
+        "weight": 0,
+        "opacity": 1,
+        "color": "#ffffff"
+    },
+    {
+        "key": "style_ocsge_diff",
+        "fillColor": "#ffffff",
+        "fillOpacity": 0.7,
+        "weight": 0,
+        "opacity": 1,
+        "color": "#ffffff"
+    },
+    {
+        "key": "style_ocsge_diff__new_artif",
+        "fillColor": "#ff0000",
+        "color": "#ff0000"
+    },
+    {
+        "key": "style_ocsge_diff__new_natural",
+        "fillColor": "#00ff00",
+        "color": "#00ff00"
+    },
+    {
+        "key": "style_zone_urbaines",
+        "fillOpacity": 0.1,
+        "weight": 1,
+        "opacity": 1
+    },
+    {
+        "key": "style_zone_urbaines__a",
+        "fillColor": "rgb(255, 255, 0)",
+        "color": "rgb(255, 255, 0)"
+    },
+    {
+        "key": "style_zone_urbaines__auc",
+        "fillColor": "rgb(255, 101, 101)",
+        "color": "rgb(255, 101, 101)"
+    },
+    {
+        "key": "style_zone_urbaines__aus",
+        "fillColor": "rgb(254, 204, 190)",
+        "color": "rgb(254, 204, 190)"
+    },
+    {
+        "key": "style_zone_urbaines__n",
+        "fillColor": "rgb(86, 170, 2)",
+        "color": "rgb(86, 170, 2)"
+    },
+    {
+        "key": "style_zone_urbaines__u",
+        "fillColor": "rgb(230, 0, 0)",
+        "color": "rgb(230, 0, 0)"
+    }
+]

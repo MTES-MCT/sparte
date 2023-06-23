@@ -146,3 +146,18 @@ class ZoneConstruiteSerializer(serializers.GeoFeatureModelSerializer):
         )
         model = models.ZoneConstruite
         geo_field = "mpoly"
+
+
+class ZoneUrbaSerializer(serializers.GeoFeatureModelSerializer):
+    class Meta:
+        fields = (
+            "id",
+            "libelle",
+            "libelong",
+            "typezone",
+            "urlfic",
+            "datappro",
+            "datvalid",
+        )
+        model = models.ZoneUrba
+        geo_field = "mpoly"

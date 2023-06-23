@@ -113,12 +113,14 @@ def find_first_and_last_ocsge(self, project_id: int) -> None:
     """Use associated cities to find departements and available OCSGE millesime"""
     logger.info("Start find_first_and_last_ocsge id=%d", project_id)
     try:
-        result = Project.objects.get(pk=project_id).get_first_last_millesime()
+        project = Project.objects.get(pk=project_id)
+        result = project.get_first_last_millesime()
         race_protection_save(
             project_id,
             {
                 "first_year_ocsge": result["first"],
                 "last_year_ocsge": result["last"],
+                "available_millesimes": project.available_millesimes,
                 "async_find_first_and_last_ocsge_done": True,
             },
         )
@@ -134,7 +136,7 @@ def find_first_and_last_ocsge(self, project_id: int) -> None:
 
 @shared_task
 def send_email_request_bilan(request_id):
-    """Alerte envoyée à l'équipe SPARTE pour les avertir d'une demande de Diagnostic."""
+    """Alerte envoyée à l'équipe pour les avertir d'une demande de Diagnostic."""
     logger.info("Start send_email_request_bilan, request_id=%s", request_id)
     request = Request.objects.get(pk=request_id)
     diagnostic = request.project
@@ -145,7 +147,7 @@ def send_email_request_bilan(request_id):
         image_url = diagnostic.cover_image.url
     email = SibTemplateEmail(
         template_id=1,
-        recipients=[{"name": "Team SPARTE", "email": app_parameter.TEAM_EMAIL}],
+        recipients=[{"name": "Team Mon Diagnostic Artificialisation", "email": app_parameter.TEAM_EMAIL}],
         params={
             "diagnostic_name": diagnostic.name,
             "user_email": request.email,

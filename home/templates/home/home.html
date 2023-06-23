@@ -1,15 +1,15 @@
-{% extends 'index.html' %}
+{% extends "index.html" %}
 
 {% load static %}
 {% load sri %}
 
-{% block pagetitle %}Accueil{% endblock %}
+{% block pagetitle %}Accueil{% endblock pagetitle %}
 
 {% block headers %}
 {% sri_static "home/css/home.css" %}
 {% endblock headers %}
 
-{% block body_class %}home{% endblock %}
+{% block body_class %}home{% endblock body_class %}
 
 <!-- Hide breadcrumbs on home page -->
 {% block breadcrumbs %}
@@ -20,10 +20,10 @@
   <div class="fr-container">
     <div class="fr-grid-row fr-grid-row--gutters fr-py-6w">
       <div class="fr-col fr-col-12 fr-col-md-9">
-        <h1 class="fr-mb-0">SPARTE vous aide à analyser et maitriser la consommation d’espaces et l’artificialisation des sols de votre territoire</h1>
+        <h1 class="fr-mb-0">Mon Diagnostic Artificialisation vous aide à analyser et maitriser la consommation d'espaces et l'artificialisation des sols de votre territoire</h1>
       </div>
       <div class="fr-col fr-col-12 fr-col-md-8">
-        <p>Estimez la trajectoire d'une collectivité selon sa consommation d’espaces des 10 dernières années et ses projets d'aménagement à l'horizon 2031.</p>
+        <p>Estimez la trajectoire d'une collectivité selon sa consommation d'espaces des 10 dernières années et ses projets d'aménagement à l'horizon 2031.</p>
       </div>
     </div>
   </div>
@@ -69,7 +69,7 @@
         <div class="fr-card">
           <div class="fr-card__body">
             <div class="fr-card__content">
-              <h3 class="fr-card__title">Pilotez la consommation d’espaces grâce à l’outil de simulation de trajectoires</h3>
+              <h3 class="fr-card__title">Pilotez la consommation d'espaces grâce à l'outil de simulation de trajectoires</h3>
               <p class="fr-card__desc">Croisement de vos estimations avec l'objectif de réduction de consommation d'espaces.</p>
             </div>
           </div>
@@ -107,7 +107,7 @@
       <div class="fr-col-md-12">
         <p class="fr-pr-3w fw-bold"><span class="fr-icon-check-line fr-mr-1w" aria-hidden="true"></span>L'article 192 de la loi Climat et Résilience et ses décrets d'application incitent les collectivités à préserver leurs sols à travers 2 objectifs:</p>
         <ul class="fr-text--sm"> 
-          <li>D'ici 2031 : diminution d'environ 50% du rythme de consommation d’espaces naturels, agricoles, et forestiers par rapport au bilan des 10 dernières années (2011-2021).</li>
+          <li>D'ici 2031 : diminution d'environ 50% du rythme de consommation d'espaces naturels, agricoles, et forestiers par rapport au bilan des 10 dernières années (2011-2021).</li>
           <li>D'ici 2050 : Zéro Artificialisation Nette (ZAN) grâce à l'équilibre entre le total des surfaces artificialisées et renaturées.</li>
         </ul>
         <p class="fr-pr-3w fw-bold"><span class="fr-icon-check-line fr-mr-1w" aria-hidden="true"></span>Pour les collectivités cette loi se traduit par:</p>
@@ -124,7 +124,7 @@
 
 <section class="fr-py-6w">
   <div class="fr-container">
-    <h2 class="text-center">D’où proviennent nos données ?</h2>
+    <h2 class="text-center">D'où proviennent nos données ?</h2>
     <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--center fr-pt-6w">
       <div class="fr-col-12 fr-col-md-4">
         <div class="fr-card">
@@ -146,7 +146,7 @@
           <div class="fr-card__body">
             <div class="fr-card__content">
               <h3 class="fr-card__title">OCS GE (Occupation du Sol à Grande Echelle) produite par l'IGN</h3>
-              <p class="fr-card__desc">Base de données vectorielle de description de l’occupation et de l’usage du sol dont les unités minimales de cartographie sont de 200m2 pour le bâti et de 500m2 pour le reste en zone urbaine. Disponible France entière à horizon 2024 et mis à jour tous les 3 ans. Production en co-maitrise d'ouvrage avec la DGALN (Direction Générale de l'Aménagement, du Logement et de la Nature).</p>
+              <p class="fr-card__desc">Base de données vectorielle de description de l'occupation et de l'usage du sol dont les unités minimales de cartographie sont de 200m2 pour le bâti et de 500m2 pour le reste en zone urbaine. Disponible France entière à horizon 2024 et mis à jour tous les 3 ans. Production en co-maitrise d'ouvrage avec la DGALN (Direction Générale de l'Aménagement, du Logement et de la Nature).</p>
             </div>
           </div>
           <div class="fr-card__header">
@@ -161,7 +161,7 @@
           <div class="fr-card__body">
             <div class="fr-card__content">
               <h3 class="fr-card__title">Données complémentaires</h3>
-              <p class="fr-card__desc">SPARTE propose des croisements avec les données de l'INSEE (population) et bientôt du Géoportail de l'urbanisme (PLU, PLUi).</p>
+              <p class="fr-card__desc">Mon Diagnostic Artificialisation propose des croisements avec les données de l'INSEE (population) et bientôt du Géoportail de l'urbanisme (PLU, PLUi).</p>
             </div>
           </div>
           <div class="fr-card__header">
@@ -175,16 +175,15 @@
   </div>
 </section>
 {% include  "home/partials/newsletter_form.html" %}
+{% endblock content %}
 
-
-{% endblock %}
 {% block tagging %}
-  <script language="javascript" nonce="{{ CSP_NONCE }}">
+<script language="javascript" nonce="{{ CSP_NONCE }}">
 $( window ).on('load', function () {
     _paq.push(['trackEvent', 'Home page', 'Ouverture'])
 })
 
-$( "#btn-voir-diag-1" ).click(function() {
+{% comment %} $( "#btn-voir-diag-1" ).click(function() {
     _paq.push(['trackEvent', 'CTA', 'Voir mon diagnostic', 'CTA0001'])
 })
 
@@ -198,6 +197,6 @@ $( "#btn-contact-form" ).click(function() {
 
 $( "#btn-voir-diag-2" ).click(function() {
   _paq.push(['trackEvent', 'CTA', 'Créer mon diagnostic', 'CTA0004'])
-})
+}) {% endcomment %}
 </script>
 {% endblock tagging %}

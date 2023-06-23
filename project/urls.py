@@ -67,6 +67,16 @@ urlpatterns = [
         views.ProjectReportTarget2031View.as_view(),
         name="report_target_2031",
     ),
+    path(
+        "<int:pk>/tableau-de-bord/zonages-d-urbanisme",
+        views.ProjectReportUrbanZonesView.as_view(),
+        name="report_urban_zones",
+    ),
+    path(
+        "<int:pk>/tableau-de-bord/zones-urbanismes",
+        views.ProjectReportGpuView.as_view(),
+        name="report_gpu",
+    ),
     # REPORT PARTIALS
     path(
         "<int:pk>/tableau-de-bord/consommation-relative/surface",
@@ -82,6 +92,21 @@ urlpatterns = [
         "<int:pk>/tableau-de-bord/consommation-relative/ménages",
         views.ConsoRelativeHouseholdChart.as_view(),
         name="relative-household",
+    ),
+    path(
+        "<int:pk>/tableau-de-bord/artificialisation/évolution-nette",
+        views.ArtifNetChart.as_view(),
+        name="artif-net-chart",
+    ),
+    path(
+        "<int:pk>/tableau-de-bord/artificialisation/détail-couverture",
+        views.ArtifDetailCouvChart.as_view(),
+        name="artif-detail-couv-chart",
+    ),
+    path(
+        "<int:pk>/tableau-de-bord/artificialisation/détail-usage",
+        views.ArtifDetailUsaChart.as_view(),
+        name="artif-detail-usa-chart",
     ),
     path(
         "<int:pk>/set-target-2031",
@@ -105,6 +130,21 @@ urlpatterns = [
         views.CityArtifMapView.as_view(),
         name="theme-city-artif",
     ),
+    path(
+        "<int:pk>/carte/zonages-d-urbanisme",
+        views.UrbanZonesMapView.as_view(),
+        name="map-urban-zones",
+    ),
+    path(
+        "<int:pk>/map-v2",
+        views.MapV2View.as_view(),
+        name="map-v2",
+    ),
+    path(
+        "<int:project_id>/carte/detail-zone-urbaine/<int:pk>",
+        views.ArtifZoneUrbaView.as_view(),
+        name="map-pane-artif-zone-urba",
+    ),
     # DOWNLOAD
     path(
         "<int:pk>/tableau-de-bord/telechargement",
@@ -121,6 +161,7 @@ urlpatterns = [
     path("<int:pk>/export-excel", views.ExportExcelView.as_view(), name="export-excel"),
     # SUB APPS
     path("<int:pk>/trajectoires", include("trajectory.urls", namespace="trajectory")),
+    path("test", views.TestView.as_view(), name="test"),
 ]
 
 

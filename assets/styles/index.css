@@ -2,6 +2,8 @@
 @import '@gouvfr/dsfr/dist/utility/icons/icons-system/icons-system.min.css';
 @import '@gouvfr/dsfr/dist/utility/icons/icons-design/icons-design.min.css';
 @import '@gouvfr/dsfr/dist/utility/icons/icons-business/icons-business.min.css';
+@import 'leaflet/dist/leaflet.css';
+@import '/assets/styles/map.css';
 
 /*
 Fix link icon position
@@ -17,6 +19,19 @@ Fix nav extra margin
 */
 .fr-nav__list {
     margin: 0;
+}
+
+/*
+Header dropdown menu
+*/
+header.fr-header {
+    z-index: 1600;
+}
+
+#menu-mon-compte {
+    right: 0px;
+    margin: 0;
+    padding: 0;
 }
 
 /*
@@ -92,8 +107,20 @@ Loader
     animation: m 1s infinite;
 }
 
+.fr-custom-loader-min {
+    margin: 40px auto;
+    color: darkblue;
+    width: 30px;
+    height: 12px;
+    --d: radial-gradient(farthest-side, currentColor 90%, #0000);
+    background: var(--d), var(--d), var(--d);
+    background-size: 7px 7px;
+    background-repeat: no-repeat;
+    animation: m 1s infinite;
+}
+
 .fr-custom-loader--button {
-    color: white;
+    color: darkblue;
     width: 30px;
     height: 12px;
     --d: radial-gradient(farthest-side, currentColor 90%, #0000);
@@ -394,6 +421,10 @@ Breadcrumb min
 */
 .breadcrumb-min .fr-breadcrumb {
     margin: 0.8rem 0;
+}
+
+.breadcrumb-min .custom-breadcrumb {
+    border-bottom: 1px solid #eaeaea;
 }
 
 /*

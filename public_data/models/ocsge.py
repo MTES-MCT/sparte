@@ -56,6 +56,7 @@ class Ocsge(TruncateTableMixin, DataColorationMixin, models.Model):
             models.Index(fields=["couverture"]),
             models.Index(fields=["usage"]),
             models.Index(fields=["year"]),
+            models.Index(fields=["is_artificial"]),
         ]
 
     @classmethod

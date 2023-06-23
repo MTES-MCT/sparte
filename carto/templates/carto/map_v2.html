@@ -1,0 +1,92 @@
+{% extends "index.html" %}
+
+{% load static %}
+{% load project_tags %}
+{% load humanize %}
+{% load i18n %}
+{% load l10n %}
+{% load highcharts_tags %}
+{% load sri %}
+
+{% block pagetitle %}
+{{ map_name }}
+{% endblock pagetitle %}
+
+{% block headers %}
+<meta name="htmx-config" content='{"inlineScriptNonce":"{{ CSP_NONCE }}"}'>
+<style nonce="{{ CSP_NONCE }}">
+html, body {
+    height: 100% !important;
+}
+</style>
+{% endblock headers %}
+
+{% block body_class %}header-min full-width breadcrumb-min{% endblock body_class %}
+
+{% block content %}
+<div id="mapV2__wrapper" class="d-flex h-100">
+    <div id="mapV2__container" class="flex-grow-1">
+        <div id="mapV2__legend"></div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block footer %}{% endblock footer %}
+
+{% block bodyend %}
+{% localize off %}
+{% sri_static "highcharts/js/highcharts.js" %}
+{% sri_static "highcharts/js/highcharts-more.js" %}
+{% sri_static "highcharts/js/exporting.js" %}
+{% french_translation %}
+
+<script language="javascript" nonce="{{ CSP_NONCE }}">
+layerList = [
+{% for layer in layer_list %}
+    {
+        {% for k, v in layer.items %}
+        {{ k }}: "{{ v|safe }}",
+        {% endfor %}
+    },
+{% endfor %}
+]
+
+couv_leafs = [
+{% for leaf in couv_leafs %}
+    {
+        "code_couverture": "{{ leaf.code_prefix_class|safe }}",
+        "map_color": "{{ leaf.map_color|safe }}",
+    },
+{% endfor %}
+]
+
+usa_leafs = [
+{% for leaf in usa_leafs %}
+    {
+        "code_usage": "{{ leaf.code_prefix_class|safe }}",
+        "map_color": "{{ leaf.map_color|safe }}",
+    },
+{% endfor %}
+]
+
+new SparteMap ({
+    targetElement: document.getElementById('mapV2__container'),
+    debug: true,
+    mapCenter: [{{ center_lat }}, {{ center_lng }}],
+    defaultZoom: {{ default_zoom }},
+    layerList: layerList,
+    couv_leafs: couv_leafs,
+    usa_leafs: usa_leafs,
+    projectId: {{ project_id }}
+})
+</script>
+{% endlocalize %}
+{% endblock bodyend %}
+
+{% block tagging %}
+<script language="javascript" nonce="{{ CSP_NONCE }}">
+$( window ).on('load', function () {
+    _paq.push(['trackEvent', 'Consultation diagnostic', 'Carte intéractive', '{{ map_name }}'])
+})
+</script>
+{% endblock tagging %}

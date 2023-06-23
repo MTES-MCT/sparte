@@ -1,3 +1,7 @@
+/*********************
+ * TODO: WEBPACK Code splitting
+ ********************/
+
 // Import styles
 import '/assets/styles/index.css';
 
@@ -15,6 +19,22 @@ Alpine.start();
 window.htmx = require('htmx.org');
 // Fix CSP inline style
 window.htmx.config.includeIndicatorStyles = false;
+// Disable Submit Button
+window.htmx.defineExtension('disable-element', {
+    onEvent: function (name, evt) {
+        if (name === "htmx:beforeRequest" || name === "htmx:afterRequest") {
+            let elt = evt.detail.elt;
+            let target = elt.getAttribute("hx-disable-element");
+            let targetElement = (target == "self") ? elt : document.querySelector(target);
+
+            if (name === "htmx:beforeRequest" && targetElement) {
+                targetElement.disabled = true;
+            } else if (name == "htmx:afterRequest" && targetElement) {
+                targetElement.disabled = false;
+            }
+        }
+    }
+});
 
 // Import fr-callout-read-more
 import '/assets/scripts/fr-callout-read-more.js';
@@ -24,3 +44,6 @@ import '/assets/scripts/highcharts-custom-buttons.js';
 
 // Import filter diagnostic list
 import '/assets/scripts/filter-diagnostic-list.js';
+
+// Import map V2
+import '/assets/scripts/map_v2/index.js'
