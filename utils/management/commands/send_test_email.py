@@ -21,7 +21,7 @@ class Command(BaseCommand):
         email = SibTemplateEmail(
             template_id=1,
             subject=f"Demande de bilan - {request.email} - {diagnostic.name}",
-            recipients=[{"name": "Team SPARTE", "email": "swann.bouviermuller@gmail.com"}],
+            recipients=[{"name": "Team Mon Diagnostic Artificialisation", "email": "swann.bouviermuller@gmail.com"}],
             params={
                 "diagnostic_name": diagnostic.name,
                 "user_email": request.email,

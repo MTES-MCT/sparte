@@ -1,9 +1,9 @@
-{% extends 'index.html' %}
+{% extends "index.html" %}
 
 {% load static %}
 {% load sri %}
 
-{% block pagetitle %}Déclaration d’accessibilité{% endblock %}
+{% block pagetitle %}Déclaration d'accessibilité{% endblock pagetitle %}
 
 {% block headers %}
 {% sri_static "home/css/home.css" %}
@@ -12,30 +12,30 @@
 {% block content %}
 <div class="d-flex justify-content-center">
     <div class="home-container">
-        <h1>Déclaration d’accessibilité</h1>
+        <h1>Déclaration d'accessibilité</h1>
 
         <p>
             Établie le 7 juillet 2022.
         </p>
 
         <p>
-            Le ministère de l’Écologie s’engage à rendre son service accessible, conformément à l’article 47 de la loi n° 2005-102 du 11 février 2005.
+            Le ministère de l'Écologie s'engage à rendre son service accessible, conformément à l'article 47 de la loi n° 2005-102 du 11 février 2005.
         </p>
 
         <p>
-            Cette déclaration d’accessibilité s’applique à <strong>SPARTE</strong> (https://sparte.beta.gouv.fr).
+            Cette déclaration d'accessibilité s'applique à <strong>Mon Diagnostic Artificialisation</strong> (https://sparte.beta.gouv.fr).
         </p>
 
         <h2>État de conformité</h2>
 
         <p>
-            <strong>SPARTE</strong> est <strong>non conforme</strong> avec le <abbr title="Référentiel général d’amélioration de l’accessibilité">RGAA</abbr>. L'application n’a encore pas été auditée.
+            <strong>Mon Diagnostic Artificialisation</strong> est <strong>non conforme</strong> avec le <abbr title="Référentiel général d'amélioration de l'accessibilité">RGAA</abbr>. L'application n'a encore pas été auditée.
         </p>
 
         <h2>Voie de recours</h2>
 
         <p>
-            Cette procédure est à utiliser dans le cas suivant&nbsp;: vous avez signalé au responsable du site internet un défaut d’accessibilité qui vous empêche d’accéder à un contenu ou à un des services du portail et vous n’avez pas obtenu de réponse satisfaisante.
+            Cette procédure est à utiliser dans le cas suivant&nbsp;: vous avez signalé au responsable du site internet un défaut d'accessibilité qui vous empêche d'accéder à un contenu ou à un des services du portail et vous n'avez pas obtenu de réponse satisfaisante.
         </p>
 
         <p>Vous pouvez&nbsp;:</p>
@@ -49,11 +49,11 @@
         <hr>
 
         <p>
-            Cette déclaration d’accessibilité a été créé le 7 juillet 2022 grâce au <a href="https://betagouv.github.io/a11y-generateur-declaration/#create">Générateur de Déclaration d’Accessibilité de BetaGouv</a>
+            Cette déclaration d'accessibilité a été créé le 7 juillet 2022 grâce au <a href="https://betagouv.github.io/a11y-generateur-declaration/#create">Générateur de Déclaration d'Accessibilité de BetaGouv</a>
         </p>
     </div>
 </div>
-{% endblock %}
+{% endblock content %}
 
 {% block tagging %}
 <script language="javascript" nonce="{{ CSP_NONCE }}">

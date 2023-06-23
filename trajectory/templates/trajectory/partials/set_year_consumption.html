@@ -2,14 +2,14 @@
 
 {% if form %}
     <div class="fr-mt-4w">
-        <form hx-post="{% url 'project:trajectory:partial-form-consumption' project.pk %}" hx-swap="outerHTML">
+        <form hx-post="{% url 'project:trajectory:partial-form-consumption' project.pk %}" hx-swap="outerHTML" hx-ext="disable-element" hx-disable-element="#save_trajectory_conso_btn">
             <p class="fr-text--sm">Renseignez vos surfaces consommées prévisionnelles pour chaque année (en Ha).</p>
 
             <div class="fr-grid-row form-set-year-conso">
                 {% csrf_token %}
                 {{ form|crispy }}
             </div>
-            <button class="fr-btn position-relative" type="submit"><span class="htmx-indicator-placeholder">Enregistrer et visualiser</span><div class="fr-custom-loader--button htmx-indicator"></div></button>
+            <button id="save_trajectory_conso_btn" class="fr-btn position-relative" type="submit"><span class="htmx-indicator-placeholder">Enregistrer et visualiser</span><div class="fr-custom-loader--button htmx-indicator"></div></button>
         </form>
     </div>
 {% endif %}
@@ -49,5 +49,10 @@
                 {% display_chart 'trajectory_chart' trajectory_chart CSP_NONCE %}
             </div>
         </div>
+        <script language="javascript" nonce="{{ CSP_NONCE }}">
+            $( window ).on('load', function () {
+                _paq.push(['trackEvent', '', '', 'display_trajectory_graph'])
+            })
+        </script>
     </div>
 {% endif %}

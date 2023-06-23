@@ -1,0 +1,54 @@
+{% extends 'index.html' %}
+
+{% load static %}
+{% load project_tags %}
+{% load humanize %}
+{% load i18n %}
+{% load l10n %}
+{% load sri %}
+
+{% block pagetitle %}
+Zonages d'urbanisme
+{% endblock %}
+
+{% block headers %}
+{% sri_static "project/css/project.css" %}
+{% endblock %}
+
+{% block content %}
+<div class="px-4">
+    {% include "project/partials/report_title.html" with title=diagnostic surface=diagnostic.area %}
+
+    {% include "project/report_menu.html" %}
+
+    <div class="fr-container fr-py-3w">
+        <div class="fr-callout fr-fi-information-line">
+            <h3 class="fr-callout__title">Découvrez notre explorateur des zonages d'urbanisme</h3>
+            <p class="fr-callout__text">
+                Croisez les zonages d'urbanisme avec les données de l'OCS GE afin de comprendre l'artificialisation de votre territoire.
+            </p>
+            <a href="{% url 'project:map-urban-zones' project.pk %}">
+                <button class="fr-btn">
+                    Explorer les zonages d'urbanisme
+                </button>
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block tagging %}
+<script language="javascript" nonce="{{ CSP_NONCE }}">
+$( window ).on('load', function () {
+    _paq.push(['trackEvent', 'Consultation diagnostic', 'Tableau de bord', 'Zonages d\'urbanisme'])
+})
+
+var fired = false
+$( window ).scroll(function() {
+    if(fired == false && $( window ).scrollTop() + $( window ).height() > $( "#block-content" ).height() - 100) {
+        _paq.push(['trackEvent', 'Consultation diagnostic', 'Fin tableau de bord', 'Zonages d\'urbanisme']])
+        fired = true
+    }
+})
+</script>
+{% endblock tagging %}

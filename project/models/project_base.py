@@ -9,10 +9,10 @@ from django.conf import settings
 from django.contrib.gis.db import models as gis_models
 from django.contrib.gis.db.models import Extent, Union
 from django.contrib.gis.db.models.functions import Centroid, Area
-from django.contrib.gis.geos import Polygon
+from django.contrib.gis.geos import MultiPolygon, Polygon
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
-from django.db.models import Case, F, Max, Min, Q, Sum, Value, When, DecimalField
+from django.db.models import Case, F, Q, Sum, Value, When, DecimalField
 from django.db.models.functions import Coalesce, Concat, Cast
 from django.urls import reverse
 from django.utils import timezone
@@ -265,6 +265,14 @@ class Project(BaseProject):
 
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
+
+    available_millesimes = models.CharField(
+        "OCS GE disponibles",
+        max_length=255,
+        blank=True,
+        null=True,
+        help_text="Millésimes disponibles sur la période d'analyse du diagnostic.",
+    )
 
     first_year_ocsge = models.IntegerField(
         "Premier millésime OCSGE",
@@ -782,13 +790,27 @@ class Project(BaseProject):
         result = self.emprise_set.aggregate(center=Centroid(Union("mpoly")))
         return result["center"]
 
+    def get_available_millesimes(self, commit=False):
+        if not self.available_millesimes:
+            self.available_millesimes = ",".join(
+                str(y)
+                for y in (
+                    Ocsge.objects.intersect(self.combined_emprise)
+                    .filter(year__gte=self.analyse_start_date, year__lte=self.analyse_end_date)
+                    .order_by("year")
+                    .distinct()
+                    .values_list("year", flat=True)
+                )
+            )
+            if commit:
+                self.save(update_fields=["available_millesimes"])
+        return [int(y) for y in self.available_millesimes.split(",")]
+
     def get_first_last_millesime(self):
         """return {"first": yyyy, "last": yyyy} which are the first and last
         OCS GE millesime completly included in diagnostic time frame"""
-        qs = Ocsge.objects.filter(mpoly__intersects=self.combined_emprise)
-        qs = qs.filter(year__gte=self.analyse_start_date, year__lte=self.analyse_end_date)
-        qs = qs.aggregate(first=Min("year"), last=Max("year"))
-        return qs
+        millesimes = self.get_available_millesimes()
+        return {"first": min(millesimes), "last": max(millesimes)}
 
     def get_base_sol(self, millesime, sol="couverture"):
         if sol == "couverture":
@@ -836,10 +858,24 @@ class Project(BaseProject):
             item.surface_diff = item.surface_last - item.surface_first
         return item_list
 
-    def get_detail_artif(self, sol: Literal["couverture", "usage"]):
+    def get_detail_artif(self, sol: Literal["couverture", "usage"], geom: MultiPolygon | None = None):
+        """
+        [
+            {
+                "code_prefix": "CS1.1.1",
+                "label": "Zone Bâti (maison,...)",
+                "label_short": "Zone Bâti",
+                "artif": 1000.0,
+                "renat":  100.0,
+            },
+            {...}
+        ]
+        """
+        if not geom:
+            geom = self.combined_emprise
         Zero = Area(Polygon(((0, 0), (0, 0), (0, 0), (0, 0)), srid=2154))
         return (
-            OcsgeDiff.objects.intersect(self.combined_emprise)
+            OcsgeDiff.objects.intersect(geom)
             .filter(
                 year_old__gte=self.analyse_start_date,
                 year_new__lte=self.analyse_end_date,
@@ -861,15 +897,27 @@ class Project(BaseProject):
                 area_artif=Case(When(is_new_artif=True, then=F("intersection_area")), default=Zero),
                 area_renat=Case(When(is_new_natural=True, then=F("intersection_area")), default=Zero),
             )
+            .order_by("code_prefix", "label", "label_short")
             .values("code_prefix", "label", "label_short")
             .annotate(
-                artif=Cast(Sum("area_artif"), DecimalField(max_digits=15, decimal_places=2)),
-                renat=Cast(Sum("area_renat"), DecimalField(max_digits=15, decimal_places=2)),
+                artif=Cast(Sum("area_artif") / 10000, DecimalField(max_digits=15, decimal_places=2)),
+                renat=Cast(Sum("area_renat") / 10000, DecimalField(max_digits=15, decimal_places=2)),
             )
-            .order_by("code_prefix", "label", "label_short")
         )
 
     def get_base_sol_artif(self, sol="couverture"):
+        """
+        [
+            {
+                "code_prefix": "CS1.1.1",
+                "label": "Zone Bâti (maison,...)",
+                "label_short": "Zone Bâti",
+                "map_color": "#FF0000",
+                "surface": 1000.0,
+            },
+            {...}
+        ]
+        """
         return (
             CommuneSol.objects.filter(
                 city__in=self.cities.all(),
@@ -882,6 +930,7 @@ class Project(BaseProject):
                 label_short=F(f"matrix__{sol}__label_short"),
                 map_color=F(f"matrix__{sol}__map_color"),
             )
+            .order_by("code_prefix", "label", "label_short", "map_color")
             .values("code_prefix", "label", "label_short", "map_color")
             .annotate(surface=Sum("surface"))
         )

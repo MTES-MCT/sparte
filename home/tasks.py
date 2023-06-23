@@ -12,13 +12,13 @@ logger = logging.getLogger(__name__)
 
 @shared_task
 def send_contact_form(contact_form_id):
-    logger.info("Send contact email to bilan SPARTE team")
+    logger.info("Send contact email to team")
     logger.info("contact_email_id=%s", contact_form_id)
     contact_form = ContactForm.objects.get(pk=contact_form_id)
     try:
         email = SibTemplateEmail(
             template_id=9,
-            recipients=[{"Name": "Equipe Sparte", "email": app_parameter.TEAM_EMAIL}],
+            recipients=[{"Name": "Equipe Mon Diagnostic Artificialisation", "email": app_parameter.TEAM_EMAIL}],
             params={
                 "content_html": contact_form.content.replace("\n", "<br/>"),
                 "sender": contact_form.email,
@@ -31,7 +31,7 @@ def send_contact_form(contact_form_id):
         logger.exception(exc)
         contact_form.handle_exception()
     finally:
-        logger.info("End send contact email to bilan SPARTE team")
+        logger.info("End send contact email to team")
 
 
 @shared_task

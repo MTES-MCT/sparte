@@ -261,67 +261,6 @@ def migrate(ctx):
 
 @cli.command()
 @click.pass_context
-def mep_150(ctx):
-    """Trigger all data transformation to successful MEP release 1.5.0"""
-    click.secho("Start migration v1.5.0", fg="cyan")
-    connecter = ScalingoInterface(ctx.obj)
-
-    click.secho("Fix look a like", fg="cyan")
-    connecter.manage_py("fix_look_a_like")
-
-    click.secho("Setup departement", fg="cyan")
-    connecter.manage_py("setup_dept")
-
-
-@cli.command()
-@click.pass_context
-def mep_200(ctx):
-    """Trigger all data transformation to successful MEP release 1.6"""
-    click.secho("Start migration v1.6", fg="cyan")
-    connecter = ScalingoInterface(ctx.obj)
-
-    click.secho("Fix missing 6.1 and 6.2 in artificial", fg="cyan")
-    connecter.manage_py("build_matrix")
-
-    click.secho("Load 2021 Cérema's data", fg="cyan")
-    connecter.manage_py("load_cerema")
-
-    click.secho("Create all diagnostic cover images", fg="cyan")
-    connecter.manage_py("generate_cover")
-
-    click.secho("Add title, tagline and footer", fg="cyan")
-    connecter.manage_py("add_title")
-
-
-@cli.command()
-@click.pass_context
-def mep_210(ctx):
-    """Trigger all data transformation to successful MEP release 1.6"""
-    click.secho("Start migration v1.6", fg="cyan")
-    connecter = ScalingoInterface(ctx.obj)
-
-    click.secho("Load INSEE", fg="cyan")
-    connecter.manage_py("load_insee")
-
-
-@cli.command()
-@click.pass_context
-def mep_240(ctx):
-    """Trigger all data transformation to successful MEP release 1.6"""
-    click.secho("Start migration v2.4", fg="cyan")
-    connecter = ScalingoInterface(ctx.obj)
-
-    click.secho("Add new couvertures", fg="cyan")
-    connecter.manage_py("load_usage_couv")
-    connecter.manage_py("build_matrix")
-
-    click.secho("Add BFC's OCS GE", fg="cyan")
-    connecter.detached = True
-    connecter.manage_py("load_ocsge_bfc")
-
-
-@cli.command()
-@click.pass_context
 def mep_260(ctx):
     """Trigger all data transformation to successful MEP release 2.4"""
     click.secho("Start migration v2.6", fg="cyan")

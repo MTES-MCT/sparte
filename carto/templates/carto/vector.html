@@ -1,4 +1,4 @@
-{% extends 'index.html' %}
+{% extends "index.html" %}
 
 {% load static %}
 {% load humanize %}
@@ -8,18 +8,18 @@
 
 {% block pagetitle %}
 Carte intéractive
-{% endblock %}
+{% endblock pagetitle %}
 
 {% block headers %}
 {% sri_static "carto/js/leaflet.js" %}
 {% sri_static "carto/css/leaflet.css" %}
-{% endblock %}
+{% endblock headers %}
 
 {% block carto %}
 
 <div id="vectormap" class="flex-grow-1"></div>
 
-{% endblock %}
+{% endblock carto %}
 
 {% block bodyend %}
 {% localize off %}
@@ -139,7 +139,6 @@ var layerControl = L.control.layers(baseMaps, overlayMaps).addTo(lmap);
 
 </script>
 {% endlocalize %}
-{% endblock %}
-
+{% endblock bodyend %}
 
 {% block footer %}{% endblock footer %}

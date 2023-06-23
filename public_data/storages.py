@@ -7,3 +7,4 @@ class DataStorage(S3Boto3Storage):
 
     bucket_name = settings.AWS_STORAGE_BUCKET_NAME
     location = "data"
+    file_overwrite = False

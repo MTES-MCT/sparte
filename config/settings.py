@@ -20,7 +20,7 @@ from django.core.exceptions import ImproperlyConfigured
 from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.redis import RedisIntegration
 
-OFFICIAL_VERSION = "2.5.2"
+OFFICIAL_VERSION = "4.0.0"
 
 root = environ.Path(__file__) - 2  # get root of the project
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -97,6 +97,7 @@ INSTALLED_APPS = DJANGO_APPS + RESTFRAMEWORK_APPS + THIRD_APPS + PROJECT_APPS
 
 
 MIDDLEWARE = [
+    "django.middleware.gzip.GZipMiddleware",
     "config.middlewares.LogIncomingRequest",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -403,7 +404,7 @@ if ENVIRONMENT != "local":
         # environment variable, or infer a git commit
         # SHA as release, however you may want to set
         # something more human-readable.
-        release=f"Sparte@{OFFICIAL_VERSION}",
+        release=f"MonDiagArtif@{OFFICIAL_VERSION}",
         environment=ENVIRONMENT,
         debug=False,
         request_bodies="always",
@@ -529,9 +530,9 @@ LOGGING = {
             "level": LOGGING_LEVEL,
             "propagate": False,
         },
-        'django.db.backends': {
-            'level': DB_LOGGING_LEVEL,
-            'handlers': ['console'],
+        "django.db.backends": {
+            "level": DB_LOGGING_LEVEL,
+            "handlers": ["console"],
         },
     },
 }
