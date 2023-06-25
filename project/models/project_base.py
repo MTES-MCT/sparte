@@ -804,13 +804,16 @@ class Project(BaseProject):
             )
             if commit:
                 self.save(update_fields=["available_millesimes"])
-        return [int(y) for y in self.available_millesimes.split(",")]
+        return [int(y) for y in self.available_millesimes.split(",") if y]
 
     def get_first_last_millesime(self):
         """return {"first": yyyy, "last": yyyy} which are the first and last
         OCS GE millesime completly included in diagnostic time frame"""
         millesimes = self.get_available_millesimes()
-        return {"first": min(millesimes), "last": max(millesimes)}
+        if millesimes:
+            return {"first": min(millesimes), "last": max(millesimes)}
+        else:
+            return {"first": None, "last": None}
 
     def get_base_sol(self, millesime, sol="couverture"):
         if sol == "couverture":
