@@ -341,6 +341,13 @@ if EMAIL_ENGINE not in ["local", "sendinblue"]:
     raise ImproperlyConfigured("E-mail backend needs to be correctly set")
 elif EMAIL_ENGINE == "local":
     EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
+else:
+    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+    EMAIL_HOST = "smtp-relay.brevo.com"
+    EMAIL_PORT = 587
+    EMAIL_HOST_USER = env.str("EMAIL_HOST_USER")
+    EMAIL_HOST_PASSWORD = env.str("EMAIL_SMTP_KEY")
+
 
 EMAIL_FILE_PATH = env.str("EMAIL_FILE_PATH", default=BASE_DIR / "emails")
 SENDINBLUE_API_KEY = env.str("API_KEY_SENDINBLUE")
