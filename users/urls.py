@@ -10,7 +10,9 @@ from django.contrib.auth.views import (
     PasswordResetCompleteView,
 )
 
+
 app_name = "users"
+
 
 urlpatterns = [
     path("signup/", views.UserCreateView.as_view(), name="signup"),
@@ -40,14 +42,13 @@ urlpatterns = [
         "password-reset-confirm/<uidb64>/<token>/",
         PasswordResetConfirmView.as_view(
             template_name="users/password_reset_confirm.html",
+            success_url=reverse_lazy("users:password_reset_complete"),
         ),
         name="password_reset_confirm",
     ),
     path(
         "password-reset-complete/",
-        PasswordResetCompleteView.as_view(
-            template_name="users/password_reset_complete.html",
-        ),
+        PasswordResetCompleteView.as_view(template_name="users/password_reset_complete.html"),
         name="password_reset_complete",
     ),
     path("unsubscribe/", views.UserDeleteView.as_view(), name="unsubscribe"),
