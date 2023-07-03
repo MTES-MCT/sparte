@@ -345,8 +345,8 @@ else:
     EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
     EMAIL_HOST = "smtp-relay.brevo.com"
     EMAIL_PORT = 587
-    EMAIL_HOST_USER = "swann.bouviermuller@beta.gouv.fr"
-    EMAIL_HOST_PASSWORD = "***REMOVED***"
+    EMAIL_HOST_USER = env.str("EMAIL_HOST_USER")
+    EMAIL_HOST_PASSWORD = env.str("EMAIL_SMTP_KEY")
 
 
 EMAIL_FILE_PATH = env.str("EMAIL_FILE_PATH", default=BASE_DIR / "emails")
