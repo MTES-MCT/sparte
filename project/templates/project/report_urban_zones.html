@@ -38,6 +38,14 @@ Zonages d'urbanisme
             <div class="fr-custom-loader"></div>
         </div>
 
+        <div id="a123" class="fr-mt-7w" hx-get="{% url 'project:zone-urba-auu' project.id %}" hx-trigger="load delay 4s" hx-swap="outerHTML">
+            <h3>Synthèses des zonages d'urbanime</h3>
+
+            <!-- TODO Sofian ajouter skeletton -->
+            <div class="fr-custom-loader"></div>
+            <button class="fr-btn" hx-target="#a123" hx-swap="outerHTML" hx-get="{% url 'project:zone-urba-auu' project.id %}">reload</button>
+        </div>
+
     </div>
 
 </div>

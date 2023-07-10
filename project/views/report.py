@@ -5,7 +5,7 @@ from django.contrib import messages
 from django.contrib.gis.db.models.functions import Area
 from django.contrib.gis.geos import Polygon
 from django.db import transaction
-from django.db.models import Case, CharField, DecimalField, F, Q, Sum, Value, When
+from django.db.models import Case, CharField, Count, DecimalField, F, Q, Sum, Value, When
 from django.db.models.functions import Cast, Concat
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.urls import reverse
@@ -15,6 +15,7 @@ from project import charts, tasks
 from project.models import Project, ProjectCommune, Request
 from project.utils import add_total_line_column
 from public_data.models import CouvertureSol, UsageSol
+from public_data.models.administration import Commune
 from public_data.models.gpu import ZoneUrba, ArtifAreaZoneUrba
 from public_data.models.ocsge import Ocsge, OcsgeDiff
 from utils.htmx import StandAloneMixin
@@ -841,11 +842,9 @@ class ProjectReportGpuView(ProjectReportBaseView):
 
 
 class ProjectReportGpuZoneSynthesisTable(StandAloneMixin, TemplateView):
-    template_name = "project/partials/aggregated_zone_urba_table.html"
+    template_name = "project/partials/zone_urba_aggregated_table.html"
 
     def get_context_data(self, **kwargs):
-        from django.db.models import Sum, Count
-
         diagnostic = Project.objects.get(pk=self.kwargs["pk"])
         qs = (
             ArtifAreaZoneUrba.objects.filter(zone_urba__in=ZoneUrba.objects.intersect(diagnostic.combined_emprise))
@@ -877,6 +876,46 @@ class ProjectReportGpuZoneSynthesisTable(StandAloneMixin, TemplateView):
         for k in zone_list.keys():
             zone_list[k]["fill_up_rate"] = 100 * zone_list[k]["last_artif_area"] / zone_list[k]["total_area"]
             zone_list[k]["new_artif"] = zone_list[k]["last_artif_area"] - zone_list[k]["first_artif_area"]
+        kwargs |= {
+            "zone_list": zone_list.values(),
+            "diagnostic": diagnostic,
+            "first_year_ocsge": str(diagnostic.first_year_ocsge),
+            "last_year_ocsge": str(diagnostic.last_year_ocsge),
+        }
+        return super().get_context_data(**kwargs)
+
+
+class ProjectReportGpuZoneAUUTable(StandAloneMixin, TemplateView):
+    """Nom commune, code INSEE, libellé court, libellé long, type de zone, surface, surface artificialisée, taux de
+    remplissage, Progression"""
+
+    template_name = "project/partials/zone_urba_auu_table.html"
+
+    def get_context_data(self, **kwargs):
+        diagnostic = Project.objects.get(pk=self.kwargs["pk"])
+        zone_urba = ZoneUrba.objects.intersect(diagnostic.combined_emprise)
+        qs = (
+            ArtifAreaZoneUrba.objects.filter(zone_urba__in=zone_urba)
+            .filter(year__in=[diagnostic.first_year_ocsge, diagnostic.last_year_ocsge])
+            .filter(zone_urba__typezone__in=["U", "AUc", "AUs"])
+            .annotate(fill_up_rate=100 * F("area") / F("zone_urba__area"))
+            .select_related("zone_urba")
+            .order_by("-fill_up_rate", "zone_urba__insee", "zone_urba__typezone", "-year", "zone_urba__id")
+        )
+        code_insee = qs.values_list("zone_urba__insee", flat=True).distinct()
+        city_list = {
+            _["insee"]: _["name"]
+            for _ in Commune.objects.filter(insee__in=code_insee).order_by("insee").values("insee", "name")
+        }
+        zone_list = {}
+        for row in qs:
+            key = row.zone_urba.id
+            if key not in zone_list:
+                zone_list[key] = row
+                zone_list[key].city_name = city_list[row.zone_urba.insee]
+            if row.year == diagnostic.first_year_ocsge:
+                zone_list[key].new_artif = zone_list[key].area - row.area
+
         kwargs |= {
             "zone_list": zone_list.values(),
             "diagnostic": diagnostic,
