@@ -118,6 +118,11 @@ urlpatterns = [
         views.ProjectReportGpuZoneSynthesisTable.as_view(),
         name="synthesis-zone-urba-all",
     ),
+    path(
+        "<int:pk>/zonages-d-urbanisme-auu",
+        views.ProjectReportGpuZoneAUUTable.as_view(),
+        name="zone-urba-auu",
+    ),
     # MAP
     path("<int:pk>/map", views.ProjectMapView.as_view(), name="map"),
     path(
