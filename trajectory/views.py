@@ -82,7 +82,7 @@ class ProjectReportTrajectoryPeriodView(FormView):
 
 
 class ProjectReportTrajectoryConsumptionView(FormView):
-    template_name = "trajectory/partials/set_year_consumption.html"
+    template_name = "trajectory/partials/update_trajectory.html"
     form_class = UpdateTrajectoryForm
 
     @cached_property
@@ -91,7 +91,7 @@ class ProjectReportTrajectoryConsumptionView(FormView):
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs() | {
-            "trajectory": self.diagnostic.trajectory_set.all().first(),
+            "trajectory": self.diagnostic.trajectory_set.order_by("id").first(),
         }
         return kwargs
 
