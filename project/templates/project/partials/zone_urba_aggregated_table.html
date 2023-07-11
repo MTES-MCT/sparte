@@ -20,7 +20,12 @@
                     <td class="text-end">{{ zone.nb_zones }}</td>
                     <td class="text-end">{{ zone.total_area|floatformat:1 }} ha</td>
                     <td class="text-end">{{ zone.last_artif_area|floatformat:1 }} ha</td>
-                    <td class="text-end">{{ zone.fill_up_rate|floatformat:1 }}%</td>
+                    <td class="text-end">
+                        <div class="progress-bar-container">
+                            <div class="progress-bar-indicator w-{{ zone.fill_up_rate|floatformat:0 }}"></div>
+                            <div class="progress-bar-value">{{ zone.fill_up_rate|floatformat:1 }}%</div>
+                        </div>
+                    </td>
                     <td class="text-end">{{ zone.new_artif|floatformat:1 }} ha</td>
                 </tr>
                 {% endfor %}
