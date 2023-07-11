@@ -16,4 +16,9 @@ urlpatterns = [
         views.ProjectReportTrajectoryConsumptionView.as_view(),
         name="partial-form-consumption",
     ),
+    path(
+        "graphique",
+        views.ProjectReportTrajectoryGraphView.as_view(),
+        name="partial-graphic",
+    ),
 ]
