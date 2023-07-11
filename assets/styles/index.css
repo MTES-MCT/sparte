@@ -433,3 +433,12 @@ Leaflet
 .leaflet-control-zoom a {
     background-image: none;
 }
+
+/*
+Table
+*/
+.table-custom th, .table-custom td {
+    white-space: nowrap;
+    padding-right: 1rem;
+    font-size: 14px;
+}
