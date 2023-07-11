@@ -65,3 +65,7 @@ class UpdateProjectForm(forms.ModelForm):
     def save(self, *args, **kwargs):
         self.instance._change_reason = "update_project"
         return super().save(*args, **kwargs)
+
+
+class FilterAUUTable(forms.Form):
+    page_number = forms.IntegerField(required=False)
