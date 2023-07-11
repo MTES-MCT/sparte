@@ -15,7 +15,7 @@ class TrajectoryChart(ObjectiveChart):
             raise NoTrajectoryException(f"Project id={project.id} has no trajectory")
         super().__init__(project)
         self.chart["chart"]["zoomType"] = "x"
-        self.chart["xAxis"]["categories"] = [str(i) for i in range(self.trajectory.start, self.trajectory.end + 1)]
+        self.chart["xAxis"]["categories"] = [str(i) for i in range(2011, max(2031, self.trajectory.end + 1))]
 
     def get_starting_cumulative_value(self) -> float:
         # get objectives 2031 cumulative
@@ -33,7 +33,6 @@ class TrajectoryChart(ObjectiveChart):
             {
                 "name": "Trajectoire",
                 "yAxis": 1,
-                "type": "line",
                 "color": "#eaa568",
                 "zIndex": 5,
                 "data": [{"name": str(y), "y": v} for y, v in self.trajectory.get_value_per_year().items()],
@@ -42,6 +41,7 @@ class TrajectoryChart(ObjectiveChart):
         cumulative_trajectory = {
             "name": "Trajectoire cumulée",
             "color": "#eaa568",
+            "type": "line",
             "zIndex": 1,
             "data": [],
         }
@@ -51,13 +51,6 @@ class TrajectoryChart(ObjectiveChart):
             cumulative_trajectory["data"].append({"name": point["name"], "y": total})  # type: ignore
         self.series.append(cumulative_trajectory)
         self.chart["series"] = self.series
-        self.reduce_series_to_trajectory()
-
-    def reduce_series_to_trajectory(self) -> None:
-        for serie in self.chart["series"]:
-            for i in range(len(serie["data"]) - 1, -1, -1):
-                if not (self.trajectory.start <= int(serie["data"][i]["name"]) <= self.trajectory.end):
-                    del serie["data"][i]
 
     def get_data_table(self):
         real = {_["name"]: _["y"] for _ in self.series[0]["data"]}

@@ -1,5 +1,3 @@
-from typing import Any, Dict
-
 from django import forms
 from django.core.validators import MaxValueValidator, MinValueValidator
 
@@ -27,22 +25,16 @@ class SelectYearPeriodForm(forms.Form):
         super().__init__(*args, **kwargs)
         for year, val in self.trajectory.get_value_per_year().items():
             self.fields[f"year_{year}"] = forms.IntegerField(
-                label=f"Consommation {year}", min_value=0, initial=val, required=True
+                label=f"Consommation {year}", min_value=0, initial=val if val else 0, required=True
             )
-
-    def clean(self) -> Dict[str, Any]:
-        cleaned_data = super().clean()
-        # check that there is one field per year in the period
-        for y in range(self.trajectory.start, self.cleaned_data["end"] + 1):
-            if f"year_{y}" not in cleaned_data:
-                self.add_error(f"year_{y}", "Ce champ doit être renseigné")
-        return cleaned_data
+        self.fields["end"].initial = self.trajectory.end
 
     def save(self, commit=True):
         self.trajectory.end = self.cleaned_data["end"]
-        for field_name, value in self.cleaned_data.items():
-            if field_name.startswith("year_"):
-                self.trajectory.data[field_name[5:]] = value
+        self.trajectory.data = {
+            year: self.cleaned_data.get(f"year_{year}", 0)
+            for year in range(2021, int(self.cleaned_data["end"]) + 1)
+        }
         if commit:
             self.trajectory.save()
         return self.trajectory
