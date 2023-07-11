@@ -912,7 +912,7 @@ class ProjectReportGpuZoneAUUTable(StandAloneMixin, TemplateView):
             key = row.zone_urba.id
             if key not in zone_list:
                 zone_list[key] = row
-                zone_list[key].city_name = city_list[row.zone_urba.insee]
+                zone_list[key].city_name = city_list.get(row.zone_urba.insee, "")
             if row.year == diagnostic.first_year_ocsge:
                 zone_list[key].new_artif = zone_list[key].area - row.area
 
@@ -949,7 +949,7 @@ class ProjectReportGpuZoneNTable(StandAloneMixin, TemplateView):
             key = row.zone_urba.id
             if key not in zone_list:
                 zone_list[key] = row
-                zone_list[key].city_name = city_list[row.zone_urba.insee]
+                zone_list[key].city_name = city_list.get(row.zone_urba.insee, "")
                 zone_list[key].new_artif = 0
             if row.year == diagnostic.first_year_ocsge:
                 zone_list[key].new_artif = zone_list[key].area - row.area
