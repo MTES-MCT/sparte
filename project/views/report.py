@@ -923,3 +923,41 @@ class ProjectReportGpuZoneAUUTable(StandAloneMixin, TemplateView):
             "last_year_ocsge": str(diagnostic.last_year_ocsge),
         }
         return super().get_context_data(**kwargs)
+
+
+class ProjectReportGpuZoneNTable(StandAloneMixin, TemplateView):
+    template_name = "project/partials/zone_urba_n_table.html"
+
+    def get_context_data(self, **kwargs):
+        diagnostic = Project.objects.get(pk=self.kwargs["pk"])
+        zone_urba = ZoneUrba.objects.intersect(diagnostic.combined_emprise)
+        qs = (
+            ArtifAreaZoneUrba.objects.filter(zone_urba__in=zone_urba)
+            .filter(year__in=[diagnostic.first_year_ocsge, diagnostic.last_year_ocsge])
+            .filter(zone_urba__typezone="N")
+            .annotate(fill_up_rate=100 * F("area") / F("zone_urba__area"))
+            .select_related("zone_urba")
+            .order_by("-fill_up_rate", "zone_urba__insee", "zone_urba__typezone", "-year", "zone_urba__id")
+        )
+        code_insee = qs.values_list("zone_urba__insee", flat=True).distinct()
+        city_list = {
+            _["insee"]: _["name"]
+            for _ in Commune.objects.filter(insee__in=code_insee).order_by("insee").values("insee", "name")
+        }
+        zone_list = {}
+        for row in qs:
+            key = row.zone_urba.id
+            if key not in zone_list:
+                zone_list[key] = row
+                zone_list[key].city_name = city_list[row.zone_urba.insee]
+                zone_list[key].new_artif = 0
+            if row.year == diagnostic.first_year_ocsge:
+                zone_list[key].new_artif = zone_list[key].area - row.area
+        zone_list = sorted(zone_list.values(), key=lambda x: x.new_artif, reverse=True)
+        kwargs |= {
+            "zone_list": zone_list[:10],
+            "diagnostic": diagnostic,
+            "first_year_ocsge": str(diagnostic.first_year_ocsge),
+            "last_year_ocsge": str(diagnostic.last_year_ocsge),
+        }
+        return super().get_context_data(**kwargs)

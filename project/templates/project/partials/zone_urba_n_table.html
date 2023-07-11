@@ -1,0 +1,40 @@
+<div id="a456" class="fr-mt-7w">
+    <h3>Zones naturelles ayant été le plus artificialisées sur la période</h3>
+
+    <button class="fr-btn" hx-target="#a456" hx-get="{% url 'project:zone-urba-n' diagnostic.id %}">reload</button>
+
+    <p>
+        <table>
+            <thead>Nom commune, code INSEE, libellé court, libellé long, type de zone, surface, surface artificialisée, taux de remplissage, Progression
+                <tr>
+                    <th scope="col">Commune</th>
+                    <th scope="col">Insee</th>
+                    <th scope="col">Libellé court</th>
+                    <th scope="col">Libellé long</th>
+                
+                    <th scope="col">Type de zone</th>
+                    <th scope="col">Surface</th>
+                    <th scope="col">Surface artificielle ({{ last_year_ocsge }})</th>
+                    <th scope="col">Taux de remplissage ({{ last_year_ocsge }})</th>
+                    <th scope="col">Artificialisation<br/>({{ first_year_ocsge }} à {{ last_year_ocsge }})</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for zone in zone_list %}
+                <tr>
+                    <td>{{ zone.city_name }}</td>
+                    <td>{{ zone.zone_urba.insee }}</td>
+                    <td>{{ zone.zone_urba.libelle }}</td>
+                    <td>{{ zone.zone_urba.libelong }}</td>
+
+                    <td>{{ zone.zone_urba.typezone }}</td>
+                    <td align="right">{{ zone.zone_urba.area|floatformat:1 }} Ha</td>
+                    <td align="right">{{ zone.area|floatformat:1 }} Ha</td>
+                    <td align="right">{{ zone.fill_up_rate|floatformat:1 }}%</td>
+                    <td align="right">{{ zone.new_artif|floatformat:1 }} Ha</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </p>
+</div>
