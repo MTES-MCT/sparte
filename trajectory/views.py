@@ -1,12 +1,14 @@
 from functools import cached_property
+from math import floor
 from typing import Any, Dict
 
 from django.http import HttpResponse
 from django.views.generic import FormView, TemplateView
 
+from project.charts import ObjectiveChart
 from project.models import Project
 from project.views import ProjectReportBaseView
-from trajectory import charts  # TrajectoryChart
+from trajectory.charts import TrajectoryChart
 from trajectory.forms import DateEndForm, UpdateTrajectoryForm
 from utils.htmx import StandAloneMixin
 
@@ -17,14 +19,24 @@ class ProjectReportTrajectoryView(ProjectReportBaseView):
 
     def get_context_data(self, **kwargs) -> Dict[str, Any]:
         diagnostic = self.get_object()
+        kwargs |= {"diagnostic": diagnostic, "active_page": "trajectory"}
+
         if diagnostic.trajectory_set.count() == 0:
-            diagnostic.trajectory_set.create(name="default", start=2021, end=2031, data={})
-        kwargs.update(
-            {
-                "diagnostic": diagnostic,
-                "active_page": "trajectory",
+            trajectory_chart = ObjectiveChart(diagnostic)
+        else:
+            trajectory_chart = TrajectoryChart(diagnostic)
+            kwargs |= {
+                "trajectory": diagnostic.trajectory_set.order_by("id").first(),
+                "conso_perso": trajectory_chart.trajectory_cumulative,
+                "annual_perso": trajectory_chart.trajectory_annual,
             }
-        )
+        kwargs |= {
+            "total_real": trajectory_chart.total_real,
+            "annual_real": trajectory_chart.annual_real,
+            "conso_2031": trajectory_chart.conso_2031,
+            "annual_objective_2031": trajectory_chart.annual_objective_2031,
+            "trajectory_chart": trajectory_chart,
+        }
         return super().get_context_data(**kwargs)
 
 
@@ -34,13 +46,22 @@ class ProjectReportTrajectoryConsumptionView(StandAloneMixin, FormView):
 
     @cached_property
     def diagnostic(self):
-        return Project.objects.get(pk=self.kwargs["pk"])
+        diagnostic = Project.objects.get(pk=self.kwargs["pk"])
+        if diagnostic.trajectory_set.count() == 0:
+            trajectory_chart = ObjectiveChart(diagnostic)
+            diagnostic.trajectory_set.create(
+                name="default",
+                start=2021,
+                end=2030,
+                data={year: floor(trajectory_chart.annual_objective_2031) for year in range(2021, 2031)},
+            )
+        return diagnostic
 
     def get_form_kwargs(self):
         return super().get_form_kwargs() | {"trajectory": self.diagnostic.trajectory_set.order_by("id").first()}
 
     def get_context_data(self, **kwargs):
-        kwargs |= {"project": self.diagnostic}
+        kwargs |= {"diagnostic": self.diagnostic}
         return super().get_context_data(**kwargs)
 
     def post(self, request, *args, **kwargs):
@@ -68,8 +89,12 @@ class ProjectReportTrajectoryGraphView(StandAloneMixin, TemplateView):
 
     def get_context_data(self, **kwargs) -> Dict[str, Any]:
         diagnostic = Project.objects.get(id=self.kwargs["pk"])
+        if diagnostic.trajectory_set.count() == 0:
+            trajectory_chart = ObjectiveChart(diagnostic)
+        else:
+            trajectory_chart = TrajectoryChart(diagnostic)
         kwargs |= {
             "diagnostic": diagnostic,
-            "trajectory_chart": charts.TrajectoryChart(diagnostic),
+            "trajectory_chart": trajectory_chart,
         }
         return super().get_context_data(**kwargs)

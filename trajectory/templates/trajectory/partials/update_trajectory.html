@@ -1,6 +1,6 @@
 {% load crispy_forms_tags %}
 
-<form hx-post="{% url 'project:trajectory:partial-form-consumption' project.pk %}" hx-swap="outerHTML" hx-ext="disable-element" hx-disable-element="#save_trajectory_period_btn">
+<form hx-post="{% url 'project:trajectory:partial-form-consumption' diagnostic.pk %}" hx-swap="outerHTML" hx-ext="disable-element" hx-disable-element="#save_trajectory_period_btn">
     {% csrf_token %}
 
     <div class="fr-grid-row form-set-year-conso">
