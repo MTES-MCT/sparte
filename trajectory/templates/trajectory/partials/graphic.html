@@ -93,7 +93,7 @@
 {% display_chart 'trajectory_chart' trajectory_chart CSP_NONCE %}
 
 {% if reload_kpi %}
-    <span id="button-swapper" hx-swap-oob="true">{{ diagnostic.target_2031 }}</span>
+    <span id="objective-swapper" hx-swap-oob="true">{{ diagnostic.target_2031 }}</span>
     <span id="total_real-swapper" hx-swap-oob="true">{{ total_real|floatformat:0 }}</span>
     <span id="annual_real-swapper" hx-swap-oob="true">{{ annual_real|floatformat:1 }}</span>
     <span id="conso_2031-swapper" hx-swap-oob="true">{{ conso_2031|floatformat:1 }}</span>

@@ -1,14 +1,25 @@
 {% load crispy_forms_tags %}
 
-<form hx-post="{% url 'project:trajectory:partial-form-consumption' diagnostic.pk %}" hx-swap="outerHTML" hx-ext="disable-element" hx-disable-element="#save_trajectory_period_btn">
-    {% csrf_token %}
-
-    <div class="fr-grid-row form-set-year-conso">
+{% if success_message %}
+    <div class="fade-in fr-alert fr-alert--success fr-alert--sm" role="alert">
+        <h3 class="fr-alert__title">Votre projection a été personnalisée.</h3>
+    </div>
+{% else %}
+    <form hx-post="{% url 'project:trajectory:partial-form-consumption' diagnostic.pk %}"
+          hx-swap="outerHTML"
+          hx-ext="disable-element"
+          hx-disable-element="#save_trajectory_btn">
         {% csrf_token %}
-        {{ form|crispy }}
-    </div>
 
-    <div class="d-flex justify-content-end">
-        <button id="save_trajectory_btn" class="fr-btn mt-2 position-relative" type="submit"><span class="htmx-indicator-placeholder">Enregistrer</span><div class="fr-custom-loader--button htmx-indicator"></div></button>
-    </div>
-</form>
+        <div class="fr-grid-row form-set-year-conso">
+            {% csrf_token %}
+            {{ form|crispy }}
+        </div>
+
+        <ul class="fr-btns-group fr-btns-group--right fr-btns-group--inline-lg fr-mt-2w">
+            <li>
+                <button id="save_trajectory_btn" class="fr-btn mt-2 position-relative" type="submit"><span class="htmx-indicator-placeholder">Enregistrer</span><div class="fr-custom-loader--button htmx-indicator"></div></button>
+            </li>
+        </ul>
+    </form>
+{% endif %}

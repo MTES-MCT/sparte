@@ -57,8 +57,8 @@ Trajectoires
                         +<span id="conso_2031-swapper">{{ conso_2031|floatformat:1 }}</span> ha
                         (<span id="annual_objective-swapper">{{ annual_objective_2031|floatformat:1 }}</span> ha/an)
                     </p>
-                    <p>Consommation cumulée de la période du 1er jan. 2021 au 31 déc. 2030 (10 ans) avec un seuil de réduction de 50%</p>
-                    <p><button id="btn-change-objective" class="fr-btn fr-btn--primary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#setTarget" data-toggle="tooltip" title="Personnaliser mon objectif 2031" aria-hidden="true" hx-get="{% url 'project:set_target_2031' project.pk %}" hx-target="#setTargetForm">Personnaliser mon seuil de réduction:&nbsp;<span id="button-swapper">{{ diagnostic.target_2031 }}</span>%</button></p>
+                    <p>Consommation cumulée de la période du 1er jan. 2021 au 31 déc. 2030 (10 ans) avec un seuil de réduction de <span id="objective-swapper">{{ diagnostic.target_2031 }}</span>%</p>
+                    <p><button id="btn-change-objective" class="fr-btn fr-btn--primary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#setTarget" data-toggle="tooltip" title="Personnaliser mon objectif 2031" aria-hidden="true" hx-get="{% url 'project:trajectory:set_target_2031' diagnostic.pk %}" hx-target="#setTargetForm">Personnaliser mon seuil de réduction</button></p>
                 </div>
             </div>
 
@@ -71,10 +71,9 @@ Trajectoires
                             (<span id="annual_perso-swapper">{{ annual_perso|floatformat:1 }}</span> ha/an)
                         </p>
                         <p>Consommation cumulée de la période du 1er jan. 2021 au 31 déc. {{ trajectory.end }}</p>
-                        <p><button class="fr-btn fr-btn--primary fr-btn--sm">Configurer ma projection personnalisée</button></p>
-                    {% else %}
-                        <p><button class="fr-btn fr-btn--primary fr-btn--sm">CTA spéciale: Configurer ma projection personnalisée pour la première fois</button></p>
                     {% endif %}
+
+                    <button id="btn-change-trajectory" class="fr-btn fr-btn--primary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#setTrajectory" data-toggle="tooltip" title="Personnaliser ma projection" aria-hidden="true" hx-get="{% url 'project:trajectory:partial-form-consumption' diagnostic.pk %}" hx-target="#setTrajectoryForm">Configurer ma projection personnalisée</button>
                     
                 </div>
             </div>
@@ -85,14 +84,10 @@ Trajectoires
             {% include "trajectory/partials/graphic.html" %}
         </div>
 
-        <div id="update-form" class="fr-mt-7w">
-            <button class="fr-btn" hx-target="#update-form" hx-get="{% url 'project:trajectory:partial-form-consumption' diagnostic.id %}">Show form</button>
-        </div>
-
     </div>
 </div>
 
-<!-- Modal -->
+<!-- Modal pour personnaliser l'objectif -->
 <div class="modal fade" id="setTarget" tabindex="-1" aria-labelledby="setTargetLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
         <div class="fr-modal__body">
@@ -110,6 +105,26 @@ Trajectoires
         </div>
     </div>
 </div>
+
+<!-- Modal pour saisir sa trajectoire de consommation -->
+<div class="modal fade" id="setTrajectory" tabindex="-1" aria-labelledby="setTrajectoryLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+        <div class="fr-modal__body">
+            <div class="fr-modal__header">
+                <button class="fr-link--close fr-link" data-bs-dismiss="modal" aria-label="Close">Fermer</button>
+            </div>
+            <div class="fr-modal__content">
+                <h1 class="fr-modal__title" id="setTrajectoryLabel">
+                    Projection personnalisée
+                </h1>
+                <div id="setTrajectoryForm">
+                    <div class="fr-custom-loader"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 {% endblock content %}
 

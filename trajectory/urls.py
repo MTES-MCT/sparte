@@ -21,4 +21,9 @@ urlpatterns = [
         views.ProjectReportTrajectoryGraphView.as_view(),
         name="partial-graphic",
     ),
+    path(
+        "set-target-2031",
+        views.SetTargetView.as_view(),
+        name="set_target_2031",
+    ),
 ]

@@ -3,7 +3,7 @@ from math import floor
 from typing import Any, Dict
 
 from django.http import HttpResponse
-from django.views.generic import FormView, TemplateView
+from django.views.generic import FormView, TemplateView, UpdateView
 
 from project.charts import ObjectiveChart
 from project.models import Project
@@ -78,10 +78,10 @@ class ProjectReportTrajectoryConsumptionView(StandAloneMixin, FormView):
 
     def form_valid(self, form: UpdateTrajectoryForm) -> HttpResponse:
         form.save()
-        context = self.get_context_data(form=form) | {"success_message": True}
-        response = self.render_to_response(context)
-        response["HX-Trigger"] = "load-graphic"
-        return response
+        return self.render_to_response(
+            self.get_context_data(form=form, success_message=True),
+            headers={"HX-Trigger": "load-graphic"},
+        )
 
 
 class ProjectReportTrajectoryGraphView(StandAloneMixin, TemplateView):
@@ -108,3 +108,17 @@ class ProjectReportTrajectoryGraphView(StandAloneMixin, TemplateView):
             "annual_objective_2031": trajectory_chart.annual_objective_2031,
         }
         return super().get_context_data(**kwargs)
+
+
+class SetTargetView(UpdateView):
+    model = Project
+    template_name = "trajectory/partials/report_set_target_2031.html"
+    fields = ["target_2031"]
+    context_object_name = "diagnostic"
+
+    def form_valid(self, form):
+        self.object = form.save()
+        return self.render_to_response(
+            self.get_context_data(success_message=True),
+            headers={"HX-Trigger": "load-graphic"},
+        )
