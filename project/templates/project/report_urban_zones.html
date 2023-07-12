@@ -37,18 +37,16 @@ Zonages d'urbanisme
             <div class="fr-custom-loader"></div>
         </div>
 
-        <div id="a123" class="fr-mt-7w" hx-get="{% url 'project:zone-urba-auu' project.id %}" hx-trigger="load delay:2s" hx-swap="outerHTML">
+        <div id="table-auu" class="fr-mt-7w" hx-get="{% url 'project:zone-urba-auu' project.id %}" hx-trigger="load delay:2s" hx-swap="outerHTML">
             <h3>Taux de remplissage des zones AU et U</h3>
 
             <div class="fr-custom-loader"></div>
-            {% comment %} <button class="fr-btn" hx-target="#a123" hx-swap="outerHTML" hx-get="{% url 'project:zone-urba-auu' project.id %}">reload</button> {% endcomment %}
         </div>
 
-        <div id="a456" class="fr-mt-7w" hx-get="{% url 'project:zone-urba-n' project.id %}" hx-trigger="load delay:3s" hx-swap="outerHTML">
+        <div id="table-n" class="fr-mt-7w" hx-get="{% url 'project:zone-urba-n' project.id %}" hx-trigger="load delay:3s" hx-swap="outerHTML">
             <h3>Zones naturelles ayant été le plus artificialisées sur la période</h3>
 
             <div class="fr-custom-loader"></div>
-            {% comment %} <button class="fr-btn" hx-target="#a456" hx-swap="outerHTML" hx-get="{% url 'project:zone-urba-n' project.id %}">reload</button> {% endcomment %}
         </div>
 
     </div>

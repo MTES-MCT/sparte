@@ -1,4 +1,5 @@
 from decimal import InvalidOperation
+from math import ceil
 from typing import Any, Dict
 
 from django.contrib import messages
@@ -12,6 +13,7 @@ from django.urls import reverse
 from django.views.generic import CreateView, DetailView, TemplateView
 
 from project import charts, tasks
+from project.forms import FilterAUUTable
 from project.models import Project, ProjectCommune, Request
 from project.utils import add_total_line_column
 from public_data.models import CouvertureSol, UsageSol
@@ -891,7 +893,14 @@ class ProjectReportGpuZoneAUUTable(StandAloneMixin, TemplateView):
 
     template_name = "project/partials/zone_urba_auu_table.html"
 
+    def get_filters(self):
+        form = FilterAUUTable(data=self.request.GET)
+        if form.is_valid():
+            return {"page": form.cleaned_data["page_number"] or 1}
+        return {"page": 1}
+
     def get_context_data(self, **kwargs):
+        filters = self.get_filters()
         diagnostic = Project.objects.get(pk=self.kwargs["pk"])
         zone_urba = ZoneUrba.objects.intersect(diagnostic.combined_emprise)
         qs = (
@@ -917,7 +926,9 @@ class ProjectReportGpuZoneAUUTable(StandAloneMixin, TemplateView):
                 zone_list[key].new_artif = zone_list[key].area - row.area
 
         kwargs |= {
-            "zone_list": zone_list.values(),
+            "zone_list": list(zone_list.values())[filters["page"] * 10 - 10 : filters["page"] * 10],
+            "current_page": filters["page"],
+            "pages": list(range(1, ceil(len(zone_list) / 10) + 1)),
             "diagnostic": diagnostic,
             "first_year_ocsge": str(diagnostic.first_year_ocsge),
             "last_year_ocsge": str(diagnostic.last_year_ocsge),
