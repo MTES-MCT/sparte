@@ -8,7 +8,24 @@ def year_choices():
     return [(r, str(r)) for r in range(2000, 2075)]
 
 
-class SelectYearPeriodForm(forms.Form):
+class DateEndForm(forms.Form):
+    end = forms.TypedChoiceField(
+        choices=[(r, str(r)) for r in range(2021, 2075)],
+        label="Année de fin",
+        validators=[MinValueValidator("2021"), MaxValueValidator("2075")],
+    )
+
+    def __init__(self, trajectory: Trajectory, *args, **kwargs):
+        self.trajectory = trajectory
+        super().__init__(*args, **kwargs)
+
+    def save(self):
+        self.trajectory.end = self.cleaned_data["end"]
+        self.trajectory.save()
+        return self.trajectory
+
+
+class UpdateTrajectoryForm(forms.Form):
     start = forms.TypedChoiceField(
         choices=year_choices(),
         label="",
