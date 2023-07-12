@@ -41,7 +41,7 @@ Trajectoires
             <div class="fr-callout-read-more__text" id="target_2031_1" hidden>
                 <p class="fr-text--sm">La Loi Climat & Résilience recommande :</p>
                 <ul class="fr-text--sm mb-3">
-                    <li>entre 2021 et 2031 à l'échelle régionale, de diviser par 2 la consommation d'espaces Naturels, Agricoles et Forestiers (NAF) mesurée entre 2011 et 2021 ;</li>
+                    <li>entre 2021 et 2031 <strong>à l'échelle régionale</strong>, de diviser par 2 la consommation d'espaces Naturels, Agricoles et Forestiers (NAF) mesurée entre 2011 et 2021 ;</li>
                     <li>d'ici février 2024, que les SRADDET territorialisent les objectifs de diminution pour chaque SCoT, qui territorialiseront à l'échelle des EPCI et communes.</li>
                 </ul>
                 <p class="fr-text--sm mb-3"><strong>Dans l'attente de cette territorialisation</strong> des objectifs 2031 par les SRADDET, Mon Diagnostic Artificialisation vous propose ci-dessous, une première estimation de la consommation d'espaces NAF à l'échelle du territoire de diagnostic. Pour cela Mon Diagnostic Artificialisation se base, comme recommandé par la loi Climat & Résilience, sur le bilan de la consommation cumulée des espaces NAF des années 2011 à 2021.</p>
@@ -60,36 +60,36 @@ Trajectoires
 
             <div class="fr-col-12 fr-col-md-4 fr-grid-row">
                 <div class="fr-callout w-100">
-                    <h3>Période de référence</h3>
-                    <p class="fr-callout__title">
-                        +<span id="total_real-swapper">{{ total_real|floatformat:0 }}</span> ha
-                        (<span id="annual_real-swapper">{{ annual_real|floatformat:1 }}</span> ha/an)
-                    </p>
-                    <p>Consommation cumulée de la période du 1er jan. 2011 au 31 déc. 2020 (10 ans)</p>
+                    <h4>Période de référence</h4>
+                    <div class="d-flex fr-mb-1w">
+                        <p class="fr-callout__title">+<span id="total_real-swapper">{{ total_real|floatformat:0 }}</span> ha</p>
+                        <p class="fr-tag fr-tag--sm fr-tag--blue fr-ml-2w"><strong>+(<span id="annual_real-swapper">{{ annual_real|floatformat:1 }}</span> ha/an)</strong></p>
+                    </div>
+                    <p class="fr-text--sm">Consommation cumulée de la période du 1er jan. 2011 au 31 déc. 2020 (10 ans)</p>
                 </div>
             </div>
 
             <div class="fr-col-12 fr-col-md-4 fr-grid-row">
                 <div class="fr-callout w-100">
-                    <h3>Projection 2031</h3>
-                    <p class="fr-callout__title">
-                        +<span id="conso_2031-swapper">{{ conso_2031|floatformat:1 }}</span> ha
-                        (<span id="annual_objective-swapper">{{ annual_objective_2031|floatformat:1 }}</span> ha/an)
-                    </p>
-                    <p>Consommation cumulée de la période du 1er jan. 2021 au 31 déc. 2030 (10 ans) avec un seuil de réduction de <span id="objective-swapper">{{ diagnostic.target_2031 }}</span>%</p>
+                    <h4>Projection 2031</h4>
+                    <div class="d-flex fr-mb-1w">
+                        <p class="fr-callout__title">+<span id="conso_2031-swapper">{{ conso_2031|floatformat:1 }}</span> ha</p>
+                        <p class="fr-tag fr-tag--sm fr-tag--blue fr-ml-2w"><strong>+<span id="annual_objective-swapper">{{ annual_objective_2031|floatformat:1 }}</span> ha/an</strong></p>
+                    </div>
+                    <p class="fr-text--sm">Consommation cumulée de la période du 1er jan. 2021 au 31 déc. 2030 (10 ans) avec un seuil de réduction de <span id="objective-swapper">{{ diagnostic.target_2031 }}</span>%</p>
                     <p><button id="btn-change-objective" class="fr-btn fr-btn--primary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#setTarget" data-toggle="tooltip" title="Personnaliser mon objectif 2031" aria-hidden="true" hx-get="{% url 'project:trajectory:set_target_2031' diagnostic.pk %}" hx-target="#setTargetForm">Personnaliser mon seuil de réduction</button></p>
                 </div>
             </div>
 
             <div class="fr-col-12 fr-col-md-4 fr-grid-row">
                 <div class="fr-callout w-100">
-                    <h3>Projection personnalisée</h3>
+                    <h4>Projection personnalisée</h4>
                     {% if trajectory %}
-                        <p class="fr-callout__title">
-                            +<span id="conso_perso-swapper">{{ conso_perso|floatformat:1 }}</span> ha
-                            (<span id="annual_perso-swapper">{{ annual_perso|floatformat:1 }}</span> ha/an)
-                        </p>
-                        <p>Consommation cumulée de la période du 1er jan. 2021 au 31 déc. {{ trajectory.end }}</p>
+                        <div class="d-flex fr-mb-1w">
+                            <p class="fr-callout__title">+<span id="conso_perso-swapper">{{ conso_perso|floatformat:1 }}</span> ha</p>
+                            <p class="fr-tag fr-tag--sm fr-tag--blue fr-ml-2w"><strong><span id="annual_perso-swapper">{{ annual_perso|floatformat:1 }}</span> ha/an</strong></p>
+                        </div>
+                        <p class="fr-text--sm">Consommation cumulée de la période du 1er jan. 2021 au 31 déc. {{ trajectory.end }}</p>
                     {% endif %}
 
                     <button id="btn-change-trajectory" class="fr-btn fr-btn--primary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#setTrajectory" data-toggle="tooltip" title="Personnaliser ma projection" aria-hidden="true" hx-get="{% url 'project:trajectory:partial-form-consumption' diagnostic.pk %}" hx-target="#setTrajectoryForm">Configurer ma projection personnalisée</button>
