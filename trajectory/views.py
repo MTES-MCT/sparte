@@ -1,5 +1,5 @@
 from functools import cached_property
-from typing import Any, Callable, Dict
+from typing import Any, Dict
 
 from django.http import HttpResponse
 from django.views.generic import FormView, TemplateView
@@ -7,7 +7,7 @@ from django.views.generic import FormView, TemplateView
 from project.models import Project
 from project.views import ProjectReportBaseView
 from trajectory import charts  # TrajectoryChart
-from trajectory.forms import SelectYearPeriodForm, UpdateTrajectoryForm
+from trajectory.forms import DateEndForm, UpdateTrajectoryForm
 from utils.htmx import StandAloneMixin
 
 
@@ -43,12 +43,20 @@ class ProjectReportTrajectoryConsumptionView(StandAloneMixin, FormView):
         kwargs |= {"project": self.diagnostic}
         return super().get_context_data(**kwargs)
 
+    def post(self, request, *args, **kwargs):
+        end_form = DateEndForm(**self.get_form_kwargs())
+        if end_form.is_valid():
+            end_form.save()
+            form = self.get_form()
+            if form.is_valid():
+                return self.form_valid(form)
+            else:
+                return self.form_invalid(form)
+        else:
+            return self.form_invalid(self.get_form())
+
     def form_valid(self, form: UpdateTrajectoryForm) -> HttpResponse:
         form.save()
-        form_kwargs = self.get_form_kwargs()
-        if "data" in form_kwargs:
-            del form_kwargs["data"]
-        form = UpdateTrajectoryForm(**form_kwargs)
         context = self.get_context_data(form=form) | {"success_message": True}
         response = self.render_to_response(context)
         response["HX-Trigger"] = "load-graphic"
