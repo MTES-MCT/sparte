@@ -93,8 +93,18 @@ class ProjectReportTrajectoryGraphView(StandAloneMixin, TemplateView):
             trajectory_chart = ObjectiveChart(diagnostic)
         else:
             trajectory_chart = TrajectoryChart(diagnostic)
+            kwargs |= {
+                "trajectory": diagnostic.trajectory_set.order_by("id").first(),
+                "conso_perso": trajectory_chart.trajectory_cumulative,
+                "annual_perso": trajectory_chart.trajectory_annual,
+            }
         kwargs |= {
+            "reload_kpi": True,
             "diagnostic": diagnostic,
             "trajectory_chart": trajectory_chart,
+            "total_real": trajectory_chart.total_real,
+            "annual_real": trajectory_chart.annual_real,
+            "conso_2031": trajectory_chart.conso_2031,
+            "annual_objective_2031": trajectory_chart.annual_objective_2031,
         }
         return super().get_context_data(**kwargs)
