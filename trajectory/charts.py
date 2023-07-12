@@ -46,11 +46,16 @@ class TrajectoryChart(ObjectiveChart):
             "data": [],
         }
         total = self.get_starting_cumulative_value()
+        self.trajectory_cumulative = 0
+        cpt_year = 0
         for point in self.series[-1]["data"]:
             total += point["y"]
+            self.trajectory_cumulative += point["y"]
+            cpt_year += 1
             cumulative_trajectory["data"].append({"name": point["name"], "y": total})  # type: ignore
         self.series.append(cumulative_trajectory)
         self.chart["series"] = self.series
+        self.trajectory_annual = self.trajectory_cumulative / cpt_year
 
     def get_data_table(self):
         real = {_["name"]: _["y"] for _ in self.series[0]["data"]}

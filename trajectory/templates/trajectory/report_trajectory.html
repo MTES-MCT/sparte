@@ -15,6 +15,11 @@ Trajectoires
 
 {% block headers %}
 <meta name="htmx-config" content='{"inlineScriptNonce":"{{ CSP_NONCE }}"}'>
+{% localize off %}
+{% sri_static "highcharts/js/highcharts.js" %}
+{% sri_static "highcharts/js/exporting.js" %}
+{% french_translation %}
+{% endlocalize %}
 {% endblock headers %}
 
 {% block content %}
@@ -32,28 +37,74 @@ Trajectoires
             </p>
         </div>
 
-        <div id="graphic" class="fr-mt-7w" hx-get="{% url 'project:trajectory:partial-graphic' diagnostic.id %}" hx-trigger="load delay:1s, load-graphic from:body">
-            <button class="fr-btn" hx-target="#graphic" hx-get="{% url 'project:trajectory:partial-graphic' diagnostic.id %}">reload</button>
+        <div class="fr-grid-row fr-grid-row--gutters fr-mt-7w">
 
-            <div class="fr-custom-loader"></div>            
+            <div class="fr-col-12 fr-col-md-4 fr-grid-row">
+                <div class="fr-callout w-100">
+                    <h3>Période de référence</h3>
+                    <p class="fr-callout__title">{{ total_real|floatformat:0 }} ha ({{ annual_real|floatformat:1 }} ha/an)</p>
+                    <p>Consommation cumulée de la période du 1er jan. 2011 au 31 déc. 2020 (10 ans)</p>
+                </div>
+            </div>
+
+            <div class="fr-col-12 fr-col-md-4 fr-grid-row">
+                <div class="fr-callout w-100">
+                    <h3>Projection 2031</h3>
+                    <p class="fr-callout__title">{{ conso_2031|floatformat:1 }} ha ({{ annual_objective_2031|floatformat:1 }} ha/an)</p>
+                    <p>Consommation cumulée de la période du 1er jan. 2021 au 31 déc. 2030 (10 ans) avec un seuil de réduction de 50%</p>
+                    <p><button id="btn-change-objective" class="fr-btn fr-btn--primary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#setTarget" data-toggle="tooltip" title="Personnaliser mon objectif 2031" aria-hidden="true" hx-get="{% url 'project:set_target_2031' project.pk %}" hx-target="#setTargetForm">Personnaliser mon seuil de réduction:&nbsp;<span id="button-swapper">{{ diagnostic.target_2031 }}</span>%</button></p>
+                </div>
+            </div>
+
+            <div class="fr-col-12 fr-col-md-4 fr-grid-row">
+                <div class="fr-callout w-100">
+                    <h3>Projection personnalisée</h3>
+                    {% if trajectory %}
+                        <p class="fr-callout__title">+{{ conso_perso|floatformat:1 }} ha ({{ annual_perso|floatformat:1 }} ha/an)</p>
+                        <p>Consommation cumulée de la période du 1er jan. 2021 au 31 déc. {{ trajectory.end }}</p>
+                        <p><button class="fr-btn fr-btn--primary fr-btn--sm">Configurer ma projection personnalisée</button></p>
+                    {% else %}
+                        <p><button class="fr-btn fr-btn--primary fr-btn--sm">CTA spéciale: Configurer ma projection personnalisée pour la première fois</button></p>
+                    {% endif %}
+                    
+                </div>
+            </div>
+
         </div>
 
-        <div class="fr-mt-7w" hx-get="{% url 'project:trajectory:partial-form-consumption' diagnostic.id %}" hx-trigger="load delay:2s">
-            <div class="fr-custom-loader"></div>
+        <div id="graphic" class="fr-mt-7w" hx-get="{% url 'project:trajectory:partial-graphic' diagnostic.id %}" hx-trigger="load-graphic from:body">
+            {% include "trajectory/partials/graphic.html" %}
         </div>
 
+        <div id="update-form" class="fr-mt-7w">
+            <button class="fr-btn" hx-target="#update-form" hx-get="{% url 'project:trajectory:partial-form-consumption' diagnostic.id %}">Show form</button>
+        </div>
+
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="setTarget" tabindex="-1" aria-labelledby="setTargetLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+        <div class="fr-modal__body">
+            <div class="fr-modal__header">
+                <button class="fr-link--close fr-link" data-bs-dismiss="modal" aria-label="Close">Fermer</button>
+            </div>
+            <div class="fr-modal__content">
+                <h1 class="fr-modal__title" id="setTargetLabel">
+                    Personnaliser mon objectif 2031
+                </h1>
+                <div id="setTargetForm">
+                    <div class="fr-custom-loader"></div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
 {% endblock content %}
 
 {% block bodyend %}
-
-{% localize off %}
-{% sri_static "highcharts/js/highcharts.js" %}
-{% sri_static "highcharts/js/exporting.js" %}
-{% french_translation %}
-{% endlocalize %}
 
 <script language="javascript" nonce="{{ CSP_NONCE }}">
     window.htmx.on("hidden.bs.modal", () => {
