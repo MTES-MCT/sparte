@@ -67,5 +67,12 @@ $( window ).scroll(function() {
         fired = true
     }
 })
+
+window.htmx.on("htmx:afterSwap", () => {
+    $('[data-toggle="tooltip"]').tooltip({
+        trigger: 'hover',
+        placement: 'right'
+    })
+})
 </script>
 {% endblock tagging %}
