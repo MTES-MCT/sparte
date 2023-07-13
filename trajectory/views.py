@@ -61,7 +61,10 @@ class ProjectReportTrajectoryConsumptionView(StandAloneMixin, FormView):
         return super().get_form_kwargs() | {"trajectory": self.diagnostic.trajectory_set.order_by("id").first()}
 
     def get_context_data(self, **kwargs):
-        kwargs |= {"diagnostic": self.diagnostic}
+        kwargs |= {
+            "diagnostic": self.diagnostic,
+            "years": [str(i) for i in range(2021, 2051)],
+        }
         return super().get_context_data(**kwargs)
 
     def post(self, request, *args, **kwargs):
