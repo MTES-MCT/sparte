@@ -41,14 +41,23 @@
         </table>
     </div>
 
-    <div align="center">
+    <nav role="navigation" class="fr-pagination fr-mt-2v" aria-label="Pagination">
+        <ul class="fr-pagination__list justify-content-end">
         {% for i in pages %}
             {% if i == current_page %}
-                <b>{{ i }}</b>
+                <li>
+                    <a class="fr-pagination__link" aria-current="page">
+                        {{ i }}
+                    </a>
+                </li>
             {% else %}
-                <a href="" hx-get="{% url 'project:zone-urba-auu' diagnostic.id %}?page_number={{ i }}" hx-target="#table-auu" class="btn btn-sm mx-1">{{ i }}</a>
+                <li>
+                    <a href="#" hx-get="{% url 'project:zone-urba-auu' diagnostic.id %}?page_number={{ i }}" hx-target="#table-auu" class="fr-pagination__link">
+                        {{ i }}
+                    </a>
+                </li>
             {% endif %}
         {% endfor %}
-    </div>
-
+        </ul>
+    </nav>
 </div>
