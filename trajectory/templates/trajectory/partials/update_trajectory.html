@@ -11,7 +11,48 @@
           hx-disable-element="#save_trajectory_btn">
         {% csrf_token %}
 
-        <div class="fr-grid-row form-set-year-conso">
+        <div class="d-flex align-items-end fr-mb-2w">
+            <span class="fr-mr-2w">De</span>
+            <select class="fr-select fr-mr-2w trajectory-select-year" disabled id="select-disabled" name="select-disabled">
+                <option value="" selected disabled hidden>2021</option>
+            </select>
+            <span class="fr-mr-2w">à</span>
+            <select class="fr-select trajectory-select-year" id="select" name="select">
+                {% for year in years %}
+                    <option value="{{ year }}" {% if year == "2030" %} selected{% endif %}>{{ year }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <p class="fr-text--sm fr-mb-0 fr-mt-3w">Renseignez vos surfaces consommées prévisionnelles pour chaque année (en Ha). Vous avez la possibilité de renseigner ces surfaces en annuelle ou en cumulée.</p>
+        
+        <div class="fr-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th></th>
+                        {% for year in years %}
+                            <th scope="col">{{ year }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Consommation annuelle</strong></td>
+                        {% for year in years %}
+                            <td><input class="fr-input trajectory-table-input" type="text" value="0" name="year_{{year}}"></td>
+                        {% endfor %}
+                    </tr>
+                    <tr>
+                        <td><strong>Consommation cumulée</strong></td>
+                        {% for year in years %}
+                            <td><input class="fr-input trajectory-table-input" type="text" value="0" name="sum_year_{{year}}"></td>
+                        {% endfor %}
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        {% comment %} <div class="fr-grid-row form-set-year-conso">
             {% csrf_token %}
             {{ form|crispy }}
         </div>
@@ -20,6 +61,6 @@
             <li>
                 <button id="save_trajectory_btn" class="fr-btn mt-2 position-relative" type="submit"><span class="htmx-indicator-placeholder">Enregistrer</span><div class="fr-custom-loader--button htmx-indicator"></div></button>
             </li>
-        </ul>
+        </ul> {% endcomment %}
     </form>
 {% endif %}

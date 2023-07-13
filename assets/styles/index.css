@@ -300,11 +300,19 @@ select[name=start].is-invalid, select[name=end].is-invalid {
 }
 
 /*
-Margin trajectory conso
+Trajectory conso
 */
 .form-set-year-conso > div {
     margin-right: 25px;
     margin-bottom: 25px;
+}
+
+.trajectory-select-year {
+    width: 100px;
+}
+
+.trajectory-table-input {
+    width: 70px;
 }
 
 /*

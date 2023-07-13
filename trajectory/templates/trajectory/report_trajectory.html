@@ -59,7 +59,7 @@ Trajectoires
         <div class="fr-grid-row fr-grid-row--gutters fr-mt-7w">
 
             <div class="fr-col-12 fr-col-md-4 fr-grid-row">
-                <div class="fr-callout w-100">
+                <div class="fr-callout w-100 fr-p-5w">
                     <h4>Période de référence</h4>
                     <div class="d-flex fr-mb-1w">
                         <p class="fr-callout__title">+<span id="total_real-swapper">{{ total_real|floatformat:0 }}</span> ha</p>
@@ -70,19 +70,19 @@ Trajectoires
             </div>
 
             <div class="fr-col-12 fr-col-md-4 fr-grid-row">
-                <div class="fr-callout w-100">
+                <div class="fr-callout w-100 fr-p-5w">
                     <h4>Projection 2031</h4>
                     <div class="d-flex fr-mb-1w">
                         <p class="fr-callout__title">+<span id="conso_2031-swapper">{{ conso_2031|floatformat:1 }}</span> ha</p>
                         <p class="fr-tag fr-tag--sm fr-tag--blue fr-ml-2w"><strong>+<span id="annual_objective-swapper">{{ annual_objective_2031|floatformat:1 }}</span> ha/an</strong></p>
                     </div>
                     <p class="fr-text--sm">Consommation cumulée de la période du 1er jan. 2021 au 31 déc. 2030 (10 ans) avec un seuil de réduction de <span id="objective-swapper">{{ diagnostic.target_2031 }}</span>%</p>
-                    <p><button id="btn-change-objective" class="fr-btn fr-btn--primary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#setTarget" data-toggle="tooltip" title="Personnaliser mon objectif 2031" aria-hidden="true" hx-get="{% url 'project:trajectory:set_target_2031' diagnostic.pk %}" hx-target="#setTargetForm">Personnaliser mon seuil de réduction</button></p>
+                    <p><button id="btn-change-objective" class="fr-btn fr-btn--primary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#setTarget" aria-hidden="true" hx-get="{% url 'project:trajectory:set_target_2031' diagnostic.pk %}" hx-target="#setTargetForm">Personnaliser mon seuil de réduction</button></p>
                 </div>
             </div>
 
             <div class="fr-col-12 fr-col-md-4 fr-grid-row">
-                <div class="fr-callout w-100">
+                <div class="fr-callout w-100 fr-p-5w">
                     <h4>Projection personnalisée</h4>
                     {% if trajectory %}
                         <div class="d-flex fr-mb-1w">
@@ -92,7 +92,7 @@ Trajectoires
                         <p class="fr-text--sm">Consommation cumulée de la période du 1er jan. 2021 au 31 déc. {{ trajectory.end }}</p>
                     {% endif %}
 
-                    <button id="btn-change-trajectory" class="fr-btn fr-btn--primary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#setTrajectory" data-toggle="tooltip" title="Personnaliser ma projection" aria-hidden="true" hx-get="{% url 'project:trajectory:partial-form-consumption' diagnostic.pk %}" hx-target="#setTrajectoryForm">Configurer ma projection personnalisée</button>
+                    <button id="btn-change-trajectory" class="fr-btn fr-btn--primary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#setTrajectory" aria-hidden="true" hx-get="{% url 'project:trajectory:partial-form-consumption' diagnostic.pk %}" hx-target="#setTrajectoryForm">Configurer ma projection personnalisée</button>
                     
                 </div>
             </div>
@@ -115,7 +115,7 @@ Trajectoires
             </div>
             <div class="fr-modal__content">
                 <h1 class="fr-modal__title" id="setTargetLabel">
-                    Personnaliser mon objectif 2031
+                    Personnaliser mon seuil de réduction à 2031
                 </h1>
                 <div id="setTargetForm">
                     <div class="fr-custom-loader"></div>

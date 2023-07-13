@@ -1,6 +1,6 @@
 {% load highcharts_tags %}
 
-<button class="fr-btn" hx-target="#graphic" hx-get="{% url 'project:trajectory:partial-graphic' diagnostic.id %}">reload</button>
+{% comment %} <button class="fr-btn" hx-target="#graphic" hx-get="{% url 'project:trajectory:partial-graphic' diagnostic.id %}">reload</button> {% endcomment %}
 
 <div class="fr-mt-7w">
     <div class="border fr-p-2w">
@@ -72,7 +72,7 @@
 </div>
 
 <!-- Modal -->
-<div class="modal fade" id="setTrajectory" tabindex="-1" aria-labelledby="setTrajectoryLabel" aria-hidden="true">
+<div class="modal fade modal-xl" id="setTrajectory" tabindex="-1" aria-labelledby="setTrajectoryLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
         <div class="fr-modal__body">
             <div class="fr-modal__header">
@@ -80,7 +80,7 @@
             </div>
             <div class="fr-modal__content">
                 <h1 class="fr-modal__title" id="setTrajectoryLabel">
-                    Sélectionner une période
+                    Configurer ma projection personnalisée
                 </h1>
                 <div id="setTrajectoryForm">
                     <div class="fr-custom-loader"></div>
