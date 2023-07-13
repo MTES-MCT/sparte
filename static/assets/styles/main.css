@@ -1699,6 +1699,7 @@ Table
     white-space: nowrap;
     padding-right: 1rem;
     font-size: 14px;
+    max-width: 200px;
 }
 
 /*

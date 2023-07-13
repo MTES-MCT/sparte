@@ -1,8 +1,6 @@
 <div id="a456" class="fr-mt-7w">
     <h3>Zones naturelles ayant été le plus artificialisées sur la période</h3>
 
-    {% comment %} <button class="fr-btn" hx-target="#a456" hx-get="{% url 'project:zone-urba-n' diagnostic.id %}">reload</button> {% endcomment %}
-
     <div class="overflow-auto">
         <table class="table table-striped table-sm table-borderless table-custom">
             <thead>
@@ -24,7 +22,7 @@
                     <td>{{ zone.city_name }}</td>
                     <td class="text-end">{{ zone.zone_urba.insee }}</td>
                     <td>{{ zone.zone_urba.libelle }}</td>
-                    <td>{{ zone.zone_urba.libelong }}</td>
+                    <td data-toggle="tooltip" title="{{ zone.zone_urba.libelong }}"><div class="text-truncate">{{ zone.zone_urba.libelong }}</div></td>
                     <td>{{ zone.zone_urba.typezone }}</td>
                     <td class="text-end">{{ zone.zone_urba.area|floatformat:1 }} ha</td>
                     <td class="text-end">{{ zone.area|floatformat:1 }} ha</td>
