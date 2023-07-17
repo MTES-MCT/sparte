@@ -1,49 +1,45 @@
 import pytest
+# from django.contrib.gis.geos import MultiPolygon
+from django.contrib.gis.geos import GEOSGeometry
 
-from django.contrib.gis.geos import MultiPolygon
+from public_data.models.administration import Departement, Region
 
 from .models import Commune, CommunePop
 
 # from .validators import MinValueValidator, MaxValueValidator
 
 
-SQUARE = MultiPolygon([((2.2, 4.2), (5.2, 4.2), (5.2, 6.6), (2.2, 6.6), (2.2, 4.2))], srid=4326)
+# SQUARE = MultiPolygon([((2.2, 4.2), (5.2, 4.2), (5.2, 6.6), (2.2, 6.6), (2.2, 4.2))], srid=4326)
+# SQUARE = MultiPolygon([((2.2, 4.2), (5.2, 4.2), (5.2, 6.6), (2.2, 6.6), (2.2, 4.2))], srid='4326')
+SQUARE = GEOSGeometry('MULTIPOLYGON(((2.2 4.2, 5.2 4.2, 5.2 6.6, 2.2 6.6, 2.2 4.2)))', srid=4326)
 
 
 @pytest.fixture
-def setup_departement():
-    commune = Departement.objects.create(
-        name="TestCommune",
-        insee="12345",
+def setup_administration_level():
+    region = Region.objects.create(
+        name="TestRegion",
+        insee="1",
         mpoly=SQUARE,
     )
-    return commune
-
-
-@pytest.fixture
-def setup_departement():
-    commune = Departement.objects.create(
-        name="TestCommune",
-        insee="12345",
+    dept = Departement.objects.create(
+        name="TestDepartement",
+        insee="12",
         mpoly=SQUARE,
+        region=region,
     )
-    return commune
-
-
-@pytest.fixture
-def setup_commune():
     commune = Commune.objects.create(
         name="TestCommune",
         insee="12345",
         mpoly=SQUARE,
+        departement=dept,
     )
     return commune
 
 
 @pytest.fixture
-def setup_commune_pop(setup_commune):
+def setup_commune_pop(setup_administration_level):
     commune_pop = CommunePop(
-        commune=setup_commune,
+        commune=setup_administration_level,
         year=2020,
         pop=1000,
         pop_change=100,
