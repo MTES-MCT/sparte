@@ -109,11 +109,6 @@ urlpatterns = [
         name="artif-detail-usa-chart",
     ),
     path(
-        "<int:pk>/set-target-2031",
-        views.SetTargetView.as_view(),
-        name="set_target_2031",
-    ),
-    path(
         "<int:pk>/synthèse-des-zonages-d-urbanisme",
         views.ProjectReportGpuZoneSynthesisTable.as_view(),
         name="synthesis-zone-urba-all",
