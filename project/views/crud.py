@@ -19,7 +19,7 @@ from project import tasks
 from project.forms import KeywordForm, SelectTerritoryForm, UpdateProjectForm
 from project.models import Project, create_from_public_key
 from public_data.models import AdminRef, Land, LandException
-from utils.views_mixins import BreadCrumbMixin
+from utils.views_mixins import BreadCrumbMixin, RedirectURLMixin
 
 from .mixins import GroupMixin
 
