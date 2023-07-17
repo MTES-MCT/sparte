@@ -5,6 +5,17 @@
         <h3 class="fr-alert__title">Votre projection a été personnalisée.</h3>
     </div>
 {% else %}
+    <script language="javascript">
+        let data = {
+            {% for year, val in data.items %}
+            "{{ year }}": {{ val }},
+            {% endfor %}
+        }
+        let cumul = {{ cumul}}
+        let end_year = {{ end_year }}
+        let avg_2031 = {{ avg_2031 }}
+    </script>
+
     <form hx-post="{% url 'project:trajectory:partial-form-consumption' diagnostic.pk %}"
           hx-swap="outerHTML"
           hx-ext="disable-element"
@@ -17,7 +28,7 @@
                 <option value="" selected disabled hidden>2021</option>
             </select>
             <span class="fr-mr-2w">à</span>
-            <select class="fr-select trajectory-select-year" id="select" name="select">
+            <select class="fr-select trajectory-select-year" id="select" name="end">
                 {% for year in years %}
                     <option value="{{ year }}" {% if year == "2030" %} selected{% endif %}>{{ year }}</option>
                 {% endfor %}
@@ -52,7 +63,7 @@
                 </tbody>
             </table>
         </div>
-        {% comment %} <div class="fr-grid-row form-set-year-conso">
+        <div class="fr-grid-row form-set-year-conso">
             {% csrf_token %}
             {{ form|crispy }}
         </div>
@@ -61,6 +72,6 @@
             <li>
                 <button id="save_trajectory_btn" class="fr-btn mt-2 position-relative" type="submit"><span class="htmx-indicator-placeholder">Enregistrer</span><div class="fr-custom-loader--button htmx-indicator"></div></button>
             </li>
-        </ul> {% endcomment %}
+        </ul> {% comment %} {% endcomment %}
     </form>
 {% endif %}

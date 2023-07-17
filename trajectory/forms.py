@@ -15,43 +15,20 @@ class DateEndForm(forms.Form):
         validators=[MinValueValidator("2021"), MaxValueValidator("2075")],
     )
 
-    def __init__(self, trajectory: Trajectory, *args, **kwargs):
-        self.trajectory = trajectory
+    def __init__(self, start: int = 2021, end: int = 2030, default: float = 0, *args, **kwargs):
         super().__init__(*args, **kwargs)
-
-    def save(self):
-        self.trajectory.end = self.cleaned_data["end"]
-        self.trajectory.save()
-        return self.trajectory
 
 
 class UpdateTrajectoryForm(forms.Form):
-    start = forms.TypedChoiceField(
-        choices=year_choices(),
-        label="",
-        validators=[MinValueValidator("2000"), MaxValueValidator("2075")],
-    )
-    end = forms.TypedChoiceField(
-        choices=[(r, str(r)) for r in range(2021, 2075)],
-        label="Année de fin",
-        validators=[MinValueValidator("2021"), MaxValueValidator("2075")],
-    )
-
-    def __init__(self, trajectory: Trajectory, *args, **kwargs):
-        self.trajectory = trajectory
+    def __init__(self, start: int = 2021, end: int = 2030, default: float = 0, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        for year, val in self.trajectory.get_value_per_year().items():
-            self.fields[f"year_{year}"] = forms.IntegerField(
-                label=f"Consommation {year}", min_value=0, initial=val if val else 0, required=True
+        if isinstance(end, str):
+            end = int(end)
+        for year in range(start, end + 1):
+            key = f"year_{year}"
+            self.fields[key] = forms.FloatField(
+                label=f"Consommation {year}",
+                min_value=0,
+                initial=kwargs["initial"].get(key, default),
+                required=True,
             )
-        self.fields["end"].initial = self.trajectory.end
-
-    def save(self, commit=True):
-        self.trajectory.end = self.cleaned_data["end"]
-        self.trajectory.data = {
-            year: self.cleaned_data.get(f"year_{year}", 0)
-            for year in range(2021, int(self.cleaned_data["end"]) + 1)
-        }
-        if commit:
-            self.trajectory.save()
-        return self.trajectory
