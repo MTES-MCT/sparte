@@ -1,8 +1,8 @@
-from django.core.management.base import BaseCommand
-from asgiref.sync import sync_to_async
-import requests
-from concurrent.futures import ThreadPoolExecutor
 import asyncio
+from concurrent.futures import ThreadPoolExecutor
+
+import requests
+from django.core.management.base import BaseCommand
 
 from public_data.models.gpu import ZoneUrba
 

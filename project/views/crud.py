@@ -1,10 +1,9 @@
 import celery
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect
-from django.urls import reverse_lazy, reverse
+from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.views.generic import (
     DeleteView,
@@ -22,7 +21,6 @@ from project.models import Project, create_from_public_key
 from public_data.models import AdminRef, Land, LandException
 from utils.views_mixins import BreadCrumbMixin, RedirectURLMixin
 
-from utils.views import RedirectURLMixin
 from .mixins import GroupMixin
 
 
