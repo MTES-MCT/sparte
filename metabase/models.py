@@ -3,8 +3,6 @@ from datetime import datetime
 
 from django.db import models
 
-# from django.dispatch import receiver
-
 from project.models import Project, Request
 from utils.functions import get_url_with_domain
 

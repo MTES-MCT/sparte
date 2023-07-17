@@ -61,8 +61,8 @@ class Command(BaseCommand):
 
             def diff(prefix, year):
                 try:
-                    current = row.get(f"{prefix}{year}", None)
-                    previous = row.get(f"{prefix}{year-1}", None)
+                    current = row.get(f"{prefix}{year}", None)  # noqa: B023
+                    previous = row.get(f"{prefix}{year-1}", None)  # noqa: B023
                     return current - previous
                 except (TypeError, ValueError):
                     return None

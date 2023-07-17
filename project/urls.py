@@ -113,6 +113,21 @@ urlpatterns = [
         views.SetTargetView.as_view(),
         name="set_target_2031",
     ),
+    path(
+        "<int:pk>/synthèse-des-zonages-d-urbanisme",
+        views.ProjectReportGpuZoneSynthesisTable.as_view(),
+        name="synthesis-zone-urba-all",
+    ),
+    path(
+        "<int:pk>/zonages-d-urbanisme-auu",
+        views.ProjectReportGpuZoneAUUTable.as_view(),
+        name="zone-urba-auu",
+    ),
+    path(
+        "<int:pk>/zonages-d-urbanisme-n",
+        views.ProjectReportGpuZoneNTable.as_view(),
+        name="zone-urba-n",
+    ),
     # MAP
     path("<int:pk>/map", views.ProjectMapView.as_view(), name="map"),
     path(
