@@ -17,13 +17,16 @@ prettytable = "*"
 pytest = "*"
 pytest-django = "*"
 pytest-cov = "*"
+pytest-env = "*"
 pytest-github-actions-annotate-failures = "*"
 bandit = "*"
+ipython-sql = "*"
 isort = "*"
 mypy = "*"
 types-requests = "*"
 types-setuptools = "*"
-
+jupyter-client = "==7.3.2"
+tornado = "==6.1"
 
 [packages]
 boto3 = "*"
