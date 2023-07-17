@@ -1,4 +1,4 @@
-{% extends 'index.html' %}
+{% extends "index.html" %}
 
 {% load static %}
 {% load project_tags %}
@@ -9,11 +9,7 @@
 
 {% block pagetitle %}
 Zonages d'urbanisme
-{% endblock %}
-
-{% block headers %}
-{% sri_static "project/css/project.css" %}
-{% endblock %}
+{% endblock pagetitle %}
 
 {% block content %}
 <div class="px-4">
@@ -33,9 +29,30 @@ Zonages d'urbanisme
                 </button>
             </a>
         </div>
+    
+
+        <div class="fr-mt-7w" hx-get="{% url 'project:synthesis-zone-urba-all' project.id %}" hx-trigger="load delay:1s" hx-swap="outerHTML">
+            <h3>Synthèse des zonages d'urbanime</h3>
+
+            <div class="fr-custom-loader"></div>
+        </div>
+
+        <div id="table-auu" class="fr-mt-7w" hx-get="{% url 'project:zone-urba-auu' project.id %}" hx-trigger="load delay:2s" hx-swap="outerHTML">
+            <h3>Taux de remplissage des zones AU et U</h3>
+
+            <div class="fr-custom-loader"></div>
+        </div>
+
+        <div id="table-n" class="fr-mt-7w" hx-get="{% url 'project:zone-urba-n' project.id %}" hx-trigger="load delay:3s" hx-swap="outerHTML">
+            <h3>Zones naturelles ayant été le plus artificialisées sur la période</h3>
+
+            <div class="fr-custom-loader"></div>
+        </div>
+
     </div>
+
 </div>
-{% endblock %}
+{% endblock content %}
 
 {% block tagging %}
 <script language="javascript" nonce="{{ CSP_NONCE }}">
@@ -46,9 +63,16 @@ $( window ).on('load', function () {
 var fired = false
 $( window ).scroll(function() {
     if(fired == false && $( window ).scrollTop() + $( window ).height() > $( "#block-content" ).height() - 100) {
-        _paq.push(['trackEvent', 'Consultation diagnostic', 'Fin tableau de bord', 'Zonages d\'urbanisme']])
+        _paq.push(['trackEvent', 'Consultation diagnostic', 'Fin tableau de bord', 'Zonages d\'urbanisme'])
         fired = true
     }
+})
+
+window.htmx.on("htmx:afterSwap", () => {
+    $('[data-toggle="tooltip"]').tooltip({
+        trigger: 'hover',
+        placement: 'right'
+    })
 })
 </script>
 {% endblock tagging %}

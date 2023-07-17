@@ -1,3 +1,4 @@
+import os
 import re
 
 import pytest
@@ -5,7 +6,7 @@ from django.contrib.gis.geos import MultiPolygon, Polygon
 
 from users.tests import users  # noqa: F401
 
-from .models import Emprise, Project, user_directory_path
+from project.models import Emprise, Project, user_directory_path
 
 BIG_SQUARE = MultiPolygon(
     [Polygon.from_bbox((43, -1, 44, 0))],
@@ -95,3 +96,9 @@ class TestModelUtils:
         path_re = re.compile(r"(user_[0-9]{4,4}\/)?[\w]{6,6}\/(.+)")
         assert path_re.match(user_directory_path(projects["cobas"], filename))
         assert path_re.match(user_directory_path(None, filename))
+
+
+class TestSettings:
+    def test_general(self):
+        account_id = os.getenv("ACCOUNT_ID")
+        assert account_id == "9876"

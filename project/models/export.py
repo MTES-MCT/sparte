@@ -1,5 +1,5 @@
 import logging
-from datetime import date, datetime
+from datetime import datetime
 from io import BytesIO
 
 from django.urls import reverse
