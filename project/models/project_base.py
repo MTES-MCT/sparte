@@ -8,17 +8,16 @@ import pandas as pd
 from django.conf import settings
 from django.contrib.gis.db import models as gis_models
 from django.contrib.gis.db.models import Extent, Union
-from django.contrib.gis.db.models.functions import Centroid, Area
+from django.contrib.gis.db.models.functions import Area, Centroid
 from django.contrib.gis.geos import MultiPolygon, Polygon
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
-from django.db.models import Case, F, Q, Sum, Value, When, DecimalField
-from django.db.models.functions import Coalesce, Concat, Cast
+from django.db.models import Case, DecimalField, F, Q, Sum, Value, When
+from django.db.models.functions import Cast, Coalesce, Concat
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.functional import cached_property
 from simple_history.models import HistoricalRecords
-
 
 from config.storages import PublicMediaStorage
 from public_data.models import (

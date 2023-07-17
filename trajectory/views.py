@@ -4,14 +4,10 @@ from typing import Any, Callable, Dict
 from django.http import HttpResponse
 from django.views.generic import FormView
 
-from trajectory import charts  # TrajectoryChart
 from project.models import Project
 from project.views import ProjectReportBaseView
-
-from trajectory.forms import (
-    SelectYearPeriodForm,
-    UpdateTrajectoryForm,
-)
+from trajectory import charts  # TrajectoryChart
+from trajectory.forms import SelectYearPeriodForm, UpdateTrajectoryForm
 
 
 class ProjectReportTrajectoryView(ProjectReportBaseView):
