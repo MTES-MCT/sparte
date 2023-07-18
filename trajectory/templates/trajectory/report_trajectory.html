@@ -89,7 +89,7 @@ Trajectoires
                             <p class="fr-callout__title">+<span id="conso_perso-swapper">{{ conso_perso|floatformat:1 }}</span> ha</p>
                             <p class="fr-tag fr-tag--sm fr-tag--blue fr-ml-2w"><strong><span id="annual_perso-swapper">{{ annual_perso|floatformat:1 }}</span> ha/an</strong></p>
                         </div>
-                        <p class="fr-text--sm">Consommation cumulée de la période du 1er jan. 2021 au 31 déc. {{ trajectory.end }}</p>
+                        <p class="fr-text--sm">Consommation cumulée de la période du 1er jan. 2021 au 31 déc. <span id="trajectory-end-swapper">{{ trajectory.end|stringformat:"s" }}</span></p>
                     {% endif %}
 
                     <button id="btn-change-trajectory" class="fr-btn fr-btn--primary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#setTrajectory" aria-hidden="true" hx-get="{% url 'project:trajectory:partial-form-consumption' diagnostic.pk %}" hx-target="#setTrajectoryForm">Configurer ma projection personnalisée</button>
