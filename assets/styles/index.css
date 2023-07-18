@@ -312,7 +312,8 @@ Trajectory conso
 }
 
 .trajectory-table-input {
-    width: 70px;
+    width: 90px;
+    font-size: 13px;
 }
 
 /*
