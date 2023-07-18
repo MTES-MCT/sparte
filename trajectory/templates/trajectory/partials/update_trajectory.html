@@ -5,6 +5,14 @@
     <div class="fade-in fr-alert fr-alert--success fr-alert--sm" role="alert">
         <h3 class="fr-alert__title">Votre projection a été personnalisée.</h3>
     </div>
+
+    <script language="javascript" nonce="{{ CSP_NONCE }}">
+        setTimeout(() => {
+            const modal = bootstrap.Modal.getInstance(document.getElementById("setTrajectory"))
+            if (modal)
+                modal.hide()
+        }, 1800)
+    </script>
 {% else %}
     <script language="javascript" nonce="{{ CSP_NONCE }}">
         trajectory = [
@@ -77,14 +85,18 @@
                 // create sum conso input
                 let tdSum = document.createElement("td");
                 tdSum.classList.add("dynamic");
-                let sumConsoInput = document.createElement('input');
-                sumConsoInput.disabled = true;
-                sumConsoInput.type = "number";
-                sumConsoInput.step = .1;
-                sumConsoInput.value = sum.toFixed(1);
-                sumConsoInput.name = `sum_year_${_obj.year}`;
-                sumConsoInput.classList.add("fr-input", "trajectory-table-input", "trajectory-table-input--sum");
-                tdSum.appendChild(sumConsoInput);
+                // let sumConsoInput = document.createElement('input');
+                // sumConsoInput.type = "number";
+                // sumConsoInput.step = .1;
+                // sumConsoInput.value = sum.toFixed(1);
+                // sumConsoInput.name = `sum_year_${_obj.year}`;
+                // sumConsoInput.classList.add("fr-input", "trajectory-table-input", "trajectory-table-input--sum");
+                // tdSum.appendChild(sumConsoInput);
+                // tableSumConso.appendChild(tdSum);
+                let sumConsoText = document.createElement('span');
+                sumConsoText.classList.add("trajectory-table--sum");
+                sumConsoText.innerHTML = sum.toFixed(1);
+                tdSum.appendChild(sumConsoText);
                 tableSumConso.appendChild(tdSum);
             })
 
@@ -117,11 +129,17 @@
     
                 // Update sum inputs
                 let arrAnnual = document.querySelectorAll(".trajectory-table-input--annual");
-                let arrSum = document.querySelectorAll(".trajectory-table-input--sum");
+                // let arrSum = document.querySelectorAll(".trajectory-table-input--sum");
+                // mixSum = cumul;
+                // arrSum.forEach((ele, index) => {
+                //     mixSum += parseFloat(arrAnnual[index].value);
+                //     ele.value = mixSum.toFixed(1);
+                // })
+                let arrSum = document.querySelectorAll(".trajectory-table--sum");
                 mixSum = cumul;
                 arrSum.forEach((ele, index) => {
                     mixSum += parseFloat(arrAnnual[index].value);
-                    ele.value = mixSum.toFixed(1);
+                    ele.innerHTML = mixSum.toFixed(1);
                 })
             }));
     
@@ -139,32 +157,33 @@
         setData();
 
         document.getElementById("select_end_year").addEventListener("change", (_event) => {
+            sum = cumul;
             end_year = _event.target.value;
             
             setData();
         });
     </script>
 
-    <div class="d-flex align-items-end fr-mb-2w">
-        <span class="fr-mr-2w">De</span>
-        <select class="fr-select fr-mr-2w trajectory-select-year" disabled id="select-disabled" name="select-disabled">
-            <option value="" selected disabled hidden>2021</option>
-        </select>
-        <span class="fr-mr-2w">à</span>
-        <select class="fr-select trajectory-select-year" id="select_end_year" name="end">
-            {% for year in choices %}
-                <option value="{{ year }}" {% if year == "2030" %} selected{% endif %}>{{ year }}</option>
-            {% endfor %}
-        </select>
-    </div>
-
-    <p class="fr-text--sm fr-mb-0 fr-mt-3w">Renseignez vos surfaces consommées prévisionnelles pour chaque année (en Ha). Vous avez la possibilité de renseigner ces surfaces en <strong>annuelle</strong> ou en <strong>cumulée</strong>.</p>
-
     <form hx-post="{% url 'project:trajectory:partial-form-consumption' diagnostic.pk %}"
         hx-swap="outerHTML"
         hx-ext="disable-element"
         hx-disable-element="#save_trajectory_btn">
         {% csrf_token %}
+        
+        <div class="d-flex align-items-end fr-mb-2w">
+            <span class="fr-mr-2w">De</span>
+            <select class="fr-select fr-mr-2w trajectory-select-year" disabled id="select-disabled" name="select-disabled">
+                <option value="" selected disabled hidden>2021</option>
+            </select>
+            <span class="fr-mr-2w">à</span>
+            <select class="fr-select trajectory-select-year" id="select_end_year" name="end">
+                {% for year in choices %}
+                    <option value="{{ year }}" {% if year == "2030" %} selected{% endif %}>{{ year }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <p class="fr-text--sm fr-mb-0 fr-mt-3w">Renseignez vos surfaces consommées prévisionnelles pour chaque année (en Ha). Vous avez la possibilité de renseigner ces surfaces en <strong>annuelle</strong> ou en <strong>cumulée</strong>.</p>
 
         <div class="fr-table fr-mb-2w table-custom">
             <table>

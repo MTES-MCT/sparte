@@ -124,43 +124,32 @@ Trajectoires
     </div>
 </div>
 
+<!-- Modal pour saisir sa trajectoire de consommation -->
+<div class="modal fade modal-xl" id="setTrajectory" tabindex="-1" aria-labelledby="setTrajectoryLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+        <div class="fr-modal__body">
+            <div class="fr-modal__header">
+                <button class="fr-link--close fr-link" data-bs-dismiss="modal" aria-label="Close">Fermer</button>
+            </div>
+            <div class="fr-modal__content">
+                <h1 class="fr-modal__title" id="setTrajectoryLabel">
+                    Configurer ma projection personnalisée
+                </h1>
+                <div id="setTrajectoryForm">
+                    <div class="fr-custom-loader"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 {% endblock content %}
 
 {% block bodyend %}
 
 <script language="javascript" nonce="{{ CSP_NONCE }}">
     let data, cumul, end_year, end_year, avg_2031, sum, range, trajectory, mode;
-
-    window.htmx.on("hidden.bs.modal", () => {
-        document.getElementById("setTrajectoryForm").innerHTML = "<div class='fr-custom-loader'></div>"
-    })
-
-    window.htmx.on("htmx:oobAfterSwap", (e) => {
-        // Check swap target
-        if (e.detail.target.id === "conso-input-swapper") {
-            const modal = bootstrap.Modal.getInstance(document.getElementById("setTrajectory"))
-            if (modal) {
-                modal.hide()
-                // Wait for oob swap
-                setTimeout(() => {
-                    const formContainer = document.getElementById("conso-input-swapper")
-                    const firstInput = formContainer.getElementsByClassName('fr-input')[0]
-                    firstInput.focus()
-                }, 500)
-            }
-        }
-        else if (e.detail.target.id === "trajectory-chart-swapper") {
-            // Wait for oob swap
-            setTimeout(() => {
-                const chartContainer = document.getElementById("trajectory-chart-swapper")
-                const topPos = chartContainer.getBoundingClientRect().top + window.pageYOffset
-                window.scrollTo({
-                    top: topPos,
-                    behavior: 'smooth'
-                })
-            }, 500)
-        }
-    })
 </script>
 {% endblock bodyend %}
 
