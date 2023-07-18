@@ -74,9 +74,10 @@ class ProjectReportTrajectoryConsumptionView(StandAloneMixin, FormView):
         trajectory_chart = self.trajectory_chart
         kwargs |= {
             "diagnostic": self.diagnostic,
-            "years": [str(i) for i in range(2021, 2051)],
+            "choices": [str(i) for i in range(2021, 2051)],
             "cumul": trajectory_chart.total_real,
             "avg_2031": trajectory_chart.annual_objective_2031,
+            "start_year": "2021",
         }
         if "form" in kwargs:
             kwargs["data"] = {n[-4:]: f.initial for n, f in kwargs["form"].fields.items() if n.startswith("year_")}

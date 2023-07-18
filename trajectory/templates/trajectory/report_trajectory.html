@@ -93,7 +93,6 @@ Trajectoires
                     {% endif %}
 
                     <button id="btn-change-trajectory" class="fr-btn fr-btn--primary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#setTrajectory" aria-hidden="true" hx-get="{% url 'project:trajectory:partial-form-consumption' diagnostic.pk %}" hx-target="#setTrajectoryForm">Configurer ma projection personnalisée</button>
-                    
                 </div>
             </div>
 
@@ -125,31 +124,13 @@ Trajectoires
     </div>
 </div>
 
-<!-- Modal pour saisir sa trajectoire de consommation -->
-<div class="modal fade" id="setTrajectory" tabindex="-1" aria-labelledby="setTrajectoryLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
-        <div class="fr-modal__body">
-            <div class="fr-modal__header">
-                <button class="fr-link--close fr-link" data-bs-dismiss="modal" aria-label="Close">Fermer</button>
-            </div>
-            <div class="fr-modal__content">
-                <h1 class="fr-modal__title" id="setTrajectoryLabel">
-                    Projection personnalisée
-                </h1>
-                <div id="setTrajectoryForm">
-                    <div class="fr-custom-loader"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-
 {% endblock content %}
 
 {% block bodyend %}
 
 <script language="javascript" nonce="{{ CSP_NONCE }}">
+    let data, cumul, end_year, end_year, avg_2031, sum, range, trajectory, mode;
+
     window.htmx.on("hidden.bs.modal", () => {
         document.getElementById("setTrajectoryForm").innerHTML = "<div class='fr-custom-loader'></div>"
     })
