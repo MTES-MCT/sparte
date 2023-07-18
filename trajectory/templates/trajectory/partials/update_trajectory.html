@@ -178,7 +178,7 @@
             <span class="fr-mr-2w">à</span>
             <select class="fr-select trajectory-select-year" id="select_end_year" name="end">
                 {% for year in choices %}
-                    <option value="{{ year }}" {% if year == "2030" %} selected{% endif %}>{{ year }}</option>
+                    <option value="{{ year }}" {% if year == end_year %} selected{% endif %}>{{ year }}</option>
                 {% endfor %}
             </select>
         </div>
