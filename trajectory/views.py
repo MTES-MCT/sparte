@@ -1,13 +1,16 @@
 from functools import cached_property
-from typing import Any, Callable, Dict
+import json
+from typing import Any, Dict
 
 from django.http import HttpResponse
-from django.views.generic import FormView
+from django.views.generic import FormView, TemplateView, UpdateView
 
+from project.charts import ObjectiveChart
 from project.models import Project
 from project.views import ProjectReportBaseView
-from trajectory import charts  # TrajectoryChart
-from trajectory.forms import SelectYearPeriodForm, UpdateTrajectoryForm
+from trajectory.charts import TrajectoryChart
+from trajectory.forms import DateEndForm, UpdateTrajectoryForm
+from utils.htmx import StandAloneMixin
 
 
 class ProjectReportTrajectoryView(ProjectReportBaseView):
@@ -16,99 +19,146 @@ class ProjectReportTrajectoryView(ProjectReportBaseView):
 
     def get_context_data(self, **kwargs) -> Dict[str, Any]:
         diagnostic = self.get_object()
-        form_period = ProjectReportTrajectoryPeriodView(request=self.request, kwargs=self.kwargs).get_form()
-        form_consumption = ProjectReportTrajectoryConsumptionView(request=self.request, kwargs=self.kwargs).get_form()
-        kwargs.update(
-            {
-                "diagnostic": diagnostic,
-                "active_page": "trajectory",
-                "form_period": form_period,
-                "initial_form_consumption": form_consumption,
+        kwargs |= {"diagnostic": diagnostic, "active_page": "trajectory"}
+
+        if diagnostic.trajectory_set.count() == 0:
+            trajectory_chart = ObjectiveChart(diagnostic)
+        else:
+            trajectory_chart = TrajectoryChart(diagnostic)
+            kwargs |= {
+                "trajectory": diagnostic.trajectory_set.order_by("id").first(),
+                "conso_perso": trajectory_chart.trajectory_cumulative,
+                "annual_perso": trajectory_chart.trajectory_annual,
             }
-        )
-        try:
-            kwargs["trajectory_chart"] = charts.TrajectoryChart(diagnostic)
-        except charts.NoTrajectoryException:
-            pass
+        kwargs |= {
+            "total_real": trajectory_chart.total_real,
+            "annual_real": trajectory_chart.annual_real,
+            "conso_2031": trajectory_chart.conso_2031,
+            "annual_objective_2031": trajectory_chart.annual_objective_2031,
+            "trajectory_chart": trajectory_chart,
+        }
         return super().get_context_data(**kwargs)
 
 
-class ProjectReportTrajectoryPeriodView(FormView):
-    template_name = "trajectory/partials/select_year_period.html"
-    form_class = SelectYearPeriodForm
+class ProjectReportTrajectoryConsumptionView(StandAloneMixin, FormView):
+    template_name = "trajectory/partials/update_trajectory.html"
+    form_class = UpdateTrajectoryForm
 
     @cached_property
-    def diagnostic(self):
-        return Project.objects.get(pk=self.kwargs["pk"])
+    def trajectory_chart(self):
+        return ObjectiveChart(self.diagnostic)
 
-    def get_initial(self) -> Dict[str, Any]:
-        kwargs_initial = super().get_initial()
-        trajectory = self.diagnostic.trajectory_set.all().first()
-        if trajectory:
-            kwargs_initial |= {
-                "start": trajectory.start,
-                "end": trajectory.end,
-            }
-        return kwargs_initial
-
-    def get_context_data(self, **kwargs):
-        kwargs["project"] = self.diagnostic
-        return super().get_context_data(**kwargs)
-
-    def get_or_create_trajectory(self, start: int, end: int):
-        trajectory = self.diagnostic.trajectory_set.all().first()
-        if trajectory:
-            trajectory.start = start
-            trajectory.end = end
-            trajectory.save()
-        else:
-            trajectory = self.diagnostic.trajectory_set.create(
-                name="Trajectoire 1",
-                start=start,
-                end=end,
-                data={},
-            )
-        return trajectory
-
-    def form_valid(self, form: SelectYearPeriodForm) -> HttpResponse:
-        trajectory = self.get_or_create_trajectory(form.cleaned_data["start"], form.cleaned_data["end"])
-        kwargs = {
-            "form": form,
-            "start": form.cleaned_data["start"],
-            "end": form.cleaned_data["end"],
-            "form_consumption": UpdateTrajectoryForm(trajectory=trajectory),
-        }
-        return self.render_to_response(self.get_context_data(**kwargs))
-
-
-class ProjectReportTrajectoryConsumptionView(FormView):
-    template_name = "trajectory/partials/set_year_consumption.html"
-    form_class = UpdateTrajectoryForm
+    @cached_property
+    def trajectory(self):
+        return self.diagnostic.trajectory_set.order_by("id").first()
 
     @cached_property
     def diagnostic(self):
         return Project.objects.get(pk=self.kwargs["pk"])
 
     def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs() | {
-            "trajectory": self.diagnostic.trajectory_set.all().first(),
-        }
-        return kwargs
-
-    def get_form(self, form_class: Callable | None = None) -> UpdateTrajectoryForm | None:
+        kwargs = {"default": 0}
         try:
-            return super().get_form(form_class=form_class)
+            kwargs |= {"start": self.trajectory.start, "end": self.trajectory.end}
         except AttributeError:
-            return None
+            pass
+        return super().get_form_kwargs() | kwargs
+
+    def get_initial(self):
+        """Return the initial data to use for forms on this view."""
+        try:
+            return {f"year_{y}": v for y, v in self.trajectory.data.items()}
+        except AttributeError:
+            return {}
 
     def get_context_data(self, **kwargs):
-        kwargs |= {"project": self.diagnostic}
+        trajectory_chart = self.trajectory_chart
+        kwargs |= {
+            "diagnostic": self.diagnostic,
+            "choices": [str(i) for i in range(2021, 2051)],
+            "cumul": trajectory_chart.total_real,
+            "avg_2031": trajectory_chart.annual_objective_2031,
+            "start_year": "2021",
+        }
+        if "form" not in kwargs:
+            kwargs["form"] = self.get_form()
+        kwargs["data"] = json.dumps({n[-4:]: f.initial for n, f in kwargs["form"].fields.items() if n.startswith("year_")})
+        try:
+            kwargs["end_year"] = str(self.trajectory.end)
+        except AttributeError:
+            kwargs["end_year"] = "2030"
         return super().get_context_data(**kwargs)
 
+    def post(self, request, *args, **kwargs):
+        end_form = DateEndForm(data=self.request.POST)
+        if end_form.is_valid():
+            trajectory = self.trajectory
+            if not trajectory:
+                trajectory = self.diagnostic.trajectory_set.create(
+                    name="default",
+                    start=2021,
+                    end=2030,
+                    data={
+                        year: self.trajectory_chart.annual_objective_2031
+                        for year in range(2021, int(end_form.cleaned_data["end"]) + 1)
+                    },
+                )
+            trajectory.end = end_form.cleaned_data["end"]
+            trajectory.save()
+            form = self.get_form()
+            if form.is_valid():
+                trajectory.data = {
+                    str(y): form.cleaned_data[f"year_{y}"] for y in range(2021, int(end_form.cleaned_data["end"]) + 1)
+                }
+                trajectory.save()
+                return self.form_valid(form)
+            else:
+                return self.form_invalid(form)
+        else:
+            return self.form_invalid(self.get_form())
+
     def form_valid(self, form: UpdateTrajectoryForm) -> HttpResponse:
-        form.save()
-        context = self.get_context_data(form=form) | {
-            "trajectory_chart": charts.TrajectoryChart(self.diagnostic),
-            "success_message": True,
+        return self.render_to_response(
+            self.get_context_data(form=form, success_message=True),
+            headers={"HX-Trigger": "load-graphic"},
+        )
+
+
+class ProjectReportTrajectoryGraphView(StandAloneMixin, TemplateView):
+    template_name = "trajectory/partials/graphic.html"
+
+    def get_context_data(self, **kwargs) -> Dict[str, Any]:
+        diagnostic = Project.objects.get(id=self.kwargs["pk"])
+        if diagnostic.trajectory_set.count() == 0:
+            trajectory_chart = ObjectiveChart(diagnostic)
+        else:
+            trajectory_chart = TrajectoryChart(diagnostic)
+            kwargs |= {
+                "trajectory": diagnostic.trajectory_set.order_by("id").first(),
+                "conso_perso": trajectory_chart.trajectory_cumulative,
+                "annual_perso": trajectory_chart.trajectory_annual,
+            }
+        kwargs |= {
+            "reload_kpi": True,
+            "diagnostic": diagnostic,
+            "trajectory_chart": trajectory_chart,
+            "total_real": trajectory_chart.total_real,
+            "annual_real": trajectory_chart.annual_real,
+            "conso_2031": trajectory_chart.conso_2031,
+            "annual_objective_2031": trajectory_chart.annual_objective_2031,
         }
-        return self.render_to_response(context)
+        return super().get_context_data(**kwargs)
+
+
+class SetTargetView(UpdateView):
+    model = Project
+    template_name = "trajectory/partials/report_set_target_2031.html"
+    fields = ["target_2031"]
+    context_object_name = "diagnostic"
+
+    def form_valid(self, form):
+        self.object = form.save()
+        return self.render_to_response(
+            self.get_context_data(success_message=True),
+            headers={"HX-Trigger": "load-graphic"},
+        )

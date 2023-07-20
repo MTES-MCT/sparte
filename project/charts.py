@@ -139,7 +139,7 @@ class ObjectiveChart(ProjectChart):
         ],
         "xAxis": {
             "type": "category",
-            # "categories": [str(i) for i in range(2011, 2031)],
+            "categories": [str(i) for i in range(2011, 2031)],
             "plotBands": [
                 {
                     "color": "#f4faff",
@@ -187,14 +187,14 @@ class ObjectiveChart(ProjectChart):
                 "name": "Conso. annuelle réelle",
                 "yAxis": 1,
                 "data": list(),
-                "type": "line",
                 "color": "#95ceff",
-                "dashStyle": "ShortDash",
                 "zIndex": 4,
             },
             {
                 "name": "Conso. cumulée réelle",
                 "data": list(),
+                "type": "line",
+
                 "color": "#95ceff",
                 "zIndex": 3,
             },
@@ -202,14 +202,14 @@ class ObjectiveChart(ProjectChart):
                 "name": "Objectif conso. annuelle",
                 "yAxis": 1,
                 "data": list(),
-                "type": "line",
                 "color": "#87cc78",
-                "dashStyle": "ShortDash",
                 "zIndex": 2,
             },
             {
                 "name": "Objectif conso. cumulée",
                 "data": list(),
+                "type": "line",
+                "dashStyle": "ShortDash",
                 "color": "#a9ff96",
                 "zIndex": 1,
             },
