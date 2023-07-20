@@ -1,6 +1,8 @@
 {% load crispy_forms_tags %}
 {% load l10n %}
 
+<button class="fr-btn fr-btn--primary fr-btn--sm" hx-get="{% url 'project:trajectory:partial-form-consumption' diagnostic.pk %}" hx-target="#setTrajectoryForm">Reload</button>
+
 {% if success_message %}
     <div class="fade-in fr-alert fr-alert--success fr-alert--sm" role="alert">
         <h3 class="fr-alert__title">Votre projection a été personnalisée.</h3>
@@ -15,11 +17,13 @@
     </script>
 {% else %}
     <script language="javascript" nonce="{{ CSP_NONCE }}">
-        trajectory = [
+        {% comment %} trajectory = [
             {% for year, val in data.items %}
-            { "{{ year }}" : {{ val }} },
+            "{{ year }}" : {{ val }},
             {% endfor %}
-        ]
+        ] {% endcomment %}
+        trajectory = JSON.parse('{{ data|escapejs }}');
+        console.log(trajectory);
         start_year = {{ start_year|unlocalize }}
         end_year = {{ end_year }}
         cumul = {{ cumul|unlocalize  }};
@@ -34,8 +38,12 @@
             range = generateYearsBetween(start_year, end_year);
 
             range.forEach((_year) => {
-                data.push({ "year": _year, "annual_conso": trajectory.length > 0 ? trajectory[_year] : {{ avg_2031|unlocalize }} })
+                console.log(_year);
+                console.log(trajectory[_year]);
+                data.push({ "year": _year, "annual_conso": trajectory.hasOwnProperty(_year) ? trajectory[_year] : {{ avg_2031|unlocalize }} })
             });
+
+            console.log(data);
 
             fillTable();
         }

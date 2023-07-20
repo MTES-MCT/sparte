@@ -1,4 +1,5 @@
 from functools import cached_property
+import json
 from typing import Any, Dict
 
 from django.http import HttpResponse
@@ -81,7 +82,7 @@ class ProjectReportTrajectoryConsumptionView(StandAloneMixin, FormView):
         }
         if "form" not in kwargs:
             kwargs["form"] = self.get_form()
-        kwargs["data"] = {n[-4:]: f.initial for n, f in kwargs["form"].fields.items() if n.startswith("year_")}
+        kwargs["data"] = json.dumps({n[-4:]: f.initial for n, f in kwargs["form"].fields.items() if n.startswith("year_")})
         try:
             kwargs["end_year"] = str(self.trajectory.end)
         except AttributeError:
