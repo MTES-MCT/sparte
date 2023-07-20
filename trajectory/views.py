@@ -79,8 +79,9 @@ class ProjectReportTrajectoryConsumptionView(StandAloneMixin, FormView):
             "avg_2031": trajectory_chart.annual_objective_2031,
             "start_year": "2021",
         }
-        if "form" in kwargs:
-            kwargs["data"] = {n[-4:]: f.initial for n, f in kwargs["form"].fields.items() if n.startswith("year_")}
+        if "form" not in kwargs:
+            kwargs["form"] = self.get_form()
+        kwargs["data"] = {n[-4:]: f.initial for n, f in kwargs["form"].fields.items() if n.startswith("year_")}
         try:
             kwargs["end_year"] = str(self.trajectory.end)
         except AttributeError:
