@@ -1,8 +1,6 @@
 {% load crispy_forms_tags %}
 {% load l10n %}
 
-<button class="fr-btn fr-btn--primary fr-btn--sm" hx-get="{% url 'project:trajectory:partial-form-consumption' diagnostic.pk %}" hx-target="#setTrajectoryForm">Reload</button>
-
 {% if success_message %}
     <div class="fade-in fr-alert fr-alert--success fr-alert--sm" role="alert">
         <h3 class="fr-alert__title">Votre projection a été personnalisée.</h3>
