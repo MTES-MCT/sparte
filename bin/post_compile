@@ -12,7 +12,7 @@ python manage.py migrate
 python manage.py load_param --no-update --file required_parameters.json
 
 # Execute data migrations
-python scripts/cmd.py --env local mep
+python manage.py migrate_trajectory
 
 # collect static
 npm run build:prod

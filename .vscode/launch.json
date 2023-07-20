@@ -58,9 +58,7 @@
       "request": "launch",
       "program": "${workspaceFolder}/manage.py",
       "args": [
-        "${fileBasenameNoExtension}",
-        "--dept",
-        "32"
+        "${fileBasenameNoExtension}"
       ],
       "django": true,
       "justMyCode": true
