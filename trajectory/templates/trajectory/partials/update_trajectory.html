@@ -1,0 +1,229 @@
+{% load crispy_forms_tags %}
+{% load l10n %}
+
+{% if success_message %}
+    <div class="fade-in fr-alert fr-alert--success fr-alert--sm" role="alert">
+        <h3 class="fr-alert__title">Votre projection a été personnalisée.</h3>
+    </div>
+
+    <script language="javascript" nonce="{{ CSP_NONCE }}">
+        setTimeout(() => {
+            const modal = bootstrap.Modal.getInstance(document.getElementById("setTrajectory"))
+            if (modal)
+                modal.hide()
+        }, 1800)
+    </script>
+{% else %}
+    <script language="javascript" nonce="{{ CSP_NONCE }}">
+        {% comment %} trajectory = [
+            {% for year, val in data.items %}
+            "{{ year }}" : {{ val }},
+            {% endfor %}
+        ] {% endcomment %}
+        trajectory = JSON.parse('{{ data|escapejs }}');
+        console.log(trajectory);
+        start_year = {{ start_year|unlocalize }}
+        end_year = {{ end_year }}
+        cumul = {{ cumul|unlocalize  }};
+        avg_2031 = {{ avg_2031|unlocalize }};
+        sum = cumul;
+        // mode = "annual";
+
+        function setData() {
+            resetTable();
+
+            data = [];
+            range = generateYearsBetween(start_year, end_year);
+
+            range.forEach((_year) => {
+                console.log(_year);
+                console.log(trajectory[_year]);
+                data.push({ "year": _year, "annual_conso": trajectory.hasOwnProperty(_year) ? trajectory[_year] : {{ avg_2031|unlocalize }} })
+            });
+
+            console.log(data);
+
+            fillTable();
+        }
+
+        function resetTable() {
+            document.querySelectorAll(".dynamic").forEach(el => el.remove());
+        }
+
+        function generateYearsBetween(startYear = 2000, endYear) {
+            const endDate = endYear || new Date().getFullYear();
+            let years = [];
+          
+            for (var i = startYear; i <= endDate; i++) {
+              years.push(startYear);
+              startYear++;
+            }
+            return years;
+        }
+
+        function fillTable() {
+            const tableHead = document.getElementById('table-head');
+            const tableAnnualConso = document.getElementById('table-annual-conso');
+            const tableSumConso = document.getElementById('table-sum-conso');
+
+            data.map((_obj) => {
+                sum += _obj.annual_conso;
+
+                // Create th
+                let th = document.createElement("th");
+                th.classList.add("dynamic");
+                let text = document.createTextNode(_obj.year);
+                th.appendChild(text);
+                tableHead.appendChild(th);
+
+                // create annual conso input
+                let tdAnnualConso = document.createElement("td");
+                tdAnnualConso.classList.add("dynamic");
+                let annualConsoInput = document.createElement('input');
+                annualConsoInput.type = "number";
+                annualConsoInput.step = .1;
+                annualConsoInput.value = _obj.annual_conso.toFixed(1);
+                annualConsoInput.name = `year_${_obj.year}`;
+                annualConsoInput.classList.add("fr-input", "trajectory-table-input", "trajectory-table-input--annual");
+                tdAnnualConso.appendChild(annualConsoInput);
+                tableAnnualConso.appendChild(tdAnnualConso);
+
+                // create sum conso input
+                let tdSum = document.createElement("td");
+                tdSum.classList.add("dynamic");
+                // let sumConsoInput = document.createElement('input');
+                // sumConsoInput.type = "number";
+                // sumConsoInput.step = .1;
+                // sumConsoInput.value = sum.toFixed(1);
+                // sumConsoInput.name = `sum_year_${_obj.year}`;
+                // sumConsoInput.classList.add("fr-input", "trajectory-table-input", "trajectory-table-input--sum");
+                // tdSum.appendChild(sumConsoInput);
+                // tableSumConso.appendChild(tdSum);
+                let sumConsoText = document.createElement('span');
+                sumConsoText.classList.add("trajectory-table--sum");
+                sumConsoText.innerHTML = sum.toFixed(1);
+                tdSum.appendChild(sumConsoText);
+                tableSumConso.appendChild(tdSum);
+            })
+
+            document.querySelectorAll(".trajectory-table-input--annual").forEach(el => el.addEventListener('input', event => {
+                // Set mode
+                //mode = "annual"
+                
+                // Add flag class
+                event.target.classList.add('annual-updated');
+    
+                // Force non empty input
+                if (!event.target.value)
+                    event.target.value = 0;
+    
+                // Get flagged input sum
+                let arrUpdated = document.querySelectorAll(".annual-updated");
+                let sumArrUpdated = 0;
+                for(var i=0; i < arrUpdated.length; i++){
+                    if(parseFloat(arrUpdated[i].value))
+                        sumArrUpdated += parseFloat(arrUpdated[i].value);
+                }
+    
+                // Update other inputs values
+                let arrNotUpdated = document.querySelectorAll(".trajectory-table-input--annual:not(.annual-updated)");
+                let totalYears = end_year - start_year;
+                let totalAvgConso = totalYears * avg_2031;
+                let remainder = totalAvgConso - sumArrUpdated;
+                let balance = remainder / arrNotUpdated.length;
+                arrNotUpdated.forEach(ele => ele.value = balance.toFixed(1));
+    
+                // Update sum inputs
+                let arrAnnual = document.querySelectorAll(".trajectory-table-input--annual");
+                // let arrSum = document.querySelectorAll(".trajectory-table-input--sum");
+                // mixSum = cumul;
+                // arrSum.forEach((ele, index) => {
+                //     mixSum += parseFloat(arrAnnual[index].value);
+                //     ele.value = mixSum.toFixed(1);
+                // })
+                let arrSum = document.querySelectorAll(".trajectory-table--sum");
+                mixSum = cumul;
+                arrSum.forEach((ele, index) => {
+                    mixSum += parseFloat(arrAnnual[index].value);
+                    ele.innerHTML = mixSum.toFixed(1);
+                })
+            }));
+    
+            // document.querySelectorAll(".trajectory-table-input--sum").forEach(el => el.addEventListener('input', event => {
+            //     // Set mode
+            //     mode = "sum"
+            //     // Add flag class
+            //     event.target.classList.add('sum-updated');
+            //     // Force non empty input
+            //     if (!event.target.value)
+            //         event.target.value = 0;
+            // }));
+        };
+
+        setData();
+
+        document.getElementById("select_end_year").addEventListener("change", (_event) => {
+            sum = cumul;
+            end_year = _event.target.value;
+            
+            setData();
+        });
+    </script>
+
+    <form hx-post="{% url 'project:trajectory:partial-form-consumption' diagnostic.pk %}"
+        hx-swap="outerHTML"
+        hx-ext="disable-element"
+        hx-disable-element="#save_trajectory_btn">
+        {% csrf_token %}
+        
+        <div class="d-flex align-items-end fr-mb-2w">
+            <span class="fr-mr-2w">De</span>
+            <select class="fr-select fr-mr-2w trajectory-select-year" disabled id="select-disabled" name="select-disabled">
+                <option value="" selected disabled hidden>2021</option>
+            </select>
+            <span class="fr-mr-2w">à</span>
+            <select class="fr-select trajectory-select-year" id="select_end_year" name="end">
+                {% for year in choices %}
+                    <option value="{{ year }}" {% if year == end_year %} selected{% endif %}>{{ year }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <p class="fr-text--sm fr-mb-0 fr-mt-3w">Renseignez vos surfaces consommées prévisionnelles pour chaque année (en Ha). Vous avez la possibilité de renseigner ces surfaces en <strong>annuelle</strong> ou en <strong>cumulée</strong>.</p>
+
+        <div class="fr-table fr-mb-2w table-custom">
+            <table>
+                <thead>
+                    <tr id="table-head">
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr id="table-annual-conso">
+                        <td><strong>Consommation annuelle</strong></td>
+                    </tr>
+                    <tr id="table-sum-conso">
+                        <td><strong>Consommation cumulée</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="d-flex fr-mt-2w">
+            <div class="fr-notice fr-notice--info">
+                <div class="fr-container">
+                    <div class="fr-notice__body">
+                        <p class="fr-text--sm">Consommation cumulée de la période de référence: {{ cumul|floatformat:1 }} ha</p>
+                        <p class="fr-text--sm">Consommation annuelle maximum autorisée par le seuil de réduction: {{ avg_2031|floatformat:1 }} ha</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <ul class="fr-btns-group fr-btns-group--right fr-btns-group--inline-lg">
+            <li>
+                <button id="save_trajectory_btn" class="fr-btn position-relative" type="submit"><span class="htmx-indicator-placeholder">Enregistrer</span><div class="fr-custom-loader--button htmx-indicator"></div></button>
+            </li>
+        </ul>
+    </form>
+{% endif %}
