@@ -87,7 +87,7 @@ class ProjectReportTrajectoryConsumptionView(StandAloneMixin, FormView):
             kwargs["form"] = self.get_form()
         kwargs["data"] = json.dumps(
             {
-                n[-4:]: {"value": f.initial, "update": kwargs["form"].fields[f"year_updated_{n[-4:]}"].initial}
+                n[-4:]: {"value": f.initial, "updated": kwargs["form"].fields[f"year_updated_{n[-4:]}"].initial}
                 for n, f in kwargs["form"].fields.items()
                 if n.startswith("year_2")
             }
