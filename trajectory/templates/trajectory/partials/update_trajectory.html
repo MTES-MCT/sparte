@@ -29,8 +29,10 @@
             range = generateYearsBetween(start_year, end_year);
 
             range.forEach((_year) => {
-                data.push({ "year": _year, "annual_conso": trajectory.hasOwnProperty(_year) ? trajectory[_year] : {{ avg_2031|unlocalize }} })
+                data.push({ "year": _year, "annual_conso": trajectory.hasOwnProperty(_year) ? trajectory[_year] : { value: {{ avg_2031|unlocalize }}, updated: false } })
             });
+
+            console.log(data)
 
             fillTable();
         }
