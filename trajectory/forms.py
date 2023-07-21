@@ -25,10 +25,17 @@ class UpdateTrajectoryForm(forms.Form):
         if isinstance(end, str):
             end = int(end)
         for year in range(start, end + 1):
-            key = f"year_{year}"
+            key = f"year_{year}"  # year_2023
             self.fields[key] = forms.FloatField(
                 label=f"Consommation {year}",
                 min_value=0,
                 initial=kwargs["initial"].get(key, default),
                 required=True,
             )
+            # year_2023_updated
+            self.fields[f"{key}_updated"] = forms.BooleanField(
+                label=f"Updated {year}",
+                default=0,
+                required=True,
+            )
+
