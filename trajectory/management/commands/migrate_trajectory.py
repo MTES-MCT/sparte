@@ -16,11 +16,11 @@ class Command(BaseCommand):
         logger.info("Migrate trajectory")
         q_combined = reduce(lambda q1, q2: q1 | q2, [Q(data__has_key=str(y)) for y in range(2000, 2021)])
         qs = Trajectory.objects.filter(q_combined)
+        total = qs.count()
         for i, trajectory in enumerate(qs):
             new_data = {y: v for y, v in trajectory.data.items() if int(y) >= 2021}
             if new_data != trajectory.data:
                 trajectory.data = new_data
-                # trajectory.save()
-                print("found one")
-            print(i)
+                trajectory.save()
+            print(f"{i}/{total}")
         logger.info("End migrate trajectory")
