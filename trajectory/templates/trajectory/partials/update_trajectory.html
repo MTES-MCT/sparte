@@ -22,7 +22,7 @@
             ...
         }
         {% endcomment %}
-        trajectory = JSON.parse('{{ data|escapejs }}');
+        trajectory = JSON.parse('{{ data|safe }}');
         console.log(trajectory);
         start_year = {{ start_year|unlocalize }}
         end_year = {{ end_year }}
@@ -227,4 +227,17 @@
             </li>
         </ul>
     </form>
+
+    {% if debug %}
+        <form hx-post="{% url 'project:trajectory:partial-form-consumption' diagnostic.pk %}" hx-swap="outerHTML">
+            {% csrf_token %}
+            {{ form|crispy }}
+            <select class="fr-select trajectory-select-year" id="select_end_year" name="end">
+                {% for year in choices %}
+                    <option value="{{ year }}" {% if year == end_year %} selected{% endif %}>{{ year }}</option>
+                {% endfor %}
+            </select>
+            <button class="fr-btn position-relative" type="submit">Enregistrer</button>
+        </form>
+    {% endif %}
 {% endif %}
