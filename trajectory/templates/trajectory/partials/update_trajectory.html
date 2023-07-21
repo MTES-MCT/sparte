@@ -15,15 +15,7 @@
     </script>
 {% else %}
     <script language="javascript" nonce="{{ CSP_NONCE }}">
-        {% comment %}
-        trajectory = {
-            "2021": {"value": 10, "updated": false},
-            "2022": {"value": 9.5, "updated": true},
-            ...
-        }
-        {% endcomment %}
         trajectory = JSON.parse('{{ data|safe }}');
-        console.log(trajectory);
         start_year = {{ start_year|unlocalize }}
         end_year = {{ end_year }}
         cumul = {{ cumul|unlocalize  }};
@@ -37,12 +29,8 @@
             range = generateYearsBetween(start_year, end_year);
 
             range.forEach((_year) => {
-                console.log(_year);
-                console.log(trajectory[_year]);
                 data.push({ "year": _year, "annual_conso": trajectory.hasOwnProperty(_year) ? trajectory[_year] : {{ avg_2031|unlocalize }} })
             });
-
-            console.log(data);
 
             fillTable();
         }
@@ -68,7 +56,7 @@
             const tableSumConso = document.getElementById('table-sum-conso');
 
             data.map((_obj) => {
-                sum += _obj.annual_conso;
+                sum += _obj.annual_conso.value;
 
                 // Create th
                 let th = document.createElement("th");
@@ -83,10 +71,22 @@
                 let annualConsoInput = document.createElement('input');
                 annualConsoInput.type = "number";
                 annualConsoInput.step = .1;
-                annualConsoInput.value = _obj.annual_conso.toFixed(1);
+                annualConsoInput.value = _obj.annual_conso.value.toFixed(1);
                 annualConsoInput.name = `year_${_obj.year}`;
                 annualConsoInput.classList.add("fr-input", "trajectory-table-input", "trajectory-table-input--annual");
+                // Add flag class
+                if (_obj.annual_conso.updated)
+                    annualConsoInput.classList.add('annual-updated');
                 tdAnnualConso.appendChild(annualConsoInput);
+
+                // Create hidden updated checkbox
+                let checkbox = document.createElement('input');
+                checkbox.type = "checkbox";
+                checkbox.hidden = true;
+                checkbox.name = `year_updated_${_obj.year}`;
+                checkbox.checked = _obj.annual_conso.updated;
+                tdAnnualConso.appendChild(checkbox);
+
                 tableAnnualConso.appendChild(tdAnnualConso);
 
                 // create sum conso input
@@ -109,11 +109,16 @@
 
             document.querySelectorAll(".trajectory-table-input--annual").forEach(el => el.addEventListener('input', event => {
                 // Set mode
-                //mode = "annual"
+                // mode = "annual"
                 
                 // Add flag class
                 event.target.classList.add('annual-updated');
-    
+
+                // Get year
+                const year = event.target.name.replace("year_", "")
+                // Check hidden checkbox
+                document.querySelector(`[name=year_updated_${year}]`).checked = true
+
                 // Force non empty input
                 if (!event.target.value)
                     event.target.value = 0;
@@ -190,7 +195,8 @@
             </select>
         </div>
 
-        <p class="fr-text--sm fr-mb-0 fr-mt-3w">Renseignez vos surfaces consommées prévisionnelles pour chaque année (en Ha). Vous avez la possibilité de renseigner ces surfaces en <strong>annuelle</strong> ou en <strong>cumulée</strong>.</p>
+        <p class="fr-text--sm fr-mb-0 fr-mt-3w">Renseignez vos surfaces consommées prévisionnelles pour chaque année (en Ha).</p>
+        {% comment %} <p class="fr-text--sm fr-mb-0 fr-mt-3w">Renseignez vos surfaces consommées prévisionnelles pour chaque année (en Ha). Vous avez la possibilité de renseigner ces surfaces en <strong>annuelle</strong> ou en <strong>cumulée</strong>.</p> {% endcomment %}
 
         <div class="fr-table fr-mb-2w table-custom">
             <table>
@@ -228,7 +234,7 @@
         </ul>
     </form>
 
-    {% if debug %}
+    {% comment %} {% if debug %}
         <form hx-post="{% url 'project:trajectory:partial-form-consumption' diagnostic.pk %}" hx-swap="outerHTML">
             {% csrf_token %}
             {{ form|crispy }}
@@ -239,5 +245,5 @@
             </select>
             <button class="fr-btn position-relative" type="submit">Enregistrer</button>
         </form>
-    {% endif %}
+    {% endif %} {% endcomment %}
 {% endif %}
