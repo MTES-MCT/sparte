@@ -27,7 +27,6 @@ class UpdateTrajectoryForm(forms.Form):
             updated_key = f"year_updated_{year}"  # year_updated_2023
             self.fields[key] = forms.FloatField(
                 label=f"Consommation {year}",
-                min_value=0,
                 initial=kwargs["initial"].get(key, default),
                 required=True,
             )
