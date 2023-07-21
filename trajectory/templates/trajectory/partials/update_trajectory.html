@@ -15,11 +15,13 @@
     </script>
 {% else %}
     <script language="javascript" nonce="{{ CSP_NONCE }}">
-        {% comment %} trajectory = [
-            {% for year, val in data.items %}
-            "{{ year }}" : {{ val }},
-            {% endfor %}
-        ] {% endcomment %}
+        {% comment %}
+        trajectory = {
+            "2021": {"value": 10, "updated": false},
+            "2022": {"value": 9.5, "updated": true},
+            ...
+        }
+        {% endcomment %}
         trajectory = JSON.parse('{{ data|escapejs }}');
         console.log(trajectory);
         start_year = {{ start_year|unlocalize }}
@@ -27,7 +29,6 @@
         cumul = {{ cumul|unlocalize  }};
         avg_2031 = {{ avg_2031|unlocalize }};
         sum = cumul;
-        // mode = "annual";
 
         function setData() {
             resetTable();
