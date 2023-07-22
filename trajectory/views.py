@@ -57,7 +57,7 @@ class ProjectReportTrajectoryConsumptionView(StandAloneMixin, FormView):
         return Project.objects.get(pk=self.kwargs["pk"])
 
     def get_form_kwargs(self):
-        kwargs = {"default": 0}
+        kwargs = {"default": self.trajectory_chart.annual_objective_2031}
         try:
             kwargs |= {"start": self.trajectory.start, "end": self.trajectory.end}
         except AttributeError:
