@@ -453,6 +453,10 @@ Table
     max-width: 200px;
 }
 
+.table-custom td input.annual-updated {
+    background-color: var(--background-action-low-blue-france);
+}
+
 /*
 Progress bar gradient
 */
