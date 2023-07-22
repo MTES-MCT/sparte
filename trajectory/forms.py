@@ -33,6 +33,6 @@ class UpdateTrajectoryForm(forms.Form):
             # year_updated_2023
             self.fields[f"year_updated_{year}"] = forms.BooleanField(
                 label=f"Updated {year}",
-                initial=kwargs["initial"].get(updated_key, default),
+                initial=kwargs["initial"].get(updated_key, False),
                 required=False,
             )
