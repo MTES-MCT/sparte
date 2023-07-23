@@ -20,7 +20,6 @@
         end_year = {{ end_year }}
         cumul = {{ cumul|unlocalize  }};
         avg_2031 = {{ avg_2031|unlocalize }};
-        sum = cumul;
         data = [];
 
         function setData() {
@@ -73,6 +72,8 @@
         }
 
         function fillTable() {
+            sum = cumul;
+            
             const tableHead = document.getElementById('table-head');
             const tableAnnualConso = document.getElementById('table-annual-conso');
             const tableSumConso = document.getElementById('table-sum-conso');
@@ -90,16 +91,6 @@
                 // create annual conso input
                 let tdAnnualConso = document.createElement("td");
                 tdAnnualConso.classList.add("dynamic");
-                let annualConsoInput = document.createElement('input');
-                annualConsoInput.type = "number";
-                annualConsoInput.step = .1;
-                annualConsoInput.value = _obj.annual_conso.value.toFixed(1);
-                annualConsoInput.name = `year_${_obj.year}`;
-                annualConsoInput.classList.add("fr-input", "trajectory-table-input", "trajectory-table-input--annual");
-                // Add flag class
-                if (_obj.annual_conso.updated)
-                    annualConsoInput.classList.add('annual-updated');
-                tdAnnualConso.appendChild(annualConsoInput);
 
                 // Create hidden updated checkbox
                 let checkbox = document.createElement('input');
@@ -109,6 +100,39 @@
                 checkbox.checked = _obj.annual_conso.updated;
                 tdAnnualConso.appendChild(checkbox);
 
+                let tdAnnualConsoContainer = document.createElement("div");
+                tdAnnualConsoContainer.classList.add("d-flex");
+                let annualConsoInput = document.createElement('input');
+                annualConsoInput.type = "number";
+                annualConsoInput.step = .1;
+                annualConsoInput.value = _obj.annual_conso.value.toFixed(1);
+                annualConsoInput.name = `year_${_obj.year}`;
+                annualConsoInput.classList.add("fr-input", "trajectory-table-input", "trajectory-table-input--annual");
+                tdAnnualConsoContainer.appendChild(annualConsoInput);
+                if (_obj.annual_conso.updated) {
+                    // Add flag class
+                    annualConsoInput.classList.add('annual-updated');
+
+                    // Add reset button
+                    let resetButton = document.createElement("button");
+                    resetButton.type = "button";
+                    resetButton.classList.add("fr-ml-1v");
+                    resetButton.innerHTML = "<i class='bi bi-arrow-clockwise'></i>";
+                    resetButton.onclick = function (_event) {
+                        _event.preventDefault();
+                        annualConsoInput.classList.remove('annual-updated');
+
+                        // Check hidden checkbox
+                        checkbox.checked = false
+
+                        // Update data
+                        data.find((_el) => _el.year == _obj.year).annual_conso.updated = false
+
+                        setData();
+                    };
+                    tdAnnualConsoContainer.appendChild(resetButton);
+                }
+                tdAnnualConso.appendChild(tdAnnualConsoContainer);
                 tableAnnualConso.appendChild(tdAnnualConso);
 
                 // create sum conso input
@@ -137,6 +161,26 @@
                 if (!event.target.value)
                     event.target.value = 0;
                 
+                if (!event.target.classList.contains("annual-updated")) {
+                    // Add reset button
+                    let resetButton = document.createElement("button");
+                    resetButton.type = "button";
+                    resetButton.classList.add("fr-ml-1v");
+                    resetButton.innerHTML = "<i class='bi bi-arrow-clockwise'></i>";
+                    resetButton.onclick = function (_event) {
+                        _event.preventDefault();
+                        event.target.classList.remove('annual-updated');
+
+                        // Check hidden checkbox
+                        document.querySelector(`[name=year_updated_${year}]`).checked = false
+
+                        // Update data
+                        data.find((_el) => _el.year == year).annual_conso.updated = false
+
+                        setData();
+                    };
+                    event.target.parentNode.appendChild(resetButton);
+                }
 
                 // Add flag class
                 event.target.classList.add('annual-updated');
