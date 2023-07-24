@@ -14,7 +14,10 @@ class Trajectory(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def get_value_per_year(self):
-        return {y: self.data.get(str(y), 0) for y in range(int(self.start), int(self.end) + 1)}
+        return {
+            y: self.data.get(str(y), {"value": 0})["value"]
+            for y in range(int(self.start), int(self.end) + 1)
+        }
 
     class Meta:
         ordering = ["name", "start", "end"]

@@ -57,7 +57,7 @@ class ProjectReportTrajectoryConsumptionView(StandAloneMixin, FormView):
         return Project.objects.get(pk=self.kwargs["pk"])
 
     def get_form_kwargs(self):
-        kwargs = {"default": 0}
+        kwargs = {"default": self.trajectory_chart.annual_objective_2031}
         try:
             kwargs |= {"start": self.trajectory.start, "end": self.trajectory.end}
         except AttributeError:
@@ -66,8 +66,11 @@ class ProjectReportTrajectoryConsumptionView(StandAloneMixin, FormView):
 
     def get_initial(self):
         """Return the initial data to use for forms on this view."""
+        data = {}
         try:
-            return {f"year_{y}": v for y, v in self.trajectory.data.items()}
+            for y, v in self.trajectory.data.items():
+                data |= {f"year_{y}": v.get("value"), f"year_updated_{y}": v.get("updated")}
+            return data
         except AttributeError:
             return {}
 
@@ -82,7 +85,13 @@ class ProjectReportTrajectoryConsumptionView(StandAloneMixin, FormView):
         }
         if "form" not in kwargs:
             kwargs["form"] = self.get_form()
-        kwargs["data"] = json.dumps({n[-4:]: f.initial for n, f in kwargs["form"].fields.items() if n.startswith("year_")})
+        kwargs["data"] = json.dumps(
+            {
+                n[-4:]: {"value": f.initial, "updated": kwargs["form"].fields[f"year_updated_{n[-4:]}"].initial}
+                for n, f in kwargs["form"].fields.items()
+                if n.startswith("year_2")
+            }
+        )
         try:
             kwargs["end_year"] = str(self.trajectory.end)
         except AttributeError:
@@ -99,7 +108,10 @@ class ProjectReportTrajectoryConsumptionView(StandAloneMixin, FormView):
                     start=2021,
                     end=2030,
                     data={
-                        year: self.trajectory_chart.annual_objective_2031
+                        year: {
+                            "value": self.trajectory_chart.annual_objective_2031,
+                            "updated": False,
+                        }
                         for year in range(2021, int(end_form.cleaned_data["end"]) + 1)
                     },
                 )
@@ -108,7 +120,11 @@ class ProjectReportTrajectoryConsumptionView(StandAloneMixin, FormView):
             form = self.get_form()
             if form.is_valid():
                 trajectory.data = {
-                    str(y): form.cleaned_data[f"year_{y}"] for y in range(2021, int(end_form.cleaned_data["end"]) + 1)
+                    str(y): {
+                        "value": form.cleaned_data[f"year_{y}"],
+                        "updated": form.cleaned_data[f"year_updated_{y}"],
+                    }
+                    for y in range(2021, int(end_form.cleaned_data["end"]) + 1)
                 }
                 trajectory.save()
                 return self.form_valid(form)
