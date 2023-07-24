@@ -1,8 +1,6 @@
 from django import forms
 from django.core.validators import MaxValueValidator, MinValueValidator
 
-from trajectory.models import Trajectory
-
 
 def year_choices():
     return [(r, str(r)) for r in range(2000, 2075)]
@@ -25,10 +23,16 @@ class UpdateTrajectoryForm(forms.Form):
         if isinstance(end, str):
             end = int(end)
         for year in range(start, end + 1):
-            key = f"year_{year}"
+            key = f"year_{year}"  # year_2023
+            updated_key = f"year_updated_{year}"  # year_updated_2023
             self.fields[key] = forms.FloatField(
                 label=f"Consommation {year}",
-                min_value=0,
                 initial=kwargs["initial"].get(key, default),
                 required=True,
+            )
+            # year_updated_2023
+            self.fields[f"year_updated_{year}"] = forms.BooleanField(
+                label=f"Updated {year}",
+                initial=kwargs["initial"].get(updated_key, False),
+                required=False,
             )
