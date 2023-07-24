@@ -13,9 +13,9 @@ class Trajectory(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    def get_value_per_year(self):
+    def get_value_per_year(self, default: int = 0) -> dict[int, int]:
         return {
-            y: self.data.get(str(y), {"value": 0})["value"]
+            y: self.data.get(str(y), {"value": default})["value"]
             for y in range(int(self.start), int(self.end) + 1)
         }
 
