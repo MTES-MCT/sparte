@@ -35,7 +35,10 @@ class TrajectoryChart(ObjectiveChart):
                 "yAxis": 1,
                 "color": "#eaa568",
                 "zIndex": 5,
-                "data": [{"name": str(y), "y": v} for y, v in self.trajectory.get_value_per_year().items()],
+                "data": [
+                    {"name": str(y), "y": v}
+                    for y, v in self.trajectory.get_value_per_year(default=self.annual_objective_2031).items()
+                ],
             }
         )
         cumulative_trajectory = {
