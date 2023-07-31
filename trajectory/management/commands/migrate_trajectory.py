@@ -20,7 +20,7 @@ class Command(BaseCommand):
             trajectory.data = {y: {"value": v, "updated": False} for y, v in trajectory.data.items() if int(y) >= 2021}
             trajectory.save()
             stat = StatDiagnostic.get_or_create(trajectory.project)
-            if stat.analysis_level is None:
+            if not stat.analysis_level:
                 stat.update_with_project(trajectory.project)
             stat.update_with_trajectory(trajectory)
             if i % 100 == 0:
