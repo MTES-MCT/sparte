@@ -103,7 +103,7 @@ class StatDiagnostic(models.Model):
     @classmethod
     def get_or_create(cls, project: Project) -> "StatDiagnostic":
         try:
-            return StatDiagnostic.objects.get(project=project)
+            return project.statdiagnostic
         except StatDiagnostic.DoesNotExist:
             return StatDiagnostic(
                 project=project,
