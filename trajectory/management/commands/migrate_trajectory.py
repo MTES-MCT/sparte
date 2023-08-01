@@ -8,6 +8,14 @@ from trajectory.models import Trajectory
 logger = logging.getLogger("management.commands")
 
 
+def get_value(data) -> float:
+    if isinstance(data, float):
+        return data
+    if isinstance(data, dict):
+        return get_value(data.get("value", 0))
+    raise ValueError(f"données non anticipée {type(data)}:{data}")
+
+
 class Command(BaseCommand):
     help = "Migrate trajectory if required"
 
@@ -17,7 +25,9 @@ class Command(BaseCommand):
         total = qs.count()
         logger.info(f"To process = {total}")
         for i, trajectory in enumerate(qs):
-            trajectory.data = {y: {"value": v, "updated": False} for y, v in trajectory.data.items() if int(y) >= 2021}
+            trajectory.data = {
+                y: {"value": get_value(v), "updated": False} for y, v in trajectory.data.items() if int(y) >= 2021
+            }
             trajectory.save()
             stat = StatDiagnostic.get_or_create(trajectory.project)
             if not stat.analysis_level:
