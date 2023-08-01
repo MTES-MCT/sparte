@@ -77,6 +77,7 @@ THIRD_APPS = [
     "django_app_parameter",
     "sri",
     "simple_history",
+    "corsheaders",
 ]
 
 # upper app should not communicate with lower ones
@@ -93,6 +94,7 @@ PROJECT_APPS = [
     "metabase.apps.MetabaseConfig",
 ]
 
+
 INSTALLED_APPS = DJANGO_APPS + RESTFRAMEWORK_APPS + THIRD_APPS + PROJECT_APPS
 
 
@@ -107,6 +109,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "simple_history.middleware.HistoryRequestMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
 ]
 
 
@@ -222,6 +225,14 @@ STATIC_ROOT = str(BASE_DIR / "staticroot")
 
 PUBLIC_MEDIA_LOCATION = "media"
 MEDIA_URL = f"https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/{PUBLIC_MEDIA_LOCATION}/"
+
+
+# CORSHEADERS
+# https://github.com/adamchainz/django-cors-headers
+
+CORS_ORIGIN_WHITELIST = ["https://sparte-metabase.osc-secnum-fr1.scalingo.io"]
+CORS_ALLOW_CREDENTIALS = True
+CORS_ORIGIN_ALLOW_ALL = False
 
 
 # Default primary key field type
@@ -437,7 +448,7 @@ if USE_CSP:
     MIDDLEWARE.insert(2, "csp.middleware.CSPMiddleware")
 
 CSP_UPGRADE_INSECURE_REQUESTS = not DEBUG
-CSP_DEFAULT_SRC = ["'self'"]
+CSP_DEFAULT_SRC = ["'self'", "https://sparte-metabase.osc-secnum-fr1.scalingo.io"]
 CSP_SCRIPT_SRC = [
     "'self'",
     "https://stats.beta.gouv.fr",
@@ -460,7 +471,8 @@ CSP_IMG_SRC = [
 ]
 CSP_INCLUDE_NONCE_IN = ["script-src", "style-src"]
 CSP_FONT_SRC = ("'self'", "data:", "https://cdn.jsdelivr.net", STATIC_URL)
-CSP_CONNECT_SRC = ["'self'", "https://stats.beta.gouv.fr"]
+CSP_CONNECT_SRC = ["'self'", "https://stats.beta.gouv.fr", "https://sparte-metabase.osc-secnum-fr1.scalingo.io"]
+CSP_FRAME_ANCESTORS = ("'self'", "https://sparte-metabase.osc-secnum-fr1.scalingo.io")
 
 
 # MAP SETTINGS

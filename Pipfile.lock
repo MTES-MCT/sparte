@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "bfd1ed068d330c7fccf82fb47a6c0525f0d240197e177db75c4f8ea25c57f2e0"
+            "sha256": "63bc8a8e23a67b56cf5d6d0c8fb938ba32c14d372a7c80c385cf013f2ca92e30"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -74,19 +74,19 @@
         },
         "boto3": {
             "hashes": [
-                "sha256:aea48aedf3e8676e598e3202e732295064a4fcad5f2d2d2a699368b8c3ab492c",
-                "sha256:d8e31f69fb919025a5961f8fbeb51fe92e2f753beb37fc1853138667a231cdaa"
+                "sha256:67001b3f512cbe2e00e352c65fb443b504e5e388fee39d73bcc42da1ae87d9e3",
+                "sha256:cb8af03f553f1c7db7137bc897785baeeaa97b8fde483eb1cdb1f1ef3cec9cb7"
             ],
             "index": "pypi",
-            "version": "==1.28.16"
+            "version": "==1.28.10"
         },
         "botocore": {
             "hashes": [
-                "sha256:563e15979e763b93d78de58d0fc065f8615be12f41bab42f5ad9f412b6a224b3",
-                "sha256:92b240e2cb7b3afae5361651d2f48ee582f45d2dab53aef76eef7eec1d3ce582"
+                "sha256:736a9412f405d6985570c4a87b533c2396dd8d4042d8c7a0ca14e73d4f1bcf9d",
+                "sha256:a3bfd3627a490faedf37d79373d6957936d7720888ca85466e0471cb921e4557"
             ],
             "markers": "python_version >= '3.7'",
-            "version": "==1.31.16"
+            "version": "==1.31.10"
         },
         "celery": {
             "hashes": [
@@ -339,6 +339,14 @@
             ],
             "index": "pypi",
             "version": "==1.0.0"
+        },
+        "django-cors-headers": {
+            "hashes": [
+                "sha256:9ada212b0e2efd4a5e339360ffc869cb21ac5605e810afe69f7308e577ea5bde",
+                "sha256:f9749c6410fe738278bc2b6ef17f05195bc7b251693c035752d8257026af024f"
+            ],
+            "index": "pypi",
+            "version": "==4.2.0"
         },
         "django-crispy-forms": {
             "hashes": [
@@ -2871,7 +2879,7 @@
                 "sha256:b97381b204a206e1be618f5e1215a57174a1a7732490b3bf6668cf41d30bc72d"
             ],
             "markers": "python_full_version >= '3.7.0'",
-            "version": "==13.5.1"
+            "version": "==13.4.2"
         },
         "rpds-py": {
             "hashes": [
