@@ -1,7 +1,7 @@
 
 from django.contrib.gis.db.models.functions import Area, Intersection, Transform
 from django.contrib.gis.geos import MultiPolygon, Polygon
-from django.db.models import DecimalField, Manager, Sum, QuerySet
+from django.db.models import DecimalField, Manager, QuerySet, Sum
 from django.db.models.functions import Cast, Coalesce
 
 
