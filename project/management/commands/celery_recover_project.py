@@ -1,12 +1,11 @@
-import celery
 import logging
 
+import celery
 from django.core.management.base import BaseCommand
 
 from metabase.tasks import async_create_stat_for_project
 from project import tasks as t
 from project.models import Project
-
 
 logger = logging.getLogger("management.commands")
 
