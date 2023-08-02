@@ -27,6 +27,7 @@ from matplotlib_scalebar.scalebar import ScaleBar
 from diagnostic_word.renderers import Renderer
 from project.models import Project, Request
 from public_data.models import ArtificialArea, Cerema, Land, OcsgeDiff
+from public_data.models.gpu import ZoneUrba
 from utils.db import fix_poly
 from utils.emails import SibTemplateEmail
 from utils.functions import get_url_with_domain
@@ -508,6 +509,62 @@ def generate_theme_map_understand_artif(self, project_id):
 
     finally:
         logger.info("End generate_theme_map_understand_artif, project_id=%d", project_id)
+
+
+@shared_task(bind=True, max_retries=5)
+def generate_theme_map_gpu(self, project_id):
+    logger.info("Start generate_map_gpu, project_id=%d", project_id)
+    try:
+        diagnostic = Project.objects.get(id=int(project_id))
+
+        geom = diagnostic.combined_emprise.transform("3857", clone=True)
+        srid, wkt = geom.ewkt.split(";")
+        polygons = shapely.wkt.loads(wkt)
+        gdf_emprise = geopandas.GeoDataFrame({"geometry": [polygons]}, crs="EPSG:3857")
+
+        data = {"color": [], "geometry": []}
+
+        for zone_urba in ZoneUrba.objects.intersect(diagnostic.combined_emprise):
+            srid, wkt = zone_urba.intersection.ewkt.split(";")
+            polygons = shapely.wkt.loads(wkt)
+            data["geometry"].append(polygons)
+            data["color"].append((*[_ / 255 for _ in zone_urba.get_color()], 0.9))
+
+        zone_urba_gdf = geopandas.GeoDataFrame(data, crs="EPSG:4326").to_crs(epsg=3857)
+
+        fig, ax = plt.subplots(figsize=(15, 10))
+        plt.axis("off")
+        fig.set_dpi(150)
+
+        zone_urba_gdf.plot(ax=ax, color=zone_urba_gdf["color"])
+        gdf_emprise.plot(ax=ax, facecolor="none", edgecolor="yellow")
+        ax.add_artist(ScaleBar(1))
+        ax.set_title("Les zones d'urbanisme de son territoire")
+        cx.add_basemap(ax, source=settings.ORTHOPHOTO_URL)
+
+        img_data = io.BytesIO()
+        plt.savefig(img_data, bbox_inches="tight")
+        plt.close()
+        img_data.seek(0)
+
+        race_protection_save_map(
+            diagnostic.pk,
+            "async_theme_map_understand_artif_done",
+            "theme_map_gpu",
+            f"theme_map_gpu_{project_id}.png",
+            img_data,
+        )
+
+    except Project.DoesNotExist:
+        logger.error(f"project_id={project_id} does not exist")
+
+    except Exception as exc:
+        logger.error(exc)
+        logger.exception(exc)
+        self.retry(exc=exc, countdown=300)
+
+    finally:
+        logger.info("End generate_map_gpu, project_id=%d", project_id)
 
 
 @shared_task(bind=True, max_retries=5)
