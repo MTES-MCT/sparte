@@ -123,6 +123,11 @@ urlpatterns = [
         views.ProjectReportGpuZoneNTable.as_view(),
         name="zone-urba-n",
     ),
+    path(
+        "<int:pk>/zonages-d-urbanisme/carte-générale",
+        views.ProjectReportGpuZoneGeneralMap.as_view(),
+        name="zone-urba-general-map",
+    ),
     # MAP
     path("<int:pk>/map", views.ProjectMapView.as_view(), name="map"),
     path(

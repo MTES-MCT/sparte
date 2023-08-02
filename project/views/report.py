@@ -983,3 +983,10 @@ class ProjectReportGpuZoneNTable(CacheMixin, StandAloneMixin, TemplateView):
             "last_year_ocsge": str(diagnostic.last_year_ocsge),
         }
         return super().get_context_data(**kwargs)
+
+
+class ProjectReportGpuZoneGeneralMap(StandAloneMixin, TemplateView):
+    template_name = "project/partials/zone_urba_general_map.html"
+
+    def get_context_data(self, **kwargs):
+        return super().get_context_data(diagnostic=Project.objects.get(pk=self.kwargs["pk"]), **kwargs)
