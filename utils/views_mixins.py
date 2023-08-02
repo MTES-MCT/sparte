@@ -1,6 +1,8 @@
 from django.core.exceptions import ImproperlyConfigured
 from django.shortcuts import resolve_url
 from django.urls import reverse_lazy
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 
 
 class GetObjectMixin:
@@ -46,3 +48,11 @@ class RedirectURLMixin:
         if self.next_page:
             return resolve_url(self.next_page)
         raise ImproperlyConfigured("No URL to redirect to. Provide a next_page.")
+
+
+class CacheMixin:
+    cache_timeout = 60 * 60 * 9  # cache pour 9 heures
+
+    @method_decorator(cache_page(cache_timeout))
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
