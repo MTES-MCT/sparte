@@ -6,7 +6,17 @@ from django.contrib import messages
 from django.contrib.gis.db.models.functions import Area
 from django.contrib.gis.geos import Polygon
 from django.db import transaction
-from django.db.models import Case, CharField, Count, DecimalField, F, Q, Sum, Value, When
+from django.db.models import (
+    Case,
+    CharField,
+    Count,
+    DecimalField,
+    F,
+    Q,
+    Sum,
+    Value,
+    When,
+)
 from django.db.models.functions import Cast, Concat
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.urls import reverse
@@ -18,14 +28,15 @@ from project.models import Project, ProjectCommune, Request
 from project.utils import add_total_line_column
 from public_data.models import CouvertureSol, UsageSol
 from public_data.models.administration import Commune
-from public_data.models.gpu import ZoneUrba, ArtifAreaZoneUrba
+from public_data.models.gpu import ArtifAreaZoneUrba, ZoneUrba
 from public_data.models.ocsge import Ocsge, OcsgeDiff
 from utils.htmx import StandAloneMixin
+from utils.views_mixins import CacheMixin
 
 from .mixins import BreadCrumbMixin, GroupMixin, UserQuerysetOrPublicMixin
 
 
-class ProjectReportBaseView(GroupMixin, DetailView):
+class ProjectReportBaseView(CacheMixin, GroupMixin, DetailView):
     breadcrumbs_title = "To be set"
     context_object_name = "project"
     queryset = Project.objects.all()
@@ -532,7 +543,7 @@ class DownloadWordView(TemplateView):
         return super().get(request, *args, **kwargs)
 
 
-class ConsoRelativeSurfaceChart(UserQuerysetOrPublicMixin, DetailView):
+class ConsoRelativeSurfaceChart(CacheMixin, UserQuerysetOrPublicMixin, DetailView):
     context_object_name = "project"
     queryset = Project.objects.all()
     template_name = "project/partials/surface_comparison_conso.html"
@@ -552,7 +563,7 @@ class ConsoRelativeSurfaceChart(UserQuerysetOrPublicMixin, DetailView):
         return super().get_context_data(**kwargs)
 
 
-class ConsoRelativePopChart(UserQuerysetOrPublicMixin, DetailView):
+class ConsoRelativePopChart(CacheMixin, UserQuerysetOrPublicMixin, DetailView):
     context_object_name = "project"
     queryset = Project.objects.all()
     template_name = "project/partials/pop_comparison_conso.html"
@@ -572,7 +583,7 @@ class ConsoRelativePopChart(UserQuerysetOrPublicMixin, DetailView):
         return super().get_context_data(**kwargs)
 
 
-class ConsoRelativeHouseholdChart(UserQuerysetOrPublicMixin, DetailView):
+class ConsoRelativeHouseholdChart(CacheMixin, UserQuerysetOrPublicMixin, DetailView):
     context_object_name = "project"
     queryset = Project.objects.all()
     template_name = "project/partials/household_comparison_conso.html"
@@ -592,7 +603,7 @@ class ConsoRelativeHouseholdChart(UserQuerysetOrPublicMixin, DetailView):
         return super().get_context_data(**kwargs)
 
 
-class ArtifZoneUrbaView(StandAloneMixin, DetailView):
+class ArtifZoneUrbaView(CacheMixin, StandAloneMixin, DetailView):
     """Content of the pannel in Urba Area Explorator."""
 
     context_object_name = "zone_urba"
@@ -619,7 +630,7 @@ class ArtifZoneUrbaView(StandAloneMixin, DetailView):
         return super().get_context_data(**kwargs)
 
 
-class ArtifNetChart(TemplateView):
+class ArtifNetChart(CacheMixin, TemplateView):
     template_name = "project/partials/artif_net_chart.html"
 
     def get(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
@@ -681,7 +692,7 @@ class ArtifNetChart(TemplateView):
         return super().get_context_data(**kwargs)
 
 
-class ArtifDetailCouvChart(TemplateView):
+class ArtifDetailCouvChart(CacheMixin, TemplateView):
     template_name = "project/partials/artif_detail_couv_chart.html"
 
     def get(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
@@ -752,7 +763,7 @@ class ArtifDetailCouvChart(TemplateView):
         return super().get_context_data(**kwargs)
 
 
-class ArtifDetailUsaChart(TemplateView):
+class ArtifDetailUsaChart(CacheMixin, TemplateView):
     template_name = "project/partials/artif_detail_usage_chart.html"
 
     def get(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
@@ -843,7 +854,7 @@ class ProjectReportGpuView(ProjectReportBaseView):
         return super().get_context_data(**kwargs)
 
 
-class ProjectReportGpuZoneSynthesisTable(StandAloneMixin, TemplateView):
+class ProjectReportGpuZoneSynthesisTable(CacheMixin, StandAloneMixin, TemplateView):
     template_name = "project/partials/zone_urba_aggregated_table.html"
 
     def get_context_data(self, **kwargs):
@@ -887,7 +898,7 @@ class ProjectReportGpuZoneSynthesisTable(StandAloneMixin, TemplateView):
         return super().get_context_data(**kwargs)
 
 
-class ProjectReportGpuZoneAUUTable(StandAloneMixin, TemplateView):
+class ProjectReportGpuZoneAUUTable(CacheMixin, StandAloneMixin, TemplateView):
     """Nom commune, code INSEE, libellé court, libellé long, type de zone, surface, surface artificialisée, taux de
     remplissage, Progression"""
 
@@ -936,7 +947,7 @@ class ProjectReportGpuZoneAUUTable(StandAloneMixin, TemplateView):
         return super().get_context_data(**kwargs)
 
 
-class ProjectReportGpuZoneNTable(StandAloneMixin, TemplateView):
+class ProjectReportGpuZoneNTable(CacheMixin, StandAloneMixin, TemplateView):
     template_name = "project/partials/zone_urba_n_table.html"
 
     def get_context_data(self, **kwargs):
