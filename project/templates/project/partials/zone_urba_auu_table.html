@@ -1,61 +1,73 @@
 <div id="table-auu" class="fr-mt-7w">
     <h3>Taux de remplissage des zones AU et U</h3>
 
-    <div class="overflow-auto">
-        <table class="table table-striped table-sm table-borderless table-custom">
-            <thead>
-                <tr>
-                    <th scope="col">Commune</th>
-                    <th scope="col" class="text-end">Insee</th>
-                    <th scope="col">Libellé court</th>
-                    <th scope="col">Libellé long</th>
-                    <th scope="col">Type de zone</th>
-                    <th scope="col" class="text-end">Surface</th>
-                    <th scope="col" class="text-end">Surface artificielle ({{ last_year_ocsge }})</th>
-                    <th scope="col" class="text-end">Taux de remplissage ({{ last_year_ocsge }})</th>
-                    <th scope="col" class="text-end">Artificialisation ({{ first_year_ocsge }} à {{ last_year_ocsge }})</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for zone in zone_list %}
-                <tr>
-                    <td>{{ zone.city_name }}</td>
-                    <td class="text-end">{{ zone.zone_urba.insee }}</td>
-                    <td>{{ zone.zone_urba.libelle }}</td>
-                    <td data-toggle="tooltip" title="{{ zone.zone_urba.libelong }}"><div class="text-truncate">{{ zone.zone_urba.libelong }}</div></td>
-                    <td>{{ zone.zone_urba.typezone }}</td>
-                    <td class="text-end">{{ zone.zone_urba.area|floatformat:1 }} ha</td>
-                    <td class="text-end">{{ zone.area|floatformat:1 }} ha</td>
-                    <td class="text-end">
-                        <div class="progress-bar-container">
-                            <div class="progress-bar-indicator w-{{ zone.fill_up_rate|floatformat:0 }}"></div>
-                            <div class="progress-bar-value">{{ zone.fill_up_rate|floatformat:1 }}%</div>
-                        </div>
-                    </td>
-                    <td class="text-end">{{ zone.new_artif|floatformat:1 }} ha</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+    <div class="fr-grid-row fr-grid-row--gutters">
+        <div class="fr-col-12 fr-col-lg-8">
 
-    <nav role="navigation" class="fr-pagination fr-mt-2v" aria-label="Pagination">
-        <ul class="fr-pagination__list justify-content-end">
-        {% for i in pages %}
-            {% if i == current_page %}
-                <li>
-                    <a class="fr-pagination__link" aria-current="page">
-                        {{ i }}
-                    </a>
-                </li>
-            {% else %}
-                <li>
-                    <a href="#" hx-get="{% url 'project:zone-urba-auu' diagnostic.id %}?page_number={{ i }}" hx-target="#table-auu" class="fr-pagination__link">
-                        {{ i }}
-                    </a>
-                </li>
-            {% endif %}
-        {% endfor %}
-        </ul>
-    </nav>
+            <div class="overflow-auto">
+                <table class="table table-striped table-sm table-borderless table-custom">
+                    <thead>
+                        <tr>
+                            <th scope="col">Commune</th>
+                            <th scope="col" class="text-end">Insee</th>
+                            <th scope="col">Libellé court</th>
+                            <th scope="col">Libellé long</th>
+                            <th scope="col">Type de zone</th>
+                            <th scope="col" class="text-end">Surface</th>
+                            <th scope="col" class="text-end">Surface artificielle ({{ last_year_ocsge }})</th>
+                            <th scope="col" class="text-end">Taux de remplissage ({{ last_year_ocsge }})</th>
+                            <th scope="col" class="text-end">Artificialisation ({{ first_year_ocsge }} à {{ last_year_ocsge }})</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for zone in zone_list %}
+                        <tr>
+                            <td>{{ zone.city_name }}</td>
+                            <td class="text-end">{{ zone.zone_urba.insee }}</td>
+                            <td>{{ zone.zone_urba.libelle }}</td>
+                            <td data-toggle="tooltip" title="{{ zone.zone_urba.libelong }}"><div class="text-truncate">{{ zone.zone_urba.libelong }}</div></td>
+                            <td>{{ zone.zone_urba.typezone }}</td>
+                            <td class="text-end">{{ zone.zone_urba.area|floatformat:1 }} ha</td>
+                            <td class="text-end">{{ zone.area|floatformat:1 }} ha</td>
+                            <td class="text-end">
+                                <div class="progress-bar-container">
+                                    <div class="progress-bar-indicator w-{{ zone.fill_up_rate|floatformat:0 }}"></div>
+                                    <div class="progress-bar-value">{{ zone.fill_up_rate|floatformat:1 }}%</div>
+                                </div>
+                            </td>
+                            <td class="text-end">{{ zone.new_artif|floatformat:1 }} ha</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+
+            <nav role="navigation" class="fr-pagination fr-mt-2v" aria-label="Pagination">
+                <ul class="fr-pagination__list justify-content-end">
+                {% for i in pages %}
+                    {% if i == current_page %}
+                        <li>
+                            <a class="fr-pagination__link" aria-current="page">
+                                {{ i }}
+                            </a>
+                        </li>
+                    {% else %}
+                        <li>
+                            <a href="#" hx-get="{% url 'project:zone-urba-auu' diagnostic.id %}?page_number={{ i }}" hx-target="#table-auu" class="fr-pagination__link">
+                                {{ i }}
+                            </a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+                </ul>
+            </nav>
+
+        </div>
+
+        <div class="fr-col-12 fr-col-lg-4">
+            {% include "project/partials/zone_urba_fill_map.html" %}
+        </div>
+
+    </div>
 </div>
