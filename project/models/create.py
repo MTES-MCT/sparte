@@ -20,6 +20,7 @@ def get_map_generation_tasks(project: Project, t: ModuleType) -> List[celery.Tas
             ("generate_theme_map_artif", "async_generate_theme_map_artif_done"),
             ("generate_theme_map_understand_artif", "async_theme_map_understand_artif_done"),
             ("generate_theme_map_gpu", "async_theme_map_gpu_done"),
+            ("generate_theme_map_fill_gpu", "async_theme_map_fill_gpu_done"),
         ]
         if getattr(project, bool_field_name) is False
     ]

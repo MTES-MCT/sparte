@@ -26,7 +26,7 @@ from matplotlib_scalebar.scalebar import ScaleBar
 
 from project.models import Project, Request
 from public_data.models import ArtificialArea, Cerema, Land, OcsgeDiff
-from public_data.models.gpu import ZoneUrba
+from public_data.models.gpu import ArtifAreaZoneUrba, ZoneUrba
 from utils.db import fix_poly
 from utils.emails import SibTemplateEmail
 from utils.functions import get_url_with_domain
@@ -96,7 +96,7 @@ def set_combined_emprise(self, project_id: int) -> None:
     try:
         project = Project.objects.get(pk=project_id)
         combined_emprise = project.cities.all().aggregate(emprise=Union("mpoly"))
-        project.emprise_set.create(mpoly=fix_poly(combined_emprise['emprise']))
+        project.emprise_set.create(mpoly=fix_poly(combined_emprise["emprise"]))
         race_protection_save(project_id, {"async_set_combined_emprise_done": True})
     except Project.DoesNotExist:
         logger.error(f"project_id={project_id} does not exist")
@@ -513,7 +513,7 @@ def generate_theme_map_understand_artif(self, project_id):
 
 @shared_task(bind=True, max_retries=5)
 def generate_theme_map_gpu(self, project_id):
-    logger.info("Start generate_map_gpu, project_id=%d", project_id)
+    logger.info("Start generate_theme_map_gpu, project_id=%d", project_id)
     try:
         diagnostic = Project.objects.get(id=int(project_id))
 
@@ -564,7 +564,51 @@ def generate_theme_map_gpu(self, project_id):
         self.retry(exc=exc, countdown=300)
 
     finally:
-        logger.info("End generate_map_gpu, project_id=%d", project_id)
+        logger.info("End generate_theme_map_gpu, project_id=%d", project_id)
+
+
+@shared_task(bind=True, max_retries=5)
+def generate_theme_map_fill_gpu(self, project_id):
+    logger.info("Start generate_theme_map_fill_gpu, project_id=%d", project_id)
+    try:
+        diagnostic = Project.objects.get(pk=project_id)
+        zone_urba = ZoneUrba.objects.intersect(diagnostic.combined_emprise)
+        qs = (
+            ArtifAreaZoneUrba.objects.filter(
+                zone_urba__in=zone_urba,
+                year__in=[diagnostic.first_year_ocsge, diagnostic.last_year_ocsge],
+                zone_urba__typezone__in=["U", "AUc", "AUs"],
+            )
+            .annotate(
+                level=100 * F("area") / F("zone_urba__area"),
+                mpoly=F("zone_urba__mpoly"),
+            )
+        )
+
+        img_data = get_img(
+            queryset=qs,
+            color="OrRd",
+            title="Taux de remplissage des zones urbaines (U) et à urbaniser (AU)",
+        )
+
+        race_protection_save_map(
+            diagnostic.pk,
+            "async_theme_map_fill_gpu_done",
+            "theme_map_fill_gpu",
+            f"theme_map_fill_gpu_{project_id}.png",
+            img_data,
+        )
+
+    except Project.DoesNotExist:
+        logger.error(f"project_id={project_id} does not exist")
+
+    except Exception as exc:
+        logger.error(exc)
+        logger.exception(exc)
+        self.retry(exc=exc, countdown=300)
+
+    finally:
+        logger.info("End generate_theme_map_fill_gpu, project_id=%d", project_id)
 
 
 @shared_task(bind=True, max_retries=5)
