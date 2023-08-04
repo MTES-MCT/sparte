@@ -361,7 +361,7 @@ class Project(BaseProject):
     async_generate_theme_map_artif_done = models.BooleanField(default=False)
     async_theme_map_understand_artif_done = models.BooleanField(default=False)
     async_theme_map_gpu_done = models.BooleanField(default=False)
-    async_thme_map_fill_gpu_done = models.BooleanField(default=False)
+    async_theme_map_fill_gpu_done = models.BooleanField(default=False)
 
     history = HistoricalRecords()
 
