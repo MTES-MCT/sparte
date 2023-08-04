@@ -24,7 +24,6 @@ from django.utils import timezone
 from django_app_parameter import app_parameter
 from matplotlib_scalebar.scalebar import ScaleBar
 
-from diagnostic_word.renderers import Renderer
 from project.models import Project, Request
 from public_data.models import ArtificialArea, Cerema, Land, OcsgeDiff
 from public_data.models.gpu import ZoneUrba
@@ -255,6 +254,7 @@ class WordAlreadySentException(Exception):
 
 @shared_task(bind=True, max_retries=6)
 def generate_word_diagnostic(self, request_id):
+    from diagnostic_word.renderers import Renderer
     from highcharts.charts import RateLimitExceededException
 
     logger.info(f"Start generate word for request_id={request_id}")
@@ -549,7 +549,7 @@ def generate_theme_map_gpu(self, project_id):
 
         race_protection_save_map(
             diagnostic.pk,
-            "async_theme_map_understand_artif_done",
+            "async_theme_map_gpu_done",
             "theme_map_gpu",
             f"theme_map_gpu_{project_id}.png",
             img_data,

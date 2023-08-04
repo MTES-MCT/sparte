@@ -5,7 +5,8 @@ from django.core.management.base import BaseCommand
 
 from metabase.tasks import async_create_stat_for_project
 from project import tasks as t
-from project.models import Project
+from project.models import Project, trigger_async_tasks
+from project.models.exceptions import TooOldException
 
 logger = logging.getLogger("management.commands")
 
@@ -53,30 +54,12 @@ class Command(BaseCommand):
 
     def recover_add_city(self):
         try:
-            id_list = self.diagnostic.land_ids.split(",")
-        except AttributeError:
+            public_key = self.diagnostic.recover_public_key()
+        except TooOldException as toe:
             logger.warning("Project too old, no land id saved")
+            logger.exception(toe)
             return
-        if len(id_list) > 1:
-            logger.warning("Too old project, it contains several territory.")
-            return
-        public_key = f"{self.diagnostic.land_type}_{self.diagnostic.land_ids}"
-        celery.chain(
-            t.add_city.si(self.id, public_key),
-            t.set_combined_emprise.si(self.id),
-            celery.group(
-                t.find_first_and_last_ocsge.si(self.id),
-                t.add_neighboors.si(self.id),
-            ),
-            celery.group(
-                t.generate_cover_image.si(self.id),
-                t.generate_theme_map_conso.si(self.id),
-                t.generate_theme_map_artif.si(self.id),
-                t.generate_theme_map_understand_artif.si(self.id),
-            ),
-            # to not make user wait for other stuff, nuild metabase stat after all others tasks
-            async_create_stat_for_project.si(self.id, do_location=True),
-        ).apply_async()
+        trigger_async_tasks(self.diagnostic, public_key)
 
     def recover_set_combined_emprise(self):
         celery.chain(
