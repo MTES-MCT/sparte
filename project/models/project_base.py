@@ -20,6 +20,7 @@ from django.utils.functional import cached_property
 from simple_history.models import HistoricalRecords
 
 from config.storages import PublicMediaStorage
+from project.models.exceptions import TooOldException
 from public_data.models import (
     AdminRef,
     Cerema,
@@ -52,6 +53,7 @@ class ProjectNotSaved(BaseException):
 def upload_in_project_folder(project: "Project", filename: str) -> str:
     """Define where to upload project's cover image : diagnostic/<int:id>
     nb: currently you can't add cover image if project is not saved yet"""
+
     return f"diagnostics/{project.get_folder_name()}/{filename}"
 
 
@@ -207,6 +209,17 @@ class Project(BaseProject):
     def level_label(self):
         return AdminRef.get_label(self.level)
 
+    public_keys = models.CharField("Clé publiques", max_length=255, blank=True, null=True)
+
+    def recover_public_key(self):
+        try:
+            id_list = self.land_ids.split(",")
+        except AttributeError:
+            raise TooOldException("Project too old, no land id saved")
+        if len(id_list) > 1:
+            raise TooOldException("Too old project, it contains several territory.")
+        return f"{self.land_type}_{self.land_ids}"
+
     land_type = models.CharField(
         "Type de territoire",
         choices=LEVEL_CHOICES,
@@ -340,7 +353,7 @@ class Project(BaseProject):
     async_generate_theme_map_conso_done = models.BooleanField(default=False)
     async_generate_theme_map_artif_done = models.BooleanField(default=False)
     async_theme_map_understand_artif_done = models.BooleanField(default=False)
-    async_theme_map_gpu = models.BooleanField(default=False)
+    async_theme_map_gpu_done = models.BooleanField(default=False)
 
     history = HistoricalRecords()
 
@@ -355,7 +368,7 @@ class Project(BaseProject):
             & self.async_generate_theme_map_conso_done
             & self.async_generate_theme_map_artif_done
             & self.async_theme_map_understand_artif_done
-            & self.async_theme_map_gpu
+            & self.async_theme_map_gpu_done
         )
 
     class Meta:
