@@ -37,6 +37,16 @@ class ZoneUrba(models.Model):
 
     objects = ZoneUrbaManager()
 
+    def get_color(self):
+        transco = {
+            "a": [255, 255, 0],
+            "auc": [255, 101, 101],
+            "aus": [254, 204, 190],
+            "n": [86, 170, 2],
+            "u": [230, 0, 0],
+        }
+        return transco.get(self.typezone.lower(), [0, 0, 0])
+
     def __str__(self):
         return f"{self.insee} {self.typezone} {self.area}Ha"
 
