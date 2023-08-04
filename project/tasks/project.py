@@ -584,12 +584,29 @@ def generate_theme_map_fill_gpu(self, project_id):
                 mpoly=F("zone_urba__mpoly"),
             )
         )
+        if qs.count() > 0:
+            img_data = get_img(
+                queryset=qs,
+                color="OrRd",
+                title="Taux de remplissage des zones urbaines (U) et à urbaniser (AU)",
+            )
+        else:
+            geom = diagnostic.combined_emprise.transform("3857", clone=True)
+            srid, wkt = geom.ewkt.split(";")
+            polygons = shapely.wkt.loads(wkt)
+            gdf_emprise = geopandas.GeoDataFrame({"geometry": [polygons]}, crs="EPSG:3857")
+            fig, ax = plt.subplots(figsize=(15, 10))
+            plt.axis("off")
+            fig.set_dpi(150)
+            gdf_emprise.plot(ax=ax, facecolor="none", edgecolor="yellow")
+            ax.add_artist(ScaleBar(1))
+            ax.set_title("Il n'y a pas de zone U ou AU")
+            cx.add_basemap(ax, source=settings.ORTHOPHOTO_URL)
 
-        img_data = get_img(
-            queryset=qs,
-            color="OrRd",
-            title="Taux de remplissage des zones urbaines (U) et à urbaniser (AU)",
-        )
+            img_data = io.BytesIO()
+            plt.savefig(img_data, bbox_inches="tight")
+            plt.close()
+            img_data.seek(0)
 
         race_protection_save_map(
             diagnostic.pk,
