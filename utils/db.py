@@ -19,7 +19,7 @@ class IntersectMixin:
     def intersect(self, geom) -> QuerySet:
         """Filter queryset on intersection between class mpoly field and geom args
         add intersection and intersection_area fields"""
-        queryset = self.filter(mpoly__intersects=geom)
+        queryset = self.filter(mpoly__intersects=geom)  # type: ignore
         queryset = queryset.annotate(
             intersection=Intersection("mpoly", geom),
             intersection_area=Area(Transform("intersection", 2154)),

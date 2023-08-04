@@ -1,4 +1,5 @@
 from decimal import InvalidOperation
+from functools import cached_property
 from math import ceil
 from typing import Any, Dict
 
@@ -857,8 +858,17 @@ class ProjectReportGpuView(ProjectReportBaseView):
 class ProjectReportGpuZoneSynthesisTable(CacheMixin, StandAloneMixin, TemplateView):
     template_name = "project/partials/zone_urba_aggregated_table.html"
 
+    @cached_property
+    def diagnostic(self):
+        return Project.objects.get(pk=self.kwargs["pk"])
+
+    def should_cache(self, *args, **kwargs):
+        if not self.diagnostic.theme_map_gpu:
+            return False
+        return True
+
     def get_context_data(self, **kwargs):
-        diagnostic = Project.objects.get(pk=self.kwargs["pk"])
+        diagnostic = self.diagnostic
         qs = (
             ArtifAreaZoneUrba.objects.filter(zone_urba__in=ZoneUrba.objects.intersect(diagnostic.combined_emprise))
             .filter(year__in=[diagnostic.first_year_ocsge, diagnostic.last_year_ocsge])
@@ -904,6 +914,16 @@ class ProjectReportGpuZoneAUUTable(CacheMixin, StandAloneMixin, TemplateView):
 
     template_name = "project/partials/zone_urba_auu_table.html"
 
+    @cached_property
+    def diagnostic(self):
+        return Project.objects.get(pk=self.kwargs["pk"])
+
+    def should_cache(self, *args, **kwargs):
+        """Override to disable cache conditionnally"""
+        if not self.diagnostic.theme_map_fill_gpu:
+            return False
+        return True
+
     def get_filters(self):
         form = FilterAUUTable(data=self.request.GET)
         if form.is_valid():
@@ -912,7 +932,7 @@ class ProjectReportGpuZoneAUUTable(CacheMixin, StandAloneMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         filters = self.get_filters()
-        diagnostic = Project.objects.get(pk=self.kwargs["pk"])
+        diagnostic = self.diagnostic
         zone_urba = ZoneUrba.objects.intersect(diagnostic.combined_emprise)
         qs = (
             ArtifAreaZoneUrba.objects.filter(zone_urba__in=zone_urba)
@@ -983,3 +1003,17 @@ class ProjectReportGpuZoneNTable(CacheMixin, StandAloneMixin, TemplateView):
             "last_year_ocsge": str(diagnostic.last_year_ocsge),
         }
         return super().get_context_data(**kwargs)
+
+
+class ProjectReportGpuZoneGeneralMap(StandAloneMixin, TemplateView):
+    template_name = "project/partials/zone_urba_general_map.html"
+
+    def get_context_data(self, **kwargs):
+        return super().get_context_data(diagnostic=Project.objects.get(pk=self.kwargs["pk"]), **kwargs)
+
+
+class ProjectReportGpuZoneFillMap(StandAloneMixin, TemplateView):
+    template_name = "project/partials/zone_urba_fill_map.html"
+
+    def get_context_data(self, **kwargs):
+        return super().get_context_data(diagnostic=Project.objects.get(pk=self.kwargs["pk"]), **kwargs)

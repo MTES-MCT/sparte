@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 hello world
 """
 from pathlib import Path
+from typing import Any, Dict
 
 import environ
 import pkg_resources
@@ -244,23 +245,29 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # CACHES
 # https://docs.djangoproject.com/en/4.2/topics/cache/
 
-CACHES = {
-    "default": {
-        "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": env.str("REDIS_URL"),
-        "TIMEOUT": 60 * 60 * 9,  # 9 heures
-        "OPTIONS": {
-            "CLIENT_CLASS": "django_redis.client.DefaultClient",
-            "MAX_ENTRIES": 1000,
+CACHES: Dict[str, Any] = {}
+
+if ENVIRONMENT in ["local"]:
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.dummy.DummyCache",
         }
     }
-}
-
-
-# SESSION
-
-SESSION_ENGINE = "django.contrib.sessions.backends.cache"
-SESSION_CACHE_ALIAS = "default"
+else:
+    CACHES = {
+        "default": {
+            "BACKEND": "django_redis.cache.RedisCache",
+            "LOCATION": env.str("REDIS_URL"),
+            "TIMEOUT": 60 * 60 * 9,  # 9 heures
+            "OPTIONS": {
+                "CLIENT_CLASS": "django_redis.client.DefaultClient",
+                "MAX_ENTRIES": 1000,
+            }
+        }
+    }
+    # SESSION
+    SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+    SESSION_CACHE_ALIAS = "default"
 
 
 # Django.contrib.messages
