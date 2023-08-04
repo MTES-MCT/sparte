@@ -345,6 +345,13 @@ class Project(BaseProject):
         storage=PublicMediaStorage(),
     )
 
+    theme_map_fill_gpu = models.ImageField(
+        upload_to=upload_in_project_folder,
+        blank=True,
+        null=True,
+        storage=PublicMediaStorage(),
+    )
+
     async_add_city_done = models.BooleanField(default=False)
     async_set_combined_emprise_done = models.BooleanField(default=False)
     async_cover_image_done = models.BooleanField(default=False)
@@ -354,6 +361,7 @@ class Project(BaseProject):
     async_generate_theme_map_artif_done = models.BooleanField(default=False)
     async_theme_map_understand_artif_done = models.BooleanField(default=False)
     async_theme_map_gpu_done = models.BooleanField(default=False)
+    async_thme_map_fill_gpu_done = models.BooleanField(default=False)
 
     history = HistoricalRecords()
 
@@ -368,7 +376,6 @@ class Project(BaseProject):
             & self.async_generate_theme_map_conso_done
             & self.async_generate_theme_map_artif_done
             & self.async_theme_map_understand_artif_done
-            & self.async_theme_map_gpu_done
         )
 
     class Meta:
