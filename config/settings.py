@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 hello world
 """
 from pathlib import Path
+from typing import Any, Dict
 
 import environ
 import pkg_resources
@@ -244,6 +245,8 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # CACHES
 # https://docs.djangoproject.com/en/4.2/topics/cache/
 
+CACHES: Dict[str, Any] = {}
+
 if ENVIRONMENT in ["local"]:
     CACHES = {
         "default": {
@@ -262,12 +265,9 @@ else:
             }
         }
     }
-
-
-# SESSION
-
-SESSION_ENGINE = "django.contrib.sessions.backends.cache"
-SESSION_CACHE_ALIAS = "default"
+    # SESSION
+    SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+    SESSION_CACHE_ALIAS = "default"
 
 
 # Django.contrib.messages
