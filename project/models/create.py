@@ -4,10 +4,9 @@ from typing import List
 
 import celery
 
+from project.models import Project
 from public_data.models import AdminRef, Land
 from users.models import User
-
-from project.models import Project
 
 
 def get_map_generation_tasks(project: Project, t: ModuleType) -> List[celery.Task]:
