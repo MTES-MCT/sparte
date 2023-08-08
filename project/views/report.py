@@ -23,6 +23,7 @@ from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.views.generic import CreateView, DetailView, TemplateView
 
+from brevo.tasks import send_request_to_brevo
 from project import charts, tasks
 from project.forms import FilterAUUTable
 from project.models import Project, ProjectCommune, Request
@@ -480,6 +481,7 @@ class ProjectReportDownloadView(BreadCrumbMixin, CreateView):
         form.instance.project = Project.objects.get(pk=self.kwargs["pk"])
         form.instance._change_reason = "New request"
         new_request = form.save()
+        send_request_to_brevo.delay(new_request.id)
         tasks.send_email_request_bilan.delay(new_request.id)
         tasks.generate_word_diagnostic.apply_async((new_request.id,), link=tasks.send_word_diagnostic.s())
         return self.render_to_response(self.get_context_data(success_message=True))

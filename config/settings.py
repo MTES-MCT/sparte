@@ -93,6 +93,7 @@ PROJECT_APPS = [
     "diagnostic_word.apps.DiagnosticWordConfig",
     "home.apps.HomeConfig",
     "metabase.apps.MetabaseConfig",
+    "brevo.apps.BrevoConfig",
 ]
 
 
