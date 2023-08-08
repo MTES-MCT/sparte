@@ -18,7 +18,7 @@ class SubscribeUserException(Exception):
     pass
 
 
-class BrevoContact:
+class Brevo:
     """Send user's data to enable automation in Brevo.
     API References: https://developers.brevo.com/reference"""
 
