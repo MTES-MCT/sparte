@@ -9,6 +9,7 @@ from typing import Any, Dict
 import requests
 from django.conf import settings
 
+from project.models import Request
 from users.models import User
 
 
@@ -52,6 +53,27 @@ class Brevo:
             },
             "updateEnabled": True,
             "email": user.email,
+        }
+        response = self._post("contacts", data=data)
+        if response.status_code != 204:
+            raise SubscribeUserException(
+                f"Error while sending user's data to Brevo after subscription: {response.text}"
+            )
+
+    def after_request(self, request: Request) -> None:
+        """Send user's data to Brevo after requesting a diagnostic."""
+        data = {
+            "attributes": {
+                "NOM": request.last_name or "",
+                "PRENOM": request.first_name or "",
+                "ORGANISME": request.organism or "",
+                "FONCTION": request.function or "",
+                "LAST_DATE_DIAG_CREATED": request.project.created_date.strftime("%Y/%m/%d"),
+                "LAST_DATE_DL_DIAG": request.created_date.strftime("%Y/%m/%d"),
+                "A_TELECHARGE_BILAN": "OUI",
+            },
+            "updateEnabled": True,
+            "email": request.email,
         }
         response = self._post("contacts", data=data)
         if response.status_code != 204:
