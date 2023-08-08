@@ -40,9 +40,9 @@ class UserCreateView(BreadCrumbMixin, CreateView):
     success_url = reverse_lazy("users:signin")
 
     def form_valid(self, form):
-        user = form.save()
-        send_user_subscription_to_brevo.delay(user.id)
-        login(self.request, user)
+        self.object = form.save()
+        send_user_subscription_to_brevo.delay(self.object.id)
+        login(self.request, self.object)
         return HttpResponseRedirect(self.get_success_url())
 
     def get_success_url(self):
