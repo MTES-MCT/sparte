@@ -44,6 +44,7 @@ def trigger_async_tasks(project: Project, public_key) -> None:
     #     # to not make user wait for other stuff, nuild metabase stat after all others tasks
     #     async_create_stat_for_project.si(project.id, do_location=True),
     # ).apply_async()
+    from brevo.tasks import send_diagnostic_to_brevo
     from metabase.tasks import async_create_stat_for_project
     from project import tasks as t
 
@@ -69,7 +70,10 @@ def trigger_async_tasks(project: Project, public_key) -> None:
     if tasks_chain:
         celery.chain(
             *tasks_chain,
-            async_create_stat_for_project.si(project.id, do_location=True),
+            celery.group(
+                async_create_stat_for_project.si(project.id, do_location=True),
+                send_diagnostic_to_brevo.si(project.id),
+            ),
         ).apply_async()
 
 
