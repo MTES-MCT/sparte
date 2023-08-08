@@ -3,40 +3,36 @@ import logging
 from celery import shared_task
 
 from brevo.connectors import Brevo
+from project.models import Request
 from users.models import User
+from utils.decorators import log_function
 
 logger = logging.getLogger(__name__)
 
 
 @shared_task(bind=True, max_retries=5)
+@log_function(logger)
 def send_user_subscription_to_brevo(self, user_id: int) -> None:
     """Send subscription information to Brevo."""
-    logger.info("Start send_user_subscription_to_brevo, user_id==%d", user_id)
     try:
-        user = User.objects.get(pk=user_id)
-        Brevo().after_subscription(user)
+        Brevo().after_subscription(User.objects.get(pk=user_id))
     except User.DoesNotExist:
         logger.error(f"user_id={user_id} does not exist")
     except Exception as exc:
         logger.error(exc)
         logger.exception(exc)
         self.retry(exc=exc, countdown=60)
-    finally:
-        logger.info("End send_user_subscription_to_brevo, user_id=%d", user_id)
 
 
 @shared_task(bind=True, max_retries=5)
-def send_user_diagnostic_to_brevo(self, user_id: int) -> None:
+@log_function(logger)
+def send_request_to_brevo(self, request_id: int) -> None:
     """Send subscription information to Brevo."""
-    logger.info("Start send_user_subscription_to_brevo, user_id==%d", user_id)
     try:
-        user = User.objects.get(pk=user_id)
-        Brevo().after_subscription(user)
-    except User.DoesNotExist:
-        logger.error(f"user_id={user_id} does not exist")
+        Brevo().after_request(Request.objects.get(pk=request_id))
+    except Request.DoesNotExist:
+        logger.error(f"request_id={request_id} does not exist")
     except Exception as exc:
         logger.error(exc)
         logger.exception(exc)
         self.retry(exc=exc, countdown=60)
-    finally:
-        logger.info("End send_user_subscription_to_brevo, user_id=%d", user_id)
