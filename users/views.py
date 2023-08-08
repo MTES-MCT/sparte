@@ -6,12 +6,11 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.views.generic import RedirectView
 from django.views.generic.edit import CreateView, DeleteView, FormView, UpdateView
-from users.tasks import send_user_subscription_to_brevo
 
+from brevo.tasks import send_user_subscription_to_brevo
+from users.forms import SigninForm, SignupForm, UpdatePasswordForm
+from users.models import User
 from utils.views_mixins import BreadCrumbMixin
-
-from .forms import SigninForm, SignupForm, UpdatePasswordForm
-from .models import User
 
 
 class SigninView(BreadCrumbMixin, LoginView):
