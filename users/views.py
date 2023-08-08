@@ -6,6 +6,7 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.views.generic import RedirectView
 from django.views.generic.edit import CreateView, DeleteView, FormView, UpdateView
+from users.tasks import send_user_subscription_to_brevo
 
 from utils.views_mixins import BreadCrumbMixin
 
@@ -40,10 +41,9 @@ class UserCreateView(BreadCrumbMixin, CreateView):
     success_url = reverse_lazy("users:signin")
 
     def form_valid(self, form):
-        """If the form is valid, save the associated model."""
-        self.object = form.save()
-        # login created user
-        login(self.request, self.object)
+        user = form.save()
+        send_user_subscription_to_brevo.delay(user.id)
+        login(self.request, user)
         return HttpResponseRedirect(self.get_success_url())
 
     def get_success_url(self):
