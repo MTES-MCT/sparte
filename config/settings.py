@@ -258,7 +258,7 @@ else:
     CACHES = {
         "default": {
             "BACKEND": "django_redis.cache.RedisCache",
-            "LOCATION": env.str("REDIS_URL"),
+            "LOCATION": env.str("SCALINGO_REDIS_URL"),
             "TIMEOUT": 60 * 60 * 9,  # 9 heures
             "OPTIONS": {
                 "CLIENT_CLASS": "django_redis.client.DefaultClient",
