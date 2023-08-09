@@ -7,10 +7,10 @@ from django.urls import reverse_lazy
 from django.views.generic import RedirectView
 from django.views.generic.edit import CreateView, DeleteView, FormView, UpdateView
 
+from brevo.tasks import send_user_subscription_to_brevo
+from users.forms import SigninForm, SignupForm, UpdatePasswordForm
+from users.models import User
 from utils.views_mixins import BreadCrumbMixin
-
-from .forms import SigninForm, SignupForm, UpdatePasswordForm
-from .models import User
 
 
 class SigninView(BreadCrumbMixin, LoginView):
@@ -40,9 +40,8 @@ class UserCreateView(BreadCrumbMixin, CreateView):
     success_url = reverse_lazy("users:signin")
 
     def form_valid(self, form):
-        """If the form is valid, save the associated model."""
         self.object = form.save()
-        # login created user
+        send_user_subscription_to_brevo.delay(self.object.id)
         login(self.request, self.object)
         return HttpResponseRedirect(self.get_success_url())
 

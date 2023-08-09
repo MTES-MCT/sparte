@@ -1,4 +1,4 @@
-FROM python:3.10
+FROM python:3.11
 
 LABEL maintainer="swann.bouviermuller@gmail.com"
 LABEL vendor="Innov & Code"
