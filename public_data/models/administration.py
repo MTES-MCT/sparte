@@ -412,6 +412,7 @@ class Commune(DataColorationMixin, LandMixin, GetDataFromCeremaMixin, models.Mod
         blank=True,
         null=True,
     )
+    area = models.DecimalField("Surface", max_digits=15, decimal_places=4, blank=True, null=True)
     surface_artif = models.DecimalField(
         "Surface artificielle",
         max_digits=15,

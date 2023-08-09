@@ -22,6 +22,7 @@ from django.db.models.functions import Cast, Concat
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.views.generic import CreateView, DetailView, TemplateView
+import pandas as pd
 
 from brevo.tasks import send_request_to_brevo
 from project import charts, tasks
@@ -408,36 +409,72 @@ class ProjectReportArtifView(ProjectReportBaseView):
                     usage_row["last_millesime"] = row["surface"]
                     break
 
-        kwargs.update(
-            {
-                "first_millesime": str(first_millesime),
-                "last_millesime": str(last_millesime),
-                "artif_area": artif_area,
-                "rate_artif_area": rate_artif_area,
-                "new_artif": progression_time_scoped["new_artif"],
-                "new_natural": progression_time_scoped["new_natural"],
-                "net_artif": net_artif,
-                "net_artif_rate": net_artif_rate,
-                "chart_evolution_artif": chart_evolution_artif,
-                "table_evolution_artif": add_total_line_column(table_evolution_artif, line=False),
-                "headers_evolution_artif": headers_evolution_artif,
-                "detail_couv_artif_chart": detail_couv_artif_chart,
-                "detail_couv_artif_table": detail_couv_artif_table,
-                "detail_usage_artif_table": detail_usage_artif_table,
-                "detail_total_artif": sum(_["artif"] for _ in detail_couv_artif_chart.get_series()),
-                "detail_total_renat": sum(_["renat"] for _ in detail_couv_artif_chart.get_series()),
-                "detail_usage_artif_chart": detail_usage_artif_chart,
-                "couv_artif_sol": couv_artif_sol,
-                "usage_artif_sol": usage_artif_sol,
-                "chart_comparison": chart_comparison,
-                "table_comparison": add_total_line_column(chart_comparison.get_series()),
-                "level": level,
-                "chart_waterfall": chart_waterfall,
-                "nb_communes": project.cities.count(),
-            }
-        )
+        kwargs |= {
+            "first_millesime": str(first_millesime),
+            "last_millesime": str(last_millesime),
+            "artif_area": artif_area,
+            "rate_artif_area": rate_artif_area,
+            "new_artif": progression_time_scoped["new_artif"],
+            "new_natural": progression_time_scoped["new_natural"],
+            "net_artif": net_artif,
+            "net_artif_rate": net_artif_rate,
+            "chart_evolution_artif": chart_evolution_artif,
+            "table_evolution_artif": add_total_line_column(table_evolution_artif, line=False),
+            "headers_evolution_artif": headers_evolution_artif,
+            "detail_couv_artif_chart": detail_couv_artif_chart,
+            "detail_couv_artif_table": detail_couv_artif_table,
+            "detail_usage_artif_table": detail_usage_artif_table,
+            "detail_total_artif": sum(_["artif"] for _ in detail_couv_artif_chart.get_series()),
+            "detail_total_renat": sum(_["renat"] for _ in detail_couv_artif_chart.get_series()),
+            "detail_usage_artif_chart": detail_usage_artif_chart,
+            "couv_artif_sol": couv_artif_sol,
+            "usage_artif_sol": usage_artif_sol,
+            "chart_comparison": chart_comparison,
+            "table_comparison": add_total_line_column(chart_comparison.get_series()),
+            "level": level,
+            "chart_waterfall": chart_waterfall,
+            "nb_communes": project.cities.count(),
+        }
+
+        kwargs |= self.get_artif_net_table(project)
 
         return super().get_context_data(**kwargs)
+
+    def get_artif_net_table(self, project):
+        qs = project.get_artif_per_city_and_period()
+        df = pd.DataFrame.from_records(qs)
+        pivot_df = df.pivot_table(
+            index="name", columns="period", values=["new_artif", "new_natural", "net_artif"], aggfunc="sum"
+        )
+        pivot_df = pivot_df.swaplevel(0, 1, axis=1).sort_index(axis=1)
+        pivot_df["total_net_artif"] = pivot_df.xs("net_artif", axis=1, level=1).sum(axis=1)
+        pivot_df["area"] = df.groupby("name")["area"].first()
+        pivot_df["net_artif_percentage"] = (pivot_df["total_net_artif"] / pivot_df["area"]) * 100
+        pivot_df["net_artif_percentage"] = pivot_df["net_artif_percentage"].apply(lambda x: f"{x:.4f}%")
+        periods = [
+            _ for _ in pivot_df.columns.levels[0] if _ not in ["total_net_artif", "area", "net_artif_percentage"]
+        ]
+        records = [
+            {
+                "name": _[("name", "")],
+                "total_net_artif": _[("total_net_artif", "")],
+                "net_artif_percentage": _[("net_artif_percentage", "")],
+                "area": _[("area", "")],
+                "periods": [
+                    {
+                        "net_artif": _[(p, "net_artif")],
+                        "new_artif": _[(p, "new_artif")],
+                        "new_natural": _[(p, "new_natural")],
+                    }
+                    for p in periods
+                ],
+            }
+            for _ in pivot_df.reset_index().to_dict(orient="records")
+        ]
+        return {
+            "table_artif_net_records": records,
+            "table_artif_net_periods": periods,
+        }
 
 
 class ProjectReportDownloadView(BreadCrumbMixin, CreateView):
