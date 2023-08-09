@@ -281,24 +281,39 @@ Rapport artificialisation
                     <p>OCS GE traduite grâce à la matrice de passage.</p>
 
                     <h6 class="fr-mt-2w">Données</h6>
+
                     <table class="table table-striped table-sm table-borderless mt-5">
                         <thead>
                             <tr>
-                                <th scope="col"></th>
-                                {% for period in headers_evolution_artif %}
-                                <th scope="col" class="text-end">{{ period }}</th>
-                                {% endfor %}
-                                <th scope="col" class="text-end">Total</th>
+                              <th scope="col" rowspan="2">Commune</th>
+                              <th scope="col" class="text-end" rowspan="2">Surface</th>
+                              {% for period in table_artif_net_periods %}
+                                <th scope="col" colspan="3">{{ period }}</th>
+                              {% endfor %}
+                              <th scope="col" class="text-end" rowspan="2">Artificialisation nette totale</th>
+                              <th scope="col" class="text-end" rowspan="2">Pourcentage d'artificialisation nette total</th>
+                            </tr>
+                            <tr>
+                              {% for period in table_artif_net_periods %}
+                                  <th scope="col" class="text-end">Artificialisation</th>
+                                  <th scope="col" class="text-end">Renaturation</th>
+                                  <th scope="col" class="text-end">Artificialisation nette</th>
+                              {% endfor %}
                             </tr>
                         </thead>
                         <tbody>
-                            {% for serie_name, data in table_comparison.items %}
-                            <tr>
-                                <th scope="row">{{ serie_name }}</th>
-                                {% for period, val in data.items %}
-                                <td align="right">{{ val|floatformat:1 }}</td>
+                            {% for record in table_artif_net_records %}
+                              <tr>
+                                <td>{{ record.name }}</td>
+                                <td class="text-end">{{ record.area|floatformat:1 }}</td>
+                                {% for period in record.periods %}
+                                  <td class="text-end">{{ period.new_artif|floatformat:1 }}</td>
+                                  <td class="text-end">{{ period.new_natural|floatformat:1 }}</td>
+                                  <td class="text-end">{{ period.net_artif|floatformat:1 }}</td>
                                 {% endfor %}
-                            </tr>
+                                <td class="text-end">{{ record.total_net_artif|floatformat:1 }}</td>
+                                <td class="text-end">{{ record.net_artif_percentage }}</td>
+                              </tr>
                             {% endfor %}
                         </tbody>
                     </table>

@@ -721,14 +721,38 @@ class Project(BaseProject):
         result = self.cities.all().aggregate(total=Sum("surface_artif"))
         return result["total"] or 0
 
+    def get_artif_per_city_and_period(self):
+        qs = (
+            CommuneDiff.objects.all()
+            .filter(city__in=self.cities.all())
+            .annotate(
+                period=Concat("year_old", Value(" - "), "year_new", output_field=models.CharField()),
+                name=F("city__name"),
+                area=F("city__area"),
+            )
+            .order_by("name", "period", "year_old", "year_new")
+            .values("name", "period", "year_old", "year_new", "area")
+            .annotate(
+                new_artif=Coalesce(Sum("new_artif"), Decimal("0")),
+                new_natural=Coalesce(Sum("new_natural"), Decimal("0")),
+                net_artif=Coalesce(Sum("net_artif"), Decimal("0")),
+            )
+        )
+        return qs
+
     def get_artif_progession_time_scoped(self):
         """Return example: {"new_artif": 12, "new_natural": 2: "net_artif": 10}"""
-        qs = CommuneDiff.objects.filter(city__in=self.cities.all())
-        qs = qs.filter(year_old__gte=self.analyse_start_date, year_new__lte=self.analyse_end_date)
-        return qs.aggregate(
-            new_artif=Coalesce(Sum("new_artif"), Decimal("0")),
-            new_natural=Coalesce(Sum("new_natural"), Decimal("0")),
-            net_artif=Coalesce(Sum("net_artif"), Decimal("0")),
+        return (
+            CommuneDiff.objects.all()
+            .filter(
+                city__in=self.cities.all(),
+                year_old__gte=self.analyse_start_date, year_new__lte=self.analyse_end_date,
+            )
+            .aggregate(
+                new_artif=Coalesce(Sum("new_artif"), Decimal("0")),
+                new_natural=Coalesce(Sum("new_natural"), Decimal("0")),
+                net_artif=Coalesce(Sum("net_artif"), Decimal("0")),
+            )
         )
 
     def get_artif_evolution(self):
