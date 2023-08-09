@@ -9,7 +9,7 @@ logger = logging.getLogger("management.commands")
 
 
 def get_value(data) -> float:
-    if isinstance(data, float):
+    if isinstance(data, float) or isinstance(data, int):
         return data
     if isinstance(data, dict):
         return get_value(data.get("value", 0))
