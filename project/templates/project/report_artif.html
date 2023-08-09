@@ -110,9 +110,94 @@ Rapport artificialisation
             </div>
         </div>
 
+        <div class="fr-mt-12w">
+            <h2>Aperçu de l'artificialisation</h2>
+
+            <h3>Evolution de l'artificialisation entre {{ diagnostic.analyse_start_date }} et {{ diagnostic.analyse_end_date }}</h3>
+
+            <div class="fr-grid-row fr-grid-row--gutters">
+                <div class="fr-col-12 fr-col-lg-8">
+                    <div class="border fr-p-2w h-100">
+                        <div class="d-flex justify-content-end align-items-center fr-mb-2w">    
+                            <div class="dropdown custom-dropdown fr-mr-2w" data-toggle="tooltip" title="Exporter le graphique">
+                                <button class="fr-btn fr-icon-download-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="dropdown" aria-expanded="false"></button>
+        
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_waterfall" data-type="image/png">PNG</a>
+                                    </li>
+                                    <li>
+                                        <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_waterfall" data-type="image/jpeg">JPEG</a>
+                                    </li>
+                                    <li>
+                                        <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_waterfall" data-type="application/pdf">PDF</a>
+                                    </li>
+                                    <li>
+                                        <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_waterfall" data-type="image/svg+xml">Vectoriel</a>
+                                    </li>
+                                </ul>
+                            </div>
+    
+                            <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm fullscreen-chart" data-chart-target="chart_waterfall" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
+                        </div>
+                        <div id="chart_waterfall"></div>
+                    </div>
+                </div>
+                <div class="fr-col-12 fr-col-lg-4">
+                    <div class="border theme-map-image-container h-100 fr-p-2w d-flex flex-column align-items-center justify-content-between">
+                        <div class="d-flex justify-content-end align-items-center w-100 fr-mb-2w">
+                            <a href="{% url 'project:theme-my-artif' project.pk %}" target="_blank">
+                                 <button class="fr-btn fr-icon-external-link-line fr-btn--tertiary fr-btn--sm"></button>
+                            </a>
+                        </div>
+                        <p class="fw-bold">Carte comprendre l'artificialisation de son territoire</p>
+                        {% if project.theme_map_understand_artif %}
+                        <img src="{{ project.theme_map_understand_artif.url }}" alt="Carte comprendre l'artificialisation de son territoire">
+                        {% else %}
+                        <div class="skeleton-loader"></div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="fr-callout bg-white fr-p-2w mt-4">
+                <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data-2">Données</button>
+                <div class="fr-collapse" id="target-data-2">
+                    <h6 class="fr-mt-2w">Source</h6>
+                    <p>Données d'OCcupation des Sols à Grande Echelle (OCS GE) de l'IGN, sur la période d'analyse traduite grâce à la matrice de passage.</p>
+
+                    <h6 class="fr-mt-2w">Calcul</h6>
+                    <p>Artificialisation sur la période - renaturation sur la période.</p>
+
+                    <h6 class="fr-mt-2w">Données</h6>
+                    <table class="table table-striped table-sm table-borderless">
+                        <thead>
+                            <tr>
+                                <th scope="col"></th>
+                                {% for period in headers_evolution_artif %}
+                                <th scope="col" class="text-end">{{ period }} (Ha)</th>
+                                {% endfor %}
+                                <th scope="col" class="text-end">Total (Ha)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for serie_name, data in table_evolution_artif.items %}
+                            <tr>
+                                <th scope="row">{{ serie_name }}</th>
+                                {% for period, val in data.items %}
+                                <td align="right">{{ val|floatformat:1 }}</td>
+                                {% endfor %}
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
         {% if nb_communes > 1 %}
         <div class="fr-mt-12w">
-            <h3 id="conso-annuelle">Artificialisation annuelle des {% if level == "COMM" %}communes{% elif level == "EPCI" %}communes{% elif level == "DEPT" %}EPCI{% else %}départements{% endif %} du territoire</h3>
+            <h3 id="conso-annuelle">Artificialisation nette entre {{ diagnostic.analyse_start_date }} et {{ diagnostic.analyse_end_date }}</h3>
 
             <div class="fr-grid-row fr-grid-row--gutters">
                 <div class="fr-col-12 fr-col-lg-8">
@@ -221,89 +306,6 @@ Rapport artificialisation
             </div>
         </div>
         {% endif %}
-
-        <div class="fr-mt-12w">
-            <h3>Evolution</h3>
-
-            <div class="fr-grid-row fr-grid-row--gutters">
-                <div class="fr-col-12 fr-col-lg-8">
-                    <div class="border fr-p-2w h-100">
-                        <div class="d-flex justify-content-end align-items-center fr-mb-2w">    
-                            <div class="dropdown custom-dropdown fr-mr-2w" data-toggle="tooltip" title="Exporter le graphique">
-                                <button class="fr-btn fr-icon-download-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="dropdown" aria-expanded="false"></button>
-        
-                                <ul class="dropdown-menu">
-                                    <li>
-                                        <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_waterfall" data-type="image/png">PNG</a>
-                                    </li>
-                                    <li>
-                                        <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_waterfall" data-type="image/jpeg">JPEG</a>
-                                    </li>
-                                    <li>
-                                        <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_waterfall" data-type="application/pdf">PDF</a>
-                                    </li>
-                                    <li>
-                                        <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_waterfall" data-type="image/svg+xml">Vectoriel</a>
-                                    </li>
-                                </ul>
-                            </div>
-    
-                            <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm fullscreen-chart" data-chart-target="chart_waterfall" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
-                        </div>
-                        <div id="chart_waterfall"></div>
-                    </div>
-                </div>
-                <div class="fr-col-12 fr-col-lg-4">
-                    <div class="border theme-map-image-container h-100 fr-p-2w d-flex flex-column align-items-center justify-content-between">
-                        <div class="d-flex justify-content-end align-items-center w-100 fr-mb-2w">
-                            <a href="{% url 'project:theme-my-artif' project.pk %}" target="_blank">
-                                 <button class="fr-btn fr-icon-external-link-line fr-btn--tertiary fr-btn--sm"></button>
-                            </a>
-                        </div>
-                        <p class="fw-bold">Carte comprendre l'artificialisation de son territoire</p>
-                        {% if project.theme_map_understand_artif %}
-                        <img src="{{ project.theme_map_understand_artif.url }}" alt="Carte comprendre l'artificialisation de son territoire">
-                        {% else %}
-                        <div class="skeleton-loader"></div>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-
-            <div class="fr-callout bg-white fr-p-2w mt-4">
-                <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data-2">Données</button>
-                <div class="fr-collapse" id="target-data-2">
-                    <h6 class="fr-mt-2w">Source</h6>
-                    <p>Données d'OCcupation des Sols à Grande Echelle (OCS GE) de l'IGN, sur la période d'analyse traduite grâce à la matrice de passage.</p>
-
-                    <h6 class="fr-mt-2w">Calcul</h6>
-                    <p>Artificialisation sur la période - renaturation sur la période.</p>
-
-                    <h6 class="fr-mt-2w">Données</h6>
-                    <table class="table table-striped table-sm table-borderless">
-                        <thead>
-                            <tr>
-                                <th scope="col"></th>
-                                {% for period in headers_evolution_artif %}
-                                <th scope="col" class="text-end">{{ period }} (Ha)</th>
-                                {% endfor %}
-                                <th scope="col" class="text-end">Total (Ha)</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for serie_name, data in table_evolution_artif.items %}
-                            <tr>
-                                <th scope="row">{{ serie_name }}</th>
-                                {% for period, val in data.items %}
-                                <td align="right">{{ val|floatformat:1 }}</td>
-                                {% endfor %}
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
 
         <div class="fr-mt-7w">
             <h2>Détails de l'artificialisation entre {{ first_millesime }} et {{ last_millesime }}</h2>
