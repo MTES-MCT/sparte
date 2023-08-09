@@ -423,7 +423,7 @@ class WaterfallnArtifChart(ProjectChart):
     name = "Evolution de l'artificialisation"
     param = {
         "chart": {"type": "waterfall"},
-        "title": {"text": "Synthèse"},
+        "title": {"text": "Total pour l'ensemble du territoire du diagnostic"},
         "yAxis": {
             "title": {"text": "Surface (en ha)"},
             "stackLabels": {"enabled": True, "format": "{total:,.1f}"},
@@ -814,8 +814,8 @@ class NetArtifComparaisonChart(ProjectChart):
     name = "Net artificialisation per cities"
     param = {
         "chart": {"type": "column"},
-        "title": {"text": ""},
-        "yAxis": {"title": {"text": "Artificialisation net (en ha)"}},
+        "title": {"text": "Répartition de l'artificialisation nette"},
+        "yAxis": {"title": {"text": "Artificialisation nette (en ha)"}},
         "xAxis": {"type": "category"},
         "legend": {"layout": "vertical", "align": "right", "verticalAlign": "top"},
         "series": [],
