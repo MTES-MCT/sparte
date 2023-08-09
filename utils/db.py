@@ -1,7 +1,7 @@
 
 from django.contrib.gis.db.models.functions import Area, Intersection, Transform
 from django.contrib.gis.geos import MultiPolygon, Polygon
-from django.db.models import DecimalField, Manager, Sum, QuerySet
+from django.db.models import DecimalField, Manager, QuerySet, Sum
 from django.db.models.functions import Cast, Coalesce
 
 
@@ -19,7 +19,7 @@ class IntersectMixin:
     def intersect(self, geom) -> QuerySet:
         """Filter queryset on intersection between class mpoly field and geom args
         add intersection and intersection_area fields"""
-        queryset = self.filter(mpoly__intersects=geom)
+        queryset = self.filter(mpoly__intersects=geom)  # type: ignore
         queryset = queryset.annotate(
             intersection=Intersection("mpoly", geom),
             intersection_area=Area(Transform("intersection", 2154)),
