@@ -48,7 +48,8 @@ class ProjectReportTrajectoryConsumptionView(StandAloneMixin, FormView):
     def trajectory_chart(self):
         return ObjectiveChart(self.diagnostic)
 
-    @cached_property
+    # @cached_property
+    @property
     def trajectory(self):
         return self.diagnostic.trajectory_set.order_by("id").first()
 
@@ -83,8 +84,8 @@ class ProjectReportTrajectoryConsumptionView(StandAloneMixin, FormView):
             "avg_2031": trajectory_chart.annual_objective_2031,
             "start_year": "2021",
         }
-        if "form" not in kwargs:
-            kwargs["form"] = self.get_form()
+        # if "form" not in kwargs:
+        kwargs["form"] = self.get_form()
         kwargs["data"] = json.dumps(
             {
                 n[-4:]: {"value": f.initial, "updated": kwargs["form"].fields[f"year_updated_{n[-4:]}"].initial}
