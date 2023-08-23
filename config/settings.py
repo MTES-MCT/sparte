@@ -484,6 +484,7 @@ CSP_SCRIPT_SRC = [
     "https://stats.beta.gouv.fr",
     "https://code.highcharts.com",
     STATIC_URL,
+    "www.googletagmanager.com",
 ]
 CSP_STYLE_SRC = [
     "'self'",
