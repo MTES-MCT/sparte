@@ -498,6 +498,7 @@ CSP_IMG_SRC = [
     STATIC_URL,
     "https://www.google.com/",
     "https://www.google.fr/",
+    "googleads.g.doubleclick.net",
 ]
 CSP_INCLUDE_NONCE_IN = ["script-src", "style-src"]
 CSP_FONT_SRC = ("'self'", "data:", "https://cdn.jsdelivr.net", STATIC_URL)

@@ -16,5 +16,5 @@ def tracking_code(context):
 def adwords_google_tag_code(context):
     return {
         "CSP_NONCE": context["CSP_NONCE"],
-        "GOOGLE_ADWORDS_ACTIVATE": settings.MATOMO_ACTIVATE,
+        "GOOGLE_ADWORDS_ACTIVATE": settings.GOOGLE_ADWORDS_ACTIVATE,
     }
