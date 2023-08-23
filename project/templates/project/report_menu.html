@@ -25,3 +25,23 @@
         </ul>
     </nav>
 </div>
+
+{% if project.user is None %}
+    <div class="fr-container fr-py-1w">
+        <div class="fr-notice fr-notice--info">
+            <div class="fr-container">
+                <div class="fr-notice__body">
+                    <p class="fr-notice__title fr-text--sm">
+                        {% if user.is_authenticated %}
+                            Le diagnostic n'est pas associé à votre compte, vous ne pourrez pas le retrouver lors de votre prochaine visite.
+                            <br>Pour corriger cela: <a href="{% url 'project:claim' project.id %}" class="fr-link fr-link--sm fr-icon-arrow-right-line fr-link--icon-right">Associer le diagnostic à votre compte</a>
+                        {% else %}
+                            Vous êtes actuellement en mode "anonyme", vous ne pourrez pas retrouver votre diagnostic lors de votre prochaine visite.
+                            <br>Pour corriger cela: <a href="{% url 'users:signup' %}?next={% url 'project:claim' project.id %}" class="fr-link fr-link--sm fr-icon-arrow-right-line fr-link--icon-right">Créer un compte</a> ou <a class="fr-link fr-link--sm fr-icon-arrow-right-line fr-link--icon-right" href="{% url 'users:signin' %}?next={% url 'project:claim' project.id %}" class="">connectez vous</a>
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endif %}
