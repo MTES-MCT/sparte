@@ -77,7 +77,11 @@
     <span id="annual_real-swapper" hx-swap-oob="true">{{ annual_real|floatformat:1 }}</span>
     <span id="conso_2031-swapper" hx-swap-oob="true">{{ conso_2031|floatformat:1 }}</span>
     <span id="annual_objective-swapper" hx-swap-oob="true">{{ annual_objective_2031|floatformat:1 }}</span>
-    <span id="conso_perso-swapper" hx-swap-oob="true">{{ conso_perso|floatformat:1 }}</span>
-    <span id="annual_perso-swapper" hx-swap-oob="true">{{ annual_perso|floatformat:1 }}</span>
-    <span id="trajectory-end-swapper" hx-swap-oob="true">{{ trajectory.end|stringformat:"s" }}</span>
+    <div id="trajectory-swapper" hx-swap-oob="true">
+        <div class="d-flex fr-mb-1w">
+            <p class="fr-callout__title">+{{ conso_perso|floatformat:1 }} ha</p>
+            <p class="fr-tag fr-tag--sm fr-tag--blue fr-ml-2w"><strong>{{ annual_perso|floatformat:1 }} ha/an</strong></p>
+        </div>
+        <p class="fr-text--sm">Consommation cumulée de la période du 1er jan. 2021 au 31 déc. {{ trajectory.end|stringformat:"s" }}</p>
+    </div>
 {% endif %}
