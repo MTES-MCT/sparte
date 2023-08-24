@@ -1266,9 +1266,14 @@ input[type="range"]::-moz-range-thumb {
 /*
 Fix link icon position
 */
-.fr-breadcrumb__link::before {
+.fr-breadcrumb__link::before,
+.fr-link::after {
     position: relative;
     top: 5px;
+}
+
+p .fr-link::after {
+    top: 0;
 }
 
 /*
