@@ -22,7 +22,8 @@ window.htmx.onLoad(function() {
             e.preventDefault();
 
             chart.exportChart({
-                type: button.dataset.type
+                type: button.dataset.type,
+                scale: 3
             });
         }
     });
