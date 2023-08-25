@@ -1272,6 +1272,10 @@ Fix link icon position
     top: 5px;
 }
 
+p .fr-link::after {
+    top: 0;
+}
+
 /*
 Fix nav extra margin
 */

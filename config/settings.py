@@ -263,7 +263,7 @@ else:
             "OPTIONS": {
                 "CLIENT_CLASS": "django_redis.client.DefaultClient",
                 "MAX_ENTRIES": 1000,
-            }
+            },
         }
     }
     # SESSION
@@ -478,31 +478,37 @@ if USE_CSP:
     MIDDLEWARE.insert(2, "csp.middleware.CSPMiddleware")
 
 CSP_UPGRADE_INSECURE_REQUESTS = not DEBUG
-CSP_DEFAULT_SRC = ["'self'", "https://sparte-metabase.osc-secnum-fr1.scalingo.io"]
+CSP_DEFAULT_SRC = ["'self'", "sparte-metabase.osc-secnum-fr1.scalingo.io"]
 CSP_SCRIPT_SRC = [
     "'self'",
-    "https://stats.beta.gouv.fr",
-    "https://code.highcharts.com",
+    "stats.beta.gouv.fr",
+    "code.highcharts.com",
     STATIC_URL,
+    "www.googletagmanager.com",
 ]
 CSP_STYLE_SRC = [
     "'self'",
-    "https://cdn.jsdelivr.net",
+    "cdn.jsdelivr.net",
     STATIC_URL,
 ]
 CSP_IMG_SRC = [
     "'self'",
-    "https://wxs.ign.fr",
+    "wxs.ign.fr",
     "data:",
     MEDIA_URL,
     STATIC_URL,
-    "https://www.google.com/",
-    "https://www.google.fr/",
+    "google.com",
+    "google.fr",
     "googleads.g.doubleclick.net",
 ]
 CSP_INCLUDE_NONCE_IN = ["script-src", "style-src"]
-CSP_FONT_SRC = ("'self'", "data:", "https://cdn.jsdelivr.net", STATIC_URL)
-CSP_CONNECT_SRC = ["'self'", "https://stats.beta.gouv.fr", "https://sparte-metabase.osc-secnum-fr1.scalingo.io"]
+CSP_FONT_SRC = ("'self'", "data:", "cdn.jsdelivr.net", STATIC_URL)
+CSP_CONNECT_SRC = [
+    "'self'",
+    "beta.gouv.fr",
+    "sparte-metabase.osc-secnum-fr1.scalingo.io",
+    "google.com",
+]
 CSP_FRAME_ANCESTORS = ("'self'", "https://sparte-metabase.osc-secnum-fr1.scalingo.io")
 
 
