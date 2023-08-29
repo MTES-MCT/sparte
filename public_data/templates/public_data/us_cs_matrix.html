@@ -70,7 +70,7 @@ td.artificiel {
             </thead>
             <tbody>
                 <tr>
-                    <th rowspan="4">US1 - Production primaire</th>
+                    <th rowspan="5">US1 - Production primaire</th>
                     <th colspan="2">US1.1 - Agriculture</th>
                     {% for code_couverture, item in matrix_1_1.items %}
                         {% if item.is_artificial %}
@@ -103,6 +103,16 @@ td.artificiel {
                 <tr>
                     <th colspan="2">US1.4 - Pêche et aquaculture</th>
                     {% for code_couverture, item in matrix_1_4.items %}
+                        {% if item.is_artificial %}
+                            <td class="artificiel">Artificiel</td>
+                        {% else %}
+                            <td></td>
+                        {% endif %}
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <th colspan="2">US1.5 - Autres prod. primaires</th>
+                    {% for code_couverture, item in matrix_1_5.items %}
                         {% if item.is_artificial %}
                             <td class="artificiel">Artificiel</td>
                         {% else %}
