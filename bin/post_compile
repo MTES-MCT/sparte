@@ -16,8 +16,9 @@ python manage.py migrate_trajectory
 python manage.py evaluate_city_area
 
 # collect static
-npm run build:prod
 python manage.py collectstatic --noinput
 
 # clear cache
+echo "python=$(python --version)"
+echo "django=$(python -m django --version)"
 python manage.py clear_cache
