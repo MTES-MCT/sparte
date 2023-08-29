@@ -60,7 +60,7 @@
         "name": "URL de l'iframe des statistiques (px)",
         "slug": "STATS_URL",
         "value_type": "STR",
-        "value": "https://sparte-metabase.osc-secnum-fr1.scalingo.io/public/dashboard/c20cec9f-5e88-4ed7-a4bb-0a08640d138d",
+        "value": "http://sparte-metabase.osc-secnum-fr1.scalingo.io/public/dashboard/67c2adfb-b21d-4d53-bd88-2be2186eccd6",
         "is_global": false
     }
 ]
