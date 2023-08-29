@@ -39,19 +39,3 @@ Rapport Zones d'Urbanisme
     </div>
 </div>
 {% endblock %}
-
-{% block tagging %}
-<script language="javascript" nonce="{{ CSP_NONCE }}">
-$( window ).on('load', function () {
-    _paq.push(['trackEvent', 'Consultation diagnostic', 'Tableau de bord', 'GPU'])
-})
-
-var fired = false
-$( window ).scroll(function() {
-    if(fired == false && $( window ).scrollTop() + $( window ).height() > $( "#block-content" ).height() - 100) {
-        _paq.push(['trackEvent', 'Consultation diagnostic', 'Fin tableau de bord', 'GPU'])
-        fired = true
-    }
-})
-</script>
-{% endblock tagging %}

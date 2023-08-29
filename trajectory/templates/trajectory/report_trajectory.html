@@ -157,16 +157,8 @@ Trajectoires
 
 {% block tagging %}
 <script language="javascript" nonce="{{ CSP_NONCE }}">
-$( window ).on('load', function () {
-    _paq.push(['trackEvent', '', '', 'open_dashboard_trajectory'])
-})
-
-var fired = false
-$( window ).scroll(function() {
-    if(fired == false && $( window ).scrollTop() + $( window ).height() > $( "#block-content" ).height() - 100) {
-        _paq.push(['trackEvent', '', '', 'end_dashboard_trajectory'])
-        fired = true
-    }
-})
+window.onload = function(event) {
+    _paq.push(['trackEvent', 'north_star_activation_funnel', 'open_dashboard_trajectory', 'step_3_north_star_activation_funnel'])
+}
 </script>
 {% endblock tagging %}

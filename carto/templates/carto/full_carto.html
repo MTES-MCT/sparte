@@ -118,11 +118,6 @@ const resize = () => {
     $("#layer_list").height(height)
 }
 
-$( window ).on('load', function () {
-    _paq.push(['trackEvent', 'Consultation diagnostic', 'Carte intéractive', 'ouverture'])
-    resize()
-})
-
 $(window).resize(() => {
     let height = $(window).height() - $('.fr-header').height() - $('.fr-container').height()
     console.log('test', height)

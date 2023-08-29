@@ -56,18 +56,6 @@ Zonages d'urbanisme
 
 {% block tagging %}
 <script language="javascript" nonce="{{ CSP_NONCE }}">
-$( window ).on('load', function () {
-    _paq.push(['trackEvent', 'Consultation diagnostic', 'Tableau de bord', 'Zonages d\'urbanisme'])
-})
-
-var fired = false
-$( window ).scroll(function() {
-    if(fired == false && $( window ).scrollTop() + $( window ).height() > $( "#block-content" ).height() - 100) {
-        _paq.push(['trackEvent', 'Consultation diagnostic', 'Fin tableau de bord', 'Zonages d\'urbanisme'])
-        fired = true
-    }
-})
-
 window.htmx.on("htmx:afterSwap", () => {
     $('[data-toggle="tooltip"]').tooltip({
         trigger: 'hover',
