@@ -53,7 +53,7 @@
         "name": "Hauteur de l'iframe des statistiques (px)",
         "slug": "STATS_HEIGHT",
         "value_type": "STR",
-        "value": "2300",
+        "value": "1050",
         "is_global": false
     },
     {
