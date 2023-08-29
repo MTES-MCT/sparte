@@ -92,7 +92,7 @@
           <input type="hidden" name="search_commune" value="on">
           <div class="fr-search-bar fr-search-bar--lg" role="search">
             <input class="fr-input" placeholder="Saisissez le nom d'un territoire" type="search" name="keyword" >
-            <button class="fr-btn">Rechercher</button>
+            <button class="fr-btn" id="search-territory">Rechercher</button>
           </div>
         </form>
       </div>
@@ -179,24 +179,12 @@
 
 {% block tagging %}
 <script language="javascript" nonce="{{ CSP_NONCE }}">
-$( window ).on('load', function () {
-    _paq.push(['trackEvent', 'Home page', 'Ouverture'])
-})
+window.onload = function(event) {
+  _paq.push(['trackEvent', 'north_star_activation_funnel', 'open_homepage', 'step_0_north_star_activation_funnel'])
+}
 
-{% comment %} $( "#btn-voir-diag-1" ).click(function() {
-    _paq.push(['trackEvent', 'CTA', 'Voir mon diagnostic', 'CTA0001'])
-})
-
-$( "#newsletter-email" ).click(function() {
-  _paq.push(['trackEvent', 'CTA', "S'inscrire à la newsletter", 'CTA0002'])
-})
-
-$( "#btn-contact-form" ).click(function() {
-  _paq.push(['trackEvent', 'CTA', 'Nous écrire', 'CTA0003'])
-})
-
-$( "#btn-voir-diag-2" ).click(function() {
-  _paq.push(['trackEvent', 'CTA', 'Créer mon diagnostic', 'CTA0004'])
-}) {% endcomment %}
+document.getElementById('search-territory').onclick = function() {
+  _paq.push(['trackEvent', 'north_star_activation_funnel', 'search_territory', 'step_1_north_star_activation_funnel'])
+};
 </script>
 {% endblock tagging %}

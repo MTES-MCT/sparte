@@ -1,9 +1,10 @@
 from django.urls import path
-from django.views.generic import TemplateView
+
+from metabase import views
 
 app_name = "metabase"
 
 
 urlpatterns = [
-    path("", TemplateView.as_view(template_name="metabase/stats.html"), name="stats"),
+    path("", views.StatsView.as_view(), name="stats"),
 ]
