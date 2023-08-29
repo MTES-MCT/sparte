@@ -608,19 +608,3 @@ Rapport artificialisation
 
 {% endlocalize %}
 {% endblock bodyend %}
-
-{% block tagging %}
-<script language="javascript" nonce="{{ CSP_NONCE }}">
-$( window ).on('load', function () {
-    _paq.push(['trackEvent', 'Consultation diagnostic', 'Tableau de bord', 'Artificialisation'])
-})
-
-var fired = false
-$( window ).scroll(function() {
-    if(fired == false && $( window ).scrollTop() + $( window ).height() > $( "#block-content" ).height() - 100) {
-        _paq.push(['trackEvent', 'Consultation diagnostic', 'Fin tableau de bord', 'Artificialisation'])
-        fired = true
-    }
-})
-</script>
-{% endblock tagging %}

@@ -18,15 +18,3 @@
 </div>
 
 {% endblock content %}
-
-{% block tagging %}
-<script language="javascript" nonce="{{ CSP_NONCE }}">
-$( window ).on('load', function () {
-    _paq.push(['trackEvent', '{{ page_title }}', 'Ouverture'])
-})
-
-$( "#btn-validate" ).click(function() {
-    _paq.push(['trackEvent', '{{ page_title }}', 'Confirmation'])
-})
-</script>
-{% endblock tagging %}

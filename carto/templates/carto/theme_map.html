@@ -51,11 +51,3 @@ carto.init(geolayers)
 </script>
 {% endlocalize %}
 {% endblock bodyend %}
-
-{% block tagging %}
-<script language="javascript" nonce="{{ CSP_NONCE }}">
-$( window ).on('load', function () {
-    _paq.push(['trackEvent', 'Consultation diagnostic', 'Carte intéractive', '{{ map_name }}'])
-})
-</script>
-{% endblock tagging %}
