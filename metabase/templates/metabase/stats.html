@@ -2,11 +2,6 @@
 
 {% block pagetitle %}Statistiques{% endblock pagetitle %}
 
-<!-- Hide breadcrumbs -->
-{% block breadcrumbs %}
-{% endblock breadcrumbs %}
-
-
 {% block content %}
 <div class="fr-container fr-pt-5w">
     <iframe
@@ -23,7 +18,7 @@
     let iframe = document.getElementById("my-iframe");
 
 	iframe.addEventListener('load', function() {
-        iframe.style.height = "2300px"
+        iframe.style.height = "{{ STATS_HEIGHT }}px"
 	});	
 </script>
 

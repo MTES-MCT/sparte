@@ -48,5 +48,12 @@
         "value_type": "STR",
         "value": "https://sparte-metabase.osc-secnum-fr1.scalingo.io/",
         "is_global": true
+    },
+    {
+        "name": "Hauteur de l'iframe des statistiques (px)",
+        "slug": "STATS_HEIGHT",
+        "value_type": "STR",
+        "value": "2300",
+        "is_global": true
     }
 ]
