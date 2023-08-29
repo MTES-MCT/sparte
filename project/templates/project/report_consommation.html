@@ -517,23 +517,3 @@ Rapport consommation
 </script>
 {% endlocalize %}
 {% endblock bodyend %}
-
-{% block tagging %}
-<script language="javascript" nonce="{{ CSP_NONCE }}">
-$( window ).on('load', function () {
-    _paq.push(['trackEvent', 'Consultation diagnostic', 'Tableau de bord', 'Consommation'])
-})
-
-var fired = false
-$( window ).scroll(function() {
-    if(fired == false && $( window ).scrollTop() + $( window ).height() > $( "#block-content" ).height() - 100) {
-        _paq.push(['trackEvent', 'Consultation diagnostic', 'Fin tableau de bord', 'Consommation'])
-        fired = true
-    }
-})
-
-$( "#cerema-link" ).click(function() {
-    _paq.push(['trackEvent', 'Liens sortants', 'Site du Cérema', 'Depuis rapport conso'])
-})
-</script>
-{% endblock tagging %}

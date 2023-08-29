@@ -266,23 +266,3 @@ window.htmx.on("htmx:oobAfterSwap", () => {
 })
 </script>
 {% endblock bodyend %}
-
-{% block tagging %}
-<script language="javascript" nonce="{{ CSP_NONCE }}">
-$( window ).on('load', function () {
-    _paq.push(['trackEvent', 'Consultation diagnostic', 'Tableau de bord', 'Objectif 2031'])
-})
-
-var fired = false
-$( window ).scroll(function() {
-    if(fired == false && $( window ).scrollTop() + $( window ).height() > $( "#block-content" ).height() - 100) {
-        _paq.push(['trackEvent', 'Consultation diagnostic', 'Fin tableau de bord', 'Objectif 2031'])
-        fired = true
-    }
-})
-
-$( "#btn-change-objective" ).click(function() {
-    _paq.push(['trackEvent', 'Consultation diagnostic', 'Bouton personnaliser', 'Objectif 2031'])
-})
-</script>
-{% endblock tagging %}

@@ -569,7 +569,6 @@ function GeoLayer(name, url) {
     this.activate_layer = () => {
         this.display = true
         this.refresh_data()
-        _paq.push(['trackEvent', 'Consultation diagnostic', 'Affichage', this.name])
     }
 
     this.deactivate_layer = () => {

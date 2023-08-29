@@ -455,19 +455,3 @@
 {% display_chart 'chart_usa_wheel' usa_whell_chart CSP_NONCE %}
 {% endlocalize %}
 {% endblock bodyend %}
-
-{% block tagging %}
-<script language="javascript" nonce="{{ CSP_NONCE }}">
-$( window ).on('load', function () {
-    _paq.push(['trackEvent', 'Consultation diagnostic', 'Tableau de bord', '{{ nom }}'])
-})
-
-var fired = false
-$( window ).scroll(function() {
-    if(fired == false && $( window ).scrollTop() + $( window ).height() > $( "#block-content" ).height() - 100) {
-        _paq.push(['trackEvent', 'Consultation diagnostic', 'Fin tableau de bord', '{{ nom }}'])
-        fired = true
-    }
-})
-</script>
-{% endblock tagging %}
