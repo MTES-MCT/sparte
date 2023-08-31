@@ -191,7 +191,7 @@ def add_neighboors(self, project_id):
         logger.info("End add_neighboors, project_id=%d", project_id)
 
 
-@shared_task(bind=True, max_retries=5)
+@shared_task(bind=True, max_retries=5, queue='long')
 def generate_cover_image(self, project_id):
     logger.info("Start generate_cover_image, project_id=%d", project_id)
     try:
@@ -252,7 +252,7 @@ class WordAlreadySentException(Exception):
     pass
 
 
-@shared_task(bind=True, max_retries=6)
+@shared_task(bind=True, max_retries=6, queue='long')
 def generate_word_diagnostic(self, request_id):
     from diagnostic_word.renderers import Renderer
     from highcharts.charts import RateLimitExceededException
@@ -373,7 +373,7 @@ def get_img(queryset, color: str, title: str) -> io.BytesIO:
     return img_data
 
 
-@shared_task(bind=True, max_retries=5)
+@shared_task(bind=True, max_retries=5, queue='long')
 def generate_theme_map_conso(self, project_id):
     logger.info("Start generate_theme_map_conso, project_id=%d", project_id)
 
@@ -411,7 +411,7 @@ def generate_theme_map_conso(self, project_id):
         logger.info("End generate_theme_map_conso, project_id=%d", project_id)
 
 
-@shared_task(bind=True, max_retries=5)
+@shared_task(bind=True, max_retries=5, queue='long')
 def generate_theme_map_artif(self, project_id):
     logger.info("Start generate_theme_map_artif, project_id=%d", project_id)
 
@@ -445,7 +445,7 @@ def generate_theme_map_artif(self, project_id):
         logger.info("End generate_theme_map_artif, project_id=%d", project_id)
 
 
-@shared_task(bind=True, max_retries=5)
+@shared_task(bind=True, max_retries=5, queue='long')
 def generate_theme_map_understand_artif(self, project_id):
     logger.info("Start generate_theme_map_understand_artif, project_id=%d", project_id)
 
@@ -511,7 +511,7 @@ def generate_theme_map_understand_artif(self, project_id):
         logger.info("End generate_theme_map_understand_artif, project_id=%d", project_id)
 
 
-@shared_task(bind=True, max_retries=5)
+@shared_task(bind=True, max_retries=5, queue='long')
 def generate_theme_map_gpu(self, project_id):
     logger.info("Start generate_theme_map_gpu, project_id=%d", project_id)
     try:
@@ -567,7 +567,7 @@ def generate_theme_map_gpu(self, project_id):
         logger.info("End generate_theme_map_gpu, project_id=%d", project_id)
 
 
-@shared_task(bind=True, max_retries=5)
+@shared_task(bind=True, max_retries=5, queue='long')
 def generate_theme_map_fill_gpu(self, project_id):
     logger.info("Start generate_theme_map_fill_gpu, project_id=%d", project_id)
     try:
