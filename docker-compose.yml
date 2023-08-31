@@ -75,12 +75,32 @@ services:
     networks:
       - app-network
 
-  worker:
+  worker-quick:
     image: sparte/backend:latest
     working_dir: /app
     volumes:
       - .:/app
-    command: celery -A config.celery worker --loglevel info --pool solo
+    command: celery -A config.celery worker --loglevel info --pool solo -Q quick
+    # command: tail -F anything
+    env_file: .env
+    environment:
+      - DATABASE_URL=postgis://postgres:postgres@db:5432/postgres
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+      - HIGHCHART_SERVER=http://highchart:8090/
+      - SCALINGO_REDIS_URL=redis://redis:6379/0
+    depends_on:
+      - db
+      - redis
+    networks:
+      - app-network
+
+  worker-long:
+    image: sparte/backend:latest
+    working_dir: /app
+    volumes:
+      - .:/app
+    command: celery -A config.celery worker --loglevel info --pool solo -Q long
     # command: tail -F anything
     env_file: .env
     environment:
