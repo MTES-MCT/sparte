@@ -16,6 +16,14 @@ def get_value(data) -> float:
     raise ValueError(f"données non anticipée {type(data)}:{data}")
 
 
+def get_updated(data) -> bool:
+    if isinstance(data, float) or isinstance(data, int):
+        return True
+    if isinstance(data, dict):
+        return data.get("updated", True)
+    raise ValueError(f"données non anticipée {type(data)}:{data}")
+
+
 class Command(BaseCommand):
     help = "Migrate trajectory if required"
 
@@ -26,7 +34,7 @@ class Command(BaseCommand):
         logger.info(f"To process = {total}")
         for i, trajectory in enumerate(qs):
             trajectory.data = {
-                y: {"value": get_value(v), "updated": v.get("updated", True)} for y, v in trajectory.data.items() if int(y) >= 2021
+                y: {"value": get_value(v), "updated": get_updated(v)} for y, v in trajectory.data.items() if int(y) >= 2021
             }
             trajectory.save()
             stat = StatDiagnostic.get_or_create(trajectory.project)
