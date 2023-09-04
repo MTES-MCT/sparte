@@ -422,7 +422,7 @@ def generate_theme_map_artif(self, project_id):
         img_data = get_img(
             queryset=qs,
             color="OrRd",
-            title=("Artificialisation d'espaces des communes du territoire " "sur la période (en Ha)"),
+            title="Artificialisation des communes du territoire sur la période (en Ha)",
         )
 
         race_protection_save_map(
@@ -573,16 +573,13 @@ def generate_theme_map_fill_gpu(self, project_id):
     try:
         diagnostic = Project.objects.get(pk=project_id)
         zone_urba = ZoneUrba.objects.intersect(diagnostic.combined_emprise)
-        qs = (
-            ArtifAreaZoneUrba.objects.filter(
-                zone_urba__in=zone_urba,
-                year__in=[diagnostic.first_year_ocsge, diagnostic.last_year_ocsge],
-                zone_urba__typezone__in=["U", "AUc", "AUs"],
-            )
-            .annotate(
-                level=100 * F("area") / F("zone_urba__area"),
-                mpoly=F("zone_urba__mpoly"),
-            )
+        qs = ArtifAreaZoneUrba.objects.filter(
+            zone_urba__in=zone_urba,
+            year__in=[diagnostic.first_year_ocsge, diagnostic.last_year_ocsge],
+            zone_urba__typezone__in=["U", "AUc", "AUs"],
+        ).annotate(
+            level=100 * F("area") / F("zone_urba__area"),
+            mpoly=F("zone_urba__mpoly"),
         )
         if qs.count() > 0:
             img_data = get_img(
