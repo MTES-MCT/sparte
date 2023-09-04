@@ -728,7 +728,7 @@ class Project(BaseProject):
             .annotate(
                 period=Concat("year_old", Value(" - "), "year_new", output_field=models.CharField()),
                 name=F("city__name"),
-                area=F("city__area"),
+                area=F("city__area") / 10000,
             )
             .order_by("name", "period", "year_old", "year_new")
             .values("name", "period", "year_old", "year_new", "area")
