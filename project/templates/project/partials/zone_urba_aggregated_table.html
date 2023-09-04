@@ -1,0 +1,63 @@
+<div class="fr-mt-7w">
+    <h3>Synthèse des zonages d'urbanisme</h3>
+
+    <div class="fr-grid-row fr-grid-row--gutters">
+        <div class="fr-col-12 fr-col-lg-8">
+            <div class="overflow-auto">
+                <table class="table table-striped table-sm table-borderless table-custom">
+                    <thead>
+                        <tr>
+                            <th scope="col">Type de<br/>zone</th>
+                            <th scope="col" class="text-end">Nombre<br/>de zones</th>
+                            <th scope="col" class="text-end">Surface<br/>totale</th>
+                            <th scope="col" class="text-end">Surface<br/>artificielle ({{ last_year_ocsge }})</th>
+                            <th scope="col" class="text-end">Taux de<br/>remplissage ({{ last_year_ocsge }})</th>
+                            <th scope="col" class="text-end">Artificialisation<br/>({{ first_year_ocsge }} à {{ last_year_ocsge }})</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for zone in zone_list %}
+                        <tr>
+                            <th scope="row" class="text-nowrap">{{ zone.type_zone }}</th>
+                            <td class="text-end">{{ zone.nb_zones }}</td>
+                            <td class="text-end">{{ zone.total_area|floatformat:1 }} ha</td>
+                            <td class="text-end">{{ zone.last_artif_area|floatformat:1 }} ha</td>
+                            <td class="text-end">
+                                <div class="progress-bar-container">
+                                    <div class="progress-bar-indicator w-{{ zone.fill_up_rate|floatformat:0 }}"></div>
+                                    <div class="progress-bar-value">{{ zone.fill_up_rate|floatformat:1 }}%</div>
+                                </div>
+                            </td>
+                            <td class="text-end">{{ zone.new_artif|floatformat:1 }} ha</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <p class="my-3">Les types de zone d'après le Standard CNIG PLU v2022 - rev. octobre 2022:
+            <br/><span class="fw-bold">U</span> : zone urbanisme
+            <br/><span class="fw-bold">AUc</span> : zone à urbaniser
+            <br/><span class="fw-bold">AUs</span> : zone à urbaniser bloquée
+            <br/><span class="fw-bold">A</span> : zone agricole
+            <br/><span class="fw-bold">N</span> : zone naturelle
+            </p>
+        </div>
+
+        <div class="fr-col-12 fr-col-lg-4">
+            {% include "project/partials/zone_urba_general_map.html" %}
+        </div>
+
+    </div>
+
+    <div class="fr-callout bg-white fr-p-2w mt-4">
+        <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data-aggregated-table">Données</button>
+        <div class="fr-collapse" id="target-data-aggregated-table">
+            <h6 class="fr-mt-2w">Source</h6>
+            <p>Données d'OCcupation des Sols à Grande Echelle (OCS GE) de l'IGN, sur la période d'analyse. Zonages d'Urbanisme issue du Géoportaille en date de juin 2023.</p>
+
+            <h6 class="fr-mt-2w">Calcul</h6>
+            <p>Qualifier l'artificialisation de chaque parcelle OCS GE via la matrice d'artficialisation (<a href="{% url 'public_data:matrix' %}">consulter</a>). Puis comparer la surface totale des parcelles artificielles dans chaque zonage d'urbanisme à la surface de la zone pour connaître le taux d'occupation.</p>
+        </div>
+    </div>
+
+</div>

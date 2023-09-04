@@ -1,28 +1,45 @@
 from decimal import InvalidOperation
+from functools import cached_property
+from math import ceil
 from typing import Any, Dict
 
 from django.contrib import messages
 from django.contrib.gis.db.models.functions import Area
 from django.contrib.gis.geos import Polygon
 from django.db import transaction
-from django.db.models import Case, CharField, DecimalField, F, Q, Sum, Value, When
+from django.db.models import (
+    Case,
+    CharField,
+    Count,
+    DecimalField,
+    F,
+    Q,
+    Sum,
+    Value,
+    When,
+)
 from django.db.models.functions import Cast, Concat
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.views.generic import CreateView, DetailView, TemplateView
+import pandas as pd
 
+from brevo.tasks import send_request_to_brevo
 from project import charts, tasks
+from project.forms import FilterAUUTable
 from project.models import Project, ProjectCommune, Request
 from project.utils import add_total_line_column
 from public_data.models import CouvertureSol, UsageSol
-from public_data.models.gpu import ZoneUrba
+from public_data.models.administration import Commune
+from public_data.models.gpu import ArtifAreaZoneUrba, ZoneUrba
 from public_data.models.ocsge import Ocsge, OcsgeDiff
 from utils.htmx import StandAloneMixin
+from utils.views_mixins import CacheMixin
 
 from .mixins import BreadCrumbMixin, GroupMixin, UserQuerysetOrPublicMixin
 
 
-class ProjectReportBaseView(GroupMixin, DetailView):
+class ProjectReportBaseView(CacheMixin, GroupMixin, DetailView):
     breadcrumbs_title = "To be set"
     context_object_name = "project"
     queryset = Project.objects.all()
@@ -392,36 +409,72 @@ class ProjectReportArtifView(ProjectReportBaseView):
                     usage_row["last_millesime"] = row["surface"]
                     break
 
-        kwargs.update(
-            {
-                "first_millesime": str(first_millesime),
-                "last_millesime": str(last_millesime),
-                "artif_area": artif_area,
-                "rate_artif_area": rate_artif_area,
-                "new_artif": progression_time_scoped["new_artif"],
-                "new_natural": progression_time_scoped["new_natural"],
-                "net_artif": net_artif,
-                "net_artif_rate": net_artif_rate,
-                "chart_evolution_artif": chart_evolution_artif,
-                "table_evolution_artif": add_total_line_column(table_evolution_artif, line=False),
-                "headers_evolution_artif": headers_evolution_artif,
-                "detail_couv_artif_chart": detail_couv_artif_chart,
-                "detail_couv_artif_table": detail_couv_artif_table,
-                "detail_usage_artif_table": detail_usage_artif_table,
-                "detail_total_artif": sum(_["artif"] for _ in detail_couv_artif_chart.get_series()),
-                "detail_total_renat": sum(_["renat"] for _ in detail_couv_artif_chart.get_series()),
-                "detail_usage_artif_chart": detail_usage_artif_chart,
-                "couv_artif_sol": couv_artif_sol,
-                "usage_artif_sol": usage_artif_sol,
-                "chart_comparison": chart_comparison,
-                "table_comparison": add_total_line_column(chart_comparison.get_series()),
-                "level": level,
-                "chart_waterfall": chart_waterfall,
-                "nb_communes": project.cities.count(),
-            }
-        )
+        kwargs |= {
+            "first_millesime": str(first_millesime),
+            "last_millesime": str(last_millesime),
+            "artif_area": artif_area,
+            "rate_artif_area": rate_artif_area,
+            "new_artif": progression_time_scoped["new_artif"],
+            "new_natural": progression_time_scoped["new_natural"],
+            "net_artif": net_artif,
+            "net_artif_rate": net_artif_rate,
+            "chart_evolution_artif": chart_evolution_artif,
+            "table_evolution_artif": add_total_line_column(table_evolution_artif, line=False),
+            "headers_evolution_artif": headers_evolution_artif,
+            "detail_couv_artif_chart": detail_couv_artif_chart,
+            "detail_couv_artif_table": detail_couv_artif_table,
+            "detail_usage_artif_table": detail_usage_artif_table,
+            "detail_total_artif": sum(_["artif"] for _ in detail_couv_artif_chart.get_series()),
+            "detail_total_renat": sum(_["renat"] for _ in detail_couv_artif_chart.get_series()),
+            "detail_usage_artif_chart": detail_usage_artif_chart,
+            "couv_artif_sol": couv_artif_sol,
+            "usage_artif_sol": usage_artif_sol,
+            "chart_comparison": chart_comparison,
+            "table_comparison": add_total_line_column(chart_comparison.get_series()),
+            "level": level,
+            "chart_waterfall": chart_waterfall,
+            "nb_communes": project.cities.count(),
+        }
+
+        kwargs |= self.get_artif_net_table(project)
 
         return super().get_context_data(**kwargs)
+
+    def get_artif_net_table(self, project):
+        qs = project.get_artif_per_city_and_period()
+        df = pd.DataFrame.from_records(qs)
+        pivot_df = df.pivot_table(
+            index="name", columns="period", values=["new_artif", "new_natural", "net_artif"], aggfunc="sum"
+        )
+        pivot_df = pivot_df.swaplevel(0, 1, axis=1).sort_index(axis=1)
+        pivot_df["total_net_artif"] = pivot_df.xs("net_artif", axis=1, level=1).sum(axis=1)
+        pivot_df["area"] = df.groupby("name")["area"].first()
+        pivot_df["net_artif_percentage"] = (pivot_df["total_net_artif"] / pivot_df["area"]) * 100
+        pivot_df["net_artif_percentage"] = pivot_df["net_artif_percentage"].apply(lambda x: f"{x:.4f}%")
+        periods = [
+            _ for _ in pivot_df.columns.levels[0] if _ not in ["total_net_artif", "area", "net_artif_percentage"]
+        ]
+        records = [
+            {
+                "name": _[("name", "")],
+                "total_net_artif": _[("total_net_artif", "")],
+                "net_artif_percentage": _[("net_artif_percentage", "")],
+                "area": _[("area", "")],
+                "periods": [
+                    {
+                        "net_artif": _[(p, "net_artif")],
+                        "new_artif": _[(p, "new_artif")],
+                        "new_natural": _[(p, "new_natural")],
+                    }
+                    for p in periods
+                ],
+            }
+            for _ in pivot_df.reset_index().to_dict(orient="records")
+        ]
+        return {
+            "table_artif_net_records": records,
+            "table_artif_net_periods": periods,
+        }
 
 
 class ProjectReportDownloadView(BreadCrumbMixin, CreateView):
@@ -465,6 +518,7 @@ class ProjectReportDownloadView(BreadCrumbMixin, CreateView):
         form.instance.project = Project.objects.get(pk=self.kwargs["pk"])
         form.instance._change_reason = "New request"
         new_request = form.save()
+        send_request_to_brevo.delay(new_request.id)
         tasks.send_email_request_bilan.delay(new_request.id)
         tasks.generate_word_diagnostic.apply_async((new_request.id,), link=tasks.send_word_diagnostic.s())
         return self.render_to_response(self.get_context_data(success_message=True))
@@ -506,7 +560,7 @@ class ProjectReportUrbanZonesView(ProjectReportBaseView):
         )
 
         return super().get_context_data(**kwargs)
-    
+
 
 class DownloadWordView(TemplateView):
     template_name = "project/error_download_word.html"
@@ -529,7 +583,7 @@ class DownloadWordView(TemplateView):
         return super().get(request, *args, **kwargs)
 
 
-class ConsoRelativeSurfaceChart(UserQuerysetOrPublicMixin, DetailView):
+class ConsoRelativeSurfaceChart(CacheMixin, UserQuerysetOrPublicMixin, DetailView):
     context_object_name = "project"
     queryset = Project.objects.all()
     template_name = "project/partials/surface_comparison_conso.html"
@@ -549,7 +603,7 @@ class ConsoRelativeSurfaceChart(UserQuerysetOrPublicMixin, DetailView):
         return super().get_context_data(**kwargs)
 
 
-class ConsoRelativePopChart(UserQuerysetOrPublicMixin, DetailView):
+class ConsoRelativePopChart(CacheMixin, UserQuerysetOrPublicMixin, DetailView):
     context_object_name = "project"
     queryset = Project.objects.all()
     template_name = "project/partials/pop_comparison_conso.html"
@@ -569,7 +623,7 @@ class ConsoRelativePopChart(UserQuerysetOrPublicMixin, DetailView):
         return super().get_context_data(**kwargs)
 
 
-class ConsoRelativeHouseholdChart(UserQuerysetOrPublicMixin, DetailView):
+class ConsoRelativeHouseholdChart(CacheMixin, UserQuerysetOrPublicMixin, DetailView):
     context_object_name = "project"
     queryset = Project.objects.all()
     template_name = "project/partials/household_comparison_conso.html"
@@ -589,7 +643,7 @@ class ConsoRelativeHouseholdChart(UserQuerysetOrPublicMixin, DetailView):
         return super().get_context_data(**kwargs)
 
 
-class ArtifZoneUrbaView(StandAloneMixin, DetailView):
+class ArtifZoneUrbaView(CacheMixin, StandAloneMixin, DetailView):
     """Content of the pannel in Urba Area Explorator."""
 
     context_object_name = "zone_urba"
@@ -616,7 +670,7 @@ class ArtifZoneUrbaView(StandAloneMixin, DetailView):
         return super().get_context_data(**kwargs)
 
 
-class ArtifNetChart(TemplateView):
+class ArtifNetChart(CacheMixin, TemplateView):
     template_name = "project/partials/artif_net_chart.html"
 
     def get(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
@@ -678,7 +732,7 @@ class ArtifNetChart(TemplateView):
         return super().get_context_data(**kwargs)
 
 
-class ArtifDetailCouvChart(TemplateView):
+class ArtifDetailCouvChart(CacheMixin, TemplateView):
     template_name = "project/partials/artif_detail_couv_chart.html"
 
     def get(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
@@ -749,7 +803,7 @@ class ArtifDetailCouvChart(TemplateView):
         return super().get_context_data(**kwargs)
 
 
-class ArtifDetailUsaChart(TemplateView):
+class ArtifDetailUsaChart(CacheMixin, TemplateView):
     template_name = "project/partials/artif_detail_usage_chart.html"
 
     def get(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
@@ -838,3 +892,167 @@ class ProjectReportGpuView(ProjectReportBaseView):
         )
 
         return super().get_context_data(**kwargs)
+
+
+class ProjectReportGpuZoneSynthesisTable(CacheMixin, StandAloneMixin, TemplateView):
+    template_name = "project/partials/zone_urba_aggregated_table.html"
+
+    @cached_property
+    def diagnostic(self):
+        return Project.objects.get(pk=self.kwargs["pk"])
+
+    def should_cache(self, *args, **kwargs):
+        if not self.diagnostic.theme_map_gpu:
+            return False
+        return True
+
+    def get_context_data(self, **kwargs):
+        diagnostic = self.diagnostic
+        qs = (
+            ArtifAreaZoneUrba.objects.filter(zone_urba__in=ZoneUrba.objects.intersect(diagnostic.combined_emprise))
+            .filter(year__in=[diagnostic.first_year_ocsge, diagnostic.last_year_ocsge])
+            .order_by("zone_urba__typezone", "year")
+            .values("zone_urba__typezone", "year")
+            .annotate(
+                artif_area=Sum("area"),
+                total_area=Sum("zone_urba__area"),
+                nb_zones=Count("zone_urba_id"),
+            )
+        )
+        zone_list = dict()
+        for row in qs:
+            if row["zone_urba__typezone"] not in zone_list:
+                zone_list[row["zone_urba__typezone"]] = {
+                    "type_zone": row["zone_urba__typezone"],
+                    "nb_zones": row["nb_zones"],
+                    "total_area": row["total_area"],
+                    "first_artif_area": 0.0,
+                    "last_artif_area": 0.0,
+                    "fill_up_rate": 0.0,
+                    "new_artif": 0.0,
+                }
+            if row["year"] == diagnostic.first_year_ocsge:
+                zone_list[row["zone_urba__typezone"]]["first_artif_area"] = row["artif_area"]
+            else:
+                zone_list[row["zone_urba__typezone"]]["last_artif_area"] = row["artif_area"]
+        for k in zone_list.keys():
+            zone_list[k]["fill_up_rate"] = 100 * zone_list[k]["last_artif_area"] / zone_list[k]["total_area"]
+            zone_list[k]["new_artif"] = zone_list[k]["last_artif_area"] - zone_list[k]["first_artif_area"]
+        kwargs |= {
+            "zone_list": zone_list.values(),
+            "diagnostic": diagnostic,
+            "first_year_ocsge": str(diagnostic.first_year_ocsge),
+            "last_year_ocsge": str(diagnostic.last_year_ocsge),
+        }
+        return super().get_context_data(**kwargs)
+
+
+class ProjectReportGpuZoneAUUTable(CacheMixin, StandAloneMixin, TemplateView):
+    """Nom commune, code INSEE, libellé court, libellé long, type de zone, surface, surface artificialisée, taux de
+    remplissage, Progression"""
+
+    template_name = "project/partials/zone_urba_auu_table.html"
+
+    @cached_property
+    def diagnostic(self):
+        return Project.objects.get(pk=self.kwargs["pk"])
+
+    def should_cache(self, *args, **kwargs):
+        """Override to disable cache conditionnally"""
+        if not self.diagnostic.theme_map_fill_gpu:
+            return False
+        return True
+
+    def get_filters(self):
+        form = FilterAUUTable(data=self.request.GET)
+        if form.is_valid():
+            return {"page": form.cleaned_data["page_number"] or 1}
+        return {"page": 1}
+
+    def get_context_data(self, **kwargs):
+        filters = self.get_filters()
+        diagnostic = self.diagnostic
+        zone_urba = ZoneUrba.objects.intersect(diagnostic.combined_emprise)
+        qs = (
+            ArtifAreaZoneUrba.objects.filter(zone_urba__in=zone_urba)
+            .filter(year__in=[diagnostic.first_year_ocsge, diagnostic.last_year_ocsge])
+            .filter(zone_urba__typezone__in=["U", "AUc", "AUs"])
+            .annotate(fill_up_rate=100 * F("area") / F("zone_urba__area"))
+            .select_related("zone_urba")
+            .order_by("-fill_up_rate", "zone_urba__insee", "zone_urba__typezone", "-year", "zone_urba__id")
+        )
+        code_insee = qs.values_list("zone_urba__insee", flat=True).distinct()
+        city_list = {
+            _["insee"]: _["name"]
+            for _ in Commune.objects.filter(insee__in=code_insee).order_by("insee").values("insee", "name")
+        }
+        zone_list = {}
+        for row in qs:
+            key = row.zone_urba.id
+            if key not in zone_list:
+                zone_list[key] = row
+                zone_list[key].city_name = city_list.get(row.zone_urba.insee, "")
+            if row.year == diagnostic.first_year_ocsge:
+                zone_list[key].new_artif = zone_list[key].area - row.area
+
+        kwargs |= {
+            "zone_list": list(zone_list.values())[filters["page"] * 10 - 10 : filters["page"] * 10],
+            "current_page": filters["page"],
+            "pages": list(range(1, ceil(len(zone_list) / 10) + 1)),
+            "diagnostic": diagnostic,
+            "first_year_ocsge": str(diagnostic.first_year_ocsge),
+            "last_year_ocsge": str(diagnostic.last_year_ocsge),
+        }
+        return super().get_context_data(**kwargs)
+
+
+class ProjectReportGpuZoneNTable(CacheMixin, StandAloneMixin, TemplateView):
+    template_name = "project/partials/zone_urba_n_table.html"
+
+    def get_context_data(self, **kwargs):
+        diagnostic = Project.objects.get(pk=self.kwargs["pk"])
+        zone_urba = ZoneUrba.objects.intersect(diagnostic.combined_emprise)
+        qs = (
+            ArtifAreaZoneUrba.objects.filter(zone_urba__in=zone_urba)
+            .filter(year__in=[diagnostic.first_year_ocsge, diagnostic.last_year_ocsge])
+            .filter(zone_urba__typezone="N")
+            .annotate(fill_up_rate=100 * F("area") / F("zone_urba__area"))
+            .select_related("zone_urba")
+            .order_by("-fill_up_rate", "zone_urba__insee", "zone_urba__typezone", "-year", "zone_urba__id")
+        )
+        code_insee = qs.values_list("zone_urba__insee", flat=True).distinct()
+        city_list = {
+            _["insee"]: _["name"]
+            for _ in Commune.objects.filter(insee__in=code_insee).order_by("insee").values("insee", "name")
+        }
+        zone_list = {}
+        for row in qs:
+            key = row.zone_urba.id
+            if key not in zone_list:
+                zone_list[key] = row
+                zone_list[key].city_name = city_list.get(row.zone_urba.insee, "")
+                zone_list[key].new_artif = 0
+            if row.year == diagnostic.first_year_ocsge:
+                zone_list[key].new_artif = zone_list[key].area - row.area
+        zone_list = sorted(zone_list.values(), key=lambda x: x.new_artif, reverse=True)
+        kwargs |= {
+            "zone_list": zone_list[:10],
+            "diagnostic": diagnostic,
+            "first_year_ocsge": str(diagnostic.first_year_ocsge),
+            "last_year_ocsge": str(diagnostic.last_year_ocsge),
+        }
+        return super().get_context_data(**kwargs)
+
+
+class ProjectReportGpuZoneGeneralMap(StandAloneMixin, TemplateView):
+    template_name = "project/partials/zone_urba_general_map.html"
+
+    def get_context_data(self, **kwargs):
+        return super().get_context_data(diagnostic=Project.objects.get(pk=self.kwargs["pk"]), **kwargs)
+
+
+class ProjectReportGpuZoneFillMap(StandAloneMixin, TemplateView):
+    template_name = "project/partials/zone_urba_fill_map.html"
+
+    def get_context_data(self, **kwargs):
+        return super().get_context_data(diagnostic=Project.objects.get(pk=self.kwargs["pk"]), **kwargs)

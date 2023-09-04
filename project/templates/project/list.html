@@ -88,11 +88,3 @@ Mes diagnostics
     </div>
 </div>
 {% endblock content %}
-
-{% block tagging %}
-<script language="javascript" nonce="{{ CSP_NONCE }}">
-$( window ).on('load', function () {
-    _paq.push(['trackEvent', 'Consultation diagnostic', 'Mes diagnostics'])
-})
-</script>
-{% endblock tagging %}

@@ -1,10 +1,9 @@
 import celery
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect
-from django.urls import reverse_lazy, reverse
+from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.views.generic import (
     DeleteView,
@@ -16,13 +15,12 @@ from django.views.generic import (
 )
 from django.views.generic.edit import FormMixin
 
-from project import charts, tasks
+from project import tasks
 from project.forms import KeywordForm, SelectTerritoryForm, UpdateProjectForm
 from project.models import Project, create_from_public_key
 from public_data.models import AdminRef, Land, LandException
 from utils.views_mixins import BreadCrumbMixin, RedirectURLMixin
 
-from utils.views import RedirectURLMixin
 from .mixins import GroupMixin
 
 
@@ -94,25 +92,6 @@ class CreateProjectViews(BreadCrumbMixin, FormView):
                 return redirect("project:report_download", pk=project.id)
             else:
                 return redirect("project:splash", pk=project.id)
-
-
-class SetTargetView(UpdateView):
-    model = Project
-    template_name = "project/partials/report_set_target_2031.html"
-    fields = ["target_2031"]
-
-    def form_valid(self, form):
-        self.object = form.save()
-        objective_chart = charts.ObjectiveChart(self.get_object())
-        context = self.get_context_data() | {
-            "success_message": True,
-            "objective_chart": objective_chart,
-            "conso_2031_minus_10": objective_chart.conso_2031 * 0.9,
-            "conso_2031_annual_minus_10": objective_chart.annual_objective_2031 * 0.9,
-            "conso_2031_plus_10": objective_chart.conso_2031 * 1.1,
-            "conso_2031_annual_plus_10": objective_chart.annual_objective_2031 * 1.1,
-        }
-        return self.render_to_response(context)
 
 
 class ProjectUpdateView(GroupMixin, UpdateView):

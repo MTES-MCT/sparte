@@ -37,6 +37,19 @@ class ZoneUrba(models.Model):
 
     objects = ZoneUrbaManager()
 
+    def get_color(self):
+        transco = {
+            "a": [255, 255, 0],
+            "auc": [255, 101, 101],
+            "aus": [254, 204, 190],
+            "n": [86, 170, 2],
+            "u": [230, 0, 0],
+        }
+        return transco.get(self.typezone.lower(), [0, 0, 0])
+
+    def __str__(self):
+        return f"{self.insee} {self.typezone} {self.area}Ha"
+
     class Meta:
         indexes = [
             models.Index(fields=["insee"]),
@@ -48,6 +61,9 @@ class ArtifAreaZoneUrba(models.Model):
     zone_urba = models.ForeignKey(ZoneUrba, on_delete=models.CASCADE)
     year = models.IntegerField("Millésime", validators=[MinValueValidator(2000), MaxValueValidator(2050)])
     area = models.DecimalField("Surface artificielle", max_digits=15, decimal_places=4)
+
+    def __str__(self):
+        return f"{self.zone_urba_id} {self.year} {self.area}Ha"
 
     class Meta:
         constraints = [UniqueConstraint(fields=["zone_urba", "year"], name="unique_zone_year")]

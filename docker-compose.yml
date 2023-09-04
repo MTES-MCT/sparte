@@ -36,7 +36,7 @@ services:
       - DATABASE_URL=postgis://postgres:postgres@db:5432/postgres
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
-      - USE_S3=0
+      - SCALINGO_REDIS_URL=redis://redis:6379/0
     ports:
       - "5678:5678"
       - "8080:8080"
@@ -58,6 +58,7 @@ services:
       - DATABASE_URL=postgis://postgres:postgres@db:5432/postgres
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
+      - SCALINGO_REDIS_URL=redis://redis:6379/0
     depends_on:
       - db
       - redis
@@ -87,6 +88,7 @@ services:
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
       - HIGHCHART_SERVER=http://highchart:8090/
+      - SCALINGO_REDIS_URL=redis://redis:6379/0
     depends_on:
       - db
       - redis
@@ -104,6 +106,7 @@ services:
       - DATABASE_URL=postgis://postgres:postgres@db:5432/postgres
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
+      - SCALINGO_REDIS_URL=redis://redis:6379/0
     depends_on:
       - db
       - redis

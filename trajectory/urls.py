@@ -12,13 +12,18 @@ urlpatterns = [
         name="home",
     ),
     path(
-        "selectionne-période",
-        views.ProjectReportTrajectoryPeriodView.as_view(),
-        name="partial-form-period",
-    ),
-    path(
         "consommation",
         views.ProjectReportTrajectoryConsumptionView.as_view(),
         name="partial-form-consumption",
+    ),
+    path(
+        "graphique",
+        views.ProjectReportTrajectoryGraphView.as_view(),
+        name="partial-graphic",
+    ),
+    path(
+        "set-target-2031",
+        views.SetTargetView.as_view(),
+        name="set_target_2031",
     ),
 ]

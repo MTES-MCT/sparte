@@ -15,6 +15,11 @@ Trajectoires
 
 {% block headers %}
 <meta name="htmx-config" content='{"inlineScriptNonce":"{{ CSP_NONCE }}"}'>
+{% localize off %}
+{% sri_static "highcharts/js/highcharts.js" %}
+{% sri_static "highcharts/js/exporting.js" %}
+{% french_translation %}
+{% endlocalize %}
 {% endblock headers %}
 
 {% block content %}
@@ -24,113 +29,115 @@ Trajectoires
     {% include "project/report_menu.html" %}
 
     <div class="fr-container fr-py-3w">
-        <div class="fr-alert fr-alert--info">
-            <div class="fr-alert__title">Comment fonctionne cet écran ?</div>
-            <p class="fr-text--sm">
-                Cet écran vous permet de visualiser votre trajectoire en renseignant vos consommations d'espaces prévisionnelles année par année (en Ha).
-                <br/>Pour commencer, veuillez sélectionner une période, puis saisissez les surfaces consommées prévisionnelles pour chaque année.
-            </p>
+        <div class="fr-callout fr-callout--brown-caramel fr-fi-information-line fr-callout-read-more">
+            <div class="fr-callout-read-more__excerpt">
+                <p class="fr-text--sm">La Loi Climat & Résilience recommande :</p>
+                <ul class="fr-text--sm mb-3">
+                    <li>entre 2021 et 2031 <strong>à l'échelle régionale</strong>, de diviser par 2 la consommation d'espaces Naturels, Agricoles et Forestiers (NAF) mesurée entre 2011 et 2021 ;</li>
+                    <li>d'ici février 2024, que les SRADDET territorialisent les objectifs de diminution pour chaque SCoT, qui territorialiseront à l'échelle des EPCI et communes.</li>
+                </ul>
+            </div>
+
+            <div class="fr-callout-read-more__text" id="target_2031_1" hidden>
+                <p class="fr-text--sm">La Loi Climat & Résilience recommande :</p>
+                <ul class="fr-text--sm mb-3">
+                    <li>entre 2021 et 2031 <strong>à l'échelle régionale</strong>, de diviser par 2 la consommation d'espaces Naturels, Agricoles et Forestiers (NAF) mesurée entre 2011 et 2021 ;</li>
+                    <li>d'ici février 2024, que les SRADDET territorialisent les objectifs de diminution pour chaque SCoT, qui territorialiseront à l'échelle des EPCI et communes.</li>
+                </ul>
+                <p class="fr-text--sm mb-3"><strong>Dans l'attente de cette territorialisation</strong> des objectifs 2031 par les SRADDET, Mon Diagnostic Artificialisation vous propose ci-dessous, une première estimation de la consommation d'espaces NAF à l'échelle du territoire de diagnostic. Pour cela Mon Diagnostic Artificialisation se base, comme recommandé par la loi Climat & Résilience, sur le bilan de la consommation cumulée des espaces NAF des années 2011 à 2021.</p>
+                <p class="fr-text--sm">Pour la mesure de la consommation d'espaces NAF, <strong>l'Etat utilise les fichiers fonciers</strong> :</p>
+                <ul class="fr-text--sm mb-3">
+                    <li>Ces données sont fournies tous les ans depuis 2009,</li>
+                    <li>Le dernier millésime de 2021 est la photographie du territoire au 1er janvier 2021, intégrant les évolutions réalisées au cours de l'année 2020.</li>
+                </ul>
+            </div>
+            <button class="fr-btn fr-btn--secondary fr-btn--sm fr-callout-read-more__btn" aria-expanded="false" aria-controls="target_2031_1">
+                Lire plus
+            </button>
         </div>
 
-        <div id="trajectory-chart-swapper">
-        {% if trajectory_chart %}
-            <div class="fr-mt-7w">
-                <div class="border fr-p-2w">
-                    <div class="d-flex justify-content-end align-items-center fr-mb-2w">
-                        <a href="{% url 'project:report_target_2031' project.pk %}" data-toggle="tooltip" title="Personnaliser mon objectif 2031" class="fr-btn fr-btn--tertiary fr-btn--sm fr-mr-2w">Personnaliser mon objectif: {{ project.target_2031 }}%</a>
+        <div class="fr-grid-row fr-grid-row--gutters fr-mt-7w">
 
-                        <div class="dropdown custom-dropdown fr-mr-2w" data-toggle="tooltip" title="Exporter le graphique">
-                            <button class="fr-btn fr-icon-download-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="dropdown" aria-expanded="false"></button>
-
-                            <ul class="dropdown-menu">
-                                <li>
-                                    <a class="fr-nav__link export-chart" href="#" data-chart-target="objective_chart" data-type="image/png">PNG</a>
-                                </li>
-                                <li>
-                                    <a class="fr-nav__link export-chart" href="#" data-chart-target="objective_chart" data-type="image/jpeg">JPEG</a>
-                                </li>
-                                <li>
-                                    <a class="fr-nav__link export-chart" href="#" data-chart-target="objective_chart" data-type="application/pdf">PDF</a>
-                                </li>
-                                <li>
-                                    <a class="fr-nav__link export-chart" href="#" data-chart-target="objective_chart" data-type="image/svg+xml">Vectoriel</a>
-                                </li>
-                            </ul>
-                        </div>
-
-                        <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm fullscreen-chart" data-chart-target="trajectory_chart" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
+            <div class="fr-col-12 fr-col-md-4 fr-grid-row">
+                <div class="fr-callout w-100 fr-p-5w">
+                    <h4>Période de référence</h4>
+                    <div class="d-flex fr-mb-1w">
+                        <p class="fr-callout__title">+<span id="total_real-swapper">{{ total_real|floatformat:0 }}</span> ha</p>
+                        <p class="fr-tag fr-tag--sm fr-tag--blue fr-ml-2w"><strong>+(<span id="annual_real-swapper">{{ annual_real|floatformat:1 }}</span> ha/an)</strong></p>
                     </div>
-
-                    <div id="trajectory_chart"></div>
+                    <p class="fr-text--sm">Consommation cumulée de la période du 1er jan. 2011 au 31 déc. 2020 (10 ans)</p>
                 </div>
             </div>
-        {% endif %}
+
+            <div class="fr-col-12 fr-col-md-4 fr-grid-row">
+                <div class="fr-callout w-100 fr-p-5w">
+                    <h4>Projection 2031</h4>
+                    <div class="d-flex fr-mb-1w">
+                        <p class="fr-callout__title">+<span id="conso_2031-swapper">{{ conso_2031|floatformat:1 }}</span> ha</p>
+                        <p class="fr-tag fr-tag--sm fr-tag--blue fr-ml-2w"><strong>+<span id="annual_objective-swapper">{{ annual_objective_2031|floatformat:1 }}</span> ha/an</strong></p>
+                    </div>
+                    <p class="fr-text--sm">Consommation cumulée de la période du 1er jan. 2021 au 31 déc. 2030 (10 ans) avec un seuil de réduction de <span id="objective-swapper">{{ diagnostic.target_2031 }}</span>%</p>
+                    <p><button id="btn-change-objective" class="fr-btn fr-btn--primary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#setTarget" aria-hidden="true" hx-get="{% url 'project:trajectory:set_target_2031' diagnostic.pk %}" hx-target="#setTargetForm">Personnaliser mon seuil de réduction</button></p>
+                </div>
+            </div>
+
+            <div class="fr-col-12 fr-col-md-4 fr-grid-row">
+                <div class="fr-callout w-100 fr-p-5w">
+                    <h4>Projection personnalisée</h4>
+                    {% if trajectory %}
+                        <div id="trajectory-swapper">
+                            <div class="d-flex fr-mb-1w">
+                                <p class="fr-callout__title">+{{ conso_perso|floatformat:1 }} ha</p>
+                                <p class="fr-tag fr-tag--sm fr-tag--blue fr-ml-2w"><strong>{{ annual_perso|floatformat:1 }} ha/an</strong></p>
+                            </div>
+                            <p class="fr-text--sm">Consommation cumulée de la période du 1er jan. 2021 au 31 déc. {{ trajectory.end|stringformat:"s" }}</p>
+                        </div>
+                    {% else %}
+                        <div id="trajectory-swapper"></div>
+                    {% endif %}
+
+                    <button id="btn-change-trajectory" class="fr-btn fr-btn--primary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#setTrajectory" aria-hidden="true" hx-get="{% url 'project:trajectory:partial-form-consumption' diagnostic.pk %}" hx-target="#setTrajectoryForm">Configurer ma projection personnalisée</button>
+                </div>
+            </div>
+
         </div>
 
-        <div class="fr-mt-7w">
-            <h3>Configurer sa trajectoire</h3>
-
-            <button class="fr-btn fr-btn--tertiary" data-bs-toggle="modal" data-bs-target="#setTrajectory" aria-hidden="true" hx-get="{% url 'project:trajectory:partial-form-period' project.pk %}" hx-target="#setTrajectoryForm">Sélectionner une période</button>
-
-            <div id="conso-input-swapper">
-                {% include "trajectory/partials/set_year_consumption.html" with form=initial_form_consumption project=project %}
-            </div>
-        </div>
-
-        <div class="fr-callout bg-white fr-p-2w mt-4">
-            <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data-1">Données</button>
-            <div class="fr-collapse" id="target-data-1">
-                <h6 class="fr-mt-2w">Source</h6>
-                <p>Fichiers fonciers du Cérema issus des données MAJIC  (Mise A Jour de l'Information Cadastrale) de la DGFIP (millésime min :  2009, millésime max : 2021)</p>
-
-                <h6 class="fr-mt-2w">Calcul</h6>
-                <p>La consommation réelle annuelle et cumulée provient des données du Cérema. Elles donnent la consommation d'espaces NAF par année, pour le territoire choisi. </p>
-
-                <h6 class="fr-mt-2w">Données</h6>
-                
-                <table class="table table-striped table-sm table-hover">
-                    <thead>
-                        <tr>
-                            <th scope="col">Millésime</th>
-                            <th scope="col" class="text-end">Réelle (Ha)</th>
-                            <th scope="col" class="text-end">Réelle cumulée (Ha)</th>
-                            <th scope="col" class="text-end">Projection annualisée<br/>de l'objectif 2031 (Ha)</th>
-                            <th scope="col" class="text-end">Cumulé de la<br/>projection (Ha)</th>
-                            <th scope="col" class="text-end">Trajectoire (Ha)</th>
-                            <th scope="col" class="text-end">Cumulé de la<br/>trajectoire (Ha)</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {{ data_table }}
-                        {% for line in trajectory_chart.get_data_table %}
-                        <tr>
-                            <th scope="row">{{ line.year }}</th>
-                            <td align="right">{{ line.real|floatformat:1 }}</td>
-                            <td align="right">{{ line.added_real|floatformat:1 }}</td>
-                            <td align="right">{{ line.objective|floatformat:1 }}</td>
-                            <td align="right">{{ line.added_objective|floatformat:1 }}</td>
-                            <td align="right">{{ line.trajectory|floatformat:1 }}</td>
-                            <td align="right">{{ line.added_trajectory|floatformat:1 }}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
+        <div id="graphic" class="fr-mt-7w" hx-get="{% url 'project:trajectory:partial-graphic' diagnostic.id %}" hx-trigger="load-graphic from:body">
+            {% include "trajectory/partials/graphic.html" %}
         </div>
 
     </div>
 </div>
 
-<!-- Modal -->
-<div class="modal fade" id="setTrajectory" tabindex="-1" aria-labelledby="setTrajectoryLabel" aria-hidden="true">
+<!-- Modal pour personnaliser l'objectif -->
+<div class="modal fade" id="setTarget" tabindex="-1" aria-labelledby="setTargetLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
         <div class="fr-modal__body">
             <div class="fr-modal__header">
                 <button class="fr-link--close fr-link" data-bs-dismiss="modal" aria-label="Close">Fermer</button>
             </div>
             <div class="fr-modal__content">
+                <h1 class="fr-modal__title" id="setTargetLabel">
+                    Personnaliser mon seuil de réduction à 2031
+                </h1>
+                <div id="setTargetForm">
+                    <div class="fr-custom-loader"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal pour saisir sa trajectoire de consommation -->
+<div class="modal fade modal-xl" id="setTrajectory" tabindex="-1" aria-labelledby="setTrajectoryLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+        <div class="fr-modal__body">
+            <div class="fr-modal__header">
+                <button class="fr-link--close fr-link" data-bs-dismiss="modal" aria-label="Close">Annuler</button>
+            </div>
+            <div class="fr-modal__content">
                 <h1 class="fr-modal__title" id="setTrajectoryLabel">
-                    Sélectionner une période
+                    Configurer ma projection personnalisée
                 </h1>
                 <div id="setTrajectoryForm">
                     <div class="fr-custom-loader"></div>
@@ -142,60 +149,16 @@ Trajectoires
 {% endblock content %}
 
 {% block bodyend %}
-{% localize off %}
-{% sri_static "highcharts/js/highcharts.js" %}
-{% sri_static "highcharts/js/exporting.js" %}
-{% french_translation %}
-{% if trajectory_chart %}
-    {% display_chart 'trajectory_chart' trajectory_chart CSP_NONCE %}
-{% endif %}
-{% endlocalize %}
-<script language="javascript" nonce="{{ CSP_NONCE }}">
-    window.htmx.on("hidden.bs.modal", () => {
-        document.getElementById("setTrajectoryForm").innerHTML = "<div class='fr-custom-loader'></div>"
-    })
 
-    window.htmx.on("htmx:oobAfterSwap", (e) => {
-        // Check swap target
-        if (e.detail.target.id === "conso-input-swapper") {
-            const modal = bootstrap.Modal.getInstance(document.getElementById("setTrajectory"))
-            if (modal) {
-                modal.hide()
-                // Wait for oob swap
-                setTimeout(() => {
-                    const formContainer = document.getElementById("conso-input-swapper")
-                    const firstInput = formContainer.getElementsByClassName('fr-input')[0]
-                    firstInput.focus()
-                }, 500)
-            }
-        }
-        else if (e.detail.target.id === "trajectory-chart-swapper") {
-            // Wait for oob swap
-            setTimeout(() => {
-                const chartContainer = document.getElementById("trajectory-chart-swapper")
-                const topPos = chartContainer.getBoundingClientRect().top + window.pageYOffset
-                window.scrollTo({
-                    top: topPos,
-                    behavior: 'smooth'
-                })
-            }, 500)
-        }
-    })
+<script language="javascript" nonce="{{ CSP_NONCE }}">
+    let data, cumul, start_year, end_year, avg_2031, sum, range, trajectory;
 </script>
 {% endblock bodyend %}
 
 {% block tagging %}
 <script language="javascript" nonce="{{ CSP_NONCE }}">
-$( window ).on('load', function () {
-    _paq.push(['trackEvent', '', '', 'open_dashboard_trajectory'])
-})
-
-var fired = false
-$( window ).scroll(function() {
-    if(fired == false && $( window ).scrollTop() + $( window ).height() > $( "#block-content" ).height() - 100) {
-        _paq.push(['trackEvent', '', '', 'end_dashboard_trajectory'])
-        fired = true
-    }
-})
+window.onload = function(event) {
+    _paq.push(['trackEvent', 'north_star_activation_funnel', 'open_dashboard_trajectory', 'step_3_north_star_activation_funnel'])
+}
 </script>
 {% endblock tagging %}

@@ -32,15 +32,3 @@
 <!-- / .row -->
 
 {% endblock content %}
-
-{% block tagging %}
-<script language="javascript" nonce="{{ CSP_NONCE }}">
-$( window ).on('load', function () {
-    _paq.push(['trackEvent', '', '', 'open_subscription_form'])
-})
-
-$( "#btn-inscription" ).click(function() {
-    _paq.push(['trackEvent', '', '', 'subscribe'])
-})
-</script>
-{% endblock tagging %}

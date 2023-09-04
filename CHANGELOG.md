@@ -3,13 +3,39 @@
 Ce changelog suit la méthode "keep a changelog" disponible ici: [https://keepachangelog.com/en/1.0.0/](https://keepachangelog.com/en/1.0.0/)
 
 
-## [4] La GPU - Non livré
+## [4.1] Trajectoire v2 - Non livré
 
 ### Ajouté :
+- Synthèse des zones d'urbanisme dans le diagnostic
+- Trajectoire v2
+- Communication des données user à Brevo
+- Ajouté conversion adwords
+- Système de cache
 
 ### Modifié :
+- Nouvelle page de statistiques
+- Mise à jour du tracking matomo
+- Titre et ordre de la page rapport > artificialisation
 
 ### Corrigé :
+- Afficher la ligne US 1.5 dans la matrice
+- Afficher le message pour réclamer un projet
+
+## [4.0.2] La GPU - 2023.07.03
+
+### Corrigé :
+- hotfix : oublie du mot de passe.
+
+
+## [4.0.1] La GPU - 2023.06.25
+
+### Corrigé :
+- hotfix : création d'un diagnostic n'ayant pas encore l'OCS GE.
+
+## [4] La GPU - 2023.06.23
+
+### Ajouté :
+- Explorateur des zones d'urbanisme
 
 ## [3] - 2023.05.11
 

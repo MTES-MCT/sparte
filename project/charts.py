@@ -139,7 +139,7 @@ class ObjectiveChart(ProjectChart):
         ],
         "xAxis": {
             "type": "category",
-            # "categories": [str(i) for i in range(2011, 2031)],
+            "categories": [str(i) for i in range(2011, 2031)],
             "plotBands": [
                 {
                     "color": "#f4faff",
@@ -187,14 +187,14 @@ class ObjectiveChart(ProjectChart):
                 "name": "Conso. annuelle réelle",
                 "yAxis": 1,
                 "data": list(),
-                "type": "line",
                 "color": "#95ceff",
-                "dashStyle": "ShortDash",
                 "zIndex": 4,
             },
             {
                 "name": "Conso. cumulée réelle",
                 "data": list(),
+                "type": "line",
+
                 "color": "#95ceff",
                 "zIndex": 3,
             },
@@ -202,14 +202,14 @@ class ObjectiveChart(ProjectChart):
                 "name": "Objectif conso. annuelle",
                 "yAxis": 1,
                 "data": list(),
-                "type": "line",
                 "color": "#87cc78",
-                "dashStyle": "ShortDash",
                 "zIndex": 2,
             },
             {
                 "name": "Objectif conso. cumulée",
                 "data": list(),
+                "type": "line",
+                "dashStyle": "ShortDash",
                 "color": "#a9ff96",
                 "zIndex": 1,
             },
@@ -423,7 +423,7 @@ class WaterfallnArtifChart(ProjectChart):
     name = "Evolution de l'artificialisation"
     param = {
         "chart": {"type": "waterfall"},
-        "title": {"text": "Synthèse"},
+        "title": {"text": "Total pour l'ensemble du territoire du diagnostic"},
         "yAxis": {
             "title": {"text": "Surface (en ha)"},
             "stackLabels": {"enabled": True, "format": "{total:,.1f}"},
@@ -814,8 +814,8 @@ class NetArtifComparaisonChart(ProjectChart):
     name = "Net artificialisation per cities"
     param = {
         "chart": {"type": "column"},
-        "title": {"text": ""},
-        "yAxis": {"title": {"text": "Artificialisation net (en ha)"}},
+        "title": {"text": "Répartition de l'artificialisation nette"},
+        "yAxis": {"title": {"text": "Artificialisation nette (en ha)"}},
         "xAxis": {"type": "category"},
         "legend": {"layout": "vertical", "align": "right", "verticalAlign": "top"},
         "series": [],

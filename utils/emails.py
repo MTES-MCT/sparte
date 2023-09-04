@@ -1,10 +1,9 @@
 import logging
+from typing import Any, Dict, List, Literal, Optional
 
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
-from requests import post, exceptions
-
-from typing import Any, Dict, List, Literal, Optional
+from requests import exceptions, post
 
 logger = logging.getLogger(__name__)
 

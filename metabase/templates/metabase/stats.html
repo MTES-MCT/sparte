@@ -1,0 +1,25 @@
+{% extends "index.html" %}
+
+{% block pagetitle %}Statistiques{% endblock pagetitle %}
+
+{% block content %}
+<div class="fr-container fr-pt-5w">
+    <iframe
+        id="my-iframe"
+        src="{{ STATS_URL }}"
+        frameborder="0"
+        width="100%"
+        marginheight="0"
+        marginwidth="0"
+    ></iframe>
+</div>
+
+<script language="javascript" nonce="{{ CSP_NONCE }}">
+    let iframe = document.getElementById("my-iframe");
+
+	iframe.addEventListener('load', function() {
+        iframe.style.height = "{{ STATS_HEIGHT }}px"
+	});	
+</script>
+
+{% endblock content %}
