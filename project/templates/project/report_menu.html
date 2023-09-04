@@ -32,12 +32,11 @@
             <div class="fr-container">
                 <div class="fr-notice__body">
                     <p class="fr-notice__title fr-text--sm">
+                        Vous êtes actuellement en mode "anonyme". Si vous souhaitez retrouver votre diagnostic ou vos trajectoires lors de votre prochaine visite
                         {% if user.is_authenticated %}
-                            Le diagnostic n'est pas associé à votre compte, vous ne pourrez pas le retrouver lors de votre prochaine visite.
-                            <br>Pour corriger cela: <a href="{% url 'project:claim' project.id %}" class="fr-link fr-link--sm fr-icon-arrow-right-line fr-link--icon-right">Associer le diagnostic à votre compte</a>
+                            <a href="{% url 'project:claim' project.id %}" class="fr-link fr-link--sm fr-icon-arrow-right-line fr-link--icon-right">associez le à votre compte</a>.
                         {% else %}
-                            Vous êtes actuellement en mode "anonyme", vous ne pourrez pas retrouver votre diagnostic lors de votre prochaine visite.
-                            <br>Pour corriger cela: <a href="{% url 'users:signup' %}?next={% url 'project:claim' project.id %}" class="fr-link fr-link--sm fr-icon-arrow-right-line fr-link--icon-right">Créer un compte</a> ou <a class="fr-link fr-link--sm fr-icon-arrow-right-line fr-link--icon-right" href="{% url 'users:signin' %}?next={% url 'project:claim' project.id %}" class="">connectez vous</a>
+                            <a href="{% url 'users:signup' %}?next={% url 'project:claim' project.id %}" class="fr-link fr-link--sm fr-icon-arrow-right-line fr-link--icon-right">créez un compte</a> ou <a class="fr-link fr-link--sm fr-icon-arrow-right-line fr-link--icon-right" href="{% url 'users:signin' %}?next={% url 'project:claim' project.id %}">connectez-vous</a>.
                         {% endif %}
                     </p>
                 </div>
