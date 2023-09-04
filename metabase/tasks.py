@@ -32,3 +32,16 @@ def async_create_stat_for_request(self, request_id: int) -> None:
         self.retry(exc=exc, countdown=300)  # 5 minutes
     finally:
         logger.info("End async_create_stat_for_request project_id=%d", request_id)
+
+
+@shared_task(bind=True, max_retries=5)
+def async_create_stat_for_trajectory(self, trajectory_id: int) -> None:
+    logger.info("Start async_create_stat_for_trajectory trajectory_id==%d", trajectory_id)
+    try:
+        StatDiagnostic.trajectory_post_save(trajectory_id)
+    except Exception as exc:
+        logger.error(exc)
+        logger.exception(exc)
+        self.retry(exc=exc, countdown=300)  # 5 minutes
+    finally:
+        logger.info("End async_create_stat_for_request project_id=%d", trajectory_id)

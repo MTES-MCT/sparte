@@ -8,19 +8,19 @@ import pandas as pd
 from django.conf import settings
 from django.contrib.gis.db import models as gis_models
 from django.contrib.gis.db.models import Extent, Union
-from django.contrib.gis.db.models.functions import Centroid, Area
+from django.contrib.gis.db.models.functions import Area, Centroid
 from django.contrib.gis.geos import MultiPolygon, Polygon
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
-from django.db.models import Case, F, Q, Sum, Value, When, DecimalField
-from django.db.models.functions import Coalesce, Concat, Cast
+from django.db.models import Case, DecimalField, F, Q, Sum, Value, When
+from django.db.models.functions import Cast, Coalesce, Concat
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.functional import cached_property
 from simple_history.models import HistoricalRecords
 
-
 from config.storages import PublicMediaStorage
+from project.models.exceptions import TooOldException
 from public_data.models import (
     AdminRef,
     Cerema,
@@ -53,6 +53,7 @@ class ProjectNotSaved(BaseException):
 def upload_in_project_folder(project: "Project", filename: str) -> str:
     """Define where to upload project's cover image : diagnostic/<int:id>
     nb: currently you can't add cover image if project is not saved yet"""
+
     return f"diagnostics/{project.get_folder_name()}/{filename}"
 
 
@@ -208,6 +209,17 @@ class Project(BaseProject):
     def level_label(self):
         return AdminRef.get_label(self.level)
 
+    public_keys = models.CharField("Clé publiques", max_length=255, blank=True, null=True)
+
+    def recover_public_key(self):
+        try:
+            id_list = self.land_ids.split(",")
+        except AttributeError:
+            raise TooOldException("Project too old, no land id saved")
+        if len(id_list) > 1:
+            raise TooOldException("Too old project, it contains several territory.")
+        return f"{self.land_type}_{self.land_ids}"
+
     land_type = models.CharField(
         "Type de territoire",
         choices=LEVEL_CHOICES,
@@ -252,13 +264,13 @@ class Project(BaseProject):
         null=True,
     )
     target_2031 = models.IntegerField(
-        "Objectif 2031 (en %)",
+        "Seuil de réduction à 2031 (en %)",
         validators=[MinValueValidator(0), MaxValueValidator(100)],
         default=50,
         help_text=(
             "A date, l'objectif national est de réduire de 50% la consommation "
-            "d'espace d'ici à 2031. Cet objectif doit être personnalisé localement "
-            "par les SRADDET. Vous pouvez changer l'objectif pour tester différents "
+            "d'espaces d'ici à 2031. Ce seuil doit être personnalisé localement "
+            "par les SRADDET. Vous pouvez changer le seuil pour tester différents "
             "scénarios."
         ),
     )
@@ -326,6 +338,20 @@ class Project(BaseProject):
         storage=PublicMediaStorage(),
     )
 
+    theme_map_gpu = models.ImageField(
+        upload_to=upload_in_project_folder,
+        blank=True,
+        null=True,
+        storage=PublicMediaStorage(),
+    )
+
+    theme_map_fill_gpu = models.ImageField(
+        upload_to=upload_in_project_folder,
+        blank=True,
+        null=True,
+        storage=PublicMediaStorage(),
+    )
+
     async_add_city_done = models.BooleanField(default=False)
     async_set_combined_emprise_done = models.BooleanField(default=False)
     async_cover_image_done = models.BooleanField(default=False)
@@ -334,6 +360,8 @@ class Project(BaseProject):
     async_generate_theme_map_conso_done = models.BooleanField(default=False)
     async_generate_theme_map_artif_done = models.BooleanField(default=False)
     async_theme_map_understand_artif_done = models.BooleanField(default=False)
+    async_theme_map_gpu_done = models.BooleanField(default=False)
+    async_theme_map_fill_gpu_done = models.BooleanField(default=False)
 
     history = HistoricalRecords()
 
@@ -693,14 +721,38 @@ class Project(BaseProject):
         result = self.cities.all().aggregate(total=Sum("surface_artif"))
         return result["total"] or 0
 
+    def get_artif_per_city_and_period(self):
+        qs = (
+            CommuneDiff.objects.all()
+            .filter(city__in=self.cities.all())
+            .annotate(
+                period=Concat("year_old", Value(" - "), "year_new", output_field=models.CharField()),
+                name=F("city__name"),
+                area=F("city__area") / 10000,
+            )
+            .order_by("name", "period", "year_old", "year_new")
+            .values("name", "period", "year_old", "year_new", "area")
+            .annotate(
+                new_artif=Coalesce(Sum("new_artif"), Decimal("0")),
+                new_natural=Coalesce(Sum("new_natural"), Decimal("0")),
+                net_artif=Coalesce(Sum("net_artif"), Decimal("0")),
+            )
+        )
+        return qs
+
     def get_artif_progession_time_scoped(self):
         """Return example: {"new_artif": 12, "new_natural": 2: "net_artif": 10}"""
-        qs = CommuneDiff.objects.filter(city__in=self.cities.all())
-        qs = qs.filter(year_old__gte=self.analyse_start_date, year_new__lte=self.analyse_end_date)
-        return qs.aggregate(
-            new_artif=Coalesce(Sum("new_artif"), Decimal("0")),
-            new_natural=Coalesce(Sum("new_natural"), Decimal("0")),
-            net_artif=Coalesce(Sum("net_artif"), Decimal("0")),
+        return (
+            CommuneDiff.objects.all()
+            .filter(
+                city__in=self.cities.all(),
+                year_old__gte=self.analyse_start_date, year_new__lte=self.analyse_end_date,
+            )
+            .aggregate(
+                new_artif=Coalesce(Sum("new_artif"), Decimal("0")),
+                new_natural=Coalesce(Sum("new_natural"), Decimal("0")),
+                net_artif=Coalesce(Sum("net_artif"), Decimal("0")),
+            )
         )
 
     def get_artif_evolution(self):
@@ -744,6 +796,8 @@ class Project(BaseProject):
             qs = qs.annotate(name=F("city__epci__name"))
         elif analysis_level == "REGION":
             qs = qs.annotate(name=F("city__departement__region__name"))
+        elif analysis_level == "SCOT":
+            qs = qs.annotate(name=F("city__scot__name"))
         else:
             qs = qs.annotate(name=F("city__name"))
         qs = qs.filter(year_old__gte=self.analyse_start_date, year_new__lte=self.analyse_end_date)

@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 hello world
 """
 from pathlib import Path
+from typing import Any, Dict
 
 import environ
 import pkg_resources
@@ -20,7 +21,7 @@ from django.core.exceptions import ImproperlyConfigured
 from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.redis import RedisIntegration
 
-OFFICIAL_VERSION = "4.0.0"
+OFFICIAL_VERSION = "4.1.0"
 
 root = environ.Path(__file__) - 2  # get root of the project
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -77,6 +78,7 @@ THIRD_APPS = [
     "django_app_parameter",
     "sri",
     "simple_history",
+    "corsheaders",
 ]
 
 # upper app should not communicate with lower ones
@@ -91,7 +93,9 @@ PROJECT_APPS = [
     "diagnostic_word.apps.DiagnosticWordConfig",
     "home.apps.HomeConfig",
     "metabase.apps.MetabaseConfig",
+    "brevo.apps.BrevoConfig",
 ]
+
 
 INSTALLED_APPS = DJANGO_APPS + RESTFRAMEWORK_APPS + THIRD_APPS + PROJECT_APPS
 
@@ -107,6 +111,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "simple_history.middleware.HistoryRequestMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
 ]
 
 
@@ -128,6 +133,7 @@ TEMPLATES = [
                 "users.context_processors.add_connected_user_to_context",
                 "django_app_parameter.context_processors.add_global_parameter_context",
                 "csp.context_processors.nonce",
+                "config.context_processors.add_settings_to_context",
             ],
         },
     },
@@ -223,10 +229,46 @@ PUBLIC_MEDIA_LOCATION = "media"
 MEDIA_URL = f"https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/{PUBLIC_MEDIA_LOCATION}/"
 
 
+# CORSHEADERS
+# https://github.com/adamchainz/django-cors-headers
+
+CORS_ORIGIN_WHITELIST = ["https://sparte-metabase.osc-secnum-fr1.scalingo.io"]
+CORS_ALLOW_CREDENTIALS = True
+CORS_ORIGIN_ALLOW_ALL = False
+
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+
+# CACHES
+# https://docs.djangoproject.com/en/4.2/topics/cache/
+
+CACHES: Dict[str, Any] = {}
+
+if ENVIRONMENT in ["local"]:
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.dummy.DummyCache",
+        }
+    }
+else:
+    CACHES = {
+        "default": {
+            "BACKEND": "django_redis.cache.RedisCache",
+            "LOCATION": env.str("SCALINGO_REDIS_URL"),
+            "TIMEOUT": 60 * 60 * 9,  # 9 heures
+            "OPTIONS": {
+                "CLIENT_CLASS": "django_redis.client.DefaultClient",
+                "MAX_ENTRIES": 1000,
+            },
+        }
+    }
+    # SESSION
+    SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+    SESSION_CACHE_ALIAS = "default"
 
 
 # Django.contrib.messages
@@ -436,30 +478,38 @@ if USE_CSP:
     MIDDLEWARE.insert(2, "csp.middleware.CSPMiddleware")
 
 CSP_UPGRADE_INSECURE_REQUESTS = not DEBUG
-CSP_DEFAULT_SRC = ["'self'"]
+CSP_DEFAULT_SRC = ["'self'", "sparte-metabase.osc-secnum-fr1.scalingo.io"]
 CSP_SCRIPT_SRC = [
     "'self'",
-    "https://stats.beta.gouv.fr",
-    "https://code.highcharts.com",
+    "stats.beta.gouv.fr",
+    "code.highcharts.com",
     STATIC_URL,
+    "www.googletagmanager.com",
 ]
 CSP_STYLE_SRC = [
     "'self'",
-    "https://cdn.jsdelivr.net",
+    "cdn.jsdelivr.net",
     STATIC_URL,
 ]
 CSP_IMG_SRC = [
     "'self'",
-    "https://wxs.ign.fr",
+    "wxs.ign.fr",
     "data:",
     MEDIA_URL,
     STATIC_URL,
-    "https://www.google.com/",
-    "https://www.google.fr/",
+    "google.com",
+    "google.fr",
+    "googleads.g.doubleclick.net",
 ]
 CSP_INCLUDE_NONCE_IN = ["script-src", "style-src"]
-CSP_FONT_SRC = ("'self'", "data:", "https://cdn.jsdelivr.net", STATIC_URL)
-CSP_CONNECT_SRC = ["'self'", "https://stats.beta.gouv.fr"]
+CSP_FONT_SRC = ("'self'", "data:", "cdn.jsdelivr.net", STATIC_URL)
+CSP_CONNECT_SRC = [
+    "'self'",
+    "beta.gouv.fr",
+    "sparte-metabase.osc-secnum-fr1.scalingo.io",
+    "google.com",
+]
+CSP_FRAME_ANCESTORS = ("'self'", "https://sparte-metabase.osc-secnum-fr1.scalingo.io")
 
 
 # MAP SETTINGS

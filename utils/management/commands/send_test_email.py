@@ -1,9 +1,9 @@
 from django.core.management.base import BaseCommand
 from django.urls import reverse
 
+from project.models import Request
 from utils.emails import SibTemplateEmail
 from utils.functions import get_url_with_domain
-from project.models import Request
 
 
 class Command(BaseCommand):

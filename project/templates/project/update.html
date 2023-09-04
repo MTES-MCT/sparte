@@ -22,7 +22,7 @@ Modifier
 
     {% include "project/report_menu.html" %}
 
-    <div class="fr-container">
+    <div class="fr-container fr-mt-3w">
         <div class="d-flex flex-column align-items-center">
             <div class="fr-col-12 fr-col-lg-8">
                 <form action="" method="post">
@@ -85,19 +85,3 @@ if (next == "report-target-2031"){
 }
 </script>
 {% endblock bodyend %}
-
-{% block tagging %}
-<script language="javascript" nonce="{{ CSP_NONCE }}">
-$( window ).on('load', function () {
-    _paq.push(['trackEvent', 'Consultation diagnostic', 'Tableau de bord', 'Synthèse'])
-})
-
-var fired = false
-$( window ).scroll(function() {
-    if(fired == false && $( window ).scrollTop() + $( window ).height() > $( "#block-content" ).height() - 100) {
-        _paq.push(['trackEvent', 'Consultation diagnostic', 'Fin tableau de bord', 'Synthèse'])
-        fired = true
-    }
-})
-</script>
-{% endblock tagging %}

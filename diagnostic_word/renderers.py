@@ -1,5 +1,4 @@
 import os
-from pathlib import Path
 import tempfile
 from io import BytesIO
 from typing import Any, Dict, Optional, Union
@@ -9,8 +8,8 @@ from docx.shared import Mm
 from docxtpl import DocxTemplate, InlineImage, RichText
 
 from diagnostic_word.models import WordTemplate
-from project.models import Project
 from project import charts
+from project.models import Project
 from project.utils import add_total_line_column
 from utils.functions import get_url_with_domain
 

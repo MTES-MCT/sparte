@@ -36,6 +36,7 @@ urlpatterns = [
     path("project/", include("project.urls")),
     path("carte/", include("carto.urls")),
     path("word/", include("diagnostic_word.urls")),
+    path("statistiques/", include("metabase.urls")),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

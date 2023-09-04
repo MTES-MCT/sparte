@@ -62,11 +62,11 @@ urlpatterns = [
         views.ProjectReportCityGroupView.as_view(),
         name="report_city_group",
     ),
-    path(
-        "<int:pk>/tableau-de-bord/objectif-2031",
-        views.ProjectReportTarget2031View.as_view(),
-        name="report_target_2031",
-    ),
+    # path(
+    #     "<int:pk>/tableau-de-bord/objectif-2031",
+    #     views.ProjectReportTarget2031View.as_view(),
+    #     name="report_target_2031",
+    # ),
     path(
         "<int:pk>/tableau-de-bord/zonages-d-urbanisme",
         views.ProjectReportUrbanZonesView.as_view(),
@@ -109,9 +109,29 @@ urlpatterns = [
         name="artif-detail-usa-chart",
     ),
     path(
-        "<int:pk>/set-target-2031",
-        views.SetTargetView.as_view(),
-        name="set_target_2031",
+        "<int:pk>/synthèse-des-zonages-d-urbanisme",
+        views.ProjectReportGpuZoneSynthesisTable.as_view(),
+        name="synthesis-zone-urba-all",
+    ),
+    path(
+        "<int:pk>/zonages-d-urbanisme-auu",
+        views.ProjectReportGpuZoneAUUTable.as_view(),
+        name="zone-urba-auu",
+    ),
+    path(
+        "<int:pk>/zonages-d-urbanisme-n",
+        views.ProjectReportGpuZoneNTable.as_view(),
+        name="zone-urba-n",
+    ),
+    path(
+        "<int:pk>/zonages-d-urbanisme/carte-générale",
+        views.ProjectReportGpuZoneGeneralMap.as_view(),
+        name="zone-urba-general-map",
+    ),
+    path(
+        "<int:pk>/zonages-d-urbanisme/carte-de-remplissage",
+        views.ProjectReportGpuZoneFillMap.as_view(),
+        name="zone-urba-fill-map",
     ),
     # MAP
     path("<int:pk>/map", views.ProjectMapView.as_view(), name="map"),
@@ -160,7 +180,7 @@ urlpatterns = [
     path("exports/", views.ExportListView.as_view(), name="excel"),
     path("<int:pk>/export-excel", views.ExportExcelView.as_view(), name="export-excel"),
     # SUB APPS
-    path("<int:pk>/trajectoires", include("trajectory.urls", namespace="trajectory")),
+    path("<int:pk>/trajectoires/", include("trajectory.urls", namespace="trajectory")),
     path("test", views.TestView.as_view(), name="test"),
 ]
 

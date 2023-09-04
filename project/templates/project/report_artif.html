@@ -80,8 +80,7 @@ Rapport artificialisation
         </div>
 
         <div class="fr-mt-12w">
-            <h2>Evolution en volume de {{ diagnostic.analyse_start_date }} à {{ diagnostic.analyse_end_date }}</h2>
-            <p>Sur la période demandée, l'OCS GE couvre de {{ first_millesime }} à {{ last_millesime }}.</p>
+            <h2>Evolution en volume de {{ first_millesime }} à {{ last_millesime }}</h2>
             <div class="fr-grid-row fr-grid-row--gutters">
               <div class="fr-col-12 fr-col-md-6 fr-col-lg-3 fr-grid-row">
                 <div class="fr-callout w-100">
@@ -110,120 +109,10 @@ Rapport artificialisation
             </div>
         </div>
 
-        {% if nb_communes > 1 %}
         <div class="fr-mt-12w">
-            <h3 id="conso-annuelle">Artificialisation annuelle des {% if level == "COMM" %}communes{% elif level == "EPCI" %}communes{% elif level == "DEPT" %}EPCI{% else %}départements{% endif %} du territoire</h3>
+            <h2>Aperçu de l'artificialisation</h2>
 
-            <div class="fr-grid-row fr-grid-row--gutters">
-                <div class="fr-col-12 fr-col-lg-8">
-                    <div class="border fr-p-2w h-100">
-                        <div class="d-flex justify-content-end align-items-center fr-mb-2w">
-                            <div class="dropdown custom-dropdown fr-mr-2w">
-                                <button class="fr-btn fr-btn--tertiary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill" data-bs-toggle="dropdown" aria-expanded="false">
-                                    Maille d'analyse
-                                </button>
-    
-                                <ul class="dropdown-menu">
-                                    <li>
-                                        <a class="fr-nav__link" {% if level == "COMM" %} aria-current="true"{% endif %} href="{% url "project:report_artif" project.id %}?level_conso=COMMUNE">Communes</a>
-                                    </li>
-                                    {% if land_type in "DEPART_REGION_COMP" %}
-                                    <li>
-                                        <a class="fr-nav__link" {% if level == "EPCI" %} aria-current="true"{% endif %} href="{% url "project:report_artif" project.id %}?level_conso=EPCI">EPCI</a>
-                                    </li>
-                                    {% endif %}
-                                    {% if land_type in "REGION_COMP" %}
-                                    <li>
-                                        <a class="fr-nav__link" {% if level == "DEPART" %} aria-current="true"{% endif %} href="{% url "project:report_artif" project.id %}?level_conso=DEPART">Départements</a>
-                                    </li>
-                                    {% endif %}
-                                    {% if land_type in "COMP" %}
-                                    <li>
-                                        <a class="fr-nav__link" {% if level == "REGION" %} aria-current="true"{% endif %} href="{% url "project:report_artif" project.id %}?level_conso=REGION">Régions</a>
-                                    </li>
-                                    {% endif %}
-                                </ul>
-                            </div>
-    
-                            <div class="dropdown custom-dropdown fr-mr-2w" data-toggle="tooltip" title="Exporter le graphique">
-                                <button class="fr-btn fr-icon-download-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="dropdown" aria-expanded="false"></button>
-        
-                                <ul class="dropdown-menu">
-                                    <li>
-                                        <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_comparison" data-type="image/png">PNG</a>
-                                    </li>
-                                    <li>
-                                        <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_comparison" data-type="image/jpeg">JPEG</a>
-                                    </li>
-                                    <li>
-                                        <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_comparison" data-type="application/pdf">PDF</a>
-                                    </li>
-                                    <li>
-                                        <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_comparison" data-type="image/svg+xml">Vectoriel</a>
-                                    </li>
-                                </ul>
-                            </div>
-    
-                            <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm fullscreen-chart" data-chart-target="chart_comparison" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
-                        </div>
-                        <div id="chart_comparison"></div>
-                    </div>
-                </div>
-                <div class="fr-col-12 fr-col-lg-4">
-                    <div class="border theme-map-image-container h-100 fr-p-2w d-flex flex-column align-items-center justify-content-between">
-                        <div class="d-flex justify-content-end align-items-center w-100 fr-mb-2w">
-                            <a href="{% url 'project:theme-city-artif' project.pk %}" target="_blank">
-                                <button class="fr-btn fr-icon-external-link-line fr-btn--tertiary fr-btn--sm"></button>
-                            </a>
-                        </div>
-                        <p class="fw-bold">Carte artificialisation d'espaces des communes du territoire sur la période (en Ha)</p>
-                        {% if project.theme_map_artif %}
-                        <img src="{{ project.theme_map_artif.url }}" alt="Carte artificialisation d'espaces des communes du territoire sur la période (en Ha)">
-                        {% else %}
-                        <div class="skeleton-loader"></div>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-
-            <div class="fr-callout bg-white fr-p-2w mt-4">
-                <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data-1">Données</button>
-                <div class="fr-collapse" id="target-data-1">
-                    <h6 class="fr-mt-2w">Source</h6>
-                    <p>Données d'OCcupation des Sols à Grande Echelle (OCS GE) de l'IGN, sur la période d'analyse.</p>
-
-                    <h6 class="fr-mt-2w">Calcul</h6>
-                    <p>OCS GE traduite grâce à la matrice de passage.</p>
-
-                    <h6 class="fr-mt-2w">Données</h6>
-                    <table class="table table-striped table-sm table-borderless mt-5">
-                        <thead>
-                            <tr>
-                                <th scope="col"></th>
-                                {% for period in headers_evolution_artif %}
-                                <th scope="col" class="text-end">{{ period }}</th>
-                                {% endfor %}
-                                <th scope="col" class="text-end">Total</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for serie_name, data in table_comparison.items %}
-                            <tr>
-                                <th scope="row">{{ serie_name }}</th>
-                                {% for period, val in data.items %}
-                                <td align="right">{{ val|floatformat:1 }}</td>
-                                {% endfor %}
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-        {% endif %}
-
-        <div class="fr-mt-12w">
-            <h3>Evolution</h3>
+            <h3>Evolution de l'artificialisation entre {{ first_millesime }} et {{ last_millesime }}</h3>
 
             <div class="fr-grid-row fr-grid-row--gutters">
                 <div class="fr-col-12 fr-col-lg-8">
@@ -304,6 +193,133 @@ Rapport artificialisation
                 </div>
             </div>
         </div>
+
+        {% if nb_communes > 1 %}
+        <div class="fr-mt-12w">
+            <h3 id="conso-annuelle">Artificialisation nette entre {{ first_millesime }} et {{ last_millesime }}</h3>
+
+            <div class="fr-grid-row fr-grid-row--gutters">
+                <div class="fr-col-12 fr-col-lg-8">
+                    <div class="border fr-p-2w h-100">
+                        <div class="d-flex justify-content-end align-items-center fr-mb-2w">
+                            <div class="dropdown custom-dropdown fr-mr-2w">
+                                <button class="fr-btn fr-btn--tertiary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Maille d'analyse
+                                </button>
+    
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <a class="fr-nav__link" {% if level == "COMM" %} aria-current="true"{% endif %} href="{% url "project:report_artif" project.id %}?level_conso=COMMUNE">Communes</a>
+                                    </li>
+                                    {% if land_type in "DEPART_REGION_COMP" %}
+                                    <li>
+                                        <a class="fr-nav__link" {% if level == "EPCI" %} aria-current="true"{% endif %} href="{% url "project:report_artif" project.id %}?level_conso=EPCI">EPCI</a>
+                                    </li>
+                                    {% endif %}
+                                    {% if land_type in "REGION_COMP" %}
+                                    <li>
+                                        <a class="fr-nav__link" {% if level == "DEPART" %} aria-current="true"{% endif %} href="{% url "project:report_artif" project.id %}?level_conso=DEPART">Départements</a>
+                                    </li>
+                                    {% endif %}
+                                    {% if land_type in "COMP" %}
+                                    <li>
+                                        <a class="fr-nav__link" {% if level == "REGION" %} aria-current="true"{% endif %} href="{% url "project:report_artif" project.id %}?level_conso=REGION">Régions</a>
+                                    </li>
+                                    {% endif %}
+                                </ul>
+                            </div>
+    
+                            <div class="dropdown custom-dropdown fr-mr-2w" data-toggle="tooltip" title="Exporter le graphique">
+                                <button class="fr-btn fr-icon-download-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="dropdown" aria-expanded="false"></button>
+        
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_comparison" data-type="image/png">PNG</a>
+                                    </li>
+                                    <li>
+                                        <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_comparison" data-type="image/jpeg">JPEG</a>
+                                    </li>
+                                    <li>
+                                        <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_comparison" data-type="application/pdf">PDF</a>
+                                    </li>
+                                    <li>
+                                        <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_comparison" data-type="image/svg+xml">Vectoriel</a>
+                                    </li>
+                                </ul>
+                            </div>
+    
+                            <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm fullscreen-chart" data-chart-target="chart_comparison" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
+                        </div>
+                        <div id="chart_comparison"></div>
+                    </div>
+                </div>
+                <div class="fr-col-12 fr-col-lg-4">
+                    <div class="border theme-map-image-container h-100 fr-p-2w d-flex flex-column align-items-center justify-content-between">
+                        <div class="d-flex justify-content-end align-items-center w-100 fr-mb-2w">
+                            <a href="{% url 'project:theme-city-artif' project.pk %}" target="_blank">
+                                <button class="fr-btn fr-icon-external-link-line fr-btn--tertiary fr-btn--sm"></button>
+                            </a>
+                        </div>
+                        <p class="fw-bold">Carte artificialisation des communes du territoire sur la période (en Ha)</p>
+                        {% if project.theme_map_artif %}
+                        <img src="{{ project.theme_map_artif.url }}" alt="Carte artificialisation des communes du territoire sur la période (en Ha)">
+                        {% else %}
+                        <div class="skeleton-loader"></div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="fr-callout bg-white fr-p-2w mt-4">
+                <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data-1">Données</button>
+                <div class="fr-collapse" id="target-data-1">
+                    <h6 class="fr-mt-2w">Source</h6>
+                    <p>Données d'OCcupation des Sols à Grande Echelle (OCS GE) de l'IGN, sur la période d'analyse.</p>
+
+                    <h6 class="fr-mt-2w">Calcul</h6>
+                    <p>OCS GE traduite grâce à la matrice de passage.</p>
+
+                    <h6 class="fr-mt-2w">Données</h6>
+
+                    <table class="table table-striped table-sm table-borderless mt-5">
+                        <thead>
+                            <tr>
+                              <th scope="col" rowspan="2">Commune</th>
+                              <th scope="col" class="text-end" rowspan="2">Surface</th>
+                              {% for period in table_artif_net_periods %}
+                                <th scope="col" colspan="3">{{ period }}</th>
+                              {% endfor %}
+                              <th scope="col" class="text-end" rowspan="2">Artificialisation nette totale</th>
+                              <th scope="col" class="text-end" rowspan="2">Pourcentage d'artificialisation nette total</th>
+                            </tr>
+                            <tr>
+                              {% for period in table_artif_net_periods %}
+                                  <th scope="col" class="text-end">Artificialisation</th>
+                                  <th scope="col" class="text-end">Renaturation</th>
+                                  <th scope="col" class="text-end">Artificialisation nette</th>
+                              {% endfor %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for record in table_artif_net_records %}
+                              <tr>
+                                <td>{{ record.name }}</td>
+                                <td class="text-end">{{ record.area|floatformat:1 }}</td>
+                                {% for period in record.periods %}
+                                  <td class="text-end">{{ period.new_artif|floatformat:1 }}</td>
+                                  <td class="text-end">{{ period.new_natural|floatformat:1 }}</td>
+                                  <td class="text-end">{{ period.net_artif|floatformat:1 }}</td>
+                                {% endfor %}
+                                <td class="text-end">{{ record.total_net_artif|floatformat:1 }}</td>
+                                <td class="text-end">{{ record.net_artif_percentage }}</td>
+                              </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        {% endif %}
 
         <div class="fr-mt-7w">
             <h2>Détails de l'artificialisation entre {{ first_millesime }} et {{ last_millesime }}</h2>
@@ -591,19 +607,3 @@ Rapport artificialisation
 
 {% endlocalize %}
 {% endblock bodyend %}
-
-{% block tagging %}
-<script language="javascript" nonce="{{ CSP_NONCE }}">
-$( window ).on('load', function () {
-    _paq.push(['trackEvent', 'Consultation diagnostic', 'Tableau de bord', 'Artificialisation'])
-})
-
-var fired = false
-$( window ).scroll(function() {
-    if(fired == false && $( window ).scrollTop() + $( window ).height() > $( "#block-content" ).height() - 100) {
-        _paq.push(['trackEvent', 'Consultation diagnostic', 'Fin tableau de bord', 'Artificialisation'])
-        fired = true
-    }
-})
-</script>
-{% endblock tagging %}

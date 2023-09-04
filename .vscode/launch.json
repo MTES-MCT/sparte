@@ -22,26 +22,6 @@
       "django": true
     },
     {
-      "name": "Debug Django in container",
-      "type": "docker",
-      "request": "launch",
-      "preLaunchTask": "docker-run: debug",
-      "python": {
-        "pathMappings": [
-          {
-            "localRoot": "${workspaceFolder}",
-            "remoteRoot": "/app"
-          }
-        ],
-        "projectType": "django"
-      },
-      "dockerServerReadyAction": {
-        "action": "openExternally",
-        "pattern": "Running on (http?://\\S+|[0-9]+)",
-        "uriFormat": "%s://localhost:%s/"
-      }
-    },
-    {
       "name": "Runserver",
       "type": "python",
       "request": "launch",
@@ -53,14 +33,31 @@
       "justMyCode": true
     },
     {
+      "name": "Debug Celery",
+      "type": "python",
+      "request": "launch",
+      "module": "celery",
+      "args": [
+        "-A",
+        "config.celery",
+        "worker",
+        "--loglevel",
+        "info",
+        "--pool",
+        "solo"
+      ],
+      "cwd": "${workspaceFolder}",
+      "django": true,
+      "justMyCode": true,
+      "console": "integratedTerminal"
+    },
+    {
       "name": "Mgt cmd",
       "type": "python",
       "request": "launch",
       "program": "${workspaceFolder}/manage.py",
       "args": [
-        "${fileBasenameNoExtension}",
-        "--dept",
-        "32"
+        "${fileBasenameNoExtension}"
       ],
       "django": true,
       "justMyCode": true

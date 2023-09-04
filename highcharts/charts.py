@@ -31,8 +31,21 @@ class Chart:
 
     def get_param(self) -> Dict[str, Any]:
         param = copy.deepcopy(self.param)
-        param["navigation"] = {"buttonOptions": {"enabled": False}}
-        param["credits"] = {"enabled": False}
+        param |= {
+            "navigation": {"buttonOptions": {"enabled": False}},
+            "credits": {"enabled": False},
+            "legend": {**param.get("legend", {}), "width": 200, "itemStyle": {"word-wrap": "break-word"}},
+            "responsive": {
+                "rules": [
+                    {
+                        "condition": {"maxWidth": 600},
+                        "chartOptions": {
+                            "legend": {"align": "center", "verticalAlign": "bottom", "layout": "horizontal"}
+                        },
+                    }
+                ]
+            },
+        }
         return param
 
     def get_options(self, serie_name) -> Dict[str, Any]:

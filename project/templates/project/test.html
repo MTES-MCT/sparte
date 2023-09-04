@@ -1,42 +1,24 @@
 {% extends "index.html" %}
 
 {% load static %}
-{% load project_tags %}
-{% load humanize %}
-{% load i18n %}
-{% load l10n %}
-{% load highcharts_tags %}
-{% load sri %}
 
 {% block pagetitle %}
-Test
+Test Ad Words
 {% endblock pagetitle %}
 
 {% block content %}
-
-<button id="blue">Confirmer la suppression</button>
-
-<script language="javascript">
-    document.getElementById("blue").addEventListener("click", function() {
-        document.getElementById("blue").
-        document.body.dispatchEvent(new Event("my-custo-evt"))
-    });
-
-    document.body.addEventListener("my-custo-evt", function (evt) {
-        alert("Hello World!")
-    })
-
-</script>
-
-<div hx-get="{% url 'project:map-pane-artif-zone-urba' 1504 599878 %}" hx-trigger="click">Get it!</div>
+Test Ad Words
 {% endblock content %}
 
-{% endblock bodyend %}
-{% localize off %}
-{% sri_static "highcharts/js/highcharts.js" %}
-{% sri_static "highcharts/js/exporting.js" %}
-{% sri_static "highcharts/js/sankey.js" %}
-{% sri_static "highcharts/js/dependency-wheel.js" %}
-{% french_translation %}
-{% endlocalize %}
-{% endblock bodyend %}
+{% block tagging %}
+<script language="javascript" nonce="{{ CSP_NONCE }}">
+$( window ).on('load', function () {
+    // Google adwords
+    gtag('event', 'conversion', {
+        'send_to': 'AW-11157347812/iZaJCM7iz6kYEOS7nsgp',
+        'value': 5.0,
+        'event_callback': function () { }
+    });
+})
+</script>
+{% endblock tagging %}

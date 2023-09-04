@@ -1,0 +1,2 @@
+class TooOldException(Exception):
+    pass

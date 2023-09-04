@@ -59,7 +59,7 @@ Synthèse
       {% endif %}
 
       <div class="fr-mt-7w">
-        <h2>Objectif 2031</h2>
+        <h2>Trajectoires</h2>
         <h4>Estimation de la trajectoire 2031</h4>
         <div class="fr-grid-row fr-grid-row--gutters">
           <div class="fr-col-12 fr-col-md-6 fr-grid-row">
@@ -71,12 +71,12 @@ Synthèse
           <div class="fr-col-12 fr-col-md-6 fr-grid-row">
             <div class="fr-callout w-100">
               <p class="fr-callout__title">+{{ objective_chart.conso_2031|floatformat:1 }} ha</p>
-              <p>Consommation d'espaces totale maximale pour 2021-2031 sur la base d'une réduction de {{ diagnostic.target_2031 }}%</p>
+              <p>Consommation cumulée de la période du 1er jan. 2021 au 31 déc. 2030 (10 ans) avec un seuil de réduction de {{ diagnostic.target_2031 }}%</p>
             </div>
           </div>
         </div>
         <div>
-          <a class="fr-link" href="{% url 'project:report_target_2031' diagnostic.pk %}">Consulter l'objectif 2031</a>
+          <a class="fr-link" href="{% url 'project:trajectory:home' diagnostic.pk %}">Consulter l'objectif 2031</a>
         </div>
         <div class="fr-callout bg-white fr-p-2w mt-4">
           <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data-1">Données</button>
@@ -84,7 +84,7 @@ Synthèse
               <h6 class="fr-mt-2w">Source</h6>
               <p>Données d'évolution des fichiers fonciers du Cérema issus des données MAJIC (Mise A Jour de l'Information Cadastrale) de la DGFIP (millésime min : 2009, millésime max : 2020).</p>
               <h6 class="fr-mt-2w">Calcul</h6>
-              <p>La consommation 2021-2031 doit être la moitié de celle de 2011-2021.</p>
+              <p>La Loi Climat & Résilience recommande entre 2021 et 2031 à l'échelle régionale, de diviser par 2 la consommation d'espaces Naturels, Agricoles et Forestiers (NAF) mesurée entre 2011 et 2021 ; le même calcul a été appliqué à l'échelle du territoire comme scénario standard.</p>
           </div>
         </div>
       </div>
@@ -166,16 +166,8 @@ Synthèse
 
 {% block tagging %}
 <script language="javascript" nonce="{{ CSP_NONCE }}">
-$( window ).on('load', function () {
-    _paq.push(['trackEvent', '', '', 'open_dashboard_synthesis'])
-})
-
-var fired = false
-$( window ).scroll(function() {
-    if(fired == false && $( window ).scrollTop() + $( window ).height() > $( "#block-content" ).height() - 100) {
-        _paq.push(['trackEvent', '', '', 'end_dashboard_synthesis'])
-        fired = true
-    }
-})
+window.onload = function(event) {
+  _paq.push(['trackEvent', 'north_star_activation_funnel', 'open_dashboard_synthesis', 'step_2_north_star_activation_funnel'])
+}
 </script>
 {% endblock tagging %}

@@ -202,11 +202,3 @@ $('#id_departement').on('change', function(){ $(this).closest('form').submit() }
 $('#id_epci').on('change', function(){ $(this).closest('form').submit() })
 </script>
 {% endblock bodyend %}
-
-{% block tagging %}
-<script language="javascript" nonce="{{ CSP_NONCE }}">
-$( window ).on('load', function () {
-    _paq.push(['trackEvent', 'Création diagnostic', 'Entry point', 'parcours 4'])
-})
-</script>
-{% endblock tagging %}
