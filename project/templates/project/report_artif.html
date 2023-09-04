@@ -80,8 +80,7 @@ Rapport artificialisation
         </div>
 
         <div class="fr-mt-12w">
-            <h2>Evolution en volume de {{ diagnostic.analyse_start_date }} à {{ diagnostic.analyse_end_date }}</h2>
-            <p>Sur la période demandée, l'OCS GE couvre de {{ first_millesime }} à {{ last_millesime }}.</p>
+            <h2>Evolution en volume de {{ first_millesime }} à {{ last_millesime }}</h2>
             <div class="fr-grid-row fr-grid-row--gutters">
               <div class="fr-col-12 fr-col-md-6 fr-col-lg-3 fr-grid-row">
                 <div class="fr-callout w-100">
@@ -113,7 +112,7 @@ Rapport artificialisation
         <div class="fr-mt-12w">
             <h2>Aperçu de l'artificialisation</h2>
 
-            <h3>Evolution de l'artificialisation entre {{ diagnostic.analyse_start_date }} et {{ diagnostic.analyse_end_date }}</h3>
+            <h3>Evolution de l'artificialisation entre {{ first_millesime }} et {{ last_millesime }}</h3>
 
             <div class="fr-grid-row fr-grid-row--gutters">
                 <div class="fr-col-12 fr-col-lg-8">
@@ -197,7 +196,7 @@ Rapport artificialisation
 
         {% if nb_communes > 1 %}
         <div class="fr-mt-12w">
-            <h3 id="conso-annuelle">Artificialisation nette entre {{ diagnostic.analyse_start_date }} et {{ diagnostic.analyse_end_date }}</h3>
+            <h3 id="conso-annuelle">Artificialisation nette entre {{ first_millesime }} et {{ last_millesime }}</h3>
 
             <div class="fr-grid-row fr-grid-row--gutters">
                 <div class="fr-col-12 fr-col-lg-8">
@@ -261,9 +260,9 @@ Rapport artificialisation
                                 <button class="fr-btn fr-icon-external-link-line fr-btn--tertiary fr-btn--sm"></button>
                             </a>
                         </div>
-                        <p class="fw-bold">Carte artificialisation d'espaces des communes du territoire sur la période (en Ha)</p>
+                        <p class="fw-bold">Carte artificialisation des communes du territoire sur la période (en Ha)</p>
                         {% if project.theme_map_artif %}
-                        <img src="{{ project.theme_map_artif.url }}" alt="Carte artificialisation d'espaces des communes du territoire sur la période (en Ha)">
+                        <img src="{{ project.theme_map_artif.url }}" alt="Carte artificialisation des communes du territoire sur la période (en Ha)">
                         {% else %}
                         <div class="skeleton-loader"></div>
                         {% endif %}

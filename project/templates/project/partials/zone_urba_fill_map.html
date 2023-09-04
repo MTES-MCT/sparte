@@ -1,8 +1,10 @@
 <div id="target-zone-urba-fill-map" class="border theme-map-image-container h-100 fr-p-2w d-flex flex-column align-items-center justify-content-between">
     <div class="d-flex justify-content-end align-items-center w-100 fr-mb-2w">
-        <a href="{% url 'project:map-urban-zones' diagnostic.pk %}" target="_blank">
-            <button class="fr-btn fr-icon-external-link-line fr-btn--tertiary fr-btn--sm"></button>
-        </a>
+        {% if diagnostic.theme_map_fill_gpu %}
+            <a href="{{ diagnostic.theme_map_fill_gpu.url }}" target="_blank">
+                <button class="fr-btn fr-icon-external-link-line fr-btn--tertiary fr-btn--sm"></button>
+            </a>
+        {% endif %}
     </div>
     <p class="fw-bold">Carte présentant le remplissage des zones U, AUs et AUc</p>
     {% if diagnostic.theme_map_fill_gpu %}

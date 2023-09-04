@@ -728,7 +728,7 @@ class Project(BaseProject):
             .annotate(
                 period=Concat("year_old", Value(" - "), "year_new", output_field=models.CharField()),
                 name=F("city__name"),
-                area=F("city__area"),
+                area=F("city__area") / 10000,
             )
             .order_by("name", "period", "year_old", "year_new")
             .values("name", "period", "year_old", "year_new", "area")
@@ -796,6 +796,8 @@ class Project(BaseProject):
             qs = qs.annotate(name=F("city__epci__name"))
         elif analysis_level == "REGION":
             qs = qs.annotate(name=F("city__departement__region__name"))
+        elif analysis_level == "SCOT":
+            qs = qs.annotate(name=F("city__scot__name"))
         else:
             qs = qs.annotate(name=F("city__name"))
         qs = qs.filter(year_old__gte=self.analyse_start_date, year_new__lte=self.analyse_end_date)
