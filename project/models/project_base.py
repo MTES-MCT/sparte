@@ -117,11 +117,11 @@ class BaseProject(models.Model):
             return None
 
     @cached_property
-    def area(self):
+    def area(self) -> float:
         try:
-            return self.combined_emprise.transform(2154, clone=True).area / 10000
+            return float(self.combined_emprise.transform(2154, clone=True).area / 10000)
         except AttributeError:
-            return 0
+            return float(0)
 
     def __str__(self):
         return self.name

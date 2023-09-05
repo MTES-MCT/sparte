@@ -192,9 +192,9 @@ class LandMixin:
         return f"{self.land_type}_{self.id}"
 
     @cached_property
-    def area(self):
+    def area(self) -> float:
         """Return surface of the land in Ha"""
-        return self.mpoly.transform(2154, clone=True).area / 10000
+        return float(self.mpoly.transform(2154, clone=True).area / 10000)
 
     @classmethod
     def search(cls, needle, region=None, departement=None, epci=None):
