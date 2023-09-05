@@ -1,4 +1,5 @@
 import collections
+from decimal import Decimal
 from typing import Dict, List
 
 from django.contrib.gis.geos import MultiPolygon
@@ -36,15 +37,14 @@ class ConsoComparisonChart(ProjectChart):
             self.chart["tooltip"] = {"enabled": False}
 
     def get_series(self):
-        datas = dict()
-        for land in self.project.get_look_a_like():
-            coef = self.project.area / land.area if self.relative else 1
-            datas[land.name] = land.get_conso_per_year(
+        return {
+            land.name: land.get_conso_per_year(
                 self.project.analyse_start_date,
                 self.project.analyse_end_date,
-                coef=coef,
+                coef=self.project.area / (float(land.area) if self.relative else 1),
             )
-        return datas
+            for land in self.project.get_look_a_like()
+        }
 
     def add_series(self):
         self.add_serie(
@@ -194,7 +194,6 @@ class ObjectiveChart(ProjectChart):
                 "name": "Conso. cumulée réelle",
                 "data": list(),
                 "type": "line",
-
                 "color": "#95ceff",
                 "zIndex": 3,
             },
