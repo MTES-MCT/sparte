@@ -80,7 +80,7 @@ services:
     working_dir: /app
     volumes:
       - .:/app
-    command: celery -A config.celery worker --loglevel info --pool solo -Q quick
+    command: celery -A config.celery worker --loglevel info --pool solo
     # command: tail -F anything
     env_file: .env
     environment:
@@ -133,6 +133,16 @@ services:
     networks:
       - app-network
 
+  flower:
+    image: mher/flower
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - FLOWER_PORT=8887
+    networks:
+      - app-network
+    ports:
+      - 8887:8887
+
 
 networks:
   app-network:
@@ -140,13 +150,3 @@ networks:
 
 volumes:
   db_data:
-
-  # flower:
-  #   image: mher/flower
-  #   environment:
-  #     - CELERY_BROKER_URL=redis://redis:6379/0
-  #     - FLOWER_PORT=8887
-  #   networks:
-  #     - app-network
-  #   ports:
-  #     - 8887:8887
