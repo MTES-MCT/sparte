@@ -379,7 +379,7 @@ class ArtificialAreaViewSet(OnlyBoundingBoxMixin, ZoomSimplificationMixin, Optim
         "o.surface": "surface",
         "o.year": "year",
     }
-
+    optimized_geo_field = "st_AsGeoJSON(ST_Intersection(o.mpoly, b.box), 6, 0)"
     min_zoom = 12
 
     def get_zoom(self):
@@ -405,7 +405,7 @@ class ArtificialAreaViewSet(OnlyBoundingBoxMixin, ZoomSimplificationMixin, Optim
         ]
         if "project_id" in self.request.query_params:
             sql_from += [
-                "INNER JOIN (SELECT ST_Union(mpoly) as geom FROM project_emprise WHERE project_id = %s) as t",
+                "INNER JOIN (SELECT ST_Union(pe.mpoly) as geom FROM project_emprise pe WHERE project_id = %s) as t",
                 "ON ST_Intersects(o.mpoly, t.geom)",
             ]
         return " ".join(sql_from)
