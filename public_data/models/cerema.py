@@ -134,11 +134,14 @@ class Cerema(DataColorationMixin, models.Model):
     art09act22 = models.FloatField(null=True)
     art09hab22 = models.FloatField(null=True)
     art09mix22 = models.FloatField(null=True)
+    art09rou22 = models.FloatField(null=True)
+    art09fer22 = models.FloatField(null=True)
     art09inc22 = models.FloatField(null=True)
     artcom0922 = models.FloatField(null=True)
     aav2020 = models.CharField(max_length=80, null=True)
     libaav2020 = models.CharField(max_length=80, null=True)
-    aav2020_ty = models.CharField(max_length=80, null=True)
+    aav2020txt = models.CharField(max_length=1, null=True)
+    aav2020_ty = models.CharField(max_length=6, null=True)
     pop13 = models.BigIntegerField(null=True)
     pop19 = models.BigIntegerField(null=True)
     pop1319 = models.BigIntegerField(null=True)
@@ -152,31 +155,7 @@ class Cerema(DataColorationMixin, models.Model):
     menhab1319 = models.FloatField(null=True)
     artpop1319 = models.FloatField(null=True)
     surfcom2022 = models.FloatField(null=True)
-
-    # "naf09art22": "NAF09ART22",
-    # "art09act22": "ART09ACT22",
-    # "art09hab22": "ART09HAB22",
-    # "art09mix22": "ART09MIX22",
-    # "art09inc22": "ART09INC22",
-    # "art09rou22": "ART09ROU22",
-    # "art09fer22": "ART09FER22",
-    # "artcom2020": "ARTCOM2020",
-    # "pop13": "POP13",
-    # "pop19": "POP19",
-    # "pop1319": "POP1319",
-    # "men13": "MEN13",
-    # "men19": "MEN19",
-    # "men1319": "MEN1319",
-    # "emp13": "EMP13",
-    # "emp19": "EMP19",
-    # "emp1319": "EMP1319",
-    # "mepart1319": "MEPART1319",
-    # "menhab1319": "MENHAB1319",
-    # "artpop1319": "ARTPOP1319",
-    # "surfcom202": "SURFCOM202",
-    # "aav2020": "AAV2020",
-    # "aav2020txt": "AAV2020TXT",
-    # "aav2020_ty": "AAV2020_TY",
+    artcom2020 = models.FloatField(null=True)
 
     # calculated field :
     naf11art21 = models.FloatField(null=True)
