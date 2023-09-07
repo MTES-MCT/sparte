@@ -36,65 +36,108 @@ class Cerema(DataColorationMixin, models.Model):
     dept_name = models.CharField(max_length=50, db_index=True)
     epci_id = models.CharField(max_length=50, db_index=True)
     epci_name = models.CharField(max_length=70, db_index=True)
-    aav2020 = models.CharField(max_length=80, null=True)
-    libaav2020 = models.CharField(max_length=80, null=True)
-    aav2020_ty = models.CharField(max_length=80, null=True)
+    scot = models.CharField(max_length=254, null=True)
     naf09art10 = models.FloatField(null=True)
     art09act10 = models.FloatField(null=True)
     art09hab10 = models.FloatField(null=True)
     art09mix10 = models.FloatField(null=True)
+    art09rou10 = models.FloatField(null=True)
+    art09fer10 = models.FloatField(null=True)
     art09inc10 = models.FloatField(null=True)
     naf10art11 = models.FloatField(null=True)
     art10act11 = models.FloatField(null=True)
     art10hab11 = models.FloatField(null=True)
     art10mix11 = models.FloatField(null=True)
+    art10rou11 = models.FloatField(null=True)
+    art10fer11 = models.FloatField(null=True)
     art10inc11 = models.FloatField(null=True)
     naf11art12 = models.FloatField(null=True)
     art11act12 = models.FloatField(null=True)
     art11hab12 = models.FloatField(null=True)
     art11mix12 = models.FloatField(null=True)
+    art11rou12 = models.FloatField(null=True)
+    art11fer12 = models.FloatField(null=True)
     art11inc12 = models.FloatField(null=True)
     naf12art13 = models.FloatField(null=True)
     art12act13 = models.FloatField(null=True)
     art12hab13 = models.FloatField(null=True)
     art12mix13 = models.FloatField(null=True)
+    art12rou13 = models.FloatField(null=True)
+    art12fer13 = models.FloatField(null=True)
     art12inc13 = models.FloatField(null=True)
     naf13art14 = models.FloatField(null=True)
     art13act14 = models.FloatField(null=True)
     art13hab14 = models.FloatField(null=True)
     art13mix14 = models.FloatField(null=True)
+    art13rou14 = models.FloatField(null=True)
+    art13fer14 = models.FloatField(null=True)
     art13inc14 = models.FloatField(null=True)
     naf14art15 = models.FloatField(null=True)
     art14act15 = models.FloatField(null=True)
     art14hab15 = models.FloatField(null=True)
     art14mix15 = models.FloatField(null=True)
+    art14rou15 = models.FloatField(null=True)
+    art14fer15 = models.FloatField(null=True)
     art14inc15 = models.FloatField(null=True)
     naf15art16 = models.FloatField(null=True)
     art15act16 = models.FloatField(null=True)
     art15hab16 = models.FloatField(null=True)
     art15mix16 = models.FloatField(null=True)
+    art15rou16 = models.FloatField(null=True)
+    art15fer16 = models.FloatField(null=True)
     art15inc16 = models.FloatField(null=True)
     naf16art17 = models.FloatField(null=True)
     art16act17 = models.FloatField(null=True)
     art16hab17 = models.FloatField(null=True)
     art16mix17 = models.FloatField(null=True)
+    art16rou17 = models.FloatField(null=True)
+    art16fer17 = models.FloatField(null=True)
     art16inc17 = models.FloatField(null=True)
     naf17art18 = models.FloatField(null=True)
     art17act18 = models.FloatField(null=True)
     art17hab18 = models.FloatField(null=True)
     art17mix18 = models.FloatField(null=True)
+    art17rou18 = models.FloatField(null=True)
+    art17fer18 = models.FloatField(null=True)
     art17inc18 = models.FloatField(null=True)
     naf18art19 = models.FloatField(null=True)
     art18act19 = models.FloatField(null=True)
     art18hab19 = models.FloatField(null=True)
     art18mix19 = models.FloatField(null=True)
+    art18rou19 = models.FloatField(null=True)
+    art18fer19 = models.FloatField(null=True)
     art18inc19 = models.FloatField(null=True)
     naf19art20 = models.FloatField(null=True)
     art19act20 = models.FloatField(null=True)
     art19hab20 = models.FloatField(null=True)
     art19mix20 = models.FloatField(null=True)
+    art19rou20 = models.FloatField(null=True)
+    art19fer20 = models.FloatField(null=True)
     art19inc20 = models.FloatField(null=True)
-    # changed fields 2021
+    naf20art21 = models.FloatField(null=True)
+    art20act21 = models.FloatField(null=True)
+    art20hab21 = models.FloatField(null=True)
+    art20mix21 = models.FloatField(null=True)
+    art20rou21 = models.FloatField(null=True)
+    art20fer21 = models.FloatField(null=True)
+    art20inc21 = models.FloatField(null=True)
+    naf21art22 = models.FloatField(null=True)
+    art21act22 = models.FloatField(null=True)
+    art21hab22 = models.FloatField(null=True)
+    art21mix22 = models.FloatField(null=True)
+    art21rou22 = models.FloatField(null=True)
+    art21fer22 = models.FloatField(null=True)
+    art21inc22 = models.FloatField(null=True)
+    # Data stored without current usage
+    naf09art21 = models.FloatField(null=True)
+    art09act21 = models.FloatField(null=True)
+    art09hab21 = models.FloatField(null=True)
+    art09mix21 = models.FloatField(null=True)
+    art09inc21 = models.FloatField(null=True)
+    artcom0921 = models.FloatField(null=True)
+    aav2020 = models.CharField(max_length=80, null=True)
+    libaav2020 = models.CharField(max_length=80, null=True)
+    aav2020_ty = models.CharField(max_length=80, null=True)
     pop13 = models.BigIntegerField(null=True)
     pop18 = models.BigIntegerField(null=True)
     pop1318 = models.BigIntegerField(null=True)
@@ -108,27 +151,32 @@ class Cerema(DataColorationMixin, models.Model):
     menhab1318 = models.FloatField(null=True)
     artpop1318 = models.FloatField(null=True)
     surfcom202 = models.FloatField(null=True)
-    # new fields 2021
-    scot = models.CharField(max_length=254, null=True)
-    naf20art21 = models.FloatField(null=True)
-    art20act21 = models.FloatField(null=True)
-    art20hab21 = models.FloatField(null=True)
-    art20mix21 = models.FloatField(null=True)
-    art20inc21 = models.FloatField(null=True)
-    naf09art21 = models.FloatField(null=True)
-    art09act21 = models.FloatField(null=True)
-    art09hab21 = models.FloatField(null=True)
-    art09mix21 = models.FloatField(null=True)
-    art09inc21 = models.FloatField(null=True)
-    artcom0921 = models.FloatField(null=True)
-    # deleted fields 2021
-    # nafart0920 = models.FloatField(null=True)
-    # artact0920 = models.FloatField(null=True)
-    # arthab0920 = models.FloatField(null=True)
-    # artmix0920 = models.FloatField(null=True)
-    # artinc0920 = models.FloatField(null=True)
-    # artcom0920 = models.FloatField(null=True)
-    # cateaav202 = models.BigIntegerField(null=True)
+
+    # "naf09art22": "NAF09ART22",
+    # "art09act22": "ART09ACT22",
+    # "art09hab22": "ART09HAB22",
+    # "art09mix22": "ART09MIX22",
+    # "art09inc22": "ART09INC22",
+    # "art09rou22": "ART09ROU22",
+    # "art09fer22": "ART09FER22",
+    # "artcom2020": "ARTCOM2020",
+    # "pop13": "POP13",
+    # "pop19": "POP19",
+    # "pop1319": "POP1319",
+    # "men13": "MEN13",
+    # "men19": "MEN19",
+    # "men1319": "MEN1319",
+    # "emp13": "EMP13",
+    # "emp19": "EMP19",
+    # "emp1319": "EMP1319",
+    # "mepart1319": "MEPART1319",
+    # "menhab1319": "MENHAB1319",
+    # "artpop1319": "ARTPOP1319",
+    # "surfcom202": "SURFCOM202",
+    # "aav2020": "AAV2020",
+    # "aav2020txt": "AAV2020TXT",
+    # "aav2020_ty": "AAV2020_TY",
+
     # calculated field :
     naf11art21 = models.FloatField(null=True)
     art11hab21 = models.FloatField(null=True)
