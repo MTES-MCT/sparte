@@ -189,10 +189,10 @@ class Cerema(DataColorationMixin, models.Model):
         """
         end = int(end) - 2000
         start = int(start) - 2000
-        if not 9 <= start <= 20:
-            raise ValueError("'start' must be between 2009 and 2020")
-        if not 10 <= end <= 20:
-            raise ValueError("'end' must be between 2010 and 2020")
+        if not 9 <= start <= 21:
+            raise ValueError("'start' must be between 2009 and 2022")
+        if not 10 <= end <= 21:
+            raise ValueError("'end' must be between 2010 and 2022")
         if end < start:
             raise ValueError("start must be <= to end")
         return [f"naf{i:0>2}art{i+1:0>2}" for i in range(start, end + 1)]
@@ -204,4 +204,4 @@ class Cerema(DataColorationMixin, models.Model):
         code
         From : naf09art10 (year 2009) to naf19art20 (year 2020)
         """
-        return [f"naf{y:0>2}art{y+1:0>2}" for y in range(9, 19 + 1)]
+        return [f"naf{y:0>2}art{y+1:0>2}" for y in range(9, 21 + 1)]
