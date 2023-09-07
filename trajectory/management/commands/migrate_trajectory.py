@@ -34,13 +34,12 @@ class Command(BaseCommand):
         logger.info(f"To process = {total}")
         for i, trajectory in enumerate(qs):
             trajectory.data = {
-                y: {"value": get_value(v), "updated": get_updated(v)} for y, v in trajectory.data.items() if int(y) >= 2021
+                y: v
+                for y, v in trajectory.data.items()
+                if int(y) >= 2022
             }
+            trajectory.start = 2022
             trajectory.save()
-            stat = StatDiagnostic.get_or_create(trajectory.project)
-            if not stat.analysis_level:
-                stat.update_with_project(trajectory.project)
-            stat.update_with_trajectory(trajectory)
             if i % 100 == 0:
                 print(f"{i + 1}/{total}")
         print(f"{i + 1}/{total}")
