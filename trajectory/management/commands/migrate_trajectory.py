@@ -2,7 +2,6 @@ import logging
 
 from django.core.management.base import BaseCommand
 
-from metabase.models import StatDiagnostic
 from trajectory.models import Trajectory
 
 logger = logging.getLogger("management.commands")
