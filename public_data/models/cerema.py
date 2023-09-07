@@ -183,7 +183,7 @@ class Cerema(DataColorationMixin, models.Model):
         ['naf15art16', 'naf16art17', 'naf17art18', 'naf18art19']
         >>> Cerema.get_art_field(2014, 2014)
         ['naf14art15']
-        >>> Cerema.get_art_field(2008, 2021)
+        >>> Cerema.get_art_field(2008, 2030)
         Exception: ValueError
         ```
         """
