@@ -561,6 +561,8 @@ class Project(BaseProject):
             "hab": "Habitat",
             "act": "Activité",
             "mix": "Mixte",
+            "rou": "Route",
+            "fer": "Ferré",
             "inc": "Non renseigné",
         }
         results = {f: dict() for f in determinants.values()}
