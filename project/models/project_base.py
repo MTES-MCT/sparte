@@ -586,7 +586,7 @@ class Project(BaseProject):
     def get_bilan_conso_per_year(self):
         """Return the space consummed per year between 2011 and 2020"""
         qs = self.get_cerema_cities().aggregate(
-            **{f"20{f[3:5]}": Sum(f) / 10000 for f in Cerema.get_art_field("2011", "2020")}
+            **{f"20{f[3:5]}": Sum(f) / 10000 for f in Cerema.get_art_field("2011", "2021")}
         )
         return qs
 

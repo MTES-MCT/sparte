@@ -79,10 +79,10 @@ class ProjectReportTrajectoryConsumptionView(StandAloneMixin, FormView):
         trajectory_chart = self.trajectory_chart
         kwargs |= {
             "diagnostic": self.diagnostic,
-            "choices": [str(i) for i in range(2021, 2051)],
+            "choices": [str(i) for i in range(2022, 2051)],
             "cumul": trajectory_chart.total_real,
             "avg_2031": trajectory_chart.annual_objective_2031,
-            "start_year": "2021",
+            "start_year": "2022",
         }
         # if "form" not in kwargs:
         kwargs["form"] = self.get_form()
@@ -106,14 +106,14 @@ class ProjectReportTrajectoryConsumptionView(StandAloneMixin, FormView):
             if not trajectory:
                 trajectory = self.diagnostic.trajectory_set.create(
                     name="default",
-                    start=2021,
+                    start=2022,
                     end=2030,
                     data={
                         year: {
                             "value": self.trajectory_chart.annual_objective_2031,
                             "updated": False,
                         }
-                        for year in range(2021, int(end_form.cleaned_data["end"]) + 1)
+                        for year in range(2022, int(end_form.cleaned_data["end"]) + 1)
                     },
                 )
             trajectory.end = end_form.cleaned_data["end"]
@@ -125,7 +125,7 @@ class ProjectReportTrajectoryConsumptionView(StandAloneMixin, FormView):
                         "value": form.cleaned_data[f"year_{y}"],
                         "updated": form.cleaned_data[f"year_updated_{y}"],
                     }
-                    for y in range(2021, int(end_form.cleaned_data["end"]) + 1)
+                    for y in range(2022, int(end_form.cleaned_data["end"]) + 1)
                 }
                 trajectory.save()
                 return self.form_valid(form)
