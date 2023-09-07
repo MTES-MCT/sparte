@@ -657,6 +657,7 @@ def alert_on_blocked_diagnostic(self):
                     params={
                         "qte_diagnostics": total,
                         "diagnostic_list": diagnostic_list,
+                        "enviroment": settings.ENVIRONMENT,
                     },
                 )
                 logger.info(email.send())
