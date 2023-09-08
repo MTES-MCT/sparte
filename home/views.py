@@ -140,3 +140,7 @@ class AllEmailsView(UserPassesTestMixin, TemplateView):
 
         kwargs.update({"email_list": email_list})
         return super().get_context_data(**kwargs)
+
+
+class MaintenanceView(TemplateView):
+    template_name = "home/maintenance.html"

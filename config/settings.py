@@ -53,6 +53,8 @@ ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["127.0.0.1", "localhost"])
 
 DOMAIN_URL = env.str("DOMAIN_URL")
 
+MAINTENANCE_MODE = env.bool("MAINTENANCE_MODE", default=False)
+
 # Application definition
 
 DJANGO_APPS = [
@@ -103,6 +105,7 @@ INSTALLED_APPS = DJANGO_APPS + RESTFRAMEWORK_APPS + THIRD_APPS + PROJECT_APPS
 MIDDLEWARE = [
     "django.middleware.gzip.GZipMiddleware",
     "config.middlewares.LogIncomingRequest",
+    "config.middlewares.MaintenanceModeMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
