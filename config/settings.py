@@ -53,8 +53,6 @@ ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["127.0.0.1", "localhost"])
 
 DOMAIN_URL = env.str("DOMAIN_URL")
 
-MAINTENANCE_MODE = env.bool("MAINTENANCE_MODE", default=False)
-
 # Application definition
 
 DJANGO_APPS = [

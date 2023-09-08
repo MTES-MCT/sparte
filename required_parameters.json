@@ -62,5 +62,12 @@
         "value_type": "STR",
         "value": "http://sparte-metabase.osc-secnum-fr1.scalingo.io/public/dashboard/67c2adfb-b21d-4d53-bd88-2be2186eccd6",
         "is_global": false
+    },
+    {
+        "name": "Mise en maintenance du site",
+        "slug": "MAINTENANCE_MODE",
+        "value_type": "BOO",
+        "value": "0",
+        "is_global": false
     }
 ]
