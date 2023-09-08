@@ -3,6 +3,7 @@ from django.contrib import messages
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.db.models import F, Value
 from django.http import HttpResponseRedirect
+from django.shortcuts import redirect
 from django.views.generic import CreateView, FormView, RedirectView, TemplateView
 from django_app_parameter import app_parameter
 
@@ -157,6 +158,8 @@ class MaintenanceView(StandAloneMixin, HtmxRedirectMixin, TemplateView):
 
     def get(self, request, *args, **kwargs):
         if not app_parameter.MAINTENANCE_MODE:
-            return self.htmx_redirect()
-
+            if request.META.get('HTTP_HX_REQUEST'):
+                return self.htmx_redirect()
+            else:
+                return redirect(self.request.GET.get('next', '/'))
         return super().get(request, *args, **kwargs)
