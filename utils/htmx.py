@@ -4,6 +4,8 @@ Contains mixins and other miscallenous tools for HTMX
 
 from typing import Any, Dict, List
 
+from django.http import HttpResponse
+
 
 class StandAloneMixin:
     """Enable a fragment view to be open on standalone mode using base template."""
@@ -37,3 +39,16 @@ class StandAloneMixin:
         if self.htmx is None:
             kwargs |= {"fragment_template_name": self.template_name}  # type: ignore
         return super().get_context_data(**kwargs)  # type: ignore
+
+
+class HtmxRedirectMixin:
+    redirect_url = ""
+
+    def get_redirect_url(self):
+        return self.redirect_url
+
+    def htmx_redirect(self):
+        # HX-Redirect
+        response = HttpResponse()
+        response["HX-Redirect"] = self.get_redirect_url()
+        return response

@@ -1,3 +1,4 @@
+from typing import Any
 from django.contrib import messages
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.db.models import F, Value
@@ -7,6 +8,8 @@ from django_app_parameter import app_parameter
 
 from project.models import Request
 from users.models import User
+from utils.functions import get_url_with_domain
+from utils.htmx import HtmxRedirectMixin, StandAloneMixin
 from utils.views_mixins import BreadCrumbMixin
 
 from . import charts
@@ -140,3 +143,20 @@ class AllEmailsView(UserPassesTestMixin, TemplateView):
 
         kwargs.update({"email_list": email_list})
         return super().get_context_data(**kwargs)
+
+
+class MaintenanceView(StandAloneMixin, HtmxRedirectMixin, TemplateView):
+    template_name = "home/partials/maintenance.html"
+
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        kwargs["next"] = self.request.GET.get("next", "/")
+        return super().get_context_data(**kwargs)
+
+    def get_redirect_url(self):
+        return get_url_with_domain(self.request.GET.get('next', '/'))
+
+    def get(self, request, *args, **kwargs):
+        if not app_parameter.MAINTENANCE_MODE:
+            return self.htmx_redirect()
+
+        return super().get(request, *args, **kwargs)
