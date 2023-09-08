@@ -4,6 +4,7 @@
 @import '@gouvfr/dsfr/dist/utility/icons/icons-business/icons-business.min.css';
 @import 'leaflet/dist/leaflet.css';
 @import '/assets/styles/map.css';
+@import 'maplibre-gl/dist/maplibre-gl.css';
 
 /*
 Header logo
