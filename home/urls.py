@@ -31,6 +31,7 @@ urlpatterns = [
         views.AllEmailsView.as_view(),
         name="all-emails",
     ),
+    path('maintenance', views.MaintenanceView.as_view(), name='maintenance_mode'),
 ]
 
 router = routers.DefaultRouter()
