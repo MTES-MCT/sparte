@@ -1,17 +1,23 @@
 {% extends "index.html" %}
 
 {% load static %}
+{% load sri %}
 
 {% block pagetitle %}Maintenance{% endblock pagetitle %}
 
-<!-- Hide breadcrumbs on home page -->
-{% block breadcrumbs %}
-{% endblock breadcrumbs %}
+{% block headers %}
+{% sri_static "home/css/home.css" %}
+{% endblock headers %}
 
 {% block content %}
-    <h1>Maintenance</h1>
-    <p>
-        L'application est en cours de maintenance. Nous nous efforçons d'écourter son indisponibilité. Merci pour votre
-        compréhension.
-    </p>
+<div class="d-flex justify-content-center fr-pb-2w">
+    <div class="home-container">
+        <img class="fr-responsive-img" src="{% static 'home/img/maintenance.svg' %}" alt="">
+        <h1 class="text-center fr-display--lg">Maintenance</h1>
+        <p class="text-center text-mute">
+            L'application est en cours de maintenance. Nous nous efforçons d'écourter son indisponibilité. Merci pour votre
+            compréhension.
+        </p>
+    </div>
+</div>
 {% endblock content %}
