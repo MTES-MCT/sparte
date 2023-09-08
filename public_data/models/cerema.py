@@ -162,12 +162,20 @@ class Cerema(DataColorationMixin, models.Model):
     art11hab21 = models.FloatField(null=True)
     art11act21 = models.FloatField(null=True)
 
-    mpoly = models.MultiPolygonField()
+    mpoly = models.MultiPolygonField(spatial_index=True)
 
     objects = CeremaManager()
 
     default_property = "naf_arti"
     default_color = "pink"
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['scot']),
+            models.Index(fields=['region_id']),
+            models.Index(fields=['dept_id']),
+            models.Index(fields=['epci_id']),
+        ]
 
     def __str__(self):
         return self.city_insee
