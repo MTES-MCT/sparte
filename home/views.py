@@ -1,3 +1,4 @@
+from typing import Any
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import UserPassesTestMixin
@@ -147,8 +148,12 @@ class AllEmailsView(UserPassesTestMixin, TemplateView):
 class MaintenanceView(TemplateView):
     template_name = "home/maintenance.html"
 
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        kwargs["next"] = self.request.GET.get("next", "/")
+        return super().get_context_data(**kwargs)
+
     def get(self, request, *args, **kwargs):
-        if not settings.MAINTENANCE_MODE:
+        if not app_parameter.MAINTENANCE_MODE:
             return redirect(request.GET.get('next', '/'))
 
         return super().get(request, *args, **kwargs)

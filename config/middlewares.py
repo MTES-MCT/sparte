@@ -1,9 +1,9 @@
 import logging
 import time
 
-from django.conf import settings
 from django.http import HttpResponseRedirect
 from django.urls import reverse
+from django_app_parameter import app_parameter
 
 
 logger = logging.getLogger(__name__)
@@ -31,14 +31,11 @@ class MaintenanceModeMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-        # Vérifiez si MAINTENANCE_MODE est activé
-        is_maintenance_mode = getattr(settings, "MAINTENANCE_MODE", False)
-
         maintenance_path = reverse("home:maintenance_mode")
 
         # Évitez une redirection infinie en autorisant l'accès à la vue de maintenance et à l'admin
         if (
-            is_maintenance_mode
+            app_parameter.MAINTENANCE_MODE
             and not request.path.startswith("/admin/")
             and request.path != maintenance_path
         ):
