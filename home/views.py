@@ -1,7 +1,9 @@
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.db.models import F, Value
 from django.http import HttpResponseRedirect
+from django.shortcuts import redirect
 from django.views.generic import CreateView, FormView, RedirectView, TemplateView
 from django_app_parameter import app_parameter
 
@@ -144,3 +146,9 @@ class AllEmailsView(UserPassesTestMixin, TemplateView):
 
 class MaintenanceView(TemplateView):
     template_name = "home/maintenance.html"
+
+    def get(self, request, *args, **kwargs):
+        if not settings.MAINTENANCE_MODE:
+            return redirect(request.GET.get('next', '/'))
+
+        return super().get(request, *args, **kwargs)

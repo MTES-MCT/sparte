@@ -42,6 +42,6 @@ class MaintenanceModeMiddleware:
             and not request.path.startswith("/admin/")
             and request.path != maintenance_path
         ):
-            return HttpResponseRedirect(maintenance_path)
+            return HttpResponseRedirect(f"{maintenance_path}?next={request.path}")
 
         return self.get_response(request)
