@@ -20,16 +20,16 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         PrintProgress.logger = logger
         logger.info(self.help)
-        # self.update_region()
-        # self.update_departement()
-        # self.update_scot()
-        # self.update_epci()
-        # self.update_commune()
+        self.update_region()
+        self.update_departement()
+        self.update_scot()
+        self.update_epci()
+        self.update_commune()
         self.delete_commune()
 
     def update_region(self):
         region_list = Cerema.objects.all().values("region_id", "region_name").annotate(geom=Union("mpoly"))
-        for region in PrintProgress(region_list, title="looping on regions"):
+        for region in PrintProgress(region_list, title="looping on regions", step=4):
             Region.objects.filter(source_id=region["region_id"]).update(
                 name=region["region_name"],
                 mpoly=fix_poly(region["geom"]),
