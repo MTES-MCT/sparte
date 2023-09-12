@@ -1,6 +1,6 @@
 export default class Tabs {
     constructor(_options = {}) {
-        this.sparteMap = window.sparteMap
+        this.mapLibre = window.mapLibre
         this.tabList = _options.tabList
 
         this.setTabs()
@@ -18,7 +18,7 @@ export default class Tabs {
 
         this.tabsNode.appendChild(this.buttonsNode)
 
-        this.sparteMap.targetElement.parentNode.insertBefore(this.tabsNode, this.sparteMap.targetElement.nextSibling)
+        this.mapLibre.targetElement.parentNode.insertBefore(this.tabsNode, this.mapLibre.targetElement.nextSibling)
 
         this.tabList.map((_obj) => this.createTab(_obj))
     }
