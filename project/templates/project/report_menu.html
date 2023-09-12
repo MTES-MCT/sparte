@@ -10,14 +10,14 @@
             <li class="fr-nav__item">
                 <a class="fr-nav__link" {% if active_page == 'consommation' %} aria-current="true"{% endif %} href="{% url 'project:report_conso' project.pk %}">Consommation</a>
             </li>
-            <li class="fr-nav__item"{% if not project.is_artif %} data-toggle="tooltip" title="OCS GE n'est pas disponible pour ce territoire" aria-hidden="true"{% endif %}>
+            <li class="fr-nav__item"{% if not project.is_artif %} data-toggle="tooltip" title="L'OCS GE (données d'artificialisation) n'est pas disponible pour ce territoire." aria-hidden="true"{% endif %}>
                 <a class="fr-nav__link {% if not project.is_artif %} disabled{% endif %}" {% if not project.is_artif %} role="link" aria-disabled="true"{% else %} href="{% url 'project:report_artif' project.pk %}"{% endif %} {% if active_page == 'artificialisation' %} aria-current="true"{% endif %}>Artificialisation</a>
             </li>
-            <li class="fr-nav__item"{% if not project.is_artif %} data-toggle="tooltip" title="OCS GE n'est pas disponible pour ce territoire" aria-hidden="true"{% endif %}>
+            <li class="fr-nav__item"{% if not project.is_artif %} data-toggle="tooltip" title="L'OCS GE (données d'artificialisation) n'est pas disponible pour ce territoire." aria-hidden="true"{% endif %}>
                 <a class="fr-nav__link {% if not project.is_artif %} disabled{% endif %}" {% if not project.is_artif %} role="link" aria-disabled="true"{% else %} href="{% url 'project:report_discover' project.pk %}"{% endif %} {% if active_page == 'discover' %} aria-current="true"{% endif %}>Découvrir l'OCSGE</a>
             </li>
-            <li class="fr-nav__item">
-                <a class="fr-nav__link" {% if active_page == 'urban_zones' %} aria-current="true"{% endif %} href="{% url 'project:report_urban_zones' project.pk %}">Zonages d'urbanisme</a>
+            <li class="fr-nav__item"{% if not project.is_artif %} data-toggle="tooltip" title="L'OCS GE (données d'artificialisation) n'est pas disponible pour ce territoire." aria-hidden="true"{% endif %}>
+                <a class="fr-nav__link {% if not project.is_artif %} disabled{% endif %}" {% if not project.is_artif %} role="link" aria-disabled="true"{% else %} href="{% url 'project:report_urban_zones' project.pk %}"{% endif %} {% if active_page == 'urban_zones' %} aria-current="true"{% endif %}>Zonages d'urbanisme</a>
             </li>
             <li class="fr-nav__item">
                 <a class="fr-nav__link" {% if active_page == 'update' %}aria-current="true"{% endif %} href="{% url 'project:update' project.pk %}">Paramètres</a>
