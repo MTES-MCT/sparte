@@ -214,68 +214,52 @@ class MapLibreView(GroupMixin, DetailView):
         return breadcrumbs
 
     def get_context_data(self, **kwargs):
-        # UPGRADE: add center and zoom fields on project model
-        # values would be infered when emprise is loaded
-        center = self.object.get_centroid()
-        # available_millesimes = self.object.get_available_millesimes(commit=True)
-        all_zoom = list(range(6, 19))
         kwargs.update(
             {
-                # center map on France
                 "carto_name": "Project",
                 "map_name": "Explorateur zones d'urbanismes",
                 "project_id": self.object.pk,
-                "center_lat": center.y,
-                "center_lng": center.x,
-                "default_zoom": 15,
-                "couv_leafs": CouvertureSol.get_leafs(),
-                "usa_leafs": UsageSol.get_leafs(),
                 "layer_list": [
                     {
                         "name": "Fond de carte",
-                        "key": "fond-de-carte",
-                        "type": "tile",
-                        "url": [
-                            {
-                                "value": "https://wxs.ign.fr/ortho/geoportail/wmts",
-                                "zoom_available": all_zoom,  # Tile layers should always have all zoom available for now
+                        "source": {
+                            "key": "fond-de-carte-source",
+                            "params": {
+                                "type": "raster",
+                                'tiles': ["https://wxs.ign.fr/ortho/geoportail/wmts?REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0&TILEMATRIXSET=PM&LAYER=ORTHOIMAGERY.ORTHOPHOTOS&STYLE=normal&FORMAT=image/jpeg&TILECOL={x}&TILEROW={y}&TILEMATRIX={z}"],
+                                'tileSize': 256  
                             }
-                        ],
-                        "url_params": {
-                            "REQUEST": "GetTile",
-                            "SERVICE": "WMTS",
-                            "VERSION": "1.0.0",
-                            "TILEMATRIXSET": "PM",
-                            "LAYER": "ORTHOIMAGERY.ORTHOPHOTOS",
-                            "STYLE": "normal",
-                            "FORMAT": "image/jpeg",
-                            "TILECOL": "{x}",
-                            "TILEROW": "{y}",
-                            "TILEMATRIX": "{z}",
                         },
-                        "z_index": 0,
-                        "is_optimized": 0,
-                        "is_interactive": 0,
+                        "layers": [
+                            {
+                                "id": "fond-de-carte-layer",
+                                'type': 'raster',
+                                'source': 'fond-de-carte-source',
+                                'layout': {
+                                    'visibility': 'visible',
+                                },
+                            },
+                        ],
                         "filters": [
                             {
                                 "name": "Fond de carte",
-                                "type": "visible",
-                                "value": "true",
+                                "type": "visibility",
+                                "default_value": "visible",
                                 "triggers": [
                                     {
-                                        "method": "toggleVisibile",
-                                        "layer": "fond-de-carte"
+                                        "method": "toggleVisibility",
+                                        "layers": ["fond-de-carte-layer"]
                                     }
                                 ]
                             },
                             {
                                 "name": "Visibilité du fond de carte",
                                 "type": "opacity",
-                                "value": 1,
+                                "default_value": 1,
                                 "triggers": [
                                     {
                                         "method": "changeOpacity",
-                                        "layer": "fond-de-carte"
+                                        "layers": ["fond-de-carte-layer"]
                                     }
                                 ]
                             },
@@ -283,268 +267,93 @@ class MapLibreView(GroupMixin, DetailView):
                     },
                     {
                         "name": "Limites administratives",
-                        "key": "limites-administratives",
-                        "type": "geojson",
-                        "url": [
-                            {
-                                "value": reverse_lazy("public_data:commune-optimized"),
-                                "zoom_available": [12, 13, 14, 15],
-                            },
-                            {
-                                "value": reverse_lazy("public_data:epci-optimized"),
-                                "zoom_available": [10, 11],
-                            },
-                            {
-                                "value": reverse_lazy("public_data:scot-optimized"),
-                                "zoom_available": [9],
-                            },
-                            {
-                                "value": reverse_lazy("public_data:departement-optimized"),
-                                "zoom_available": [8],
-                            },
-                            {
-                                "value": reverse_lazy("public_data:region-optimized"),
-                                "zoom_available": [6, 7],
+                        "source": {
+                            "key": "limites-administratives-source",
+                            "params": {
+                                "type": "vector",
+                                "url": "https://wxs.ign.fr/administratif/geoportail/tms/1.0.0/ADMIN_EXPRESS/metadata.json"   
                             }
-                        ],
-                        "style_key": "style_limites_administratives",
-                        "z_index": 1,
-                        "is_optimized": 1,
-                        "is_interactive": 0,
-                        "filters": [
+                        },
+                        "layers": [
                             {
-                                "name": "Limites administratives",
-                                "type": "visible",
-                                "value": "true",
-                                "triggers": [
-                                    {
-                                        "method": "toggleVisibile",
-                                        "layer": "limites-administratives"
-                                    }
-                                ]
+                                "id": "limites-administratives-region-layer",
+                                'type': 'line',
+                                'source': 'limites-administratives-source',
+                                'source-layer': 'region',
+                                'layout': {
+                                    'visibility': 'visible',
+                                },
+                                'paint': {
+                                    'line-color': '#ff69b4',
+                                    'line-width': 1
+                                }
                             },
+                            {
+                                "id": "limites-administratives-departement-layer",
+                                'type': 'line',
+                                'source': 'limites-administratives-source',
+                                'source-layer': 'departement',
+                                'layout': {
+                                    'visibility': 'visible',
+                                },
+                                'paint': {
+                                    'line-color': '#ffff00',
+                                    'line-width': 1
+                                }
+                            },
+                            {
+                                "id": "limites-administratives-epci-layer",
+                                'type': 'line',
+                                'source': 'limites-administratives-source',
+                                'source-layer': 'epci',
+                                'layout': {
+                                    'visibility': 'visible',
+                                },
+                                'paint': {
+                                    'line-color': '#00ffff',
+                                    'line-width': 1
+                                }
+                            },
+                            {
+                                "id": "limites-administratives-commune-layer",
+                                'type': 'line',
+                                'source': 'limites-administratives-source',
+                                'source-layer': 'commune',
+                                'layout': {
+                                    'visibility': 'visible',
+                                },
+                                'paint': {
+                                    'line-color': '#ff00ff',
+                                    'line-width': 1
+                                }
+                            }
                         ]
                     },
                     {
                         "name": "Emprise du territoire",
-                        "key": "emprise-du-territoire",
-                        "type": "geojson",
-                        "url": [
-                            {
-                                "value": reverse_lazy("project:emprise-list"),
-                                "zoom_available": all_zoom,
+                        "source": {
+                            "key": "emprise-du-territoire-source",
+                            "params": {
+                                "type": "geojson",
+                                "data": reverse_lazy("project:emprise-list") + f"?id={self.object.pk}",
                             }
-                        ],
-                        "url_params": {
-                            "id": self.object.pk,
                         },
-                        "style_key": "style_emprise",
-                        "z_index": 10,
-                        "is_optimized": 0,
-                        "is_interactive": 0,
-                        "filters": [
+                        "layers": [
                             {
-                                "name": "Emprise du territoire",
-                                "type": "visible",
-                                "value": "true",
-                                "triggers": [
-                                    {
-                                        "method": "toggleVisibile",
-                                        "layer": "emprise-du-territoire"
-                                    }
-                                ]
-                            },
-                        ]
-                    },
-                    {
-                        "name": "Zones urbaines",
-                        "key": "zones-urbaines",
-                        "type": "geojson",
-                        "url": [
-                            {
-                                "value": reverse_lazy("public_data:zoneurba-optimized"),
-                                "zoom_available": list(range(12, 19)),
-                            }
-                        ],
-                        "url_params": {
-                            "type_zone": "AUc, AUs, Ah, Nd, A, N, Nh, U",
-                        },
-                        "label": {
-                            "key": "typezone"
-                        },
-                        "style_key": "style_zone_urbaines",
-                        "z_index": 5,
-                        "is_optimized": 1,
-                        "is_interactive": 1,
-                        "legend": [
-                            # {
-                            #     "name": "ID",
-                            #     "key": "id"
-                            # },
-                            {
-                                "name": "Libellé",
-                                "key": "libelle"
-                            },
-                            {
-                                "name": "Libellé long",
-                                "key": "libelong"
-                            },
-                            {
-                                "name": "Type de zone",
-                                "key": "typezone"
-                            }
-                        ],
-                        "filters": [
-                            {
-                                "name": "Zonages des documents d&rsquo;urbanisme",
-                                "type": "visible",
-                                "value": "true",
-                                "triggers": [
-                                    {
-                                        "method": "toggleVisibile",
-                                        "layer": "zones-urbaines"
-                                    }
-                                ]
-                            },
-                            {
-                                "name": "",
-                                "type": "tag",
-                                "value": ["AUc", "AUs", "U", "A", "N"],
-                                "options": [
-                                    {
-                                        "name": "AUc",
-                                        "value": "AUc",
-                                    },
-                                    {
-                                        "name": "AUs",
-                                        "value": "AUs",
-                                    },
-                                    {
-                                        "name": "U",
-                                        "value": "U",
-                                    },
-                                    {
-                                        "name": "A",
-                                        "value": "A",
-                                    },
-                                    {
-                                        "name": "N",
-                                        "value": "N",
-                                    },
-                                ],
-                                "triggers": [
-                                    {
-                                        "method": "updateData",
-                                        "param": "type_zone",
-                                        "layer": "zones-urbaines"
-                                    }
-                                ]
-                            }
-                        ],
-                    },
-                    {
-                        "name": "OCS GE",
-                        "key": "ocs-ge",
-                        "type": "geojson",
-                        "url": [
-                            {
-                                "value": reverse_lazy("public_data:ocsge-optimized"),
-                                "zoom_available": list(range(15, 19)),
-                            }
-                        ],
-                        "url_params": {
-                            "year": 2019,
-                            "is_artificial": 1,
-                        },
-                        "style_key": "style_ocsge_couverture",
-                        "z_index": 4,
-                        "is_optimized": 1,
-                        "is_interactive": 1,
-                        "legend": [
-                            {
-                                "name": "Code couverture",
-                                "key": "code_couverture"
-                            },
-                            {
-                                "name": "Code usage",
-                                "key": "code_usage"
-                            },
-                            {
-                                "name": "Libellé couverture",
-                                "key": "couverture_label_short"
-                            },
-                            {
-                                "name": "Libellé usage",
-                                "key": "usage_label_short"
-                            },
-                            {
-                                "name": "Surface",
-                                "key": "surface",
-                                "formatter": ["number", ["fr-FR", "unit", "hectare", 2]]
-                            },
-                            {
-                                "name": "Millésime",
-                                "key": "year"
-                            }
-                        ],
-                        "filters": [
-                            {
-                                "name": "OCS GE",
-                                "type": "visible",
-                                "value": "true",
-                                "triggers": [
-                                    {
-                                        "method": "toggleVisibile",
-                                        "layer": "ocs-ge"
-                                    }
-                                ]
-                            },
-                            {
-                                "name": "Nomemclature",
-                                "type": "select",
-                                "value": "style_ocsge_couv",
-                                "options": [
-                                    {
-                                        "name": "Couverture",
-                                        "value": "style_ocsge_couverture",
-                                    },
-                                    {
-                                        "name": "Usage",
-                                        "value": "style_ocsge_usage",
-                                    }
-                                ],
-                                "triggers": [
-                                    {
-                                        "method": "updateStyleKey",
-                                        "layer": "ocs-ge"
-                                    }
-                                ]
-                            },
-                            {
-                                "name": "Millésime",
-                                "type": "select",
-                                "value": 2019,
-                                "options": [
-                                    {
-                                        "name": 2016,
-                                        "value": 2016,
-                                    },
-                                    {
-                                        "name": 2019,
-                                        "value": 2019,
-                                    }
-                                ],
-                                "triggers": [
-                                    {
-                                        "method": "updateData",
-                                        "param": "year",
-                                        "layer": "ocs-ge"
-                                    }
-                                ]
+                                "id": "emprise-du-territoire-layer",
+                                'type': 'line',
+                                'source': 'emprise-du-territoire-source',
+                                'layout': {
+                                    'visibility': 'visible',
+                                },
+                                'paint': {
+                                    'line-color': '#ff0000',
+                                    'line-width': 1
+                                }
                             }
                         ]
                     },
-                ],
+                ]
             }
         )
         return super().get_context_data(**kwargs)

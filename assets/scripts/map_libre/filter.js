@@ -1,13 +1,12 @@
 export default class Filter {
     constructor(_options = {}, groupNode) {
-        this.sparteMap = window.sparteMap
-        this.layers = window.sparteMap.layers
+        this.mapLibre = window.mapLibre
+        this.layers = window.mapLibre.layers
 
         this.name = _options.name
         this.triggers = _options.triggers
         this.type = _options.type
-        this.options = _options.options
-        this.value = _options.value === 'true' ? true : _options.value === 'false' ? false : _options.value
+        this.defaultValue = _options.default_value
         this.groupNode = groupNode
 
         this.setFilter()
@@ -15,8 +14,8 @@ export default class Filter {
 
     setFilter() {
         switch (this.type) {
-            case 'visible':
-                this.groupNode.appendChild(this.CreateFilterVisible())
+            case 'visibility':
+                this.groupNode.appendChild(this.CreateFilterVisibility())
                 break
             case 'select':
                 this.groupNode.appendChild(this.CreateFilterSelect())
@@ -43,8 +42,8 @@ export default class Filter {
         let input = document.createElement('input')
         input.type = 'range'
         input.min = 0
-        input.max = 1
-        input.step = 0.1
+        input.max = 100
+        input.step = 1
 
         // Add change event
         input.addEventListener('input', (_event) => {
@@ -65,7 +64,7 @@ export default class Filter {
         return filter
     }
 
-    CreateFilterVisible() {
+    CreateFilterVisibility() {
         // Create filter node
         let filter = document.createElement('div')
         filter.classList.add('filter-group__filter')

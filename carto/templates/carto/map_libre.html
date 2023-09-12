@@ -38,44 +38,13 @@ html, body {
 {% sri_static "highcharts/js/exporting.js" %}
 {% french_translation %}
 
+{{ layer_list|json_script:"layer_list" }}
+
 <script language="javascript" nonce="{{ CSP_NONCE }}">
-layerList = [
-{% for layer in layer_list %}
-    {
-        {% for k, v in layer.items %}
-        {{ k }}: "{{ v|safe }}",
-        {% endfor %}
-    },
-{% endfor %}
-]
-
-couv_leafs = [
-{% for leaf in couv_leafs %}
-    {
-        "code_couverture": "{{ leaf.code_prefix_class|safe }}",
-        "map_color": "{{ leaf.map_color|safe }}",
-    },
-{% endfor %}
-]
-
-usa_leafs = [
-{% for leaf in usa_leafs %}
-    {
-        "code_usage": "{{ leaf.code_prefix_class|safe }}",
-        "map_color": "{{ leaf.map_color|safe }}",
-    },
-{% endfor %}
-]
-
 new MapLibre ({
     targetElement: document.getElementById('mapV2__container'),
-    debug: true,
-    mapCenter: [{{ center_lat }}, {{ center_lng }}],
-    defaultZoom: {{ default_zoom }},
-    layerList: layerList,
-    couv_leafs: couv_leafs,
-    usa_leafs: usa_leafs,
-    projectId: {{ project_id }}
+    debug: false,
+    layerList: JSON.parse(document.getElementById('layer_list').textContent),
 })
 </script>
 {% endlocalize %}
