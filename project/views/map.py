@@ -235,30 +235,29 @@ class MapLibreView(GroupMixin, DetailView):
                                 "id": "fond-de-carte-layer",
                                 'type': 'raster',
                                 'source': 'fond-de-carte-source',
-                                'layout': {
-                                    'visibility': 'visible',
-                                },
                             },
                         ],
                         "filters": [
                             {
-                                "name": "Fond de carte",
+                                "name": "Visibilité du calque",
                                 "type": "visibility",
-                                "default_value": "visible",
+                                "value": "visible",
                                 "triggers": [
                                     {
-                                        "method": "toggleVisibility",
+                                        "method": "setLayoutProperty",
+                                        "property": "visibility",
                                         "layers": ["fond-de-carte-layer"]
                                     }
                                 ]
                             },
                             {
-                                "name": "Visibilité du fond de carte",
+                                "name": "Opacité du calque",
                                 "type": "opacity",
-                                "default_value": 1,
+                                "value": 100,
                                 "triggers": [
                                     {
-                                        "method": "changeOpacity",
+                                        "method": "setPaintProperty",
+                                        "property": "raster-opacity",
                                         "layers": ["fond-de-carte-layer"]
                                     }
                                 ]
@@ -280,9 +279,6 @@ class MapLibreView(GroupMixin, DetailView):
                                 'type': 'line',
                                 'source': 'limites-administratives-source',
                                 'source-layer': 'region',
-                                'layout': {
-                                    'visibility': 'visible',
-                                },
                                 'paint': {
                                     'line-color': '#ff69b4',
                                     'line-width': 1
@@ -293,9 +289,6 @@ class MapLibreView(GroupMixin, DetailView):
                                 'type': 'line',
                                 'source': 'limites-administratives-source',
                                 'source-layer': 'departement',
-                                'layout': {
-                                    'visibility': 'visible',
-                                },
                                 'paint': {
                                     'line-color': '#ffff00',
                                     'line-width': 1
@@ -306,9 +299,6 @@ class MapLibreView(GroupMixin, DetailView):
                                 'type': 'line',
                                 'source': 'limites-administratives-source',
                                 'source-layer': 'epci',
-                                'layout': {
-                                    'visibility': 'visible',
-                                },
                                 'paint': {
                                     'line-color': '#00ffff',
                                     'line-width': 1
@@ -319,14 +309,37 @@ class MapLibreView(GroupMixin, DetailView):
                                 'type': 'line',
                                 'source': 'limites-administratives-source',
                                 'source-layer': 'commune',
-                                'layout': {
-                                    'visibility': 'visible',
-                                },
                                 'paint': {
                                     'line-color': '#ff00ff',
                                     'line-width': 1
                                 }
                             }
+                        ],
+                        "filters": [
+                            {
+                                "name": "Visibilité du calque",
+                                "type": "visibility",
+                                "value": "visible",
+                                "triggers": [
+                                    {
+                                        "method": "setLayoutProperty",
+                                        "property": "visibility",
+                                        "layers": ["limites-administratives-region-layer", "limites-administratives-departement-layer", "limites-administratives-epci-layer", "limites-administratives-commune-layer"]
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "Opacité du calque",
+                                "type": "opacity",
+                                "value": 100,
+                                "triggers": [
+                                    {
+                                        "method": "setPaintProperty",
+                                        "property": "line-opacity",
+                                        "layers": ["limites-administratives-region-layer", "limites-administratives-departement-layer", "limites-administratives-epci-layer", "limites-administratives-commune-layer"]
+                                    }
+                                ]
+                            },
                         ]
                     },
                     {
@@ -351,6 +364,32 @@ class MapLibreView(GroupMixin, DetailView):
                                     'line-width': 1
                                 }
                             }
+                        ],
+                        "filters": [
+                            {
+                                "name": "Visibilité du calque",
+                                "type": "visibility",
+                                "value": "visible",
+                                "triggers": [
+                                    {
+                                        "method": "setLayoutProperty",
+                                        "property": "visibility",
+                                        "layers": ["emprise-du-territoire-layer"]
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "Opacité du calque",
+                                "type": "opacity",
+                                "value": 100,
+                                "triggers": [
+                                    {
+                                        "method": "setPaintProperty",
+                                        "property": "line-opacity",
+                                        "layers": ["emprise-du-territoire-layer"]
+                                    }
+                                ]
+                            },
                         ]
                     },
                 ]

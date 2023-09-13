@@ -24,8 +24,8 @@ html, body {
 {% block body_class %}header-min full-width breadcrumb-min{% endblock body_class %}
 
 {% block content %}
-<div id="mapV2__wrapper" class="d-flex h-100">
-    <div id="mapV2__container" class="flex-grow-1"></div>
+<div id="map__wrapper" class="d-flex h-100">
+    <div id="map__container" class="flex-grow-1"></div>
 </div>
 {% endblock content %}
 
@@ -42,7 +42,7 @@ html, body {
 
 <script language="javascript" nonce="{{ CSP_NONCE }}">
 new MapLibre ({
-    targetElement: document.getElementById('mapV2__container'),
+    targetElement: document.getElementById('map__container'),
     debug: false,
     layerList: JSON.parse(document.getElementById('layer_list').textContent),
 })

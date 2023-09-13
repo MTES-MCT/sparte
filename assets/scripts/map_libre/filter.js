@@ -1,12 +1,13 @@
 export default class Filter {
     constructor(_options = {}, groupNode) {
         this.mapLibre = window.mapLibre
-        this.layers = window.mapLibre.layers
+        this.map = this.mapLibre.map
 
         this.name = _options.name
         this.triggers = _options.triggers
         this.type = _options.type
-        this.defaultValue = _options.default_value
+        this.value = _options.value
+
         this.groupNode = groupNode
 
         this.setFilter()
@@ -49,10 +50,9 @@ export default class Filter {
         input.addEventListener('input', (_event) => {
             this.value = _event.target.value
 
-            // Triggers layer methods
-            this.triggers.map((_obj) => {
-                const layer = this.layers.find((__obj) => __obj.key === _obj.layer)
-                layer[`${_obj.method}`](this.value)
+            // Filter triggers actions
+            this.triggers.map((_trigger) => {
+                _trigger.layers.map((_layer) => this.map[`${_trigger.method}`](_layer, _trigger.property, parseInt(this.value, 10) / 100))
             })
         })
 
@@ -81,12 +81,11 @@ export default class Filter {
             button.querySelector('i').classList.toggle('bi-eye')
             button.querySelector('i').classList.toggle('bi-eye-slash')
             
-            this.value = !this.value
+            this.value = this.value === 'visible' ? 'none' : 'visible'
 
-            // Triggers layer methods
-            this.triggers.map((_obj) => {
-                const layer = this.layers.find((__obj) => __obj.key === _obj.layer)
-                layer[`${_obj.method}`](this.value)
+            // Filter triggers actions
+            this.triggers.map((_trigger) => {
+                _trigger.layers.map((_layer) => this.map[`${_trigger.method}`](_layer, _trigger.property, this.value))
             })
         })
 
