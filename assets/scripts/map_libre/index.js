@@ -63,6 +63,7 @@ export default class MapLibre {
     }
 
     setLayers() {
+
         this.layerList.map((_obj) => {
             // Create sources
             new Source(_obj.source)
@@ -72,8 +73,8 @@ export default class MapLibre {
                 _obj.layers.map((__obj) => new Layer(__obj))
 
             // Create associated filters
-            // if(_obj.filters?.length > 0)
-            //     new FilterGroup(_obj.filters)
+            if(_obj.filters?.length > 0)
+                new FilterGroup(_obj.name, _obj.filters)
         })
     }
 }

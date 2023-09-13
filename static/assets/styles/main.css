@@ -1060,11 +1060,15 @@ svg.leaflet-image-layer.leaflet-interactive path {
 		}
 	}
 
-#mapV2__wrapper {
+#map__wrapper {
     position: relative;
 }
 
-.mapV2__controls input {
+#map__container {
+    background-color: #DDDDDD;
+}
+
+.map__controls input {
     margin-right: 5px;
 }
 
@@ -1078,7 +1082,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
     width: 100%;
 }
 
-#mapV2__legend {
+#map__legend {
     background: rgba(255, 255, 255, 1);
     position: absolute;
     bottom: 0;
@@ -1090,7 +1094,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
     transition: opacity .3s ease;
 }
 
-#mapV2__legend.visible {
+#map__legend.visible {
     opacity: 1;
 }
 
@@ -1178,11 +1182,34 @@ Tabs
     position: relative;
 }
 
+.tabs .tab .filter-group .filter-group__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.tabs .tab .filter-group .filter-group__header.active {
+    font-weight: 600;
+}
+
 .tabs .tab .filter-group .filter-group__filter {
     display: flex;
     align-items: center;
     justify-content: space-between;
     margin-bottom: 15px;
+}
+
+.tabs .tab .filter-group .filter-group__accordion {
+    height: 0;
+    transition: opacity .3s ease-in;
+    opacity: 0;
+    overflow: hidden;
+}
+
+.tabs .tab .filter-group .filter-group__accordion:not([aria-hidden="true"]) {
+    height: auto;
+    opacity: 1;
+    margin-top: 15px;
 }
 
 .tabs .tab .filter-group .filter-group__filter:last-child {
