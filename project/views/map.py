@@ -214,11 +214,15 @@ class MapLibreView(GroupMixin, DetailView):
         return breadcrumbs
 
     def get_context_data(self, **kwargs):
+        center = self.object.get_centroid()
         kwargs.update(
             {
                 "carto_name": "Project",
                 "map_name": "Explorateur zones d'urbanismes",
                 "project_id": self.object.pk,
+                "center_lat": center.y,
+                "center_lng": center.x,
+                "default_zoom": 10,
                 "layer_list": [
                     {
                         "name": "Fond de carte",
@@ -356,12 +360,9 @@ class MapLibreView(GroupMixin, DetailView):
                                 "id": "emprise-du-territoire-layer",
                                 'type': 'line',
                                 'source': 'emprise-du-territoire-source',
-                                'layout': {
-                                    'visibility': 'visible',
-                                },
                                 'paint': {
                                     'line-color': '#ff0000',
-                                    'line-width': 1
+                                    'line-width': 2
                                 }
                             }
                         ],
@@ -391,6 +392,27 @@ class MapLibreView(GroupMixin, DetailView):
                                 ]
                             },
                         ]
+                    },
+                    {
+                        "name": "Zonages d'urbanisme",
+                        "source": {
+                            "key": "zonages-d-urbanisme-source",
+                            "params": {
+                                "type": "geojson",
+                                "data": reverse_lazy("public_data:zoneurba-optimized") + f"?in_bbox=0.09630203247070312,43.54288679897409,0.15861511230468753,43.55669697799667&type_zone=AUc,Aus,U,A,N&zoom=16",
+                            }
+                        },
+                        "layers": [
+                            {
+                                "id": "zonages-d-urbanismee-layer",
+                                'type': 'line',
+                                'source': 'zonages-d-urbanisme-source',
+                                'paint': {
+                                    'line-color': '#ff0000',
+                                    'line-width': 1
+                                }
+                            }
+                        ],
                     },
                 ]
             }
