@@ -11,6 +11,8 @@ export default class MapLibre {
         this.targetElement = _options.targetElement
         this.debug = _options.debug
         this.layerList = _options.layerList
+        this.mapCenter = _options.mapCenter
+        this.defaultZoom = _options.defaultZoom
 
         if (!this.targetElement) {
             console.warn('Missing \'targetElement\' property')
@@ -35,8 +37,8 @@ export default class MapLibre {
     setMap() {
         this.map = new maplibregl.Map({
             container: this.targetElement, // container
-            center: [3.389162, 46.852644], // starting position [lng, lat]
-            zoom: 5, // starting zoom
+            center: this.mapCenter, // starting position [lng, lat]
+            zoom: this.defaultZoom, // starting zoom
             maxZoom: 18,
             attributionControl: false
         })

@@ -44,6 +44,8 @@ html, body {
 new MapLibre ({
     targetElement: document.getElementById('map__container'),
     debug: false,
+    mapCenter: [{{ center_lng }}, {{ center_lat }}],
+    defaultZoom: {{ default_zoom }},
     layerList: JSON.parse(document.getElementById('layer_list').textContent),
 })
 </script>
