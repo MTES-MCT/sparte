@@ -1,4 +1,6 @@
 import maplibregl from 'maplibre-gl';
+import { debounce } from './utils.js'
+
 import Tabs from './tabs.js'
 import Source from './source.js'
 import Layer from './layer.js'
@@ -22,7 +24,6 @@ export default class MapLibre {
         this.setConfig()
         this.setTabs()
         this.setMap()
-        this.setLayers()
     }
 
     setConfig() {
@@ -37,13 +38,37 @@ export default class MapLibre {
     setMap() {
         this.map = new maplibregl.Map({
             container: this.targetElement, // container
+            style: {
+                "version": 8,
+                "name": "Empty",
+                "metadata": {
+                    "mapbox:autocomposite": true
+                },
+                "glyphs": "/static/carto/fonts/{fontstack}/{range}.pbf",
+                "sources": {},
+                "layers": [
+                    {
+                        "id": "background",
+                        "type": "background",
+                        "paint": {
+                            "background-color": "#DDDDDD"
+                        }
+                    }
+                ]
+            }, // Empty style with DSFR Marianne font glyphs
             center: this.mapCenter, // starting position [lng, lat]
             zoom: this.defaultZoom, // starting zoom
             maxZoom: 18,
             attributionControl: false
         })
 
-        this.map.addControl(new maplibregl.AttributionControl({ compact: true }))
+        this.map.on('load', () => {
+            this.map.addControl(new maplibregl.AttributionControl({ compact: true }))
+
+            this.map.on('moveend', debounce(() => this.update(), 1000))
+
+            this.setLayers()
+        })
     }
 
     setTabs() {
@@ -65,19 +90,25 @@ export default class MapLibre {
     }
 
     setLayers() {
+        this.sources = []
 
         this.layerList.map((_obj) => {
             // Create sources
-            new Source(_obj.source)
+            this.sources.push(new Source(_obj.source))
 
             // Create associated layers
             if (_obj.layers?.length > 0)
                 _obj.layers.map((__obj) => new Layer(__obj))
 
             // Create associated filters
-            if(_obj.filters?.length > 0)
+            if (_obj.filters?.length > 0)
                 new FilterGroup(_obj.name, _obj.filters)
         })
+    }
+
+    update() {
+        if (this.sources)
+            this.sources.map((_obj) => _obj.update())
     }
 }
 
