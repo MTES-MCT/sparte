@@ -399,20 +399,65 @@ class MapLibreView(GroupMixin, DetailView):
                             "key": "zonages-d-urbanisme-source",
                             "params": {
                                 "type": "geojson",
-                                "data": reverse_lazy("public_data:zoneurba-optimized") + f"?in_bbox=0.09630203247070312,43.54288679897409,0.15861511230468753,43.55669697799667&type_zone=AUc,Aus,U,A,N&zoom=16",
-                            }
+                                "data": reverse_lazy("public_data:zoneurba-optimized"),
+                            },
                         },
                         "layers": [
                             {
-                                "id": "zonages-d-urbanismee-layer",
-                                'type': 'line',
-                                'source': 'zonages-d-urbanisme-source',
-                                'paint': {
-                                    'line-color': '#ff0000',
-                                    'line-width': 1
+                                "id": "zonages-d-urbanisme-layer",
+                                "type": "line",
+                                "source": "zonages-d-urbanisme-source",
+                                "minzoom": 12,
+                                "maxzoom": 19,
+                                "paint": {
+                                    "line-color": [
+                                        "match",
+                                        ["get", "typezone"],
+                                        "N", "#56aa02",
+                                        "U", "#e60000",
+                                        "Auc", "#ff6565",
+                                        "Aus", "#feccbe",
+                                        "#ffff00" # default color => zones A
+                                    ],
+                                    "line-width": 1
                                 }
-                            }
+                            },
+                            {
+                                "id": "zonages-d-urbanisme-labels",
+                                "type": "symbol",
+                                "source": "zonages-d-urbanisme-source",
+                                "layout": {
+                                    "text-field": ["get", "typezone"],
+                                    "text-anchor": "top",
+                                    "text-font": ["Marianne Regular"],
+                                },
+                                "paint": {
+                                    "text-color": [
+                                        "match",
+                                        ["get", "typezone"],
+                                        "N", "#56aa02",
+                                        "U", "#e60000",
+                                        "Auc", "#ff6565",
+                                        "Aus", "#feccbe",
+                                        "#ffff00" # default color => zones A
+                                    ],
+                                }
+                            },
                         ],
+                        "filters": [
+                            {
+                                "name": "Visibilité du calque",
+                                "type": "visibility",
+                                "value": "visible",
+                                "triggers": [
+                                    {
+                                        "method": "setLayoutProperty",
+                                        "property": "visibility",
+                                        "layers": ["zonages-d-urbanisme-layer", "zonages-d-urbanisme-labels"]
+                                    }
+                                ]
+                            },
+                        ]
                     },
                 ]
             }
