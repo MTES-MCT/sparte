@@ -289,6 +289,20 @@ class MapLibreView(GroupMixin, DetailView):
                                 }
                             },
                             {
+                                "id": "limites-administratives-region-labels",
+                                "type": "symbol",
+                                "source": "limites-administratives-source",
+                                'source-layer': 'region',
+                                "layout": {
+                                    "text-field": ["get", "nom"],
+                                    "text-anchor": "top",
+                                    "text-font": ["Marianne Regular"],
+                                },
+                                "paint": {
+                                    "text-color": "#000000",
+                                }
+                            },
+                            {
                                 "id": "limites-administratives-departement-layer",
                                 'type': 'line',
                                 'source': 'limites-administratives-source',
@@ -296,6 +310,20 @@ class MapLibreView(GroupMixin, DetailView):
                                 'paint': {
                                     'line-color': '#ffff00',
                                     'line-width': 1
+                                }
+                            },
+                            {
+                                "id": "limites-administratives-departement-labels",
+                                "type": "symbol",
+                                "source": "limites-administratives-source",
+                                'source-layer': 'departement',
+                                "layout": {
+                                    "text-field": ["get", "nom"],
+                                    "text-anchor": "top",
+                                    "text-font": ["Marianne Regular"],
+                                },
+                                "paint": {
+                                    "text-color": "#000000",
                                 }
                             },
                             {
@@ -309,6 +337,20 @@ class MapLibreView(GroupMixin, DetailView):
                                 }
                             },
                             {
+                                "id": "limites-administratives-epci-labels",
+                                "type": "symbol",
+                                "source": "limites-administratives-source",
+                                'source-layer': 'epci',
+                                "layout": {
+                                    "text-field": ["get", "nom"],
+                                    "text-anchor": "top",
+                                    "text-font": ["Marianne Regular"],
+                                },
+                                "paint": {
+                                    "text-color": "#000000",
+                                }
+                            },
+                            {
                                 "id": "limites-administratives-commune-layer",
                                 'type': 'line',
                                 'source': 'limites-administratives-source',
@@ -317,7 +359,21 @@ class MapLibreView(GroupMixin, DetailView):
                                     'line-color': '#ff00ff',
                                     'line-width': 1
                                 }
-                            }
+                            },
+                            {
+                                "id": "limites-administratives-commune-labels",
+                                "type": "symbol",
+                                "source": "limites-administratives-source",
+                                'source-layer': 'commune',
+                                "layout": {
+                                    "text-field": ["get", "nom"],
+                                    "text-anchor": "top",
+                                    "text-font": ["Marianne Regular"],
+                                },
+                                "paint": {
+                                    "text-color": "#000000",
+                                }
+                            },
                         ],
                         "filters": [
                             {
@@ -454,6 +510,23 @@ class MapLibreView(GroupMixin, DetailView):
                                         "method": "setLayoutProperty",
                                         "property": "visibility",
                                         "layers": ["zonages-d-urbanisme-layer", "zonages-d-urbanisme-labels"]
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "Opacité du calque",
+                                "type": "opacity",
+                                "value": 100,
+                                "triggers": [
+                                    {
+                                        "method": "setPaintProperty",
+                                        "property": "line-opacity",
+                                        "layers": ["zonages-d-urbanisme-layer"]
+                                    },
+                                    {
+                                        "method": "setPaintProperty",
+                                        "property": "text-opacity",
+                                        "layers": ["zonages-d-urbanisme-labels"]
                                     }
                                 ]
                             },
