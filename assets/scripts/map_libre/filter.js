@@ -7,6 +7,7 @@ export default class Filter {
         this.triggers = _options.triggers
         this.type = _options.type
         this.value = _options.value
+        this.options = _options.options
 
         this.groupNode = groupNode
 
@@ -24,7 +25,7 @@ export default class Filter {
             case 'tag':
                 this.groupNode.appendChild(this.CreateFilterTag())
                 break
-             case 'opacity':
+            case 'opacity':
                 this.groupNode.appendChild(this.CreateFilterOpacity())
                 break
             default:
@@ -51,9 +52,7 @@ export default class Filter {
             this.value = _event.target.value
 
             // Filter triggers actions
-            this.triggers.map((_trigger) => {
-                _trigger.layers.map((_layer) => this.map[`${_trigger.method}`](_layer, _trigger.property, parseInt(this.value, 10) / 100))
-            })
+            this.triggerFilters(parseInt(this.value, 10) / 100)
         })
 
         filter.appendChild(input)
@@ -75,18 +74,16 @@ export default class Filter {
         let button = document.createElement('button')
         button.classList.add('fr-btn', 'fr-btn--tertiary', 'fr-btn--sm')
         button.innerHTML = `<i class="bi ${this.value ? 'bi-eye' : 'bi-eye-slash'}"></i>`
-        
+
         // Add click event
         button.addEventListener('click', (_event) => {
             button.querySelector('i').classList.toggle('bi-eye')
             button.querySelector('i').classList.toggle('bi-eye-slash')
-            
+
             this.value = this.value === 'visible' ? 'none' : 'visible'
 
             // Filter triggers actions
-            this.triggers.map((_trigger) => {
-                _trigger.layers.map((_layer) => this.map[`${_trigger.method}`](_layer, _trigger.property, this.value))
-            })
+            this.triggerFilters(this.value)
         })
 
         filter.appendChild(button)
@@ -104,7 +101,7 @@ export default class Filter {
         // Create Select
         let select = document.createElement('select')
         select.classList.add('fr-btn', 'fr-btn--tertiary', 'fr-btn--sm')
-        
+
         this.options.map((_obj) => {
             let option = document.createElement('option')
             option.value = _obj.value
@@ -113,16 +110,13 @@ export default class Filter {
                 option.setAttribute('selected', 'selected')
             select.appendChild(option)
         })
-        
+
         // Add change event
         select.addEventListener('change', (_event) => {
             this.value = _event.target.value
 
             // Triggers layer methods
-            this.triggers.map((_obj) => {
-                const layer = this.layers.find((__obj) => __obj.key === _obj.layer)
-                layer[`${_obj.method}`](this.value, _obj.param)
-            })
+            this.triggerFilters(this.value)
         })
 
         filter.appendChild(select)
@@ -150,21 +144,36 @@ export default class Filter {
                 const value = _event.target.dataset.value
 
                 // Update filter value
-                if(!this.value.includes(value))
+                if (!this.value.includes(value))
                     this.value.push(value)
                 else
                     this.value.splice(this.value.indexOf(value), 1)
-                
-                // Triggers layer methods
-                this.triggers.map((_obj) => {
-                    const layer = this.layers.find((__obj) => __obj.key === _obj.layer)
-                    layer[`${_obj.method}`](this.value, _obj.param)
-                })
+
+                // Triggers actions
+                this.triggerFilters(this.value)
             })
 
             filter.appendChild(tag)
         })
 
         return filter
+    }
+
+    triggerFilters(_value) {
+        this.triggers.map((_trigger) => {
+            _trigger.layers.map((_layer) => this[`${_trigger.method}`](_layer, _trigger.property, _value))
+        })
+    }
+
+    filterByPropertyInArray(_layer, _property, _value) {
+        this.map.setFilter(_layer, ["in", _property, ..._value])
+    }
+
+    changePaintProperty(_layer, _property, _value) {
+        this.map.setPaintProperty(_layer, _property, _value)
+    }
+
+    changeLayoutProperty(_layer, _property, _value) {
+        this.map.setLayoutProperty(_layer, _property, _value)
     }
 }
