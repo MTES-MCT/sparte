@@ -408,9 +408,16 @@ class MapLibreView(GroupMixin, DetailView):
                             "key": "emprise-du-territoire-source",
                             "params": {
                                 "type": "geojson",
-                                "data": reverse_lazy("project:emprise-list") + f"?id={self.object.pk}",
+                                "data": reverse_lazy("project:emprise-list"),
                             }
                         },
+                        "source_query_strings": [
+                            {
+                                "type": "string",
+                                "key": "id",
+                                "value": self.object.pk,
+                            },
+                        ],
                         "layers": [
                             {
                                 "id": "emprise-du-territoire-layer",
@@ -458,6 +465,18 @@ class MapLibreView(GroupMixin, DetailView):
                                 "data": reverse_lazy("public_data:zoneurba-optimized"),
                             },
                         },
+                        "source_query_strings": [
+                            {
+                                "type": "function",
+                                "key": "in_bbox",
+                                "value": "getBbox",
+                            },
+                            {
+                                "type": "function",
+                                "key": "zoom",
+                                "value": "getZoom",
+                            },
+                        ],
                         "layers": [
                             {
                                 "id": "zonages-d-urbanisme-layer",
@@ -473,7 +492,7 @@ class MapLibreView(GroupMixin, DetailView):
                                         "U", "#e60000",
                                         "Auc", "#ff6565",
                                         "Aus", "#feccbe",
-                                        "#ffff00" # default color => zones A
+                                        "#ffff00" # Default color => zones A
                                     ],
                                     "line-width": 1
                                 }
@@ -482,6 +501,8 @@ class MapLibreView(GroupMixin, DetailView):
                                 "id": "zonages-d-urbanisme-labels",
                                 "type": "symbol",
                                 "source": "zonages-d-urbanisme-source",
+                                "minzoom": 12,
+                                "maxzoom": 19,
                                 "layout": {
                                     "text-field": ["get", "typezone"],
                                     "text-anchor": "top",
@@ -495,7 +516,7 @@ class MapLibreView(GroupMixin, DetailView):
                                         "U", "#e60000",
                                         "Auc", "#ff6565",
                                         "Aus", "#feccbe",
-                                        "#ffff00" # default color => zones A
+                                        "#ffff00" # Default color => zones A
                                     ],
                                 }
                             },

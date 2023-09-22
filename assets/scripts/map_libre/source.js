@@ -1,48 +1,72 @@
 export default class Source {
-    constructor(_options = {}) {
+    constructor(_options = {}, _query_strings) {
         this.mapLibre = window.mapLibre
         this.map = this.mapLibre.map
 
         this.key = _options.key
-        this.onUpdate = _options.onUpdate
         this.params = _options.params
-        this.params.cluster = this.params.cluster === 'true' ? true : false
+        this.queryStrings = _query_strings
+        this.isUpdated = this.queryStrings?.some(_obj => _obj['key'] === 'in_bbox') || false // Check for bbox query string
 
         this.setSource()
     }
 
     // Setters
     setSource() {
+        // Add query params to url for geojson layers
+        if (this.params.type === 'geojson') {
+            this.url = this.getUrl()
+            this.params.data = this.url
+        }
+
+        // Create source
         this.map.addSource(this.key, this.params)
     }
 
     // Actions
     async update() {
-        if (this.key === "zonages-d-urbanisme-source") {
-
-            const bbox = this.map.getBounds().toArray().join(',')
-            let url = this.params.data
-            url += `?in_bbox=${bbox}&type_zone=AUc,Aus,U,A,N&zoom=10`
-            console.log(url);
+        if (this.isUpdated) {
             const source = this.map.getSource(this.key)
-            source.setData(url)
+            console.log(this.url);
+            source.setData(this.url)
         }
     }
 
-    // async getData() {
-    //     // Get url
-    //     const url = this.params.data
+    getUrl() {
+        let url = this.params.data
 
-    //     if (!url)
-    //         return null
+        // Add query params
+        if (this.queryStrings) {
+            this.queryStrings.map((_obj, index) => {
+                const queryParam = this.getQueryParam(_obj.type, _obj.value)
+                url += `${index === 0 ? '?' : '&'}${_obj.key}=${queryParam}`
+            })
+        }
 
-    //     try {
-    //         const response = await fetch(url)
-    //         const data = await response.json()
+        return url
+    }
 
-    //         return data
-    //     } catch (error) {
-    //         console.log(error)
-    //     }
-    // }
+    getQueryParam(type, value) {
+        var params = {
+            "string": () => {
+                return value
+            },
+            "function": () => {
+                return this[value]()
+            },
+            "default": () => {
+                console.log(`Query param type unknow for source ${this.key}`)
+                return ""
+            }
+        };
+        return (params[type] || params['default'])()
+    }
+
+    getBbox() {
+        return this.map.getBounds().toArray().join(',')
+    }
+
+    getZoom() {
+        return 10 // required param, waiting for backend update to remove it
+    }
 }
