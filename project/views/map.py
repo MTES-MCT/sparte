@@ -248,7 +248,7 @@ class MapLibreView(GroupMixin, DetailView):
                                 "value": "visible",
                                 "triggers": [
                                     {
-                                        "method": "setLayoutProperty",
+                                        "method": "changeLayoutProperty",
                                         "property": "visibility",
                                         "layers": ["fond-de-carte-layer"]
                                     }
@@ -260,7 +260,7 @@ class MapLibreView(GroupMixin, DetailView):
                                 "value": 100,
                                 "triggers": [
                                     {
-                                        "method": "setPaintProperty",
+                                        "method": "changePaintProperty",
                                         "property": "raster-opacity",
                                         "layers": ["fond-de-carte-layer"]
                                     }
@@ -382,9 +382,18 @@ class MapLibreView(GroupMixin, DetailView):
                                 "value": "visible",
                                 "triggers": [
                                     {
-                                        "method": "setLayoutProperty",
+                                        "method": "changeLayoutProperty",
                                         "property": "visibility",
-                                        "layers": ["limites-administratives-region-layer", "limites-administratives-departement-layer", "limites-administratives-epci-layer", "limites-administratives-commune-layer"]
+                                        "layers": [
+                                            "limites-administratives-region-layer",
+                                            "limites-administratives-departement-layer",
+                                            "limites-administratives-epci-layer",
+                                            "limites-administratives-commune-layer",
+                                            "limites-administratives-region-labels",
+                                            "limites-administratives-departement-labels",
+                                            "limites-administratives-epci-labels",
+                                            "limites-administratives-commune-labels"
+                                        ]
                                     }
                                 ]
                             },
@@ -394,9 +403,24 @@ class MapLibreView(GroupMixin, DetailView):
                                 "value": 100,
                                 "triggers": [
                                     {
-                                        "method": "setPaintProperty",
+                                        "method": "changePaintProperty",
                                         "property": "line-opacity",
-                                        "layers": ["limites-administratives-region-layer", "limites-administratives-departement-layer", "limites-administratives-epci-layer", "limites-administratives-commune-layer"]
+                                        "layers": [
+                                            "limites-administratives-region-layer",
+                                            "limites-administratives-departement-layer",
+                                            "limites-administratives-epci-layer",
+                                            "limites-administratives-commune-layer",
+                                        ]
+                                    },
+                                    {
+                                        "method": "changePaintProperty",
+                                        "property": "text-opacity",
+                                        "layers": [
+                                            "limites-administratives-region-labels",
+                                            "limites-administratives-departement-labels",
+                                            "limites-administratives-epci-labels",
+                                            "limites-administratives-commune-labels"
+                                        ]
                                     }
                                 ]
                             },
@@ -436,7 +460,7 @@ class MapLibreView(GroupMixin, DetailView):
                                 "value": "visible",
                                 "triggers": [
                                     {
-                                        "method": "setLayoutProperty",
+                                        "method": "changeLayoutProperty",
                                         "property": "visibility",
                                         "layers": ["emprise-du-territoire-layer"]
                                     }
@@ -448,7 +472,7 @@ class MapLibreView(GroupMixin, DetailView):
                                 "value": 100,
                                 "triggers": [
                                     {
-                                        "method": "setPaintProperty",
+                                        "method": "changePaintProperty",
                                         "property": "line-opacity",
                                         "layers": ["emprise-du-territoire-layer"]
                                     }
@@ -457,7 +481,7 @@ class MapLibreView(GroupMixin, DetailView):
                         ]
                     },
                     {
-                        "name": "Zonages d'urbanisme",
+                        "name": "Zonages des documents d&rsquo;urbanisme",
                         "source": {
                             "key": "zonages-d-urbanisme-source",
                             "params": {
@@ -528,7 +552,7 @@ class MapLibreView(GroupMixin, DetailView):
                                 "value": "visible",
                                 "triggers": [
                                     {
-                                        "method": "setLayoutProperty",
+                                        "method": "changeLayoutProperty",
                                         "property": "visibility",
                                         "layers": ["zonages-d-urbanisme-layer", "zonages-d-urbanisme-labels"]
                                     }
@@ -540,17 +564,51 @@ class MapLibreView(GroupMixin, DetailView):
                                 "value": 100,
                                 "triggers": [
                                     {
-                                        "method": "setPaintProperty",
+                                        "method": "changePaintProperty",
                                         "property": "line-opacity",
                                         "layers": ["zonages-d-urbanisme-layer"]
                                     },
                                     {
-                                        "method": "setPaintProperty",
+                                        "method": "changePaintProperty",
                                         "property": "text-opacity",
                                         "layers": ["zonages-d-urbanisme-labels"]
                                     }
                                 ]
                             },
+                            {
+                                "name": "",
+                                "type": "tag",
+                                "value": ["AUc", "AUs", "U", "A", "N"],
+                                "options": [
+                                    {
+                                        "name": "AUc",
+                                        "value": "AUc",
+                                    },
+                                    {
+                                        "name": "AUs",
+                                        "value": "AUs",
+                                    },
+                                    {
+                                        "name": "U",
+                                        "value": "U",
+                                    },
+                                    {
+                                        "name": "A",
+                                        "value": "A",
+                                    },
+                                    {
+                                        "name": "N",
+                                        "value": "N",
+                                    },
+                                ],
+                                "triggers": [
+                                    {
+                                        "method": "filterByPropertyInArray",
+                                        "property": "typezone",
+                                        "layers": ["zonages-d-urbanisme-layer", "zonages-d-urbanisme-labels"]
+                                    }
+                                ]
+                            }
                         ]
                     },
                 ]
