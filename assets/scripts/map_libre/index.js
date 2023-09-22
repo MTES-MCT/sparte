@@ -55,7 +55,7 @@ export default class MapLibre {
                         }
                     }
                 ]
-            }, // Empty style with DSFR Marianne font glyphs
+            }, // Empty style with DSFR Marianne font glyphs https://github.com/mapbox/mapbox-gl-styles/blob/master/styles/empty-v8.json
             center: this.mapCenter, // starting position [lng, lat]
             zoom: this.defaultZoom, // starting zoom
             maxZoom: 18,
@@ -94,7 +94,7 @@ export default class MapLibre {
 
         this.layerList.map((_obj) => {
             // Create sources
-            this.sources.push(new Source(_obj.source))
+            this.sources.push(new Source(_obj.source, _obj.source_query_strings))
 
             // Create associated layers
             if (_obj.layers?.length > 0)
