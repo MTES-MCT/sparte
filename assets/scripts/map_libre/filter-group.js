@@ -1,5 +1,5 @@
 import Filter from './filter.js'
-import { slugify } from './utils.js'
+import { slugify, isInRange } from './utils.js'
 
 export default class FilterGroup {
     constructor(_name, _source, _options = {}) {
@@ -40,9 +40,15 @@ export default class FilterGroup {
             this.groupContentNode.setAttribute('aria-hidden', expanded)
         }
 
+        // Create placeholder layer not available
+        this.placeholderNode = document.createElement('div')
+        this.placeholderNode.classList.add('filter-placeholder', 'tab-item')
+        this.placeholderNode.innerHTML = `<div>Le calque <strong>${this.name}</strong> n'est pas disponible pour ce niveau de zoom.</div>`
+
         this.groupHeaderNode.appendChild(this.titleNode)
         this.groupHeaderNode.appendChild(this.buttonNode)
         this.groupNode.appendChild(this.groupHeaderNode)
+        this.groupNode.appendChild(this.placeholderNode)
 
         this.groupContentNode.id = `accordion-${this.slug}`
         this.groupContentNode.setAttribute('aria-hidden', 'true')
@@ -65,6 +71,18 @@ export default class FilterGroup {
             this.buttonNode.classList.add('btn--map-loading')
             iconNode.classList.remove('bi', 'bi-gear')
             iconNode.classList.add('spinner-border', 'spinner-border-sm')
+        }
+    }
+
+    update() {
+        const source = this.mapLibre.sources.find((_obj) => _obj.key === this.source)
+        if (isInRange(this.mapLibre.map.getZoom(), source.minZoom, source.maxZoom)) {
+            this.placeholderNode.style.visibility = 'hidden'
+            this.placeholderNode.style.opacity = 0
+        }
+        else {
+            this.placeholderNode.style.visibility = 'visible'
+            this.placeholderNode.style.opacity = 1            
         }
     }
 }

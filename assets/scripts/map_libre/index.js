@@ -169,6 +169,9 @@ export default class MapLibre {
     update() {
         if (this.sources)
             this.sources.map((_obj) => _obj.update())
+    
+        if (this.filters)
+            this.filters.map((_obj) => _obj.update())
     }
 
     sourceData(_source) {
