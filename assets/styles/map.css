@@ -48,6 +48,13 @@
 }
 
 /*
+Fix option button icon margin
+*/
+.btn--map-loading {
+    padding: .25rem .7rem;
+}
+
+/*
 Custom leaflet tooltip
 */
 .leaflet-tooltip {
@@ -170,6 +177,10 @@ Tabs
     opacity: 0;
     transition: opacity .3s ease;
     text-align: center;
+}
+
+.tabs .tab select {
+    outline: none;
 }
 
 /*
