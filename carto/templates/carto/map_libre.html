@@ -43,7 +43,7 @@ html, body {
 <script language="javascript" nonce="{{ CSP_NONCE }}">
 new MapLibre ({
     targetElement: document.getElementById('map__container'),
-    debug: false,
+    debug: true,
     mapCenter: [{{ center_lng }}, {{ center_lat }}],
     defaultZoom: {{ default_zoom }},
     layerList: JSON.parse(document.getElementById('layer_list').textContent),

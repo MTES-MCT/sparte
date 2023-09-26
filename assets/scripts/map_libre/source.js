@@ -1,13 +1,21 @@
+import { isInRange } from './utils.js'
+
 export default class Source {
-    constructor(_options = {}, _query_strings) {
+    constructor(_options = {}, _custom_options) {
         this.mapLibre = window.mapLibre
         this.map = this.mapLibre.map
 
         this.key = _options.key
         this.params = _options.params
-        this.queryStrings = _query_strings
+        this.queryStrings = _custom_options?.query_strings
+        this.minZoom = _custom_options?.min_zoom || 0
+        this.maxZoom = _custom_options?.max_zoom || 19
+        this.baseUrl = _options.params.data
+        
         this.isUpdated = this.queryStrings?.some(_obj => _obj['key'] === 'in_bbox') || false // Check for bbox query string
-
+        this.lastDataZoom = null
+        this.lastDataBbox = null
+        
         this.setSource()
     }
 
@@ -15,8 +23,7 @@ export default class Source {
     setSource() {
         // Add query params to url for geojson layers
         if (this.params.type === 'geojson') {
-            this.url = this.getUrl()
-            this.params.data = this.url
+            this.params.data = this.isZoomAvailable() ? this.getUrl() : null
         }
 
         // Create source
@@ -25,15 +32,18 @@ export default class Source {
 
     // Actions
     async update() {
-        if (this.isUpdated) {
+        const currentZoom = this.getZoom()
+
+        if (this.isUpdated && this.isZoomAvailable()) {
             const source = this.map.getSource(this.key)
-            console.log(this.url);
-            source.setData(this.url)
+            source.setData(this.getUrl())
+
+            this.lastDataZoom = currentZoom
         }
     }
 
     getUrl() {
-        let url = this.params.data
+        let url = this.baseUrl
 
         // Add query params
         if (this.queryStrings) {
@@ -67,6 +77,10 @@ export default class Source {
     }
 
     getZoom() {
-        return 10 // required param, waiting for backend update to remove it
+        return Math.floor(this.map.getZoom())
+    }
+
+    isZoomAvailable() {
+        return isInRange(this.getZoom(), this.minZoom, this.maxZoom)
     }
 }

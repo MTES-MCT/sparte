@@ -106,8 +106,11 @@ export default class Filter {
             let option = document.createElement('option')
             option.value = _obj.value
             option.text = _obj.name
-            if (this.value == _obj.value)
+            if (this.value == _obj.value) {
                 option.setAttribute('selected', 'selected')
+                // Triggers default option
+                this.triggerFilters(_obj['data-value'])
+            }
             select.appendChild(option)
         })
 
@@ -116,7 +119,7 @@ export default class Filter {
             this.value = _event.target.value
 
             // Triggers layer methods
-            this.triggerFilters(this.value)
+            this.triggerFilters(this.options.find((_obj) => _obj.value === this.value)['data-value'])
         })
 
         filter.appendChild(select)

@@ -45,3 +45,11 @@ export function formatData(_type, _options, _value) {
 
 	return formatter[_type]?.(_options) ?? "formatter not found"
 }
+
+export function isInRange(num, low, high) {
+	if (num >= low && num <= high) {
+		return true
+	}
+
+	return false
+}

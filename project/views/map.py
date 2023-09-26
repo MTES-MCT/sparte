@@ -215,6 +215,16 @@ class MapLibreView(GroupMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         center = self.object.get_centroid()
+        usage_colors = ["match", ["get", "code_usage"]]
+        for leaf in UsageSol.get_leafs():
+            usage_colors.append(leaf.code_prefix)
+            usage_colors.append(leaf.map_color)
+        usage_colors.append("rgba(0, 0, 0, 0)") # default color
+        couverture_colors = ["match", ["get", "code_couverture"]]
+        for leaf in CouvertureSol.get_leafs():
+            couverture_colors.append(leaf.code_prefix)
+            couverture_colors.append(leaf.map_color)
+        couverture_colors.append("rgba(0, 0, 0, 0)") # default color       
         kwargs.update(
             {
                 "carto_name": "Project",
@@ -222,7 +232,7 @@ class MapLibreView(GroupMixin, DetailView):
                 "project_id": self.object.pk,
                 "center_lat": center.y,
                 "center_lng": center.x,
-                "default_zoom": 10,
+                "default_zoom": 15,
                 "layer_list": [
                     {
                         "name": "Fond de carte",
@@ -230,15 +240,15 @@ class MapLibreView(GroupMixin, DetailView):
                             "key": "fond-de-carte-source",
                             "params": {
                                 "type": "raster",
-                                'tiles': ["https://wxs.ign.fr/ortho/geoportail/wmts?REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0&TILEMATRIXSET=PM&LAYER=ORTHOIMAGERY.ORTHOPHOTOS&STYLE=normal&FORMAT=image/jpeg&TILECOL={x}&TILEROW={y}&TILEMATRIX={z}"],
-                                'tileSize': 256  
+                                "tiles": ["https://wxs.ign.fr/ortho/geoportail/wmts?REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0&TILEMATRIXSET=PM&LAYER=ORTHOIMAGERY.ORTHOPHOTOS&STYLE=normal&FORMAT=image/jpeg&TILECOL={x}&TILEROW={y}&TILEMATRIX={z}"],
+                                "tileSize": 256  
                             }
                         },
                         "layers": [
                             {
                                 "id": "fond-de-carte-layer",
-                                'type': 'raster',
-                                'source': 'fond-de-carte-source',
+                                "type": "raster",
+                                "source": "fond-de-carte-source",
                             },
                         ],
                         "filters": [
@@ -280,19 +290,19 @@ class MapLibreView(GroupMixin, DetailView):
                         "layers": [
                             {
                                 "id": "limites-administratives-region-layer",
-                                'type': 'line',
-                                'source': 'limites-administratives-source',
-                                'source-layer': 'region',
-                                'paint': {
-                                    'line-color': '#ff69b4',
-                                    'line-width': 1
+                                "type": "line",
+                                "source": "limites-administratives-source",
+                                "source-layer": "region",
+                                "paint": {
+                                    "line-color": "#ff69b4",
+                                    "line-width": 1
                                 }
                             },
                             {
                                 "id": "limites-administratives-region-labels",
                                 "type": "symbol",
                                 "source": "limites-administratives-source",
-                                'source-layer': 'region',
+                                "source-layer": "region",
                                 "layout": {
                                     "text-field": ["get", "nom"],
                                     "text-anchor": "top",
@@ -304,19 +314,19 @@ class MapLibreView(GroupMixin, DetailView):
                             },
                             {
                                 "id": "limites-administratives-departement-layer",
-                                'type': 'line',
-                                'source': 'limites-administratives-source',
-                                'source-layer': 'departement',
-                                'paint': {
-                                    'line-color': '#ffff00',
-                                    'line-width': 1
+                                "type": "line",
+                                "source": "limites-administratives-source",
+                                "source-layer": "departement",
+                                "paint": {
+                                    "line-color": "#ffff00",
+                                    "line-width": 1
                                 }
                             },
                             {
                                 "id": "limites-administratives-departement-labels",
                                 "type": "symbol",
                                 "source": "limites-administratives-source",
-                                'source-layer': 'departement',
+                                "source-layer": "departement",
                                 "layout": {
                                     "text-field": ["get", "nom"],
                                     "text-anchor": "top",
@@ -328,19 +338,19 @@ class MapLibreView(GroupMixin, DetailView):
                             },
                             {
                                 "id": "limites-administratives-epci-layer",
-                                'type': 'line',
-                                'source': 'limites-administratives-source',
-                                'source-layer': 'epci',
-                                'paint': {
-                                    'line-color': '#00ffff',
-                                    'line-width': 1
+                                "type": "line",
+                                "source": "limites-administratives-source",
+                                "source-layer": "epci",
+                                "paint": {
+                                    "line-color": "#00ffff",
+                                    "line-width": 1
                                 }
                             },
                             {
                                 "id": "limites-administratives-epci-labels",
                                 "type": "symbol",
                                 "source": "limites-administratives-source",
-                                'source-layer': 'epci',
+                                "source-layer": "epci",
                                 "layout": {
                                     "text-field": ["get", "nom"],
                                     "text-anchor": "top",
@@ -352,19 +362,19 @@ class MapLibreView(GroupMixin, DetailView):
                             },
                             {
                                 "id": "limites-administratives-commune-layer",
-                                'type': 'line',
-                                'source': 'limites-administratives-source',
-                                'source-layer': 'commune',
-                                'paint': {
-                                    'line-color': '#ff00ff',
-                                    'line-width': 1
+                                "type": "line",
+                                "source": "limites-administratives-source",
+                                "source-layer": "commune",
+                                "paint": {
+                                    "line-color": "#ff00ff",
+                                    "line-width": 1
                                 }
                             },
                             {
                                 "id": "limites-administratives-commune-labels",
                                 "type": "symbol",
                                 "source": "limites-administratives-source",
-                                'source-layer': 'commune',
+                                "source-layer": "commune",
                                 "layout": {
                                     "text-field": ["get", "nom"],
                                     "text-anchor": "top",
@@ -435,21 +445,23 @@ class MapLibreView(GroupMixin, DetailView):
                                 "data": reverse_lazy("project:emprise-list"),
                             }
                         },
-                        "source_query_strings": [
-                            {
-                                "type": "string",
-                                "key": "id",
-                                "value": self.object.pk,
-                            },
-                        ],
+                        "source_custom_options": {
+                            "query_strings": [
+                                {
+                                    "type": "string",
+                                    "key": "id",
+                                    "value": self.object.pk,
+                                },
+                            ],
+                        },
                         "layers": [
                             {
                                 "id": "emprise-du-territoire-layer",
-                                'type': 'line',
-                                'source': 'emprise-du-territoire-source',
-                                'paint': {
-                                    'line-color': '#ff0000',
-                                    'line-width': 2
+                                "type": "line",
+                                "source": "emprise-du-territoire-source",
+                                "paint": {
+                                    "line-color": "#ff0000",
+                                    "line-width": 2
                                 }
                             }
                         ],
@@ -488,19 +500,23 @@ class MapLibreView(GroupMixin, DetailView):
                                 "type": "geojson",
                                 "data": reverse_lazy("public_data:zoneurba-optimized"),
                             },
+
                         },
-                        "source_query_strings": [
-                            {
-                                "type": "function",
-                                "key": "in_bbox",
-                                "value": "getBbox",
-                            },
-                            {
-                                "type": "function",
-                                "key": "zoom",
-                                "value": "getZoom",
-                            },
-                        ],
+                        "source_custom_options": {
+                            "query_strings": [
+                                {
+                                    "type": "function",
+                                    "key": "in_bbox",
+                                    "value": "getBbox",
+                                },
+                                {
+                                    "type": "function",
+                                    "key": "zoom",
+                                    "value": "getZoom",
+                                },
+                            ],
+                            "min_zoom": 12
+                        },
                         "layers": [
                             {
                                 "id": "zonages-d-urbanisme-layer",
@@ -609,6 +625,100 @@ class MapLibreView(GroupMixin, DetailView):
                                     }
                                 ]
                             }
+                        ]
+                    },
+                    {
+                        "name": "OCS GE",
+                        "source": {
+                            "key": "ocs-ge-source",
+                            "params": {
+                                "type": "geojson",
+                                "data": reverse_lazy("public_data:ocsge-optimized"),
+                            },
+                        },
+                        "source_custom_options": {
+                            "query_strings": [
+                                {
+                                    "type": "function",
+                                    "key": "in_bbox",
+                                    "value": "getBbox",
+                                },
+                                {
+                                    "type": "function",
+                                    "key": "zoom",
+                                    "value": "getZoom",
+                                },
+                                {
+                                    "type": "string",
+                                    "key": "year",
+                                    "value": 2019,
+                                },
+                                {
+                                    "type": "string",
+                                    "key": "is_artificial",
+                                    "value": 1,
+                                },
+                            ],
+                            "min_zoom": 15,
+                        },
+                        "layers": [
+                            {
+                                "id": "ocs-ge-layer",
+                                "type": "fill",
+                                "source": "ocs-ge-source",
+                                "minzoom": 15,
+                                "maxzoom": 19,
+                            },
+                        ],
+                        "filters": [
+                            {
+                                "name": "Visibilité du calque",
+                                "type": "visibility",
+                                "value": "visible",
+                                "triggers": [
+                                    {
+                                        "method": "changeLayoutProperty",
+                                        "property": "visibility",
+                                        "layers": ["ocs-ge-layer"]
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "Opacité du calque",
+                                "type": "opacity",
+                                "value": 100,
+                                "triggers": [
+                                    {
+                                        "method": "changePaintProperty",
+                                        "property": "fill-opacity",
+                                        "layers": ["ocs-ge-layer"]
+                                    },
+                                ]
+                            },
+                            {
+                                "name": "Nomemclature",
+                                "type": "select",
+                                "value": "couverture",
+                                "options": [
+                                    {
+                                        "name": "Couverture",
+                                        "value": "couverture",
+                                        "data-value": couverture_colors,
+                                    },
+                                    {
+                                        "name": "Usage",
+                                        "value": "usage",
+                                        "data-value": usage_colors,
+                                    }
+                                ],
+                                "triggers": [
+                                    {
+                                        "method": "changePaintProperty",
+                                        "property": "fill-color",
+                                        "layers": ["ocs-ge-layer"]
+                                    }
+                                ]
+                            },
                         ]
                     },
                 ]
