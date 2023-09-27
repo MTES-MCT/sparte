@@ -5,6 +5,7 @@ from django.core.management.base import BaseCommand
 from django.core.paginator import Paginator
 
 from public_data.models import Cerema, Commune, Departement, Epci, Region
+from public_data.models.administration import Scot
 from utils.db import fix_poly
 
 logger = logging.getLogger("management.commands")
@@ -17,8 +18,9 @@ class Command(BaseCommand):
         logger.info("Recreate region, departement, EPCI and communes referentials")
         self.load_region()
         self.load_departement()
+        self.load_scot()
         self.load_epci()
-        self.link_epci_with_dept()
+        self.link_epci()
         self.load_communes()
 
     def load_region(self):
@@ -75,7 +77,38 @@ class Command(BaseCommand):
         Epci.objects.bulk_create(items)
         logger.info("Done loading EPCI")
 
-    def link_epci_with_dept(self):
+    def load_scot(self):
+        logger.info("Loading SCOT")
+        Scot.objects.all().delete()
+        qs = Cerema.objects.values("scot_name").annotate(mpoly=Union("mpoly")).order_by("scot_name")
+        logger.info("%d SCoTs found", len(qs))
+        scot_list = [
+            Scot(
+                name=data["scot_name"],
+                mpoly=fix_poly(data["mpoly"]),
+            )
+            for data in qs
+        ]
+        Scot.objects.bulk_create(scot_list)
+        # link to region and departement
+        depts = {d.source_id: d for d in Departement.objects.all()}
+        regions = {r.source_id: r for r in Region.objects.all()}
+        links = {}
+        for scot_name, dept_id, region_id in (
+            Cerema.objects.values_list("scot_name", "dept_id", "region_id")
+            .order_by("scot_name")
+            .distinct()
+        ):
+            if scot_name not in links:
+                links[scot_name] = {"depts": set(), "regions": set()}
+            links[scot_name]["dept_id_list"].add(dept_id)
+            links[scot_name]["region_id_list"].add(region_id)
+        for scot_name, data in links.items():
+            scot = Scot.objects.get(name=scot_name)
+            scot.departements.add(*[depts[d] for d in data["dept_id_list"]])
+            scot.regions.add(*[regions[r] for r in data["region_id_list"]])
+
+    def link_epci(self):
         logger.info("Link EPCI <-> département")
         depts = {d.source_id: d for d in Departement.objects.all()}
         epcis = {e.source_id: e for e in Epci.objects.all()}
