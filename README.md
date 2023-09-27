@@ -113,7 +113,16 @@ python scripts/cmd.py --env $ENV run 'python manage.py build_artificial_area --d
 python scripts/cmd.py --env $ENV run 'python manage.py set_density --reset --departement Gers'
 ```
 
-MEP 4.0
 
-- Charger les zones urbaines du GERS : ./manage.py import_gpu --dept 32
+## Migration Cerema avec données 2021 (réalisée en septembre 2023)
 
+On ne peut pas exécuter le code de migration directement sur le serveur car il n'y a pas assez de RAM.
+
+1. Mettre l'application en mode maintenance: `/admin/django_app_parameter/parameter/11/change/`
+2. Via git, merger la branche staging dans master
+3. Attendre la fin du déploiement
+4. Ouvrir un tunnel vers la db de prod: `scalingo --app sparte-staging --region osc-fr1 db-tunnel DATABASE_URL`
+5. Modifier le .env pour utiliser la db de prod depuis votre poste postgis://username:password@127.0.0.1:10000/dbname?sslmode=prefer
+6. Dans un terminal, sourcer le .env pour être sûr de tapper dans la db de prod
+7. Charger les données du Cerema `scalingo --app sparte-staging --region osc-fr1 run 'python manage.py load_cerema'`
+7. Exécuter les scripts de migration `python manage.py update_administration_layer`
