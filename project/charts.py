@@ -1,5 +1,4 @@
 import collections
-from decimal import Decimal
 from typing import Dict, List
 
 from django.contrib.gis.geos import MultiPolygon
@@ -41,7 +40,7 @@ class ConsoComparisonChart(ProjectChart):
             land.name: land.get_conso_per_year(
                 self.project.analyse_start_date,
                 self.project.analyse_end_date,
-                coef=self.project.area / (float(land.area) if self.relative else 1),
+                coef=(self.project.area / float(land.area)) if self.relative else 1,
             )
             for land in self.project.get_look_a_like()
         }
