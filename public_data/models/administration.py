@@ -328,7 +328,7 @@ class Scot(LandMixin, GetDataFromCeremaMixin, models.Model):
         return self.commune_set.all()
 
     def __str__(self):
-        return f"SCOT {self.name.upper()}"
+        return self.name.upper()
 
     @classmethod
     def search(cls, needle, region=None, departement=None, epci=None):
