@@ -8,17 +8,17 @@ def year_choices():
 
 class DateEndForm(forms.Form):
     end = forms.TypedChoiceField(
-        choices=[(r, str(r)) for r in range(2021, 2075)],
+        choices=[(r, str(r)) for r in range(2022, 2075)],
         label="Année de fin",
-        validators=[MinValueValidator("2021"), MaxValueValidator("2075")],
+        validators=[MinValueValidator("2022"), MaxValueValidator("2075")],
     )
 
-    def __init__(self, start: int = 2021, end: int = 2030, default: float = 0, *args, **kwargs):
+    def __init__(self, start: int = 2022, end: int = 2030, default: float = 0, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
 
 class UpdateTrajectoryForm(forms.Form):
-    def __init__(self, start: int = 2021, end: int = 2030, default: float = 0, *args, **kwargs):
+    def __init__(self, start: int = 2022, end: int = 2030, default: float = 0, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if isinstance(end, str):
             end = int(end)

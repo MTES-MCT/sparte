@@ -165,3 +165,8 @@ notebooks/*.xlsx
 staticroot/*
 public_data/static/SSCH*
 diff_bfc_*
+public_data/cerema_2023/metro/obs_artif_conso_com_2009_2022.cpg
+public_data/cerema_2023/metro/obs_artif_conso_com_2009_2022.dbf
+public_data/cerema_2023/metro/obs_artif_conso_com_2009_2022.prj
+public_data/cerema_2023/metro/obs_artif_conso_com_2009_2022.shp
+public_data/cerema_2023/metro/obs_artif_conso_com_2009_2022.shx
