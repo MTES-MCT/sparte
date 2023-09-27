@@ -29,8 +29,7 @@ class Mattermost:
         data = {"text": self.msg}
         if self.channel:
             data["channel"] = self.channel
-        if self.information:
-            data["props"] = {"card": self.information}
+        data["props"] = {"card": f"{self.information}\n\nEnvironment: {settings.ENVIRONMENT}"}
         response = requests.post(self.url, json=data)
         if response.ok:
             return True

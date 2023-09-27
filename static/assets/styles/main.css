@@ -1264,6 +1264,13 @@ input[type="range"]::-moz-range-thumb {
     box-shadow: -407px 0 0 400px #000091;
 }
 /*
+Header logo
+*/
+.fr-header__operator img {
+    height: 54px;
+}
+
+/*
 Fix link icon position
 */
 .fr-breadcrumb__link::before,
@@ -1601,7 +1608,8 @@ HTMX Indicator loader
 Home Page
 */
 .section-blue {
-    background-color: #1D41FF;
+    background: rgb(2,0,36);
+    background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(118,57,246,1) 0%, rgba(0,101,203,1) 100%);
 }
 
 .section-main {

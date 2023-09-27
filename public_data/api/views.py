@@ -118,7 +118,7 @@ class OnlyBoundingBoxMixin:
 
     def get_sql_from(self) -> str:
         from_parts = [
-            super().get_sql_from(),
+            super().get_sql_from(),  # type: ignore
             "INNER JOIN (SELECT ST_MakeEnvelope(%s, %s, %s, %s, 4326) as box) as b ON ST_Intersects(o.mpoly, b.box)",
         ]
         return " ".join(from_parts)
