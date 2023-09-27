@@ -2,8 +2,27 @@
 
 Ce changelog suit la méthode "keep a changelog" disponible ici: [https://keepachangelog.com/en/1.0.0/](https://keepachangelog.com/en/1.0.0/)
 
+## [4.2] Cerema 2021 - Non livré
 
-## [4.1] Trajectoire v2 - Non livré
+### Ajouté :
+- Données Cerema 2021
+
+
+### Modifié :
+- Séparation des tâches asynchrones en 2 queues pour accélérer la création des diagnostics en ligne et les découpler de l'IGN
+
+
+## [4.1.1] Petits fixs - 2023.09.18
+
+### Ajouté :
+- Ecran de maintenance
+
+### Modifié :
+- Remplacer objectif par trajectoire dans la page de synthèse d'un diag
+- Désactiver onglet zonage d'urbanisme lorsque l'OCS GE n'est pas disponible
+
+
+## [4.1] Trajectoire v2 - 2023.09.08
 
 ### Ajouté :
 - Synthèse des zones d'urbanisme dans le diagnostic

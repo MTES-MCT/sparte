@@ -31,7 +31,7 @@ class AutoLoadMixin:
     # properties that need to be set when heritating
     couverture_field = None
     usage_field = None
-    shape_file_path = Path()
+    shape_file_path: str = ""
     mapping: Dict[str, str] = {}
 
     def before_save(self):

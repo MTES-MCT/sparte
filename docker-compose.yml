@@ -80,7 +80,7 @@ services:
     working_dir: /app
     volumes:
       - .:/app
-    command: celery -A config.celery worker --loglevel info --pool solo
+    command: celery -A config.celery worker --loglevel debug --concurrency=4 --max-tasks-per-child=1
     # command: tail -F anything
     env_file: .env
     environment:
@@ -100,7 +100,7 @@ services:
     working_dir: /app
     volumes:
       - .:/app
-    command: celery -A config.celery worker --loglevel info --pool solo -Q long
+    command: celery -A config.celery worker --loglevel debug --concurrency=4 --max-tasks-per-child=1 -Q long
     # command: tail -F anything
     env_file: .env
     environment:
