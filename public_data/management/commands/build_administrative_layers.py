@@ -11,7 +11,7 @@ logger = logging.getLogger("management.commands")
 
 
 class Command(BaseCommand):
-    help = "Will load data into Region, Departement and Epci from Cerema data"
+    help = "(caution, it's from scratch) Will load data into Region, Departement and Epci from Cerema data"
 
     def handle(self, *args, **options):
         logger.info("Recreate region, departement, EPCI and communes referentials")
