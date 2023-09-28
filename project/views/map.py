@@ -232,7 +232,7 @@ class MapLibreView(GroupMixin, DetailView):
                 "project_id": self.object.pk,
                 "center_lat": center.y,
                 "center_lng": center.x,
-                "default_zoom": 15,
+                "default_zoom": 12,
                 "layer_list": [
                     {
                         "name": "Fond de carte",
@@ -493,147 +493,13 @@ class MapLibreView(GroupMixin, DetailView):
                         ]
                     },
                     {
-                        "name": "Zonages des documents d&rsquo;urbanisme",
-                        "source": {
-                            "key": "zonages-d-urbanisme-source",
-                            "params": {
-                                "type": "geojson",
-                                "data": reverse_lazy("public_data:zoneurba-optimized"),
-                            },
-
-                        },
-                        "source_custom_options": {
-                            "query_strings": [
-                                {
-                                    "type": "function",
-                                    "key": "in_bbox",
-                                    "value": "getBbox",
-                                },
-                                {
-                                    "type": "function",
-                                    "key": "zoom",
-                                    "value": "getZoom",
-                                },
-                            ],
-                            "min_zoom": 12
-                        },
-                        "layers": [
-                            {
-                                "id": "zonages-d-urbanisme-layer",
-                                "type": "line",
-                                "source": "zonages-d-urbanisme-source",
-                                "minzoom": 12,
-                                "maxzoom": 19,
-                                "paint": {
-                                    "line-color": [
-                                        "match",
-                                        ["get", "typezone"],
-                                        "N", "#56aa02",
-                                        "U", "#e60000",
-                                        "Auc", "#ff6565",
-                                        "Aus", "#feccbe",
-                                        "#ffff00" # Default color => zones A
-                                    ],
-                                    "line-width": 1
-                                }
-                            },
-                            {
-                                "id": "zonages-d-urbanisme-labels",
-                                "type": "symbol",
-                                "source": "zonages-d-urbanisme-source",
-                                "minzoom": 12,
-                                "maxzoom": 19,
-                                "layout": {
-                                    "text-field": ["get", "typezone"],
-                                    "text-anchor": "top",
-                                    "text-font": ["Marianne Regular"],
-                                },
-                                "paint": {
-                                    "text-color": [
-                                        "match",
-                                        ["get", "typezone"],
-                                        "N", "#56aa02",
-                                        "U", "#e60000",
-                                        "Auc", "#ff6565",
-                                        "Aus", "#feccbe",
-                                        "#ffff00" # Default color => zones A
-                                    ],
-                                }
-                            },
-                        ],
-                        "filters": [
-                            {
-                                "name": "Visibilité du calque",
-                                "type": "visibility",
-                                "value": "visible",
-                                "triggers": [
-                                    {
-                                        "method": "changeLayoutProperty",
-                                        "property": "visibility",
-                                        "layers": ["zonages-d-urbanisme-layer", "zonages-d-urbanisme-labels"]
-                                    }
-                                ]
-                            },
-                            {
-                                "name": "Opacité du calque",
-                                "type": "opacity",
-                                "value": 100,
-                                "triggers": [
-                                    {
-                                        "method": "changePaintProperty",
-                                        "property": "line-opacity",
-                                        "layers": ["zonages-d-urbanisme-layer"]
-                                    },
-                                    {
-                                        "method": "changePaintProperty",
-                                        "property": "text-opacity",
-                                        "layers": ["zonages-d-urbanisme-labels"]
-                                    }
-                                ]
-                            },
-                            {
-                                "name": "",
-                                "type": "tag",
-                                "value": ["AUc", "AUs", "U", "A", "N"],
-                                "options": [
-                                    {
-                                        "name": "AUc",
-                                        "value": "AUc",
-                                    },
-                                    {
-                                        "name": "AUs",
-                                        "value": "AUs",
-                                    },
-                                    {
-                                        "name": "U",
-                                        "value": "U",
-                                    },
-                                    {
-                                        "name": "A",
-                                        "value": "A",
-                                    },
-                                    {
-                                        "name": "N",
-                                        "value": "N",
-                                    },
-                                ],
-                                "triggers": [
-                                    {
-                                        "method": "filterByPropertyInArray",
-                                        "property": "typezone",
-                                        "layers": ["zonages-d-urbanisme-layer", "zonages-d-urbanisme-labels"]
-                                    }
-                                ]
-                            }
-                        ]
-                    },
-                    {
                         "name": "OCS GE",
                         "source": {
                             "key": "ocs-ge-source",
                             "params": {
                                 "type": "geojson",
                                 "data": reverse_lazy("public_data:ocsge-optimized"),
+                                "generateId": True #This ensures that all features have unique IDs   
                             },
                         },
                         "source_custom_options": {
@@ -668,6 +534,14 @@ class MapLibreView(GroupMixin, DetailView):
                                 "source": "ocs-ge-source",
                                 "minzoom": 15,
                                 "maxzoom": 19,
+                                "paint": {
+                                    "fill-opacity": [
+                                        "case",
+                                        ["boolean", ["feature-state", "hover"], False],
+                                        0.9,
+                                        0.7
+                                    ]
+                                }
                             },
                         ],
                         "filters": [
@@ -717,6 +591,261 @@ class MapLibreView(GroupMixin, DetailView):
                                         "property": "fill-color",
                                         "layers": ["ocs-ge-layer"]
                                     }
+                                ]
+                            },
+                        ],
+                        "events": [
+                            {
+                                "type": "mousemove",
+                                "layer": "ocs-ge-layer",
+                                "methods": [
+                                    {
+                                        "key": "hoverEffectIn",
+                                    },
+                                    {
+                                        "key": "showInfoBox",
+                                        "title": "OCS GE",
+                                        "properties": [
+                                            {
+                                                "name": "Code couverture",
+                                                "key": "code_couverture"
+                                            },
+                                            {
+                                                "name": "Code usage",
+                                                "key": "code_usage"
+                                            },
+                                            {
+                                                "name": "Libellé couverture",
+                                                "key": "couverture_label_short"
+                                            },
+                                            {
+                                                "name": "Libellé usage",
+                                                "key": "usage_label_short"
+                                            },
+                                            {
+                                                "name": "Surface",
+                                                "key": "surface",
+                                                "formatter": ["number", ["fr-FR", "unit", "hectare", 2]]
+                                            },
+                                            {
+                                                "name": "Millésime",
+                                                "key": "year"
+                                            }
+                                        ]
+                                    }
+                                ],
+                            },
+                            {
+                                "type": "mouseleave",
+                                "layer": "ocs-ge-layer",
+                                "methods": [
+                                    {
+                                        "key": "hoverEffectOut",
+                                    },
+                                    {
+                                        "key": "hideInfoBox",
+                                    },
+                                ]
+                            },
+                        ]
+                    },
+                    {
+                        "name": "Zonages des documents d&rsquo;urbanisme",
+                        "source": {
+                            "key": "zonages-d-urbanisme-source",
+                            "params": {
+                                "type": "geojson",
+                                "data": reverse_lazy("public_data:zoneurba-optimized"),
+                                "generateId": True #This ensures that all features have unique IDs     
+                            },
+
+                        },
+                        "source_custom_options": {
+                            "query_strings": [
+                                {
+                                    "type": "function",
+                                    "key": "in_bbox",
+                                    "value": "getBbox",
+                                },
+                                {
+                                    "type": "function",
+                                    "key": "zoom",
+                                    "value": "getZoom",
+                                },
+                            ],
+                            "min_zoom": 12
+                        },
+                        "layers": [
+                            {
+                                "id": "zonages-d-urbanisme-line-layer",
+                                "type": "line",
+                                "source": "zonages-d-urbanisme-source",
+                                "minzoom": 12,
+                                "maxzoom": 19,
+                                "paint": {
+                                    "line-color": [
+                                        "match",
+                                        ["get", "typezone"],
+                                        "N", "#56aa02",
+                                        "U", "#e60000",
+                                        "Auc", "#ff6565",
+                                        "Aus", "#feccbe",
+                                        "#ffff00" # Default color => zones A
+                                    ],
+                                    "line-width": 1
+                                }
+                            },
+                            {
+                                "id": "zonages-d-urbanisme-labels",
+                                "type": "symbol",
+                                "source": "zonages-d-urbanisme-source",
+                                "minzoom": 12,
+                                "maxzoom": 19,
+                                "layout": {
+                                    "text-field": ["get", "typezone"],
+                                    "text-anchor": "top",
+                                    "text-font": ["Marianne Regular"],
+                                },
+                                "paint": {
+                                    "text-color": [
+                                        "match",
+                                        ["get", "typezone"],
+                                        "N", "#56aa02",
+                                        "U", "#e60000",
+                                        "Auc", "#ff6565",
+                                        "Aus", "#feccbe",
+                                        "#ffff00" # Default color => zones A
+                                    ],
+                                }
+                            },
+                            {
+                                "id": "zonages-d-urbanisme-fill-layer",
+                                "type": "fill",
+                                "source": "zonages-d-urbanisme-source",
+                                "minzoom": 12,
+                                "maxzoom": 19,
+                                "paint": {
+                                    "fill-color": [
+                                        "match",
+                                        ["get", "typezone"],
+                                        "N", "#56aa02",
+                                        "U", "#e60000",
+                                        "Auc", "#ff6565",
+                                        "Aus", "#feccbe",
+                                        "#ffff00" # Default color => zones A
+                                    ],
+                                    "fill-opacity": [
+                                        "case",
+                                        ["boolean", ["feature-state", "hover"], False],
+                                        0.4,
+                                        0
+                                    ],
+                                },
+                            },
+                        ],
+                        "filters": [
+                            {
+                                "name": "Visibilité du calque",
+                                "type": "visibility",
+                                "value": "visible",
+                                "triggers": [
+                                    {
+                                        "method": "changeLayoutProperty",
+                                        "property": "visibility",
+                                        "layers": ["zonages-d-urbanisme-line-layer", "zonages-d-urbanisme-labels", "zonages-d-urbanisme-fill-layer"]
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "Opacité du calque",
+                                "type": "opacity",
+                                "value": 100,
+                                "triggers": [
+                                    {
+                                        "method": "changePaintProperty",
+                                        "property": "line-opacity",
+                                        "layers": ["zonages-d-urbanisme-line-layer"]
+                                    },
+                                    {
+                                        "method": "changePaintProperty",
+                                        "property": "text-opacity",
+                                        "layers": ["zonages-d-urbanisme-labels"]
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "",
+                                "type": "tag",
+                                "value": ["AUc", "AUs", "U", "A", "N"],
+                                "options": [
+                                    {
+                                        "name": "AUc",
+                                        "value": "AUc",
+                                    },
+                                    {
+                                        "name": "AUs",
+                                        "value": "AUs",
+                                    },
+                                    {
+                                        "name": "U",
+                                        "value": "U",
+                                    },
+                                    {
+                                        "name": "A",
+                                        "value": "A",
+                                    },
+                                    {
+                                        "name": "N",
+                                        "value": "N",
+                                    },
+                                ],
+                                "triggers": [
+                                    {
+                                        "method": "filterByPropertyInArray",
+                                        "property": "typezone",
+                                        "layers": ["zonages-d-urbanisme-layer", "zonages-d-urbanisme-labels"]
+                                    }
+                                ]
+                            }
+                        ],
+                        "events": [
+                            {
+                                "type": "mousemove",
+                                "layer": "zonages-d-urbanisme-fill-layer",
+                                "methods": [
+                                    {
+                                        "key": "hoverEffectIn",
+                                    },
+                                    {
+                                        "key": "showInfoBox",
+                                        "title": "Zonages des documents d&rsquo;urbanisme",
+                                        "properties": [
+                                            {
+                                                "name": "Libellé",
+                                                "key": "libelle"
+                                            },
+                                            {
+                                                "name": "Libellé long",
+                                                "key": "libelong"
+                                            },
+                                            {
+                                                "name": "Type de zone",
+                                                "key": "typezone"
+                                            },
+                                        ]
+                                    }
+                                ],
+                            },
+                            {
+                                "type": "mouseleave",
+                                "layer": "zonages-d-urbanisme-fill-layer",
+                                "methods": [
+                                    {
+                                        "key": "hoverEffectOut",
+                                    },
+                                    {
+                                        "key": "hideInfoBox",
+                                    },
                                 ]
                             },
                         ]
