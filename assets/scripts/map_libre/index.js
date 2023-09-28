@@ -5,6 +5,7 @@ import Tabs from './tabs.js'
 import Source from './source.js'
 import Layer from './layer.js'
 import FilterGroup from './filter-group.js'
+import Events from './events.js'
 
 export default class MapLibre {
     constructor(_options = {}) {
@@ -24,6 +25,7 @@ export default class MapLibre {
         this.setConfig()
         this.setTabs()
         this.setMap()
+        this.setInfosBox()
 
         if (this.debug)
             this.setDebug()
@@ -75,13 +77,29 @@ export default class MapLibre {
             // Set Filters
             this.setFilters()
 
-            // Events
+            // Set Events
+            this.setEvents()
+
+            // Set global Events
             this.map.on('moveend', debounce(() => this.update(), 1000))
             this.map.on('sourcedata', (_obj) => this.sourceData(_obj))
 
-            // Controls
+            // Set controls
             this.map.addControl(new maplibregl.NavigationControl(), 'top-left')
+
+            // // Set popup
+            // this.popup = new maplibregl.Popup({
+            //     closeButton: false,
+            //     closeOnClick: false
+            // })
         })
+    }
+
+    setInfosBox() {
+        this.infosBoxNode = document.createElement('div')
+        this.infosBoxNode.id = 'map__infos-box'
+
+        this.targetElement.appendChild(this.infosBoxNode)
     }
 
     setTabs() {
@@ -131,9 +149,16 @@ export default class MapLibre {
 
         this.layerList.map((_obj) => {
             // Create filters
-            if (_obj.filters?.length > 0) {
+            if (_obj.filters?.length > 0)
                 this.filters.push(new FilterGroup(_obj.name, _obj.source.key, _obj.filters))
-            }
+        })
+    }
+
+    setEvents() {
+        this.layerList.map((_obj) => {
+            // Create events
+            if (_obj.events?.length > 0)
+                new Events(_obj.events, _obj.source.key)
         })
     }
 

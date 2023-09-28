@@ -20,20 +20,39 @@
     width: 100%;
 }
 
-#map__legend {
-    background: rgba(255, 255, 255, 1);
+#map__infos-box {
     position: absolute;
-    bottom: 0;
-    height: 40px;
-    width: 100%;
+    bottom: 20px;
+    left: 20px;
+    height: auto;
+    width: 300px;
     z-index: 1000;
-    padding: 10px;
-    opacity: 0;
-    transition: opacity .3s ease;
+    pointer-events: none;
 }
 
-#map__legend.visible {
+#map__infos-box > .info-box.visible:not(:last-child) {
+    margin-bottom: 5px;
+}
+
+.info-box {
+    background: #ffffff;
+    visibility: hidden;
+    opacity: 0;
+    height: 0;
+}
+
+.info-box.visible {
+    visibility: visible;
     opacity: 1;
+    height: auto;
+    padding: 10px;
+}
+
+.info-box__title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 5px;
 }
 
 .map-label {
@@ -107,7 +126,7 @@ Tabs
     position: absolute;
     right: 60px;
     top: 0;
-    bottom: 40px;
+    bottom: 0;
     z-index: 1000;
     transition: all .5s ease;
     overflow: auto;
