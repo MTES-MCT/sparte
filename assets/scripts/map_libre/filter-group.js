@@ -2,13 +2,13 @@ import Filter from './filter.js'
 import { slugify, isInRange } from './utils.js'
 
 export default class FilterGroup {
-    constructor(_name, _source, _options = {}) {
+    constructor(_options = {}) {
         this.mapLibre = window.mapLibre
 
-        this.name = _name
-        this.slug = slugify(this.name)
-        this.source = _source
-        this.filters = _options
+        this.name = _options.name
+        this.slug = slugify(_options.name)
+        this.source = _options.source
+        this.filters = _options.filters
 
         this.setFilterGroup()
     }

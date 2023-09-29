@@ -1,9 +1,10 @@
 export default class Events {
-    constructor(_options = {}, _source) {
+    constructor(_options = {}, _layer, _source) {
         this.mapLibre = window.mapLibre
         this.map = this.mapLibre.map
 
         this.events = _options
+        this.layer = _layer
         this.source = _source
 
         this.hoveredPolygonId = null
@@ -14,9 +15,9 @@ export default class Events {
     // Setters
     setEvents() {
         this.events.map((_obj) => {
-            this.map.on(_obj.type, _obj.layer, (_event) => {
-                _obj.methods.map((__obj) => {
-                    this[__obj.key](_event, __obj.title, __obj.properties)
+            this.map.on(_obj.type, this.layer, (_event) => {
+                _obj.triggers.map((__obj) => {
+                    this[__obj.method](_event, __obj.options)
                 })
             })
         })
@@ -61,14 +62,14 @@ export default class Events {
         this.hoveredPolygonId = null
     }
 
-    showInfoBox(_event, _title, _properties) {
+    showInfoBox(_event, _options) {
         if (!this.infoBoxNode)
             this.setInfoBox()
         
             if(_event.features.length > 0) {
-            let info = `<div class="info-box__title"><strong>${_title}</strong><i class='bi bi-info-circle'></i></div>`
+            let info = `<div class="info-box__title"><strong>${_options.title}</strong><i class='bi bi-info-circle'></i></div>`
             
-            _properties.map((_obj) => {
+            _options.properties.map((_obj) => {
                 if (_event.features[0].properties[_obj.key])
                     info += `<div class="fr-mr-2w"><strong>${_obj.name}</strong>: ${_event.features[0].properties[_obj.key]}</div>`
             })
@@ -82,11 +83,4 @@ export default class Events {
     hideInfoBox(_event) {
         this.infoBoxNode.classList.remove("visible")
     }
-
-    // showPopup(_event, _data) {
-    //     this.mapLibre.popup
-    //         .setLngLat(_event.features[0].properties.label_center.match(/\(.*?\)/g).map(x => x.replace(/[()]/g, "")).pop().split(' '))
-    //         .setHTML(_event.features[0].properties.libelle)
-    //         .addTo(this.map);
-    // }
 }
