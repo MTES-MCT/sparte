@@ -228,11 +228,10 @@ class MapLibreView(GroupMixin, DetailView):
         kwargs.update(
             {
                 "carto_name": "Project",
-                "map_name": "Explorateur zones d'urbanismes",
-                "project_id": self.object.pk,
+                "map_name": "Explorateur des zonages des documents d&rsquo;urbanisme",
                 "center_lat": center.y,
                 "center_lng": center.x,
-                "default_zoom": 15,
+                "default_zoom": 12,
                 "data": {
                     "sources": [
                         {
@@ -424,6 +423,17 @@ class MapLibreView(GroupMixin, DetailView):
                                         },
                                         {
                                             "method": "hideInfoBox",
+                                        },
+                                    ]
+                                },
+                                {
+                                    "type": "click",
+                                    "triggers": [
+                                        {
+                                            "method": "displayFeatureData",
+                                            "options": {
+                                                "data": f"/project/{self.object.pk}/carte/detail-zone-urbaine/",
+                                            },
                                         },
                                     ]
                                 },

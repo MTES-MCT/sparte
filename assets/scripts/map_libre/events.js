@@ -2,6 +2,7 @@ export default class Events {
     constructor(_options = {}, _layer, _source) {
         this.mapLibre = window.mapLibre
         this.map = this.mapLibre.map
+        this.tabs = this.mapLibre.tabs
 
         this.events = _options
         this.layer = _layer
@@ -34,8 +35,8 @@ export default class Events {
 
     // Actions
     hoverEffectIn(_event) {
-        if(_event.features.length > 0) {
-            if(this.hoveredPolygonId !== null) {
+        if (_event.features.length > 0) {
+            if (this.hoveredPolygonId !== null) {
                 this.map.setFeatureState(
                     { source: this.source, id: this.hoveredPolygonId },
                     { hover: false }
@@ -52,7 +53,7 @@ export default class Events {
     }
 
     hoverEffectOut(_event) {
-        if(this.hoveredPolygonId !== null) {
+        if (this.hoveredPolygonId !== null) {
             this.map.setFeatureState(
                 { source: this.source, id: this.hoveredPolygonId },
                 { hover: false }
@@ -66,7 +67,7 @@ export default class Events {
         if (!this.infoBoxNode)
             this.setInfoBox()
         
-            if(_event.features.length > 0) {
+        if (_event.features.length > 0) {
             let info = `<div class="info-box__title"><strong>${_options.title}</strong><i class='bi bi-info-circle'></i></div>`
             
             _options.properties.map((_obj) => {
@@ -82,5 +83,19 @@ export default class Events {
 
     hideInfoBox(_event) {
         this.infoBoxNode.classList.remove("visible")
+    }
+
+    displayFeatureData(_event, _options) {
+        if (_event.features.length > 0) {
+            const url = _options.data + _event.features[0].properties.id
+            const htmxContent = `<div hx-get="${url}" hx-trigger="load" class="tab-item"><div class="fr-custom-loader-min htmx-indicator"></div></div>`
+
+            let dataTab = this.tabs.getTab('data')
+            if (dataTab.hidden)
+                this.tabs.toggle('data')
+
+            dataTab.innerHTML = htmxContent
+            htmx.process(dataTab)
+        }
     }
 }
