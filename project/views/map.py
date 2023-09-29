@@ -232,7 +232,7 @@ class MapLibreView(GroupMixin, DetailView):
                 "project_id": self.object.pk,
                 "center_lat": center.y,
                 "center_lng": center.x,
-                "default_zoom": 12,
+                "default_zoom": 15,
                 "data": {
                     "sources": [
                         {
@@ -621,7 +621,7 @@ class MapLibreView(GroupMixin, DetailView):
                                         {
                                             "method": "changeLayoutProperty",
                                             "property": "visibility",
-                                            "layers": ["fond-de-carte-layer"],
+                                            "items": ["fond-de-carte-layer"],
                                         },
                                     ],
                                 },
@@ -633,7 +633,7 @@ class MapLibreView(GroupMixin, DetailView):
                                         {
                                             "method": "changePaintProperty",
                                             "property": "raster-opacity",
-                                            "layers": ["fond-de-carte-layer"],
+                                            "items": ["fond-de-carte-layer"],
                                         },
                                     ],
                                 },
@@ -651,7 +651,7 @@ class MapLibreView(GroupMixin, DetailView):
                                         {
                                             "method": "changeLayoutProperty",
                                             "property": "visibility",
-                                            "layers": ["emprise-du-territoire-layer"],
+                                            "items": ["emprise-du-territoire-layer"],
                                         },
                                     ],
                                 },
@@ -663,7 +663,7 @@ class MapLibreView(GroupMixin, DetailView):
                                         {
                                             "method": "changePaintProperty",
                                             "property": "line-opacity",
-                                            "layers": ["emprise-du-territoire-layer"],
+                                            "items": ["emprise-du-territoire-layer"],
                                         },
                                     ],
                                 },
@@ -681,7 +681,7 @@ class MapLibreView(GroupMixin, DetailView):
                                         {
                                             "method": "changeLayoutProperty",
                                             "property": "visibility",
-                                            "layers": [
+                                            "items": [
                                                 "limites-administratives-region-layer",
                                                 "limites-administratives-departement-layer",
                                                 "limites-administratives-epci-layer",
@@ -702,7 +702,7 @@ class MapLibreView(GroupMixin, DetailView):
                                         {
                                             "method": "changePaintProperty",
                                             "property": "line-opacity",
-                                            "layers": [
+                                            "items": [
                                                 "limites-administratives-region-layer",
                                                 "limites-administratives-departement-layer",
                                                 "limites-administratives-epci-layer",
@@ -712,7 +712,7 @@ class MapLibreView(GroupMixin, DetailView):
                                         {
                                             "method": "changePaintProperty",
                                             "property": "text-opacity",
-                                            "layers": [
+                                            "items": [
                                                 "limites-administratives-region-labels",
                                                 "limites-administratives-departement-labels",
                                                 "limites-administratives-epci-labels",
@@ -735,7 +735,7 @@ class MapLibreView(GroupMixin, DetailView):
                                         {
                                             "method": "changeLayoutProperty",
                                             "property": "visibility",
-                                            "layers": ["zonages-d-urbanisme-line-layer", "zonages-d-urbanisme-labels", "zonages-d-urbanisme-fill-layer"],
+                                            "items": ["zonages-d-urbanisme-line-layer", "zonages-d-urbanisme-labels", "zonages-d-urbanisme-fill-layer"],
                                         },
                                     ],
                                 },
@@ -747,12 +747,12 @@ class MapLibreView(GroupMixin, DetailView):
                                         {
                                             "method": "changePaintProperty",
                                             "property": "line-opacity",
-                                            "layers": ["zonages-d-urbanisme-line-layer"],
+                                            "items": ["zonages-d-urbanisme-line-layer"],
                                         },
                                         {
                                             "method": "changePaintProperty",
                                             "property": "text-opacity",
-                                            "layers": ["zonages-d-urbanisme-labels"],
+                                            "items": ["zonages-d-urbanisme-labels"],
                                         },
                                     ],
                                 },
@@ -786,7 +786,7 @@ class MapLibreView(GroupMixin, DetailView):
                                         {
                                             "method": "filterByPropertyInArray",
                                             "property": "typezone",
-                                            "layers": ["zonages-d-urbanisme-layer", "zonages-d-urbanisme-labels"],
+                                            "items": ["zonages-d-urbanisme-line-layer", "zonages-d-urbanisme-labels", "zonages-d-urbanisme-fill-layer"],
                                         },
                                     ],
                                 },
@@ -804,19 +804,19 @@ class MapLibreView(GroupMixin, DetailView):
                                         {
                                             "method": "changeLayoutProperty",
                                             "property": "visibility",
-                                            "layers": ["ocs-ge-layer"],
+                                            "items": ["ocs-ge-layer"],
                                         },
                                     ],
                                 },
                                 {
                                     "name": "Opacité du calque",
                                     "type": "opacity",
-                                    "value": 100,
+                                    "value": 70,
                                     "triggers": [
                                         {
                                             "method": "changePaintProperty",
                                             "property": "fill-opacity",
-                                            "layers": ["ocs-ge-layer"],
+                                            "items": ["ocs-ge-layer"],
                                         },
                                     ],
                                 },
@@ -840,7 +840,31 @@ class MapLibreView(GroupMixin, DetailView):
                                         {
                                             "method": "changePaintProperty",
                                             "property": "fill-color",
-                                            "layers": ["ocs-ge-layer"],
+                                            "items": ["ocs-ge-layer"],
+                                        },
+                                    ],
+                                },
+                                {
+                                    "name": "Millésime",
+                                    "type": "select",
+                                    "value": "2019",
+                                    "options": [
+                                        {
+                                            "name": "2016",
+                                            "value": "2016",
+                                            "data-value": "2016",
+                                        },
+                                        {
+                                            "name": "2019",
+                                            "value": "2019",
+                                            "data-value": "2019",
+                                        },
+                                    ],
+                                    "triggers": [
+                                        {
+                                            "method": "updateQueryString",
+                                            "property": "year",
+                                            "items": ["ocs-ge-source"],
                                         },
                                     ],
                                 },

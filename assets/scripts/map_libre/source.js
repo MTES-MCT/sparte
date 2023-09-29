@@ -31,7 +31,7 @@ export default class Source {
     }
 
     // Actions
-    async update() {
+    update() {
         const currentZoom = this.getZoom()
 
         if (this.isUpdated && this.isZoomAvailable()) {
