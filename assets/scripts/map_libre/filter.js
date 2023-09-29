@@ -164,19 +164,25 @@ export default class Filter {
 
     triggerFilters(_value) {
         this.triggers.map((_trigger) => {
-            _trigger.layers.map((_layer) => this[`${_trigger.method}`](_layer, _trigger.property, _value))
+            _trigger.items.map((_obj) => this[`${_trigger.method}`](_obj, _trigger.property, _value))
         })
     }
 
-    filterByPropertyInArray(_layer, _property, _value) {
-        this.map.setFilter(_layer, ["in", _property, ..._value])
+    filterByPropertyInArray(_item, _property, _value) {
+        this.map.setFilter(_item, ["in", _property, ..._value])
     }
 
-    changePaintProperty(_layer, _property, _value) {
-        this.map.setPaintProperty(_layer, _property, _value)
+    changePaintProperty(_item, _property, _value) {
+        this.map.setPaintProperty(_item, _property, _value)
     }
 
-    changeLayoutProperty(_layer, _property, _value) {
-        this.map.setLayoutProperty(_layer, _property, _value)
+    changeLayoutProperty(_item, _property, _value) {
+        this.map.setLayoutProperty(_item, _property, _value)
+    }
+
+    updateQueryString(_item, _property, _value) {
+        const source = this.mapLibre.sources.find((_obj) => _obj.key === _item)
+        source.queryStrings.map((_obj) => _obj.key === _property ? _obj.value = _value : _obj.value)
+        source.update()
     }
 }
