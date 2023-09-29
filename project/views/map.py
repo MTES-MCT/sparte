@@ -324,6 +324,112 @@ class MapLibreView(GroupMixin, DetailView):
                             "source": "fond-de-carte-source",
                         },
                         {
+                            "id": "limites-administratives-region-layer",
+                            "type": "line",
+                            "source": "limites-administratives-source",
+                            "source-layer": "region",
+                            "paint": {
+                                "line-color": "#b5bee2",
+                                "line-width": 1.5,
+                            },
+                        },
+                        {
+                            "id": "limites-administratives-departement-layer",
+                            "type": "line",
+                            "source": "limites-administratives-source",
+                            "source-layer": "departement",
+                            "paint": {
+                                "line-color": "#b5bee2",
+                                "line-width": 1.5,
+                            },
+                        },
+                        {
+                            "id": "limites-administratives-epci-layer",
+                            "type": "line",
+                            "source": "limites-administratives-source",
+                            "source-layer": "epci",
+                            "paint": {
+                                "line-color": "#b5bee2",
+                                "line-width": 1.5,
+                            },
+                        },
+                        {
+                            "id": "limites-administratives-commune-layer",
+                            "type": "line",
+                            "source": "limites-administratives-source",
+                            "source-layer": "commune",
+                            "paint": {
+                                "line-color": "#b5bee2",
+                                "line-width": 1.5,
+                            },
+                        },
+                        {
+                            "id": "emprise-du-territoire-layer",
+                            "type": "line",
+                            "source": "emprise-du-territoire-source",
+                            "paint": {
+                                "line-color": "#ffff00",
+                                "line-width": 1.5,
+                            },
+                        },
+                        {
+                            "id": "zonages-d-urbanisme-fill-layer",
+                            "type": "fill",
+                            "source": "zonages-d-urbanisme-source",
+                            "minzoom": 12,
+                            "maxzoom": 19,
+                            "paint": {
+                                "fill-color": "#ffffff",
+                                "fill-opacity": [
+                                    "case",
+                                    ["boolean", ["feature-state", "hover"], False],
+                                    0.8,
+                                    0
+                                ],
+                            },
+                            "events": [
+                                {
+                                    "type": "mousemove",
+                                    "triggers": [
+                                        {
+                                            "method": "hoverEffectIn",
+                                        },
+                                        {
+                                            "method": "showInfoBox",
+                                            "options": {
+                                                "title": "Zonages des documents d&rsquo;urbanisme",
+                                                "properties": [
+                                                    {
+                                                        "name": "Libellé",
+                                                        "key": "libelle"
+                                                    },
+                                                    {
+                                                        "name": "Libellé long",
+                                                        "key": "libelong"
+                                                    },
+                                                    {
+                                                        "name": "Type de zone",
+                                                        "key": "typezone"
+                                                    },
+                                                ]
+                                            }
+                                        }
+                                    ],
+                                },
+                                {
+                                    "type": "mouseleave",
+                                    "triggers": [
+                                        {
+                                            "method": "hoverEffectOut",
+                                        },
+                                        {
+                                            "method": "hideInfoBox",
+                                        },
+                                    ]
+                                },
+                            ]
+                        },
+                        {
                             "id": "ocs-ge-layer",
                             "type": "fill",
                             "source": "ocs-ge-source",
@@ -393,63 +499,6 @@ class MapLibreView(GroupMixin, DetailView):
                             ]
                         },
                         {
-                            "id": "zonages-d-urbanisme-fill-layer",
-                            "type": "fill",
-                            "source": "zonages-d-urbanisme-source",
-                            "minzoom": 12,
-                            "maxzoom": 19,
-                            "paint": {
-                                "fill-color": "#ffffff",
-                                "fill-opacity": [
-                                    "case",
-                                    ["boolean", ["feature-state", "hover"], False],
-                                    0.4,
-                                    0
-                                ],
-                            },
-                            "events": [
-                                {
-                                    "type": "mousemove",
-                                    "triggers": [
-                                        {
-                                            "method": "hoverEffectIn",
-                                        },
-                                        {
-                                            "method": "showInfoBox",
-                                            "options": {
-                                                "title": "Zonages des documents d&rsquo;urbanisme",
-                                                "properties": [
-                                                    {
-                                                        "name": "Libellé",
-                                                        "key": "libelle"
-                                                    },
-                                                    {
-                                                        "name": "Libellé long",
-                                                        "key": "libelong"
-                                                    },
-                                                    {
-                                                        "name": "Type de zone",
-                                                        "key": "typezone"
-                                                    },
-                                                ]
-                                            }
-                                        }
-                                    ],
-                                },
-                                {
-                                    "type": "mouseleave",
-                                    "triggers": [
-                                        {
-                                            "method": "hoverEffectOut",
-                                        },
-                                        {
-                                            "method": "hideInfoBox",
-                                        },
-                                    ]
-                                },
-                            ]
-                        },
-                        {
                             "id": "zonages-d-urbanisme-line-layer",
                             "type": "line",
                             "source": "zonages-d-urbanisme-source",
@@ -459,11 +508,11 @@ class MapLibreView(GroupMixin, DetailView):
                                 "line-color": [
                                     "match",
                                     ["get", "typezone"],
-                                    "N", "#56aa02",
+                                    "N", "#7BB561",
                                     "U", "#e60000",
-                                    "Auc", "#ff6565",
-                                    "Aus", "#feccbe",
-                                    "#ffff00", # Default color => zones A
+                                    "AUc", "#ff6565",
+                                    "AUs", "#feccbe",
+                                    "#FFD301", # Default color => zones A
                                 ],
                                 "line-width": 1,
                             },
@@ -483,31 +532,12 @@ class MapLibreView(GroupMixin, DetailView):
                                 "text-color": [
                                     "match",
                                     ["get", "typezone"],
-                                    "N", "#56aa02",
+                                    "N", "#7BB561",
                                     "U", "#e60000",
-                                    "Auc", "#ff6565",
-                                    "Aus", "#feccbe",
-                                    "#ffff00", # Default color => zones A
+                                    "AUc", "#ff6565",
+                                    "AUs", "#feccbe",
+                                    "#FFD301", # Default color => zones A
                                 ],
-                            },
-                        },
-                        {
-                            "id": "emprise-du-territoire-layer",
-                            "type": "line",
-                            "source": "emprise-du-territoire-source",
-                            "paint": {
-                                "line-color": "#ff0000",
-                                "line-width": 2,
-                            },
-                        },
-                        {
-                            "id": "limites-administratives-region-layer",
-                            "type": "line",
-                            "source": "limites-administratives-source",
-                            "source-layer": "region",
-                            "paint": {
-                                "line-color": "#ff69b4",
-                                "line-width": 1,
                             },
                         },
                         {
@@ -516,22 +546,15 @@ class MapLibreView(GroupMixin, DetailView):
                             "source": "limites-administratives-source",
                             "source-layer": "region",
                             "layout": {
+                                "text-size": 16,
                                 "text-field": ["get", "nom"],
                                 "text-anchor": "top",
                                 "text-font": ["Marianne Regular"],
                             },
                             "paint": {
                                 "text-color": "#000000",
-                            },
-                        },
-                        {
-                            "id": "limites-administratives-departement-layer",
-                            "type": "line",
-                            "source": "limites-administratives-source",
-                            "source-layer": "departement",
-                            "paint": {
-                                "line-color": "#ffff00",
-                                "line-width": 1,
+                                "text-halo-color": "#E5EEFD",
+                                "text-halo-width": 1.5,
                             },
                         },
                         {
@@ -540,22 +563,15 @@ class MapLibreView(GroupMixin, DetailView):
                             "source": "limites-administratives-source",
                             "source-layer": "departement",
                             "layout": {
+                                "text-size": 15,
                                 "text-field": ["get", "nom"],
                                 "text-anchor": "top",
                                 "text-font": ["Marianne Regular"],
                             },
                             "paint": {
                                 "text-color": "#000000",
-                            },
-                        },
-                        {
-                            "id": "limites-administratives-epci-layer",
-                            "type": "line",
-                            "source": "limites-administratives-source",
-                            "source-layer": "epci",
-                            "paint": {
-                                "line-color": "#00ffff",
-                                "line-width": 1,
+                                "text-halo-color": "#E5EEFD",
+                                "text-halo-width": 2,
                             },
                         },
                         {
@@ -564,22 +580,15 @@ class MapLibreView(GroupMixin, DetailView):
                             "source": "limites-administratives-source",
                             "source-layer": "epci",
                             "layout": {
+                                "text-size": 13,
                                 "text-field": ["get", "nom"],
                                 "text-anchor": "top",
                                 "text-font": ["Marianne Regular"],
                             },
                             "paint": {
                                 "text-color": "#000000",
-                            },
-                        },
-                        {
-                            "id": "limites-administratives-commune-layer",
-                            "type": "line",
-                            "source": "limites-administratives-source",
-                            "source-layer": "commune",
-                            "paint": {
-                                "line-color": "#ff00ff",
-                                "line-width": 1,
+                                "text-halo-color": "#E5EEFD",
+                                "text-halo-width": 2,
                             },
                         },
                         {
@@ -588,12 +597,15 @@ class MapLibreView(GroupMixin, DetailView):
                             "source": "limites-administratives-source",
                             "source-layer": "commune",
                             "layout": {
+                                "text-size": 12,
                                 "text-field": ["get", "nom"],
                                 "text-anchor": "top",
                                 "text-font": ["Marianne Regular"],
                             },
                             "paint": {
                                 "text-color": "#000000",
+                                "text-halo-color": "#E5EEFD",
+                                "text-halo-width": 2,
                             },
                         },
                     ],
