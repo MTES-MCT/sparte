@@ -58,6 +58,8 @@ export default class FilterGroup {
         this.groupNode.appendChild(this.groupContentNode)
 
         this.tabNode.appendChild(this.groupNode)
+
+        this.togglePlaceholder()
     }
 
     sourceData(_loaded) {
@@ -74,7 +76,7 @@ export default class FilterGroup {
         }
     }
 
-    update() {
+    togglePlaceholder() {
         const source = this.mapLibre.sources.find((_obj) => _obj.key === this.source)
         if (isInRange(this.mapLibre.map.getZoom(), source.minZoom, source.maxZoom)) {
             this.placeholderNode.style.visibility = 'hidden'
@@ -84,5 +86,9 @@ export default class FilterGroup {
             this.placeholderNode.style.visibility = 'visible'
             this.placeholderNode.style.opacity = 1            
         }
+    }
+
+    update() {
+        this.togglePlaceholder()
     }
 }
