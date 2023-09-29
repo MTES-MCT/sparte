@@ -1,16 +1,16 @@
 import { isInRange } from './utils.js'
 
 export default class Source {
-    constructor(_options = {}, _custom_options) {
+    constructor(_options = {}) {
         this.mapLibre = window.mapLibre
         this.map = this.mapLibre.map
 
         this.key = _options.key
         this.params = _options.params
-        this.queryStrings = _custom_options?.query_strings
-        this.minZoom = _custom_options?.min_zoom || 0
-        this.maxZoom = _custom_options?.max_zoom || 19
         this.baseUrl = _options.params.data
+        this.queryStrings = _options.query_strings
+        this.minZoom = _options.min_zoom || 0
+        this.maxZoom = _options.max_zoom || 19
         
         this.isUpdated = this.queryStrings?.some(_obj => _obj['key'] === 'in_bbox') || false // Check for bbox query string
         this.lastDataZoom = null

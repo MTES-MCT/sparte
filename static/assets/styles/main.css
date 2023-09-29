@@ -1084,8 +1084,8 @@ svg.leaflet-image-layer.leaflet-interactive path {
 
 #map__infos-box {
     position: absolute;
-    bottom: 20px;
-    left: 20px;
+    bottom: 10px;
+    left: 10px;
     height: auto;
     width: 300px;
     z-index: 1000;

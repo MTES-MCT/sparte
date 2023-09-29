@@ -5,7 +5,6 @@ import Tabs from './tabs.js'
 import Source from './source.js'
 import Layer from './layer.js'
 import FilterGroup from './filter-group.js'
-import Events from './events.js'
 
 export default class MapLibre {
     constructor(_options = {}) {
@@ -13,9 +12,9 @@ export default class MapLibre {
 
         this.targetElement = _options.targetElement
         this.debug = _options.debug
-        this.layerList = _options.layerList
         this.mapCenter = _options.mapCenter
         this.defaultZoom = _options.defaultZoom
+        this.data = _options.data
 
         if (!this.targetElement) {
             console.warn('Missing \'targetElement\' property')
@@ -77,21 +76,12 @@ export default class MapLibre {
             // Set Filters
             this.setFilters()
 
-            // Set Events
-            this.setEvents()
-
             // Set global Events
             this.map.on('moveend', debounce(() => this.update(), 1000))
             this.map.on('sourcedata', (_obj) => this.sourceData(_obj))
 
             // Set controls
             this.map.addControl(new maplibregl.NavigationControl(), 'top-left')
-
-            // // Set popup
-            // this.popup = new maplibregl.Popup({
-            //     closeButton: false,
-            //     closeOnClick: false
-            // })
         })
     }
 
@@ -131,34 +121,25 @@ export default class MapLibre {
     setSources() {
         this.sources = []
 
-        this.layerList.map((_obj) => {
+        this.data.sources.map((_obj) => {
             // Create sources
-            this.sources.push(new Source(_obj.source, _obj.source_custom_options))
+            this.sources.push(new Source(_obj))
         })
     }
 
     setLayers() {
-        this.layerList.map((_obj) => {
+        this.data.layers.map((_obj) => {
             // Create layers
-            _obj.layers.map((__obj) => new Layer(__obj))
+            new Layer(_obj)
         })
     }
 
     setFilters() {
         this.filters = []
 
-        this.layerList.map((_obj) => {
+        this.data.filters.map((_obj) => {
             // Create filters
-            if (_obj.filters?.length > 0)
-                this.filters.push(new FilterGroup(_obj.name, _obj.source.key, _obj.filters))
-        })
-    }
-
-    setEvents() {
-        this.layerList.map((_obj) => {
-            // Create events
-            if (_obj.events?.length > 0)
-                new Events(_obj.events, _obj.source.key)
+            this.filters.push(new FilterGroup(_obj))
         })
     }
 

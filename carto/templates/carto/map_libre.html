@@ -38,7 +38,7 @@ html, body {
 {% sri_static "highcharts/js/exporting.js" %}
 {% french_translation %}
 
-{{ layer_list|json_script:"layer_list" }}
+{{ data|json_script:"data" }}
 
 <script language="javascript" nonce="{{ CSP_NONCE }}">
 new MapLibre ({
@@ -46,7 +46,7 @@ new MapLibre ({
     debug: true,
     mapCenter: [{{ center_lng }}, {{ center_lat }}],
     defaultZoom: {{ default_zoom }},
-    layerList: JSON.parse(document.getElementById('layer_list').textContent),
+    data: JSON.parse(document.getElementById('data').textContent)
 })
 </script>
 {% endlocalize %}
