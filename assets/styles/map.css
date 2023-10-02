@@ -180,6 +180,10 @@ Tabs
     margin-bottom: 0px;
 }
 
+.tabs .tab .filter-group .filter-group__filter .fr-tag:last-child {
+    margin-right: 5px;
+}
+
 .tabs .tab .filter-group .filter-placeholder {
     position: absolute;
     background: rgba(18, 18, 255, 0.08);
