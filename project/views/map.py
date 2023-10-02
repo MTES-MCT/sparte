@@ -518,11 +518,11 @@ class MapLibreView(GroupMixin, DetailView):
                                 "line-color": [
                                     "match",
                                     ["get", "typezone"],
-                                    "N", "#7BB561",
+                                    "N", "#59b72d",
                                     "U", "#e60000",
                                     "AUc", "#ff6565",
                                     "AUs", "#feccbe",
-                                    "#FFD301", # Default color => zones A
+                                    "#ffff00", # Default color => zones A
                                 ],
                                 "line-width": 1,
                             },
@@ -542,11 +542,11 @@ class MapLibreView(GroupMixin, DetailView):
                                 "text-color": [
                                     "match",
                                     ["get", "typezone"],
-                                    "N", "#7BB561",
+                                    "N", "#59b72d",
                                     "U", "#e60000",
                                     "AUc", "#ff6565",
                                     "AUs", "#feccbe",
-                                    "#FFD301", # Default color => zones A
+                                    "#ffff00", # Default color => zones A
                                 ],
                             },
                         },
