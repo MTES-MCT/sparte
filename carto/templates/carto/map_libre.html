@@ -1,0 +1,53 @@
+{% extends "index.html" %}
+
+{% load static %}
+{% load project_tags %}
+{% load humanize %}
+{% load i18n %}
+{% load l10n %}
+{% load highcharts_tags %}
+{% load sri %}
+
+{% block pagetitle %}
+{{ map_name }}
+{% endblock pagetitle %}
+
+{% block headers %}
+<meta name="htmx-config" content='{"inlineScriptNonce":"{{ CSP_NONCE }}"}'>
+<style nonce="{{ CSP_NONCE }}">
+html, body {
+    height: 100% !important;
+}
+</style>
+{% endblock headers %}
+
+{% block body_class %}header-min full-width breadcrumb-min{% endblock body_class %}
+
+{% block content %}
+<div id="map__wrapper" class="d-flex h-100">
+    <div id="map__container" class="flex-grow-1"></div>
+</div>
+{% endblock content %}
+
+{% block footer %}{% endblock footer %}
+
+{% block bodyend %}
+{% localize off %}
+{% sri_static "highcharts/js/highcharts.js" %}
+{% sri_static "highcharts/js/highcharts-more.js" %}
+{% sri_static "highcharts/js/exporting.js" %}
+{% french_translation %}
+
+{{ data|json_script:"data" }}
+
+<script language="javascript" nonce="{{ CSP_NONCE }}">
+new MapLibre ({
+    targetElement: document.getElementById('map__container'),
+    debug: true,
+    mapCenter: [{{ center_lng }}, {{ center_lat }}],
+    defaultZoom: {{ default_zoom }},
+    data: JSON.parse(document.getElementById('data').textContent)
+})
+</script>
+{% endlocalize %}
+{% endblock bodyend %}
