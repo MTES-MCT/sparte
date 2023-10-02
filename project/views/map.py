@@ -203,6 +203,690 @@ class ProjectMapView(GroupMixin, DetailView):
         return super().get_context_data(**kwargs)
 
 
+class MapLibreView(GroupMixin, DetailView):
+    queryset = Project.objects.all()
+    template_name = "carto/map_libre.html"
+    context_object_name = "project"
+
+    def get_context_breadcrumbs(self):
+        breadcrumbs = super().get_context_breadcrumbs()
+        breadcrumbs.append({"href": None, "title": "Carte intéractive"})
+        return breadcrumbs
+
+    def get_context_data(self, **kwargs):
+        center = self.object.get_centroid()
+        usage_colors = ["match", ["get", "code_usage"]]
+        for leaf in UsageSol.get_leafs():
+            usage_colors.append(leaf.code_prefix)
+            usage_colors.append(leaf.map_color)
+        usage_colors.append("rgba(0, 0, 0, 0)") # default color
+        couverture_colors = ["match", ["get", "code_couverture"]]
+        for leaf in CouvertureSol.get_leafs():
+            couverture_colors.append(leaf.code_prefix)
+            couverture_colors.append(leaf.map_color)
+        couverture_colors.append("rgba(0, 0, 0, 0)") # default color       
+        kwargs.update(
+            {
+                "carto_name": "Project",
+                "map_name": "Explorateur des zonages des documents d&rsquo;urbanisme",
+                "center_lat": center.y,
+                "center_lng": center.x,
+                "default_zoom": 12,
+                "data": {
+                    "sources": [
+                        {
+                            "key": "fond-de-carte-source",
+                            "params": {
+                                "type": "raster",
+                                "tiles": ["https://wxs.ign.fr/ortho/geoportail/wmts?REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0&TILEMATRIXSET=PM&LAYER=ORTHOIMAGERY.ORTHOPHOTOS&STYLE=normal&FORMAT=image/jpeg&TILECOL={x}&TILEROW={y}&TILEMATRIX={z}"],
+                                "tileSize": 256  
+                            },
+                        },
+                        {
+                            "key": "ocs-ge-source",
+                            "params": {
+                                "type": "geojson",
+                                "data": reverse_lazy("public_data:ocsge-optimized"),
+                                "generateId": True #This ensures that all features have unique IDs   
+                            },
+                            "query_strings": [
+                                {
+                                    "type": "function",
+                                    "key": "in_bbox",
+                                    "value": "getBbox",
+                                },
+                                {
+                                    "type": "function",
+                                    "key": "zoom",
+                                    "value": "getZoom",
+                                },
+                                {
+                                    "type": "string",
+                                    "key": "year",
+                                    "value": 2019,
+                                },
+                                {
+                                    "type": "string",
+                                    "key": "is_artificial",
+                                    "value": 1,
+                                }
+                            ],
+                            "min_zoom": 15,
+                        },
+                        {
+                            "key": "zonages-d-urbanisme-source",
+                            "params": {
+                                "type": "geojson",
+                                "data": reverse_lazy("public_data:zoneurba-optimized"),
+                                "generateId": True, # This ensures that all features have unique IDs     
+                            },
+                            "query_strings": [
+                                {
+                                    "type": "function",
+                                    "key": "in_bbox",
+                                    "value": "getBbox",
+                                },
+                                {
+                                    "type": "function",
+                                    "key": "zoom",
+                                    "value": "getZoom",
+                                }
+                            ],
+                            "min_zoom": 12,
+                        },
+                        {
+                            "key": "emprise-du-territoire-source",
+                            "params": {
+                                "type": "geojson",
+                                "data": reverse_lazy("project:emprise-list"),
+                            },
+                            "query_strings": [
+                                {
+                                    "type": "string",
+                                    "key": "id",
+                                    "value": self.object.pk,
+                                },
+                            ],
+                        },
+                        {
+                            "key": "limites-administratives-source",
+                            "params": {
+                                "type": "vector",
+                                "url": "https://wxs.ign.fr/administratif/geoportail/tms/1.0.0/ADMIN_EXPRESS/metadata.json",  
+                            },
+                        },
+                    ],
+                    "layers": [ # order matter
+                        {
+                            "id": "fond-de-carte-layer",
+                            "type": "raster",
+                            "source": "fond-de-carte-source",
+                        },
+                        {
+                            "id": "limites-administratives-region-layer",
+                            "type": "line",
+                            "source": "limites-administratives-source",
+                            "source-layer": "region",
+                            "paint": {
+                                "line-color": "#b5bee2",
+                                "line-width": 1.5,
+                            },
+                        },
+                        {
+                            "id": "limites-administratives-departement-layer",
+                            "type": "line",
+                            "source": "limites-administratives-source",
+                            "source-layer": "departement",
+                            "paint": {
+                                "line-color": "#b5bee2",
+                                "line-width": 1.5,
+                            },
+                        },
+                        {
+                            "id": "limites-administratives-epci-layer",
+                            "type": "line",
+                            "source": "limites-administratives-source",
+                            "source-layer": "epci",
+                            "paint": {
+                                "line-color": "#b5bee2",
+                                "line-width": 1.5,
+                            },
+                        },
+                        {
+                            "id": "limites-administratives-commune-layer",
+                            "type": "line",
+                            "source": "limites-administratives-source",
+                            "source-layer": "commune",
+                            "paint": {
+                                "line-color": "#b5bee2",
+                                "line-width": 1.5,
+                            },
+                        },
+                        {
+                            "id": "emprise-du-territoire-layer",
+                            "type": "line",
+                            "source": "emprise-du-territoire-source",
+                            "paint": {
+                                "line-color": "#ffff00",
+                                "line-width": 1.5,
+                            },
+                        },
+                        {
+                            "id": "zonages-d-urbanisme-fill-layer",
+                            "type": "fill",
+                            "source": "zonages-d-urbanisme-source",
+                            "minzoom": 12,
+                            "maxzoom": 19,
+                            "paint": {
+                                "fill-color": "#ffffff",
+                                "fill-opacity": [
+                                    "case",
+                                    ["boolean", ["feature-state", "hover"], False],
+                                    0.8,
+                                    0
+                                ],
+                            },
+                            "events": [
+                                {
+                                    "type": "mousemove",
+                                    "triggers": [
+                                        {
+                                            "method": "hoverEffectIn",
+                                        },
+                                        {
+                                            "method": "showInfoBox",
+                                            "options": {
+                                                "title": "Zonages des documents d&rsquo;urbanisme",
+                                                "properties": [
+                                                    {
+                                                        "name": "Libellé",
+                                                        "key": "libelle"
+                                                    },
+                                                    {
+                                                        "name": "Libellé long",
+                                                        "key": "libelong"
+                                                    },
+                                                    {
+                                                        "name": "Type de zone",
+                                                        "key": "typezone"
+                                                    },
+                                                ]
+                                            }
+                                        }
+                                    ],
+                                },
+                                {
+                                    "type": "mouseleave",
+                                    "triggers": [
+                                        {
+                                            "method": "hoverEffectOut",
+                                        },
+                                        {
+                                            "method": "hideInfoBox",
+                                        },
+                                    ]
+                                },
+                                {
+                                    "type": "click",
+                                    "triggers": [
+                                        {
+                                            "method": "displayFeatureData",
+                                            "options": {
+                                                "data": f"/project/{self.object.pk}/carte/detail-zone-urbaine/",
+                                            },
+                                        },
+                                    ]
+                                },
+                            ]
+                        },
+                        {
+                            "id": "ocs-ge-layer",
+                            "type": "fill",
+                            "source": "ocs-ge-source",
+                            "minzoom": 15,
+                            "maxzoom": 19,
+                            "paint": {
+                                "fill-opacity": [
+                                    "case",
+                                    ["boolean", ["feature-state", "hover"], False],
+                                    1,
+                                    0.7
+                                ],
+                            },                            
+                            "events": [
+                                {
+                                    "type": "mousemove",
+                                    "triggers": [
+                                        {
+                                            "method": "hoverEffectIn",
+                                        },
+                                        {
+                                            "method": "showInfoBox",
+                                            "options": {
+                                                "title": "OCS GE",
+                                                "properties": [
+                                                    {
+                                                        "name": "Code couverture",
+                                                        "key": "code_couverture"
+                                                    },
+                                                    {
+                                                        "name": "Code usage",
+                                                        "key": "code_usage"
+                                                    },
+                                                    {
+                                                        "name": "Libellé couverture",
+                                                        "key": "couverture_label_short"
+                                                    },
+                                                    {
+                                                        "name": "Libellé usage",
+                                                        "key": "usage_label_short"
+                                                    },
+                                                    {
+                                                        "name": "Surface",
+                                                        "key": "surface",
+                                                        "formatter": ["number", ["fr-FR", "unit", "hectare", 2]]
+                                                    },
+                                                    {
+                                                        "name": "Millésime",
+                                                        "key": "year"
+                                                    }
+                                                ]   
+                                            }
+                                        }
+                                    ],
+                                },
+                                {
+                                    "type": "mouseleave",
+                                    "triggers": [
+                                        {
+                                            "method": "hoverEffectOut",
+                                        },
+                                        {
+                                            "method": "hideInfoBox",
+                                        },
+                                    ]
+                                },
+                            ]
+                        },
+                        {
+                            "id": "zonages-d-urbanisme-line-layer",
+                            "type": "line",
+                            "source": "zonages-d-urbanisme-source",
+                            "minzoom": 12,
+                            "maxzoom": 19,
+                            "paint": {
+                                "line-color": [
+                                    "match",
+                                    ["get", "typezone"],
+                                    "N", "#59b72d",
+                                    "U", "#e60000",
+                                    "AUc", "#ff6565",
+                                    "AUs", "#feccbe",
+                                    "#ffff00", # Default color => zones A
+                                ],
+                                "line-width": 1,
+                            },
+                        },
+                        {
+                            "id": "zonages-d-urbanisme-labels",
+                            "type": "symbol",
+                            "source": "zonages-d-urbanisme-source",
+                            "minzoom": 12,
+                            "maxzoom": 19,
+                            "layout": {
+                                "text-field": ["get", "typezone"],
+                                "text-anchor": "top",
+                                "text-font": ["Marianne Regular"],
+                            },
+                            "paint": {
+                                "text-color": [
+                                    "match",
+                                    ["get", "typezone"],
+                                    "N", "#59b72d",
+                                    "U", "#e60000",
+                                    "AUc", "#ff6565",
+                                    "AUs", "#feccbe",
+                                    "#ffff00", # Default color => zones A
+                                ],
+                            },
+                        },
+                        {
+                            "id": "limites-administratives-region-labels",
+                            "type": "symbol",
+                            "source": "limites-administratives-source",
+                            "source-layer": "region",
+                            "layout": {
+                                "text-size": 16,
+                                "text-field": ["get", "nom"],
+                                "text-anchor": "top",
+                                "text-font": ["Marianne Regular"],
+                            },
+                            "paint": {
+                                "text-color": "#000000",
+                                "text-halo-color": "#E5EEFD",
+                                "text-halo-width": 1.5,
+                            },
+                        },
+                        {
+                            "id": "limites-administratives-departement-labels",
+                            "type": "symbol",
+                            "source": "limites-administratives-source",
+                            "source-layer": "departement",
+                            "layout": {
+                                "text-size": 15,
+                                "text-field": ["get", "nom"],
+                                "text-anchor": "top",
+                                "text-font": ["Marianne Regular"],
+                            },
+                            "paint": {
+                                "text-color": "#000000",
+                                "text-halo-color": "#E5EEFD",
+                                "text-halo-width": 2,
+                            },
+                        },
+                        {
+                            "id": "limites-administratives-epci-labels",
+                            "type": "symbol",
+                            "source": "limites-administratives-source",
+                            "source-layer": "epci",
+                            "layout": {
+                                "text-size": 13,
+                                "text-field": ["get", "nom"],
+                                "text-anchor": "top",
+                                "text-font": ["Marianne Regular"],
+                            },
+                            "paint": {
+                                "text-color": "#000000",
+                                "text-halo-color": "#E5EEFD",
+                                "text-halo-width": 2,
+                            },
+                        },
+                        {
+                            "id": "limites-administratives-commune-labels",
+                            "type": "symbol",
+                            "source": "limites-administratives-source",
+                            "source-layer": "commune",
+                            "layout": {
+                                "text-size": 12,
+                                "text-field": ["get", "nom"],
+                                "text-anchor": "top",
+                                "text-font": ["Marianne Regular"],
+                            },
+                            "paint": {
+                                "text-color": "#000000",
+                                "text-halo-color": "#E5EEFD",
+                                "text-halo-width": 2,
+                            },
+                        },
+                    ],
+                    "filters": [ # order matter
+                        {
+                            "name": "Fond de carte",
+                            "filters": [
+                                {
+                                    "name": "Visibilité du calque",
+                                    "type": "visibility",
+                                    "value": "visible",
+                                    "triggers": [
+                                        {
+                                            "method": "changeLayoutProperty",
+                                            "property": "visibility",
+                                            "items": ["fond-de-carte-layer"],
+                                        },
+                                    ],
+                                },
+                                {
+                                    "name": "Opacité du calque",
+                                    "type": "opacity",
+                                    "value": 100,
+                                    "triggers": [
+                                        {
+                                            "method": "changePaintProperty",
+                                            "property": "raster-opacity",
+                                            "items": ["fond-de-carte-layer"],
+                                        },
+                                    ],
+                                },
+                            ],
+                            "source": "fond-de-carte-source",
+                        },
+                        {
+                            "name": "Emprise du territoire",
+                            "filters": [
+                                {
+                                    "name": "Visibilité du calque",
+                                    "type": "visibility",
+                                    "value": "visible",
+                                    "triggers": [
+                                        {
+                                            "method": "changeLayoutProperty",
+                                            "property": "visibility",
+                                            "items": ["emprise-du-territoire-layer"],
+                                        },
+                                    ],
+                                },
+                                {
+                                    "name": "Opacité du calque",
+                                    "type": "opacity",
+                                    "value": 100,
+                                    "triggers": [
+                                        {
+                                            "method": "changePaintProperty",
+                                            "property": "line-opacity",
+                                            "items": ["emprise-du-territoire-layer"],
+                                        },
+                                    ],
+                                },
+                            ],
+                            "source": "emprise-du-territoire-source",
+                        },
+                        {
+                            "name": "Limites administratives",
+                            "filters": [
+                                {
+                                    "name": "Visibilité du calque",
+                                    "type": "visibility",
+                                    "value": "visible",
+                                    "triggers": [
+                                        {
+                                            "method": "changeLayoutProperty",
+                                            "property": "visibility",
+                                            "items": [
+                                                "limites-administratives-region-layer",
+                                                "limites-administratives-departement-layer",
+                                                "limites-administratives-epci-layer",
+                                                "limites-administratives-commune-layer",
+                                                "limites-administratives-region-labels",
+                                                "limites-administratives-departement-labels",
+                                                "limites-administratives-epci-labels",
+                                                "limites-administratives-commune-labels",
+                                            ],
+                                        },
+                                    ],
+                                },
+                                {
+                                    "name": "Opacité du calque",
+                                    "type": "opacity",
+                                    "value": 100,
+                                    "triggers": [
+                                        {
+                                            "method": "changePaintProperty",
+                                            "property": "line-opacity",
+                                            "items": [
+                                                "limites-administratives-region-layer",
+                                                "limites-administratives-departement-layer",
+                                                "limites-administratives-epci-layer",
+                                                "limites-administratives-commune-layer",
+                                            ]
+                                        },
+                                        {
+                                            "method": "changePaintProperty",
+                                            "property": "text-opacity",
+                                            "items": [
+                                                "limites-administratives-region-labels",
+                                                "limites-administratives-departement-labels",
+                                                "limites-administratives-epci-labels",
+                                                "limites-administratives-commune-labels",
+                                            ],
+                                        },
+                                    ],
+                                },
+                            ],
+                            "source": "limites-administratives-source",
+                        },
+                        {
+                            "name": "Zonages des documents d&rsquo;urbanisme",
+                            "filters": [
+                                {
+                                    "name": "Visibilité du calque",
+                                    "type": "visibility",
+                                    "value": "visible",
+                                    "triggers": [
+                                        {
+                                            "method": "changeLayoutProperty",
+                                            "property": "visibility",
+                                            "items": ["zonages-d-urbanisme-line-layer", "zonages-d-urbanisme-labels", "zonages-d-urbanisme-fill-layer"],
+                                        },
+                                    ],
+                                },
+                                {
+                                    "name": "Opacité du calque",
+                                    "type": "opacity",
+                                    "value": 100,
+                                    "triggers": [
+                                        {
+                                            "method": "changePaintProperty",
+                                            "property": "line-opacity",
+                                            "items": ["zonages-d-urbanisme-line-layer"],
+                                        },
+                                        {
+                                            "method": "changePaintProperty",
+                                            "property": "text-opacity",
+                                            "items": ["zonages-d-urbanisme-labels"],
+                                        },
+                                    ],
+                                },
+                                {
+                                    "name": "",
+                                    "type": "tag",
+                                    "value": ["AUc", "AUs", "U", "A", "N"],
+                                    "options": [
+                                        {
+                                            "name": "AUc",
+                                            "value": "AUc",
+                                        },
+                                        {
+                                            "name": "AUs",
+                                            "value": "AUs",
+                                        },
+                                        {
+                                            "name": "U",
+                                            "value": "U",
+                                        },
+                                        {
+                                            "name": "A",
+                                            "value": "A",
+                                        },
+                                        {
+                                            "name": "N",
+                                            "value": "N",
+                                        },
+                                    ],
+                                    "triggers": [
+                                        {
+                                            "method": "filterByPropertyInArray",
+                                            "property": "typezone",
+                                            "items": ["zonages-d-urbanisme-line-layer", "zonages-d-urbanisme-labels", "zonages-d-urbanisme-fill-layer"],
+                                        },
+                                    ],
+                                },
+                            ],
+                            "source": "zonages-d-urbanisme-source",
+                        },
+                        {
+                            "name": "OCS GE",
+                            "filters": [
+                                {
+                                    "name": "Visibilité du calque",
+                                    "type": "visibility",
+                                    "value": "visible",
+                                    "triggers": [
+                                        {
+                                            "method": "changeLayoutProperty",
+                                            "property": "visibility",
+                                            "items": ["ocs-ge-layer"],
+                                        },
+                                    ],
+                                },
+                                {
+                                    "name": "Opacité du calque",
+                                    "type": "opacity",
+                                    "value": 70,
+                                    "triggers": [
+                                        {
+                                            "method": "changePaintProperty",
+                                            "property": "fill-opacity",
+                                            "items": ["ocs-ge-layer"],
+                                        },
+                                    ],
+                                },
+                                {
+                                    "name": "Nomemclature",
+                                    "type": "select",
+                                    "value": "couverture",
+                                    "options": [
+                                        {
+                                            "name": "Couverture",
+                                            "value": "couverture",
+                                            "data-value": couverture_colors,
+                                        },
+                                        {
+                                            "name": "Usage",
+                                            "value": "usage",
+                                            "data-value": usage_colors,
+                                        },
+                                    ],
+                                    "triggers": [
+                                        {
+                                            "method": "changePaintProperty",
+                                            "property": "fill-color",
+                                            "items": ["ocs-ge-layer"],
+                                        },
+                                    ],
+                                },
+                                {
+                                    "name": "Millésime",
+                                    "type": "select",
+                                    "value": "2019",
+                                    "options": [
+                                        {
+                                            "name": "2016",
+                                            "value": "2016",
+                                            "data-value": "2016",
+                                        },
+                                        {
+                                            "name": "2019",
+                                            "value": "2019",
+                                            "data-value": "2019",
+                                        },
+                                    ],
+                                    "triggers": [
+                                        {
+                                            "method": "updateQueryString",
+                                            "property": "year",
+                                            "items": ["ocs-ge-source"],
+                                        },
+                                    ],
+                                },
+                            ],
+                            "source": "ocs-ge-source",
+                        },
+                    ],
+                }
+            }
+        )
+        return super().get_context_data(**kwargs)
+    
 class MapV2View(GroupMixin, DetailView):
     queryset = Project.objects.all()
     template_name = "carto/map_v2.html"
