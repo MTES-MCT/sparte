@@ -161,6 +161,11 @@ urlpatterns = [
         name="map-v2",
     ),
     path(
+        "<int:pk>/map-libre",
+        views.MapLibreView.as_view(),
+        name="map-libre",
+    ),
+    path(
         "<int:project_id>/carte/detail-zone-urbaine/<int:pk>",
         views.ArtifZoneUrbaView.as_view(),
         name="map-pane-artif-zone-urba",

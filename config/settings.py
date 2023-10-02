@@ -480,7 +480,8 @@ if USE_CSP:
     MIDDLEWARE.insert(2, "csp.middleware.CSPMiddleware")
 
 CSP_UPGRADE_INSECURE_REQUESTS = not DEBUG
-CSP_DEFAULT_SRC = ["'self'", "sparte-metabase.osc-secnum-fr1.scalingo.io"]
+CSP_DEFAULT_SRC = ["'self'", "sparte-metabase.osc-secnum-fr1.scalingo.io", "blob:"]
+CSP_WORKER_SRC = ["blob:"]
 CSP_SCRIPT_SRC = [
     "'self'",
     "stats.beta.gouv.fr",
@@ -510,6 +511,11 @@ CSP_CONNECT_SRC = [
     "beta.gouv.fr",
     "sparte-metabase.osc-secnum-fr1.scalingo.io",
     "google.com",
+    "wxs.ign.fr",
+    "https://raw.githack.com",
+    "https://openmaptiles.geo.data.gouv.fr",
+    "https://openmaptiles.github.io",
+    "https://stats.beta.gouv.fr"
 ]
 CSP_FRAME_ANCESTORS = ("'self'", "https://sparte-metabase.osc-secnum-fr1.scalingo.io")
 
