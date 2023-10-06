@@ -1,6 +1,6 @@
 {% load highcharts_tags %}
 
-<h3>Consommation d'espaces par nouvel habitant</h3>
+<h3>Consommation relative aux évolutions démographiques des territoires</h3>
 
 <p>Mise en perspective de la consommation d'espaces avec les données de l'INSEE.</p>
 
@@ -102,7 +102,7 @@
         <h6 class="fr-mt-2w">Sourcce</h6>
         <ul>
             <li>Recensement de la population (RP) de l'INSEE, sur la période d'analyse (millésime min : 2006, millésime max : 2019)  : <a href="https://www.insee.fr/fr/statistiques/3698339" target="_blank" rel="noreferrer noopener">L'historique des populations communales</a> (colonnes PMUN06 à PMUN19)</li>
-            <li>Données d'évolution des fichiers fonciers du Cérema issus des données MAJIC (Mise A Jour de l'Information Cadastrale) de la DGFIP, sur la période d'analyse (millésime min : 2009, millésime max : 2021) </li>
+            <li>Données d'évolution des fichiers fonciers produits et diffusés par le Cérema depuis 2009 à partir des fichiers MAJIC (Mise A Jour de  l'Information Cadastrale) de la DGFIP. Le dernier millésime de 2022 est la  photographie du territoire au 1er janvier 2022, intégrant les évolutions réalisées au cours de l'année 2021.</li>
         </ul>
 
         <h6 class="fr-mt-2w">Calcul</h6>
@@ -143,9 +143,18 @@
             <div class="fr-modal__content">
                 <h1 id="fr-modal-2-title" class="fr-modal__title" id="pop-astuce-label">
                     <span class="fr-fi-arrow-right-line fr-fi--lg"></span>
-                    Astuces - Consommation d'espaces par nouvel habitant
+                    Astuces - Consommation relative aux évolutions démographiques des territoires
                 </h1>
-                <p class="fr-text--sm">Analyser la sobriété foncière en comparant le volume d'ha consommé par habitant. Si un territoire est négatif, il a consommé alors qu'il a perdu de la population.</p>
+                <p class="fr-text--sm">
+                    Selon l'INSEE la population correspond à "l'ensemble des personnes, nationaux ou étrangers, établies de façon durable sur le territoire économique du pays, même si
+                    ces personnes en sont temporairement absentes. Cette règle générale comporte toutefois certaines exceptions (étudiants notamment)."
+                </p>
+                <p class="fr-text--sm">
+                    La consommation relative aux évolutions démographiques des territoires permet d'analyser la sobriété foncière en comparant le volume
+                    d'ha consommé par habitant. Si un territoire est négatif, cela signifie qu'il a consommé alors qu'il a perdu de la population.
+                </p>
+                <p class="fr-text--sm">Avec le bouton <span class="fr-icon-drag-move-2-line fr-icon--sm" aria-hidden="true"></span>, vous pouvez afficher le graphique en plein écran.</p>
+                <p class="fr-text--sm">Avec le bouton <span class="fr-icon-download-line fr-icon--sm" aria-hidden="true"></span>, vous pouvez télécharger le graphique sous forme d'image (utilisez PNG si vous ne savez pas lequel choisir).</p>
             </div>
         </div>
     </div>
