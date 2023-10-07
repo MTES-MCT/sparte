@@ -69,5 +69,12 @@
         "value_type": "BOO",
         "value": "0",
         "is_global": false
+    },
+    {
+        "name": "Envoyer une alerte lorsqu'un diag est dl.",
+        "slug": "ALERTE_ON_DIAG_DL",
+        "value_type": "BOO",
+        "value": "0",
+        "is_global": false
     }
 ]
