@@ -138,6 +138,9 @@ def find_first_and_last_ocsge(self, project_id: int) -> None:
 def send_email_request_bilan(request_id):
     """Alerte envoyée à l'équipe pour les avertir d'une demande de Diagnostic."""
     logger.info("Start send_email_request_bilan, request_id=%s", request_id)
+    if app_parameter.ALERTE_ON_DIAG_DL is False:
+        logger.info("ALERTE_ON_DIAG_DL is False, skip send_email_request_bilan")
+        return
     request = Request.objects.get(pk=request_id)
     diagnostic = request.project
     project_url = get_url_with_domain(reverse("project:detail", args=[diagnostic.id]))
