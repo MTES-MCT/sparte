@@ -748,7 +748,8 @@ class Project(BaseProject):
             CommuneDiff.objects.all()
             .filter(
                 city__in=self.cities.all(),
-                year_old__gte=self.analyse_start_date, year_new__lte=self.analyse_end_date,
+                year_old__gte=self.analyse_start_date,
+                year_new__lte=self.analyse_end_date,
             )
             .aggregate(
                 new_artif=Coalesce(Sum("new_artif"), Decimal("0")),
@@ -791,29 +792,28 @@ class Project(BaseProject):
             }
         }
         """
-        qs = CommuneDiff.objects.filter(city__in=self.cities.all())
-        if analysis_level == "DEPART":
-            qs = qs.annotate(name=F("city__departement__name"))
-        elif analysis_level == "EPCI":
-            qs = qs.annotate(name=F("city__epci__name"))
-        elif analysis_level == "REGION":
-            qs = qs.annotate(name=F("city__departement__region__name"))
-        elif analysis_level == "SCOT":
-            qs = qs.annotate(name=F("city__scot__name"))
-        else:
-            qs = qs.annotate(name=F("city__name"))
-        qs = qs.filter(year_old__gte=self.analyse_start_date, year_new__lte=self.analyse_end_date)
-        qs = qs.annotate(
-            period=Concat(
-                "year_old",
-                Value(" - "),
-                "year_new",
-                output_field=models.CharField(),
+        transco = {
+            "DEPART": "city__departement__name",
+            "EPCI": "city__epci__name",
+            "REGION": "city__departement__region__name",
+            "SCOT": "city__scot__name",
+        }
+        field_name = transco.get(analysis_level, "city__name")
+        qs = (
+            CommuneDiff.objects.filter(city__in=self.cities.all())
+            .annotate(name=Coalesce(F(field_name), Value("Non couvert")))
+            .filter(year_old__gte=self.analyse_start_date, year_new__lte=self.analyse_end_date)
+            .annotate(
+                period=Concat(
+                    "year_old",
+                    Value(" - "),
+                    "year_new",
+                    output_field=models.CharField(),
+                )
             )
+            .values("name", "period")
+            .annotate(net_artif=Sum("net_artif"))
         )
-        qs = qs.values("name", "period")
-        qs = qs.annotate(net_artif=Sum("net_artif"))
-
         results = collections.defaultdict(dict)
         for row in qs:
             results[row["name"]][row["period"]] = row["net_artif"]
