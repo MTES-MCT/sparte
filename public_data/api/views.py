@@ -180,7 +180,7 @@ class OcsgeViewSet(OnlyBoundingBoxMixin, ZoomSimplificationMixin, OptimizedMixin
         "pdcs.label_short": "couverture_label_short",
         "pdus.label_short": "usage_label_short",
     }
-    min_zoom = 15
+    min_zoom = 12
 
     def get_queryset(self):
         """
