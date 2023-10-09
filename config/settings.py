@@ -315,12 +315,15 @@ CRISPY_CLASS_CONVERTERS = {
 }
 
 # Celery configuration
+
 CELERY_BROKER_URL = env.str("CELERY_BROKER_URL")
 CELERY_RESULT_BACKEND = env.str("CELERY_RESULT_BACKEND")
 CELERY_ACKS_LATE = True
 CELERY_TASK_ACKS_LATE = True
 CELERY_WORKER_PREFETCH_MULTIPLIER = 1
 CELERY_RESULT_EXTENDED = True
+# make celery synchronous if debug is True
+CELERY_TASK_ALWAYS_EAGER = DEBUG
 
 # django-debug-toolbar configuration
 
