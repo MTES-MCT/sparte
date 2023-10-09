@@ -51,7 +51,7 @@ class RedirectURLMixin:
 
 
 class CacheMixin:
-    cache_timeout = 60 * 60 * 9  # cache pour 9 heures
+    cache_timeout = 60 * 15  # cache pour 15 minutes
 
     def should_cache(self, *args, **kwargs):
         """Override to disable cache conditionnally"""

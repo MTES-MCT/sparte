@@ -212,39 +212,38 @@ class ObjectiveChart(ProjectChart):
                 "zIndex": 1,
             },
         ]
-        total = 0
+        self.total_real = total_2020 = 0
         cpt = 0
         for year, val in self.project.get_bilan_conso_per_year().items():
-            total += val
+            if int(year) <= 2020:
+                total_2020 += val
+            self.total_real += val
             cpt += 1
             self.series[1]["data"].append(
                 {
                     "name": year,
-                    "y": total,
+                    "y": self.total_real,
                     "progression": val,
                 }
             )
             self.series[0]["data"].append({"name": year, "y": val})
 
-        self.annual_objective_2031 = total * self.project.target_2031 / 1000
-        self.total_real = total
+        self.annual_objective_2031 = total_2020 * self.project.target_2031 / 1000
         self.annual_real = self.total_real / 10
-
-        for year in range(int(year) + 1, 2031):  # noqa: B020
-            total += self.annual_objective_2031
+        self.total_2031 = total_2020
+        self.conso_2031 = 0
+        for year in range(2020 + 1, 2031):  # noqa: B020
+            self.total_2031 += self.annual_objective_2031
             self.series[3]["data"].append(
                 {
                     "name": str(year),
-                    "y": total,
+                    "y": self.total_2031,
                     "progression": self.annual_objective_2031,
                 }
             )
             self.series[2]["data"].append({"name": str(year), "y": self.annual_objective_2031})
 
-        self.conso_2031 = total - self.total_real
-        self.total_2031 = total
-
-        self.chart["yAxis"][0]["max"] = total * 1.2
+        self.chart["yAxis"][0]["max"] = self.total_2031 * 1.2
 
         self.chart["series"] = self.series
 
