@@ -956,7 +956,7 @@ class UrbanZonesMapView(GroupMixin, DetailView):
                                     "value": 1,
                                 }
                             ],
-                            "min_zoom": 15,
+                            "min_zoom": 12,
                         },
                         {
                             "key": "zonages-d-urbanisme-source",
@@ -1128,7 +1128,7 @@ class UrbanZonesMapView(GroupMixin, DetailView):
                             "id": "ocs-ge-layer",
                             "type": "fill",
                             "source": "ocs-ge-source",
-                            "minzoom": 15,
+                            "minzoom": 12,
                             "maxzoom": 19,
                             "paint": {
                                 "fill-opacity": [
