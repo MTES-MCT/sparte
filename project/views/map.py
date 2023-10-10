@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.gis.geos import Polygon
 from django.db.models import F, FloatField, Max, OuterRef, Subquery, Sum
 from django.db.models.functions import Cast
@@ -238,7 +239,7 @@ class MapLibreView(GroupMixin, DetailView):
                             "key": "fond-de-carte-source",
                             "params": {
                                 "type": "raster",
-                                "tiles": ["https://wxs.ign.fr/ortho/geoportail/wmts?REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0&TILEMATRIXSET=PM&LAYER=ORTHOIMAGERY.ORTHOPHOTOS&STYLE=normal&FORMAT=image/jpeg&TILECOL={x}&TILEROW={y}&TILEMATRIX={z}"],
+                                "tiles": [settings.ORTHOPHOTO_URL],
                                 "tileSize": 256  
                             },
                         },
@@ -923,7 +924,7 @@ class UrbanZonesMapView(GroupMixin, DetailView):
                             "key": "fond-de-carte-source",
                             "params": {
                                 "type": "raster",
-                                "tiles": ["https://wxs.ign.fr/ortho/geoportail/wmts?REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0&TILEMATRIXSET=PM&LAYER=ORTHOIMAGERY.ORTHOPHOTOS&STYLE=normal&FORMAT=image/jpeg&TILECOL={x}&TILEROW={y}&TILEMATRIX={z}"],
+                                "tiles": [settings.ORTHOPHOTO_URL],
                                 "tileSize": 256  
                             },
                         },
