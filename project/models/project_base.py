@@ -10,6 +10,7 @@ from django.contrib.gis.db import models as gis_models
 from django.contrib.gis.db.models import Extent, Union
 from django.contrib.gis.db.models.functions import Area, Centroid
 from django.contrib.gis.geos import MultiPolygon, Polygon
+from django.core.cache import cache
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import Case, DecimalField, F, Q, Sum, Value, When
@@ -423,6 +424,7 @@ class Project(BaseProject):
     def save(self, *args, **kwargs):
         logger.info("Saving project %d: update_fields=%s", self.id, str(kwargs.get("update_fields", [])))
         super().save(*args, **kwargs)
+        cache.delete_pattern(f'*project/{self.id}/*')
 
     def get_territory_name(self):
         if self.territory_name:
