@@ -80,6 +80,7 @@ THIRD_APPS = [
     "sri",
     "simple_history",
     "corsheaders",
+    "fancy_cache",
 ]
 
 # upper app should not communicate with lower ones
@@ -250,27 +251,29 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 CACHES: Dict[str, Any] = {}
 
-if ENVIRONMENT in ["local"]:
-    CACHES = {
-        "default": {
-            "BACKEND": "django.core.cache.backends.dummy.DummyCache",
-        }
+# if ENVIRONMENT in ["local"]:
+#     CACHES = {
+#         "default": {
+#             "BACKEND": "django.core.cache.backends.dummy.DummyCache",
+#         }
+#     }
+# else:
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": env.str("SCALINGO_REDIS_URL"),
+        "TIMEOUT": 60 * 15,  # 15 minutes
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            "MAX_ENTRIES": 1000,
+        },
     }
-else:
-    CACHES = {
-        "default": {
-            "BACKEND": "django_redis.cache.RedisCache",
-            "LOCATION": env.str("SCALINGO_REDIS_URL"),
-            "TIMEOUT": 60 * 60 * 9,  # 9 heures
-            "OPTIONS": {
-                "CLIENT_CLASS": "django_redis.client.DefaultClient",
-                "MAX_ENTRIES": 1000,
-            },
-        }
-    }
-    # SESSION
-    SESSION_ENGINE = "django.contrib.sessions.backends.cache"
-    SESSION_CACHE_ALIAS = "default"
+}
+FANCY_REMEMBER_ALL_URLS = True
+FANCY_REMEMBER_STATS_ALL_URLS = True
+# SESSION
+
+SESSION_CACHE_ALIAS = "default"
 
 
 # Django.contrib.messages
