@@ -536,6 +536,7 @@ class UsageSolPieChart(CouvertureSolPieChart):
 class CouvertureSolProgressionChart(ProjectChart):
     _level = 2
     _sol = "couverture"
+    _sub_title = "la couverture"
     name = "Progression des principaux postes de la couverture du sol"
     param = {
         "chart": {"type": "column"},
@@ -562,7 +563,7 @@ class CouvertureSolProgressionChart(ProjectChart):
 
     def get_series(self):
         if not self.series:
-            title = f"Evolution de la couverture des sols de {self.first_millesime} à " f"{self.last_millesime}"
+            title = f"Evolution de {self._sub_title} des sols de {self.first_millesime} à {self.last_millesime}"
             self.chart["title"]["text"] = title
             self.series = self.project.get_base_sol_progression(
                 self.first_millesime, self.last_millesime, sol=self._sol
@@ -589,6 +590,7 @@ class CouvertureSolProgressionChart(ProjectChart):
 class UsageSolProgressionChart(CouvertureSolProgressionChart):
     _level = 1
     _sol = "usage"
+    _sub_title = "l'usage"
 
 
 class DetailCouvArtifChart(ProjectChart):
