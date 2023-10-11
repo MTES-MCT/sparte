@@ -134,7 +134,6 @@ urlpatterns = [
         name="zone-urba-fill-map",
     ),
     # MAP
-    path("<int:pk>/map", views.ProjectMapView.as_view(), name="map"),
     path(
         "<int:pk>/carte/comprendre-mon-artificialisation",
         views.MyArtifMapView.as_view(),
@@ -156,9 +155,9 @@ urlpatterns = [
         name="map-urban-zones",
     ),
     path(
-        "<int:pk>/map-libre",
-        views.MapLibreView.as_view(),
-        name="map-libre",
+        "<int:pk>/map-test",
+        views.MapTest.as_view(),
+        name="map-test",
     ),
     path(
         "<int:project_id>/carte/detail-zone-urbaine/<int:pk>",
