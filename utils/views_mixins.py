@@ -2,7 +2,8 @@ from django.core.exceptions import ImproperlyConfigured
 from django.shortcuts import resolve_url
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
-from django.views.decorators.cache import cache_page
+from django.views.decorators.cache import cache_control
+from fancy_cache import cache_page
 
 
 class GetObjectMixin:
@@ -57,7 +58,20 @@ class CacheMixin:
         """Override to disable cache conditionnally"""
         return True
 
-    @method_decorator(cache_page(cache_timeout))
+    def prefixer(request):
+        if request.method != "GET" or request.GET.get("no-cache"):
+            return None
+        return request.get_full_path()
+
+    @method_decorator(
+        cache_control(
+            no_cache=True,
+            max_age=0,
+            no_store=True,
+            must_revalidate=True,
+        )
+    )
+    @method_decorator(cache_page(cache_timeout, key_prefix=prefixer))
     def cached_dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
 
