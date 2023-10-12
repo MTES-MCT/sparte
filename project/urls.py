@@ -156,7 +156,7 @@ urlpatterns = [
     ),
     path(
         "<int:pk>/map-test",
-        views.MapTest.as_view(),
+        views.MapTestView.as_view(),
         name="map-test",
     ),
     path(
