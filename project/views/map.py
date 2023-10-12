@@ -27,7 +27,6 @@ class BaseMap(GroupMixin, DetailView):
     
     queryset = Project.objects.all()
     template_name = "carto/map_libre.html"
-    context_object_name = "project"
     title = "To be set"
     default_zoom = "To be set"
     
@@ -353,11 +352,10 @@ class BaseMap(GroupMixin, DetailView):
         return super().get_context_data(**kwargs)
 
 
-class MapTest(BaseMap):
+class MapTestView(BaseMap):
     title = "Carte de test"
     scale_size = 5
     default_zoom = 10
-    queryset = Project.objects.all()
     
     def get_sources_list(self, *sources):
         sources = [
