@@ -185,4 +185,9 @@ export default class Filter {
         source.queryStrings.map((_obj) => _obj.key === _property ? _obj.value = _value : _obj.value)
         source.update()
     }
+
+    toggleLegend(_item, _property, _value) {
+        const legend = document.getElementById(_item)
+        legend.classList.toggle(_property)
+    }
 }

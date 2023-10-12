@@ -29,6 +29,7 @@ class BaseMap(GroupMixin, DetailView):
     template_name = "carto/map_libre.html"
     context_object_name = "project"
     title = "To be set"
+    default_zoom = "To be set"
     
     def get_context_breadcrumbs(self):
         breadcrumbs = super().get_context_breadcrumbs()
@@ -341,7 +342,7 @@ class BaseMap(GroupMixin, DetailView):
                 "map_name": self.title,
                 "center_lat": center.y,
                 "center_lng": center.x,
-                "default_zoom": 12,
+                "default_zoom": self.default_zoom,
                 "data": {
                     "sources": self.get_sources_list(),
                     "layers": layers,
@@ -354,135 +355,58 @@ class BaseMap(GroupMixin, DetailView):
 
 class MapTest(BaseMap):
     title = "Carte de test"
+    scale_size = 5
+    default_zoom = 10
+    queryset = Project.objects.all()
     
     def get_sources_list(self, *sources):
         sources = [
             {
-                "key": "ocs-ge-source",
+                "key": "consommation-des-communes-source",
                 "params": {
                     "type": "geojson",
-                    "data": reverse_lazy("public_data:ocsge-optimized"),
-                    "generateId": True,  # This ensures that all features have unique IDs
+                    "data": reverse_lazy(f"project:theme-city-conso", args=[self.object.id]),
                 },
                 "query_strings": [
                     {
-                        "type": "function",
-                        "key": "in_bbox",
-                        "value": "getBbox",
-                    },
-                    {
-                        "type": "function",
-                        "key": "zoom",
-                        "value": "getZoom",
-                    },
-                    {
                         "type": "string",
-                        "key": "year",
-                        "value": 2019,
-                    },
-                    {
-                        "type": "string",
-                        "key": "is_artificial",
+                        "key": "data",
                         "value": 1,
                     },
-                ],
-                "min_zoom": 15,
-            },
-            {
-                "key": "zonages-d-urbanisme-source",
-                "params": {
-                    "type": "geojson",
-                    "data": reverse_lazy("public_data:zoneurba-optimized"),
-                    "generateId": True,  # This ensures that all features have unique IDs
-                },
-                "query_strings": [
                     {
                         "type": "function",
                         "key": "in_bbox",
                         "value": "getBbox",
                     },
-                    {
-                        "type": "function",
-                        "key": "zoom",
-                        "value": "getZoom",
-                    },
                 ],
-                "min_zoom": 12,
-            },  
+                "min_zoom": 8,
+            },
         ]
         return super().get_sources_list(*sources)
     
     def get_layers_list(self, *layers):
         layers = [
             {
-                "id": "zonages-d-urbanisme-fill-layer",
-                "z-index": 6,
+                "id": "consommation-des-communes-fill-layer",
+                "z-index": 4,
                 "type": "fill",
-                "source": "zonages-d-urbanisme-source",
-                "minzoom": 12,
+                "source": "consommation-des-communes-source",
+                "minzoom": 8,
                 "maxzoom": 19,
                 "paint": {
-                    "fill-color": "#ffffff",
-                    "fill-opacity": ["case", ["boolean", ["feature-state", "hover"], False], 0.8, 0],
-                },
-                "events": [
-                    {
-                        "type": "mousemove",
-                        "triggers": [
-                            {
-                                "method": "hoverEffectIn",
-                            },
-                            {
-                                "method": "showInfoBox",
-                                "options": {
-                                    "title": "Zonages des documents d&rsquo;urbanisme",
-                                    "properties": [
-                                        {"name": "Libellé", "key": "libelle"},
-                                        {"name": "Libellé long", "key": "libelong"},
-                                        {"name": "Type de zone", "key": "typezone"},
-                                    ],
-                                },
-                            },
-                        ],
-                    },
-                    {
-                        "type": "mouseleave",
-                        "triggers": [
-                            {
-                                "method": "hoverEffectOut",
-                            },
-                            {
-                                "method": "hideInfoBox",
-                            },
-                        ],
-                    },
-                    {
-                        "type": "click",
-                        "triggers": [
-                            {
-                                "method": "displayFeatureData",
-                                "options": {
-                                    "data": f"/project/{self.object.pk}/carte/detail-zone-urbaine/",
-                                },
-                            },
-                        ],
-                    },
-                ],
-            },
-            {
-                "id": "ocs-ge-layer",
-                "z-index": 7,
-                "type": "fill",
-                "source": "ocs-ge-source",
-                "minzoom": 15,
-                "maxzoom": 19,
-                "paint": {
+                    "fill-color": self.get_gradient_expression(),
                     "fill-opacity": [
                         "case",
                         ["boolean", ["feature-state", "hover"], False],
-                        1,
-                        0.7,
+                        0.8,
+                        0.6,
                     ],
+                },
+                "legend": {
+                    "title": "Consommation des communes",
+                    "subtitle": f"Surface consommée de {self.object.analyse_start_date} à {self.object.analyse_end_date}",
+                    "data": self.get_gradient_scale(),
+                    "formatter": ["number", ["fr-FR", "unit", "hectare", 2]],
                 },
                 "events": [
                     {
@@ -494,18 +418,15 @@ class MapTest(BaseMap):
                             {
                                 "method": "showInfoBox",
                                 "options": {
-                                    "title": "OCS GE",
+                                    "title": "Consommation des communes",
                                     "properties": [
-                                        {"name": "Code couverture", "key": "code_couverture"},
-                                        {"name": "Code usage", "key": "code_usage"},
-                                        {"name": "Libellé couverture", "key": "couverture_label_short"},
-                                        {"name": "Libellé usage", "key": "usage_label_short"},
+                                        {"name": "Commune", "key": "name"},
+                                        {"name": "Code INSEE", "key": "insee"},
                                         {
-                                            "name": "Surface",
-                                            "key": "surface",
+                                            "name": "Surface consommée",
+                                            "key": "artif_area",
                                             "formatter": ["number", ["fr-FR", "unit", "hectare", 2]],
                                         },
-                                        {"name": "Millésime", "key": "year"},
                                     ],
                                 },
                             },
@@ -523,77 +444,15 @@ class MapTest(BaseMap):
                         ],
                     },
                 ],
-            },
-            {
-                "id": "zonages-d-urbanisme-line-layer",
-                "z-index": 8,
-                "type": "line",
-                "source": "zonages-d-urbanisme-source",
-                "minzoom": 12,
-                "maxzoom": 19,
-                "paint": {
-                    "line-color": [
-                        "match",
-                        ["get", "typezone"],
-                        "N",
-                        "#59b72d",
-                        "U",
-                        "#e60000",
-                        "AUc",
-                        "#ff6565",
-                        "AUs",
-                        "#feccbe",
-                        "#ffff00",  # Default color => zones A
-                    ],
-                    "line-width": 1,
-                },
-            },
-            {
-                "id": "zonages-d-urbanisme-labels",
-                "z-index": 9,
-                "type": "symbol",
-                "source": "zonages-d-urbanisme-source",
-                "minzoom": 12,
-                "maxzoom": 19,
-                "layout": {
-                    "text-field": ["get", "typezone"],
-                    "text-anchor": "top",
-                    "text-font": ["Marianne Regular"],
-                },
-                "paint": {
-                    "text-color": [
-                        "match",
-                        ["get", "typezone"],
-                        "N",
-                        "#59b72d",
-                        "U",
-                        "#e60000",
-                        "AUc",
-                        "#ff6565",
-                        "AUs",
-                        "#feccbe",
-                        "#ffff00",  # Default color => zones A
-                    ],
-                },
             },
         ]
         return super().get_layers_list(*layers)
     
     def get_filters_list(self, *filters):
-        usage_colors = ["match", ["get", "code_usage"]]
-        for leaf in UsageSol.get_leafs():
-            usage_colors.append(leaf.code_prefix)
-            usage_colors.append(leaf.map_color)
-        usage_colors.append("rgba(0, 0, 0, 0)")  # default color
-        couverture_colors = ["match", ["get", "code_couverture"]]
-        for leaf in CouvertureSol.get_leafs():
-            couverture_colors.append(leaf.code_prefix)
-            couverture_colors.append(leaf.map_color)
-        couverture_colors.append("rgba(0, 0, 0, 0)")  # default color
         filters = [
             {
-                "name": "Zonages des documents d&rsquo;urbanisme",
-                "z-index": 4,
+                "name": "Consommation des communes",
+                "z-index": 3,
                 "filters": [
                     {
                         "name": "Visibilité du calque",
@@ -603,157 +462,52 @@ class MapTest(BaseMap):
                             {
                                 "method": "changeLayoutProperty",
                                 "property": "visibility",
-                                "items": [
-                                    "zonages-d-urbanisme-line-layer",
-                                    "zonages-d-urbanisme-labels",
-                                    "zonages-d-urbanisme-fill-layer",
-                                ],
-                            },
-                        ],
-                    },
-                    {
-                        "name": "Opacité du calque",
-                        "type": "opacity",
-                        "value": 100,
-                        "triggers": [
-                            {
-                                "method": "changePaintProperty",
-                                "property": "line-opacity",
-                                "items": ["zonages-d-urbanisme-line-layer"],
+                                "items": ["consommation-des-communes-fill-layer"],
                             },
                             {
-                                "method": "changePaintProperty",
-                                "property": "text-opacity",
-                                "items": ["zonages-d-urbanisme-labels"],
-                            },
-                        ],
-                    },
-                    {
-                        "name": "",
-                        "type": "tag",
-                        "value": ["AUc", "AUs", "U", "A", "N"],
-                        "options": [
-                            {
-                                "name": "AUc",
-                                "value": "AUc",
-                            },
-                            {
-                                "name": "AUs",
-                                "value": "AUs",
-                            },
-                            {
-                                "name": "U",
-                                "value": "U",
-                            },
-                            {
-                                "name": "A",
-                                "value": "A",
-                            },
-                            {
-                                "name": "N",
-                                "value": "N",
-                            },
-                        ],
-                        "triggers": [
-                            {
-                                "method": "filterByPropertyInArray",
-                                "property": "typezone",
-                                "items": [
-                                    "zonages-d-urbanisme-line-layer",
-                                    "zonages-d-urbanisme-labels",
-                                    "zonages-d-urbanisme-fill-layer",
-                                ],
+                                "method": "toggleLegend",
+                                "property": "visible",
+                                "items": ["legend-box-consommation-des-communes-source"],
                             },
                         ],
                     },
                 ],
-                "source": "zonages-d-urbanisme-source",
-            },
-            {
-                "name": "OCS GE",
-                "z-index": 5,
-                "filters": [
-                    {
-                        "name": "Visibilité du calque",
-                        "type": "visibility",
-                        "value": "visible",
-                        "triggers": [
-                            {
-                                "method": "changeLayoutProperty",
-                                "property": "visibility",
-                                "items": ["ocs-ge-layer"],
-                            },
-                        ],
-                    },
-                    {
-                        "name": "Opacité du calque",
-                        "type": "opacity",
-                        "value": 70,
-                        "triggers": [
-                            {
-                                "method": "changePaintProperty",
-                                "property": "fill-opacity",
-                                "items": ["ocs-ge-layer"],
-                            },
-                        ],
-                    },
-                    {
-                        "name": "Nomemclature",
-                        "type": "select",
-                        "value": "couverture",
-                        "options": [
-                            {
-                                "name": "Couverture",
-                                "value": "couverture",
-                                "data-value": couverture_colors,
-                            },
-                            {
-                                "name": "Usage",
-                                "value": "usage",
-                                "data-value": usage_colors,
-                            },
-                        ],
-                        "triggers": [
-                            {
-                                "method": "changePaintProperty",
-                                "property": "fill-color",
-                                "items": ["ocs-ge-layer"],
-                            },
-                        ],
-                    },
-                    {
-                        "name": "Millésime",
-                        "type": "select",
-                        "value": "2019",
-                        "options": [
-                            {
-                                "name": "2016",
-                                "value": "2016",
-                                "data-value": "2016",
-                            },
-                            {
-                                "name": "2019",
-                                "value": "2019",
-                                "data-value": "2019",
-                            },
-                        ],
-                        "triggers": [
-                            {
-                                "method": "updateQueryString",
-                                "property": "year",
-                                "items": ["ocs-ge-source"],
-                            },
-                        ],
-                    },
-                ],
-                "source": "ocs-ge-source",
+                "source": "fond-de-carte-source",
             },
         ]
         return super().get_filters_list(*filters)
+    
+    def get_gradient_scale(self):
+        fields = Cerema.get_art_field(self.object.analyse_start_date, self.object.analyse_end_date)
+        qs = (
+            self.object.get_cerema_cities()
+            .annotate(conso=sum([F(f) for f in fields]) / 10000)
+            .values("city_name")
+            .annotate(conso=Sum(F("conso")))
+            .order_by("conso")
+        )
+        if qs.count() <= self.scale_size:
+            boundaries = sorted([i["conso"] for i in qs])
+        else:
+            boundaries = jenks_breaks([i["conso"] for i in qs], n_classes=self.scale_size)[1:]
+        data = [{"value": v, "color": c.hex_l} for v, c in zip(boundaries, get_dark_blue_gradient(len(boundaries)))]
+        return data
+    
+    def get_gradient_expression(self):
+        data = [
+            'interpolate',
+            ['linear'],
+            ['get', 'artif_area'],
+        ]
+        for scale in self.get_gradient_scale():
+            data.append(scale["value"])
+            data.append(scale["color"])
+        return data
 
 
 class UrbanZonesMapView(BaseMap):
     title = "Explorateur des zonages d'urbanisme"
+    default_zoom = 12
     
     def get_sources_list(self, *sources):
         sources = [
@@ -1081,18 +835,6 @@ class UrbanZonesMapView(BaseMap):
                             {
                                 "method": "changeLayoutProperty",
                                 "property": "visibility",
-                                "items": ["ocs-ge-layer"],
-                            },
-                        ],
-                    },
-                    {
-                        "name": "Opacité du calque",
-                        "type": "opacity",
-                        "value": 70,
-                        "triggers": [
-                            {
-                                "method": "changePaintProperty",
-                                "property": "fill-opacity",
                                 "items": ["ocs-ge-layer"],
                             },
                         ],
