@@ -480,7 +480,7 @@ GOOGLE_ADWORDS_ACTIVATE = env.bool("GOOGLE_ADWORDS_ACTIVATE", default=False)
 
 USE_CSP = env.bool("USE_CSP", default=not DEBUG)
 if USE_CSP:
-    MIDDLEWARE.insert(2, "csp.middleware.CSPMiddleware")
+    MIDDLEWARE.insert(2, "config.middlewares.ForceNonceCSPMiddleware")
 
 CSP_UPGRADE_INSECURE_REQUESTS = not DEBUG
 CSP_DEFAULT_SRC = ["'self'", "sparte-metabase.osc-secnum-fr1.scalingo.io", "blob:"]
