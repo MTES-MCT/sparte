@@ -13,8 +13,8 @@
 {% endblock pagetitle %}
 
 {% block headers %}
-<meta name="htmx-config" content='{"inlineScriptNonce":"{{ CSP_NONCE }}"}'>
-<style nonce="{{ CSP_NONCE }}">
+<meta name="htmx-config" content='{"inlineScriptNonce":"[NONE_PLACEHOLDER]"}'>
+<style nonce="[NONE_PLACEHOLDER]">
 html, body {
     height: 100% !important;
 }
@@ -40,7 +40,7 @@ html, body {
 
 {{ data|json_script:"data" }}
 
-<script language="javascript" nonce="{{ CSP_NONCE }}">
+<script language="javascript" nonce="[NONE_PLACEHOLDER]">
 new MapLibre ({
     targetElement: document.getElementById('map__container'),
     debug: true,
