@@ -76,7 +76,7 @@ Modifier
 {% endblock content %}
 
 {% block bodyend %}
-<script language="javascript" nonce="{{ CSP_NONCE }}">
+<script language="javascript" nonce="[NONE_PLACEHOLDER]">
 const queryString = window.location.search
 const urlParams = new URLSearchParams(queryString)
 const next = urlParams.get('next')
