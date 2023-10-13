@@ -1015,38 +1015,130 @@ class MyArtifMapView(BaseThemeMap):
         return super().get_layers_list(*layers)
 
 
-class CitySpaceConsoMapView(BaseThemeMap):
+class CitySpaceConsoMapView(BaseMap):
     title = "Consommation d'espaces des communes de mon territoire"
-    url_name = "theme-city-conso"
-
+    scale_size = 5
+    default_zoom = 10
+    
+    def get_sources_list(self, *sources):
+        sources = [
+            {
+                "key": "consommation-des-communes-source",
+                "params": {
+                    "type": "geojson",
+                    "data": reverse_lazy(f"project:theme-city-conso", args=[self.object.id]),
+                },
+                "query_strings": [
+                    {
+                        "type": "string",
+                        "key": "data",
+                        "value": 1,
+                    },
+                    {
+                        "type": "function",
+                        "key": "in_bbox",
+                        "value": "getBbox",
+                    },
+                ],
+                "min_zoom": 8,
+            },
+        ]
+        return super().get_sources_list(*sources)
+    
     def get_layers_list(self, *layers):
         layers = [
             {
-                "name": "Consommation des communes",
-                "url": self.get_data_url(),
-                "display": True,
-                "gradient_url": self.get_gradient_url(),
-                "level": "2",
-                "color_property_name": "artif_area",
-            }
-        ] + list(layers)
+                "id": "consommation-des-communes-fill-layer",
+                "z-index": 4,
+                "type": "fill",
+                "source": "consommation-des-communes-source",
+                "minzoom": 8,
+                "maxzoom": 19,
+                "paint": {
+                    "fill-color": self.get_gradient_expression(),
+                    "fill-opacity": [
+                        "case",
+                        ["boolean", ["feature-state", "hover"], False],
+                        0.8,
+                        0.6,
+                    ],
+                },
+                "legend": {
+                    "title": "Consommation des communes",
+                    "subtitle": f"Surface consommée de {self.object.analyse_start_date} à {self.object.analyse_end_date}",
+                    "data": self.get_gradient_scale(),
+                    "formatter": ["number", ["fr-FR", "unit", "hectare", 2]],
+                },
+                "events": [
+                    {
+                        "type": "mousemove",
+                        "triggers": [
+                            {
+                                "method": "hoverEffectIn",
+                            },
+                            {
+                                "method": "showInfoBox",
+                                "options": {
+                                    "title": "Consommation des communes",
+                                    "properties": [
+                                        {"name": "Commune", "key": "name"},
+                                        {"name": "Code INSEE", "key": "insee"},
+                                        {
+                                            "name": "Surface consommée",
+                                            "key": "artif_area",
+                                            "formatter": ["number", ["fr-FR", "unit", "hectare", 2]],
+                                        },
+                                    ],
+                                },
+                            },
+                        ],
+                    },
+                    {
+                        "type": "mouseleave",
+                        "triggers": [
+                            {
+                                "method": "hoverEffectOut",
+                            },
+                            {
+                                "method": "hideInfoBox",
+                            },
+                        ],
+                    },
+                ],
+            },
+        ]
         return super().get_layers_list(*layers)
-
-    def get_data(self):
-        project = self.get_object()
-        fields = Cerema.get_art_field(project.analyse_start_date, project.analyse_end_date)
-        qs = Cerema.objects.annotate(artif_area=sum(F(f) for f in fields))
-        queryset = project.cities.all().annotate(
-            artif_area=Subquery(qs.filter(city_insee=OuterRef("insee")).values("artif_area")[:1]) / 10000
-        )
-        bbox = self.request.GET.get("bbox", None)
-        if bbox is not None and len(bbox) > 0:
-            polygon_box = Polygon.from_bbox(bbox.split(","))
-            queryset = queryset.filter(mpoly__within=polygon_box)
-        serializer = CitySpaceConsoMapSerializer(queryset, many=True)
-        return JsonResponse(serializer.data, status=200)
-
-    def get_gradient(self):
+    
+    def get_filters_list(self, *filters):
+        filters = [
+            {
+                "name": "Consommation des communes",
+                "z-index": 3,
+                "filters": [
+                    {
+                        "name": "Visibilité du calque",
+                        "type": "visibility",
+                        "value": "visible",
+                        "triggers": [
+                            {
+                                "method": "changeLayoutProperty",
+                                "property": "visibility",
+                                "items": ["consommation-des-communes-fill-layer"],
+                            },
+                            {
+                                "method": "toggleLegend",
+                                "property": "visible",
+                                "items": ["legend-box-consommation-des-communes-source"],
+                            },
+                        ],
+                    },
+                ],
+                "source": "fond-de-carte-source",
+            },
+        ]
+        return super().get_filters_list(*filters)
+    
+    def get_gradient_scale(self):
         fields = Cerema.get_art_field(self.object.analyse_start_date, self.object.analyse_end_date)
         qs = (
             self.object.get_cerema_cities()
@@ -1060,7 +1152,40 @@ class CitySpaceConsoMapView(BaseThemeMap):
         else:
             boundaries = jenks_breaks([i["conso"] for i in qs], n_classes=self.scale_size)[1:]
         data = [{"value": v, "color": c.hex_l} for v, c in zip(boundaries, get_dark_blue_gradient(len(boundaries)))]
-        return JsonResponse(data, safe=False)
+        return data
+    
+    def get_gradient_expression(self):
+        data = [
+            'interpolate',
+            ['linear'],
+            ['get', 'artif_area'],
+        ]
+        for scale in self.get_gradient_scale():
+            data.append(scale["value"])
+            data.append(scale["color"])
+        return data
+    
+    def get_data(self):
+        project = self.get_object()
+        fields = Cerema.get_art_field(project.analyse_start_date, project.analyse_end_date)
+        qs = Cerema.objects.annotate(artif_area=sum(F(f) for f in fields))
+        queryset = project.cities.all().annotate(
+            artif_area=Subquery(qs.filter(city_insee=OuterRef("insee")).values("artif_area")[:1]) / 10000
+        )
+        bbox = self.request.GET.get("bbox", None)
+        if bbox is not None and len(bbox) > 0:
+            polygon_box = Polygon.from_bbox(bbox.split(","))
+            queryset = queryset.filter(mpoly__within=polygon_box)
+        serializer = CitySpaceConsoMapSerializer(queryset, many=True)
+        return JsonResponse(serializer.data, status=200)
+    
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        if "data" in self.request.GET:
+            return self.get_data()
+        else:
+            context = self.get_context_data(object=self.object)
+            return self.render_to_response(context)
 
 
 class CityArtifMapView(BaseThemeMap):
