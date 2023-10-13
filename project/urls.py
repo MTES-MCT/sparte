@@ -140,7 +140,7 @@ urlpatterns = [
         name="theme-my-artif",
     ),
     path(
-        "<int:pk>/carte/consomation-villes-du-territoire",
+        "<int:pk>/carte/consommation-villes-du-territoire",
         views.CitySpaceConsoMapView.as_view(),
         name="theme-city-conso",
     ),
