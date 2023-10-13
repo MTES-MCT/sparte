@@ -53,4 +53,6 @@ class ForceNonceCSPMiddleware(CSPMiddleware):
     def process_response(self, request, response):
         """Replace nonce placeholder by its true value."""
         response = super().process_response(request, response)
-        response.content.replace("[NONE_PLACEHOLDER]", request.csp_nonce)
+        content = response.content.decode("utf-8")
+        response.content = content.replace("[NONE_PLACEHOLDER]", request.csp_nonce).encode("utf-8")
+        return response
