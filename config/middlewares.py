@@ -47,4 +47,10 @@ class MaintenanceModeMiddleware:
 
 class ForceNonceCSPMiddleware(CSPMiddleware):
     def process_request(self, request):
+        """Ensure csp_nonce is set on request object."""
         request.csp_nonce = self._make_nonce(request)
+
+    def process_response(self, request, response):
+        """Replace nonce placeholder by its true value."""
+        response = super().process_response(request, response)
+        response.content.replace("[NONE_PLACEHOLDER]", request.csp_nonce)
