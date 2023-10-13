@@ -14,7 +14,7 @@ Rapport consommation
 
 {% block headers %}
 {% sri_static "project/css/project.css" %}
-<meta name="htmx-config" content='{"inlineScriptNonce":"{{ CSP_NONCE }}"}'>
+<meta name="htmx-config" content='{"inlineScriptNonce":"[NONE_PLACEHOLDER]"}'>
 {% endblock headers %}
 
 {% block content %}
@@ -505,7 +505,7 @@ Rapport consommation
 {% display_chart 'chart_determinant' determinant_per_year_chart CSP_NONCE %}
 {% display_chart 'pie_determinant' determinant_pie_chart CSP_NONCE %}
 
-<script language="javascript" nonce="{{ CSP_NONCE }}">
+<script language="javascript" nonce="[NONE_PLACEHOLDER]">
     ///////////////////////////////
     // Select / unselect all
     ///////////////////////////////
