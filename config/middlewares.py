@@ -1,6 +1,7 @@
 import logging
 import time
 
+from csp.middleware import CSPMiddleware
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django_app_parameter import app_parameter
@@ -42,3 +43,8 @@ class MaintenanceModeMiddleware:
             return HttpResponseRedirect(f"{maintenance_path}?next={request.path}")
 
         return self.get_response(request)
+
+
+class ForceNonceCSPMiddleware(CSPMiddleware):
+    def process_request(self, request):
+        request.csp_nonce = self._make_nonce(request)
