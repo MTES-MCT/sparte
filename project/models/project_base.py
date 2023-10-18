@@ -725,18 +725,27 @@ class Project(BaseProject):
         result = self.cities.all().aggregate(total=Sum("surface_artif"))
         return result["total"] or 0
 
-    def get_artif_per_city_and_period(self):
+    def get_artif_per_maille_and_period(self):
+        """Return example: {"new_artif": 12, "new_natural": 2: "net_artif": 10}"""
+        mapping = {
+            AdminRef.COMPOSITE: "city__name",
+            AdminRef.COMMUNE: "city__name",
+            AdminRef.EPCI: "city__epci__name",
+            AdminRef.SCOT: "city__scot__name",
+            AdminRef.DEPARTEMENT: "city__departement__name",
+            AdminRef.REGION: "city__departement__region__name",
+        }
         qs = (
             CommuneDiff.objects.all()
             .filter(city__in=self.cities.all())
             .annotate(
                 period=Concat("year_old", Value(" - "), "year_new", output_field=models.CharField()),
-                name=F("city__name"),
-                area=F("city__area") / 10000,
+                name=Coalesce(F(mapping.get(self.level, "city__name")), Value("Non couvert")),
             )
             .order_by("name", "period", "year_old", "year_new")
-            .values("name", "period", "year_old", "year_new", "area")
+            .values("name", "period", "year_old", "year_new")
             .annotate(
+                area=Sum("city__area") / 10000,
                 new_artif=Coalesce(Sum("new_artif"), Decimal("0")),
                 new_natural=Coalesce(Sum("new_natural"), Decimal("0")),
                 net_artif=Coalesce(Sum("net_artif"), Decimal("0")),
