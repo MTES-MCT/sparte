@@ -441,7 +441,7 @@ class ProjectReportArtifView(ProjectReportBaseView):
         return super().get_context_data(**kwargs)
 
     def get_artif_net_table(self, project):
-        qs = project.get_artif_per_city_and_period()
+        qs = project.get_artif_per_maille_and_period()
         df = pd.DataFrame.from_records(qs)
         pivot_df = df.pivot_table(
             index="name", columns="period", values=["new_artif", "new_natural", "net_artif"], aggfunc="sum"
