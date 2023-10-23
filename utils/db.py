@@ -5,10 +5,13 @@ from django.db.models import DecimalField, Manager, QuerySet, Sum
 from django.db.models.functions import Cast, Coalesce
 
 
+Zero = Area(Polygon(((0, 0), (0, 0), (0, 0), (0, 0)), srid=2154))
+
+
 def cast_sum(field, filter=None, divider=10000):
     """Add all required data to a queryset to sum a field and return a Decimal"""
     return Cast(
-        Coalesce(Sum(field, filter=filter, default=0), 0) / divider,
+        Coalesce(Sum(field, filter=filter, default=Zero), 0) / divider,
         DecimalField(max_digits=15, decimal_places=2),
     )
 
@@ -22,7 +25,10 @@ class IntersectMixin:
         queryset = self.filter(mpoly__intersects=geom)  # type: ignore
         queryset = queryset.annotate(
             intersection=Intersection("mpoly", geom),
-            intersection_area=Area(Transform("intersection", 2154)),
+            intersection_area=Coalesce(
+                Area(Transform("intersection", 2154)),
+                Zero,
+            )
         )
         return queryset
 
