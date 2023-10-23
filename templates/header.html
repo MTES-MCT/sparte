@@ -1,8 +1,10 @@
+{% load static %}
+
 <header role="banner" class="fr-header">
     <div class="fr-header__body">
         <div class="fr-container">
             <div class="fr-header__body-row position-relative">
-                <div class="fr-header__brand fr-enlarge-link">
+                <div class="fr-header__brand">
                     <div class="fr-header__brand-top">
                         <div class="fr-header__logo">
                             <p class="fr-logo">
@@ -18,14 +20,10 @@
                             </button>
                         </div>
                     </div>
-                    <div class="fr-header__service">
-                        <a href="/" title="Accueil - [À MODIFIER - Nom du site / service] - Nom de l'entité (ministère, secrétariat d‘état, gouvernement)">
-                            <p class="fr-header__service-title">
-                                Mon Diagnostic Artificialisation
-                                <sup class="fr-badge fr-badge--sm fr-badge--blue-cumulus">Par SPARTE</sup>
-                            </p>
+                    <div class="fr-header__operator">
+                        <a href="/" title="Accueil - Mon Diagnostic Artificialisation">
+                            <img class="fr-responsive-img" src="{% static '/img/logo-mon-diagnostic-artificialisation.svg' %}" alt="Mon Diagnostic Artificialisation">
                         </a>
-                        {% comment %} <small class="fr-header__service-tagline">Mesurer votre consommation d'espaces et l'artificialisation de votre territoire</small> {% endcomment %}
                     </div>
                 </div>
                 <div class="fr-header__tools">

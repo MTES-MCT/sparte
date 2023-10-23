@@ -23,7 +23,9 @@
             </ul>
         </div>
 
-        <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm fullscreen-chart" data-chart-target="indicateur_chart" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
+        <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm fr-mr-2w fullscreen-chart" data-chart-target="indicateur_chart" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
+
+        <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#consoRelativeSurface" data-toggle="tooltip" title="Astuces pour lire le graphique" aria-hidden="true"></button>
     </div>
     <div id="indicateur_chart"></div>
 </div>
@@ -32,7 +34,7 @@
     <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="surface-data">Données</button>
     <div class="fr-collapse" id="surface-data">
         <h6 class="fr-mt-2w">Source</h6>
-        <p>Données d'évolution des fichiers fonciers du Cérema issus des données MAJIC (Mise A Jour de l'Information Cadastrale) de la DGFIP, sur la période d'analyse (millésime min : 2009, millésime max : 2021)</p>
+        <p>Données d'évolution des fichiers fonciers produits et diffusés par le Cérema depuis 2009 à partir des fichiers MAJIC (Mise A Jour de  l'Information Cadastrale) de la DGFIP. Le dernier millésime de 2022 est la  photographie du territoire au 1er janvier 2022, intégrant les évolutions réalisées au cours de l'année 2021.</p>
 
         <h6 class="fr-mt-2w">Calcul</h6>
         <p>Calcul de l'air après projection <a href="https://epsg.io/2154" target="_blank">EPSG:2154 - Lambert 93</a></p>
@@ -80,7 +82,9 @@
             </ul>
         </div>
 
-        <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm fullscreen-chart" data-chart-target="comparison_chart" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
+        <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm fr-mr-2w fullscreen-chart" data-chart-target="comparison_chart" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
+
+        <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#consoRelativeSurface" data-toggle="tooltip" title="Astuces pour lire le graphique" aria-hidden="true"></button>
     </div>
     <div id="comparison_chart"></div>
 </div>
@@ -89,7 +93,7 @@
     <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="surface-relative-comparison-data">Données</button>
     <div class="fr-collapse" id="surface-relative-comparison-data">
         <h6 class="fr-mt-2w">Source</h6>
-        <p>Données d'évolution des fichiers fonciers du Cérema issus des données MAJIC (Mise A Jour de l'Information Cadastrale) de la DGFIP, sur la période d'analyse (millésime min : 2009, millésime max : 2021).</p>
+        <p>Données d'évolution des fichiers fonciers produits et diffusés par le Cérema depuis 2009 à partir des fichiers MAJIC (Mise A Jour de  l'Information Cadastrale) de la DGFIP. Le dernier millésime de 2022 est la  photographie du territoire au 1er janvier 2022, intégrant les évolutions réalisées au cours de l'année 2021.</p>
         
         <h6 class="fr-mt-2w">Calcul</h6>
         <p>La consommation de chaque territoire est divisée par sa propre surface puis multiplié par la surface de votre territoire.</p>
@@ -121,3 +125,27 @@
 
 {% display_chart 'indicateur_chart' indicateur_chart CSP_NONCE %}
 {% display_chart 'comparison_chart' comparison_chart CSP_NONCE %}
+
+<!-- Modal -->
+<div class="modal fade" id="consoRelativeSurface" tabindex="-1" aria-labelledby="consoRelativeSurfaceLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+        <div class="fr-modal__body">
+            <div class="fr-modal__header">
+                <button class="fr-link--close fr-link" data-bs-dismiss="modal" aria-label="Close">Fermer</button>
+            </div>
+            <div class="fr-modal__content">
+                <h1 class="fr-modal__title" id="consoRelativeSurfaceLabel">
+                    <span class="fr-fi-arrow-right-line fr-fi--lg"></span>
+                    Astuces - Graphique consommation d'espaces rapportée à la surface du territoire
+                </h1>
+                <p class="fr-text--sm">
+                    La consommation relative aux surfaces des territoires permet d'analyser la consommation d'espaces au regard de la surface totale du territoire.
+                    Cette approche proportionnelle permet de comparer les territoires selon le pourcentage d'ha consommé par rapport au volume d'ha total du territoire.
+                    La comparaison avec les voisins permet d'appréhender les dynamiques globales brutes de consommation d'espaces NAF et de les comparer entre elles.
+                </p>
+                <p class="fr-text--sm">Avec le bouton <span class="fr-icon-drag-move-2-line fr-icon--sm" aria-hidden="true"></span>, vous pouvez afficher le graphique en plein écran.</p>
+                <p class="fr-text--sm">Avec le bouton <span class="fr-icon-download-line fr-icon--sm" aria-hidden="true"></span>, vous pouvez télécharger le graphique sous forme d'image (utilisez PNG si vous ne savez pas lequel choisir).</p>
+            </div>
+        </div>
+    </div>
+</div>

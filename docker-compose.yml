@@ -75,12 +75,32 @@ services:
     networks:
       - app-network
 
-  worker:
+  worker-quick:
     image: sparte/backend:latest
     working_dir: /app
     volumes:
       - .:/app
-    command: celery -A config.celery worker --loglevel info --pool solo
+    command: celery -A config.celery worker --loglevel debug --concurrency=4 --max-tasks-per-child=1
+    # command: tail -F anything
+    env_file: .env
+    environment:
+      - DATABASE_URL=postgis://postgres:postgres@db:5432/postgres
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+      - HIGHCHART_SERVER=http://highchart:8090/
+      - SCALINGO_REDIS_URL=redis://redis:6379/0
+    depends_on:
+      - db
+      - redis
+    networks:
+      - app-network
+
+  worker-long:
+    image: sparte/backend:latest
+    working_dir: /app
+    volumes:
+      - .:/app
+    command: celery -A config.celery worker --loglevel debug --concurrency=4 --max-tasks-per-child=1 -Q long
     # command: tail -F anything
     env_file: .env
     environment:
@@ -113,6 +133,16 @@ services:
     networks:
       - app-network
 
+  flower:
+    image: mher/flower
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - FLOWER_PORT=8887
+    networks:
+      - app-network
+    ports:
+      - 8887:8887
+
 
 networks:
   app-network:
@@ -120,13 +150,3 @@ networks:
 
 volumes:
   db_data:
-
-  # flower:
-  #   image: mher/flower
-  #   environment:
-  #     - CELERY_BROKER_URL=redis://redis:6379/0
-  #     - FLOWER_PORT=8887
-  #   networks:
-  #     - app-network
-  #   ports:
-  #     - 8887:8887

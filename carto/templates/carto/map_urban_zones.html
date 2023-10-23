@@ -13,8 +13,8 @@
 {% endblock pagetitle %}
 
 {% block headers %}
-<meta name="htmx-config" content='{"inlineScriptNonce":"{{ CSP_NONCE }}"}'>
-<style nonce="{{ CSP_NONCE }}">
+<meta name="htmx-config" content='{"inlineScriptNonce":"[NONE_PLACEHOLDER]"}'>
+<style nonce="[NONE_PLACEHOLDER]">
 html, body {
     height: 100% !important;
 }
@@ -24,10 +24,8 @@ html, body {
 {% block body_class %}header-min full-width breadcrumb-min{% endblock %}
 
 {% block content %}
-<div id="mapV2__wrapper" class="d-flex h-100">
-    <div id="mapV2__container" class="flex-grow-1">
-        <div id="mapV2__legend"></div>
-    </div>
+<div id="map__wrapper" class="d-flex h-100">
+    <div id="map__container" class="flex-grow-1"></div>
 </div>
 {% endblock content %}
 
@@ -40,45 +38,16 @@ html, body {
 {% sri_static "highcharts/js/exporting.js" %}
 {% french_translation %}
 
-<script language="javascript" nonce="{{ CSP_NONCE }}">
-layerList = [
-{% for layer in layer_list %}
-    {
-        {% for k, v in layer.items %}
-        {{ k }}: "{{ v|safe }}",
-        {% endfor %}
-    },
-{% endfor %}
-]
+{{ data|json_script:"data" }}
 
-couv_leafs = [
-{% for leaf in couv_leafs %}
-    {
-        "code_couverture": "{{ leaf.code_prefix_class|safe }}",
-        "map_color": "{{ leaf.map_color|safe }}",
-    },
-{% endfor %}
-]
-
-usa_leafs = [
-{% for leaf in usa_leafs %}
-    {
-        "code_usage": "{{ leaf.code_prefix_class|safe }}",
-        "map_color": "{{ leaf.map_color|safe }}",
-    },
-{% endfor %}
-]
-
-new SparteMap ({
-    targetElement: document.getElementById('mapV2__container'),
-    debug: false,
-    mapCenter: [{{ center_lat }}, {{ center_lng }}],
-    defaultZoom: {{ default_zoom }},
-    layerList: layerList,
-    couv_leafs: couv_leafs,
-    usa_leafs: usa_leafs,
-    projectId: {{ project_id }}
-})
+<script language="javascript" nonce="[NONE_PLACEHOLDER]">
+    new MapLibre ({
+        targetElement: document.getElementById('map__container'),
+        debug: true,
+        mapCenter: [{{ center_lng }}, {{ center_lat }}],
+        defaultZoom: {{ default_zoom }},
+        data: JSON.parse(document.getElementById('data').textContent)
+    })
 </script>
 {% endlocalize %}
 {% endblock bodyend %}

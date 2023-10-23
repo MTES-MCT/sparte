@@ -31,7 +31,7 @@ class AutoLoadMixin:
     # properties that need to be set when heritating
     couverture_field = None
     usage_field = None
-    shape_file_path = Path()
+    shape_file_path: str = ""
     mapping: Dict[str, str] = {}
 
     def before_save(self):
@@ -86,6 +86,7 @@ class AutoLoadMixin:
         strict=True,
         silent=False,
         encoding="utf-8",
+        step=1000,
     ):
         """
         Populate table with data from shapefile then calculate all fields
@@ -110,8 +111,8 @@ class AutoLoadMixin:
         cls.clean_data(clean_queryset=clean_queryset)
         logger.info("Load new data")
         # # load files
-        lm = LayerMapping(cls, shp_file, cls.mapping, encoding=encoding, transaction_mode="autocommit")
-        lm.save(strict=strict, silent=silent, verbose=verbose, progress=True)
+        lm = LayerMapping(cls, shp_file, cls.mapping, encoding=encoding, transaction_mode="commit_on_success")
+        lm.save(strict=strict, silent=silent, verbose=verbose, progress=True, step=step)
         logger.info("Data loaded")
         logger.info("Calculate fields")
         try:

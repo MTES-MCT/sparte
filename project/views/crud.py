@@ -278,6 +278,7 @@ class SplashProgressionView(GroupMixin, DetailView):
             self.object.async_add_city_done
             and self.object.async_set_combined_emprise_done
             and self.object.async_add_neighboors_done
+            and self.object.async_find_first_and_last_ocsge_done
         ):
             response["HX-Redirect"] = reverse("project:detail", kwargs=self.kwargs)
         return response

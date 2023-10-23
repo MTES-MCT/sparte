@@ -109,7 +109,7 @@ def create_from_public_key(
 def create_from_public_key_list(
     public_key_list: List[str],
     start: str = "2011",
-    end: str = "2020",
+    end: str = "2021",
     user: User | None = None,
 ) -> Project:
     """Create a project from a list of public_keys"""

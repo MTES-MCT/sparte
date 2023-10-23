@@ -21,7 +21,7 @@ from django.core.exceptions import ImproperlyConfigured
 from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.redis import RedisIntegration
 
-OFFICIAL_VERSION = "4.1.0"
+OFFICIAL_VERSION = "4.2.0"
 
 root = environ.Path(__file__) - 2  # get root of the project
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -56,6 +56,7 @@ DOMAIN_URL = env.str("DOMAIN_URL")
 # Application definition
 
 DJANGO_APPS = [
+    "clearcache",  # need to be above of contrib admin
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -79,6 +80,7 @@ THIRD_APPS = [
     "sri",
     "simple_history",
     "corsheaders",
+    "fancy_cache",
 ]
 
 # upper app should not communicate with lower ones
@@ -249,27 +251,29 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 CACHES: Dict[str, Any] = {}
 
-if ENVIRONMENT in ["local"]:
-    CACHES = {
-        "default": {
-            "BACKEND": "django.core.cache.backends.dummy.DummyCache",
-        }
+# if ENVIRONMENT in ["local"]:
+#     CACHES = {
+#         "default": {
+#             "BACKEND": "django.core.cache.backends.dummy.DummyCache",
+#         }
+#     }
+# else:
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": env.str("SCALINGO_REDIS_URL"),
+        "TIMEOUT": 60 * 15,  # 15 minutes
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            "MAX_ENTRIES": 1000,
+        },
     }
-else:
-    CACHES = {
-        "default": {
-            "BACKEND": "django_redis.cache.RedisCache",
-            "LOCATION": env.str("SCALINGO_REDIS_URL"),
-            "TIMEOUT": 60 * 60 * 9,  # 9 heures
-            "OPTIONS": {
-                "CLIENT_CLASS": "django_redis.client.DefaultClient",
-                "MAX_ENTRIES": 1000,
-            },
-        }
-    }
-    # SESSION
-    SESSION_ENGINE = "django.contrib.sessions.backends.cache"
-    SESSION_CACHE_ALIAS = "default"
+}
+FANCY_REMEMBER_ALL_URLS = True
+FANCY_REMEMBER_STATS_ALL_URLS = True
+# SESSION
+
+SESSION_CACHE_ALIAS = "default"
 
 
 # Django.contrib.messages
@@ -476,10 +480,11 @@ GOOGLE_ADWORDS_ACTIVATE = env.bool("GOOGLE_ADWORDS_ACTIVATE", default=False)
 
 USE_CSP = env.bool("USE_CSP", default=not DEBUG)
 if USE_CSP:
-    MIDDLEWARE.insert(2, "csp.middleware.CSPMiddleware")
+    MIDDLEWARE.insert(2, "config.middlewares.ForceNonceCSPMiddleware")
 
 CSP_UPGRADE_INSECURE_REQUESTS = not DEBUG
-CSP_DEFAULT_SRC = ["'self'", "sparte-metabase.osc-secnum-fr1.scalingo.io"]
+CSP_DEFAULT_SRC = ["'self'", "sparte-metabase.osc-secnum-fr1.scalingo.io", "blob:"]
+CSP_WORKER_SRC = ["blob:"]
 CSP_SCRIPT_SRC = [
     "'self'",
     "stats.beta.gouv.fr",
@@ -509,6 +514,11 @@ CSP_CONNECT_SRC = [
     "beta.gouv.fr",
     "sparte-metabase.osc-secnum-fr1.scalingo.io",
     "google.com",
+    "wxs.ign.fr",
+    "https://raw.githack.com",
+    "https://openmaptiles.geo.data.gouv.fr",
+    "https://openmaptiles.github.io",
+    "https://stats.beta.gouv.fr"
 ]
 CSP_FRAME_ANCESTORS = ("'self'", "https://sparte-metabase.osc-secnum-fr1.scalingo.io")
 

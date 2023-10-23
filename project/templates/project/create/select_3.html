@@ -8,7 +8,7 @@ Créer un diagnostic
 {% endblock pagetitle %}
 
 {% block headers %}
-<style nonce="{{ CSP_NONCE }}">
+<style nonce="[NONE_PLACEHOLDER]">
 .item {
     position: relative;
     display: block;
@@ -191,7 +191,7 @@ Créer un diagnostic
 {% endblock content %}
 
 {% block bodyend %}
-<script language="javascript" nonce="{{ CSP_NONCE }}">
+<script language="javascript" nonce="[NONE_PLACEHOLDER]">
 $(".stretched-link").click(function(){
     $("#id_selection").val($(this).attr("public-key"))
     $("#main-form").submit()

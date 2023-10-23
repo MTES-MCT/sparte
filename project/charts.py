@@ -1,5 +1,4 @@
 import collections
-from decimal import Decimal
 from typing import Dict, List
 
 from django.contrib.gis.geos import MultiPolygon
@@ -41,7 +40,7 @@ class ConsoComparisonChart(ProjectChart):
             land.name: land.get_conso_per_year(
                 self.project.analyse_start_date,
                 self.project.analyse_end_date,
-                coef=self.project.area / (float(land.area) if self.relative else 1),
+                coef=(self.project.area / float(land.area)) if self.relative else 1,
             )
             for land in self.project.get_look_a_like()
         }
@@ -213,39 +212,38 @@ class ObjectiveChart(ProjectChart):
                 "zIndex": 1,
             },
         ]
-        total = 0
+        self.total_real = total_2020 = 0
         cpt = 0
         for year, val in self.project.get_bilan_conso_per_year().items():
-            total += val
+            if int(year) <= 2020:
+                total_2020 += val
+            self.total_real += val
             cpt += 1
             self.series[1]["data"].append(
                 {
                     "name": year,
-                    "y": total,
+                    "y": self.total_real,
                     "progression": val,
                 }
             )
             self.series[0]["data"].append({"name": year, "y": val})
 
-        self.annual_objective_2031 = total * self.project.target_2031 / 1000
-        self.total_real = total
+        self.annual_objective_2031 = total_2020 * self.project.target_2031 / 1000
         self.annual_real = self.total_real / 10
-
-        for year in range(int(year) + 1, 2031):  # noqa: B020
-            total += self.annual_objective_2031
+        self.total_2031 = total_2020
+        self.conso_2031 = 0
+        for year in range(2020 + 1, 2031):  # noqa: B020
+            self.total_2031 += self.annual_objective_2031
             self.series[3]["data"].append(
                 {
                     "name": str(year),
-                    "y": total,
+                    "y": self.total_2031,
                     "progression": self.annual_objective_2031,
                 }
             )
             self.series[2]["data"].append({"name": str(year), "y": self.annual_objective_2031})
 
-        self.conso_2031 = total - self.total_real
-        self.total_2031 = total
-
-        self.chart["yAxis"][0]["max"] = total * 1.2
+        self.chart["yAxis"][0]["max"] = self.total_2031 * 1.2
 
         self.chart["series"] = self.series
 
@@ -538,6 +536,7 @@ class UsageSolPieChart(CouvertureSolPieChart):
 class CouvertureSolProgressionChart(ProjectChart):
     _level = 2
     _sol = "couverture"
+    _sub_title = "la couverture"
     name = "Progression des principaux postes de la couverture du sol"
     param = {
         "chart": {"type": "column"},
@@ -564,7 +563,7 @@ class CouvertureSolProgressionChart(ProjectChart):
 
     def get_series(self):
         if not self.series:
-            title = f"Evolution de la couverture des sols de {self.first_millesime} à " f"{self.last_millesime}"
+            title = f"Evolution de {self._sub_title} des sols de {self.first_millesime} à {self.last_millesime}"
             self.chart["title"]["text"] = title
             self.series = self.project.get_base_sol_progression(
                 self.first_millesime, self.last_millesime, sol=self._sol
@@ -591,6 +590,7 @@ class CouvertureSolProgressionChart(ProjectChart):
 class UsageSolProgressionChart(CouvertureSolProgressionChart):
     _level = 1
     _sol = "usage"
+    _sub_title = "l'usage"
 
 
 class DetailCouvArtifChart(ProjectChart):
