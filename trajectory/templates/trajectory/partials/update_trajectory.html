@@ -6,19 +6,17 @@
         <h3 class="fr-alert__title">Votre projection a été personnalisée.</h3>
     </div>
 
-    <script language="javascript" nonce="{{ CSP_NONCE }}">
+    <script language="javascript" nonce="[NONE_PLACEHOLDER]">
         setTimeout(() => {
             const modal = bootstrap.Modal.getInstance(document.getElementById("setTrajectory"))
             if (modal)
                 modal.hide()
         }, 1800)
 
-        window.onload = function(event) {
-            _paq.push(['trackEvent', 'north_star_activation_funnel', 'trajectory_updated', 'step_4_north_star_activation_funnel'])
-        }
+        _paq.push(['trackEvent', 'north_star_activation_funnel', 'trajectory_updated', 'step_4_north_star_activation_funnel'])
     </script>
 {% else %}
-    <script language="javascript" nonce="{{ CSP_NONCE }}">
+    <script language="javascript" nonce="[NONE_PLACEHOLDER]">
         trajectory = JSON.parse('{{ data|safe }}');
         start_year = {{ start_year|unlocalize }}
         end_year = {{ end_year }}

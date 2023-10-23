@@ -30,6 +30,7 @@ admin.site.site_header = f"Mon Diagnostic Artificialisation v{settings.OFFICIAL_
 urlpatterns = [
     path("boom/", trigger_error),
     path("", include("home.urls")),
+    path("admin/clearcache/", include("clearcache.urls")),
     path("admin/", admin.site.urls),
     path("users/", include("users.urls")),
     path("public/", include("public_data.urls")),
@@ -37,6 +38,7 @@ urlpatterns = [
     path("carte/", include("carto.urls")),
     path("word/", include("diagnostic_word.urls")),
     path("statistiques/", include("metabase.urls")),
+    path("fancy-cache", include("fancy_cache.urls")),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

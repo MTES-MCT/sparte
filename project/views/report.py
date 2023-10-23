@@ -441,7 +441,7 @@ class ProjectReportArtifView(ProjectReportBaseView):
         return super().get_context_data(**kwargs)
 
     def get_artif_net_table(self, project):
-        qs = project.get_artif_per_city_and_period()
+        qs = project.get_artif_per_maille_and_period()
         df = pd.DataFrame.from_records(qs)
         pivot_df = df.pivot_table(
             index="name", columns="period", values=["new_artif", "new_natural", "net_artif"], aggfunc="sum"
@@ -1015,7 +1015,7 @@ class ProjectReportGpuZoneNTable(CacheMixin, StandAloneMixin, TemplateView):
         qs = (
             ArtifAreaZoneUrba.objects.filter(zone_urba__in=zone_urba)
             .filter(year__in=[diagnostic.first_year_ocsge, diagnostic.last_year_ocsge])
-            .filter(zone_urba__typezone="N")
+            .filter(zone_urba__typezone="N", zone_urba__area__gt=0)
             .annotate(fill_up_rate=100 * F("area") / F("zone_urba__area"))
             .select_related("zone_urba")
             .order_by("-fill_up_rate", "zone_urba__insee", "zone_urba__typezone", "-year", "zone_urba__id")

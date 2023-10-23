@@ -10,6 +10,7 @@ from django.contrib.gis.db import models as gis_models
 from django.contrib.gis.db.models import Extent, Union
 from django.contrib.gis.db.models.functions import Area, Centroid
 from django.contrib.gis.geos import MultiPolygon, Polygon
+from django.core.cache import cache
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import Case, DecimalField, F, Q, Sum, Value, When
@@ -166,7 +167,7 @@ class CityGroup:
 
 
 class Project(BaseProject):
-    ANALYZE_YEARS = [(str(y), str(y)) for y in range(2009, 2021)]
+    ANALYZE_YEARS = [(str(y), str(y)) for y in range(2009, 2022)]
     LEVEL_CHOICES = AdminRef.CHOICES
 
     is_public = models.BooleanField(
@@ -423,6 +424,7 @@ class Project(BaseProject):
     def save(self, *args, **kwargs):
         logger.info("Saving project %d: update_fields=%s", self.id, str(kwargs.get("update_fields", [])))
         super().save(*args, **kwargs)
+        cache.delete_pattern(f'*project/{self.id}/*')
 
     def get_territory_name(self):
         if self.territory_name:
@@ -561,6 +563,8 @@ class Project(BaseProject):
             "hab": "Habitat",
             "act": "Activité",
             "mix": "Mixte",
+            "rou": "Route",
+            "fer": "Ferré",
             "inc": "Non renseigné",
         }
         results = {f: dict() for f in determinants.values()}
@@ -586,7 +590,7 @@ class Project(BaseProject):
     def get_bilan_conso_per_year(self):
         """Return the space consummed per year between 2011 and 2020"""
         qs = self.get_cerema_cities().aggregate(
-            **{f"20{f[3:5]}": Sum(f) / 10000 for f in Cerema.get_art_field("2011", "2020")}
+            **{f"20{f[3:5]}": Sum(f) / 10000 for f in Cerema.get_art_field("2011", "2021")}
         )
         return qs
 
@@ -721,18 +725,27 @@ class Project(BaseProject):
         result = self.cities.all().aggregate(total=Sum("surface_artif"))
         return result["total"] or 0
 
-    def get_artif_per_city_and_period(self):
+    def get_artif_per_maille_and_period(self):
+        """Return example: {"new_artif": 12, "new_natural": 2: "net_artif": 10}"""
+        mapping = {
+            AdminRef.COMPOSITE: "city__name",
+            AdminRef.COMMUNE: "city__name",
+            AdminRef.EPCI: "city__epci__name",
+            AdminRef.SCOT: "city__scot__name",
+            AdminRef.DEPARTEMENT: "city__departement__name",
+            AdminRef.REGION: "city__departement__region__name",
+        }
         qs = (
             CommuneDiff.objects.all()
             .filter(city__in=self.cities.all())
             .annotate(
                 period=Concat("year_old", Value(" - "), "year_new", output_field=models.CharField()),
-                name=F("city__name"),
-                area=F("city__area") / 10000,
+                name=Coalesce(F(mapping.get(self.level, "city__name")), Value("Non couvert")),
             )
             .order_by("name", "period", "year_old", "year_new")
-            .values("name", "period", "year_old", "year_new", "area")
+            .values("name", "period", "year_old", "year_new")
             .annotate(
+                area=Sum("city__area") / 10000,
                 new_artif=Coalesce(Sum("new_artif"), Decimal("0")),
                 new_natural=Coalesce(Sum("new_natural"), Decimal("0")),
                 net_artif=Coalesce(Sum("net_artif"), Decimal("0")),
@@ -746,7 +759,8 @@ class Project(BaseProject):
             CommuneDiff.objects.all()
             .filter(
                 city__in=self.cities.all(),
-                year_old__gte=self.analyse_start_date, year_new__lte=self.analyse_end_date,
+                year_old__gte=self.analyse_start_date,
+                year_new__lte=self.analyse_end_date,
             )
             .aggregate(
                 new_artif=Coalesce(Sum("new_artif"), Decimal("0")),
@@ -789,29 +803,28 @@ class Project(BaseProject):
             }
         }
         """
-        qs = CommuneDiff.objects.filter(city__in=self.cities.all())
-        if analysis_level == "DEPART":
-            qs = qs.annotate(name=F("city__departement__name"))
-        elif analysis_level == "EPCI":
-            qs = qs.annotate(name=F("city__epci__name"))
-        elif analysis_level == "REGION":
-            qs = qs.annotate(name=F("city__departement__region__name"))
-        elif analysis_level == "SCOT":
-            qs = qs.annotate(name=F("city__scot__name"))
-        else:
-            qs = qs.annotate(name=F("city__name"))
-        qs = qs.filter(year_old__gte=self.analyse_start_date, year_new__lte=self.analyse_end_date)
-        qs = qs.annotate(
-            period=Concat(
-                "year_old",
-                Value(" - "),
-                "year_new",
-                output_field=models.CharField(),
+        transco = {
+            "DEPART": "city__departement__name",
+            "EPCI": "city__epci__name",
+            "REGION": "city__departement__region__name",
+            "SCOT": "city__scot__name",
+        }
+        field_name = transco.get(analysis_level, "city__name")
+        qs = (
+            CommuneDiff.objects.filter(city__in=self.cities.all())
+            .annotate(name=Coalesce(F(field_name), Value("Non couvert")))
+            .filter(year_old__gte=self.analyse_start_date, year_new__lte=self.analyse_end_date)
+            .annotate(
+                period=Concat(
+                    "year_old",
+                    Value(" - "),
+                    "year_new",
+                    output_field=models.CharField(),
+                )
             )
+            .values("name", "period")
+            .annotate(net_artif=Sum("net_artif"))
         )
-        qs = qs.values("name", "period")
-        qs = qs.annotate(net_artif=Sum("net_artif"))
-
         results = collections.defaultdict(dict)
         for row in qs:
             results[row["name"]][row["period"]] = row["net_artif"]
