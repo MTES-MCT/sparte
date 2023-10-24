@@ -32,11 +32,7 @@ class Command(BaseCommand):
         total = qs.count()
         logger.info(f"To process = {total}")
         for i, trajectory in enumerate(qs):
-            trajectory.data = {
-                y: v
-                for y, v in trajectory.data.items()
-                if int(y) >= 2022
-            }
+            trajectory.data = {y: v for y, v in trajectory.data.items() if int(y) >= 2022}
             trajectory.start = 2022
             trajectory.save()
             if i % 100 == 0:

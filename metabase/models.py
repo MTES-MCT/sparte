@@ -89,13 +89,13 @@ class StatDiagnostic(models.Model):
             self.city = f"{city.name} ({city.insee})"
 
         if qs.values("epci__name").distinct().count() == 1:
-            self.epci = qs.values("epci__name").distinct().first()['epci__name']
+            self.epci = qs.values("epci__name").distinct().first()["epci__name"]
 
         if qs.values("scot__name").distinct().count() == 1:
-            self.scot = qs.values("scot__name").distinct().first()['scot__name']
+            self.scot = qs.values("scot__name").distinct().first()["scot__name"]
 
         if qs.values("departement__name").distinct().count() == 1:
-            self.departement = qs.values("departement__name").distinct().first()['departement__name']
+            self.departement = qs.values("departement__name").distinct().first()["departement__name"]
 
         if qs.values("departement__region__name").distinct().count() == 1:
             self.region = qs.values("departement__region__name").distinct().first()["departement__region__name"]

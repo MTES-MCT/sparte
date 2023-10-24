@@ -82,7 +82,7 @@ export default class GeoJSONLayer extends Layer {
                 }
             })
 
-            // Mouse events 
+            // Mouse events
             _layer.on('mouseover', () => {
                 // create legend
                 if (this.legend.length > 0)
@@ -130,7 +130,7 @@ export default class GeoJSONLayer extends Layer {
     async setData() {
         // Get data
         const data = await this.getData()
-        
+
         this.setFlags()
 
         // Clear layers

@@ -61,17 +61,17 @@ export default class Events {
                 { hover: false }
             )
         }
-        
+
         this.hoveredPolygonId = null
     }
 
     showInfoBox(_event, _options) {
         if (!this.infoBoxNode)
             this.setInfoBox()
-        
+
         if (_event.features.length > 0) {
             let info = `<div class="info-box__title"><strong>${_options.title}</strong><i class='bi bi-info-circle'></i></div>`
-            
+
             _options.properties.map((_obj) => {
                 if (_event.features[0].properties[_obj.key])
                 {

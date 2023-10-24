@@ -55,7 +55,7 @@ Le site est désormais accessible en local à cette adresse:
 | CELERY_BROKER_URL | chaîne pour se connecter à redis | redis://127.0.0.1:6379/0 |
 | CELERY_RESULT_BACKEND | chaîne pour se connecter à redis | redis://127.0.0.1:6379/0 |
 | DATABASE_URL | chaîne pour se connecter à la base de données Postgresql + gis | postgis://postgres:postgres@127.0.0.1:54321/postgres |
-| DB_LOGGING_LEVEL | détermine le niveau de log de la base de données | WARNING | 
+| DB_LOGGING_LEVEL | détermine le niveau de log de la base de données | WARNING |
 | DEBUG | activer ou non les messages détaillés d'erreur | 1 |
 | DEBUG_TOOLBAR | activer la barre de debug de Django | 1 |
 | DEFAULT_FROM_EMAIL | Expéditeur par défaut des emails envoyés | johndoe@email.com |
@@ -65,7 +65,7 @@ Le site est désormais accessible en local à cette adresse:
 | EMAIL_SMTP_KEY | mot de passe SMTP | |
 | EMAIL_HOST_USER | nom d'utilisteur SMTP | |
 | ENVIRONMENT | indique sur quel environnement est exécuté l'app. Choix possibles: local, staging, prod | local |
-| GOOGLE_ADWORDS_ACTIVATE | indique s'il faut ajouter des google tags aux pages | 1 | 
+| GOOGLE_ADWORDS_ACTIVATE | indique s'il faut ajouter des google tags aux pages | 1 |
 | HIGHCHART_SERVER | url pour accéder au serveur générant des images à partir de paramètres Highcharts | https://highcharts-export.osc-fr1.scalingo.io |
 | MATTERMOST_WEBHOOK | Webhook personnel pour envoyer des messages dans Mattermost | https://mattermost.incubateur.net/hooks/uak581f8bidyxp5td67rurj5sh |
 | MATOMO_ACTIVATE | Détermine si des infos doivent être envoyé à Matomo | 0 |
