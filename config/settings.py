@@ -65,6 +65,7 @@ DJANGO_APPS = [
     "django.contrib.staticfiles",
     "django.contrib.gis",
     "django.contrib.humanize",
+    'django.contrib.postgres',
 ]
 
 RESTFRAMEWORK_APPS = [
