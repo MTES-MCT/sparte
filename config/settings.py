@@ -65,7 +65,7 @@ DJANGO_APPS = [
     "django.contrib.staticfiles",
     "django.contrib.gis",
     "django.contrib.humanize",
-    'django.contrib.postgres',
+    "django.contrib.postgres",
 ]
 
 RESTFRAMEWORK_APPS = [
@@ -522,7 +522,7 @@ CSP_CONNECT_SRC = [
     "https://raw.githack.com",
     "https://openmaptiles.geo.data.gouv.fr",
     "https://openmaptiles.github.io",
-    "https://stats.beta.gouv.fr"
+    "https://stats.beta.gouv.fr",
 ]
 CSP_FRAME_ANCESTORS = ("'self'", "https://sparte-metabase.osc-secnum-fr1.scalingo.io")
 

@@ -21,10 +21,7 @@ from .views import DisplayMatrix
 app_name = "public_data"
 
 
-urlpatterns = [
-    path("matrix", DisplayMatrix.as_view(), name="matrix"),
-    path("grid", grid_views, name="grid")
-]
+urlpatterns = [path("matrix", DisplayMatrix.as_view(), name="matrix"), path("grid", grid_views, name="grid")]
 
 
 router = routers.DefaultRouter()

@@ -1,4 +1,3 @@
-
 from django.contrib.gis.db.models.functions import Area, Intersection, Transform
 from django.contrib.gis.geos import MultiPolygon, Polygon
 from django.db.models import DecimalField, Manager, QuerySet, Sum
@@ -32,7 +31,7 @@ class IntersectMixin:
             intersection_area=Coalesce(
                 Area(Transform("intersection", 2154)),
                 Zero,
-            )
+            ),
         )
         return queryset
 
