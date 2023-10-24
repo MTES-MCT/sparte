@@ -8,8 +8,12 @@ from django.db.models.functions import Cast, Coalesce
 Zero = Area(Polygon(((0, 0), (0, 0), (0, 0), (0, 0)), srid=2154))
 
 
-def cast_sum(field, filter=None, divider=10000):
-    """Add all required data to a queryset to sum a field and return a Decimal"""
+def cast_sum_area(field, filter=None, divider=10000):
+    """
+    Sum all area fields and cast the total to DecimalField.
+    The area field is in m², so by default we divide by 10000 to get hectares.
+    """
+
     return Cast(
         Coalesce(Sum(field, filter=filter, default=Zero), 0) / divider,
         DecimalField(max_digits=15, decimal_places=2),
