@@ -80,11 +80,11 @@ class Command(BaseCommand):
     def load_scot(self):
         logger.info("Loading SCOT")
         Scot.objects.all().delete()
-        qs = Cerema.objects.values("scot_name").annotate(mpoly=Union("mpoly")).order_by("scot_name")
+        qs = Cerema.objects.values("scot").annotate(mpoly=Union("mpoly")).order_by("scot")
         logger.info("%d SCoTs found", len(qs))
         scot_list = [
             Scot(
-                name=data["scot_name"],
+                name=data["scot"],
                 mpoly=fix_poly(data["mpoly"]),
             )
             for data in qs
@@ -95,8 +95,8 @@ class Command(BaseCommand):
         regions = {r.source_id: r for r in Region.objects.all()}
         links = {}
         for scot_name, dept_id, region_id in (
-            Cerema.objects.values_list("scot_name", "dept_id", "region_id")
-            .order_by("scot_name")
+            Cerema.objects.values_list("scot", "dept_id", "region_id")
+            .order_by("scot")
             .distinct()
         ):
             if scot_name not in links:
