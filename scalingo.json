@@ -1,0 +1,40 @@
+{
+    "copy_parent_database_urls": true,
+    "formation": {
+        "web": {
+            "amount": 1,
+            "size": "XL"
+        },
+        "celerydefaultworker": {
+            "amount": 1,
+            "size": "M"
+        },
+        "celerylongworker": {
+            "amount": 1,
+            "size": "XL"
+        },
+        "celerybeat": {
+            "amount": 1,
+            "size": "S"
+        }
+    },
+    "addons": [
+        {
+            "plan": "postgresql:postgresql-starter-8"
+        },
+        {
+            "plan": "redis:redis-sandbox"
+        }
+    ],
+    "env": {
+        "PUBLIC_URL": {
+            "description": "URL of the application",
+            "generator": "url"
+          },
+          "ADMIN_URL": {
+            "description": "Admin URL of the application",
+            "generator": "url",
+            "template": "%URL%/admin/"
+          }
+    }
+}
