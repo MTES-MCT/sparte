@@ -9,5 +9,9 @@ class WordTemplateAdmin(admin.ModelAdmin):
     readonly_fields = ("slug", "last_update")
 
     def has_add_permission(self, request, obj=None):
-        """Only super user can add new word template"""
+        """Only super user can add new word template."""
+        return request.user.is_superuser
+
+    def has_delete_permission(self, request, obj=None):
+        """Only super user can delete word template."""
         return request.user.is_superuser
