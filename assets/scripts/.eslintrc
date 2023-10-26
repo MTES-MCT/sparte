@@ -1,0 +1,8 @@
+{
+    "parser": "@babel/eslint-parser",
+    "extends": ["airbnb/base"],
+    "parserOptions": {
+        "requireConfigFile": false
+    },
+    "rules": {}
+}
