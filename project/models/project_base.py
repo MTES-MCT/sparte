@@ -37,7 +37,7 @@ from public_data.models import (
 )
 from public_data.models.administration import Commune
 from public_data.models.mixins import DataColorationMixin
-from utils.db import cast_sum
+from utils.db import cast_sum_area
 
 from .utils import user_directory_path
 
@@ -910,8 +910,8 @@ class Project(BaseProject):
         qs = CommuneSol.objects.filter(city__in=self.cities.all(), year__in=[first_millesime, last_millesime])
         qs = qs.annotate(code_prefix=code_field)
         qs = qs.values("code_prefix")
-        qs = qs.annotate(surface_first=cast_sum("surface", filter=Q(year=first_millesime), divider=1))
-        qs = qs.annotate(surface_last=cast_sum("surface", filter=Q(year=last_millesime), divider=1))
+        qs = qs.annotate(surface_first=cast_sum_area("surface", filter=Q(year=first_millesime), divider=1))
+        qs = qs.annotate(surface_last=cast_sum_area("surface", filter=Q(year=last_millesime), divider=1))
         data = list(qs)
         item_list = list(klass.objects.all().order_by("code"))
         for item in item_list:
