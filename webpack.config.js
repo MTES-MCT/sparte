@@ -1,7 +1,7 @@
 const path = require('path');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const TerserPlugin = require('terser-webpack-plugin');
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const TerserPlugin = require("terser-webpack-plugin");
 const ESLintPlugin = require('eslint-webpack-plugin');
 
 const common = {
@@ -40,13 +40,13 @@ const common = {
     },
     plugins: [
         new MiniCssExtractPlugin({
-            filename: 'assets/styles/[name].css',
-            chunkFilename: '[id].css'
+            filename: "assets/styles/[name].css",
+            chunkFilename: "[id].css"
         }),
         new ESLintPlugin({
-            extensions: ['js'],
+            extensions: "js",
             emitWarning: true,
-            fix: true
+            fix: true,
         }),
     ]
 }

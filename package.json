@@ -5,10 +5,11 @@
   "scripts": {
     "build:dev": "webpack --watch --mode development",
     "build:prod": "webpack --watch --mode production",
-    "lint": "eslint --fix ./assets/scripts/*.js ./assets/scripts/**/*.js"
+    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore"
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.22.15",
+    "@gouvfr/dsfr": "^1.8.5",
     "css-loader": "^6.7.3",
     "eslint": "^8.52.0",
     "eslint-config-airbnb": "^19.0.4",
