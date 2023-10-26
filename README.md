@@ -58,9 +58,10 @@ Le site est désormais accessible en local à cette adresse:
 | DB_LOGGING_LEVEL | détermine le niveau de log de la base de données | WARNING | 
 | DEBUG | activer ou non les messages détaillés d'erreur | 1 |
 | DEBUG_TOOLBAR | activer la barre de debug de Django | 1 |
-| DEFAULT_FROM_EMAIL |  | swann.bouviermuller@gmail.com |
+| DEFAULT_FROM_EMAIL | Expéditeur par défaut des emails envoyés | johndoe@email.com |
 | DOMAIN_URL | l'url sur laquelle est branchée l'application | http://localhost:8080/ |
 | EMAIL_ENGINE | indique à l'application le backend à utiliser pour envoyer les e-mails. 2 choix disponibles : sendinblue, local | local |
+| EMAIL_FILE_PATH | Uniquement utile si EMAIL_ENGINE=local. Indique l'emplacement où stocker les emails | BASE_DIR / "emails" |
 | EMAIL_SMTP_KEY | mot de passe SMTP | |
 | EMAIL_HOST_USER | nom d'utilisteur SMTP | |
 | ENVIRONMENT | indique sur quel environnement est exécuté l'app. Choix possibles: local, staging, prod | local |
