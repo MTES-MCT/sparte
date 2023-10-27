@@ -31,6 +31,7 @@
     ],
     "env": {
         "IS_REVIEW_APP": {
+            "description": "flag to know it's a review app",
             "value": "true"
         },
         "DOMAIN_URL": {
