@@ -33,17 +33,13 @@ html, body {
 
 {% block bodyend %}
 {% localize off %}
-{% sri_static "highcharts/js/highcharts.js" %}
-{% sri_static "highcharts/js/highcharts-more.js" %}
-{% sri_static "highcharts/js/exporting.js" %}
-{% french_translation %}
 
 {{ data|json_script:"data" }}
 
 <script language="javascript" nonce="[NONE_PLACEHOLDER]">
 new MapLibre ({
     targetElement: document.getElementById('map__container'),
-    debug: true,
+    debug: {{ debug|yesno:"true,false" }},
     mapCenter: [{{ center_lng }}, {{ center_lat }}],
     defaultZoom: {{ default_zoom }},
     data: JSON.parse(document.getElementById('data').textContent)
