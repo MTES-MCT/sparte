@@ -1,0 +1,46 @@
+{
+    "name": "MonDiagnosticArtificialisation",
+    "formation": {
+        "web": {
+            "amount": 1,
+            "size": "2XL"
+        },
+        "celerydefaultworker": {
+            "amount": 1,
+            "size": "M"
+        },
+        "celerylongworker": {
+            "amount": 1,
+            "size": "XL"
+        },
+        "celerybeat": {
+            "amount": 1,
+            "size": "S"
+        }
+    },
+    "scripts": {
+        "first-deploy": "bash bin/init_review_database.sh"
+    },
+    "addons": [
+        {
+            "plan": "postgresql:postgresql-starter-1"
+        },
+        {
+            "plan": "redis:redis-sandbox"
+        }
+    ],
+    "env": {
+        "IS_REVIEW_APP": {
+            "value": "true"
+        },
+        "DOMAIN_URL": {
+            "description": "URL of the application",
+            "generator": "url"
+          },
+          "ADMIN_URL": {
+            "description": "Admin URL of the application",
+            "generator": "url",
+            "template": "%URL%/admin/"
+          }
+    }
+}
