@@ -68,3 +68,15 @@ class Newsletter(models.Model):
 
     def __str__(self):
         return f"Newsletter de {self.email}"
+
+
+class AliveTimeStamp(models.Model):
+    """Log a new instance every 15 minutes to check if async tasks are alive."""
+    timestamp = models.DateTimeField(auto_now=True)
+    queue_name = models.CharField(max_length=20)
+
+    def __str__(self):
+        return f"{self.queue_name} - {self.timestamp:%Y-%m-%d %H:%M:%S}"
+
+    class Meta:
+        ordering = ["-timestamp"]
