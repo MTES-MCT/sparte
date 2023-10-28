@@ -46,12 +46,12 @@ app.conf.beat_schedule = {
     },
     "default-alive-timestamp": {
         "task": "home.tasks.update_alive_timestamp",
-        "schedule": crontab(minute="*/1"),
+        "schedule": crontab(minute="*/15"),
         "args": ("default",),
     },
     "long-alive-timestamp": {
         "task": "home.tasks.update_alive_timestamp",
-        "schedule": crontab(minute="*/1"),
+        "schedule": crontab(minute="*/15"),
         "args": ("long",),
         "options": {
             "queue": "long",
