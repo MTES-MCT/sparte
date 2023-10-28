@@ -32,7 +32,7 @@ urlpatterns = [
         name="all-emails",
     ),
     path("maintenance", views.MaintenanceView.as_view(), name="maintenance_mode"),
-    path("alive", views.AliveView.as_view(), name="alive"),
+    path("alive/async-workers", views.AliveView.as_view(), name="alive"),
 ]
 
 router = routers.DefaultRouter()
