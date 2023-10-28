@@ -270,47 +270,48 @@ class ProjectReportDicoverOcsgeView(ProjectReportBaseView):
         return super().get_context_data(**kwargs)
 
 
-class ProjectReportUsageView(ProjectReportBaseView):
-    template_name = "project/report_usage.html"
-    breadcrumbs_title = "Rapport sur l'usage des sols"
+# DEPRECATED : je pense que ce n'est plus utilisé, code mort
+# class ProjectReportUsageView(ProjectReportBaseView):
+#     template_name = "project/report_usage.html"
+#     breadcrumbs_title = "Rapport sur l'usage des sols"
 
-    def get_context_data(self, **kwargs):
-        project = self.get_object()
+#     def get_context_data(self, **kwargs):
+#         project = self.get_object()
 
-        surface_territory = project.area
-        kwargs = {
-            "nom": "Usage",
-            "surface_territory": surface_territory,
-            "active_page": "usage",
-        }
+#         surface_territory = project.area
+#         kwargs = {
+#             "nom": "Usage",
+#             "surface_territory": surface_territory,
+#             "active_page": "usage",
+#         }
 
-        if not project.is_artif:
-            return super().get_context_data(**kwargs)
+#         if not project.is_artif:
+#             return super().get_context_data(**kwargs)
 
-        first_millesime = project.first_year_ocsge
-        last_millesime = project.last_year_ocsge
+#         first_millesime = project.first_year_ocsge
+#         last_millesime = project.last_year_ocsge
 
-        pie_chart = charts.UsageSolPieChart(project)
-        progression_chart = charts.UsageSolProgressionChart(project)
-        kwargs.update(
-            {
-                "first_millesime": str(first_millesime),
-                "last_millesime": str(last_millesime),
-                "pie_chart": pie_chart,
-                "progression_chart": progression_chart,
-            }
-        )
+#         pie_chart = charts.UsageSolPieChart(project)
+#         progression_chart = charts.UsageSolProgressionChart(project)
+#         kwargs.update(
+#             {
+#                 "first_millesime": str(first_millesime),
+#                 "last_millesime": str(last_millesime),
+#                 "pie_chart": pie_chart,
+#                 "progression_chart": progression_chart,
+#             }
+#         )
 
-        matrix_data = project.get_matrix(sol="usage")
-        if matrix_data:
-            kwargs.update(
-                {
-                    "matrix_data": add_total_line_column(matrix_data),
-                    "matrix_headers": list(matrix_data.values())[0].keys(),
-                }
-            )
+#         matrix_data = project.get_matrix(sol="usage")
+#         if matrix_data:
+#             kwargs.update(
+#                 {
+#                     "matrix_data": add_total_line_column(matrix_data),
+#                     "matrix_headers": list(matrix_data.values())[0].keys(),
+#                 }
+#             )
 
-        return super().get_context_data(**kwargs)
+#         return super().get_context_data(**kwargs)
 
 
 class ProjectReportSynthesisView(ProjectReportBaseView):

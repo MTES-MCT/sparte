@@ -47,11 +47,12 @@ urlpatterns = [
         views.ProjectReportDicoverOcsgeView.as_view(),
         name="report_discover",
     ),
-    path(
-        "<int:pk>/tableau-de-bord/usage",
-        views.ProjectReportUsageView.as_view(),
-        name="report_usage",
-    ),
+    # DEAD CODE - à retirer si aucun bug ne se produit
+    # path(
+    #     "<int:pk>/tableau-de-bord/usage",
+    #     views.ProjectReportUsageView.as_view(),
+    #     name="report_usage",
+    # ),
     path(
         "<int:pk>/tableau-de-bord/artificialisation",
         views.ProjectReportArtifView.as_view(),
