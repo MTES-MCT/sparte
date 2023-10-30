@@ -36,8 +36,8 @@ jobs:
     - uses: actions/checkout@v4
     - name: Move files to /app
       run: |
-        echo "{{ $GITHUB_WORKSPACE }}"
-        mv -R {{ $GITHUB_WORKSPACE }} /app
+        echo "mv from $GITHUB_WORKSPACE to /app"
+        mv $GITHUB_WORKSPACE/* /app
     - name: List files in the directory
       run: |
         pwd
