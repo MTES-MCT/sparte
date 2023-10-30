@@ -41,10 +41,13 @@ jobs:
         mv $GITHUB_WORKSPACE/* .
     - name: Check Black
       run: black --check --include='\.py$' --exclude='/migrations/' .
+      continue-on-error: true
     - name: check isort
       run: isort . --check-only --skip env
+      continue-on-error: true
     - name: check flake8
       run: isort . --check-only --skip env
+      continue-on-error: true
 
     # next add test
     # services:

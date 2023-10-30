@@ -169,7 +169,7 @@ class MaintenanceView(StandAloneMixin, HtmxRedirectMixin, TemplateView):
             if request.META.get("HTTP_HX_REQUEST"):
                 return self.htmx_redirect()
             else:
-                return redirect(self.request.GET.get("next", "/"))
+                return redirect(self.request.GET.get('next', "/"))
         return super().get(request, *args, **kwargs)
 
 
