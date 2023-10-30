@@ -45,34 +45,33 @@ jobs:
     - name: check isort
       run: isort . --check-only --skip env
 
-    # - name: Run Tests
-    #   run: |
-    #     python manage.py test
-
-    # - name: Run test suite
-    #   run: |
-    #     pipenv run test -svvv
+    # next add test
+    # services:
+    #   db:
+    #     image: kartoza/postgis:13-3.1--v2021.09.08
+    #     env:
+    #       POSTGRES_USER: postgres
+    #       POSTGRES_PASSWORD: postgres
+    #       POSTGRES_DB: postgres
+    #     ports:
+    #       - 5432:5432
+    # - name: Run tests
     #   env:
-    #     TEST_DB_HOST: localhost
-    #     TEST_DB_NAME: postgres
-    #     TEST_DB_PASS: postgres
-    #     TEST_DB_PORT: 5432
-    #     TEST_DB_USER: postgres
-
-    # - name: Run linter
+    #     SECRET: ${{ secrets.SECRET }}
+    #     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+    #     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    #     DATABASE_URL: postgis://postgres:postgres@127.0.0.1:5432/postgres
+    #     ENVIRONMENT: github
+    #     DEBUG: 0
+    #     DOMAIN_URL: http://localhost:8080/
+    #     CELERY_BROKER_URL: redis://127.0.0.1:6379/0
+    #     CELERY_RESULT_BACKEND: django-db
+    #     AWS_STORAGE_BUCKET_NAME: sparte-staging
+    #     AWS_S3_REGION_NAME: eu-west-3
+    #     AWS_LOCATION: github
+    #     EMAIL_ENGINE: local
+    #     DEFAULT_FROM_EMAIL: contact@anonymous.com
+    #     MATOMO_ACTIVATE: 0
+    #     HIGHCHART_SERVER: http://localhost:8090/
     #   run: |
-    #     pipenv run lint
-
-    # - name: Run formatting check
-    #   run: |
-    #     pipenv run format --check
-
-    # - name: Setup node.js (for pyright)
-    #   uses: actions/setup-node@v1
-    #   with:
-    #     node-version: "12"
-
-    # - name: Run type checking
-    #   run: |
-    #     npm install -g pyright
-    #     pipenv run typecheck
+    #     pipenv run pytest -vv
