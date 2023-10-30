@@ -5,7 +5,7 @@ from django_app_parameter import app_parameter
 
 from utils.emails import SibTemplateEmail
 
-from .models import ContactForm, Newsletter
+from .models import AliveTimeStamp, ContactForm, Newsletter
 
 logger = logging.getLogger(__name__)
 
@@ -66,3 +66,8 @@ def send_nwl_final(newsletter_id):
         logger.exception(exc)
     finally:
         logger.info("End send newsletter subscription confirmation")
+
+
+@shared_task
+def update_alive_timestamp(queue_name):
+    AliveTimeStamp.objects.create(queue_name=queue_name)
