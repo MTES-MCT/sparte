@@ -6,33 +6,33 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v3
 
-    - uses: actions/setup-python@v4
-      id: cp311
-      with:
-        python-version-file: '.python-version'
-        cache: 'pipenv'
-
-    - run: echo 'Cache hit=${{ steps.cp311.outputs.cache-hit }}' # true if cache-hit occurred on the primary key
-
-    - name: Install pipenv
-      run: curl https://raw.githubusercontent.com/pypa/pipenv/master/get-pipenv.py | python
-
-    - run: pipenv install --deploy --dev
-
-    - name: Save Docker image
+    - name: Build Docker image
       run: |
         docker build -t app-image .
         docker save app-image | gzip > app-image.tar.gz
+
     - uses: actions/upload-artifact@v3
       with:
         name: app-image
         path: app-image.tar.gz
+
+  lint:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+    - uses: actions/download-artifact@v3
+      with:
+        name: app-image
+    - run: |
+        gzip -d app-image.tar.gz
+        docker load < app-image.tar
+    - name: Run black
+      run: docker run app-image /bin/sh -c "black --check --include='\.py$' --exclude='/migrations/' ."
 
     # - name: check black formatting
     #   run: pipenv run black --check --include="\.py" --exclude="env/*,0*" .
