@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # This script is designed to initialize the review app database with data from the staging database.
-# It is executed by Scalingo after the build of the review app (see scalingo.json:scripts). 
+# It is executed by Scalingo after the build of the review app (see scalingo.json:scripts).
 # Make sure that the SPARTE-STAGING's environment variables include:
 # STAGING_DATABASE_URL, which should contain the connection string to the staging database.
 
