@@ -1,4 +1,4 @@
-name: Django CI
+name: Python lint and test
 
 on:
   pull_request:
@@ -8,38 +8,66 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-    strategy:
-      max-parallel: 4
-      matrix:
-        python-version: [3.11]
-
-    services:
-      db_service:
-        image: postgres
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_DB: postgres
-          POSTGRES_PASSWORD: postgres
-        # Set health checks to wait until postgres has started
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432:5432
 
     steps:
     - uses: actions/checkout@v3
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v3
+
+    - uses: actions/setup-python@v4
+      id: cp311
       with:
-        python-version: ${{ matrix.python-version }}
-    - name: Install Dependencies
+        python-version-file: '.python-version'
+        cache: 'pipenv'
+
+    - run: echo 'Cache hit=${{ steps.cp311.outputs.cache-hit }}' # true if cache-hit occurred on the primary key
+
+    - name: Install pipenv
+      run: curl https://raw.githubusercontent.com/pypa/pipenv/master/get-pipenv.py | python
+
+    - run: pipenv install --deploy --dev
+
+    - name: Save Docker image
       run: |
-        python -m pip install --upgrade pip
-        python install pipenv
-        pipenv install -d
-    - name: Run Tests
-      run: |
-        python manage.py test
+        docker build -t app-image .
+        docker save app-image | gzip > app-image.tar.gz
+    - uses: actions/upload-artifact@v3
+      with:
+        name: app-image
+        path: app-image.tar.gz
+
+    # - name: check black formatting
+    #   run: pipenv run black --check --include="\.py" --exclude="env/*,0*" .
+
+    # - name: check isort
+    #   run: pipenv run isort . --check-only --skip env
+
+    # - name: Run Tests
+    #   run: |
+    #     python manage.py test
+
+    # - name: Run test suite
+    #   run: |
+    #     pipenv run test -svvv
+    #   env:
+    #     TEST_DB_HOST: localhost
+    #     TEST_DB_NAME: postgres
+    #     TEST_DB_PASS: postgres
+    #     TEST_DB_PORT: 5432
+    #     TEST_DB_USER: postgres
+
+    # - name: Run linter
+    #   run: |
+    #     pipenv run lint
+
+    # - name: Run formatting check
+    #   run: |
+    #     pipenv run format --check
+
+    # - name: Setup node.js (for pyright)
+    #   uses: actions/setup-node@v1
+    #   with:
+    #     node-version: "12"
+
+    # - name: Run type checking
+    #   run: |
+    #     npm install -g pyright
+    #     pipenv run typecheck
