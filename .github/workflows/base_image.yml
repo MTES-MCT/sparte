@@ -1,0 +1,35 @@
+name: Build and Push Base Docker Image to speedup other workflows
+
+on:
+  push:
+    branches:
+      - develop
+    paths:
+      - 'Pipfile.lock'
+      - 'packages.lock'
+  pull_request:
+    branches:
+      - develop
+    paths:
+      - 'Pipfile.lock'
+      - 'packages.lock'
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Login to DockerHub
+      uses: docker/login-action@v2
+      with:
+        username: swannbm
+        password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+    - name: Build Docker image
+      run: docker build -t swannbm/BaseSparte:latest .
+
+
+    - name: Push Docker image
+      run: docker push swannbm/BaseSparte:latest
