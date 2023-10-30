@@ -2,14 +2,13 @@ import logging
 
 from django.contrib.gis.db.models import Union
 from django.core.management.base import BaseCommand
-from project.models.project_base import ProjectCommune
 
-from public_data.models import Commune, Cerema, Epci
+from project.models.project_base import ProjectCommune
+from public_data.models import Cerema, Commune, Epci
 from public_data.models.administration import Departement, Region, Scot
 from public_data.models.ocsge import ArtificialArea
 from utils.commands import PrintProgress
 from utils.db import fix_poly
-
 
 logger = logging.getLogger("management.commands")
 
