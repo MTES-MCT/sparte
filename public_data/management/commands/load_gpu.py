@@ -7,7 +7,8 @@ from django.db import connection
 from django.db.models import DecimalField, F
 from django.db.models.functions import Cast
 
-from public_data.models import AutoLoadMixin, ZoneUrba
+from public_data.models import ZoneUrba
+from public_data.models.mixins import AutoLoadMixin
 
 logger = logging.getLogger("management.commands")
 
@@ -47,7 +48,7 @@ class ZoneUrbaFrance(AutoLoadMixin, ZoneUrba):
     }
 
     @classmethod
-    def clean_data(cls, clean_queryset=None):
+    def clean_data(cls):
         """Clean data before loading"""
         cls.objects.all().delete()
 
@@ -119,7 +120,6 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         logger.info("Load GPU")
         self.verbose = options["verbose"]
-        self.local_file = options["local_file"]
         logger.info("Full load")
         if options["truncate"]:
             self.truncate()
@@ -132,4 +132,11 @@ class Command(BaseCommand):
 
     def load(self):
         logger.info("Load data for: ZoneUrbaFrance")
-        ZoneUrbaFrance.load(verbose=self.verbose, shp_file=self.local_file, encoding="latin1", silent=True)
+
+        ZoneUrbaFrance.load(
+            layer_mapper_verbose=self.verbose,
+            encoding="latin1",
+            silent=True,
+        )
+
+        logger.info("End loading ZoneUrbaFrance")
