@@ -90,7 +90,7 @@ Variables d'environnement spécifique à Scalingo. Voir les valeurs sur Scalingo
 ## Contribution
 
 ### Lint
-- Depuis l'environement pipenv, installer la configuration pre-commit sur votre dépot git local : `pre-commit install`
+- Depuis le shell pipenv, installer la configuration pre-commit sur votre dépot git local : `pre-commit install`
 - Il est aussi possible de lancer le pre-commit manuellement sans l'installer : `pre-commit run --all-file`
 
 De cette manière, vos changements seront évalués automatiquement selon notre coding style (voir le fichier `.pre-commit.config.yaml` pour le détail).
