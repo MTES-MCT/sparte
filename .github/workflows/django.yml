@@ -15,7 +15,7 @@ jobs:
       id: cache-lock
       uses: actions/cache@v3
       with:
-        path: ~/.cache
+        path: .
         key: lock-${{ hashFiles('Pipfile.lock', 'packages.lock') }}
     - if: ${{ steps.cache-lock.outputs.cache-hit != 'true' }}
       name: Build and push Docker image
@@ -29,11 +29,14 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: swannbm/basesparte:latest
+      options: --user root
     defaults:
       run:
         working-directory: /app
     steps:
     - uses: actions/checkout@v3
+      with:
+        path: /app
     - name: List files in the directory
       run: |
         pwd
