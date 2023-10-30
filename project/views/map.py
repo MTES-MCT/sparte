@@ -28,7 +28,7 @@ class BaseMap(GroupMixin, DetailView):
     queryset = Project.objects.all()
     template_name = "carto/map_libre.html"
     title = "To be set"
-    default_zoom = "To be set"
+    default_zoom: int
 
     def get_context_breadcrumbs(self):
         breadcrumbs = super().get_context_breadcrumbs()
