@@ -42,9 +42,9 @@ jobs:
     - name: Check Black
       run: black --check --include='\.py$' --exclude='/migrations/' .
     - name: check isort
-      run: isort . --check-only --skip env
+      run: isort . --check-only --sp
     - name: check flake8
-      run: isort . --check-only --profile black --skip .gitignore,.dockerignore,migrations/*
+      run: flake8 .
 
     # next add test
     # services:

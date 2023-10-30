@@ -27,6 +27,7 @@ pytest-env = "*"
 pytest-github-actions-annotate-failures = "*"
 types-requests = "*"
 types-setuptools = "*"
+flake8-pyproject = "*"
 
 [packages]
 boto3 = "*"
