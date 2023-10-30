@@ -165,17 +165,24 @@ Synthèse
         <h4>Artificialisation des zonages d'urbanisme selon les documents d'urbanisme en vigueur</h4>
         <p>Sur la période demandée, l'OCS GE couvre de {{ first_millesime }} à {{ last_millesime }}.</p>
         <div class="fr-grid-row fr-grid-row--gutters">
+          {% for zone in zone_list %}
           <div class="fr-col-12 fr-col-md-4 fr-grid-row">
             <div class="fr-callout w-100">
-              <p class="fr-callout__title">
-                Zones A
-              </p>
+              <div class="d-flex justify-content-between align-items-center">
+                <p class="fr-callout__title">
+                  Zones {{ zone.type_zone }}
+                </p>
+                <div class="progress-bar-container">
+                  <div class="progress-bar-indicator w-{{ zone.fill_up_rate|floatformat:0 }}"></div>
+                  <div class="progress-bar-value">{{ zone.fill_up_rate|floatformat:1 }}%</div>
+                </div>
+              </div>
               <p>
-                Surface Totale: <strong>6702,2 ha</strong><br>
-                Taux de remplissage (2019): <strong>20%</strong>
+                Surface Totale: <strong>{{ zone.total_area|floatformat:1 }} ha</strong><br>
               </p>
             </div>
           </div>
+          {% endfor %}
         </div>
         <div>
           <a class="fr-link" href="{% url 'project:report_urban_zones' project.pk %}">Consulter les zonages d'urbanisme</a>

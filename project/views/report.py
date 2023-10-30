@@ -326,6 +326,35 @@ class ProjectReportSynthesisView(ProjectReportBaseView):
         progression_time_scoped = project.get_artif_progession_time_scoped()
         objective_chart = charts.ObjectiveChart(project)
         curent_conso = project.get_bilan_conso_time_scoped()
+        qs = (
+            ArtifAreaZoneUrba.objects.filter(zone_urba__in=ZoneUrba.objects.intersect(project.combined_emprise))
+            .filter(year__in=[project.first_year_ocsge, project.last_year_ocsge])
+            .order_by("zone_urba__typezone", "year")
+            .values("zone_urba__typezone", "year")
+            .annotate(
+                artif_area=Sum("area"),
+                total_area=Sum("zone_urba__area"),
+                nb_zones=Count("zone_urba_id"),
+            )
+        )
+        zone_list = dict()
+        for row in qs:
+            if row["zone_urba__typezone"] not in zone_list:
+                zone_list[row["zone_urba__typezone"]] = {
+                    "type_zone": row["zone_urba__typezone"],
+                    "total_area": row["total_area"],
+                    "first_artif_area": 0.0,
+                    "last_artif_area": 0.0,
+                    "fill_up_rate": 0.0,
+                    "new_artif": 0.0,
+                }
+            if row["year"] == project.first_year_ocsge:
+                zone_list[row["zone_urba__typezone"]]["first_artif_area"] = row["artif_area"]
+            else:
+                zone_list[row["zone_urba__typezone"]]["last_artif_area"] = row["artif_area"]
+        for k in zone_list.keys():
+            zone_list[k]["fill_up_rate"] = 100 * zone_list[k]["last_artif_area"] / zone_list[k]["total_area"]
+            zone_list[k]["new_artif"] = zone_list[k]["last_artif_area"] - zone_list[k]["first_artif_area"]
         kwargs.update(
             {
                 "diagnostic": project,
@@ -339,6 +368,7 @@ class ProjectReportSynthesisView(ProjectReportBaseView):
                 "year_avg_conso": curent_conso / project.nb_years,
                 "first_millesime": str(project.first_year_ocsge),
                 "last_millesime": str(project.last_year_ocsge),
+                "zone_list": zone_list.values()
             }
         )
         return super().get_context_data(**kwargs)
