@@ -11,35 +11,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
-
-    # use cache to skip building if no changes are detected in *.lock files
     - name: Use cache to check if rebuild is necessary
       id: cache-lock
       uses: actions/cache@v3
       with:
         key: lock-${{ hashFiles('Pipfile.lock', 'packages.lock') }}
-    - name: Check if cache was hit
-      id: cache-hit
+    - if: ${{ steps.cache-lock.outputs.cache-hit != 'true' }}
+      name: Build and push Docker image
       run: |
-        echo "cache-hit=${{ steps.cache-lock.outputs.cache-hit }}"
-        if [[ "${{ steps.cache-lock.outputs.cache-hit }}" == "true" ]]; then
-          echo "Cache hit, skipping build and push steps."
-          echo "##[endgroup]"
-          exit 0
-        fi
-
-    # build and push image
-    - name: Login to DockerHub
-      uses: docker/login-action@v2
-      with:
-        username: swannbm
-        password: ${{ secrets.DOCKERHUB_PASSWORD }}
-    - name: Build Docker image
-      run: docker build -t swannbm/basesparte:latest .
-    - name: Push Docker image
-      run: docker push swannbm/basesparte:latest
+        docker login -u swannbm -p ${{ secrets.DOCKERHUB_PASSWORD }}
+        docker build -t swannbm/basesparte:latest .
+        docker push swannbm/basesparte:latest
 
   linters:
+    needs: build-and-push
     runs-on: ubuntu-latest
     container:
       image: swannbm/basesparte:latest
