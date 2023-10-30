@@ -81,12 +81,13 @@ class ProjectReportConsoView(ProjectReportBaseView):
         # objectives
         objective_chart = charts.ObjectiveChart(project)
 
+        # comparison chart
+        comparison_chart = charts.ConsoComparisonChart(project, relative=False)
+
         # Liste des groupes de communes
         groups_names = project.projectcommune_set.all().order_by("group_name")
         groups_names = groups_names.exclude(group_name=None).distinct()
         groups_names = groups_names.values_list("group_name", flat=True)
-
-        comparison_chart = charts.ConsoComparisonChart(project, relative=False)
 
         kwargs.update(
             {
@@ -115,6 +116,7 @@ class ProjectReportConsoView(ProjectReportBaseView):
                 # tables
                 "communes_data_table": add_total_line_column(chart_conso_cities.get_series()),
                 "data_determinant": add_total_line_column(det_chart.get_series()),
+                "data_comparison": add_total_line_column(comparison_chart.get_series()),
                 "groups_names": groups_names,
                 "level": level,
                 "objective_chart": objective_chart,
