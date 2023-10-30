@@ -25,7 +25,7 @@ jobs:
         docker push swannbm/basesparte:latest
 
   linters:
-    # needs: build-and-push
+    needs: build-and-push
     runs-on: ubuntu-latest
     container:
       image: swannbm/basesparte:latest
@@ -39,10 +39,11 @@ jobs:
       run: |
         echo "mv from $GITHUB_WORKSPACE to working directory"
         mv $GITHUB_WORKSPACE/* .
-    - name: Check with Black
+    - name: Check Black
       run: black --check --include='\.py$' --exclude='/migrations/' .
-
     - name: check isort
+      run: isort . --check-only --skip env
+    - name: check flake8
       run: isort . --check-only --skip env
 
     # next add test
