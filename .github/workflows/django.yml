@@ -38,6 +38,7 @@ jobs:
         DEBUG: 0
         DOMAIN_URL: http://localhost:8080/
         CELERY_BROKER_URL: redis://127.0.0.1:6379/0
+        SCALINGO_REDIS_URL: redis://127.0.0.1:6379/0
         CELERY_RESULT_BACKEND: django-db
         AWS_STORAGE_BUCKET_NAME: sparte-staging
         AWS_S3_REGION_NAME: eu-west-3
