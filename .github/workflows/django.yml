@@ -61,7 +61,7 @@ jobs:
     #     SECRET: ${{ secrets.SECRET }}
     #     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
     #     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-    #     DATABASE_URL: postgis://postgres:postgres@127.0.0.1:5432/postgres
+    #     DATABASE_URL: postgis://postgres:postgres@db:5432/postgres
     #     ENVIRONMENT: github
     #     DEBUG: 0
     #     DOMAIN_URL: http://localhost:8080/
