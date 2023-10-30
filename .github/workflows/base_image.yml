@@ -28,8 +28,8 @@ jobs:
         password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
     - name: Build Docker image
-      run: docker build -t swannbm/BaseSparte:latest .
+      run: docker build -t swannbm/basesparte:latest .
 
 
     - name: Push Docker image
-      run: docker push swannbm/BaseSparte:latest
+      run: docker push swannbm/basesparte:latest
