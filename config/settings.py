@@ -322,8 +322,7 @@ CELERY_ACKS_LATE = True
 CELERY_TASK_ACKS_LATE = True
 CELERY_WORKER_PREFETCH_MULTIPLIER = 1
 CELERY_RESULT_EXTENDED = True
-# make celery synchronous if debug is True
-CELERY_TASK_ALWAYS_EAGER = DEBUG
+CELERY_TASK_ALWAYS_EAGER = env.bool('CELERY_TASK_ALWAYS_EAGER', default=False)
 
 # django-debug-toolbar configuration
 
