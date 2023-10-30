@@ -11,7 +11,7 @@ Exemple : `./manage.py shp2model ./public_data/media/mondossier/monfichier.shp`
 
 La commande va analyser le contenu du fichier et fournir un squelette de model selon les règles suivantes :
 - Nom de la classe : nom du layer (en camelcase)
-- Hérite de la classe `Autoload`
+- Hérite de la classe `AutoLoadMixin`
 - Un champ va être ajouté par feature avec pour nom le nom du champ en minuscule. Le type de champ est fonction du type OFT trouvé et le max_length est issu du field_width du fichier.
 - un champ MultiPolygon est ajouté (nom: mpoly)
 - le chemin vers le fichier est conservé dans la propriété shape_file_path
@@ -19,7 +19,7 @@ La commande va analyser le contenu du fichier et fournir un squelette de model s
 
 Exemple:
 ```
-class Artificialisee2015to2018(AutoLoad):
+class Artificialisee2015to2018(AutoLoadMixin):
     """
     A_B_2015_2018 : la surface (en hectares) artificialisée entre 2015 et 2018
     Données construites par Philippe
@@ -44,9 +44,9 @@ class Artificialisee2015to2018(AutoLoad):
     }
 ```
 
-### load_data et Autoload
+### load_data et AutoLoadMixin
 
-Ci-dessus, vous avez remarqué que le squelette hérite de la classe Autoload (et nom models.Model comme il est de coutume). C'est pour que la classe embarque une méthode de classe "Load()" qui permet de charger les données en base depuis le fichier shape.
+Ci-dessus, vous avez remarqué que le squelette hérite de la classe AutoLoadMixin (et nom models.Model comme il est de coutume). C'est pour que la classe embarque une méthode de classe "Load()" qui permet de charger les données en base depuis le fichier shape.
 
 Cette fonctionnalité est activée au travers de la commande load_data qui prend le nom du classe en paramètre. Exemple : `./manage.py load_data public_data.models.Artificialisee2015to2018`
 
