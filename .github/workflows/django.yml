@@ -43,8 +43,11 @@ jobs:
       run: black --check --include='\.py$' --exclude='/migrations/' .
     - name: check isort
       run: isort . --check-only --sp pyproject.toml
-    # - name: check flake8
-    #   run: flake8 . --config=.flake8
+    - name: check flake8
+      run: |
+        pwd
+        ls -alh
+        flake8 . --config=.flake8
 
     # next add test
     # services:
