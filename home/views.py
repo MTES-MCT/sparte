@@ -4,7 +4,12 @@ from typing import Any
 from django.contrib import messages
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.db.models import F, Value
-from django.http import HttpRequest, HttpResponse, HttpResponseGone, HttpResponseRedirect
+from django.http import (
+    HttpRequest,
+    HttpResponse,
+    HttpResponseGone,
+    HttpResponseRedirect,
+)
 from django.shortcuts import redirect
 from django.utils import timezone
 from django.views.generic import CreateView, FormView, RedirectView, TemplateView
