@@ -7,22 +7,22 @@ on:
     branches: [ develop ]
 
 jobs:
-  # build-and-push:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #   - uses: actions/checkout@v3
-  #   - name: Use cache to check if rebuild is necessary
-  #     id: cache-lock
-  #     uses: actions/cache@v3
-  #     with:
-  #       path: .
-  #       key: lock-${{ hashFiles('Pipfile.lock', 'packages.lock') }}
-  #   - if: ${{ steps.cache-lock.outputs.cache-hit != 'true' }}
-  #     name: Build and push Docker image
-  #     run: |
-  #       docker login -u swannbm -p ${{ secrets.DOCKERHUB_PASSWORD }}
-  #       docker build -t swannbm/basesparte:latest .
-  #       docker push swannbm/basesparte:latest
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Use cache to check if rebuild is necessary
+      id: cache-lock
+      uses: actions/cache@v3
+      with:
+        path: .
+        key: lock-${{ hashFiles('Pipfile.lock', 'packages.lock') }}
+    - if: ${{ steps.cache-lock.outputs.cache-hit != 'true' }}
+      name: Build and push Docker image
+      run: |
+        docker login -u swannbm -p ${{ secrets.DOCKERHUB_PASSWORD }}
+        docker build -t swannbm/basesparte:latest .
+        docker push swannbm/basesparte:latest
 
   linters:
     # needs: build-and-push
@@ -32,24 +32,18 @@ jobs:
     defaults:
       run:
         working-directory: /app
+
     steps:
     - uses: actions/checkout@v4
     - name: Move files to /app
       run: |
-        echo "mv from $GITHUB_WORKSPACE to /app"
-        mv $GITHUB_WORKSPACE/* /app
-    - name: List files in the directory
-      run: |
-        pwd
-        ls -alh
+        echo "mv from $GITHUB_WORKSPACE to working directory"
+        mv $GITHUB_WORKSPACE/* .
     - name: Check with Black
       run: black --check --include='\.py$' --exclude='/migrations/' .
 
-    # - name: check black formatting
-    #   run: pipenv run black --check --include="\.py" --exclude="env/*,0*" .
-
-    # - name: check isort
-    #   run: pipenv run isort . --check-only --skip env
+    - name: check isort
+      run: isort . --check-only --skip env
 
     # - name: Run Tests
     #   run: |
