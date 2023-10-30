@@ -41,13 +41,10 @@ jobs:
         mv $GITHUB_WORKSPACE/* .
     - name: Check Black
       run: black --check --include='\.py$' --exclude='/migrations/' .
-      continue-on-error: true
     - name: check isort
       run: isort . --check-only --skip env
-      continue-on-error: true
     - name: check flake8
-      run: isort . --check-only --skip env
-      continue-on-error: true
+      run: isort . --check-only --profile black --skip .gitignore,.dockerignore,migrations/*
 
     # next add test
     # services:
