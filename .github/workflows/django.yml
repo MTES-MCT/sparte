@@ -34,6 +34,10 @@ jobs:
         working-directory: /app
     steps:
     - uses: actions/checkout@v3
+    - name: List files in the directory
+      run: |
+        pwd
+        ls -alh
     - name: Check with Black
       run: black --check --include='\.py$' --exclude='/migrations/' .
 
