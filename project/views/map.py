@@ -24,19 +24,19 @@ class BaseMap(GroupMixin, DetailView):
     * get_layers_list: define the filters to be display in the map
     * get_filters_list: define the filters to be display in the filters zone
     """
-    
+
     queryset = Project.objects.all()
     template_name = "carto/map_libre.html"
     title = "To be set"
     default_zoom = "To be set"
-    
+
     def get_context_breadcrumbs(self):
         breadcrumbs = super().get_context_breadcrumbs()
         breadcrumbs += [
             {"title": self.title},
         ]
         return breadcrumbs
- 
+
     def get_sources_list(self, *sources):
         sources = [
             {
@@ -70,7 +70,7 @@ class BaseMap(GroupMixin, DetailView):
             },
         ] + list(sources)
         return sources
-       
+
     def get_layers_list(self, *layers):
         layers = [
             {
@@ -207,7 +207,7 @@ class BaseMap(GroupMixin, DetailView):
             },
         ] + list(layers)
         return layers
-    
+
     def get_filters_list(self, *filters):
         filters = [
             {
@@ -310,7 +310,7 @@ class BaseMap(GroupMixin, DetailView):
                                     "limites-administratives-departement-layer",
                                     "limites-administratives-epci-layer",
                                     "limites-administratives-commune-layer",
-                                ]
+                                ],
                             },
                             {
                                 "method": "changePaintProperty",
@@ -346,7 +346,7 @@ class BaseMap(GroupMixin, DetailView):
                     "sources": self.get_sources_list(),
                     "layers": layers,
                     "filters": filters,
-                }
+                },
             }
         )
         return super().get_context_data(**kwargs)
@@ -356,14 +356,14 @@ class MapTestView(BaseMap):
     title = "Carte de test"
     scale_size = 5
     default_zoom = 10
-    
+
     def get_sources_list(self, *sources):
         sources = [
             {
                 "key": "consommation-des-communes-source",
                 "params": {
                     "type": "geojson",
-                    "data": reverse_lazy(f"project:theme-city-conso", args=[self.object.id]),
+                    "data": reverse_lazy("project:theme-city-conso", args=[self.object.id]),
                 },
                 "query_strings": [
                     {
@@ -381,7 +381,7 @@ class MapTestView(BaseMap):
             },
         ]
         return super().get_sources_list(*sources)
-    
+
     def get_layers_list(self, *layers):
         layers = [
             {
@@ -445,7 +445,7 @@ class MapTestView(BaseMap):
             },
         ]
         return super().get_layers_list(*layers)
-    
+
     def get_filters_list(self, *filters):
         filters = [
             {
@@ -474,7 +474,7 @@ class MapTestView(BaseMap):
             },
         ]
         return super().get_filters_list(*filters)
-    
+
     def get_gradient_scale(self):
         fields = Cerema.get_art_field(self.object.analyse_start_date, self.object.analyse_end_date)
         qs = (
@@ -490,12 +490,12 @@ class MapTestView(BaseMap):
             boundaries = jenks_breaks([i["conso"] for i in qs], n_classes=self.scale_size)[1:]
         data = [{"value": v, "color": c.hex_l} for v, c in zip(boundaries, get_dark_blue_gradient(len(boundaries)))]
         return data
-    
+
     def get_gradient_expression(self):
         data = [
-            'interpolate',
-            ['linear'],
-            ['get', 'artif_area'],
+            "interpolate",
+            ["linear"],
+            ["get", "artif_area"],
         ]
         for scale in self.get_gradient_scale():
             data.append(scale["value"])
@@ -506,7 +506,7 @@ class MapTestView(BaseMap):
 class UrbanZonesMapView(BaseMap):
     title = "Explorateur des zonages d'urbanisme"
     default_zoom = 12
-    
+
     def get_sources_list(self, *sources):
         sources = [
             {
@@ -560,10 +560,10 @@ class UrbanZonesMapView(BaseMap):
                     },
                 ],
                 "min_zoom": 12,
-            },  
+            },
         ]
         return super().get_sources_list(*sources)
-    
+
     def get_layers_list(self, *layers):
         layers = [
             {
@@ -730,7 +730,7 @@ class UrbanZonesMapView(BaseMap):
             },
         ]
         return super().get_layers_list(*layers)
-    
+
     def get_filters_list(self, *filters):
         usage_colors = ["match", ["get", "code_usage"]]
         for leaf in UsageSol.get_leafs():
@@ -1019,14 +1019,14 @@ class CitySpaceConsoMapView(BaseMap):
     title = "Consommation d'espaces des communes de mon territoire"
     scale_size = 5
     default_zoom = 10
-    
+
     def get_sources_list(self, *sources):
         sources = [
             {
                 "key": "consommation-des-communes-source",
                 "params": {
                     "type": "geojson",
-                    "data": reverse_lazy(f"project:theme-city-conso", args=[self.object.id]),
+                    "data": reverse_lazy("project:theme-city-conso", args=[self.object.id]),
                 },
                 "query_strings": [
                     {
@@ -1044,7 +1044,7 @@ class CitySpaceConsoMapView(BaseMap):
             },
         ]
         return super().get_sources_list(*sources)
-    
+
     def get_layers_list(self, *layers):
         layers = [
             {
@@ -1108,7 +1108,7 @@ class CitySpaceConsoMapView(BaseMap):
             },
         ]
         return super().get_layers_list(*layers)
-    
+
     def get_filters_list(self, *filters):
         filters = [
             {
@@ -1137,7 +1137,7 @@ class CitySpaceConsoMapView(BaseMap):
             },
         ]
         return super().get_filters_list(*filters)
-    
+
     def get_gradient_scale(self):
         fields = Cerema.get_art_field(self.object.analyse_start_date, self.object.analyse_end_date)
         qs = (
@@ -1153,18 +1153,18 @@ class CitySpaceConsoMapView(BaseMap):
             boundaries = jenks_breaks([i["conso"] for i in qs], n_classes=self.scale_size)[1:]
         data = [{"value": v, "color": c.hex_l} for v, c in zip(boundaries, get_dark_blue_gradient(len(boundaries)))]
         return data
-    
+
     def get_gradient_expression(self):
         data = [
-            'interpolate',
-            ['linear'],
-            ['get', 'artif_area'],
+            "interpolate",
+            ["linear"],
+            ["get", "artif_area"],
         ]
         for scale in self.get_gradient_scale():
             data.append(scale["value"])
             data.append(scale["color"])
         return data
-    
+
     def get_data(self):
         project = self.get_object()
         fields = Cerema.get_art_field(project.analyse_start_date, project.analyse_end_date)
@@ -1178,7 +1178,7 @@ class CitySpaceConsoMapView(BaseMap):
             queryset = queryset.filter(mpoly__within=polygon_box)
         serializer = CitySpaceConsoMapSerializer(queryset, many=True)
         return JsonResponse(serializer.data, status=200)
-    
+
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
         if "data" in self.request.GET:

@@ -89,7 +89,7 @@ class Command(BaseCommand):
                 mpoly=fix_poly(data["mpoly"]),
             )
             for data in qs
-            if data["scot"] is not None # filter out communes without scot
+            if data["scot"] is not None  # filter out communes without scot
         ]
 
         Scot.objects.bulk_create(scot_list)
@@ -100,15 +100,15 @@ class Command(BaseCommand):
 
         for scot_name, dept_id, region_id in (
             Cerema.objects.values_list("scot", "dept_id", "region_id")
-                .order_by("scot")
-                .filter(scot__isnull=False)
-                .distinct()
+            .filter(scot__isnull=False)
+            .order_by("scot")
+            .distinct()
         ):
             if scot_name not in links:
-                links[scot_name] = {'departement_ids': set(), 'region_ids': set()}
+                links[scot_name] = {"departement_ids": set(), "region_ids": set()}
 
-            links[scot_name]['departement_ids'].add(dept_id)
-            links[scot_name]['region_ids'].add(region_id)
+            links[scot_name]["departement_ids"].add(dept_id)
+            links[scot_name]["region_ids"].add(region_id)
 
         for scot_name, data in links.items():
             scot = Scot.objects.get(name=scot_name)

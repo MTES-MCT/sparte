@@ -6,7 +6,6 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django_app_parameter import app_parameter
 
-
 logger = logging.getLogger(__name__)
 
 

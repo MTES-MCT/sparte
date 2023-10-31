@@ -3,6 +3,7 @@ from functools import cached_property
 from math import ceil
 from typing import Any, Dict
 
+import pandas as pd
 from django.contrib import messages
 from django.contrib.gis.db.models.functions import Area
 from django.contrib.gis.geos import Polygon
@@ -22,7 +23,6 @@ from django.db.models.functions import Cast, Concat
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.views.generic import CreateView, DetailView, TemplateView
-import pandas as pd
 
 from brevo.tasks import send_request_to_brevo
 from project import charts, tasks

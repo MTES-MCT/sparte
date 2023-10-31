@@ -171,10 +171,10 @@ class Cerema(DataColorationMixin, models.Model):
 
     class Meta:
         indexes = [
-            models.Index(fields=['scot']),
-            models.Index(fields=['region_id']),
-            models.Index(fields=['dept_id']),
-            models.Index(fields=['epci_id']),
+            models.Index(fields=["scot"]),
+            models.Index(fields=["region_id"]),
+            models.Index(fields=["dept_id"]),
+            models.Index(fields=["epci_id"]),
         ]
 
     def __str__(self):

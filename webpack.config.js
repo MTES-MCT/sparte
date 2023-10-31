@@ -9,7 +9,7 @@ const common = {
         "path": path.resolve(__dirname, "static"),
         "filename": "assets/scripts/bundle.js",
     },
-    performance: { 
+    performance: {
         hints: false
     },
     module: {

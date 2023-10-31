@@ -424,7 +424,7 @@ class Project(BaseProject):
     def save(self, *args, **kwargs):
         logger.info("Saving project %d: update_fields=%s", self.id, str(kwargs.get("update_fields", [])))
         super().save(*args, **kwargs)
-        cache.delete_pattern(f'*project/{self.id}/*')
+        cache.delete_pattern(f"*project/{self.id}/*")
 
     def get_territory_name(self):
         if self.territory_name:

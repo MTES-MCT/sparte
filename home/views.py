@@ -1,5 +1,6 @@
 from datetime import timedelta
 from typing import Any
+
 from django.contrib import messages
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.db.models import F, Value
@@ -156,14 +157,14 @@ class MaintenanceView(StandAloneMixin, HtmxRedirectMixin, TemplateView):
         return super().get_context_data(**kwargs)
 
     def get_redirect_url(self):
-        return get_url_with_domain(self.request.GET.get('next', '/'))
+        return get_url_with_domain(self.request.GET.get("next", "/"))
 
     def get(self, request, *args, **kwargs):
         if not app_parameter.MAINTENANCE_MODE:
-            if request.META.get('HTTP_HX_REQUEST'):
+            if request.META.get("HTTP_HX_REQUEST"):
                 return self.htmx_redirect()
             else:
-                return redirect(self.request.GET.get('next', '/'))
+                return redirect(self.request.GET.get("next", "/"))
         return super().get(request, *args, **kwargs)
 
 

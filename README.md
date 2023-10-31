@@ -90,14 +90,16 @@ Variables d'environnement spécifique à Scalingo. Voir les valeurs sur Scalingo
 
 ## Contribution
 
-### Avant de commit
-- Vérifier la couverture des tests unitaires `coverage run -m pytest && coverage report -m`
-- Vérifier le formatage `flake8`
+### Lint
+- Depuis le shell pipenv, installer la configuration pre-commit sur votre dépot git local : `pre-commit install`
+- Il est aussi possible de lancer le pre-commit manuellement sans l'installer : `pre-commit run --all-file`
 
-Si vous souhaitez ignorer le pre-commit hook (utile pour ajouter des fichiers shapes sans les modifier):
-```
-git commit --no-verify
-```
+De cette manière, vos changements seront évalués automatiquement selon notre coding style (voir le fichier `.pre-commit.config.yaml` pour le détail).
+
+### Test
+
+- Avant chaque commit, lancer manuellement depuis le containeur de l'application les tests et l'analyse de la couverture de tests: `coverage run -m pytest && coverage report -m`
+
 
 ### Récupérer un backup de production
 
