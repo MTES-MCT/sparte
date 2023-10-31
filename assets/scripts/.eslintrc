@@ -8,6 +8,9 @@
     "parserOptions": {
         "requireConfigFile": false
     },
+    "globals": {
+        "Highcharts": "readonly"
+    },
     "rules": {
         "no-param-reassign": "off",
         "no-console": "off",
