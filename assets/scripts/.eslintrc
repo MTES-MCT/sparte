@@ -9,7 +9,8 @@
         "requireConfigFile": false
     },
     "globals": {
-        "Highcharts": "readonly"
+        "Highcharts": "readonly",
+        "htmx": "readonly"
     },
     "rules": {
         "no-param-reassign": "off",
