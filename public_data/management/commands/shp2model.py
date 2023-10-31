@@ -22,6 +22,7 @@ def get_django_type(oft_type):
         "OFTInteger": "IntegerField",
         "OFTReal": "FloatField",
         "OFTInteger64": "IntegerField",
+        "OFTDate": "DateField",
     }
     try:
         return transco[oft_type.__name__]
