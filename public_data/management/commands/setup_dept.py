@@ -9,6 +9,7 @@ logger = logging.getLogger("management.commands")
 config = {
     "Gers": "2016 2019",
     "Gironde": "2015 2018",
+    "Essonne": "2018 2021"
     # "Côte-d'Or": "2010 2017",
     # "Doubs": "2010 2017",
     # "Jura": "2010 2017",
