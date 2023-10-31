@@ -633,6 +633,133 @@ class BelfortOcsgeDiff1017(BourgogneFrancheComteOcsgeDiff1017):
     shape_file_path = "territoire_de_belfort_ocsgediff_1017.zip"
 
 
+# Essonne
+
+
+class EssonneOcsge(AutoLoadMixin, Ocsge):
+    class Meta:
+        proxy = True
+
+    mapping = {
+        "couverture": "CODE_CS",
+        "usage": "CODE_US",
+        "id_source": "ID",
+        "mpoly": "MULTIPOLYGON",
+        # "source": "SOURCE",
+        # "code_or": "CODE_OR",
+        # "ossature": "OSSATURE",
+        # "id_source": "ID_ORIGINE",
+        # "millesime": "MILLESIME",
+    }
+
+    def save(self, *args, **kwargs):
+        self.year = self.__class__._year
+        key = (self.couverture, self.usage)
+
+        if key not in CouvertureUsageMatrix.matrix_dict():
+            self.is_artificial = False
+            return super().save(*args, **kwargs)
+
+        self.matrix = CouvertureUsageMatrix.matrix_dict()[key]
+        self.is_artificial = bool(self.matrix.is_artificial)
+
+        if self.matrix.couverture:
+            self.couverture_label = self.matrix.couverture.label
+        if self.matrix.usage:
+            self.usage_label = self.matrix.usage.label
+
+        return super().save(*args, **kwargs)
+
+    @classmethod
+    def clean_data(cls):
+        qs = (
+            cls.objects.all()
+            .filter(mpoly__intersects=Departement.objects.get(name="Essonne").mpoly)
+            .filter(year=cls._year)
+        )
+        qs.delete()
+
+
+class EssonneOcsge2018(EssonneOcsge):
+    class Meta:
+        proxy = True
+
+    shape_file_path = "essonne_ocsge_2018.zip"
+    _year = 2018
+
+
+class EssonneOcsge2021(EssonneOcsge):
+    class Meta:
+        proxy = True
+
+    shape_file_path = "essonne_ocsge_2021.zip"
+    _year = 2021
+
+
+class EssonneOcsgeZoneConstruite(AutoLoadMixin, ZoneConstruite):
+    class Meta:
+        proxy = True
+
+    mapping = {
+        "id_source": "ID",
+        "millesime": "MILLESIME",
+        "mpoly": "MULTIPOLYGON",
+    }
+
+    def save(self, *args, **kwargs):
+        self.year = self._year
+        self.surface = self.mpoly.transform(2154, clone=True).area
+        super().save(*args, **kwargs)
+
+    @classmethod
+    def clean_data(cls):
+        qs = cls.objects.filter(mpoly__intersects=Departement.objects.get(name="Essonne").mpoly)
+        qs = qs.filter(year=cls._year)
+        qs.delete()
+
+
+class EssonneOcsgeZoneConstruite2018(EssonneOcsgeZoneConstruite):
+    class Meta:
+        proxy = True
+
+    shape_file_path = "essonne_zone_construite_2018.zip"
+    _year = 2018
+
+
+class EssonneOcsgeZoneConstruite2021(EssonneOcsgeZoneConstruite):
+    class Meta:
+        proxy = True
+
+    shape_file_path = "essonne_zone_construite_2021.zip"
+    _year = 2021
+
+
+class EssonneOcsgeDiff1821(AutoOcsgeDiff):
+    class Meta:
+        proxy = True
+
+    _year_old = 2018
+    _year_new = 2021
+
+    shape_file_path = "essonne_diff_2018_2021.zip"
+
+    mapping = {
+        "cs_new": "CS_2021",
+        "us_new": "US_2021",
+        "cs_old": "CS_2018",
+        "us_old": "US_2018",
+        # "oss_2018": "OSS_2018",
+        # "oss_2021": "OSS_2021",
+        "mpoly": "MULTIPOLYGON",
+    }
+
+    @classmethod
+    def clean_data(cls):
+        qs = cls.objects.filter(mpoly__intersects=Departement.objects.get(name="Essonne").mpoly)
+        qs = qs.filter(year_new=cls._year_new, year_old=cls._year_old)
+        qs.delete()
+
+
 class Command(BaseCommand):
     help = "Load all data from OCS GE"
 
@@ -660,7 +787,9 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         logger.info("Load OCSGE")
+
         self.verbose = not options["no_verbose"]
+
         item_list = [
             # BASSIN D'ARCACHON #####
             ArcachonOcsge2018,
@@ -673,15 +802,30 @@ class Command(BaseCommand):
             GersOcsgeDiff,
             GersZoneConstruite2016,
             GersZoneConstruite2019,
+            # Essonne ####
+            EssonneOcsge2018,
+            EssonneOcsge2021,
+            EssonneOcsgeDiff1821,
+            EssonneOcsgeZoneConstruite2018,
+            EssonneOcsgeZoneConstruite2021,
         ]
 
-        if options["item"]:
-            self.load([i for i in item_list if i.__name__ == options["item"]])
-        else:
-            logger.info("Full load")
-            if options["truncate"]:
-                self.truncate()
-            self.load(item_list)
+        item_name_filter = options.get("item")
+
+        if item_name_filter:
+            items = [i for i in item_list if i.__name__ == item_name_filter]
+
+            if not items:
+                raise Exception(f"Item {item_name_filter} not found. Maybe you forgot to add it to the item_list?")
+
+            return self.load(items)
+
+        logger.info("Full load")
+
+        if options.get("truncate"):
+            self.truncate()
+
+        self.load(item_list)
 
         logger.info("End loading OCSGE")
 
