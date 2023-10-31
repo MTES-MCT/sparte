@@ -2,7 +2,6 @@
 
 from typing import Callable
 
-from django.core.files import File
 from django.db import migrations
 
 from config.storages import DefaultStorage

@@ -7,7 +7,7 @@ window.htmx.onLoad(function() {
             const target = button.dataset.chartTarget;
             const chartDom = document.getElementById(target);
             const chart = Highcharts.charts[Highcharts.attr(chartDom, 'data-highcharts-chart')];
-        
+
             chart.fullscreen.toggle();
         }
     });
@@ -18,7 +18,7 @@ window.htmx.onLoad(function() {
             const target = button.dataset.chartTarget;
             const chartDom = document.getElementById(target);
             const chart = Highcharts.charts[Highcharts.attr(chartDom, 'data-highcharts-chart')];
-            
+
             e.preventDefault();
 
             chart.exportChart({

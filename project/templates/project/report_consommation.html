@@ -53,7 +53,7 @@ Rapport consommation
                 </p>
                 <p class="fr-text--sm mb-3">
                     Les données de l'INSEE sont également intégrées pour mettre en perspective la consommation d'espaces vis à vis de l'évolution de la population.
-                </p>               
+                </p>
                 <p class="fr-text--sm mb-3"><a href="https://artificialisation.developpement-durable.gouv.fr/bases-donnees/les-fichiers-fonciers" target="_blank" id="cerema-link">Plus d'informations sur les fichiers fonciers (source : Cerema)</a></p>
             </div>
 
@@ -210,7 +210,7 @@ Rapport consommation
                         {% endif %}
                     </div>
                 </div>
-               {% endif %} 
+               {% endif %}
             </div>
 
             <div class="fr-callout bg-white fr-p-2w mt-4">
@@ -257,7 +257,7 @@ Rapport consommation
                         <div class="d-flex justify-content-end align-items-center fr-mb-2w">
                             <div class="dropdown custom-dropdown fr-mr-2w" data-toggle="tooltip" title="Exporter le graphique">
                                 <button class="fr-btn fr-icon-download-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="dropdown" aria-expanded="false"></button>
-    
+
                                 <ul class="dropdown-menu">
                                     <li>
                                         <a class="fr-nav__link export-chart" href="#" data-chart-target="pie_determinant" data-type="image/png">PNG</a>
@@ -273,7 +273,7 @@ Rapport consommation
                                     </li>
                                 </ul>
                             </div>
-    
+
                             <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm fr-mr-2w fullscreen-chart" data-chart-target="pie_determinant" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
 
                             <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#determinantModal" data-toggle="tooltip" title="Astuces pour lire le graphique" aria-hidden="true"></button>
@@ -286,7 +286,7 @@ Rapport consommation
                         <div class="d-flex justify-content-end align-items-center fr-mb-2w">
                             <div class="dropdown custom-dropdown fr-mr-2w" data-toggle="tooltip" title="Exporter le graphique">
                                 <button class="fr-btn fr-icon-download-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="dropdown" aria-expanded="false"></button>
-    
+
                                 <ul class="dropdown-menu">
                                     <li>
                                         <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_determinant" data-type="image/png">PNG</a>
@@ -302,7 +302,7 @@ Rapport consommation
                                     </li>
                                 </ul>
                             </div>
-    
+
                             <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm fr-mr-2w fullscreen-chart" data-chart-target="chart_determinant" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
 
                             <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#determinantModal" data-toggle="tooltip" title="Astuces pour lire le graphique" aria-hidden="true"></button>
@@ -374,7 +374,7 @@ Rapport consommation
                     </div>
 
                     <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm fr-mr-2w fullscreen-chart" data-chart-target="chart_2" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
-                    
+
                     <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#comparaisonVoisin" data-toggle="tooltip" title="Astuces pour lire le graphique" aria-hidden="true"></button>
                 </div>
                 <div id="chart_2"></div>
@@ -420,7 +420,7 @@ Rapport consommation
 
             <!-- TODO Sofian ajouter skeletton -->
             <div class="fr-custom-loader"></div>
-            
+
         </div>
 
         <div id="conso-relative-pop-anchor" class="fr-mt-7w" hx-get="{% url 'project:relative-pop' project.id %}" hx-trigger="revealed">
@@ -436,7 +436,7 @@ Rapport consommation
             <!-- TODO Sofian ajouter skeletton -->
             <div class="fr-custom-loader"></div>
         </div>
-        
+
     </div>
 </div>
 

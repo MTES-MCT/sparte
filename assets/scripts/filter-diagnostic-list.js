@@ -5,7 +5,7 @@ if (filterDiagnosticListInput) {
         const keyword = filterDiagnosticListInput.value.toLowerCase();
         let elements = document.querySelectorAll('.diagnostic-list-item');
         elements = Array.from(elements);
-    
+
         elements.map((element) => {
             const name = element.querySelector('.diagnostic-list-item-key').dataset.key.toLowerCase();
             if (name.indexOf(keyword) != -1) {
@@ -17,7 +17,7 @@ if (filterDiagnosticListInput) {
                 element.style.visibility = 'hidden';
             }
         });
-    
+
         // Get hidden elements count
         const emptyMessage = document.getElementById('diagnostic-list-empty-message');
         if (elements.length === elements.filter((obj) => obj.hidden).length) {

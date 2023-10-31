@@ -74,7 +74,7 @@ class Command(BaseCommand):
         logger.info("Departement processed: %s", dept.name)
 
         bcontent = io.BytesIO()
-        StreamWriter = codecs.getwriter('utf-8')
+        StreamWriter = codecs.getwriter("utf-8")
         stream = StreamWriter(bcontent)
         writer = csv.writer(stream, delimiter=";", quotechar='"', quoting=csv.QUOTE_ALL)
 
