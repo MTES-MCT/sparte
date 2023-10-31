@@ -70,7 +70,7 @@ class Command(BaseCommand):
         layer = datasource[0]
 
         class_name = to_camel_case(layer)
-        print(f"class {class_name}(AutoLoad):")
+        print(f"class {class_name}(AutoLoadMixin):")
 
         mapping = dict()
         for i, field_name in enumerate(layer.fields):
