@@ -69,7 +69,7 @@ class AutoLoadMixin:
         cls.__check_path_is_a_regular_file(shape_file_path)
         cls.__check_path_suffix_is_shapefile(shape_file_path)
 
-    def __retrieve_zipped_shape_file_folder_from_s3(file_name: str) -> Path:
+    def __retrieve_and_unzip_shape_file_folder_from_s3(file_name: str) -> Path:
         storage = DataStorage()
 
         if not storage.exists(file_name):
@@ -77,21 +77,22 @@ class AutoLoadMixin:
 
         file_stream = storage.open(file_name)
 
-        # retrieve Zipfile and extract in temporary directory
         temp_dir_path = Path(TemporaryDirectory().name)
         logger.info("Use temp directory %s", temp_dir_path)
 
         with ZipFile(file_stream) as zip_file:
             zip_file.extractall(temp_dir_path)
 
+        logger.info("File copied from bucket and extracted in temp dir")
+
         return temp_dir_path
 
     def __get_shapefile_path_from_folder(folder_path: Path) -> Path:
-        logger.info("File copied from bucket and extracted in temp dir")
+        for tempfile in folder_path.rglob("*.shp"):
+            if tempfile.name.startswith("._"):
+                continue
 
-        for tempfile in folder_path.iterdir():
-            if tempfile.is_file() and tempfile.suffix == ".shp":
-                return tempfile
+            return tempfile
 
         raise FileNotFoundError("No file with .shp suffix")
 
@@ -136,7 +137,7 @@ class AutoLoadMixin:
         if not local_file_path:
             logger.info("Retrieving shapefile from S3")
 
-            shapefile_temp_folder = cls.__retrieve_zipped_shape_file_folder_from_s3(cls.shape_file_path)
+            shapefile_temp_folder = cls.__retrieve_and_unzip_shape_file_folder_from_s3(cls.shape_file_path)
             shape_file_path = cls.__get_shapefile_path_from_folder(shapefile_temp_folder)
         else:
             logger.info("Using local shapefile")
