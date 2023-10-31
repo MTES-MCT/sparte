@@ -8,5 +8,14 @@
     "parserOptions": {
         "requireConfigFile": false
     },
-    "rules": {}
+    "rules": {
+        "no-param-reassign": "off",
+        "no-console": "off",
+        "max-len": "off",
+        "semi": ["error", "never"],
+        "no-unreachable": ["error"],
+        "no-unexpected-multiline": ["error"],
+        "brace-style": ["error", "allman"],
+        "import/extensions": ["error", "always"]
+    }
 }
