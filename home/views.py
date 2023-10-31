@@ -1,10 +1,12 @@
+from datetime import timedelta
 from typing import Any
 
 from django.contrib import messages
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.db.models import F, Value
-from django.http import HttpResponseRedirect
+from django.http import HttpRequest, HttpResponse, HttpResponseGone, HttpResponseRedirect
 from django.shortcuts import redirect
+from django.utils import timezone
 from django.views.generic import CreateView, FormView, RedirectView, TemplateView
 from django_app_parameter import app_parameter
 
@@ -16,7 +18,7 @@ from utils.views_mixins import BreadCrumbMixin
 
 from . import charts
 from .forms import NewsletterForm
-from .models import ContactForm, Newsletter
+from .models import AliveTimeStamp, ContactForm, Newsletter
 from .tasks import send_contact_form, send_nwl_confirmation, send_nwl_final
 
 
@@ -164,3 +166,15 @@ class MaintenanceView(StandAloneMixin, HtmxRedirectMixin, TemplateView):
             else:
                 return redirect(self.request.GET.get("next", "/"))
         return super().get(request, *args, **kwargs)
+
+
+class AliveView(TemplateView):
+    template_name = "home/alive.html"
+
+    def get(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+        from_datetime = timezone.now() - timedelta(minutes=35)
+        default_is_alive = AliveTimeStamp.objects.filter(queue_name="default", timestamp__gte=from_datetime).exists()
+        long_is_alive = AliveTimeStamp.objects.filter(queue_name="default", timestamp__gte=from_datetime).exists()
+        if default_is_alive and long_is_alive:
+            return HttpResponse("All good...")
+        return HttpResponseGone("Celery workers are not alive.")

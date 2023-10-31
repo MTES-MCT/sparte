@@ -252,26 +252,26 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 CACHES: Dict[str, Any] = {}
 
-# if ENVIRONMENT in ["local"]:
-#     CACHES = {
-#         "default": {
-#             "BACKEND": "django.core.cache.backends.dummy.DummyCache",
-#         }
-#     }
-# else:
-CACHES = {
-    "default": {
-        "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": env.str("SCALINGO_REDIS_URL"),
-        "TIMEOUT": 60 * 15,  # 15 minutes
-        "OPTIONS": {
-            "CLIENT_CLASS": "django_redis.client.DefaultClient",
-            "MAX_ENTRIES": 1000,
-        },
+if ENVIRONMENT in ["local"]:
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.dummy.DummyCache",
+        }
     }
-}
-FANCY_REMEMBER_ALL_URLS = True
-FANCY_REMEMBER_STATS_ALL_URLS = True
+else:
+    CACHES = {
+        "default": {
+            "BACKEND": "django_redis.cache.RedisCache",
+            "LOCATION": env.str("SCALINGO_REDIS_URL"),
+            "TIMEOUT": 60 * 15,  # 15 minutes
+            "OPTIONS": {
+                "CLIENT_CLASS": "django_redis.client.DefaultClient",
+                "MAX_ENTRIES": 1000,
+            },
+        }
+    }
+    FANCY_REMEMBER_ALL_URLS = True
+    FANCY_REMEMBER_STATS_ALL_URLS = True
 # SESSION
 
 SESSION_CACHE_ALIAS = "default"
@@ -322,8 +322,7 @@ CELERY_ACKS_LATE = True
 CELERY_TASK_ACKS_LATE = True
 CELERY_WORKER_PREFETCH_MULTIPLIER = 1
 CELERY_RESULT_EXTENDED = True
-# make celery synchronous if debug is True
-CELERY_TASK_ALWAYS_EAGER = DEBUG
+CELERY_TASK_ALWAYS_EAGER = env.bool('CELERY_TASK_ALWAYS_EAGER', default=False)
 
 # django-debug-toolbar configuration
 
