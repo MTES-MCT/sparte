@@ -8,38 +8,25 @@ from django.db.models.functions import Cast
 from public_data.models import (
     CouvertureUsageMatrix,
     Departement,
-    Region,
     Ocsge,
     OcsgeDiff,
+    Region,
     ZoneConstruite,
 )
-
 from public_data.models.mixins import AutoLoadMixin
-
 
 logger = logging.getLogger("management.commands")
 
-matrix_list = dict()
-
-for item in CouvertureUsageMatrix.objects.all().select_related("usage", "couverture"):
-    key = (
-        item.couverture.code_prefix if item.couverture else None,
-        item.usage.code_prefix if item.usage else None,
-    )
-    matrix_list[key] = item
-
-gironde = Departement.objects.get(name="Gironde")
-gers = Departement.objects.get(name="Gers")
-bourgogne_france_compte = Region.objects.get(name="Bourgogne-Franche-Comté")
 
 class AutoOcsgeDiff(AutoLoadMixin, OcsgeDiff):
-    class Meta: proxy = True
+    class Meta:
+        proxy = True
 
     def before_save(self):
         self.year_new = self.__class__._year_new
         self.year_old = self.__class__._year_old
 
-        self.new_matrix = matrix_list[(self.cs_new, self.us_new)]
+        self.new_matrix = CouvertureUsageMatrix.matrix_dict()[(self.cs_new, self.us_new)]
         self.new_is_artif = bool(self.new_matrix.is_artificial)
 
         if self.new_matrix.couverture:
@@ -48,7 +35,7 @@ class AutoOcsgeDiff(AutoLoadMixin, OcsgeDiff):
         if self.new_matrix.usage:
             self.us_new_label = self.new_matrix.usage.label
 
-        self.old_matrix = matrix_list[(self.cs_old, self.us_old)]
+        self.old_matrix = CouvertureUsageMatrix.matrix_dict()[(self.cs_old, self.us_old)]
         self.old_is_artif = bool(self.old_matrix.is_artificial)
 
         if self.old_matrix.couverture:
@@ -68,52 +55,15 @@ class AutoOcsgeDiff(AutoLoadMixin, OcsgeDiff):
             )
         )
 
+
 # ##############
 #   ARCACHON
 # ##############
 
-class ArcachonOcsge2015(AutoLoadMixin, Ocsge):
-    mapping = {
-        "couverture": "couverture",
-        "usage": "usage",
-        "mpoly": "MULTIPOLYGON",
-    }
-
-    @classmethod
-    def clean_data(cls):
-        qs = cls.objects.filter(mpoly__intersects=gironde.mpoly)
-        qs = qs.filter(year=cls._year)
-        qs.delete()
-
-    def save(self, *args, **kwargs):
-        self.year = self.__class__._year
-        key = (self.couverture, self.usage)
-
-        if key not in matrix_list:
-            self.is_artificial = False
-            return super().save(*args, **kwargs)
-
-        self.matrix = matrix_list[key]
-        self.is_artificial = bool(self.matrix.is_artificial)
-
-        if self.matrix.couverture:
-            self.couverture_label = self.matrix.couverture.label
-        if self.matrix.usage:
-            self.usage_label = self.matrix.usage.label
-
-        return super().save(*args, **kwargs)
-
-    @classmethod
-    def calculate_fields(cls):
-        cls.objects.all().filter(surface__isnull=True).update(
-            surface=Cast(
-                Area(Transform("mpoly", 2154)),
-                DecimalField(max_digits=15, decimal_places=4),
-            )
-        )
 
 class ArcachonOcsge(AutoLoadMixin, Ocsge):
-    class Meta: proxy = True
+    class Meta:
+        proxy = True
 
     mapping = {
         "couverture": "couverture",
@@ -123,7 +73,7 @@ class ArcachonOcsge(AutoLoadMixin, Ocsge):
 
     @classmethod
     def clean_data(cls):
-        qs = cls.objects.filter(mpoly__intersects=gironde.mpoly)
+        qs = cls.objects.filter(mpoly__intersects=Departement.objects.get(name="Gironde").mpoly)
         qs = qs.filter(year=cls._year)
         qs.delete()
 
@@ -131,11 +81,11 @@ class ArcachonOcsge(AutoLoadMixin, Ocsge):
         self.year = self.__class__._year
         key = (self.couverture, self.usage)
 
-        if key not in matrix_list:
+        if key not in CouvertureUsageMatrix.matrix_dict():
             self.is_artificial = False
             return super().save(*args, **kwargs)
 
-        self.matrix = matrix_list[key]
+        self.matrix = CouvertureUsageMatrix.matrix_dict()[key]
         self.is_artificial = bool(self.matrix.is_artificial)
 
         if self.matrix.couverture:
@@ -158,6 +108,7 @@ class ArcachonOcsge(AutoLoadMixin, Ocsge):
             )
         )
 
+
 class ArcachonOcsge2015(ArcachonOcsge):
     """
     Données de l'OCSGE pour l'année 2015
@@ -165,14 +116,16 @@ class ArcachonOcsge2015(ArcachonOcsge):
     python manage.py load_data --class public_data.models.Ocsge2015
     """
 
-    class Meta: proxy = True
+    class Meta:
+        proxy = True
 
     shape_file_path = "OCSGE_2015.zip"
     _year = 2015
 
 
 class ArcachonOcsge2018(ArcachonOcsge):
-    class Meta: proxy = True
+    class Meta:
+        proxy = True
 
     shape_file_path = "OCSGE_2018.zip"
     _year = 2018
@@ -184,7 +137,8 @@ class ArcachonArtif(AutoOcsgeDiff):
     Données construites par Philippe
     """
 
-    class Meta: proxy = True
+    class Meta:
+        proxy = True
 
     shape_file_path = "a_b_2015_2018.zip"
     _year_new = 2018
@@ -200,20 +154,21 @@ class ArcachonArtif(AutoOcsgeDiff):
 
     @classmethod
     def clean_data(cls):
-        qs = cls.objects.filter(mpoly__intersects=gironde.mpoly)
+        qs = cls.objects.filter(mpoly__intersects=Departement.objects.get(name="Gironde").mpoly)
         qs = qs.filter(year_new=cls._year_new, year_old=cls._year_old)
         qs = qs.filter(is_new_natural=False, is_new_artif=True)
         qs.delete()
 
 
 class ArcachonRenat(ArcachonArtif):
-    class Meta: proxy = True
+    class Meta:
+        proxy = True
 
     shape_file_path = "a_b_2015_2018.zip"
 
     @classmethod
     def clean_data(cls):
-        qs = cls.objects.filter(mpoly__intersects=gironde.mpoly)
+        qs = cls.objects.filter(mpoly__intersects=Departement.objects.get(name="Gironde").mpoly)
         qs = qs.filter(year_new=cls._year_new, year_old=cls._year_old)
         qs = qs.filter(is_new_natural=True, is_new_artif=False)
         qs.delete()
@@ -225,7 +180,8 @@ class ArcachonRenat(ArcachonArtif):
 
 
 class GersOcsge(AutoLoadMixin, Ocsge):
-    class Meta: proxy = True
+    class Meta:
+        proxy = True
 
     mapping = {
         "id_source": "ID",
@@ -237,7 +193,7 @@ class GersOcsge(AutoLoadMixin, Ocsge):
     def save(self, *args, **kwargs):
         key = (self.couverture, self.usage)
 
-        self.matrix = matrix_list[key]
+        self.matrix = CouvertureUsageMatrix.matrix_dict()[key]
         self.is_artificial = bool(self.matrix.is_artificial)
 
         if self.matrix.couverture:
@@ -251,7 +207,7 @@ class GersOcsge(AutoLoadMixin, Ocsge):
 
     @classmethod
     def clean_data(cls):
-        qs = cls.objects.filter(mpoly__intersects=gers.mpoly)
+        qs = cls.objects.filter(mpoly__intersects=Departement.objects.get(name="Gers").mpoly)
         qs = qs.filter(year=cls.year)
         qs.delete()
 
@@ -266,14 +222,16 @@ class GersOcsge(AutoLoadMixin, Ocsge):
 
 
 class GersOcsge2016(GersOcsge):
-    class Meta: proxy = True
+    class Meta:
+        proxy = True
 
     shape_file_path = "gers_ocsge_2016.zip"
     year = 2016
 
 
 class GersOcsge2019(GersOcsge):
-    class Meta: proxy = True
+    class Meta:
+        proxy = True
 
     shape_file_path = "gers_ocsge_2019.zip"
     year = 2019
@@ -284,7 +242,9 @@ class GersOcsgeDiff(AutoOcsgeDiff):
     Email du dev du 06.10.2022: on fait la diff entre le plus récent et celui d'avant.
     avant = 2019, après = 2016
     """
-    class Meta: proxy = True
+
+    class Meta:
+        proxy = True
 
     _year_new = 2019
     _year_old = 2016
@@ -301,13 +261,14 @@ class GersOcsgeDiff(AutoOcsgeDiff):
 
     @classmethod
     def clean_data(cls):
-        qs = cls.objects.filter(mpoly__intersects=gers.mpoly)
+        qs = cls.objects.filter(mpoly__intersects=Departement.objects.get(name="Gers").mpoly)
         qs = qs.filter(year_new=cls._year_new, year_old=cls._year_old)
         qs.delete()
 
 
 class GersZoneConstruite2016(AutoLoadMixin, ZoneConstruite):
-    class Meta: proxy = True
+    class Meta:
+        proxy = True
 
     _year = 2016
     shape_file_path = "gers_zone_construite_2016.zip"
@@ -324,12 +285,14 @@ class GersZoneConstruite2016(AutoLoadMixin, ZoneConstruite):
 
     @classmethod
     def clean_data(cls):
-        qs = cls.objects.filter(mpoly__intersects=gers.mpoly)
+        qs = cls.objects.filter(mpoly__intersects=Departement.objects.get(name="Gers").mpoly)
         qs = qs.filter(year=cls._year)
         qs.delete()
 
+
 class GersZoneConstruite2019(GersZoneConstruite2016):
-    class Meta: proxy = True
+    class Meta:
+        proxy = True
 
     _year = 2019
     shape_file_path = "gers_zone_construite_2019.zip"
@@ -349,7 +312,8 @@ class GersZoneConstruite2019(GersZoneConstruite2016):
 
 
 class BourgogneFrancheComteOcsge(AutoLoadMixin, Ocsge):
-    class Meta: proxy = True
+    class Meta:
+        proxy = True
 
     mapping = {
         "id_source": "ID",
@@ -362,7 +326,7 @@ class BourgogneFrancheComteOcsge(AutoLoadMixin, Ocsge):
     def save(self, *args, **kwargs):
         key = (self.couverture, self.usage)
 
-        self.matrix = matrix_list[key]
+        self.matrix = CouvertureUsageMatrix.matrix_dict()[key]
         self.is_artificial = bool(self.matrix.is_artificial)
 
         if self.matrix.couverture:
@@ -376,7 +340,11 @@ class BourgogneFrancheComteOcsge(AutoLoadMixin, Ocsge):
 
     @classmethod
     def clean_data(cls):
-        qs = cls.objects.all().filter(mpoly__intersects=bourgogne_france_compte.mpoly).filter(year=cls.year)
+        qs = (
+            cls.objects.all()
+            .filter(mpoly__intersects=Region.objects.get(name="Bourgogne-Franche-Comté").mpoly)
+            .filter(year=cls.year)
+        )
         qs.delete()
 
     @classmethod
@@ -389,9 +357,9 @@ class BourgogneFrancheComteOcsge(AutoLoadMixin, Ocsge):
         )
 
 
-
 class CotedorOcsge2010(BourgogneFrancheComteOcsge):
-    class Meta: proxy = True
+    class Meta:
+        proxy = True
 
     departement_name = "Côte-d'Or"
     shape_file_path = "cotedor_ocsge_2010.zip"
@@ -399,7 +367,8 @@ class CotedorOcsge2010(BourgogneFrancheComteOcsge):
 
 
 class CotedorOcsge2017(BourgogneFrancheComteOcsge):
-    class Meta: proxy = True
+    class Meta:
+        proxy = True
 
     departement_name = "Côte-d'Or"
     shape_file_path = "cotedor_ocsge_2017.zip"
@@ -407,7 +376,8 @@ class CotedorOcsge2017(BourgogneFrancheComteOcsge):
 
 
 class DoubsOcsge2010(BourgogneFrancheComteOcsge):
-    class Meta: proxy = True
+    class Meta:
+        proxy = True
 
     departement_name = "Doubs"
     shape_file_path = "doubs_ocsge_2010.zip"
@@ -415,7 +385,8 @@ class DoubsOcsge2010(BourgogneFrancheComteOcsge):
 
 
 class DoubsOcsge2017(BourgogneFrancheComteOcsge):
-    class Meta: proxy = True
+    class Meta:
+        proxy = True
 
     departement_name = "Doubs"
     shape_file_path = "doubs_ocsge_2017.zip"
@@ -423,7 +394,8 @@ class DoubsOcsge2017(BourgogneFrancheComteOcsge):
 
 
 class JuraOcsge2010(BourgogneFrancheComteOcsge):
-    class Meta: proxy = True
+    class Meta:
+        proxy = True
 
     departement_name = "Jura"
     shape_file_path = "jura_ocsge_2010.zip"
@@ -431,7 +403,8 @@ class JuraOcsge2010(BourgogneFrancheComteOcsge):
 
 
 class JuraOcsge2017(BourgogneFrancheComteOcsge):
-    class Meta: proxy = True
+    class Meta:
+        proxy = True
 
     departement_name = "Jura"
     shape_file_path = "jura_ocsge_2017.zip"
@@ -446,7 +419,8 @@ class JuraOcsge2017(BourgogneFrancheComteOcsge):
 
 
 class NievreOcsge2011(BourgogneFrancheComteOcsge):
-    class Meta: proxy = True
+    class Meta:
+        proxy = True
 
     departement_name = "Nièvre"
     shape_file_path = "nievre_ocsge_2011.zip"
@@ -454,7 +428,8 @@ class NievreOcsge2011(BourgogneFrancheComteOcsge):
 
 
 class NievreOcsge2017(BourgogneFrancheComteOcsge):
-    class Meta: proxy = True
+    class Meta:
+        proxy = True
 
     departement_name = "Nièvre"
     shape_file_path = "nievre_ocsge_2017.zip"
@@ -462,7 +437,8 @@ class NievreOcsge2017(BourgogneFrancheComteOcsge):
 
 
 class HauteSaoneOcsge2011(BourgogneFrancheComteOcsge):
-    class Meta: proxy = True
+    class Meta:
+        proxy = True
 
     departement_name = "Haute-Saône"
     shape_file_path = "haute_saone_ocsge_2011.zip"
@@ -470,7 +446,8 @@ class HauteSaoneOcsge2011(BourgogneFrancheComteOcsge):
 
 
 class HauteSaoneOcsge2017(BourgogneFrancheComteOcsge):
-    class Meta: proxy = True
+    class Meta:
+        proxy = True
 
     departement_name = "Haute-Saône"
     shape_file_path = "haute_saone_ocsge_2017.zip"
@@ -478,7 +455,8 @@ class HauteSaoneOcsge2017(BourgogneFrancheComteOcsge):
 
 
 class SaoneEtLoireOcsge2011(BourgogneFrancheComteOcsge):
-    class Meta: proxy = True
+    class Meta:
+        proxy = True
 
     departement_name = "Saône-et-Loire"
     shape_file_path = "saone_et_loire_ocsge_2011.zip"
@@ -493,7 +471,8 @@ class SaoneEtLoireOcsge2011(BourgogneFrancheComteOcsge):
 
 
 class SaoneEtLoireOcsge2018(BourgogneFrancheComteOcsge):
-    class Meta: proxy = True
+    class Meta:
+        proxy = True
 
     departement_name = "Saône-et-Loire"
     shape_file_path = "saone_et_loire_ocsge_2018.zip"
@@ -501,7 +480,8 @@ class SaoneEtLoireOcsge2018(BourgogneFrancheComteOcsge):
 
 
 class YonneOcsge2011(BourgogneFrancheComteOcsge):
-    class Meta: proxy = True
+    class Meta:
+        proxy = True
 
     departement_name = "Yonne"
     shape_file_path = "yonne_ocsge_2011.zip"
@@ -509,7 +489,8 @@ class YonneOcsge2011(BourgogneFrancheComteOcsge):
 
 
 class YonneOcsge2018(BourgogneFrancheComteOcsge):
-    class Meta: proxy = True
+    class Meta:
+        proxy = True
 
     departement_name = "Yonne"
     shape_file_path = "yonne_ocsge_2018.zip"
@@ -517,7 +498,8 @@ class YonneOcsge2018(BourgogneFrancheComteOcsge):
 
 
 class BelfortOcsge2010(BourgogneFrancheComteOcsge):
-    class Meta: proxy = True
+    class Meta:
+        proxy = True
 
     departement_name = "Territoire de Belfort"
     shape_file_path = "territoire_de_belfort_ocsge_2010.zip"
@@ -525,7 +507,8 @@ class BelfortOcsge2010(BourgogneFrancheComteOcsge):
 
 
 class BelfortOcsge2017(BourgogneFrancheComteOcsge):
-    class Meta: proxy = True
+    class Meta:
+        proxy = True
 
     departement_name = "Territoire de Belfort"
     shape_file_path = "territoire_de_belfort_ocsge_2017.zip"
@@ -537,7 +520,9 @@ class BourgogneFrancheComteOcsgeDiff1017(AutoOcsgeDiff):
     Email du dev du 06.10.2022: on fait la diff entre le plus récent et celui d'avant.
     Avant = 2019, après = 2016
     """
-    class Meta: proxy = True
+
+    class Meta:
+        proxy = True
 
     _year_new = 2017
     _year_old = 2010
@@ -545,7 +530,7 @@ class BourgogneFrancheComteOcsgeDiff1017(AutoOcsgeDiff):
     @property
     @classmethod
     def departement_name(cls):
-        raise NotImplementedError('You must define departement_name')
+        raise NotImplementedError("You must define departement_name")
 
     mapping = {
         "cs_old": "cs_apres",
@@ -569,7 +554,8 @@ class BourgogneFrancheComteOcsgeDiff1017(AutoOcsgeDiff):
 
 
 class CotedorOcsgeDiff1017(BourgogneFrancheComteOcsgeDiff1017):
-    class Meta: proxy = True
+    class Meta:
+        proxy = True
 
     _year_new = 2017
     _year_old = 2010
@@ -578,7 +564,8 @@ class CotedorOcsgeDiff1017(BourgogneFrancheComteOcsgeDiff1017):
 
 
 class DoubsOcsgeDiff1017(BourgogneFrancheComteOcsgeDiff1017):
-    class Meta: proxy = True
+    class Meta:
+        proxy = True
 
     _year_new = 2017
     _year_old = 2010
@@ -587,7 +574,8 @@ class DoubsOcsgeDiff1017(BourgogneFrancheComteOcsgeDiff1017):
 
 
 class JuraOcsgeDiff1017(BourgogneFrancheComteOcsgeDiff1017):
-    class Meta: proxy = True
+    class Meta:
+        proxy = True
 
     _year_new = 2017
     _year_old = 2010
@@ -596,7 +584,8 @@ class JuraOcsgeDiff1017(BourgogneFrancheComteOcsgeDiff1017):
 
 
 class NievreOcsgeDiff1017(BourgogneFrancheComteOcsgeDiff1017):
-    class Meta: proxy = True
+    class Meta:
+        proxy = True
 
     _year_new = 2017
     _year_old = 2011
@@ -625,7 +614,8 @@ class SaoneEtLoireOcsgeDiff1017(BourgogneFrancheComteOcsgeDiff1017):
 
 
 class YonneOcsgeDiff1118(BourgogneFrancheComteOcsgeDiff1017):
-    class Meta: proxy = True
+    class Meta:
+        proxy = True
 
     _year_new = 2018
     _year_old = 2011
@@ -634,7 +624,8 @@ class YonneOcsgeDiff1118(BourgogneFrancheComteOcsgeDiff1017):
 
 
 class BelfortOcsgeDiff1017(BourgogneFrancheComteOcsgeDiff1017):
-    class Meta: proxy = True
+    class Meta:
+        proxy = True
 
     _year_new = 2017
     _year_old = 2011
@@ -672,14 +663,11 @@ class Command(BaseCommand):
         self.verbose = not options["no_verbose"]
         item_list = [
             # BASSIN D'ARCACHON #####
-
             ArcachonOcsge2018,
             ArcachonOcsge2015,
             ArcachonArtif,
             ArcachonRenat,
-
             # GERS #####
-
             GersOcsge2016,
             GersOcsge2019,
             GersOcsgeDiff,
