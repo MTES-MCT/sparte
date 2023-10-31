@@ -1,6 +1,4 @@
 import logging
-
-from abc import abstractmethod, ABC
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import Dict
@@ -89,7 +87,6 @@ class AutoLoadMixin:
         return temp_dir_path
 
     def __get_shapefile_path_from_folder(folder_path: Path) -> Path:
-
         logger.info("File copied from bucket and extracted in temp dir")
 
         for tempfile in folder_path.iterdir():
@@ -97,7 +94,6 @@ class AutoLoadMixin:
                 return tempfile
 
         raise FileNotFoundError("No file with .shp suffix")
-
 
     @classmethod
     def clean_data(cls):
@@ -110,7 +106,7 @@ class AutoLoadMixin:
     @classmethod
     def load(
         cls,
-        use_local_file=False,
+        local_file_path=None,
         layer_mapper_verbose=True,
         layer_mapper_strict=True,
         layer_mapper_silent=False,
@@ -122,6 +118,7 @@ class AutoLoadMixin:
         All arguments are optional and only affects how LayerMapper behave
 
         Args:
+            local_file_path: path to a local shapefile
             layer_mapper_verbose: print more information
             layer_mapper_strict: raise exception if a field is missing
             layer_mapper_silent: do not print anything
@@ -136,7 +133,7 @@ class AutoLoadMixin:
             - https://docs.djangoproject.com/en/4.2/ref/contrib/gis/layermapping/
         """
 
-        if not use_local_file:
+        if not local_file_path:
             logger.info("Retrieving shapefile from S3")
 
             shapefile_temp_folder = cls.__retrieve_zipped_shape_file_folder_from_s3(cls.shape_file_path)
@@ -144,7 +141,7 @@ class AutoLoadMixin:
         else:
             logger.info("Using local shapefile")
 
-            shape_file_path = Path(cls.shape_file_path)
+            shape_file_path = Path(f"public_data/local_data/{local_file_path}")
 
         logger.log(logging.INFO, "Shapefile path: %s", shape_file_path)
 
@@ -157,7 +154,7 @@ class AutoLoadMixin:
             data=shape_file_path,
             mapping=cls.mapping,
             encoding=layer_mapper_encoding,
-            transaction_mode="commit_on_success"
+            transaction_mode="commit_on_success",
         )
 
         layer_mapper.save(
@@ -165,10 +162,11 @@ class AutoLoadMixin:
             silent=layer_mapper_silent,
             verbose=layer_mapper_verbose,
             progress=True,
-            step=layer_mapper_step
+            step=layer_mapper_step,
         )
 
         cls.calculate_fields()
+
 
 class DataColorationMixin:
     """DataColorationMixin add class' methods:
