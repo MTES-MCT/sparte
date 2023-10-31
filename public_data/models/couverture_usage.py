@@ -212,7 +212,7 @@ class CouvertureUsageMatrix(models.Model):
         return f"{cs}-{us}:{a}{c}{n}"
 
     @classmethod
-    @lru_cache(maxsize=32)
+    @lru_cache()
     def matrix_dict(cls):
         _matrix_dict = dict()
 
