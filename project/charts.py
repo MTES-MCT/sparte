@@ -17,13 +17,57 @@ class ProjectChart(charts.Chart):
         super().__init__()
 
 
-class ConsoComparisonChart(ProjectChart):
+class ConsoChart(ProjectChart):
     name = "conso comparison"
     param = {
         "title": {"text": ""},
         "yAxis": {"title": {"text": "Consommé (en ha)"}},
         "xAxis": {"type": "category"},
         "legend": {"layout": "vertical", "align": "right", "verticalAlign": "top"},
+        "tooltip": {
+            "headerFormat": "<b>{series.name}</b><br/>",
+            "pointFormat": "{point.name}: {point.y}",
+            "valueSuffix": " Ha",
+            "valueDecimals": 0,
+        },
+        "series": [],
+    }
+
+    def get_series(self):
+        return {
+            land.name: land.get_conso_per_year(
+                self.project.analyse_start_date,
+                self.project.analyse_end_date,
+                coef=1,
+            )
+            for land in self.project.get_look_a_like()
+        }
+
+    def add_series(self):
+        self.add_serie(
+            self.project.name,
+            self.project.get_conso_per_year(),
+            **{
+                "color": "#ff0000",
+                "dashStyle": "ShortDash",
+            },
+        )
+        super().add_series()
+
+
+class ConsoComparisonChart(ConsoChart):
+    name = "conso comparison"
+    param = {
+        "title": {"text": "Consommation proportionnelle à la surface"},
+        "yAxis": {"title": {"text": "Consommé (en ha)"}},
+        "xAxis": {"type": "category"},
+        "legend": {"layout": "vertical", "align": "right", "verticalAlign": "top"},
+        "tooltip": {
+            "headerFormat": "<b>{series.name}</b><br/>",
+            "pointFormat": "{point.name}: {point.y}",
+            "valueSuffix": " Ha",
+            "valueDecimals": 1,
+        },
         "series": [],
     }
 
@@ -32,8 +76,6 @@ class ConsoComparisonChart(ProjectChart):
         super().__init__(*args, **kwargs)
         if self.relative:
             self.chart["title"]["text"] = "Consommation proportionnelle à la surface"
-            self.chart["yAxis"]["visible"] = False
-            self.chart["tooltip"] = {"enabled": False}
 
     def get_series(self):
         return {
@@ -874,7 +916,7 @@ class PopChart(ProjectChart):
 class ConsoComparisonPopChart(ProjectChart):
     name = "conso comparison"
     param = {
-        "title": {"text": ("Consommation d'espaces en fonction de l'évolution de la population du" " territoire")},
+        "title": {"text": ("Ha par nouvel habitant")},
         "yAxis": {"title": {"text": "Consommation par habitant (en ha)"}},
         "xAxis": {"type": "category"},
         "legend": {"layout": "vertical", "align": "right", "verticalAlign": "middle"},
@@ -941,7 +983,7 @@ class HouseholdChart(ProjectChart):
 class ConsoComparisonHouseholdChart(ProjectChart):
     name = "conso comparison"
     param = {
-        "title": {"text": ("Consommation d'espaces en fonction de l'évolution du nombre de ménages" " du territoire")},
+        "title": {"text": ("Ha par nouveau ménage accueilli")},
         "yAxis": {"title": {"text": "Consommation par ménage (en ha)"}},
         "xAxis": {"type": "category"},
         "legend": {"layout": "vertical", "align": "right", "verticalAlign": "middle"},
@@ -1000,8 +1042,8 @@ class SurfaceChart(ProjectChart):
 
     def get_series(self):
         if not self.series:
-            self.series = {self.project.name: {"surface": self.project.area}}
-            self.series.update({land.name: {"surface": land.area} for land in self.project.get_look_a_like()})
+            self.series = {self.project.name: {"Territoire": self.project.area}}
+            self.series.update({land.name: {"Territoire": land.area} for land in self.project.get_look_a_like()})
 
         return self.series
 

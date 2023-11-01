@@ -82,7 +82,7 @@ class ProjectReportConsoView(ProjectReportBaseView):
         objective_chart = charts.ObjectiveChart(project)
 
         # comparison chart
-        comparison_chart = charts.ConsoComparisonChart(project, relative=False)
+        comparison_chart = charts.ConsoChart(project)
 
         # Liste des groupes de communes
         groups_names = project.projectcommune_set.all().order_by("group_name")
@@ -593,7 +593,7 @@ class ConsoRelativeSurfaceChart(CacheMixin, UserQuerysetOrPublicMixin, DetailVie
 
     def get_context_data(self, **kwargs):
         indicateur_chart = charts.SurfaceChart(self.object)
-        comparison_chart = charts.ConsoComparisonChart(self.object, relative=True)
+        comparison_chart = charts.ConsoComparisonChart(self.object)
         kwargs.update(
             {
                 "diagnostic": self.object,
