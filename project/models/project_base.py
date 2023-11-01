@@ -48,8 +48,6 @@ class ProjectNotSaved(BaseException):
     """Exception raised when project needs to be saved once before performing the
     requested action"""
 
-    pass
-
 
 def upload_in_project_folder(project: "Project", filename: str) -> str:
     """Define where to upload project's cover image : diagnostic/<int:id>
