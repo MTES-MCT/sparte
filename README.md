@@ -40,7 +40,7 @@ Le site est désormais accessible en local à cette adresse:
 - En **local** ces valeurs doivent être dans le fichier .env à la racine du projet.
 - Pour le déploiement sur **scalingo**, ces variables sont à ajouter dans la section "Environnement" du container.
 
-| Nom | Description | Valeur locale |
+| Nom | Description | Valeur par défaut en local |
 |-----|-------------|---------------|
 | ALERT_DIAG_MEDIUM | Comment envoyer les alertes des diagnostics bloqués: mattermost, email, both | |
 | ALERT_DIAG_EMAIL_RECIPIENTS | Liste des adresses e-mails auxuqelles envoyées les alertes diagnostics bloqués | 127.0.0.1,localhost |
@@ -68,6 +68,7 @@ Le site est désormais accessible en local à cette adresse:
 | ENVIRONMENT | indique sur quel environnement est exécuté l'app. Choix possibles: local, staging, prod | local |
 | GOOGLE_ADWORDS_ACTIVATE | indique s'il faut ajouter des google tags aux pages | 1 |
 | HIGHCHART_SERVER | url pour accéder au serveur générant des images à partir de paramètres Highcharts | https://highcharts-export.osc-fr1.scalingo.io |
+| LOCAL_FILE_DIRECTORY | Emplacement des données locales (utile pour charger des shapefile en local au lieu de S3) | public_data/local_data |
 | MATTERMOST_WEBHOOK | Webhook personnel pour envoyer des messages dans Mattermost | https://mattermost.incubateur.net/hooks/uak581f8bidyxp5td67rurj5sh |
 | MATOMO_ACTIVATE | Détermine si des infos doivent être envoyé à Matomo | 0 |
 | MATOMO_SCRIPT_NAME | | |
