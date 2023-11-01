@@ -1,0 +1,87 @@
+name: Check all Python's linters
+
+on:
+  push:
+    branches: [ develop ]
+  pull_request:
+    branches: [ develop ]
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Use cache to check if rebuild is necessary
+      id: cache-lock
+      uses: actions/cache@v3
+      with:
+        path: .
+        key: lock-${{ hashFiles('Pipfile.lock', 'packages.lock') }}
+    - if: ${{ steps.cache-lock.outputs.cache-hit != 'true' }}
+      name: Build and push Docker image
+      run: |
+        docker login -u swannbm -p ${{ secrets.DOCKERHUB_PASSWORD }}
+        docker build -t swannbm/basesparte:latest .
+        docker push swannbm/basesparte:latest
+
+  linters:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    container:
+      image: swannbm/basesparte:latest
+      env:
+        DATABASE_URL: postgis://postgres:postgres@db:5432/postgres
+        SECRET: ${{ secrets.SECRET }}
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        ENVIRONMENT: github
+        DEBUG: 0
+        DOMAIN_URL: http://localhost:8080/
+        CELERY_BROKER_URL: redis://127.0.0.1:6379/0
+        SCALINGO_REDIS_URL: redis://127.0.0.1:6379/0
+        CELERY_RESULT_BACKEND: django-db
+        AWS_STORAGE_BUCKET_NAME: sparte-staging
+        AWS_S3_REGION_NAME: eu-west-3
+        AWS_LOCATION: github
+        EMAIL_ENGINE: local
+        DEFAULT_FROM_EMAIL: contact@anonymous.com
+        MATOMO_ACTIVATE: 0
+        HIGHCHART_SERVER: http://localhost:8090/
+    services:
+      db:
+        image: kartoza/postgis:13-3.1--v2021.09.08
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
+    defaults:
+      run:
+        working-directory: /app
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Move files to /app
+      run: |
+        echo "mv from $GITHUB_WORKSPACE to working directory"
+        mv $GITHUB_WORKSPACE/* .
+    - name: debug info
+      run: |
+        whoami
+        pwd
+        python --version
+        django-admin --version
+        ls -alh
+    - name: Check Black
+      run: black --check --include='\.py$' --exclude='/migrations/' .
+    - name: check isort
+      run: isort . --check-only --sp pyproject.toml
+    - name: check flake8
+      run: flake8 . --config=flake8
+    - name: Run pytest
+      run: pytest -vv
+      continue-on-error: true
+    # - name: Run mypy
+    #   run: mypy .
+    #   continue-on-error: true

@@ -9,7 +9,6 @@ __all__ = [
     "user_directory_path",
 ]
 
-
 from .project_base import Emprise, Project, ProjectCommune
 from .request import ErrorTracking, Request
 from .utils import user_directory_path
