@@ -1,5 +1,7 @@
 import logging
+from pathlib import Path
 
+import geopandas
 from django.contrib.gis.db.models.functions import Area, Transform
 from django.core.management.base import BaseCommand
 from django.db.models import DecimalField
@@ -760,6 +762,142 @@ class EssonneOcsgeDiff1821(AutoOcsgeDiff):
         qs.delete()
 
 
+class SeineEtMarneOcsge(AutoLoadMixin, Ocsge):
+    class Meta:
+        proxy = True
+
+    mapping = {
+        "id_source": "ID",
+        "couverture": "COUVERTURE",
+        "usage": "USAGE",
+        "mpoly": "MULTIPOLYGON",
+        # "millesime": "MILLESIME",
+        # "source": "SOURCE",
+        # "id_origine": "ID_ORIGINE",
+        # "ossature": "OSSATURE",
+        # "code_or": "CODE_OR",
+    }
+
+    def save(self, *args, **kwargs):
+        self.year = self.__class__._year
+        key = (self.couverture, self.usage)
+
+        if key not in CouvertureUsageMatrix.matrix_dict():
+            self.is_artificial = False
+            return super().save(*args, **kwargs)
+
+        self.matrix = CouvertureUsageMatrix.matrix_dict()[key]
+        self.is_artificial = bool(self.matrix.is_artificial)
+
+        if self.matrix.couverture:
+            self.couverture_label = self.matrix.couverture.label
+        if self.matrix.usage:
+            self.usage_label = self.matrix.usage.label
+
+        return super().save(*args, **kwargs)
+
+    @classmethod
+    def clean_data(cls):
+        qs = (
+            cls.objects.all()
+            .filter(mpoly__intersects=Departement.objects.get(name="Seine-et-Marne").mpoly)
+            .filter(year=cls._year)
+        )
+        qs.delete()
+
+
+class SeineEtMarneOcsge2017(SeineEtMarneOcsge):
+    class Meta:
+        proxy = True
+
+    shape_file_path = "seine_et_marne_ocsge_2017.zip"
+    _year = 2017
+
+
+class SeineEtMarneOcsge2021(SeineEtMarneOcsge):
+    class Meta:
+        proxy = True
+
+    shape_file_path = "seine_et_marne_ocsge_2021.zip"
+    _year = 2021
+
+
+class SeineEtMarneOcsgeZoneConstruite(AutoLoadMixin, ZoneConstruite):
+    class Meta:
+        proxy = True
+
+    mapping = {
+        "id_source": "OBJECTID",
+        "mpoly": "MULTIPOLYGON",
+        "millesime": "MILLESIME",
+        # "zc_type": "ZC_TYPE",
+    }
+
+    @classmethod
+    def prepare_shapefile(cls, shape_file_path: Path) -> Path:
+        gdf = geopandas.read_file(shape_file_path)
+
+        gdf["OBJECTID"] = gdf["OBJECTID"].astype(str)
+        gdf["MILLESIME"] = str(cls._year)  # could be in before_save but kept here for clarity
+
+        gdf.to_file(shape_file_path, driver="ESRI Shapefile")
+
+        return shape_file_path
+
+    def save(self, *args, **kwargs):
+        self.year = self._year
+        self.surface = self.mpoly.transform(2154, clone=True).area
+        super().save(*args, **kwargs)
+
+    @classmethod
+    def clean_data(cls):
+        qs = cls.objects.filter(mpoly__intersects=Departement.objects.get(name="Seine-et-Marne").mpoly)
+        qs = qs.filter(year=cls._year)
+        qs.delete()
+
+
+class SeineEtMarneOcsgeZoneConstruite2017(SeineEtMarneOcsgeZoneConstruite):
+    class Meta:
+        proxy = True
+
+    shape_file_path = "seine_et_marne_zone_construite_2017.zip"
+    _year = 2017
+
+
+class SeineEtMarneOcsgeZoneConstruite2021(SeineEtMarneOcsgeZoneConstruite):
+    class Meta:
+        proxy = True
+
+    shape_file_path = "seine_et_marne_zone_construite_2021.zip"
+    _year = 2021
+
+
+class SeineEtMarneOcsgeDiff1721(AutoOcsgeDiff):
+    class Meta:
+        proxy = True
+
+    _year_old = 2017
+    _year_new = 2021
+
+    shape_file_path = "seine_et_marne_diff_2017_2021.zip"
+
+    mapping = {
+        "cs_new": "CS_2021",
+        "us_new": "US_2021",
+        "cs_old": "CS_2017",
+        "us_old": "US_2017",
+        "mpoly": "MULTIPOLYGON",
+        # "oss_2017": "OSS_2017",
+        # "oss_2021": "OSS_2021",
+    }
+
+    @classmethod
+    def clean_data(cls):
+        qs = cls.objects.filter(mpoly__intersects=Departement.objects.get(name="Seine-et-Marne").mpoly)
+        qs = qs.filter(year_new=cls._year_new, year_old=cls._year_old)
+        qs.delete()
+
+
 class Command(BaseCommand):
     help = "Load all data from OCS GE"
 
@@ -808,7 +946,18 @@ class Command(BaseCommand):
             EssonneOcsgeDiff1821,
             EssonneOcsgeZoneConstruite2018,
             EssonneOcsgeZoneConstruite2021,
+            # Seine-et-Marne ####
+            SeineEtMarneOcsge2017,
+            SeineEtMarneOcsge2021,
+            SeineEtMarneOcsgeDiff1721,
+            SeineEtMarneOcsgeZoneConstruite2017,
+            SeineEtMarneOcsgeZoneConstruite2021,
         ]
+
+        if options.get("truncate"):
+            logger.info("Full truncate OCSGE")
+            self.truncate()
+            logger.info("End truncate OCSGE")
 
         item_name_filter = options.get("item")
 
@@ -821,12 +970,7 @@ class Command(BaseCommand):
             return self.load(items)
 
         logger.info("Full load")
-
-        if options.get("truncate"):
-            self.truncate()
-
         self.load(item_list)
-
         logger.info("End loading OCSGE")
 
     def truncate(self):

@@ -56,6 +56,10 @@ class AutoLoadMixin:
     def calculate_fields(cls):
         pass
 
+    @classmethod
+    def prepare_shapefile(cls, shape_file_path: Path) -> Path:
+        return shape_file_path
+
     def __check_path_is_a_regular_file(path: Path):
         if not path.is_file():
             raise FileNotFoundError(f"{path} is not a regular file")
@@ -66,8 +70,15 @@ class AutoLoadMixin:
 
     @classmethod
     def __check_shapefile_path(cls, shape_file_path: Path) -> Path:
+        """
+        Throws:
+            FileNotFoundError: if the shapefile is not found on S3 or locally
+            NotImplementedError: if the child class does not implement the shape_file_path property
+        """
         cls.__check_path_is_a_regular_file(shape_file_path)
         cls.__check_path_suffix_is_shapefile(shape_file_path)
+
+        return shape_file_path
 
     def __retrieve_and_unzip_shape_file_folder_from_s3(file_name: str) -> Path:
         storage = DataStorage()
@@ -146,7 +157,8 @@ class AutoLoadMixin:
 
         logger.log(logging.INFO, "Shapefile path: %s", shape_file_path)
 
-        cls.__check_shapefile_path(shape_file_path)
+        shape_file_path = cls.prepare_shapefile(shape_file_path)
+        shape_file_path = cls.__check_shapefile_path(shape_file_path)
 
         cls.clean_data()
 
