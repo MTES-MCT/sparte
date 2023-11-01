@@ -71,32 +71,15 @@ class ConsoComparisonChart(ConsoChart):
         "series": [],
     }
 
-    def __init__(self, *args, **kwargs):
-        self.relative = kwargs.pop("relative") if "relative" in kwargs else False
-        super().__init__(*args, **kwargs)
-        if self.relative:
-            self.chart["title"]["text"] = "Consommation proportionnelle à la surface"
-
     def get_series(self):
         return {
             land.name: land.get_conso_per_year(
                 self.project.analyse_start_date,
                 self.project.analyse_end_date,
-                coef=(self.project.area / float(land.area)) if self.relative else 1,
+                coef=self.project.area / float(land.area),
             )
             for land in self.project.get_look_a_like()
         }
-
-    def add_series(self):
-        self.add_serie(
-            self.project.name,
-            self.project.get_conso_per_year(),
-            **{
-                "color": "#ff0000",
-                "dashStyle": "ShortDash",
-            },
-        )
-        super().add_series()
 
 
 class ConsoCommuneChart(ProjectChart):
