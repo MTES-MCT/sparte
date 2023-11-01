@@ -99,10 +99,6 @@ class ArcachonOcsge(AutoLoadMixin, Ocsge):
 
     @classmethod
     def calculate_fields(cls):
-        """Override if you need to calculate some fields after loading data.
-        By default, it will calculate label for couverture and usage if couverture_field
-        and usage_field are set with the name of the field containing code (cs.2.1.3)
-        """
         cls.objects.all().filter(surface__isnull=True).update(
             surface=Cast(
                 Area(Transform("mpoly", 2154)),
@@ -834,15 +830,13 @@ class SeineEtMarneOcsgeZoneConstruite(AutoLoadMixin, ZoneConstruite):
     }
 
     @classmethod
-    def prepare_shapefile(cls, shape_file_path: Path) -> Path:
+    def prepare_shapefile(cls, shape_file_path: Path):
         gdf = geopandas.read_file(shape_file_path)
 
         gdf["OBJECTID"] = gdf["OBJECTID"].astype(str)
         gdf["MILLESIME"] = str(cls._year)  # could be in before_save but kept here for clarity
 
         gdf.to_file(shape_file_path, driver="ESRI Shapefile")
-
-        return shape_file_path
 
     def save(self, *args, **kwargs):
         self.year = self._year

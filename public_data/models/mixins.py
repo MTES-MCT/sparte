@@ -1,4 +1,5 @@
 import logging
+from os import getenv
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import Dict
@@ -31,11 +32,27 @@ class AutoLoadMixin:
     @property
     @classmethod
     def shape_file_path() -> str:
+        """
+        Path to the shapefile to load, either on S3 or locally
+
+        Local path is relative to the env variable LOCAL_FILE_DIRECTORY
+        S3 path is relative to the value defined in DataStorage.location
+
+        Example:
+        LOCAL_FILE_DIRECTORY = 'public_data/local_data'
+        shape_file_path = 'communes/communes-2021-01-01.shp'
+
+        will load the shapefile from public_data/local_data/communes/communes-2021-01-01.shp
+        """
         raise NotImplementedError("The shape_file_path property must be set in child class")
 
     @property
     @classmethod
     def mapping() -> Dict[str, str]:
+        """
+        Mapping between shapefile fields and model fields
+        for geodjango's LayerMapping
+        """
         raise NotImplementedError("The mapping property must be set in child class")
 
     def before_save(self):
@@ -54,11 +71,25 @@ class AutoLoadMixin:
 
     @classmethod
     def calculate_fields(cls):
+        """Override if you need to calculate some fields after loading data."""
         pass
 
     @classmethod
-    def prepare_shapefile(cls, shape_file_path: Path) -> Path:
-        return shape_file_path
+    def prepare_shapefile(cls, shape_file_path: Path):
+        """
+        Hook to prepare shapefile before loading it into database
+        Useful to modify shapefile fields type before mapping
+
+        Note that this hook cannot use cls.shape_file_path directly
+        because the data is not yet available when downloading from S3.
+
+        The shape_file_path argument in provided after the data is
+        downloaded and extracted in the load method.
+
+        Args:
+            shape_file_path: path to the shapefile to prepare
+        """
+        pass
 
     def __check_path_is_a_regular_file(path: Path):
         if not path.is_file():
@@ -69,34 +100,36 @@ class AutoLoadMixin:
             raise FileNotFoundError(f"{path} is not a shapefile")
 
     @classmethod
-    def __check_shapefile_path(cls, shape_file_path: Path) -> Path:
-        """
-        Throws:
-            FileNotFoundError: if the shapefile is not found on S3 or locally
-            NotImplementedError: if the child class does not implement the shape_file_path property
-        """
+    def __check_is_shape_file(cls, shape_file_path: Path):
         cls.__check_path_is_a_regular_file(shape_file_path)
         cls.__check_path_suffix_is_shapefile(shape_file_path)
 
-        return shape_file_path
-
-    def __retrieve_and_unzip_shape_file_folder_from_s3(file_name: str) -> Path:
+    def __retrieve_zipped_shapefile_from_s3(
+        file_name_on_s3: str,
+        output_path: Path,
+    ) -> Path:
         storage = DataStorage()
 
-        if not storage.exists(file_name):
-            raise FileNotFoundError(f"{file_name} could not be found on S3")
+        if not storage.exists(file_name_on_s3):
+            raise FileNotFoundError(f"{file_name_on_s3} could not be found on S3")
 
-        file_stream = storage.open(file_name)
+        output_zip_path = f"{output_path}/{file_name_on_s3}"
 
-        temp_dir_path = Path(TemporaryDirectory().name)
-        logger.info("Use temp directory %s", temp_dir_path)
+        storage.bucket.download_file(
+            Key=f"{storage.location}/{file_name_on_s3}",
+            Filename=output_zip_path,
+        )
 
-        with ZipFile(file_stream) as zip_file:
-            zip_file.extractall(temp_dir_path)
+        return output_zip_path
 
-        logger.info("File copied from bucket and extracted in temp dir")
+    def __extract_zipped_shapefile(
+        zipped_shapefile_path: Path,
+        output_path: Path,
+    ) -> Path:
+        with ZipFile(zipped_shapefile_path) as zip_file:
+            zip_file.extractall(output_path)
 
-        return temp_dir_path
+        return output_path
 
     def __get_shapefile_path_from_folder(folder_path: Path) -> Path:
         for tempfile in folder_path.rglob("*.shp"):
@@ -113,12 +146,13 @@ class AutoLoadMixin:
         Clean previous data before loading new one
         The implementation of the method should ensure idempotency
         """
-        raise NotImplementedError("Need to be overrided to delete old data before loading")
+        raise NotImplementedError(f"No clean_data method implemented for the class {cls.__name__}")
 
     @classmethod
     def load(
         cls,
         local_file_path=None,
+        local_file_directory=getenv("LOCAL_FILE_DIRECTORY"),
         layer_mapper_verbose=True,
         layer_mapper_strict=True,
         layer_mapper_silent=False,
@@ -144,41 +178,57 @@ class AutoLoadMixin:
         SeeAlso:
             - https://docs.djangoproject.com/en/4.2/ref/contrib/gis/layermapping/
         """
+        with TemporaryDirectory() as temporary_directory:
+            if not local_file_path:
+                logger.info("Retrieving zipped shapefile from S3")
 
-        if not local_file_path:
-            logger.info("Retrieving shapefile from S3")
+                zipped_shapefile_path = cls.__retrieve_zipped_shapefile_from_s3(
+                    file_name_on_s3=cls.shape_file_path,
+                    output_path=Path(temporary_directory),
+                )
+                logger.info(f"Zipped shapefile temporary path: {zipped_shapefile_path}")
 
-            shapefile_temp_folder = cls.__retrieve_and_unzip_shape_file_folder_from_s3(cls.shape_file_path)
-            shape_file_path = cls.__get_shapefile_path_from_folder(shapefile_temp_folder)
-        else:
-            logger.info("Using local shapefile")
+                logger.info("Extracting zipped shapefile")
 
-            shape_file_path = Path(f"public_data/local_data/{local_file_path}")
+                shapefile_folder_path = cls.__extract_zipped_shapefile(
+                    zipped_shapefile_path=zipped_shapefile_path,
+                    output_path=Path(temporary_directory),
+                )
 
-        logger.log(logging.INFO, "Shapefile path: %s", shape_file_path)
+                logger.info(f"Extracted shapefile folder path: {shapefile_folder_path}")
 
-        shape_file_path = cls.prepare_shapefile(shape_file_path)
-        shape_file_path = cls.__check_shapefile_path(shape_file_path)
+                shape_file_path = cls.__get_shapefile_path_from_folder(shapefile_folder_path)
+            else:
+                logger.info("Using local shapefile")
 
-        cls.clean_data()
+                shape_file_path = Path(f"{local_file_directory}/{local_file_path}")
 
-        layer_mapper = LayerMapping(
-            model=cls,
-            data=shape_file_path,
-            mapping=cls.mapping,
-            encoding=layer_mapper_encoding,
-            transaction_mode="commit_on_success",
-        )
+            logger.info("Shapefile path: %s", shape_file_path)
 
-        layer_mapper.save(
-            strict=layer_mapper_strict,
-            silent=layer_mapper_silent,
-            verbose=layer_mapper_verbose,
-            progress=True,
-            step=layer_mapper_step,
-        )
+            cls.__check_is_shape_file(shape_file_path)
+            cls.prepare_shapefile(shape_file_path)
 
-        cls.calculate_fields()
+            logger.info("Cleaning previously loaded data")
+
+            cls.clean_data()
+
+            layer_mapper = LayerMapping(
+                model=cls,
+                data=shape_file_path,
+                mapping=cls.mapping,
+                encoding=layer_mapper_encoding,
+                transaction_mode="commit_on_success",
+            )
+
+            layer_mapper.save(
+                strict=layer_mapper_strict,
+                silent=layer_mapper_silent,
+                verbose=layer_mapper_verbose,
+                progress=True,
+                step=layer_mapper_step,
+            )
+
+            cls.calculate_fields()
 
 
 class DataColorationMixin:
