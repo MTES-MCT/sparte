@@ -187,4 +187,4 @@ class Command(BaseCommand):
             layer_mapper_silent=False,
         )
 
-        logger.info("End Cerema")
+        logger.info("End loading Cerema")
