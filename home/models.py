@@ -72,6 +72,7 @@ class Newsletter(models.Model):
 
 class AliveTimeStamp(models.Model):
     """Log a new instance every 15 minutes to check if async tasks are alive."""
+
     timestamp = models.DateTimeField(auto_now=True)
     queue_name = models.CharField(max_length=20)
 

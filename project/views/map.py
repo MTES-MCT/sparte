@@ -28,7 +28,7 @@ class BaseMap(GroupMixin, DetailView):
     queryset = Project.objects.all()
     template_name = "carto/map_libre.html"
     title = "To be set"
-    default_zoom = "To be set"
+    default_zoom: int
 
     def get_context_breadcrumbs(self):
         breadcrumbs = super().get_context_breadcrumbs()
@@ -402,7 +402,9 @@ class MapTestView(BaseMap):
                 },
                 "legend": {
                     "title": "Consommation des communes",
-                    "subtitle": f"Surface consommée de {self.object.analyse_start_date} à {self.object.analyse_end_date}",
+                    "subtitle": (
+                        f"Surface consommée de {self.object.analyse_start_date} à {self.object.analyse_end_date}"
+                    ),
                     "data": self.get_gradient_scale(),
                     "formatter": ["number", ["fr-FR", "unit", "hectare", 2]],
                 },
@@ -1065,7 +1067,9 @@ class CitySpaceConsoMapView(BaseMap):
                 },
                 "legend": {
                     "title": "Consommation des communes",
-                    "subtitle": f"Surface consommée de {self.object.analyse_start_date} à {self.object.analyse_end_date}",
+                    "subtitle": (
+                        f"Surface consommée de {self.object.analyse_start_date} à {self.object.analyse_end_date}"
+                    ),
                     "data": self.get_gradient_scale(),
                     "formatter": ["number", ["fr-FR", "unit", "hectare", 2]],
                 },

@@ -998,8 +998,10 @@ class ProjectReportGpuZoneAUUTable(CacheMixin, StandAloneMixin, TemplateView):
             if row.year == diagnostic.first_year_ocsge:
                 zone_list[key].new_artif = zone_list[key].area - row.area
 
+        mini = filters["page"] * 10 - 10
+        maxi = filters["page"] * 10
         kwargs |= {
-            "zone_list": list(zone_list.values())[filters["page"] * 10 - 10 : filters["page"] * 10],
+            "zone_list": list(zone_list.values())[mini:maxi],
             "current_page": filters["page"],
             "pages": list(range(1, ceil(len(zone_list) / 10) + 1)),
             "diagnostic": diagnostic,

@@ -100,8 +100,8 @@ class Command(BaseCommand):
 
         for scot_name, dept_id, region_id in (
             Cerema.objects.values_list("scot", "dept_id", "region_id")
-            .filter(scot__isnull=False)
             .order_by("scot")
+            .filter(scot__isnull=False)
             .distinct()
         ):
             if scot_name not in links:

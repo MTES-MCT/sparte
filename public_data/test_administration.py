@@ -3,9 +3,13 @@ import pytest
 # from django.contrib.gis.geos import MultiPolygon
 from django.contrib.gis.geos import GEOSGeometry
 
-from public_data.models.administration import Epci, Region
-
-from .models import Commune, CommunePop, Departement
+from public_data.models.administration import (
+    Commune,
+    CommunePop,
+    Departement,
+    Epci,
+    Region,
+)
 
 # from .validators import MinValueValidator, MaxValueValidator
 
