@@ -161,8 +161,8 @@ class Renderer:
         nb_neighbors = diagnostic.nb_look_a_like
         voisins = list()
         if nb_neighbors > 0:
-            comparison_chart = charts.ConsoComparisonChart(diagnostic, relative=False)
-            comparison_relative_chart = charts.ConsoComparisonChart(diagnostic, relative=True)
+            comparison_chart = charts.ConsoChart(diagnostic)
+            comparison_relative_chart = charts.ConsoComparisonChart(diagnostic)
             voisins = diagnostic.get_look_a_like()
             context.update(
                 {
