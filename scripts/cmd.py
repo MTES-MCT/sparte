@@ -184,11 +184,10 @@ def logs(ctx, filter):
 
 
 @cli.command()
-@click.option("--off", is_flag=True)
 @click.pass_context
-def maintenance(ctx, off):
-    cmd = "maintenance --on" if off is False else "maintenance --off"
-    ScalingoInterface(ctx.obj).manage_py(cmd)
+def maintenance(ctx):
+    """Toggle maintenance mode."""
+    ScalingoInterface(ctx.obj).manage_py("maintenance")
 
 
 @cli.command()
