@@ -8,17 +8,7 @@ from django.contrib import messages
 from django.contrib.gis.db.models.functions import Area
 from django.contrib.gis.geos import Polygon
 from django.db import transaction
-from django.db.models import (
-    Case,
-    CharField,
-    Count,
-    DecimalField,
-    F,
-    Q,
-    Sum,
-    Value,
-    When,
-)
+from django.db.models import Case, CharField, DecimalField, F, Q, Sum, Value, When
 from django.db.models.functions import Cast, Concat
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.urls import reverse
