@@ -10,6 +10,7 @@ config = {
     "Gers": "2016 2019",
     "Gironde": "2015 2018",
     "Essonne": "2018 2021",
+    "Seine-et-Marne": "2017 2021",
 }
 
 
