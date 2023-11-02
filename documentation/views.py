@@ -1,3 +1,6 @@
-from django.shortcuts import render
+from django.views.generic import TemplateView
 
-# Create your views here.
+from utils.views_mixins import BreadCrumbMixin
+
+class FAQView(BreadCrumbMixin, TemplateView):
+    template_name = "documentation/faq.html"
