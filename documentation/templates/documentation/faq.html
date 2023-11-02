@@ -59,3 +59,20 @@
     </div>
 </section>
 {% endblock content %}
+
+{% block bodyend %}
+<script language="javascript" nonce="[NONE_PLACEHOLDER]">
+    // Force accordion opening if anchor is present in url
+    const currentUrl = document.URL
+	const urlParts = currentUrl.split('#')	
+    const anchor =  (urlParts.length > 1) ? urlParts[1] : null
+
+    if (anchor)
+    {
+        const button = document.querySelector(`[aria-controls=${anchor}]`)
+        setTimeout(() => {
+            button.click()
+        }, 1000)
+    }
+</script>
+{% endblock bodyend %}
