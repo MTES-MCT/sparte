@@ -1052,9 +1052,6 @@ class Project(BaseProject):
     ]:
         """Return artif progression for each zone type.
 
-        Args:
-            geom (MultiPolygon): geom to filter on
-
         Returns:
             List of Dict with structure:
                 type_zone (str): type of zone A, N, AU, etc.
