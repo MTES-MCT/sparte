@@ -28,7 +28,7 @@ class AutoLoadMixin:
     """
 
     @property
-    def shape_file_path() -> str:
+    def shape_file_path(self) -> str:
         """
         Path to the shapefile to load, either on S3 or locally
 
@@ -44,7 +44,7 @@ class AutoLoadMixin:
         raise NotImplementedError("The shape_file_path property must be set in child class")
 
     @property
-    def mapping() -> Dict[str, str]:
+    def mapping(self) -> Dict[str, str]:
         """
         Mapping between shapefile fields and model fields
         for geodjango's LayerMapping
