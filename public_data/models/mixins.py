@@ -73,7 +73,7 @@ class AutoLoadMixin:
         """Hook that prepares shapefile before loading it into database
         Useful to modify shapefile fields type before mapping
 
-        Note that this method will update the in place in case
+        Note that this method will update in place in case
         a local file is used. If the shapefile is retrieved from S3,
         it will update the file from the temporary directory it
         is extracted to.
