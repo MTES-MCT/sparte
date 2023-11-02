@@ -825,17 +825,17 @@ class SeineEtMarneOcsgeZoneConstruite(AutoLoadMixin, ZoneConstruite):
     mapping = {
         "id_source": "OBJECTID",
         "mpoly": "MULTIPOLYGON",
-        "millesime": "MILLESIME",
         # "zc_type": "ZC_TYPE",
     }
 
-    @classmethod
-    def prepare_shapefile(cls, shape_file_path: Path):
+    def before_save(self) -> None:
+        self.millesime = str(self._year)
+        return super().before_save()
+
+    @staticmethod
+    def prepare_shapefile(shape_file_path: Path):
         gdf = geopandas.read_file(shape_file_path)
-
         gdf["OBJECTID"] = gdf["OBJECTID"].astype(str)
-        gdf["MILLESIME"] = str(cls._year)  # could be in before_save but kept here for clarity
-
         gdf.to_file(shape_file_path, driver="ESRI Shapefile")
 
     def save(self, *args, **kwargs):

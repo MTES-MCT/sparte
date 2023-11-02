@@ -23,14 +23,9 @@ class AutoLoadMixin:
     * shape_file_path - usually shape file is in media directory
     * mapping - between feature name and database field name
     Those two needs to be set in child class.
-
-    SeeAlso::
-    - public_data.management.commands.shp2model
-    - public_data.management.commands.load_data
     """
 
     @property
-    @classmethod
     def shape_file_path() -> str:
         """
         Path to the shapefile to load, either on S3 or locally
@@ -47,7 +42,6 @@ class AutoLoadMixin:
         raise NotImplementedError("The shape_file_path property must be set in child class")
 
     @property
-    @classmethod
     def mapping() -> Dict[str, str]:
         """
         Mapping between shapefile fields and model fields
@@ -55,7 +49,7 @@ class AutoLoadMixin:
         """
         raise NotImplementedError("The mapping property must be set in child class")
 
-    def before_save(self):
+    def before_save(self) -> None:
         """Hook to set data before saving"""
         pass
 
@@ -65,19 +59,18 @@ class AutoLoadMixin:
         self.after_save()
         return self
 
-    def after_save(self):
+    def after_save(self) -> None:
         """Hook to do things after saving"""
         pass
 
     @classmethod
-    def calculate_fields(cls):
+    def calculate_fields(cls) -> None:
         """Override if you need to calculate some fields after loading data."""
         pass
 
-    @classmethod
-    def prepare_shapefile(cls, shape_file_path: Path):
-        """
-        Hook to prepare shapefile before loading it into database
+    @staticmethod
+    def prepare_shapefile(shape_file_path: Path) -> None:
+        """Hook that prepares shapefile before loading it into database
         Useful to modify shapefile fields type before mapping
 
         Note that this hook cannot use cls.shape_file_path directly
@@ -91,16 +84,16 @@ class AutoLoadMixin:
         """
         pass
 
-    def __check_path_is_a_regular_file(path: Path):
+    def __check_path_is_a_regular_file(path: Path) -> None:
         if not path.is_file():
             raise FileNotFoundError(f"{path} is not a regular file")
 
-    def __check_path_suffix_is_shapefile(path: Path):
+    def __check_path_suffix_is_shapefile(path: Path) -> None:
         if path.suffix != ".shp":
             raise FileNotFoundError(f"{path} is not a shapefile")
 
     @classmethod
-    def __check_is_shape_file(cls, shape_file_path: Path):
+    def __check_is_shape_file(cls, shape_file_path: Path) -> None:
         cls.__check_path_is_a_regular_file(shape_file_path)
         cls.__check_path_suffix_is_shapefile(shape_file_path)
 
@@ -141,10 +134,12 @@ class AutoLoadMixin:
         raise FileNotFoundError("No file with .shp suffix")
 
     @classmethod
-    def clean_data(cls):
-        """
-        Clean previous data before loading new one
+    def clean_data(cls) -> None:
+        """Delete previously loaded data
+
         The implementation of the method should ensure idempotency
+        by removing entirely and exclusively the data previously loaded
+        by the child class
         """
         raise NotImplementedError(f"No clean_data method implemented for the class {cls.__name__}")
 
@@ -158,25 +153,28 @@ class AutoLoadMixin:
         layer_mapper_silent=False,
         layer_mapper_encoding="utf-8",
         layer_mapper_step=1000,
-    ):
-        """
-        Populate table with data from shapefile then calculate all fields
+    ) -> None:
+        """Populate table with data from shapefile then calculate all fields
+
+        If no local_file_path is provided, the shapefile is downloaded from S3,
+        and then extracted in a temporary directory.
+
         All arguments are optional and only affects how LayerMapper behave
+        LayerMapper documentation:
+        - https://docs.djangoproject.com/en/4.2/ref/contrib/gis/layermapping/
 
         Args:
             local_file_path: path to a local shapefile
+            local_file_directory: directory where to find the local shapefile
             layer_mapper_verbose: print more information
             layer_mapper_strict: raise exception if a field is missing
             layer_mapper_silent: do not print anything
             layer_mapper_encoding: encoding of the shapefile
             layer_mapper_step: number of rows to process at once
 
-        Throws:
+        Raises:
             FileNotFoundError: if the shapefile is not found on S3 or locally
             NotImplementedError: if the child class does not implement the shape_file_path property
-
-        SeeAlso:
-            - https://docs.djangoproject.com/en/4.2/ref/contrib/gis/layermapping/
         """
         with TemporaryDirectory() as temporary_directory:
             if not local_file_path:
