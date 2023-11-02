@@ -13,5 +13,9 @@
     "flake8.args": [
         "--config",
         "flake8"
-    ]
+    ],
+    "editor.defaultFormatter": "ms-python.black-formatter",
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.black-formatter"
+    }
 }
