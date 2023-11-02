@@ -274,5 +274,35 @@ def mep_260(ctx):
     click.secho("Nothing", fg="cyan")
 
 
+@cli.command()
+@click.pass_context
+def mep_seine_et_marne(ctx):
+    connecter = ScalingoInterface(ctx.obj)
+    connecter.manage_py("load_ocsge --item SeineEtMarneOcsge2017")
+    connecter.manage_py("load_ocsge --item SeineEtMarneOcsge2021")
+    connecter.manage_py("load_ocsge --item SeineEtMarneOcsgeDiff1721")
+    connecter.manage_py("load_ocsge --item SeineEtMarneOcsgeZoneConstruite2017")
+    connecter.manage_py("load_ocsge --item SeineEtMarneOcsgeZoneConstruite2021")
+    connecter.manage_py("build_commune_data --departement Seine-et-Marne --verbose")
+    connecter.manage_py("setup_dept")
+    connecter.manage_py("build_artificial_area --departement Seine-et-Marne --verbose")
+    connecter.manage_py("set_density --departement Seine-et-Marne")
+
+
+@cli.command()
+@click.pass_context
+def mep_essonne(ctx):
+    connecter = ScalingoInterface(ctx.obj)
+    connecter.manage_py("load_ocsge --item EssonneOcsge2018")
+    connecter.manage_py("load_ocsge --item EssonneOcsge2021")
+    connecter.manage_py("load_ocsge --item EssonneOcsgeDiff1821")
+    connecter.manage_py("load_ocsge --item EssonneOcsgeZoneConstruite2018")
+    connecter.manage_py("load_ocsge --item EssonneOcsgeZoneConstruite2021")
+    connecter.manage_py("build_commune_data --departement Essonne --verbose")
+    connecter.manage_py("setup_dept")
+    connecter.manage_py("build_artificial_area --departement Essonne --verbose")
+    connecter.manage_py("set_density --departement Essonne")
+
+
 if __name__ == "__main__":
     cli(obj={})
