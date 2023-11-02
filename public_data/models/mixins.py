@@ -16,6 +16,8 @@ from utils.colors import get_onecolor_gradient, get_random_color, is_valid
 
 logger = logging.getLogger(__name__)
 
+LOCAL_FILE_DIRECTORY = getenv("LOCAL_FILE_DIRECTORY")
+
 
 class AutoLoadMixin:
     """
@@ -51,7 +53,6 @@ class AutoLoadMixin:
 
     def before_save(self) -> None:
         """Hook to set data before saving"""
-        pass
 
     def save(self, *args, **kwargs):
         self.before_save()
@@ -61,12 +62,10 @@ class AutoLoadMixin:
 
     def after_save(self) -> None:
         """Hook to do things after saving"""
-        pass
 
     @classmethod
     def calculate_fields(cls) -> None:
         """Override if you need to calculate some fields after loading data."""
-        pass
 
     @staticmethod
     def prepare_shapefile(shape_file_path: Path) -> None:
@@ -82,7 +81,6 @@ class AutoLoadMixin:
             shape_file_path: path to the shapefile to prepare
             (provided by the load method)
         """
-        pass
 
     def __check_path_is_a_regular_file(path: Path) -> None:
         if not path.is_file():
@@ -147,7 +145,7 @@ class AutoLoadMixin:
     def load(
         cls,
         local_file_path=None,
-        local_file_directory=getenv("LOCAL_FILE_DIRECTORY"),
+        local_file_directory=LOCAL_FILE_DIRECTORY,
         layer_mapper_verbose=True,
         layer_mapper_strict=True,
         layer_mapper_silent=False,
