@@ -3,31 +3,44 @@
 
 # SPARTE
 
-Le Service de Portrait de l’ARtificialisation des TErritoires (ou SPARTE) est une plateforme qui aide les collectivité à mesurer l'artificialisation de leurs sols et ainsi se conformer aux nouvelles lois.
+Le Service de Portrait de l’ARtificialisation des TErritoires (ou SPARTE)
+est une plateforme qui aide les collectivité à mesurer l'artificialisation
+de leurs sols et ainsi se conformer aux nouvelles lois.
 
-## Installation
+## Installation backend
 
-1. Cloner le répository git `git clone git@github.com:MTES-MCT/sparte.git` puis aller dans le dossier `cd sparte`
-2. Installer les dépendances avec pipenv `pipenv install --dev`
-3. Créer un fichier .env avec (à compléter avec vos crédentials, voir ci-dessous...)
-4. Démarrer les bases de données `docker-compose up -d`
-5. Basculer dans l'environnement virtuel `pipenv shell`
-6. Migration initiale `python manage.py migrate`
-7. Créer un super utilisateur `python manage.py createsuperuser`
-8. Démarrer le serveur `python manage.py runserver 0.0.0.0:8080`
-9. Ouvrer la home page [http://localhost:8080/](http://localhost:8080/)
-10. Copier les fichiers de données OCS GE et Cérema... sur votre bucket AWS
-11. Lancer l'installation des données `python scripts/cmd.py --env local rebuild`
+1. Cloner le répository `git clone git@github.com:MTES-MCT/sparte.git`
+2. Aller dans le dossier `cd sparte`
+3. Installer les dépendances avec pipenv `pipenv install --dev`
+4. Copier le fichier .env.example et nommer la copie .env
+5. Compléter les valeurs du fichier .env commençant par `YOUR`
+6. Demander à un mainteneur du dépot les valeurs du fichier
+.env `ASK_A_MAINTAINER`
+7. Démarrer le projet `docker-compose up -d`
+8. Basculer dans l'environnement virtuel `pipenv shell`
+9. Faire la migration initiale `python manage.py migrate`
+10. Ajouter les valeurs par défaut des paramètres requis
+`python manage.py load_param --no-update --file required_parameters.json`
 
-## Frontend
-1. Installer les dépendances front `npm install`
-2. Lancer le build du bundle `npm run build:dev` ou `npm run build:prod` (Génère un nouveau bundle à chaque mise à jour du fichier ./assets/scripts/index.js)
+Le site est désormais accessible en local à cette adresse:
+[http://localhost:8080/](http://localhost:8080/)
+
+### Optionnel
+
+11. Créer un super utilisateur `python manage.py createsuperuser` (pour accéder à l'interface d'administration)
+12. Copier les fichiers de données OCS GE et Cérema sur votre bucket AWS (étapes décrites ci-dessous)
+13. Lancer l'installation des données `python scripts/cmd.py --env local rebuild`
+
+## Installation frontend
+1. Installer les dépendances `npm install`
+2. Lancer le build du bundle `npm run build:dev` ou `npm run build:prod` (génère un nouveau bundle à chaque mise à jour du fichier ./assets/scripts/index.js)
 
 ### Variables d'environnement
 
-Pour une installation locale, ces valeurs doivent être dans le fichier .env à la racine du projet. Pour le déploiement sur scalingo, ces variables sont à ajouter dans la section "Environnement" du container.
+- En **local** ces valeurs doivent être dans le fichier .env à la racine du projet.
+- Pour le déploiement sur **scalingo**, ces variables sont à ajouter dans la section "Environnement" du container.
 
-| Nom | description | valeur locale |
+| Nom | Description | Valeur locale |
 |-----|-------------|---------------|
 | ALERT_DIAG_MEDIUM | Comment envoyer les alertes des diagnostics bloqués: mattermost, email, both | |
 | ALERT_DIAG_EMAIL_RECIPIENTS | Liste des adresses e-mails auxuqelles envoyées les alertes diagnostics bloqués | 127.0.0.1,localhost |
@@ -41,16 +54,23 @@ Pour une installation locale, ces valeurs doivent être dans le fichier .env à 
 | AWS_STORAGE_BUCKET_NAME | nom du bucket de stockage | sparte-staging |
 | CELERY_BROKER_URL | chaîne pour se connecter à redis | redis://127.0.0.1:6379/0 |
 | CELERY_RESULT_BACKEND | chaîne pour se connecter à redis | redis://127.0.0.1:6379/0 |
+| CELERY_TASK_ALWAYS_EAGER | Rend celery synchrone | False |
 | DATABASE_URL | chaîne pour se connecter à la base de données Postgresql + gis | postgis://postgres:postgres@127.0.0.1:54321/postgres |
+| DB_LOGGING_LEVEL | détermine le niveau de log de la base de données | WARNING |
 | DEBUG | activer ou non les messages détaillés d'erreur | 1 |
 | DEBUG_TOOLBAR | activer la barre de debug de Django | 1 |
-| DEFAULT_FROM_EMAIL |  | swann.bouviermuller@gmail.com |
+| DEFAULT_FROM_EMAIL | Expéditeur par défaut des emails envoyés | johndoe@email.com |
 | DOMAIN_URL | l'url sur laquelle est branchée l'application | http://localhost:8080/ |
 | EMAIL_ENGINE | indique à l'application le backend à utiliser pour envoyer les e-mails. 2 choix disponibles : sendinblue, local | local |
+| EMAIL_FILE_PATH | Uniquement utile si EMAIL_ENGINE=local. Indique l'emplacement où stocker les emails | BASE_DIR / "emails" |
+| EMAIL_SMTP_KEY | mot de passe SMTP | |
+| EMAIL_HOST_USER | nom d'utilisteur SMTP | |
 | ENVIRONMENT | indique sur quel environnement est exécuté l'app. Choix possibles: local, staging, prod | local |
-| HIGHCHART_SERVER | ulr pour accéder au serveur générant des images à partir de paramètres Highcharts | https://highcharts-export.osc-fr1.scalingo.io |
+| GOOGLE_ADWORDS_ACTIVATE | indique s'il faut ajouter des google tags aux pages | 1 |
+| HIGHCHART_SERVER | url pour accéder au serveur générant des images à partir de paramètres Highcharts | https://highcharts-export.osc-fr1.scalingo.io |
 | MATTERMOST_WEBHOOK | Webhook personnel pour envoyer des messages dans Mattermost | https://mattermost.incubateur.net/hooks/uak581f8bidyxp5td67rurj5sh |
 | MATOMO_ACTIVATE | Détermine si des infos doivent être envoyé à Matomo | 0 |
+| MATOMO_SCRIPT_NAME | | |
 | MATOMO_TOKEN | Token pour envoyer les données à Matomo |  |
 | SECRET | salt pour django | |
 | USE_SRI | Active l'utilisation des SRI même lorsque debug = 1 | 1 |
@@ -68,30 +88,31 @@ Variables d'environnement spécifique à Scalingo. Voir les valeurs sur Scalingo
 | SCALINGO_REDIS_URL | Ajouté lorsque l'addon redis est activé |
 
 
-## Before commiting
+## Contribution
 
-Vérifier la couverture des TU: `coverage run -m pytest && coverage report -m`
+### Lint
+- Depuis le shell pipenv, installer la configuration pre-commit sur votre dépot git local : `pre-commit install`
+- Il est aussi possible de lancer le pre-commit manuellement sans l'installer : `pre-commit run --all-file`
 
-Vérifier que le formatage est bon: `flake8`
+De cette manière, vos changements seront évalués automatiquement selon notre coding style (voir le fichier `.pre-commit.config.yaml` pour le détail).
 
-Si vous souhaitez bypasser pre-commit hook (usefull pour ajouter des fichiers shapes sans les modifiers):
-```
-git commit --no-verify
-```
+### Test
 
-## Get production DB
+- Avant chaque commit, lancer manuellement depuis le containeur de l'application les tests et l'analyse de la couverture de tests: `coverage run -m pytest && coverage report -m`
 
-Sometimes, you need to fetch and install a Scalingo DB backup.
 
-1. Fetch backup from scalingo app > ressources > pg dashboard > backup, download last backup (eg. 20220830000404_sparte_1396.tar.gz)
-2. Uncompress `tar -xf 20220830000404_sparte_1396.tar.gz`
-3. restore `pg_restore --clean --if-exists --no-owner --no-privileges --no-comments --dbname postgres://postgres:postgres@127.0.0.1:5432/postgres 20220830000404_sparte_1396.pgsql`
+### Récupérer un backup de production
 
-## Update OCS GE
+1. Récupérer un backup sur scalingo en parcourant le menu: app > ressources > pg dashboard > backup, download last backup (par exemple 20220830000404_sparte_1396.tar.gz)
+2. Décompresser le backup `tar -xf 20220830000404_sparte_1396.tar.gz`
+3. Charger le backup dans la base de donnée  `pg_restore --clean --if-exists --no-owner --no-privileges --no-comments --dbname postgres://postgres:postgres@127.0.0.1:5432/postgres 20220830000404_sparte_1396.pgsql`
+
+
+### Update OCS GE
 
 The process is not stable yet. Use it with caution.
 
-1. Download shape files from IGN's website [https://geoservices.ign.fr](https://geoservices.ign.fr) "ACCUEIL > CATALOGUE > OCS GE"
+1. Download shape files from IGN's website [https://geoservices.ign.fr](https://geoservices.ign.fr) "Catalogue > OCS GE"
 2. Extract shape files and zip them by name, remove anysubfolder, the zip should contain only files
 3. Name zip file accordingly to expected name in [public_data/management/commands/load_ocsge.py](public_data/management/commands/load_ocsge.py). If you want to update 2016 Gers millesime, name it accordingly to what you will find in class **GersOcsge2016** and the property **shape_file_path** (which is gers_ocsge_2016.zip when writhing those lines)
 4. Upload the zip in the bucket, in data folder.
@@ -126,3 +147,6 @@ On ne peut pas exécuter le code de migration directement sur le serveur car il 
 6. Dans un terminal, sourcer le .env pour être sûr de tapper dans la db de prod
 7. Charger les données du Cerema `scalingo --app sparte-staging --region osc-fr1 run 'python manage.py load_cerema'`
 7. Exécuter les scripts de migration `python manage.py update_administration_layer`
+
+
+https://google.github.io/styleguide/pyguide.html#38-comments-and-docstrings

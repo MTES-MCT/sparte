@@ -57,13 +57,13 @@ export default class Tabs {
 
         this.tabsNode.appendChild(tabNode)
     }
-    
+
     toggle(_id) {
         // Find the associated tab
         const tabNode = this.tabsNode.querySelector(`[aria-labelledby="${_id}"]`)
         const buttonNode = this.buttonsNode.querySelector('#' + _id)
         const isAlreadyOpen = !tabNode.hidden
-        
+
         // Hide all tabs
         this.tabsNode.querySelectorAll('[role="tabpanel"]').forEach(_tabNode => {
             _tabNode.hidden = true
@@ -77,7 +77,7 @@ export default class Tabs {
         if (!isAlreadyOpen) {
             // Mark the clicked button as selected
             buttonNode.setAttribute('aria-selected', true)
-        
+
             // Show associated tab
             tabNode.hidden = false
         }

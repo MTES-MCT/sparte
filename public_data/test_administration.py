@@ -3,16 +3,20 @@ import pytest
 # from django.contrib.gis.geos import MultiPolygon
 from django.contrib.gis.geos import GEOSGeometry
 
-from public_data.models.administration import Departement, Epci, Region
-
-from .models import Commune, CommunePop, Departement
+from public_data.models.administration import (
+    Commune,
+    CommunePop,
+    Departement,
+    Epci,
+    Region,
+)
 
 # from .validators import MinValueValidator, MaxValueValidator
 
 
 # SQUARE = MultiPolygon([((2.2, 4.2), (5.2, 4.2), (5.2, 6.6), (2.2, 6.6), (2.2, 4.2))], srid=4326)
 # SQUARE = MultiPolygon([((2.2, 4.2), (5.2, 4.2), (5.2, 6.6), (2.2, 6.6), (2.2, 4.2))], srid='4326')
-SQUARE = GEOSGeometry('MULTIPOLYGON(((2.2 4.2, 5.2 4.2, 5.2 6.6, 2.2 6.6, 2.2 4.2)))', srid=4326)
+SQUARE = GEOSGeometry("MULTIPOLYGON(((2.2 4.2, 5.2 4.2, 5.2 6.6, 2.2 6.6, 2.2 4.2)))", srid=4326)
 
 
 @pytest.fixture

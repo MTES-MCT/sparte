@@ -23,7 +23,7 @@ app_name = "public_data"
 
 urlpatterns = [
     path("matrix", DisplayMatrix.as_view(), name="matrix"),
-    path("grid", grid_views, name="grid")
+    path("grid", grid_views, name="grid"),
 ]
 
 

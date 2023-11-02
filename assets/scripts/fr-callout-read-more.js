@@ -6,7 +6,7 @@ buttons.forEach(button => {
         const text = button.parentNode.querySelector('.fr-callout-read-more__text');
 
         let expanded = button.getAttribute("aria-expanded") === "true";
-        
+
         button.parentNode.classList.toggle("fr-callout-read-more--expanded")
         button.setAttribute("aria-expanded", !expanded);
         excerpt.hidden = !expanded;

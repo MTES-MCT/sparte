@@ -4,8 +4,8 @@ from django.db import migrations
 
 
 def update_analysis_level(apps, schema_editor):
-    StatDiagnostic = apps.get_model('metabase', 'StatDiagnostic')
-    StatDiagnostic.objects.filter(analysis_level='COMMUNE').update(analysis_level='COMM')
+    StatDiagnostic = apps.get_model("metabase", "StatDiagnostic")
+    StatDiagnostic.objects.filter(analysis_level="COMMUNE").update(analysis_level="COMM")
 
 
 class Migration(migrations.Migration):
@@ -13,6 +13,4 @@ class Migration(migrations.Migration):
         ("metabase", "0006_statdiagnostic_date_first_trajectory_and_more"),
     ]
 
-    operations = [
-        migrations.RunPython(update_analysis_level, reverse_code=migrations.RunPython.noop)
-    ]
+    operations = [migrations.RunPython(update_analysis_level, reverse_code=migrations.RunPython.noop)]

@@ -12,7 +12,7 @@ from public_data.models import (
     OcsgeDiff,
     Region,
 )
-from utils.db import cast_sum
+from utils.db import cast_sum_area
 
 logger = logging.getLogger("management.commands")
 
@@ -109,7 +109,7 @@ class Command(BaseCommand):
             return
         city.last_millesime = ocsge.year
         qs = qs.filter(year=ocsge.year, is_artificial=True)
-        result = qs.aggregate(surface_artif=cast_sum("intersection_area"))
+        result = qs.aggregate(surface_artif=cast_sum_area("intersection_area"))
         city.surface_artif = result["surface_artif"]
         city.save()
         self.build_commune_sol(city)
@@ -122,7 +122,7 @@ class Command(BaseCommand):
         qs = Ocsge.objects.intersect(city.mpoly)
         qs = qs.exclude(matrix=None)
         qs = qs.values("matrix_id", "year")
-        qs = qs.annotate(surface=cast_sum("intersection_area"))
+        qs = qs.annotate(surface=cast_sum_area("intersection_area"))
         CommuneSol.objects.bulk_create([CommuneSol(city=city, **_) for _ in qs])
 
     def build_commune_diff(self, city):
@@ -130,8 +130,8 @@ class Command(BaseCommand):
         qs = OcsgeDiff.objects.intersect(city.mpoly)
         qs = qs.values("year_old", "year_new")
         qs = qs.annotate(
-            new_artif=cast_sum("intersection_area", filter=Q(is_new_artif=True)),
-            new_natural=cast_sum("intersection_area", filter=Q(is_new_natural=True)),
+            new_artif=cast_sum_area("intersection_area", filter=Q(is_new_artif=True)),
+            new_natural=cast_sum_area("intersection_area", filter=Q(is_new_natural=True)),
             net_artif=F("new_artif") - F("new_natural"),
         )
 

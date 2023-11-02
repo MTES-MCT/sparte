@@ -65,7 +65,7 @@
         function generateYearsBetween(startYear = 2000, endYear) {
             const endDate = endYear || new Date().getFullYear();
             let years = [];
-          
+
             for (var i = startYear; i <= endDate; i++) {
               years.push(startYear);
               startYear++;
@@ -75,7 +75,7 @@
 
         function fillTable() {
             sum = cumul;
-            
+
             const tableHead = document.getElementById('table-head');
             const tableAnnualConso = document.getElementById('table-annual-conso');
             const tableSumConso = document.getElementById('table-sum-conso');
@@ -158,11 +158,11 @@
             document.querySelectorAll(".trajectory-table-input--annual").forEach(el => el.addEventListener('input', event => {
                 // Set mode
                 // mode = "annual"
-                
+
                 // Force non empty input
                 if (!event.target.value)
                     event.target.value = 0;
-                
+
                 if (!event.target.classList.contains("annual-updated")) {
                     // Add reset button
                     let resetButton = document.createElement("button");
@@ -198,7 +198,7 @@
                         _obj.annual_conso.updated = true
                     }
                 });
-    
+
                 // Get flagged input sum
                 let arrUpdated = document.querySelectorAll(".annual-updated");
                 let sumArrUpdated = 0;
@@ -206,7 +206,7 @@
                     if(parseFloat(arrUpdated[i].value))
                         sumArrUpdated += parseFloat(arrUpdated[i].value);
                 }
-    
+
                 // Update other inputs values
                 let arrNotUpdated = document.querySelectorAll(".trajectory-table-input--annual:not(.annual-updated)");
                 const balance = getBalance();
@@ -227,7 +227,7 @@
                     ele.innerHTML = parseFloat(mixSum.toFixed(1)).toLocaleString('fr-FR');
                 })
             }));
-    
+
             // document.querySelectorAll(".trajectory-table-input--sum").forEach(el => el.addEventListener('input', event => {
             //     // Set mode
             //     mode = "sum"
@@ -244,7 +244,7 @@
         document.getElementById("select_end_year").addEventListener("change", (_event) => {
             sum = cumul;
             end_year = _event.target.value;
-            
+
             setData();
         });
     </script>
@@ -254,7 +254,7 @@
         hx-ext="disable-element"
         hx-disable-element="#save_trajectory_btn">
         {% csrf_token %}
-        
+
         <div class="d-flex align-items-end fr-mb-2w">
             <span class="fr-mr-2w">De</span>
             <select class="fr-select fr-mr-2w trajectory-select-year" disabled id="select-disabled" name="select-disabled">

@@ -2,11 +2,14 @@
 from collections import defaultdict
 
 
-def add_total_line_column(series, column=True, line=True):
+def add_total_line_column(series, column=True, line=True, replace_none=False):
     table = dict()
     total_line = defaultdict(lambda: 0)
     for name, data in series.items():
-        table[name] = data.copy()
+        if replace_none:
+            table[name] = {y: v or 0 for y, v in data.items()}
+        else:
+            table[name] = data.copy()
         if column:
             # add column
             table[name]["total"] = sum([i for i in data.values() if i])

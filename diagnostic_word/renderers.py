@@ -104,6 +104,9 @@ class Renderer:
         buffer.seek(0)
         return buffer
 
+    def prep_chart(self, chart):
+        return self.prep_image(chart.get_temp_image(), width=170)
+
     def prep_image(
         self,
         field: Union[ImageField, str],
@@ -158,8 +161,8 @@ class Renderer:
         nb_neighbors = diagnostic.nb_look_a_like
         voisins = list()
         if nb_neighbors > 0:
-            comparison_chart = charts.ConsoComparisonChart(diagnostic, relative=False)
-            comparison_relative_chart = charts.ConsoComparisonChart(diagnostic, relative=True)
+            comparison_chart = charts.ConsoChart(diagnostic)
+            comparison_relative_chart = charts.ConsoComparisonChart(diagnostic)
             voisins = diagnostic.get_look_a_like()
             context.update(
                 {
@@ -196,45 +199,53 @@ class Renderer:
 
         url_diag = get_url_with_domain(diagnostic.get_absolute_url())
 
-        context.update(
-            {
-                "nb_voisins": nb_neighbors,
-                "url_clickable": self.prep_link(link=url_diag),
-                "url": url_diag,
-                "communes_data_table": add_total_line_column(chart_conso_cities.get_series()),
-                "determinants_data_table": add_total_line_column(det_chart.get_series()),
-                "target_2031_consumed": target_2031_consumption,
-                "target_2031_annual_avg": target_2031_consumption / 10,
-                "target_2031_target": target_2031_consumption / 2,
-                "target_2031_annual_forecast": target_2031_consumption / 20,
-                "project_scope_consumed": current_conso,
-                "project_scope_annual_avg": current_conso / diagnostic.nb_years,
-                "project_scope_nb_years": diagnostic.nb_years,
-                "project_scope_nb_years_before_31": diagnostic.nb_years_before_2031,
-                "project_scope_forecast_2031": diagnostic.nb_years_before_2031 * current_conso / diagnostic.nb_years,
-                # charts
-                "chart_conso_communes": self.prep_image(
-                    chart_conso_cities.get_temp_image(),
-                    width=170,
-                ),
-                "chart_determinants": self.prep_image(
-                    det_chart.get_temp_image(),
-                    width=170,
-                ),
-                "pie_chart_determinants": self.prep_image(
-                    pie_det_chart.get_temp_image(),
-                    width=140,
-                ),
-                "projection_zan_2031": self.prep_image(
-                    objective_chart.get_temp_image(),
-                    width=170,
-                ),
-                "projection_zan_cumulee_ref": round(objective_chart.total_real, 1),
-                "projection_zan_annuelle_ref": round(objective_chart.annual_real, 1),
-                "projection_zan_cumulee_objectif": round(objective_chart.conso_2031),
-                "projection_zan_annuelle_objectif": round(objective_chart.annual_objective_2031),
-            }
-        )
+        context |= {
+            "nb_voisins": nb_neighbors,
+            "url_clickable": self.prep_link(link=url_diag),
+            "url": url_diag,
+            "communes_data_table": add_total_line_column(chart_conso_cities.get_series()),
+            "determinants_data_table": add_total_line_column(det_chart.get_series()),
+            "target_2031_consumed": target_2031_consumption,
+            "target_2031_annual_avg": target_2031_consumption / 10,
+            "target_2031_target": target_2031_consumption / 2,
+            "target_2031_annual_forecast": target_2031_consumption / 20,
+            "project_scope_consumed": current_conso,
+            "project_scope_annual_avg": current_conso / diagnostic.nb_years,
+            "project_scope_nb_years": diagnostic.nb_years,
+            "project_scope_nb_years_before_31": diagnostic.nb_years_before_2031,
+            "project_scope_forecast_2031": diagnostic.nb_years_before_2031 * current_conso / diagnostic.nb_years,
+            # charts
+            "chart_conso_communes": self.prep_chart(chart_conso_cities),
+            "chart_determinants": self.prep_chart(det_chart),
+            "pie_chart_determinants": self.prep_chart(pie_det_chart),
+            "projection_zan_2031": self.prep_chart(objective_chart),
+            "projection_zan_cumulee_ref": round(objective_chart.total_real, 1),
+            "projection_zan_annuelle_ref": round(objective_chart.annual_real, 1),
+            "projection_zan_cumulee_objectif": round(objective_chart.conso_2031),
+            "projection_zan_annuelle_objectif": round(objective_chart.annual_objective_2031),
+        }
+
+        surface_chart = charts.SurfaceChart(diagnostic)
+        pop_chart = charts.PopChart(diagnostic)
+        conso_comparison_pop_chart = charts.ConsoComparisonPopChart(diagnostic)
+        household_chart = charts.HouseholdChart(diagnostic)
+        conso_comparison_household_chart = charts.ConsoComparisonHouseholdChart(diagnostic)
+
+        context |= {
+            "surface_chart ": self.prep_chart(surface_chart),
+            "pop_chart ": self.prep_chart(pop_chart),
+            "pop_table": add_total_line_column(pop_chart.get_series(), replace_none=True),
+            "conso_comparison_pop_chart ": self.prep_chart(conso_comparison_pop_chart),
+            "conso_comparison_pop_table": add_total_line_column(
+                conso_comparison_pop_chart.get_series(), replace_none=True
+            ),
+            "household_chart ": self.prep_chart(household_chart),
+            "household_table": add_total_line_column(household_chart.get_series(), replace_none=True),
+            "conso_comparison_household_chart ": self.prep_chart(conso_comparison_household_chart),
+            "conso_comparison_household_table": add_total_line_column(
+                conso_comparison_household_chart.get_series(), replace_none=True
+            ),
+        }
 
         if diagnostic.is_artif:
             context.update(

@@ -5,8 +5,8 @@ from django.http import JsonResponse
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.exceptions import ParseError
-from public_data.api.serializers import ZoneUrbaSerializer
 
+from public_data.api.serializers import ZoneUrbaSerializer
 from public_data.models import Cerema, Commune
 from public_data.models.gpu import ZoneUrba
 

@@ -15,8 +15,7 @@ class Trajectory(models.Model):
 
     def get_value_per_year(self, default: int = 0) -> dict[int, int]:
         return {
-            y: self.data.get(str(y), {"value": default})["value"]
-            for y in range(int(self.start), int(self.end) + 1)
+            y: self.data.get(str(y), {"value": default})["value"] for y in range(int(self.start), int(self.end) + 1)
         }
 
     class Meta:
