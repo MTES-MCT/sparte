@@ -31,8 +31,13 @@ class Command(BaseCommand):
 
         if options["on"] is True:
             self.activate()
-        if options["off"] is True:
+        elif options["off"] is True:
             self.deactivate()
+        else:  # toggle mode
+            if self.current_mode is True:
+                self.deactivate()
+            else:
+                self.activate()
 
         logger.info("End maintenance command")
 
