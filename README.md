@@ -147,3 +147,6 @@ On ne peut pas exécuter le code de migration directement sur le serveur car il 
 6. Dans un terminal, sourcer le .env pour être sûr de tapper dans la db de prod
 7. Charger les données du Cerema `scalingo --app sparte-staging --region osc-fr1 run 'python manage.py load_cerema'`
 7. Exécuter les scripts de migration `python manage.py update_administration_layer`
+
+
+https://google.github.io/styleguide/pyguide.html#38-comments-and-docstrings
