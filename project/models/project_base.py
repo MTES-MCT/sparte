@@ -974,7 +974,7 @@ class Project(BaseProject):
             )
         )
 
-    def get_base_sol_artif(self, sol="couverture"):
+    def get_base_sol_artif(self, sol: Literal["couverture", "usage"] = "couverture"):
         """
         [
             {
@@ -1005,12 +1005,20 @@ class Project(BaseProject):
         )
 
     def get_neighbors(self, land_type=None):
+        """Return all touching land of the project according to land_type.
+
+        Args:
+            land_type:
+
+        returns:
+            QuerySet of Lands
+        """
         if not land_type:
             land_type = self.land_type
         klass = AdminRef.get_class(land_type)
         return klass.objects.all().filter(mpoly__touches=self.combined_emprise).order_by("name")
 
-    def get_matrix(self, sol: str = "couverture"):
+    def get_matrix(self, sol: Literal["couverture", "usage"] = "couverture"):
         if sol == "usage":
             prefix = "us"
             headers = {_.code: _ for _ in UsageSol.objects.all()}
