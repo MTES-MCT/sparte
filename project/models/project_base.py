@@ -13,7 +13,7 @@ from django.contrib.gis.geos import MultiPolygon, Polygon
 from django.core.cache import cache
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
-from django.db.models import Case, DecimalField, F, Q, Sum, Value, When
+from django.db.models import Case, Count, DecimalField, F, Q, Sum, Value, When
 from django.db.models.functions import Cast, Coalesce, Concat
 from django.urls import reverse
 from django.utils import timezone
@@ -36,6 +36,7 @@ from public_data.models import (
     UsageSol,
 )
 from public_data.models.administration import Commune
+from public_data.models.gpu import ArtifAreaZoneUrba, ZoneUrba
 from public_data.models.mixins import DataColorationMixin
 from utils.db import cast_sum_area
 
@@ -973,7 +974,7 @@ class Project(BaseProject):
             )
         )
 
-    def get_base_sol_artif(self, sol="couverture"):
+    def get_base_sol_artif(self, sol: Literal["couverture", "usage"] = "couverture"):
         """
         [
             {
@@ -1004,12 +1005,20 @@ class Project(BaseProject):
         )
 
     def get_neighbors(self, land_type=None):
+        """Return all touching land of the project according to land_type.
+
+        Args:
+            land_type:
+
+        returns:
+            QuerySet of Lands
+        """
         if not land_type:
             land_type = self.land_type
         klass = AdminRef.get_class(land_type)
         return klass.objects.all().filter(mpoly__touches=self.combined_emprise).order_by("name")
 
-    def get_matrix(self, sol="couverture"):
+    def get_matrix(self, sol: Literal["couverture", "usage"] = "couverture"):
         if sol == "usage":
             prefix = "us"
             headers = {_.code: _ for _ in UsageSol.objects.all()}
@@ -1039,6 +1048,57 @@ class Project(BaseProject):
             }
         else:
             return dict()
+
+    def get_artif_per_zone_urba_type(
+        self,
+    ) -> Dict[
+        Literal["AUs", "AUc", "A", "N", "U"],
+        Dict[
+            Literal["type_zone", "total_area", "first_artif_area", "last_artif_area", "fill_up_rate", "new_artif"],
+            str | float,
+        ],
+    ]:
+        """Return artif progression for each zone type.
+
+        Returns:
+            List of Dict with structure:
+                type_zone (str): type of zone A, N, AU, etc.
+                total_area (float): total area of zone
+                first_artif_area (float): artificial area of zone in first year
+                last_artif_area (float): artificial area of zone in last year
+                fill_up_rate (float): percentage of zone filled up
+        """
+        qs = (
+            ArtifAreaZoneUrba.objects.filter(zone_urba__in=ZoneUrba.objects.intersect(self.combined_emprise))
+            .filter(year__in=[self.first_year_ocsge, self.last_year_ocsge])
+            .order_by("zone_urba__typezone", "year")
+            .values("zone_urba__typezone", "year")
+            .annotate(
+                artif_area=Sum("area"),
+                total_area=Sum("zone_urba__area"),
+                nb_zones=Count("zone_urba_id"),
+            )
+        )
+        zone_list = dict()
+        for row in qs:
+            zone_type = row["zone_urba__typezone"]  # A, U, AUs...
+            if zone_type not in zone_list:
+                zone_list[zone_type] = {
+                    "type_zone": zone_type,
+                    "total_area": row["total_area"],
+                    "first_artif_area": 0.0,
+                    "last_artif_area": 0.0,
+                    "fill_up_rate": 0.0,
+                    "new_artif": 0.0,
+                }
+            if row["year"] == self.first_year_ocsge:
+                zone_list[zone_type]["first_artif_area"] = row["artif_area"]
+            else:
+                zone_list[zone_type]["last_artif_area"] = row["artif_area"]
+        for k in zone_list.keys():
+            zone_list[k]["fill_up_rate"] = 100 * zone_list[k]["last_artif_area"] / zone_list[k]["total_area"]
+            zone_list[k]["new_artif"] = zone_list[k]["last_artif_area"] - zone_list[k]["first_artif_area"]
+        return zone_list
 
 
 class Emprise(DataColorationMixin, gis_models.Model):
