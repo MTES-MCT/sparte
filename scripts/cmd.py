@@ -184,6 +184,14 @@ def logs(ctx, filter):
 
 
 @cli.command()
+@click.option("--off", is_flag=True)
+@click.pass_context
+def maintenance(ctx, off):
+    cmd = "maintenance --on" if off is False else "maintenance --off"
+    ScalingoInterface(ctx.obj).manage_py(cmd)
+
+
+@cli.command()
 @click.option("--klass", default=None, type=str, help="upload data for a specific model")
 @click.pass_context
 def load_data(ctx, klass=None):
