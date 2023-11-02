@@ -73,14 +73,14 @@ class AutoLoadMixin:
         """Hook that prepares shapefile before loading it into database
         Useful to modify shapefile fields type before mapping
 
-        Note that this hook cannot use cls.shape_file_path directly
-        because the data is not yet available when downloading from S3.
-
-        The shape_file_path argument in provided after the data is
-        downloaded and extracted in the load method.
+        Note that this method will update the in place in case
+        a local file is used. If the shapefile is retrieved from S3,
+        it will update the file from the temporary directory it
+        is extracted to.
 
         Args:
             shape_file_path: path to the shapefile to prepare
+            (provided by the load method)
         """
         pass
 

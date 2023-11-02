@@ -828,10 +828,6 @@ class SeineEtMarneOcsgeZoneConstruite(AutoLoadMixin, ZoneConstruite):
         # "zc_type": "ZC_TYPE",
     }
 
-    def before_save(self) -> None:
-        self.millesime = str(self._year)
-        return super().before_save()
-
     @staticmethod
     def prepare_shapefile(shape_file_path: Path):
         gdf = geopandas.read_file(shape_file_path)
@@ -839,7 +835,8 @@ class SeineEtMarneOcsgeZoneConstruite(AutoLoadMixin, ZoneConstruite):
         gdf.to_file(shape_file_path, driver="ESRI Shapefile")
 
     def save(self, *args, **kwargs):
-        self.year = self._year
+        self.year = int(self._year)
+        self.millesime = str(self._year)
         self.surface = self.mpoly.transform(2154, clone=True).area
         super().save(*args, **kwargs)
 
