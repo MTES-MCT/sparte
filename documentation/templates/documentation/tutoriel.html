@@ -1,0 +1,87 @@
+{% extends "index.html" %}
+
+{% load static %}
+
+{% block pagetitle %}Tutoriel{% endblock pagetitle %}
+
+{% block content %}
+
+<!--
+    Règles d'usage du template liées:
+
+    Un nouveau bloc se structure toujours avec une div de classe fr-grid-row puis d'une ou plusieurs div de classe fr-col.
+    cf: https://www.systeme-de-design.gouv.fr/elements-d-interface/fondamentaux-techniques/grille-et-points-de-rupture/
+
+    Vous pouvez régler les marges entre les blocs ou certains éléments grâce aux classes d'espacements du DSFR.
+    cf: https://www.systeme-de-design.gouv.fr/elements-d-interface/fondamentaux-techniques/espacement
+
+    Vous pouvez utiliser l'ensemble des composants du DSFR pour effectuer votre mise en page. Il suffit de le copier-coller
+    dans le template, le style s'appliquera tout seul.
+    cf: https://www.systeme-de-design.gouv.fr/elements-d-interface/composants/
+
+    Pour ajouter une image, vous devez la déposer dans le dossier sparte/documentation/static/documentation/img/ puis l'ajouter
+    dans le template via la balise image suivante (Veillez à ce quelles ne soient pas trop lourdes):
+    <img class="fr-responsive-img" src="{% static 'documentation/img/image-test.png' %}" alt="">
+-->
+
+<section>
+    <div class="fr-container">
+        <div class="fr-grid-row">
+            <div class="fr-col">
+                <h1>Tutoriel</h1>
+            </div>
+        </div>
+
+        <div class="fr-grid-row">
+            <div class="fr-col">
+                <h2>Lorem ipsum dolor sit amet ?</h2>
+                <p>
+                    Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit
+                    anim id est laborum.
+                </p>
+            </div>
+        </div>
+
+        <div class="fr-grid-row fr-mb-5w">
+            <div class="fr-col">
+                <!-- Exemple de composant DSFR -->
+                <div class="fr-alert fr-alert--info">
+                    <h3 class="fr-alert__title">Nec feugiat nisl pretium</h3>
+                    <p>Arcu ac tortor dignissim convallis aenean et tortor at risus.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="fr-grid-row fr-mb-3w">
+            <div class="fr-col">
+                <h2>Sint occaecat cupidatat non proident ?</h2>
+                <p>
+                    Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit
+                    anim id est laborum.
+                </p>
+                <h3>Laboris nisi ut aliquip ex ea commodo consequat.</h3>
+                <p>
+                    Aliquet sagittis id consectetur purus ut faucibus pulvinar elementum. Orci dapibus ultrices in iaculis nunc.
+                    Quis varius quam quisque id diam. Nec feugiat nisl pretium fusce id velit ut tortor pretium. Fames ac turpis
+                    egestas integer eget aliquet nibh praesent tristique. Faucibus purus in massa tempor. Arcu ac tortor
+                    dignissim convallis aenean et tortor at risus. Mauris sit amet massa vitae tortor condimentum lacinia quis.
+                    Eros in cursus turpis massa tincidunt dui ut. Integer quis auctor elit sed vulputate. Elementum facilisis
+                    leo vel fringilla est ullamcorper eget nulla <a href="test" target="_blank">link test</a>. Nisl purus in mollis nunc sed id. Montes nascetur ridiculus
+                    mus mauris vitae. Vestibulum lorem sed risus ultricies.
+                </p>
+                <ul>
+                    <li>Eiusmod tempor incididunt.</li>
+                    <li>Dolor in reprehenderit in voluptate.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="fr-grid-row fr-mb-3w">
+            <div class="fr-col">
+                <!-- Exemple d'image' -->
+                <img class="fr-responsive-img" src="{% static 'documentation/img/image-test.png' %}" alt="">
+            </div>
+        </div>
+    </div>
+</section> 
+{% endblock content %}
