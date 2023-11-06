@@ -90,16 +90,14 @@ Variables d'environnement spécifique à Scalingo. Voir les valeurs sur Scalingo
 
 ## Contribution
 
-### Lint
-- Depuis le shell pipenv, installer la configuration pre-commit sur votre dépot git local : `pre-commit install`
-- Il est aussi possible de lancer le pre-commit manuellement sans l'installer : `pre-commit run --all-file`
+### Avant de commit
+- Vérifier la couverture des tests unitaires `coverage run -m pytest && coverage report -m`
+- Vérifier le formatage `flake8`
 
-De cette manière, vos changements seront évalués automatiquement selon notre coding style (voir le fichier `.pre-commit.config.yaml` pour le détail).
-
-### Test
-
-- Avant chaque commit, lancer manuellement depuis le containeur de l'application les tests et l'analyse de la couverture de tests: `coverage run -m pytest && coverage report -m`
-
+Si vous souhaitez ignorer le pre-commit hook (utile pour ajouter des fichiers shapes sans les modifier):
+```
+git commit --no-verify
+```
 
 ### Récupérer un backup de production
 
@@ -142,10 +140,10 @@ On ne peut pas exécuter le code de migration directement sur le serveur car il 
 1. Mettre l'application en mode maintenance: `/admin/django_app_parameter/parameter/11/change/`
 2. Via git, merger la branche staging dans master
 3. Attendre la fin du déploiement
-4. Ouvrir un tunnel vers la db de prod: `scalingo --app sparte-staging --region osc-fr1 db-tunnel DATABASE_URL`
+4. Ouvrir un tunnel vers la db de prod: `scalingo --app sparte --region osc-secnum-fr1 db-tunnel DATABASE_URL`
 5. Modifier le .env pour utiliser la db de prod depuis votre poste postgis://username:password@127.0.0.1:10000/dbname?sslmode=prefer
 6. Dans un terminal, sourcer le .env pour être sûr de tapper dans la db de prod
-7. Charger les données du Cerema `scalingo --app sparte-staging --region osc-fr1 run 'python manage.py load_cerema'`
+7. Charger les données du Cerema `scalingo --app sparte --region osc-secnum-fr1 run 'python manage.py load_cerema'`
 7. Exécuter les scripts de migration `python manage.py update_administration_layer`
 
 
