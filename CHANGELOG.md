@@ -2,11 +2,17 @@
 
 Ce changelog suit la méthode "keep a changelog" disponible ici: [https://keepachangelog.com/en/1.0.0/](https://keepachangelog.com/en/1.0.0/)
 
+
+## [4.2.1] Cerema 2021 - Non livré
+
+### corrigé :
+- Bloc "consommation 2031" des pages Synthèse et Trajectoire n'affichait plus le volume autorisé
+- Bloc "Bilan conso" incohérent entre les rapports Trajectoire et Consommation, c'est le rapport Consommation qui avait le calcul exacte.
+
 ## [4.2] Cerema 2021 - Non livré
 
 ### Ajouté :
 - Données Cerema 2021
-
 
 ### Modifié :
 - Séparation des tâches asynchrones en 2 queues pour accélérer la création des diagnostics en ligne et les découpler de l'IGN
