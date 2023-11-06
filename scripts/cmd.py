@@ -276,7 +276,7 @@ def mep_260(ctx):
 
 @cli.command()
 @click.pass_context
-def mep_seine_et_marne(ctx):
+def load_seine_et_marne_ocsge(ctx):
     connecter = ScalingoInterface(ctx.obj)
     connecter.manage_py("load_ocsge --item SeineEtMarneOcsge2017")
     connecter.manage_py("load_ocsge --item SeineEtMarneOcsge2021")
@@ -291,7 +291,7 @@ def mep_seine_et_marne(ctx):
 
 @cli.command()
 @click.pass_context
-def mep_essonne(ctx):
+def load_essonne_ocsge(ctx):
     connecter = ScalingoInterface(ctx.obj)
     connecter.manage_py("load_ocsge --item EssonneOcsge2018")
     connecter.manage_py("load_ocsge --item EssonneOcsge2021")
