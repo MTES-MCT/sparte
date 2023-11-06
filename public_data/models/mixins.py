@@ -168,9 +168,9 @@ class AutoLoadMixin:
         - https://docs.djangoproject.com/en/4.2/ref/contrib/gis/layermapping/
 
         Args:
+            verbose: print more information
             local_file_path: path to a local shapefile
             local_file_directory: directory where to find the local shapefile
-            layer_mapper_verbose: print more information
             layer_mapper_strict: raise exception if a field is missing
             layer_mapper_silent: do not print anything
             layer_mapper_encoding: encoding of the shapefile
