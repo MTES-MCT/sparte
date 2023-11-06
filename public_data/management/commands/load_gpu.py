@@ -134,7 +134,7 @@ class Command(BaseCommand):
         logger.info("Load data for: ZoneUrbaFrance")
 
         ZoneUrbaFrance.load(
-            layer_mapper_verbose=self.verbose,
+            verbose=self.verbose,
             encoding="latin1",
             silent=True,
         )

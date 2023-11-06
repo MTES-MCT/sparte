@@ -17,4 +17,4 @@ def load_data(class_name, verbose=False):
 
     logging.info("load data of %s (verbose=%s)", my_class, verbose)
 
-    my_class.load(layer_mapper_verbose=verbose)
+    my_class.load(verbose=verbose)

@@ -976,4 +976,4 @@ class Command(BaseCommand):
 
         for item in item_list:
             logger.info("Load data for: %s", item.__name__)
-            item.load(layer_mapper_verbose=self.verbose)
+            item.load(verbose=self.verbose)

@@ -182,7 +182,7 @@ class Command(BaseCommand):
         logger.info("Load Cerema")
 
         LoadCerema.load(
-            layer_mapper_verbose=kwargs.get("verbose", False),
+            verbose=kwargs.get("verbose", False),
             layer_mapper_strict=False,
             layer_mapper_silent=False,
         )

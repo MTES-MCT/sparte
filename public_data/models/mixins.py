@@ -82,6 +82,12 @@ class AutoLoadMixin:
             (provided by the load method)
         """
 
+    def __log(verbose):
+        if verbose:
+            return logger.info
+        else:
+            return logger.debug
+
     def __check_path_is_a_regular_file(path: Path) -> None:
         if not path.is_file():
             raise FileNotFoundError(f"{path} is not a regular file")
@@ -146,7 +152,7 @@ class AutoLoadMixin:
         cls,
         local_file_path=None,
         local_file_directory=LOCAL_FILE_DIRECTORY,
-        layer_mapper_verbose=True,
+        verbose=True,
         layer_mapper_strict=True,
         layer_mapper_silent=False,
         layer_mapper_encoding="utf-8",
@@ -175,6 +181,8 @@ class AutoLoadMixin:
             NotImplementedError: if the child class does not implement the shape_file_path property
         """
 
+        logger.setLevel(logging.DEBUG if verbose else logging.INFO)
+
         logger.info("Loading data from class %s", cls.__name__)
 
         with TemporaryDirectory() as temporary_directory:
@@ -185,16 +193,16 @@ class AutoLoadMixin:
                     file_name_on_s3=cls.shape_file_path,
                     output_path=Path(temporary_directory),
                 )
-                logger.info(f"Zipped shapefile temporary path: {zipped_shapefile_path}")
+                logger.debug(f"Zipped shapefile temporary path: {zipped_shapefile_path}")
 
-                logger.info("Extracting zipped shapefile")
+                logger.debug("Extracting zipped shapefile")
 
                 shapefile_folder_path = cls.__extract_zipped_shapefile(
                     zipped_shapefile_path=zipped_shapefile_path,
                     output_path=Path(temporary_directory),
                 )
 
-                logger.info(f"Extracted shapefile folder path: {shapefile_folder_path}")
+                logger.debug(f"Extracted shapefile folder path: {shapefile_folder_path}")
 
                 shape_file_path = cls.__get_shapefile_path_from_folder(shapefile_folder_path)
             else:
@@ -206,7 +214,7 @@ class AutoLoadMixin:
 
             cls.__check_is_shape_file(shape_file_path)
 
-            logger.info("Shapefile is valid ✅")
+            logger.debug("Shapefile is valid ✅")
 
             logger.info("Preparing shapefile")
 
@@ -231,7 +239,7 @@ class AutoLoadMixin:
             layer_mapper.save(
                 strict=layer_mapper_strict,
                 silent=layer_mapper_silent,
-                verbose=layer_mapper_verbose,
+                verbose=verbose,
                 progress=True,
                 step=layer_mapper_step,
             )
