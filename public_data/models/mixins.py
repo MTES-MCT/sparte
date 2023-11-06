@@ -82,12 +82,6 @@ class AutoLoadMixin:
             (provided by the load method)
         """
 
-    def __log(verbose):
-        if verbose:
-            return logger.info
-        else:
-            return logger.debug
-
     def __check_path_is_a_regular_file(path: Path) -> None:
         if not path.is_file():
             raise FileNotFoundError(f"{path} is not a regular file")
