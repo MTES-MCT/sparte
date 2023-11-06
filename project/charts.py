@@ -231,7 +231,7 @@ class ObjectiveChart(ProjectChart):
         self.annual_objective_2031 = total_2020 * self.project.target_2031 / 1000
         self.annual_real = self.total_real / 10
         self.total_2031 = total_2020
-        self.conso_2031 = 0
+        self.conso_2031 = self.annual_objective_2031 * 10
         for year in range(2020 + 1, 2031):  # noqa: B020
             self.total_2031 += self.annual_objective_2031
             self.series[3]["data"].append(
