@@ -174,6 +174,9 @@ class AutoLoadMixin:
             FileNotFoundError: if the shapefile is not found on S3 or locally
             NotImplementedError: if the child class does not implement the shape_file_path property
         """
+
+        logger.info("Loading data from class %s", cls.__name__)
+
         with TemporaryDirectory() as temporary_directory:
             if not local_file_path:
                 logger.info("Retrieving zipped shapefile from S3")
@@ -202,11 +205,18 @@ class AutoLoadMixin:
             logger.info("Shapefile path: %s", shape_file_path)
 
             cls.__check_is_shape_file(shape_file_path)
+
+            logger.info("Shapefile is valid ✅")
+
+            logger.info("Preparing shapefile")
+
             cls.prepare_shapefile(shape_file_path)
 
             logger.info("Cleaning previously loaded data")
 
             cls.clean_data()
+
+            logger.info("Setting up LayerMapper")
 
             layer_mapper = LayerMapping(
                 model=cls,
@@ -216,6 +226,8 @@ class AutoLoadMixin:
                 transaction_mode="commit_on_success",
             )
 
+            logger.info("Saving mapped entities")
+
             layer_mapper.save(
                 strict=layer_mapper_strict,
                 silent=layer_mapper_silent,
@@ -224,7 +236,11 @@ class AutoLoadMixin:
                 step=layer_mapper_step,
             )
 
+            logger.info("Calculating fields")
+
             cls.calculate_fields()
+
+        logger.info("Done loading data from class %s", cls.__name__)
 
 
 class DataColorationMixin:
