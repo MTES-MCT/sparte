@@ -973,48 +973,105 @@ class BaseThemeMap(GroupMixin, DetailView):
             return self.render_to_response(context)
 
 
-class MyArtifMapView(BaseThemeMap):
+class MyArtifMapView(BaseMap):
     title = "Comprendre l'artificialisation du territoire"
+    default_zoom = 12
 
-    def get_layers_list(self, *layers):
+    def get_sources_list(self, *sources):
         years = (
             self.object.cities.all().first().communediff_set.all().aggregate(old=Max("year_old"), new=Max("year_new"))
         )
-        layers = list(layers) + [
+        sources = [
             {
-                "name": "Artificialisation",
-                "url": (
-                    f'{reverse_lazy("public_data:ocsgediff-optimized")}'
-                    f"?year_old={years['old']}&year_new={years['new']}"
-                    f"&is_new_artif=true&project_id={self.object.id}"
-                ),
-                "display": True,
-                "style": "get_color_for_ocsge_diff",
-                "level": "7",
+                "key": "zones-artificielles-source",
+                "params": {
+                    "type": "geojson",
+                    "data": reverse_lazy("public_data:artificialarea-optimized"),
+                    "generateId": True,  # This ensures that all features have unique IDs
+                },
+                "query_strings": [
+                    {
+                        "type": "function",
+                        "key": "in_bbox",
+                        "value": "getBbox",
+                    },
+                    {
+                        "type": "function",
+                        "key": "zoom",
+                        "value": "getZoom",
+                    },
+                    {
+                        "type": "string",
+                        "key": "year",
+                        "value": years["new"],
+                    },
+                    {
+                        "type": "string",
+                        "key": "id",
+                        "value": self.object.pk,
+                    },
+                ],
+                "min_zoom": 12,
             },
+        ]
+        return super().get_sources_list(*sources)
+
+    def get_layers_list(self, *layers):
+        layers = [
             {
-                "name": "Renaturation",
-                "url": (
-                    f'{reverse_lazy("public_data:ocsgediff-optimized")}'
-                    f"?year_old={years['old']}&year_new={years['new']}"
-                    f"&is_new_natural=true&project_id={self.object.id}"
-                ),
-                "display": True,
-                "style": "get_color_for_ocsge_diff",
-                "level": "7",
-            },
-            {
-                "name": "Zones artificielles",
-                "url": (
-                    f'{reverse_lazy("public_data:artificialarea-optimized")}'
-                    f"?year={years['new']}&project_id={self.object.id}"
-                ),
-                "display": True,
-                "style": "style_zone_artificielle",
-                "level": "3",
+                "id": "zones-artificielles-fill-layer",
+                "z-index": 6,
+                "type": "fill",
+                "source": "zones-artificielles-source",
+                "minzoom": 12,
+                "maxzoom": 19,
+                "paint": {
+                    "fill-color": "#f88e55",
+                    "fill-opacity": ["case", ["boolean", ["feature-state", "hover"], False], 1, 0.7],
+                },
             },
         ]
         return super().get_layers_list(*layers)
+
+    # def get_layers_list(self, *layers):
+    #     years = (
+    #         self.object.cities.all().first().communediff_set.all().aggregate(old=Max("year_old"), new=Max("year_new"))
+    #     )
+    #     layers = list(layers) + [
+    #         {
+    #             "name": "Artificialisation",
+    #             "url": (
+    #                 f'{reverse_lazy("public_data:ocsgediff-optimized")}'
+    #                 f"?year_old={years['old']}&year_new={years['new']}"
+    #                 f"&is_new_artif=true&project_id={self.object.id}"
+    #             ),
+    #             "display": True,
+    #             "style": "get_color_for_ocsge_diff",
+    #             "level": "7",
+    #         },
+    #         {
+    #             "name": "Renaturation",
+    #             "url": (
+    #                 f'{reverse_lazy("public_data:ocsgediff-optimized")}'
+    #                 f"?year_old={years['old']}&year_new={years['new']}"
+    #                 f"&is_new_natural=true&project_id={self.object.id}"
+    #             ),
+    #             "display": True,
+    #             "style": "get_color_for_ocsge_diff",
+    #             "level": "7",
+    #         },
+    #         {
+    #             "name": "Zones artificielles",
+    #             "url": (
+    #                 f'{reverse_lazy("public_data:artificialarea-optimized")}'
+    #                 f"?year={years['new']}&project_id={self.object.id}"
+    #             ),
+    #             "display": True,
+    #             "style": "style_zone_artificielle",
+    #             "level": "3",
+    #         },
+    #     ]
+    #     return super().get_layers_list(*layers)
 
 
 class CitySpaceConsoMapView(BaseMap):
