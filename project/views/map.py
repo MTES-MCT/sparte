@@ -1096,6 +1096,24 @@ class MyArtifMapView(BaseMap):
                     "fill-color": "#f88e55",
                     "fill-opacity": ["case", ["boolean", ["feature-state", "hover"], False], 1, 0.7],
                 },
+                "events": [
+                    {
+                        "type": "mousemove",
+                        "triggers": [
+                            {
+                                "method": "hoverEffectIn",
+                            },
+                        ],
+                    },
+                    {
+                        "type": "mouseleave",
+                        "triggers": [
+                            {
+                                "method": "hoverEffectOut",
+                            },
+                        ],
+                    },
+                ],
             },
             {
                 "id": "ocsge-diff-artif-fill-layer",
@@ -1108,10 +1126,28 @@ class MyArtifMapView(BaseMap):
                     "fill-color": "#ff0000",
                     "fill-opacity": ["case", ["boolean", ["feature-state", "hover"], False], 1, 0.7],
                 },
+                "events": [
+                    {
+                        "type": "mousemove",
+                        "triggers": [
+                            {
+                                "method": "hoverEffectIn",
+                            },
+                        ],
+                    },
+                    {
+                        "type": "mouseleave",
+                        "triggers": [
+                            {
+                                "method": "hoverEffectOut",
+                            },
+                        ],
+                    },
+                ],
             },
             {
                 "id": "ocsge-diff-natural-fill-layer",
-                "z-index": 7,
+                "z-index": 8,
                 "type": "fill",
                 "source": "ocsge-diff-natural-source",
                 "minzoom": 12,
@@ -1120,6 +1156,24 @@ class MyArtifMapView(BaseMap):
                     "fill-color": "#00ff00",
                     "fill-opacity": ["case", ["boolean", ["feature-state", "hover"], False], 1, 0.7],
                 },
+                "events": [
+                    {
+                        "type": "mousemove",
+                        "triggers": [
+                            {
+                                "method": "hoverEffectIn",
+                            },
+                        ],
+                    },
+                    {
+                        "type": "mouseleave",
+                        "triggers": [
+                            {
+                                "method": "hoverEffectOut",
+                            },
+                        ],
+                    },
+                ],
             },
         ]
         return super().get_layers_list(*layers)
