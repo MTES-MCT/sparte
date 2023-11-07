@@ -1009,7 +1009,7 @@ class MyArtifMapView(BaseMap):
                 "min_zoom": 12,
             },
             {
-                "key": "ocsge-diff-artif-source",
+                "key": "ocsge-diff-source",
                 "params": {
                     "type": "geojson",
                     "data": reverse_lazy("public_data:ocsgediff-optimized"),
@@ -1030,47 +1030,6 @@ class MyArtifMapView(BaseMap):
                         "type": "string",
                         "key": "year_new",
                         "value": years["new"],
-                    },
-                    {
-                        "type": "string",
-                        "key": "is_new_artif",
-                        "value": True,
-                    },
-                    {
-                        "type": "string",
-                        "key": "id",
-                        "value": self.object.pk,
-                    },
-                ],
-                "min_zoom": 12,
-            },
-            {
-                "key": "ocsge-diff-natural-source",
-                "params": {
-                    "type": "geojson",
-                    "data": reverse_lazy("public_data:ocsgediff-optimized"),
-                    "generateId": True,  # This ensures that all features have unique IDs
-                },
-                "query_strings": [
-                    {
-                        "type": "function",
-                        "key": "in_bbox",
-                        "value": "getBbox",
-                    },
-                    {
-                        "type": "string",
-                        "key": "year_old",
-                        "value": years["old"],
-                    },
-                    {
-                        "type": "string",
-                        "key": "year_new",
-                        "value": years["new"],
-                    },
-                    {
-                        "type": "string",
-                        "key": "is_new_natural",
-                        "value": True,
                     },
                     {
                         "type": "string",
@@ -1103,6 +1062,21 @@ class MyArtifMapView(BaseMap):
                             {
                                 "method": "hoverEffectIn",
                             },
+                            {
+                                "method": "showInfoBox",
+                                "options": {
+                                    "title": "Zones artificielles",
+                                    "properties": [
+                                        {"name": "Commune", "key": "city"},
+                                        {
+                                            "name": "Surface",
+                                            "key": "surface",
+                                            "formatter": ["number", ["fr-FR", "unit", "hectare", 2]],
+                                        },
+                                        {"name": "Millésime", "key": "year"},
+                                    ],
+                                },
+                            },
                         ],
                     },
                     {
@@ -1111,21 +1085,25 @@ class MyArtifMapView(BaseMap):
                             {
                                 "method": "hoverEffectOut",
                             },
+                            {
+                                "method": "hideInfoBox",
+                            },
                         ],
                     },
                 ],
             },
             {
-                "id": "ocsge-diff-artif-fill-layer",
+                "id": "ocsge-diff-artificialisation-fill-layer",
                 "z-index": 7,
                 "type": "fill",
-                "source": "ocsge-diff-artif-source",
+                "source": "ocsge-diff-source",
                 "minzoom": 12,
                 "maxzoom": 19,
                 "paint": {
                     "fill-color": "#ff0000",
                     "fill-opacity": ["case", ["boolean", ["feature-state", "hover"], False], 1, 0.7],
                 },
+                "filter": ["==", "is_new_artif", True],
                 "events": [
                     {
                         "type": "mousemove",
@@ -1146,16 +1124,17 @@ class MyArtifMapView(BaseMap):
                 ],
             },
             {
-                "id": "ocsge-diff-natural-fill-layer",
+                "id": "ocsge-diff-renaturation-fill-layer",
                 "z-index": 8,
                 "type": "fill",
-                "source": "ocsge-diff-natural-source",
+                "source": "ocsge-diff-source",
                 "minzoom": 12,
                 "maxzoom": 19,
                 "paint": {
                     "fill-color": "#00ff00",
                     "fill-opacity": ["case", ["boolean", ["feature-state", "hover"], False], 1, 0.7],
                 },
+                "filter": ["==", "is_new_natural", True],
                 "events": [
                     {
                         "type": "mousemove",
@@ -1226,7 +1205,7 @@ class MyArtifMapView(BaseMap):
                                 "method": "changeLayoutProperty",
                                 "property": "visibility",
                                 "items": [
-                                    "ocsge-diff-artif-fill-layer",
+                                    "ocsge-diff-artificialisation-fill-layer",
                                 ],
                             },
                         ],
@@ -1239,12 +1218,12 @@ class MyArtifMapView(BaseMap):
                             {
                                 "method": "changePaintProperty",
                                 "property": "fill-opacity",
-                                "items": ["ocsge-diff-artif-fill-layer"],
+                                "items": ["ocsge-diff-artificialisation-fill-layer"],
                             },
                         ],
                     },
                 ],
-                "source": "ocsge-diff-artif-source",
+                "source": "ocsge-diff-source",
             },
             {
                 "name": "Renaturation",
@@ -1259,7 +1238,7 @@ class MyArtifMapView(BaseMap):
                                 "method": "changeLayoutProperty",
                                 "property": "visibility",
                                 "items": [
-                                    "ocsge-diff-natural-fill-layer",
+                                    "ocsge-diff-renaturation-fill-layer",
                                 ],
                             },
                         ],
@@ -1272,55 +1251,15 @@ class MyArtifMapView(BaseMap):
                             {
                                 "method": "changePaintProperty",
                                 "property": "fill-opacity",
-                                "items": ["ocsge-diff-natural-fill-layer"],
+                                "items": ["ocsge-diff-renaturation-fill-layer"],
                             },
                         ],
                     },
                 ],
-                "source": "ocsge-diff-natural-source",
+                "source": "ocsge-diff-source",
             },
         ]
         return super().get_filters_list(*filters)
-
-    # def get_layers_list(self, *layers):
-    #     years = (
-    #         self.object.cities.all().first().communediff_set.all().aggregate(old=Max("year_old"), new=Max("year_new"))
-    #     )
-    #     layers = list(layers) + [
-    #         {
-    #             "name": "Artificialisation",
-    #             "url": (
-    #                 f'{reverse_lazy("public_data:ocsgediff-optimized")}'
-    #                 f"?year_old={years['old']}&year_new={years['new']}"
-    #                 f"&is_new_artif=true&project_id={self.object.id}"
-    #             ),
-    #             "display": True,
-    #             "style": "get_color_for_ocsge_diff",
-    #             "level": "7",
-    #         },
-    #         {
-    #             "name": "Renaturation",
-    #             "url": (
-    #                 f'{reverse_lazy("public_data:ocsgediff-optimized")}'
-    #                 f"?year_old={years['old']}&year_new={years['new']}"
-    #                 f"&is_new_natural=true&project_id={self.object.id}"
-    #             ),
-    #             "display": True,
-    #             "style": "get_color_for_ocsge_diff",
-    #             "level": "7",
-    #         },
-    #         {
-    #             "name": "Zones artificielles",
-    #             "url": (
-    #                 f'{reverse_lazy("public_data:artificialarea-optimized")}'
-    #                 f"?year={years['new']}&project_id={self.object.id}"
-    #             ),
-    #             "display": True,
-    #             "style": "style_zone_artificielle",
-    #             "level": "3",
-    #         },
-    #     ]
-    #     return super().get_layers_list(*layers)
 
 
 class CitySpaceConsoMapView(BaseMap):
