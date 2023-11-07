@@ -14,5 +14,18 @@
     "editor.defaultFormatter": "ms-python.black-formatter",
     "[python]": {
         "editor.defaultFormatter": "ms-python.black-formatter"
-    }
+    },
+    "isort.check": true,
+    "isort.importStrategy": "fromEnvironment",
+    "flake8.importStrategy": "fromEnvironment",
+    "python.analysis.autoFormatStrings": true,
+    "python.analysis.inlayHints.callArgumentNames": "all",
+    "python.analysis.inlayHints.functionReturnTypes": true,
+    "python.createEnvironment.contentButton": "show",
+    "python.terminal.activateEnvInCurrentTerminal": true,
+    "black-formatter.importStrategy": "fromEnvironment",
+    "git.autofetch": true,
+    "git.autoStash": false,
+    "git.fetchOnPull": true,
+    "git.followTagsWhenSync": true,
 }
