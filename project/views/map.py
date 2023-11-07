@@ -1044,6 +1044,42 @@ class MyArtifMapView(BaseMap):
                 ],
                 "min_zoom": 12,
             },
+            {
+                "key": "ocsge-diff-natural-source",
+                "params": {
+                    "type": "geojson",
+                    "data": reverse_lazy("public_data:ocsgediff-optimized"),
+                    "generateId": True,  # This ensures that all features have unique IDs
+                },
+                "query_strings": [
+                    {
+                        "type": "function",
+                        "key": "in_bbox",
+                        "value": "getBbox",
+                    },
+                    {
+                        "type": "string",
+                        "key": "year_old",
+                        "value": years["old"],
+                    },
+                    {
+                        "type": "string",
+                        "key": "year_new",
+                        "value": years["new"],
+                    },
+                    {
+                        "type": "string",
+                        "key": "is_new_natural",
+                        "value": True,
+                    },
+                    {
+                        "type": "string",
+                        "key": "id",
+                        "value": self.object.pk,
+                    },
+                ],
+                "min_zoom": 12,
+            },
         ]
         return super().get_sources_list(*sources)
 
@@ -1070,6 +1106,18 @@ class MyArtifMapView(BaseMap):
                 "maxzoom": 19,
                 "paint": {
                     "fill-color": "#ff0000",
+                    "fill-opacity": ["case", ["boolean", ["feature-state", "hover"], False], 1, 0.7],
+                },
+            },
+            {
+                "id": "ocsge-diff-natural-fill-layer",
+                "z-index": 7,
+                "type": "fill",
+                "source": "ocsge-diff-natural-source",
+                "minzoom": 12,
+                "maxzoom": 19,
+                "paint": {
+                    "fill-color": "#00ff00",
                     "fill-opacity": ["case", ["boolean", ["feature-state", "hover"], False], 1, 0.7],
                 },
             },
