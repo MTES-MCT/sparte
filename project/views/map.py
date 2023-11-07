@@ -1178,6 +1178,110 @@ class MyArtifMapView(BaseMap):
         ]
         return super().get_layers_list(*layers)
 
+    def get_filters_list(self, *filters):
+        filters = [
+            {
+                "name": "Zones artificielles",
+                "z-index": 4,
+                "filters": [
+                    {
+                        "name": "Visibilité du calque",
+                        "type": "visibility",
+                        "value": "visible",
+                        "triggers": [
+                            {
+                                "method": "changeLayoutProperty",
+                                "property": "visibility",
+                                "items": [
+                                    "zones-artificielles-fill-layer",
+                                ],
+                            },
+                        ],
+                    },
+                    {
+                        "name": "Opacité du calque",
+                        "type": "opacity",
+                        "value": 100,
+                        "triggers": [
+                            {
+                                "method": "changePaintProperty",
+                                "property": "fill-opacity",
+                                "items": ["zones-artificielles-fill-layer"],
+                            },
+                        ],
+                    },
+                ],
+                "source": "zones-artificielles-source",
+            },
+            {
+                "name": "Artificialisation",
+                "z-index": 5,
+                "filters": [
+                    {
+                        "name": "Visibilité du calque",
+                        "type": "visibility",
+                        "value": "visible",
+                        "triggers": [
+                            {
+                                "method": "changeLayoutProperty",
+                                "property": "visibility",
+                                "items": [
+                                    "ocsge-diff-artif-fill-layer",
+                                ],
+                            },
+                        ],
+                    },
+                    {
+                        "name": "Opacité du calque",
+                        "type": "opacity",
+                        "value": 100,
+                        "triggers": [
+                            {
+                                "method": "changePaintProperty",
+                                "property": "fill-opacity",
+                                "items": ["ocsge-diff-artif-fill-layer"],
+                            },
+                        ],
+                    },
+                ],
+                "source": "ocsge-diff-artif-source",
+            },
+            {
+                "name": "Renaturation",
+                "z-index": 4,
+                "filters": [
+                    {
+                        "name": "Visibilité du calque",
+                        "type": "visibility",
+                        "value": "visible",
+                        "triggers": [
+                            {
+                                "method": "changeLayoutProperty",
+                                "property": "visibility",
+                                "items": [
+                                    "ocsge-diff-natural-fill-layer",
+                                ],
+                            },
+                        ],
+                    },
+                    {
+                        "name": "Opacité du calque",
+                        "type": "opacity",
+                        "value": 100,
+                        "triggers": [
+                            {
+                                "method": "changePaintProperty",
+                                "property": "fill-opacity",
+                                "items": ["ocsge-diff-natural-fill-layer"],
+                            },
+                        ],
+                    },
+                ],
+                "source": "ocsge-diff-natural-source",
+            },
+        ]
+        return super().get_filters_list(*filters)
+
     # def get_layers_list(self, *layers):
     #     years = (
     #         self.object.cities.all().first().communediff_set.all().aggregate(old=Max("year_old"), new=Max("year_new"))
