@@ -144,6 +144,11 @@ urlpatterns = [
         views.ProjectReportArtifTerritoryMap.as_view(),
         name="artif-territory-map",
     ),
+    path(
+        "<int:pk>/artificialisation/carte-villes",
+        views.ProjectReportArtifCitiesMap.as_view(),
+        name="artif-cities-map",
+    ),
     # MAP
     path(
         "<int:pk>/carte/comprendre-mon-artificialisation",

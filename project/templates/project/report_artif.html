@@ -244,19 +244,7 @@ Rapport artificialisation
                     </div>
                 </div>
                 <div class="fr-col-12 fr-col-lg-4">
-                    <div class="border theme-map-image-container h-100 fr-p-2w d-flex flex-column align-items-center justify-content-between">
-                        <div class="d-flex justify-content-end align-items-center w-100 fr-mb-2w">
-                            <a href="{% url 'project:theme-city-artif' project.pk %}" target="_blank">
-                                <button class="fr-btn fr-icon-external-link-line fr-btn--tertiary fr-btn--sm"></button>
-                            </a>
-                        </div>
-                        <p class="fw-bold">Carte artificialisation des communes du territoire sur la période (en Ha)</p>
-                        {% if project.theme_map_artif %}
-                        <img src="{{ project.theme_map_artif.url }}" alt="Carte artificialisation des communes du territoire sur la période (en Ha)">
-                        {% else %}
-                        <div class="skeleton-loader"></div>
-                        {% endif %}
-                    </div>
+                    {% include "project/partials/artif_cities_map.html" %}
                 </div>
             </div>
 
