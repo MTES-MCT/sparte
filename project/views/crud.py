@@ -238,20 +238,11 @@ class ProjectRemoveLookALike(GroupMixin, RedirectURLMixin, DetailView):
 
 
 class ProjectListView(GroupMixin, LoginRequiredMixin, ListView):
-    queryset = Project.objects.all()
     template_name = "project/list.html"
     context_object_name = "projects"  # override to add an "s"
 
     def get_queryset(self):
-        qs = Project.objects.filter(user=self.request.user)
-        for project in qs:
-            if project.cover_image:
-                try:
-                    project.prop_width = 266
-                    project.prop_height = project.cover_image.height * 266 / project.cover_image.width
-                except FileNotFoundError:
-                    project.cover_image = None
-        return qs
+        return Project.objects.filter(user=self.request.user)
 
 
 class SplashScreenView(GroupMixin, DetailView):
