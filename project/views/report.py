@@ -1023,3 +1023,10 @@ class ProjectReportGpuZoneFillMap(StandAloneMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         return super().get_context_data(diagnostic=Project.objects.get(pk=self.kwargs["pk"]), **kwargs)
+
+
+class ProjectReportConsoMap(StandAloneMixin, TemplateView):
+    template_name = "project/partials/conso_map.html"
+
+    def get_context_data(self, **kwargs):
+        return super().get_context_data(diagnostic=Project.objects.get(pk=self.kwargs["pk"]), **kwargs)
