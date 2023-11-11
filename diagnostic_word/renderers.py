@@ -233,9 +233,9 @@ class Renderer:
 
         context |= {
             "surface_chart ": self.prep_chart(surface_chart),
-            "pop_chart ": self.prep_chart(pop_chart),
+            "pop_chart": self.prep_chart(pop_chart),
             "pop_table": add_total_line_column(pop_chart.get_series(), replace_none=True),
-            "conso_comparison_pop_chart ": self.prep_chart(conso_comparison_pop_chart),
+            "conso_comparison_pop_chart": self.prep_chart(conso_comparison_pop_chart),
             "conso_comparison_pop_table": add_total_line_column(
                 conso_comparison_pop_chart.get_series(), replace_none=True
             ),

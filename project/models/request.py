@@ -62,3 +62,14 @@ class ErrorTracking(models.Model):
     request = models.ForeignKey(Request, on_delete=models.CASCADE, related_name="errors")
     created_date = models.DateTimeField(auto_now_add=True)
     exception = models.TextField()
+
+    def __str__(self):
+        lines = [_.strip() for _ in self.exception.splitlines() if _.strip()]
+        try:
+            last_line = lines.pop()
+        except IndexError:
+            last_line = "unknow"
+        return f"{self.created_date:%Y%m%d %H%M%S}: {last_line}"
+
+    class Meta:
+        ordering = ["-created_date"]
