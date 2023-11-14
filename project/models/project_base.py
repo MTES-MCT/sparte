@@ -520,6 +520,16 @@ class Project(BaseProject):
 
         return False
 
+    @cached_property
+    def partially_covered_by_ocsge(self) -> bool:
+        if (
+            not self.uniformly_covered_by_ocsge
+            and self.cities.exclude(departement__source_id=33).filter(departement__is_artif_ready=True).exists()
+        ):
+            return True
+
+        return False
+
     def get_ocsge_millesimes(self):
         """Return all OCS GE millésimes available within project cities and between
         project analyse ztart and end date"""

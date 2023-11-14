@@ -44,10 +44,6 @@ class ProjectReportBaseView(CacheMixin, GroupMixin, DetailView):
         breadcrumbs.append({"href": None, "title": self.breadcrumbs_title})
         return breadcrumbs
 
-    def get_context_data(self, **kwargs):
-        kwargs["ocsge_available"] = self.object.uniformly_covered_by_ocsge
-        return super().get_context_data(**kwargs)
-
 
 class ProjectReportConsoView(ProjectReportBaseView):
     template_name = "project/report_consommation.html"
