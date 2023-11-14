@@ -460,21 +460,39 @@ class Project(BaseProject):
         return self.folder_name
 
     @cached_property
-    def is_artif(self):
-        """Check first if departement has OCSGE millesime (to speed up process),
-        secondly check if project emprise contains OCS GE data. Usefull for vendée
-        project
-        TODO: remove the specific rule for Gironde
+    def departement_count(self) -> int:
+        return self.cities.values_list("departement_id", flat=True).distinct().count()
+
+    @cached_property
+    def uniformly_covered_by_ocsge(self) -> bool:
         """
-        if self.cities.exclude(departement__source_id=33).filter(departement__is_artif_ready=True).exists():
-            # au moins 1 département autre que la gironde avec Arcachon est artif_ready
+        Check if the project is covered by OCS GE data, based
+        on the departements it spreads over.
+
+        Specific case when the emprise is an EPCI: this method
+        will return True only if the EPCI is fully covered by
+        OCS GE data, and only if it is not spread over more than
+        one department.
+
+        Note that this method will only work after the setup_dept
+        method has been called.
+        """
+
+        if self.departement_count > 1:
+            """
+            Different departments probably have OCS GE Data that
+            was collected at different years, using different
+            classification for couverture and usage.
+            """
+            return False
+
+        all_cities_are_in_a_departement_covered_by_ocsge = (
+            self.cities.filter(departement__is_artif_ready=True).count() == self.cities.count()
+        )
+
+        if all_cities_are_in_a_departement_covered_by_ocsge:
             return True
-        elif self.cities.filter(departement__source_id=33).exists():
-            # on a une ville du département de gironde, alors on vérifie si on est sur la couche de données d'arcachon
-            geom = self.combined_emprise
-            if geom:
-                return Ocsge.objects.filter(mpoly__intersects=geom).exists()
-        # dans tous les autres cas il n'y a pas d'OCS GE
+
         return False
 
     def get_ocsge_millesimes(self):

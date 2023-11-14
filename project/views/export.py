@@ -69,7 +69,7 @@ class ExportExcelView(View):
             self.add_population_sheet()
             self.add_menages_sheet()
             self.add_conso_sheet()
-            if self.project.is_artif:
+            if self.project.uniformly_covered_by_ocsge:
                 self.add_artif_sheet()
                 self.add_detail_artif_sheet()
         buffer.seek(0)

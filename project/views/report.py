@@ -45,7 +45,7 @@ class ProjectReportBaseView(CacheMixin, GroupMixin, DetailView):
         return breadcrumbs
 
     def get_context_data(self, **kwargs):
-        kwargs["ocsge_available"] = self.object.is_artif
+        kwargs["ocsge_available"] = self.object.uniformly_covered_by_ocsge
         return super().get_context_data(**kwargs)
 
 
@@ -207,7 +207,7 @@ class ProjectReportDicoverOcsgeView(ProjectReportBaseView):
     breadcrumbs_title = "Rapport découvrir l'OCS GE"
 
     def get_context_data(self, **kwargs):
-        project = self.get_object()
+        project: Project = self.get_object()
 
         surface_territory = project.area
         kwargs = {
@@ -217,7 +217,7 @@ class ProjectReportDicoverOcsgeView(ProjectReportBaseView):
             "active_page": "discover",
         }
 
-        if not project.is_artif:
+        if not project.uniformly_covered_by_ocsge:
             return super().get_context_data(**kwargs)
 
         kwargs.update(
@@ -262,50 +262,6 @@ class ProjectReportDicoverOcsgeView(ProjectReportBaseView):
         return super().get_context_data(**kwargs)
 
 
-# DEPRECATED : je pense que ce n'est plus utilisé, code mort
-# class ProjectReportUsageView(ProjectReportBaseView):
-#     template_name = "project/report_usage.html"
-#     breadcrumbs_title = "Rapport sur l'usage des sols"
-
-#     def get_context_data(self, **kwargs):
-#         project = self.get_object()
-
-#         surface_territory = project.area
-#         kwargs = {
-#             "nom": "Usage",
-#             "surface_territory": surface_territory,
-#             "active_page": "usage",
-#         }
-
-#         if not project.is_artif:
-#             return super().get_context_data(**kwargs)
-
-#         first_millesime = project.first_year_ocsge
-#         last_millesime = project.last_year_ocsge
-
-#         pie_chart = charts.UsageSolPieChart(project)
-#         progression_chart = charts.UsageSolProgressionChart(project)
-#         kwargs.update(
-#             {
-#                 "first_millesime": str(first_millesime),
-#                 "last_millesime": str(last_millesime),
-#                 "pie_chart": pie_chart,
-#                 "progression_chart": progression_chart,
-#             }
-#         )
-
-#         matrix_data = project.get_matrix(sol="usage")
-#         if matrix_data:
-#             kwargs.update(
-#                 {
-#                     "matrix_data": add_total_line_column(matrix_data),
-#                     "matrix_headers": list(matrix_data.values())[0].keys(),
-#                 }
-#             )
-
-#         return super().get_context_data(**kwargs)
-
-
 class ProjectReportSynthesisView(ProjectReportBaseView):
     template_name = "project/report_synthesis.html"
     breadcrumbs_title = "Synthèse consommation d'espaces et artificialisation"
@@ -342,7 +298,7 @@ class ProjectReportArtifView(ProjectReportBaseView):
     breadcrumbs_title = "Rapport artificialisation"
 
     def get_context_data(self, **kwargs):
-        project = self.get_object()
+        project: Project = self.get_object()
         total_surface = project.area
 
         # Retrieve request level of analysis
@@ -355,7 +311,7 @@ class ProjectReportArtifView(ProjectReportBaseView):
             "total_surface": total_surface,
         }
 
-        if not project.is_artif:
+        if not project.uniformly_covered_by_ocsge:
             return super().get_context_data(**kwargs)
 
         first_millesime = project.first_year_ocsge
