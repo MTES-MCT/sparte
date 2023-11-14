@@ -486,11 +486,36 @@ class Project(BaseProject):
             """
             return False
 
-        all_cities_are_in_a_departement_covered_by_ocsge = (
-            self.cities.filter(departement__is_artif_ready=True).count() == self.cities.count()
-        )
+        if self.cities.filter(departement__source_id=33).exists():
+            """
+            If the project is in Gironde, we manually check if local
+            data is available for all cities.
 
-        if all_cities_are_in_a_departement_covered_by_ocsge:
+            To avoid matching cities that overlaps with arcachon
+            dataset's artifacts we use the centroid of each city,
+            and count that for each there are at least one OCS GE
+            data piece per millesime
+            """
+
+            ocsge_data_pieces = Ocsge.objects.filter(
+                mpoly__intersects=(
+                    self.cities.annotate(centroid=Centroid("mpoly")).aggregate(Union("centroid"))["centroid__union"]
+                )
+            )
+
+            millesime_count = ocsge_data_pieces.distinct("year").count()
+
+            if millesime_count < 2:
+                return False
+
+            return ocsge_data_pieces.count() == self.cities.count() * millesime_count
+
+        if self.cities.first().departement.is_artif_ready:
+            """
+            As all cities belong to the same departement, we
+            can only check that the first one is marked
+            as "artif_ready".
+            """
             return True
 
         return False
