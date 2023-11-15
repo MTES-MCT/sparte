@@ -189,5 +189,13 @@ Trajectoires
 window.onload = function(event) {
     _paq.push(['trackEvent', 'north_star_activation_funnel', 'open_dashboard_trajectory', 'step_3_north_star_activation_funnel'])
 }
+
+document.getElementById("btn-change-objective").onclick = function() {
+    _paq.push(['trackEvent', 'north_star_activation_funnel', 'click_button_set_target_2031', 'step_3_1 north_star_activation_funnel'])
+}
+
+document.getElementById("btn-change-trajectory").onclick = function() {
+    _paq.push(['trackEvent', 'north_star_activation_funnel', 'click_button_set_trajectory', 'step_3_3 north_star_activation_funnel'])
+}
 </script>
 {% endblock tagging %}
