@@ -59,15 +59,10 @@ class ConsoComparisonChart(ConsoChart):
     name = "conso comparison"
     param = {
         "title": {"text": "Consommation proportionnelle à la surface"},
-        "yAxis": {"title": {"text": "Consommé (en ha)"}},
+        "yAxis": {"visible": False},
         "xAxis": {"type": "category"},
         "legend": {"layout": "vertical", "align": "right", "verticalAlign": "top"},
-        "tooltip": {
-            "headerFormat": "<b>{series.name}</b><br/>",
-            "pointFormat": "{point.name}: {point.y}",
-            "valueSuffix": " Ha",
-            "valueDecimals": 1,
-        },
+        "tooltip": {"enabled": False},
         "series": [],
     }
 
