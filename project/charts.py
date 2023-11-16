@@ -228,6 +228,7 @@ class ObjectiveChart(ProjectChart):
             )
             self.series[0]["data"].append({"name": year, "y": val})
 
+        self.annual_2020 = self.total_2020 / 10
         self.annual_objective_2031 = self.total_2020 * self.project.target_2031 / 1000
         self.annual_real = self.total_real / 10
         self.total_2031 = self.total_2020
