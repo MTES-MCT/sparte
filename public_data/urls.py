@@ -7,6 +7,7 @@ from .api.views import (
     CouvertureSolViewset,
     DepartementViewSet,
     EpciViewSet,
+    OcsgeDiffCentroidViewSet,
     OcsgeDiffViewSet,
     OcsgeViewSet,
     RegionViewSet,
@@ -33,6 +34,7 @@ router.register(r"referentiel/couverture-sol", CouvertureSolViewset)
 router.register(r"referentiel/usage-sol", UsageSolViewset)
 router.register(r"ocsge/general", OcsgeViewSet)
 router.register(r"ocsge/diff", OcsgeDiffViewSet)
+router.register(r"ocsge/diff/centroids", OcsgeDiffCentroidViewSet)
 router.register(r"ocsge/zones-construites", ZoneConstruiteViewSet)
 router.register(r"ocsge/zones-artificielles", ArtificialAreaViewSet)
 router.register(r"referentiel/region", RegionViewSet)
