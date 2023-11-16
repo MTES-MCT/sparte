@@ -12,7 +12,7 @@
                 modal.hide()
         }, 1800)
 
-        _paq.push(['trackEvent', 'north_star_activation_funnel', 'target_2031_updated', 'step_3_2 north_star_activation_funnel'])
+        _paq.push(['trackEvent', 'north_star_activation_funnel', 'target_2031_updated', 'target_2031_form_success'])
     </script>
 {% else %}
     <form hx-post="{% url 'project:trajectory:set_target_2031' diagnostic.pk %}" hx-ext="disable-element" hx-disable-element="#set_target_2031_btn">
@@ -24,4 +24,10 @@
             </li>
         </ul>
     </form>
+
+    <script language="javascript" nonce="[NONE_PLACEHOLDER]">
+        document.getElementById("set_target_2031_btn").onclick = function() {
+            _paq.push(['trackEvent', 'north_star_activation_funnel', 'click_button_save_target_2031', 'save_target_2031_button_clicked'])
+        }
+    </script>
 {% endif %}
