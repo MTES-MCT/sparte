@@ -505,7 +505,11 @@ class Project(BaseProject):
 
             millesime_count = ocsge_data_pieces.distinct("year").count()
 
-            if millesime_count < 2:
+            if millesime_count == 0:
+                """
+                If there is 0 millesim for the emprise, it means
+                that the emprise is not covered by OCS GE data.
+                """
                 return False
 
             return ocsge_data_pieces.count() == self.cities.count() * millesime_count
