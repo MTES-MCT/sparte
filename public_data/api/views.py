@@ -293,6 +293,10 @@ class OcsgeDiffViewSet(OnlyBoundingBoxMixin, ZoomSimplificationMixin, OptimizedM
         return where
 
 
+class OcsgeDiffCentroidViewSet(OcsgeDiffViewSet):
+    optimized_geo_field = "st_AsGeoJSON(St_Centroid(o.mpoly))"
+
+
 class ZoneConstruiteViewSet(OnlyBoundingBoxMixin, ZoomSimplificationMixin, OptimizedMixins, DataViewSet):
     queryset = models.ZoneConstruite.objects.all()
     serializer_class = serializers.ZoneConstruiteSerializer
