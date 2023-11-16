@@ -18,7 +18,12 @@ Ce changelog suit la méthode "keep a changelog" disponible ici: [https://keepac
 ### Corrigé
 * Activation de la maintenance lors de la livraison
 
-## [4.2.1] Cerema 2021 - Non livré
+## [4.2.2] Cerema 2021 - 2023-11-06
+
+### corrigé :
+- Bloc "consommation 2031" de la page Trajectoire
+
+## [4.2.1] Cerema 2021 - 2023-11-06
 
 ### corrigé :
 - Bloc "consommation 2031" des pages Synthèse et Trajectoire n'affichait plus le volume autorisé
