@@ -5,18 +5,18 @@ Ce changelog suit la méthode "keep a changelog" disponible ici: [https://keepac
 ## [4.3] Export conso - Non livré
 
 ### Ajouté
-* Nouveaux graphiques dans l'export Word
-* Système de supervision des tâches asynchrones
-* CI pour valider le code Python
+- Nouveaux graphiques dans l'export Word
+- Système de supervision des tâches asynchrones
+- CI pour valider le code Python
 
 ### Modifié
-* Ajout des logos, de la typo, des remerciements, etc... dans l'export Word
-* Introduction des rapports
-* Prise en compte des accents dans la recherche de territoire
-* Modification des graphiques de comparaison de la conso
+- Ajout des logos, de la typo, des remerciements, etc... dans l'export Word
+- Introduction des rapports
+- Prise en compte des accents dans la recherche de territoire
+- Modification des graphiques de comparaison de la conso
 
 ### Corrigé
-* Activation de la maintenance lors de la livraison
+- Activation de la maintenance lors de la livraison
 
 ## [4.2.2] Cerema 2021 - 2023-11-06
 
