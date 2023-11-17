@@ -12,6 +12,12 @@
             <button id="save_trajectory_conso_btn" class="fr-btn position-relative" type="submit"><span class="htmx-indicator-placeholder">Enregistrer et visualiser</span><div class="fr-custom-loader--button htmx-indicator"></div></button>
         </form>
     </div>
+
+    <script language="javascript" nonce="[NONE_PLACEHOLDER]">
+        document.getElementById("save_trajectory_conso_btn").onclick = function() {
+            _paq.push(['trackEvent', 'north_star_activation_funnel', 'submit_form_set_trajectory', 'set_trajectory_form_submitted'])
+        }
+    </script>
 {% endif %}
 
 {% if success_message %}
