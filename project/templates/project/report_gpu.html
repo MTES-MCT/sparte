@@ -22,7 +22,7 @@ Rapport Zones d'Urbanisme
 
     <div class="fr-container fr-py-3w">
 
-      {% if project.partially_covered_by_ocsge %}
+      {% if project.has_partial_ocsge_coverage %}
       <div class="fr-notice fr-notice--info">
         <div class="fr-container">
           <div class="fr-notice__body">
@@ -30,7 +30,7 @@ Rapport Zones d'Urbanisme
           </div>
         </div>
       </div>
-      {% elif not project.uniformly_covered_by_ocsge %}
+      {% elif not project.has_uniform_ocsge_coverage %}
       <div class="fr-notice fr-notice--info">
         <div class="fr-container">
           <div class="fr-notice__body">

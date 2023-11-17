@@ -460,79 +460,68 @@ class Project(BaseProject):
         return self.folder_name
 
     @cached_property
-    def departement_count(self) -> int:
-        return self.cities.values_list("departement_id", flat=True).distinct().count()
+    def __related_ocsge(self):
+        """
+        Related OCS GE data for all cities of the project
+        (with year filter)
+        """
+        return Ocsge.objects.filter(
+            year__gte=self.analyse_start_date,
+            year__lte=self.analyse_end_date,
+            mpoly__intersects=(
+                self.cities.annotate(centroid=Centroid("mpoly")).aggregate(Union("centroid"))["centroid__union"]
+            ),
+        )
 
     @cached_property
-    def uniformly_covered_by_ocsge(self) -> bool:
-        """
-        Check if the project is covered by OCS GE data, based
-        on the departements it spreads over.
+    def __ocsge_coverage_statuses(self) -> Dict[Literal["complete", "uniform", "partial", "empty"], bool]:
+        millesime_count = self.__related_ocsge.values("year").distinct().count()
+        departement_count = self.cities.values_list("departement_id").distinct().count()
+        ocsge_count = self.__related_ocsge.count()
+        city_count = self.cities.count()
 
-        Specific case when the emprise is an EPCI: this method
-        will return True only if the EPCI is fully covered by
-        OCS GE data, and only if it is not spread over more than
-        one department.
+        complete = millesime_count > 0 and (ocsge_count == city_count * millesime_count)
 
-        Note that this method will only work after the setup_dept
-        method has been called.
-        """
-
-        if self.departement_count > 1:
-            """
-            Different departments probably have OCS GE Data that
-            was collected at different years, using different
-            classification for couverture and usage.
-            """
-            return False
-
-        if self.cities.filter(departement__source_id=33).exists():
-            """
-            If the project is in Gironde, we manually check if local
-            data is available for all cities.
-
-            To avoid matching cities that overlaps with arcachon
-            dataset's artifacts we use the centroid of each city,
-            and count that for each there are at least one OCS GE
-            data piece per millesime
-            """
-
-            ocsge_data_pieces = Ocsge.objects.filter(
-                mpoly__intersects=(
-                    self.cities.annotate(centroid=Centroid("mpoly")).aggregate(Union("centroid"))["centroid__union"]
-                )
-            )
-
-            millesime_count = ocsge_data_pieces.distinct("year").count()
-
-            if millesime_count == 0:
-                """
-                If there is 0 millesim for the emprise, it means
-                that the emprise is not covered by OCS GE data.
-                """
-                return False
-
-            return ocsge_data_pieces.count() == self.cities.count() * millesime_count
-
-        if self.cities.first().departement.is_artif_ready:
-            """
-            As all cities belong to the same departement, we
-            can only check that the first one is marked
-            as "artif_ready".
-            """
-            return True
-
-        return False
+        return {
+            "complete": complete,
+            "uniform": complete and departement_count == 1,
+            "partial": not complete and ocsge_count > 0,
+            "empty": ocsge_count == 0,
+        }
 
     @cached_property
-    def partially_covered_by_ocsge(self) -> bool:
-        if (
-            not self.uniformly_covered_by_ocsge
-            and self.cities.exclude(departement__source_id=33).filter(departement__is_artif_ready=True).exists()
-        ):
-            return True
+    def has_complete_ocsge_coverage(self) -> bool:
+        """
+        All cities of the project have OCS GE data
+        for the selected millésimes.
+        """
+        return self.__ocsge_coverage_statuses["complete"]
 
-        return False
+    @cached_property
+    def has_uniform_ocsge_coverage(self) -> bool:
+        """
+        All cities of the project have OCS GE data
+        for the selected millésimes, and the cities spreads over
+        only one departement. This definition could evolve in
+        the future if two departements have the same millésimes
+        available.
+        """
+        return self.__ocsge_coverage_statuses["uniform"]
+
+    @cached_property
+    def has_partial_ocsge_coverage(self) -> bool:
+        """
+        At least one city of the project have OCS GE data
+        for the selected millésimes.
+        """
+        return self.__ocsge_coverage_statuses["partial"]
+
+    @cached_property
+    def has_empty_ocsge_coverage(self) -> bool:
+        """
+        No OCS GE data for the selected millésimes.
+        """
+        return self.__ocsge_coverage_statuses["empty"]
 
     def get_ocsge_millesimes(self):
         """Return all OCS GE millésimes available within project cities and between

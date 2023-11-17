@@ -247,7 +247,7 @@ class Renderer:
             ),
         }
 
-        if diagnostic.uniformly_covered_by_ocsge:
+        if diagnostic.has_uniform_ocsge_coverage:
             context.update(
                 {
                     "ocsge_is_available": True,

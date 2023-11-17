@@ -213,7 +213,7 @@ class ProjectReportDicoverOcsgeView(ProjectReportBaseView):
             "active_page": "discover",
         }
 
-        if not project.uniformly_covered_by_ocsge:
+        if not project.has_uniform_ocsge_coverage:
             return super().get_context_data(**kwargs)
 
         kwargs.update(
@@ -263,7 +263,7 @@ class ProjectReportSynthesisView(ProjectReportBaseView):
     breadcrumbs_title = "Synthèse consommation d'espaces et artificialisation"
 
     def get_context_data(self, **kwargs):
-        project = self.get_object()
+        project: Project = self.get_object()
         total_surface = int(project.area * 100)
         progression_time_scoped = project.get_artif_progession_time_scoped()
         objective_chart = charts.ObjectiveChart(project)
@@ -307,7 +307,7 @@ class ProjectReportArtifView(ProjectReportBaseView):
             "total_surface": total_surface,
         }
 
-        if not project.uniformly_covered_by_ocsge:
+        if not project.has_uniform_ocsge_coverage:
             return super().get_context_data(**kwargs)
 
         first_millesime = project.first_year_ocsge
