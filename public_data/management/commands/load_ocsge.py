@@ -2,7 +2,7 @@ import logging
 from pathlib import Path
 
 import geopandas
-from django.contrib.gis.db.models.functions import Area, Transform
+from django.contrib.gis.db.models.functions import Area, Centroid, Transform
 from django.core.management.base import BaseCommand
 from django.db.models import DecimalField
 from django.db.models.functions import Cast
@@ -75,7 +75,8 @@ class ArcachonOcsge(AutoLoadMixin, Ocsge):
 
     @classmethod
     def clean_data(cls):
-        qs = cls.objects.filter(mpoly__intersects=Departement.objects.get(name="Gironde").mpoly)
+        qs = cls.objects.annotate(centroid=Centroid("mpoly"))
+        qs = qs.filter(centroid__intersects=Departement.objects.get(name="Gironde").mpoly)
         qs = qs.filter(year=cls._year)
         qs.delete()
 
@@ -152,7 +153,8 @@ class ArcachonArtif(AutoOcsgeDiff):
 
     @classmethod
     def clean_data(cls):
-        qs = cls.objects.filter(mpoly__intersects=Departement.objects.get(name="Gironde").mpoly)
+        qs = cls.objects.annotate(centroid=Centroid("mpoly"))
+        qs = qs.filter(centroid__intersects=Departement.objects.get(name="Gironde").mpoly)
         qs = qs.filter(year_new=cls._year_new, year_old=cls._year_old)
         qs = qs.filter(is_new_natural=False, is_new_artif=True)
         qs.delete()
@@ -166,7 +168,8 @@ class ArcachonRenat(ArcachonArtif):
 
     @classmethod
     def clean_data(cls):
-        qs = cls.objects.filter(mpoly__intersects=Departement.objects.get(name="Gironde").mpoly)
+        qs = cls.objects.annotate(centroid=Centroid("mpoly"))
+        qs = qs.filter(centroid__intersects=Departement.objects.get(name="Gironde").mpoly)
         qs = qs.filter(year_new=cls._year_new, year_old=cls._year_old)
         qs = qs.filter(is_new_natural=True, is_new_artif=False)
         qs.delete()
@@ -205,7 +208,8 @@ class GersOcsge(AutoLoadMixin, Ocsge):
 
     @classmethod
     def clean_data(cls):
-        qs = cls.objects.filter(mpoly__intersects=Departement.objects.get(name="Gers").mpoly)
+        qs = cls.objects.annotate(centroid=Centroid("mpoly"))
+        qs = qs.filter(centroid__intersects=Departement.objects.get(name="Gers").mpoly)
         qs = qs.filter(year=cls.year)
         qs.delete()
 
@@ -259,7 +263,8 @@ class GersOcsgeDiff(AutoOcsgeDiff):
 
     @classmethod
     def clean_data(cls):
-        qs = cls.objects.filter(mpoly__intersects=Departement.objects.get(name="Gers").mpoly)
+        qs = cls.objects.annotate(centroid=Centroid("mpoly"))
+        qs = qs.filter(centroid__intersects=Departement.objects.get(name="Gers").mpoly)
         qs = qs.filter(year_new=cls._year_new, year_old=cls._year_old)
         qs.delete()
 
@@ -283,8 +288,9 @@ class GersZoneConstruite2016(AutoLoadMixin, ZoneConstruite):
 
     @classmethod
     def clean_data(cls):
-        qs = cls.objects.filter(mpoly__intersects=Departement.objects.get(name="Gers").mpoly)
-        qs = qs.filter(year=cls._year)
+        qs = cls.objects.annotate(centroid=Centroid("mpoly"))
+        qs = qs.filter(centroid__intersects=Departement.objects.get(name="Gers").mpoly)
+        qs = qs.filter(year=cls.year)
         qs.delete()
 
 
@@ -338,11 +344,9 @@ class BourgogneFrancheComteOcsge(AutoLoadMixin, Ocsge):
 
     @classmethod
     def clean_data(cls):
-        qs = (
-            cls.objects.all()
-            .filter(mpoly__intersects=Region.objects.get(name="Bourgogne-Franche-Comté").mpoly)
-            .filter(year=cls.year)
-        )
+        qs = cls.objects.annotate(centroid=Centroid("mpoly"))
+        qs = qs.filter(centroid__intersects=Region.objects.get(name="Bourgogne-Franche-Comté").mpoly)
+        qs = qs.filter(year=cls.year)
         qs.delete()
 
     @classmethod
@@ -541,12 +545,8 @@ class BourgogneFrancheComteOcsgeDiff1017(AutoOcsgeDiff):
 
     @classmethod
     def clean_data(cls):
-        dept = Departement.objects.get(name=cls.departement_name)
-
-        if not dept:
-            raise Exception(f"Departement {cls.departement_name} not found")
-
-        qs = cls.objects.filter(mpoly__intersects=dept.mpoly)
+        qs = cls.objects.annotate(centroid=Centroid("mpoly"))
+        qs = cls.objects.filter(centroid__intersects=Departement.objects.get(name=cls.departement_name).mpoly)
         qs = qs.filter(year_new=cls._year_new, year_old=cls._year_old)
         qs.delete()
 
@@ -670,11 +670,9 @@ class EssonneOcsge(AutoLoadMixin, Ocsge):
 
     @classmethod
     def clean_data(cls):
-        qs = (
-            cls.objects.all()
-            .filter(mpoly__intersects=Departement.objects.get(name="Essonne").mpoly)
-            .filter(year=cls._year)
-        )
+        qs = cls.objects.annotate(centroid=Centroid("mpoly"))
+        qs = qs.filter(centroid__intersects=Departement.objects.get(name="Essonne").mpoly)
+        qs = qs.filter(year=cls._year)
         qs.delete()
 
 
@@ -711,7 +709,8 @@ class EssonneOcsgeZoneConstruite(AutoLoadMixin, ZoneConstruite):
 
     @classmethod
     def clean_data(cls):
-        qs = cls.objects.filter(mpoly__intersects=Departement.objects.get(name="Essonne").mpoly)
+        qs = cls.objects.annotate(centroid=Centroid("mpoly"))
+        qs = qs.filter(centroid__intersects=Departement.objects.get(name="Essonne").mpoly)
         qs = qs.filter(year=cls._year)
         qs.delete()
 
@@ -753,7 +752,8 @@ class EssonneOcsgeDiff1821(AutoOcsgeDiff):
 
     @classmethod
     def clean_data(cls):
-        qs = cls.objects.filter(mpoly__intersects=Departement.objects.get(name="Essonne").mpoly)
+        qs = cls.objects.annotate(centroid=Centroid("mpoly"))
+        qs = qs.filter(centroid__intersects=Departement.objects.get(name="Essonne").mpoly)
         qs = qs.filter(year_new=cls._year_new, year_old=cls._year_old)
         qs.delete()
 
@@ -794,11 +794,9 @@ class SeineEtMarneOcsge(AutoLoadMixin, Ocsge):
 
     @classmethod
     def clean_data(cls):
-        qs = (
-            cls.objects.all()
-            .filter(mpoly__intersects=Departement.objects.get(name="Seine-et-Marne").mpoly)
-            .filter(year=cls._year)
-        )
+        qs = cls.objects.annotate(centroid=Centroid("mpoly"))
+        qs = qs.filter(centroid__intersects=Departement.objects.get(name="Seine-et-Marne").mpoly)
+        qs = qs.filter(year=cls._year)
         qs.delete()
 
 
@@ -842,7 +840,8 @@ class SeineEtMarneOcsgeZoneConstruite(AutoLoadMixin, ZoneConstruite):
 
     @classmethod
     def clean_data(cls):
-        qs = cls.objects.filter(mpoly__intersects=Departement.objects.get(name="Seine-et-Marne").mpoly)
+        qs = cls.objects.annotate(centroid=Centroid("mpoly"))
+        qs = qs.filter(centroid__intersects=Departement.objects.get(name="Seine-et-Marne").mpoly)
         qs = qs.filter(year=cls._year)
         qs.delete()
 
@@ -884,7 +883,8 @@ class SeineEtMarneOcsgeDiff1721(AutoOcsgeDiff):
 
     @classmethod
     def clean_data(cls):
-        qs = cls.objects.filter(mpoly__intersects=Departement.objects.get(name="Seine-et-Marne").mpoly)
+        qs = cls.objects.annotate(centroid=Centroid("mpoly"))
+        qs = qs.filter(centroid__intersects=Departement.objects.get(name="Seine-et-Marne").mpoly)
         qs = qs.filter(year_new=cls._year_new, year_old=cls._year_old)
         qs.delete()
 
