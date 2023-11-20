@@ -249,9 +249,6 @@ def rebuild(ctx, klass=None):
     click.secho("Build artificial area", fg="cyan")
     connecter.manage_py("build_artificial_area")
 
-    click.secho("Evaluate density of building in zone construite (async)", fg="cyan")
-    connecter.manage_py("set_density")
-
     click.secho("Load INSEE", fg="cyan")
     connecter.manage_py("load_insee")
 
