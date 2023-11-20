@@ -286,7 +286,6 @@ def load_seine_et_marne_ocsge(ctx):
     connecter.manage_py("build_commune_data --departement Seine-et-Marne --verbose")
     connecter.manage_py("setup_dept")
     connecter.manage_py("build_artificial_area --departement Seine-et-Marne --verbose")
-    connecter.manage_py("set_density --departement Seine-et-Marne")
 
 
 @cli.command()
@@ -301,7 +300,6 @@ def load_essonne_ocsge(ctx):
     connecter.manage_py("build_commune_data --departement Essonne --verbose")
     connecter.manage_py("setup_dept")
     connecter.manage_py("build_artificial_area --departement Essonne --verbose")
-    connecter.manage_py("set_density --departement Essonne")
 
 
 if __name__ == "__main__":
