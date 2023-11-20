@@ -175,13 +175,13 @@ export default class MapLibre {
     update() {
         if (this.sources)
             this.sources.map((_obj) => _obj.update())
-    
+
         if (this.filters)
             this.filters.map((_obj) => _obj.update())
     }
 
     sourceData(_source) {
-        if (_source.source.type != 'geojson') // Display loader only for geojson 
+        if (_source.source.type != 'geojson') // Display loader only for geojson
             return
 
         const filter = this.filters.find((_obj) => _obj.source === _source.sourceId)

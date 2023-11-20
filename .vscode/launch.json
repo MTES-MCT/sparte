@@ -42,9 +42,11 @@
         "config.celery",
         "worker",
         "--loglevel",
-        "info",
+        "debug",
         "--pool",
-        "solo"
+        "solo",
+        "-Q",
+        "long"
       ],
       "cwd": "${workspaceFolder}",
       "django": true,

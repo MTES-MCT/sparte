@@ -3,26 +3,16 @@ from functools import cached_property
 from math import ceil
 from typing import Any, Dict
 
+import pandas as pd
 from django.contrib import messages
 from django.contrib.gis.db.models.functions import Area
 from django.contrib.gis.geos import Polygon
 from django.db import transaction
-from django.db.models import (
-    Case,
-    CharField,
-    Count,
-    DecimalField,
-    F,
-    Q,
-    Sum,
-    Value,
-    When,
-)
+from django.db.models import Case, CharField, DecimalField, F, Q, Sum, Value, When
 from django.db.models.functions import Cast, Concat
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.views.generic import CreateView, DetailView, TemplateView
-import pandas as pd
 
 from brevo.tasks import send_request_to_brevo
 from project import charts, tasks
@@ -81,12 +71,13 @@ class ProjectReportConsoView(ProjectReportBaseView):
         # objectives
         objective_chart = charts.ObjectiveChart(project)
 
+        # comparison chart
+        comparison_chart = charts.ConsoChart(project)
+
         # Liste des groupes de communes
         groups_names = project.projectcommune_set.all().order_by("group_name")
         groups_names = groups_names.exclude(group_name=None).distinct()
         groups_names = groups_names.values_list("group_name", flat=True)
-
-        comparison_chart = charts.ConsoComparisonChart(project, relative=False)
 
         kwargs.update(
             {
@@ -115,6 +106,7 @@ class ProjectReportConsoView(ProjectReportBaseView):
                 # tables
                 "communes_data_table": add_total_line_column(chart_conso_cities.get_series()),
                 "data_determinant": add_total_line_column(det_chart.get_series()),
+                "data_comparison": add_total_line_column(comparison_chart.get_series()),
                 "groups_names": groups_names,
                 "level": level,
                 "objective_chart": objective_chart,
@@ -270,47 +262,48 @@ class ProjectReportDicoverOcsgeView(ProjectReportBaseView):
         return super().get_context_data(**kwargs)
 
 
-class ProjectReportUsageView(ProjectReportBaseView):
-    template_name = "project/report_usage.html"
-    breadcrumbs_title = "Rapport sur l'usage des sols"
+# DEPRECATED : je pense que ce n'est plus utilisé, code mort
+# class ProjectReportUsageView(ProjectReportBaseView):
+#     template_name = "project/report_usage.html"
+#     breadcrumbs_title = "Rapport sur l'usage des sols"
 
-    def get_context_data(self, **kwargs):
-        project = self.get_object()
+#     def get_context_data(self, **kwargs):
+#         project = self.get_object()
 
-        surface_territory = project.area
-        kwargs = {
-            "nom": "Usage",
-            "surface_territory": surface_territory,
-            "active_page": "usage",
-        }
+#         surface_territory = project.area
+#         kwargs = {
+#             "nom": "Usage",
+#             "surface_territory": surface_territory,
+#             "active_page": "usage",
+#         }
 
-        if not project.is_artif:
-            return super().get_context_data(**kwargs)
+#         if not project.is_artif:
+#             return super().get_context_data(**kwargs)
 
-        first_millesime = project.first_year_ocsge
-        last_millesime = project.last_year_ocsge
+#         first_millesime = project.first_year_ocsge
+#         last_millesime = project.last_year_ocsge
 
-        pie_chart = charts.UsageSolPieChart(project)
-        progression_chart = charts.UsageSolProgressionChart(project)
-        kwargs.update(
-            {
-                "first_millesime": str(first_millesime),
-                "last_millesime": str(last_millesime),
-                "pie_chart": pie_chart,
-                "progression_chart": progression_chart,
-            }
-        )
+#         pie_chart = charts.UsageSolPieChart(project)
+#         progression_chart = charts.UsageSolProgressionChart(project)
+#         kwargs.update(
+#             {
+#                 "first_millesime": str(first_millesime),
+#                 "last_millesime": str(last_millesime),
+#                 "pie_chart": pie_chart,
+#                 "progression_chart": progression_chart,
+#             }
+#         )
 
-        matrix_data = project.get_matrix(sol="usage")
-        if matrix_data:
-            kwargs.update(
-                {
-                    "matrix_data": add_total_line_column(matrix_data),
-                    "matrix_headers": list(matrix_data.values())[0].keys(),
-                }
-            )
+#         matrix_data = project.get_matrix(sol="usage")
+#         if matrix_data:
+#             kwargs.update(
+#                 {
+#                     "matrix_data": add_total_line_column(matrix_data),
+#                     "matrix_headers": list(matrix_data.values())[0].keys(),
+#                 }
+#             )
 
-        return super().get_context_data(**kwargs)
+#         return super().get_context_data(**kwargs)
 
 
 class ProjectReportSynthesisView(ProjectReportBaseView):
@@ -323,6 +316,8 @@ class ProjectReportSynthesisView(ProjectReportBaseView):
         progression_time_scoped = project.get_artif_progession_time_scoped()
         objective_chart = charts.ObjectiveChart(project)
         curent_conso = project.get_bilan_conso_time_scoped()
+        zone_urba = project.get_artif_per_zone_urba_type()
+
         kwargs.update(
             {
                 "diagnostic": project,
@@ -336,6 +331,7 @@ class ProjectReportSynthesisView(ProjectReportBaseView):
                 "year_avg_conso": curent_conso / project.nb_years,
                 "first_millesime": str(project.first_year_ocsge),
                 "last_millesime": str(project.last_year_ocsge),
+                "zone_list": zone_urba,
             }
         )
         return super().get_context_data(**kwargs)
@@ -590,7 +586,7 @@ class ConsoRelativeSurfaceChart(CacheMixin, UserQuerysetOrPublicMixin, DetailVie
 
     def get_context_data(self, **kwargs):
         indicateur_chart = charts.SurfaceChart(self.object)
-        comparison_chart = charts.ConsoComparisonChart(self.object, relative=True)
+        comparison_chart = charts.ConsoComparisonChart(self.object)
         kwargs.update(
             {
                 "diagnostic": self.object,
@@ -907,42 +903,11 @@ class ProjectReportGpuZoneSynthesisTable(CacheMixin, StandAloneMixin, TemplateVi
         return True
 
     def get_context_data(self, **kwargs):
-        diagnostic = self.diagnostic
-        qs = (
-            ArtifAreaZoneUrba.objects.filter(zone_urba__in=ZoneUrba.objects.intersect(diagnostic.combined_emprise))
-            .filter(year__in=[diagnostic.first_year_ocsge, diagnostic.last_year_ocsge])
-            .order_by("zone_urba__typezone", "year")
-            .values("zone_urba__typezone", "year")
-            .annotate(
-                artif_area=Sum("area"),
-                total_area=Sum("zone_urba__area"),
-                nb_zones=Count("zone_urba_id"),
-            )
-        )
-        zone_list = dict()
-        for row in qs:
-            if row["zone_urba__typezone"] not in zone_list:
-                zone_list[row["zone_urba__typezone"]] = {
-                    "type_zone": row["zone_urba__typezone"],
-                    "nb_zones": row["nb_zones"],
-                    "total_area": row["total_area"],
-                    "first_artif_area": 0.0,
-                    "last_artif_area": 0.0,
-                    "fill_up_rate": 0.0,
-                    "new_artif": 0.0,
-                }
-            if row["year"] == diagnostic.first_year_ocsge:
-                zone_list[row["zone_urba__typezone"]]["first_artif_area"] = row["artif_area"]
-            else:
-                zone_list[row["zone_urba__typezone"]]["last_artif_area"] = row["artif_area"]
-        for k in zone_list.keys():
-            zone_list[k]["fill_up_rate"] = 100 * zone_list[k]["last_artif_area"] / zone_list[k]["total_area"]
-            zone_list[k]["new_artif"] = zone_list[k]["last_artif_area"] - zone_list[k]["first_artif_area"]
         kwargs |= {
-            "zone_list": zone_list.values(),
-            "diagnostic": diagnostic,
-            "first_year_ocsge": str(diagnostic.first_year_ocsge),
-            "last_year_ocsge": str(diagnostic.last_year_ocsge),
+            "zone_list": self.diagnostic.get_artif_per_zone_urba_type(),
+            "diagnostic": self.diagnostic,
+            "first_year_ocsge": str(self.diagnostic.first_year_ocsge),
+            "last_year_ocsge": str(self.diagnostic.last_year_ocsge),
         }
         return super().get_context_data(**kwargs)
 
@@ -995,8 +960,10 @@ class ProjectReportGpuZoneAUUTable(CacheMixin, StandAloneMixin, TemplateView):
             if row.year == diagnostic.first_year_ocsge:
                 zone_list[key].new_artif = zone_list[key].area - row.area
 
+        mini = filters["page"] * 10 - 10
+        maxi = filters["page"] * 10
         kwargs |= {
-            "zone_list": list(zone_list.values())[filters["page"] * 10 - 10 : filters["page"] * 10],
+            "zone_list": list(zone_list.values())[mini:maxi],
             "current_page": filters["page"],
             "pages": list(range(1, ceil(len(zone_list) / 10) + 1)),
             "diagnostic": diagnostic,

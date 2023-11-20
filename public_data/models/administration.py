@@ -239,7 +239,7 @@ class Region(LandMixin, GetDataFromCeremaMixin, models.Model):
 
     @classmethod
     def search(cls, needle, region=None, departement=None, epci=None):
-        qs = cls.objects.filter(name__icontains=needle)
+        qs = cls.objects.filter(name__unaccent__trigram_word_similar=needle)
         if region:
             qs = qs.filter(id=region.id)
         qs = qs.order_by("name")
@@ -293,7 +293,7 @@ class Departement(LandMixin, GetDataFromCeremaMixin, models.Model):
 
     @classmethod
     def search(cls, needle, region=None, departement=None, epci=None):
-        qs = cls.objects.filter(name__icontains=needle)
+        qs = cls.objects.filter(name__unaccent__trigram_word_similar=needle)
         if region:
             qs = qs.filter(region=region)
         if departement:
@@ -332,7 +332,7 @@ class Scot(LandMixin, GetDataFromCeremaMixin, models.Model):
 
     @classmethod
     def search(cls, needle, region=None, departement=None, epci=None):
-        qs = cls.objects.filter(name__icontains=needle)
+        qs = cls.objects.filter(name__unaccent__trigram_word_similar=needle)
         if region:
             qs = qs.filter(region=region)
         if departement:
@@ -373,7 +373,7 @@ class Epci(LandMixin, GetDataFromCeremaMixin, models.Model):
 
     @classmethod
     def search(cls, needle, region=None, departement=None, epci=None):
-        qs = cls.objects.filter(name__icontains=needle)
+        qs = cls.objects.filter(name__unaccent__trigram_word_similar=needle)
         if region:
             qs = qs.filter(departements__region=region)
         if departement:
@@ -439,8 +439,8 @@ class Commune(DataColorationMixin, LandMixin, GetDataFromCeremaMixin, models.Mod
             qs = cls.objects.filter(insee__icontains=needle)
         else:
             qs = cls.objects.all()
-            for word in needle.split(" "):
-                qs = qs.filter(name__icontains=word)
+            qs = qs.filter(name__unaccent__trigram_word_similar=needle)
+
         if region:
             qs = qs.filter(departement__region=region)
         if departement:

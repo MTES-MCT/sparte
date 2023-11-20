@@ -78,6 +78,7 @@ Trajectoires
                     La consommation d'espaces NAF est mesurée avec les données d’évolution des fichiers fonciers produits et diffusés par le Cérema depuis 2009 à partir des fichiers MAJIC de la DGFIP.
                     Le dernier millésime de 2022 est la  photographie du territoire au 1er janvier 2022, intégrant les évolutions réalisées au cours de l'année 2021.
                 </p>
+                <img src="{% static 'trajectory/img/trajectory_schema.png' %}" />
             </div>
             <button class="fr-btn fr-btn--secondary fr-btn--sm fr-callout-read-more__btn" aria-expanded="false" aria-controls="target_2031_1">
                 Lire plus
@@ -187,6 +188,14 @@ Trajectoires
 <script language="javascript" nonce="[NONE_PLACEHOLDER]">
 window.onload = function(event) {
     _paq.push(['trackEvent', 'north_star_activation_funnel', 'open_dashboard_trajectory', 'step_3_north_star_activation_funnel'])
+}
+
+document.getElementById("btn-change-objective").onclick = function() {
+    _paq.push(['trackEvent', 'north_star_activation_funnel', 'click_button_set_target_2031', 'set_target_2031_button_clicked'])
+}
+
+document.getElementById("btn-change-trajectory").onclick = function() {
+    _paq.push(['trackEvent', 'north_star_activation_funnel', 'click_button_set_trajectory', 'set_trajectory_button_clicked'])
 }
 </script>
 {% endblock tagging %}

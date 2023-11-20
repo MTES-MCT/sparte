@@ -1,5 +1,13 @@
 # See https://pre-commit.com for more information
 # See https://pre-commit.com/hooks.html for more hooks
+
+exclude: >-
+  ^.*\.(js|jsx|ts|tsx|css|scss|html|json|yaml|yml|md|mdx|graphql|gql|
+  png|jpe?g|gif|ico|tif?f|bmp|svg|eps|raw|cr2|nef|orf|sr2|webp|
+  shp|shx|dbf|prj|sbn|sbx|fbn|fbx|ain|aih|ixs|mxs|atx|shp.xml|
+  cpg|qix|fix|gix|six|prj.xml|sbn.xml|sbx.xml|shp.html|shp.xml|
+  shx.xml|dbf.xml|prj.xml|shp.xml|xml|gml|vrt|sld|symb|lyr|lyrx|
+  kml|kmz|tab|qgs|qlr|shp.xml|ovr)$
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
   rev: v3.2.0
@@ -9,13 +17,27 @@ repos:
     - id: check-yaml
     - id: check-merge-conflict
     - id: check-toml
-- repo: https://github.com/ambv/black
-  rev: 21.6b0
+- repo: https://github.com/pycqa/isort
+  rev: 5.12.0
+  hooks:
+    - id: isort
+      name: isort
+- repo: https://github.com/psf/black
+  rev: 23.10.1
   hooks:
     - id: black
       language_version: python3
-- repo: https://github.com/pycqa/bandit
-  rev: 1.7.0
-  hooks:
-    - id: bandit
-      args: ['-iii', '-ll']
+# - repo: https://github.com/pycqa/bandit
+#   rev: 1.7.0
+#   hooks:
+#     - id: bandit
+#       args: ['-iii', '-ll']
+-   repo: https://github.com/PyCQA/autoflake
+    rev: v2.2.1
+    hooks:
+    -   id: autoflake
+-   repo: https://github.com/pycqa/flake8
+    rev: 6.1.0
+    hooks:
+    -   id: flake8
+        args: ['--config', 'flake8']

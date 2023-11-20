@@ -44,6 +44,19 @@ app.conf.beat_schedule = {
         "task": "project.tasks.project.alert_on_blocked_diagnostic",
         "schedule": crontab(minute="0", hour="8,12,16"),
     },
+    "default-alive-timestamp": {
+        "task": "home.tasks.update_alive_timestamp",
+        "schedule": crontab(minute="*/15"),
+        "args": ("default",),
+    },
+    "long-alive-timestamp": {
+        "task": "home.tasks.update_alive_timestamp",
+        "schedule": crontab(minute="*/15"),
+        "args": ("long",),
+        "options": {
+            "queue": "long",
+        },
+    },
 }
 
 

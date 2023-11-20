@@ -53,6 +53,12 @@
             <a class="fr-footer__bottom-link" href="{{ EXTERNAL_DOC }}" target="_blank" title="Consulter la documentation - nouvelle fenêtre" rel="noopener">Documentations</a>
           </li>
           <li class="fr-footer__bottom-item">
+            <a class="fr-footer__bottom-link" href="{% url 'documentation:faq' %}">FAQ</a>
+          </li>
+          <li class="fr-footer__bottom-item">
+            <a class="fr-footer__bottom-link" href="{% url 'documentation:tutoriel' %}">Tutoriel</a>
+          </li>
+          <li class="fr-footer__bottom-item">
             <a class="fr-footer__bottom-link" href="{% url 'home:contact' %}">Contactez-nous</a>
           </li>
         {% endblock footer_links %}
