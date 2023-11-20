@@ -11,11 +11,11 @@ export default class Source {
         this.queryStrings = _options.query_strings
         this.minZoom = _options.min_zoom || 0
         this.maxZoom = _options.max_zoom || 19
-        
+
         this.isUpdated = this.queryStrings?.some(_obj => _obj['key'] === 'in_bbox') || false // Check for bbox query string
         this.lastDataZoom = null
         this.lastDataBbox = null
-        
+
         this.setSource()
     }
 

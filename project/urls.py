@@ -47,11 +47,12 @@ urlpatterns = [
         views.ProjectReportDicoverOcsgeView.as_view(),
         name="report_discover",
     ),
-    path(
-        "<int:pk>/tableau-de-bord/usage",
-        views.ProjectReportUsageView.as_view(),
-        name="report_usage",
-    ),
+    # DEAD CODE - à retirer si aucun bug ne se produit
+    # path(
+    #     "<int:pk>/tableau-de-bord/usage",
+    #     views.ProjectReportUsageView.as_view(),
+    #     name="report_usage",
+    # ),
     path(
         "<int:pk>/tableau-de-bord/artificialisation",
         views.ProjectReportArtifView.as_view(),
@@ -134,14 +135,13 @@ urlpatterns = [
         name="zone-urba-fill-map",
     ),
     # MAP
-    path("<int:pk>/map", views.ProjectMapView.as_view(), name="map"),
     path(
         "<int:pk>/carte/comprendre-mon-artificialisation",
         views.MyArtifMapView.as_view(),
         name="theme-my-artif",
     ),
     path(
-        "<int:pk>/carte/consomation-villes-du-territoire",
+        "<int:pk>/carte/consommation-villes-du-territoire",
         views.CitySpaceConsoMapView.as_view(),
         name="theme-city-conso",
     ),
@@ -156,9 +156,9 @@ urlpatterns = [
         name="map-urban-zones",
     ),
     path(
-        "<int:pk>/map-libre",
-        views.MapLibreView.as_view(),
-        name="map-libre",
+        "<int:pk>/map-test",
+        views.MapTestView.as_view(),
+        name="map-test",
     ),
     path(
         "<int:project_id>/carte/detail-zone-urbaine/<int:pk>",

@@ -1,0 +1,78 @@
+{% extends "index.html" %}
+
+{% block pagetitle %}FAQ{% endblock pagetitle %}
+
+{% block content %}
+<section>
+    <div class="fr-container">
+        <h1>FAQ</h1>
+
+        <div class="fr-accordions-group">
+            <section class="fr-accordion">
+                <h3 class="fr-accordion__title">
+                    <!-- attribut aria-controls à modifier par vos soins (doit être identique à l'id) -->
+                    <button class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-114">Intitulé accordéon</button>
+                </h3>
+                <!-- id à modifier par vos soins (doit être unique et servira aussi de référence pour l'ancre) -->
+                <div class="fr-collapse" id="accordion-114">
+                    <!-- données de test -->
+                    <h4 class="fr-h4">Contenu </h4>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing, <a href="test" target="_blank">link test</a> incididunt, ut labore et dolore magna aliqua. Vitae sapien pellentesque habitant morbi tristique senectus et. Diam maecenas sed enim ut. Accumsan lacus vel facilisis volutpat est. Ut aliquam purus sit amet luctus. Lorem ipsum dolor sit amet consectetur adipiscing elit ut.</p>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing, <a href="test" target="_blank">link test</a> incididunt, ut labore et dolore magna aliqua. Vitae sapien pellentesque habitant morbi tristique senectus et. Diam maecenas sed enim ut. Accumsan lacus vel facilisis volutpat est. Ut aliquam purus sit amet luctus. Lorem ipsum dolor sit amet consectetur adipiscing elit ut.</p>
+                    <ul>
+                        <li>list item</li>
+                        <li>list item</li>
+                        <li>list item<ul>
+                                <li>list item niveau 2</li>
+                                <li>list item niveau 2</li>
+                                <li>list item niveau 2</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+            
+            <section class="fr-accordion">
+                <h3 class="fr-accordion__title">
+                    <!-- attribut aria-controls à modifier par vos soins (doit être identique à l'id) -->
+                    <button class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-115">Intitulé accordéon</button>
+                </h3>
+                <!-- id à modifier par vos soins (doit être unique et servira aussi de référence pour l'ancre) -->
+                <div class="fr-collapse" id="accordion-115">
+                    <!-- données de test -->
+                    <h4 class="fr-h4">Contenu </h4>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing, <a href="test" target="_blank">link test</a> incididunt, ut labore et dolore magna aliqua. Vitae sapien pellentesque habitant morbi tristique senectus et. Diam maecenas sed enim ut. Accumsan lacus vel facilisis volutpat est. Ut aliquam purus sit amet luctus. Lorem ipsum dolor sit amet consectetur adipiscing elit ut.</p>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing, <a href="test" target="_blank">link test</a> incididunt, ut labore et dolore magna aliqua. Vitae sapien pellentesque habitant morbi tristique senectus et. Diam maecenas sed enim ut. Accumsan lacus vel facilisis volutpat est. Ut aliquam purus sit amet luctus. Lorem ipsum dolor sit amet consectetur adipiscing elit ut.</p>
+                    <ul>
+                        <li>list item</li>
+                        <li>list item</li>
+                        <li>list item<ul>
+                                <li>list item niveau 2</li>
+                                <li>list item niveau 2</li>
+                                <li>list item niveau 2</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+        </div>
+    </div>
+</section>
+{% endblock content %}
+
+{% block bodyend %}
+<script language="javascript" nonce="[NONE_PLACEHOLDER]">
+    // Force accordion opening if anchor is present in url
+    const currentUrl = document.URL
+	const urlParts = currentUrl.split('#')	
+    const anchor =  (urlParts.length > 1) ? urlParts[1] : null
+
+    if (anchor)
+    {
+        const button = document.querySelector(`[aria-controls=${anchor}]`)
+        setTimeout(() => {
+            button.click()
+        }, 1000)
+    }
+</script>
+{% endblock bodyend %}

@@ -68,8 +68,8 @@ services:
       - app-network
 
   highchart:
-    image: swannbm/scalingo-highcharts-export-server:13
-    command: highcharts-export-server --enableServer 1 --port 8090
+    image: swannbm/scalingo-highcharts-export-server
+    command: highcharts-export-server --enableServer 1 --port 8090 --host 0.0.0.0
     ports:
       - "8090:8090"
     networks:

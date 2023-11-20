@@ -1,11 +1,31 @@
 {
-    "[html][django-html][handlebars][hbs][mustache][jinja][jinja-html][nj][njk][nunjucks][twig]": {
-        "editor.defaultFormatter": "monosans.djlint"
-    },
     "python.testing.pytestArgs": [
         "."
     ],
     "python.testing.unittestEnabled": false,
     "python.testing.pytestEnabled": true,
-    "editor.rulers": [128]
+    "editor.rulers": [
+        128
+    ],
+    "flake8.args": [
+        "--config",
+        "flake8"
+    ],
+    "editor.defaultFormatter": "ms-python.black-formatter",
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.black-formatter"
+    },
+    "isort.check": true,
+    "isort.importStrategy": "fromEnvironment",
+    "flake8.importStrategy": "fromEnvironment",
+    "python.analysis.autoFormatStrings": true,
+    "python.analysis.inlayHints.callArgumentNames": "all",
+    "python.analysis.inlayHints.functionReturnTypes": true,
+    "python.createEnvironment.contentButton": "show",
+    "python.terminal.activateEnvInCurrentTerminal": true,
+    "black-formatter.importStrategy": "fromEnvironment",
+    "git.autofetch": true,
+    "git.autoStash": false,
+    "git.fetchOnPull": true,
+    "git.followTagsWhenSync": true,
 }

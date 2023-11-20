@@ -15,5 +15,7 @@ def log_function(logger: logging.Logger):
             finally:
                 print(f"End {func.__name__}; args={args}; kwargs={kwargs}")
             return result
+
         return wrapper
+
     return decorator

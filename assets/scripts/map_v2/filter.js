@@ -76,12 +76,12 @@ export default class Filter {
         let button = document.createElement('button')
         button.classList.add('fr-btn', 'fr-btn--tertiary', 'fr-btn--sm')
         button.innerHTML = `<i class="bi ${this.value ? 'bi-eye' : 'bi-eye-slash'}"></i>`
-        
+
         // Add click event
         button.addEventListener('click', (_event) => {
             button.querySelector('i').classList.toggle('bi-eye')
             button.querySelector('i').classList.toggle('bi-eye-slash')
-            
+
             this.value = !this.value
 
             // Triggers layer methods
@@ -106,7 +106,7 @@ export default class Filter {
         // Create Select
         let select = document.createElement('select')
         select.classList.add('fr-btn', 'fr-btn--tertiary', 'fr-btn--sm')
-        
+
         this.options.map((_obj) => {
             let option = document.createElement('option')
             option.value = _obj.value
@@ -115,7 +115,7 @@ export default class Filter {
                 option.setAttribute('selected', 'selected')
             select.appendChild(option)
         })
-        
+
         // Add change event
         select.addEventListener('change', (_event) => {
             this.value = _event.target.value
@@ -156,7 +156,7 @@ export default class Filter {
                     this.value.push(value)
                 else
                     this.value.splice(this.value.indexOf(value), 1)
-                
+
                 // Triggers layer methods
                 this.triggers.map((_obj) => {
                     const layer = this.layers.find((__obj) => __obj.key === _obj.layer)

@@ -1051,7 +1051,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
 	}
 
 /* Printing */
-	
+
 @media print {
 	/* Prevent printers from removing background-images of controls. */
 	.leaflet-control {
@@ -1092,28 +1092,36 @@ svg.leaflet-image-layer.leaflet-interactive path {
     pointer-events: none;
 }
 
-#map__infos-box > .info-box.visible:not(:last-child) {
+#map__infos-box > div.visible:not(:last-child) {
     margin-bottom: 5px;
 }
 
-.info-box {
+.legend-box__legend {
+    display: flex;
+}
+
+.info-box, .legend-box {
     background: #ffffff;
     visibility: hidden;
     opacity: 0;
     height: 0;
 }
 
-.info-box.visible {
+.info-box.visible, .legend-box.visible {
     visibility: visible;
     opacity: 1;
     height: auto;
     padding: 10px;
 }
 
-.info-box__title {
+.info-box__title, .legend-box__title {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    margin-bottom: 5px;
+}
+
+.legend-box__subtitle {
     margin-bottom: 5px;
 }
 
@@ -1700,7 +1708,7 @@ Home Page
     bottom: 0;
     right: -130px;
     transition: all 0.4s ease-out;
-    -webkit-box-shadow: -4px -1px 11px -2px rgba(0,0,0,0.25); 
+    -webkit-box-shadow: -4px -1px 11px -2px rgba(0,0,0,0.25);
     box-shadow: -4px -1px 11px -2px rgba(0,0,0,0.25);
 }
 
@@ -1799,7 +1807,7 @@ Progress bar gradient
     width: 60px;
     background: #cecece;
 }
-  
+
 .progress-bar-indicator {
     height: 100%;
     -webkit-mask:linear-gradient(#fff 0 0);

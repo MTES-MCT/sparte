@@ -82,31 +82,38 @@ class Command(BaseCommand):
         Scot.objects.all().delete()
         qs = Cerema.objects.values("scot").annotate(mpoly=Union("mpoly")).order_by("scot")
         logger.info("%d SCoTs found", len(qs))
+
         scot_list = [
             Scot(
                 name=data["scot"],
                 mpoly=fix_poly(data["mpoly"]),
             )
             for data in qs
+            if data["scot"] is not None  # filter out communes without scot
         ]
+
         Scot.objects.bulk_create(scot_list)
         # link to region and departement
         depts = {d.source_id: d for d in Departement.objects.all()}
         regions = {r.source_id: r for r in Region.objects.all()}
         links = {}
+
         for scot_name, dept_id, region_id in (
             Cerema.objects.values_list("scot", "dept_id", "region_id")
             .order_by("scot")
+            .filter(scot__isnull=False)
             .distinct()
         ):
             if scot_name not in links:
-                links[scot_name] = {"depts": set(), "regions": set()}
-            links[scot_name]["dept_id_list"].add(dept_id)
-            links[scot_name]["region_id_list"].add(region_id)
+                links[scot_name] = {"departement_ids": set(), "region_ids": set()}
+
+            links[scot_name]["departement_ids"].add(dept_id)
+            links[scot_name]["region_ids"].add(region_id)
+
         for scot_name, data in links.items():
             scot = Scot.objects.get(name=scot_name)
-            scot.departements.add(*[depts[d] for d in data["dept_id_list"]])
-            scot.regions.add(*[regions[r] for r in data["region_id_list"]])
+            scot.departements.add(*[depts[d] for d in data["departement_ids"]])
+            scot.regions.add(*[regions[r] for r in data["region_ids"]])
 
     def link_epci(self):
         logger.info("Link EPCI <-> département")

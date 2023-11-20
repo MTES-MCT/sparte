@@ -1,3 +1,5 @@
+import { formatData } from './utils.js'
+
 export default class Events {
     constructor(_options = {}, _layer, _source) {
         this.mapLibre = window.mapLibre
@@ -59,20 +61,23 @@ export default class Events {
                 { hover: false }
             )
         }
-        
+
         this.hoveredPolygonId = null
     }
 
     showInfoBox(_event, _options) {
         if (!this.infoBoxNode)
             this.setInfoBox()
-        
+
         if (_event.features.length > 0) {
             let info = `<div class="info-box__title"><strong>${_options.title}</strong><i class='bi bi-info-circle'></i></div>`
-            
+
             _options.properties.map((_obj) => {
                 if (_event.features[0].properties[_obj.key])
-                    info += `<div class="fr-mr-2w"><strong>${_obj.name}</strong>: ${_event.features[0].properties[_obj.key]}</div>`
+                {
+                    const value = _obj.formatter ? formatData(_obj.formatter[0], _obj.formatter[1], _event.features[0].properties[_obj.key]) : _event.features[0].properties[_obj.key]
+                    info += `<div class="fr-mr-2w"><strong>${_obj.name}</strong>: ${value}</div>`
+                }
             })
 
             this.infoBoxNode.innerHTML = info

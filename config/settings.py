@@ -21,7 +21,7 @@ from django.core.exceptions import ImproperlyConfigured
 from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.redis import RedisIntegration
 
-OFFICIAL_VERSION = "4.2.2"
+OFFICIAL_VERSION = "4.3.0"
 
 root = environ.Path(__file__) - 2  # get root of the project
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -65,6 +65,7 @@ DJANGO_APPS = [
     "django.contrib.staticfiles",
     "django.contrib.gis",
     "django.contrib.humanize",
+    "django.contrib.postgres",
 ]
 
 RESTFRAMEWORK_APPS = [
@@ -96,6 +97,7 @@ PROJECT_APPS = [
     "home.apps.HomeConfig",
     "metabase.apps.MetabaseConfig",
     "brevo.apps.BrevoConfig",
+    "documentation.apps.DocumentationConfig",
 ]
 
 
@@ -251,26 +253,26 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 CACHES: Dict[str, Any] = {}
 
-# if ENVIRONMENT in ["local"]:
-#     CACHES = {
-#         "default": {
-#             "BACKEND": "django.core.cache.backends.dummy.DummyCache",
-#         }
-#     }
-# else:
-CACHES = {
-    "default": {
-        "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": env.str("SCALINGO_REDIS_URL"),
-        "TIMEOUT": 60 * 15,  # 15 minutes
-        "OPTIONS": {
-            "CLIENT_CLASS": "django_redis.client.DefaultClient",
-            "MAX_ENTRIES": 1000,
-        },
+if ENVIRONMENT in ["local"]:
+    CACHES = {
+        "default": {
+            "BACKEND": "config.cache_backends.RedisDummyCache",
+        }
     }
-}
-FANCY_REMEMBER_ALL_URLS = True
-FANCY_REMEMBER_STATS_ALL_URLS = True
+else:
+    CACHES = {
+        "default": {
+            "BACKEND": "django_redis.cache.RedisCache",
+            "LOCATION": env.str("SCALINGO_REDIS_URL"),
+            "TIMEOUT": 60 * 15,  # 15 minutes
+            "OPTIONS": {
+                "CLIENT_CLASS": "django_redis.client.DefaultClient",
+                "MAX_ENTRIES": 1000,
+            },
+        }
+    }
+    FANCY_REMEMBER_ALL_URLS = True
+    FANCY_REMEMBER_STATS_ALL_URLS = True
 # SESSION
 
 SESSION_CACHE_ALIAS = "default"
@@ -314,12 +316,14 @@ CRISPY_CLASS_CONVERTERS = {
 }
 
 # Celery configuration
+
 CELERY_BROKER_URL = env.str("CELERY_BROKER_URL")
 CELERY_RESULT_BACKEND = env.str("CELERY_RESULT_BACKEND")
 CELERY_ACKS_LATE = True
 CELERY_TASK_ACKS_LATE = True
 CELERY_WORKER_PREFETCH_MULTIPLIER = 1
 CELERY_RESULT_EXTENDED = True
+CELERY_TASK_ALWAYS_EAGER = env.bool("CELERY_TASK_ALWAYS_EAGER", default=False)
 
 # django-debug-toolbar configuration
 
@@ -527,7 +531,7 @@ CSP_FRAME_ANCESTORS = ("'self'", "https://sparte-metabase.osc-secnum-fr1.scaling
 
 ORTHOPHOTO_URL = (
     "https://wxs.ign.fr/ortho/geoportail/wmts?"
-    "&REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0&TILEMATRIXSET=PM"
+    "REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0&TILEMATRIXSET=PM"
     "&LAYER=ORTHOIMAGERY.ORTHOPHOTOS&STYLE=normal&FORMAT=image/jpeg"
     "&TILECOL={x}&TILEROW={y}&TILEMATRIX={z}"
 )

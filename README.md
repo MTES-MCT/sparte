@@ -54,17 +54,19 @@ Le site est désormais accessible en local à cette adresse:
 | AWS_STORAGE_BUCKET_NAME | nom du bucket de stockage | sparte-staging |
 | CELERY_BROKER_URL | chaîne pour se connecter à redis | redis://127.0.0.1:6379/0 |
 | CELERY_RESULT_BACKEND | chaîne pour se connecter à redis | redis://127.0.0.1:6379/0 |
+| CELERY_TASK_ALWAYS_EAGER | Rend celery synchrone | False |
 | DATABASE_URL | chaîne pour se connecter à la base de données Postgresql + gis | postgis://postgres:postgres@127.0.0.1:54321/postgres |
-| DB_LOGGING_LEVEL | détermine le niveau de log de la base de données | WARNING | 
+| DB_LOGGING_LEVEL | détermine le niveau de log de la base de données | WARNING |
 | DEBUG | activer ou non les messages détaillés d'erreur | 1 |
 | DEBUG_TOOLBAR | activer la barre de debug de Django | 1 |
-| DEFAULT_FROM_EMAIL |  | swann.bouviermuller@gmail.com |
+| DEFAULT_FROM_EMAIL | Expéditeur par défaut des emails envoyés | johndoe@email.com |
 | DOMAIN_URL | l'url sur laquelle est branchée l'application | http://localhost:8080/ |
 | EMAIL_ENGINE | indique à l'application le backend à utiliser pour envoyer les e-mails. 2 choix disponibles : sendinblue, local | local |
+| EMAIL_FILE_PATH | Uniquement utile si EMAIL_ENGINE=local. Indique l'emplacement où stocker les emails | BASE_DIR / "emails" |
 | EMAIL_SMTP_KEY | mot de passe SMTP | |
 | EMAIL_HOST_USER | nom d'utilisteur SMTP | |
 | ENVIRONMENT | indique sur quel environnement est exécuté l'app. Choix possibles: local, staging, prod | local |
-| GOOGLE_ADWORDS_ACTIVATE | indique s'il faut ajouter des google tags aux pages | 1 | 
+| GOOGLE_ADWORDS_ACTIVATE | indique s'il faut ajouter des google tags aux pages | 1 |
 | HIGHCHART_SERVER | url pour accéder au serveur générant des images à partir de paramètres Highcharts | https://highcharts-export.osc-fr1.scalingo.io |
 | MATTERMOST_WEBHOOK | Webhook personnel pour envoyer des messages dans Mattermost | https://mattermost.incubateur.net/hooks/uak581f8bidyxp5td67rurj5sh |
 | MATOMO_ACTIVATE | Détermine si des infos doivent être envoyé à Matomo | 0 |
@@ -145,4 +147,4 @@ On ne peut pas exécuter le code de migration directement sur le serveur car il 
 7. Exécuter les scripts de migration `python manage.py update_administration_layer`
 
 
-
+https://google.github.io/styleguide/pyguide.html#38-comments-and-docstrings

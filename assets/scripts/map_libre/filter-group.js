@@ -84,7 +84,7 @@ export default class FilterGroup {
         }
         else {
             this.placeholderNode.style.visibility = 'visible'
-            this.placeholderNode.style.opacity = 1            
+            this.placeholderNode.style.opacity = 1
         }
     }
 
