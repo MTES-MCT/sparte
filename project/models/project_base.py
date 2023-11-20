@@ -8,7 +8,7 @@ import pandas as pd
 from django.conf import settings
 from django.contrib.gis.db import models as gis_models
 from django.contrib.gis.db.models import Extent, Union
-from django.contrib.gis.db.models.functions import Area, Centroid
+from django.contrib.gis.db.models.functions import Area, Centroid, PointOnSurface
 from django.contrib.gis.geos import MultiPolygon, Polygon
 from django.core.cache import cache
 from django.core.validators import MaxValueValidator, MinValueValidator
@@ -465,27 +465,54 @@ class Project(BaseProject):
         Related OCS GE data for all cities of the project
         (with year filter)
         """
+        city_centers_collection = self.cities.annotate(center=PointOnSurface("mpoly")).aggregate(Union("center"))[
+            "center__union"
+        ]
+
         return Ocsge.objects.filter(
             year__gte=self.analyse_start_date,
             year__lte=self.analyse_end_date,
-            mpoly__intersects=(
-                self.cities.annotate(centroid=Centroid("mpoly")).aggregate(Union("centroid"))["centroid__union"]
-            ),
+            mpoly__intersects=city_centers_collection,
         )
 
     @cached_property
     def __ocsge_coverage_statuses(self) -> Dict[Literal["complete", "uniform", "partial", "empty"], bool]:
-        millesime_count = self.__related_ocsge.values("year").distinct().count()
-        departement_count = self.cities.values_list("departement_id").distinct().count()
-        ocsge_count = self.__related_ocsge.count()
-        city_count = self.cities.count()
+        related_departements = self.cities.values("departement__mpoly").distinct()
 
-        complete = millesime_count > 0 and (ocsge_count == city_count * millesime_count)
+        departement_count = related_departements.count()
+        ocsge_count = self.__related_ocsge.count()
+
+        complete_coverage = False
+
+        for departement in related_departements:
+            """
+            Check for each departement that all cities have OCS GE data
+            for the selected millésimes.
+            """
+            departement_ocsge = self.__related_ocsge.annotate(centroid=PointOnSurface("mpoly")).filter(
+                centroid__intersects=departement["departement__mpoly"]
+            )
+
+            departement_cities = self.cities.annotate(centroid=PointOnSurface("mpoly")).filter(
+                centroid__intersects=departement["departement__mpoly"]
+            )
+
+            millesime_count = departement_ocsge.values("year").distinct().count()
+            ocsge_within_departement_count = departement_ocsge.count()
+            city_within_departement_count = departement_cities.count()
+
+            if not (
+                millesime_count > 0
+                and (ocsge_within_departement_count == city_within_departement_count * millesime_count)
+            ):
+                break
+        else:
+            complete_coverage = True
 
         return {
-            "complete": complete,
-            "uniform": complete and departement_count == 1,
-            "partial": not complete and ocsge_count > 0,
+            "complete": complete_coverage,
+            "uniform": complete_coverage and departement_count == 1,
+            "partial": not complete_coverage and ocsge_count > 0,
             "empty": ocsge_count == 0,
         }
 

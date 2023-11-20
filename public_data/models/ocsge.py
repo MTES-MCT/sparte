@@ -41,6 +41,7 @@ class Ocsge(TruncateTableMixin, DataColorationMixin, models.Model):
     usage_label = models.CharField("Libellé usage du sol", max_length=254, blank=True, null=True)
     is_artificial = models.BooleanField("Est artificiel", null=True, blank=True)
     surface = models.DecimalField("surface", max_digits=15, decimal_places=4, blank=True, null=True)
+    departement = models.ForeignKey("public_data.Departement", on_delete=models.PROTECT, null=True, blank=True)
 
     mpoly = models.MultiPolygonField()
 
@@ -79,6 +80,9 @@ class Ocsge(TruncateTableMixin, DataColorationMixin, models.Model):
         # 1 m² ==> 0,0001 hectare
         data = {_[field_group_by]: _["total_surface"].sq_m / 10000 for _ in qs}
         return data
+
+    def thing(self):
+        self.mpoly.centroid
 
 
 class OcsgeDiff(TruncateTableMixin, DataColorationMixin, models.Model):
