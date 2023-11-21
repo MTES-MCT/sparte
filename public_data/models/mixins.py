@@ -1,4 +1,5 @@
 import logging
+from os import getenv
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import Dict
@@ -15,6 +16,8 @@ from utils.colors import get_onecolor_gradient, get_random_color, is_valid
 
 logger = logging.getLogger(__name__)
 
+LOCAL_FILE_DIRECTORY = getenv("LOCAL_FILE_DIRECTORY")
+
 
 class AutoLoadMixin:
     """
@@ -22,21 +25,34 @@ class AutoLoadMixin:
     * shape_file_path - usually shape file is in media directory
     * mapping - between feature name and database field name
     Those two needs to be set in child class.
-
-    SeeAlso::
-    - public_data.management.commands.shp2model
-    - public_data.management.commands.load_data
     """
 
-    # properties that need to be set when heritating
-    couverture_field = None
-    usage_field = None
-    shape_file_path: str = ""
-    mapping: Dict[str, str] = {}
+    @property
+    def shape_file_path(self) -> str:
+        """
+        Path to the shapefile to load, either on S3 or locally
 
-    def before_save(self):
+        Local path is relative to the env variable LOCAL_FILE_DIRECTORY
+        S3 path is relative to the value defined in DataStorage.location
+
+        Example:
+        LOCAL_FILE_DIRECTORY = 'public_data/local_data'
+        shape_file_path = 'communes/communes-2021-01-01.shp'
+
+        will load the shapefile from public_data/local_data/communes/communes-2021-01-01.shp
+        """
+        raise NotImplementedError("The shape_file_path property must be set in child class")
+
+    @property
+    def mapping(self) -> Dict[str, str]:
+        """
+        Mapping between shapefile fields and model fields
+        for geodjango's LayerMapping
+        """
+        raise NotImplementedError("The mapping property must be set in child class")
+
+    def before_save(self) -> None:
         """Hook to set data before saving"""
-        pass
 
     def save(self, *args, **kwargs):
         self.before_save()
@@ -44,82 +60,189 @@ class AutoLoadMixin:
         self.after_save()
         return self
 
-    def after_save(self):
+    def after_save(self) -> None:
         """Hook to do things after saving"""
-        pass
 
     @classmethod
-    def get_shape_file(cls, bucket_file=None):
-        # use special storage class to access files in s3://xxx/data directory
+    def calculate_fields(cls) -> None:
+        """Override if you need to calculate some fields after loading data."""
+
+    @staticmethod
+    def prepare_shapefile(shape_file_path: Path) -> None:
+        """Hook that prepares shapefile before loading it into database
+        Useful to modify shapefile fields type before mapping
+
+        Note that this method will update in place in case
+        a local file is used. If the shapefile is retrieved from S3,
+        it will update the file from the temporary directory it
+        is extracted to.
+
+        Args:
+            shape_file_path: path to the shapefile to prepare
+            (provided by the load method)
+        """
+
+    def __check_path_is_a_regular_file(path: Path) -> None:
+        if not path.is_file():
+            raise FileNotFoundError(f"{path} is not a regular file")
+
+    def __check_path_suffix_is_shapefile(path: Path) -> None:
+        if path.suffix != ".shp":
+            raise FileNotFoundError(f"{path} is not a shapefile")
+
+    @classmethod
+    def __check_is_shape_file(cls, shape_file_path: Path) -> None:
+        cls.__check_path_is_a_regular_file(shape_file_path)
+        cls.__check_path_suffix_is_shapefile(shape_file_path)
+
+    def __retrieve_zipped_shapefile_from_s3(
+        file_name_on_s3: str,
+        output_path: Path,
+    ) -> Path:
         storage = DataStorage()
-        if not storage.exists(cls.shape_file_path):
-            raise FileNotFoundError(f"s3://xxx/data/{cls.shape_file_path}")
-        file_stream = storage.open(cls.shape_file_path)
 
-        # retrieve Zipfile and extract in temporary directory
-        temp_dir_path = Path(TemporaryDirectory().name)
-        logger.info("Use temp directory %s", temp_dir_path)
+        if not storage.exists(file_name_on_s3):
+            raise FileNotFoundError(f"{file_name_on_s3} could not be found on S3")
 
-        with ZipFile(file_stream) as zip_file:
-            zip_file.extractall(temp_dir_path)  # extract files to dir
-        logger.info("File copied from bucket and extracted in temp dir")
+        output_zip_path = f"{output_path}/{file_name_on_s3}"
 
-        # get shape file
-        for tempfile in temp_dir_path.iterdir():
-            if tempfile.is_file() and tempfile.suffix == ".shp":
-                return tempfile
+        storage.bucket.download_file(
+            Key=f"{storage.location}/{file_name_on_s3}",
+            Filename=output_zip_path,
+        )
 
-        # no shape file found
+        return output_zip_path
+
+    def __extract_zipped_shapefile(
+        zipped_shapefile_path: Path,
+        output_path: Path,
+    ) -> Path:
+        with ZipFile(zipped_shapefile_path) as zip_file:
+            zip_file.extractall(output_path)
+
+        return output_path
+
+    def __get_shapefile_path_from_folder(folder_path: Path) -> Path:
+        for tempfile in folder_path.rglob("*.shp"):
+            if tempfile.name.startswith("._"):
+                continue
+
+            return tempfile
+
         raise FileNotFoundError("No file with .shp suffix")
 
     @classmethod
-    def clean_data(cls, clean_queryset=None):
-        raise NotImplementedError("Need to be overrided to delete old data before loading")
+    def clean_data(cls) -> None:
+        """Delete previously loaded data
+
+        The implementation of the method should ensure idempotency
+        by removing entirely and exclusively the data previously loaded
+        by the child class
+        """
+        raise NotImplementedError(f"No clean_data method implemented for the class {cls.__name__}")
 
     @classmethod
     def load(
         cls,
+        local_file_path=None,
+        local_file_directory=LOCAL_FILE_DIRECTORY,
         verbose=True,
-        shp_file=None,
-        bucket_file=None,
-        clean_queryset=None,
-        strict=True,
-        silent=False,
-        encoding="utf-8",
-        step=1000,
-    ):
-        """
-        Populate table with data from shapefile then calculate all fields
+        layer_mapper_strict=True,
+        layer_mapper_silent=False,
+        layer_mapper_encoding="utf-8",
+        layer_mapper_step=1000,
+    ) -> None:
+        """Populate table with data from shapefile then calculate all fields
+
+        If no local_file_path is provided, the shapefile is downloaded from S3,
+        and then extracted in a temporary directory.
+
+        All arguments are optional and only affects how LayerMapper behave
+        LayerMapper documentation:
+        - https://docs.djangoproject.com/en/4.2/ref/contrib/gis/layermapping/
 
         Args:
-            cls (undefined): default class calling
-            verbose=True (undefined): define level of verbosity
+            verbose: print more information
+            local_file_path: path to a local shapefile
+            local_file_directory: directory where to find the local shapefile
+            layer_mapper_strict: raise exception if a field is missing
+            layer_mapper_silent: do not print anything
+            layer_mapper_encoding: encoding of the shapefile
+            layer_mapper_step: number of rows to process at once
+
+        Raises:
+            FileNotFoundError: if the shapefile is not found on S3 or locally
+            NotImplementedError: if the child class does not implement the shape_file_path property
         """
-        logger.info("Load data of %s", cls.__name__)
-        if shp_file:
-            shp_file = Path(shp_file)
-            if not (shp_file.is_file() and shp_file.suffix == ".shp"):
-                raise FileNotFoundError("No file with .shp suffix")
-        else:
-            if bucket_file:
-                shp_file = cls.get_shape_file(bucket_file=bucket_file)
+
+        logger.setLevel(logging.DEBUG if verbose else logging.INFO)
+
+        logger.info("Loading data from class %s", cls.__name__)
+
+        with TemporaryDirectory() as temporary_directory:
+            if not local_file_path:
+                logger.info("Retrieving zipped shapefile from S3")
+
+                zipped_shapefile_path = cls.__retrieve_zipped_shapefile_from_s3(
+                    file_name_on_s3=cls.shape_file_path,
+                    output_path=Path(temporary_directory),
+                )
+                logger.debug(f"Zipped shapefile temporary path: {zipped_shapefile_path}")
+
+                logger.debug("Extracting zipped shapefile")
+
+                shapefile_folder_path = cls.__extract_zipped_shapefile(
+                    zipped_shapefile_path=zipped_shapefile_path,
+                    output_path=Path(temporary_directory),
+                )
+
+                logger.debug(f"Extracted shapefile folder path: {shapefile_folder_path}")
+
+                shape_file_path = cls.__get_shapefile_path_from_folder(shapefile_folder_path)
             else:
-                shp_file = cls.get_shape_file(bucket_file=cls.shape_file_path)
-        logger.info("Shape file found: %s", shp_file)
-        # # delete previous data
-        logger.info("Delete previous data")
-        cls.clean_data(clean_queryset=clean_queryset)
-        logger.info("Load new data")
-        # # load files
-        lm = LayerMapping(cls, shp_file, cls.mapping, encoding=encoding, transaction_mode="commit_on_success")
-        lm.save(strict=strict, silent=silent, verbose=verbose, progress=True, step=step)
-        logger.info("Data loaded")
-        logger.info("Calculate fields")
-        try:
-            getattr(cls, "calculate_fields")()  # noqa: B009
-        except AttributeError:
-            pass
-        logger.info("End loading data %s", cls.__name__)
+                logger.info("Using local shapefile")
+
+                shape_file_path = Path(f"{local_file_directory}/{local_file_path}")
+
+            logger.info("Shapefile path: %s", shape_file_path)
+
+            cls.__check_is_shape_file(shape_file_path)
+
+            logger.debug("Shapefile is valid ✅")
+
+            logger.info("Preparing shapefile")
+
+            cls.prepare_shapefile(shape_file_path)
+
+            logger.info("Cleaning previously loaded data")
+
+            cls.clean_data()
+
+            logger.info("Setting up LayerMapper")
+
+            layer_mapper = LayerMapping(
+                model=cls,
+                data=shape_file_path,
+                mapping=cls.mapping,
+                encoding=layer_mapper_encoding,
+                transaction_mode="commit_on_success",
+            )
+
+            logger.info("Saving mapped entities")
+
+            layer_mapper.save(
+                strict=layer_mapper_strict,
+                silent=layer_mapper_silent,
+                verbose=verbose,
+                progress=True,
+                step=layer_mapper_step,
+            )
+
+            logger.info("Calculating fields")
+
+            cls.calculate_fields()
+
+        logger.info("Done loading data from class %s", cls.__name__)
 
 
 class DataColorationMixin:
