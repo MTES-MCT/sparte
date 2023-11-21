@@ -510,6 +510,7 @@ class UrbanZonesMapView(BaseMap):
     default_zoom = 12
 
     def get_sources_list(self, *sources):
+        available_millesimes = self.object.get_available_millesimes(commit=True)
         sources = [
             {
                 "key": "ocs-ge-source",
@@ -532,7 +533,7 @@ class UrbanZonesMapView(BaseMap):
                     {
                         "type": "string",
                         "key": "year",
-                        "value": 2019,
+                        "value": available_millesimes[-1],
                     },
                     {
                         "type": "string",
@@ -734,6 +735,16 @@ class UrbanZonesMapView(BaseMap):
         return super().get_layers_list(*layers)
 
     def get_filters_list(self, *filters):
+        available_millesimes = self.object.get_available_millesimes(commit=True)
+        available_millesimes_options = []
+        for millesime in available_millesimes:
+            available_millesimes_options.append(
+                {
+                    "name": millesime,
+                    "value": millesime,
+                    "data-value": millesime,
+                }
+            )
         usage_colors = ["match", ["get", "code_usage"]]
         for leaf in UsageSol.get_leafs():
             usage_colors.append(leaf.code_prefix)
@@ -866,19 +877,8 @@ class UrbanZonesMapView(BaseMap):
                     {
                         "name": "Millésime",
                         "type": "select",
-                        "value": "2019",
-                        "options": [
-                            {
-                                "name": "2016",
-                                "value": "2016",
-                                "data-value": "2016",
-                            },
-                            {
-                                "name": "2019",
-                                "value": "2019",
-                                "data-value": "2019",
-                            },
-                        ],
+                        "value": available_millesimes[-1],
+                        "options": available_millesimes_options,
                         "triggers": [
                             {
                                 "method": "updateQueryString",

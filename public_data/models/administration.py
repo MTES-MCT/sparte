@@ -334,7 +334,7 @@ class Scot(LandMixin, GetDataFromCeremaMixin, models.Model):
     def search(cls, needle, region=None, departement=None, epci=None):
         qs = cls.objects.filter(name__unaccent__trigram_word_similar=needle)
         if region:
-            qs = qs.filter(region=region)
+            qs = qs.filter(regions=region)
         if departement:
             qs = qs.filter(id=departement.id)
         qs = qs.order_by("name")
