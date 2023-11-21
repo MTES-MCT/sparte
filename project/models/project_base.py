@@ -108,13 +108,13 @@ class BaseProject(models.Model):
     )
 
     @cached_property
-    def combined_emprise(self):
+    def combined_emprise(self) -> MultiPolygon:
         """Return a combined MultiPolygon of all emprises."""
         combined = self.emprise_set.aggregate(Union("mpoly"))
         if "mpoly__union" in combined:
             return combined["mpoly__union"]
         else:
-            return None
+            return MultiPolygon()
 
     @property
     def area(self) -> float:
