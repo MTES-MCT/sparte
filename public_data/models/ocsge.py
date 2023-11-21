@@ -30,6 +30,7 @@ from django.contrib.gis.db.models.functions import (
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db.models import Sum
 
+from public_data.models.enums import SRID
 from utils.db import IntersectManager
 
 from .couverture_usage import CouvertureUsageMatrix
@@ -48,7 +49,12 @@ class Ocsge(TruncateTableMixin, DataColorationMixin, models.Model):
     surface = models.DecimalField("surface", max_digits=15, decimal_places=4, blank=True, null=True)
     departement = models.ForeignKey("public_data.Departement", on_delete=models.PROTECT, null=True, blank=True)
 
-    mpoly = models.MultiPolygonField()
+    mpoly = models.MultiPolygonField(srid=4326)
+    srid_source = models.IntegerField(
+        "SRID",
+        choices=SRID.choices,
+        default=SRID.LAMBERT_93,
+    )
 
     objects = IntersectManager()
 
@@ -94,7 +100,12 @@ class OcsgeDiff(TruncateTableMixin, DataColorationMixin, models.Model):
     cs_old = models.CharField("Code ancienne couverture", max_length=12, blank=True, null=True)
     us_new = models.CharField("Code nouveau usage", max_length=12, blank=True, null=True)
     us_old = models.CharField("Code ancien usage", max_length=12, blank=True, null=True)
-    mpoly = models.MultiPolygonField()
+    mpoly = models.MultiPolygonField(srid=4326)
+    srid_source = models.IntegerField(
+        "SRID",
+        choices=SRID.choices,
+        default=SRID.LAMBERT_93,
+    )
     surface = models.DecimalField("surface", max_digits=15, decimal_places=4, blank=True, null=True)
     cs_old_label = models.CharField("Ancienne couverture", max_length=254, blank=True, null=True)
     us_old_label = models.CharField("Ancien usage", max_length=254, blank=True, null=True)
@@ -133,7 +144,12 @@ class OcsgeDiff(TruncateTableMixin, DataColorationMixin, models.Model):
 
 
 class ArtificialArea(TruncateTableMixin, DataColorationMixin, models.Model):
-    mpoly = models.MultiPolygonField()
+    mpoly = models.MultiPolygonField(srid=4326)
+    srid_source = models.IntegerField(
+        "SRID",
+        choices=SRID.choices,
+        default=SRID.LAMBERT_93,
+    )
     year = models.IntegerField(
         "Année",
         validators=[MinValueValidator(2000), MaxValueValidator(2050)],
@@ -158,7 +174,13 @@ class ArtificialArea(TruncateTableMixin, DataColorationMixin, models.Model):
 class ZoneConstruite(TruncateTableMixin, DataColorationMixin, models.Model):
     id_source = models.CharField("ID Source", max_length=200)
     millesime = models.CharField("Millesime", max_length=200)
-    mpoly = models.MultiPolygonField()
+    mpoly = models.MultiPolygonField(srid=4326)
+    srid_source = models.IntegerField(
+        "SRID",
+        choices=SRID.choices,
+        default=SRID.LAMBERT_93,
+    )
+
     # calculated
     year = models.IntegerField(
         "Année",
