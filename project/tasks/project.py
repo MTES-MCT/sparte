@@ -217,9 +217,8 @@ def generate_cover_image(self, project_id):
     logger.info("Start generate_cover_image, project_id=%d", project_id)
     try:
         diagnostic = Project.objects.get(id=int(project_id))
-        geom = diagnostic.combined_emprise.transform("2154", clone=True)
-        srid, wkt = geom.ewkt.split(";")
-        polygons = shapely.wkt.loads(wkt)
+        geom = diagnostic.combined_emprise
+        polygons = shapely.wkt.loads(geom.wkt)
 
         gdf_emprise = geopandas.GeoDataFrame(
             {
@@ -230,7 +229,7 @@ def generate_cover_image(self, project_id):
                     polygons,
                 ],
             },
-            crs="EPSG:2154",
+            crs=f"EPSG:{geom.srid}",
         ).to_crs(epsg=3857)
 
         fig, ax = plt.subplots(figsize=(60, 10))

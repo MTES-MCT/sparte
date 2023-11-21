@@ -3,13 +3,11 @@ Nouvelle VERSION lors de la 1.3.0 : on souhaite normaliser les données OCSGE
 pour la france entière.
 
 1. Ocsge
-========
 Les données de l'OCSGE avec la couverture complète de la France, année par année.
 On stock ici tous les millésimes de tous les départements.
 
 
 2. OcsgeDiff
-============
 Contient les différences entres les millésimes :qu'est-ce qui a été de nouveau
 naturalisé et qu'est ce qui a été artificialisé...
 Comme précédemment, on stock dans ce modèle tous les millésimes, tous les
@@ -77,13 +75,13 @@ class Ocsge(TruncateTableMixin, DataColorationMixin, models.Model):
         }
 
         Parameters:
-        ==========
         * field_group_by: 'couverture' or 'usage'
         * coveredby: polynome of the perimeter in which Ocsge items mut be
         """
         qs = cls.objects.filter(year=year)
         qs = qs.filter(mpoly__intersects=coveredby)
         qs = qs.annotate(intersection=Intersection(MakeValid("mpoly"), coveredby.make_valid()))
+        # TODO: use dynamic transform
         qs = qs.annotate(intersection_surface=Area(Transform("intersection", 2154)))
         qs = qs.values(field_group_by).order_by(field_group_by)
         qs = qs.annotate(total_surface=Sum("intersection_surface"))
