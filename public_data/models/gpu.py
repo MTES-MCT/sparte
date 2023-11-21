@@ -5,6 +5,7 @@ from django.contrib.gis.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db.models import UniqueConstraint
 
+from public_data.models.enums import SRID
 from utils.db import IntersectMixin
 
 
@@ -28,7 +29,12 @@ class ZoneUrba(models.Model):
     datappro = models.CharField("datappro", max_length=80, blank=True, null=True)
     datvalid = models.CharField("datvalid", max_length=80, blank=True, null=True)
 
-    mpoly = models.MultiPolygonField()
+    mpoly = models.MultiPolygonField(srid=4326)
+    srid_source = models.IntegerField(
+        "SRID",
+        choices=SRID.choices,
+        default=SRID.LAMBERT_93,
+    )
 
     # calulated fields
     insee = models.CharField("insee", max_length=10, blank=True, null=True)

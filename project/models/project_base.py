@@ -35,6 +35,7 @@ from public_data.models import (
     UsageSol,
 )
 from public_data.models.administration import Commune
+from public_data.models.enums import SRID
 from public_data.models.gpu import ArtifAreaZoneUrba, ZoneUrba
 from public_data.models.mixins import DataColorationMixin
 from utils.db import cast_sum_area
@@ -1184,7 +1185,12 @@ class Emprise(DataColorationMixin, gis_models.Model):
         on_delete=models.CASCADE,
         verbose_name="Projet",
     )
-    mpoly = gis_models.MultiPolygonField()
+    mpoly = gis_models.MultiPolygonField(srid=4326)
+    srid_source = models.IntegerField(
+        "SRID",
+        choices=SRID.choices,
+        default=SRID.LAMBERT_93,
+    )
 
     # mapping for LayerMapping (from GeoDjango)
     mapping = {
