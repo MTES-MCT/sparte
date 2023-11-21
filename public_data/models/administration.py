@@ -34,6 +34,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db.models import Sum
 from django.utils.functional import cached_property
 
+from public_data.models.enums import SRID
 from utils.db import IntersectManager
 
 from .cerema import Cerema
@@ -234,7 +235,12 @@ class LandMixin:
 class Region(LandMixin, GetDataFromCeremaMixin, models.Model):
     source_id = models.CharField("Identifiant source", max_length=50)
     name = models.CharField("Nom", max_length=50)
-    mpoly = models.MultiPolygonField()
+    mpoly = models.MultiPolygonField(srid=4326)
+    srid_source = models.IntegerField(
+        "SRID",
+        choices=SRID.choices,
+        default=SRID.LAMBERT_93,
+    )
 
     objects = IntersectManager()
 
@@ -282,7 +288,12 @@ class Departement(LandMixin, GetDataFromCeremaMixin, models.Model):
     is_artif_ready = models.BooleanField("Données artif disponibles", default=False)
     ocsge_millesimes = ArrayField(models.IntegerField(), null=True, blank=True)
     name = models.CharField("Nom", max_length=50)
-    mpoly = models.MultiPolygonField()
+    mpoly = models.MultiPolygonField(srid=4326)
+    srid_source = models.IntegerField(
+        "SRID",
+        choices=SRID.choices,
+        default=SRID.LAMBERT_93,
+    )
 
     objects = IntersectManager()
 
@@ -315,7 +326,13 @@ class Departement(LandMixin, GetDataFromCeremaMixin, models.Model):
 
 class Scot(LandMixin, GetDataFromCeremaMixin, models.Model):
     name = models.CharField("Nom", max_length=250)
-    mpoly = models.MultiPolygonField(null=True, blank=True)
+    mpoly = models.MultiPolygonField(srid=4326, null=True, blank=True)
+    srid_source = models.IntegerField(
+        "SRID",
+        choices=SRID.choices,
+        default=SRID.LAMBERT_93,
+    )
+
     regions = models.ManyToManyField(Region)
     departements = models.ManyToManyField(Departement)
     siren = models.CharField("Siren", max_length=12, null=True, blank=True)
@@ -355,7 +372,12 @@ class Scot(LandMixin, GetDataFromCeremaMixin, models.Model):
 class Epci(LandMixin, GetDataFromCeremaMixin, models.Model):
     source_id = models.CharField("Identifiant source", max_length=50)
     name = models.CharField("Nom", max_length=70)
-    mpoly = models.MultiPolygonField()
+    mpoly = models.MultiPolygonField(srid=4326)
+    srid_source = models.IntegerField(
+        "SRID",
+        choices=SRID.choices,
+        default=SRID.LAMBERT_93,
+    )
     departements = models.ManyToManyField(Departement)
 
     objects = IntersectManager()
@@ -408,7 +430,12 @@ class Commune(DataColorationMixin, LandMixin, GetDataFromCeremaMixin, models.Mod
     departement = models.ForeignKey(Departement, on_delete=models.PROTECT)
     epci = models.ForeignKey(Epci, on_delete=models.PROTECT, blank=True, null=True)
     scot = models.ForeignKey(Scot, on_delete=models.PROTECT, blank=True, null=True)
-    mpoly = models.MultiPolygonField()
+    mpoly = models.MultiPolygonField(srid=4326)
+    srid_source = models.IntegerField(
+        "SRID",
+        choices=SRID.choices,
+        default=SRID.LAMBERT_93,
+    )
 
     objects = IntersectManager()
 
