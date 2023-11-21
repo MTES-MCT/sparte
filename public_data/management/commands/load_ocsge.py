@@ -5,6 +5,7 @@ from django.contrib.gis.db.models.functions import Area, Transform
 from django.core.management.base import BaseCommand
 from django.db.models import DecimalField, Q
 from django.db.models.functions import Cast
+from django.core.management.base import BaseCommand
 
 from public_data.models import (
     CouvertureUsageMatrix,
@@ -64,6 +65,7 @@ class AutoOcsgeDiff(AutoLoadMixin, OcsgeDiff):
 
     @classmethod
     def calculate_fields(cls) -> None:
+        # TODO: use dynamic transform
         cls.objects.filter(
             departement=cls._departement,
             year_new=cls._year_new,
@@ -119,6 +121,7 @@ class AutoOcsge(AutoLoadMixin, Ocsge):
 
     @classmethod
     def calculate_fields(cls) -> None:
+        # TODO: use dynamic transform
         cls.objects.filter(
             departement=cls._departement,
             year=cls._year,
@@ -141,6 +144,7 @@ class AutoZoneConstruite(AutoLoadMixin, ZoneConstruite):
     }
 
     def save(self, *args, **kwargs) -> Self:
+        # TODO: use dynamic transform
         self.year = int(self._year)
         self.surface = self.mpoly.transform(2154, clone=True).area
         self.departement = self._departement
