@@ -28,10 +28,11 @@ from django.contrib.gis.db.models.functions import (
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db.models import Sum
 
-from public_data.models.couverture_usage import CouvertureUsageMatrix
 from public_data.models.enums import SRID
-from public_data.models.mixins import DataColorationMixin, TruncateTableMixin
-from utils.db import DynamicSRIDTransform, IntersectManager
+from utils.db import IntersectManager
+
+from .couverture_usage import CouvertureUsageMatrix
+from .mixins import DataColorationMixin, TruncateTableMixin
 
 
 class Ocsge(TruncateTableMixin, DataColorationMixin, models.Model):

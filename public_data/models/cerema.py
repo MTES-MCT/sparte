@@ -17,7 +17,8 @@ from django.contrib.gis.db import models
 from django.db.models import F
 
 from public_data.models.enums import SRID
-from public_data.models.mixins import DataColorationMixin
+
+from .mixins import DataColorationMixin
 
 
 class CeremaManager(models.Manager):
