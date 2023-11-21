@@ -91,8 +91,8 @@ Trajectoires
                 <div class="fr-callout w-100 fr-p-5w">
                     <h4>Période de référence</h4>
                     <div class="d-flex fr-mb-1w">
-                        <p class="fr-callout__title">+<span id="total_real-swapper">{{ total_real|floatformat:0 }}</span> ha</p>
-                        <p class="fr-tag fr-tag--sm fr-tag--blue fr-ml-2w"><strong>+(<span id="annual_real-swapper">{{ annual_real|floatformat:1 }}</span> ha/an)</strong></p>
+                        <p class="fr-callout__title">+<span id="total_real-swapper">{{ trajectory_chart.total_2020|floatformat:1 }}</span> ha</p>
+                        <p class="fr-tag fr-tag--sm fr-tag--blue fr-ml-2w"><strong>+(<span id="annual_real-swapper">{{ trajectory_chart.annual_2020|floatformat:1 }}</span> ha/an)</strong></p>
                     </div>
                     <p class="fr-text--sm">Consommation cumulée de la période du 1er jan. 2011 au 31 déc. 2020 (10 ans)</p>
                 </div>
@@ -188,6 +188,14 @@ Trajectoires
 <script language="javascript" nonce="[NONE_PLACEHOLDER]">
 window.onload = function(event) {
     _paq.push(['trackEvent', 'north_star_activation_funnel', 'open_dashboard_trajectory', 'step_3_north_star_activation_funnel'])
+}
+
+document.getElementById("btn-change-objective").onclick = function() {
+    _paq.push(['trackEvent', 'north_star_activation_funnel', 'click_button_set_target_2031', 'set_target_2031_button_clicked'])
+}
+
+document.getElementById("btn-change-trajectory").onclick = function() {
+    _paq.push(['trackEvent', 'north_star_activation_funnel', 'click_button_set_trajectory', 'set_trajectory_button_clicked'])
 }
 </script>
 {% endblock tagging %}

@@ -59,15 +59,10 @@ class ConsoComparisonChart(ConsoChart):
     name = "conso comparison"
     param = {
         "title": {"text": "Consommation proportionnelle à la surface"},
-        "yAxis": {"title": {"text": "Consommé (en ha)"}},
+        "yAxis": {"visible": False},
         "xAxis": {"type": "category"},
         "legend": {"layout": "vertical", "align": "right", "verticalAlign": "top"},
-        "tooltip": {
-            "headerFormat": "<b>{series.name}</b><br/>",
-            "pointFormat": "{point.name}: {point.y}",
-            "valueSuffix": " Ha",
-            "valueDecimals": 1,
-        },
+        "tooltip": {"enabled": False},
         "series": [],
     }
 
@@ -253,6 +248,7 @@ class ObjectiveChart(ProjectChart):
             )
             self.series[0]["data"].append({"name": year, "y": val})
 
+        self.annual_2020 = self.total_2020 / 10
         self.annual_objective_2031 = self.total_2020 * self.project.target_2031 / 1000
         self.annual_real = self.total_real / 10
         self.total_2031 = self.total_2020

@@ -2,23 +2,31 @@
 
 Ce changelog suit la méthode "keep a changelog" disponible ici: [https://keepachangelog.com/en/1.0.0/](https://keepachangelog.com/en/1.0.0/)
 
-## [4.3] Export conso - Non livré
+## [4.3] Export conso - 2023-11-20
 
 ### Ajouté
-* Nouveaux graphiques dans l'export Word
-* Système de supervision des tâches asynchrones
-* CI pour valider le code Python
+- Nouveaux graphiques dans l'export Word
+- Système de supervision des tâches asynchrones
+- CI pour valider le code Python
+- Migration de la carte conso vers MapLibre
 
 ### Modifié
-* Ajout des logos, de la typo, des remerciements, etc... dans l'export Word
-* Introduction des rapports
-* Prise en compte des accents dans la recherche de territoire
-* Modification des graphiques de comparaison de la conso
+- Ajout des logos, de la typo, des remerciements, etc... dans l'export Word
+- Introduction des rapports
+- Prise en compte des accents dans la recherche de territoire
+- Modification des graphiques de comparaison de la conso
+- Mise à jour Tag Plan
+- Modifications retours DGALN
 
 ### Corrigé
-* Activation de la maintenance lors de la livraison
+- Activation de la maintenance lors de la livraison
 
-## [4.2.1] Cerema 2021 - Non livré
+## [4.2.2] Cerema 2021 - 2023-11-06
+
+### corrigé :
+- Bloc "consommation 2031" de la page Trajectoire
+
+## [4.2.1] Cerema 2021 - 2023-11-06
 
 ### corrigé :
 - Bloc "consommation 2031" des pages Synthèse et Trajectoire n'affichait plus le volume autorisé
