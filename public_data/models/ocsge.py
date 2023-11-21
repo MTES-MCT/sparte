@@ -81,6 +81,7 @@ class Ocsge(TruncateTableMixin, DataColorationMixin, models.Model):
         qs = cls.objects.filter(year=year)
         qs = qs.filter(mpoly__intersects=coveredby)
         qs = qs.annotate(intersection=Intersection(MakeValid("mpoly"), coveredby.make_valid()))
+        # TODO: use dynamic transform
         qs = qs.annotate(intersection_surface=Area(Transform("intersection", 2154)))
         qs = qs.values(field_group_by).order_by(field_group_by)
         qs = qs.annotate(total_surface=Sum("intersection_surface"))

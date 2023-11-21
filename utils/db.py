@@ -33,10 +33,11 @@ class IntersectMixin:
     def intersect(self, geom) -> QuerySet:
         """Filter queryset on intersection between class mpoly field and geom args
         add intersection and intersection_area fields"""
+        # TODO: dynamic transform
         return self.filter(mpoly__intersects=geom).annotate(
             intersection=Intersection(MakeValid("mpoly"), geom),
             intersection_area=Coalesce(
-                Area(DynamicSRIDTransform("intersection", "srid_source")),
+                Area(Transform("intersection", first_srid_source)),
                 Zero,
             ),
         )
