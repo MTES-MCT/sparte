@@ -227,7 +227,7 @@ class OcsgeViewSet(OnlyBoundingBoxMixin, ZoomSimplificationMixin, OptimizedMixin
         return params  # /!\ order matter, see sql query below
 
 
-class OcsgeDiffViewSet(OnlyBoundingBoxMixin, ZoomSimplificationMixin, OptimizedMixins, DataViewSet):
+class OcsgeDiffViewSet(ZoomSimplificationMixin, OptimizedMixins, DataViewSet):
     queryset = models.OcsgeDiff.objects.all()
     serializer_class = serializers.OcsgeDiffSerializer
     optimized_fields = {
@@ -256,9 +256,7 @@ class OcsgeDiffViewSet(OnlyBoundingBoxMixin, ZoomSimplificationMixin, OptimizedM
             return 18  # make old map work
 
     def get_params(self, request):
-        bbox = request.query_params.get("in_bbox").split(",")
-        params = list(map(float, bbox))
-        params.append(int(request.query_params.get("year_new")))
+        params = [int(request.query_params.get("year_new"))]
         params.append(int(request.query_params.get("year_old")))
 
         if "is_new_artif" in request.query_params:
@@ -270,19 +268,17 @@ class OcsgeDiffViewSet(OnlyBoundingBoxMixin, ZoomSimplificationMixin, OptimizedM
 
         # /!\ order matter, check sql query to know
         return params
-
+    
     def get_sql_from(self):
-        return (
-            f"FROM {self.queryset.model._meta.db_table} o "
-            "INNER JOIN (SELECT ST_MakeEnvelope(%s, %s, %s, %s, 4326) as box) as b "
-            "ON ST_Intersects(o.mpoly, b.box) "
-        )
+        return f"from {self.queryset.model._meta.db_table} o"
 
     def get_sql_where(self):
         where = "where year_new = %s and year_old = %s "
-        if "is_new_artif" in self.request.query_params:
+        if "is_new_artif" in self.request.query_params and "is_new_natural" in self.request.query_params:
+            where += "and (is_new_artif = %s or is_new_natural = %s) "
+        elif "is_new_artif" in self.request.query_params:
             where += "and is_new_artif = %s "
-        if "is_new_natural" in self.request.query_params:
+        elif "is_new_natural" in self.request.query_params:
             where += "and is_new_natural = %s "
         if "project_id" in self.request.query_params:
             where += (
