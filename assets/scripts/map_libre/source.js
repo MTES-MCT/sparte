@@ -97,7 +97,7 @@ export default class Source {
         this.markers = {}
         this.markersOnScreen = {}
 
-        this.map.on('render', () => {
+        this.map.on("render", () => {
             if (!this.map.isSourceLoaded(this.key)) return
             this.updateMarkers(_options)
         })
@@ -125,6 +125,20 @@ export default class Source {
                 marker = this.markers[id] = new maplibregl.Marker({
                     element: el
                 }).setLngLat(coords)
+
+                marker.getElement().addEventListener('click', () => {                    
+                    this.map.getSource(this.key).getClusterExpansionZoom(
+                        id,
+                        (err, zoom) => {
+                            if (err) return;
+                            
+                            this.map.easeTo({
+                                center: coords,
+                                zoom: zoom
+                            })
+                        }
+                    )
+                })
             }
             newMarkers[id] = marker
             
