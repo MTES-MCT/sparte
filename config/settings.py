@@ -268,6 +268,7 @@ else:
             "OPTIONS": {
                 "CLIENT_CLASS": "django_redis.client.DefaultClient",
                 "MAX_ENTRIES": 1000,
+                "VERSION": 1,
             },
         }
     }
