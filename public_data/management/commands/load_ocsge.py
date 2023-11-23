@@ -2,7 +2,7 @@ import logging
 from pathlib import Path
 
 import geopandas
-from django.contrib.gis.db.models.functions import Area, Centroid, Transform
+from django.contrib.gis.db.models.functions import Area, Transform
 from django.core.management.base import BaseCommand
 from django.db.models import DecimalField
 from django.db.models.functions import Cast
@@ -26,6 +26,7 @@ class AutoOcsgeDiff(AutoLoadMixin, OcsgeDiff):
     def before_save(self):
         self.year_new = self.__class__._year_new
         self.year_old = self.__class__._year_old
+        self.departement = self.__class__._departement
 
         self.new_matrix = CouvertureUsageMatrix.matrix_dict()[(self.cs_new, self.us_new)]
         self.new_is_artif = bool(self.new_matrix.is_artificial)
@@ -72,8 +73,10 @@ class GersOcsge(AutoLoadMixin, Ocsge):
         "usage": "CODE_US",
         "mpoly": "MULTIPOLYGON",
     }
+    _departement = Departement.objects.get(name="Gers")
 
     def save(self, *args, **kwargs):
+        self.departement = self._departement
         key = (self.couverture, self.usage)
 
         self.matrix = CouvertureUsageMatrix.matrix_dict()[key]
@@ -84,16 +87,16 @@ class GersOcsge(AutoLoadMixin, Ocsge):
         if self.matrix.usage:
             self.usage_label = self.matrix.usage.label
 
-        self.year = self.__class__.year
+        self.year = self.__class__._year
 
         return super().save(*args, **kwargs)
 
     @classmethod
     def clean_data(cls):
-        qs = cls.objects.annotate(centroid=Centroid("mpoly"))
-        qs = qs.filter(centroid__intersects=Departement.objects.get(name="Gers").mpoly)
-        qs = qs.filter(year=cls.year)
-        qs.delete()
+        cls.objects.filter(
+            departement=cls._departement,
+            year=cls._year,
+        ).delete()
 
     @classmethod
     def calculate_fields(cls):
@@ -110,7 +113,7 @@ class GersOcsge2016(GersOcsge):
         proxy = True
 
     shape_file_path = "gers_ocsge_2016.zip"
-    year = 2016
+    _year = 2016
 
 
 class GersOcsge2019(GersOcsge):
@@ -118,7 +121,7 @@ class GersOcsge2019(GersOcsge):
         proxy = True
 
     shape_file_path = "gers_ocsge_2019.zip"
-    year = 2019
+    _year = 2019
 
 
 class GersOcsgeDiff(AutoOcsgeDiff):
@@ -132,6 +135,7 @@ class GersOcsgeDiff(AutoOcsgeDiff):
 
     _year_new = 2019
     _year_old = 2016
+    _departement = Departement.objects.get(name="Gers")
 
     shape_file_path = "gers_diff_2016_2019.zip"
 
@@ -145,10 +149,11 @@ class GersOcsgeDiff(AutoOcsgeDiff):
 
     @classmethod
     def clean_data(cls):
-        qs = cls.objects.annotate(centroid=Centroid("mpoly"))
-        qs = qs.filter(centroid__intersects=Departement.objects.get(name="Gers").mpoly)
-        qs = qs.filter(year_new=cls._year_new, year_old=cls._year_old)
-        qs.delete()
+        cls.objects.filter(
+            departement=cls._departement,
+            year_new=cls._year_new,
+            year_old=cls._year_old,
+        ).delete()
 
 
 class GersZoneConstruite2016(AutoLoadMixin, ZoneConstruite):
@@ -156,6 +161,7 @@ class GersZoneConstruite2016(AutoLoadMixin, ZoneConstruite):
         proxy = True
 
     _year = 2016
+    _departement = Departement.objects.get(name="Gers")
     shape_file_path = "gers_zone_construite_2016.zip"
     mapping = {
         "id_source": "ID",
@@ -165,15 +171,16 @@ class GersZoneConstruite2016(AutoLoadMixin, ZoneConstruite):
 
     def save(self, *args, **kwargs):
         self.year = self._year
+        self.departement = self._departement
         self.surface = self.mpoly.transform(2154, clone=True).area
         super().save(*args, **kwargs)
 
     @classmethod
     def clean_data(cls):
-        qs = cls.objects.annotate(centroid=Centroid("mpoly"))
-        qs = qs.filter(centroid__intersects=Departement.objects.get(name="Gers").mpoly)
-        qs = qs.filter(year=cls.year)
-        qs.delete()
+        cls.objects.filter(
+            departement=cls._departement,
+            year=cls._year,
+        ).delete()
 
 
 class GersZoneConstruite2019(GersZoneConstruite2016):
@@ -196,15 +203,12 @@ class EssonneOcsge(AutoLoadMixin, Ocsge):
         "usage": "CODE_US",
         "id_source": "ID",
         "mpoly": "MULTIPOLYGON",
-        # "source": "SOURCE",
-        # "code_or": "CODE_OR",
-        # "ossature": "OSSATURE",
-        # "id_source": "ID_ORIGINE",
-        # "millesime": "MILLESIME",
     }
+    _departement = Departement.objects.get(name="Essonne")
 
     def save(self, *args, **kwargs):
         self.year = self.__class__._year
+        self.departement = self._departement
         key = (self.couverture, self.usage)
 
         if key not in CouvertureUsageMatrix.matrix_dict():
@@ -223,10 +227,10 @@ class EssonneOcsge(AutoLoadMixin, Ocsge):
 
     @classmethod
     def clean_data(cls):
-        qs = cls.objects.annotate(centroid=Centroid("mpoly"))
-        qs = qs.filter(centroid__intersects=Departement.objects.get(name="Essonne").mpoly)
-        qs = qs.filter(year=cls._year)
-        qs.delete()
+        cls.objects.filter(
+            departement=cls._departement,
+            year=cls._year,
+        )
 
 
 class EssonneOcsge2018(EssonneOcsge):
@@ -249,6 +253,7 @@ class EssonneOcsgeZoneConstruite(AutoLoadMixin, ZoneConstruite):
     class Meta:
         proxy = True
 
+    _departement = Departement.objects.get(name="Essonne")
     mapping = {
         "id_source": "ID",
         "millesime": "MILLESIME",
@@ -257,15 +262,16 @@ class EssonneOcsgeZoneConstruite(AutoLoadMixin, ZoneConstruite):
 
     def save(self, *args, **kwargs):
         self.year = self._year
+        self.departement = self._departement
         self.surface = self.mpoly.transform(2154, clone=True).area
         super().save(*args, **kwargs)
 
     @classmethod
     def clean_data(cls):
-        qs = cls.objects.annotate(centroid=Centroid("mpoly"))
-        qs = qs.filter(centroid__intersects=Departement.objects.get(name="Essonne").mpoly)
-        qs = qs.filter(year=cls._year)
-        qs.delete()
+        cls.objects.filter(
+            departement=cls._departement,
+            year=cls._year,
+        ).delete()
 
 
 class EssonneOcsgeZoneConstruite2018(EssonneOcsgeZoneConstruite):
@@ -290,6 +296,7 @@ class EssonneOcsgeDiff1821(AutoOcsgeDiff):
 
     _year_old = 2018
     _year_new = 2021
+    _departement = Departement.objects.get(name="Essonne")
 
     shape_file_path = "essonne_diff_2018_2021.zip"
 
@@ -298,17 +305,16 @@ class EssonneOcsgeDiff1821(AutoOcsgeDiff):
         "us_new": "US_2021",
         "cs_old": "CS_2018",
         "us_old": "US_2018",
-        # "oss_2018": "OSS_2018",
-        # "oss_2021": "OSS_2021",
         "mpoly": "MULTIPOLYGON",
     }
 
     @classmethod
     def clean_data(cls):
-        qs = cls.objects.annotate(centroid=Centroid("mpoly"))
-        qs = qs.filter(centroid__intersects=Departement.objects.get(name="Essonne").mpoly)
-        qs = qs.filter(year_new=cls._year_new, year_old=cls._year_old)
-        qs.delete()
+        cls.objects.filter(
+            departement=cls._departement,
+            year_new=cls._year_new,
+            year_old=cls._year_old,
+        ).delete()
 
 
 class SeineEtMarneOcsge(AutoLoadMixin, Ocsge):
@@ -320,15 +326,12 @@ class SeineEtMarneOcsge(AutoLoadMixin, Ocsge):
         "couverture": "COUVERTURE",
         "usage": "USAGE",
         "mpoly": "MULTIPOLYGON",
-        # "millesime": "MILLESIME",
-        # "source": "SOURCE",
-        # "id_origine": "ID_ORIGINE",
-        # "ossature": "OSSATURE",
-        # "code_or": "CODE_OR",
     }
+    _departement = Departement.objects.get(name="Seine-et-Marne")
 
     def save(self, *args, **kwargs):
         self.year = self.__class__._year
+        self.departement = self._departement
         key = (self.couverture, self.usage)
 
         if key not in CouvertureUsageMatrix.matrix_dict():
@@ -347,10 +350,10 @@ class SeineEtMarneOcsge(AutoLoadMixin, Ocsge):
 
     @classmethod
     def clean_data(cls):
-        qs = cls.objects.annotate(centroid=Centroid("mpoly"))
-        qs = qs.filter(centroid__intersects=Departement.objects.get(name="Seine-et-Marne").mpoly)
-        qs = qs.filter(year=cls._year)
-        qs.delete()
+        cls.objects.filter(
+            departement=cls._departement,
+            year=cls._year,
+        ).delete()
 
 
 class SeineEtMarneOcsge2017(SeineEtMarneOcsge):
@@ -376,8 +379,8 @@ class SeineEtMarneOcsgeZoneConstruite(AutoLoadMixin, ZoneConstruite):
     mapping = {
         "id_source": "OBJECTID",
         "mpoly": "MULTIPOLYGON",
-        # "zc_type": "ZC_TYPE",
     }
+    _departement = Departement.objects.get(name="Seine-et-Marne")
 
     @staticmethod
     def prepare_shapefile(shape_file_path: Path):
@@ -389,14 +392,15 @@ class SeineEtMarneOcsgeZoneConstruite(AutoLoadMixin, ZoneConstruite):
         self.year = int(self._year)
         self.millesime = str(self._year)
         self.surface = self.mpoly.transform(2154, clone=True).area
+        self.departement = self._departement
         super().save(*args, **kwargs)
 
     @classmethod
     def clean_data(cls):
-        qs = cls.objects.annotate(centroid=Centroid("mpoly"))
-        qs = qs.filter(centroid__intersects=Departement.objects.get(name="Seine-et-Marne").mpoly)
-        qs = qs.filter(year=cls._year)
-        qs.delete()
+        cls.objects.filter(
+            departement=cls._departement,
+            year=cls._year,
+        ).delete()
 
 
 class SeineEtMarneOcsgeZoneConstruite2017(SeineEtMarneOcsgeZoneConstruite):
@@ -421,6 +425,7 @@ class SeineEtMarneOcsgeDiff1721(AutoOcsgeDiff):
 
     _year_old = 2017
     _year_new = 2021
+    _departement = Departement.objects.get(name="Seine-et-Marne")
 
     shape_file_path = "seine_et_marne_diff_2017_2021.zip"
 
@@ -430,16 +435,15 @@ class SeineEtMarneOcsgeDiff1721(AutoOcsgeDiff):
         "cs_old": "CS_2017",
         "us_old": "US_2017",
         "mpoly": "MULTIPOLYGON",
-        # "oss_2017": "OSS_2017",
-        # "oss_2021": "OSS_2021",
     }
 
     @classmethod
     def clean_data(cls):
-        qs = cls.objects.annotate(centroid=Centroid("mpoly"))
-        qs = qs.filter(centroid__intersects=Departement.objects.get(name="Seine-et-Marne").mpoly)
-        qs = qs.filter(year_new=cls._year_new, year_old=cls._year_old)
-        qs.delete()
+        cls.objects.filter(
+            departement=cls._departement,
+            year_new=cls._year_new,
+            year_old=cls._year_old,
+        ).delete()
 
 
 class Command(BaseCommand):

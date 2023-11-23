@@ -102,6 +102,7 @@ class OcsgeDiff(TruncateTableMixin, DataColorationMixin, models.Model):
     new_is_artif = models.BooleanField(blank=True, null=True)
     is_new_artif = models.BooleanField(blank=True, null=True)
     is_new_natural = models.BooleanField(blank=True, null=True)
+    departement = models.ForeignKey("public_data.Departement", on_delete=models.PROTECT, null=True, blank=True)
     old_matrix = models.ForeignKey(
         CouvertureUsageMatrix,
         on_delete=models.PROTECT,
@@ -163,6 +164,7 @@ class ZoneConstruite(TruncateTableMixin, DataColorationMixin, models.Model):
         blank=True,
     )
     surface = models.DecimalField("surface", max_digits=15, decimal_places=4, blank=True, null=True)
+    departement = models.ForeignKey("public_data.Departement", on_delete=models.PROTECT, null=True, blank=True)
 
     objects = IntersectManager()
 

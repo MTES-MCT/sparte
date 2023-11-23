@@ -1,0 +1,21 @@
+{% if not project.has_uniform_ocsge_coverage %}
+<div class="fr-notice fr-notice--info">
+  <div class="fr-container">
+    <div class="fr-notice__body">
+      <p class="fr-notice__title">
+        {% if project.has_partial_ocsge_coverage %}
+          Les données OCS GE ne sont que partiellement disponibles sur ce territoire, vous n'avez
+          donc pas accès aux informations relatives à l'artificialisation, l'usage et la couverture.
+        {% elif project.has_complete_ocsge_coverage %}
+          Les données OCS GE sont disponibles sur ce territoire, mais les dates des millésimes ne
+          sont pas uniformes entre toutes les collectivités, vous n'avez donc pas accès aux
+          informations relatives à l'artificialisation, l'usage et la couverture.
+        {% else %}
+          Les données OCS GE ne sont pas encore disponibles sur ce territoire pour les dates sélectionnées,
+          vous n'avez donc pas accès aux informations relatives à l'artificialisation, l'usage et la couverture.
+        {% endif %}
+        </p>
+    </div>
+  </div>
+</div>
+{% endif %}
