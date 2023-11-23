@@ -1090,13 +1090,14 @@ class MyArtifMapView(BaseMap):
                         "value": True,
                     },
                 ],
-                "min_zoom": 8,
+                "min_zoom": 6,
                 "triggers": [
                     {
                         "method": "displayDonutsChartClusters",
                         "options": {
                             "colors": ["#ff0000", "#00ff00"],
-                            "props": ["sumArtif", "sumRenat"]
+                            "props": ["sumArtif", "sumRenat"],
+                            "formatter": ["number", ["fr-FR", "unit", "hectare", 2]],
                         }
                     }
                 ]
@@ -1336,12 +1337,13 @@ class MyArtifMapView(BaseMap):
                 ],
             },
             {
-                "id": "ocsge-diff-cluster-layer",
+                "id": "ocsge-diff-circle-layer",
                 "z-index": 8,
                 "type": "circle",
                 "source": "ocsge-diff-centroids-source",
-                "minzoom": 8,
+                "minzoom": 10,
                 "maxzoom": 14,
+                'filter': ['!=', 'cluster', True],
                 "paint": {
                     "circle-color": [
                         "case",
@@ -1349,34 +1351,35 @@ class MyArtifMapView(BaseMap):
                         "#00ff00",
                         "#ff0000", # Default color => zones is_new_artif
                     ],
-                    "circle-radius": 5,
-                    # "circle-opacity": 0,
+                    "circle-radius": 12,
+                    "circle-opacity": 0.6,
                 },
             },
-            # {
-            #     "id": "ocsge-diff-cluster-label-layer",
-            #     "z-index": 9,
-            #     "type": "symbol",
-            #     "source": "ocsge-diff-centroids-source",
-            #     "layout": {
-            #         "text-field": [
-            #             "concat",
-            #             [
-            #                 'number-format',
-            #                 ["get", "sum"],
-            #                 { "locale": "fr-FR", "unit": "hectare", "max-fraction-digits": 10 }
-            #             ],
-            #             " ha"
-            #         ],
-            #         "text-font": ["Marianne Regular"],
-            #         "text-size": 12,
-            #     },
-            #     "minzoom": 8,
-            #     "maxzoom": 14,
-            #     "paint": {
-            #         "text-color": "#fff"
-            #     }
-            # },
+            {
+                "id": "ocsge-diff-label-layer",
+                "z-index": 9,
+                "type": "symbol",
+                "source": "ocsge-diff-centroids-source",
+                "minzoom": 10,
+                "maxzoom": 14,
+                'filter': ['!=', 'cluster', True],
+                "layout": {
+                    "text-field": [
+                        "concat",
+                        [
+                            "number-format",
+                            ["get", "surface"],
+                            { "locale": "fr-FR", "unit": "hectare", "max-fraction-digits": 2 }
+                        ],
+                        " ha"
+                    ],
+                    "text-font": ["Marianne Regular"],
+                    "text-size": 10,
+                },
+                "paint": {
+                    "text-color": "#fff"
+                }
+            },
             # {
             #     "id": "ocsge-diff-artificialisation-fill-layer",
             #     "z-index": 7,
