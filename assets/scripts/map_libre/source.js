@@ -121,7 +121,7 @@ export default class Source {
                 _options.props.forEach(_obj => {
                     counts.push(props[_obj])
                 })
-                const el = createDonutChart(_options.colors, counts);
+                const el = createDonutChart(_options.colors, counts, _options.formatter);
                 marker = this.markers[id] = new maplibregl.Marker({
                     element: el
                 }).setLngLat(coords)
