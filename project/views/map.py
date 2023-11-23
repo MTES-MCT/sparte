@@ -1052,7 +1052,7 @@ class MyArtifMapView(BaseMap):
                     "generateId": True,  # This ensures that all features have unique IDs
                     "cluster": True,
                     "clusterMaxZoom": 14,
-                    "clusterRadius": 50,
+                    "clusterRadius": 70,
                     "clusterProperties": {
                         # Keep separate sum
                         "sumArtif": ["+", ['case', ["==", ["get", "is_new_artif"], True], ["get", "surface"], 0]],
@@ -1095,7 +1095,7 @@ class MyArtifMapView(BaseMap):
                     {
                         "method": "displayDonutsChartClusters",
                         "options": {
-                            "colors": ["#ff0000", "#00ff00"],
+                            "colors": ["#FC4F4F", "#43d360"],
                             "props": ["sumArtif", "sumRenat"],
                             "formatter": ["number", ["fr-FR", "unit", "hectare", 2]],
                         }
@@ -1312,8 +1312,8 @@ class MyArtifMapView(BaseMap):
                     "fill-color": [
                         "case",
                         ["==", ["get", "is_new_natural"], True],
-                        "#00ff00",
-                        "#ff0000", # Default color => zones is_new_artif
+                        "#43d360",
+                        "#FC4F4F", # Default color => zones is_new_artif
                     ],
                     "fill-opacity": ["case", ["boolean", ["feature-state", "hover"], False], 1, 0.7],
                 },
@@ -1341,15 +1341,15 @@ class MyArtifMapView(BaseMap):
                 "z-index": 8,
                 "type": "circle",
                 "source": "ocsge-diff-centroids-source",
-                "minzoom": 10,
-                "maxzoom": 14,
+                "minzoom": 6,
+                "maxzoom": 16,
                 'filter': ['!=', 'cluster', True],
                 "paint": {
                     "circle-color": [
                         "case",
                         ["==", ["get", "is_new_natural"], True],
-                        "#00ff00",
-                        "#ff0000", # Default color => zones is_new_artif
+                        "#43d360",
+                        "#FC4F4F", # Default color => zones is_new_artif
                     ],
                     "circle-radius": 12,
                     "circle-opacity": 0.6,
@@ -1360,8 +1360,8 @@ class MyArtifMapView(BaseMap):
                 "z-index": 9,
                 "type": "symbol",
                 "source": "ocsge-diff-centroids-source",
-                "minzoom": 10,
-                "maxzoom": 14,
+                "minzoom": 6,
+                "maxzoom": 16,
                 'filter': ['!=', 'cluster', True],
                 "layout": {
                     "text-field": [
