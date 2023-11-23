@@ -67,7 +67,7 @@ export function createDonutChart(colors, counts, formatter) {
 	const r0 = Math.round(r * 0.6)
 	const w = r * 2
 	 
-	let html = `<div><svg width="${w}" height="${w}" viewbox="0 0 ${w} ${w}" text-anchor="middle" style="font: ${fontSize}px sans-serif; display: block">`
+	let html = `<div style="cursor:pointer;"><svg width="${w}" height="${w}" viewbox="0 0 ${w} ${w}" text-anchor="middle" style="font: ${fontSize}px sans-serif; display: block">`
 	 
 	for (let i = 0; i < counts.length; i++) {
 		html += donutSegment(
@@ -78,7 +78,7 @@ export function createDonutChart(colors, counts, formatter) {
 			colors[i]
 		)
 	}
-	html += `<circle cx="${r}" cy="${r}" r="${r0}" fill="white" fill-opacity="0.9" />
+	html += `<circle cx="${r}" cy="${r}" r="${r0}" fill="white" />
 	<text dominant-baseline="central" transform="translate(${r}, ${r})">
 	${formatData(formatter[0], formatter[1], total)}
 	</text>
@@ -107,5 +107,5 @@ export function donutSegment(start, end, r, r0, color) {
 		r + r0 * x1
 	} ${r + r0 * y1} A ${r0} ${r0} 0 ${largeArc} 0 ${r + r0 * x0} ${
 		r + r0 * y0
-	}" fill="${color}" fill-opacity="0.9" />`
+	}" fill="${color}" />`
 }
