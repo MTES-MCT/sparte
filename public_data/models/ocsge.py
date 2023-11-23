@@ -81,9 +81,6 @@ class Ocsge(TruncateTableMixin, DataColorationMixin, models.Model):
         data = {_[field_group_by]: _["total_surface"].sq_m / 10000 for _ in qs}
         return data
 
-    def thing(self):
-        self.mpoly.centroid
-
 
 class OcsgeDiff(TruncateTableMixin, DataColorationMixin, models.Model):
     year_old = models.IntegerField("Ancienne année", validators=[MinValueValidator(2000), MaxValueValidator(2050)])
