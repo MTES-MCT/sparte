@@ -988,6 +988,7 @@ class MyArtifMapView(BaseMap):
                     "type": "geojson",
                     "data": reverse_lazy("public_data:artificialarea-optimized"),
                     "generateId": True,  # This ensures that all features have unique IDs
+                    "tolerance": 0
                 },
                 "query_strings": [
                     {
