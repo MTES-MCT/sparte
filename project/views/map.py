@@ -975,7 +975,7 @@ class BaseThemeMap(GroupMixin, DetailView):
 
 class MyArtifMapView(BaseMap):
     title = "Comprendre l'artificialisation du territoire"
-    default_zoom = 14
+    default_zoom = 10
 
     def get_sources_list(self, *sources):
         years = (
@@ -1007,7 +1007,7 @@ class MyArtifMapView(BaseMap):
                         "value": self.object.pk,
                     },
                 ],
-                "min_zoom": 10,
+                "min_zoom": 12,
             },
             {
                 "key": "ocsge-diff-source",
@@ -1113,7 +1113,7 @@ class MyArtifMapView(BaseMap):
                 "z-index": 6,
                 "type": "fill",
                 "source": "zones-artificielles-source",
-                "minzoom": 10,
+                "minzoom": 12,
                 "maxzoom": 19,
                 "paint": {
                     "fill-color": "#f88e55",
@@ -1206,7 +1206,7 @@ class MyArtifMapView(BaseMap):
                 "type": "circle",
                 "source": "ocsge-diff-centroids-source",
                 "minzoom": 6,
-                "maxzoom": 16,
+                "maxzoom": 14,
                 'filter': ['!=', 'cluster', True],
                 "paint": {
                     "circle-color": [
@@ -1225,7 +1225,7 @@ class MyArtifMapView(BaseMap):
                 "type": "symbol",
                 "source": "ocsge-diff-centroids-source",
                 "minzoom": 6,
-                "maxzoom": 16,
+                "maxzoom": 14,
                 'filter': ['!=', 'cluster', True],
                 "layout": {
                     "text-field": [
@@ -1270,7 +1270,7 @@ class MyArtifMapView(BaseMap):
                     {
                         "name": "Opacité du calque",
                         "type": "opacity",
-                        "value": 100,
+                        "value": 70,
                         "triggers": [
                             {
                                 "method": "changePaintProperty",
@@ -1299,19 +1299,6 @@ class MyArtifMapView(BaseMap):
                                     "ocsge-diff-circle-layer",
                                     "ocsge-diff-label-layer"
                                 ],
-                            },
-                        ],
-                    },
-                    {
-                        "name": "Opacité du calque",
-                        "type": "opacity",
-                        "value": 100,
-                        "triggers": [
-                            {
-                                "method": "changePaintProperty",
-                                "property": "fill-opacity",
-                                "items": ["ocsge-diff-fill-layer","ocsge-diff-circle-layer",
-                                    "ocsge-diff-label-layer"],
                             },
                         ],
                     },
