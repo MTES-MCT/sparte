@@ -1248,105 +1248,75 @@ class MyArtifMapView(BaseMap):
 
     def get_filters_list(self, *filters):
         filters = [
-            # {
-            #     "name": "Zones artificielles",
-            #     "z-index": 4,
-            #     "filters": [
-            #         {
-            #             "name": "Visibilité du calque",
-            #             "type": "visibility",
-            #             "value": "visible",
-            #             "triggers": [
-            #                 {
-            #                     "method": "changeLayoutProperty",
-            #                     "property": "visibility",
-            #                     "items": [
-            #                         "zones-artificielles-fill-layer",
-            #                     ],
-            #                 },
-            #             ],
-            #         },
-            #         {
-            #             "name": "Opacité du calque",
-            #             "type": "opacity",
-            #             "value": 100,
-            #             "triggers": [
-            #                 {
-            #                     "method": "changePaintProperty",
-            #                     "property": "fill-opacity",
-            #                     "items": ["zones-artificielles-fill-layer"],
-            #                 },
-            #             ],
-            #         },
-            #     ],
-            #     "source": "zones-artificielles-source",
-            # },
-            # {
-            #     "name": "Artificialisation",
-            #     "z-index": 5,
-            #     "filters": [
-            #         {
-            #             "name": "Visibilité du calque",
-            #             "type": "visibility",
-            #             "value": "visible",
-            #             "triggers": [
-            #                 {
-            #                     "method": "changeLayoutProperty",
-            #                     "property": "visibility",
-            #                     "items": [
-            #                         "ocsge-diff-artificialisation-fill-layer",
-            #                     ],
-            #                 },
-            #             ],
-            #         },
-            #         {
-            #             "name": "Opacité du calque",
-            #             "type": "opacity",
-            #             "value": 100,
-            #             "triggers": [
-            #                 {
-            #                     "method": "changePaintProperty",
-            #                     "property": "fill-opacity",
-            #                     "items": ["ocsge-diff-artificialisation-fill-layer"],
-            #                 },
-            #             ],
-            #         },
-            #     ],
-            #     "source": "ocsge-diff-source",
-            # },
-            # {
-            #     "name": "Renaturation",
-            #     "z-index": 4,
-            #     "filters": [
-            #         {
-            #             "name": "Visibilité du calque",
-            #             "type": "visibility",
-            #             "value": "visible",
-            #             "triggers": [
-            #                 {
-            #                     "method": "changeLayoutProperty",
-            #                     "property": "visibility",
-            #                     "items": [
-            #                         "ocsge-diff-renaturation-fill-layer",
-            #                     ],
-            #                 },
-            #             ],
-            #         },
-            #         {
-            #             "name": "Opacité du calque",
-            #             "type": "opacity",
-            #             "value": 100,
-            #             "triggers": [
-            #                 {
-            #                     "method": "changePaintProperty",
-            #                     "property": "fill-opacity",
-            #                     "items": ["ocsge-diff-renaturation-fill-layer"],
-            #                 },
-            #             ],
-            #         },
-            #     ],
-            #     "source": "ocsge-diff-source",
-            # },
+            {
+                "name": "Zones artificielles",
+                "z-index": 4,
+                "filters": [
+                    {
+                        "name": "Visibilité du calque",
+                        "type": "visibility",
+                        "value": "visible",
+                        "triggers": [
+                            {
+                                "method": "changeLayoutProperty",
+                                "property": "visibility",
+                                "items": [
+                                    "zones-artificielles-fill-layer",
+                                ],
+                            },
+                        ],
+                    },
+                    {
+                        "name": "Opacité du calque",
+                        "type": "opacity",
+                        "value": 100,
+                        "triggers": [
+                            {
+                                "method": "changePaintProperty",
+                                "property": "fill-opacity",
+                                "items": ["zones-artificielles-fill-layer"],
+                            },
+                        ],
+                    },
+                ],
+                "source": "zones-artificielles-source",
+            },
+            {
+                "name": "Différentiel OCS GE",
+                "z-index": 5,
+                "filters": [
+                    {
+                        "name": "Visibilité du calque",
+                        "type": "visibility",
+                        "value": "visible",
+                        "triggers": [
+                            {
+                                "method": "changeLayoutProperty",
+                                "property": "visibility",
+                                "items": [
+                                    "ocsge-diff-fill-layer",
+                                    "ocsge-diff-circle-layer",
+                                    "ocsge-diff-label-layer"
+                                ],
+                            },
+                        ],
+                    },
+                    {
+                        "name": "Opacité du calque",
+                        "type": "opacity",
+                        "value": 100,
+                        "triggers": [
+                            {
+                                "method": "changePaintProperty",
+                                "property": "fill-opacity",
+                                "items": ["ocsge-diff-fill-layer","ocsge-diff-circle-layer",
+                                    "ocsge-diff-label-layer"],
+                            },
+                        ],
+                    },
+                ],
+                "source": "ocsge-diff-source",
+            },
         ]
         return super().get_filters_list(*filters)
 
