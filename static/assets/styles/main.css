@@ -1087,7 +1087,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
     bottom: 10px;
     left: 10px;
     height: auto;
-    width: 300px;
+    width: auto;
     z-index: 1000;
     pointer-events: none;
 }
