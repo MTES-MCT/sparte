@@ -116,12 +116,27 @@ class BaseProject(models.Model):
         else:
             return None
 
-    @cached_property
     def area(self) -> float:
-        try:
-            return float(self.combined_emprise.transform(2154, clone=True).area / 10000)
-        except AttributeError:
-            return float(0)
+        """
+        The area of the combined emprise of the project in hectare.
+
+        As this value should not change after the creation of a project,
+        we cache it for an arbitrary long time.
+        """
+        cache_key = f"project/{self.id}/area"
+
+        if cache.has_key(cache_key):
+            return cache.get(cache_key)
+
+        if self.combined_emprise:
+            area = float(self.combined_emprise.transform(2154, clone=True).area / 10000)
+        else:
+            area = float(0)
+
+        ONE_MONTH = 60 * 60 * 24 * 30
+        cache.set(key=cache_key, value=area, timeout=ONE_MONTH)
+
+        return area
 
     def __str__(self):
         return self.name
