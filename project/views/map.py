@@ -405,6 +405,7 @@ class MapTestView(BaseMap):
                     "subtitle": (
                         f"Surface consommée de {self.object.analyse_start_date} à {self.object.analyse_end_date}"
                     ),
+                    "type": "scale",
                     "data": self.get_gradient_scale(),
                     "formatter": ["number", ["fr-FR", "unit", "hectare", 2]],
                 },
@@ -1172,6 +1173,20 @@ class MyArtifMapView(BaseMap):
                     ],
                     "fill-opacity": ["case", ["boolean", ["feature-state", "hover"], False], 1, 0.7],
                 },
+                "legend": {
+                    "title": "Différentiel OCS GE",
+                    "type": "raw",
+                    "data": [
+                        {
+                            "value": "Zones artificialisées",
+                            "color": "#FC4F4F",
+                        },
+                        {
+                            "value": "Zones renaturées",
+                            "color": "#43d360",
+                        }
+                    ],
+                },
                 "events": [
                     {
                         "type": "mousemove",
@@ -1362,6 +1377,7 @@ class CitySpaceConsoMapView(BaseMap):
                     "subtitle": (
                         f"Surface consommée de {self.object.analyse_start_date} à {self.object.analyse_end_date}"
                     ),
+                    "type": "scale",
                     "data": self.get_gradient_scale(),
                     "formatter": ["number", ["fr-FR", "unit", "hectare", 2]],
                 },
