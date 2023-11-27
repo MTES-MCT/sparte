@@ -268,7 +268,7 @@ class OcsgeDiffViewSet(ZoomSimplificationMixin, OptimizedMixins, DataViewSet):
 
         # /!\ order matter, check sql query to know
         return params
-    
+
     def get_sql_from(self):
         return f"from {self.queryset.model._meta.db_table} o"
 
