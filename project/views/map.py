@@ -989,7 +989,7 @@ class MyArtifMapView(BaseMap):
                     "type": "geojson",
                     "data": reverse_lazy("public_data:artificialarea-optimized"),
                     "generateId": True,  # This ensures that all features have unique IDs
-                    "tolerance": 0
+                    "tolerance": 0,
                 },
                 "query_strings": [
                     {
@@ -1057,10 +1057,11 @@ class MyArtifMapView(BaseMap):
                     "clusterRadius": 70,
                     "clusterProperties": {
                         # Keep separate sum
-                        "sumArtif": ["+", ['case', ["==", ["get", "is_new_artif"], True], ["get", "surface"], 0]],
-                        "sumRenat": ["+", ['case', ["==", ["get", "is_new_natural"], True], ["get", "surface"], 0]]
+                        "sumArtif": ["+", ["case", ["==", ["get", "is_new_artif"], True], ["get", "surface"], 0]],
+                        "sumRenat": ["+", ["case", ["==", ["get", "is_new_natural"], True], ["get", "surface"], 0]],
                     },
-                    "filter": ["any",
+                    "filter": [
+                        "any",
                         ["==", ["get", "is_new_natural"], True],
                         ["==", ["get", "is_new_artif"], True],
                     ],
@@ -1100,9 +1101,9 @@ class MyArtifMapView(BaseMap):
                             "colors": ["#FC4F4F", "#43d360"],
                             "props": ["sumArtif", "sumRenat"],
                             "formatter": ["number", ["fr-FR", "unit", "hectare", 2]],
-                        }
+                        },
                     }
-                ]
+                ],
             },
         ]
         return super().get_sources_list(*sources)
@@ -1169,7 +1170,7 @@ class MyArtifMapView(BaseMap):
                         "case",
                         ["==", ["get", "is_new_natural"], True],
                         "#43d360",
-                        "#FC4F4F", # Default color => zones is_new_artif
+                        "#FC4F4F",  # Default color => zones is_new_artif
                     ],
                     "fill-opacity": ["case", ["boolean", ["feature-state", "hover"], False], 1, 0.7],
                 },
@@ -1184,7 +1185,7 @@ class MyArtifMapView(BaseMap):
                         {
                             "value": "Zones renaturées",
                             "color": "#43d360",
-                        }
+                        },
                     ],
                 },
                 "events": [
@@ -1222,13 +1223,13 @@ class MyArtifMapView(BaseMap):
                 "source": "ocsge-diff-centroids-source",
                 "minzoom": 6,
                 "maxzoom": 14,
-                'filter': ['!=', 'cluster', True],
+                "filter": ["!=", "cluster", True],
                 "paint": {
                     "circle-color": [
                         "case",
                         ["==", ["get", "is_new_natural"], True],
                         "#43d360",
-                        "#FC4F4F", # Default color => zones is_new_artif
+                        "#FC4F4F",  # Default color => zones is_new_artif
                     ],
                     "circle-radius": 12,
                     "circle-opacity": 0.6,
@@ -1241,23 +1242,21 @@ class MyArtifMapView(BaseMap):
                 "source": "ocsge-diff-centroids-source",
                 "minzoom": 6,
                 "maxzoom": 14,
-                'filter': ['!=', 'cluster', True],
+                "filter": ["!=", "cluster", True],
                 "layout": {
                     "text-field": [
                         "concat",
                         [
                             "number-format",
                             ["get", "surface"],
-                            { "locale": "fr-FR", "unit": "hectare", "max-fraction-digits": 2 }
+                            {"locale": "fr-FR", "unit": "hectare", "max-fraction-digits": 2},
                         ],
-                        " ha"
+                        " ha",
                     ],
                     "text-font": ["Marianne Regular"],
                     "text-size": 10,
                 },
-                "paint": {
-                    "text-color": "#fff"
-                }
+                "paint": {"text-color": "#fff"},
             },
         ]
         return super().get_layers_list(*layers)
@@ -1312,7 +1311,7 @@ class MyArtifMapView(BaseMap):
                                 "items": [
                                     "ocsge-diff-fill-layer",
                                     "ocsge-diff-circle-layer",
-                                    "ocsge-diff-label-layer"
+                                    "ocsge-diff-label-layer",
                                 ],
                             },
                         ],
