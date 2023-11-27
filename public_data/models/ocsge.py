@@ -23,10 +23,7 @@ problème de performance
 from django.contrib.gis.db import models
 from django.contrib.gis.db.models.functions import Area, Intersection, Transform
 from django.core.validators import MaxValueValidator, MinValueValidator
-
-# from django.db import connection
-from django.db.models import DecimalField, Sum
-from django.db.models.functions import Coalesce
+from django.db.models import Sum
 
 from utils.db import IntersectManager
 
@@ -162,7 +159,6 @@ class ZoneConstruite(TruncateTableMixin, DataColorationMixin, models.Model):
         blank=True,
     )
     surface = models.DecimalField("surface", max_digits=15, decimal_places=4, blank=True, null=True)
-    built_density = models.DecimalField("Densité construite", max_digits=15, decimal_places=4, blank=True, null=True)
 
     objects = IntersectManager()
 
@@ -170,17 +166,3 @@ class ZoneConstruite(TruncateTableMixin, DataColorationMixin, models.Model):
         indexes = [
             models.Index(fields=["year"]),
         ]
-
-    def set_built_density(self, save=False):
-        qs = Ocsge.objects.intersect(self.mpoly)
-        qs = qs.filter(couverture="CS1.1.1.1", year=self.year)
-        qs = qs.aggregate(
-            built=Coalesce(
-                Sum("intersection_area"),
-                0,
-                output_field=DecimalField(max_digits=15, decimal_places=4),
-            )
-        )
-        self.built_density = round(qs["built"] / self.surface, 2)
-        if save:
-            self.save(update_fields=["built_density"])
