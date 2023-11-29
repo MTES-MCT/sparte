@@ -135,6 +135,7 @@ class ArtificialArea(TruncateTableMixin, DataColorationMixin, models.Model):
     )
     surface = models.DecimalField("surface", max_digits=15, decimal_places=4)
     city = models.ForeignKey("public_data.Commune", on_delete=models.CASCADE)
+    departement = models.ForeignKey("public_data.Departement", on_delete=models.PROTECT, null=True, blank=True)
 
     objects = IntersectManager()
 
