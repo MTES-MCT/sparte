@@ -33,6 +33,9 @@ html, body {
 
 {% block bodyend %}
 {% localize off %}
+{% sri_static "highcharts/js/highcharts.js" %}
+{% sri_static "highcharts/js/highcharts-more.js" %}
+{% sri_static "highcharts/js/exporting.js" %}
 
 {{ data|json_script:"data" }}
 
