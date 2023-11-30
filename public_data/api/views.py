@@ -273,19 +273,19 @@ class OcsgeDiffViewSet(ZoomSimplificationMixin, OptimizedMixins, DataViewSet):
         return f"from {self.queryset.model._meta.db_table} o"
 
     def get_sql_where(self):
-        where = "where year_new = %s and year_old = %s "
-        if "is_new_artif" in self.request.query_params and "is_new_natural" in self.request.query_params:
-            where += "and (is_new_artif = %s or is_new_natural = %s) "
-        elif "is_new_artif" in self.request.query_params:
-            where += "and is_new_artif = %s "
-        elif "is_new_natural" in self.request.query_params:
-            where += "and is_new_natural = %s "
+        and_group = ["year_new = %s", "year_old = %s"]
+        or_group = []
+        if "is_new_artif" in self.request.query_params:
+            or_group.append("is_new_artif = %s")
+        if "is_new_natural" in self.request.query_params:
+            or_group.append("is_new_natural = %s")
+        if or_group:
+            and_group.append(f"({' or '.join(or_group)})")
         if "project_id" in self.request.query_params:
-            where += (
-                "and ST_Intersects(mpoly, ("
-                "    SELECT ST_Union(mpoly) FROM project_emprise WHERE project_id = %s"
-                "))"
+            and_group.append(
+                "ST_Intersects(mpoly, (SELECT ST_Union(mpoly) FROM project_emprise WHERE project_id = %s))"
             )
+        where = f"where {' and '.join(and_group)}"
         return where
 
 
