@@ -385,6 +385,12 @@ class Epci(LandMixin, GetDataFromCeremaMixin, models.Model):
 
 
 class Commune(DataColorationMixin, LandMixin, GetDataFromCeremaMixin, models.Model):
+    class OcsgeCoverageStatusChoices(models.TextChoices):
+        COMPlETE_NOT_UNIFORM = "COMPlETE_NOT_UNIFORM", "Complète mais non uniforme"
+        COMPLETE_UNIFORM = "COMPLETE_UNIFORM", "Complète et uniforme"
+        PARTIAL = "PARTIAL", "Partielle"
+        NOT_AVAILABLE = "NOT_AVAILABLE", "Non disponible"
+
     insee = models.CharField("Code INSEE", max_length=7)
     name = models.CharField("Nom", max_length=50)
     departement = models.ForeignKey(Departement, on_delete=models.PROTECT)
@@ -409,6 +415,12 @@ class Commune(DataColorationMixin, LandMixin, GetDataFromCeremaMixin, models.Mod
         decimal_places=4,
         blank=True,
         null=True,
+    )
+    ocsge_coverage_status = models.CharField(
+        "Statut de couverture OCSGE",
+        choices=OcsgeCoverageStatusChoices.choices,
+        default=OcsgeCoverageStatusChoices.NOT_AVAILABLE,
+        max_length=50,
     )
 
     # DataColorationMixin properties that need to be set when heritating
