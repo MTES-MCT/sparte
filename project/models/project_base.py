@@ -116,6 +116,7 @@ class BaseProject(models.Model):
         else:
             return None
 
+    @property
     def area(self) -> float:
         """
         The area of the combined emprise of the project in hectare.
