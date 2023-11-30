@@ -35,7 +35,7 @@ export default class Legend {
         }
 
         this.data.map((_obj, index) => {
-            let legendText = this.getLegendText(_obj, index)
+            const legendText = this.getLegendText(_obj, index)
             let legendNode = document.createElement('div')
             legendNode.classList.add('legend-box__legend')
             legendNode.innerHTML = `<svg class="me-2" width="18" height="18" xmlns="http://www.w3.org/2000/svg" version="1.1"><rect x="0" y="0" width="18" height="18" fill="${_obj.color}"/></svg><div>${legendText}</div>`
@@ -47,7 +47,7 @@ export default class Legend {
     }
 
     getLegendText(_obj, index) {
-        var legend = {
+        const legend = {
             "raw": () => {
                 return this.formatter ? formatData(this.formatter[0], this.formatter[1], _obj.value) : _obj.value
             },

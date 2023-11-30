@@ -134,7 +134,7 @@ export default class Source {
                             
                             this.map.easeTo({
                                 center: coords,
-                                zoom: zoom
+                                zoom
                             })
                         }
                     )
