@@ -463,7 +463,9 @@ class Project(BaseProject):
     def is_artif(self):
         """Check first if departement has OCSGE millesime (to speed up process),
         secondly check if project emprise contains OCS GE data. Usefull for vendée
-        project"""
+        project
+        TODO: remove the specific rule for Gironde
+        """
         if self.cities.exclude(departement__source_id=33).filter(departement__is_artif_ready=True).exists():
             # au moins 1 département autre que la gironde avec Arcachon est artif_ready
             return True
