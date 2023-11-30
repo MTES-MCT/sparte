@@ -57,123 +57,6 @@ class AutoOcsgeDiff(AutoLoadMixin, OcsgeDiff):
         )
 
 
-# ##############
-#   ARCACHON
-# ##############
-
-
-class ArcachonOcsge(AutoLoadMixin, Ocsge):
-    class Meta:
-        proxy = True
-
-    mapping = {
-        "couverture": "couverture",
-        "usage": "usage",
-        "mpoly": "MULTIPOLYGON",
-    }
-
-    @classmethod
-    def clean_data(cls):
-        qs = cls.objects.annotate(centroid=Centroid("mpoly"))
-        qs = qs.filter(centroid__intersects=Departement.objects.get(name="Gironde").mpoly)
-        qs = qs.filter(year=cls._year)
-        qs.delete()
-
-    def save(self, *args, **kwargs):
-        self.year = self.__class__._year
-        key = (self.couverture, self.usage)
-
-        if key not in CouvertureUsageMatrix.matrix_dict():
-            self.is_artificial = False
-            return super().save(*args, **kwargs)
-
-        self.matrix = CouvertureUsageMatrix.matrix_dict()[key]
-        self.is_artificial = bool(self.matrix.is_artificial)
-
-        if self.matrix.couverture:
-            self.couverture_label = self.matrix.couverture.label
-        if self.matrix.usage:
-            self.usage_label = self.matrix.usage.label
-
-        return super().save(*args, **kwargs)
-
-    @classmethod
-    def calculate_fields(cls):
-        cls.objects.all().filter(surface__isnull=True).update(
-            surface=Cast(
-                Area(Transform("mpoly", 2154)),
-                DecimalField(max_digits=15, decimal_places=4),
-            )
-        )
-
-
-class ArcachonOcsge2015(ArcachonOcsge):
-    """
-    Données de l'OCSGE pour l'année 2015
-    Données fournies par Philippe 09/2021
-    python manage.py load_data --class public_data.models.Ocsge2015
-    """
-
-    class Meta:
-        proxy = True
-
-    shape_file_path = "OCSGE_2015.zip"
-    _year = 2015
-
-
-class ArcachonOcsge2018(ArcachonOcsge):
-    class Meta:
-        proxy = True
-
-    shape_file_path = "OCSGE_2018.zip"
-    _year = 2018
-
-
-class ArcachonArtif(AutoOcsgeDiff):
-    """
-    A_B_2015_2018 : la surface (en hectares) artificialisée entre 2015 et 2018
-    Données construites par Philippe
-    """
-
-    class Meta:
-        proxy = True
-
-    shape_file_path = "a_b_2015_2018.zip"
-    _year_new = 2018
-    _year_old = 2015
-    mapping = {
-        "surface": "Surface",
-        "cs_new": "cs_2018",
-        "us_new": "us_2018",
-        "cs_old": "cs_2015",
-        "us_old": "us_2015",
-        "mpoly": "MULTIPOLYGON",
-    }
-
-    @classmethod
-    def clean_data(cls):
-        qs = cls.objects.annotate(centroid=Centroid("mpoly"))
-        qs = qs.filter(centroid__intersects=Departement.objects.get(name="Gironde").mpoly)
-        qs = qs.filter(year_new=cls._year_new, year_old=cls._year_old)
-        qs = qs.filter(is_new_natural=False, is_new_artif=True)
-        qs.delete()
-
-
-class ArcachonRenat(ArcachonArtif):
-    class Meta:
-        proxy = True
-
-    shape_file_path = "a_b_2015_2018.zip"
-
-    @classmethod
-    def clean_data(cls):
-        qs = cls.objects.annotate(centroid=Centroid("mpoly"))
-        qs = qs.filter(centroid__intersects=Departement.objects.get(name="Gironde").mpoly)
-        qs = qs.filter(year_new=cls._year_new, year_old=cls._year_old)
-        qs = qs.filter(is_new_natural=True, is_new_artif=False)
-        qs.delete()
-
-
 # ##########
 #   GERS
 # ##########
@@ -590,11 +473,6 @@ class Command(BaseCommand):
         self.verbose = not options["no_verbose"]
 
         item_list = [
-            # BASSIN D'ARCACHON #####
-            ArcachonOcsge2018,
-            ArcachonOcsge2015,
-            ArcachonArtif,
-            ArcachonRenat,
             # GERS #####
             GersOcsge2016,
             GersOcsge2019,
