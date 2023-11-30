@@ -86,6 +86,42 @@ export default class Events {
         }
     }
 
+    showArtifInfoBox(_event, _options) {
+        if (!this.infoBoxNode)
+            this.setInfoBox()
+
+        if (_event.features.length > 0) {
+            this.infoBoxNode.innerHTML = `<div class="info-box__title"><strong>${_options.title}</strong><i class='bi bi-info-circle'></i></div>
+                <ul class="fr-badge-group">
+                    <li><p class="fr-badge fr-badge--${_event.features[0].properties['is_new_artif'] ? 'error' : 'success'} fr-badge--sm fr-badge--no-icon text-capitalize">${_event.features[0].properties['is_new_artif'] ? 'Artificialiation' : 'Renaturation'}</p></li>
+                    <li><p class="fr-badge fr-badge--blue-ecume fr-badge--sm fr-badge--no-icon text-capitalize">Surface:&nbsp;<strong>${formatData("number", ["fr-FR", "unit", "hectare", 3], _event.features[0].properties['surface'])}</strong></p></li>
+                </ul>
+                <table class="table table-striped table-sm table-borderless table-custom">
+                    <thead>
+                        <tr>
+                            <th scope="col" class="fr-text--xs">Millésime</th>
+                            <th scope="col" class="fr-text--xs">Couverture</th>
+                            <th scope="col" class="fr-text--xs">Usage</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="fr-text--xs">${_event.features[0].properties['year_old']}</td>
+                            <td class="fr-text--xs"><div class="text-truncate">${_event.features[0].properties['cs_old']}</div></td>
+                            <td class="fr-text--xs"><div class="text-truncate">${_event.features[0].properties['us_new']}</div></td>
+                        </tr>
+                        <tr>
+                            <td class="fr-text--xs">${_event.features[0].properties['year_new']}</td>
+                            <td class="fr-text--xs"><div class="text-truncate">${_event.features[0].properties['cs_new']}</div></td>
+                            <td class="fr-text--xs"><div class="text-truncate">${_event.features[0].properties['us_new']}</div></td>
+                        </tr>
+                    </tbody>
+                </table>`
+
+            this.infoBoxNode.classList.add("visible")
+        }
+    }
+
     hideInfoBox(_event) {
         this.infoBoxNode.classList.remove("visible")
     }
