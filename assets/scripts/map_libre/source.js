@@ -1,4 +1,5 @@
-import { isInRange } from './utils.js'
+import maplibregl from 'maplibre-gl';
+import { isInRange, createDonutChart } from './utils.js'
 
 export default class Source {
     constructor(_options = {}) {
@@ -9,6 +10,7 @@ export default class Source {
         this.params = _options.params
         this.baseUrl = _options.params.data
         this.queryStrings = _options.query_strings
+        this.triggers = _options.triggers
         this.minZoom = _options.min_zoom || 0
         this.maxZoom = _options.max_zoom || 19
 
@@ -28,6 +30,13 @@ export default class Source {
 
         // Create source
         this.map.addSource(this.key, this.params)
+
+        // Custom methods
+        if (this.triggers) {
+            this.triggers.forEach(_obj => {
+                this[`${_obj.method}`](_obj.options)
+            })
+        }
     }
 
     // Actions
@@ -82,5 +91,63 @@ export default class Source {
 
     isZoomAvailable() {
         return isInRange(this.getZoom(), this.minZoom, this.maxZoom)
+    }
+
+    displayDonutsChartClusters(_options) {
+        this.markers = {}
+        this.markersOnScreen = {}
+
+        this.map.on("render", () => {
+            if (!this.map.isSourceLoaded(this.key)) return
+            this.updateMarkers(_options)
+        })
+    }
+
+    updateMarkers(_options) {
+        const newMarkers = {}
+        const features = this.map.querySourceFeatures(this.key)
+
+        // for every cluster on the screen, create an HTML marker for it (if we didn't yet),
+        // and add it to the map if it's not there already
+        for (const feature of features) {
+            const coords = feature.geometry.coordinates
+            const props = feature.properties
+            if (!props.cluster) continue
+            const id = props.cluster_id
+            
+            let marker = this.markers[id]
+            if (!marker) {
+                const counts = []
+                _options.props.forEach(_obj => {
+                    counts.push(props[_obj])
+                })
+                const el = createDonutChart(_options.colors, counts, _options.formatter);
+                marker = this.markers[id] = new maplibregl.Marker({
+                    element: el
+                }).setLngLat(coords)
+
+                marker.getElement().addEventListener('click', () => {                    
+                    this.map.getSource(this.key).getClusterExpansionZoom(
+                        id,
+                        (err, zoom) => {
+                            if (err) return;
+                            
+                            this.map.easeTo({
+                                center: coords,
+                                zoom
+                            })
+                        }
+                    )
+                })
+            }
+            newMarkers[id] = marker
+            
+            if (!this.markersOnScreen[id]) marker.addTo(this.map)
+        }
+        // for every marker we've added previously, remove those that are no longer visible
+        for (const id in this.markersOnScreen) {
+            if (!newMarkers[id]) this.markersOnScreen[id].remove()
+        }
+        this.markersOnScreen = newMarkers
     }
 }
