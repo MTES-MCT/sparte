@@ -7,7 +7,7 @@
                     <p class="fr-tag">Surface du territoire:&nbsp;<strong>{{ surface|floatformat:0 }} ha</strong></p>
                 </li>
                 <li>
-                    <a href="#" class="fr-tag">Période demandée:&nbsp;<strong>De {{ project.analyse_start_date }} à {{ project.analyse_end_date }}</strong><span class="fr-icon-pencil-fill fr-icon--sm custom-tag-icon" aria-hidden="true"></span></a>
+                    <a href="#" data-fr-opened="false" aria-controls="fr-modal-update-period" class="fr-tag" hx-target="#update_period_form">Période demandée:&nbsp;<strong>De {{ project.analyse_start_date }} à {{ project.analyse_end_date }}</strong><span class="fr-icon-pencil-fill fr-icon--sm custom-tag-icon" aria-hidden="true"></span></a>
                 </li>
                 <li>
                     <p class="fr-tag">Maille d'analyse:&nbsp;<strong>{{ project.level_label }}</strong></p>
@@ -22,7 +22,7 @@
 
             <ul class="dropdown-menu w-100">
                 <li>
-                    <a id="download_diag_word_btn" class="fr-nav__link" hx-get="{% url 'project:report_download' project.pk %}" hx-target="#fr-modal__form" href="#" data-fr-opened="false" aria-controls="fr-modal-download-word">
+                    <a id="download_diag_word_btn" class="fr-nav__link" hx-get="{% url 'project:report_download' project.pk %}" hx-target="#diag_word_form" href="#" data-fr-opened="false" aria-controls="fr-modal-download-word">
                         Word
                     </a>
                 </li>
@@ -36,6 +36,27 @@
     </div>
 </div>
 
+<!-- Modal -->
+<dialog aria-labelledby="fr-modal-1-title" id="fr-modal-update-period" class="fr-modal" role="dialog" >
+    <div class="fr-container fr-container--fluid fr-container-md">
+        <div class="fr-grid-row fr-grid-row--center">
+            <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+                <div class="fr-modal__body">
+                    <div class="fr-modal__header">
+                        <button class="fr-link--close fr-link" aria-controls="fr-modal-update-period">Fermer</button>
+                    </div>
+                    <div class="fr-modal__content">
+                        <h1 id="fr-modal-1-title" class="fr-modal__title">
+                            Modifier la période du diagnostic
+                        </h1>
+                        <div id="update_period_form"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</dialog>
+
 <dialog aria-labelledby="fr-modal-2-title" id="fr-modal-download-word" class="fr-modal" role="dialog" >
     <div class="fr-container fr-container--fluid fr-container-md">
         <div class="fr-grid-row fr-grid-row--center">
@@ -48,7 +69,7 @@
                         <h1 id="fr-modal-2-title" class="fr-modal__title">
                             Recevoir le diagnostic par e-mail
                         </h1>
-                        <div id="fr-modal__form"></div>
+                        <div id="diag_word_form"></div>
                     </div>
                 </div>
             </div>
