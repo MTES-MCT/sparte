@@ -481,45 +481,23 @@ class Project(BaseProject):
         )
 
     def __ocsge_coverage_statuses(self) -> Dict[Literal["complete", "uniform", "partial", "empty"], bool]:
-        cache_key = (
-            f"project/{self.id}/ocsge_coverage_statuses/from:{self.analyse_start_date}/to:{self.analyse_end_date}"
+        related_cities_with_ocsge = self.cities.filter(
+            ocsge_coverage_status=str(Commune.OcsgeCoverageStatusChoices.AVAILABLE),
+            last_millesime__lte=self.analyse_end_date,
+            first_millesime__gte=self.analyse_start_date,
         )
 
-        if cache.has_key(key=cache_key):
-            return cache.get(key=cache_key)
-
-        complete_coverage = False
-
-        for departement in self.__related_departements:
-            """
-            Check for each departement that all cities have OCS GE data
-            for the selected millésimes.
-            """
-            ocsge_in_departement = self.__related_ocsge.filter(departement_id=departement)
-            cities_in_departement = self.cities.filter(departement_id=departement)
-
-            millesime_count = ocsge_in_departement.values("year").distinct().count()
-            ocsge_in_departement_count = ocsge_in_departement.count()
-            cities_in_departement_count = cities_in_departement.count()
-
-            if not (
-                millesime_count > 0 and (ocsge_in_departement_count == cities_in_departement_count * millesime_count)
-            ):
-                break
-        else:
-            complete_coverage = True
-
-        ocsge_count = self.__related_ocsge.count()
+        related_cities_with_ocsge_count = related_cities_with_ocsge.count()
+        all_related_cities_have_ocsge = related_cities_with_ocsge_count == self.cities.count()
+        at_least_one_related_cities_have_ocsge = related_cities_with_ocsge_count > 1
         departement_count = self.__related_departements.count()
 
         statuses = {
-            "complete": complete_coverage,
-            "uniform": complete_coverage and departement_count == 1,
-            "partial": not complete_coverage and ocsge_count > 0,
-            "empty": ocsge_count == 0,
+            "complete_uniform": all_related_cities_have_ocsge and departement_count == 1,
+            "complete_not_uniform": all_related_cities_have_ocsge and departement_count > 1,
+            "partial": not all_related_cities_have_ocsge and at_least_one_related_cities_have_ocsge,
+            "no_data": not at_least_one_related_cities_have_ocsge,
         }
-
-        cache.set(key=cache_key, value=statuses, timeout=60 * 60 * 24)
 
         return statuses
 
@@ -529,7 +507,7 @@ class Project(BaseProject):
         All cities of the project have OCS GE data
         for the selected millésimes.
         """
-        return self.__ocsge_coverage_statuses()["complete"]
+        return self.__ocsge_coverage_statuses()["complete_not_uniform"]
 
     @cached_property
     def has_uniform_ocsge_coverage(self) -> bool:
@@ -540,7 +518,7 @@ class Project(BaseProject):
         the future if two departements have the same millésimes
         available.
         """
-        return self.__ocsge_coverage_statuses()["uniform"]
+        return self.__ocsge_coverage_statuses()["complete_uniform"]
 
     @cached_property
     def has_partial_ocsge_coverage(self) -> bool:

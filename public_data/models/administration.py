@@ -386,9 +386,7 @@ class Epci(LandMixin, GetDataFromCeremaMixin, models.Model):
 
 class Commune(DataColorationMixin, LandMixin, GetDataFromCeremaMixin, models.Model):
     class OcsgeCoverageStatusChoices(models.TextChoices):
-        COMPlETE_NOT_UNIFORM = "COMPlETE_NOT_UNIFORM", "Complète mais non uniforme"
-        COMPLETE_UNIFORM = "COMPLETE_UNIFORM", "Complète et uniforme"
-        PARTIAL = "PARTIAL", "Partielle"
+        AVAILABLE = "AVAILABLE", "Disponible"
         NOT_AVAILABLE = "NOT_AVAILABLE", "Non disponible"
 
     insee = models.CharField("Code INSEE", max_length=7)
@@ -402,6 +400,12 @@ class Commune(DataColorationMixin, LandMixin, GetDataFromCeremaMixin, models.Mod
 
     # Calculated fields
     map_color = models.CharField("Couleur d'affichage", max_length=30, null=True, blank=True)
+    first_millesime = models.IntegerField(
+        "Premier millésime disponible",
+        validators=[MinValueValidator(2000), MaxValueValidator(2050)],
+        blank=True,
+        null=True,
+    )
     last_millesime = models.IntegerField(
         "Dernier millésime disponible",
         validators=[MinValueValidator(2000), MaxValueValidator(2050)],

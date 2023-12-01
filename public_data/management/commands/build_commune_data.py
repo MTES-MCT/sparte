@@ -99,27 +99,81 @@ class Command(BaseCommand):
         city = qs.first()
         self.build_data(city)
 
-    def build_data(self, city):
-        qs = Ocsge.objects.intersect(city.mpoly)
-        # find most recent millesime
-        try:
-            ocsge = qs.latest("year")
-        except Ocsge.DoesNotExist:
-            # nothing to calculate
+    def __curry_related_ocsge(self, OcsgeModel, city: Commune):
+        return OcsgeModel.objects.intersect(city.mpoly)
+
+    def __related_ocsge(self, city: Commune):
+        return self.__curry_related_ocsge(OcsgeModel=Ocsge, city=city)
+
+    def __related_ocsge_diff(self, city: Commune):
+        return self.__curry_related_ocsge(OcsgeModel=OcsgeDiff, city=city)
+
+    def __available_millesimes_in_departement(self, city: Commune):
+        return Ocsge.objects.filter(departement=city.departement).distinct("year")
+
+    def __calculate_surface_artif(self, city: Commune):
+        city.surface_artif = (
+            self.__related_ocsge(city)
+            .filter(
+                is_artificial=True,
+                year=city.last_millesime,
+            )
+            .aggregate(surface_artif=cast_sum_area("intersection_area"))["surface_artif"]
+        )
+
+    def __calculate_ocsge_coverage_status(self, city: Commune) -> None:
+        """
+        The city is considered covered by OCSGE if there is
+        as many OCS GE objects on any point of the city
+        as there are available millesimes in the departement.
+
+        We take an arbitrary point in the center of the city
+        to check this condition (city.mpoly.point_on_surface)
+        and count the number of OCS GE objects on this point.
+
+        If there are no available millesimes in the departement,
+        the city is not covered.
+        """
+        ocsge_count_in_city_center_point = (
+            self.__related_ocsge(city)
+            .filter(
+                mpoly__contains=city.mpoly.point_on_surface,
+            )
+            .count()
+        )
+
+        available_millesime_in_departement_count = self.__available_millesimes_in_departement(city).count()
+
+        has_ocge_coverage = available_millesime_in_departement_count > 0 and (
+            ocsge_count_in_city_center_point == available_millesime_in_departement_count
+        )
+
+        if has_ocge_coverage:
+            city.ocsge_coverage_status = Commune.OcsgeCoverageStatusChoices.AVAILABLE
+
+    def __calculate_ocsge_first_and_last_millesime(self, city: Commune):
+        city.last_millesime = self.__available_millesimes_in_departement(city).latest("year").year
+        city.first_millesime = self.__available_millesimes_in_departement(city).earliest("year").year
+
+    def build_data(self, city: Commune):
+        self.__calculate_ocsge_coverage_status(city)
+
+        if city.ocsge_coverage_status == Commune.OcsgeCoverageStatusChoices.NOT_AVAILABLE:
             return
-        city.last_millesime = ocsge.year
-        qs = qs.filter(year=ocsge.year, is_artificial=True)
-        result = qs.aggregate(surface_artif=cast_sum_area("intersection_area"))
-        city.surface_artif = result["surface_artif"]
+
+        self.__calculate_ocsge_first_and_last_millesime(city)
+        self.__calculate_surface_artif(city)
+
         city.save()
+
         self.build_commune_sol(city)
         self.build_commune_diff(city)
 
-    def build_commune_sol(self, city):
+    def build_commune_sol(self, city: Commune):
         # Prep data for couverture and usage in CommuneSol
         # clean data first
         CommuneSol.objects.filter(city=city).delete()
-        qs = Ocsge.objects.intersect(city.mpoly)
+        qs = self.__related_ocsge(city)
         qs = qs.exclude(matrix=None)
         qs = qs.values("matrix_id", "year")
         qs = qs.annotate(surface=cast_sum_area("intersection_area"))
@@ -127,7 +181,7 @@ class Command(BaseCommand):
 
     def build_commune_diff(self, city):
         # prep data for artif report in CommuneDiff
-        qs = OcsgeDiff.objects.intersect(city.mpoly)
+        qs = self.__related_ocsge_diff(city)
         qs = qs.values("year_old", "year_new")
         qs = qs.annotate(
             new_artif=cast_sum_area("intersection_area", filter=Q(is_new_artif=True)),
