@@ -4,13 +4,13 @@
             <h1 class="mb-3">{{ title }}</h1>
             <ul class="fr-tags-group">
                 <li>
-                    <p class="fr-tag fr-tag--sm">Surface du territoire:&nbsp;<strong>{{ surface|floatformat:0 }} ha</strong></p>
+                    <p class="fr-tag">Surface du territoire:&nbsp;<strong>{{ surface|floatformat:0 }} ha</strong></p>
                 </li>
                 <li>
-                    <p class="fr-tag fr-tag--sm">Période demandée:&nbsp;<strong>De {{ project.analyse_start_date }} à {{ project.analyse_end_date }}</strong></p>
+                    <a href="#" class="fr-tag">Période demandée:&nbsp;<strong>De {{ project.analyse_start_date }} à {{ project.analyse_end_date }}</strong><span class="fr-icon-pencil-fill fr-icon--sm custom-tag-icon" aria-hidden="true"></span></a>
                 </li>
                 <li>
-                    <p class="fr-tag fr-tag--sm">Maille d'analyse:&nbsp;<strong>{{ project.level_label }}</strong></p>
+                    <p class="fr-tag">Maille d'analyse:&nbsp;<strong>{{ project.level_label }}</strong></p>
                 </li>
             </ul>
         </div>

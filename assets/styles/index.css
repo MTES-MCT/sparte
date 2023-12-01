@@ -13,6 +13,13 @@ Header logo
 }
 
 /*
+Custom tag icon
+*/
+.custom-tag-icon {
+    margin-left: 4px;
+}
+
+/*
 Fix link icon position
 */
 .fr-breadcrumb__link::before,
