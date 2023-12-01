@@ -73,7 +73,11 @@ class GersOcsge(AutoLoadMixin, Ocsge):
         "usage": "CODE_US",
         "mpoly": "MULTIPOLYGON",
     }
-    _departement = Departement.objects.get(name="Gers")
+
+    @staticmethod
+    @property
+    def _departement() -> Departement:
+        return Departement.objects.get(name="Gers")
 
     def save(self, *args, **kwargs):
         self.departement = self._departement
@@ -135,7 +139,11 @@ class GersOcsgeDiff(AutoOcsgeDiff):
 
     _year_new = 2019
     _year_old = 2016
-    _departement = Departement.objects.get(name="Gers")
+
+    @staticmethod
+    @property
+    def _departement() -> Departement:
+        return Departement.objects.get(name="Gers")
 
     shape_file_path = "gers_diff_2016_2019.zip"
 
@@ -161,7 +169,12 @@ class GersZoneConstruite2016(AutoLoadMixin, ZoneConstruite):
         proxy = True
 
     _year = 2016
-    _departement = Departement.objects.get(name="Gers")
+
+    @staticmethod
+    @property
+    def _departement() -> Departement:
+        return Departement.objects.get(name="Gers")
+
     shape_file_path = "gers_zone_construite_2016.zip"
     mapping = {
         "id_source": "ID",
@@ -204,7 +217,11 @@ class EssonneOcsge(AutoLoadMixin, Ocsge):
         "id_source": "ID",
         "mpoly": "MULTIPOLYGON",
     }
-    _departement = Departement.objects.get(name="Essonne")
+
+    @staticmethod
+    @property
+    def _departement() -> Departement:
+        return Departement.objects.get(name="Essonne")
 
     def save(self, *args, **kwargs):
         self.year = self.__class__._year
@@ -253,7 +270,11 @@ class EssonneOcsgeZoneConstruite(AutoLoadMixin, ZoneConstruite):
     class Meta:
         proxy = True
 
-    _departement = Departement.objects.get(name="Essonne")
+    @staticmethod
+    @property
+    def _departement() -> Departement:
+        return Departement.objects.get(name="Essonne")
+
     mapping = {
         "id_source": "ID",
         "millesime": "MILLESIME",
@@ -296,7 +317,11 @@ class EssonneOcsgeDiff1821(AutoOcsgeDiff):
 
     _year_old = 2018
     _year_new = 2021
-    _departement = Departement.objects.get(name="Essonne")
+
+    @staticmethod
+    @property
+    def _departement() -> Departement:
+        return Departement.objects.get(name="Essonne")
 
     shape_file_path = "essonne_diff_2018_2021.zip"
 
@@ -327,7 +352,11 @@ class SeineEtMarneOcsge(AutoLoadMixin, Ocsge):
         "usage": "USAGE",
         "mpoly": "MULTIPOLYGON",
     }
-    _departement = Departement.objects.get(name="Seine-et-Marne")
+
+    @staticmethod
+    @property
+    def _departement() -> Departement:
+        return Departement.objects.get(name="Seine-et-Marne")
 
     def save(self, *args, **kwargs):
         self.year = self.__class__._year
@@ -380,7 +409,11 @@ class SeineEtMarneOcsgeZoneConstruite(AutoLoadMixin, ZoneConstruite):
         "id_source": "OBJECTID",
         "mpoly": "MULTIPOLYGON",
     }
-    _departement = Departement.objects.get(name="Seine-et-Marne")
+
+    @staticmethod
+    @property
+    def _departement() -> Departement:
+        return Departement.objects.get(name="Seine-et-Marne")
 
     @staticmethod
     def prepare_shapefile(shape_file_path: Path):
@@ -425,7 +458,11 @@ class SeineEtMarneOcsgeDiff1721(AutoOcsgeDiff):
 
     _year_old = 2017
     _year_new = 2021
-    _departement = Departement.objects.get(name="Seine-et-Marne")
+
+    @staticmethod
+    @property
+    def _departement() -> Departement:
+        return Departement.objects.get(name="Seine-et-Marne")
 
     shape_file_path = "seine_et_marne_diff_2017_2021.zip"
 
