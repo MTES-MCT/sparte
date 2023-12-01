@@ -8,7 +8,7 @@ import pandas as pd
 from django.conf import settings
 from django.contrib.gis.db import models as gis_models
 from django.contrib.gis.db.models import Extent, Union
-from django.contrib.gis.db.models.functions import Area, Centroid, PointOnSurface
+from django.contrib.gis.db.models.functions import Area, Centroid
 from django.contrib.gis.geos import MultiPolygon, Polygon
 from django.core.cache import cache
 from django.core.validators import MaxValueValidator, MinValueValidator
@@ -463,23 +463,6 @@ class Project(BaseProject):
     def __related_departements(self):
         return self.cities.values_list("departement_id", flat=True).distinct().all()
 
-    @cached_property
-    def __related_ocsge(self):
-        """
-        Related OCS GE data for all cities of the project
-        for the selected years.
-        """
-        city_centers_collection = self.cities.annotate(center=PointOnSurface("mpoly")).aggregate(Union("center"))[
-            "center__union"
-        ]
-
-        return Ocsge.objects.filter(
-            departement__in=self.__related_departements,
-            year__gte=self.analyse_start_date,
-            year__lte=self.analyse_end_date,
-            mpoly__intersects=city_centers_collection,
-        )
-
     def __ocsge_coverage_statuses(
         self,
     ) -> Dict[Literal["complete_uniform", "complete_not_uniform", "partial", "no_data"], bool]:
@@ -498,14 +481,12 @@ class Project(BaseProject):
         at_least_one_related_cities_have_ocsge = related_cities_with_ocsge_count > 1
         departement_count = self.__related_departements.count()
 
-        statuses = {
+        return {
             "complete_uniform": all_related_cities_have_ocsge and departement_count == 1,
             "complete_not_uniform": all_related_cities_have_ocsge and departement_count > 1,
             "partial": not all_related_cities_have_ocsge and at_least_one_related_cities_have_ocsge,
             "no_data": not at_least_one_related_cities_have_ocsge,
         }
-
-        return statuses
 
     @cached_property
     def has_complete_ocsge_coverage(self) -> bool:
