@@ -136,6 +136,17 @@ class ProjectUpdateView(GroupMixin, UpdateView):
         return redirect("project:splash", pk=self.object.id)
 
 
+class SetProjectPeriodView(ProjectUpdateView):
+    template_name = "project/partials/report_set_period.html"
+    
+    class Meta:
+        model = Project
+        fields = [
+            "analyse_start_date",
+            "analyse_end_date",
+        ]
+
+        
 class ProjectDeleteView(GroupMixin, LoginRequiredMixin, DeleteView):
     model = Project
     template_name = "project/delete.html"

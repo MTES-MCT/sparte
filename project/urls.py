@@ -31,6 +31,11 @@ urlpatterns = [
         views.ProjectRemoveLookALike.as_view(),
         name="rm-lookalike",
     ),
+    path(
+        "<int:pk>/set-period",
+        views.SetProjectPeriodView.as_view(),
+        name="set-period",
+    ),
     # REPORT
     path(
         "<int:pk>/tableau-de-bord/consommation",
