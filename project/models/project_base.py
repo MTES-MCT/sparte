@@ -480,7 +480,13 @@ class Project(BaseProject):
             mpoly__intersects=city_centers_collection,
         )
 
-    def __ocsge_coverage_statuses(self) -> Dict[Literal["complete", "uniform", "partial", "empty"], bool]:
+    def __ocsge_coverage_statuses(
+        self,
+    ) -> Dict[Literal["complete_uniform", "complete_not_uniform", "partial", "no_data"], bool]:
+        """
+        This method is private, refer to the following properties
+        for more information about the returned statuses.
+        """
         related_cities_with_ocsge = self.cities.filter(
             ocsge_coverage_status=Commune.OcsgeCoverageStatusChoices.AVAILABLE,
             last_millesime__lte=self.analyse_end_date,
@@ -533,7 +539,7 @@ class Project(BaseProject):
         """
         No OCS GE data for the selected millésimes.
         """
-        return self.__ocsge_coverage_statuses()["empty"]
+        return self.__ocsge_coverage_statuses()["no_data"]
 
     def get_ocsge_millesimes(self):
         """Return all OCS GE millésimes available within project cities and between
