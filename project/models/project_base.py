@@ -482,7 +482,7 @@ class Project(BaseProject):
 
     def __ocsge_coverage_statuses(self) -> Dict[Literal["complete", "uniform", "partial", "empty"], bool]:
         related_cities_with_ocsge = self.cities.filter(
-            ocsge_coverage_status=str(Commune.OcsgeCoverageStatusChoices.AVAILABLE),
+            ocsge_coverage_status=Commune.OcsgeCoverageStatusChoices.AVAILABLE,
             last_millesime__lte=self.analyse_end_date,
             first_millesime__gte=self.analyse_start_date,
         )
