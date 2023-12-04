@@ -122,8 +122,8 @@ class ProjectUpdateView(GroupMixin, UpdateView):
 
         self.object = form.save()
         celery.chain(
-            # check that ocsge period is still between project period
             tasks.find_first_and_last_ocsge.si(self.object.id),
+            tasks.calculate_project_ocsge_status.si(self.object.id),
             celery.group(
                 tasks.generate_theme_map_conso.si(self.object.id),
                 tasks.generate_theme_map_artif.si(self.object.id),
@@ -131,13 +131,7 @@ class ProjectUpdateView(GroupMixin, UpdateView):
             ),
             async_create_stat_for_project.si(self.object.id, do_location=False),
         ).apply_async()
-        return HttpResponseRedirect(self.get_success_url())
-
-    def get_success_url(self):
-        if "next" in self.request.GET:
-            if self.request.GET["next"] == "report-target-2031":
-                return reverse_lazy("project:report_target_2031", kwargs=self.kwargs)
-        return reverse_lazy("project:update", kwargs=self.kwargs)
+        return redirect("project:splash", pk=self.object.id)
 
 
 class ProjectDeleteView(GroupMixin, LoginRequiredMixin, DeleteView):
