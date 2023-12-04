@@ -182,6 +182,34 @@ class CityGroup:
 
 
 class Project(BaseProject):
+    class OcsgeCoverageStatus(models.TextChoices):
+        COMPLETE_UNIFORM = "COMPLETE_UNIFORM", "Complet et uniforme"
+        """
+        All cities of the project have OCS GE data for the selected millésimes,
+        and the cities spreads over only one departement. This definition could
+        evolve in the future if two departements have the same millésimes
+        available, and the code allow for that verification.
+        """
+
+        COMPLETE_NOT_UNIFORM = "COMPLETE_NOT_UNIFORM", "Complet mais non uniforme"
+        """
+        All cities of the project have OCS GE data for the selected millésimes
+        but the cities spreads over more than one departement.
+        """
+
+        PARTIAL = "PARTIAL", "Partiel"
+        """
+        At least one city of the project have OCS GE data for the selected
+        millésimes.
+        """
+
+        NO_DATA = "NO_DATA", "Aucune donnée"
+        """
+        0 city of the project have OCS GE data for the selected millésimes.
+        """
+
+        UNDEFINED = "UNDEFINED", "Non défini"
+
     ANALYZE_YEARS = [(str(y), str(y)) for y in range(2009, 2022)]
     LEVEL_CHOICES = AdminRef.CHOICES
 
@@ -368,6 +396,13 @@ class Project(BaseProject):
         storage=PublicMediaStorage(),
     )
 
+    ocsge_coverage_status = models.CharField(
+        "Statut de la couverture OCS GE",
+        max_length=20,
+        choices=OcsgeCoverageStatus.choices,
+        default=OcsgeCoverageStatus.UNDEFINED,
+    )
+
     async_add_city_done = models.BooleanField(default=False)
     async_set_combined_emprise_done = models.BooleanField(default=False)
     async_cover_image_done = models.BooleanField(default=False)
@@ -378,6 +413,7 @@ class Project(BaseProject):
     async_theme_map_understand_artif_done = models.BooleanField(default=False)
     async_theme_map_gpu_done = models.BooleanField(default=False)
     async_theme_map_fill_gpu_done = models.BooleanField(default=False)
+    async_ocsge_coverage_status_done = models.BooleanField(default=False)
 
     history = HistoricalRecords()
 
@@ -388,6 +424,7 @@ class Project(BaseProject):
             & self.async_set_combined_emprise_done
             & self.async_cover_image_done
             & self.async_find_first_and_last_ocsge_done
+            & self.async_ocsge_coverage_status_done
             & self.async_add_neighboors_done
             & self.async_generate_theme_map_conso_done
             & self.async_generate_theme_map_artif_done
@@ -463,13 +500,7 @@ class Project(BaseProject):
     def __related_departements(self):
         return self.cities.values_list("departement_id", flat=True).distinct().all()
 
-    def __ocsge_coverage_statuses(
-        self,
-    ) -> Dict[Literal["complete_uniform", "complete_not_uniform", "partial", "no_data"], bool]:
-        """
-        This method is private, refer to the following properties
-        for more information about the returned statuses.
-        """
+    def get_ocsge_coverage_status(self) -> OcsgeCoverageStatus:
         related_cities_with_ocsge = self.cities.filter(
             ocsge_coverage_status=Commune.OcsgeCoverageStatusChoices.AVAILABLE,
             last_millesime__lte=self.analyse_end_date,
@@ -481,46 +512,19 @@ class Project(BaseProject):
         at_least_one_related_cities_have_ocsge = related_cities_with_ocsge_count > 1
         departement_count = self.__related_departements.count()
 
-        return {
-            "complete_uniform": all_related_cities_have_ocsge and departement_count == 1,
-            "complete_not_uniform": all_related_cities_have_ocsge and departement_count > 1,
-            "partial": not all_related_cities_have_ocsge and at_least_one_related_cities_have_ocsge,
-            "no_data": not at_least_one_related_cities_have_ocsge,
-        }
+        if all_related_cities_have_ocsge and departement_count == 1:
+            return self.OcsgeCoverageStatus.COMPLETE_UNIFORM
 
-    @cached_property
-    def has_complete_ocsge_coverage(self) -> bool:
-        """
-        All cities of the project have OCS GE data
-        for the selected millésimes.
-        """
-        return self.__ocsge_coverage_statuses()["complete_not_uniform"]
+        if all_related_cities_have_ocsge and departement_count > 1:
+            return self.OcsgeCoverageStatus.COMPLETE_NOT_UNIFORM
 
-    @cached_property
-    def has_uniform_ocsge_coverage(self) -> bool:
-        """
-        All cities of the project have OCS GE data
-        for the selected millésimes, and the cities spreads over
-        only one departement. This definition could evolve in
-        the future if two departements have the same millésimes
-        available.
-        """
-        return self.__ocsge_coverage_statuses()["complete_uniform"]
+        if not all_related_cities_have_ocsge and at_least_one_related_cities_have_ocsge:
+            return self.OcsgeCoverageStatus.PARTIAL
 
-    @cached_property
-    def has_partial_ocsge_coverage(self) -> bool:
-        """
-        At least one city of the project have OCS GE data
-        for the selected millésimes.
-        """
-        return self.__ocsge_coverage_statuses()["partial"]
+        if not at_least_one_related_cities_have_ocsge:
+            return self.OcsgeCoverageStatus.NO_DATA
 
-    @cached_property
-    def has_empty_ocsge_coverage(self) -> bool:
-        """
-        No OCS GE data for the selected millésimes.
-        """
-        return self.__ocsge_coverage_statuses()["no_data"]
+        return self.OcsgeCoverageStatus.UNDEFINED
 
     def get_ocsge_millesimes(self):
         """Return all OCS GE millésimes available within project cities and between

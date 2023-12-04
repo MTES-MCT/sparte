@@ -213,7 +213,7 @@ class ProjectReportDicoverOcsgeView(ProjectReportBaseView):
             "active_page": "discover",
         }
 
-        if not project.has_uniform_ocsge_coverage:
+        if not project.ocsge_coverage_status == project.OcsgeCoverageStatus.COMPLETE_UNIFORM:
             return super().get_context_data(**kwargs)
 
         kwargs.update(
@@ -307,7 +307,7 @@ class ProjectReportArtifView(ProjectReportBaseView):
             "total_surface": total_surface,
         }
 
-        if not project.has_uniform_ocsge_coverage:
+        if not project.ocsge_coverage_status == project.OcsgeCoverageStatus.COMPLETE_UNIFORM:
             return super().get_context_data(**kwargs)
 
         first_millesime = project.first_year_ocsge
