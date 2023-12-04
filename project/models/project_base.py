@@ -502,7 +502,7 @@ class Project(BaseProject):
 
     def get_ocsge_coverage_status(self) -> OcsgeCoverageStatus:
         related_cities_with_ocsge = self.cities.filter(
-            ocsge_coverage_status=Commune.OcsgeCoverageStatusChoices.AVAILABLE,
+            ocsge_available=True,
             last_millesime__lte=self.analyse_end_date,
             first_millesime__gte=self.analyse_start_date,
         )

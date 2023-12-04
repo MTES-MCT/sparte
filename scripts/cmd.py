@@ -278,6 +278,7 @@ def mep_ocsge_440(ctx):
 
     connecter.manage_py("remove_ocsge_data_gironde")
     connecter.manage_py("set_gers_departement_to_ocsge_objects")
+    connecter.manage_py("build_commune_data --departement Gers --verbose")
 
     connecter.manage_py("load_ocsge --item SeineEtMarneOcsge2017")
     connecter.manage_py("load_ocsge --item SeineEtMarneOcsge2021")

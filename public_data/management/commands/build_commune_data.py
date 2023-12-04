@@ -121,7 +121,7 @@ class Command(BaseCommand):
             .aggregate(surface_artif=cast_sum_area("intersection_area"))["surface_artif"]
         )
 
-    def __calculate_ocsge_coverage_status(self, city: Commune) -> None:
+    def __calculate_ocsge_availability(self, city: Commune) -> None:
         """
         The city is considered covered by OCSGE if there is
         as many OCS GE objects on any point of the city
@@ -149,16 +149,16 @@ class Command(BaseCommand):
         )
 
         if has_ocge_coverage:
-            city.ocsge_coverage_status = Commune.OcsgeCoverageStatusChoices.AVAILABLE
+            city.ocsge_available = True
 
     def __calculate_ocsge_first_and_last_millesime(self, city: Commune):
         city.last_millesime = self.__available_millesimes_in_departement(city).latest("year").year
         city.first_millesime = self.__available_millesimes_in_departement(city).earliest("year").year
 
     def build_data(self, city: Commune):
-        self.__calculate_ocsge_coverage_status(city)
+        self.__calculate_ocsge_availability(city)
 
-        if city.ocsge_coverage_status == Commune.OcsgeCoverageStatusChoices.NOT_AVAILABLE:
+        if not city.ocsge_available:
             return
 
         self.__calculate_ocsge_first_and_last_millesime(city)
