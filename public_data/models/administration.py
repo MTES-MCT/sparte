@@ -314,13 +314,6 @@ class Scot(LandMixin, GetDataFromCeremaMixin, models.Model):
     land_type = AdminRef.SCOT
     default_analysis_level = AdminRef.EPCI
 
-    # def get_ocsge_millesimes(self) -> set:
-    #     """Return the list of all OCSGE millesimes (years) available for this dept."""
-    #     if not self.ocsge_millesimes:
-    #         return list()
-    #     matches = re.finditer(r"([\d]{4,4})", self.ocsge_millesimes)
-    #     return {int(m.group(0)) for m in matches}
-
     def get_qs_cerema(self):
         return Cerema.objects.filter(city_insee__in=self.commune_set.values("insee"))
 
