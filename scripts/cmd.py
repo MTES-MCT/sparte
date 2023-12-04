@@ -274,6 +274,7 @@ def mep_260(ctx):
 @cli.command()
 @click.pass_context
 def mep_ocsge_440(ctx):
+    # TODO: remove this command once it has run on staging and production
     connecter = ScalingoInterface(ctx.obj)
 
     connecter.manage_py("remove_ocsge_data_gironde")
