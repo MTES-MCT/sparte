@@ -518,7 +518,7 @@ class Project(BaseProject):
         if all_related_cities_have_ocsge and departement_count > 1:
             return self.OcsgeCoverageStatus.COMPLETE_NOT_UNIFORM
 
-        if not all_related_cities_have_ocsge and at_least_one_related_cities_have_ocsge:
+        if at_least_one_related_cities_have_ocsge:
             return self.OcsgeCoverageStatus.PARTIAL
 
         if not at_least_one_related_cities_have_ocsge:
