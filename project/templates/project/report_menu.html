@@ -12,15 +12,15 @@
             </li>
             <li
                 class="fr-nav__item"
-                {% if project.ocsge_coverage_status != 'COMPLETE_UNIFORM'%}
+                {% if not project.has_complete_uniform_ocsge_coverage %}
                     data-toggle="tooltip"
                     title="L'OCS GE (données d'artificialisation) n'est pas disponible pour ce territoire."
                     aria-hidden="true"
                 {% endif %}
             >
                 <a
-                    class="fr-nav__link {% if project.ocsge_coverage_status != 'COMPLETE_UNIFORM' %} disabled {% endif %}"
-                    {% if project.ocsge_coverage_status != 'COMPLETE_UNIFORM' %}
+                    class="fr-nav__link {% if not project.has_complete_uniform_ocsge_coverage %} disabled {% endif %}"
+                    {% if not project.has_complete_uniform_ocsge_coverage %}
                         role="link"
                         aria-disabled="true"
                     {% else %}
@@ -35,15 +35,15 @@
             </li>
             <li
                 class="fr-nav__item"
-                {% if project.ocsge_coverage_status != 'COMPLETE_UNIFORM'%}
+                {% if not project.has_complete_uniform_ocsge_coverage%}
                     data-toggle="tooltip"
                     title="L'OCS GE (données d'artificialisation) n'est pas disponible pour ce territoire."
                     aria-hidden="true"
                 {% endif %}
             >
                 <a
-                    class="fr-nav__link {% if project.ocsge_coverage_status != 'COMPLETE_UNIFORM'%} disabled {% endif %}"
-                    {% if project.ocsge_coverage_status != 'COMPLETE_UNIFORM' %}
+                    class="fr-nav__link {% if not project.has_complete_uniform_ocsge_coverage %} disabled {% endif %}"
+                    {% if not project.has_complete_uniform_ocsge_coverage %}
                         role="link" aria-disabled="true"
                     {% else %}
                         href="{% url 'project:report_discover' project.pk %}"
@@ -57,15 +57,15 @@
             </li>
             <li
                 class="fr-nav__item"
-                {% if project.ocsge_coverage_status != 'COMPLETE_UNIFORM' %}
+                {% if not project.has_complete_uniform_ocsge_coverage %}
                     data-toggle="tooltip"
                     title="L'OCS GE (données d'artificialisation) n'est pas disponible pour ce territoire."
                     aria-hidden="true"
                 {% endif %}
             >
                 <a
-                    class="fr-nav__link {% if project.ocsge_coverage_status != 'COMPLETE_UNIFORM' %} disabled{% endif %}"
-                    {% if project.ocsge_coverage_status != 'COMPLETE_UNIFORM' %}
+                    class="fr-nav__link {% if not project.has_complete_uniform_ocsge_coverage %} disabled{% endif %}"
+                    {% if not project.has_complete_uniform_ocsge_coverage %}
                         role="link"
                         aria-disabled="true"
                     {% else %}

@@ -45,7 +45,7 @@ Mes diagnostics
                                     <li>
                                         <p class="fr-tag fr-tag--sm">Maille d'analyse:&nbsp;<strong>{{ project.level_label }}</strong></p>
                                     </li>
-                                    {% if project.ocsge_coverage_status == 'COMPLETE_UNIFORM' %}
+                                    {% if project.has_complete_uniform_ocsge_coverage %}
                                     <li>
                                         <p class="fr-tag fr-tag--sm fr-tag--success"><strong>OCS GE</strong><span class="fr-icon-success-fill fr-icon--sm fr-ml-1v" aria-hidden="true"></span></p>
                                     </li>

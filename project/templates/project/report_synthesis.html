@@ -112,7 +112,7 @@ Synthèse
         </div>
       </div>
 
-      {% if diagnostic.ocsge_coverage_status == "COMPLETE_UNIFORM" %}
+      {% if diagnostic.has_complete_uniform_ocsge_coverage %}
       <div class="fr-mt-12w">
         <h2>Artificialisation</h2>
         <h4>Bilan de l'artificialisation nette entre {{ diagnostic.analyse_start_date }} et {{ diagnostic.analyse_end_date }}</h4>

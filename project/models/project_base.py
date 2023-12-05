@@ -523,6 +523,22 @@ class Project(BaseProject):
 
         return self.OcsgeCoverageStatus.NO_DATA
 
+    @cached_property
+    def has_complete_uniform_ocsge_coverage(self) -> bool:
+        return self.ocsge_coverage_status == self.OcsgeCoverageStatus.COMPLETE_UNIFORM
+
+    @cached_property
+    def has_complete_not_uniform_ocsge_coverage(self) -> bool:
+        return self.ocsge_coverage_status == self.OcsgeCoverageStatus.COMPLETE_NOT_UNIFORM
+
+    @cached_property
+    def has_partial_ocsge_coverage(self) -> bool:
+        return self.ocsge_coverage_status == self.OcsgeCoverageStatus.PARTIAL
+
+    @cached_property
+    def has_no_ocsge_coverage(self) -> bool:
+        return self.ocsge_coverage_status == self.OcsgeCoverageStatus.NO_DATA
+
     def get_ocsge_millesimes(self):
         """Return all OCS GE millésimes available within project cities and between
         project analyse ztart and end date"""
