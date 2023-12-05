@@ -1,0 +1,14 @@
+<div id="target-artif-cities-map" class="border theme-map-image-container h-100 fr-p-2w d-flex flex-column align-items-center justify-content-between">
+    <div class="d-flex justify-content-end align-items-center w-100 fr-mb-2w">
+        <a href="{% url 'project:theme-city-artif' project.pk %}" target="_blank">
+            <button class="fr-btn fr-icon-external-link-line fr-btn--tertiary fr-btn--sm"></button>
+        </a>
+    </div>
+    <p class="fw-bold">Carte artificialisation des communes du territoire sur la période (en Ha)</p>
+    {% if project.theme_map_artif %}
+    <img src="{{ project.theme_map_artif.url }}" alt="Carte artificialisation des communes du territoire sur la période (en Ha)">
+    {% else %}
+    <div class="skeleton-loader" hx-get="{% url 'project:artif-cities-map' diagnostic.id %}" hx-trigger="load delay:10s" hx-target="#target-artif-cities-map" hx-swap="outerHTML">
+    </div>
+    {% endif %}
+</div>
