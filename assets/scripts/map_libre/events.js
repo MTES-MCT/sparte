@@ -108,7 +108,7 @@ export default class Events {
                         <tr>
                             <td class="fr-text--xs">${_event.features[0].properties['year_old']}</td>
                             <td class="fr-text--xs"><div class="text-truncate">${_event.features[0].properties['cs_old']}</div></td>
-                            <td class="fr-text--xs"><div class="text-truncate">${_event.features[0].properties['us_new']}</div></td>
+                            <td class="fr-text--xs"><div class="text-truncate">${_event.features[0].properties['us_old']}</div></td>
                         </tr>
                         <tr>
                             <td class="fr-text--xs">${_event.features[0].properties['year_new']}</td>
