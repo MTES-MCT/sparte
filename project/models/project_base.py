@@ -521,10 +521,7 @@ class Project(BaseProject):
         if at_least_one_related_cities_have_ocsge:
             return self.OcsgeCoverageStatus.PARTIAL
 
-        if not at_least_one_related_cities_have_ocsge:
-            return self.OcsgeCoverageStatus.NO_DATA
-
-        return self.OcsgeCoverageStatus.UNDEFINED
+        return self.OcsgeCoverageStatus.NO_DATA
 
     def get_ocsge_millesimes(self):
         """Return all OCS GE millésimes available within project cities and between
