@@ -48,15 +48,7 @@ Synthèse
         </button>
       </div>
 
-      {% if not ocsge_available %}
-      <div class="fr-notice fr-notice--info">
-        <div class="fr-container">
-          <div class="fr-notice__body">
-            <p class="fr-notice__title">Les données OCS GE ne sont pas encore disponibles sur ce territoire, vous n'avez donc pas accès aux informations relatives à l'artificialisation, l'usage et la couverture.</p>
-          </div>
-        </div>
-      </div>
-      {% endif %}
+      {% include "project/partials/ocsge_status.html" %}
 
       <div class="fr-mt-7w">
         <h2>Trajectoires</h2>
@@ -120,7 +112,7 @@ Synthèse
         </div>
       </div>
 
-      {% if ocsge_available %}
+      {% if diagnostic.has_complete_uniform_ocsge_coverage %}
       <div class="fr-mt-12w">
         <h2>Artificialisation</h2>
         <h4>Bilan de l'artificialisation nette entre {{ diagnostic.analyse_start_date }} et {{ diagnostic.analyse_end_date }}</h4>

@@ -247,7 +247,7 @@ class Renderer:
             ),
         }
 
-        if diagnostic.is_artif:
+        if diagnostic.ocsge_coverage_status == diagnostic.OcsgeCoverageStatus.COMPLETE_UNIFORM:
             context.update(
                 {
                     "ocsge_is_available": True,

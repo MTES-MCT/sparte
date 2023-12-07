@@ -116,12 +116,28 @@ class BaseProject(models.Model):
         else:
             return None
 
-    @cached_property
+    @property
     def area(self) -> float:
-        try:
-            return float(self.combined_emprise.transform(2154, clone=True).area / 10000)
-        except AttributeError:
-            return float(0)
+        """
+        The area of the combined emprise of the project in hectare.
+
+        As this value should not change after the creation of a project,
+        we cache it for an arbitrary long time.
+        """
+        cache_key = f"project/{self.id}/area"
+
+        if cache.has_key(cache_key):
+            return cache.get(cache_key)
+
+        if self.combined_emprise:
+            area = float(self.combined_emprise.transform(2154, clone=True).area / 10000)
+        else:
+            area = float(0)
+
+        ONE_MONTH = 60 * 60 * 24 * 30
+        cache.set(key=cache_key, value=area, timeout=ONE_MONTH)
+
+        return area
 
     def __str__(self):
         return self.name
@@ -166,6 +182,34 @@ class CityGroup:
 
 
 class Project(BaseProject):
+    class OcsgeCoverageStatus(models.TextChoices):
+        COMPLETE_UNIFORM = "COMPLETE_UNIFORM", "Complet et uniforme"
+        """
+        All cities of the project have OCS GE data for the selected millésimes,
+        and the cities spreads over only one departement. This definition could
+        evolve in the future if two departements have the same millésimes
+        available, and the code allow for that verification.
+        """
+
+        COMPLETE_NOT_UNIFORM = "COMPLETE_NOT_UNIFORM", "Complet mais non uniforme"
+        """
+        All cities of the project have OCS GE data for the selected millésimes
+        but the cities spreads over more than one departement.
+        """
+
+        PARTIAL = "PARTIAL", "Partiel"
+        """
+        At least one city of the project have OCS GE data for the selected
+        millésimes.
+        """
+
+        NO_DATA = "NO_DATA", "Aucune donnée"
+        """
+        0 city of the project have OCS GE data for the selected millésimes.
+        """
+
+        UNDEFINED = "UNDEFINED", "Non défini"
+
     ANALYZE_YEARS = [(str(y), str(y)) for y in range(2009, 2022)]
     LEVEL_CHOICES = AdminRef.CHOICES
 
@@ -352,6 +396,13 @@ class Project(BaseProject):
         storage=PublicMediaStorage(),
     )
 
+    ocsge_coverage_status = models.CharField(
+        "Statut de la couverture OCS GE",
+        max_length=20,
+        choices=OcsgeCoverageStatus.choices,
+        default=OcsgeCoverageStatus.UNDEFINED,
+    )
+
     async_add_city_done = models.BooleanField(default=False)
     async_set_combined_emprise_done = models.BooleanField(default=False)
     async_cover_image_done = models.BooleanField(default=False)
@@ -362,6 +413,7 @@ class Project(BaseProject):
     async_theme_map_understand_artif_done = models.BooleanField(default=False)
     async_theme_map_gpu_done = models.BooleanField(default=False)
     async_theme_map_fill_gpu_done = models.BooleanField(default=False)
+    async_ocsge_coverage_status_done = models.BooleanField(default=False)
 
     history = HistoricalRecords()
 
@@ -372,6 +424,7 @@ class Project(BaseProject):
             & self.async_set_combined_emprise_done
             & self.async_cover_image_done
             & self.async_find_first_and_last_ocsge_done
+            & self.async_ocsge_coverage_status_done
             & self.async_add_neighboors_done
             & self.async_generate_theme_map_conso_done
             & self.async_generate_theme_map_artif_done
@@ -444,20 +497,47 @@ class Project(BaseProject):
         return self.folder_name
 
     @cached_property
-    def is_artif(self):
-        """Check first if departement has OCSGE millesime (to speed up process),
-        secondly check if project emprise contains OCS GE data. Usefull for vendée
-        project"""
-        if self.cities.exclude(departement__source_id=33).filter(departement__is_artif_ready=True).exists():
-            # au moins 1 département autre que la gironde avec Arcachon est artif_ready
-            return True
-        elif self.cities.filter(departement__source_id=33).exists():
-            # on a une ville du département de gironde, alors on vérifie si on est sur la couche de données d'arcachon
-            geom = self.combined_emprise
-            if geom:
-                return Ocsge.objects.filter(mpoly__intersects=geom).exists()
-        # dans tous les autres cas il n'y a pas d'OCS GE
-        return False
+    def __related_departements(self):
+        return self.cities.values_list("departement_id", flat=True).distinct().all()
+
+    def get_ocsge_coverage_status(self) -> OcsgeCoverageStatus:
+        related_cities_with_ocsge = self.cities.filter(
+            ocsge_available=True,
+            last_millesime__lte=self.analyse_end_date,
+            first_millesime__gte=self.analyse_start_date,
+        )
+
+        related_cities_with_ocsge_count = related_cities_with_ocsge.count()
+        all_related_cities_have_ocsge = related_cities_with_ocsge_count == self.cities.count()
+        at_least_one_related_cities_have_ocsge = related_cities_with_ocsge_count > 1
+        departement_count = self.__related_departements.count()
+
+        if all_related_cities_have_ocsge and departement_count == 1:
+            return self.OcsgeCoverageStatus.COMPLETE_UNIFORM
+
+        if all_related_cities_have_ocsge and departement_count > 1:
+            return self.OcsgeCoverageStatus.COMPLETE_NOT_UNIFORM
+
+        if at_least_one_related_cities_have_ocsge:
+            return self.OcsgeCoverageStatus.PARTIAL
+
+        return self.OcsgeCoverageStatus.NO_DATA
+
+    @cached_property
+    def has_complete_uniform_ocsge_coverage(self) -> bool:
+        return self.ocsge_coverage_status == self.OcsgeCoverageStatus.COMPLETE_UNIFORM
+
+    @cached_property
+    def has_complete_not_uniform_ocsge_coverage(self) -> bool:
+        return self.ocsge_coverage_status == self.OcsgeCoverageStatus.COMPLETE_NOT_UNIFORM
+
+    @cached_property
+    def has_partial_ocsge_coverage(self) -> bool:
+        return self.ocsge_coverage_status == self.OcsgeCoverageStatus.PARTIAL
+
+    @cached_property
+    def has_no_ocsge_coverage(self) -> bool:
+        return self.ocsge_coverage_status == self.OcsgeCoverageStatus.NO_DATA
 
     def get_ocsge_millesimes(self):
         """Return all OCS GE millésimes available within project cities and between
@@ -857,19 +937,18 @@ class Project(BaseProject):
         return result["center"]
 
     def get_available_millesimes(self, commit=False):
-        if not self.available_millesimes:
-            self.available_millesimes = ",".join(
-                str(y)
-                for y in (
-                    Ocsge.objects.intersect(self.combined_emprise)
-                    .filter(year__gte=self.analyse_start_date, year__lte=self.analyse_end_date)
-                    .order_by("year")
-                    .distinct()
-                    .values_list("year", flat=True)
-                )
+        self.available_millesimes = ",".join(
+            str(y)
+            for y in (
+                Ocsge.objects.intersect(self.combined_emprise)
+                .filter(year__gte=self.analyse_start_date, year__lte=self.analyse_end_date)
+                .order_by("year")
+                .distinct()
+                .values_list("year", flat=True)
             )
-            if commit:
-                self.save(update_fields=["available_millesimes"])
+        )
+        if commit:
+            self.save(update_fields=["available_millesimes"])
         return [int(y) for y in self.available_millesimes.split(",") if y]
 
     def get_first_last_millesime(self):

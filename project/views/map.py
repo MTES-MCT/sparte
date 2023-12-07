@@ -405,6 +405,7 @@ class MapTestView(BaseMap):
                     "subtitle": (
                         f"Surface consommée de {self.object.analyse_start_date} à {self.object.analyse_end_date}"
                     ),
+                    "type": "scale",
                     "data": self.get_gradient_scale(),
                     "formatter": ["number", ["fr-FR", "unit", "hectare", 2]],
                 },
@@ -510,6 +511,7 @@ class UrbanZonesMapView(BaseMap):
     default_zoom = 12
 
     def get_sources_list(self, *sources):
+        available_millesimes = self.object.get_available_millesimes(commit=True)
         sources = [
             {
                 "key": "ocs-ge-source",
@@ -532,7 +534,7 @@ class UrbanZonesMapView(BaseMap):
                     {
                         "type": "string",
                         "key": "year",
-                        "value": 2019,
+                        "value": available_millesimes[-1],
                     },
                     {
                         "type": "string",
@@ -734,6 +736,16 @@ class UrbanZonesMapView(BaseMap):
         return super().get_layers_list(*layers)
 
     def get_filters_list(self, *filters):
+        available_millesimes = self.object.get_available_millesimes(commit=True)
+        available_millesimes_options = []
+        for millesime in available_millesimes:
+            available_millesimes_options.append(
+                {
+                    "name": millesime,
+                    "value": millesime,
+                    "data-value": millesime,
+                }
+            )
         usage_colors = ["match", ["get", "code_usage"]]
         for leaf in UsageSol.get_leafs():
             usage_colors.append(leaf.code_prefix)
@@ -866,19 +878,8 @@ class UrbanZonesMapView(BaseMap):
                     {
                         "name": "Millésime",
                         "type": "select",
-                        "value": "2019",
-                        "options": [
-                            {
-                                "name": "2016",
-                                "value": "2016",
-                                "data-value": "2016",
-                            },
-                            {
-                                "name": "2019",
-                                "value": "2019",
-                                "data-value": "2019",
-                            },
-                        ],
+                        "value": available_millesimes[-1],
+                        "options": available_millesimes_options,
                         "triggers": [
                             {
                                 "method": "updateQueryString",
@@ -973,48 +974,353 @@ class BaseThemeMap(GroupMixin, DetailView):
             return self.render_to_response(context)
 
 
-class MyArtifMapView(BaseThemeMap):
+class MyArtifMapView(BaseMap):
     title = "Comprendre l'artificialisation du territoire"
+    default_zoom = 10
 
-    def get_layers_list(self, *layers):
+    def get_sources_list(self, *sources):
         years = (
             self.object.cities.all().first().communediff_set.all().aggregate(old=Max("year_old"), new=Max("year_new"))
         )
-        layers = list(layers) + [
+        sources = [
             {
-                "name": "Artificialisation",
-                "url": (
-                    f'{reverse_lazy("public_data:ocsgediff-optimized")}'
-                    f"?year_old={years['old']}&year_new={years['new']}"
-                    f"&is_new_artif=true&project_id={self.object.id}"
-                ),
-                "display": True,
-                "style": "get_color_for_ocsge_diff",
-                "level": "7",
+                "key": "zones-artificielles-source",
+                "params": {
+                    "type": "geojson",
+                    "data": reverse_lazy("public_data:artificialarea-optimized"),
+                    "generateId": True,  # This ensures that all features have unique IDs
+                    "tolerance": 0,
+                },
+                "query_strings": [
+                    {
+                        "type": "function",
+                        "key": "in_bbox",
+                        "value": "getBbox",
+                    },
+                    {
+                        "type": "string",
+                        "key": "year",
+                        "value": years["new"],
+                    },
+                    {
+                        "type": "string",
+                        "key": "project_id",
+                        "value": self.object.pk,
+                    },
+                ],
+                "min_zoom": 12,
             },
             {
-                "name": "Renaturation",
-                "url": (
-                    f'{reverse_lazy("public_data:ocsgediff-optimized")}'
-                    f"?year_old={years['old']}&year_new={years['new']}"
-                    f"&is_new_natural=true&project_id={self.object.id}"
-                ),
-                "display": True,
-                "style": "get_color_for_ocsge_diff",
-                "level": "7",
+                "key": "ocsge-diff-source",
+                "params": {
+                    "type": "geojson",
+                    "data": reverse_lazy("public_data:ocsgediff-optimized"),
+                    "generateId": True,  # This ensures that all features have unique IDs
+                },
+                "query_strings": [
+                    {
+                        "type": "string",
+                        "key": "year_old",
+                        "value": years["old"],
+                    },
+                    {
+                        "type": "string",
+                        "key": "year_new",
+                        "value": years["new"],
+                    },
+                    {
+                        "type": "string",
+                        "key": "project_id",
+                        "value": self.object.pk,
+                    },
+                    {
+                        "type": "string",
+                        "key": "is_new_artif",
+                        "value": True,
+                    },
+                    {
+                        "type": "string",
+                        "key": "is_new_natural",
+                        "value": True,
+                    },
+                ],
+                "min_zoom": 10,
             },
             {
-                "name": "Zones artificielles",
-                "url": (
-                    f'{reverse_lazy("public_data:artificialarea-optimized")}'
-                    f"?year={years['new']}&project_id={self.object.id}"
-                ),
-                "display": True,
-                "style": "style_zone_artificielle",
-                "level": "3",
+                "key": "ocsge-diff-centroids-source",
+                "params": {
+                    "type": "geojson",
+                    "data": reverse_lazy("public_data:ocsgeDiffCentroids-optimized"),
+                    "generateId": True,  # This ensures that all features have unique IDs
+                    "cluster": True,
+                    "clusterMaxZoom": 14,
+                    "clusterRadius": 70,
+                    "clusterProperties": {
+                        # Keep separate sum
+                        "sumArtif": ["+", ["case", ["==", ["get", "is_new_artif"], True], ["get", "surface"], 0]],
+                        "sumRenat": ["+", ["case", ["==", ["get", "is_new_natural"], True], ["get", "surface"], 0]],
+                    },
+                    "filter": [
+                        "any",
+                        ["==", ["get", "is_new_natural"], True],
+                        ["==", ["get", "is_new_artif"], True],
+                    ],
+                },
+                "query_strings": [
+                    {
+                        "type": "string",
+                        "key": "year_old",
+                        "value": years["old"],
+                    },
+                    {
+                        "type": "string",
+                        "key": "year_new",
+                        "value": years["new"],
+                    },
+                    {
+                        "type": "string",
+                        "key": "project_id",
+                        "value": self.object.pk,
+                    },
+                    {
+                        "type": "string",
+                        "key": "is_new_artif",
+                        "value": True,
+                    },
+                    {
+                        "type": "string",
+                        "key": "is_new_natural",
+                        "value": True,
+                    },
+                ],
+                "min_zoom": 6,
+                "triggers": [
+                    {
+                        "method": "displayDonutsChartClusters",
+                        "options": {
+                            "colors": ["#FC4F4F", "#43d360"],
+                            "props": ["sumArtif", "sumRenat"],
+                            "formatter": ["number", ["fr-FR", "unit", "hectare", 2]],
+                        },
+                    }
+                ],
+            },
+        ]
+        return super().get_sources_list(*sources)
+
+    def get_layers_list(self, *layers):
+        layers = [
+            {
+                "id": "zones-artificielles-fill-layer",
+                "z-index": 6,
+                "type": "fill",
+                "source": "zones-artificielles-source",
+                "minzoom": 12,
+                "maxzoom": 19,
+                "paint": {
+                    "fill-color": "#f88e55",
+                    "fill-opacity": ["case", ["boolean", ["feature-state", "hover"], False], 1, 0.7],
+                },
+                "events": [
+                    {
+                        "type": "mousemove",
+                        "triggers": [
+                            {
+                                "method": "hoverEffectIn",
+                            },
+                            {
+                                "method": "showInfoBox",
+                                "options": {
+                                    "title": "Zones artificielles",
+                                    "properties": [
+                                        {"name": "Commune", "key": "city"},
+                                        {
+                                            "name": "Surface",
+                                            "key": "surface",
+                                            "formatter": ["number", ["fr-FR", "unit", "hectare", 2]],
+                                        },
+                                        {"name": "Millésime", "key": "year"},
+                                    ],
+                                },
+                            },
+                        ],
+                    },
+                    {
+                        "type": "mouseleave",
+                        "triggers": [
+                            {
+                                "method": "hoverEffectOut",
+                            },
+                            {
+                                "method": "hideInfoBox",
+                            },
+                        ],
+                    },
+                ],
+            },
+            {
+                "id": "ocsge-diff-fill-layer",
+                "z-index": 7,
+                "type": "fill",
+                "source": "ocsge-diff-source",
+                "minzoom": 10,
+                "maxzoom": 19,
+                "paint": {
+                    "fill-color": [
+                        "case",
+                        ["==", ["get", "is_new_natural"], True],
+                        "#43d360",
+                        "#FC4F4F",  # Default color => zones is_new_artif
+                    ],
+                    "fill-opacity": ["case", ["boolean", ["feature-state", "hover"], False], 1, 0.7],
+                },
+                "legend": {
+                    "title": "Différentiel OCS GE",
+                    "type": "raw",
+                    "data": [
+                        {
+                            "value": "Zones artificialisées",
+                            "color": "#FC4F4F",
+                        },
+                        {
+                            "value": "Zones renaturées",
+                            "color": "#43d360",
+                        },
+                    ],
+                },
+                "events": [
+                    {
+                        "type": "mousemove",
+                        "triggers": [
+                            {
+                                "method": "hoverEffectIn",
+                            },
+                            {
+                                "method": "showArtifInfoBox",
+                                "options": {
+                                    "title": "Différentiel OCS GE",
+                                },
+                            },
+                        ],
+                    },
+                    {
+                        "type": "mouseleave",
+                        "triggers": [
+                            {
+                                "method": "hoverEffectOut",
+                            },
+                            {
+                                "method": "hideInfoBox",
+                            },
+                        ],
+                    },
+                ],
+            },
+            {
+                "id": "ocsge-diff-circle-layer",
+                "z-index": 8,
+                "type": "circle",
+                "source": "ocsge-diff-centroids-source",
+                "minzoom": 6,
+                "maxzoom": 14,
+                "filter": ["!=", "cluster", True],
+                "paint": {
+                    "circle-color": [
+                        "case",
+                        ["==", ["get", "is_new_natural"], True],
+                        "#43d360",
+                        "#FC4F4F",  # Default color => zones is_new_artif
+                    ],
+                    "circle-radius": 12,
+                    "circle-opacity": 0.6,
+                },
+            },
+            {
+                "id": "ocsge-diff-label-layer",
+                "z-index": 9,
+                "type": "symbol",
+                "source": "ocsge-diff-centroids-source",
+                "minzoom": 6,
+                "maxzoom": 14,
+                "filter": ["!=", "cluster", True],
+                "layout": {
+                    "text-field": [
+                        "concat",
+                        [
+                            "number-format",
+                            ["get", "surface"],
+                            {"locale": "fr-FR", "unit": "hectare", "max-fraction-digits": 2},
+                        ],
+                        " ha",
+                    ],
+                    "text-font": ["Marianne Regular"],
+                    "text-size": 10,
+                },
+                "paint": {"text-color": "#fff"},
             },
         ]
         return super().get_layers_list(*layers)
+
+    def get_filters_list(self, *filters):
+        filters = [
+            {
+                "name": "Zones artificielles",
+                "z-index": 4,
+                "filters": [
+                    {
+                        "name": "Visibilité du calque",
+                        "type": "visibility",
+                        "value": "visible",
+                        "triggers": [
+                            {
+                                "method": "changeLayoutProperty",
+                                "property": "visibility",
+                                "items": [
+                                    "zones-artificielles-fill-layer",
+                                ],
+                            },
+                        ],
+                    },
+                    {
+                        "name": "Opacité du calque",
+                        "type": "opacity",
+                        "value": 70,
+                        "triggers": [
+                            {
+                                "method": "changePaintProperty",
+                                "property": "fill-opacity",
+                                "items": ["zones-artificielles-fill-layer"],
+                            },
+                        ],
+                    },
+                ],
+                "source": "zones-artificielles-source",
+            },
+            {
+                "name": "Différentiel OCS GE",
+                "z-index": 5,
+                "filters": [
+                    {
+                        "name": "Visibilité du calque",
+                        "type": "visibility",
+                        "value": "visible",
+                        "triggers": [
+                            {
+                                "method": "changeLayoutProperty",
+                                "property": "visibility",
+                                "items": [
+                                    "ocsge-diff-fill-layer",
+                                    "ocsge-diff-circle-layer",
+                                    "ocsge-diff-label-layer",
+                                ],
+                            },
+                        ],
+                    },
+                ],
+                "source": "ocsge-diff-source",
+            },
+        ]
+        return super().get_filters_list(*filters)
 
 
 class CitySpaceConsoMapView(BaseMap):
@@ -1070,6 +1376,7 @@ class CitySpaceConsoMapView(BaseMap):
                     "subtitle": (
                         f"Surface consommée de {self.object.analyse_start_date} à {self.object.analyse_end_date}"
                     ),
+                    "type": "scale",
                     "data": self.get_gradient_scale(),
                     "formatter": ["number", ["fr-FR", "unit", "hectare", 2]],
                 },

@@ -134,6 +134,24 @@ def find_first_and_last_ocsge(self, project_id: int) -> None:
         logger.info("End find_first_and_last_ocsge, project_id=%d", project_id)
 
 
+@shared_task(bind=True, max_retries=5)
+def calculate_project_ocsge_status(self, project_id: int) -> None:
+    try:
+        project = Project.objects.get(pk=project_id)
+        race_protection_save(
+            project_id,
+            {"ocsge_coverage_status": project.get_ocsge_coverage_status(), "async_ocsge_coverage_status_done": True},
+        )
+    except Project.DoesNotExist:
+        logger.error(f"project_id={project_id} does not exist")
+    except Exception as e:
+        logger.error(e)
+        logger.exception(e)
+        self.retry(exc=e, countdown=300)
+    finally:
+        logger.info("End calculate_project_ocsge_status, project_id=%d", project_id)
+
+
 @shared_task
 def send_email_request_bilan(request_id):
     """Alerte envoyée à l'équipe pour les avertir d'une demande de Diagnostic."""
@@ -320,7 +338,9 @@ def send_word_diagnostic(self, request_id):
             params={
                 "diagnostic_name": req.project.name,
                 "image_url": req.project.cover_image.url,
-                "ocsge_available": "" if req.project.is_artif else "display",
+                "ocsge_available": ""
+                if req.project.ocsge_coverage_status == req.project.OcsgeCoverageStatus.COMPLETE_UNIFORM
+                else "display",
                 "diagnostic_url": get_url_with_domain(reverse("project:word_download", args=[req.id])),
             },
         )

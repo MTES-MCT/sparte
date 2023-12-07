@@ -27,4 +27,5 @@ python manage.py collectstatic --noinput
 python manage.py clear_cache
 
 # Deactivating maintenance mode
-python manage.py maintenance --off
+# v4.4 has a long data migration manually run
+# python manage.py maintenance --off
