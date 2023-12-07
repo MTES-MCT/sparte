@@ -41,6 +41,7 @@ class Ocsge(TruncateTableMixin, DataColorationMixin, models.Model):
     usage_label = models.CharField("Libellé usage du sol", max_length=254, blank=True, null=True)
     is_artificial = models.BooleanField("Est artificiel", null=True, blank=True)
     surface = models.DecimalField("surface", max_digits=15, decimal_places=4, blank=True, null=True)
+    departement = models.ForeignKey("public_data.Departement", on_delete=models.PROTECT, null=True, blank=True)
 
     mpoly = models.MultiPolygonField()
 
@@ -98,6 +99,7 @@ class OcsgeDiff(TruncateTableMixin, DataColorationMixin, models.Model):
     new_is_artif = models.BooleanField(blank=True, null=True)
     is_new_artif = models.BooleanField(blank=True, null=True)
     is_new_natural = models.BooleanField(blank=True, null=True)
+    departement = models.ForeignKey("public_data.Departement", on_delete=models.PROTECT, null=True, blank=True)
     old_matrix = models.ForeignKey(
         CouvertureUsageMatrix,
         on_delete=models.PROTECT,
@@ -133,6 +135,7 @@ class ArtificialArea(TruncateTableMixin, DataColorationMixin, models.Model):
     )
     surface = models.DecimalField("surface", max_digits=15, decimal_places=4)
     city = models.ForeignKey("public_data.Commune", on_delete=models.CASCADE)
+    departement = models.ForeignKey("public_data.Departement", on_delete=models.PROTECT, null=True, blank=True)
 
     objects = IntersectManager()
 
@@ -159,6 +162,7 @@ class ZoneConstruite(TruncateTableMixin, DataColorationMixin, models.Model):
         blank=True,
     )
     surface = models.DecimalField("surface", max_digits=15, decimal_places=4, blank=True, null=True)
+    departement = models.ForeignKey("public_data.Departement", on_delete=models.PROTECT, null=True, blank=True)
 
     objects = IntersectManager()
 

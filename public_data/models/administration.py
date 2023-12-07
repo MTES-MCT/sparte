@@ -314,13 +314,6 @@ class Scot(LandMixin, GetDataFromCeremaMixin, models.Model):
     land_type = AdminRef.SCOT
     default_analysis_level = AdminRef.EPCI
 
-    # def get_ocsge_millesimes(self) -> set:
-    #     """Return the list of all OCSGE millesimes (years) available for this dept."""
-    #     if not self.ocsge_millesimes:
-    #         return list()
-    #     matches = re.finditer(r"([\d]{4,4})", self.ocsge_millesimes)
-    #     return {int(m.group(0)) for m in matches}
-
     def get_qs_cerema(self):
         return Cerema.objects.filter(city_insee__in=self.commune_set.values("insee"))
 
@@ -396,6 +389,12 @@ class Commune(DataColorationMixin, LandMixin, GetDataFromCeremaMixin, models.Mod
 
     # Calculated fields
     map_color = models.CharField("Couleur d'affichage", max_length=30, null=True, blank=True)
+    first_millesime = models.IntegerField(
+        "Premier millésime disponible",
+        validators=[MinValueValidator(2000), MaxValueValidator(2050)],
+        blank=True,
+        null=True,
+    )
     last_millesime = models.IntegerField(
         "Dernier millésime disponible",
         validators=[MinValueValidator(2000), MaxValueValidator(2050)],
@@ -409,6 +408,10 @@ class Commune(DataColorationMixin, LandMixin, GetDataFromCeremaMixin, models.Mod
         decimal_places=4,
         blank=True,
         null=True,
+    )
+    ocsge_available = models.BooleanField(
+        "Statut de couverture OCSGE",
+        default=False,
     )
 
     # DataColorationMixin properties that need to be set when heritating
