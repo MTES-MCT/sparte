@@ -99,10 +99,11 @@ class AutoLoadMixin:
     def __common_prepare_shapefile(cls, shape_file_path: Path) -> None:
         cls.prepare_shapefile(shape_file_path=shape_file_path)
 
-        # set srid_source if needed
+        # set srid_source if the target model has a srid_source field
+
         if getattr(cls, "srid_source", None):
             gdf = geopandas.read_file(shape_file_path)
-            gdf["srid_source"] = gdf.crs.to_epsg()
+            gdf["sridsource"] = gdf.crs.to_epsg()
             gdf.to_file(shape_file_path, driver="ESRI Shapefile")
 
     def __check_path_is_a_regular_file(path: Path) -> None:
