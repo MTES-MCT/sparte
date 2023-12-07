@@ -37,7 +37,7 @@ class IntersectMixin:
         return self.filter(mpoly__intersects=geom).annotate(
             intersection=Intersection(MakeValid("mpoly"), geom),
             intersection_area=Coalesce(
-                Area(Transform("intersection", first_srid_source)),
+                Area(Transform("intersection", srid_source)),
                 Zero,
             ),
         )

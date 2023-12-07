@@ -4,16 +4,15 @@ from django.core.management.base import BaseCommand
 from django.db.models import F
 
 from public_data.models import Cerema
-from public_data.models.mixins import AutoLoadMixin, TruncateTableMixin
+from public_data.models.enums import SRID
+from public_data.models.mixins import AutoLoadMixin
 
 logger = logging.getLogger("management.commands")
 
 
-class LoadCerema(TruncateTableMixin, AutoLoadMixin, Cerema):
+class BaseLoadCerema(AutoLoadMixin, Cerema):
     class Meta:
         proxy = True
-
-    shape_file_path = "obs_artif_conso_com_2009_2022.zip"
 
     mapping = {
         "city_insee": "IDCOM",
@@ -117,6 +116,7 @@ class LoadCerema(TruncateTableMixin, AutoLoadMixin, Cerema):
         "art21fer22": "ART21FER22",
         "art21inc22": "ART21INC22",
         "mpoly": "MULTIPOLYGON",
+        "srid_source": "sridsource",
         # mis dans la table tel quel (pas d'usage à date)
         "naf09art22": "NAF09ART22",
         "art09act22": "ART09ACT22",
@@ -158,9 +158,67 @@ class LoadCerema(TruncateTableMixin, AutoLoadMixin, Cerema):
         }
         cls.objects.update(**kwargs)
 
+
+class LoadCeremaMetropole(BaseLoadCerema):
+    class Meta:
+        proxy = True
+
+    shape_file_path = "obs_artif_conso_com_2009_2022.zip"
+
     @classmethod
     def clean_data(cls):
-        cls.truncate()
+        cls.objects.filter(srid_source=SRID.LAMBERT_93).delete()
+
+
+class BaseLoadCeremaDromCom(BaseLoadCerema):
+    class Meta:
+        proxy = True
+
+    mapping = {k: v for k, v in BaseLoadCerema.mapping.items() if k not in ["surfcom2022", "artcom2020"]}
+
+
+class LoadCeremaGuadeloupe(BaseLoadCeremaDromCom):
+    class Meta:
+        proxy = True
+
+    shape_file_path = "obs_artif_conso_com_2009_2022_971.zip"
+
+    @classmethod
+    def clean_data(cls):
+        cls.objects.filter(region_name="Guadeloupe").delete()
+
+
+class LoadCeremaMartinique(BaseLoadCeremaDromCom):
+    class Meta:
+        proxy = True
+
+    shape_file_path = "obs_artif_conso_com_2009_2022_972.zip"
+
+    @classmethod
+    def clean_data(cls):
+        cls.objects.filter(region_name="Martinique").delete()
+
+
+class LoadCeremaGuyane(BaseLoadCeremaDromCom):
+    class Meta:
+        proxy = True
+
+    shape_file_path = "obs_artif_conso_com_2009_2022_973.zip"
+
+    @classmethod
+    def clean_data(cls):
+        cls.objects.filter(region_name="Guyane").delete()
+
+
+class LoadCeremaLaReunion(BaseLoadCeremaDromCom):
+    class Meta:
+        proxy = True
+
+    shape_file_path = "obs_artif_conso_com_2009_2022_974.zip"
+
+    @classmethod
+    def clean_data(cls):
+        cls.objects.filter(region_name="La Réunion").delete()
 
 
 class Command(BaseCommand):
@@ -177,14 +235,40 @@ class Command(BaseCommand):
             type=str,
             help="Use local file instead of s3",
         )
+        parser.add_argument(
+            "--item",
+            type=str,
+            help="Load only a specific drom com",
+        )
 
-    def handle(self, *args, **kwargs):
+    def load(self, items, options):
+        for item in items:
+            item.load(
+                verbose=options.get("verbose", False),
+                layer_mapper_silent=False,
+            )
+
+    def handle(self, *args, **options):
         logger.info("Load Cerema")
 
-        LoadCerema.load(
-            verbose=kwargs.get("verbose", False),
-            layer_mapper_strict=False,
-            layer_mapper_silent=False,
-        )
+        item_name_filter = options.get("item")
+
+        item_list = [
+            LoadCeremaMetropole,
+            LoadCeremaGuadeloupe,
+            LoadCeremaMartinique,
+            LoadCeremaGuyane,
+            LoadCeremaLaReunion,
+        ]
+
+        if item_name_filter:
+            items = [i for i in item_list if i.__name__ == item_name_filter]
+
+            if not items:
+                raise Exception(f"Item {item_name_filter} not found. Maybe you forgot to add it to the item_list?")
+
+            return self.load(items, options)
+
+        self.load(item_list, options)
 
         logger.info("End loading Cerema")

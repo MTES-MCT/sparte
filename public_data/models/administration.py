@@ -10,7 +10,6 @@ A venir :
 
 
 class Land
-==========
 
 C'est une classe qui se réfère à un territoire sans que l'on ait à connaître son niveau
 administratif exacte. Derrière un land peut se cacher une commune, un epci...
@@ -608,10 +607,11 @@ class Land:
 
     def __init__(self, public_key):
         self.public_key = public_key
+
         try:
             self.land_type, self.id = public_key.strip().split("_")
-        except ValueError:
-            raise LandException("Clé du territoire mal formatée")
+        except ValueError as e:
+            raise LandException("Clé du territoire mal formatée", e)
         if not self.id.isdigit():
             raise LandException("ID n'est pas un entier correcte.")
         try:

@@ -33,6 +33,7 @@ from public_data.models import (
     Land,
     OcsgeDiff,
     UsageSol,
+    LandException,
 )
 from public_data.models.administration import Commune
 from public_data.models.enums import SRID
@@ -129,15 +130,17 @@ class BaseProject(models.Model):
         if cache.has_key(cache_key):
             return cache.get(cache_key)
 
-        if self.combined_emprise:
-            area = float(self.combined_emprise.transform(2154, clone=True).area / 10000)
-        else:
-            area = float(0)
+        total_area = 0
+
+        for emprise in self.emprise_set.all():
+            total_area += emprise.mpoly.transform(emprise.srid_source, clone=True).area
+
+        total_area /= 10000
 
         ONE_MONTH = 60 * 60 * 24 * 30
-        cache.set(key=cache_key, value=area, timeout=ONE_MONTH)
+        cache.set(key=cache_key, value=total_area, timeout=ONE_MONTH)
 
-        return area
+        return total_area
 
     def __str__(self):
         return self.name
@@ -592,7 +595,7 @@ class Project(BaseProject):
         for public_key in public_keys:
             try:
                 lands.append(Land(public_key))
-            except Exception:
+            except LandException:
                 to_remove.append(public_key)
         if to_remove:
             self.remove_look_a_like(to_remove, many=True)

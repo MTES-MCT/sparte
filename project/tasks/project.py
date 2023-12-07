@@ -16,7 +16,6 @@ import matplotlib.pyplot as plt
 import shapely
 from celery import shared_task
 from django.conf import settings
-from django.contrib.gis.db.models import Union
 from django.db import transaction
 from django.db.models import F, OuterRef, Q, Subquery
 from django.urls import reverse
@@ -24,7 +23,7 @@ from django.utils import timezone
 from django_app_parameter import app_parameter
 from matplotlib_scalebar.scalebar import ScaleBar
 
-from project.models import Project, Request
+from project.models import Emprise, Project, Request
 from public_data.models import ArtificialArea, Cerema, Land, OcsgeDiff
 from public_data.models.gpu import ArtifAreaZoneUrba, ZoneUrba
 from utils.db import fix_poly
@@ -93,10 +92,17 @@ def add_city(self, project_id: int, public_keys: str) -> None:
 def set_combined_emprise(self, project_id: int) -> None:
     """Use linked cities to create project emprise."""
     logger.info("Start set_combined_emprise project_id==%d", project_id)
+
     try:
         project = Project.objects.get(pk=project_id)
-        combined_emprise = project.cities.all().aggregate(emprise=Union("mpoly"))
-        project.emprise_set.create(mpoly=fix_poly(combined_emprise["emprise"]))
+
+        for city in project.cities.all():
+            Emprise.objects.create(
+                mpoly=fix_poly(city.mpoly),
+                srid_source=city.srid_source,
+                project=project,
+            )
+
         race_protection_save(project_id, {"async_set_combined_emprise_done": True})
     except Project.DoesNotExist:
         logger.error(f"project_id={project_id} does not exist")
