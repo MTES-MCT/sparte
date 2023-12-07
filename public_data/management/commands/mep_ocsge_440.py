@@ -27,7 +27,7 @@ class Command(BaseCommand):
             "SeineEtMarneOcsgeZoneConstruite2017",
             "SeineEtMarneOcsgeZoneConstruite2021",
         ]
-        call_command("load_ocsge", items=" ".join(ocsge_items))
+        call_command("load_ocsge", item=" ".join(ocsge_items))
         call_command("setup_dept")
 
         call_command("build_commune_data", departement="Essonne", verbose=True)
