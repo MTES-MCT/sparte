@@ -299,6 +299,13 @@ def mep_ocsge_440(ctx):
     connecter.manage_py("setup_dept")
     connecter.manage_py("build_artificial_area --departement Essonne --verbose")
 
+    connecter.manage_py("import_gpu --dept 91")
+    connecter.manage_py("import_gpu --dept 77")
+
+    connecter.manage_py("load_insee")
+
+    connecter.manage_py("maintenance --off")
+
 
 if __name__ == "__main__":
     cli(obj={})
