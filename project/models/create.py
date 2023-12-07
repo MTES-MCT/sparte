@@ -26,24 +26,6 @@ def get_map_generation_tasks(project: Project, t: ModuleType) -> List[celery.Tas
 
 
 def trigger_async_tasks(project: Project, public_key) -> None:
-    # # use celery to speedup user experience
-    # celery.chain(
-    #     t.add_city.si(project.id, public_key),
-    #     t.set_combined_emprise.si(project.id),
-    #     celery.group(
-    #         t.find_first_and_last_ocsge.si(project.id),
-    #         t.add_neighboors.si(project.id),
-    #     ),
-    #     celery.group(
-    #         t.generate_cover_image.si(project.id),
-    #         t.generate_theme_map_conso.si(project.id),
-    #         t.generate_theme_map_artif.si(project.id),
-    #         t.generate_theme_map_understand_artif.si(project.id),
-    #         t.generate_theme_map_gpu.si(project.id),
-    #     ),
-    #     # to not make user wait for other stuff, nuild metabase stat after all others tasks
-    #     async_create_stat_for_project.si(project.id, do_location=True),
-    # ).apply_async()
     from brevo.tasks import send_diagnostic_to_brevo
     from metabase.tasks import async_create_stat_for_project
     from project import tasks as t
@@ -57,6 +39,8 @@ def trigger_async_tasks(project: Project, public_key) -> None:
     group_1 = []
     if not project.async_find_first_and_last_ocsge_done:
         group_1.append(t.find_first_and_last_ocsge.si(project.id))
+    if not project.async_ocsge_coverage_status_done:
+        group_1.append(t.calculate_project_ocsge_status.si(project.id))
     if not project.async_add_neighboors_done:
         group_1.append(t.add_neighboors.si(project.id))
     if group_1:
@@ -102,55 +86,5 @@ def create_from_public_key(
     project.set_success(save=True)
 
     trigger_async_tasks(project, public_key)
-
-    return project
-
-
-def create_from_public_key_list(
-    public_key_list: List[str],
-    start: str = "2011",
-    end: str = "2021",
-    user: User | None = None,
-) -> Project:
-    """Create a project from a list of public_keys"""
-
-    raise NotImplementedError("TODO update code when used")  # NOSONAR
-
-    from project import tasks as t
-
-    # if there is on ly one public_key, use the dedicated function
-    if len(public_key_list) == 1:
-        return create_from_public_key(public_key_list[0], start=start, end=end, user=user)
-
-    lands = Land.get_lands(public_key_list)
-    land_type = AdminRef.get_admin_level({p.split("_")[0] for p in public_key_list})
-
-    project = Project(
-        name="Diagnostic de plusieurs communes",
-        is_public=True,
-        analyse_start_date=start,
-        analyse_end_date=end,
-        level=AdminRef.get_analysis_default_level(land_type),
-        land_ids=",".join(str(_.id) for _ in lands),
-        land_type=land_type,
-        territory_name="territoire composite",
-        user=user,
-    )
-    project.set_success(save=True)
-
-    # use celery to speedup user experience
-    jobs = [
-        t.generate_cover_image.si(project.id),
-        t.find_first_and_last_ocsge.si(project.id),
-    ]
-    if project.land_type != AdminRef.COMPOSITE:
-        # insert in jobs list before cover generation
-        jobs.append(t.add_neighboors.si(project.id))
-
-    celery.chain(
-        t.add_city.si(project.id, "-".join(public_key_list)),
-        t.set_combined_emprise.si(project.id),
-        celery.group(jobs),
-    ).apply_async()
 
     return project
