@@ -22,15 +22,7 @@ Rapport Zones d'Urbanisme
 
     <div class="fr-container fr-py-3w">
 
-      {% if not ocsge_available %}
-      <div class="fr-notice fr-notice--info">
-        <div class="fr-container">
-          <div class="fr-notice__body">
-            <p class="fr-notice__title">Les données OCS GE ne sont pas encore disponibles sur ce territoire, vous n'avez donc pas accès aux informations relatives à l'artificialisation, l'usage et la couverture.</p>
-          </div>
-        </div>
-      </div>
-      {% endif %}
+      {% include "project/partials/ocsge_status.html" %}
 
       <div class="fr-mt-7w">
         <h2>Zones d'urbanisme</h2>

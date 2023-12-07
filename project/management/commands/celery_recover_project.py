@@ -41,6 +41,8 @@ class Command(BaseCommand):
             return self.recover_set_combined_emprise()
         if not self.diagnostic.async_find_first_and_last_ocsge_done:
             t.find_first_and_last_ocsge.delay(self.id)
+        if not self.diagnostic.async_ocsge_coverage_status_done:
+            t.calculate_project_ocsge_status.delay(self.id)
         if not self.diagnostic.async_add_neighboors_done:
             t.add_neighboors.delay(self.id)
         if not self.diagnostic.async_cover_image_done:
@@ -66,6 +68,7 @@ class Command(BaseCommand):
             t.set_combined_emprise.si(self.id),
             celery.group(
                 t.find_first_and_last_ocsge.si(self.id),
+                t.calculate_project_ocsge_status(self.id),
                 t.add_neighboors.si(self.id),
             ),
             celery.group(
