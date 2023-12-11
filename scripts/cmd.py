@@ -276,35 +276,8 @@ def mep_260(ctx):
 def mep_ocsge_440(ctx):
     # TODO: remove this command once it has run on staging and production
     connecter = ScalingoInterface(ctx.obj)
-
-    connecter.manage_py("remove_ocsge_data_gironde")
-    connecter.manage_py("set_gers_departement_to_ocsge_objects")
-    connecter.manage_py("build_commune_data --departement Gers --verbose")
-
-    connecter.manage_py("load_ocsge --item SeineEtMarneOcsge2017")
-    connecter.manage_py("load_ocsge --item SeineEtMarneOcsge2021")
-    connecter.manage_py("load_ocsge --item SeineEtMarneOcsgeDiff1721")
-    connecter.manage_py("load_ocsge --item SeineEtMarneOcsgeZoneConstruite2017")
-    connecter.manage_py("load_ocsge --item SeineEtMarneOcsgeZoneConstruite2021")
-    connecter.manage_py("build_commune_data --departement Seine-et-Marne --verbose")
-    connecter.manage_py("setup_dept")
-    connecter.manage_py("build_artificial_area --departement Seine-et-Marne --verbose")
-
-    connecter.manage_py("load_ocsge --item EssonneOcsge2018")
-    connecter.manage_py("load_ocsge --item EssonneOcsge2021")
-    connecter.manage_py("load_ocsge --item EssonneOcsgeDiff1821")
-    connecter.manage_py("load_ocsge --item EssonneOcsgeZoneConstruite2018")
-    connecter.manage_py("load_ocsge --item EssonneOcsgeZoneConstruite2021")
-    connecter.manage_py("build_commune_data --departement Essonne --verbose")
-    connecter.manage_py("setup_dept")
-    connecter.manage_py("build_artificial_area --departement Essonne --verbose")
-
-    connecter.manage_py("import_gpu --dept 91")
-    connecter.manage_py("import_gpu --dept 77")
-
-    connecter.manage_py("load_insee")
-
-    connecter.manage_py("maintenance --off")
+    connecter.detached = True
+    connecter.manage_py("mep_ocsge_440")
 
 
 if __name__ == "__main__":

@@ -465,6 +465,7 @@ class Command(BaseCommand):
         parser.add_argument(
             "--item",
             type=str,
+            nargs="+",
             help="item that you want to load ex: GersOcsge2016, ZoneConstruite2019...",
         )
         parser.add_argument(
@@ -517,15 +518,17 @@ class Command(BaseCommand):
         item_name_filter = options.get("item")
 
         if item_name_filter:
-            items = [i for i in item_list if i.__name__ == item_name_filter]
-
-            if not items:
-                raise Exception(f"Item {item_name_filter} not found. Maybe you forgot to add it to the item_list?")
-
-            return self.load(items)
+            # first check all args are good
+            for item in item_name_filter:
+                if item not in [i.__name__ for i in item_list]:
+                    raise Exception(f"Item {item} not found. Maybe you forgot to add it to the item_list?")
+            # make a list of corresponding class
+            items = [i for i in item_list if i.__name__ in item_name_filter]
+        else:
+            items = item_list
 
         logger.info("Full load")
-        self.load(item_list)
+        self.load(items)
         logger.info("End loading OCSGE")
 
     def truncate(self):
