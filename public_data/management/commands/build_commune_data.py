@@ -152,8 +152,9 @@ class Command(BaseCommand):
             city.ocsge_available = True
 
     def __calculate_ocsge_first_and_last_millesime(self, city: Commune):
-        city.last_millesime = self.__available_millesimes_in_departement(city).latest("year").year
-        city.first_millesime = self.__available_millesimes_in_departement(city).earliest("year").year
+        queryset = Ocsge.objects.intersect(city.mpoly).distinct("year")
+        city.last_millesime = queryset.latest("year").year
+        city.first_millesime = queryset.earliest("year").year
 
     def build_data(self, city: Commune):
         self.__calculate_ocsge_availability(city)
