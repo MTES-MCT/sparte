@@ -13,7 +13,7 @@ Projection 2031
 {% endblock pagetitle %}
 
 {% block headers %}
-<meta name="htmx-config" content='{"inlineScriptNonce":"[NONE_PLACEHOLDER]"}'>
+<meta name="htmx-config" content='{"inlineScriptNonce":"[NONCE_PLACEHOLDER]"}'>
 {% sri_static "project/css/project.css" %}
 {% endblock headers %}
 
@@ -257,7 +257,7 @@ Projection 2031
 {% french_translation %}
 {% display_chart 'objective_chart' objective_chart CSP_NONCE %}
 {% endlocalize %}
-<script language="javascript" nonce="[NONE_PLACEHOLDER]">
+<script language="javascript" nonce="[NONCE_PLACEHOLDER]">
 window.htmx.on("htmx:oobAfterSwap", () => {
     const modal = bootstrap.Modal.getInstance(document.getElementById("setTarget"))
     setTimeout(function () {

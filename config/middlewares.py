@@ -54,5 +54,5 @@ class ForceNonceCSPMiddleware(CSPMiddleware):
         response = super().process_response(request, response)
         if isinstance(response, HttpResponse):
             content = response.content.decode("utf-8")
-            response.content = content.replace("[NONE_PLACEHOLDER]", request.csp_nonce).encode("utf-8")
+            response.content = content.replace("[NONCE_PLACEHOLDER]", request.csp_nonce).encode("utf-8")
         return response
