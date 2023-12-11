@@ -12,5 +12,12 @@ class Command(BaseCommand):
     help = "Build all ocsge status of projects"
 
     def handle(self, *args, **options):
-        for project in Project.objects.all():
+        projects = Project.objects.all()
+
+        logger.info("%d projects", projects.count())
+
+        for project in projects:
+            logger.info("Process project %d", project.id)
             calculate_project_ocsge_status(project.id)
+
+        logger.info("End building ocsge status")

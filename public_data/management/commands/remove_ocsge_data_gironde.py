@@ -20,7 +20,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         """
         The command creates an approximate buffer of the Gironde extent
-        padded by 500m and deletes all OCS GE related data (Ocsge,
+        padded by 5km and deletes all OCS GE related data (Ocsge,
         OcsgeDiff, ZoneConstruite) that intersects with it.
         """
 
