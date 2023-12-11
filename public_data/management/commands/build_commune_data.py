@@ -99,21 +99,12 @@ class Command(BaseCommand):
         city = qs.first()
         self.build_data(city)
 
-    def __curry_related_ocsge(self, OcsgeModel, city: Commune):
-        return OcsgeModel.objects.intersect(city.mpoly)
-
-    def __related_ocsge(self, city: Commune):
-        return self.__curry_related_ocsge(OcsgeModel=Ocsge, city=city)
-
-    def __related_ocsge_diff(self, city: Commune):
-        return self.__curry_related_ocsge(OcsgeModel=OcsgeDiff, city=city)
-
     def __available_millesimes_in_departement(self, city: Commune):
         return Ocsge.objects.filter(departement=city.departement).distinct("year")
 
     def __calculate_surface_artif(self, city: Commune):
         city.surface_artif = (
-            self.__related_ocsge(city)
+            Ocsge.objects.intersect(city.mpoly)
             .filter(
                 is_artificial=True,
                 year=city.last_millesime,
@@ -135,7 +126,7 @@ class Command(BaseCommand):
         the city is not covered.
         """
         ocsge_count_in_city_center_point = (
-            self.__related_ocsge(city)
+            Ocsge.objects.intersect(city.mpoly)
             .filter(
                 mpoly__contains=city.mpoly.point_on_surface,
             )
@@ -174,20 +165,24 @@ class Command(BaseCommand):
         # Prep data for couverture and usage in CommuneSol
         # clean data first
         CommuneSol.objects.filter(city=city).delete()
-        qs = self.__related_ocsge(city)
-        qs = qs.exclude(matrix=None)
-        qs = qs.values("matrix_id", "year")
-        qs = qs.annotate(surface=cast_sum_area("intersection_area"))
+        qs = (
+            Ocsge.objects.intersect(city.mpoly)
+            .exclude(matrix=None)
+            .values("matrix_id", "year")
+            .annotate(surface=cast_sum_area("intersection_area"))
+        )
         CommuneSol.objects.bulk_create([CommuneSol(city=city, **_) for _ in qs])
 
     def build_commune_diff(self, city):
         # prep data for artif report in CommuneDiff
-        qs = self.__related_ocsge_diff(city)
-        qs = qs.values("year_old", "year_new")
-        qs = qs.annotate(
-            new_artif=cast_sum_area("intersection_area", filter=Q(is_new_artif=True)),
-            new_natural=cast_sum_area("intersection_area", filter=Q(is_new_natural=True)),
-            net_artif=F("new_artif") - F("new_natural"),
+        qs = (
+            OcsgeDiff.objects.intersect(city.mpoly)
+            .values("year_old", "year_new")
+            .annotate(
+                new_artif=cast_sum_area("intersection_area", filter=Q(is_new_artif=True)),
+                new_natural=cast_sum_area("intersection_area", filter=Q(is_new_natural=True)),
+                net_artif=F("new_artif") - F("new_natural"),
+            )
         )
 
         for result in qs:
