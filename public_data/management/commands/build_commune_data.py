@@ -133,7 +133,7 @@ class Command(BaseCommand):
             .count()
         )
 
-        available_millesime_in_departement_count = self.__available_millesimes_in_departement(city).count()
+        available_millesime_in_departement_count = len(city.get_ocsge_millesimes())
 
         has_ocge_coverage = available_millesime_in_departement_count > 0 and (
             ocsge_count_in_city_center_point == available_millesime_in_departement_count
