@@ -7,9 +7,9 @@ from public_data.models import Departement
 logger = logging.getLogger("management.commands")
 
 config = {
-    "Gers": "2016 2019",
-    "Essonne": "2018 2021",
-    "Seine-et-Marne": "2017 2021",
+    "Gers": ["2016", "2019"],
+    "Essonne": ["2018", "2021"],
+    "Seine-et-Marne": ["2017", "2021"],
 }
 
 
@@ -20,7 +20,7 @@ class Command(BaseCommand):
         logger.info("Start setup departement OCSGE")
         Departement.objects.all().update(
             is_artif_ready=False,
-            ocsge_millesimes="",
+            ocsge_millesimes=None,
         )
         logger.info("Done reset, start config")
         for name, millesimes in config.items():

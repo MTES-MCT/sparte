@@ -20,7 +20,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         """
         The command creates an approximate buffer of the Gironde extent
-        padded by 50km and deletes all OCS GE related data (Ocsge,
+        padded by 5km and deletes all OCS GE related data (Ocsge,
         OcsgeDiff, ZoneConstruite) that intersects with it.
         """
 
@@ -29,7 +29,7 @@ class Command(BaseCommand):
         gironde_mpoly = Departement.objects.get(name="Gironde").mpoly
         gironde_mpoly_lambert = gironde_mpoly.transform(2154, clone=True)
 
-        buffer_size_in_meters = 50000
+        buffer_size_in_meters = 5000
 
         gironde_mpoly_buffered = gironde_mpoly_lambert.buffer(buffer_size_in_meters)
         gironde_mpoly_buffered_wsg84 = gironde_mpoly_buffered.transform(4326, clone=True)
