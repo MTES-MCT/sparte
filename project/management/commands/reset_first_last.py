@@ -20,7 +20,7 @@ class Command(BaseCommand):
         logger.info(f"Resetting first and last ocsge for {count} projects")
 
         for i, project in enumerate(projects):
-            logger.info(f"{i}/{count} - Process project {project.id}")
+            logger.info(f"{i + 1}/{count} - Process project {project.id}")
             find_first_and_last_ocsge(project.id)
 
         logger.info("End reevaluation")

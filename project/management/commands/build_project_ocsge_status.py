@@ -18,7 +18,7 @@ class Command(BaseCommand):
         logger.info(f"Start building ocsge status for {count} projects")
 
         for i, project in enumerate(projects):
-            logger.info(f"{i}/{count} - Process project {project.id}")
+            logger.info(f"{i + 1}/{count} - Process project {project.id}")
             calculate_project_ocsge_status(project.id)
 
         logger.info("End building ocsge status")
