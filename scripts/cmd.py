@@ -276,6 +276,7 @@ def mep_260(ctx):
 def mep_440(ctx):
     # TODO: remove this command once it has run on staging and production
     connecter = ScalingoInterface(ctx.obj)
+    connecter.detached = True
 
     click.secho("Start MEP 440 Migration", fg="cyan")
 
