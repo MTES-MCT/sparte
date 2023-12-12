@@ -33,6 +33,17 @@ class AutoOcsgeDiff(AutoLoadMixin, OcsgeDiff):
     class Meta:
         proxy = True
 
+    @classmethod
+    @property
+    def mapping(cls) -> dict[str, str]:
+        return {
+            "cs_old": f"CS_{cls._year_old}",
+            "us_old": f"US_{cls._year_old}",
+            "cs_new": f"CS_{cls._year_new}",
+            "us_new": f"US_{cls._year_new}",
+            "mpoly": "MULTIPOLYGON",
+        }
+
     def before_save(self):
         self.year_new = self.__class__._year_new
         self.year_old = self.__class__._year_old
@@ -67,13 +78,15 @@ class AutoOcsgeDiff(AutoLoadMixin, OcsgeDiff):
             )
         )
 
+    @classmethod
+    def clean_data(cls):
+        cls.objects.filter(
+            departement=cls._departement,
+            year_new=cls._year_new,
+            year_old=cls._year_old,
+        ).delete()
 
-# ##########
-#   GERS
-# ##########
-
-
-class GersOcsge(AutoLoadMixin, Ocsge):
+class AutoOcsge(AutoLoadMixin, Ocsge):
     class Meta:
         proxy = True
 
@@ -84,10 +97,9 @@ class GersOcsge(AutoLoadMixin, Ocsge):
         "mpoly": "MULTIPOLYGON",
     }
 
-    _departement = get_departement("Gers")
-
     def save(self, *args, **kwargs):
-        self.departement = self._departement
+        self.year = self.__class__._year
+        self.departement = self.__class__._departement
         key = (self.couverture, self.usage)
 
         self.matrix = get_matrix()[key]
@@ -97,8 +109,6 @@ class GersOcsge(AutoLoadMixin, Ocsge):
             self.couverture_label = self.matrix.couverture.label
         if self.matrix.usage:
             self.usage_label = self.matrix.usage.label
-
-        self.year = self.__class__._year
 
         return super().save(*args, **kwargs)
 
@@ -119,23 +129,52 @@ class GersOcsge(AutoLoadMixin, Ocsge):
         )
 
 
-class GersOcsge2016(GersOcsge):
+class AutoZoneConstruite(AutoLoadMixin, ZoneConstruite):
+    class Meta:
+        proxy = True
+
+    mapping = {
+        "id_source": "ID",
+        "millesime": "MILLESIME",
+        "mpoly": "MULTIPOLYGON",
+    }
+
+    def save(self, *args, **kwargs):
+        self.year = int(self._year)
+        self.surface = self.mpoly.transform(2154, clone=True).area
+        self.departement = self._departement
+        super().save(*args, **kwargs)
+
+    @classmethod
+    def clean_data(cls):
+        cls.objects.filter(
+            departement=cls._departement,
+            year=cls._year,
+        ).delete()
+
+# ##########
+#   GERS
+# ##########
+
+class GersOcsge2016(AutoOcsge): #ok
     class Meta:
         proxy = True
 
     shape_file_path = "gers_ocsge_2016.zip"
     _year = 2016
+    _departement = get_departement("Gers")
 
 
-class GersOcsge2019(GersOcsge):
+class GersOcsge2019(AutoOcsge): #ok
     class Meta:
         proxy = True
 
     shape_file_path = "gers_ocsge_2019.zip"
     _year = 2019
+    _departement = get_departement("Gers")
 
 
-class GersOcsgeDiff(AutoOcsgeDiff):
+class GersOcsgeDiff(AutoOcsgeDiff): #ok
     """
     Email du dev du 06.10.2022: on fait la diff entre le plus récent et celui d'avant.
     avant = 2019, après = 2016
@@ -158,16 +197,7 @@ class GersOcsgeDiff(AutoOcsgeDiff):
         "mpoly": "MULTIPOLYGON",
     }
 
-    @classmethod
-    def clean_data(cls):
-        cls.objects.filter(
-            departement=cls._departement,
-            year_new=cls._year_new,
-            year_old=cls._year_old,
-        ).delete()
-
-
-class GersZoneConstruite2016(AutoLoadMixin, ZoneConstruite):
+class GersZoneConstruite2016(AutoZoneConstruite): #ok
     class Meta:
         proxy = True
 
@@ -175,141 +205,56 @@ class GersZoneConstruite2016(AutoLoadMixin, ZoneConstruite):
     _departement = get_departement("Gers")
 
     shape_file_path = "gers_zone_construite_2016.zip"
-    mapping = {
-        "id_source": "ID",
-        "millesime": "MILLESIME",
-        "mpoly": "MULTIPOLYGON",
-    }
 
-    def save(self, *args, **kwargs):
-        self.year = self._year
-        self.departement = self._departement
-        self.surface = self.mpoly.transform(2154, clone=True).area
-        super().save(*args, **kwargs)
-
-    @classmethod
-    def clean_data(cls):
-        cls.objects.filter(
-            departement=cls._departement,
-            year=cls._year,
-        ).delete()
-
-
-class GersZoneConstruite2019(GersZoneConstruite2016):
+class GersZoneConstruite2019(AutoZoneConstruite): #ok
     class Meta:
         proxy = True
 
     _year = 2019
+    _departement = get_departement("Gers")
+
     shape_file_path = "gers_zone_construite_2019.zip"
 
 
 # Essonne
 
-
-class EssonneOcsge(AutoLoadMixin, Ocsge):
-    class Meta:
-        proxy = True
-
-    mapping = {
-        "couverture": "CODE_CS",
-        "usage": "CODE_US",
-        "id_source": "ID",
-        "mpoly": "MULTIPOLYGON",
-    }
-
-    _departement = get_departement("Essonne")
-
-    def save(self, *args, **kwargs):
-        self.year = self.__class__._year
-        self.departement = self._departement
-        key = (self.couverture, self.usage)
-
-        self.matrix = get_matrix()[key]
-        self.is_artificial = bool(self.matrix.is_artificial)
-
-        if self.matrix.couverture:
-            self.couverture_label = self.matrix.couverture.label
-        if self.matrix.usage:
-            self.usage_label = self.matrix.usage.label
-
-        return super().save(*args, **kwargs)
-
-    @classmethod
-    def clean_data(cls):
-        cls.objects.filter(
-            departement=cls._departement,
-            year=cls._year,
-        ).delete()
-
-    @classmethod
-    def calculate_fields(cls):
-        cls.objects.all().filter(surface__isnull=True).update(
-            surface=Cast(
-                Area(Transform("mpoly", 2154)),
-                DecimalField(max_digits=15, decimal_places=4),
-            )
-        )
-
-
-class EssonneOcsge2018(EssonneOcsge):
+class EssonneOcsge2018(AutoOcsge): #ok
     class Meta:
         proxy = True
 
     shape_file_path = "essonne_ocsge_2018.zip"
     _year = 2018
+    _departement = get_departement("Essonne")
 
 
-class EssonneOcsge2021(EssonneOcsge):
+class EssonneOcsge2021(AutoOcsge): #ok
     class Meta:
         proxy = True
 
     shape_file_path = "essonne_ocsge_2021.zip"
     _year = 2021
-
-
-class EssonneOcsgeZoneConstruite(AutoLoadMixin, ZoneConstruite):
-    class Meta:
-        proxy = True
-
     _departement = get_departement("Essonne")
 
-    mapping = {
-        "id_source": "ID",
-        "millesime": "MILLESIME",
-        "mpoly": "MULTIPOLYGON",
-    }
-
-    def save(self, *args, **kwargs):
-        self.year = self._year
-        self.departement = self._departement
-        self.surface = self.mpoly.transform(2154, clone=True).area
-        super().save(*args, **kwargs)
-
-    @classmethod
-    def clean_data(cls):
-        cls.objects.filter(
-            departement=cls._departement,
-            year=cls._year,
-        ).delete()
-
-
-class EssonneOcsgeZoneConstruite2018(EssonneOcsgeZoneConstruite):
+class EssonneOcsgeZoneConstruite2018(AutoZoneConstruite): #ok
     class Meta:
         proxy = True
 
+    
     shape_file_path = "essonne_zone_construite_2018.zip"
     _year = 2018
+    _departement = get_departement("Essonne")
 
 
-class EssonneOcsgeZoneConstruite2021(EssonneOcsgeZoneConstruite):
+class EssonneOcsgeZoneConstruite2021(AutoZoneConstruite): #ok
     class Meta:
         proxy = True
 
     shape_file_path = "essonne_zone_construite_2021.zip"
     _year = 2021
+    _departement = get_departement("Essonne")
 
 
-class EssonneOcsgeDiff1821(AutoOcsgeDiff):
+class EssonneOcsgeDiff1821(AutoOcsgeDiff): #ok
     class Meta:
         proxy = True
 
@@ -320,24 +265,8 @@ class EssonneOcsgeDiff1821(AutoOcsgeDiff):
 
     shape_file_path = "essonne_diff_2018_2021.zip"
 
-    mapping = {
-        "cs_new": "CS_2021",
-        "us_new": "US_2021",
-        "cs_old": "CS_2018",
-        "us_old": "US_2018",
-        "mpoly": "MULTIPOLYGON",
-    }
 
-    @classmethod
-    def clean_data(cls):
-        cls.objects.filter(
-            departement=cls._departement,
-            year_new=cls._year_new,
-            year_old=cls._year_old,
-        ).delete()
-
-
-class SeineEtMarneOcsge(AutoLoadMixin, Ocsge):
+class SeineEtMarneOcsge(AutoOcsge):
     class Meta:
         proxy = True
 
@@ -350,43 +279,8 @@ class SeineEtMarneOcsge(AutoLoadMixin, Ocsge):
 
     _departement = get_departement("Seine-et-Marne")
 
-    def save(self, *args, **kwargs):
-        self.year = self.__class__._year
-        self.departement = self._departement
-        key = (self.couverture, self.usage)
 
-        if key not in get_matrix():
-            self.is_artificial = False
-            return super().save(*args, **kwargs)
-
-        self.matrix = get_matrix()[key]
-        self.is_artificial = bool(self.matrix.is_artificial)
-
-        if self.matrix.couverture:
-            self.couverture_label = self.matrix.couverture.label
-        if self.matrix.usage:
-            self.usage_label = self.matrix.usage.label
-
-        return super().save(*args, **kwargs)
-
-    @classmethod
-    def clean_data(cls):
-        cls.objects.filter(
-            departement=cls._departement,
-            year=cls._year,
-        ).delete()
-
-    @classmethod
-    def calculate_fields(cls):
-        cls.objects.all().filter(surface__isnull=True).update(
-            surface=Cast(
-                Area(Transform("mpoly", 2154)),
-                DecimalField(max_digits=15, decimal_places=4),
-            )
-        )
-
-
-class SeineEtMarneOcsge2017(SeineEtMarneOcsge):
+class SeineEtMarneOcsge2017(SeineEtMarneOcsge): #ok
     class Meta:
         proxy = True
 
@@ -394,7 +288,7 @@ class SeineEtMarneOcsge2017(SeineEtMarneOcsge):
     _year = 2017
 
 
-class SeineEtMarneOcsge2021(SeineEtMarneOcsge):
+class SeineEtMarneOcsge2021(SeineEtMarneOcsge): #ok
     class Meta:
         proxy = True
 
@@ -402,7 +296,7 @@ class SeineEtMarneOcsge2021(SeineEtMarneOcsge):
     _year = 2021
 
 
-class SeineEtMarneOcsgeZoneConstruite(AutoLoadMixin, ZoneConstruite):
+class SeineEtMarneOcsgeZoneConstruite(AutoZoneConstruite):
     class Meta:
         proxy = True
 
@@ -418,20 +312,6 @@ class SeineEtMarneOcsgeZoneConstruite(AutoLoadMixin, ZoneConstruite):
         gdf = geopandas.read_file(shape_file_path)
         gdf["OBJECTID"] = gdf["OBJECTID"].astype(str)
         gdf.to_file(shape_file_path, driver="ESRI Shapefile")
-
-    def save(self, *args, **kwargs):
-        self.year = int(self._year)
-        self.millesime = str(self._year)
-        self.surface = self.mpoly.transform(2154, clone=True).area
-        self.departement = self._departement
-        super().save(*args, **kwargs)
-
-    @classmethod
-    def clean_data(cls):
-        cls.objects.filter(
-            departement=cls._departement,
-            year=cls._year,
-        ).delete()
 
 
 class SeineEtMarneOcsgeZoneConstruite2017(SeineEtMarneOcsgeZoneConstruite):
@@ -461,22 +341,50 @@ class SeineEtMarneOcsgeDiff1721(AutoOcsgeDiff):
 
     shape_file_path = "seine_et_marne_diff_2017_2021.zip"
 
-    mapping = {
-        "cs_new": "CS_2021",
-        "us_new": "US_2021",
-        "cs_old": "CS_2017",
-        "us_old": "US_2017",
-        "mpoly": "MULTIPOLYGON",
-    }
 
-    @classmethod
-    def clean_data(cls):
-        cls.objects.filter(
-            departement=cls._departement,
-            year_new=cls._year_new,
-            year_old=cls._year_old,
-        ).delete()
+class HautsDeSeineOcsge2018(AutoOcsge):
+    class Meta:
+        proxy = True
 
+    shape_file_path = "hauts_de_seine_ocsge_2018_corrige.zip"
+    _departement = get_departement("Hauts-de-Seine")
+    _year = 2019
+
+class HautsDeSeineOcsge2021(AutoOcsge):
+    class Meta:
+        proxy = True
+
+    shape_file_path = "hauts_de_seine_ocsge_2021_corrige.zip"
+    _departement = get_departement("Hauts-de-Seine")
+    _year = 2021
+
+
+class HautsDeSeineOcsgeZoneConstruite2018(AutoZoneConstruite):
+    class Meta:
+        proxy = True
+    
+    shape_file_path = "hauts_de_seine_zone_construite_2018_corrige.zip"
+    _departement = get_departement("Hauts-de-Seine")
+    _year = 2018
+
+class HautsDeSeineOcsgeZoneConstruite2021(AutoZoneConstruite):
+    class Meta:
+        proxy = True
+    
+    shape_file_path = "hauts_de_seine_zone_construite_2021_corrige.zip"
+    _departement = get_departement("Hauts-de-Seine")
+    _year = 2021
+
+class HautsDeSeineOcsgeDiff1821(AutoOcsgeDiff):
+    class Meta:
+        proxy = True
+
+    _year_old = 2018
+    _year_new = 2021
+
+    _departement = get_departement("Hauts-de-Seine")
+
+    shape_file_path = "hauts_de_seine_diff_2018_2021_corrige.zip"
 
 class Command(BaseCommand):
     help = "Load all data from OCS GE"
@@ -528,6 +436,12 @@ class Command(BaseCommand):
             SeineEtMarneOcsgeDiff1721,
             SeineEtMarneOcsgeZoneConstruite2017,
             SeineEtMarneOcsgeZoneConstruite2021,
+            # Hauts-de-Seine ####
+            HautsDeSeineOcsge2018,
+            HautsDeSeineOcsge2021,
+            HautsDeSeineOcsgeZoneConstruite2018,
+            HautsDeSeineOcsgeZoneConstruite2021,
+            HautsDeSeineOcsgeDiff1821,
         ]
 
         if options.get("truncate"):
