@@ -13,11 +13,12 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         projects = Project.objects.all()
+        count = projects.count()
 
-        logger.info("%d projects", projects.count())
+        logger.info(f"Start building ocsge status for {count} projects")
 
-        for project in projects:
-            logger.info("Process project %d", project.id)
+        for i, project in enumerate(projects):
+            logger.info(f"{i}/{count} - Process project {project.id}")
             calculate_project_ocsge_status(project.id)
 
         logger.info("End building ocsge status")
