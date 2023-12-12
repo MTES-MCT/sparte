@@ -14,7 +14,7 @@ Trajectoires
 {% endblock pagetitle %}
 
 {% block headers %}
-<meta name="htmx-config" content='{"inlineScriptNonce":"[NONE_PLACEHOLDER]"}'>
+<meta name="htmx-config" content='{"inlineScriptNonce":"[NONCE_PLACEHOLDER]"}'>
 {% localize off %}
 {% sri_static "highcharts/js/highcharts.js" %}
 {% sri_static "highcharts/js/exporting.js" %}
@@ -179,13 +179,13 @@ Trajectoires
 
 {% block bodyend %}
 
-<script language="javascript" nonce="[NONE_PLACEHOLDER]">
+<script language="javascript" nonce="[NONCE_PLACEHOLDER]">
     let data, cumul, start_year, end_year, avg_2031, sum, range, trajectory;
 </script>
 {% endblock bodyend %}
 
 {% block tagging %}
-<script language="javascript" nonce="[NONE_PLACEHOLDER]">
+<script language="javascript" nonce="[NONCE_PLACEHOLDER]">
 window.onload = function(event) {
     _paq.push(['trackEvent', 'north_star_activation_funnel', 'open_dashboard_trajectory', 'step_3_north_star_activation_funnel'])
 }
