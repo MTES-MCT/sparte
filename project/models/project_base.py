@@ -541,12 +541,12 @@ class Project(BaseProject):
 
     def get_ocsge_millesimes(self):
         """Return all OCS GE millésimes available within project cities and between
-        project analyse ztart and end date"""
-        ids = self.cities.filter(departement__is_artif_ready=True).value_list("departement_id", flat=True)
+        project analyse start and end date"""
+        ids = self.cities.filter(departement__is_artif_ready=True).values_list("departement_id", flat=True).distinct()
         years = set()
         for dept in Departement.objects.filter(id__in=ids):
-            years.update(dept.get_ocsge_millesimes())
-        return [x for x in years if x <= self.analyse_end_date and x >= self.analyse_start_date]
+            years.update(dept.ocsge_millesimes)
+        return [x for x in years if self.analyse_start_date <= x <= self.analyse_end_date]
 
     def add_look_a_like(self, public_key, many=False):
         """Add a public_key to look a like keeping the field formated
@@ -1153,8 +1153,8 @@ class Project(BaseProject):
             .order_by("zone_urba__typezone", "year")
             .values("zone_urba__typezone", "year")
             .annotate(
-                artif_area=Sum("area"),
-                total_area=Sum("zone_urba__area"),
+                artif_area=Sum("area", output_field=models.DecimalField(decimal_places=2, max_digits=15)),
+                total_area=Sum("zone_urba__area", output_field=models.DecimalField(decimal_places=2, max_digits=15)),
                 nb_zones=Count("zone_urba_id"),
             )
         )
@@ -1165,10 +1165,10 @@ class Project(BaseProject):
                 zone_list[zone_type] = {
                     "type_zone": zone_type,
                     "total_area": row["total_area"],
-                    "first_artif_area": 0.0,
-                    "last_artif_area": 0.0,
-                    "fill_up_rate": 0.0,
-                    "new_artif": 0.0,
+                    "first_artif_area": Decimal(0.0),
+                    "last_artif_area": Decimal(0.0),
+                    "fill_up_rate": Decimal(0.0),
+                    "new_artif": Decimal(0.0),
                 }
             if row["year"] == self.first_year_ocsge:
                 zone_list[zone_type]["first_artif_area"] = row["artif_area"]
