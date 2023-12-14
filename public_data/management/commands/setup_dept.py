@@ -10,6 +10,8 @@ config = {
     "Gers": [2016, 2019],
     "Essonne": [2018, 2021],
     "Seine-et-Marne": [2017, 2021],
+    "Hauts-de-Seine": [2018, 2021],
+    "Landes": [2018, 2021],
 }
 
 
