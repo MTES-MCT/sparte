@@ -110,46 +110,21 @@ class Command(BaseCommand):
             .aggregate(surface_artif=cast_sum_area("intersection_area"))["surface_artif"]
         )
 
-    def __calculate_ocsge_availability(self, city: Commune) -> None:
-        """
-        The city is considered covered by OCSGE if there is
-        as many OCS GE objects on any point of the city
-        as there are available millesimes in the departement.
+    def __set_ocsge_availability(self, city: Commune) -> bool:
+        city.ocsge_available = bool(city.departement.ocsge_millesimes)
 
-        We take an arbitrary point in the center of the city
-        to check this condition (city.mpoly.point_on_surface)
-        and count the number of OCS GE objects on this point.
-
-        If there are no available millesimes in the departement,
-        the city is not covered.
-        """
-        ocsge_count_in_city_center_point = (
-            Ocsge.objects.intersect(city.mpoly).filter(mpoly__contains=city.mpoly.point_on_surface).count()
-        )
-
-        available_millesime_in_departement_count = len(city.get_ocsge_millesimes())
-
-        has_ocge_coverage = available_millesime_in_departement_count > 0 and (
-            ocsge_count_in_city_center_point == available_millesime_in_departement_count
-        )
-
-        city.ocsge_available = has_ocge_coverage
-
-    def __calculate_ocsge_first_and_last_millesime(self, city: Commune) -> None:
-        queryset = (
-            Ocsge.objects.intersect(city.mpoly).filter(mpoly__contains=city.mpoly.point_on_surface).distinct("year")
-        )
-        city.last_millesime = queryset.latest("year").year
-        city.first_millesime = queryset.earliest("year").year
+    def __set_ocsge_first_and_last_millesime(self, city: Commune) -> None:
+        city.last_millesime = max(city.departement.ocsge_millesimes)
+        city.first_millesime = min(city.departement.ocsge_millesimes)
 
     def build_data(self, city: Commune):
-        self.__calculate_ocsge_availability(city)
+        self.__set_ocsge_availability(city)
 
         if not city.ocsge_available:
             city.save()
             return
 
-        self.__calculate_ocsge_first_and_last_millesime(city)
+        self.__set_ocsge_first_and_last_millesime(city)
         self.__calculate_surface_artif(city)
 
         city.save()
