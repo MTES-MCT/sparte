@@ -96,7 +96,11 @@ class Command(BaseCommand):
                 logger.info("%d/%d - %s (%s)", i + 1, total, city.name, city.insee)
 
     def build(self, city):
-        qs = Ocsge.objects.filter(mpoly__intersects=city.mpoly, is_artificial=True)
+        qs = Ocsge.objects.filter(
+            mpoly__intersects=city.mpoly,
+            is_artificial=True,
+            departement_id=city.departement_id,
+        )
         if not qs.exists():
             return
         qs = (

@@ -2,8 +2,6 @@
 Ce fichier contient les référentiels CouvertureSol et UsageSol qui sont les deux
 types d'analyse fournies par l'OCSGE.
 """
-from functools import lru_cache
-
 from django.db import models
 
 
@@ -212,7 +210,6 @@ class CouvertureUsageMatrix(models.Model):
         return f"{cs}-{us}:{a}{c}{n}"
 
     @classmethod
-    @lru_cache()
     def matrix_dict(cls):
         _matrix_dict = dict()
 
