@@ -110,13 +110,17 @@ class Command(BaseCommand):
             .annotate(geom=MakeValid(Union("intersection")), surface=Sum("intersection_area"))
         )
 
-        for result in qs:
-            ArtificialArea.objects.create(
-                city=city,
-                year=result["year"],
-                mpoly=fix_poly(result["geom"]),
-                surface=result["surface"].sq_m / 10000,
-            )
+        ArtificialArea.objects.bulk_create(
+            [
+                ArtificialArea(
+                    city=city,
+                    year=result["year"],
+                    mpoly=fix_poly(result["geom"]),
+                    surface=result["surface"].sq_m / 10000,
+                )
+                for result in qs
+            ]
+        )
 
     def clean(self, qs):
         logger.info("Delete previous artificial areas")
