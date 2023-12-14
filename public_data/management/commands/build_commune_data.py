@@ -110,21 +110,11 @@ class Command(BaseCommand):
             .aggregate(surface_artif=cast_sum_area("intersection_area"))["surface_artif"]
         )
 
-    def __set_ocsge_availability(self, city: Commune) -> bool:
-        city.ocsge_available = bool(city.departement.ocsge_millesimes)
-
-    def __set_ocsge_first_and_last_millesime(self, city: Commune) -> None:
-        city.last_millesime = max(city.departement.ocsge_millesimes)
-        city.first_millesime = min(city.departement.ocsge_millesimes)
-
     def build_data(self, city: Commune):
-        self.__set_ocsge_availability(city)
-
         if not city.ocsge_available:
-            city.save()
+            logger.info(f"No OCSGE data available for {city.name}. Maybe you forgot to run setup_dept?")
             return
 
-        self.__set_ocsge_first_and_last_millesime(city)
         self.__calculate_surface_artif(city)
 
         city.save()
