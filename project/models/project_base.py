@@ -31,7 +31,6 @@ from public_data.models import (
     CouvertureSol,
     Departement,
     Land,
-    Ocsge,
     OcsgeDiff,
     UsageSol,
 )
@@ -937,19 +936,15 @@ class Project(BaseProject):
         return result["center"]
 
     def get_available_millesimes(self, commit=False):
-        self.available_millesimes = ",".join(
-            str(y)
-            for y in (
-                Ocsge.objects.intersect(self.combined_emprise)
-                .filter(year__gte=self.analyse_start_date, year__lte=self.analyse_end_date)
-                .order_by("year")
-                .distinct()
-                .values_list("year", flat=True)
-            )
-        )
-        if commit:
-            self.save(update_fields=["available_millesimes"])
-        return [int(y) for y in self.available_millesimes.split(",") if y]
+        millesimes = set()
+
+        departements = self.cities.values_list("departement", flat=True)
+
+        for departement in Departement.objects.filter(id__in=departements):
+            if departement.ocsge_millesimes:
+                millesimes.update(departement.ocsge_millesimes)
+
+        return [y for y in millesimes if int(self.analyse_start_date) <= y <= int(self.analyse_end_date)]
 
     def get_first_last_millesime(self):
         """return {"first": yyyy, "last": yyyy} which are the first and last

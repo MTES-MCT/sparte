@@ -96,7 +96,11 @@ class Command(BaseCommand):
                 logger.info("%d/%d - %s (%s)", i + 1, total, city.name, city.insee)
 
     def build(self, city):
-        qs = Ocsge.objects.filter(mpoly__intersects=city.mpoly, is_artificial=True)
+        qs = Ocsge.objects.filter(
+            mpoly__intersects=city.mpoly,
+            is_artificial=True,
+            departement_id=city.departement_id,
+        )
         if not qs.exists():
             return
         qs = (
@@ -106,17 +110,13 @@ class Command(BaseCommand):
             .annotate(geom=MakeValid(Union("intersection")), surface=Sum("intersection_area"))
         )
 
-        ArtificialArea.objects.bulk_create(
-            [
-                ArtificialArea(
-                    city=city,
-                    year=result["year"],
-                    mpoly=fix_poly(result["geom"]),
-                    surface=result["surface"].sq_m / 10000,
-                )
-                for result in qs
-            ]
-        )
+        for result in qs:
+            ArtificialArea.objects.create(
+                city=city,
+                year=result["year"],
+                mpoly=fix_poly(result["geom"]),
+                surface=result["surface"].sq_m / 10000,
+            )
 
     def clean(self, qs):
         logger.info("Delete previous artificial areas")

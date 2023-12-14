@@ -99,15 +99,13 @@ class Command(BaseCommand):
         city = qs.first()
         self.build_data(city)
 
-    def __available_millesimes_in_departement(self, city: Commune):
-        return Ocsge.objects.filter(departement=city.departement).distinct("year")
-
     def __calculate_surface_artif(self, city: Commune):
         city.surface_artif = (
             Ocsge.objects.intersect(city.mpoly)
             .filter(
                 is_artificial=True,
                 year=city.last_millesime,
+                departement_id=city.departement_id,
             )
             .aggregate(surface_artif=cast_sum_area("intersection_area"))["surface_artif"]
         )
@@ -126,11 +124,7 @@ class Command(BaseCommand):
         the city is not covered.
         """
         ocsge_count_in_city_center_point = (
-            Ocsge.objects.intersect(city.mpoly)
-            .filter(
-                mpoly__contains=city.mpoly.point_on_surface,
-            )
-            .count()
+            Ocsge.objects.intersect(city.mpoly).filter(mpoly__contains=city.mpoly.point_on_surface).count()
         )
 
         available_millesime_in_departement_count = len(city.get_ocsge_millesimes())
@@ -139,11 +133,12 @@ class Command(BaseCommand):
             ocsge_count_in_city_center_point == available_millesime_in_departement_count
         )
 
-        if has_ocge_coverage:
-            city.ocsge_available = True
+        city.ocsge_available = has_ocge_coverage
 
-    def __calculate_ocsge_first_and_last_millesime(self, city: Commune):
-        queryset = Ocsge.objects.intersect(city.mpoly).distinct("year")
+    def __calculate_ocsge_first_and_last_millesime(self, city: Commune) -> None:
+        queryset = (
+            Ocsge.objects.intersect(city.mpoly).filter(mpoly__contains=city.mpoly.point_on_surface).distinct("year")
+        )
         city.last_millesime = queryset.latest("year").year
         city.first_millesime = queryset.earliest("year").year
 
@@ -151,6 +146,7 @@ class Command(BaseCommand):
         self.__calculate_ocsge_availability(city)
 
         if not city.ocsge_available:
+            city.save()
             return
 
         self.__calculate_ocsge_first_and_last_millesime(city)
@@ -162,11 +158,10 @@ class Command(BaseCommand):
         self.build_commune_diff(city)
 
     def build_commune_sol(self, city: Commune):
-        # Prep data for couverture and usage in CommuneSol
-        # clean data first
         CommuneSol.objects.filter(city=city).delete()
         qs = (
             Ocsge.objects.intersect(city.mpoly)
+            .filter(departement_id=city.departement_id)
             .exclude(matrix=None)
             .values("matrix_id", "year")
             .annotate(surface=cast_sum_area("intersection_area"))
@@ -174,9 +169,10 @@ class Command(BaseCommand):
         CommuneSol.objects.bulk_create([CommuneSol(city=city, **_) for _ in qs])
 
     def build_commune_diff(self, city):
-        # prep data for artif report in CommuneDiff
+        CommuneDiff.objects.filter(city=city).delete()
         qs = (
             OcsgeDiff.objects.intersect(city.mpoly)
+            .filter(departement_id=city.departement_id)
             .values("year_old", "year_new")
             .annotate(
                 new_artif=cast_sum_area("intersection_area", filter=Q(is_new_artif=True)),
@@ -185,17 +181,4 @@ class Command(BaseCommand):
             )
         )
 
-        for result in qs:
-            try:
-                # try to fetch the line if exists
-                city_data = CommuneDiff.objects.get(
-                    city=city,
-                    year_old=result["year_old"],
-                    year_new=result["year_new"],
-                )
-                city_data.new_artif = result["new_artif"]
-                city_data.new_natural = result["new_natural"]
-                city_data.net_artif = result["net_artif"]
-                city_data.save()
-            except CommuneDiff.DoesNotExist:
-                city_data = CommuneDiff.objects.create(city=city, **result)
+        CommuneDiff.objects.bulk_create([CommuneDiff(city=city, **_) for _ in qs])
