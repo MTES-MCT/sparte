@@ -1498,24 +1498,121 @@ class CitySpaceConsoMapView(BaseMap):
             return self.render_to_response(context)
 
 
-class CityArtifMapView(BaseThemeMap):
+class CityArtifMapView(BaseMap):
     title = "Artificialisation des communes de mon territoire"
-    url_name = "theme-city-artif"
-
+    scale_size = 5
+    default_zoom = 10
+    
+    def get_sources_list(self, *sources):
+        sources = [
+            {
+                "key": "artificialisation-des-communes-source",
+                "params": {
+                    "type": "geojson",
+                    "data": reverse_lazy("project:theme-city-artif", args=[self.object.id]),
+                },
+                "query_strings": [
+                    {
+                        "type": "string",
+                        "key": "data",
+                        "value": 1,
+                    },
+                    {
+                        "type": "function",
+                        "key": "in_bbox",
+                        "value": "getBbox",
+                    },
+                ],
+                "min_zoom": 8,
+            },
+        ]
+        return super().get_sources_list(*sources)
+    
     def get_layers_list(self, *layers):
         layers = [
             {
-                "name": self.title,
-                "url": self.get_data_url(),
-                "display": True,
-                "gradient_url": self.get_gradient_url(),
-                "level": "2",
-                "color_property_name": "surface_artif",
+                "id": "artificialisation-des-communes-fill-layer",
+                "z-index": 4,
+                "type": "fill",
+                "source": "artificialisation-des-communes-source",
+                "minzoom": 8,
+                "maxzoom": 19,
+                "paint": {
+                    "fill-color": self.get_gradient_expression(),
+                    "fill-opacity": [
+                        "case",
+                        ["boolean", ["feature-state", "hover"], False],
+                        0.8,
+                        0.6,
+                    ],
+                },
+                "legend": {
+                    "title": "Artificialisation des communes",
+                    "type": "scale",
+                    "data": self.get_gradient_scale(),
+                    "formatter": ["number", ["fr-FR", "unit", "hectare", 2]],
+                },
+                "events": [
+                    {
+                        "type": "mousemove",
+                        "triggers": [
+                            {
+                                "method": "hoverEffectIn",
+                            },
+                            {
+                                "method": "showArtifCommunesInfoBox",
+                                "options": {
+                                    "title": "Artificialisation des communes",
+                                },
+                            },
+                        ],
+                    },
+                    {
+                        "type": "mouseleave",
+                        "triggers": [
+                            {
+                                "method": "hoverEffectOut",
+                            },
+                            {
+                                "method": "hideInfoBox",
+                            },
+                        ],
+                    },
+                ],
             },
-        ] + list(layers)
+        ]
         return super().get_layers_list(*layers)
-
-    def get_gradient(self):
+    
+    def get_filters_list(self, *filters):
+        filters = [
+            {
+                "name": "Artificialisation des communes",
+                "z-index": 3,
+                "filters": [
+                    {
+                        "name": "Visibilité du calque",
+                        "type": "visibility",
+                        "value": "visible",
+                        "triggers": [
+                            {
+                                "method": "changeLayoutProperty",
+                                "property": "visibility",
+                                "items": ["artificialisation-des-communes-fill-layer"],
+                            },
+                            {
+                                "method": "toggleLegend",
+                                "property": "visible",
+                                "items": ["legend-box-artificialisation-des-communes-source"],
+                            },
+                        ],
+                    },
+                ],
+                "source": "artificialisation-des-communes-source",
+            },
+        ]
+        return super().get_filters_list(*filters)
+    
+    def get_gradient_scale(self):
         boundaries = (
             self.object.cities.all()
             .filter(surface_artif__isnull=False)
@@ -1528,8 +1625,19 @@ class CityArtifMapView(BaseThemeMap):
         elif len(boundaries) > self.scale_size:
             boundaries = jenks_breaks(boundaries, n_classes=self.scale_size)[1:]
         data = [{"value": v, "color": c.hex_l} for v, c in zip(boundaries, get_yellow2red_gradient(len(boundaries)))]
-        return JsonResponse(data, safe=False)
-
+        return data
+    
+    def get_gradient_expression(self):
+        data = [
+            "interpolate",
+            ["linear"],
+            ["to-number", ["get", "surface_artif"]],
+        ]
+        for scale in self.get_gradient_scale():
+            data.append(scale["value"])
+            data.append(scale["color"])
+        return data
+    
     def get_data(self):
         queryset = self.object.cities.all()
         bbox = self.request.GET.get("bbox", None)
@@ -1538,3 +1646,11 @@ class CityArtifMapView(BaseThemeMap):
             queryset = queryset.filter(mpoly__within=polygon_box)
         serializer = CityArtifMapSerializer(queryset, many=True)
         return JsonResponse(serializer.data, status=200)
+    
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        if "data" in self.request.GET:
+            return self.get_data()
+        else:
+            context = self.get_context_data(object=self.object)
+            return self.render_to_response(context)
