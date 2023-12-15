@@ -16,7 +16,6 @@
   },
   "dependencies": {
     "htmx.org": "^1.8.4",
-    "leaflet": "^1.9.3",
     "lodash.isequal": "^4.5.0",
     "maplibre-gl": "^3.3.1"
   }
