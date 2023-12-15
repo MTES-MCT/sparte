@@ -1422,9 +1422,9 @@ class CityArtifMapView(BaseMap):
     title = "Artificialisation des communes de mon territoire"
     scale_size = 5
     default_zoom = 10
-
+    
     def get_sources_list(self, *sources):
-        additional_sources = [
+        sources = [
             {
                 "key": "artificialisation-des-communes-source",
                 "params": {
@@ -1446,8 +1446,8 @@ class CityArtifMapView(BaseMap):
                 "min_zoom": 8,
             },
         ]
-        return super().get_sources_list(*(additional_sources + list(sources)))
-
+        return super().get_sources_list(*sources)
+    
     def get_layers_list(self, *layers):
         additional_layers = [
             {
@@ -1501,10 +1501,10 @@ class CityArtifMapView(BaseMap):
                 ],
             },
         ]
-        return super().get_layers_list(*(additional_layers + list(layers)))
-
+        return super().get_layers_list(*layers)
+    
     def get_filters_list(self, *filters):
-        additional_filters = [
+        filters = [
             {
                 "name": "Artificialisation des communes",
                 "z-index": 3,
@@ -1530,8 +1530,8 @@ class CityArtifMapView(BaseMap):
                 "source": "artificialisation-des-communes-source",
             },
         ]
-        return super().get_filters_list(*(additional_filters + list(filters)))
-
+        return super().get_filters_list(*filters)
+    
     def get_gradient_scale(self):
         boundaries = (
             self.object.cities.all()
@@ -1546,7 +1546,7 @@ class CityArtifMapView(BaseMap):
             boundaries = jenks_breaks(boundaries, n_classes=self.scale_size)[1:]
         data = [{"value": v, "color": c.hex_l} for v, c in zip(boundaries, get_yellow2red_gradient(len(boundaries)))]
         return data
-
+    
     def get_gradient_expression(self):
         data = [
             "interpolate",
@@ -1557,7 +1557,7 @@ class CityArtifMapView(BaseMap):
             data.append(scale["value"])
             data.append(scale["color"])
         return data
-
+    
     def get_data(self):
         queryset = self.object.cities.all()
         bbox = self.request.GET.get("bbox", None)
@@ -1566,7 +1566,7 @@ class CityArtifMapView(BaseMap):
             queryset = queryset.filter(mpoly__within=polygon_box)
         serializer = CityArtifMapSerializer(queryset, many=True)
         return JsonResponse(serializer.data, status=200)
-
+    
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
         if "data" in self.request.GET:
