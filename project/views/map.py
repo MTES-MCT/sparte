@@ -892,7 +892,7 @@ class UrbanZonesMapView(BaseMap):
                 "source": "ocs-ge-source",
             },
         ]
-        return super().get_filters_list(*(additional_filters + list(filters)))
+        return super().get_filters_list(*filters)
 
 
 class MyArtifMapView(BaseMap):

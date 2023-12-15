@@ -15,7 +15,7 @@ import './fr-callout-read-more.js'
 import './highcharts-custom-buttons.js'
 
 // Import filter diagnostic list
-import './filter-diagnostic-list.js'
+import '/assets/scripts/filter-diagnostic-list.js';
 
 // Import map
 import './map_libre/index.js'
