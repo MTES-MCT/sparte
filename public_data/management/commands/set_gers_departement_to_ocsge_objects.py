@@ -25,7 +25,7 @@ class Command(BaseCommand):
         ocsge_diff = OcsgeDiff.objects.filter(Q(departement__isnull=True) | Q(departement__name=""))
         ocsge_diff.update(departement=gers)
 
-        ocsge = Ocsge.objects.all()
+        ocsge = Ocsge.objects.filter(Q(departement__isnull=True) | Q(departement__name=""))
         ocsge.update(departement=gers)
 
         zone_construites = ZoneConstruite.objects.filter(Q(departement__isnull=True) | Q(departement__name=""))
