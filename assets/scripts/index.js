@@ -38,8 +38,5 @@ import '/assets/scripts/highcharts-custom-buttons.js';
 // Import filter diagnostic list
 import '/assets/scripts/filter-diagnostic-list.js';
 
-// Import map V2
-import '/assets/scripts/map_v2/index.js'
-
 // Import map
 import '/assets/scripts/map_libre/index.js'
