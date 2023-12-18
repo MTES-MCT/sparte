@@ -600,6 +600,7 @@ def generate_theme_map_fill_gpu(self, project_id):
             zone_urba__in=zone_urba,
             year__in=[diagnostic.first_year_ocsge, diagnostic.last_year_ocsge],
             zone_urba__typezone__in=["U", "AUc", "AUs"],
+            zone_urba__area__gt=0,
         ).annotate(
             level=100 * F("area") / F("zone_urba__area"),
             mpoly=F("zone_urba__mpoly"),
