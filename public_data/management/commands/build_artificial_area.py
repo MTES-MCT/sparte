@@ -1,7 +1,12 @@
 import logging
 
 from django.contrib.gis.db.models import Union
-from django.contrib.gis.db.models.functions import Area, Intersection, Transform
+from django.contrib.gis.db.models.functions import (
+    Area,
+    Intersection,
+    MakeValid,
+    Transform,
+)
 from django.core.management.base import BaseCommand
 from django.db.models import Q, Sum
 
@@ -61,7 +66,7 @@ class Command(BaseCommand):
             return
         departement = qs.first()
         logger.info("Departement: %s (%s)", departement.name, departement.source_id)
-        self.process(departement.commune_set.all().order_by("name"))
+        self.process(departement.commune_set.all().order_by("insee"))
 
     def process_one(self, insee):
         logger.info("Processing one city with code insee= %s", insee)
@@ -79,10 +84,9 @@ class Command(BaseCommand):
             return
         region = qs.first()
         logger.info("Région: %s (%s)", region.name, region.source_id)
-        self.process(region.get_cities().order_by("name"))
+        self.process(region.get_cities().order_by("insee"))
 
     def process(self, queryset):
-        queryset = queryset.order_by("insee")
         total = queryset.count()
         logger.info("Total cities : %d", total)
         self.clean(queryset)
@@ -92,13 +96,19 @@ class Command(BaseCommand):
                 logger.info("%d/%d - %s (%s)", i + 1, total, city.name, city.insee)
 
     def build(self, city):
-        qs = Ocsge.objects.filter(mpoly__intersects=city.mpoly, is_artificial=True)
+        qs = Ocsge.objects.filter(
+            mpoly__intersects=city.mpoly,
+            is_artificial=True,
+            departement_id=city.departement_id,
+        )
         if not qs.exists():
             return
-        qs = qs.annotate(intersection=Intersection("mpoly", city.mpoly))
-        qs = qs.annotate(intersection_area=Area(Transform("intersection", 2154)))
-        qs = qs.values("year")
-        qs = qs.annotate(geom=Union("intersection"), surface=Sum("intersection_area"))
+        qs = (
+            qs.annotate(intersection=Intersection("mpoly", city.mpoly))
+            .annotate(intersection_area=Area(Transform("intersection", 2154)))
+            .values("year")
+            .annotate(geom=MakeValid(Union("intersection")), surface=Sum("intersection_area"))
+        )
 
         ArtificialArea.objects.bulk_create(
             [
