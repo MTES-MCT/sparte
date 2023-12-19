@@ -891,10 +891,13 @@ class ProjectReportGpuZoneAUUTable(CacheMixin, StandAloneMixin, TemplateView):
         diagnostic = self.diagnostic
         zone_urba = ZoneUrba.objects.intersect(diagnostic.combined_emprise)
         qs = (
-            ArtifAreaZoneUrba.objects.filter(zone_urba__in=zone_urba)
-            .filter(year__in=[diagnostic.first_year_ocsge, diagnostic.last_year_ocsge])
-            .filter(zone_urba__typezone__in=["U", "AUc", "AUs"])
-            .annotate(fill_up_rate=100 * F("area") / F("zone_urba__area"))
+            ArtifAreaZoneUrba.objects.filter(
+                zone_urba__in=zone_urba,
+                year__in=[diagnostic.first_year_ocsge, diagnostic.last_year_ocsge],
+                zone_urba__typezone__in=["U", "AUc", "AUs"],
+                zone_urba__area__gt=0,
+            )
+            .annotate(fill_up_rate=100 * F("area") / F("zone_urba__area"))  # TODO : pré-calculer
             .select_related("zone_urba")
             .order_by("-fill_up_rate", "zone_urba__insee", "zone_urba__typezone", "-year", "zone_urba__id")
         )
@@ -932,9 +935,12 @@ class ProjectReportGpuZoneNTable(CacheMixin, StandAloneMixin, TemplateView):
         diagnostic = Project.objects.get(pk=self.kwargs["pk"])
         zone_urba = ZoneUrba.objects.intersect(diagnostic.combined_emprise)
         qs = (
-            ArtifAreaZoneUrba.objects.filter(zone_urba__in=zone_urba)
-            .filter(year__in=[diagnostic.first_year_ocsge, diagnostic.last_year_ocsge])
-            .filter(zone_urba__typezone="N", zone_urba__area__gt=0)
+            ArtifAreaZoneUrba.objects.filter(
+                zone_urba__in=zone_urba,
+                year__in=[diagnostic.first_year_ocsge, diagnostic.last_year_ocsge],
+                zone_urba__typezone="N",
+                zone_urba__area__gt=0,
+            )
             .annotate(fill_up_rate=100 * F("area") / F("zone_urba__area"))
             .select_related("zone_urba")
             .order_by("-fill_up_rate", "zone_urba__insee", "zone_urba__typezone", "-year", "zone_urba__id")
