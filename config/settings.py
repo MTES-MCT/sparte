@@ -56,7 +56,6 @@ DOMAIN_URL = env.str("DOMAIN_URL")
 # Application definition
 
 DJANGO_APPS = [
-    "clearcache",  # need to be above of contrib admin
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
