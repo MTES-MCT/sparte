@@ -1,4 +1,5 @@
 import logging
+from functools import cache
 from pathlib import Path
 
 import geopandas
@@ -23,6 +24,11 @@ def get_departement(name: str) -> Departement:
     return Departement.objects.get(name=name)
 
 
+@cache
+def get_matrix():
+    return CouvertureUsageMatrix.matrix_dict()
+
+
 class AutoOcsgeDiff(AutoLoadMixin, OcsgeDiff):
     class Meta:
         proxy = True
@@ -32,7 +38,7 @@ class AutoOcsgeDiff(AutoLoadMixin, OcsgeDiff):
         self.year_old = self.__class__._year_old
         self.departement = self.__class__._departement
 
-        self.new_matrix = CouvertureUsageMatrix.matrix_dict()[(self.cs_new, self.us_new)]
+        self.new_matrix = get_matrix()[(self.cs_new, self.us_new)]
         self.new_is_artif = bool(self.new_matrix.is_artificial)
 
         if self.new_matrix.couverture:
@@ -41,7 +47,7 @@ class AutoOcsgeDiff(AutoLoadMixin, OcsgeDiff):
         if self.new_matrix.usage:
             self.us_new_label = self.new_matrix.usage.label
 
-        self.old_matrix = CouvertureUsageMatrix.matrix_dict()[(self.cs_old, self.us_old)]
+        self.old_matrix = get_matrix()[(self.cs_old, self.us_old)]
         self.old_is_artif = bool(self.old_matrix.is_artificial)
 
         if self.old_matrix.couverture:
@@ -84,7 +90,7 @@ class GersOcsge(AutoLoadMixin, Ocsge):
         self.departement = self._departement
         key = (self.couverture, self.usage)
 
-        self.matrix = CouvertureUsageMatrix.matrix_dict()[key]
+        self.matrix = get_matrix()[key]
         self.is_artificial = bool(self.matrix.is_artificial)
 
         if self.matrix.couverture:
@@ -218,11 +224,7 @@ class EssonneOcsge(AutoLoadMixin, Ocsge):
         self.departement = self._departement
         key = (self.couverture, self.usage)
 
-        if key not in CouvertureUsageMatrix.matrix_dict():
-            self.is_artificial = False
-            return super().save(*args, **kwargs)
-
-        self.matrix = CouvertureUsageMatrix.matrix_dict()[key]
+        self.matrix = get_matrix()[key]
         self.is_artificial = bool(self.matrix.is_artificial)
 
         if self.matrix.couverture:
@@ -237,6 +239,15 @@ class EssonneOcsge(AutoLoadMixin, Ocsge):
         cls.objects.filter(
             departement=cls._departement,
             year=cls._year,
+        ).delete()
+
+    @classmethod
+    def calculate_fields(cls):
+        cls.objects.all().filter(surface__isnull=True).update(
+            surface=Cast(
+                Area(Transform("mpoly", 2154)),
+                DecimalField(max_digits=15, decimal_places=4),
+            )
         )
 
 
@@ -344,11 +355,11 @@ class SeineEtMarneOcsge(AutoLoadMixin, Ocsge):
         self.departement = self._departement
         key = (self.couverture, self.usage)
 
-        if key not in CouvertureUsageMatrix.matrix_dict():
+        if key not in get_matrix():
             self.is_artificial = False
             return super().save(*args, **kwargs)
 
-        self.matrix = CouvertureUsageMatrix.matrix_dict()[key]
+        self.matrix = get_matrix()[key]
         self.is_artificial = bool(self.matrix.is_artificial)
 
         if self.matrix.couverture:
@@ -364,6 +375,15 @@ class SeineEtMarneOcsge(AutoLoadMixin, Ocsge):
             departement=cls._departement,
             year=cls._year,
         ).delete()
+
+    @classmethod
+    def calculate_fields(cls):
+        cls.objects.all().filter(surface__isnull=True).update(
+            surface=Cast(
+                Area(Transform("mpoly", 2154)),
+                DecimalField(max_digits=15, decimal_places=4),
+            )
+        )
 
 
 class SeineEtMarneOcsge2017(SeineEtMarneOcsge):
