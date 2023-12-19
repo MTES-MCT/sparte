@@ -46,7 +46,7 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument(
-            "--dept",
+            "--departement",
             type=str,
             help="departement you want to export",
         )
@@ -58,9 +58,9 @@ class Command(BaseCommand):
 
         qs = Departement.objects.all().order_by("name")
 
-        dept_param = options["dept"]
+        dept_param = options["departement"]
         if dept_param:
-            qs = qs.filter(Q(source_id=dept_param) | Q(name=dept_param))
+            qs = qs.filter(Q(source_id=dept_param) | Q(name__icontains=dept_param))
             if not qs.exists():
                 raise ValueError(f"{dept_param} is not a valid departement")
 

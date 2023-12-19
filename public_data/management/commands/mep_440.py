@@ -39,8 +39,8 @@ class Command(BaseCommand):
         call_command("build_artificial_area", departement="Essonne", verbose=True)
         call_command("build_artificial_area", departement="Seine-et-Marne", verbose=True)
 
-        call_command("import_gpu", dept="91")
-        call_command("import_gpu", dept="77")
+        call_command("import_gpu", departement="Essonne")
+        call_command("import_gpu", departement="Seine-et-Marne")
 
         call_command("reset_first_last")
         call_command("build_project_ocsge_status")
