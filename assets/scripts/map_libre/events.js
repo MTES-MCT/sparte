@@ -85,13 +85,14 @@ export default class Events
     {
       let info = `<div class="info-box__title"><strong>${_options.title}</strong><i class='bi bi-info-circle'></i></div>`
 
-            _options.properties.map((_obj) => {
-                if (_event.features[0].properties[_obj.key])
-                {
-                    const value = _obj.formatter ? formatData(_obj.formatter[0], _obj.formatter[1], _event.features[0].properties[_obj.key]) : _event.features[0].properties[_obj.key]
-                    info += `<div class="fr-mr-2w"><strong>${_obj.name}:</strong> ${value}</div>`
-                }
-            })
+      _options.properties.forEach((_obj) =>
+      {
+        if (_event.features[0].properties[_obj.key])
+        {
+          const value = _obj.formatter ? formatData(_obj.formatter[0], _obj.formatter[1], _event.features[0].properties[_obj.key]) : _event.features[0].properties[_obj.key]
+          info += `<div class="fr-mr-2w"><strong>${_obj.name}:</strong> ${value}</div>`
+        }
+      })
 
       this.infoBoxNode.innerHTML = info
 
@@ -134,21 +135,23 @@ export default class Events
 
       this.infoBoxNode.classList.add('visible')
     }
+  }
 
-    showArtifCommunesInfoBox(_event, _options) {
-        if (!this.infoBoxNode)
-            this.setInfoBox()
+  showArtifCommunesInfoBox(_event, _options)
+  {
+    if (!this.infoBoxNode) this.setInfoBox()
 
-        if (_event.features.length > 0) {
-            const { properties } = _event.features[0]
-            const artifEvo = JSON.parse(properties['artif_evo'])[0]
+    if (_event.features.length > 0)
+    {
+      const { properties } = _event.features[0]
+      const artifEvo = JSON.parse(properties.artif_evo)[0]
 
-            this.infoBoxNode.innerHTML = `<div class="info-box__title"><strong>${_options.title}</strong><i class='bi bi-info-circle'></i></div>
-            <div class="fr-mr-2w"><strong>Commune:</strong> ${properties['name']}</div>
-            <div class="fr-mr-2w"><strong>Code INSEE:</strong> ${properties['insee']}</div>
-            <div class="fr-mr-2w"><strong>Surface:</strong> ${formatData("number", ["fr-FR", "unit", "hectare", 2], properties['area'])}</div>
-            <div class="fr-mr-2w"><strong>Surface artificialisée:</strong> ${formatData("number", ["fr-FR", "unit", "hectare", 2], properties['surface_artif'])}</div>
-            <div class="fr-mr-2w"><strong>Évolution de l'artificialisation entre ${artifEvo['year_old']} et ${artifEvo['year_new']}:</strong></div>
+      this.infoBoxNode.innerHTML = `<div class="info-box__title"><strong>${_options.title}</strong><i class='bi bi-info-circle'></i></div>
+            <div class="fr-mr-2w"><strong>Commune:</strong> ${properties.name}</div>
+            <div class="fr-mr-2w"><strong>Code INSEE:</strong> ${properties.insee}</div>
+            <div class="fr-mr-2w"><strong>Surface:</strong> ${formatData('number', ['fr-FR', 'unit', 'hectare', 2], properties.area)}</div>
+            <div class="fr-mr-2w"><strong>Surface artificialisée:</strong> ${formatData('number', ['fr-FR', 'unit', 'hectare', 2], properties.surface_artif)}</div>
+            <div class="fr-mr-2w"><strong>Évolution de l'artificialisation entre ${artifEvo.year_old} et ${artifEvo.year_new}:</strong></div>
             <table class="table table-striped table-sm table-borderless table-custom">
                 <thead>
                     <tr>
@@ -159,18 +162,13 @@ export default class Events
                 </thead>
                 <tbody>
                     <tr>
-                        <td class="fr-text--xs text-danger">${formatData("number", ["fr-FR", "unit", "hectare", 2], artifEvo['new_artif'])}</td>
-                        <td class="fr-text--xs text-success">${formatData("number", ["fr-FR", "unit", "hectare", 2], artifEvo['new_natural'])}</td>
-                        <td class="fr-text--xs ${artifEvo['new_artif'] > artifEvo['new_natural'] ? ' text-danger' : ' text-success'}">${formatData("number", ["fr-FR", "unit", "hectare", 2], artifEvo['net_artif'])}</td>
+                        <td class="fr-text--xs text-danger">${formatData('number', ['fr-FR', 'unit', 'hectare', 2], artifEvo.new_artif)}</td>
+                        <td class="fr-text--xs text-success">${formatData('number', ['fr-FR', 'unit', 'hectare', 2], artifEvo.new_natural)}</td>
+                        <td class="fr-text--xs ${artifEvo.new_artif > artifEvo.new_natural ? ' text-danger' : ' text-success'}">${formatData('number', ['fr-FR', 'unit', 'hectare', 2], artifEvo.net_artif)}</td>
                     </tr>
                 </tbody>
             </table>`
-            this.infoBoxNode.classList.add("visible")
-        }
-    }
-
-    hideInfoBox(_event) {
-        this.infoBoxNode.classList.remove("visible")
+      this.infoBoxNode.classList.add('visible')
     }
   }
 
