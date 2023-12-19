@@ -346,6 +346,7 @@ class HautsDeSeineOcsge2018(AutoOcsge):  # ok
     shape_file_path = "hauts_de_seine_ocsge_2018_corrige.zip"
     _departement = get_departement("Hauts-de-Seine")
     _year = 2018
+    make_mpoly_valid = True
 
 
 class HautsDeSeineOcsge2021(AutoOcsge):  # ok
@@ -355,6 +356,7 @@ class HautsDeSeineOcsge2021(AutoOcsge):  # ok
     shape_file_path = "hauts_de_seine_ocsge_2021_corrige.zip"
     _departement = get_departement("Hauts-de-Seine")
     _year = 2021
+    make_mpoly_valid = True
 
 
 class HautsDeSeineOcsgeZoneConstruite2018(AutoZoneConstruite):  # ok
@@ -364,6 +366,7 @@ class HautsDeSeineOcsgeZoneConstruite2018(AutoZoneConstruite):  # ok
     shape_file_path = "hauts_de_seine_zone_construite_2018_corrige.zip"
     _departement = get_departement("Hauts-de-Seine")
     _year = 2018
+    make_mpoly_valid = True
 
 
 class HautsDeSeineOcsgeZoneConstruite2021(AutoZoneConstruite):  # ok
@@ -373,6 +376,7 @@ class HautsDeSeineOcsgeZoneConstruite2021(AutoZoneConstruite):  # ok
     shape_file_path = "hauts_de_seine_zone_construite_2021_corrige.zip"
     _departement = get_departement("Hauts-de-Seine")
     _year = 2021
+    make_mpoly_valid = True
 
 
 class HautsDeSeineOcsgeDiff1821(AutoOcsgeDiff):  # ok
@@ -383,56 +387,9 @@ class HautsDeSeineOcsgeDiff1821(AutoOcsgeDiff):  # ok
     _year_new = 2021
 
     _departement = get_departement("Hauts-de-Seine")
+    make_mpoly_valid = True
 
     shape_file_path = "hauts_de_seine_diff_2018_2021_corrige.zip"
-
-
-class LandesOcsge2018(AutoOcsge):  # ok
-    class Meta:
-        proxy = True
-
-    shape_file_path = "landes_ocsge_2018_corrige.zip"
-    _departement = get_departement("Landes")
-    _year = 2018
-
-
-class LandesOcsge2021(AutoOcsge):  # ok
-    class Meta:
-        proxy = True
-
-    shape_file_path = "landes_ocsge_2021_corrige.zip"
-    _departement = get_departement("Landes")
-    _year = 2021
-
-
-class LandesOcsgeZoneConstruite2018(AutoZoneConstruite):
-    class Meta:
-        proxy = True
-
-    shape_file_path = "landes_zone_construite_2018_corrige.zip"
-    _departement = get_departement("Landes")
-    _year = 2018
-
-
-class LandesOcsgeZoneConstruite2021(AutoZoneConstruite):
-    class Meta:
-        proxy = True
-
-    shape_file_path = "landes_zone_construite_2021_corrige.zip"
-    _departement = get_departement("Landes")
-    _year = 2021
-
-
-class LandesOcsgeDiff1821(AutoOcsgeDiff):
-    class Meta:
-        proxy = True
-
-    _year_old = 2018
-    _year_new = 2021
-
-    _departement = get_departement("Landes")
-
-    shape_file_path = "landes_diff_2018_2021_corrige.zip"
 
 
 class Command(BaseCommand):
@@ -504,12 +461,6 @@ class Command(BaseCommand):
             HautsDeSeineOcsgeZoneConstruite2018,
             HautsDeSeineOcsgeZoneConstruite2021,
             HautsDeSeineOcsgeDiff1821,
-            # Landes ####
-            LandesOcsge2018,
-            LandesOcsge2021,
-            LandesOcsgeZoneConstruite2018,
-            LandesOcsgeZoneConstruite2021,
-            LandesOcsgeDiff1821,
         ]
 
         if options.get("departement"):
