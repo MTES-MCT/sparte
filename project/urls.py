@@ -134,6 +134,21 @@ urlpatterns = [
         views.ProjectReportGpuZoneFillMap.as_view(),
         name="zone-urba-fill-map",
     ),
+    path(
+        "<int:pk>/consommation/carte",
+        views.ProjectReportConsoMap.as_view(),
+        name="conso-map",
+    ),
+    path(
+        "<int:pk>/artificialisation/carte-territoire",
+        views.ProjectReportArtifTerritoryMap.as_view(),
+        name="artif-territory-map",
+    ),
+    path(
+        "<int:pk>/artificialisation/carte-villes",
+        views.ProjectReportArtifCitiesMap.as_view(),
+        name="artif-cities-map",
+    ),
     # MAP
     path(
         "<int:pk>/carte/comprendre-mon-artificialisation",

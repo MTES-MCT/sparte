@@ -40,7 +40,7 @@ Le site est désormais accessible en local à cette adresse:
 - En **local** ces valeurs doivent être dans le fichier .env à la racine du projet.
 - Pour le déploiement sur **scalingo**, ces variables sont à ajouter dans la section "Environnement" du container.
 
-| Nom | Description | Valeur locale |
+| Nom | Description | Valeur par défaut en local |
 |-----|-------------|---------------|
 | ALERT_DIAG_MEDIUM | Comment envoyer les alertes des diagnostics bloqués: mattermost, email, both | |
 | ALERT_DIAG_EMAIL_RECIPIENTS | Liste des adresses e-mails auxuqelles envoyées les alertes diagnostics bloqués | 127.0.0.1,localhost |
@@ -68,6 +68,7 @@ Le site est désormais accessible en local à cette adresse:
 | ENVIRONMENT | indique sur quel environnement est exécuté l'app. Choix possibles: local, staging, prod | local |
 | GOOGLE_ADWORDS_ACTIVATE | indique s'il faut ajouter des google tags aux pages | 1 |
 | HIGHCHART_SERVER | url pour accéder au serveur générant des images à partir de paramètres Highcharts | https://highcharts-export.osc-fr1.scalingo.io |
+| LOCAL_FILE_DIRECTORY | Emplacement des données locales (utile pour charger des shapefile en local au lieu de S3) | public_data/local_data |
 | MATTERMOST_WEBHOOK | Webhook personnel pour envoyer des messages dans Mattermost | https://mattermost.incubateur.net/hooks/uak581f8bidyxp5td67rurj5sh |
 | MATOMO_ACTIVATE | Détermine si des infos doivent être envoyé à Matomo | 0 |
 | MATOMO_SCRIPT_NAME | | |
@@ -115,7 +116,7 @@ The process is not stable yet. Use it with caution.
 3. Name zip file accordingly to expected name in [public_data/management/commands/load_ocsge.py](public_data/management/commands/load_ocsge.py). If you want to update 2016 Gers millesime, name it accordingly to what you will find in class **GersOcsge2016** and the property **shape_file_path** (which is gers_ocsge_2016.zip when writhing those lines)
 4. Upload the zip in the bucket, in data folder.
 5. Trigger the loading with the command `python scripts/cmd.py --env prod load-ocsge --item .....`, replace ... by the item you want to load (following previous example it's `python scripts/cmd.py --env local load-ocsge --item GersOcsge2016`). Obviously test it in staging first.
-6. Update all precalculated data: build_commune_data, build_artificial_area, set_density
+6. Update all precalculated data: build_commune_data, build_artificial_area
 7. Update official data origin in [gitbook](https://app.gitbook.com/o/-MMQU-ngAOgQAqCm4mf3/s/OgEtEJQsOvgZrMPdWEIo/)
 8. Update admin's [Départements](https://sparte.beta.gouv.fr/admin/public_data/departement/) if new OCS GE has been added
 
@@ -128,8 +129,7 @@ python scripts/cmd.py --env $ENV load-ocsge --item GersZoneConstruite2016 && \
 python scripts/cmd.py --env $ENV load-ocsge --item GersZoneConstruite2019 && \
 python scripts/cmd.py --env $ENV load-ocsge --item GersOcsgeDiff && \
 python scripts/cmd.py --env $ENV run 'python manage.py build_commune_data --departement Gers' && \
-python scripts/cmd.py --env $ENV run 'python manage.py build_artificial_area --departement Gers' && \
-python scripts/cmd.py --env $ENV run 'python manage.py set_density --reset --departement Gers'
+python scripts/cmd.py --env $ENV run 'python manage.py build_artificial_area --departement Gers'
 ```
 
 

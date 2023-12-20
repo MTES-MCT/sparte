@@ -2,6 +2,15 @@
 
 Ce changelog suit la méthode "keep a changelog" disponible ici: [https://keepachangelog.com/en/1.0.0/](https://keepachangelog.com/en/1.0.0/)
 
+## [4.4] Export conso - Non livré
+
+### Ajouté
+- OCS GE Seine-Et-Marne et Essonne
+
+### Modifié
+- Période par défaut d'un diagnostic élargie de 2009 à 2021
+- Carte comprendre l'OCS GE migrée vers MapLibre
+
 ## [4.3] Export conso - 2023-11-20
 
 ### Ajouté

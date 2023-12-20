@@ -14,7 +14,7 @@ Rapport consommation
 
 {% block headers %}
 {% sri_static "project/css/project.css" %}
-<meta name="htmx-config" content='{"inlineScriptNonce":"[NONE_PLACEHOLDER]"}'>
+<meta name="htmx-config" content='{"inlineScriptNonce":"[NONCE_PLACEHOLDER]"}'>
 {% endblock headers %}
 
 {% block content %}
@@ -196,21 +196,9 @@ Rapport consommation
                 </div>
                 {% if nb_communes > 1 %}
                 <div class="fr-col-12 fr-col-lg-4">
-                    <div class="border theme-map-image-container h-100 fr-p-2w d-flex flex-column align-items-center justify-content-between">
-                        <div class="d-flex justify-content-end align-items-center w-100 fr-mb-2w">
-                            <a href="{% url 'project:theme-city-conso' project.pk %}" target="_blank">
-                                <button class="fr-btn fr-icon-external-link-line fr-btn--tertiary fr-btn--sm"></button>
-                            </a>
-                        </div>
-                        <p class="fw-bold">Carte consommation d'espaces des communes du territoire sur la période (en Ha)</p>
-                        {% if project.theme_map_conso %}
-                        <img src="{{ project.theme_map_conso.url }}" alt="Carte consommation d'espaces des communes du territoire sur la période (en Ha)">
-                        {% else %}
-                        <div class="skeleton-loader"></div>
-                        {% endif %}
-                    </div>
+                    {% include "project/partials/conso_map.html" %}
                 </div>
-               {% endif %}
+                {% endif %}
             </div>
 
             <div class="fr-callout bg-white fr-p-2w mt-4">
@@ -528,7 +516,7 @@ Rapport consommation
 {% display_chart 'chart_determinant' determinant_per_year_chart CSP_NONCE %}
 {% display_chart 'pie_determinant' determinant_pie_chart CSP_NONCE %}
 
-<script language="javascript" nonce="[NONE_PLACEHOLDER]">
+<script language="javascript" nonce="[NONCE_PLACEHOLDER]">
     ///////////////////////////////
     // Select / unselect all
     ///////////////////////////////

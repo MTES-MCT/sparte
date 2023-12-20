@@ -83,3 +83,4 @@ class Command(BaseCommand):
                 CommunePop.objects.bulk_create(todo)
                 del todo
                 todo = []
+        CommunePop.objects.bulk_create(todo)

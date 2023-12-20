@@ -25,10 +25,10 @@ Afin de se référer à un Land, on utilise un identifiant unique :
     REGION_[ID]
     COMMUNE_[ID]
 """
-import re
 from typing import Literal
 
 from django.contrib.gis.db import models
+from django.contrib.postgres.fields import ArrayField
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db.models import Sum
@@ -235,7 +235,10 @@ class Region(LandMixin, GetDataFromCeremaMixin, models.Model):
     default_analysis_level = AdminRef.DEPARTEMENT
 
     def get_ocsge_millesimes(self) -> set:
-        return {millesime for dept in self.departement_set.all() for millesime in dept.get_ocsge_millesimes()}
+        millesimes = set()
+        for dept in self.departement_set.all():
+            millesimes.update(dept.ocsge_millesimes)
+        return millesimes
 
     @classmethod
     def search(cls, needle, region=None, departement=None, epci=None):
@@ -266,7 +269,7 @@ class Departement(LandMixin, GetDataFromCeremaMixin, models.Model):
     source_id = models.CharField("Identifiant source", max_length=50)
     region = models.ForeignKey(Region, on_delete=models.CASCADE)
     is_artif_ready = models.BooleanField("Données artif disponibles", default=False)
-    ocsge_millesimes = models.CharField("Millesimes OCSGE dispo", max_length=100, null=True)
+    ocsge_millesimes = ArrayField(models.IntegerField(), null=True, blank=True)
     name = models.CharField("Nom", max_length=50)
     mpoly = models.MultiPolygonField()
 
@@ -274,13 +277,6 @@ class Departement(LandMixin, GetDataFromCeremaMixin, models.Model):
 
     land_type = AdminRef.DEPARTEMENT
     default_analysis_level = AdminRef.SCOT
-
-    def get_ocsge_millesimes(self) -> set:
-        """Return the list of all OCSGE millesimes (years) available for this dept."""
-        if not self.ocsge_millesimes:
-            return set()
-        matches = re.finditer(r"([\d]{4,4})", self.ocsge_millesimes)
-        return {int(m.group(0)) for m in matches}
 
     def get_qs_cerema(self):
         return Cerema.objects.filter(dept_id=self.source_id)
@@ -314,13 +310,6 @@ class Scot(LandMixin, GetDataFromCeremaMixin, models.Model):
     land_type = AdminRef.SCOT
     default_analysis_level = AdminRef.EPCI
 
-    # def get_ocsge_millesimes(self) -> set:
-    #     """Return the list of all OCSGE millesimes (years) available for this dept."""
-    #     if not self.ocsge_millesimes:
-    #         return list()
-    #     matches = re.finditer(r"([\d]{4,4})", self.ocsge_millesimes)
-    #     return {int(m.group(0)) for m in matches}
-
     def get_qs_cerema(self):
         return Cerema.objects.filter(city_insee__in=self.commune_set.values("insee"))
 
@@ -334,7 +323,7 @@ class Scot(LandMixin, GetDataFromCeremaMixin, models.Model):
     def search(cls, needle, region=None, departement=None, epci=None):
         qs = cls.objects.filter(name__unaccent__trigram_word_similar=needle)
         if region:
-            qs = qs.filter(region=region)
+            qs = qs.filter(regions=region)
         if departement:
             qs = qs.filter(id=departement.id)
         qs = qs.order_by("name")
@@ -353,7 +342,10 @@ class Epci(LandMixin, GetDataFromCeremaMixin, models.Model):
     default_analysis_level = AdminRef.COMMUNE
 
     def get_ocsge_millesimes(self) -> set:
-        return {millesime for dept in self.departements.all() for millesime in dept.get_ocsge_millesimes()}
+        millesimes = set()
+        for dept in self.departements.all():
+            millesimes.update(dept.ocsge_millesimes)
+        return millesimes
 
     @property
     def is_artif_ready(self):
@@ -396,6 +388,12 @@ class Commune(DataColorationMixin, LandMixin, GetDataFromCeremaMixin, models.Mod
 
     # Calculated fields
     map_color = models.CharField("Couleur d'affichage", max_length=30, null=True, blank=True)
+    first_millesime = models.IntegerField(
+        "Premier millésime disponible",
+        validators=[MinValueValidator(2000), MaxValueValidator(2050)],
+        blank=True,
+        null=True,
+    )
     last_millesime = models.IntegerField(
         "Dernier millésime disponible",
         validators=[MinValueValidator(2000), MaxValueValidator(2050)],
@@ -409,6 +407,10 @@ class Commune(DataColorationMixin, LandMixin, GetDataFromCeremaMixin, models.Mod
         decimal_places=4,
         blank=True,
         null=True,
+    )
+    ocsge_available = models.BooleanField(
+        "Statut de couverture OCSGE",
+        default=False,
     )
 
     # DataColorationMixin properties that need to be set when heritating
@@ -428,7 +430,7 @@ class Commune(DataColorationMixin, LandMixin, GetDataFromCeremaMixin, models.Mod
         return f"{self.name} ({self.insee})"
 
     def get_ocsge_millesimes(self) -> set:
-        return self.departement.get_ocsge_millesimes()
+        return self.departement.ocsge_millesimes
 
     def get_cities(self):
         return [self]

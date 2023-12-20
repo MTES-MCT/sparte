@@ -15,7 +15,7 @@ Carte thématique - {{ map_name }}
 {% sri_static "carto/css/leaflet.css" %}
 {% sri_static "carto/css/theme_map.css" %}
 {% sri_static "carto/js/map.js" %}
-<style nonce="[NONE_PLACEHOLDER]">
+<style nonce="[NONCE_PLACEHOLDER]">
 html, body {
     height: 100% !important;
 }
@@ -36,7 +36,7 @@ html, body {
 
 {% block bodyend %}
 {% localize off %}
-<script language="javascript" nonce="[NONE_PLACEHOLDER]">
+<script language="javascript" nonce="[NONCE_PLACEHOLDER]">
 geolayers = [
 {% for layer in layer_list %}
     {
