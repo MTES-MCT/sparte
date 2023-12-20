@@ -30,7 +30,6 @@ admin.site.site_header = f"Mon Diagnostic Artificialisation v{settings.OFFICIAL_
 urlpatterns = [
     path("boom/", trigger_error),
     path("", include("home.urls")),
-    path("admin/clearcache/", include("clearcache.urls")),
     path("admin/", admin.site.urls),
     path("users/", include("users.urls")),
     path("public/", include("public_data.urls")),

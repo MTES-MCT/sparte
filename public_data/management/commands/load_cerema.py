@@ -159,8 +159,7 @@ class LoadCerema(TruncateTableMixin, AutoLoadMixin, Cerema):
         cls.objects.update(**kwargs)
 
     @classmethod
-    def clean_data(cls, clean_queryset=None):
-        # cls.objects.all().delete()
+    def clean_data(cls):
         cls.truncate()
 
 
@@ -179,14 +178,13 @@ class Command(BaseCommand):
             help="Use local file instead of s3",
         )
 
-    def handle(self, *args, **options):
+    def handle(self, *args, **kwargs):
         logger.info("Load Cerema")
-        kwargs = {
-            "verbose": options.get("verbose", False),
-            "strict": False,
-            "silent": False,
-            "shp_file": options.get("local_file", ""),
-        }
-        logger.debug("kwargs: %s", kwargs)
-        LoadCerema.load(**kwargs)
-        logger.info("End Cerema")
+
+        LoadCerema.load(
+            verbose=kwargs.get("verbose", False),
+            layer_mapper_strict=False,
+            layer_mapper_silent=False,
+        )
+
+        logger.info("End loading Cerema")

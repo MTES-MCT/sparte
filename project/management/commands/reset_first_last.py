@@ -9,17 +9,18 @@ logger = logging.getLogger("management.commands")
 
 
 class Command(BaseCommand):
-    help = "Reset all projects data, usefull when updating all precalculated fields"
+    help = "Reset first and last ocsge for all projects"
 
     def handle(self, *args, **options):
-        logger.info("Reevaluate indicators for all project")
-        qs = Project.objects.all()
-        logger.info("%d projects", qs.count())
-        for project in qs:
-            try:
-                logger.info("Process project %d", project.id)
-                find_first_and_last_ocsge(project)
-                project.save()
-            except Exception as e:
-                logger.error("Failed for project=%d, error=%s", project.id, e)
+        logger.info("Reevaluate ocsge millesimes for all project")
+
+        projects = Project.objects.all()
+        count = projects.count()
+
+        logger.info(f"Resetting first and last ocsge for {count} projects")
+
+        for i, project in enumerate(projects):
+            logger.info(f"{i + 1}/{count} - Process project {project.id}")
+            find_first_and_last_ocsge(project.id)
+
         logger.info("End reevaluation")

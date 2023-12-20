@@ -1,3 +1,4 @@
+from django.contrib.gis.db.models import Func
 from django.contrib.gis.db.models.functions import Area, Intersection, Transform
 from django.contrib.gis.geos import MultiPolygon, Polygon
 from django.db.models import DecimalField, Manager, QuerySet, Sum
@@ -46,3 +47,20 @@ def fix_poly(field):
         return field
     else:
         raise TypeError("Field should be Polygon or MultiPolygon")
+
+
+class Buffer(Func):
+    """Make a buffer arround a mpoly.
+
+    Add an outputfield to ensure the result is a MultiPolygon.
+    >>> Buffer("intersection", buffer_width, output_field=MultiPolygonField())
+
+    To get meters when srid=4326, use:
+    >>> buffer_width = 5 / 40000000.0 * 360.0  # 5 meters
+    """
+
+    function = "ST_Buffer"
+    arity = 2
+
+    def __init__(self, expression, radius, **extra):
+        super().__init__(expression, radius, **extra)

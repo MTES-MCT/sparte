@@ -22,6 +22,7 @@ def get_django_type(oft_type):
         "OFTInteger": "IntegerField",
         "OFTReal": "FloatField",
         "OFTInteger64": "IntegerField",
+        "OFTDate": "DateField",
     }
     try:
         return transco[oft_type.__name__]
@@ -70,7 +71,7 @@ class Command(BaseCommand):
         layer = datasource[0]
 
         class_name = to_camel_case(layer)
-        print(f"class {class_name}(AutoLoad):")
+        print(f"class {class_name}(AutoLoadMixin):")
 
         mapping = dict()
         for i, field_name in enumerate(layer.fields):

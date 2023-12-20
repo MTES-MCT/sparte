@@ -99,53 +99,51 @@ class Command(BaseCommand):
         city = qs.first()
         self.build_data(city)
 
-    def build_data(self, city):
-        qs = Ocsge.objects.intersect(city.mpoly)
-        # find most recent millesime
-        try:
-            ocsge = qs.latest("year")
-        except Ocsge.DoesNotExist:
-            # nothing to calculate
+    def __calculate_surface_artif(self, city: Commune):
+        city.surface_artif = (
+            Ocsge.objects.intersect(city.mpoly)
+            .filter(
+                is_artificial=True,
+                year=city.last_millesime,
+                departement_id=city.departement_id,
+            )
+            .aggregate(surface_artif=cast_sum_area("intersection_area"))["surface_artif"]
+        )
+
+    def build_data(self, city: Commune):
+        if not city.ocsge_available:
+            logger.info(f"No OCSGE data available for {city.name}. Maybe you forgot to run setup_dept?")
             return
-        city.last_millesime = ocsge.year
-        qs = qs.filter(year=ocsge.year, is_artificial=True)
-        result = qs.aggregate(surface_artif=cast_sum_area("intersection_area"))
-        city.surface_artif = result["surface_artif"]
+
+        self.__calculate_surface_artif(city)
+
         city.save()
+
         self.build_commune_sol(city)
         self.build_commune_diff(city)
 
-    def build_commune_sol(self, city):
-        # Prep data for couverture and usage in CommuneSol
-        # clean data first
+    def build_commune_sol(self, city: Commune):
         CommuneSol.objects.filter(city=city).delete()
-        qs = Ocsge.objects.intersect(city.mpoly)
-        qs = qs.exclude(matrix=None)
-        qs = qs.values("matrix_id", "year")
-        qs = qs.annotate(surface=cast_sum_area("intersection_area"))
+        qs = (
+            Ocsge.objects.intersect(city.mpoly)
+            .filter(departement_id=city.departement_id)
+            .exclude(matrix=None)
+            .values("matrix_id", "year")
+            .annotate(surface=cast_sum_area("intersection_area"))
+        )
         CommuneSol.objects.bulk_create([CommuneSol(city=city, **_) for _ in qs])
 
     def build_commune_diff(self, city):
-        # prep data for artif report in CommuneDiff
-        qs = OcsgeDiff.objects.intersect(city.mpoly)
-        qs = qs.values("year_old", "year_new")
-        qs = qs.annotate(
-            new_artif=cast_sum_area("intersection_area", filter=Q(is_new_artif=True)),
-            new_natural=cast_sum_area("intersection_area", filter=Q(is_new_natural=True)),
-            net_artif=F("new_artif") - F("new_natural"),
+        CommuneDiff.objects.filter(city=city).delete()
+        qs = (
+            OcsgeDiff.objects.intersect(city.mpoly)
+            .filter(departement_id=city.departement_id)
+            .values("year_old", "year_new")
+            .annotate(
+                new_artif=cast_sum_area("intersection_area", filter=Q(is_new_artif=True)),
+                new_natural=cast_sum_area("intersection_area", filter=Q(is_new_natural=True)),
+                net_artif=F("new_artif") - F("new_natural"),
+            )
         )
 
-        for result in qs:
-            try:
-                # try to fetch the line if exists
-                city_data = CommuneDiff.objects.get(
-                    city=city,
-                    year_old=result["year_old"],
-                    year_new=result["year_new"],
-                )
-                city_data.new_artif = result["new_artif"]
-                city_data.new_natural = result["new_natural"]
-                city_data.net_artif = result["net_artif"]
-                city_data.save()
-            except CommuneDiff.DoesNotExist:
-                city_data = CommuneDiff.objects.create(city=city, **result)
+        CommuneDiff.objects.bulk_create([CommuneDiff(city=city, **_) for _ in qs])
