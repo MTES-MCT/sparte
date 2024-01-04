@@ -104,7 +104,7 @@ class Command(BaseCommand):
         if not qs.exists():
             return
         qs = (
-            qs.annotate(intersection=Intersection("mpoly", city.mpoly))
+            qs.annotate(intersection=Intersection(MakeValid("mpoly"), city.mpoly))
             .annotate(intersection_area=Area(Transform("intersection", 2154)))
             .values("year")
             .annotate(geom=MakeValid(Union("intersection")), surface=Sum("intersection_area"))

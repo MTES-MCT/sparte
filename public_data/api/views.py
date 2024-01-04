@@ -114,7 +114,7 @@ class OptimizedMixins:
 
 
 class OnlyBoundingBoxMixin:
-    optimized_geo_field = "st_AsGeoJSON(ST_Intersection(mpoly, b.box), 6, 0)"
+    optimized_geo_field = "st_AsGeoJSON(ST_Intersection(ST_MakeValid(mpoly), b.box), 6, 0)"
 
     def get_sql_from(self) -> str:
         from_parts = [

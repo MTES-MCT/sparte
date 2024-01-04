@@ -13,7 +13,6 @@ from django.db import connection
 
 from public_data.storages import DataStorage
 from utils.colors import get_onecolor_gradient, get_random_color, is_valid
-from utils.db import make_multipolygon_valid
 
 logger = logging.getLogger(__name__)
 
@@ -26,14 +25,6 @@ class AutoLoadMixin:
     * shape_file_path - usually shape file is in media directory
     * mapping - between feature name and database field name
     Those two needs to be set in child class.
-    """
-
-    make_mpoly_valid = False
-    """
-    If True, make geometries valid before loading data.
-    Only works if the target geometry is MultiPolygon.
-    NOTE: this is a hack not a fix, please delete this as soon
-    as possible.
     """
 
     @property
@@ -62,8 +53,6 @@ class AutoLoadMixin:
 
     def before_save(self) -> None:
         """Hook to set data before saving"""
-        if self.make_mpoly_valid:
-            self.mpoly = make_multipolygon_valid(self.mpoly)
 
     def save(self, *args, **kwargs):
         self.before_save()
