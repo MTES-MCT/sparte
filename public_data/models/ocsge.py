@@ -19,7 +19,12 @@ problème de performance
 
 """
 from django.contrib.gis.db import models
-from django.contrib.gis.db.models.functions import Area, Intersection, MakeValid
+from django.contrib.gis.db.models.functions import (
+    Area,
+    Intersection,
+    MakeValid,
+    Transform,
+)
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db.models import Sum
 
@@ -74,9 +79,8 @@ class Ocsge(TruncateTableMixin, DataColorationMixin, models.Model):
         """
         qs = cls.objects.filter(year=year)
         qs = qs.filter(mpoly__intersects=coveredby)
-
         qs = qs.annotate(intersection=Intersection(MakeValid("mpoly"), coveredby.make_valid()))
-        qs = qs.annotate(intersection_surface=Area(DynamicSRIDTransform("intersection", "srid_source")))
+        qs = qs.annotate(intersection_surface=Area(Transform("intersection", 2154)))
         qs = qs.values(field_group_by).order_by(field_group_by)
         qs = qs.annotate(total_surface=Sum("intersection_surface"))
         data = {_[field_group_by]: _["total_surface"].sq_m / 10000 for _ in qs}

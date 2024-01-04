@@ -101,7 +101,7 @@ class Command(BaseCommand):
 
         qs = (
             qs.annotate(intersection=Intersection(MakeValid("mpoly"), city.mpoly))
-            .annotate(intersection_area=Area(DynamicSRIDTransform("intersection", "srid_source")))
+            .annotate(intersection_area=Area(Transform("intersection", 2154)))
             .values("year")
             .annotate(geom=MakeValid(Union("intersection")), surface=Sum("intersection_area"))
         )

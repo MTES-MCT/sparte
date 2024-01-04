@@ -1,43 +1,18 @@
-from django.contrib.gis.db.models.functions import Area, Intersection, Transform
-from django.contrib.gis.geos import (
-    GeometryCollection,
-    LineString,
-    MultiPoint,
-    MultiPolygon,
-    Point,
-    Polygon,
+from logging import getLogger
+
+from django.contrib.gis.db.models.functions import (
+    Area,
+    Intersection,
+    MakeValid,
+    Transform,
 )
+from django.contrib.gis.geos import GeometryCollection, MultiPolygon, Polygon
 from django.db.models import DecimalField, Manager, QuerySet, Sum
 from django.db.models.functions import Cast, Coalesce
 
-from public_data.models.enums import SRID
-
 logger = getLogger(__name__)
 
-Zero = Area(Polygon(((0, 0), (0, 0), (0, 0), (0, 0)), srid=SRID.LAMBERT_93))
-
-
-class DynamicSRIDTransform(Func):
-    """
-    The built-in Transform function cannot dynamically get the srid
-    of a field to perform the transformation. This function allows
-    to do so.
-
-    NOTE: outputs MultiPolygon by default. Override output_field to
-    change this.
-
-    Examples:
-    >>> DynamicSRIDTransform('mpoly', 'srid_source')
-    >>> DynamicSRIDTransform('mpoly', 2154)
-    >>> DynamicSRIDTransform('mpoly', 'srid_source', output_field=PolygonField())
-    """
-
-    function = "ST_Transform"
-    arity = 2
-    output_field = MultiPolygonField()
-
-    def __init__(self, expression, srid_source, **extra):
-        super().__init__(expression, srid_source, **extra)
+Zero = Area(Polygon(((0, 0), (0, 0), (0, 0), (0, 0)), srid=2154))
 
 
 def cast_sum_area(field, filter=None, divider=10000):
@@ -74,63 +49,27 @@ class IntersectManager(IntersectMixin, Manager):
 def fix_poly(field) -> MultiPolygon:
     if isinstance(field, Polygon):
         return MultiPolygon(field)
-    elif isinstance(field, MultiPolygon):
+
+    if isinstance(field, MultiPolygon):
         return field
-    else:
-        raise TypeError(f"Field should be Polygon or MultiPolygon. Found: {field.geom_type}")
 
+    if isinstance(field, GeometryCollection):
+        multipolygon = MultiPolygon()
 
-def __buffer_geometry_and_make_it_valid(
-    geom: LineString | Point | MultiPoint,
-) -> Polygon | MultiPolygon | GeometryCollection:
-    """
-    NOTE: please delete me with the make_multipolygon_valid function below
-    as soon as possible.
-    """
-    buffered = geom.buffer(0.0000000001).make_valid()
+        for geom_part in field:
+            if isinstance(geom_part, Polygon):
+                multipolygon.append(geom_part)
+            elif isinstance(geom_part, MultiPolygon):
+                multipolygon.extend(geom_part)
+            else:
+                logger.info(
+                    msg=(
+                        f"GeometryCollection contains unexpected type: {geom_part.geom_type}.",
+                        "This is probably the result of MakeValid.",
+                        "Ignored",
+                    )
+                )
 
-    if (
-        not isinstance(buffered, Polygon)
-        and not isinstance(buffered, MultiPolygon)
-        and not isinstance(buffered, GeometryCollection)
-    ):
-        raise Exception(f"Unexpected geometry type while make geometry valid: {geom.geom_type}")
+        return multipolygon
 
-    return buffered
-
-
-def make_multipolygon_valid(
-    geom: MultiPolygon | Polygon | LineString | MultiPoint | Point | GeometryCollection,
-) -> MultiPolygon:
-    """
-    This command will recursively make a geom into a valid multipolygon
-    from a geometry of various type.
-
-    Multiparts geometries (GeometryCollection, Multipoint etc ...) will be
-    converted to polygons, adn assembled into a multipolygon.
-
-    Already valid multipolygon will be returned as is.
-
-    NOTE: The function will not erase all topological errors, the output
-    should always checked manually before being used. Delete this function
-    when the data is fixed upstream and loadable. I repeat, this function
-    is a hack, it is not a future proof fix.
-    """
-    ouput_geom = None
-    geom = geom.make_valid()
-
-    if isinstance(geom, MultiPolygon):
-        ouput_geom = geom
-    elif isinstance(geom, Polygon):
-        ouput_geom = MultiPolygon(geom)
-    elif isinstance(geom, LineString) or isinstance(geom, MultiPoint) or isinstance(geom, Point):
-        ouput_geom = make_multipolygon_valid(__buffer_geometry_and_make_it_valid(geom))
-    elif isinstance(geom, GeometryCollection):
-        ouput_geom = MultiPolygon()
-
-        for geom_part in geom:
-            ouput_geom.extend(make_multipolygon_valid(geom_part))
-    else:
-        raise Exception(f"Unexpected input geometry type while making a valid multipolygon : {geom.geom_type}")
-
-    return ouput_geom
+    raise TypeError(f"Field should be Polygon or MultiPolygon. Found: {field.geom_type}")

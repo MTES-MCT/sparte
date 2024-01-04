@@ -92,8 +92,7 @@ class ZoneUrbaFrance(AutoLoadMixin, ZoneUrba):
             SELECT
                 pdz.id,
                 pdo.year,
-                ST_Area(ST_Transform(ST_Union(ST_Intersection(ST_MakeValid(pdo.mpoly), pdz.mpoly)), pdz.srid_source))
-                / 10000
+                ST_Area(ST_Transform(ST_Union(ST_Intersection(ST_MakeValid(pdo.mpoly), pdz.mpoly)), 2154)) / 10000
                 AS artificial_area
             FROM
                 public_data_zoneurba pdz
