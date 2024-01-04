@@ -84,15 +84,24 @@ class ZoneUrbaFrance(AutoLoadMixin, ZoneUrba):
         cls.objects.filter(typezone__in=["Nh", "Nd"]).update(typezone="N")
         cls.objects.filter(typezone="Ah").update(typezone="A")
         logger.info("Fill up table ZoneUrbaArtificialArea")
-        artif_area_query = (
-            "insert into public_data_artifareazoneurba (zone_urba_id, year, area) "
-            "select pdz.id, pdo.year, ST_Area(ST_Transform(ST_Union(ST_Intersection(pdo.mpoly, pdz.mpoly)), 2154)) "
-            "/ 10000 as artificial_area "
-            "from public_data_zoneurba pdz left join public_data_artifareazoneurba pda on pda.zone_urba_id = pdz.id "
-            "inner join public_data_ocsge pdo on ST_Intersects(pdo.mpoly, pdz.mpoly) and is_artificial = true "
-            "where pda.id is null "
-            "group by pdz.id, pdo.year;"
-        )
+        artif_area_query = """
+            INSERT INTO public_data_artifareazoneurba (zone_urba_id, year, area)
+            SELECT
+                pdz.id,
+                pdo.year,
+                ST_Area(ST_Transform(ST_Union(ST_Intersection(ST_MakeValid(pdo.mpoly), pdz.mpoly)), 2154)) / 10000
+                AS artificial_area
+            FROM
+                public_data_zoneurba pdz
+            LEFT JOIN
+                public_data_artifareazoneurba pda
+            ON pda.zone_urba_id = pdz.id
+            INNER JOIN
+                public_data_ocsge pdo
+            ON ST_Intersects(pdo.mpoly, pdz.mpoly) AND is_artificial = true
+            WHERE pda.id is null
+            GROUP BY pdz.id, pdo.year;
+        """
         with connection.cursor() as cursor:
             cursor.execute(artif_area_query)
 
