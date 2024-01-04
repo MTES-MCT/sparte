@@ -72,4 +72,4 @@ def fix_poly(field) -> MultiPolygon:
 
         return multipolygon
 
-    raise TypeError(f"Field should be Polygon or MultiPolygon. Found: {field.geom_type}")
+    raise TypeError(f"Field should be Polygon, MultiPolygon or GeometryCollection. Found: {field.geom_type}")
