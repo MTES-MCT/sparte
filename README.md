@@ -114,7 +114,7 @@ The process is not stable yet. Use it with caution.
 2. Extract shape files and zip them by name, remove anysubfolder, the zip should contain only files
 3. Name zip file accordingly to expected name in [public_data/management/commands/config_load_ocsge.json](public_data/management/commands/config_load_ocsge.json).
 4. Upload the zip in the bucket, in data folder.
-5. Load the data with the command `python scripts/cmd.py --env prod load_ocsge --departement Gers`
+5. Load the data with the command `python scripts/cmd.py --env prod load_ocsge --departement=Gers`
 6. Update all precalculated data: build_commune_data, build_artificial_area
 7. Update official data origin in [gitbook](https://app.gitbook.com/o/-MMQU-ngAOgQAqCm4mf3/s/OgEtEJQsOvgZrMPdWEIo/)
 8. Update admin's [Départements](https://sparte.beta.gouv.fr/admin/public_data/departement/) if new OCS GE has been added

@@ -1,0 +1,52 @@
+{
+    "Essonne": {
+        "2018": "essonne_ocsge_2018.zip",
+        "2018_zc": "essonne_zone_construite_2018.zip",
+        "2021": "essonne_ocsge_2021.zip",
+        "2021_zc": "essonne_zone_construite_2021.zip",
+        "2018_2021_diff": "essonne_diff_2018_2021.zip"
+    },
+    "Gers": {
+        "2016": "gers_ocsge_2016.zip",
+        "2016_zc": "gers_zone_construite_2016.zip",
+        "2019": "gers_ocsge_2019.zip",
+        "2019_zc": "gers_zone_construite_2019.zip",
+        "2016_2019_diff": {
+            "path": "gers_diff_2016_2019.zip",
+            "mapping": {
+                "cs_old": "cs_apres",
+                "us_old": "us_apres",
+                "cs_new": "cs_avant",
+                "us_new": "us_avant",
+                "mpoly": "MULTIPOLYGON"
+            }
+        }
+    },
+    "Hauts-de-Seine": {
+        "2018": "hauts_de_seine_ocsge_2018_corrige.zip",
+        "2018_zc": "hauts_de_seine_zone_construite_2018_corrige.zip",
+        "2021": "hauts_de_seine_ocsge_2021_corrige.zip",
+        "2021_zc": "hauts_de_seine_zone_construite_2021_corrige.zip",
+        "2018_2021_diff": "hauts_de_seine_diff_2018_2021_corrige.zip"
+    },
+    "Landes": {
+        "2018": "landes_ocsge_2018.zip",
+        "2018_zc": "landes_zone_constuite_2018.zip",
+        "2021": "landes_ocsge_2021.zip",
+        "2021_zc": "landes_zone_constuite_2021.zip",
+        "2018_2021_diff": "landes_diff_2018_2021.zip"
+    },
+    "Seine-et-Marne": {
+        "2017": "seine_et_marne_ocsge_2017.zip",
+        "2017_zc": {
+            "path": "seine_et_marne_zone_construite_2017.zip",
+            "mapping": { "mpoly": "MULTIPOLYGON" }
+        },
+        "2021": "seine_et_marne_ocsge_2021.zip",
+        "2021_zc": {
+            "path": "seine_et_marne_zone_construite_2021.zip",
+            "mapping": { "mpoly": "MULTIPOLYGON" }
+        },
+        "2017_2021_diff": "seine_et_marne_diff_2017_2021.zip"
+    }
+}
