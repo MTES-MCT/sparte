@@ -12,8 +12,8 @@ logger = logging.getLogger("management.commands")
 class Command(BaseCommand):
     help = "Dedicated to load migrate data for 4.4.1 deployment"
 
-    def load_departement(self, departement: Departement, ocsge_items: List[str]):
-        call_command("load_ocsge", item=ocsge_items)
+    def load_departement(self, departement: Departement, years: List[int]):
+        call_command("load_ocsge", departement=departement.name, year_range=years)
         call_command("setup_dept")
 
         call_command("build_commune_data", departement=departement.name, verbose=True)
@@ -29,25 +29,8 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         logger.info("Start load_441")
 
-        hauts_de_seine_ocsge_items = [
-            "HautsDeSeineOcsge2018",
-            "HautsDeSeineOcsge2021",
-            "HautsDeSeineOcsgeZoneConstruite2018",
-            "HautsDeSeineOcsgeZoneConstruite2021",
-            "HautsDeSeineOcsgeDiff1821",
-        ]
-
-        self.load_departement(Departement.objects.get(name="Hauts-de-Seine"), hauts_de_seine_ocsge_items)
-
-        landes_ocsge_items = [
-            "LandesOcsge2018",
-            "LandesOcsge2021",
-            "LandesOcsgeZoneConstruite2018",
-            "LandesOcsgeZoneConstruite2021",
-            "LandesOcsgeDiff1821",
-        ]
-
-        self.load_departement(Departement.objects.get(name="Landes"), landes_ocsge_items)
+        self.load_departement(departement=Departement.objects.get(name="Hauts-de-Seine"), years=[2018, 2021])
+        self.load_departement(departement=Departement.objects.get(name="Landes"), years=[2018, 2021])
 
         call_command("maintenance", off=True)
         logger.info("End load_441")

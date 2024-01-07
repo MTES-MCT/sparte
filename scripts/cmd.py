@@ -277,16 +277,14 @@ def mep_260(ctx):
 
 @cli.command()
 @click.pass_context
-def mep_440(ctx):
-    # TODO: remove this command once it has run on staging and production
+def load_441(ctx):
+    """Trigger all data transformation to successful MEP release 4.4.1"""
     connecter = ScalingoInterface(ctx.obj)
     connecter.detached = True
 
-    click.secho("Start MEP 440 Migration", fg="cyan")
+    connecter.manage_py("load_441")
 
-    connecter.manage_py("mep_440")
-
-    click.secho("End MEP 440 migration", fg="cyan")
+    click.secho("End load 4.4.1 migration", fg="cyan")
 
 
 if __name__ == "__main__":
