@@ -1,6 +1,8 @@
 from django.urls import path
 from rest_framework import routers
 
+from public_data.api.search import SearchLandApiView
+
 from .api.views import (
     ArtificialAreaViewSet,
     CommuneViewSet,
@@ -25,6 +27,7 @@ app_name = "public_data"
 urlpatterns = [
     path("matrix", DisplayMatrix.as_view(), name="matrix"),
     path("grid", grid_views, name="grid"),
+    path("search-land", SearchLandApiView.as_view(), name="search-land"),
 ]
 
 

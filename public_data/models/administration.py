@@ -25,7 +25,7 @@ Afin de se référer à un Land, on utilise un identifiant unique :
     REGION_[ID]
     COMMUNE_[ID]
 """
-from typing import Literal
+from typing import Dict, Literal
 
 from django.contrib.gis.db import models
 from django.contrib.postgres.fields import ArrayField
@@ -622,12 +622,14 @@ class Land:
         return cls.Meta.subclasses[land_type.upper()]
 
     @classmethod
-    def search(cls, needle, region=None, departement=None, epci=None, search_for=None):
+    def search(cls, needle, region=None, departement=None, epci=None, search_for=None) -> Dict[str, models.QuerySet]:
         """Search for a keyword on all land subclasses"""
         if not search_for:
             return dict()
-        elif search_for == "*":
+
+        if search_for == "*":
             search_for = cls.Meta.subclasses.keys()
+
         return {
             name: subclass.search(needle, region=region, departement=departement, epci=epci)
             for name, subclass in cls.Meta.subclasses.items()
