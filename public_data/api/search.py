@@ -1,8 +1,9 @@
 from rest_framework import serializers
 from rest_framework.decorators import APIView
 from rest_framework.response import Response
+from rest_framework.throttling import UserRateThrottle
 
-from public_data.models import AdminRef, Commune, Departement, Epci, Land, Region, Scot
+from public_data.models import Commune, Departement, Epci, Land, Region, Scot
 
 
 class SearchLandSerializer(serializers.Serializer):
@@ -32,11 +33,17 @@ class LandSerializer(serializers.Serializer):
         elif isinstance(obj, Scot):
             return obj.siren
 
-        raise Exception("Unknown type")
+        raise Exception("Unknown land type")
+
+
+class SearchLandApiThrottle(UserRateThrottle):
+    # Note: this will not work locally, as the throttling is managed with the cache
+    rate = "2/second"
 
 
 class SearchLandApiView(APIView):
     serializer_class = SearchLandSerializer
+    throttle_classes = [SearchLandApiThrottle]
 
     def post(self, request, format=None) -> Response:
         serializer = SearchLandSerializer(data=request.data)
@@ -55,6 +62,6 @@ class SearchLandApiView(APIView):
         output = {}
 
         for land_type, lands in results.items():
-            output[AdminRef.get_label(land_type)] = LandSerializer(lands, many=True).data
+            output[land_type] = LandSerializer(lands, many=True).data
 
         return Response(data=output)
