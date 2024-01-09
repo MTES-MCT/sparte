@@ -45,7 +45,7 @@ class SearchLandApiView(APIView):
     serializer_class = SearchLandSerializer
     throttle_classes = [SearchLandApiThrottle]
 
-    def post(self, request, format=None) -> Response:
+    def post(self, request) -> Response:
         serializer = SearchLandSerializer(data=request.data)
 
         if not serializer.is_valid():
