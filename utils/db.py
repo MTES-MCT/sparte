@@ -14,6 +14,20 @@ Zero = Area(Polygon(((0, 0), (0, 0), (0, 0), (0, 0)), srid=SRID.LAMBERT_93))
 
 
 class DynamicSRIDTransform(Func):
+    """
+    The built-in Transform function cannot dynamically get the srid
+    of a field to perform the transformation. This function allows
+    to do so.
+
+    NOTE: outputs MultiPolygon by default. Override output_field to
+    change this.
+
+    Examples:
+    >>> DynamicSRIDTransform('mpoly', 'srid_source')
+    >>> DynamicSRIDTransform('mpoly', 2154)
+    >>> DynamicSRIDTransform('mpoly', 'srid_source', output_field=PolygonField())
+    """
+
     function = "ST_Transform"
     arity = 2
     output_field = MultiPolygonField()
