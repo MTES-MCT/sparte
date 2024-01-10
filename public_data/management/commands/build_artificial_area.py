@@ -1,17 +1,12 @@
 import logging
 
 from django.contrib.gis.db.models import Union
-from django.contrib.gis.db.models.functions import (
-    Area,
-    Intersection,
-    MakeValid,
-    Transform,
-)
+from django.contrib.gis.db.models.functions import Area, Intersection, MakeValid
 from django.core.management.base import BaseCommand
 from django.db.models import Q, Sum
 
 from public_data.models import ArtificialArea, Commune, Departement, Ocsge, Region
-from utils.db import fix_poly
+from utils.db import DynamicSRIDTransform, fix_poly
 
 logger = logging.getLogger("management.commands")
 
@@ -104,11 +99,9 @@ class Command(BaseCommand):
         if not qs.exists():
             return
 
-        first_srid_source = qs.first().srid_source
-
         qs = (
             qs.annotate(intersection=Intersection(MakeValid("mpoly"), city.mpoly))
-            .annotate(intersection_area=Area(Transform("intersection", first_srid_source)))
+            .annotate(intersection_area=Area(DynamicSRIDTransform("intersection", "srid_source")))
             .values("year")
             .annotate(geom=MakeValid(Union("intersection")), surface=Sum("intersection_area"))
         )

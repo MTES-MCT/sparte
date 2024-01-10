@@ -1,11 +1,14 @@
 from functools import cache
 from typing import Self
 
-from django.contrib.gis.db.models.functions import Area, Transform
+from django.contrib.gis.db.models.functions import Area
 from django.core.management.base import BaseCommand
 from django.db.models import DecimalField, Q
 from django.db.models.functions import Cast
+from django.contrib.gis.db.models.functions import Area
 from django.core.management.base import BaseCommand
+from django.db.models import DecimalField
+from django.db.models.functions import Cast
 
 from public_data.models import (
     CouvertureUsageMatrix,
@@ -16,6 +19,7 @@ from public_data.models import (
     ZoneConstruite,
 )
 from public_data.models.mixins import AutoLoadMixin
+from utils.db import DynamicSRIDTransform
 
 
 @cache
@@ -65,14 +69,13 @@ class AutoOcsgeDiff(AutoLoadMixin, OcsgeDiff):
 
     @classmethod
     def calculate_fields(cls) -> None:
-        # TODO: use dynamic transform
         cls.objects.filter(
             departement=cls._departement,
             year_new=cls._year_new,
             year_old=cls._year_old,
         ).update(
             surface=Cast(
-                Area(Transform("mpoly", 2154)),
+                Area(DynamicSRIDTransform("mpoly", "srid_source")),
                 DecimalField(max_digits=15, decimal_places=4),
             )
         )
@@ -121,13 +124,12 @@ class AutoOcsge(AutoLoadMixin, Ocsge):
 
     @classmethod
     def calculate_fields(cls) -> None:
-        # TODO: use dynamic transform
         cls.objects.filter(
             departement=cls._departement,
             year=cls._year,
         ).update(
             surface=Cast(
-                Area(Transform("mpoly", 2154)),
+                Area(DynamicSRIDTransform("mpoly", "srid_source")),
                 DecimalField(max_digits=15, decimal_places=4),
             )
         )
@@ -144,9 +146,8 @@ class AutoZoneConstruite(AutoLoadMixin, ZoneConstruite):
     }
 
     def save(self, *args, **kwargs) -> Self:
-        # TODO: use dynamic transform
         self.year = int(self._year)
-        self.surface = self.mpoly.transform(2154, clone=True).area
+        self.surface = self.mpoly.transform(self.srid_source, clone=True).area
         self.departement = self._departement
         return super().save(*args, **kwargs)
 
