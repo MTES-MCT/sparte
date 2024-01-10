@@ -16,7 +16,7 @@ from django.views.generic import (
 from django.views.generic.edit import FormMixin
 
 from project import tasks
-from project.forms import KeywordForm, SelectTerritoryForm, UpdateProjectForm
+from project.forms import KeywordForm, SelectTerritoryForm, UpdateProjectForm, UpdateProjectPeriodForm
 from project.models import Project, create_from_public_key
 from public_data.models import AdminRef, Land, LandException
 from utils.views_mixins import BreadCrumbMixin, RedirectURLMixin
@@ -136,17 +136,45 @@ class ProjectUpdateView(GroupMixin, UpdateView):
         return redirect("project:splash", pk=self.object.id)
 
 
-class SetProjectPeriodView(ProjectUpdateView):
+class SetProjectPeriodView(GroupMixin, RedirectURLMixin, UpdateView):
+    model = Project
     template_name = "project/partials/report_set_period.html"
-    
-    class Meta:
-        model = Project
-        fields = [
-            "analyse_start_date",
-            "analyse_end_date",
-        ]
+    form_class = UpdateProjectPeriodForm
 
-        
+    def get_context_data(self, **kwargs):
+        project = self.get_object()
+
+        kwargs.update(
+            {
+                "diagnostic": project,
+                "next": self.request.build_absolute_uri(reverse_lazy("project:splash", kwargs={'pk':self.object.id})),
+            }
+        )
+        return super().get_context_data(**kwargs)
+                   
+    def form_valid(self, form):
+        """If the form is valid, save the associated model."""
+        from metabase.tasks import async_create_stat_for_project
+
+        self.object = form.save()
+
+        celery.chain(
+            tasks.find_first_and_last_ocsge.si(self.object.id),
+            tasks.calculate_project_ocsge_status.si(self.object.id),
+            celery.group(
+                tasks.generate_theme_map_conso.si(self.object.id),
+                tasks.generate_theme_map_artif.si(self.object.id),
+                tasks.generate_theme_map_understand_artif.si(self.object.id),
+            ),
+            async_create_stat_for_project.si(self.object.id, do_location=False),
+        ).apply_async()
+
+        return self.render_to_response(
+                self.get_context_data(success_message=True),
+                # headers={"HX-Redirect": reverse_lazy("project:splash", pk=self.object.id)},
+            )
+
+
 class ProjectDeleteView(GroupMixin, LoginRequiredMixin, DeleteView):
     model = Project
     template_name = "project/delete.html"

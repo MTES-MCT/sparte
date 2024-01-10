@@ -67,5 +67,19 @@ class UpdateProjectForm(forms.ModelForm):
         return super().save(*args, **kwargs)
 
 
+class UpdateProjectPeriodForm(forms.ModelForm):
+
+    class Meta:
+        model = Project
+        fields = [
+            "analyse_start_date",
+            "analyse_end_date",
+        ]
+
+    def save(self, *args, **kwargs):
+        self.instance._change_reason = "update_project"
+        return super().save(*args, **kwargs)
+
+
 class FilterAUUTable(forms.Form):
     page_number = forms.IntegerField(required=False)
