@@ -291,15 +291,8 @@ def mep_441(ctx):
 @click.pass_context
 def load_drom_com(ctx):
     connecter = ScalingoInterface(ctx.obj)
-
-    connecter.manage_py("load_cerema --item LoadCeremaMetropole")
-    connecter.manage_py("load_cerema --item LoadCeremaGuadeloupe")
-    connecter.manage_py("load_cerema --item LoadCeremaMartinique")
-    connecter.manage_py("load_cerema --item LoadCeremaGuyane")
-    connecter.manage_py("load_cerema --item LoadCeremaLaReunion")
-
-    connecter.manage_py("build_administrative_layers")
-    connecter.manage_py("load_insee")
+    connecter.detached = True
+    connecter.manage_py(management_command_name="load_drom_com")
 
 
 if __name__ == "__main__":
