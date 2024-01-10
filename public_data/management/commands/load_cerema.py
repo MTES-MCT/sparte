@@ -170,6 +170,11 @@ class LoadCeremaMetropole(BaseLoadCerema):
 
 
 class BaseLoadCeremaDromCom(BaseLoadCerema):
+    """
+    Base class for DROM COM
+    NOTE: we exclude surfcom2022 and artcom2020 because they are not available for DROM COM
+    """
+
     class Meta:
         proxy = True
 
