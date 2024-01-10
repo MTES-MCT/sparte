@@ -1,17 +1,26 @@
 {% load crispy_forms_tags %}
 
+<script language="javascript" nonce="[NONE_PLACEHOLDER]">
+    modal = bootstrap.Modal.getInstance(document.getElementById("fr-modal-update-period"))
+    modal._config.backdrop = true
+    modal._config.keyboard = true
+    document.getElementById("close-update-period").disabled = false
+</script>
+
 {% if success_message %}
     <div class="fade-in fr-alert fr-alert--success fr-alert--sm" role="alert">
         <h3 class="fr-alert__title">La période de votre diagnostic a été mise à jour.</h3>
+        <p>Vous allez être redirigé sur la page de construction de votre diagnostic.</p>
     </div>
 
-    {% comment %} <script language="javascript" nonce="[NONE_PLACEHOLDER]">
+    <script language="javascript" nonce="[NONE_PLACEHOLDER]">
         setTimeout(() => {
-            const modal = bootstrap.Modal.getInstance(document.getElementById("setTarget"))
             if (modal)
                 modal.hide()
-        }, 1800)
-    </script> {% endcomment %}
+
+            window.location.replace('{{next}}')
+        }, 2500)
+    </script>
 {% else %}
     <form hx-post="{% url 'project:set-period' project.pk %}" hx-ext="disable-element" hx-disable-element="#set_period_btn">
         {% csrf_token %}
@@ -22,4 +31,14 @@
             </li>
         </ul>
     </form>
+
+    <script language="javascript" nonce="[NONE_PLACEHOLDER]">
+        document.getElementById("set_period_btn").onclick = function() {
+            if (modal) {
+                modal._config.backdrop = false
+                modal._config.keyboard = false
+                document.getElementById("close-update-period").disabled = true
+            }
+        }
+    </script>
 {% endif %}
