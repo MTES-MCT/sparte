@@ -99,11 +99,9 @@ class Command(BaseCommand):
         if not qs.exists():
             return
 
-        first_srid_source = qs.first().srid_source
-
         qs = (
             qs.annotate(intersection=Intersection(MakeValid("mpoly"), city.mpoly))
-            .annotate(intersection_area=Area(Transform("intersection", first_srid_source)))
+            .annotate(intersection_area=Area(DynamicSRIDTransform("intersection", "srid_source")))
             .values("year")
             .annotate(geom=MakeValid(Union("intersection")), surface=Sum("intersection_area"))
         )
