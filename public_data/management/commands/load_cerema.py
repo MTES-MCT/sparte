@@ -116,7 +116,6 @@ class BaseLoadCerema(AutoLoadMixin, Cerema):
         "art21fer22": "ART21FER22",
         "art21inc22": "ART21INC22",
         "mpoly": "MULTIPOLYGON",
-        "srid_source": "sridsource",
         # mis dans la table tel quel (pas d'usage à date)
         "naf09art22": "NAF09ART22",
         "art09act22": "ART09ACT22",
@@ -182,6 +181,7 @@ class LoadCeremaGuadeloupe(BaseLoadCeremaDromCom):
         proxy = True
 
     shape_file_path = "obs_artif_conso_com_2009_2022_971.zip"
+    srid = SRID.WGS_84_UTM_ZONE_20
 
     @classmethod
     def clean_data(cls):
@@ -193,6 +193,7 @@ class LoadCeremaMartinique(BaseLoadCeremaDromCom):
         proxy = True
 
     shape_file_path = "obs_artif_conso_com_2009_2022_972.zip"
+    srid = SRID.WGS_84_UTM_ZONE_20
 
     @classmethod
     def clean_data(cls):
@@ -204,6 +205,7 @@ class LoadCeremaGuyane(BaseLoadCeremaDromCom):
         proxy = True
 
     shape_file_path = "obs_artif_conso_com_2009_2022_973.zip"
+    srid = SRID.RGFG_95_UTM_ZONE_22N
 
     @classmethod
     def clean_data(cls):
@@ -215,6 +217,7 @@ class LoadCeremaLaReunion(BaseLoadCeremaDromCom):
         proxy = True
 
     shape_file_path = "obs_artif_conso_com_2009_2022_974.zip"
+    srid = SRID.RGR_92_UTM_ZONE_40S
 
     @classmethod
     def clean_data(cls):
@@ -238,6 +241,7 @@ class Command(BaseCommand):
         parser.add_argument(
             "--item",
             type=str,
+            nargs="+",
             help="Load only a specific drom com",
         )
 
@@ -262,7 +266,7 @@ class Command(BaseCommand):
         ]
 
         if item_name_filter:
-            items = [i for i in item_list if i.__name__ == item_name_filter]
+            items = [i for i in item_list if i.__name__ in item_name_filter]
 
             if not items:
                 raise Exception(f"Item {item_name_filter} not found. Maybe you forgot to add it to the item_list?")

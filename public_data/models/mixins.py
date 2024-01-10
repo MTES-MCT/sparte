@@ -1,21 +1,21 @@
-import logging
+from logging import DEBUG, INFO, getLogger
 from os import getenv
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from typing import Dict
 from zipfile import ZipFile
 
-import geopandas
 import numpy as np
 from colour import Color
 from django.contrib.gis.utils import LayerMapping
 from django.core.exceptions import FieldDoesNotExist
 from django.db import connection
 
+from public_data.models.enums import SRID
 from public_data.storages import DataStorage
 from utils.colors import get_onecolor_gradient, get_random_color, is_valid
 
-logger = logging.getLogger(__name__)
+logger = getLogger(__name__)
 
 LOCAL_FILE_DIRECTORY = getenv("LOCAL_FILE_DIRECTORY")
 
@@ -52,8 +52,17 @@ class AutoLoadMixin:
         """
         raise NotImplementedError("The mapping property must be set in child class")
 
+    @property
+    def srid(self) -> int:
+        """
+        SRID of the source shapefile
+        Defaults to LAMBERT_93, override if needed
+        """
+        return SRID.LAMBERT_93
+
     def before_save(self) -> None:
-        """Hook to set data before saving"""
+        if hasattr(self.__class__, "srid_source"):
+            self.srid_source = self.__class__.srid
 
     def save(self, *args, **kwargs):
         self.before_save()
@@ -82,17 +91,6 @@ class AutoLoadMixin:
             shape_file_path: path to the shapefile to prepare
             (provided by the load method)
         """
-
-    @classmethod
-    def __common_prepare_shapefile(cls, shape_file_path: Path) -> None:
-        cls.prepare_shapefile(shape_file_path=shape_file_path)
-
-        # set srid_source if the target model has a srid_source field
-
-        if getattr(cls, "srid_source", None):
-            gdf = geopandas.read_file(shape_file_path)
-            gdf["sridsource"] = gdf.crs.to_epsg()
-            gdf.to_file(shape_file_path, driver="ESRI Shapefile")
 
     def __check_path_is_a_regular_file(path: Path) -> None:
         if not path.is_file():
@@ -194,7 +192,7 @@ class AutoLoadMixin:
             NotImplementedError: if the child class does not implement the shape_file_path property
         """
 
-        logger.setLevel(logging.DEBUG if verbose else logging.INFO)
+        logger.setLevel(DEBUG if verbose else INFO)
 
         logger.info("Loading data from class %s", cls.__name__)
 
@@ -231,7 +229,7 @@ class AutoLoadMixin:
 
             logger.info("Preparing shapefile")
 
-            cls.__common_prepare_shapefile(shape_file_path)
+            cls.prepare_shapefile(shape_file_path)
 
             logger.info("Cleaning previously loaded data")
 

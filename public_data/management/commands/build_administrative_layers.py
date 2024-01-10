@@ -186,8 +186,17 @@ class Command(BaseCommand):
         epcis = {e.source_id: e for e in Epci.objects.all()}
         qs = Cerema.objects.all().order_by("city_insee")
         paginator = Paginator(qs, 1000)
-        logger.info("%d Communes found in %d pages", paginator.count, paginator.num_pages)
-        # TODO : fix
+        logger.info("%d Communes found ", qs.count())
+
+        should_only_load_missing_communes = not table_was_cleaned
+
+        if should_only_load_missing_communes:
+            qs = qs.exclude(city_insee__in=Commune.objects.values_list("insee", flat=True))
+
+        logger.info("%d Communes to load ", qs.count())
+
+        paginator = Paginator(object_list=qs, per_page=1000)
+
         for page in paginator.page_range:
             Commune.objects.bulk_create(
                 (
@@ -197,30 +206,12 @@ class Command(BaseCommand):
                         departement=depts[data.dept_id],
                         epci=epcis[data.epci_id],
                         mpoly=fix_poly(data.mpoly),
-                        area=data.mpoly.transform(2154, clone=True).area / 10000,
+                        area=data.mpoly.transform(data.srid_source, clone=True).area / 10000,
+                        srid_source=data.srid_source,
                     )
+                    for data in paginator.page(page)
                 )
-                logger.info("Page %d/%d done", page, paginator.num_pages)
+            )
+            logger.info("Page %d/%d done", page, paginator.num_pages)
 
-            logger.info("Done loading Communes")
-        else:
-            total_created = 0
-
-            for data in qs:
-                _, created = Commune.objects.get_or_create(
-                    insee=data.city_insee,
-                    defaults={
-                        "name": data.city_name,
-                        "departement": depts[data.dept_id],
-                        "epci": epcis[data.epci_id],
-                        "mpoly": fix_poly(data.mpoly),
-                        "srid_source": data.srid_source,
-                    },
-                )
-
-                if created:
-                    total_created += 1
-                    if total_created % 10 == 0:
-                        logger.info("%d Communes created", total_created)
-
-            logger.info("%d Communes created", total_created)
+        logger.info("Done loading Communes")

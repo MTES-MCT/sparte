@@ -29,7 +29,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db.models import Sum
 
 from public_data.models.enums import SRID
-from utils.db import IntersectManager
+from utils.db import DynamicSRIDTransform, IntersectManager
 
 from .couverture_usage import CouvertureUsageMatrix
 from .mixins import DataColorationMixin, TruncateTableMixin
@@ -80,13 +80,11 @@ class Ocsge(TruncateTableMixin, DataColorationMixin, models.Model):
         """
         qs = cls.objects.filter(year=year)
         qs = qs.filter(mpoly__intersects=coveredby)
+
         qs = qs.annotate(intersection=Intersection(MakeValid("mpoly"), coveredby.make_valid()))
-        # TODO: use dynamic transform
-        qs = qs.annotate(intersection_surface=Area(Transform("intersection", 2154)))
+        qs = qs.annotate(intersection_surface=Area(DynamicSRIDTransform("intersection", "srid_source")))
         qs = qs.values(field_group_by).order_by(field_group_by)
         qs = qs.annotate(total_surface=Sum("intersection_surface"))
-        # il n'y a pas les hectares dans l'objet area, on doit faire une conversion
-        # 1 m² ==> 0,0001 hectare
         data = {_[field_group_by]: _["total_surface"].sq_m / 10000 for _ in qs}
         return data
 
