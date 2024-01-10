@@ -1,9 +1,11 @@
 import logging
 from pathlib import Path
 
+from django.contrib.gis.db.models.functions import Area
 from django.core.management.base import BaseCommand
 from django.db import connection
-from django.db.models import F
+from django.db.models import DecimalField, F
+from django.db.models.functions import Cast
 
 from public_data.models import ZoneUrba
 from public_data.models.mixins import AutoLoadMixin
@@ -73,12 +75,12 @@ class ZoneUrbaFrance(AutoLoadMixin, ZoneUrba):
             cursor.execute(make_valid_mpoly_query)
         logger.info("Evaluate area")
 
-        gpu_objects_without_area = cls.objects.filter(area__isnull=True)
-
-        for gpu in gpu_objects_without_area:
-            gpu.area = gpu.mpoly.transform(gpu.srid_source, clone=True).area / 10000
-
-        cls.objects.bulk_update(objs=gpu_objects_without_area, fields=["area"], batch_size=1000)
+        cls.objects.filter(area__isnull=True).update(
+            area=Cast(
+                Area(DynamicSRIDTransform("mpoly", 2154)) / 10000,
+                DecimalField(max_digits=15, decimal_places=4),
+            )
+        )
 
         logger.info("Clean typezone")
         cls.objects.update(origin_typezone=F("typezone"))
