@@ -56,7 +56,10 @@ class AutoLoadMixin:
     def srid(self) -> int:
         """
         SRID of the source shapefile
-        Defaults to LAMBERT_93, override if needed
+        Defaults to LAMBERT_93, override if needed.
+
+        NOTE: getting the SRID from the shapefile is not 100% reliable
+        hence the need to set it manually.
         """
         return SRID.LAMBERT_93
 
