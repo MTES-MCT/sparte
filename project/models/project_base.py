@@ -223,18 +223,16 @@ class Project(BaseProject):
     )
 
     analyse_start_date = models.CharField(
-        "Année de début de période d'analyse",
+        "Année de début de période du diagnostic",
         choices=ANALYZE_YEARS,
         default="2015",
         max_length=4,
-        help_text="Utile pour analyser votre territoire sur une période différente.",
     )
     analyse_end_date = models.CharField(
-        "Année de fin de période d'analyse",
+        "Année de fin de période du diagnostic",
         choices=ANALYZE_YEARS,
         default="2018",
         max_length=4,
-        help_text="Utile pour analyser votre territoire sur une période différente.",
     )
     level = models.CharField(
         "Niveau d'analyse",

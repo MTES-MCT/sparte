@@ -169,10 +169,7 @@ class SetProjectPeriodView(GroupMixin, RedirectURLMixin, UpdateView):
             async_create_stat_for_project.si(self.object.id, do_location=False),
         ).apply_async()
 
-        return self.render_to_response(
-                self.get_context_data(success_message=True),
-                # headers={"HX-Redirect": reverse_lazy("project:splash", pk=self.object.id)},
-            )
+        return self.render_to_response(self.get_context_data(success_message=True))
 
 
 class ProjectDeleteView(GroupMixin, LoginRequiredMixin, DeleteView):

@@ -81,7 +81,7 @@ class UpdateProjectPeriodForm(forms.ModelForm):
         start_date = cleaned_data.get('analyse_start_date')
         end_date = cleaned_data.get('analyse_end_date')
         if start_date > end_date:
-            raise forms.ValidationError("La date de début de période ne peut pas être supérieure à la date de fin de période.")
+            raise forms.ValidationError({"analyse_start_date": "L'année de début de période ne peut pas être supérieure à l'année de fin de période."})
         return cleaned_data
 
     def save(self, *args, **kwargs):
