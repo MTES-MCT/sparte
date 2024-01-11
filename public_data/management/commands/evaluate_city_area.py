@@ -13,5 +13,5 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         logger.info("Start evaluation of city area")
-        Commune.objects.all().update(area=Area(Transform("mpoly", 2154)))
+        Commune.objects.all().update(area=Area(Transform("mpoly", 2154)) / 10000)
         logger.info("End evaluation of city area")
