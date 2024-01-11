@@ -221,8 +221,7 @@ class Command(BaseCommand):
                         departement=depts[data.dept_id],
                         epci=epcis[data.epci_id],
                         mpoly=fix_poly(data.mpoly),
-                        area=data.mpoly.transform(data.srid_source, clone=True).area / 10000,
-                        srid_source=data.srid_source,
+                        area=data.mpoly.transform(2154, clone=True).area / 10000,
                     )
                     for data in paginator.page(page)
                 )
