@@ -157,12 +157,12 @@ function Carto(map_center, default_zoom) {
         }
 
         // Choix du fond de carte
-        let ortho = L.tileLayer(
-                'https://wxs.ign.fr/{ignApiKey}/geoportail/wmts?' +
+        L.tileLayer(
+                'https://data.geopf.fr/wmts?' +
                 '&REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0&TILEMATRIXSET=PM' +
                 '&LAYER={ignLayer}&STYLE={style}&FORMAT={format}' +
                 '&TILECOL={x}&TILEROW={y}&TILEMATRIX={z}', {
-                    attribution: '<a target="_blank" href="https://www.geoportail.gouv.fr/">Geoportail France</a>',
+                    attribution: '<a target="_blank" href="https://www.ign.fr/geoplateforme">Geoplateforme</a>',
                     ignApiKey: 'ortho',
                     ignLayer: 'ORTHOIMAGERY.ORTHOPHOTOS',
                     style: 'normal',
