@@ -65,7 +65,7 @@ class BaseMap(GroupMixin, DetailView):
                 "key": "limites-administratives-source",
                 "params": {
                     "type": "vector",
-                    "url": "https://data.geopf.fr/tms/1.0.0/ADMIN_EXPRESS/metadata.json",
+                    "url": "https://wxs.ign.fr/administratif/geoportail/tms/1.0.0/ADMIN_EXPRESS/metadata.json",
                 },
             },
         ] + list(sources)
