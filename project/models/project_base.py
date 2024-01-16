@@ -586,7 +586,8 @@ class Project(BaseProject):
         lands = list()
         to_remove = list()
         try:
-            public_keys = {_ for _ in self.look_a_like.split(";")}
+            # TODO: use ArrayField in models
+            public_keys = {_ for _ in self.look_a_like.split(";") if _}
         except AttributeError:
             public_keys = set()
         for public_key in public_keys:
