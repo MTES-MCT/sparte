@@ -9,14 +9,57 @@ Créer un diagnostic
 
 {% block headers %}
 <style nonce="[NONCE_PLACEHOLDER]">
+#results {
+    position: absolute;
+    width: 100%;
+    top: 100%;
+    max-height: 200px;
+    overflow: auto;
+    border-radius: 0 0 .25rem .25rem;
+    background: #ffffff;
+}
+
+.search-bar-icon {
+    border-radius: 0 .25rem 0 0;
+    flex: 1 0 auto;
+    font-size: 1rem;
+    line-height: 1.5rem;
+    height: 2.5rem;
+    width: 2.5rem;
+    overflow: hidden;
+    padding: .5rem;
+    white-space: nowrap;
+    background: darkblue;
+    position: relative;
+}
+
+.search-bar-icon span::before {
+    background-color: #fff;
+}
+
+.search-bar-icon .fr-custom-loader--button {
+    color: #fff;
+    transform: translate(-50%, -50%);
+    top: 50%;
+}
+
 .level {
     font-weight: 600;
     background: #EAEAEA;
+    padding: 8px 10px;
 }
 
 .territory {
     display: flex;
     align-items: center;
+    padding: 5px 10px;
+    transition: all .1s ease;
+}
+
+.territory:hover {
+    background-color: #C1C1FB;
+    color: darkblue;
+    cursor: pointer;
 }
 </style>
 {% endblock headers %}
@@ -25,127 +68,30 @@ Créer un diagnostic
 <div class="row w-100 justify-content-center">
     <div class="col-12 col-md-8 col-lg-6">
 
-        <h2 class="my-5">Sélectionner un territoire à diagnostiquer</h2>
+        <h2 class="my-5">Sélectionnez un territoire à diagnostiquer</h2>
 
-        <form id="main-form" class="row align-items-center" method="post">
-            {% csrf_token %}
-            <label class="visually-hidden" for="inlineFormInputGroupUsername">Mot clé</label>
-
-            <div class="fr-search-bar fr-search-bar--lg" id="search-2" role="search">
-                <label class="fr-label" for="search-787-input">
-                    Recherche
-                </label>
-                <input class="fr-input" placeholder="Saisissez le nom du territoire que vous recherchez" type="search" id="search-787-input" name="query" value="{{ form.cleaned_data.keyword }}" hx-trigger="keyup changed" hx-post="{% url 'public_data:search-land' %}" hx-target="#results" hx-include="closest form"
-                >
-                <button class="fr-btn">
-                    Rechercher
-                </button>
-             </div>
-
-            <input type="hidden" name="selection" id="id_selection" value="">
-
-            <div class="accordion mt-3" id="filter-panels">
-                <div class="accordion-item">
-                    <div class="accordion-header" id="filter-heading">
-                        <button class="accordion-button-custom{% if not form.cleaned_data.region %} collapsed{% endif %} fs-5 text-muted" type="button" data-bs-toggle="collapse" data-bs-target="#filter-collapse" aria-expanded="{% if form.cleaned_data.region %} true{% else %} false{% endif %}" aria-controls="filter-collapse">
-                            Filtres avancés
-                        </button>
-                    </div>
-                    <div id="filter-collapse" class="accordion-collapse collapse{% if form.cleaned_data.region %} show{% endif %}" aria-labelledby="filter-heading">
-                        <div class="accordion-body border-1">
-                            <div class="container">
-                                <div class="row row-cols-1 row-cols-md-2">
-                                    <div class="col mb-5 border-start">
-                                        <p class="fs-5 text-muted">Restreindre les résultats à une zone géographique.</p>
-                                        <table class="border-0 fs-5 text-muted">
-                                            <tr>
-                                                <td width="200">Une région :</td>
-                                                <td>{{ form.region }}</td>
-                                            </tr>
-                                            {% if form.cleaned_data.region %}
-                                            <tr>
-                                                <td>Un département :</td>
-                                                <td>{{ form.departement }}</td>
-                                            </tr>
-                                            {% endif %}
-                                            {% if form.cleaned_data.departement %}
-                                            <tr>
-                                                <td>Un EPCI :</td>
-                                                <td>{{ form.epci }}</td>
-                                            </tr>
-                                            {% endif %}
-                                        </table>
-                                    </div>
-                                    <div class="col border-start mb-auto">
-                                        <p class="fs-5 text-muted mb-0">Vous recherchez :</p>
-                                        <div class="ps-0 form-check form-switch mb-0">
-                                            {{ form.search_commune }}
-                                            <label class="form-check-label fs-5 text-muted" for="id_search_commune">une commune</label>
-                                        </div>
-                                        <div class="ps-0 form-check form-switch mb-0">
-                                            {{ form.search_epci }}
-                                            <label class="form-check-label fs-5 text-muted" for="id_search_epci">un EPCI</label>
-                                        </div>
-                                        <div class="ps-0 form-check form-switch mb-0">
-                                            {{ form.search_scot }}
-                                            <label class="form-check-label fs-5 text-muted" for="id_search_scot">un SCoT</label>
-                                        </div>
-                                        <div class="ps-0 form-check form-switch mb-0">
-                                            {{ form.search_departement }}
-                                            <label class="form-check-label fs-5 text-muted" for="id_search_departement">un département</label>
-                                        </div>
-                                        <div class="ps-0 form-check form-switch">
-                                            {{ form.search_region }}
-                                            <label class="form-check-label fs-5 text-muted" for="id_search_region">une région</label>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+        <div class="fr-search-bar position-relative" id="search-2" role="search">
+            <label class="fr-label" for="search-787-input">
+                Recherche
+            </label>
+            <input class="fr-input" placeholder="Saisissez le nom du territoire que vous recherchez" type="search" onkeyup="handleChange(event)" autocomplete="off">
+            <div class="search-bar-icon">
+                <span id="icon-search" class="fr-icon-search-line" aria-hidden="true"></span>
+                <div  id="icon-loader" class="fr-custom-loader--button" aria-hidden="true" hidden></div>
             </div>
-        </form>
-
-        <div id="results">
+            <div id="results" class="fr-card--shadow"></div>
         </div>
-        {% if results %}
-        <h3 class="my-5">Résultats</h3>
-
-        <div class="accordion" id="results-panel">
-            {% for land, data in results.items %}
-            <div class="accordion-item">
-              <h2 class="accordion-header" id="{{ land }}-heading">
-
-                <button class="accordion-button{% if not data %} collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#{{ land }}-collapse" aria-expanded="{% if data %}true{% else %}false{% endif %}" aria-controls="{{ land }}-collapse" {% if not data %} disabled{% endif %}>
-                    <span class="badge bg-light float-end text-dark me-5">{{ data|length }}</span> {{ land }}
-                </button>
-              </h2>
-              <div id="{{ land }}-collapse" class="accordion-collapse collapse{% if data %} show{% endif %}" aria-labelledby="{{ land }}-heading">
-                <div class="accordion-body">
-                    {% for result in data %}
-                    <div class="position-relative">
-                        <a href="#" class="stretched-link" public-key="{{ result.public_key }}">
-                            {{ result.name }} {% if result.insee %}({{ result.insee }}){% endif %}
-                        </a>
-                    </div>
-                {% endfor %}
-                </div>
-              </div>
-            </div>
-            {% endfor %}
-        </div>
-
-        {% else %}
-            <div class="my-5">Commencez une recherche</div>
-        {% endif %}
-
     </div>
 </div>
 {% endblock content %}
 
 {% block bodyend %}
 <script language="javascript" nonce="[NONCE_PLACEHOLDER]">
+    const results = document.getElementById('results')
+    const searchInput = document.getElementById('search-territory')
+    const iconSearch = document.getElementById('icon-search')
+    const iconLoader = document.getElementById('icon-loader')
+
     const levels = {
         COMM: 'Commune',
         EPCI: 'EPCI',
@@ -154,28 +100,62 @@ Créer un diagnostic
         REGION: 'Région',
     }
 
-    document.addEventListener('htmx:afterRequest', function (event) {
-        // Vérifiez si la demande provient de l'élément avec l'ID "results"
-        if (event.detail.target.id === 'results') {
-            var results = JSON.parse(event.detail.xhr.response);
-
-            // Injectez les résultats dans la div #results
-            document.getElementById('results').innerHTML = `<h3 class="my-5">Résultats</h3>
-                ${Object.keys(results).map((key) => {
-                    if (results[key].length > 0)
-                        return `<div class="level">${levels[key]}</div>${results[key].map((obj) => `<div class="territory"><div class="territory__name">${obj.name}</div><div class="territory__id">(${obj.source_id})</div></div>`).join("")}`
-                }).join("")}
-            `;
+    const debounce = (func, timeout = 300) => {
+        let timer
+        return (...args) => {
+            clearTimeout(timer)
+            timer = setTimeout(() => { func.apply(this, args) }, timeout)
         }
-    });
-    
-$(".stretched-link").click(function(){
-    $("#id_selection").val($(this).attr("public-key"))
-    $("#main-form").submit()
-})
+    }
 
-$('#id_region').on('change', function(){ $(this).closest('form').submit() })
-$('#id_departement').on('change', function(){ $(this).closest('form').submit() })
-$('#id_epci').on('change', function(){ $(this).closest('form').submit() })
+    const handleChange = debounce((event) => searchTerritory(event.target.value), 300)
+    
+    const searchTerritory = (value) => {
+        if (value.length <= 1) {
+            results.innerHTML = ''
+
+            return
+        }
+
+        toggleLoader(true)
+
+        fetch('{% url "public_data:search-land" %}', {
+            method: 'POST',
+            body: JSON.stringify({
+                query: value,
+            }),
+            headers: {
+                'X-CSRFToken': '{{csrf_token}}',
+                'Content-type': 'application/json; charset=UTF-8',
+            },
+        })
+        .then((response) => {
+            return response.json()
+        })
+        .then((response) => {
+            results.innerHTML = Object.keys(response)
+            .map((key) => {
+                if (response[key].length > 0)
+                    return `
+                        <div class="level">${levels[key]}</div>
+                        ${response[key].map(obj => (
+                            `<div class="territory">
+                                <div>${obj.name}</div>
+                                <div class="text-muted fr-ml-2v">(${obj.source_id})</div>
+                            </div>`
+                        )).join('')}
+                    `
+            }).join('')
+        })
+        .catch((error) => console.log("Erreur : " + error))
+        .finally(() => {
+            toggleLoader(false)
+        })
+    }
+
+    const toggleLoader = (value) => {
+        iconSearch.hidden = value
+        iconLoader.hidden = !value  
+    }
 </script>
 {% endblock bodyend %}
