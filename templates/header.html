@@ -29,11 +29,11 @@
                 <div class="fr-header__tools">
                     <div class="fr-header__tools-links">
                         <ul class="fr-btns-group">
+                            {% if request.resolver_match.url_name not in 'home,create' %}
                             <li>
-                                <a class="fr-btn" href="{% url 'project:create' %}">
-                                    Créer un diagnostic
-                                </a>
+                                {% include "project/partials/search.html" with advanced_search=0 %}
                             </li>
+                            {% endif %}
                             {% if user.is_authenticated %}
                             <li>
                                 <button class="fr-btn" aria-expanded="false" aria-controls="menu-mon-compte">Mon compte</button>

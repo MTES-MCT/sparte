@@ -24,6 +24,7 @@
       </div>
       <div class="fr-col fr-col-12 fr-col-md-8">
         <p>Estimez la trajectoire d'une collectivité selon sa consommation d'espaces des 10 dernières années et ses projets d'aménagement à l'horizon 2031.</p>
+        {% include "project/partials/search.html" with advanced_search=0 %}
       </div>
     </div>
   </div>
@@ -79,22 +80,6 @@
             </div>
           </div>
         </div>
-      </div>
-    </div>
-    <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--center fr-pt-6w">
-      <div class="fr-col-12 fr-col-md-6">
-        <form action="{% url 'project:create' %}" method="post">
-          {% csrf_token %}
-          <input type="hidden" name="search_region" value="on">
-          <input type="hidden" name="search_departement" value="on">
-          <input type="hidden" name="search_scot" value="on">
-          <input type="hidden" name="search_epci" value="on">
-          <input type="hidden" name="search_commune" value="on">
-          <div class="fr-search-bar fr-search-bar--lg" role="search">
-            <input class="fr-input" placeholder="Saisissez le nom d'un territoire" type="search" name="keyword" >
-            <button class="fr-btn" id="search-territory">Rechercher</button>
-          </div>
-        </form>
       </div>
     </div>
   </div>
@@ -183,8 +168,8 @@ window.onload = function(event) {
   _paq.push(['trackEvent', 'north_star_activation_funnel', 'open_homepage', 'step_0_north_star_activation_funnel'])
 }
 
-document.getElementById('search-territory').onclick = function() {
+{% comment %} document.getElementById('search-territory').onclick = function() {
   _paq.push(['trackEvent', 'north_star_activation_funnel', 'search_territory', 'step_1_north_star_activation_funnel'])
-};
+}; {% endcomment %}
 </script>
 {% endblock tagging %}

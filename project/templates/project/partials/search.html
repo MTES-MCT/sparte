@@ -1,0 +1,221 @@
+{% load crispy_forms_tags %}
+
+{% block headers %}
+<style nonce="[NONCE_PLACEHOLDER]">
+#results {
+    position: absolute;
+    width: 100%;
+    top: 100%;
+    max-height: 200px;
+    overflow: auto;
+    border-radius: 0 0 .25rem .25rem;
+    background: #ffffff;
+}
+
+.fr-search-bar--red .fr-input {
+    box-shadow: inset 0 -2px 0 0 #F76161;
+    outline: none;
+}
+
+.search-bar-icon {
+    border-radius: 0 .25rem 0 0;
+    flex: 1 0 auto;
+    font-size: 1rem;
+    line-height: 1.5rem;
+    height: 2.5rem;
+    width: 2.5rem;
+    overflow: hidden;
+    padding: .5rem;
+    white-space: nowrap;
+    position: relative;
+}
+
+.fr-search-bar--red .search-bar-icon {
+    background: #F76161;
+}
+
+.search-bar-icon span::before {
+    background-color: #fff;
+}
+
+.search-bar-icon .fr-custom-loader--button {
+    color: #fff;
+    transform: translate(-50%, -50%);
+    top: 50%;
+}
+
+.level {
+    font-weight: 600;
+    background: #EAEAEA;
+    padding: 8px 10px;
+}
+
+.territory {
+    display: flex;
+    align-items: center;
+    padding: 5px 10px;
+    width: 100%;
+}
+
+.no-results {
+    margin: 0;
+    padding: 8px 10px;
+}
+
+.advanced-search {
+}
+</style>
+{% endblock headers %}
+
+<div class="fr-search-bar fr-search-bar--red position-relative d-flex flex-column" role="search">
+    <div class="d-flex justify-content-center align-items-center position-relative" id="search-box">
+        <input class="fr-input" placeholder="Rechercher un territoire (Commune, EPCI, Département, Région...)" type="search" onkeyup="handleChange(event)" autocomplete="off">
+        <div class="search-bar-icon">
+            <span id="icon-search" class="fr-icon-search-line" aria-hidden="true"></span>
+            <div  id="icon-loader" class="fr-custom-loader--button" aria-hidden="true" hidden></div>
+        </div>
+        <div id="results" class="fr-card--shadow"></div>
+    </div>
+    {% if advanced_search %}
+    <div class="fr-mt-5v">
+        <div class="fr-grid-row">
+            <div class="fr-col-12 fr-col-lg-6">
+                <div class="fr-text--sm">Filtrer par zone géographique</div>
+                <div>
+                </div>
+            </div>
+            <div class="fr-col-12 fr-col-lg-6">
+                <div class="fr-text--sm">Filtrer par type de territoire</div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="type_commune" name="search_for" value="COMM" checked>
+                    <label class="form-check-label" for="type_commune">
+                        Commune
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="type_epci" name="search_for" value="EPCI" checked>
+                    <label class="form-check-label" for="type_epci">
+                        EPCI
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="type_scot" name="search_for" value="SCOT" checked>
+                    <label class="form-check-label" for="type_scot">
+                        SCoT
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="type_departement" name="search_for" value="DEPART" checked>
+                    <label class="form-check-label" for="type_departement">
+                        Département
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="type_region" name="search_for" value="REGION" checked>
+                    <label class="form-check-label" for="type_region">
+                        Région
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <a href="{% url 'project:create' %}" class="advanced-search fr-link--sm">Recherche avancée</a>
+    {% endif %}
+</div>
+
+{% block bodyend %}
+<script language="javascript" nonce="[NONCE_PLACEHOLDER]">
+    //document.getElementById('id_region').addEventListener("change", (event) => { this.closest('form').submit() })
+    //document.getElementById('id_departement').addEventListener("change", (event) => { this.closest('form').submit() })
+    //document.getElementById('id_epci').addEventListener("change", (event) => { this.closest('form').submit() })
+
+    const results = document.getElementById('results')
+    const searchBox = document.getElementById('search-box')
+    const iconSearch = document.getElementById('icon-search')
+    const iconLoader = document.getElementById('icon-loader')
+
+    //searchBox.addEventListener('mouseenter', () => results.style.visibility = 'visible')
+    //searchBox.addEventListener('mouseleave', () => results.style.visibility = 'hidden')
+
+    const levels = {
+        COMM: 'Commune',
+        EPCI: 'EPCI',
+        SCOT: 'SCOT',
+        DEPART: 'Département',
+        REGION: 'Région',
+    }
+
+    const debounce = (func, timeout = 300) => {
+        let timer
+        return (...args) => {
+            clearTimeout(timer)
+            timer = setTimeout(() => { func.apply(this, args) }, timeout)
+        }
+    }
+
+    const handleChange = debounce((event) => searchTerritory(event.target.value), 500)
+    
+    const searchTerritory = (value) => {
+        if (value.length <= 1) {
+            results.innerHTML = ''
+
+            return
+        }
+
+        toggleLoader(true)
+
+        const search_for = [...document.querySelectorAll('input[type="checkbox"][name=search_for]:checked')].map((checkbox) => checkbox.value).join(',')
+
+        fetch('{% url "public_data:search-land" %}', {
+            method: 'POST',
+            body: JSON.stringify({
+                query: value,
+                search_for: search_for
+            }),
+            headers: {
+                'X-CSRFToken': '{{csrf_token}}',
+                'Content-type': 'application/json; charset=UTF-8',
+            },
+        })
+        .then((response) => {
+            return response.json()
+        })
+        .then((response) => {
+            let count = 0
+            results.innerHTML = Object.keys(response)
+            .map((key) => {
+                if (response[key].length > 0) {
+                    count++
+
+                    return `
+                        <div class='level'>${levels[key]}</div>
+                        ${response[key].map(obj => (
+                            `<form method='post'>
+                                {% csrf_token %}
+                                <input type='hidden' name='selection' value="${obj.id}">
+                                <button type='submit' class='territory'>
+                                    <div class='fr-mr-2v'>${obj.name}</div>
+                                    <div class='text-muted'>(${obj.source_id})</div>
+                                </button>
+                            </form>`
+                        )).join('')}
+                    `
+                }
+            }).join('')
+
+            if (count === 0)
+                results.innerHTML = '<div class="no-results fr-text--sm text-muted">Il n\'y a aucun résultat pour votre recherche</div>'
+        })
+        .catch((error) => console.log('Erreur : ' + error))
+        .finally(() => {
+            toggleLoader(false)
+        })
+    }
+
+    const toggleLoader = (value) => {
+        iconSearch.hidden = value
+        iconLoader.hidden = !value  
+    }
+</script>
+{% endblock bodyend %}
