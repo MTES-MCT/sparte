@@ -197,9 +197,6 @@ class LandMixin:
     def search(cls, needle, region=None, departement=None, epci=None):
         raise NotImplementedError("need to be overridden")
 
-    def get_official_id(self) -> str:
-        return self.source_id if self.source_id is not None else ""
-
     def get_cities(self):
         raise NotImplementedError("need to be overridden")
 
