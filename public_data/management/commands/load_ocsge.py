@@ -1,30 +1,20 @@
-import json
-import logging
-from enum import StrEnum
 from functools import cache
-from typing import List, Self
+from typing import Self
 
 from django.contrib.gis.db.models.functions import Area, Transform
 from django.core.management.base import BaseCommand
-from django.db.models import DecimalField
+from django.db.models import DecimalField, Q
 from django.db.models.functions import Cast
 
 from public_data.models import (
     CouvertureUsageMatrix,
+    DataSource,
     Departement,
     Ocsge,
     OcsgeDiff,
     ZoneConstruite,
 )
 from public_data.models.mixins import AutoLoadMixin
-
-logger = logging.getLogger("management.commands")
-
-CONFIG_PATH = "public_data/management/commands/config_load_ocsge.json"
-
-
-def get_departement(name: str) -> Departement:
-    return Departement.objects.get(name=name)
 
 
 @cache
@@ -164,240 +154,110 @@ class AutoZoneConstruite(AutoLoadMixin, ZoneConstruite):
         ).delete()
 
 
-class LayerType(StrEnum):
-    OCSGE = "Ocsge"
-    ZONE_CONSTRUITE = "ZoneConstruite"
-    DIFF = "Diff"
+def get_layer_mapper_proxy_class(source: DataSource):
+    departement = Departement.objects.get(source_id=source.official_land_id)
 
+    properties = {
+        "Meta": type("Meta", (), {"proxy": True}),
+        "shape_file_path": source.path,
+        "_departement": departement,
+        "__module__": __name__,
+    }
 
-class Layer:
-    shape_file_path: str
-    departement: Departement
-    type: LayerType
-    mapping: dict[str, str] | None = None
-    year: int | None = None
-    year_old: int | None = None
-    year_new: int | None = None
+    base_class = None
 
-    def __init__(
-        self,
-        shape_file_path: str,
-        departement: Departement,
-        type: LayerType,
-        mapping: dict[str, str] | None = None,
-        year: int | None = None,
-        year_old: int | None = None,
-        year_new: int | None = None,
-    ) -> None:
-        self.shape_file_path = shape_file_path
-        self.departement = departement
-        self.type = type
-        self.mapping = mapping
-        self.year = year
-        self.year_old = year_old
-        self.year_new = year_new
+    if source.mapping:
+        properties.update({"mapping": source.mapping})
 
-        if self.type == LayerType.DIFF:
-            if not self.year_old or not self.year_new:
-                raise ValueError("year_old and year_new are required for diff layer")
-        elif self.type == LayerType.OCSGE or self.type == LayerType.ZONE_CONSTRUITE:
-            if not self.year:
-                raise ValueError("year is required for ocsge and zone_construite layer")
+    if source.name == DataSource.DataNameChoices.DIFFERENCE:
+        base_class = AutoOcsgeDiff
+        properties.update(
+            {
+                "_year_old": min(source.millesimes),
+                "_year_new": max(source.millesimes),
+            }
+        )
+    elif source.name == DataSource.DataNameChoices.OCCUPATION_DU_SOL:
+        properties.update({"_year": source.millesimes[0]})
+        base_class = AutoOcsge
+    elif source.name == DataSource.DataNameChoices.ZONE_CONSTRUITE:
+        properties.update({"_year": source.millesimes[0]})
+        base_class = AutoZoneConstruite
 
-    @property
-    def class_name(self) -> str:
-        departement_ascii = self.departement.name.encode("utf-8").decode()
+    class_name = f"Auto{source.name}{departement}{'_'.join(map(str, source.millesimes))}"
 
-        if self.type == LayerType.DIFF:
-            return f"{departement_ascii}Diff{self.year_old}{self.year_new}"
-        elif self.type == LayerType.OCSGE:
-            return f"{departement_ascii}Ocsge{self.year}"
-        elif self.type == LayerType.ZONE_CONSTRUITE:
-            return f"{departement_ascii}ZoneConstruite{self.year}"
-
-    def get_related_autoload_base_class(self) -> type:
-        if self.type == LayerType.DIFF:
-            return AutoOcsgeDiff
-        elif self.type == LayerType.OCSGE:
-            return AutoOcsge
-        elif self.type == LayerType.ZONE_CONSTRUITE:
-            return AutoZoneConstruite
-
-    @property
-    def proxy_class(self) -> type:
-        properties = {
-            "Meta": type("Meta", (), {"proxy": True}),
-            "shape_file_path": self.shape_file_path,
-            "_departement": self.departement,
-            "__module__": __name__,
-        }
-
-        if self.mapping:
-            properties.update({"mapping": self.mapping})
-
-        if self.type == LayerType.DIFF:
-            properties.update(
-                {
-                    "_year_old": self.year_old,
-                    "_year_new": self.year_new,
-                }
-            )
-        elif self.type == LayerType.OCSGE or self.type == LayerType.ZONE_CONSTRUITE:
-            properties.update({"_year": self.year})
-
-        return type(self.class_name, (self.get_related_autoload_base_class(),), properties)
-
-
-def get_year_from_layer_key(layer_key: str) -> int:
-    return int(layer_key[:4])
-
-
-def get_years_from_layer_key(layer_key: str) -> tuple[int, int]:
-    return tuple(map(int, layer_key.split("_diff")[0].split("_")))
-
-
-def get_mapping_from_layer_data(layer_data: dict[str, str] | str) -> dict[str, str] | None:
-    if isinstance(layer_data, str):
-        return None
-    return layer_data.get("mapping")
-
-
-def get_shapefile_path_from_layer_data(layer_data: dict[str, str] | str) -> str:
-    if isinstance(layer_data, str):
-        return layer_data
-    return layer_data.get("path")
-
-
-def get_layer_type_from_layer_key(layer_key: str) -> LayerType:
-    if "zc" in layer_key:
-        return LayerType.ZONE_CONSTRUITE
-    elif "diff" in layer_key:
-        return LayerType.DIFF
-    else:
-        return LayerType.OCSGE
-
-
-def parse_config(raw_config: dict) -> List[Layer]:
-    layers = []
-
-    for departement_name, data in raw_config.items():
-        departement = get_departement(departement_name)
-
-        for layer_key, layer_data in data.items():
-            layer_type = get_layer_type_from_layer_key(layer_key)
-
-            if layer_type == LayerType.DIFF:
-                year_old, year_new = get_years_from_layer_key(layer_key)
-                year_fields = {
-                    "year_old": year_old,
-                    "year_new": year_new,
-                }
-            elif layer_type == LayerType.OCSGE or layer_type == LayerType.ZONE_CONSTRUITE:
-                year_fields = {
-                    "year": get_year_from_layer_key(layer_key),
-                }
-
-            layers.append(
-                Layer(
-                    shape_file_path=get_shapefile_path_from_layer_data(layer_data),
-                    mapping=get_mapping_from_layer_data(layer_data),
-                    departement=departement,
-                    type=layer_type,
-                    **year_fields,
-                )
-            )
-
-    return layers
+    return type(class_name, (base_class,), properties)
 
 
 class Command(BaseCommand):
-    help = "Load all data from OCS GE"
+    def get_queryset(self):
+        return DataSource.objects.filter(
+            productor=DataSource.ProductorChoices.IGN,
+            dataset=DataSource.DatasetChoices.OCSGE,
+        )
 
     def add_arguments(self, parser):
         parser.add_argument(
-            "--all",
-            action="store_true",
-            help="load all data",
+            "--departement",
+            type=str,
+            help="Departement name",
+        )
+        parser.add_argument(
+            "--year-range",
+            type=str,
+            help="Year range",
         )
         parser.add_argument(
             "--layer-type",
-            type=LayerType,
-            help="layer type that you want to load ex: ocsge, zone_construite, diff",
-        )
-        parser.add_argument(
-            "--departement",
             type=str,
-            help="item that you want to load ex: GersOcsge2016, ZoneConstruite2019...",
+            help="Layer type.",
         )
-
         parser.add_argument(
-            "--year_range",
-            type=int,
-            nargs=2,
-            help="year range that you want to load ex: 2016 2019...",
-        )
-
-        parser.add_argument(
-            "--truncate",
+            "--all",
             action="store_true",
-            help="if you want to completly restart tables including id, not compatible " "with --item",
+            help="Load all data",
         )
 
-    def filter_layers_by_year_range(self, layers: List[Layer], year_range_filter: tuple[int, int]) -> List[Layer]:
-        start_range = year_range_filter[0]
-        end_range = year_range_filter[1] + 1
-
-        year_range = range(start_range, end_range)
-        filtered_layers = []
-
-        for layer in layers:
-            if layer.type == LayerType.DIFF:
-                if layer.year_old in year_range and layer.year_new in year_range:
-                    filtered_layers.append(layer)
-            elif layer.type == LayerType.OCSGE or layer.type == LayerType.ZONE_CONSTRUITE:
-                if layer.year in year_range:
-                    filtered_layers.append(layer)
-
-        return filtered_layers
-
-    def filter_layers(self, options: dict, layers: List[Layer]) -> List[Layer]:
-        filtered_layers = layers
-
-        year_range_filter = options.get("year_range")
-        departement_filter = options.get("departement")
-        layer_type_filter = options.get("layer_type")
-
-        if not year_range_filter and not departement_filter and not layer_type_filter:
-            if not options.get("all"):
-                raise ValueError(
-                    "You must pass the --all flag to load everything",
-                    "Otherwise use one of the following filters: --year_range, --departement, --layer_type",
-                )
-
-        if year_range_filter:
-            filtered_layers = self.filter_layers_by_year_range(
-                layers=filtered_layers, year_range_filter=year_range_filter
-            )
-
-        if layer_type_filter:
-            layer_type = LayerType(layer_type_filter)
-            filtered_layers = list(filter(lambda layer: layer.type == layer_type, filtered_layers))
-
-        if departement_filter:
-            departement = get_departement(departement_filter)
-            filtered_layers = list(filter(lambda layer: layer.departement.name == departement.name, filtered_layers))
-
-        return filtered_layers
+        parser.add_argument(
+            "--list",
+            action="store_true",
+            help="List available data",
+        )
 
     def handle(self, *args, **options):
-        with open(CONFIG_PATH, "r") as f:
-            layers = parse_config(raw_config=json.load(f))
+        if not options:
+            raise ValueError("You must provide at least one option, or use --all to load all data")
 
-        layers = self.filter_layers(options=options, layers=layers)
+        if options.get("list"):
+            for source in self.get_queryset():
+                print(source)
+            return
 
-        logger.info("Load data for: %s", ", ".join([layer.class_name for layer in layers]))
+        sources = self.get_queryset()
 
-        for layer in layers:
-            if options.get("truncate"):
-                layer.proxy_class.truncate()
-            layer.proxy_class.load()
+        if options.get("departement"):
+            departement_param = options.get("departement")
+            departement_queryset = Departement.objects.filter(
+                Q(source_id=departement_param) | Q(name__icontains=departement_param)
+            )
+
+            if not departement_queryset:
+                raise ValueError(f"{departement_param} is not a valid departement")
+
+            departement = departement_queryset.first()
+
+            sources = sources.filter(official_land_id=departement.source_id)
+
+        if options.get("year-range"):
+            year_range = options.get("year-range").split(",")
+            sources = sources.filter(millesimes__overlap=year_range)
+
+        if options.get("layer-type"):
+            sources = sources.filter(name__icontains=options.get("layer-type"))
+
+        if not sources:
+            raise ValueError("No data sources found")
+
+        for source in sources:
+            layer_mapper_proxy_class = get_layer_mapper_proxy_class(source)
+            layer_mapper_proxy_class.load()

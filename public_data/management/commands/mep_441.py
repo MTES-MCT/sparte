@@ -1,3 +1,6 @@
+# 4.4.1 migration
+# TODO: remove this file when 4.4.1 is deployed on staging and prod
+
 import logging
 from typing import List
 
@@ -10,7 +13,7 @@ logger = logging.getLogger("management.commands")
 
 
 class Command(BaseCommand):
-    help = "Dedicated to load migrate data for 4.4.1 deployment"
+    help = "Dedicated to load data for 4.4.1 deployment"
 
     def load_departement(self, departement: Departement, years: List[int]):
         call_command("load_ocsge", departement=departement.name, year_range=years)
@@ -28,6 +31,9 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         logger.info("Start load_441")
+        call_command("maintenance", on=True)
+
+        call_command("loaddata public_data/management/commands/data_source_fixture.json")
 
         self.load_departement(departement=Departement.objects.get(name="Hauts-de-Seine"), years=[2018, 2021])
         self.load_departement(departement=Departement.objects.get(name="Landes"), years=[2018, 2021])
