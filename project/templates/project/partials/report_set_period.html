@@ -1,6 +1,6 @@
 {% load crispy_forms_tags %}
 
-<script language="javascript" nonce="[NONE_PLACEHOLDER]">
+<script language="javascript" nonce="[NONCE_PLACEHOLDER]">
     modal = bootstrap.Modal.getInstance(document.getElementById("fr-modal-update-period"))
     modal._config.backdrop = true
     modal._config.keyboard = true
@@ -13,7 +13,7 @@
         <p>Vous allez être redirigé sur la page de construction de votre diagnostic.</p>
     </div>
 
-    <script language="javascript" nonce="[NONE_PLACEHOLDER]">
+    <script language="javascript" nonce="[NONCE_PLACEHOLDER]">
         setTimeout(() => {
             if (modal)
                 modal.hide()
@@ -32,7 +32,7 @@
         </ul>
     </form>
 
-    <script language="javascript" nonce="[NONE_PLACEHOLDER]">
+    <script language="javascript" nonce="[NONCE_PLACEHOLDER]">
         document.getElementById("set_period_btn").onclick = function() {
             if (modal) {
                 modal._config.backdrop = false
