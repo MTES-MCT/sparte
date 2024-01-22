@@ -24,8 +24,7 @@ from project.forms import (
 )
 from project.models import Project, create_from_public_key
 from project.models.create import update_period
-from public_data.exceptions import LandException
-from public_data.models import AdminRef, Land
+from public_data.models import AdminRef, Land, LandException
 from utils.views_mixins import BreadCrumbMixin, RedirectURLMixin
 
 from .mixins import GroupMixin
@@ -156,7 +155,7 @@ class SetProjectPeriodView(GroupMixin, RedirectURLMixin, UpdateView):
         return super().get_context_data(**kwargs)
 
     def form_valid(self, form):
-        update_period(self.object, form.cleaned_data["analyse_start_date"], form.cleaned_data["analyse_end_date"])
+        update_period(self.object, form.cleaned_data["start"], form.cleaned_data["end"])
         return self.render_to_response(self.get_context_data(success_message=True))
 
 
