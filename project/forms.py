@@ -67,5 +67,28 @@ class UpdateProjectForm(forms.ModelForm):
         return super().save(*args, **kwargs)
 
 
+class UpdateProjectPeriodForm(forms.ModelForm):
+    class Meta:
+        model = Project
+        fields = [
+            "analyse_start_date",
+            "analyse_end_date",
+        ]
+
+    def clean(self):
+        cleaned_data = super().clean()
+        start_date = cleaned_data.get("analyse_start_date")
+        end_date = cleaned_data.get("analyse_end_date")
+        if start_date > end_date:
+            raise forms.ValidationError(
+                {
+                    "analyse_start_date": (
+                        "L'année de début de période ne peut pas être supérieure à l'année de fin de période."
+                    )
+                }
+            )
+        return cleaned_data
+
+
 class FilterAUUTable(forms.Form):
     page_number = forms.IntegerField(required=False)

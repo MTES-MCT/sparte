@@ -709,6 +709,13 @@ Header logo
 }
 
 /*
+Custom tag icon
+*/
+.custom-tag-icon {
+    margin-left: 4px;
+}
+
+/*
 Fix link icon position
 */
 .fr-breadcrumb__link::before,
@@ -731,10 +738,6 @@ Fix nav extra margin
 /*
 Header dropdown menu
 */
-header.fr-header {
-    z-index: 1600;
-}
-
 #menu-mon-compte {
     right: 0px;
     margin: 0;
@@ -898,6 +901,50 @@ Form labels
 
 form .control-group {
     margin-top: 25px;
+}
+
+.fr-select {
+    background-size: 1rem 1rem !important;
+}
+
+.fr-select.is-invalid {
+    box-shadow: inset 0 -2px 0 0 #ce0500;
+    box-shadow: inset 0 -2px 0 0 var(--border-plain-error);
+    border-color: #ced4da !important;
+    background-image: var(--data-uri-svg) !important;
+}
+
+.invalid-feedback {
+    color: var(--text-default-error);
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    font-size: .75rem;
+    line-height: 1.25rem;
+    margin-bottom: 0;
+    margin-top: 1rem;
+}
+
+.invalid-feedback::before {
+    -webkit-mask-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCI+PHBhdGggZD0iTTE3LjUgMi41aC0xMUwxIDEybDUuNSA5LjVoMTFMMjMgMTJsLTUuNS05LjV6bS0xLjMgMTIuMy0xLjQgMS40LTIuOC0yLjgtMi44IDIuOC0xLjQtMS40IDIuOC0yLjgtMi44LTIuOCAxLjQtMS40IDIuOCAyLjggMi44LTIuOCAxLjQgMS40LTIuOCAyLjggMi44IDIuOHoiLz48L3N2Zz4=);
+    mask-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCI+PHBhdGggZD0iTTE3LjUgMi41aC0xMUwxIDEybDUuNSA5LjVoMTFMMjMgMTJsLTUuNS05LjV6bS0xLjMgMTIuMy0xLjQgMS40LTIuOC0yLjgtMi44IDIuOC0xLjQtMS40IDIuOC0yLjgtMi44LTIuOCAxLjQtMS40IDIuOCAyLjggMi44LTIuOCAxLjQgMS40LTIuOCAyLjggMi44IDIuOHoiLz48L3N2Zz4=);
+}
+
+.invalid-feedback::before {
+    --icon-size: 1rem;
+    background-color: currentColor;
+    content: "";
+    display: inline-block;
+    flex: 0 0 auto;
+    height: 1rem;
+    height: var(--icon-size);
+    margin-right: .25rem;
+    -webkit-mask-size: 100% 100%;
+    mask-size: 100% 100%;
+    vertical-align: calc(.375em - .5rem);
+    vertical-align: calc((.75em - var(--icon-size))*.5);
+    width: 1rem;
+    width: var(--icon-size);
 }
 
 /*
