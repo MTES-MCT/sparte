@@ -2,7 +2,6 @@
 @import '@gouvfr/dsfr/dist/utility/icons/icons-system/icons-system.min.css';
 @import '@gouvfr/dsfr/dist/utility/icons/icons-design/icons-design.min.css';
 @import '@gouvfr/dsfr/dist/utility/icons/icons-business/icons-business.min.css';
-@import 'leaflet/dist/leaflet.css';
 @import '/assets/styles/map.css';
 @import 'maplibre-gl/dist/maplibre-gl.css';
 
@@ -447,13 +446,6 @@ Breadcrumb min
 
 .breadcrumb-min .custom-breadcrumb {
     border-bottom: 1px solid #eaeaea;
-}
-
-/*
-Leaflet
-*/
-.leaflet-control-zoom a {
-    background-image: none;
 }
 
 /*
