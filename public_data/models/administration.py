@@ -198,10 +198,14 @@ class LandMixin:
 
     @classmethod
     def search(cls, needle, region=None, departement=None, epci=None):
-        raise NotImplementedError("need to be overrided")
+        raise NotImplementedError("need to be overridden")
 
     def get_cities(self):
-        raise NotImplementedError("need to be overrided")
+        raise NotImplementedError("need to be overridden")
+
+    @property
+    def official_id(self) -> str:
+        raise NotImplementedError("need to be overridden")
 
     def get_pop_change_per_year(
         self,
@@ -233,6 +237,10 @@ class Region(LandMixin, GetDataFromCeremaMixin, models.Model):
 
     land_type = AdminRef.REGION
     default_analysis_level = AdminRef.DEPARTEMENT
+
+    @property
+    def official_id(self) -> str:
+        return self.source_id
 
     def get_ocsge_millesimes(self) -> set:
         millesimes = set()
@@ -278,6 +286,10 @@ class Departement(LandMixin, GetDataFromCeremaMixin, models.Model):
     land_type = AdminRef.DEPARTEMENT
     default_analysis_level = AdminRef.SCOT
 
+    @property
+    def official_id(self) -> str:
+        return self.source_id
+
     def get_qs_cerema(self):
         return Cerema.objects.filter(dept_id=self.source_id)
 
@@ -310,6 +322,10 @@ class Scot(LandMixin, GetDataFromCeremaMixin, models.Model):
     land_type = AdminRef.SCOT
     default_analysis_level = AdminRef.EPCI
 
+    @property
+    def official_id(self) -> str:
+        return self.siren
+
     def get_qs_cerema(self):
         return Cerema.objects.filter(city_insee__in=self.commune_set.values("insee"))
 
@@ -340,6 +356,10 @@ class Epci(LandMixin, GetDataFromCeremaMixin, models.Model):
 
     land_type = AdminRef.EPCI
     default_analysis_level = AdminRef.COMMUNE
+
+    @property
+    def official_id(self) -> str:
+        return self.source_id
 
     def get_ocsge_millesimes(self) -> set:
         millesimes = set()
@@ -418,6 +438,10 @@ class Commune(DataColorationMixin, LandMixin, GetDataFromCeremaMixin, models.Mod
     default_color = "Yellow"
     land_type = AdminRef.COMMUNE
     default_analysis_level = AdminRef.COMMUNE
+
+    @property
+    def official_id(self) -> str:
+        return self.insee
 
     @property
     def is_artif_ready(self):
@@ -574,6 +598,10 @@ class Land:
 
     def __str__(self):
         return f"Land({str(self.land)})"
+
+    @property
+    def official_id(self) -> str:
+        return self.land.official_id
 
     @classmethod
     def get_lands(cls, public_keys):
