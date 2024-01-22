@@ -68,7 +68,6 @@ class UpdateProjectForm(forms.ModelForm):
 
 
 class UpdateProjectPeriodForm(forms.ModelForm):
-
     class Meta:
         model = Project
         fields = [
@@ -78,15 +77,17 @@ class UpdateProjectPeriodForm(forms.ModelForm):
 
     def clean(self):
         cleaned_data = super().clean()
-        start_date = cleaned_data.get('analyse_start_date')
-        end_date = cleaned_data.get('analyse_end_date')
+        start_date = cleaned_data.get("analyse_start_date")
+        end_date = cleaned_data.get("analyse_end_date")
         if start_date > end_date:
-            raise forms.ValidationError({"analyse_start_date": "L'année de début de période ne peut pas être supérieure à l'année de fin de période."})
+            raise forms.ValidationError(
+                {
+                    "analyse_start_date": (
+                        "L'année de début de période ne peut pas être supérieure à l'année de fin de période."
+                    )
+                }
+            )
         return cleaned_data
-
-    def save(self, *args, **kwargs):
-        self.instance._change_reason = "update_project"
-        return super().save(*args, **kwargs)
 
 
 class FilterAUUTable(forms.Form):

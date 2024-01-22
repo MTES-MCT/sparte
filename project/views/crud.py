@@ -16,8 +16,14 @@ from django.views.generic import (
 from django.views.generic.edit import FormMixin
 
 from project import tasks
-from project.forms import KeywordForm, SelectTerritoryForm, UpdateProjectForm, UpdateProjectPeriodForm
+from project.forms import (
+    KeywordForm,
+    SelectTerritoryForm,
+    UpdateProjectForm,
+    UpdateProjectPeriodForm,
+)
 from project.models import Project, create_from_public_key
+from project.models.create import update_period
 from public_data.models import AdminRef, Land, LandException
 from utils.views_mixins import BreadCrumbMixin, RedirectURLMixin
 
@@ -140,35 +146,16 @@ class SetProjectPeriodView(GroupMixin, RedirectURLMixin, UpdateView):
     model = Project
     template_name = "project/partials/report_set_period.html"
     form_class = UpdateProjectPeriodForm
+    context_object_name = "diagnostic"
 
     def get_context_data(self, **kwargs):
-        project = self.get_object()
-
-        kwargs.update(
-            {
-                "diagnostic": project,
-                "next": self.request.build_absolute_uri(reverse_lazy("project:splash", kwargs={'pk':self.object.id})),
-            }
-        )
+        kwargs |= {
+            "next": self.request.build_absolute_uri(reverse_lazy("project:splash", kwargs={"pk": self.object.id})),
+        }
         return super().get_context_data(**kwargs)
-                   
+
     def form_valid(self, form):
-        """If the form is valid, save the associated model."""
-        from metabase.tasks import async_create_stat_for_project
-
-        self.object = form.save()
-
-        celery.chain(
-            tasks.find_first_and_last_ocsge.si(self.object.id),
-            tasks.calculate_project_ocsge_status.si(self.object.id),
-            celery.group(
-                tasks.generate_theme_map_conso.si(self.object.id),
-                tasks.generate_theme_map_artif.si(self.object.id),
-                tasks.generate_theme_map_understand_artif.si(self.object.id),
-            ),
-            async_create_stat_for_project.si(self.object.id, do_location=False),
-        ).apply_async()
-
+        update_period(self.object, form.cleaned_data["start"], form.cleaned_data["end"])
         return self.render_to_response(self.get_context_data(success_message=True))
 
 

@@ -22,7 +22,7 @@
         }, 2500)
     </script>
 {% else %}
-    <form hx-post="{% url 'project:set-period' project.pk %}" hx-ext="disable-element" hx-disable-element="#set_period_btn">
+    <form hx-post="{% url 'project:set-period' diagnostic.pk %}" hx-ext="disable-element" hx-disable-element="#set_period_btn">
         {% csrf_token %}
         {{ form|crispy }}
         <ul class="fr-btns-group fr-btns-group--right fr-btns-group--inline-lg fr-mt-2w">
