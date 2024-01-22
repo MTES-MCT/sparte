@@ -155,7 +155,7 @@ class SetProjectPeriodView(GroupMixin, RedirectURLMixin, UpdateView):
         return super().get_context_data(**kwargs)
 
     def form_valid(self, form):
-        update_period(self.object, form.cleaned_data["start"], form.cleaned_data["end"])
+        update_period(self.object, form.cleaned_data["analyse_start_date"], form.cleaned_data["analyse_end_date"])
         return self.render_to_response(self.get_context_data(success_message=True))
 
 
