@@ -3,7 +3,7 @@ from typing import Callable, Tuple
 
 from django.core.management.base import BaseCommand
 
-from public_data.models import Cerema
+from public_data.models import Cerema, DataSource
 from public_data.models.enums import SRID
 from public_data.models.mixins import AutoLoadMixin
 
@@ -157,13 +157,6 @@ class BaseLoadCerema(AutoLoadMixin, Cerema):
         }
         cls.objects.update(**kwargs)
 
-
-class LoadCeremaMetropole(BaseLoadCerema):
-    class Meta:
-        proxy = True
-
-    shape_file_path = "obs_artif_conso_com_2009_2022.zip"
-
     @classmethod
     def clean_data(cls):
         cls.objects.filter(srid_source=SRID.LAMBERT_93).delete()
@@ -180,53 +173,34 @@ class BaseLoadCeremaDromCom(BaseLoadCerema):
 
     mapping = {k: v for k, v in BaseLoadCerema.mapping.items() if k not in ["surfcom2022", "artcom2020"]}
 
-
-class LoadCeremaGuadeloupe(BaseLoadCeremaDromCom):
-    class Meta:
-        proxy = True
-
-    shape_file_path = "obs_artif_conso_com_2009_2022_971.zip"
-    srid = SRID.WGS_84_UTM_ZONE_20
-
     @classmethod
-    def clean_data(cls):
-        cls.objects.filter(region_name="Guadeloupe").delete()
+    def clean_data(cls) -> None:
+        return cls.objects.filter(dept_id=cls.departement_id).delete()
 
 
-class LoadCeremaMartinique(BaseLoadCeremaDromCom):
-    class Meta:
-        proxy = True
+def get_layer_mapper_proxy_class(source: DataSource):
+    properties = {
+        "Meta": type("Meta", (), {"proxy": True}),
+        "shape_file_path": source.path,
+        "departement_id": source.official_land_id,
+        "srid": source.srid,
+        "__module__": __name__,
+    }
 
-    shape_file_path = "obs_artif_conso_com_2009_2022_972.zip"
-    srid = SRID.WGS_84_UTM_ZONE_20
+    if source.official_land_id:
+        base_class = BaseLoadCeremaDromCom
+    else:
+        # Metropole et Corse
+        base_class = BaseLoadCerema
 
-    @classmethod
-    def clean_data(cls):
-        cls.objects.filter(region_name="Martinique").delete()
+    if source.mapping:
+        properties.update({"mapping": source.mapping})
 
+    class_name = (
+        f"Auto{source.name}{source.official_land_id or 'MetropoleEtCorse'}{'_'.join(map(str, source.millesimes))}"
+    )
 
-class LoadCeremaGuyane(BaseLoadCeremaDromCom):
-    class Meta:
-        proxy = True
-
-    shape_file_path = "obs_artif_conso_com_2009_2022_973.zip"
-    srid = SRID.RGFG_95_UTM_ZONE_22N
-
-    @classmethod
-    def clean_data(cls):
-        cls.objects.filter(region_name="Guyane").delete()
-
-
-class LoadCeremaLaReunion(BaseLoadCeremaDromCom):
-    class Meta:
-        proxy = True
-
-    shape_file_path = "obs_artif_conso_com_2009_2022_974.zip"
-    srid = SRID.RGR_92_UTM_ZONE_40S
-
-    @classmethod
-    def clean_data(cls):
-        cls.objects.filter(region_name="La Réunion").delete()
+    return type(class_name, (base_class,), properties)
 
 
 class Command(BaseCommand):
@@ -239,67 +213,27 @@ class Command(BaseCommand):
             help="reduce output",
         )
         parser.add_argument(
-            "--official_land_ids",
-            nargs="+",
-            type=int,
-            help="Select what to to load using official land id source's property",
-        )
-        parser.add_argument(
-            "--item",
+            "--departement",
             type=str,
-            nargs="+",
             help="Load only a specific drom com",
         )
 
-    def load(self, items, options):
-        for item in items:
-            item.load(
-                verbose=options.get("verbose", False),
-                layer_mapper_silent=False,
-            )
+    def get_queryset(self):
+        return DataSource.objects.filter(
+            productor=DataSource.ProductorChoices.CEREMA,
+            dataset=DataSource.DatasetChoices.MAJIC,
+        )
 
     def handle(self, *args, **options):
-        logger.info("Load Cerema")
-
-        item_name_filter = options.get("item")
-
-        item_list = [
-            LoadCeremaMetropole,
-            LoadCeremaGuadeloupe,
-            LoadCeremaMartinique,
-            LoadCeremaGuyane,
-            LoadCeremaLaReunion,
-        ]
-
-        if item_name_filter:
-            items = [i for i in item_list if i.__name__ in item_name_filter]
-
-            if not items:
-                raise Exception(f"Item {item_name_filter} not found. Maybe you forgot to add it to the item_list?")
-
-            return self.load(items, options)
-
-        self.load(item_list, options)
-
-    def handle(self, *args, **options):
-        logger.info("Start load_cerema")
-
         sources = self.get_queryset()
 
-        if options.get("official_land_ids"):
-            logger.info("filter on official_land_ids=%s", options["official_land_ids"])
-            sources = sources.filter(official_land_id__in=options["official_land_ids"])
+        if options.get("departement"):
+            sources = sources.filter(official_land_id=options["departement"])
 
         if not sources.exists():
             logger.warning("No data source found")
             return
 
-        logger.info("Nb sources found=%d", sources.count())
-
         for source in sources:
-            factory = CeremaFactory(source)
-            layer_mapper_proxy_class = factory.get_layer_mapper_proxy_class(module_name=__name__)
-            logger.info("Process %s", layer_mapper_proxy_class.__name__)
+            layer_mapper_proxy_class = get_layer_mapper_proxy_class(source)
             layer_mapper_proxy_class.load()
-
-        logger.info("End load_cerema")
