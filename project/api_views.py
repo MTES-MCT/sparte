@@ -6,9 +6,9 @@ from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.exceptions import ParseError
 
-from public_data.api.serializers import ZoneUrbaSerializer
 from public_data.models import Cerema, Commune
 from public_data.models.gpu import ZoneUrba
+from public_data.serializers import ZoneUrbaSerializer
 
 from .models import Emprise, Project
 from .serializers import EmpriseSerializer, ProjectCommuneSerializer

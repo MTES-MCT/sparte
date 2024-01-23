@@ -25,7 +25,7 @@ Afin de se référer à un Land, on utilise un identifiant unique :
     REGION_[ID]
     COMMUNE_[ID]
 """
-from typing import Literal
+from typing import Dict, Literal
 
 from django.contrib.gis.db import models
 from django.contrib.postgres.fields import ArrayField
@@ -200,6 +200,9 @@ class LandMixin:
     def search(cls, needle, region=None, departement=None, epci=None):
         raise NotImplementedError("need to be overridden")
 
+    def get_official_id(self) -> str:
+        return self.source_id if self.source_id is not None else ""
+
     def get_cities(self):
         raise NotImplementedError("need to be overridden")
 
@@ -335,6 +338,9 @@ class Scot(LandMixin, GetDataFromCeremaMixin, models.Model):
     def __str__(self):
         return self.name.upper()
 
+    def get_official_id(self) -> str:
+        return self.siren if self.siren is not None else ""
+
     @classmethod
     def search(cls, needle, region=None, departement=None, epci=None):
         qs = cls.objects.filter(name__unaccent__trigram_word_similar=needle)
@@ -458,6 +464,9 @@ class Commune(DataColorationMixin, LandMixin, GetDataFromCeremaMixin, models.Mod
 
     def get_cities(self):
         return [self]
+
+    def get_official_id(self) -> str:
+        return self.insee if self.insee is not None else ""
 
     @classmethod
     def search(cls, needle, region=None, departement=None, epci=None):
@@ -622,12 +631,14 @@ class Land:
         return cls.Meta.subclasses[land_type.upper()]
 
     @classmethod
-    def search(cls, needle, region=None, departement=None, epci=None, search_for=None):
+    def search(cls, needle, region=None, departement=None, epci=None, search_for=None) -> Dict[str, models.QuerySet]:
         """Search for a keyword on all land subclasses"""
         if not search_for:
             return dict()
-        elif search_for == "*":
+
+        if search_for == "*":
             search_for = cls.Meta.subclasses.keys()
+
         return {
             name: subclass.search(needle, region=region, departement=departement, epci=epci)
             for name, subclass in cls.Meta.subclasses.items()

@@ -1,0 +1,218 @@
+{% load crispy_forms_tags %}
+
+<style nonce="[NONCE_PLACEHOLDER]">
+#results {
+    position: absolute;
+    width: 100%;
+    top: 100%;
+    max-height: 200px;
+    overflow: auto;
+    border-radius: 0 0 .25rem .25rem;
+    background: #ffffff;
+    text-align: left;
+}
+
+.fr-search-bar--red .fr-input {
+    box-shadow: inset 0 -2px 0 0 #F76161;
+    outline: none;
+    min-width: 510px;
+    font-size: .95rem;
+}
+
+.search-bar-icon {
+    border-radius: 0 .25rem 0 0;
+    flex: 1 0 auto;
+    font-size: 1rem;
+    line-height: 1.5rem;
+    height: 2.5rem;
+    width: 2.5rem;
+    overflow: hidden;
+    padding: .5rem;
+    white-space: nowrap;
+    position: relative;
+}
+
+.fr-search-bar--red .search-bar-icon {
+    background: #F76161;
+}
+
+.search-bar-icon span::before {
+    background-color: #fff;
+}
+
+.search-bar-icon .fr-custom-loader--button {
+    color: #fff;
+    transform: translate(-50%, -50%);
+    top: 50%;
+}
+
+.level {
+    font-weight: 600;
+    background: #EAEAEA;
+    padding: 8px 10px;
+}
+
+.territory {
+    display: flex;
+    align-items: center;
+    padding: 5px 10px;
+    width: 100%;
+    cursor: pointer;
+}
+
+.territory:hover {
+    background: #F3F4F4;
+}
+
+.no-results {
+    margin: 0;
+    padding: 8px 10px;
+}
+
+.advanced-search {
+    color: #F76161 !important;
+    font-size: .9rem;
+    background: none;
+    margin-top: 2px;
+    opacity: 1;
+    transition: opacity .3s ease;
+}
+
+.advanced-search:hover {
+    opacity: 0.7;
+}
+</style>
+
+<div class="fr-search-bar fr-search-bar--red position-relative d-flex flex-column" role="search">
+    <div class="d-flex justify-content-center align-items-center position-relative" id="search-box">
+        <input class="fr-input" placeholder="Rechercher un territoire (Commune, EPCI, Département, Région...)" type="search" onkeyup="handleChange(event)" autocomplete="off">
+        <div class="search-bar-icon">
+            <span id="icon-search" class="fr-icon-search-line" aria-hidden="true"></span>
+            <div  id="icon-loader" class="fr-custom-loader--button" aria-hidden="true" hidden></div>
+        </div>
+        <div id="results" class="fr-card--shadow" hidden></div>
+    </div>
+    <div class="d-flex justify-content-end align-items-center">
+        <a href="{% url 'project:create' %}" class="advanced-search">Recherche avancée</a>
+    </div>
+</div>
+
+<script language="javascript" nonce="[NONCE_PLACEHOLDER]">
+    const results = document.getElementById('results')
+    const searchBox = document.getElementById('search-box')
+    const searchInput = searchBox.querySelector('input')
+    const iconSearch = document.getElementById('icon-search')
+    const iconLoader = document.getElementById('icon-loader')
+
+    const levels = {
+        COMM: 'Commune',
+        EPCI: 'EPCI',
+        SCOT: 'SCOT',
+        DEPART: 'Département',
+        REGION: 'Région',
+    }
+
+    const debounce = (func, timeout = 300) => {
+        let timer
+        return (...args) => {
+            clearTimeout(timer)
+            timer = setTimeout(() => { func.apply(this, args) }, timeout)
+        }
+    }
+
+    const handleChange = debounce((event) => searchTerritory(event.target.value), 1000)
+    
+    const searchTerritory = (value) => {
+        if (value.length <= 1) {
+            results.innerHTML = ''
+
+            return
+        }
+
+        toggleLoader(true)
+
+        fetch('{% url "public_data:search-land" %}', {
+            method: 'POST',
+            body: JSON.stringify({
+                needle: value,
+            }),
+            headers: {
+                'X-CSRFToken': '{{csrf_token}}',
+                'Content-type': 'application/json; charset=UTF-8',
+            },
+        })
+        .then((response) => {
+            return response.json()
+        })
+        .then((response) => {
+            let count = 0
+            results.innerHTML = Object.keys(response)
+            .map((key) => {
+                if (response[key].length > 0) {
+                    count++
+
+                    return `
+                        <div class='level'>${levels[key]}</div>
+                        ${response[key].map(obj => (
+                            `<div class="territory" onclick="CreateDiagnostic('${obj.public_key}')">
+                                <div class='fr-mr-2v'>${obj.name}</div>
+                                ${obj.source_id !== "" ? `<div class='text-muted'>(${obj.source_id})</div>` : ``}
+                            </div>`
+                        )).join('')}
+                    `
+                }
+            }).join('')
+
+            if (count === 0)
+                results.innerHTML = '<div class="no-results fr-text--sm text-muted">Il n\'y a aucun résultat pour votre recherche</div>'
+        })
+        .catch((error) => console.log('Erreur : ' + error))
+        .finally(() => {
+            toggleLoader(false)
+        })
+    }
+
+    const toggleLoader = (value) => {
+        iconSearch.hidden = value
+        iconLoader.hidden = !value  
+    }
+
+    // Hide results on click outside search bar
+    document.addEventListener('click', (e) => {   
+        if (!searchBox.contains(e.target)){ 
+            results.hidden = true
+            results.innerHTML = ''
+            searchInput.value = ''
+        }
+        else {
+            results.hidden = false
+        }
+    })
+
+    const CreateDiagnostic = (public_key) => {
+        let form = document.createElement('form')
+        form.action = '{% url "project:create" %}'
+        form.method = 'POST'
+
+        let csrfToken = document.createElement('input')
+        csrfToken.type = 'hidden'
+        csrfToken.name = 'csrfmiddlewaretoken'
+        csrfToken.value = '{{ csrf_token }}'
+        form.appendChild(csrfToken)
+
+        let selection = document.createElement('input')
+        selection.type = 'hidden'
+        selection.name = 'selection'
+        selection.value = public_key
+        form.appendChild(selection)
+
+        let a = document.createElement('input')
+        a.type = 'hidden'
+        a.name = 'keyword'
+        a.value = searchInput.value
+        form.appendChild(a)
+
+        document.body.appendChild(form)
+        form.submit()
+    }
+</script>
