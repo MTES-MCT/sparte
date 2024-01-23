@@ -17,7 +17,7 @@ class Command(BaseCommand):
 
     def load_departement(self, departement: Departement, years: List[int]):
         call_command("load_ocsge", departement=departement.name, year_range=years)
-        call_command("setup_dept")
+        call_command("setup_departements")
 
         call_command("build_commune_data", departement=departement.name, verbose=True)
         call_command("build_artificial_area", departement=departement.name, verbose=True)
