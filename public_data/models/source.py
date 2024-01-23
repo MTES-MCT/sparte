@@ -1,6 +1,8 @@
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
 
+from public_data.models.enums import SRID
+
 
 class DataSource(models.Model):
     class Meta:
@@ -9,14 +11,20 @@ class DataSource(models.Model):
 
     class ProductorChoices(models.TextChoices):
         IGN = "IGN", "Institut national de l'information géographique et forestière"
+        CEREMA = (
+            "CEREMA",
+            "Centre d'études et d'expertise sur les risques, l'environnement, la mobilité et l'aménagement",
+        )
 
     class DatasetChoices(models.TextChoices):
         OCSGE = "OCSGE", "Occupation du sol à grande échelle"
+        MAJIC = "MAJIC", "Mise A Jour des Informations Cadastrales"
 
     class DataNameChoices(models.TextChoices):
         OCCUPATION_DU_SOL = "OCCUPATION_DU_SOL", "Couverture et usage du sol"
         DIFFERENCE = "DIFFERENCE", "Différence entre deux OCSGE"
         ZONE_CONSTRUITE = "ZONE_CONSTRUITE", "Zone construite"
+        CONSOMMATION_ESPACE = "CONSOMMATION_ESPACE", "Consommation d'espace"
 
     productor = models.CharField("Producteur", max_length=255, choices=ProductorChoices.choices)
     dataset = models.CharField("Jeu de donnée", max_length=255, choices=DatasetChoices.choices)
@@ -28,7 +36,7 @@ class DataSource(models.Model):
     )
     millesimes = ArrayField(
         models.IntegerField(),
-        verbose_name="Année(s)",
+        verbose_name="Millésime(s)",
         blank=True,
         null=True,
         help_text="Séparer les années par une virgule si la donnée concerne plusieurs années",
@@ -48,11 +56,16 @@ class DataSource(models.Model):
         help_text="""
             ID officiel du territoire (code INSEE, SIREN, etc.) <br />
             Peut-être vide si la donnée ne concerne pas un territoire spécifique
-            (par exemple, s'il concerne la France entière)
+            (par exemple, s'il concerne la France entière, ou un DROM-COM entier)
         """,
         max_length=255,
         blank=True,
         null=True,
+    )
+    srid = models.IntegerField(
+        "SRID",
+        choices=SRID.choices,
+        default=SRID.LAMBERT_93,
     )
 
     def __str__(self) -> str:
