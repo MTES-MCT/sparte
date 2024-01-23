@@ -60,11 +60,6 @@
     cursor: pointer;
 }
 
-.territory * {
-    /* prevent the childs from capturing click events as the parent is clickable */
-    pointer-events: none;
-}
-
 .territory:hover {
     background: #F3F4F4;
 }
@@ -90,7 +85,7 @@
 
 <div class="fr-search-bar fr-search-bar--red position-relative d-flex flex-column" role="search">
     <div class="d-flex justify-content-center align-items-center position-relative" id="search-box">
-        <input class="fr-input" placeholder="Rechercher un territoire (Commune, EPCI, Département, Région...)" type="search" autocomplete="off">
+        <input class="fr-input" placeholder="Rechercher un territoire (Commune, EPCI, Département, Région...)" type="search" onkeyup="handleChange(event)" autocomplete="off">
         <div class="search-bar-icon">
             <span id="icon-search" class="fr-icon-search-line" aria-hidden="true"></span>
             <div  id="icon-loader" class="fr-custom-loader--button" aria-hidden="true" hidden></div>
@@ -125,10 +120,12 @@
         }
     }
 
+    const handleChange = debounce((event) => searchTerritory(event.target.value), 1000)
     
     const searchTerritory = (value) => {
         if (value.length <= 1) {
             results.innerHTML = ''
+
             return
         }
 
@@ -157,7 +154,7 @@
                     return `
                         <div class='level'>${levels[key]}</div>
                         ${response[key].map(obj => (
-                            `<div class="territory" id="territory-${obj.public_key}">
+                            `<div class="territory" onclick="CreateDiagnostic('${obj.public_key}')">
                                 <div class='fr-mr-2v'>${obj.name}</div>
                                 ${obj.source_id !== "" ? `<div class='text-muted'>(${obj.source_id})</div>` : ``}
                             </div>`
@@ -180,7 +177,19 @@
         iconLoader.hidden = !value  
     }
 
-    const createDiagnostic = (public_key) => {
+    // Hide results on click outside search bar
+    document.addEventListener('click', (e) => {   
+        if (!searchBox.contains(e.target)){ 
+            results.hidden = true
+            results.innerHTML = ''
+            searchInput.value = ''
+        }
+        else {
+            results.hidden = false
+        }
+    })
+
+    const CreateDiagnostic = (public_key) => {
         let form = document.createElement('form')
         form.action = '{% url "project:create" %}'
         form.method = 'POST'
@@ -206,23 +215,4 @@
         document.body.appendChild(form)
         form.submit()
     }
-
-    // Hide results on click outside search bar
-    document.addEventListener('click', (e) => {   
-        if (!searchBox.contains(e.target)){ 
-            results.hidden = true
-            results.innerHTML = ''
-            searchInput.value = ''
-        }
-        else {
-            results.hidden = false
-        }
-        if (!!e.target.id && e.target.id.startsWith('territory-')) {
-            const [, public_key] = e.target.id.split('territory-')
-            createDiagnostic(public_key)
-        }
-    })
-
-    const onInput = debounce(event => searchTerritory(event.target.value), 250)
-    searchInput.addEventListener('input', onInput)
 </script>
