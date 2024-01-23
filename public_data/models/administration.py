@@ -201,7 +201,7 @@ class LandMixin:
         raise NotImplementedError("need to be overridden")
 
     def get_official_id(self) -> str:
-        return self.source_id
+        return self.source_id if self.source_id is not None else ""
 
     def get_cities(self):
         raise NotImplementedError("need to be overridden")
@@ -339,7 +339,7 @@ class Scot(LandMixin, GetDataFromCeremaMixin, models.Model):
         return self.name.upper()
 
     def get_official_id(self) -> str:
-        return self.siren
+        return self.siren if self.siren is not None else ""
 
     @classmethod
     def search(cls, needle, region=None, departement=None, epci=None):
@@ -466,7 +466,7 @@ class Commune(DataColorationMixin, LandMixin, GetDataFromCeremaMixin, models.Mod
         return [self]
 
     def get_official_id(self) -> str:
-        return self.insee
+        return self.insee if self.insee is not None else ""
 
     @classmethod
     def search(cls, needle, region=None, departement=None, epci=None):

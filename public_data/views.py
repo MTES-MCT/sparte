@@ -561,9 +561,9 @@ class SearchLandApiView(GenericViewSet):
     def post(self, request) -> Response:
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        needle = serializer.validated_data.get("needle")
+        needle = serializer.validated_data["needle"]
 
-        results = Land.search(needle)
+        results = Land.search(needle, search_for="*")
         output = {land_type: serializers.LandSerializer(lands, many=True).data for land_type, lands in results.items()}
 
         return Response(data=output)

@@ -9,7 +9,7 @@ app_name = "public_data"
 urlpatterns = [
     path("matrix", views.DisplayMatrix.as_view(), name="matrix"),
     path("grid", views.grid_views, name="grid"),
-    path("search-land", views.SearchLandApiView.as_view(), name="search-land"),
+    path("search-land", views.SearchLandApiView.as_view({"post": "post"}), name="search-land"),
 ]
 
 
