@@ -200,6 +200,9 @@ class LandMixin:
     def search(cls, needle, region=None, departement=None, epci=None):
         raise NotImplementedError("need to be overridden")
 
+    def get_official_id(self) -> str:
+        return self.source_id
+
     def get_cities(self):
         raise NotImplementedError("need to be overridden")
 
@@ -335,6 +338,9 @@ class Scot(LandMixin, GetDataFromCeremaMixin, models.Model):
     def __str__(self):
         return self.name.upper()
 
+    def get_official_id(self) -> str:
+        return self.siren
+
     @classmethod
     def search(cls, needle, region=None, departement=None, epci=None):
         qs = cls.objects.filter(name__unaccent__trigram_word_similar=needle)
@@ -458,6 +464,9 @@ class Commune(DataColorationMixin, LandMixin, GetDataFromCeremaMixin, models.Mod
 
     def get_cities(self):
         return [self]
+
+    def get_official_id(self) -> str:
+        return self.insee
 
     @classmethod
     def search(cls, needle, region=None, departement=None, epci=None):

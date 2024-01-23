@@ -134,7 +134,7 @@
         fetch('{% url "public_data:search-land" %}', {
             method: 'POST',
             body: JSON.stringify({
-                query: value,
+                needle: value,
             }),
             headers: {
                 'X-CSRFToken': '{{csrf_token}}',
