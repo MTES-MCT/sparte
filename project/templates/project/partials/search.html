@@ -154,9 +154,9 @@
                     return `
                         <div class='level'>${levels[key]}</div>
                         ${response[key].map(obj => (
-                            `<div class="territory" onclick="CreateDiagnostic('${key}_${obj.id}')">
+                            `<div class="territory" onclick="CreateDiagnostic('${obj.public_key}')">
                                 <div class='fr-mr-2v'>${obj.name}</div>
-                                <div class='text-muted'>(${obj.source_id})</div>
+                                ${obj.source_id != "" ? `<div class='text-muted'>(${obj.source_id})</div>` : ``}
                             </div>`
                         )).join('')}
                     `
