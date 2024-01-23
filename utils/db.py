@@ -1,8 +1,16 @@
-from django.contrib.gis.db.models import Func
-from django.contrib.gis.db.models.functions import Area, Intersection, Transform
-from django.contrib.gis.geos import MultiPolygon, Polygon
+from logging import getLogger
+
+from django.contrib.gis.db.models.functions import (
+    Area,
+    Intersection,
+    MakeValid,
+    Transform,
+)
+from django.contrib.gis.geos import GeometryCollection, MultiPolygon, Polygon
 from django.db.models import DecimalField, Manager, QuerySet, Sum
 from django.db.models.functions import Cast, Coalesce
+
+logger = getLogger(__name__)
 
 Zero = Area(Polygon(((0, 0), (0, 0), (0, 0), (0, 0)), srid=2154))
 
@@ -25,42 +33,43 @@ class IntersectMixin:
     def intersect(self, geom) -> QuerySet:
         """Filter queryset on intersection between class mpoly field and geom args
         add intersection and intersection_area fields"""
-        queryset = self.filter(mpoly__intersects=geom)  # type: ignore
-        queryset = queryset.annotate(
-            intersection=Intersection("mpoly", geom),
+        return self.filter(mpoly__intersects=geom).annotate(
+            intersection=Intersection(MakeValid("mpoly"), geom),
             intersection_area=Coalesce(
                 Area(Transform("intersection", 2154)),
                 Zero,
             ),
         )
-        return queryset
 
 
 class IntersectManager(IntersectMixin, Manager):
     pass
 
 
-def fix_poly(field):
+def fix_poly(field) -> MultiPolygon:
     if isinstance(field, Polygon):
         return MultiPolygon(field)
-    elif isinstance(field, MultiPolygon):
+
+    if isinstance(field, MultiPolygon):
         return field
-    else:
-        raise TypeError("Field should be Polygon or MultiPolygon")
 
+    if isinstance(field, GeometryCollection):
+        multipolygon = MultiPolygon()
 
-class Buffer(Func):
-    """Make a buffer arround a mpoly.
+        for geom_part in field:
+            if isinstance(geom_part, Polygon):
+                multipolygon.append(geom_part)
+            elif isinstance(geom_part, MultiPolygon):
+                multipolygon.extend(geom_part)
+            else:
+                logger.info(
+                    msg=(
+                        f"GeometryCollection contains unexpected type: {geom_part.geom_type}.",
+                        "This is probably the result of MakeValid.",
+                        "Ignored",
+                    )
+                )
 
-    Add an outputfield to ensure the result is a MultiPolygon.
-    >>> Buffer("intersection", buffer_width, output_field=MultiPolygonField())
+        return multipolygon
 
-    To get meters when srid=4326, use:
-    >>> buffer_width = 5 / 40000000.0 * 360.0  # 5 meters
-    """
-
-    function = "ST_Buffer"
-    arity = 2
-
-    def __init__(self, expression, radius, **extra):
-        super().__init__(expression, radius, **extra)
+    raise TypeError(f"Field should be Polygon, MultiPolygon or GeometryCollection. Found: {field.geom_type}")

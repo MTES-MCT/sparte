@@ -112,7 +112,7 @@ class Command(BaseCommand):
 
     def build_data(self, city: Commune):
         if not city.ocsge_available:
-            logger.info(f"No OCSGE data available for {city.name}. Maybe you forgot to run setup_dept?")
+            logger.info(f"No OCSGE data available for {city.name}. Maybe you forgot to run setup_departements?")
             return
 
         self.__calculate_surface_artif(city)

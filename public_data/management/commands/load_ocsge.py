@@ -1,27 +1,20 @@
-import logging
 from functools import cache
-from pathlib import Path
+from typing import Self
 
-import geopandas
 from django.contrib.gis.db.models.functions import Area, Transform
 from django.core.management.base import BaseCommand
-from django.db.models import DecimalField
+from django.db.models import DecimalField, Q
 from django.db.models.functions import Cast
 
 from public_data.models import (
     CouvertureUsageMatrix,
+    DataSource,
     Departement,
     Ocsge,
     OcsgeDiff,
     ZoneConstruite,
 )
 from public_data.models.mixins import AutoLoadMixin
-
-logger = logging.getLogger("management.commands")
-
-
-def get_departement(name: str) -> Departement:
-    return Departement.objects.get(name=name)
 
 
 @cache
@@ -33,7 +26,18 @@ class AutoOcsgeDiff(AutoLoadMixin, OcsgeDiff):
     class Meta:
         proxy = True
 
-    def before_save(self):
+    @classmethod
+    @property
+    def mapping(cls) -> dict[str, str]:
+        return {
+            "cs_old": f"CS_{cls._year_old}",
+            "us_old": f"US_{cls._year_old}",
+            "cs_new": f"CS_{cls._year_new}",
+            "us_new": f"US_{cls._year_new}",
+            "mpoly": "MULTIPOLYGON",
+        }
+
+    def before_save(self) -> None:
         self.year_new = self.__class__._year_new
         self.year_old = self.__class__._year_old
         self.departement = self.__class__._departement
@@ -59,21 +63,28 @@ class AutoOcsgeDiff(AutoLoadMixin, OcsgeDiff):
         self.is_new_natural = self.old_is_artif and not self.new_is_artif
 
     @classmethod
-    def calculate_fields(cls):
-        cls.objects.all().filter(surface__isnull=True).update(
+    def calculate_fields(cls) -> None:
+        cls.objects.filter(
+            departement=cls._departement,
+            year_new=cls._year_new,
+            year_old=cls._year_old,
+        ).update(
             surface=Cast(
                 Area(Transform("mpoly", 2154)),
                 DecimalField(max_digits=15, decimal_places=4),
             )
         )
 
+    @classmethod
+    def clean_data(cls) -> None:
+        cls.objects.filter(
+            departement=cls._departement,
+            year_new=cls._year_new,
+            year_old=cls._year_old,
+        ).delete()
 
-# ##########
-#   GERS
-# ##########
 
-
-class GersOcsge(AutoLoadMixin, Ocsge):
+class AutoOcsge(AutoLoadMixin, Ocsge):
     class Meta:
         proxy = True
 
@@ -84,144 +95,9 @@ class GersOcsge(AutoLoadMixin, Ocsge):
         "mpoly": "MULTIPOLYGON",
     }
 
-    _departement = get_departement("Gers")
-
-    def save(self, *args, **kwargs):
-        self.departement = self._departement
-        key = (self.couverture, self.usage)
-
-        self.matrix = get_matrix()[key]
-        self.is_artificial = bool(self.matrix.is_artificial)
-
-        if self.matrix.couverture:
-            self.couverture_label = self.matrix.couverture.label
-        if self.matrix.usage:
-            self.usage_label = self.matrix.usage.label
-
+    def save(self, *args, **kwargs) -> Self:
         self.year = self.__class__._year
-
-        return super().save(*args, **kwargs)
-
-    @classmethod
-    def clean_data(cls):
-        cls.objects.filter(
-            departement=cls._departement,
-            year=cls._year,
-        ).delete()
-
-    @classmethod
-    def calculate_fields(cls):
-        cls.objects.all().filter(surface__isnull=True).update(
-            surface=Cast(
-                Area(Transform("mpoly", 2154)),
-                DecimalField(max_digits=15, decimal_places=4),
-            )
-        )
-
-
-class GersOcsge2016(GersOcsge):
-    class Meta:
-        proxy = True
-
-    shape_file_path = "gers_ocsge_2016.zip"
-    _year = 2016
-
-
-class GersOcsge2019(GersOcsge):
-    class Meta:
-        proxy = True
-
-    shape_file_path = "gers_ocsge_2019.zip"
-    _year = 2019
-
-
-class GersOcsgeDiff(AutoOcsgeDiff):
-    """
-    Email du dev du 06.10.2022: on fait la diff entre le plus récent et celui d'avant.
-    avant = 2019, après = 2016
-    """
-
-    class Meta:
-        proxy = True
-
-    _year_new = 2019
-    _year_old = 2016
-    _departement = get_departement("Gers")
-
-    shape_file_path = "gers_diff_2016_2019.zip"
-
-    mapping = {
-        "cs_old": "cs_apres",
-        "us_old": "us_apres",
-        "cs_new": "cs_avant",
-        "us_new": "us_avant",
-        "mpoly": "MULTIPOLYGON",
-    }
-
-    @classmethod
-    def clean_data(cls):
-        cls.objects.filter(
-            departement=cls._departement,
-            year_new=cls._year_new,
-            year_old=cls._year_old,
-        ).delete()
-
-
-class GersZoneConstruite2016(AutoLoadMixin, ZoneConstruite):
-    class Meta:
-        proxy = True
-
-    _year = 2016
-    _departement = get_departement("Gers")
-
-    shape_file_path = "gers_zone_construite_2016.zip"
-    mapping = {
-        "id_source": "ID",
-        "millesime": "MILLESIME",
-        "mpoly": "MULTIPOLYGON",
-    }
-
-    def save(self, *args, **kwargs):
-        self.year = self._year
-        self.departement = self._departement
-        self.surface = self.mpoly.transform(2154, clone=True).area
-        super().save(*args, **kwargs)
-
-    @classmethod
-    def clean_data(cls):
-        cls.objects.filter(
-            departement=cls._departement,
-            year=cls._year,
-        ).delete()
-
-
-class GersZoneConstruite2019(GersZoneConstruite2016):
-    class Meta:
-        proxy = True
-
-    _year = 2019
-    shape_file_path = "gers_zone_construite_2019.zip"
-
-
-# Essonne
-
-
-class EssonneOcsge(AutoLoadMixin, Ocsge):
-    class Meta:
-        proxy = True
-
-    mapping = {
-        "couverture": "CODE_CS",
-        "usage": "CODE_US",
-        "id_source": "ID",
-        "mpoly": "MULTIPOLYGON",
-    }
-
-    _departement = get_departement("Essonne")
-
-    def save(self, *args, **kwargs):
-        self.year = self.__class__._year
-        self.departement = self._departement
+        self.departement = self.__class__._departement
         key = (self.couverture, self.usage)
 
         self.matrix = get_matrix()[key]
@@ -235,15 +111,18 @@ class EssonneOcsge(AutoLoadMixin, Ocsge):
         return super().save(*args, **kwargs)
 
     @classmethod
-    def clean_data(cls):
+    def clean_data(cls) -> None:
         cls.objects.filter(
             departement=cls._departement,
             year=cls._year,
         ).delete()
 
     @classmethod
-    def calculate_fields(cls):
-        cls.objects.all().filter(surface__isnull=True).update(
+    def calculate_fields(cls) -> None:
+        cls.objects.filter(
+            departement=cls._departement,
+            year=cls._year,
+        ).update(
             surface=Cast(
                 Area(Transform("mpoly", 2154)),
                 DecimalField(max_digits=15, decimal_places=4),
@@ -251,27 +130,9 @@ class EssonneOcsge(AutoLoadMixin, Ocsge):
         )
 
 
-class EssonneOcsge2018(EssonneOcsge):
+class AutoZoneConstruite(AutoLoadMixin, ZoneConstruite):
     class Meta:
         proxy = True
-
-    shape_file_path = "essonne_ocsge_2018.zip"
-    _year = 2018
-
-
-class EssonneOcsge2021(EssonneOcsge):
-    class Meta:
-        proxy = True
-
-    shape_file_path = "essonne_ocsge_2021.zip"
-    _year = 2021
-
-
-class EssonneOcsgeZoneConstruite(AutoLoadMixin, ZoneConstruite):
-    class Meta:
-        proxy = True
-
-    _departement = get_departement("Essonne")
 
     mapping = {
         "id_source": "ID",
@@ -279,288 +140,124 @@ class EssonneOcsgeZoneConstruite(AutoLoadMixin, ZoneConstruite):
         "mpoly": "MULTIPOLYGON",
     }
 
-    def save(self, *args, **kwargs):
-        self.year = self._year
-        self.departement = self._departement
-        self.surface = self.mpoly.transform(2154, clone=True).area
-        super().save(*args, **kwargs)
-
-    @classmethod
-    def clean_data(cls):
-        cls.objects.filter(
-            departement=cls._departement,
-            year=cls._year,
-        ).delete()
-
-
-class EssonneOcsgeZoneConstruite2018(EssonneOcsgeZoneConstruite):
-    class Meta:
-        proxy = True
-
-    shape_file_path = "essonne_zone_construite_2018.zip"
-    _year = 2018
-
-
-class EssonneOcsgeZoneConstruite2021(EssonneOcsgeZoneConstruite):
-    class Meta:
-        proxy = True
-
-    shape_file_path = "essonne_zone_construite_2021.zip"
-    _year = 2021
-
-
-class EssonneOcsgeDiff1821(AutoOcsgeDiff):
-    class Meta:
-        proxy = True
-
-    _year_old = 2018
-    _year_new = 2021
-
-    _departement = get_departement("Essonne")
-
-    shape_file_path = "essonne_diff_2018_2021.zip"
-
-    mapping = {
-        "cs_new": "CS_2021",
-        "us_new": "US_2021",
-        "cs_old": "CS_2018",
-        "us_old": "US_2018",
-        "mpoly": "MULTIPOLYGON",
-    }
-
-    @classmethod
-    def clean_data(cls):
-        cls.objects.filter(
-            departement=cls._departement,
-            year_new=cls._year_new,
-            year_old=cls._year_old,
-        ).delete()
-
-
-class SeineEtMarneOcsge(AutoLoadMixin, Ocsge):
-    class Meta:
-        proxy = True
-
-    mapping = {
-        "id_source": "ID",
-        "couverture": "COUVERTURE",
-        "usage": "USAGE",
-        "mpoly": "MULTIPOLYGON",
-    }
-
-    _departement = get_departement("Seine-et-Marne")
-
-    def save(self, *args, **kwargs):
-        self.year = self.__class__._year
-        self.departement = self._departement
-        key = (self.couverture, self.usage)
-
-        if key not in get_matrix():
-            self.is_artificial = False
-            return super().save(*args, **kwargs)
-
-        self.matrix = get_matrix()[key]
-        self.is_artificial = bool(self.matrix.is_artificial)
-
-        if self.matrix.couverture:
-            self.couverture_label = self.matrix.couverture.label
-        if self.matrix.usage:
-            self.usage_label = self.matrix.usage.label
-
-        return super().save(*args, **kwargs)
-
-    @classmethod
-    def clean_data(cls):
-        cls.objects.filter(
-            departement=cls._departement,
-            year=cls._year,
-        ).delete()
-
-    @classmethod
-    def calculate_fields(cls):
-        cls.objects.all().filter(surface__isnull=True).update(
-            surface=Cast(
-                Area(Transform("mpoly", 2154)),
-                DecimalField(max_digits=15, decimal_places=4),
-            )
-        )
-
-
-class SeineEtMarneOcsge2017(SeineEtMarneOcsge):
-    class Meta:
-        proxy = True
-
-    shape_file_path = "seine_et_marne_ocsge_2017.zip"
-    _year = 2017
-
-
-class SeineEtMarneOcsge2021(SeineEtMarneOcsge):
-    class Meta:
-        proxy = True
-
-    shape_file_path = "seine_et_marne_ocsge_2021.zip"
-    _year = 2021
-
-
-class SeineEtMarneOcsgeZoneConstruite(AutoLoadMixin, ZoneConstruite):
-    class Meta:
-        proxy = True
-
-    mapping = {
-        "id_source": "OBJECTID",
-        "mpoly": "MULTIPOLYGON",
-    }
-
-    _departement = get_departement("Seine-et-Marne")
-
-    @staticmethod
-    def prepare_shapefile(shape_file_path: Path):
-        gdf = geopandas.read_file(shape_file_path)
-        gdf["OBJECTID"] = gdf["OBJECTID"].astype(str)
-        gdf.to_file(shape_file_path, driver="ESRI Shapefile")
-
-    def save(self, *args, **kwargs):
+    def save(self, *args, **kwargs) -> Self:
         self.year = int(self._year)
-        self.millesime = str(self._year)
         self.surface = self.mpoly.transform(2154, clone=True).area
         self.departement = self._departement
-        super().save(*args, **kwargs)
+        return super().save(*args, **kwargs)
 
     @classmethod
-    def clean_data(cls):
+    def clean_data(cls) -> None:
         cls.objects.filter(
             departement=cls._departement,
             year=cls._year,
         ).delete()
 
 
-class SeineEtMarneOcsgeZoneConstruite2017(SeineEtMarneOcsgeZoneConstruite):
-    class Meta:
-        proxy = True
+def get_layer_mapper_proxy_class(source: DataSource):
+    departement = Departement.objects.get(source_id=source.official_land_id)
 
-    shape_file_path = "seine_et_marne_zone_construite_2017.zip"
-    _year = 2017
-
-
-class SeineEtMarneOcsgeZoneConstruite2021(SeineEtMarneOcsgeZoneConstruite):
-    class Meta:
-        proxy = True
-
-    shape_file_path = "seine_et_marne_zone_construite_2021.zip"
-    _year = 2021
-
-
-class SeineEtMarneOcsgeDiff1721(AutoOcsgeDiff):
-    class Meta:
-        proxy = True
-
-    _year_old = 2017
-    _year_new = 2021
-
-    _departement = get_departement("Seine-et-Marne")
-
-    shape_file_path = "seine_et_marne_diff_2017_2021.zip"
-
-    mapping = {
-        "cs_new": "CS_2021",
-        "us_new": "US_2021",
-        "cs_old": "CS_2017",
-        "us_old": "US_2017",
-        "mpoly": "MULTIPOLYGON",
+    properties = {
+        "Meta": type("Meta", (), {"proxy": True}),
+        "shape_file_path": source.path,
+        "_departement": departement,
+        "__module__": __name__,
     }
 
-    @classmethod
-    def clean_data(cls):
-        cls.objects.filter(
-            departement=cls._departement,
-            year_new=cls._year_new,
-            year_old=cls._year_old,
-        ).delete()
+    base_class = None
+
+    if source.mapping:
+        properties.update({"mapping": source.mapping})
+
+    if source.name == DataSource.DataNameChoices.DIFFERENCE:
+        base_class = AutoOcsgeDiff
+        properties.update(
+            {
+                "_year_old": min(source.millesimes),
+                "_year_new": max(source.millesimes),
+            }
+        )
+    elif source.name == DataSource.DataNameChoices.OCCUPATION_DU_SOL:
+        properties.update({"_year": source.millesimes[0]})
+        base_class = AutoOcsge
+    elif source.name == DataSource.DataNameChoices.ZONE_CONSTRUITE:
+        properties.update({"_year": source.millesimes[0]})
+        base_class = AutoZoneConstruite
+
+    class_name = f"Auto{source.name}{departement}{'_'.join(map(str, source.millesimes))}"
+
+    return type(class_name, (base_class,), properties)
 
 
 class Command(BaseCommand):
-    help = "Load all data from OCS GE"
+    def get_queryset(self):
+        return DataSource.objects.filter(
+            productor=DataSource.ProductorChoices.IGN,
+            dataset=DataSource.DatasetChoices.OCSGE,
+        )
 
     def add_arguments(self, parser):
         parser.add_argument(
-            "--item",
+            "--departement",
             type=str,
-            nargs="+",
-            help="item that you want to load ex: GersOcsge2016, ZoneConstruite2019...",
+            help="Departement name",
         )
         parser.add_argument(
-            "--truncate",
-            action="store_true",
-            help=("if you want to completly restart tables including id, not compatible " "with --item"),
+            "--year-range",
+            type=str,
+            help="Year range",
         )
         parser.add_argument(
-            "--describe",
-            action="store_true",
-            help="Show shape file features'",
+            "--layer-type",
+            type=str,
+            help="Layer type.",
         )
         parser.add_argument(
-            "--no-verbose",
+            "--all",
             action="store_true",
-            help="reduce output",
+            help="Load all data",
+        )
+
+        parser.add_argument(
+            "--list",
+            action="store_true",
+            help="List available data",
         )
 
     def handle(self, *args, **options):
-        logger.info("Load OCSGE")
+        if not options:
+            raise ValueError("You must provide at least one option, or use --all to load all data")
 
-        self.verbose = not options["no_verbose"]
+        if options.get("list"):
+            for source in self.get_queryset():
+                print(source)
+            return
 
-        item_list = [
-            # GERS #####
-            GersOcsge2016,
-            GersOcsge2019,
-            GersOcsgeDiff,
-            GersZoneConstruite2016,
-            GersZoneConstruite2019,
-            # Essonne ####
-            EssonneOcsge2018,
-            EssonneOcsge2021,
-            EssonneOcsgeDiff1821,
-            EssonneOcsgeZoneConstruite2018,
-            EssonneOcsgeZoneConstruite2021,
-            # Seine-et-Marne ####
-            SeineEtMarneOcsge2017,
-            SeineEtMarneOcsge2021,
-            SeineEtMarneOcsgeDiff1721,
-            SeineEtMarneOcsgeZoneConstruite2017,
-            SeineEtMarneOcsgeZoneConstruite2021,
-        ]
+        sources = self.get_queryset()
 
-        if options.get("truncate"):
-            logger.info("Full truncate OCSGE")
-            self.truncate()
-            logger.info("End truncate OCSGE")
+        if options.get("departement"):
+            departement_param = options.get("departement")
+            departement_queryset = Departement.objects.filter(
+                Q(source_id=departement_param) | Q(name__icontains=departement_param)
+            )
 
-        item_name_filter = options.get("item")
+            if not departement_queryset:
+                raise ValueError(f"{departement_param} is not a valid departement")
 
-        if item_name_filter:
-            # first check all args are good
-            for item in item_name_filter:
-                if item not in [i.__name__ for i in item_list]:
-                    raise Exception(f"Item {item} not found. Maybe you forgot to add it to the item_list?")
-            # make a list of corresponding class
-            items = [i for i in item_list if i.__name__ in item_name_filter]
-        else:
-            items = item_list
+            departement = departement_queryset.first()
 
-        logger.info("Full load")
-        self.load(items)
-        logger.info("End loading OCSGE")
+            sources = sources.filter(official_land_id=departement.source_id)
 
-    def truncate(self):
-        logger.info("Truncate Ocsge, OcsgeDiff and ZoneConstruite")
+        if options.get("year-range"):
+            year_range = options.get("year-range").split(",")
+            sources = sources.filter(millesimes__overlap=year_range)
 
-        Ocsge.truncate()
-        OcsgeDiff.truncate()
-        ZoneConstruite.truncate()
+        if options.get("layer-type"):
+            sources = sources.filter(name__icontains=options.get("layer-type"))
 
-    def load(self, item_list):
-        logger.info("Items to load: %d", len(item_list))
+        if not sources:
+            raise ValueError("No data sources found")
 
-        for item in item_list:
-            logger.info("Load data for: %s", item.__name__)
-            item.load(verbose=self.verbose)
+        for source in sources:
+            layer_mapper_proxy_class = get_layer_mapper_proxy_class(source)
+            layer_mapper_proxy_class.load()

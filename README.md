@@ -113,9 +113,9 @@ The process is not stable yet. Use it with caution.
 
 1. Download shape files from IGN's website [https://geoservices.ign.fr](https://geoservices.ign.fr) "Catalogue > OCS GE"
 2. Extract shape files and zip them by name, remove anysubfolder, the zip should contain only files
-3. Name zip file accordingly to expected name in [public_data/management/commands/load_ocsge.py](public_data/management/commands/load_ocsge.py). If you want to update 2016 Gers millesime, name it accordingly to what you will find in class **GersOcsge2016** and the property **shape_file_path** (which is gers_ocsge_2016.zip when writhing those lines)
+3. Name zip file accordingly to expected name in [public_data/management/commands/config_load_ocsge.json](public_data/management/commands/config_load_ocsge.json).
 4. Upload the zip in the bucket, in data folder.
-5. Trigger the loading with the command `python scripts/cmd.py --env prod load-ocsge --item .....`, replace ... by the item you want to load (following previous example it's `python scripts/cmd.py --env local load-ocsge --item GersOcsge2016`). Obviously test it in staging first.
+5. Load the data with the command `python scripts/cmd.py --env prod load_ocsge --departement Gers`
 6. Update all precalculated data: build_commune_data, build_artificial_area
 7. Update official data origin in [gitbook](https://app.gitbook.com/o/-MMQU-ngAOgQAqCm4mf3/s/OgEtEJQsOvgZrMPdWEIo/)
 8. Update admin's [Départements](https://sparte.beta.gouv.fr/admin/public_data/departement/) if new OCS GE has been added
@@ -123,11 +123,7 @@ The process is not stable yet. Use it with caution.
 Example, update Gers OCS GE with 2022-06 data:
 ```bash
 export ENV='local'
-python scripts/cmd.py --env $ENV load-ocsge --item GersOcsge2016 && \
-python scripts/cmd.py --env $ENV load-ocsge --item GersOcsge2019 && \
-python scripts/cmd.py --env $ENV load-ocsge --item GersZoneConstruite2016 && \
-python scripts/cmd.py --env $ENV load-ocsge --item GersZoneConstruite2019 && \
-python scripts/cmd.py --env $ENV load-ocsge --item GersOcsgeDiff && \
+python scripts/cmd.py --env $ENV run 'python manage.py load_ocsge --departement Gers' &&
 python scripts/cmd.py --env $ENV run 'python manage.py build_commune_data --departement Gers' && \
 python scripts/cmd.py --env $ENV run 'python manage.py build_artificial_area --departement Gers'
 ```
