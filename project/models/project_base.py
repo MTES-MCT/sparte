@@ -34,7 +34,6 @@ from public_data.models import (
     Land,
     OcsgeDiff,
     UsageSol,
-    LandException,
 )
 from public_data.models.administration import Commune
 from public_data.models.enums import SRID

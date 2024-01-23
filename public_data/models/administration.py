@@ -33,6 +33,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db.models import Sum
 from django.utils.functional import cached_property
 
+from public_data.exceptions import LandException
 from public_data.models.enums import SRID
 from utils.db import IntersectManager
 

@@ -1,2 +1,2 @@
-class LandException(Exception):
+class LandException(BaseException):
     pass

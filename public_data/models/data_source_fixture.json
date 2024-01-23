@@ -1,372 +1,473 @@
 [
-{
-    "model": "public_data.datasource",
-    "pk": 1,
-    "fields": {
-        "productor": "IGN",
-        "dataset": "OCSGE",
-        "name": "OCCUPATION_DU_SOL",
-        "millesimes": "[\"2018\"]",
-        "mapping": null,
-        "path": "essonne_ocsge_2018.zip",
-        "source_url": "https://wxs.ign.fr/c2vbqzbz832vi4tkvvmtsoh6/telechargement/inspire/OCSGE-NG-PACK_1-1$OCS-GE-NG_1-1__SHP_LAMB93_D091_2018-01-01/file/OCS-GE-NG_1-1__SHP_LAMB93_D091_2018-01-01.7z",
-        "official_land_id": "91"
+    {
+        "model": "public_data.datasource",
+        "pk": 1,
+        "fields": {
+            "productor": "IGN",
+            "dataset": "OCSGE",
+            "name": "OCCUPATION_DU_SOL",
+            "millesimes": "[\"2018\"]",
+            "mapping": null,
+            "path": "essonne_ocsge_2018.zip",
+            "source_url": "https://wxs.ign.fr/c2vbqzbz832vi4tkvvmtsoh6/telechargement/inspire/OCSGE-NG-PACK_1-1$OCS-GE-NG_1-1__SHP_LAMB93_D091_2018-01-01/file/OCS-GE-NG_1-1__SHP_LAMB93_D091_2018-01-01.7z",
+            "official_land_id": "91",
+            "srid": 2154
+        }
+    },
+    {
+        "model": "public_data.datasource",
+        "pk": 2,
+        "fields": {
+            "productor": "IGN",
+            "dataset": "OCSGE",
+            "name": "OCCUPATION_DU_SOL",
+            "millesimes": "[\"2021\"]",
+            "mapping": null,
+            "path": "essonne_ocsge_2021.zip",
+            "source_url": "https://wxs.ign.fr/c2vbqzbz832vi4tkvvmtsoh6/telechargement/inspire/OCSGE-NG-PACK_1-1$OCS-GE-NG_1-1__SHP_LAMB93_D091_2021-01-01/file/OCS-GE-NG_1-1__SHP_LAMB93_D091_2021-01-01.7z",
+            "official_land_id": "91",
+            "srid": 2154
+        }
+    },
+    {
+        "model": "public_data.datasource",
+        "pk": 3,
+        "fields": {
+            "productor": "IGN",
+            "dataset": "OCSGE",
+            "name": "ZONE_CONSTRUITE",
+            "millesimes": "[\"2018\"]",
+            "mapping": null,
+            "path": "essonne_zone_construite_2018.zip",
+            "source_url": "https://wxs.ign.fr/c2vbqzbz832vi4tkvvmtsoh6/telechargement/inspire/OCSGE-NG-PACK_1-1$OCS-GE-NG_1-1__SHP_LAMB93_D091_2018-01-01/file/OCS-GE-NG_1-1__SHP_LAMB93_D091_2018-01-01.7z",
+            "official_land_id": "91",
+            "srid": 2154
+        }
+    },
+    {
+        "model": "public_data.datasource",
+        "pk": 4,
+        "fields": {
+            "productor": "IGN",
+            "dataset": "OCSGE",
+            "name": "ZONE_CONSTRUITE",
+            "millesimes": "[\"2021\"]",
+            "mapping": null,
+            "path": "essonne_zone_construite_2021.zip",
+            "source_url": "https://wxs.ign.fr/c2vbqzbz832vi4tkvvmtsoh6/telechargement/inspire/OCSGE-NG-PACK_1-1$OCS-GE-NG_1-1__SHP_LAMB93_D091_2021-01-01/file/OCS-GE-NG_1-1__SHP_LAMB93_D091_2021-01-01.7z",
+            "official_land_id": "91",
+            "srid": 2154
+        }
+    },
+    {
+        "model": "public_data.datasource",
+        "pk": 5,
+        "fields": {
+            "productor": "IGN",
+            "dataset": "OCSGE",
+            "name": "DIFFERENCE",
+            "millesimes": "[\"2018\", \"2021\"]",
+            "mapping": null,
+            "path": "essonne_diff_2018_2021.zip",
+            "source_url": "https://wxs.ign.fr/c2vbqzbz832vi4tkvvmtsoh6/telechargement/inspire/OCSGE-NG-PACK_1-1_DIFF$OCS-GE-NG_1-1__SHP_LAMB93_D091_DIFF_2018-2021/file/OCS-GE-NG_1-1__SHP_LAMB93_D091_DIFF_2018-2021.7z",
+            "official_land_id": "91",
+            "srid": 2154
+        }
+    },
+    {
+        "model": "public_data.datasource",
+        "pk": 6,
+        "fields": {
+            "productor": "IGN",
+            "dataset": "OCSGE",
+            "name": "OCCUPATION_DU_SOL",
+            "millesimes": "[\"2016\"]",
+            "mapping": null,
+            "path": "gers_ocsge_2016.zip",
+            "source_url": "https://wxs.ign.fr/dyl17zgp2fcjp4msxc7xloyg/telechargement/inspire/OCSGE-PACK_GERS_2016-01$OCS_GE_1-1_2016_SHP_LAMB93_D032_2016-01-28/file/OCS_GE_1-1_2016_SHP_LAMB93_D032_2016-01-28.7z",
+            "official_land_id": "32",
+            "srid": 2154
+        }
+    },
+    {
+        "model": "public_data.datasource",
+        "pk": 7,
+        "fields": {
+            "productor": "IGN",
+            "dataset": "OCSGE",
+            "name": "OCCUPATION_DU_SOL",
+            "millesimes": "[\"2019\"]",
+            "mapping": null,
+            "path": "gers_ocsge_2019.zip",
+            "source_url": "https://wxs.ign.fr/dyl17zgp2fcjp4msxc7xloyg/telechargement/inspire/OCSGE-PACK_GERS_2019-01$OCS_GE_1-1_2019_SHP_LAMB93_D032_2022-06-21/file/OCS_GE_1-1_2019_SHP_LAMB93_D032_2022-06-21.7z",
+            "official_land_id": "32",
+            "srid": 2154
+        }
+    },
+    {
+        "model": "public_data.datasource",
+        "pk": 8,
+        "fields": {
+            "productor": "IGN",
+            "dataset": "OCSGE",
+            "name": "ZONE_CONSTRUITE",
+            "millesimes": "[\"2016\"]",
+            "mapping": null,
+            "path": "gers_zone_construite_2016.zip",
+            "source_url": "https://wxs.ign.fr/dyl17zgp2fcjp4msxc7xloyg/telechargement/inspire/OCSGE-PACK_GERS_2016-01$OCS_GE_1-1_2016_SHP_LAMB93_D032_2016-01-28/file/OCS_GE_1-1_2016_SHP_LAMB93_D032_2016-01-28.7z",
+            "official_land_id": "32",
+            "srid": 2154
+        }
+    },
+    {
+        "model": "public_data.datasource",
+        "pk": 9,
+        "fields": {
+            "productor": "IGN",
+            "dataset": "OCSGE",
+            "name": "ZONE_CONSTRUITE",
+            "millesimes": "[\"2019\"]",
+            "mapping": null,
+            "path": "gers_zone_construite_2019.zip",
+            "source_url": "https://wxs.ign.fr/dyl17zgp2fcjp4msxc7xloyg/telechargement/inspire/OCSGE-PACK_GERS_2019-01$OCS_GE_1-1_2019_SHP_LAMB93_D032_2022-06-21/file/OCS_GE_1-1_2019_SHP_LAMB93_D032_2022-06-21.7z",
+            "official_land_id": "32",
+            "srid": 2154
+        }
+    },
+    {
+        "model": "public_data.datasource",
+        "pk": 10,
+        "fields": {
+            "productor": "IGN",
+            "dataset": "OCSGE",
+            "name": "DIFFERENCE",
+            "millesimes": "[\"2016\", \"2019\"]",
+            "mapping": {
+                "mpoly": "MULTIPOLYGON",
+                "cs_new": "cs_avant",
+                "cs_old": "cs_apres",
+                "us_new": "us_avant",
+                "us_old": "us_apres"
+            },
+            "path": "gers_diff_2016_2019.zip",
+            "source_url": null,
+            "official_land_id": "32",
+            "srid": 2154
+        }
+    },
+    {
+        "model": "public_data.datasource",
+        "pk": 11,
+        "fields": {
+            "productor": "IGN",
+            "dataset": "OCSGE",
+            "name": "OCCUPATION_DU_SOL",
+            "millesimes": "[\"2018\"]",
+            "mapping": null,
+            "path": "hauts_de_seine_ocsge_2018_corrige.zip",
+            "source_url": "https://wxs.ign.fr/c2vbqzbz832vi4tkvvmtsoh6/telechargement/inspire/OCSGE-NG-PACK_1-1$OCS-GE-NG_1-1__SHP_LAMB93_D092_2018-01-01/file/OCS-GE-NG_1-1__SHP_LAMB93_D092_2018-01-01.7z",
+            "official_land_id": "92",
+            "srid": 2154
+        }
+    },
+    {
+        "model": "public_data.datasource",
+        "pk": 12,
+        "fields": {
+            "productor": "IGN",
+            "dataset": "OCSGE",
+            "name": "OCCUPATION_DU_SOL",
+            "millesimes": "[\"2021\"]",
+            "mapping": null,
+            "path": "hauts_de_seine_ocsge_2021_corrige.zip",
+            "source_url": "https://wxs.ign.fr/c2vbqzbz832vi4tkvvmtsoh6/telechargement/inspire/OCSGE-NG-PACK_1-1$OCS-GE-NG_1-1__SHP_LAMB93_D092_2021-01-01/file/OCS-GE-NG_1-1__SHP_LAMB93_D092_2021-01-01.7z",
+            "official_land_id": "92",
+            "srid": 2154
+        }
+    },
+    {
+        "model": "public_data.datasource",
+        "pk": 13,
+        "fields": {
+            "productor": "IGN",
+            "dataset": "OCSGE",
+            "name": "ZONE_CONSTRUITE",
+            "millesimes": "[\"2018\"]",
+            "mapping": null,
+            "path": "hauts_de_seine_zone_construite_2018_corrige.zip",
+            "source_url": "https://wxs.ign.fr/c2vbqzbz832vi4tkvvmtsoh6/telechargement/inspire/OCSGE-NG-PACK_1-1$OCS-GE-NG_1-1__SHP_LAMB93_D092_2018-01-01/file/OCS-GE-NG_1-1__SHP_LAMB93_D092_2018-01-01.7z",
+            "official_land_id": "92",
+            "srid": 2154
+        }
+    },
+    {
+        "model": "public_data.datasource",
+        "pk": 14,
+        "fields": {
+            "productor": "IGN",
+            "dataset": "OCSGE",
+            "name": "ZONE_CONSTRUITE",
+            "millesimes": "[\"2021\"]",
+            "mapping": null,
+            "path": "hauts_de_seine_zone_construite_2021_corrige.zip",
+            "source_url": "https://wxs.ign.fr/c2vbqzbz832vi4tkvvmtsoh6/telechargement/inspire/OCSGE-NG-PACK_1-1$OCS-GE-NG_1-1__SHP_LAMB93_D092_2021-01-01/file/OCS-GE-NG_1-1__SHP_LAMB93_D092_2021-01-01.7z",
+            "official_land_id": "92",
+            "srid": 2154
+        }
+    },
+    {
+        "model": "public_data.datasource",
+        "pk": 15,
+        "fields": {
+            "productor": "IGN",
+            "dataset": "OCSGE",
+            "name": "DIFFERENCE",
+            "millesimes": "[\"2018\", \"2021\"]",
+            "mapping": null,
+            "path": "hauts_de_seine_diff_2018_2021_corrige.zip",
+            "source_url": "https://wxs.ign.fr/c2vbqzbz832vi4tkvvmtsoh6/telechargement/inspire/OCSGE-NG-PACK_1-1_DIFF$OCS-GE-NG_1-1__SHP_LAMB93_D092_DIFF_2018-2021/file/OCS-GE-NG_1-1__SHP_LAMB93_D092_DIFF_2018-2021.7z",
+            "official_land_id": "92",
+            "srid": 2154
+        }
+    },
+    {
+        "model": "public_data.datasource",
+        "pk": 16,
+        "fields": {
+            "productor": "IGN",
+            "dataset": "OCSGE",
+            "name": "OCCUPATION_DU_SOL",
+            "millesimes": "[\"2018\"]",
+            "mapping": null,
+            "path": "landes_ocsge_2018.zip",
+            "source_url": "https://wxs.ign.fr/c2vbqzbz832vi4tkvvmtsoh6/telechargement/inspire/OCSGE-NG-PACK_1-1$OCS-GE-NG_1-1__SHP_LAMB93_D040_2018-01-01/file/OCS-GE-NG_1-1__SHP_LAMB93_D040_2018-01-01.7z",
+            "official_land_id": "40",
+            "srid": 2154
+        }
+    },
+    {
+        "model": "public_data.datasource",
+        "pk": 17,
+        "fields": {
+            "productor": "IGN",
+            "dataset": "OCSGE",
+            "name": "OCCUPATION_DU_SOL",
+            "millesimes": "[\"2021\"]",
+            "mapping": null,
+            "path": "landes_ocsge_2021.zip",
+            "source_url": "https://wxs.ign.fr/c2vbqzbz832vi4tkvvmtsoh6/telechargement/inspire/OCSGE-NG-PACK_1-1$OCS-GE-NG_1-1__SHP_LAMB93_D040_2021-01-01/file/OCS-GE-NG_1-1__SHP_LAMB93_D040_2021-01-01.7z",
+            "official_land_id": "40",
+            "srid": 2154
+        }
+    },
+    {
+        "model": "public_data.datasource",
+        "pk": 18,
+        "fields": {
+            "productor": "IGN",
+            "dataset": "OCSGE",
+            "name": "ZONE_CONSTRUITE",
+            "millesimes": "[\"2018\"]",
+            "mapping": null,
+            "path": "landes_zone_constuite_2018.zip",
+            "source_url": "https://wxs.ign.fr/c2vbqzbz832vi4tkvvmtsoh6/telechargement/inspire/OCSGE-NG-PACK_1-1$OCS-GE-NG_1-1__SHP_LAMB93_D040_2018-01-01/file/OCS-GE-NG_1-1__SHP_LAMB93_D040_2018-01-01.7z",
+            "official_land_id": "40",
+            "srid": 2154
+        }
+    },
+    {
+        "model": "public_data.datasource",
+        "pk": 19,
+        "fields": {
+            "productor": "IGN",
+            "dataset": "OCSGE",
+            "name": "ZONE_CONSTRUITE",
+            "millesimes": "[\"2021\"]",
+            "mapping": null,
+            "path": "landes_zone_constuite_2021.zip",
+            "source_url": "https://wxs.ign.fr/c2vbqzbz832vi4tkvvmtsoh6/telechargement/inspire/OCSGE-NG-PACK_1-1$OCS-GE-NG_1-1__SHP_LAMB93_D040_2021-01-01/file/OCS-GE-NG_1-1__SHP_LAMB93_D040_2021-01-01.7z",
+            "official_land_id": "40",
+            "srid": 2154
+        }
+    },
+    {
+        "model": "public_data.datasource",
+        "pk": 20,
+        "fields": {
+            "productor": "IGN",
+            "dataset": "OCSGE",
+            "name": "DIFFERENCE",
+            "millesimes": "[\"2018\", \"2021\"]",
+            "mapping": null,
+            "path": "landes_diff_2018_2021.zip",
+            "source_url": "https://wxs.ign.fr/c2vbqzbz832vi4tkvvmtsoh6/telechargement/inspire/OCSGE-NG-PACK_1-1_DIFF$OCS-GE-NG_1-1__SHP_LAMB93_D040_DIFF_2018-2021/file/OCS-GE-NG_1-1__SHP_LAMB93_D040_DIFF_2018-2021.7z",
+            "official_land_id": "40",
+            "srid": 2154
+        }
+    },
+    {
+        "model": "public_data.datasource",
+        "pk": 21,
+        "fields": {
+            "productor": "IGN",
+            "dataset": "OCSGE",
+            "name": "OCCUPATION_DU_SOL",
+            "millesimes": "[\"2017\"]",
+            "mapping": {
+                "mpoly": "MULTIPOLYGON",
+                "usage": "USAGE",
+                "id_source": "ID",
+                "couverture": "COUVERTURE"
+            },
+            "path": "seine_et_marne_ocsge_2017.zip",
+            "source_url": "https://wxs.ign.fr/c2vbqzbz832vi4tkvvmtsoh6/telechargement/inspire/OCSGE-NG-PACK_1-1$OCS-GE-NG_1-1__SHP_LAMB93_D077_2017-01-01/file/OCS-GE-NG_1-1__SHP_LAMB93_D077_2017-01-01.7z",
+            "official_land_id": "77",
+            "srid": 2154
+        }
+    },
+    {
+        "model": "public_data.datasource",
+        "pk": 22,
+        "fields": {
+            "productor": "IGN",
+            "dataset": "OCSGE",
+            "name": "OCCUPATION_DU_SOL",
+            "millesimes": "[\"2021\"]",
+            "mapping": {
+                "mpoly": "MULTIPOLYGON",
+                "usage": "USAGE",
+                "id_source": "ID",
+                "couverture": "COUVERTURE"
+            },
+            "path": "seine_et_marne_ocsge_2021.zip",
+            "source_url": "https://wxs.ign.fr/c2vbqzbz832vi4tkvvmtsoh6/telechargement/inspire/OCSGE-NG-PACK_1-1$OCS-GE-NG_1-1__SHP_LAMB93_D077_2021-01-01/file/OCS-GE-NG_1-1__SHP_LAMB93_D077_2021-01-01.7z",
+            "official_land_id": "77",
+            "srid": 2154
+        }
+    },
+    {
+        "model": "public_data.datasource",
+        "pk": 23,
+        "fields": {
+            "productor": "IGN",
+            "dataset": "OCSGE",
+            "name": "ZONE_CONSTRUITE",
+            "millesimes": "[\"2017\"]",
+            "mapping": {
+                "mpoly": "MULTIPOLYGON"
+            },
+            "path": "seine_et_marne_zone_construite_2017.zip",
+            "source_url": "https://wxs.ign.fr/c2vbqzbz832vi4tkvvmtsoh6/telechargement/inspire/OCSGE-NG-PACK_1-1$OCS-GE-NG_1-1__SHP_LAMB93_D077_2017-01-01/file/OCS-GE-NG_1-1__SHP_LAMB93_D077_2017-01-01.7z",
+            "official_land_id": "77",
+            "srid": 2154
+        }
+    },
+    {
+        "model": "public_data.datasource",
+        "pk": 24,
+        "fields": {
+            "productor": "IGN",
+            "dataset": "OCSGE",
+            "name": "ZONE_CONSTRUITE",
+            "millesimes": "[\"2021\"]",
+            "mapping": {
+                "mpoly": "MULTIPOLYGON"
+            },
+            "path": "seine_et_marne_zone_construite_2021.zip",
+            "source_url": "https://wxs.ign.fr/c2vbqzbz832vi4tkvvmtsoh6/telechargement/inspire/OCSGE-NG-PACK_1-1$OCS-GE-NG_1-1__SHP_LAMB93_D077_2021-01-01/file/OCS-GE-NG_1-1__SHP_LAMB93_D077_2021-01-01.7z",
+            "official_land_id": "77",
+            "srid": 2154
+        }
+    },
+    {
+        "model": "public_data.datasource",
+        "pk": 25,
+        "fields": {
+            "productor": "IGN",
+            "dataset": "OCSGE",
+            "name": "DIFFERENCE",
+            "millesimes": "[\"2017\", \"2021\"]",
+            "mapping": null,
+            "path": "seine_et_marne_diff_2017_2021.zip",
+            "source_url": "https://wxs.ign.fr/c2vbqzbz832vi4tkvvmtsoh6/telechargement/inspire/OCSGE-NG-PACK_1-1_DIFF$OCS-GE-NG_1-1__SHP_LAMB93_D077_DIFF_2017-2021/file/OCS-GE-NG_1-1__SHP_LAMB93_D077_DIFF_2017-2021.7z",
+            "official_land_id": "77",
+            "srid": 2154
+        }
+    },
+    {
+        "model": "public_data.datasource",
+        "pk": 27,
+        "fields": {
+            "productor": "CEREMA",
+            "dataset": "MAJIC",
+            "name": "CONSOMMATION_ESPACE",
+            "millesimes": "[\"2022\"]",
+            "mapping": null,
+            "path": "obs_artif_conso_com_2009_2022.zip",
+            "source_url": "https://cerema.app.box.com/v/pnb-action7-indicateurs-ff/file/1220325634602",
+            "official_land_id": null,
+            "srid": 2154
+        }
+    },
+    {
+        "model": "public_data.datasource",
+        "pk": 28,
+        "fields": {
+            "productor": "CEREMA",
+            "dataset": "MAJIC",
+            "name": "CONSOMMATION_ESPACE",
+            "millesimes": "[\"2022\"]",
+            "mapping": null,
+            "path": "obs_artif_conso_com_2009_2022_971.zip",
+            "source_url": "https://cerema.app.box.com/v/pnb-action7-indicateurs-ff/file/1220324623439",
+            "official_land_id": "971",
+            "srid": 32620
+        }
+    },
+    {
+        "model": "public_data.datasource",
+        "pk": 29,
+        "fields": {
+            "productor": "CEREMA",
+            "dataset": "MAJIC",
+            "name": "CONSOMMATION_ESPACE",
+            "millesimes": "[\"2022\"]",
+            "mapping": null,
+            "path": "obs_artif_conso_com_2009_2022_972.zip",
+            "source_url": "https://cerema.app.box.com/v/pnb-action7-indicateurs-ff/file/1220319992060",
+            "official_land_id": "972",
+            "srid": 32620
+        }
+    },
+    {
+        "model": "public_data.datasource",
+        "pk": 30,
+        "fields": {
+            "productor": "CEREMA",
+            "dataset": "MAJIC",
+            "name": "CONSOMMATION_ESPACE",
+            "millesimes": "[\"2022\"]",
+            "mapping": null,
+            "path": "obs_artif_conso_com_2009_2022_973.zip",
+            "source_url": "https://cerema.app.box.com/v/pnb-action7-indicateurs-ff/file/1220325269345",
+            "official_land_id": "973",
+            "srid": 2972
+        }
+    },
+    {
+        "model": "public_data.datasource",
+        "pk": 31,
+        "fields": {
+            "productor": "CEREMA",
+            "dataset": "MAJIC",
+            "name": "CONSOMMATION_ESPACE",
+            "millesimes": "[\"2022\"]",
+            "mapping": null,
+            "path": "obs_artif_conso_com_2009_2022_974.zip",
+            "source_url": "https://cerema.app.box.com/v/pnb-action7-indicateurs-ff/file/1220324321616",
+            "official_land_id": "974",
+            "srid": 2975
+        }
     }
-},
-{
-    "model": "public_data.datasource",
-    "pk": 2,
-    "fields": {
-        "productor": "IGN",
-        "dataset": "OCSGE",
-        "name": "OCCUPATION_DU_SOL",
-        "millesimes": "[\"2021\"]",
-        "mapping": null,
-        "path": "essonne_ocsge_2021.zip",
-        "source_url": "https://wxs.ign.fr/c2vbqzbz832vi4tkvvmtsoh6/telechargement/inspire/OCSGE-NG-PACK_1-1$OCS-GE-NG_1-1__SHP_LAMB93_D091_2021-01-01/file/OCS-GE-NG_1-1__SHP_LAMB93_D091_2021-01-01.7z",
-        "official_land_id": "91"
-    }
-},
-{
-    "model": "public_data.datasource",
-    "pk": 3,
-    "fields": {
-        "productor": "IGN",
-        "dataset": "OCSGE",
-        "name": "ZONE_CONSTRUITE",
-        "millesimes": "[\"2018\"]",
-        "mapping": null,
-        "path": "essonne_zone_construite_2018.zip",
-        "source_url": "https://wxs.ign.fr/c2vbqzbz832vi4tkvvmtsoh6/telechargement/inspire/OCSGE-NG-PACK_1-1$OCS-GE-NG_1-1__SHP_LAMB93_D091_2018-01-01/file/OCS-GE-NG_1-1__SHP_LAMB93_D091_2018-01-01.7z",
-        "official_land_id": "91"
-    }
-},
-{
-    "model": "public_data.datasource",
-    "pk": 4,
-    "fields": {
-        "productor": "IGN",
-        "dataset": "OCSGE",
-        "name": "ZONE_CONSTRUITE",
-        "millesimes": "[\"2021\"]",
-        "mapping": null,
-        "path": "essonne_zone_construite_2021.zip",
-        "source_url": "https://wxs.ign.fr/c2vbqzbz832vi4tkvvmtsoh6/telechargement/inspire/OCSGE-NG-PACK_1-1$OCS-GE-NG_1-1__SHP_LAMB93_D091_2021-01-01/file/OCS-GE-NG_1-1__SHP_LAMB93_D091_2021-01-01.7z",
-        "official_land_id": "91"
-    }
-},
-{
-    "model": "public_data.datasource",
-    "pk": 5,
-    "fields": {
-        "productor": "IGN",
-        "dataset": "OCSGE",
-        "name": "DIFFERENCE",
-        "millesimes": "[\"2018\", \"2021\"]",
-        "mapping": null,
-        "path": "essonne_diff_2018_2021.zip",
-        "source_url": "https://wxs.ign.fr/c2vbqzbz832vi4tkvvmtsoh6/telechargement/inspire/OCSGE-NG-PACK_1-1_DIFF$OCS-GE-NG_1-1__SHP_LAMB93_D091_DIFF_2018-2021/file/OCS-GE-NG_1-1__SHP_LAMB93_D091_DIFF_2018-2021.7z",
-        "official_land_id": "91"
-    }
-},
-{
-    "model": "public_data.datasource",
-    "pk": 6,
-    "fields": {
-        "productor": "IGN",
-        "dataset": "OCSGE",
-        "name": "OCCUPATION_DU_SOL",
-        "millesimes": "[\"2016\"]",
-        "mapping": null,
-        "path": "gers_ocsge_2016.zip",
-        "source_url": "https://wxs.ign.fr/dyl17zgp2fcjp4msxc7xloyg/telechargement/inspire/OCSGE-PACK_GERS_2016-01$OCS_GE_1-1_2016_SHP_LAMB93_D032_2016-01-28/file/OCS_GE_1-1_2016_SHP_LAMB93_D032_2016-01-28.7z",
-        "official_land_id": "32"
-    }
-},
-{
-    "model": "public_data.datasource",
-    "pk": 7,
-    "fields": {
-        "productor": "IGN",
-        "dataset": "OCSGE",
-        "name": "OCCUPATION_DU_SOL",
-        "millesimes": "[\"2019\"]",
-        "mapping": null,
-        "path": "gers_ocsge_2019.zip",
-        "source_url": "https://wxs.ign.fr/dyl17zgp2fcjp4msxc7xloyg/telechargement/inspire/OCSGE-PACK_GERS_2019-01$OCS_GE_1-1_2019_SHP_LAMB93_D032_2022-06-21/file/OCS_GE_1-1_2019_SHP_LAMB93_D032_2022-06-21.7z",
-        "official_land_id": "32"
-    }
-},
-{
-    "model": "public_data.datasource",
-    "pk": 8,
-    "fields": {
-        "productor": "IGN",
-        "dataset": "OCSGE",
-        "name": "ZONE_CONSTRUITE",
-        "millesimes": "[\"2016\"]",
-        "mapping": null,
-        "path": "gers_zone_construite_2016.zip",
-        "source_url": "https://wxs.ign.fr/dyl17zgp2fcjp4msxc7xloyg/telechargement/inspire/OCSGE-PACK_GERS_2016-01$OCS_GE_1-1_2016_SHP_LAMB93_D032_2016-01-28/file/OCS_GE_1-1_2016_SHP_LAMB93_D032_2016-01-28.7z",
-        "official_land_id": "32"
-    }
-},
-{
-    "model": "public_data.datasource",
-    "pk": 9,
-    "fields": {
-        "productor": "IGN",
-        "dataset": "OCSGE",
-        "name": "ZONE_CONSTRUITE",
-        "millesimes": "[\"2019\"]",
-        "mapping": null,
-        "path": "gers_zone_construite_2019.zip",
-        "source_url": "https://wxs.ign.fr/dyl17zgp2fcjp4msxc7xloyg/telechargement/inspire/OCSGE-PACK_GERS_2019-01$OCS_GE_1-1_2019_SHP_LAMB93_D032_2022-06-21/file/OCS_GE_1-1_2019_SHP_LAMB93_D032_2022-06-21.7z",
-        "official_land_id": "32"
-    }
-},
-{
-    "model": "public_data.datasource",
-    "pk": 10,
-    "fields": {
-        "productor": "IGN",
-        "dataset": "OCSGE",
-        "name": "DIFFERENCE",
-        "millesimes": "[\"2016\", \"2019\"]",
-        "mapping": {
-            "mpoly": "MULTIPOLYGON",
-            "cs_new": "cs_avant",
-            "cs_old": "cs_apres",
-            "us_new": "us_avant",
-            "us_old": "us_apres"
-        },
-        "path": "gers_diff_2016_2019.zip",
-        "source_url": null,
-        "official_land_id": "32"
-    }
-},
-{
-    "model": "public_data.datasource",
-    "pk": 11,
-    "fields": {
-        "productor": "IGN",
-        "dataset": "OCSGE",
-        "name": "OCCUPATION_DU_SOL",
-        "millesimes": "[\"2018\"]",
-        "mapping": null,
-        "path": "hauts_de_seine_ocsge_2018_corrige.zip",
-        "source_url": "https://wxs.ign.fr/c2vbqzbz832vi4tkvvmtsoh6/telechargement/inspire/OCSGE-NG-PACK_1-1$OCS-GE-NG_1-1__SHP_LAMB93_D092_2018-01-01/file/OCS-GE-NG_1-1__SHP_LAMB93_D092_2018-01-01.7z",
-        "official_land_id": "92"
-    }
-},
-{
-    "model": "public_data.datasource",
-    "pk": 12,
-    "fields": {
-        "productor": "IGN",
-        "dataset": "OCSGE",
-        "name": "OCCUPATION_DU_SOL",
-        "millesimes": "[\"2021\"]",
-        "mapping": null,
-        "path": "hauts_de_seine_ocsge_2021_corrige.zip",
-        "source_url": "https://wxs.ign.fr/c2vbqzbz832vi4tkvvmtsoh6/telechargement/inspire/OCSGE-NG-PACK_1-1$OCS-GE-NG_1-1__SHP_LAMB93_D092_2021-01-01/file/OCS-GE-NG_1-1__SHP_LAMB93_D092_2021-01-01.7z",
-        "official_land_id": "92"
-    }
-},
-{
-    "model": "public_data.datasource",
-    "pk": 13,
-    "fields": {
-        "productor": "IGN",
-        "dataset": "OCSGE",
-        "name": "ZONE_CONSTRUITE",
-        "millesimes": "[\"2018\"]",
-        "mapping": null,
-        "path": "hauts_de_seine_zone_construite_2018_corrige.zip",
-        "source_url": "https://wxs.ign.fr/c2vbqzbz832vi4tkvvmtsoh6/telechargement/inspire/OCSGE-NG-PACK_1-1$OCS-GE-NG_1-1__SHP_LAMB93_D092_2018-01-01/file/OCS-GE-NG_1-1__SHP_LAMB93_D092_2018-01-01.7z",
-        "official_land_id": "92"
-    }
-},
-{
-    "model": "public_data.datasource",
-    "pk": 14,
-    "fields": {
-        "productor": "IGN",
-        "dataset": "OCSGE",
-        "name": "ZONE_CONSTRUITE",
-        "millesimes": "[\"2021\"]",
-        "mapping": null,
-        "path": "hauts_de_seine_zone_construite_2021_corrige.zip",
-        "source_url": "https://wxs.ign.fr/c2vbqzbz832vi4tkvvmtsoh6/telechargement/inspire/OCSGE-NG-PACK_1-1$OCS-GE-NG_1-1__SHP_LAMB93_D092_2021-01-01/file/OCS-GE-NG_1-1__SHP_LAMB93_D092_2021-01-01.7z",
-        "official_land_id": "92"
-    }
-},
-{
-    "model": "public_data.datasource",
-    "pk": 15,
-    "fields": {
-        "productor": "IGN",
-        "dataset": "OCSGE",
-        "name": "DIFFERENCE",
-        "millesimes": "[\"2018\", \"2021\"]",
-        "mapping": null,
-        "path": "hauts_de_seine_diff_2018_2021_corrige.zip",
-        "source_url": "https://wxs.ign.fr/c2vbqzbz832vi4tkvvmtsoh6/telechargement/inspire/OCSGE-NG-PACK_1-1_DIFF$OCS-GE-NG_1-1__SHP_LAMB93_D092_DIFF_2018-2021/file/OCS-GE-NG_1-1__SHP_LAMB93_D092_DIFF_2018-2021.7z",
-        "official_land_id": "92"
-    }
-},
-{
-    "model": "public_data.datasource",
-    "pk": 16,
-    "fields": {
-        "productor": "IGN",
-        "dataset": "OCSGE",
-        "name": "OCCUPATION_DU_SOL",
-        "millesimes": "[\"2018\"]",
-        "mapping": null,
-        "path": "landes_ocsge_2018.zip",
-        "source_url": "https://wxs.ign.fr/c2vbqzbz832vi4tkvvmtsoh6/telechargement/inspire/OCSGE-NG-PACK_1-1$OCS-GE-NG_1-1__SHP_LAMB93_D040_2018-01-01/file/OCS-GE-NG_1-1__SHP_LAMB93_D040_2018-01-01.7z",
-        "official_land_id": "40"
-    }
-},
-{
-    "model": "public_data.datasource",
-    "pk": 17,
-    "fields": {
-        "productor": "IGN",
-        "dataset": "OCSGE",
-        "name": "OCCUPATION_DU_SOL",
-        "millesimes": "[\"2021\"]",
-        "mapping": null,
-        "path": "landes_ocsge_2021.zip",
-        "source_url": "https://wxs.ign.fr/c2vbqzbz832vi4tkvvmtsoh6/telechargement/inspire/OCSGE-NG-PACK_1-1$OCS-GE-NG_1-1__SHP_LAMB93_D040_2021-01-01/file/OCS-GE-NG_1-1__SHP_LAMB93_D040_2021-01-01.7z",
-        "official_land_id": "40"
-    }
-},
-{
-    "model": "public_data.datasource",
-    "pk": 18,
-    "fields": {
-        "productor": "IGN",
-        "dataset": "OCSGE",
-        "name": "ZONE_CONSTRUITE",
-        "millesimes": "[\"2018\"]",
-        "mapping": null,
-        "path": "landes_zone_constuite_2018.zip",
-        "source_url": "https://wxs.ign.fr/c2vbqzbz832vi4tkvvmtsoh6/telechargement/inspire/OCSGE-NG-PACK_1-1$OCS-GE-NG_1-1__SHP_LAMB93_D040_2018-01-01/file/OCS-GE-NG_1-1__SHP_LAMB93_D040_2018-01-01.7z",
-        "official_land_id": "40"
-    }
-},
-{
-    "model": "public_data.datasource",
-    "pk": 19,
-    "fields": {
-        "productor": "IGN",
-        "dataset": "OCSGE",
-        "name": "ZONE_CONSTRUITE",
-        "millesimes": "[\"2021\"]",
-        "mapping": null,
-        "path": "landes_zone_constuite_2021.zip",
-        "source_url": "https://wxs.ign.fr/c2vbqzbz832vi4tkvvmtsoh6/telechargement/inspire/OCSGE-NG-PACK_1-1$OCS-GE-NG_1-1__SHP_LAMB93_D040_2021-01-01/file/OCS-GE-NG_1-1__SHP_LAMB93_D040_2021-01-01.7z",
-        "official_land_id": "40"
-    }
-},
-{
-    "model": "public_data.datasource",
-    "pk": 20,
-    "fields": {
-        "productor": "IGN",
-        "dataset": "OCSGE",
-        "name": "DIFFERENCE",
-        "millesimes": "[\"2018\", \"2021\"]",
-        "mapping": null,
-        "path": "landes_diff_2018_2021.zip",
-        "source_url": "https://wxs.ign.fr/c2vbqzbz832vi4tkvvmtsoh6/telechargement/inspire/OCSGE-NG-PACK_1-1_DIFF$OCS-GE-NG_1-1__SHP_LAMB93_D040_DIFF_2018-2021/file/OCS-GE-NG_1-1__SHP_LAMB93_D040_DIFF_2018-2021.7z",
-        "official_land_id": "40"
-    }
-},
-{
-    "model": "public_data.datasource",
-    "pk": 21,
-    "fields": {
-        "productor": "IGN",
-        "dataset": "OCSGE",
-        "name": "OCCUPATION_DU_SOL",
-        "millesimes": "[\"2017\"]",
-        "mapping": {
-            "mpoly": "MULTIPOLYGON",
-            "usage": "USAGE",
-            "id_source": "ID",
-            "couverture": "COUVERTURE"
-        },
-        "path": "seine_et_marne_ocsge_2017.zip",
-        "source_url": "https://wxs.ign.fr/c2vbqzbz832vi4tkvvmtsoh6/telechargement/inspire/OCSGE-NG-PACK_1-1$OCS-GE-NG_1-1__SHP_LAMB93_D077_2017-01-01/file/OCS-GE-NG_1-1__SHP_LAMB93_D077_2017-01-01.7z",
-        "official_land_id": "77"
-    }
-},
-{
-    "model": "public_data.datasource",
-    "pk": 22,
-    "fields": {
-        "productor": "IGN",
-        "dataset": "OCSGE",
-        "name": "OCCUPATION_DU_SOL",
-        "millesimes": "[\"2021\"]",
-        "mapping": {
-            "mpoly": "MULTIPOLYGON",
-            "usage": "USAGE",
-            "id_source": "ID",
-            "couverture": "COUVERTURE"
-        },
-        "path": "seine_et_marne_ocsge_2021.zip",
-        "source_url": "https://wxs.ign.fr/c2vbqzbz832vi4tkvvmtsoh6/telechargement/inspire/OCSGE-NG-PACK_1-1$OCS-GE-NG_1-1__SHP_LAMB93_D077_2021-01-01/file/OCS-GE-NG_1-1__SHP_LAMB93_D077_2021-01-01.7z",
-        "official_land_id": "77"
-    }
-},
-{
-    "model": "public_data.datasource",
-    "pk": 23,
-    "fields": {
-        "productor": "IGN",
-        "dataset": "OCSGE",
-        "name": "ZONE_CONSTRUITE",
-        "millesimes": "[\"2017\"]",
-        "mapping": {
-            "mpoly": "MULTIPOLYGON"
-        },
-        "path": "seine_et_marne_zone_construite_2017.zip",
-        "source_url": "https://wxs.ign.fr/c2vbqzbz832vi4tkvvmtsoh6/telechargement/inspire/OCSGE-NG-PACK_1-1$OCS-GE-NG_1-1__SHP_LAMB93_D077_2017-01-01/file/OCS-GE-NG_1-1__SHP_LAMB93_D077_2017-01-01.7z",
-        "official_land_id": "77"
-    }
-},
-{
-    "model": "public_data.datasource",
-    "pk": 24,
-    "fields": {
-        "productor": "IGN",
-        "dataset": "OCSGE",
-        "name": "ZONE_CONSTRUITE",
-        "millesimes": "[\"2021\"]",
-        "mapping": {
-            "mpoly": "MULTIPOLYGON"
-        },
-        "path": "seine_et_marne_zone_construite_2021.zip",
-        "source_url": "https://wxs.ign.fr/c2vbqzbz832vi4tkvvmtsoh6/telechargement/inspire/OCSGE-NG-PACK_1-1$OCS-GE-NG_1-1__SHP_LAMB93_D077_2021-01-01/file/OCS-GE-NG_1-1__SHP_LAMB93_D077_2021-01-01.7z",
-        "official_land_id": "77"
-    }
-},
-{
-    "model": "public_data.datasource",
-    "pk": 25,
-    "fields": {
-        "productor": "IGN",
-        "dataset": "OCSGE",
-        "name": "DIFFERENCE",
-        "millesimes": "[\"2017\", \"2021\"]",
-        "mapping": null,
-        "path": "seine_et_marne_diff_2017_2021.zip",
-        "source_url": "https://wxs.ign.fr/c2vbqzbz832vi4tkvvmtsoh6/telechargement/inspire/OCSGE-NG-PACK_1-1_DIFF$OCS-GE-NG_1-1__SHP_LAMB93_D077_DIFF_2017-2021/file/OCS-GE-NG_1-1__SHP_LAMB93_D077_DIFF_2017-2021.7z",
-        "official_land_id": "77"
-    }
-}
 ]
+    
