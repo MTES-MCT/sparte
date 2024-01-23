@@ -48,7 +48,7 @@ class ClaimProjectView(LoginRequiredMixin, RedirectView):
 
 
 class CreateProjectViews(BreadCrumbMixin, FormView):
-    template_name = "project/create/select_3.html"
+    template_name = "project/create/advanced_search.html"
     form_class = SelectTerritoryForm
 
     def get_context_breadcrumbs(self):

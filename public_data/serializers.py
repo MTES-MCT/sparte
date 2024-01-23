@@ -161,3 +161,17 @@ class ZoneUrbaSerializer(serializers.GeoFeatureModelSerializer):
         )
         model = models.ZoneUrba
         geo_field = "mpoly"
+
+
+class SearchLandSerializer(s.Serializer):
+    needle = s.CharField(required=True)
+
+
+class LandSerializer(s.Serializer):
+    id = s.IntegerField()
+    name = s.CharField()
+    source_id = s.SerializerMethodField()
+    public_key = s.CharField()
+
+    def get_source_id(self, obj) -> str:
+        return obj.get_official_id()
