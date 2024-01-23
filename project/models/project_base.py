@@ -22,6 +22,7 @@ from simple_history.models import HistoricalRecords
 
 from config.storages import PublicMediaStorage
 from project.models.exceptions import TooOldException
+from public_data.exceptions import LandException
 from public_data.models import (
     AdminRef,
     Cerema,
@@ -33,7 +34,6 @@ from public_data.models import (
     Land,
     OcsgeDiff,
     UsageSol,
-    LandException,
 )
 from public_data.models.administration import Commune
 from public_data.models.enums import SRID
