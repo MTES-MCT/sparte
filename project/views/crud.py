@@ -24,7 +24,8 @@ from project.forms import (
 )
 from project.models import Project, create_from_public_key
 from project.models.create import update_period
-from public_data.models import AdminRef, Land, LandException
+from public_data.exceptions import LandException
+from public_data.models import AdminRef, Land
 from utils.views_mixins import BreadCrumbMixin, RedirectURLMixin
 
 from .mixins import GroupMixin
