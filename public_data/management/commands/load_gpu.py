@@ -77,7 +77,7 @@ class ZoneUrbaFrance(AutoLoadMixin, ZoneUrba):
 
         cls.objects.filter(area__isnull=True).update(
             area=Cast(
-                Area(DynamicSRIDTransform("mpoly", 2154)) / 10000,
+                Area(DynamicSRIDTransform("mpoly", "srid_source")) / 10000,
                 DecimalField(max_digits=15, decimal_places=4),
             )
         )
@@ -92,7 +92,8 @@ class ZoneUrbaFrance(AutoLoadMixin, ZoneUrba):
             SELECT
                 pdz.id,
                 pdo.year,
-                ST_Area(ST_Transform(ST_Union(ST_Intersection(ST_MakeValid(pdo.mpoly), pdz.mpoly)), pdz.srid_source)) / 10000
+                ST_Area(ST_Transform(ST_Union(ST_Intersection(ST_MakeValid(pdo.mpoly), pdz.mpoly)), pdz.srid_source))
+                / 10000
                 AS artificial_area
             FROM
                 public_data_zoneurba pdz
