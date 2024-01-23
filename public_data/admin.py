@@ -7,6 +7,7 @@ from .models import (
     Commune,
     CouvertureSol,
     CouvertureUsageMatrix,
+    DataSource,
     Departement,
     Epci,
     Ocsge,
@@ -159,3 +160,21 @@ class CeremaAdmin(admin.GeoModelAdmin):
     )
     search_fields = ("city_insee", "city_name", "region_name", "dept_name", "epci_name")
     ordering = ("city_insee",)
+
+
+@admin.register(DataSource)
+class AdminDataSource(admin.ModelAdmin):
+    model = DataSource
+    list_display = (
+        "dataset",
+        "name",
+        "official_land_id",
+        "millesimes",
+    )
+    search_fields = (
+        "productor",
+        "dataset",
+        "name",
+        "official_land_id",
+    )
+    ordering = ("productor", "dataset", "name")
