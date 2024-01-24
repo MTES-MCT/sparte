@@ -22,6 +22,7 @@ class Command(BaseCommand):
             "Ile-de-France": Region.objects.get(name="Île-de-France"),
             "Auvergne-Rhone-Alpes": Region.objects.get(name="Auvergne-Rhône-Alpes"),
             "Provence-Alpes-Cote d'Azur": Region.objects.get(name="Provence-Alpes-Côte d'Azur"),
+            "La Reunion": Region.objects.get(name="La Réunion"),
         }
         self.dept_list = {d.name: d for d in Departement.objects.all()}
         with DataStorage().open("scote_et_communes.xlsx") as file_stream:
@@ -46,8 +47,8 @@ class Command(BaseCommand):
                 return None
 
             if row["Région"] not in self.region_list:
-                # ignore DOMTOM
-                continue
+                raise Exception("Region %s is unknown", row["Région"])
+
             try:
                 scot = Scot.objects.get(id=row["IDSCoT\n"])
             except Scot.DoesNotExist:
@@ -74,15 +75,19 @@ class Command(BaseCommand):
 
     def link_commune_to_scot(self):
         logger.info("link_commune_to_scot")
+
+        cities = []
+
         for _, row in self.df_city.iterrows():
             try:
                 if row["id"] in self.scot_id_list:
-                    # keep only cities in keeped SCoT (ie. remove islands)
                     city = Commune.objects.get(insee=row["insee"])
                     city.scot_id = row["id"]
-                    city.save()
+                    cities.append(city)
             except Commune.DoesNotExist:
                 logger.error("%s insee is unknown in commune", row["insee"])
+
+        Commune.objects.bulk_update(objs=cities, fields=["scot_id"])
 
     def calculate_scot_mpoly_field(self):
         logger.info("calculate_scot_mpoly_field")
