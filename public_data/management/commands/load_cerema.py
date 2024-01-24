@@ -3,17 +3,16 @@ import logging
 from django.core.management.base import BaseCommand
 from django.db.models import F
 
-from public_data.models import Cerema
-from public_data.models.mixins import AutoLoadMixin, TruncateTableMixin
+from public_data.models import Cerema, DataSource
+from public_data.models.enums import SRID
+from public_data.models.mixins import AutoLoadMixin
 
 logger = logging.getLogger("management.commands")
 
 
-class LoadCerema(TruncateTableMixin, AutoLoadMixin, Cerema):
+class BaseLoadCerema(AutoLoadMixin, Cerema):
     class Meta:
         proxy = True
-
-    shape_file_path = "obs_artif_conso_com_2009_2022.zip"
 
     mapping = {
         "city_insee": "IDCOM",
@@ -160,7 +159,48 @@ class LoadCerema(TruncateTableMixin, AutoLoadMixin, Cerema):
 
     @classmethod
     def clean_data(cls):
-        cls.truncate()
+        cls.objects.filter(srid_source=SRID.LAMBERT_93).delete()
+
+
+class BaseLoadCeremaDromCom(BaseLoadCerema):
+    """
+    Base class for DROM COM
+    NOTE: we exclude surfcom2022 and artcom2020 because they are not available for DROM COM
+    """
+
+    class Meta:
+        proxy = True
+
+    mapping = {k: v for k, v in BaseLoadCerema.mapping.items() if k not in ["surfcom2022", "artcom2020"]}
+
+    @classmethod
+    def clean_data(cls) -> None:
+        return cls.objects.filter(dept_id=cls.departement_id).delete()
+
+
+def get_layer_mapper_proxy_class(source: DataSource):
+    properties = {
+        "Meta": type("Meta", (), {"proxy": True}),
+        "shape_file_path": source.path,
+        "departement_id": source.official_land_id,
+        "srid": source.srid,
+        "__module__": __name__,
+    }
+
+    if source.official_land_id:
+        base_class = BaseLoadCeremaDromCom
+    else:
+        # Metropole et Corse
+        base_class = BaseLoadCerema
+
+    if source.mapping:
+        properties.update({"mapping": source.mapping})
+
+    class_name = (
+        f"Auto{source.name}{source.official_land_id or 'MetropoleEtCorse'}{'_'.join(map(str, source.millesimes))}"
+    )
+
+    return type(class_name, (base_class,), properties)
 
 
 class Command(BaseCommand):
@@ -173,18 +213,27 @@ class Command(BaseCommand):
             help="reduce output",
         )
         parser.add_argument(
-            "--local-file",
+            "--departement",
             type=str,
-            help="Use local file instead of s3",
+            help="Load only a specific drom com",
         )
 
-    def handle(self, *args, **kwargs):
-        logger.info("Load Cerema")
-
-        LoadCerema.load(
-            verbose=kwargs.get("verbose", False),
-            layer_mapper_strict=False,
-            layer_mapper_silent=False,
+    def get_queryset(self):
+        return DataSource.objects.filter(
+            productor=DataSource.ProductorChoices.CEREMA,
+            dataset=DataSource.DatasetChoices.MAJIC,
         )
 
-        logger.info("End loading Cerema")
+    def handle(self, *args, **options):
+        sources = self.get_queryset()
+
+        if options.get("departement"):
+            sources = sources.filter(official_land_id=options["departement"])
+
+        if not sources.exists():
+            logger.warning("No data source found")
+            return
+
+        for source in sources:
+            layer_mapper_proxy_class = get_layer_mapper_proxy_class(source)
+            layer_mapper_proxy_class.load()

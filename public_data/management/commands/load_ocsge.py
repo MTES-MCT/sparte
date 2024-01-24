@@ -1,7 +1,7 @@
 from functools import cache
 from typing import Self
 
-from django.contrib.gis.db.models.functions import Area, Transform
+from django.contrib.gis.db.models.functions import Area
 from django.core.management.base import BaseCommand
 from django.db.models import DecimalField, Q
 from django.db.models.functions import Cast
@@ -15,6 +15,7 @@ from public_data.models import (
     ZoneConstruite,
 )
 from public_data.models.mixins import AutoLoadMixin
+from utils.db import DynamicSRIDTransform
 
 
 @cache
@@ -41,6 +42,7 @@ class AutoOcsgeDiff(AutoLoadMixin, OcsgeDiff):
         self.year_new = self.__class__._year_new
         self.year_old = self.__class__._year_old
         self.departement = self.__class__._departement
+        self.srid_source = self.srid
 
         self.new_matrix = get_matrix()[(self.cs_new, self.us_new)]
         self.new_is_artif = bool(self.new_matrix.is_artificial)
@@ -70,7 +72,7 @@ class AutoOcsgeDiff(AutoLoadMixin, OcsgeDiff):
             year_old=cls._year_old,
         ).update(
             surface=Cast(
-                Area(Transform("mpoly", 2154)),
+                Area(DynamicSRIDTransform("mpoly", "srid_source")),
                 DecimalField(max_digits=15, decimal_places=4),
             )
         )
@@ -98,6 +100,7 @@ class AutoOcsge(AutoLoadMixin, Ocsge):
     def save(self, *args, **kwargs) -> Self:
         self.year = self.__class__._year
         self.departement = self.__class__._departement
+        self.srid_source = self.srid
         key = (self.couverture, self.usage)
 
         self.matrix = get_matrix()[key]
@@ -124,7 +127,7 @@ class AutoOcsge(AutoLoadMixin, Ocsge):
             year=cls._year,
         ).update(
             surface=Cast(
-                Area(Transform("mpoly", 2154)),
+                Area(DynamicSRIDTransform("mpoly", "srid_source")),
                 DecimalField(max_digits=15, decimal_places=4),
             )
         )
@@ -142,7 +145,9 @@ class AutoZoneConstruite(AutoLoadMixin, ZoneConstruite):
 
     def save(self, *args, **kwargs) -> Self:
         self.year = int(self._year)
-        self.surface = self.mpoly.transform(2154, clone=True).area
+        self.departement = self.__class__._departement
+        self.srid_source = self.srid
+        self.surface = self.mpoly.transform(self.srid, clone=True).area
         self.departement = self._departement
         return super().save(*args, **kwargs)
 
@@ -161,6 +166,7 @@ def get_layer_mapper_proxy_class(source: DataSource):
         "Meta": type("Meta", (), {"proxy": True}),
         "shape_file_path": source.path,
         "_departement": departement,
+        "srid": source.srid,
         "__module__": __name__,
     }
 

@@ -14,85 +14,138 @@ logger = logging.getLogger("management.commands")
 class Command(BaseCommand):
     help = "(caution, it's from scratch) Will load data into Region, Departement and Epci from Cerema data"
 
+    def add_arguments(self, parser):
+        parser.add_argument(
+            "--clean",
+            action="store_true",
+            help="Clean all data before loading",
+        )
+
     def handle(self, *args, **options):
+        clean = options.get("clean", False)
+
         logger.info("Recreate region, departement, EPCI and communes referentials")
+
+        if clean:
+            logger.info("Clean all data")
+            Region.objects.all().delete()
+            Departement.objects.all().delete()
+            Epci.objects.all().delete()
+            Commune.objects.all().delete()
+            Scot.objects.all().delete()
+
         self.load_region()
         self.load_departement()
-        self.load_scot()
         self.load_epci()
         self.link_epci()
-        self.load_communes()
+        self.load_communes(table_was_cleaned=clean)
 
     def load_region(self):
         logger.info("Loading regions")
-        Region.objects.all().delete()
-        qs = Cerema.objects.values("region_id", "region_name")
+
+        qs = Cerema.objects.values("region_id", "region_name", "srid_source")
         qs = qs.annotate(mpoly=Union("mpoly")).order_by("region_name")
+
         logger.info("%d found regions", len(qs))
-        items = [
-            Region(
+
+        total_created = 0
+
+        for data in qs:
+            _, created = Region.objects.get_or_create(
                 source_id=data["region_id"],
-                name=data["region_name"],
-                mpoly=fix_poly(data["mpoly"]),
+                defaults={
+                    "name": data["region_name"],
+                    "mpoly": fix_poly(data["mpoly"]),
+                    "srid_source": data["srid_source"],
+                },
             )
-            for data in qs
-        ]
-        Region.objects.bulk_create(items)
+
+            if created:
+                total_created += 1
+
+        logger.info("%d regions created", total_created)
         logger.info("Done loading regions")
 
     def load_departement(self):
         logger.info("Loading departements")
-        Departement.objects.all().delete()
-        # preload Region referentiel to fill foreignkey easily
+
         regions = {r.source_id: r for r in Region.objects.all()}
-        qs = Cerema.objects.values("region_id", "dept_id", "dept_name")
+
+        qs = Cerema.objects.values("region_id", "dept_id", "dept_name", "srid_source")
         qs = qs.annotate(mpoly=Union("mpoly")).order_by("dept_id")
+
         logger.info("%d departements found", len(qs))
-        items = [
-            Departement(
+
+        total_created = 0
+
+        for data in qs:
+            _, created = Departement.objects.get_or_create(
                 source_id=data["dept_id"],
-                region=regions[data["region_id"]],
-                name=data["dept_name"],
-                mpoly=fix_poly(data["mpoly"]),
+                defaults={
+                    "region": regions[data["region_id"]],
+                    "name": data["dept_name"],
+                    "mpoly": fix_poly(data["mpoly"]),
+                    "srid_source": data["srid_source"],
+                },
             )
-            for data in qs
-        ]
-        Departement.objects.bulk_create(items)
+
+            if created:
+                total_created += 1
+
+        logger.info("%d departements created", total_created)
         logger.info("Done loading departements")
 
     def load_epci(self):
         logger.info("Loading EPCI")
-        Epci.objects.all().delete()
-        qs = Cerema.objects.values("epci_id", "epci_name")
+
+        qs = Cerema.objects.values("epci_id", "epci_name", "srid_source")
         qs = qs.annotate(mpoly=Union("mpoly")).order_by("epci_id")
+
         logger.info("%d EPCI found", len(qs))
-        items = [
-            Epci(
+
+        total_created = 0
+
+        for data in qs:
+            _, created = Epci.objects.get_or_create(
                 source_id=data["epci_id"],
-                name=data["epci_name"],
-                mpoly=fix_poly(data["mpoly"]),
+                defaults={
+                    "name": data["epci_name"],
+                    "mpoly": fix_poly(data["mpoly"]),
+                    "srid_source": data["srid_source"],
+                },
             )
-            for data in qs
-        ]
-        Epci.objects.bulk_create(items)
+
+            if created:
+                total_created += 1
+
+        logger.info("%d EPCI created", total_created)
         logger.info("Done loading EPCI")
 
     def load_scot(self):
         logger.info("Loading SCOT")
-        Scot.objects.all().delete()
-        qs = Cerema.objects.values("scot").annotate(mpoly=Union("mpoly")).order_by("scot")
+
+        qs = Cerema.objects.values("scot", "srid_source")
+        qs = qs.annotate(mpoly=Union("mpoly")).order_by("scot")
+
         logger.info("%d SCoTs found", len(qs))
 
-        scot_list = [
-            Scot(
-                name=data["scot"],
-                mpoly=fix_poly(data["mpoly"]),
-            )
-            for data in qs
-            if data["scot"] is not None  # filter out communes without scot
-        ]
+        total_created = 0
 
-        Scot.objects.bulk_create(scot_list)
+        for data in qs:
+            if data["scot"] is None:
+                continue
+
+            _, created = Scot.objects.get_or_create(
+                name=data["scot"],
+                defaults={
+                    "mpoly": fix_poly(data["mpoly"]),
+                },
+            )
+
+            if created:
+                total_created += 1
+
+        logger.info("%d SCoTs created", total_created)
         # link to region and departement
         depts = {d.source_id: d for d in Departement.objects.all()}
         regions = {r.source_id: r for r in Region.objects.all()}
@@ -127,14 +180,23 @@ class Command(BaseCommand):
             epcis[epci_id].departements.add(depts[dept_id])
         logger.info("Done linking")
 
-    def load_communes(self):
+    def load_communes(self, table_was_cleaned: bool):
         logger.info("Loading Communes")
-        Commune.objects.all().delete()
         depts = {d.source_id: d for d in Departement.objects.all()}
         epcis = {e.source_id: e for e in Epci.objects.all()}
         qs = Cerema.objects.all().order_by("city_insee")
         paginator = Paginator(qs, 1000)
-        logger.info("%d Communes found in %d pages", paginator.count, paginator.num_pages)
+        logger.info("%d Communes found ", qs.count())
+
+        should_only_load_missing_communes = not table_was_cleaned
+
+        if should_only_load_missing_communes:
+            qs = qs.exclude(city_insee__in=Commune.objects.values_list("insee", flat=True))
+
+        logger.info("%d Communes to load ", qs.count())
+
+        paginator = Paginator(object_list=qs, per_page=1000)
+
         for page in paginator.page_range:
             Commune.objects.bulk_create(
                 (
@@ -144,10 +206,12 @@ class Command(BaseCommand):
                         departement=depts[data.dept_id],
                         epci=epcis[data.epci_id],
                         mpoly=fix_poly(data.mpoly),
-                        area=data.mpoly.transform(2154, clone=True).area / 10000,
+                        area=data.mpoly.transform(data.srid_source, clone=True).area / 10000,
+                        srid_source=data.srid_source,
                     )
                     for data in paginator.page(page)
                 )
             )
             logger.info("Page %d/%d done", page, paginator.num_pages)
+
         logger.info("Done loading Communes")

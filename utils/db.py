@@ -1,18 +1,39 @@
 from logging import getLogger
 
-from django.contrib.gis.db.models.functions import (
-    Area,
-    Intersection,
-    MakeValid,
-    Transform,
-)
-from django.contrib.gis.geos import GeometryCollection, MultiPolygon, Polygon
+from django.contrib.gis.db.models import Func, MultiPolygonField
+from django.contrib.gis.db.models.functions import Area, Intersection, MakeValid
+from django.contrib.gis.geos import MultiPolygon, Polygon, GeometryCollection
 from django.db.models import DecimalField, Manager, QuerySet, Sum
 from django.db.models.functions import Cast, Coalesce
 
+from public_data.models.enums import SRID
+
 logger = getLogger(__name__)
 
-Zero = Area(Polygon(((0, 0), (0, 0), (0, 0), (0, 0)), srid=2154))
+Zero = Area(Polygon(((0, 0), (0, 0), (0, 0), (0, 0)), srid=SRID.LAMBERT_93))
+
+
+class DynamicSRIDTransform(Func):
+    """
+    The built-in Transform function cannot dynamically get the srid
+    of a field to perform the transformation. This function allows
+    to do so.
+
+    NOTE: outputs MultiPolygon by default. Override output_field to
+    change this.
+
+    Examples:
+    >>> DynamicSRIDTransform('mpoly', 'srid_source')
+    >>> DynamicSRIDTransform('mpoly', 2154)
+    >>> DynamicSRIDTransform('mpoly', 'srid_source', output_field=PolygonField())
+    """
+
+    function = "ST_Transform"
+    arity = 2
+    output_field = MultiPolygonField()
+
+    def __init__(self, expression, srid_source, **extra):
+        super().__init__(expression, srid_source, **extra)
 
 
 def cast_sum_area(field, filter=None, divider=10000):
@@ -36,7 +57,7 @@ class IntersectMixin:
         return self.filter(mpoly__intersects=geom).annotate(
             intersection=Intersection(MakeValid("mpoly"), geom),
             intersection_area=Coalesce(
-                Area(Transform("intersection", 2154)),
+                Area(DynamicSRIDTransform("intersection", "srid_source")),
                 Zero,
             ),
         )

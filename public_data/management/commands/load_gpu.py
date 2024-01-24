@@ -1,7 +1,7 @@
 import logging
 from pathlib import Path
 
-from django.contrib.gis.db.models.functions import Area, Transform
+from django.contrib.gis.db.models.functions import Area
 from django.core.management.base import BaseCommand
 from django.db import connection
 from django.db.models import DecimalField, F
@@ -9,6 +9,7 @@ from django.db.models.functions import Cast
 
 from public_data.models import ZoneUrba
 from public_data.models.mixins import AutoLoadMixin
+from utils.db import DynamicSRIDTransform
 
 logger = logging.getLogger("management.commands")
 
@@ -73,12 +74,14 @@ class ZoneUrbaFrance(AutoLoadMixin, ZoneUrba):
         with connection.cursor() as cursor:
             cursor.execute(make_valid_mpoly_query)
         logger.info("Evaluate area")
+
         cls.objects.filter(area__isnull=True).update(
             area=Cast(
-                Area(Transform("mpoly", 2154)) / 10000,
+                Area(DynamicSRIDTransform("mpoly", "srid_source")) / 10000,
                 DecimalField(max_digits=15, decimal_places=4),
             )
         )
+
         logger.info("Clean typezone")
         cls.objects.update(origin_typezone=F("typezone"))
         cls.objects.filter(typezone__in=["Nh", "Nd"]).update(typezone="N")
@@ -89,7 +92,8 @@ class ZoneUrbaFrance(AutoLoadMixin, ZoneUrba):
             SELECT
                 pdz.id,
                 pdo.year,
-                ST_Area(ST_Transform(ST_Union(ST_Intersection(ST_MakeValid(pdo.mpoly), pdz.mpoly)), 2154)) / 10000
+                ST_Area(ST_Transform(ST_Union(ST_Intersection(ST_MakeValid(pdo.mpoly), pdz.mpoly)), pdz.srid_source))
+                / 10000
                 AS artificial_area
             FROM
                 public_data_zoneurba pdz
