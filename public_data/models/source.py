@@ -1,8 +1,9 @@
-from typing import Callable, Tuple
+from typing import Any, Callable, Dict
 
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
 
+from public_data.models import cerema, ocsge
 from public_data.models.enums import SRID
 
 
@@ -71,9 +72,7 @@ class DataSource(models.Model):
     def __str__(self) -> str:
         return f"{self.productor} - {self.dataset} - {self.official_land_id} - {self.name} - {self.millesimes}"
 
-    def get_layer_mapper_proxy_class(
-        self, module_name: str = "Not set", base_classes: Tuple[Callable] | None = None
-    ) -> Callable:
+    def get_class_properties(self, module_name: str) -> Dict[str, Any]:
         properties = {
             "Meta": type("Meta", (), {"proxy": True}),
             "shape_file_path": self.path,
@@ -81,13 +80,38 @@ class DataSource(models.Model):
             "srid": self.srid,
             "__module__": module_name,
         }
-
         if self.mapping:
             properties["mapping"] = self.mapping
+        return properties
 
-        class_name = f"Auto{self.name}{self.official_land_id}{'_'.join(map(str, self.millesimes))}"
+    def _get_property_year(self) -> Dict[str, int]:
+        if self.name == DataSource.DataNameChoices.DIFFERENCE:
+            return {"_year_old": min(self.millesimes), "_year_new": max(self.millesimes)}
+        if self.name in [DataSource.DataNameChoices.OCCUPATION_DU_SOL, DataSource.DataNameChoices.ZONE_CONSTRUITE]:
+            return {"_year": self.millesimes[0]}
+        if self.name == DataSource.DataNameChoices.CONSOMMATION_ESPACE:
+            return {}
+        raise ValueError(f"Unknown how to process 'year' for data name: {self.name}")
 
-        if base_classes is None:
-            base_classes = ()
+    def get_base_class(self):
+        if self.name == DataSource.DataNameChoices.DIFFERENCE:
+            return ocsge.AutoOcsgeDiff
+        if self.name == DataSource.DataNameChoices.OCCUPATION_DU_SOL:
+            return ocsge.AutoOcsge
+        if self.name == DataSource.DataNameChoices.ZONE_CONSTRUITE:
+            return ocsge.AutoZoneConstruite
+        if self.name == DataSource.DataNameChoices.CONSOMMATION_ESPACE:
+            if self.official_land_id == "MetropoleEtCorse":
+                return cerema.BaseLoadCerema
+            return cerema.BaseLoadCeremaDromCom
+        raise ValueError(f"Unknown base class for data name: {self.name}")
 
-        return type(class_name, base_classes, properties)
+    def get_class_name(self):
+        return f"Auto{self.name}{self.official_land_id}{'_'.join(map(str, self.millesimes))}"
+
+    def get_layer_mapper_proxy_class(self, module_name: str = __name__) -> Callable:
+        return type(
+            self.get_class_name(),
+            (self.get_base_class(),),
+            self.get_class_properties(module_name),
+        )
