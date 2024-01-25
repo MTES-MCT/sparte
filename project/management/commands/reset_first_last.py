@@ -11,10 +11,23 @@ logger = logging.getLogger("management.commands")
 class Command(BaseCommand):
     help = "Reset first and last ocsge for all projects"
 
+    def add_arguments(self, parser):
+        parser.add_argument(
+            "--departements",
+            nargs="+",
+            type=int,
+            help="Select departements to build",
+        )
+
     def handle(self, *args, **options):
         logger.info("Reevaluate ocsge millesimes for all project")
 
         projects = Project.objects.all()
+
+        if options.get("departements"):
+            logger.info("Filtering on departements: %s", options["departements"])
+            projects = projects.filter(commune__departement__source_id__in=options["departements"])
+
         count = projects.count()
 
         logger.info(f"Resetting first and last ocsge for {count} projects")
