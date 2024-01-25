@@ -183,13 +183,13 @@ class Command(BaseCommand):
             scot.departements.add(*[depts[d] for d in data["departement_ids"]])
             scot.regions.add(*[regions[r] for r in data["region_ids"]])
 
-    def link_epci(self):
+    def link_epci(self, base_qs: QuerySet):
         logger.info("Link EPCI <-> département")
         depts = {d.source_id: d for d in Departement.objects.all()}
         epcis = {e.source_id: e for e in Epci.objects.all()}
         for epci in epcis.values():
             epci.departements.remove()
-        links = Cerema.objects.values_list("epci_id", "dept_id").distinct()
+        links = base_qs.values_list("epci_id", "dept_id").distinct()
         logger.info("%d links found", links.count())
         for epci_id, dept_id in links:
             epcis[epci_id].departements.add(depts[dept_id])
