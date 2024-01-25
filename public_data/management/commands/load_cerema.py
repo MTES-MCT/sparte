@@ -194,9 +194,10 @@ class Command(BaseCommand):
             help="reduce output",
         )
         parser.add_argument(
-            "--departement",
-            type=str,
-            help="Load only a specific drom com",
+            "--official_land_ids",
+            nargs="+",
+            type=int,
+            help="Select what to to load using official land id source's property",
         )
 
     def get_queryset(self):
@@ -211,9 +212,9 @@ class Command(BaseCommand):
 
         sources = self.get_queryset()
 
-        if options.get("departement"):
-            logger.info("filter on departement=%s", options["departement"])
-            sources = sources.filter(official_land_id=options["departement"])
+        if options.get("official_land_ids"):
+            logger.info("filter on official_land_ids=%s", options["official_land_ids"])
+            sources = sources.filter(official_land_id__in=options["official_land_ids"])
 
         if not sources.exists():
             logger.warning("No data source found")
