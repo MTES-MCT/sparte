@@ -22,6 +22,11 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
+        """This command is keeped for documentation prupose, do not use it unless to be sure of review everything."""
+        raise Exception("This command is deprecated")
+        self.handle2(*args, **options)
+
+    def handle2(self, *args, **options):
         clean = options.get("clean", False)
 
         logger.info("Recreate region, departement, EPCI and communes referentials")
