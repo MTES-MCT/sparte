@@ -1,3 +1,5 @@
+from typing import Callable, Tuple
+
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
 
@@ -59,8 +61,6 @@ class DataSource(models.Model):
             (par exemple, s'il concerne la France entière, ou un DROM-COM entier)
         """,
         max_length=255,
-        blank=True,
-        null=True,
     )
     srid = models.IntegerField(
         "SRID",
@@ -70,3 +70,24 @@ class DataSource(models.Model):
 
     def __str__(self) -> str:
         return f"{self.productor} - {self.dataset} - {self.official_land_id} - {self.name} - {self.millesimes}"
+
+    def get_layer_mapper_proxy_class(
+        self, module_name: str = "Not set", base_classes: Tuple[Callable] | None = None
+    ) -> Callable:
+        properties = {
+            "Meta": type("Meta", (), {"proxy": True}),
+            "shape_file_path": self.path,
+            "departement_id": self.official_land_id,
+            "srid": self.srid,
+            "__module__": module_name,
+        }
+
+        if self.mapping:
+            properties["mapping"] = self.mapping
+
+        class_name = f"Auto{self.name}{self.official_land_id}{'_'.join(map(str, self.millesimes))}"
+
+        if base_classes is None:
+            base_classes = ()
+
+        return type(class_name, base_classes, properties)
