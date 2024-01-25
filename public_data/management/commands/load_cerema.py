@@ -178,29 +178,10 @@ class BaseLoadCeremaDromCom(BaseLoadCerema):
         return cls.objects.filter(dept_id=cls.departement_id).delete()
 
 
-def get_layer_mapper_proxy_class(source: DataSource):
-    properties = {
-        "Meta": type("Meta", (), {"proxy": True}),
-        "shape_file_path": source.path,
-        "departement_id": source.official_land_id,
-        "srid": source.srid,
-        "__module__": __name__,
-    }
-
-    if source.official_land_id:
-        base_class = BaseLoadCeremaDromCom
-    else:
-        # Metropole et Corse
-        base_class = BaseLoadCerema
-
-    if source.mapping:
-        properties.update({"mapping": source.mapping})
-
-    class_name = (
-        f"Auto{source.name}{source.official_land_id or 'MetropoleEtCorse'}{'_'.join(map(str, source.millesimes))}"
-    )
-
-    return type(class_name, (base_class,), properties)
+def get_base_classes(departement: str):
+    if departement == "MetropoleEtCorse":
+        return (BaseLoadCerema,)
+    return (BaseLoadCeremaDromCom,)
 
 
 class Command(BaseCommand):
@@ -219,21 +200,32 @@ class Command(BaseCommand):
         )
 
     def get_queryset(self):
+        """Filter sources of data to return only Cerema sources and MAJIC dataset."""
         return DataSource.objects.filter(
             productor=DataSource.ProductorChoices.CEREMA,
             dataset=DataSource.DatasetChoices.MAJIC,
         )
 
     def handle(self, *args, **options):
+        logger.info("Start load_cerema")
+
         sources = self.get_queryset()
 
         if options.get("departement"):
+            logger.info("filter on departement=%s", options["departement"])
             sources = sources.filter(official_land_id=options["departement"])
 
         if not sources.exists():
             logger.warning("No data source found")
             return
 
+        logger.info("Nb sources found=%d", sources.count())
+
         for source in sources:
-            layer_mapper_proxy_class = get_layer_mapper_proxy_class(source)
+            layer_mapper_proxy_class = source.get_layer_mapper_proxy_class(
+                module_name=__name__, base_classes=get_base_classes(source.official_land_id)
+            )
+            logger.info("Process %s", layer_mapper_proxy_class.__name__)
             layer_mapper_proxy_class.load()
+
+        logger.info("End load_cerema")
