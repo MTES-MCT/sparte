@@ -52,7 +52,7 @@ class Command(BaseCommand):
         self.load_departement(base_qs)
         self.load_epci(base_qs)
         self.load_scot(base_qs)
-        self.link_epci()
+        self.link_epci(base_qs)
         self.load_communes(base_qs, table_was_cleaned=clean)
 
     def load_region(self, base_qs: QuerySet):

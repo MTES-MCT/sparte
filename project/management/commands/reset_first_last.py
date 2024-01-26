@@ -20,13 +20,13 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-        logger.info("Reevaluate ocsge millesimes for all project")
+        logger.info("Reevaluate ocsge millesimes for all projects")
 
         projects = Project.objects.all()
 
         if options.get("departements"):
             logger.info("Filtering on departements: %s", options["departements"])
-            projects = projects.filter(commune__departement__source_id__in=options["departements"])
+            projects = projects.filter(cities__departement__source_id__in=options["departements"])
 
         count = projects.count()
 
