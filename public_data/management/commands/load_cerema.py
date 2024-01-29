@@ -1,10 +1,20 @@
 import logging
+from typing import Callable, Tuple
 
 from django.core.management.base import BaseCommand
 
-from public_data.models import DataSource
+from public_data.factories import LayerMapperFactory
+from public_data.models import DataSource, cerema
 
 logger = logging.getLogger("management.commands")
+
+
+class CeremaFactory(LayerMapperFactory):
+    def get_base_class(self) -> Tuple[Callable]:
+        base_class = cerema.BaseLoadCeremaDromCom
+        if self.official_land_id == "MetropoleEtCorse":
+            base_class = cerema.BaseLoadCerema
+        return (base_class,)
 
 
 class Command(BaseCommand):
@@ -46,7 +56,8 @@ class Command(BaseCommand):
         logger.info("Nb sources found=%d", sources.count())
 
         for source in sources:
-            layer_mapper_proxy_class = source.get_layer_mapper_proxy_class(module_name=__name__)
+            factory = CeremaFactory(source)
+            layer_mapper_proxy_class = factory.get_layer_mapper_proxy_class(module_name=__name__)
             logger.info("Process %s", layer_mapper_proxy_class.__name__)
             layer_mapper_proxy_class.load()
 

@@ -1,7 +1,39 @@
+import logging
+from typing import Callable, Dict, Tuple
+
 from django.core.management.base import BaseCommand
 from django.db.models import Q
 
-from public_data.models import DataSource, Departement
+from public_data.factories import LayerMapperFactory
+from public_data.models import DataSource, Departement, ocsge
+from public_data.models.mixins import AutoLoadMixin
+
+logger = logging.getLogger("management.commands")
+
+
+class OcsgeFactory(LayerMapperFactory):
+    def get_class_properties(self) -> Dict[str, int]:
+        properties = super().get_class_properties()
+        properties |= {"_departement": Departement.objects.get(source_id=self.official_land_id)}
+        if self.name == DataSource.DataNameChoices.DIFFERENCE:
+            properties |= {"_year_old": min(self.millesimes), "_year_new": max(self.millesimes)}
+        else:
+            properties |= {"_year": self.millesimes[0]}
+        return properties
+
+    def get_base_class(self) -> Tuple[Callable]:
+        base_class = None
+        if self.name == DataSource.DataNameChoices.DIFFERENCE:
+            base_class = ocsge.AutoOcsgeDiff
+        elif self.name == DataSource.DataNameChoices.OCCUPATION_DU_SOL:
+            base_class = ocsge.AutoOcsge
+        elif self.name == DataSource.DataNameChoices.ZONE_CONSTRUITE:
+            base_class = ocsge.AutoZoneConstruite
+        if base_class is None:
+            raise ValueError(f"Unknown base class for data name: {self.name}")
+        if not issubclass(base_class, AutoLoadMixin):
+            raise TypeError(f"Base class {base_class} should inherit from AutoLoadMixin.")
+        return (base_class,)
 
 
 class Command(BaseCommand):
@@ -74,5 +106,6 @@ class Command(BaseCommand):
             raise ValueError("No data sources found")
 
         for source in sources:
-            layer_mapper_proxy_class = source.get_layer_mapper_proxy_class(module_name=__name__)
+            layer_mapper_proxy_class = OcsgeFactory(source).get_layer_mapper_proxy_class(module_name=__name__)
+            logger.info("Process %s", layer_mapper_proxy_class.__name__)
             layer_mapper_proxy_class.load()
