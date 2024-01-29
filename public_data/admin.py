@@ -2,7 +2,7 @@ from django.contrib.gis import admin
 from import_export import resources
 from import_export.admin import ImportExportMixin
 
-from .models import (
+from public_data.models import (
     Cerema,
     Commune,
     CouvertureSol,
