@@ -12,7 +12,7 @@ logger = logging.getLogger("management.commands")
 class CeremaFactory(LayerMapperFactory):
     def get_base_class(self) -> Tuple[Callable]:
         base_class = cerema.BaseLoadCeremaDromCom
-        if self.official_land_id == "MetropoleEtCorse":
+        if self.data_source.official_land_id == "MetropoleEtCorse":
             base_class = cerema.BaseLoadCerema
         return (base_class,)
 
