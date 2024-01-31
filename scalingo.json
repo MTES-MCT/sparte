@@ -1,5 +1,10 @@
 {
     "name": "MonDiagnosticArtificialisation",
+    "stack": "scalingo-20",
+    "description": "Tableau de bord pour mesurer l'artificialisation des sols des collectivités",
+    "logo": "https://mondiagnosticartificialisation.beta.gouv.fr/static/img/logo-mon-diagnostic-artificialisation.svg",
+    "repository": "https://github.com/MTES-MCT/sparte",
+    "website": "https://mondiagnosticartificialisation.beta.gouv.fr/",
     "formation": {
         "web": {
             "amount": 1,
