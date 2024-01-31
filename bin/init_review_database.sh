@@ -34,7 +34,7 @@ psql -t -c "select 'drop table if exists \"' || tablename || '\" cascade;'
             where schemaname = 'public'; " $DATABASE_URL | psql $DATABASE_URL
 
 
-echo "Pg_dump and restore at once"
+echo "Dump and restore at once"
 # Dump the staging database and restore it to the target database
 # -x: Do not dump any privilege information
 # -O: Do not set ownership for the dumped objects

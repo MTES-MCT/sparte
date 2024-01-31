@@ -1,6 +1,7 @@
 import logging
 
 from django.core.management.base import BaseCommand
+from django.db.utils import ProgrammingError
 from django_app_parameter.models import Parameter
 from psycopg2.errors import UndefinedTable
 
@@ -42,7 +43,7 @@ class Command(BaseCommand):
                     self.activate()
 
             logger.info("End maintenance command")
-        except UndefinedTable:
+        except (UndefinedTable, ProgrammingError):
             logger.error("It's look like it's the first deployment.")
 
     def activate(self):
