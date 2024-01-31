@@ -42,30 +42,30 @@ psql -t -c "select 'drop table if exists \"' || tablename || '\" cascade;'
             where schemaname = 'public'; " $DATABASE_URL | psql $DATABASE_URL
 
 
-echo "Dump and restore at once"
+# echo "Dump and restore at once"
 # Dump the staging database and restore it to the target database
 # -x: Do not dump any privilege information
 # -O: Do not set ownership for the dumped objects
 # --if-exists: Use conditional statements to drop objects if they exist
 # --clean: Clean (drop) database objects before recreating them
-pg_dump -x -O --if-exists --clean $STAGING_DATABASE_URL | psql $DATABASE_URL
+# pg_dump -x -O --if-exists --clean $STAGING_DATABASE_URL | psql $DATABASE_URL
 
-# install-scalingo-cli
-# scalingo login --api-token "${DUPLICATE_API_TOKEN}"
+install-scalingo-cli
+scalingo login --api-token "${DUPLICATE_API_TOKEN}"
 
-# addon_id="$( scalingo --app sparte-staging addons | grep PostgreSQL | cut -d "|" -f 3 | tr -d " " )"
-# echo "Found addon_id=${addon_id}"
+addon_id="$( scalingo --app sparte-staging addons | grep PostgreSQL | cut -d "|" -f 3 | tr -d " " )"
+echo "Found addon_id=${addon_id}"
 
-# echo "Download backup (could take a while)"
-# scalingo --app sparte-staging --addon "${addon_id}" backups-download --output dump.tar.gz
-# echo "Extract backup"
-# tar --extract --verbose --file=dump.tar.gz --directory="/app/dump"
-# backup_file_name=$(ls "/app/dump")
-# echo "Found backup_file_name=${backup_file_name}"
+echo "Download backup (could take a while)"
+scalingo --app sparte-staging --addon "${addon_id}" backups-download --output dump.tar.gz
+echo "Extract backup"
+tar --extract --verbose --file=dump.tar.gz --directory="/app/dump"
+backup_file_name=$(ls "/app/dump")
+echo "Found backup_file_name=${backup_file_name}"
 
-# tar --extract --verbose --file=dump.tar.gz --directory="/app/"
+tar --extract --verbose --file=dump.tar.gz --directory="/app/"
 
-# pg_restore --clean --if-exists --no-owner --no-privileges --no-comments --dbname "${DATABASE_URL}" "/app/dump/${backup_file_name}"
+pg_restore --clean --if-exists --no-owner --no-privileges --no-comments --dbname "${DATABASE_URL}" "/app/dump/${backup_file_name}"
 
 echo "Trigger classical post deployment script"
 # Source and execute the post_compile script from the bin/ directory
