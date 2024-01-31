@@ -1,5 +1,5 @@
 {
-    "name": "MonDiagnosticArtificialisation",
+    "name": "MonDiagArtif",
     "stack": "scalingo-20",
     "description": "Tableau de bord pour mesurer l'artificialisation des sols des collectivités",
     "logo": "https://mondiagnosticartificialisation.beta.gouv.fr/static/img/logo-mon-diagnostic-artificialisation.svg",
