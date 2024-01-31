@@ -200,7 +200,7 @@ class Command(BaseCommand):
         depts = {d.source_id: d for d in Departement.objects.all()}
         epcis = {e.source_id: e for e in Epci.objects.all()}
         qs = base_qs.order_by("city_insee")
-        paginator = Paginator(qs, 1000)
+
         logger.info("%d Communes found ", qs.count())
 
         should_only_load_missing_communes = not table_was_cleaned

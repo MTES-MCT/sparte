@@ -95,14 +95,17 @@ class AutoLoadMixin:
             (provided by the load method)
         """
 
+    @staticmethod
     def __check_path_is_a_regular_file(path: Path) -> None:
         if not path.is_file():
             raise FileNotFoundError(f"{path} is not a regular file")
 
+    @staticmethod
     def __check_path_suffix_is_shapefile(path: Path) -> None:
         if path.suffix != ".shp":
             raise FileNotFoundError(f"{path} is not a shapefile")
 
+    @staticmethod
     def __check_prj_file_exists(path: Path) -> None:
         prj_file_path = path.with_suffix(suffix=".prj")
 

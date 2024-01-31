@@ -1,6 +1,3 @@
-# 4.4.1 migration
-# TODO: remove this file when 4.4.1 is deployed on staging and prod
-
 import logging
 
 from django.core.management import call_command
