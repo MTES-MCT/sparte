@@ -11,8 +11,8 @@ logger = logging.getLogger("management.commands")
 
 
 class OcsgeFactory(LayerMapperFactory):
-    def get_class_properties(self) -> Dict[str, int]:
-        properties = super().get_class_properties()
+    def get_class_properties(self, module_name: str) -> Dict[str, int]:
+        properties = super().get_class_properties(module_name)
         properties |= {"_departement": Departement.objects.get(source_id=self.data_source.official_land_id)}
         if self.data_source.name == DataSource.DataNameChoices.DIFFERENCE:
             properties |= {
