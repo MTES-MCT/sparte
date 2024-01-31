@@ -21,10 +21,12 @@ if [[ $APP != *-pr* ]]; then
 fi
 echo "Inside PR detected"
 
-echo "Get postgresql client"
+
 # Get pg_dump cli of the same version as the database (14.10 when I write this comment)
 # see https://doc.scalingo.com/platform/databases/access
+echo "Get postgresql client"
 dbclient-fetcher pgsql 14.10
+echo "psql version=$(psql --version)"
 
 
 echo "Drop all tables"
