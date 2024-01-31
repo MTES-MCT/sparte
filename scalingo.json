@@ -1,0 +1,52 @@
+{
+    "name": "MonDiagArtif",
+    "stack": "scalingo-20",
+    "description": "Tableau de bord pour mesurer l'artificialisation des sols des collectivités",
+    "logo": "https://mondiagnosticartificialisation.beta.gouv.fr/static/img/logo-mon-diagnostic-artificialisation.svg",
+    "repository": "https://github.com/MTES-MCT/sparte",
+    "website": "https://mondiagnosticartificialisation.beta.gouv.fr/",
+    "env": {
+        "IS_REVIEW_APP": {
+            "description": "flag to know it's a review app",
+            "value": "true"
+        },
+        "DOMAIN_URL": {
+            "description": "URL of the application",
+            "generator": "url"
+          },
+          "ADMIN_URL": {
+            "description": "Admin URL of the application",
+            "generator": "url",
+            "template": "%URL%/admin/"
+          }
+    },
+    "addons": [
+        {
+            "plan": "postgresql:postgresql-starter-1024"
+        },
+        {
+            "plan": "redis:redis-sandbox"
+        }
+    ],
+    "formation": {
+        "web": {
+            "amount": 1,
+            "size": "2XL"
+        },
+        "celerydefaultworker": {
+            "amount": 1,
+            "size": "M"
+        },
+        "celerylongworker": {
+            "amount": 1,
+            "size": "XL"
+        },
+        "celerybeat": {
+            "amount": 1,
+            "size": "S"
+        }
+    },
+    "scripts": {
+        "first-deploy": "bash bin/init_review_database.sh"
+    }
+}
