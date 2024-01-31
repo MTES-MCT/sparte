@@ -26,7 +26,13 @@ echo "Inside PR detected"
 # see https://doc.scalingo.com/platform/databases/access
 echo "Get postgresql client"
 dbclient-fetcher pgsql 14.10
-echo "psql version=$(psql --version)"
+psql_version=$(psql --version | awk '{print $3}')
+echo "psql version=$psql_version"
+
+if [ "$psql_version" != 14.10 ]; then
+    echo "Erreur : La version de psql est ${psql_version}, mais la version 14.10 est requise."
+    exit 2
+fi
 
 
 echo "Drop all tables"
@@ -44,6 +50,22 @@ echo "Dump and restore at once"
 # --clean: Clean (drop) database objects before recreating them
 pg_dump -x -O --if-exists --clean $STAGING_DATABASE_URL | psql $DATABASE_URL
 
+# install-scalingo-cli
+# scalingo login --api-token "${DUPLICATE_API_TOKEN}"
+
+# addon_id="$( scalingo --app sparte-staging addons | grep PostgreSQL | cut -d "|" -f 3 | tr -d " " )"
+# echo "Found addon_id=${addon_id}"
+
+# echo "Download backup (could take a while)"
+# scalingo --app sparte-staging --addon "${addon_id}" backups-download --output dump.tar.gz
+# echo "Extract backup"
+# tar --extract --verbose --file=dump.tar.gz --directory="/app/dump"
+# backup_file_name=$(ls "/app/dump")
+# echo "Found backup_file_name=${backup_file_name}"
+
+# tar --extract --verbose --file=dump.tar.gz --directory="/app/"
+
+# pg_restore --clean --if-exists --no-owner --no-privileges --no-comments --dbname "${DATABASE_URL}" "/app/dump/${backup_file_name}"
 
 echo "Trigger classical post deployment script"
 # Source and execute the post_compile script from the bin/ directory
