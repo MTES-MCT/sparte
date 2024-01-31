@@ -4,15 +4,16 @@ from typing import Callable, Dict, Tuple
 from django.core.management.base import BaseCommand
 from django.db.models import Q
 
+from public_data import loaders
 from public_data.factories import LayerMapperFactory
-from public_data.models import DataSource, Departement, ocsge
+from public_data.models import DataSource, Departement
 
 logger = logging.getLogger("management.commands")
 
 
 class OcsgeFactory(LayerMapperFactory):
-    def get_class_properties(self) -> Dict[str, int]:
-        properties = super().get_class_properties()
+    def get_class_properties(self, module_name: str) -> Dict[str, int]:
+        properties = super().get_class_properties(module_name)
         properties |= {"_departement": Departement.objects.get(source_id=self.data_source.official_land_id)}
         if self.data_source.name == DataSource.DataNameChoices.DIFFERENCE:
             properties |= {
@@ -26,11 +27,11 @@ class OcsgeFactory(LayerMapperFactory):
     def get_base_class(self) -> Tuple[Callable]:
         base_class = None
         if self.data_source.name == DataSource.DataNameChoices.DIFFERENCE:
-            base_class = ocsge.AutoOcsgeDiff
+            base_class = loaders.AutoOcsgeDiff
         elif self.data_source.name == DataSource.DataNameChoices.OCCUPATION_DU_SOL:
-            base_class = ocsge.AutoOcsge
+            base_class = loaders.AutoOcsge
         elif self.data_source.name == DataSource.DataNameChoices.ZONE_CONSTRUITE:
-            base_class = ocsge.AutoZoneConstruite
+            base_class = loaders.AutoZoneConstruite
         return (base_class,)
 
 

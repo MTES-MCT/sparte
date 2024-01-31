@@ -3,17 +3,18 @@ from typing import Callable, Tuple
 
 from django.core.management.base import BaseCommand
 
+from public_data import loaders
 from public_data.factories import LayerMapperFactory
-from public_data.models import DataSource, cerema
+from public_data.models import DataSource
 
 logger = logging.getLogger("management.commands")
 
 
 class CeremaFactory(LayerMapperFactory):
     def get_base_class(self) -> Tuple[Callable]:
-        base_class = cerema.BaseLoadCeremaDromCom
+        base_class = loaders.BaseLoadCeremaDromCom
         if self.data_source.official_land_id == "MetropoleEtCorse":
-            base_class = cerema.BaseLoadCerema
+            base_class = loaders.BaseLoadCerema
         return (base_class,)
 
 

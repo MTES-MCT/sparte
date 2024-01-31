@@ -6,6 +6,7 @@ import logging
 from django.core.management import call_command
 from django.core.management.base import BaseCommand
 
+from project.models import Project
 from public_data.models import Departement
 
 logger = logging.getLogger("management.commands")
@@ -37,11 +38,17 @@ class Command(BaseCommand):
 
         logger.info("Load new OCS GE")
         call_command("setup_departements")
-        self.load_departement(departement=Departement.objects.get(name="Hauts-de-Seine"))
-        self.load_departement(departement=Departement.objects.get(name="Landes"))
 
-        call_command("reset_first_last", departements=dept_codes)
-        call_command("build_project_ocsge_status", departements=dept_codes)
+        haut_de_seine = Departement.objects.get(source_id="92")
+        self.load_departement(departement=haut_de_seine)
+
+        landes = Departement.objects.get(source_id="40")
+        self.load_departement(departement=landes)
+
+        # fix very old projets
+        Project.objects.filter(async_add_city_done=False).update(async_add_city_done=True)
+
+        call_command("update_project_ocsge", departements=["92", "40"])
 
         call_command("maintenance", off=True)
         logger.info("End mep_45")

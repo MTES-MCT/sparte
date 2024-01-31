@@ -53,11 +53,11 @@ class DataSource(models.Model):
     )
     official_land_id = models.CharField(
         verbose_name="ID du territoire",
-        help_text="""
-            ID officiel du territoire (code INSEE, SIREN, etc.) <br />
-            Peut-être vide si la donnée ne concerne pas un territoire spécifique
-            (par exemple, s'il concerne la France entière, ou un DROM-COM entier)
-        """,
+        help_text=(
+            "\nID officiel du territoire (code INSEE, SIREN, etc.) <br />"
+            "\nPeut-être vide si la donnée ne concerne pas un territoire spécifique"
+            "\n(par exemple, s'il concerne la France entière, ou un DROM-COM entier)"
+        ),
         max_length=255,
     )
     srid = models.IntegerField(

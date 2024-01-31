@@ -3,6 +3,8 @@ Asyn tasks runned by Celery
 
 Below functions are dedicated to loading a project data and pre calculate
 all the indicators required to speedup process
+
+REFACTORING : move all business logic to project/models/create.py (which should be also moved to folders domains/)
 """
 
 import io

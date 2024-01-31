@@ -3,13 +3,13 @@ import logging
 from django.core.management.base import BaseCommand
 
 from project.models import Project
-from project.tasks import find_first_and_last_ocsge
+from project.models.create import update_ocsge
 
 logger = logging.getLogger("management.commands")
 
 
 class Command(BaseCommand):
-    help = "Reset first and last ocsge for all projects"
+    help = "Update project after adding new OCS GE"
 
     def add_arguments(self, parser):
         parser.add_argument(
@@ -20,7 +20,7 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-        logger.info("Reevaluate ocsge millesimes for all projects")
+        logger.info("Reevaluate ocsge for projects")
 
         projects = Project.objects.all()
 
@@ -28,12 +28,14 @@ class Command(BaseCommand):
             logger.info("Filtering on departements: %s", options["departements"])
             projects = projects.filter(cities__departement__source_id__in=options["departements"])
 
+        projects = projects.distinct()
+
         count = projects.count()
 
-        logger.info(f"Resetting first and last ocsge for {count} projects")
+        logger.info(f"Update project OCS GE cache for {count} projects")
 
         for i, project in enumerate(projects):
             logger.info(f"{i + 1}/{count} - Process project {project.id}")
-            find_first_and_last_ocsge(project.id)
+            update_ocsge(project)
 
-        logger.info("End reevaluation")
+        logger.info("End Reevaluate ocsge for project")
