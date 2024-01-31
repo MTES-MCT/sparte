@@ -9,7 +9,7 @@ logger = logging.getLogger("management.commands")
 
 
 class Command(BaseCommand):
-    help = "Reset first and last ocsge for all projects"
+    help = "Update project after adding new OCS GE"
 
     def add_arguments(self, parser):
         parser.add_argument(
@@ -20,7 +20,7 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-        logger.info("Reevaluate ocsge millesimes for all projects")
+        logger.info("Reevaluate ocsge for projects")
 
         projects = Project.objects.all()
 
@@ -32,10 +32,10 @@ class Command(BaseCommand):
 
         count = projects.count()
 
-        logger.info(f"Resetting first and last ocsge for {count} projects")
+        logger.info(f"Update project OCS GE cache for {count} projects")
 
         for i, project in enumerate(projects):
             logger.info(f"{i + 1}/{count} - Process project {project.id}")
-            update_ocsge(project.id)
+            update_ocsge(project)
 
-        logger.info("End reevaluation")
+        logger.info("End Reevaluate ocsge for project")
