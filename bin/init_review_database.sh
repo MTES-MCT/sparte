@@ -24,7 +24,7 @@ echo "Inside PR detected"
 echo "Get postgresql client"
 # Get pg_dump cli of the same version as the database (14.10 when I write this comment)
 # see https://doc.scalingo.com/platform/databases/access
-dbclient-fetcher pgsql
+dbclient-fetcher pgsql 14.10
 
 
 echo "Drop all tables"
