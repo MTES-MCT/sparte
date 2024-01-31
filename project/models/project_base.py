@@ -412,7 +412,9 @@ class Project(BaseProject):
     async_theme_map_fill_gpu_done = models.BooleanField(default=False)
     async_ocsge_coverage_status_done = models.BooleanField(default=False)
 
-    history = HistoricalRecords()
+    history = HistoricalRecords(
+        user_db_constraint=False,
+    )
 
     @property
     def async_complete(self):
