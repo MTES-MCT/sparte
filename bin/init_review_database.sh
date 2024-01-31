@@ -59,6 +59,7 @@ echo "Found addon_id=${addon_id}"
 echo "Download backup (could take a while)"
 scalingo --app sparte-staging --addon "${addon_id}" backups-download --output dump.tar.gz
 echo "Extract backup"
+mkdir /app/dump
 tar --extract --verbose --file=dump.tar.gz --directory="/app/dump"
 backup_file_name=$(ls "/app/dump")
 echo "Found backup_file_name=${backup_file_name}"
