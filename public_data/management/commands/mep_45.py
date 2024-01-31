@@ -37,11 +37,15 @@ class Command(BaseCommand):
 
         logger.info("Load new OCS GE")
         call_command("setup_departements")
-        self.load_departement(departement=Departement.objects.get(name="Hauts-de-Seine"))
-        self.load_departement(departement=Departement.objects.get(name="Landes"))
 
-        call_command("reset_first_last", departements=dept_codes)
-        call_command("build_project_ocsge_status", departements=dept_codes)
+        haut_de_seine = Departement.objects.get(source_id="92")
+        self.load_departement(departement=haut_de_seine)
+
+        landes = Departement.objects.get(source_id="40")
+        self.load_departement(departement=landes)
+
+        call_command("reset_first_last", departements=["92", "40"])
+        call_command("build_project_ocsge_status", departements=["92", "40"])
 
         call_command("maintenance", off=True)
         logger.info("End mep_45")

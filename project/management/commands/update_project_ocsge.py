@@ -3,7 +3,7 @@ import logging
 from django.core.management.base import BaseCommand
 
 from project.models import Project
-from project.tasks import find_first_and_last_ocsge
+from project.models.create import update_ocsge
 
 logger = logging.getLogger("management.commands")
 
@@ -36,6 +36,6 @@ class Command(BaseCommand):
 
         for i, project in enumerate(projects):
             logger.info(f"{i + 1}/{count} - Process project {project.id}")
-            find_first_and_last_ocsge(project.id)
+            update_ocsge(project.id)
 
         logger.info("End reevaluation")

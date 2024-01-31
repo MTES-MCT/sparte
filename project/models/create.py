@@ -1,4 +1,9 @@
-""" Contains all logic to create a project """
+""" Contains all logic to create a project
+
+REFACTORING : this module should be expanded to contain all business logics. It should include how to create a project,
+but also all function to handle project life such as change of period asked from a user, new OCS GE's delivery and so
+on. At last, it should be moved in domains/ folder.
+"""
 from types import ModuleType
 from typing import List
 
@@ -107,6 +112,33 @@ def update_period(project: Project, start: str, end: str) -> None:
     project.async_theme_map_fill_gpu_done = False
 
     project._change_reason = "update_project_period"
+    project.save()
+
+    trigger_async_tasks(project)
+
+
+def update_ocsge(project: Project):
+    """Update cached data if new OCSGE has been delivered.
+
+    This function is mainly called after data migration when new a departement is added (or new millesime)
+
+    What it does:
+    * search if start and end period of OCS GE analysis has been changed
+    * update ocs ge status (available, partial, unavailable...)
+    * build images maps :
+      * thematic map on city artificialisation
+      * understand artificialisation map
+      * GPU filled up with artificial items
+    """
+
+    # list redo work
+    project.async_find_first_and_last_ocsge_done = False
+    project.async_ocsge_coverage_status_done = False
+    project.async_generate_theme_map_artif_done = False
+    project.async_theme_map_understand_artif_done = False
+    project.async_theme_map_fill_gpu_done = False
+
+    project._change_reason = "new_ocsge_has_benn_delivered"
     project.save()
 
     trigger_async_tasks(project)
