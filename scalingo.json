@@ -19,5 +19,13 @@
             "generator": "url",
             "template": "%URL%/admin/"
           }
-    }
+    },
+    "addons": [
+        {
+            "plan": "postgresql:postgresql-starter-1"
+        },
+        {
+            "plan": "redis:redis-sandbox"
+        }
+    ]
 }
