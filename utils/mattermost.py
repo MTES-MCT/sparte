@@ -40,14 +40,14 @@ class StartupSparte(Mattermost):
     """Send message in startup-sparte, channel general"""
 
     def __init__(self, *args, **kwargs):
-        super().__init__(channel="startup-sparte", *args, **kwargs)
+        super().__init__(channel="startup-sparte", *args, **kwargs)  # noqa: B026
 
 
 class SwannPrivate(Mattermost):
     """Send a message to Swann direct channel"""
 
     def __init__(self, *args, **kwargs):
-        super().__init__(channel="@Swann", *args, **kwargs)
+        super().__init__(channel="@Swann", *args, **kwargs)  # noqa: B026
 
 
 class BlockedDiagnostic(Mattermost):

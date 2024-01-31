@@ -2,6 +2,7 @@ import logging
 
 from django.core.management.base import BaseCommand
 from django_app_parameter.models import Parameter
+from psycopg2.errors import UndefinedTable
 
 logger = logging.getLogger("management.commands")
 
@@ -25,21 +26,24 @@ class Command(BaseCommand):
         """Change maintenance state according to on / off arguments."""
         logger.info("Start maintenance command")
 
-        self.maintenance = Parameter.objects.get_from_slug("MAINTENANCE_MODE")
-        self.current_mode = self.maintenance.get()
-        logger.info("Current maintenance mode: %s", self.current_mode)
+        try:
+            self.maintenance = Parameter.objects.get_from_slug("MAINTENANCE_MODE")
+            self.current_mode = self.maintenance.get()
+            logger.info("Current maintenance mode: %s", self.current_mode)
 
-        if options["on"] is True:
-            self.activate()
-        elif options["off"] is True:
-            self.deactivate()
-        else:  # toggle mode
-            if self.current_mode is True:
-                self.deactivate()
-            else:
+            if options["on"] is True:
                 self.activate()
+            elif options["off"] is True:
+                self.deactivate()
+            else:  # toggle mode
+                if self.current_mode is True:
+                    self.deactivate()
+                else:
+                    self.activate()
 
-        logger.info("End maintenance command")
+            logger.info("End maintenance command")
+        except UndefinedTable:
+            logger.error("It's look like it's the first deployment.")
 
     def activate(self):
         """Activate maintenance mode by changing value of MAINTENANCE_MODE parameter to 1."""
