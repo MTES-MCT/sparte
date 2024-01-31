@@ -59,8 +59,6 @@ class DataSource(models.Model):
             (par exemple, s'il concerne la France entière, ou un DROM-COM entier)
         """,
         max_length=255,
-        blank=True,
-        null=True,
     )
     srid = models.IntegerField(
         "SRID",
