@@ -32,4 +32,4 @@ pg_dump -x -O --if-exists --clean $STAGING_DATABASE_URL | psql $DATABASE_URL
 
 # Source and execute the post_compile script from the bin/ directory
 # The post_compile script includes data migrations and all other deployment tasks
-source bin/post_compile
+source bin/post_deploy_hook.sh
