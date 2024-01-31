@@ -138,7 +138,7 @@ def update_ocsge(project: Project):
     project.async_theme_map_understand_artif_done = False
     project.async_theme_map_fill_gpu_done = False
 
-    project._change_reason = "new_ocsge_has_benn_delivered"
+    project._change_reason = "new_ocsge_has_been_delivered"
     project.save()
 
     trigger_async_tasks(project)
