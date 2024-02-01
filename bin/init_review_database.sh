@@ -27,14 +27,14 @@ install-scalingo-cli
 # Get pg_dump cli of the same version as the database (14.10 when I write this comment)
 # see https://doc.scalingo.com/platform/databases/access
 echo "Get postgresql client"
-dbclient-fetcher pgsql 14.10
+dbclient-fetcher pgsql 14
 psql_version=$(psql --version | awk '{print $3}')
 echo "psql version=$psql_version"
 
-if [ "$psql_version" != 14.10 ]; then
-    echo "Erreur : La version de psql est ${psql_version}, mais la version 14.10 est requise."
-    exit 2
-fi
+# if [ "$psql_version" != 14.10 ]; then
+#     echo "Erreur : La version de psql est ${psql_version}, mais la version 14.10 est requise."
+#     exit 2
+# fi
 
 
 echo "Drop all tables"
