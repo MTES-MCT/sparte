@@ -18,7 +18,7 @@ python manage.py migrate
 python manage.py load_param --no-update --file required_parameters.json
 
 # Execute data migrations if under 30 minutes
-# python manage.py migrate_trajectory
+# eg. python manage.py migrate_trajectory
 
 # collect static
 python manage.py collectstatic --noinput
