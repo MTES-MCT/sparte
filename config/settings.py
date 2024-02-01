@@ -226,9 +226,7 @@ STATICFILES_DIRS = [
 ]
 
 STATIC_URL = "/static/"
-# STATIC_ROOT = str(BASE_DIR / "staticroot")
-STATIC_ROOT = "staticroot"
-
+STATIC_ROOT = str(BASE_DIR / "staticroot")
 
 PUBLIC_MEDIA_LOCATION = "media"
 MEDIA_URL = f"https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/{PUBLIC_MEDIA_LOCATION}/"
