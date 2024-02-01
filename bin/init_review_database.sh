@@ -24,6 +24,10 @@ echo "Inside PR detected"
 # Get pg_dump cli of the same version as the database (14.10 when I write this comment)
 # see https://doc.scalingo.com/platform/databases/access
 echo "Get postgresql client"
+
+# temp fix while scalingo fix it
+export PATH=/app/bin:$PATH
+
 dbclient-fetcher postgresql 14
 psql_version=$(psql --version | awk '{print $3}')
 echo "psql version=$psql_version"
