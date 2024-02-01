@@ -226,7 +226,8 @@ STATICFILES_DIRS = [
 ]
 
 STATIC_URL = "/static/"
-STATIC_ROOT = str(BASE_DIR / "staticroot")
+# STATIC_ROOT = str(BASE_DIR / "staticroot")
+STATIC_ROOT = "staticroot"
 
 
 PUBLIC_MEDIA_LOCATION = "media"
