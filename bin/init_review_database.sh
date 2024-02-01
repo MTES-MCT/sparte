@@ -27,7 +27,7 @@ install-scalingo-cli
 # Get pg_dump cli of the same version as the database (14.10 when I write this comment)
 # see https://doc.scalingo.com/platform/databases/access
 echo "Get postgresql client"
-dbclient-fetcher pgsql 14
+dbclient-fetcher postgresql 14
 psql_version=$(psql --version | awk '{print $3}')
 echo "psql version=$psql_version"
 
