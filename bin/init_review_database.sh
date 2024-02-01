@@ -21,9 +21,6 @@ if [[ $APP != *-pr* ]]; then
 fi
 echo "Inside PR detected"
 
-
-install-scalingo-cli
-
 # Get pg_dump cli of the same version as the database (14.10 when I write this comment)
 # see https://doc.scalingo.com/platform/databases/access
 echo "Get postgresql client"
@@ -55,6 +52,8 @@ pg_dump -x -O --if-exists --clean $STAGING_DATABASE_URL | psql $DATABASE_URL
 
 # below not working either
 # scalingo command is not found
+
+# install-scalingo-cli
 # scalingo login --api-token "${DUPLICATE_API_TOKEN}"
 
 # addon_id="$( scalingo --app sparte-staging addons | grep PostgreSQL | cut -d "|" -f 3 | tr -d " " )"
