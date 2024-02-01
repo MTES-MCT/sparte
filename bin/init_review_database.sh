@@ -31,10 +31,10 @@ dbclient-fetcher pgsql 14.10
 psql_version=$(psql --version | awk '{print $3}')
 echo "psql version=$psql_version"
 
-# if [ "$psql_version" != 14.10 ]; then
-#     echo "Erreur : La version de psql est ${psql_version}, mais la version 14.10 est requise."
-#     exit 2
-# fi
+if [ "$psql_version" != 14.10 ]; then
+    echo "Erreur : La version de psql est ${psql_version}, mais la version 14.10 est requise."
+    exit 2
+fi
 
 
 echo "Drop all tables"
