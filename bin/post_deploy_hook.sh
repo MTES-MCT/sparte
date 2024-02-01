@@ -7,9 +7,6 @@ echo "django=$(python -m django --version)"
 export LD_LIBRARY_PATH=/build/${REQUEST_ID}/.apt/usr/lib/x86_64-linux-gnu/blas/:/build/${REQUEST_ID}/.apt/usr/lib/x86_64-linux-gnu/lapack/:${LD_LIBRARY_PATH}
 export PROJ_LIB=/build/${REQUEST_ID}/.apt/usr/share/proj
 
-# Activate maintenance mode to avoid creating bugs during migrations
-python manage.py maintenance --on
-
 # Execute structure migrations
 python manage.py migrate users
 python manage.py migrate
