@@ -27,4 +27,4 @@ python manage.py collectstatic --noinput
 python manage.py clear_cache
 
 # Deactivating maintenance mode
-# python manage.py maintenance --off
+python manage.py maintenance --off
