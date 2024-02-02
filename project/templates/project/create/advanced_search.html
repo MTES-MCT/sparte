@@ -100,24 +100,24 @@ Créer un diagnostic
                 <div class="fr-grid-row fr-grid-row--gutters">
                     <div class="fr-col-12 fr-col-lg-6">
                         <p class="fs-5 text-muted">Zone géographique:</p>
-                        <table class="border-0 fs-5 text-muted">
-                            <tr>
-                                <td width="200">Région:</td>
-                                <td>{{ form.region }}</td>
-                            </tr>
+                        <div class="d-flex flex-column">
+                            <div class="d-flex justify-content-between mb-2">
+                                <div>Région:</div>
+                                <div>{{ form.region }}</div>
+                            </div>
                             {% if form.cleaned_data.region %}
-                            <tr>
-                                <td>Département:</td>
-                                <td>{{ form.departement }}</td>
-                            </tr>
+                            <div class="d-flex justify-content-between mb-2">
+                                <div>Département:</div>
+                                <div>{{ form.departement }}</div>
+                            </div>
                             {% endif %}
                             {% if form.cleaned_data.departement %}
-                            <tr>
-                                <td>EPCI:</td>
-                                <td>{{ form.epci }}</td>
-                            </tr>
+                            <div class="d-flex justify-content-between">
+                                <div>EPCI:</div>
+                                <div>{{ form.epci }}</div>
+                            </div>
                             {% endif %}
-                        </table>
+                        </div>
                     </div>
                     <div class="fr-col-12 fr-col-lg-6 border-start">
                         <p class="fs-5 text-muted mb-0">Type de territoire:</p>
@@ -144,55 +144,6 @@ Créer un diagnostic
                     </div>
                 </div>
             </div>
-
-            {% comment %} <div class="fr-mt-5v border rounded">
-                <div class="row row-cols-1 row-cols-md-2">
-                    <div class="col mb-5">
-                        <p class="fs-5 text-muted">Restreindre les résultats à une zone géographique.</p>
-                        <table class="border-0 fs-5 text-muted">
-                            <tr>
-                                <td width="200">Une région :</td>
-                                <td>{{ form.region }}</td>
-                            </tr>
-                            {% if form.cleaned_data.region %}
-                            <tr>
-                                <td>Un département :</td>
-                                <td>{{ form.departement }}</td>
-                            </tr>
-                            {% endif %}
-                            {% if form.cleaned_data.departement %}
-                            <tr>
-                                <td>Un EPCI :</td>
-                                <td>{{ form.epci }}</td>
-                            </tr>
-                            {% endif %}
-                        </table>
-                    </div>
-                    <div class="col border-start mb-auto">
-                        <p class="fs-5 text-muted mb-0">Vous recherchez :</p>
-                        <div class="ps-0 form-check form-switch mb-0">
-                            {{ form.search_commune }}
-                            <label class="form-check-label fs-5 text-muted" for="id_search_commune">une commune</label>
-                        </div>
-                        <div class="ps-0 form-check form-switch mb-0">
-                            {{ form.search_epci }}
-                            <label class="form-check-label fs-5 text-muted" for="id_search_epci">un EPCI</label>
-                        </div>
-                        <div class="ps-0 form-check form-switch mb-0">
-                            {{ form.search_scot }}
-                            <label class="form-check-label fs-5 text-muted" for="id_search_scot">un SCoT</label>
-                        </div>
-                        <div class="ps-0 form-check form-switch mb-0">
-                            {{ form.search_departement }}
-                            <label class="form-check-label fs-5 text-muted" for="id_search_departement">un département</label>
-                        </div>
-                        <div class="ps-0 form-check form-switch">
-                            {{ form.search_region }}
-                            <label class="form-check-label fs-5 text-muted" for="id_search_region">une région</label>
-                        </div>
-                    </div>
-                </div>
-            </div> {% endcomment %}
         </form>
 
         {% if results %}
