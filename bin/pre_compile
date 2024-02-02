@@ -1,4 +1,6 @@
 #!/bin/sh
 
 # Activate maintenance mode to avoid creating bugs during migrations
-./manage.py maintenance --on
+# find a way to trigger maintenance on current environment
+# do not fail if first deployment
+# curl monitor.example.com/maintenance/on
