@@ -1,4 +1,4 @@
 #!/bin/sh
 
 # Activate maintenance mode to avoid creating bugs during migrations
-python manage.py maintenance --on
+./manage.py maintenance --on
