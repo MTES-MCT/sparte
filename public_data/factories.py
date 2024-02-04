@@ -1,6 +1,6 @@
 import logging
-import random
 import re
+import secrets
 import string
 from typing import Any, Callable, Dict, Tuple
 
@@ -40,7 +40,7 @@ class LayerMapperFactory:
         Naming rule: Auto{data_name}{official_land_id}{year}
         Example: AutoOcsgeDiff3220182021
         """
-        unique_token = "".join(random.choice(string.ascii_lowercase) for _ in range(5))
+        unique_token = "".join(secrets.choice(string.ascii_lowercase) for _ in range(5))
         raw_words = ["Auto", self.data_source.name, self.data_source.official_land_id, unique_token]
         raw_words += list(map(str, self.data_source.millesimes))
         splited_words = [sub_word for word in raw_words for sub_word in word.split("_")]
