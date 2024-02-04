@@ -25,7 +25,7 @@ class LayerMapperFactory:
             properties["mapping"] = self.data_source.mapping
         return properties
 
-    def get_base_class(self) -> Tuple[Callable]:
+    def get_base_class(self) -> Tuple:
         """Return the base class from which the proxy should inherit from.
 
         The base class returned should be a child of AutoLoadMixin:
