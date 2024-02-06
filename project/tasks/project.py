@@ -190,8 +190,8 @@ def send_email_request_bilan(request_id):
 
 
 @shared_task(bind=True, max_retries=5)
-def add_neighboors(self, project_id):
-    logger.info("Start add_neighboors, project_id=%d", project_id)
+def add_similar_lands(self, project_id):
+    logger.info("Start add_similar_lands, project_id=%d", project_id)
     try:
         project = Project.objects.get(pk=project_id)
         qs = project.get_neighbors()[:9]
@@ -205,7 +205,7 @@ def add_neighboors(self, project_id):
             project_id,
             {
                 "look_a_like": project.look_a_like,
-                "async_add_neighboors_done": True,
+                "async_add_similar_lands_done": True,
             },
         )
     except Project.DoesNotExist:
@@ -215,7 +215,7 @@ def add_neighboors(self, project_id):
         logger.exception(exc)
         self.retry(exc=exc, countdown=300)
     finally:
-        logger.info("End add_neighboors, project_id=%d", project_id)
+        logger.info("End add_similar_lands, project_id=%d", project_id)
 
 
 @shared_task(bind=True, max_retries=5, queue="long")

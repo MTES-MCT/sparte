@@ -408,7 +408,7 @@ class Project(BaseProject):
     async_set_combined_emprise_done = models.BooleanField(default=False)
     async_cover_image_done = models.BooleanField(default=False)
     async_find_first_and_last_ocsge_done = models.BooleanField(default=False)
-    async_add_neighboors_done = models.BooleanField(default=False)
+    async_add_similar_lands_done = models.BooleanField(default=False)
     async_generate_theme_map_conso_done = models.BooleanField(default=False)
     async_generate_theme_map_artif_done = models.BooleanField(default=False)
     async_theme_map_understand_artif_done = models.BooleanField(default=False)
@@ -426,7 +426,7 @@ class Project(BaseProject):
             & self.async_cover_image_done
             & self.async_find_first_and_last_ocsge_done
             & self.async_ocsge_coverage_status_done
-            & self.async_add_neighboors_done
+            & self.async_add_similar_lands_done
             & self.async_generate_theme_map_conso_done
             & self.async_generate_theme_map_artif_done
             & self.async_theme_map_understand_artif_done

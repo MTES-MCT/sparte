@@ -43,8 +43,8 @@ class Command(BaseCommand):
             t.find_first_and_last_ocsge.delay(self.id)
         if not self.diagnostic.async_ocsge_coverage_status_done:
             t.calculate_project_ocsge_status.delay(self.id)
-        if not self.diagnostic.async_add_neighboors_done:
-            t.add_neighboors.delay(self.id)
+        if not self.diagnostic.async_add_similar_lands_done:
+            t.add_similar_lands.delay(self.id)
         if not self.diagnostic.async_cover_image_done:
             t.generate_cover_image.delay(self.id)
         if not self.diagnostic.async_generate_theme_map_conso_done:
@@ -69,7 +69,7 @@ class Command(BaseCommand):
             celery.group(
                 t.find_first_and_last_ocsge.si(self.id),
                 t.calculate_project_ocsge_status(self.id),
-                t.add_neighboors.si(self.id),
+                t.add_similar_lands.si(self.id),
             ),
             celery.group(
                 t.generate_cover_image.si(self.id),

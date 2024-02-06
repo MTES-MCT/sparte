@@ -43,8 +43,8 @@ def trigger_async_tasks(project: Project, public_key: str | None = None) -> None
         group_1.append(t.find_first_and_last_ocsge.si(project.id))
     if not project.async_ocsge_coverage_status_done:
         group_1.append(t.calculate_project_ocsge_status.si(project.id))
-    if not project.async_add_neighboors_done:
-        group_1.append(t.add_neighboors.si(project.id))
+    if not project.async_add_similar_lands_done:
+        group_1.append(t.add_similar_lands.si(project.id))
     if group_1:
         tasks_chain.append(celery.group(*group_1))
 
