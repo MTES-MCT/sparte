@@ -1,6 +1,14 @@
 #!/bin/sh
 
-# Activate maintenance mode to avoid creating bugs during migrations
-# find a way to trigger maintenance on current environment
-# do not fail if first deployment
-# curl monitor.example.com/maintenance/on
+# Construire le payload
+PAYLOAD=$(cat <<EOF
+{
+  "text": "Un déploiement est en cours pour la PR ${APP}; $(if [ "$IS_REVIEW_APP" = "true" ]; then echo "c'est une ReviewApp"; else echo "C'est un déploiement en PROD"; fi). L'URL d'accès est ${DOMAIN_URL}",
+  "channel": "${MATTER_DEV_CHANNEL}"
+}
+EOF
+)
+
+echo "Sending message to Mattermost: $PAYLOAD"
+
+curl -i -X POST -H 'Content-Type: application/json' -d "$PAYLOAD" "$MATTERMOST_WEBHOOK"
