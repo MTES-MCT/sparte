@@ -13,7 +13,7 @@ class Command(BaseCommand):
         parser.add_argument(
             "--channel",
             type=str,
-            help="Mattermost channel or person like startup-spart or @Swann",
+            help="Mattermost channel or person like startup-sparte or @Swann",
         )
         parser.add_argument(
             "--msg",

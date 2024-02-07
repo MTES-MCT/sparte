@@ -3,7 +3,7 @@
 # Construire le payload
 PAYLOAD=$(cat <<EOF
 {
-  "text": "Un déploiement est en cours pour la PR ${APP}; $(if [ "$IS_REVIEW_APP" = "true" ]; then echo "c'est une ReviewApp"; else echo "C'est un déploiement en PROD"; fi). L'URL d'accès est ${DOMAIN_URL}",
+  "text": "${APP} début du déploiement.",
   "channel": "${MATTER_DEV_CHANNEL}"
 }
 EOF
