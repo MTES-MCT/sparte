@@ -309,14 +309,19 @@ class Project(BaseProject):
         null=True,
     )
     target_2031 = models.IntegerField(
-        "Seuil de réduction à 2031 (en %)",
+        "Objectif de réduction à 2031 (en %)",
         validators=[MinValueValidator(0), MaxValueValidator(100)],
         default=50,
         help_text=(
-            "A date, l'objectif national est de réduire de 50% la consommation "
-            "d'espaces d'ici à 2031. Ce seuil doit être personnalisé localement "
-            "par les SRADDET. Vous pouvez changer le seuil pour tester différents "
-            "scénarios."
+            "L'objectif fixé au niveau national par la loi Climat et résilience est de "
+            "réduire de 50% la consommation d'espaces sur 2021-2031 par rapport à la "
+            "décennie précédente.<br /><br />"
+            "Cet objectif doit être territorialisé et peut être "
+            "modulé via les documents de planification régionale ainsi que les documents "
+            "d'urbanisme (SCOT, PLU(i), cartes communales).<br /><br /> "
+            "Aussi, l'objectif de réduction fixé à défaut à -50% est indicatif et ne "
+            "correspond pas nécessairement à l'objectif qui sera fixé pour le territoire "
+            "sélectionné."
         ),
     )
 
