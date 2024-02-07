@@ -21,7 +21,7 @@
 
     Pour ajouter une image, vous devez la déposer dans le dossier sparte/documentation/static/documentation/img/ puis l'ajouter
     dans le template via la balise image suivante (Veillez à ce quelles ne soient pas trop lourdes):
-    <img class="fr-responsive-img" src="{% static 'documentation/img/image-test.png' %}" alt="">
+    <img class="img-fluid img-thumbnail" src="{% static 'documentation/img/image-test.jpg' %}" alt="">
 -->
 
 <section>
@@ -31,57 +31,66 @@
                 <h1>Tutoriel</h1>
             </div>
         </div>
-
-        <div class="fr-grid-row">
+        
+        <div class="fr-grid-row fr-mb-3w">
             <div class="fr-col">
-                <h2>Lorem ipsum dolor sit amet ?</h2>
-                <p>
-                    Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit
-                    anim id est laborum.
+                <h2>✍️ Comment créer mon diagnostic ?</h2>
+                <div class="col-12 col-md-8">
+                    <img class="img-fluid img-thumbnail rounded" src="{% static 'documentation/img/tuto1.jpg' %}" alt="Catpure d'écran de la page d'acceuil">
+                </div>
+                <p class="mt-3">
+                    Nous avons pensé Mon Diagnostic Artificialisation pour que la création de votre diagnostic soit la plus simple et la plus rapide possible. Vous trouverez ci-dessous un aperçu de la procédure.
                 </p>
-            </div>
-        </div>
-
-        <div class="fr-grid-row fr-mb-5w">
-            <div class="fr-col">
-                <!-- Exemple de composant DSFR -->
-                <div class="fr-alert fr-alert--info">
-                    <h3 class="fr-alert__title">Nec feugiat nisl pretium</h3>
-                    <p>Arcu ac tortor dignissim convallis aenean et tortor at risus.</p>
+                <h3 class="mt-5">1 - Rendez-vous sur la plateforme Mon Diagnostic Artificialisation</h3>
+                <p>Il existe deux façons de créer un diagnostic :</p>
+                <ul>
+                    <li>Soit directement en tapant le nom d’une collectivité dans la barre de recherche</li>
+                    <li>Soit par le menu en haut à droite “créer un diagnostic” - là vous avez un filtre par type de collectivité</li>
+                </ul>
+                <div class="col-12 col-md-8">
+                    <img class="img-fluid img-thumbnail" src="{% static 'documentation/img/tuto2.jpg' %}" alt="Catpure d'écran de le recherche d'un territoire">
+                </div>
+                <h3 class="mt-5">2 - Choisissez la collectivité qui vous intéresse en cliquant dessus</h3>
+                <div class="col-12 col-md-8">
+                    <img class="img-fluid img-thumbnail" src="{% static 'documentation/img/tuto3.jpg' %}" alt="Catpure d'écran de la sélection de territoire">
+                </div>
+                <h3 class="mt-5">3 - Vous êtes maintenant dans la page d’accueil de votre diagnostic</h3>
+                <p>Le menu sous votre collectivité vous donne accès à plusieurs éléments du diagnostic :</p>
+                <ul>
+                    <li>une synthèse pour avoir toutes les informations essentielles en un coup d’oeil</li>
+                    <li>les trajectoires</li>
+                    <li>la consommation des sols</li>
+                    <li>l’artificialisation</li>
+                    <li>découvrir l’OCSGE</li>
+                    <li>zonages d’urbanisme</li>
+                    <li>Paramètres</li>
+                </ul>
+                <p>Les différents graphiques sont téléchargeables et donc facilement intégrables à vos rapports et autres documents.</p>
+                <div class="col-12 col-md-8">
+                    <img class="img-fluid img-thumbnail" src="{% static 'documentation/img/tuto4.jpg' %}" alt="Capture d'écran de la page d'acceuil du diagnostic">
+                </div>
+                <h3 class="mt-5">4 - Téléchargez votre diagnostic</h3>
+                <p>En cliquant sur le bouton bleu en haut à droite dans votre page de diagnostic, vous avez le choix de le charger en format Word ou en format Excel, et ainsi les intégrer à vos rapports et documents internes.</p>
+                <div class="col-12 col-md-8">
+                    <img class="img-fluid img-thumbnail" src="{% static 'documentation/img/tuto5.jpg' %}" alt="Capture d'écran du téléchargement du diagnostic">
+                </div>
+                <p class="mt-3">Si vous optez pour le format Word, une fenêtre s’ouvre pour que vous renseigniez vos informations d’envoi par mail.</p>
+                <div class="col-12 col-md-8">
+                    <img class="img-fluid img-thumbnail" src="{% static 'documentation/img/tuto6.jpg' %}" alt="Capture d'écran de la saisie de contact pour le téléchargement du diagnostic">
                 </div>
             </div>
         </div>
 
         <div class="fr-grid-row fr-mb-3w">
             <div class="fr-col">
-                <h2>Sint occaecat cupidatat non proident ?</h2>
-                <p>
-                    Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit
-                    anim id est laborum.
-                </p>
-                <h3>Laboris nisi ut aliquip ex ea commodo consequat.</h3>
-                <p>
-                    Aliquet sagittis id consectetur purus ut faucibus pulvinar elementum. Orci dapibus ultrices in iaculis nunc.
-                    Quis varius quam quisque id diam. Nec feugiat nisl pretium fusce id velit ut tortor pretium. Fames ac turpis
-                    egestas integer eget aliquet nibh praesent tristique. Faucibus purus in massa tempor. Arcu ac tortor
-                    dignissim convallis aenean et tortor at risus. Mauris sit amet massa vitae tortor condimentum lacinia quis.
-                    Eros in cursus turpis massa tincidunt dui ut. Integer quis auctor elit sed vulputate. Elementum facilisis
-                    leo vel fringilla est ullamcorper eget nulla <a href="test" target="_blank">link test</a>. Nisl purus in mollis nunc sed id. Montes nascetur ridiculus
-                    mus mauris vitae. Vestibulum lorem sed risus ultricies.
-                </p>
-                <ul>
-                    <li>Eiusmod tempor incididunt.</li>
-                    <li>Dolor in reprehenderit in voluptate.</li>
-                </ul>
-            </div>
-        </div>
-
-        <div class="fr-grid-row fr-mb-3w">
-            <div class="fr-col">
-                <!-- Exemple d'image' -->
-                <img class="fr-responsive-img" src="{% static 'documentation/img/image-test.png' %}" alt="">
+                <h2>✍️ Pourquoi se créer un compte ?</h2>
+                <p>La création d’un compte vous permet de sauvegarder vos diagnostics et de les retrouver, de la modifier dans le temps pour les mettre à jour.</p>
+                <div class="col-12 col-md-8">
+                    <img class="img-fluid img-thumbnail" src="{% static 'documentation/img/tuto7.jpg' %}" alt="Catpure d'écran de la section Mes diagnostics">
+                </div>
             </div>
         </div>
     </div>
+    
 </section> 
 {% endblock content %}
