@@ -11,5 +11,3 @@ export PROJ_LIB=/build/${REQUEST_ID}/.apt/usr/share/proj
 
 # collect static
 python manage.py collectstatic --noinput
-
-python manage.py mattermost --msg "${APP} déploiement terminé,\n${DOMAIN_URL}"
