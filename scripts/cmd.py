@@ -5,7 +5,7 @@ import click
 ENVS = {
     "local": dict(),
     "appreview": {
-        "app": "sparte-staging-pr122",
+        "app": "sparte-staging-pr127",
         "region": "osc-fr1",
     },
     "staging": {
