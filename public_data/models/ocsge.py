@@ -19,20 +19,14 @@ problème de performance
 
 """
 from django.contrib.gis.db import models
-from django.contrib.gis.db.models.functions import (
-    Area,
-    Intersection,
-    MakeValid,
-    Transform,
-)
+from django.contrib.gis.db.models.functions import Area, Intersection, MakeValid
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db.models import Sum
 
+from public_data.models.couverture_usage import CouvertureUsageMatrix
 from public_data.models.enums import SRID
+from public_data.models.mixins import DataColorationMixin, TruncateTableMixin
 from utils.db import DynamicSRIDTransform, IntersectManager
-
-from .couverture_usage import CouvertureUsageMatrix
-from .mixins import DataColorationMixin, TruncateTableMixin
 
 
 class Ocsge(TruncateTableMixin, DataColorationMixin, models.Model):

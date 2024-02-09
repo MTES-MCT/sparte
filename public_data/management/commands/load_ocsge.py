@@ -1,198 +1,39 @@
-from functools import cache
-from typing import Self
+import logging
+from typing import Callable, Dict, Tuple
 
-from django.contrib.gis.db.models.functions import Area
 from django.core.management.base import BaseCommand
-from django.db.models import DecimalField, Q
-from django.db.models.functions import Cast
+from django.db.models import Q
 
-from public_data.models import (
-    CouvertureUsageMatrix,
-    DataSource,
-    Departement,
-    Ocsge,
-    OcsgeDiff,
-    ZoneConstruite,
-)
-from public_data.models.mixins import AutoLoadMixin
-from utils.db import DynamicSRIDTransform
+from public_data import loaders
+from public_data.factories import LayerMapperFactory
+from public_data.models import DataSource
+from public_data.models.administration import Departement
+
+logger = logging.getLogger("management.commands")
 
 
-@cache
-def get_matrix():
-    return CouvertureUsageMatrix.matrix_dict()
-
-
-class AutoOcsgeDiff(AutoLoadMixin, OcsgeDiff):
-    class Meta:
-        proxy = True
-
-    @classmethod
-    @property
-    def mapping(cls) -> dict[str, str]:
-        return {
-            "cs_old": f"CS_{cls._year_old}",
-            "us_old": f"US_{cls._year_old}",
-            "cs_new": f"CS_{cls._year_new}",
-            "us_new": f"US_{cls._year_new}",
-            "mpoly": "MULTIPOLYGON",
-        }
-
-    def before_save(self) -> None:
-        self.year_new = self.__class__._year_new
-        self.year_old = self.__class__._year_old
-        self.departement = self.__class__._departement
-        self.srid_source = self.srid
-
-        self.new_matrix = get_matrix()[(self.cs_new, self.us_new)]
-        self.new_is_artif = bool(self.new_matrix.is_artificial)
-
-        if self.new_matrix.couverture:
-            self.cs_new_label = self.new_matrix.couverture.label
-
-        if self.new_matrix.usage:
-            self.us_new_label = self.new_matrix.usage.label
-
-        self.old_matrix = get_matrix()[(self.cs_old, self.us_old)]
-        self.old_is_artif = bool(self.old_matrix.is_artificial)
-
-        if self.old_matrix.couverture:
-            self.cs_old_label = self.old_matrix.couverture.label
-        if self.old_matrix.usage:
-            self.us_old_label = self.old_matrix.usage.label
-
-        self.is_new_artif = not self.old_is_artif and self.new_is_artif
-        self.is_new_natural = self.old_is_artif and not self.new_is_artif
-
-    @classmethod
-    def calculate_fields(cls) -> None:
-        cls.objects.filter(
-            departement=cls._departement,
-            year_new=cls._year_new,
-            year_old=cls._year_old,
-        ).update(
-            surface=Cast(
-                Area(DynamicSRIDTransform("mpoly", "srid_source")),
-                DecimalField(max_digits=15, decimal_places=4),
-            )
-        )
-
-    @classmethod
-    def clean_data(cls) -> None:
-        cls.objects.filter(
-            departement=cls._departement,
-            year_new=cls._year_new,
-            year_old=cls._year_old,
-        ).delete()
-
-
-class AutoOcsge(AutoLoadMixin, Ocsge):
-    class Meta:
-        proxy = True
-
-    mapping = {
-        "id_source": "ID",
-        "couverture": "CODE_CS",
-        "usage": "CODE_US",
-        "mpoly": "MULTIPOLYGON",
-    }
-
-    def save(self, *args, **kwargs) -> Self:
-        self.year = self.__class__._year
-        self.departement = self.__class__._departement
-        self.srid_source = self.srid
-        key = (self.couverture, self.usage)
-
-        self.matrix = get_matrix()[key]
-        self.is_artificial = bool(self.matrix.is_artificial)
-
-        if self.matrix.couverture:
-            self.couverture_label = self.matrix.couverture.label
-        if self.matrix.usage:
-            self.usage_label = self.matrix.usage.label
-
-        return super().save(*args, **kwargs)
-
-    @classmethod
-    def clean_data(cls) -> None:
-        cls.objects.filter(
-            departement=cls._departement,
-            year=cls._year,
-        ).delete()
-
-    @classmethod
-    def calculate_fields(cls) -> None:
-        cls.objects.filter(
-            departement=cls._departement,
-            year=cls._year,
-        ).update(
-            surface=Cast(
-                Area(DynamicSRIDTransform("mpoly", "srid_source")),
-                DecimalField(max_digits=15, decimal_places=4),
-            )
-        )
-
-
-class AutoZoneConstruite(AutoLoadMixin, ZoneConstruite):
-    class Meta:
-        proxy = True
-
-    mapping = {
-        "id_source": "ID",
-        "millesime": "MILLESIME",
-        "mpoly": "MULTIPOLYGON",
-    }
-
-    def save(self, *args, **kwargs) -> Self:
-        self.year = int(self._year)
-        self.departement = self.__class__._departement
-        self.srid_source = self.srid
-        self.surface = self.mpoly.transform(self.srid, clone=True).area
-        self.departement = self._departement
-        return super().save(*args, **kwargs)
-
-    @classmethod
-    def clean_data(cls) -> None:
-        cls.objects.filter(
-            departement=cls._departement,
-            year=cls._year,
-        ).delete()
-
-
-def get_layer_mapper_proxy_class(source: DataSource):
-    departement = Departement.objects.get(source_id=source.official_land_id)
-
-    properties = {
-        "Meta": type("Meta", (), {"proxy": True}),
-        "shape_file_path": source.path,
-        "_departement": departement,
-        "srid": source.srid,
-        "__module__": __name__,
-    }
-
-    base_class = None
-
-    if source.mapping:
-        properties.update({"mapping": source.mapping})
-
-    if source.name == DataSource.DataNameChoices.DIFFERENCE:
-        base_class = AutoOcsgeDiff
-        properties.update(
-            {
-                "_year_old": min(source.millesimes),
-                "_year_new": max(source.millesimes),
+class OcsgeFactory(LayerMapperFactory):
+    def get_class_properties(self, module_name: str) -> Dict[str, int]:
+        properties = super().get_class_properties(module_name)
+        properties |= {"_departement": Departement.objects.get(source_id=self.data_source.official_land_id)}
+        if self.data_source.name == DataSource.DataNameChoices.DIFFERENCE:
+            properties |= {
+                "_year_old": min(self.data_source.millesimes),
+                "_year_new": max(self.data_source.millesimes),
             }
-        )
-    elif source.name == DataSource.DataNameChoices.OCCUPATION_DU_SOL:
-        properties.update({"_year": source.millesimes[0]})
-        base_class = AutoOcsge
-    elif source.name == DataSource.DataNameChoices.ZONE_CONSTRUITE:
-        properties.update({"_year": source.millesimes[0]})
-        base_class = AutoZoneConstruite
+        else:
+            properties |= {"_year": self.data_source.millesimes[0]}
+        return properties
 
-    class_name = f"Auto{source.name}{departement}{'_'.join(map(str, source.millesimes))}"
-
-    return type(class_name, (base_class,), properties)
+    def get_base_class(self) -> Tuple[Callable]:
+        base_class = None
+        if self.data_source.name == DataSource.DataNameChoices.DIFFERENCE:
+            base_class = loaders.AutoOcsgeDiff
+        elif self.data_source.name == DataSource.DataNameChoices.OCCUPATION_DU_SOL:
+            base_class = loaders.AutoOcsge
+        elif self.data_source.name == DataSource.DataNameChoices.ZONE_CONSTRUITE:
+            base_class = loaders.AutoZoneConstruite
+        return (base_class,)
 
 
 class Command(BaseCommand):
@@ -265,5 +106,6 @@ class Command(BaseCommand):
             raise ValueError("No data sources found")
 
         for source in sources:
-            layer_mapper_proxy_class = get_layer_mapper_proxy_class(source)
+            layer_mapper_proxy_class = OcsgeFactory(source).get_layer_mapper_proxy_class(module_name=__name__)
+            logger.info("Process %s", layer_mapper_proxy_class.__name__)
             layer_mapper_proxy_class.load()

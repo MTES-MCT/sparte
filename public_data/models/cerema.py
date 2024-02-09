@@ -18,7 +18,7 @@ from django.db.models import F
 
 from public_data.models.enums import SRID
 
-from .mixins import DataColorationMixin
+from public_data.models.mixins import DataColorationMixin
 
 
 class CeremaManager(models.Manager):

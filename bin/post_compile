@@ -11,10 +11,3 @@ export PROJ_LIB=/build/${REQUEST_ID}/.apt/usr/share/proj
 
 # collect static
 python manage.py collectstatic --noinput
-
-# clear cache
-python manage.py clear_cache
-
-# Deactivating maintenance mode
-# v4.4 has a long data migration manually run
-python manage.py maintenance --off

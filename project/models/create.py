@@ -115,3 +115,28 @@ def update_period(project: Project, start: str, end: str) -> None:
     project.save()
 
     trigger_async_tasks(project)
+
+
+def update_ocsge(project: Project):
+    """Update cached data if new OCSGE has been delivered.
+    This function is mainly called after data migration when new a departement is added (or new millesime)
+    What it does:
+    * search if start and end period of OCS GE analysis has been changed
+    * update ocs ge status (available, partial, unavailable...)
+    * build images maps :
+      * thematic map on city artificialisation
+      * understand artificialisation map
+      * GPU filled up with artificial items
+    """
+
+    # list redo work
+    project.async_find_first_and_last_ocsge_done = False
+    project.async_ocsge_coverage_status_done = False
+    project.async_generate_theme_map_artif_done = False
+    project.async_theme_map_understand_artif_done = False
+    project.async_theme_map_fill_gpu_done = False
+
+    project._change_reason = "new_ocsge_has_been_delivered"
+    project.save()
+
+    trigger_async_tasks(project)

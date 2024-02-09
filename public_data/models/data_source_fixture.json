@@ -405,7 +405,7 @@
             "mapping": null,
             "path": "obs_artif_conso_com_2009_2022.zip",
             "source_url": "https://cerema.app.box.com/v/pnb-action7-indicateurs-ff/file/1220325634602",
-            "official_land_id": null,
+            "official_land_id": "MetropoleEtCorse",
             "srid": 2154
         }
     },
