@@ -279,7 +279,7 @@ class Project(BaseProject):
         null=True,
     )
     land_ids = models.CharField(
-        "Type de territoire",
+        "Identifiants des territoires",
         max_length=255,
         help_text=(
             "Contient les identifiants qui composent le territoire du diagnostic. "

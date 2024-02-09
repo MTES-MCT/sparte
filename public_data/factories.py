@@ -1,7 +1,12 @@
+import logging
 import re
+import secrets
+import string
 from typing import Any, Callable, Dict, Tuple
 
 from public_data.models import DataSource
+
+logger = logging.getLogger(__name__)
 
 
 class LayerMapperFactory:
@@ -20,7 +25,7 @@ class LayerMapperFactory:
             properties["mapping"] = self.data_source.mapping
         return properties
 
-    def get_base_class(self) -> Tuple[Callable]:
+    def get_base_class(self) -> Tuple:
         """Return the base class from which the proxy should inherit from.
 
         The base class returned should be a child of AutoLoadMixin:
@@ -35,14 +40,20 @@ class LayerMapperFactory:
         Naming rule: Auto{data_name}{official_land_id}{year}
         Example: AutoOcsgeDiff3220182021
         """
-        raw_words = ["Auto", self.data_source.name, self.data_source.official_land_id]
-        raw_words += list(map(str, self.data_source.millesimes))
+        unique_token = "".join(secrets.choice(string.ascii_lowercase) for _ in range(5))
+        raw_words = [
+            "Auto",
+            unique_token,
+            self.data_source.name,
+            self.data_source.official_land_id,
+        ] + list(map(str, self.data_source.millesimes))
         splited_words = [sub_word for word in raw_words for sub_word in word.split("_")]
-        cleaned_words = [re.sub(r"[^\W_]", "", word) for word in splited_words]
+        cleaned_words = [re.sub(r"[\W_]", "", word) for word in splited_words]
         class_name = "".join([word.capitalize() for word in cleaned_words if word])
         return class_name
 
     def get_layer_mapper_proxy_class(self, module_name: str = __name__) -> Callable:
+        logger.info("Create class for module=%s", module_name)
         return type(
             self.get_class_name(),
             self.get_base_class(),

@@ -29,6 +29,7 @@ types-requests = "*"
 types-setuptools = "*"
 flake8-pyproject = "*"
 click = "*"
+ggshield = "*"
 
 [packages]
 boto3 = "*"

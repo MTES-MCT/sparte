@@ -1,11 +1,9 @@
-**S**ervice de **P**ortrait de l’**AR**tificialisation des **TE**rritoires
-==========================================================================
+Mon Diagnostic Artificialisation
+================================
 
-# SPARTE
+Mon Diagnostic Artificialisation est une plateforme qui aide les collectivité à mesurer l'artificialisation de leurs sols et ainsi se conformer aux nouvelles lois.
 
-Le Service de Portrait de l’ARtificialisation des TErritoires (ou SPARTE)
-est une plateforme qui aide les collectivité à mesurer l'artificialisation
-de leurs sols et ainsi se conformer aux nouvelles lois.
+L'application a été renommée, précédemment elle s'appelait SPARTE, c'est pourquoi le répertoire Github s'appelle ainsi et vous pouvez encore trouver des références à l'application sous ce terme.
 
 ## Installation backend
 
@@ -32,13 +30,14 @@ Le site est désormais accessible en local à cette adresse:
 13. Lancer l'installation des données `python scripts/cmd.py --env local rebuild`
 
 ## Installation frontend
+
 1. Installer les dépendances `npm install`
 2. Lancer le build du bundle `npm run build:dev` ou `npm run build:prod` (génère un nouveau bundle à chaque mise à jour du fichier ./assets/scripts/index.js)
 
 ### Variables d'environnement
 
 - En **local** ces valeurs doivent être dans le fichier .env à la racine du projet.
-- Pour le déploiement sur **scalingo**, ces variables sont à ajouter dans la section "Environnement" du container.
+- Pour le déploiement sur **Scalingo**, ces variables sont à ajouter dans la section "Environnement" du container.
 
 | Nom | Description | Valeur par défaut en local |
 |-----|-------------|---------------|
