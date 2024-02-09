@@ -16,9 +16,16 @@ from django.views.generic import (
 from django.views.generic.edit import FormMixin
 
 from project import tasks
-from project.forms import KeywordForm, SelectTerritoryForm, UpdateProjectForm
+from project.forms import (
+    KeywordForm,
+    SelectTerritoryForm,
+    UpdateProjectForm,
+    UpdateProjectPeriodForm,
+)
 from project.models import Project, create_from_public_key
-from public_data.models import AdminRef, Land, LandException
+from project.models.create import update_period
+from public_data.exceptions import LandException
+from public_data.models import AdminRef, Land
 from utils.views_mixins import BreadCrumbMixin, RedirectURLMixin
 
 from .mixins import GroupMixin
@@ -42,7 +49,7 @@ class ClaimProjectView(LoginRequiredMixin, RedirectView):
 
 
 class CreateProjectViews(BreadCrumbMixin, FormView):
-    template_name = "project/create/select_3.html"
+    template_name = "project/create/advanced_search.html"
     form_class = SelectTerritoryForm
 
     def get_context_breadcrumbs(self):
@@ -134,6 +141,23 @@ class ProjectUpdateView(GroupMixin, UpdateView):
         ).apply_async()
 
         return redirect("project:splash", pk=self.object.id)
+
+
+class SetProjectPeriodView(GroupMixin, RedirectURLMixin, UpdateView):
+    model = Project
+    template_name = "project/partials/report_set_period.html"
+    form_class = UpdateProjectPeriodForm
+    context_object_name = "diagnostic"
+
+    def get_context_data(self, **kwargs):
+        kwargs |= {
+            "next": self.request.build_absolute_uri(reverse_lazy("project:splash", kwargs={"pk": self.object.id})),
+        }
+        return super().get_context_data(**kwargs)
+
+    def form_valid(self, form):
+        update_period(self.object, form.cleaned_data["analyse_start_date"], form.cleaned_data["analyse_end_date"])
+        return self.render_to_response(self.get_context_data(success_message=True))
 
 
 class ProjectDeleteView(GroupMixin, LoginRequiredMixin, DeleteView):

@@ -4,8 +4,8 @@ import click
 
 ENVS = {
     "local": dict(),
-    "440": {
-        "app": "sparte-staging-pr105",
+    "appreview": {
+        "app": "sparte-staging-pr127",
         "region": "osc-fr1",
     },
     "staging": {
@@ -248,7 +248,7 @@ def rebuild(ctx, klass=None):
     connecter.manage_py("build_commune_data")
 
     click.secho("Set available millesimes", fg="cyan")
-    connecter.manage_py("setup_dept")
+    connecter.manage_py("setup_departements")
 
     click.secho("Build artificial area", fg="cyan")
     connecter.manage_py("build_artificial_area")
@@ -277,16 +277,14 @@ def mep_260(ctx):
 
 @cli.command()
 @click.pass_context
-def mep_440(ctx):
-    # TODO: remove this command once it has run on staging and production
+def mep_450(ctx):
+    """Trigger all data transformation to successful MEP release 4.5"""
     connecter = ScalingoInterface(ctx.obj)
     connecter.detached = True
 
-    click.secho("Start MEP 440 Migration", fg="cyan")
+    connecter.manage_py("mep_45")
 
-    connecter.manage_py("mep_440")
-
-    click.secho("End MEP 440 migration", fg="cyan")
+    click.secho("End 4.5 migration", fg="cyan")
 
 
 if __name__ == "__main__":

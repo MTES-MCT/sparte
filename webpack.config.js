@@ -1,13 +1,14 @@
-const path = require("path");
+const path = require('path');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
-const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const TerserPlugin = require("terser-webpack-plugin");
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
+const ESLintPlugin = require('eslint-webpack-plugin');
 
 const common = {
-    entry: "./assets/scripts/index.js",
+    entry: './assets/scripts/index.js',
     output: {
-        "path": path.resolve(__dirname, "static"),
-        "filename": "assets/scripts/bundle.js",
+        'path': path.resolve(__dirname, 'static'),
+        'filename': 'assets/scripts/bundle.js',
     },
     performance: {
         hints: false
@@ -22,7 +23,7 @@ const common = {
                 }
             },
             {
-                "test": /\.(png|jpe?g|gif|svg)$/i,
+                'test': /\.(png|jpe?g|gif|svg)$/i,
                 type: 'asset/resource',
                 generator: {
                     filename: 'assets/images/[hash][ext][query]'
@@ -32,27 +33,32 @@ const common = {
                 test: /\.css$/i,
                 use: [
                     MiniCssExtractPlugin.loader,
-                    "css-loader"
+                    'css-loader'
                 ],
             },
         ]
     },
     plugins: [
         new MiniCssExtractPlugin({
-            filename: "assets/styles/[name].css",
-            chunkFilename: "[id].css"
-        })
+            filename: 'assets/styles/[name].css',
+            chunkFilename: '[id].css'
+        }),
+        new ESLintPlugin({
+            extensions: ['js'],
+            emitWarning: true,
+            fix: true
+        }),
     ]
 }
 
 const development = {
     ...common,
-    mode: "development",
-    // devtool: "cheap-source-map",
+    mode: 'development',
+    // devtool: 'cheap-source-map',
     plugins: [
         ...common.plugins,
         new BundleAnalyzerPlugin({
-            analyzerPort: "8989",
+            analyzerPort: '8989',
             openAnalyzer: false
         })
     ]
@@ -60,7 +66,7 @@ const development = {
 
 const production = {
     ...common,
-    mode: "production",
+    mode: 'production',
     optimization: {
         minimize: true,
         minimizer: [new TerserPlugin({
@@ -78,10 +84,10 @@ const production = {
 }
 
 module.exports = (env, argv) => {
-    const mode = argv.mode || "development";
+    const mode = argv.mode || 'development';
 
     switch (mode) {
-        case "development":
+        case 'development':
             return development
         default:
             return production

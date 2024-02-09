@@ -1,4 +1,9 @@
-""" Contains all logic to create a project """
+""" Contains all logic to create a project
+
+REFACTORING : this module should be expanded to contain all business logics. It should include how to create a project,
+but also all function to handle project life such as change of period asked from a user, new OCS GE's delivery and so
+on. At last, it should be moved in domains/ folder.
+"""
 from types import ModuleType
 from typing import List
 
@@ -25,13 +30,15 @@ def get_map_generation_tasks(project: Project, t: ModuleType) -> List[celery.Tas
     ]
 
 
-def trigger_async_tasks(project: Project, public_key) -> None:
+def trigger_async_tasks(project: Project, public_key: str | None = None) -> None:
     from brevo.tasks import send_diagnostic_to_brevo
     from metabase.tasks import async_create_stat_for_project
     from project import tasks as t
 
     tasks_chain = []
     if not project.async_add_city_done:
+        if public_key is None:
+            raise ValueError("Cannot add_cities to project without public_key.")
         tasks_chain.append(t.add_city.si(project.id, public_key))
     if not project.async_set_combined_emprise_done:
         tasks_chain.append(t.set_combined_emprise.si(project.id))
@@ -88,3 +95,50 @@ def create_from_public_key(
     trigger_async_tasks(project, public_key)
 
     return project
+
+
+def update_period(project: Project, start: str, end: str) -> None:
+    """Update the period of the project"""
+
+    project.analyse_start_date = start
+    project.analyse_end_date = end
+
+    # list redo work
+    project.async_find_first_and_last_ocsge_done = False
+    project.async_ocsge_coverage_status_done = False
+    project.async_generate_theme_map_conso_done = False
+    project.async_generate_theme_map_artif_done = False
+    project.async_theme_map_understand_artif_done = False
+    project.async_theme_map_fill_gpu_done = False
+
+    project._change_reason = "update_project_period"
+    project.save()
+
+    trigger_async_tasks(project)
+
+
+def update_ocsge(project: Project):
+    """Update cached data if new OCSGE has been delivered.
+
+    This function is mainly called after data migration when new a departement is added (or new millesime)
+
+    What it does:
+    * search if start and end period of OCS GE analysis has been changed
+    * update ocs ge status (available, partial, unavailable...)
+    * build images maps :
+      * thematic map on city artificialisation
+      * understand artificialisation map
+      * GPU filled up with artificial items
+    """
+
+    # list redo work
+    project.async_find_first_and_last_ocsge_done = False
+    project.async_ocsge_coverage_status_done = False
+    project.async_generate_theme_map_artif_done = False
+    project.async_theme_map_understand_artif_done = False
+    project.async_theme_map_fill_gpu_done = False
+
+    project._change_reason = "new_ocsge_has_been_delivered"
+    project.save()
+
+    trigger_async_tasks(project)

@@ -21,7 +21,7 @@ from django.core.exceptions import ImproperlyConfigured
 from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.redis import RedisIntegration
 
-OFFICIAL_VERSION = "4.4.0"
+OFFICIAL_VERSION = "4.5.0"
 
 root = environ.Path(__file__) - 2  # get root of the project
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -227,7 +227,6 @@ STATICFILES_DIRS = [
 
 STATIC_URL = "/static/"
 STATIC_ROOT = str(BASE_DIR / "staticroot")
-
 
 PUBLIC_MEDIA_LOCATION = "media"
 MEDIA_URL = f"https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/{PUBLIC_MEDIA_LOCATION}/"
@@ -539,6 +538,7 @@ ORTHOPHOTO_URL = (
 
 # the webhook needs to be generated in mattermost and is linked to a active account
 MATTERMOST_URL = env.str("MATTERMOST_WEBHOOK", default=None)
+MATTER_DEV_CHANNEL = env.str("MATTER_DEV_CHANNEL", default="startup-sparte-dev")
 
 # ALERT DIAGNOSTICS BLOCKED
 

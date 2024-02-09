@@ -16,7 +16,8 @@ La description précise des données est disponible dans un PDF dans lien ci-des
 from django.contrib.gis.db import models
 from django.db.models import F
 
-from .mixins import DataColorationMixin
+from public_data.models.enums import SRID
+from public_data.models.mixins import DataColorationMixin
 
 
 class CeremaManager(models.Manager):
@@ -162,7 +163,12 @@ class Cerema(DataColorationMixin, models.Model):
     art11hab21 = models.FloatField(null=True)
     art11act21 = models.FloatField(null=True)
 
-    mpoly = models.MultiPolygonField(spatial_index=True)
+    mpoly = models.MultiPolygonField(srid=4326, spatial_index=True)
+    srid_source = models.IntegerField(
+        "SRID",
+        choices=SRID.choices,
+        default=SRID.LAMBERT_93,
+    )
 
     objects = CeremaManager()
 

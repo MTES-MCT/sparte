@@ -10,7 +10,6 @@ A venir :
 
 
 class Land
-==========
 
 C'est une classe qui se réfère à un territoire sans que l'on ait à connaître son niveau
 administratif exacte. Derrière un land peut se cacher une commune, un epci...
@@ -25,7 +24,7 @@ Afin de se référer à un Land, on utilise un identifiant unique :
     REGION_[ID]
     COMMUNE_[ID]
 """
-from typing import Literal
+from typing import Dict, Literal
 
 from django.contrib.gis.db import models
 from django.contrib.postgres.fields import ArrayField
@@ -34,15 +33,13 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db.models import Sum
 from django.utils.functional import cached_property
 
+from public_data.exceptions import LandException
+from public_data.models.enums import SRID
 from utils.db import IntersectManager
 
 from .cerema import Cerema
 from .couverture_usage import CouvertureUsageMatrix
 from .mixins import DataColorationMixin
-
-
-class LandException(BaseException):
-    pass
 
 
 class AdminRef:
@@ -194,14 +191,21 @@ class LandMixin:
     @cached_property
     def area(self) -> float:
         """Return surface of the land in Ha"""
-        return float(self.mpoly.transform(2154, clone=True).area / 10000)  # type: ignore
+        return float(self.mpoly.transform(self.srid_source, clone=True).area / 10000)
 
     @classmethod
     def search(cls, needle, region=None, departement=None, epci=None):
-        raise NotImplementedError("need to be overrided")
+        raise NotImplementedError("need to be overridden")
+
+    def get_official_id(self) -> str:
+        return self.source_id if self.source_id is not None else ""
 
     def get_cities(self):
-        raise NotImplementedError("need to be overrided")
+        raise NotImplementedError("need to be overridden")
+
+    @property
+    def official_id(self) -> str:
+        raise NotImplementedError("need to be overridden")
 
     def get_pop_change_per_year(
         self,
@@ -227,12 +231,21 @@ class LandMixin:
 class Region(LandMixin, GetDataFromCeremaMixin, models.Model):
     source_id = models.CharField("Identifiant source", max_length=50)
     name = models.CharField("Nom", max_length=50)
-    mpoly = models.MultiPolygonField()
+    mpoly = models.MultiPolygonField(srid=4326)
+    srid_source = models.IntegerField(
+        "SRID",
+        choices=SRID.choices,
+        default=SRID.LAMBERT_93,
+    )
 
     objects = IntersectManager()
 
     land_type = AdminRef.REGION
     default_analysis_level = AdminRef.DEPARTEMENT
+
+    @property
+    def official_id(self) -> str:
+        return self.source_id
 
     def get_ocsge_millesimes(self) -> set:
         millesimes = set()
@@ -271,12 +284,21 @@ class Departement(LandMixin, GetDataFromCeremaMixin, models.Model):
     is_artif_ready = models.BooleanField("Données artif disponibles", default=False)
     ocsge_millesimes = ArrayField(models.IntegerField(), null=True, blank=True)
     name = models.CharField("Nom", max_length=50)
-    mpoly = models.MultiPolygonField()
+    mpoly = models.MultiPolygonField(srid=4326)
+    srid_source = models.IntegerField(
+        "SRID",
+        choices=SRID.choices,
+        default=SRID.LAMBERT_93,
+    )
 
     objects = IntersectManager()
 
     land_type = AdminRef.DEPARTEMENT
     default_analysis_level = AdminRef.SCOT
+
+    @property
+    def official_id(self) -> str:
+        return self.source_id
 
     def get_qs_cerema(self):
         return Cerema.objects.filter(dept_id=self.source_id)
@@ -300,7 +322,13 @@ class Departement(LandMixin, GetDataFromCeremaMixin, models.Model):
 
 class Scot(LandMixin, GetDataFromCeremaMixin, models.Model):
     name = models.CharField("Nom", max_length=250)
-    mpoly = models.MultiPolygonField(null=True, blank=True)
+    mpoly = models.MultiPolygonField(srid=4326, null=True, blank=True)
+    srid_source = models.IntegerField(
+        "SRID",
+        choices=SRID.choices,
+        default=SRID.LAMBERT_93,
+    )
+
     regions = models.ManyToManyField(Region)
     departements = models.ManyToManyField(Departement)
     siren = models.CharField("Siren", max_length=12, null=True, blank=True)
@@ -310,6 +338,10 @@ class Scot(LandMixin, GetDataFromCeremaMixin, models.Model):
     land_type = AdminRef.SCOT
     default_analysis_level = AdminRef.EPCI
 
+    @property
+    def official_id(self) -> str:
+        return self.siren
+
     def get_qs_cerema(self):
         return Cerema.objects.filter(city_insee__in=self.commune_set.values("insee"))
 
@@ -318,6 +350,9 @@ class Scot(LandMixin, GetDataFromCeremaMixin, models.Model):
 
     def __str__(self):
         return self.name.upper()
+
+    def get_official_id(self) -> str:
+        return self.siren if self.siren is not None else ""
 
     @classmethod
     def search(cls, needle, region=None, departement=None, epci=None):
@@ -333,13 +368,22 @@ class Scot(LandMixin, GetDataFromCeremaMixin, models.Model):
 class Epci(LandMixin, GetDataFromCeremaMixin, models.Model):
     source_id = models.CharField("Identifiant source", max_length=50)
     name = models.CharField("Nom", max_length=70)
-    mpoly = models.MultiPolygonField()
+    mpoly = models.MultiPolygonField(srid=4326)
+    srid_source = models.IntegerField(
+        "SRID",
+        choices=SRID.choices,
+        default=SRID.LAMBERT_93,
+    )
     departements = models.ManyToManyField(Departement)
 
     objects = IntersectManager()
 
     land_type = AdminRef.EPCI
     default_analysis_level = AdminRef.COMMUNE
+
+    @property
+    def official_id(self) -> str:
+        return self.source_id
 
     def get_ocsge_millesimes(self) -> set:
         millesimes = set()
@@ -382,7 +426,12 @@ class Commune(DataColorationMixin, LandMixin, GetDataFromCeremaMixin, models.Mod
     departement = models.ForeignKey(Departement, on_delete=models.PROTECT)
     epci = models.ForeignKey(Epci, on_delete=models.PROTECT, blank=True, null=True)
     scot = models.ForeignKey(Scot, on_delete=models.PROTECT, blank=True, null=True)
-    mpoly = models.MultiPolygonField()
+    mpoly = models.MultiPolygonField(srid=4326)
+    srid_source = models.IntegerField(
+        "SRID",
+        choices=SRID.choices,
+        default=SRID.LAMBERT_93,
+    )
 
     objects = IntersectManager()
 
@@ -420,6 +469,10 @@ class Commune(DataColorationMixin, LandMixin, GetDataFromCeremaMixin, models.Mod
     default_analysis_level = AdminRef.COMMUNE
 
     @property
+    def official_id(self) -> str:
+        return self.insee
+
+    @property
     def is_artif_ready(self):
         return self.departement.is_artif_ready
 
@@ -434,6 +487,9 @@ class Commune(DataColorationMixin, LandMixin, GetDataFromCeremaMixin, models.Mod
 
     def get_cities(self):
         return [self]
+
+    def get_official_id(self) -> str:
+        return self.insee if self.insee is not None else ""
 
     @classmethod
     def search(cls, needle, region=None, departement=None, epci=None):
@@ -548,10 +604,11 @@ class Land:
 
     def __init__(self, public_key):
         self.public_key = public_key
+
         try:
             self.land_type, self.id = public_key.strip().split("_")
-        except ValueError:
-            raise LandException("Clé du territoire mal formatée")
+        except ValueError as e:
+            raise LandException("Clé du territoire mal formatée", e)
         if not self.id.isdigit():
             raise LandException("ID n'est pas un entier correcte.")
         try:
@@ -561,7 +618,7 @@ class Land:
         try:
             self.land = klass.objects.get(pk=int(self.id))
         except ObjectDoesNotExist as e:
-            raise LandException(f"Public key '{id}' unknown") from e
+            raise LandException(f"Public key '{self.id}' unknown") from e
 
     def get_conso_per_year(self, start="2010", end="2020", coef=1):
         return self.land.get_conso_per_year(start, end, coef)
@@ -574,6 +631,10 @@ class Land:
 
     def __str__(self):
         return f"Land({str(self.land)})"
+
+    @property
+    def official_id(self) -> str:
+        return self.land.official_id
 
     @classmethod
     def get_lands(cls, public_keys):
@@ -594,12 +655,14 @@ class Land:
         return cls.Meta.subclasses[land_type.upper()]
 
     @classmethod
-    def search(cls, needle, region=None, departement=None, epci=None, search_for=None):
+    def search(cls, needle, region=None, departement=None, epci=None, search_for=None) -> Dict[str, models.QuerySet]:
         """Search for a keyword on all land subclasses"""
         if not search_for:
             return dict()
-        elif search_for == "*":
+
+        if search_for == "*":
             search_for = cls.Meta.subclasses.keys()
+
         return {
             name: subclass.search(needle, region=region, departement=departement, epci=epci)
             for name, subclass in cls.Meta.subclasses.items()

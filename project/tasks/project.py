@@ -3,6 +3,8 @@ Asyn tasks runned by Celery
 
 Below functions are dedicated to loading a project data and pre calculate
 all the indicators required to speedup process
+
+REFACTORING : move all business logic to project/models/create.py (which should be also moved to folders domains/)
 """
 
 import io
@@ -16,7 +18,6 @@ import matplotlib.pyplot as plt
 import shapely
 from celery import shared_task
 from django.conf import settings
-from django.contrib.gis.db.models import Union
 from django.db import transaction
 from django.db.models import F, OuterRef, Q, Subquery
 from django.urls import reverse
@@ -24,7 +25,7 @@ from django.utils import timezone
 from django_app_parameter import app_parameter
 from matplotlib_scalebar.scalebar import ScaleBar
 
-from project.models import Project, Request
+from project.models import Emprise, Project, Request
 from public_data.models import ArtificialArea, Cerema, Land, OcsgeDiff
 from public_data.models.gpu import ArtifAreaZoneUrba, ZoneUrba
 from utils.db import fix_poly
@@ -93,10 +94,17 @@ def add_city(self, project_id: int, public_keys: str) -> None:
 def set_combined_emprise(self, project_id: int) -> None:
     """Use linked cities to create project emprise."""
     logger.info("Start set_combined_emprise project_id==%d", project_id)
+
     try:
         project = Project.objects.get(pk=project_id)
-        combined_emprise = project.cities.all().aggregate(emprise=Union("mpoly"))
-        project.emprise_set.create(mpoly=fix_poly(combined_emprise["emprise"]))
+
+        for city in project.cities.all():
+            Emprise.objects.create(
+                mpoly=fix_poly(city.mpoly),
+                srid_source=city.srid_source,
+                project=project,
+            )
+
         race_protection_save(project_id, {"async_set_combined_emprise_done": True})
     except Project.DoesNotExist:
         logger.error(f"project_id={project_id} does not exist")
@@ -217,9 +225,8 @@ def generate_cover_image(self, project_id):
     logger.info("Start generate_cover_image, project_id=%d", project_id)
     try:
         diagnostic = Project.objects.get(id=int(project_id))
-        geom = diagnostic.combined_emprise.transform("2154", clone=True)
-        srid, wkt = geom.ewkt.split(";")
-        polygons = shapely.wkt.loads(wkt)
+        geom = diagnostic.combined_emprise
+        polygons = shapely.wkt.loads(geom.wkt)
 
         gdf_emprise = geopandas.GeoDataFrame(
             {
@@ -230,7 +237,7 @@ def generate_cover_image(self, project_id):
                     polygons,
                 ],
             },
-            crs="EPSG:2154",
+            crs=f"EPSG:{geom.srid}",
         ).to_crs(epsg=3857)
 
         fig, ax = plt.subplots(figsize=(60, 10))
