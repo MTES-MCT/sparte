@@ -459,13 +459,13 @@
     }
 
     // Search bar
-    const searchInput = document.getElementById('filter-faq-list-input')
+    const searchInputFaq = document.getElementById('filter-faq-list-input')
     const sections = document.querySelectorAll('.fr-accordions-group')
     const countMessage = document.getElementById('count')
     const noResultMessage = document.getElementById('no-result-message')
 
-    searchInput.onkeyup = function () {
-        const search_query = searchInput.value.toLowerCase()
+    searchInputFaq.onkeyup = function () {
+        const search_query = searchInputFaq.value.toLowerCase()
         let count = 0
 
         Array.from(sections).map((section) => {
