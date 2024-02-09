@@ -2,7 +2,7 @@ from logging import getLogger
 
 from django.contrib.gis.db.models import Func, MultiPolygonField
 from django.contrib.gis.db.models.functions import Area, Intersection, MakeValid
-from django.contrib.gis.geos import MultiPolygon, Polygon, GeometryCollection
+from django.contrib.gis.geos import GeometryCollection, MultiPolygon, Polygon
 from django.db.models import DecimalField, Manager, QuerySet, Sum
 from django.db.models.functions import Cast, Coalesce
 
