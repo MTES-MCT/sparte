@@ -1,0 +1,28 @@
+{
+    "env": {
+        "browser": true,
+        "node": true
+    },
+    "parser": "@babel/eslint-parser",
+    "extends": ["airbnb/base"],
+    "parserOptions": {
+        "requireConfigFile": false
+    },
+    "globals": {
+        "Highcharts": "readonly",
+        "htmx": "readonly"
+    },
+    "rules": {
+        "no-param-reassign": "off",
+        "no-console": "off",
+        "max-len": "off",
+        "semi": ["error", "never"],
+        "no-unreachable": ["error"],
+        "no-unexpected-multiline": ["error"],
+        "brace-style": ["error", "allman"],
+        "import/extensions": ["error", "always"],
+        "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }],
+        "no-nested-ternary": "off",
+        "no-new": "off"
+    }
+}

@@ -32,7 +32,7 @@ def projects(db, users):  # noqa: F811
         analyse_start_date=2009,
         analyse_end_date=2018,
     )
-    cobas.emprise_set.create(mpoly=BIG_SQUARE)
+    cobas.emprise_set.create(mpoly=BIG_SQUARE, srid_source=4326)
     projects = {
         "cobas": cobas,
     }
@@ -60,7 +60,7 @@ class TestProject:
 
     def test_area(self, projects):
         project = Project.objects.get(name="COBAS")
-        expected_area = BIG_SQUARE.transform(2154, clone=True).area / 100**2
+        expected_area = BIG_SQUARE.area / 100**2
         assert project.area == expected_area
 
     def test_set_success(self, projects):

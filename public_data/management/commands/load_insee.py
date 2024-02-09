@@ -81,6 +81,6 @@ class Command(BaseCommand):
             if len(todo) >= 10000:
                 logger.info(f"Save to bdd, INSEE so far {row['CODGEO']}")
                 CommunePop.objects.bulk_create(todo)
-                del todo
                 todo = []
-        CommunePop.objects.bulk_create(todo)
+        if todo:
+            CommunePop.objects.bulk_create(todo)

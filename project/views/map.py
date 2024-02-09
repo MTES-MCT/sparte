@@ -358,7 +358,7 @@ class MapTestView(BaseMap):
     default_zoom = 10
 
     def get_sources_list(self, *sources):
-        sources = [
+        additional_sources = [
             {
                 "key": "consommation-des-communes-source",
                 "params": {
@@ -380,10 +380,10 @@ class MapTestView(BaseMap):
                 "min_zoom": 8,
             },
         ]
-        return super().get_sources_list(*sources)
+        return super().get_sources_list(*(additional_sources + list(sources)))
 
     def get_layers_list(self, *layers):
-        layers = [
+        additional_layers = [
             {
                 "id": "consommation-des-communes-fill-layer",
                 "z-index": 4,
@@ -447,10 +447,10 @@ class MapTestView(BaseMap):
                 ],
             },
         ]
-        return super().get_layers_list(*layers)
+        return super().get_layers_list(*(additional_layers + list(layers)))
 
     def get_filters_list(self, *filters):
-        filters = [
+        additional_filters = [
             {
                 "name": "Consommation des communes",
                 "z-index": 3,
@@ -476,8 +476,8 @@ class MapTestView(BaseMap):
                 "source": "fond-de-carte-source",
             },
         ]
-        return super().get_filters_list(*filters)
-
+        return super().get_filters_list(*(additional_filters + list(filters)))
+    
     def get_gradient_scale(self):
         fields = Cerema.get_art_field(self.object.analyse_start_date, self.object.analyse_end_date)
         qs = (
@@ -512,7 +512,7 @@ class UrbanZonesMapView(BaseMap):
 
     def get_sources_list(self, *sources):
         available_millesimes = self.object.get_available_millesimes(commit=True)
-        sources = [
+        additional_sources = [
             {
                 "key": "ocs-ge-source",
                 "params": {
@@ -566,10 +566,10 @@ class UrbanZonesMapView(BaseMap):
                 "min_zoom": 12,
             },
         ]
-        return super().get_sources_list(*sources)
+        return super().get_sources_list(*(additional_sources + list(sources)))
 
     def get_layers_list(self, *layers):
-        layers = [
+        additional_layers = [
             {
                 "id": "zonages-d-urbanisme-fill-layer",
                 "z-index": 6,
@@ -733,7 +733,7 @@ class UrbanZonesMapView(BaseMap):
                 },
             },
         ]
-        return super().get_layers_list(*layers)
+        return super().get_layers_list(*(additional_layers + list(layers)))
 
     def get_filters_list(self, *filters):
         available_millesimes = self.object.get_available_millesimes(commit=True)
@@ -756,7 +756,7 @@ class UrbanZonesMapView(BaseMap):
             couverture_colors.append(leaf.code_prefix)
             couverture_colors.append(leaf.map_color)
         couverture_colors.append("rgba(0, 0, 0, 0)")  # default color
-        filters = [
+        additional_filters = [
             {
                 "name": "Zonages des documents d&rsquo;urbanisme",
                 "z-index": 4,
@@ -892,86 +892,7 @@ class UrbanZonesMapView(BaseMap):
                 "source": "ocs-ge-source",
             },
         ]
-        return super().get_filters_list(*filters)
-
-
-class BaseThemeMap(GroupMixin, DetailView):
-    """This is a base class for thematic map. It group together layer definition, data
-    provider and gradient provider.
-
-    Main methods:
-    =============
-    * get_data: return GeoJson of the features to display
-    * get_data_url: return endpoint url to retrieve feature to display in the map
-    * get_gradient: return JSON of the coloring scale
-    * get_gradient_url: return endpoint url of the coloring scale (inc. colors)
-    * get_layers_list: define the layer to be display in the map
-    """
-
-    queryset = Project.objects.all()
-    template_name = "carto/theme_map.html"
-    context_object_name = "project"
-    scale_size = 5
-    title = "To be set"
-    url_name = "to be set"
-
-    def get_data_url(self):
-        start = reverse_lazy(f"project:{self.url_name}", args=[self.object.id])
-        return f"{start}?data=1"
-
-    def get_gradient_url(self):
-        start = reverse_lazy(f"project:{self.url_name}", args=[self.object.id])
-        return f"{start}?gradient=1"
-
-    def get_context_breadcrumbs(self):
-        breadcrumbs = super().get_context_breadcrumbs()
-        breadcrumbs += [
-            {"title": self.title},
-        ]
-        return breadcrumbs
-
-    def get_gradient(self):
-        raise NotImplementedError("You need build gradient scale.")
-
-    def get_data(self):
-        raise NotImplementedError("You need build gradient scale.")
-
-    def get_layers_list(self, *layers):
-        layers = [
-            {
-                "name": "Emprise du projet",
-                "url": (f'{reverse_lazy("project:emprise-list")}' f"?id={self.object.pk}"),
-                "display": True,
-                "style": "style_emprise",
-                "fit_map": True,
-                "level": "5",
-            },
-        ] + list(layers)
-        return layers
-
-    def get_context_data(self, **kwargs):
-        center = self.object.get_centroid()
-        kwargs.update(
-            {
-                # center map on France
-                "map_name": self.title,
-                "center_lat": center.y,
-                "center_lng": center.x,
-                "default_zoom": 12,
-                "layer_list": self.get_layers_list(),
-            }
-        )
-        return super().get_context_data(**kwargs)
-
-    def get(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        if "gradient" in self.request.GET:
-            return self.get_gradient()
-        elif "data" in self.request.GET:
-            return self.get_data()
-        else:
-            context = self.get_context_data(object=self.object)
-            return self.render_to_response(context)
+        return super().get_filters_list(*(additional_filters + list(filters)))
 
 
 class MyArtifMapView(BaseMap):
@@ -982,7 +903,7 @@ class MyArtifMapView(BaseMap):
         years = (
             self.object.cities.all().first().communediff_set.all().aggregate(old=Max("year_old"), new=Max("year_new"))
         )
-        sources = [
+        additional_sources = [
             {
                 "key": "zones-artificielles-source",
                 "params": {
@@ -1105,10 +1026,10 @@ class MyArtifMapView(BaseMap):
                 ],
             },
         ]
-        return super().get_sources_list(*sources)
+        return super().get_sources_list(*(additional_sources + list(sources)))
 
     def get_layers_list(self, *layers):
-        layers = [
+        additional_layers = [
             {
                 "id": "zones-artificielles-fill-layer",
                 "z-index": 6,
@@ -1258,10 +1179,10 @@ class MyArtifMapView(BaseMap):
                 "paint": {"text-color": "#fff"},
             },
         ]
-        return super().get_layers_list(*layers)
+        return super().get_layers_list(*(additional_layers + list(layers)))
 
     def get_filters_list(self, *filters):
-        filters = [
+        additional_filters = [
             {
                 "name": "Zones artificielles",
                 "z-index": 4,
@@ -1319,8 +1240,7 @@ class MyArtifMapView(BaseMap):
                 "source": "ocsge-diff-source",
             },
         ]
-        return super().get_filters_list(*filters)
-
+        return super().get_filters_list(*(additional_filters + list(filters)))
 
 class CitySpaceConsoMapView(BaseMap):
     title = "Consommation d'espaces des communes de mon territoire"
@@ -1328,7 +1248,7 @@ class CitySpaceConsoMapView(BaseMap):
     default_zoom = 10
 
     def get_sources_list(self, *sources):
-        sources = [
+        additional_sources = [
             {
                 "key": "consommation-des-communes-source",
                 "params": {
@@ -1350,10 +1270,10 @@ class CitySpaceConsoMapView(BaseMap):
                 "min_zoom": 8,
             },
         ]
-        return super().get_sources_list(*sources)
+        return super().get_sources_list(*(additional_sources + list(sources)))
 
     def get_layers_list(self, *layers):
-        layers = [
+        additional_layers = [
             {
                 "id": "consommation-des-communes-fill-layer",
                 "z-index": 4,
@@ -1417,10 +1337,10 @@ class CitySpaceConsoMapView(BaseMap):
                 ],
             },
         ]
-        return super().get_layers_list(*layers)
+        return super().get_layers_list(*(additional_layers + list(layers)))
 
     def get_filters_list(self, *filters):
-        filters = [
+        additional_filters = [
             {
                 "name": "Consommation des communes",
                 "z-index": 3,
@@ -1446,7 +1366,7 @@ class CitySpaceConsoMapView(BaseMap):
                 "source": "fond-de-carte-source",
             },
         ]
-        return super().get_filters_list(*filters)
+        return super().get_filters_list(*(additional_filters + list(filters)))
 
     def get_gradient_scale(self):
         fields = Cerema.get_art_field(self.object.analyse_start_date, self.object.analyse_end_date)
@@ -1498,24 +1418,121 @@ class CitySpaceConsoMapView(BaseMap):
             return self.render_to_response(context)
 
 
-class CityArtifMapView(BaseThemeMap):
+class CityArtifMapView(BaseMap):
     title = "Artificialisation des communes de mon territoire"
-    url_name = "theme-city-artif"
+    scale_size = 5
+    default_zoom = 10
+
+    def get_sources_list(self, *sources):
+        additional_sources = [
+            {
+                "key": "artificialisation-des-communes-source",
+                "params": {
+                    "type": "geojson",
+                    "data": reverse_lazy("project:theme-city-artif", args=[self.object.id]),
+                },
+                "query_strings": [
+                    {
+                        "type": "string",
+                        "key": "data",
+                        "value": 1,
+                    },
+                    {
+                        "type": "function",
+                        "key": "in_bbox",
+                        "value": "getBbox",
+                    },
+                ],
+                "min_zoom": 8,
+            },
+        ]
+        return super().get_sources_list(*(additional_sources + list(sources)))
 
     def get_layers_list(self, *layers):
-        layers = [
+        additional_layers = [
             {
-                "name": self.title,
-                "url": self.get_data_url(),
-                "display": True,
-                "gradient_url": self.get_gradient_url(),
-                "level": "2",
-                "color_property_name": "surface_artif",
+                "id": "artificialisation-des-communes-fill-layer",
+                "z-index": 4,
+                "type": "fill",
+                "source": "artificialisation-des-communes-source",
+                "minzoom": 8,
+                "maxzoom": 19,
+                "paint": {
+                    "fill-color": self.get_gradient_expression(),
+                    "fill-opacity": [
+                        "case",
+                        ["boolean", ["feature-state", "hover"], False],
+                        0.8,
+                        0.6,
+                    ],
+                },
+                "legend": {
+                    "title": "Artificialisation des communes",
+                    "type": "scale",
+                    "data": self.get_gradient_scale(),
+                    "formatter": ["number", ["fr-FR", "unit", "hectare", 2]],
+                },
+                "events": [
+                    {
+                        "type": "mousemove",
+                        "triggers": [
+                            {
+                                "method": "hoverEffectIn",
+                            },
+                            {
+                                "method": "showArtifCommunesInfoBox",
+                                "options": {
+                                    "title": "Artificialisation des communes",
+                                },
+                            },
+                        ],
+                    },
+                    {
+                        "type": "mouseleave",
+                        "triggers": [
+                            {
+                                "method": "hoverEffectOut",
+                            },
+                            {
+                                "method": "hideInfoBox",
+                            },
+                        ],
+                    },
+                ],
             },
-        ] + list(layers)
-        return super().get_layers_list(*layers)
+        ]
+        return super().get_layers_list(*(additional_layers + list(layers)))
 
-    def get_gradient(self):
+    def get_filters_list(self, *filters):
+        additional_filters = [
+            {
+                "name": "Artificialisation des communes",
+                "z-index": 3,
+                "filters": [
+                    {
+                        "name": "Visibilité du calque",
+                        "type": "visibility",
+                        "value": "visible",
+                        "triggers": [
+                            {
+                                "method": "changeLayoutProperty",
+                                "property": "visibility",
+                                "items": ["artificialisation-des-communes-fill-layer"],
+                            },
+                            {
+                                "method": "toggleLegend",
+                                "property": "visible",
+                                "items": ["legend-box-artificialisation-des-communes-source"],
+                            },
+                        ],
+                    },
+                ],
+                "source": "artificialisation-des-communes-source",
+            },
+        ]
+        return super().get_filters_list(*(additional_filters + list(filters)))
+
+    def get_gradient_scale(self):
         boundaries = (
             self.object.cities.all()
             .filter(surface_artif__isnull=False)
@@ -1528,7 +1545,18 @@ class CityArtifMapView(BaseThemeMap):
         elif len(boundaries) > self.scale_size:
             boundaries = jenks_breaks(boundaries, n_classes=self.scale_size)[1:]
         data = [{"value": v, "color": c.hex_l} for v, c in zip(boundaries, get_yellow2red_gradient(len(boundaries)))]
-        return JsonResponse(data, safe=False)
+        return data
+
+    def get_gradient_expression(self):
+        data = [
+            "interpolate",
+            ["linear"],
+            ["to-number", ["get", "surface_artif"]],
+        ]
+        for scale in self.get_gradient_scale():
+            data.append(scale["value"])
+            data.append(scale["color"])
+        return data
 
     def get_data(self):
         queryset = self.object.cities.all()
@@ -1538,3 +1566,11 @@ class CityArtifMapView(BaseThemeMap):
             queryset = queryset.filter(mpoly__within=polygon_box)
         serializer = CityArtifMapSerializer(queryset, many=True)
         return JsonResponse(serializer.data, status=200)
+
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        if "data" in self.request.GET:
+            return self.get_data()
+        else:
+            context = self.get_context_data(object=self.object)
+            return self.render_to_response(context)
