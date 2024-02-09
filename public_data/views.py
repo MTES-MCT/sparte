@@ -7,8 +7,9 @@ from django.http import HttpResponse
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView
 from rest_framework import viewsets
-from rest_framework.decorators import action, api_view
+from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet
 from rest_framework_gis import filters
 
@@ -524,34 +525,34 @@ class CommuneViewSet(OnlyBoundingBoxMixin, ZoomSimplificationMixin, OptimizedMix
         return ""
 
 
-@api_view(["GET"])
-def grid_views(request):
-    """Grid view set."""
+class grid_view(APIView):
+    def get(self, request, format=None):
+        """Return a grid of squares of 1000 size and inside a given bbox."""
 
-    params = [int(request.query_params.get("gride_size", "1000")) * 0.008983]
-    bbox = request.query_params.get("in_bbox").split(",")
-    params += list(map(float, bbox))
+        params = [int(request.query_params.get("gride_size", "1000")) * 0.008983]
+        bbox = request.query_params.get("in_bbox").split(",")
+        params += list(map(float, bbox))
 
-    query = (
-        "SELECT st_AsGeoJSON(squares.geom, 6, 0) as mpoly "
-        "FROM ST_SquareGrid(%s, ST_MakeEnvelope(%s, %s, %s, %s, 4326)) AS squares"
-    )
+        query = (
+            "SELECT st_AsGeoJSON(squares.geom, 6, 0) as mpoly "
+            "FROM ST_SquareGrid(%s, ST_MakeEnvelope(%s, %s, %s, %s, 4326)) AS squares"
+        )
 
-    with connection.cursor() as cursor:
-        cursor.execute(query, params)
-        geojson = {
-            "type": "FeatureCollection",
-            "crs": {"type": "name", "properties": {"name": "EPSG:4326"}},
-            "features": [
-                {
-                    "type": "Feature",
-                    "geometry": json.loads(row[0]),
-                }
-                for row in cursor.fetchall()
-            ],
-        }
+        with connection.cursor() as cursor:
+            cursor.execute(query, params)
+            geojson = {
+                "type": "FeatureCollection",
+                "crs": {"type": "name", "properties": {"name": "EPSG:4326"}},
+                "features": [
+                    {
+                        "type": "Feature",
+                        "geometry": json.loads(row[0]),
+                    }
+                    for row in cursor.fetchall()
+                ],
+            }
 
-    return Response(geojson)
+        return Response(geojson)
 
 
 class SearchLandApiView(GenericViewSet):
