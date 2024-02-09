@@ -2,7 +2,22 @@
 
 Ce changelog suit la méthode "keep a changelog" disponible ici: [https://keepachangelog.com/en/1.0.0/](https://keepachangelog.com/en/1.0.0/)
 
-## [4.4] Export conso - Non livré
+## [4.5] Export conso - 2024.02.09
+
+### Ajouté
+- Ajout de la consommation des territoires d'outre-mer (DROM-COM)
+- Import OCS GE Haut-de-Seine (92)
+- Import OCS GE Landes (40)
+
+### Modifié
+- Ajouter de l'autocomplétion à la barre de recherche du tunnel de création
+- Migration carte Artificialisation des communes vers maplibre
+- Changement de période par défaut et affichage des différentes périodes réglementaires
+
+### Corrigé
+- BUG sur la comparaison surfacique avec les voisins
+
+## [4.4] Export conso - 2023.12.20
 
 ### Ajouté
 - OCS GE Seine-Et-Marne et Essonne
