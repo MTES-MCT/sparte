@@ -21,20 +21,20 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         logger.info("Start mep_45")
 
-        # call_command("maintenance", on=True)
+        call_command("maintenance", on=True)
 
-        # logger.info("Initialize data sources")
-        # call_command("loaddata", "public_data/models/data_source_fixture.json")
+        logger.info("Initialize data sources")
+        call_command("loaddata", "public_data/models/data_source_fixture.json")
 
-        # logger.info("Load DROM-COM")
-        # # Guadeloupe, Martinique, Guyane française, La Réunion
-        # dept_codes = ["971", "972", "973", "974"]
-        # call_command("load_cerema", official_land_ids=dept_codes)
-        # call_command("build_administrative_layers", departements=dept_codes)
-        # call_command("load_insee")
+        logger.info("Load DROM-COM")
+        # Guadeloupe, Martinique, Guyane française, La Réunion
+        dept_codes = ["971", "972", "973", "974"]
+        call_command("load_cerema", official_land_ids=dept_codes)
+        call_command("build_administrative_layers", departements=dept_codes)
+        call_command("load_insee")
 
-        # logger.info("Load new OCS GE")
-        # call_command("setup_departements")
+        logger.info("Load new OCS GE")
+        call_command("setup_departements")
 
         haut_de_seine = Departement.objects.get(source_id="92")
         self.load_departement(departement=haut_de_seine)

@@ -41,10 +41,14 @@ class LayerMapperFactory:
         Example: AutoOcsgeDiff3220182021
         """
         unique_token = "".join(secrets.choice(string.ascii_lowercase) for _ in range(5))
-        raw_words = ["Auto", self.data_source.name, self.data_source.official_land_id, unique_token]
-        raw_words += list(map(str, self.data_source.millesimes))
+        raw_words = [
+            "Auto",
+            unique_token,
+            self.data_source.name,
+            self.data_source.official_land_id,
+        ] + list(map(str, self.data_source.millesimes))
         splited_words = [sub_word for word in raw_words for sub_word in word.split("_")]
-        cleaned_words = [re.sub(r"[^\W_]", "", word) for word in splited_words]
+        cleaned_words = [re.sub(r"[\W_]", "", word) for word in splited_words]
         class_name = "".join([word.capitalize() for word in cleaned_words if word])
         return class_name
 

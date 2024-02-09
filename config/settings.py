@@ -538,6 +538,7 @@ ORTHOPHOTO_URL = (
 
 # the webhook needs to be generated in mattermost and is linked to a active account
 MATTERMOST_URL = env.str("MATTERMOST_WEBHOOK", default=None)
+MATTER_DEV_CHANNEL = env.str("MATTER_DEV_CHANNEL", default="startup-sparte-dev")
 
 # ALERT DIAGNOSTICS BLOCKED
 

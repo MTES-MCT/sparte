@@ -23,3 +23,5 @@ python manage.py clear_cache
 
 # Deactivating maintenance mode
 python manage.py maintenance --off
+
+python manage.py mattermost --msg "${APP} déploiement quasiment terminé, ${DOMAIN_URL}" --channel "${MATTER_DEV_CHANNEL}"
