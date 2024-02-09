@@ -6,8 +6,7 @@ from django.db.models import Q
 
 from public_data import loaders
 from public_data.factories import LayerMapperFactory
-from public_data.models import DataSource
-from public_data.models.administration import Departement
+from public_data.models import DataSource, Departement
 
 logger = logging.getLogger("management.commands")
 
