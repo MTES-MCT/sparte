@@ -21,8 +21,16 @@ class Command(BaseCommand):
             action="store_true",
             help="Clean all data before loading",
         )
+        parser.add_argument(
+            "--departements",
+            nargs="+",
+            type=int,
+            help="Select departements to build",
+        )
 
     def handle(self, *args, **options):
+        """This command is keeped for documentation prupose, do not use it unless to be sure of review everything."""
+
         clean = options.get("clean", False)
 
         logger.info("Recreate region, departement, EPCI and communes referentials")
@@ -35,16 +43,22 @@ class Command(BaseCommand):
             Commune.objects.all().delete()
             Scot.objects.all().delete()
 
-        self.load_region()
-        self.load_departement()
-        self.load_epci()
-        self.link_epci()
-        self.load_communes(table_was_cleaned=clean)
+        base_qs = Cerema.objects.all()
 
-    def load_region(self):
+        if options.get("departements"):
+            base_qs = base_qs.filter(dept_id__in=options["departements"])
+
+        self.load_region(base_qs)
+        self.load_departement(base_qs)
+        self.load_epci(base_qs)
+        self.load_scot(base_qs)
+        self.link_epci(base_qs)
+        self.load_communes(base_qs, table_was_cleaned=clean)
+
+    def load_region(self, base_qs: QuerySet):
         logger.info("Loading regions")
 
-        qs = Cerema.objects.values("region_id", "region_name", "srid_source")
+        qs = base_qs.values("region_id", "region_name", "srid_source")
         qs = qs.annotate(mpoly=Union("mpoly")).order_by("region_name")
 
         logger.info("%d found regions", len(qs))
@@ -72,7 +86,7 @@ class Command(BaseCommand):
 
         regions = {r.source_id: r for r in Region.objects.all()}
 
-        qs = Cerema.objects.values("region_id", "dept_id", "dept_name", "srid_source")
+        qs = base_qs.values("region_id", "dept_id", "dept_name", "srid_source")
         qs = qs.annotate(mpoly=Union("mpoly")).order_by("dept_id")
 
         logger.info("%d departements found", len(qs))
@@ -99,7 +113,7 @@ class Command(BaseCommand):
     def load_epci(self, base_qs: QuerySet):
         logger.info("Loading EPCI")
 
-        qs = Cerema.objects.values("epci_id", "epci_name", "srid_source")
+        qs = base_qs.values("epci_id", "epci_name", "srid_source")
         qs = qs.annotate(mpoly=Union("mpoly")).order_by("epci_id")
 
         logger.info("%d EPCI found", len(qs))
@@ -125,7 +139,7 @@ class Command(BaseCommand):
     def load_scot(self, base_qs: QuerySet):
         logger.info("Loading SCOT")
 
-        qs = Cerema.objects.values("scot", "srid_source")
+        qs = base_qs.values("scot", "srid_source")
         qs = qs.annotate(mpoly=Union("mpoly")).order_by("scot")
 
         logger.info("%d SCoTs found", len(qs))
@@ -181,12 +195,12 @@ class Command(BaseCommand):
             epcis[epci_id].departements.add(depts[dept_id])
         logger.info("Done linking")
 
-    def load_communes(self, table_was_cleaned: bool):
+    def load_communes(self, base_qs: QuerySet, table_was_cleaned: bool):
         logger.info("Loading Communes")
         depts = {d.source_id: d for d in Departement.objects.all()}
         epcis = {e.source_id: e for e in Epci.objects.all()}
-        qs = Cerema.objects.all().order_by("city_insee")
-        paginator = Paginator(qs, 1000)
+        qs = base_qs.order_by("city_insee")
+
         logger.info("%d Communes found ", qs.count())
 
         should_only_load_missing_communes = not table_was_cleaned
