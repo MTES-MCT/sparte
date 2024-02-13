@@ -48,8 +48,10 @@
                     <th scope="col" class="text-end">Réelle cumulée (Ha)</th>
                     <th scope="col" class="text-end">Projection annualisée<br/>de l'objectif 2031 (Ha)</th>
                     <th scope="col" class="text-end">Cumulé de la<br/>projection (Ha)</th>
-                    <th scope="col" class="text-end">Trajectoire (Ha)</th>
-                    <th scope="col" class="text-end">Cumulé de la<br/>trajectoire (Ha)</th>
+                    {% if has_related_trajectory %}
+                        <th scope="col" class="text-end">Trajectoire (Ha)</th>
+                        <th scope="col" class="text-end">Cumulé de la<br/>trajectoire (Ha)</th>
+                    {% endif %}
                 </tr>
             </thead>
             <tbody>
@@ -60,8 +62,10 @@
                     <td align="right">{{ line.added_real|floatformat:1 }}</td>
                     <td align="right">{{ line.objective|floatformat:1 }}</td>
                     <td align="right">{{ line.added_objective|floatformat:1 }}</td>
-                    <td align="right">{{ line.trajectory|floatformat:1 }}</td>
-                    <td align="right">{{ line.added_trajectory|floatformat:1 }}</td>
+                    {% if has_related_trajectory %}
+                        <td align="right">{{ line.trajectory|floatformat:1 }}</td>
+                        <td align="right">{{ line.added_trajectory|floatformat:1 }}</td>
+                    {% endif %}
                 </tr>
                 {% endfor %}
             </tbody>
