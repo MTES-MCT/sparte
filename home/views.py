@@ -51,6 +51,10 @@ class LegalNoticeView(BreadCrumbMixin, TemplateView):
 class PrivacyView(BreadCrumbMixin, TemplateView):
     template_name = "home/privacy.html"
 
+    def get_context_data(self, **kwargs):
+        kwargs["team_email"] = app_parameter.TEAM_EMAIL
+        return super().get_context_data(**kwargs)
+
 
 class StatsView(BreadCrumbMixin, TemplateView):
     template_name = "home/stats.html"

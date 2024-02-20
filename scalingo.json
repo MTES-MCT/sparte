@@ -2,9 +2,9 @@
     "name": "MonDiagArtif",
     "stack": "scalingo-20",
     "description": "Tableau de bord pour mesurer l'artificialisation des sols des collectivités",
-    "logo": "https://mondiagnosticartificialisation.beta.gouv.fr/static/img/logo-mon-diagnostic-artificialisation.svg",
+    "logo": "https://mondiagartif.beta.gouv.fr/static/img/logo-mon-diagnostic-artificialisation.svg",
     "repository": "https://github.com/MTES-MCT/sparte",
-    "website": "https://mondiagnosticartificialisation.beta.gouv.fr/",
+    "website": "https://mondiagartif.beta.gouv.fr/",
     "env": {
         "IS_REVIEW_APP": {
             "description": "flag to know it's a review app",
