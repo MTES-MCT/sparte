@@ -260,7 +260,7 @@
                 </h3>
                 <!-- id à modifier par vos soins (doit être unique et servira aussi de référence pour l'ancre) -->
                 <div class="fr-collapse" id="accordion-10">
-                    <p>Si vous repérez une erreur dans les données, vous pouvez nous le signaler via <a href="https://mondiagnosticartificialisation.beta.gouv.fr/contact" target="_blank" rel="noopener">notre page de contact</a> ou en envoyant directement un mail à <a href="mailto:mondiagnosticartificialisation@beta.gouv.fr">mondiagnosticartificialisation@beta.gouv.fr</a></p>
+                    <p>Si vous repérez une erreur dans les données, vous pouvez nous le signaler via <a href="/contact" target="_blank" rel="noreferrer">notre page de contact</a> ou en envoyant directement un mail à <a href="mailto:{{ team_email }}">{{ team_email }}</a></p>
                 </div>
             </section>
 
@@ -430,7 +430,7 @@
                 </h3>
                 <!-- id à modifier par vos soins (doit être unique et servira aussi de référence pour l'ancre) -->
                 <div class="fr-collapse" id="accordion-19">
-                    <p>Vous pouvez en effet vous inscrire à notre newsletter pour recevoir toutes les informations liées à Mon Diagnostic Artificialisation, comme les nouvelles fonctionnalités de la plateforme ou les nouveaux millésimes proposés par exemple. Cela se fait <a href="https://mondiagnosticartificialisation.beta.gouv.fr/" target="_blank" rel="noopener">en bas de la page d’accueil</a> de notre site.</p>
+                    <p>Vous pouvez en effet vous inscrire à notre newsletter pour recevoir toutes les informations liées à Mon Diagnostic Artificialisation, comme les nouvelles fonctionnalités de la plateforme ou les nouveaux millésimes proposés par exemple. Cela se fait <a href="{% url 'home:home' %}" target="_blank" rel="noopener">en bas de la page d’accueil</a> de notre site.</p>
                     <div class="col-12 col-md-8">
                         <img class="img-fluid img-thumbnail" src="{% static 'documentation/img/newsletter.jpg' %}" alt="Capture d'écran de la section d'inscription à la newsletter sur la page d'accueil">
                     </div>
