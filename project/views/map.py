@@ -477,7 +477,7 @@ class MapTestView(BaseMap):
             },
         ]
         return super().get_filters_list(*(additional_filters + list(filters)))
-    
+
     def get_gradient_scale(self):
         fields = Cerema.get_art_field(self.object.analyse_start_date, self.object.analyse_end_date)
         qs = (
@@ -1051,7 +1051,7 @@ class MyArtifMapView(BaseMap):
                             {
                                 "method": "showInfoBox",
                                 "options": {
-                                    "title": "Zones artificielles",
+                                    "title": "Surfaces Artificialisées",
                                     "properties": [
                                         {"name": "Commune", "key": "city"},
                                         {
@@ -1099,11 +1099,11 @@ class MyArtifMapView(BaseMap):
                     "type": "raw",
                     "data": [
                         {
-                            "value": "Zones artificialisées",
+                            "value": "Artificialisation",
                             "color": "#FC4F4F",
                         },
                         {
-                            "value": "Zones renaturées",
+                            "value": "Renaturation",
                             "color": "#43d360",
                         },
                     ],
@@ -1184,7 +1184,7 @@ class MyArtifMapView(BaseMap):
     def get_filters_list(self, *filters):
         additional_filters = [
             {
-                "name": "Zones artificielles",
+                "name": "Surfaces Artificialisées",
                 "z-index": 4,
                 "filters": [
                     {
@@ -1241,6 +1241,7 @@ class MyArtifMapView(BaseMap):
             },
         ]
         return super().get_filters_list(*(additional_filters + list(filters)))
+
 
 class CitySpaceConsoMapView(BaseMap):
     title = "Consommation d'espaces des communes de mon territoire"
