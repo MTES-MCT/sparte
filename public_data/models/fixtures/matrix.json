@@ -1,0 +1,7178 @@
+[
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1"
+            ],
+            "usage": [
+                "1"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1"
+            ],
+            "usage": [
+                "1.3"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1"
+            ],
+            "usage": [
+                "1.4"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1"
+            ],
+            "usage": [
+                "1.5"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1"
+            ],
+            "usage": [
+                "235"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1"
+            ],
+            "usage": [
+                "4.1.1"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1"
+            ],
+            "usage": [
+                "2"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1"
+            ],
+            "usage": [
+                "4.1.2"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1"
+            ],
+            "usage": [
+                "3"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1"
+            ],
+            "usage": [
+                "4"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1"
+            ],
+            "usage": [
+                "4.1.3"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1"
+            ],
+            "usage": [
+                "4.1.4"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1"
+            ],
+            "usage": [
+                "4.1.5"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1"
+            ],
+            "usage": [
+                "5"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1"
+            ],
+            "usage": [
+                "6"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1"
+            ],
+            "usage": [
+                "4.2"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1"
+            ],
+            "usage": [
+                "4.3"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1"
+            ],
+            "usage": [
+                "6.1"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1"
+            ],
+            "usage": [
+                "6.2"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1"
+            ],
+            "usage": [
+                "6.3"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1"
+            ],
+            "usage": [
+                "6.6"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1"
+            ],
+            "usage": [
+                "4.1"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1"
+            ],
+            "usage": [
+                "1.1"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1"
+            ],
+            "usage": [
+                "1.2"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1"
+            ],
+            "usage": [
+                "1"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1"
+            ],
+            "usage": [
+                "1.3"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1"
+            ],
+            "usage": [
+                "1.4"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1"
+            ],
+            "usage": [
+                "1.5"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1"
+            ],
+            "usage": [
+                "235"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1"
+            ],
+            "usage": [
+                "4.1.1"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1"
+            ],
+            "usage": [
+                "2"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1"
+            ],
+            "usage": [
+                "4.1.2"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1"
+            ],
+            "usage": [
+                "3"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1"
+            ],
+            "usage": [
+                "4"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1"
+            ],
+            "usage": [
+                "4.1.3"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1"
+            ],
+            "usage": [
+                "4.1.4"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1"
+            ],
+            "usage": [
+                "4.1.5"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1"
+            ],
+            "usage": [
+                "5"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1"
+            ],
+            "usage": [
+                "6"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1"
+            ],
+            "usage": [
+                "4.2"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1"
+            ],
+            "usage": [
+                "4.3"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1"
+            ],
+            "usage": [
+                "6.1"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1"
+            ],
+            "usage": [
+                "6.2"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1"
+            ],
+            "usage": [
+                "6.3"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1"
+            ],
+            "usage": [
+                "6.6"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1"
+            ],
+            "usage": [
+                "4.1"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1"
+            ],
+            "usage": [
+                "1.1"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1"
+            ],
+            "usage": [
+                "1.2"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.2"
+            ],
+            "usage": [
+                "1"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.2"
+            ],
+            "usage": [
+                "1.3"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.2"
+            ],
+            "usage": [
+                "1.4"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.2"
+            ],
+            "usage": [
+                "1.5"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.2"
+            ],
+            "usage": [
+                "235"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.2"
+            ],
+            "usage": [
+                "4.1.1"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.2"
+            ],
+            "usage": [
+                "2"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.2"
+            ],
+            "usage": [
+                "4.1.2"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.2"
+            ],
+            "usage": [
+                "3"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.2"
+            ],
+            "usage": [
+                "4"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.2"
+            ],
+            "usage": [
+                "4.1.3"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.2"
+            ],
+            "usage": [
+                "4.1.4"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.2"
+            ],
+            "usage": [
+                "4.1.5"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.2"
+            ],
+            "usage": [
+                "5"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.2"
+            ],
+            "usage": [
+                "6"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.2"
+            ],
+            "usage": [
+                "4.2"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.2"
+            ],
+            "usage": [
+                "4.3"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.2"
+            ],
+            "usage": [
+                "6.1"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.2"
+            ],
+            "usage": [
+                "6.2"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.2"
+            ],
+            "usage": [
+                "6.3"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.2"
+            ],
+            "usage": [
+                "6.6"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.2"
+            ],
+            "usage": [
+                "4.1"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.2"
+            ],
+            "usage": [
+                "1.1"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.2"
+            ],
+            "usage": [
+                "1.2"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.1.1"
+            ],
+            "usage": [
+                "1"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.1.1"
+            ],
+            "usage": [
+                "1.3"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.1.1"
+            ],
+            "usage": [
+                "1.4"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.1.1"
+            ],
+            "usage": [
+                "1.5"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.1.1"
+            ],
+            "usage": [
+                "235"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.1.1"
+            ],
+            "usage": [
+                "4.1.1"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.1.1"
+            ],
+            "usage": [
+                "2"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.1.1"
+            ],
+            "usage": [
+                "4.1.2"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.1.1"
+            ],
+            "usage": [
+                "3"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.1.1"
+            ],
+            "usage": [
+                "4"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.1.1"
+            ],
+            "usage": [
+                "4.1.3"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.1.1"
+            ],
+            "usage": [
+                "4.1.4"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.1.1"
+            ],
+            "usage": [
+                "4.1.5"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.1.1"
+            ],
+            "usage": [
+                "5"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.1.1"
+            ],
+            "usage": [
+                "6"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.1.1"
+            ],
+            "usage": [
+                "4.2"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.1.1"
+            ],
+            "usage": [
+                "4.3"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.1.1"
+            ],
+            "usage": [
+                "6.1"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.1.1"
+            ],
+            "usage": [
+                "6.2"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.1.1"
+            ],
+            "usage": [
+                "6.3"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.1.1"
+            ],
+            "usage": [
+                "6.6"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.1.1"
+            ],
+            "usage": [
+                "4.1"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.1.1"
+            ],
+            "usage": [
+                "1.1"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.1.1"
+            ],
+            "usage": [
+                "1.2"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.1.2"
+            ],
+            "usage": [
+                "1"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.1.2"
+            ],
+            "usage": [
+                "1.3"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.1.2"
+            ],
+            "usage": [
+                "1.4"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.1.2"
+            ],
+            "usage": [
+                "1.5"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.1.2"
+            ],
+            "usage": [
+                "235"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.1.2"
+            ],
+            "usage": [
+                "4.1.1"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.1.2"
+            ],
+            "usage": [
+                "2"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.1.2"
+            ],
+            "usage": [
+                "4.1.2"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.1.2"
+            ],
+            "usage": [
+                "3"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.1.2"
+            ],
+            "usage": [
+                "4"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.1.2"
+            ],
+            "usage": [
+                "4.1.3"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.1.2"
+            ],
+            "usage": [
+                "4.1.4"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.1.2"
+            ],
+            "usage": [
+                "4.1.5"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.1.2"
+            ],
+            "usage": [
+                "5"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.1.2"
+            ],
+            "usage": [
+                "6"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.1.2"
+            ],
+            "usage": [
+                "4.2"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.1.2"
+            ],
+            "usage": [
+                "4.3"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.1.2"
+            ],
+            "usage": [
+                "6.1"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.1.2"
+            ],
+            "usage": [
+                "6.2"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.1.2"
+            ],
+            "usage": [
+                "6.3"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.1.2"
+            ],
+            "usage": [
+                "6.6"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.1.2"
+            ],
+            "usage": [
+                "4.1"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.1.2"
+            ],
+            "usage": [
+                "1.1"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.1.2"
+            ],
+            "usage": [
+                "1.2"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2"
+            ],
+            "usage": [
+                "1"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2"
+            ],
+            "usage": [
+                "1.3"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2"
+            ],
+            "usage": [
+                "1.4"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2"
+            ],
+            "usage": [
+                "1.5"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2"
+            ],
+            "usage": [
+                "235"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2"
+            ],
+            "usage": [
+                "4.1.1"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2"
+            ],
+            "usage": [
+                "2"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2"
+            ],
+            "usage": [
+                "4.1.2"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2"
+            ],
+            "usage": [
+                "3"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2"
+            ],
+            "usage": [
+                "4"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2"
+            ],
+            "usage": [
+                "4.1.3"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2"
+            ],
+            "usage": [
+                "4.1.4"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2"
+            ],
+            "usage": [
+                "4.1.5"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2"
+            ],
+            "usage": [
+                "5"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2"
+            ],
+            "usage": [
+                "6"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2"
+            ],
+            "usage": [
+                "4.2"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2"
+            ],
+            "usage": [
+                "4.3"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2"
+            ],
+            "usage": [
+                "6.1"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2"
+            ],
+            "usage": [
+                "6.2"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2"
+            ],
+            "usage": [
+                "6.3"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2"
+            ],
+            "usage": [
+                "6.6"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2"
+            ],
+            "usage": [
+                "4.1"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2"
+            ],
+            "usage": [
+                "1.1"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2"
+            ],
+            "usage": [
+                "1.2"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.2.1"
+            ],
+            "usage": [
+                "1"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.2.1"
+            ],
+            "usage": [
+                "1.3"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.2.1"
+            ],
+            "usage": [
+                "1.4"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.2.1"
+            ],
+            "usage": [
+                "1.5"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.2.1"
+            ],
+            "usage": [
+                "235"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.2.1"
+            ],
+            "usage": [
+                "4.1.1"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.2.1"
+            ],
+            "usage": [
+                "2"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.2.1"
+            ],
+            "usage": [
+                "4.1.2"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.2.1"
+            ],
+            "usage": [
+                "3"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.2.1"
+            ],
+            "usage": [
+                "4"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.2.1"
+            ],
+            "usage": [
+                "4.1.3"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.2.1"
+            ],
+            "usage": [
+                "4.1.4"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.2.1"
+            ],
+            "usage": [
+                "4.1.5"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.2.1"
+            ],
+            "usage": [
+                "5"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.2.1"
+            ],
+            "usage": [
+                "6"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.2.1"
+            ],
+            "usage": [
+                "4.2"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.2.1"
+            ],
+            "usage": [
+                "4.3"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.2.1"
+            ],
+            "usage": [
+                "6.1"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.2.1"
+            ],
+            "usage": [
+                "6.2"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.2.1"
+            ],
+            "usage": [
+                "6.3"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.2.1"
+            ],
+            "usage": [
+                "6.6"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.2.1"
+            ],
+            "usage": [
+                "4.1"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.2.1"
+            ],
+            "usage": [
+                "1.1"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.2.1"
+            ],
+            "usage": [
+                "1.2"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.2.2"
+            ],
+            "usage": [
+                "1"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.2.2"
+            ],
+            "usage": [
+                "1.3"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.2.2"
+            ],
+            "usage": [
+                "1.4"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.2.2"
+            ],
+            "usage": [
+                "1.5"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.2.2"
+            ],
+            "usage": [
+                "235"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.2.2"
+            ],
+            "usage": [
+                "4.1.1"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.2.2"
+            ],
+            "usage": [
+                "2"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.2.2"
+            ],
+            "usage": [
+                "4.1.2"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.2.2"
+            ],
+            "usage": [
+                "3"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.2.2"
+            ],
+            "usage": [
+                "4"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.2.2"
+            ],
+            "usage": [
+                "4.1.3"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.2.2"
+            ],
+            "usage": [
+                "4.1.4"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.2.2"
+            ],
+            "usage": [
+                "4.1.5"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.2.2"
+            ],
+            "usage": [
+                "5"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.2.2"
+            ],
+            "usage": [
+                "6"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.2.2"
+            ],
+            "usage": [
+                "4.2"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.2.2"
+            ],
+            "usage": [
+                "4.3"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.2.2"
+            ],
+            "usage": [
+                "6.1"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.2.2"
+            ],
+            "usage": [
+                "6.2"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.2.2"
+            ],
+            "usage": [
+                "6.3"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.2.2"
+            ],
+            "usage": [
+                "6.6"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.2.2"
+            ],
+            "usage": [
+                "4.1"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.2.2"
+            ],
+            "usage": [
+                "1.1"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.2.2"
+            ],
+            "usage": [
+                "1.2"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2.1"
+            ],
+            "usage": [
+                "1"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2.1"
+            ],
+            "usage": [
+                "1.3"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2.1"
+            ],
+            "usage": [
+                "1.4"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2.1"
+            ],
+            "usage": [
+                "1.5"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2.1"
+            ],
+            "usage": [
+                "235"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2.1"
+            ],
+            "usage": [
+                "4.1.1"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2.1"
+            ],
+            "usage": [
+                "2"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2.1"
+            ],
+            "usage": [
+                "4.1.2"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2.1"
+            ],
+            "usage": [
+                "3"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2.1"
+            ],
+            "usage": [
+                "4"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2.1"
+            ],
+            "usage": [
+                "4.1.3"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2.1"
+            ],
+            "usage": [
+                "4.1.4"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2.1"
+            ],
+            "usage": [
+                "4.1.5"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2.1"
+            ],
+            "usage": [
+                "5"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2.1"
+            ],
+            "usage": [
+                "6"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2.1"
+            ],
+            "usage": [
+                "4.2"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2.1"
+            ],
+            "usage": [
+                "4.3"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2.1"
+            ],
+            "usage": [
+                "6.1"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2.1"
+            ],
+            "usage": [
+                "6.2"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2.1"
+            ],
+            "usage": [
+                "6.3"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2.1"
+            ],
+            "usage": [
+                "6.6"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2.1"
+            ],
+            "usage": [
+                "4.1"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2.1"
+            ],
+            "usage": [
+                "1.1"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2.1"
+            ],
+            "usage": [
+                "1.2"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2.2"
+            ],
+            "usage": [
+                "1"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2.2"
+            ],
+            "usage": [
+                "1.3"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2.2"
+            ],
+            "usage": [
+                "1.4"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2.2"
+            ],
+            "usage": [
+                "1.5"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2.2"
+            ],
+            "usage": [
+                "235"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2.2"
+            ],
+            "usage": [
+                "4.1.1"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2.2"
+            ],
+            "usage": [
+                "2"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2.2"
+            ],
+            "usage": [
+                "4.1.2"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2.2"
+            ],
+            "usage": [
+                "3"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2.2"
+            ],
+            "usage": [
+                "4"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2.2"
+            ],
+            "usage": [
+                "4.1.3"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2.2"
+            ],
+            "usage": [
+                "4.1.4"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2.2"
+            ],
+            "usage": [
+                "4.1.5"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2.2"
+            ],
+            "usage": [
+                "5"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2.2"
+            ],
+            "usage": [
+                "6"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2.2"
+            ],
+            "usage": [
+                "4.2"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2.2"
+            ],
+            "usage": [
+                "4.3"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2.2"
+            ],
+            "usage": [
+                "6.1"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2.2"
+            ],
+            "usage": [
+                "6.2"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2.2"
+            ],
+            "usage": [
+                "6.3"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2.2"
+            ],
+            "usage": [
+                "6.6"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2.2"
+            ],
+            "usage": [
+                "4.1"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2.2"
+            ],
+            "usage": [
+                "1.1"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2.2"
+            ],
+            "usage": [
+                "1.2"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2.3"
+            ],
+            "usage": [
+                "1"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2.3"
+            ],
+            "usage": [
+                "1.3"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2.3"
+            ],
+            "usage": [
+                "1.4"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2.3"
+            ],
+            "usage": [
+                "1.5"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2.3"
+            ],
+            "usage": [
+                "235"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2.3"
+            ],
+            "usage": [
+                "4.1.1"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2.3"
+            ],
+            "usage": [
+                "2"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2.3"
+            ],
+            "usage": [
+                "4.1.2"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2.3"
+            ],
+            "usage": [
+                "3"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2.3"
+            ],
+            "usage": [
+                "4"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2.3"
+            ],
+            "usage": [
+                "4.1.3"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2.3"
+            ],
+            "usage": [
+                "4.1.4"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2.3"
+            ],
+            "usage": [
+                "4.1.5"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2.3"
+            ],
+            "usage": [
+                "5"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2.3"
+            ],
+            "usage": [
+                "6"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2.3"
+            ],
+            "usage": [
+                "4.2"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2.3"
+            ],
+            "usage": [
+                "4.3"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2.3"
+            ],
+            "usage": [
+                "6.1"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2.3"
+            ],
+            "usage": [
+                "6.2"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2.3"
+            ],
+            "usage": [
+                "6.3"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2.3"
+            ],
+            "usage": [
+                "6.6"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2.3"
+            ],
+            "usage": [
+                "4.1"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2.3"
+            ],
+            "usage": [
+                "1.1"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2.3"
+            ],
+            "usage": [
+                "1.2"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1.1"
+            ],
+            "usage": [
+                "1"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1.1"
+            ],
+            "usage": [
+                "1.3"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1.1"
+            ],
+            "usage": [
+                "1.4"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1.1"
+            ],
+            "usage": [
+                "1.5"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1.1"
+            ],
+            "usage": [
+                "235"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1.1"
+            ],
+            "usage": [
+                "4.1.1"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1.1"
+            ],
+            "usage": [
+                "2"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1.1"
+            ],
+            "usage": [
+                "4.1.2"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1.1"
+            ],
+            "usage": [
+                "3"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1.1"
+            ],
+            "usage": [
+                "4"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1.1"
+            ],
+            "usage": [
+                "4.1.3"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1.1"
+            ],
+            "usage": [
+                "4.1.4"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1.1"
+            ],
+            "usage": [
+                "4.1.5"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1.1"
+            ],
+            "usage": [
+                "5"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1.1"
+            ],
+            "usage": [
+                "6"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1.1"
+            ],
+            "usage": [
+                "4.2"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1.1"
+            ],
+            "usage": [
+                "4.3"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1.1"
+            ],
+            "usage": [
+                "6.1"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1.1"
+            ],
+            "usage": [
+                "6.2"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1.1"
+            ],
+            "usage": [
+                "6.3"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1.1"
+            ],
+            "usage": [
+                "6.6"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1.1"
+            ],
+            "usage": [
+                "4.1"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1.1"
+            ],
+            "usage": [
+                "1.1"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1.1"
+            ],
+            "usage": [
+                "1.2"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1.2"
+            ],
+            "usage": [
+                "1"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1.2"
+            ],
+            "usage": [
+                "1.3"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1.2"
+            ],
+            "usage": [
+                "1.4"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1.2"
+            ],
+            "usage": [
+                "1.5"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1.2"
+            ],
+            "usage": [
+                "235"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1.2"
+            ],
+            "usage": [
+                "4.1.1"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1.2"
+            ],
+            "usage": [
+                "2"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1.2"
+            ],
+            "usage": [
+                "4.1.2"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1.2"
+            ],
+            "usage": [
+                "3"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1.2"
+            ],
+            "usage": [
+                "4"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1.2"
+            ],
+            "usage": [
+                "4.1.3"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1.2"
+            ],
+            "usage": [
+                "4.1.4"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1.2"
+            ],
+            "usage": [
+                "4.1.5"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1.2"
+            ],
+            "usage": [
+                "5"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1.2"
+            ],
+            "usage": [
+                "6"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1.2"
+            ],
+            "usage": [
+                "4.2"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1.2"
+            ],
+            "usage": [
+                "4.3"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1.2"
+            ],
+            "usage": [
+                "6.1"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1.2"
+            ],
+            "usage": [
+                "6.2"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1.2"
+            ],
+            "usage": [
+                "6.3"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1.2"
+            ],
+            "usage": [
+                "6.6"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1.2"
+            ],
+            "usage": [
+                "4.1"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1.2"
+            ],
+            "usage": [
+                "1.1"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1.2"
+            ],
+            "usage": [
+                "1.2"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1.3"
+            ],
+            "usage": [
+                "1"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1.3"
+            ],
+            "usage": [
+                "1.3"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1.3"
+            ],
+            "usage": [
+                "1.4"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1.3"
+            ],
+            "usage": [
+                "1.5"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1.3"
+            ],
+            "usage": [
+                "235"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1.3"
+            ],
+            "usage": [
+                "4.1.1"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1.3"
+            ],
+            "usage": [
+                "2"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1.3"
+            ],
+            "usage": [
+                "4.1.2"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1.3"
+            ],
+            "usage": [
+                "3"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1.3"
+            ],
+            "usage": [
+                "4"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1.3"
+            ],
+            "usage": [
+                "4.1.3"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1.3"
+            ],
+            "usage": [
+                "4.1.4"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1.3"
+            ],
+            "usage": [
+                "4.1.5"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1.3"
+            ],
+            "usage": [
+                "5"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1.3"
+            ],
+            "usage": [
+                "6"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1.3"
+            ],
+            "usage": [
+                "4.2"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1.3"
+            ],
+            "usage": [
+                "4.3"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1.3"
+            ],
+            "usage": [
+                "6.1"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1.3"
+            ],
+            "usage": [
+                "6.2"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1.3"
+            ],
+            "usage": [
+                "6.3"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1.3"
+            ],
+            "usage": [
+                "6.6"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1.3"
+            ],
+            "usage": [
+                "4.1"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1.3"
+            ],
+            "usage": [
+                "1.1"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.1.3"
+            ],
+            "usage": [
+                "1.2"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.2"
+            ],
+            "usage": [
+                "1"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.2"
+            ],
+            "usage": [
+                "1.3"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.2"
+            ],
+            "usage": [
+                "1.4"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.2"
+            ],
+            "usage": [
+                "1.5"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.2"
+            ],
+            "usage": [
+                "235"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.2"
+            ],
+            "usage": [
+                "4.1.1"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.2"
+            ],
+            "usage": [
+                "2"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.2"
+            ],
+            "usage": [
+                "4.1.2"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.2"
+            ],
+            "usage": [
+                "3"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.2"
+            ],
+            "usage": [
+                "4"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.2"
+            ],
+            "usage": [
+                "4.1.3"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.2"
+            ],
+            "usage": [
+                "4.1.4"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.2"
+            ],
+            "usage": [
+                "4.1.5"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.2"
+            ],
+            "usage": [
+                "5"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.2"
+            ],
+            "usage": [
+                "6"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.2"
+            ],
+            "usage": [
+                "4.2"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.2"
+            ],
+            "usage": [
+                "4.3"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.2"
+            ],
+            "usage": [
+                "6.1"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.2"
+            ],
+            "usage": [
+                "6.2"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.2"
+            ],
+            "usage": [
+                "6.3"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.2"
+            ],
+            "usage": [
+                "6.6"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.2"
+            ],
+            "usage": [
+                "4.1"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.2"
+            ],
+            "usage": [
+                "1.1"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.2"
+            ],
+            "usage": [
+                "1.2"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.3"
+            ],
+            "usage": [
+                "1"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.3"
+            ],
+            "usage": [
+                "1.3"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.3"
+            ],
+            "usage": [
+                "1.4"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.3"
+            ],
+            "usage": [
+                "1.5"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.3"
+            ],
+            "usage": [
+                "235"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.3"
+            ],
+            "usage": [
+                "4.1.1"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.3"
+            ],
+            "usage": [
+                "2"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.3"
+            ],
+            "usage": [
+                "4.1.2"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.3"
+            ],
+            "usage": [
+                "3"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.3"
+            ],
+            "usage": [
+                "4"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.3"
+            ],
+            "usage": [
+                "4.1.3"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.3"
+            ],
+            "usage": [
+                "4.1.4"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.3"
+            ],
+            "usage": [
+                "4.1.5"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.3"
+            ],
+            "usage": [
+                "5"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.3"
+            ],
+            "usage": [
+                "6"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.3"
+            ],
+            "usage": [
+                "4.2"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.3"
+            ],
+            "usage": [
+                "4.3"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.3"
+            ],
+            "usage": [
+                "6.1"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.3"
+            ],
+            "usage": [
+                "6.2"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.3"
+            ],
+            "usage": [
+                "6.3"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.3"
+            ],
+            "usage": [
+                "6.6"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.3"
+            ],
+            "usage": [
+                "4.1"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.3"
+            ],
+            "usage": [
+                "1.1"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1.3"
+            ],
+            "usage": [
+                "1.2"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1"
+            ],
+            "usage": [
+                "1"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1"
+            ],
+            "usage": [
+                "1.3"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1"
+            ],
+            "usage": [
+                "1.4"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1"
+            ],
+            "usage": [
+                "1.5"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1"
+            ],
+            "usage": [
+                "235"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1"
+            ],
+            "usage": [
+                "4.1.1"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1"
+            ],
+            "usage": [
+                "2"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1"
+            ],
+            "usage": [
+                "4.1.2"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1"
+            ],
+            "usage": [
+                "3"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1"
+            ],
+            "usage": [
+                "4"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1"
+            ],
+            "usage": [
+                "4.1.3"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1"
+            ],
+            "usage": [
+                "4.1.4"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1"
+            ],
+            "usage": [
+                "4.1.5"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1"
+            ],
+            "usage": [
+                "5"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1"
+            ],
+            "usage": [
+                "6"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1"
+            ],
+            "usage": [
+                "4.2"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1"
+            ],
+            "usage": [
+                "4.3"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1"
+            ],
+            "usage": [
+                "6.1"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1"
+            ],
+            "usage": [
+                "6.2"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1"
+            ],
+            "usage": [
+                "6.3"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1"
+            ],
+            "usage": [
+                "6.6"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1"
+            ],
+            "usage": [
+                "4.1"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1"
+            ],
+            "usage": [
+                "1.1"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1"
+            ],
+            "usage": [
+                "1.2"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.1"
+            ],
+            "usage": [
+                "1"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.1"
+            ],
+            "usage": [
+                "1.3"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.1"
+            ],
+            "usage": [
+                "1.4"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.1"
+            ],
+            "usage": [
+                "1.5"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.1"
+            ],
+            "usage": [
+                "235"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.1"
+            ],
+            "usage": [
+                "4.1.1"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.1"
+            ],
+            "usage": [
+                "2"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.1"
+            ],
+            "usage": [
+                "4.1.2"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.1"
+            ],
+            "usage": [
+                "3"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.1"
+            ],
+            "usage": [
+                "4"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.1"
+            ],
+            "usage": [
+                "4.1.3"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.1"
+            ],
+            "usage": [
+                "4.1.4"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.1"
+            ],
+            "usage": [
+                "4.1.5"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.1"
+            ],
+            "usage": [
+                "5"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.1"
+            ],
+            "usage": [
+                "6"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.1"
+            ],
+            "usage": [
+                "4.2"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.1"
+            ],
+            "usage": [
+                "4.3"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.1"
+            ],
+            "usage": [
+                "6.1"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.1"
+            ],
+            "usage": [
+                "6.2"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.1"
+            ],
+            "usage": [
+                "6.3"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.1"
+            ],
+            "usage": [
+                "6.6"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.1"
+            ],
+            "usage": [
+                "4.1"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.1"
+            ],
+            "usage": [
+                "1.1"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.1"
+            ],
+            "usage": [
+                "1.2"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.2"
+            ],
+            "usage": [
+                "1"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.2"
+            ],
+            "usage": [
+                "1.3"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.2"
+            ],
+            "usage": [
+                "1.4"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.2"
+            ],
+            "usage": [
+                "1.5"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.2"
+            ],
+            "usage": [
+                "235"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.2"
+            ],
+            "usage": [
+                "4.1.1"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.2"
+            ],
+            "usage": [
+                "2"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.2"
+            ],
+            "usage": [
+                "4.1.2"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.2"
+            ],
+            "usage": [
+                "3"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.2"
+            ],
+            "usage": [
+                "4"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.2"
+            ],
+            "usage": [
+                "4.1.3"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.2"
+            ],
+            "usage": [
+                "4.1.4"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.2"
+            ],
+            "usage": [
+                "4.1.5"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.2"
+            ],
+            "usage": [
+                "5"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.2"
+            ],
+            "usage": [
+                "6"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.2"
+            ],
+            "usage": [
+                "4.2"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.2"
+            ],
+            "usage": [
+                "4.3"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.2"
+            ],
+            "usage": [
+                "6.1"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.2"
+            ],
+            "usage": [
+                "6.2"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.2"
+            ],
+            "usage": [
+                "6.3"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.2"
+            ],
+            "usage": [
+                "6.6"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.2"
+            ],
+            "usage": [
+                "4.1"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.2"
+            ],
+            "usage": [
+                "1.1"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.1.2"
+            ],
+            "usage": [
+                "1.2"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2"
+            ],
+            "usage": [
+                "1"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2"
+            ],
+            "usage": [
+                "1.3"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2"
+            ],
+            "usage": [
+                "1.4"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2"
+            ],
+            "usage": [
+                "1.5"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2"
+            ],
+            "usage": [
+                "235"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2"
+            ],
+            "usage": [
+                "4.1.1"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2"
+            ],
+            "usage": [
+                "2"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2"
+            ],
+            "usage": [
+                "4.1.2"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2"
+            ],
+            "usage": [
+                "3"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2"
+            ],
+            "usage": [
+                "4"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2"
+            ],
+            "usage": [
+                "4.1.3"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2"
+            ],
+            "usage": [
+                "4.1.4"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2"
+            ],
+            "usage": [
+                "4.1.5"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2"
+            ],
+            "usage": [
+                "5"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2"
+            ],
+            "usage": [
+                "6"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2"
+            ],
+            "usage": [
+                "4.2"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2"
+            ],
+            "usage": [
+                "4.3"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2"
+            ],
+            "usage": [
+                "6.1"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2"
+            ],
+            "usage": [
+                "6.2"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2"
+            ],
+            "usage": [
+                "6.3"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2"
+            ],
+            "usage": [
+                "6.6"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2"
+            ],
+            "usage": [
+                "4.1"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2"
+            ],
+            "usage": [
+                "1.1"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "1.2"
+            ],
+            "usage": [
+                "1.2"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1"
+            ],
+            "usage": [
+                "1"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1"
+            ],
+            "usage": [
+                "1.3"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1"
+            ],
+            "usage": [
+                "1.4"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1"
+            ],
+            "usage": [
+                "1.5"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1"
+            ],
+            "usage": [
+                "235"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1"
+            ],
+            "usage": [
+                "4.1.1"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1"
+            ],
+            "usage": [
+                "2"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1"
+            ],
+            "usage": [
+                "4.1.2"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1"
+            ],
+            "usage": [
+                "3"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1"
+            ],
+            "usage": [
+                "4"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1"
+            ],
+            "usage": [
+                "4.1.3"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1"
+            ],
+            "usage": [
+                "4.1.4"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1"
+            ],
+            "usage": [
+                "4.1.5"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1"
+            ],
+            "usage": [
+                "5"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1"
+            ],
+            "usage": [
+                "6"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1"
+            ],
+            "usage": [
+                "4.2"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1"
+            ],
+            "usage": [
+                "4.3"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1"
+            ],
+            "usage": [
+                "6.1"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1"
+            ],
+            "usage": [
+                "6.2"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1"
+            ],
+            "usage": [
+                "6.3"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1"
+            ],
+            "usage": [
+                "6.6"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1"
+            ],
+            "usage": [
+                "4.1"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1"
+            ],
+            "usage": [
+                "1.1"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.1"
+            ],
+            "usage": [
+                "1.2"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.2.1"
+            ],
+            "usage": [
+                "1"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.2.1"
+            ],
+            "usage": [
+                "1.3"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.2.1"
+            ],
+            "usage": [
+                "1.4"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.2.1"
+            ],
+            "usage": [
+                "1.5"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.2.1"
+            ],
+            "usage": [
+                "235"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.2.1"
+            ],
+            "usage": [
+                "4.1.1"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.2.1"
+            ],
+            "usage": [
+                "2"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.2.1"
+            ],
+            "usage": [
+                "4.1.2"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.2.1"
+            ],
+            "usage": [
+                "3"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.2.1"
+            ],
+            "usage": [
+                "4"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.2.1"
+            ],
+            "usage": [
+                "4.1.3"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.2.1"
+            ],
+            "usage": [
+                "4.1.4"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.2.1"
+            ],
+            "usage": [
+                "4.1.5"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.2.1"
+            ],
+            "usage": [
+                "5"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.2.1"
+            ],
+            "usage": [
+                "6"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.2.1"
+            ],
+            "usage": [
+                "4.2"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.2.1"
+            ],
+            "usage": [
+                "4.3"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.2.1"
+            ],
+            "usage": [
+                "6.1"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.2.1"
+            ],
+            "usage": [
+                "6.2"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.2.1"
+            ],
+            "usage": [
+                "6.3"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.2.1"
+            ],
+            "usage": [
+                "6.6"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.2.1"
+            ],
+            "usage": [
+                "4.1"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.2.1"
+            ],
+            "usage": [
+                "1.1"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.2.1"
+            ],
+            "usage": [
+                "1.2"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.2.2"
+            ],
+            "usage": [
+                "1"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.2.2"
+            ],
+            "usage": [
+                "1.3"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.2.2"
+            ],
+            "usage": [
+                "1.4"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.2.2"
+            ],
+            "usage": [
+                "1.5"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.2.2"
+            ],
+            "usage": [
+                "235"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.2.2"
+            ],
+            "usage": [
+                "4.1.1"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.2.2"
+            ],
+            "usage": [
+                "2"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.2.2"
+            ],
+            "usage": [
+                "4.1.2"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.2.2"
+            ],
+            "usage": [
+                "3"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.2.2"
+            ],
+            "usage": [
+                "4"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.2.2"
+            ],
+            "usage": [
+                "4.1.3"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.2.2"
+            ],
+            "usage": [
+                "4.1.4"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.2.2"
+            ],
+            "usage": [
+                "4.1.5"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.2.2"
+            ],
+            "usage": [
+                "5"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.2.2"
+            ],
+            "usage": [
+                "6"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.2.2"
+            ],
+            "usage": [
+                "4.2"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.2.2"
+            ],
+            "usage": [
+                "4.3"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.2.2"
+            ],
+            "usage": [
+                "6.1"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.2.2"
+            ],
+            "usage": [
+                "6.2"
+            ],
+            "is_artificial": true,
+            "label": "ARTIF"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.2.2"
+            ],
+            "usage": [
+                "6.3"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.2.2"
+            ],
+            "usage": [
+                "6.6"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.2.2"
+            ],
+            "usage": [
+                "4.1"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.2.2"
+            ],
+            "usage": [
+                "1.1"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    },
+    {
+        "model": "public_data.couvertureusagematrix",
+        "fields": {
+            "couverture": [
+                "2.2.2"
+            ],
+            "usage": [
+                "1.2"
+            ],
+            "is_artificial": false,
+            "label": "NONE"
+        }
+    }
+]
