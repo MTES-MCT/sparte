@@ -1,0 +1,19 @@
+name: 'Pull Request'
+
+on:
+  pull_request:
+    branches-ignores:
+      - version/*
+      - staging
+      - master
+
+jobs:
+  lint:
+    steps:
+      - uses: actions/checkout@v4
+      - uses: palewire/install-python-pipenv-pipfile@v3
+          python-version: '3.11'
+      - run: python manage.py --help
+
+
+
