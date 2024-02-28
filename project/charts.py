@@ -640,7 +640,7 @@ class DetailCouvArtifChart(ProjectChart):
         self.geom = geom
         super().__init__(project)
         self.chart["title"]["text"] = (
-            f"Evolution des surfaces artificielles par type de couverture de {self.first_millesime} à "
+            f"Evolution de l'artificialisation par type de couverture de {self.first_millesime} à "
             f"{self.last_millesime}"
         )
 
@@ -708,8 +708,7 @@ class DetailUsageArtifChart(DetailCouvArtifChart):
     def __init__(self, project: Project, geom: MultiPolygon | None = None):
         super().__init__(project, geom=geom)
         self.chart["title"]["text"] = (
-            f"Evolution des surfaces artificielles par type d'usage de {self.first_millesime} à "
-            f"{self.last_millesime}"
+            f"Evolution de l'artificialisation par type d'usage de {self.first_millesime} à " f"{self.last_millesime}"
         )
 
     def get_series(self):

@@ -52,13 +52,13 @@
 <div class="fr-mt-7w">
     <h2>Détails de l'artificialisation entre {{ diagnostic.first_year_ocsge|stringformat:"s" }} et {{ diagnostic.last_year_ocsge|stringformat:"s" }}</h2>
 
-    <h3>Grandes familles de couverture des sols des espaces artificialisés</h3>
+    <h3>Grandes familles de couverture des sols des surfaces artificialisées</h3>
 
     <div hx-get="{% url 'project:artif-detail-couv-chart' diagnostic.id %}?zone_urba_id={{ zone_urba.id|stringformat:"s" }}" hx-trigger="load 2s" hx-swap="outerHTML">
         <div class="fr-custom-loader"></div>
     </div>
 
-    <h3>Grandes familles d'usages du sol des espaces artificialisés</h3>
+    <h3>Grandes familles d'usages du sol des surfaces artificialisées</h3>
 
     <div hx-get="{% url 'project:artif-detail-usa-chart' diagnostic.id %}?zone_urba_id={{ zone_urba.id|stringformat:"s" }}" hx-trigger="load 4s" hx-swap="outerHTML">
         <div class="fr-custom-loader"></div>
