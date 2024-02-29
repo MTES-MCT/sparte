@@ -616,7 +616,7 @@ def generate_theme_map_fill_gpu(self, project_id):
             img_data = get_img(
                 queryset=qs,
                 color="OrRd",
-                title="Taux de remplissage des zones urbaines (U) et à urbaniser (AU)",
+                title="Taux d'artificialisation des zones urbaines (U) et à urbaniser (AU)",
             )
         else:
             geom = diagnostic.combined_emprise.transform("3857", clone=True)
