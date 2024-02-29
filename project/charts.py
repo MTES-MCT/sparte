@@ -82,8 +82,14 @@ class ConsoCommuneChart(ProjectChart):
     param = {
         "chart": {"type": "area"},
         "title": {"text": ""},
-        "yAxis": {"title": {"text": "Consommé (en ha)"}},
+        "yAxis": {"title": {"text": "Consommé (ha)"}},
         "xAxis": {"type": "category"},
+        "tooltip": {
+            "headerFormat": "<b>{series.name}</b><br/>",
+            "pointFormat": "{point.name}: {point.y}",
+            "valueSuffix": " Ha",
+            "valueDecimals": 2,
+        },
         "legend": {
             "layout": "vertical",
             "align": "right",
