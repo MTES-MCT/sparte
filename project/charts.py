@@ -296,13 +296,13 @@ class DeterminantPerYearChart(ProjectChart):
             "stackLabels": {"enabled": True, "format": "{total:,.1f}"},
         },
         "tooltip": {
-            "headerFormat": "<b>{point.x}</b><br/>",
+            "headerFormat": "<b>{point.key}</b><br/>",
             "pointFormat": "{series.name}: {point.y}",
             "valueSuffix": " Ha",
             "valueDecimals": 1,
         },
         "xAxis": {"type": "category"},
-        "legend": {"layout": "horizontal", "align": "center", "verticalAlign": "top"},
+        "legend": {"layout": "vertical", "align": "right", "verticalAlign": "middle"},
         "plotOptions": {
             "column": {
                 "stacking": "normal",
