@@ -194,7 +194,6 @@ export default class Filter
 
   updateQueryString(_item, _property, _value)
   {
-    console.log(_item, _property, _value)
     const source = this.mapLibre.sources.find((_obj) => _obj.key === _item)
     source.queryStrings.forEach((_obj) =>
     {
