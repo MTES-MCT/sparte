@@ -477,6 +477,10 @@ MATOMO_ACTIVATE = env.bool("MATOMO_ACTIVATE", default=False)
 # GOOGLE TAG ADWORDS
 GOOGLE_ADWORDS_ACTIVATE = env.bool("GOOGLE_ADWORDS_ACTIVATE", default=False)
 
+# CRISP
+CRISP_WEBSITE_ID = env.str("CRISP_WEBSITE_ID")
+CRISP_ACTIVATED = env.bool("CRISP_ACTIVATED")
+
 # SECURITY - Content Security Header Policy
 # https://django-csp.readthedocs.io
 
