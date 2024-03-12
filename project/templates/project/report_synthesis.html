@@ -161,16 +161,17 @@ Synthèse
           {% for zone_type, zone in zone_list.items %}
             <div class="fr-col-12 fr-col-md-4 fr-grid-row">
               <div class="fr-callout w-100">
-                <div class="d-flex justify-content-between align-items-center">
-                  <p class="fr-callout__title">
-                    Zones {{ zone_type }}
-                  </p>
-                  <div class="progress-bar-container">
+                <p class="fr-callout__title">
+                  <div class="progress-bar-container progress-bar-container--big">
                     <div class="progress-bar-indicator w-{{ zone.fill_up_rate|floatformat:0 }}"></div>
                     <div class="progress-bar-value">{{ zone.fill_up_rate|floatformat:1 }}%</div>
                   </div>
-                </div>
+                </p>
                 <p>
+                  Taux d'artificialisation des zones <strong>{{ zone_type }}</strong>
+                  <span class="fr-text--sm">({{ zone.type_zone_label }})</span>
+                </p>
+                <p class="fr-text--sm fr-mt-1w">
                   Surface Totale: <strong>{{ zone.total_area|floatformat:1 }} ha</strong><br>
                 </p>
               </div>
