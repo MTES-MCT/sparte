@@ -1029,6 +1029,7 @@ class MyArtifMapView(BaseMap):
         return super().get_sources_list(*(additional_sources + list(sources)))
 
     def get_layers_list(self, *layers):
+        available_millesimes = self.object.get_available_millesimes()
         additional_layers = [
             {
                 "id": "zones-artificielles-fill-layer",
@@ -1105,6 +1106,10 @@ class MyArtifMapView(BaseMap):
                         {
                             "value": "Renaturation",
                             "color": "#43d360",
+                        },
+                        {
+                            "value": f"Surfaces artificialisées ({available_millesimes[-1]})",  # Last year
+                            "color": "#F88E55",
                         },
                     ],
                 },

@@ -33,14 +33,17 @@ Rapport artificialisation
                 </ul>
             </div>
             <div class="fr-callout-read-more__text" id="artif_1" hidden>
-                <p class="fr-text--sm mb-3">L'article 192 de la Loi Climat & Résilience votée en août 2021 définit l'artificialisation comme « une surface dont les sols sont :</p>
+                <p class="fr-text--sm mb-3">
+                    L'article 192 de la Loi Climat & Résilience votée en août 2021 définit
+                    l'artificialisation comme « une surface dont les sols sont :
+                </p>
                 <ul class="fr-text--sm mb-3">
                     <li>soit imperméabilisés en raison du bâti ou d'un revêtement,</li>
                     <li>soit stabilisés et compactés,</li>
                     <li>soit constitués de matériaux composites »</li>
                 </ul>
                 <p class="fr-text--sm mb-3">Elle se traduit dans l'OCS GE nationale comme la somme des  objets anthropisés dans la description de la couverture des sols.</p>
-                <p class="fr-text--sm mb-3">L'application applique ici un croisement des données de l'OCS GE pour définir l'artificialisation conformément aux attendus de la loi Climat & Résilience, et au décret « nomenclature de l'artificialisation des sols» <small>(Décret n° 2022-763 du 29 avril 2022 relatif à la nomenclature de l'artificialisation des sols pour la fixation et le suivi des objectifs dans les documents de planification et d'urbanisme)</small>.</p>
+                <p class="fr-text--sm mb-3">L'application applique ici un croisement des données de l'OCS GE pour définir l'artificialisation conformément aux attendus de la loi Climat & Résilience, et au décret « nomenclature de l'artificialisation des sols» <a rel="noopener noreferrer" target="_blank" href="https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000045727061">(Décret n° 2022-763 du 29 avril 2022 relatif à la nomenclature de l'artificialisation des sols pour la fixation et le suivi des objectifs dans les documents de planification et d'urbanisme)</a>.</p>
                 <p class="fr-text--sm mb-3"><strong>Définition de l'artificialisation des sols</strong></p>
                 <p class="fr-text--sm mb-3">La nomenclature précise que les surfaces dont les sols sont soit imperméabilisés en raison du bâti ou d'un revêtement, soit stabilisés et compactés, soit constitués de matériaux composites sont qualifiées de surfaces artificialisées. De même, les surfaces végétalisées herbacées (c'est-à-dire non ligneuses) et qui sont à usage résidentiel, de production secondaire ou tertiaire, ou d'infrastructures, sont considérées comme artificialisées, y compris lorsqu'elles sont en chantier ou à l'état d'abandon.</p>
                 <p class="fr-text--sm mb-3">L'artificialisation nette est définie comme « le solde de l'artificialisation et de la renaturation des sols constatées sur un périmètre et sur une période donnés » (article L.101-2-1 du code de l'urbanisme). </p>
@@ -56,6 +59,9 @@ Rapport artificialisation
         <div class="fr-mt-12w">
 
             <h2>Etat des lieux du territoire au dernier millésime</h2>
+            <a class="fr-link" href="{% url 'documentation:faq' %}#accordion-4">
+                Qu'est-ce qu'un millésime ?
+            </a>
 
             <div class="fr-mt-7w">
                 <div class="fr-grid-row fr-grid-row--gutters">
@@ -69,9 +75,9 @@ Rapport artificialisation
                         <div class="fr-callout w-100">
                         <p class="fr-callout__title">{{ artif_area|floatformat:0 }} ha</p>
                         <p>
-                            <span 
-                                class="dotted" 
-                                data-toggle="tooltip" 
+                            <span
+                                class="dotted"
+                                data-toggle="tooltip"
                                 title="Surfaces répondant à la définition de la loi Climat et Résilience et à ses décrets d'application en {{ last_millesime }}"
                                 aria-hidden="true">
                                 Surfaces artificialisées
@@ -583,6 +589,7 @@ Rapport artificialisation
                 <p class="fr-text--sm">Avec le bouton <span class="fr-icon-drag-move-2-line fr-icon--sm" aria-hidden="true"></span>, vous pouvez afficher le graphique en plein écran.</p>
                 <p class="fr-text--sm">Avec le bouton <span class="fr-icon-download-line fr-icon--sm" aria-hidden="true"></span>, vous pouvez télécharger le graphique sous forme d'image (utilisez PNG si vous ne savez pas lequel choisir).</p>
                 <p class="fr-text--sm">Exemple de lecture: 8% des nouvelles surfaces artificialisés le sont pour des Zones bâties.</p>
+                <p class="fr-text--sm">Vous pouvez analyser la répartition des surfaces artificialisées sur la période en pourcentage avec le camembert, ou en volume au dernier millésime avec l'histogramme.</p>
             </div>
         </div>
     </div>
@@ -603,6 +610,7 @@ Rapport artificialisation
                 <p class="fr-text--sm">Avec le bouton <span class="fr-icon-drag-move-2-line fr-icon--sm" aria-hidden="true"></span>, vous pouvez afficher le graphique en plein écran.</p>
                 <p class="fr-text--sm">Avec le bouton <span class="fr-icon-download-line fr-icon--sm" aria-hidden="true"></span>, vous pouvez télécharger le graphique sous forme d'image (utilisez PNG si vous ne savez pas lequel choisir).</p>
                 <p class="fr-text--sm">Exemple de lecture: 55% des nouvelles surfaces artificialisées le sont pour des Zones résidentielles.</p>
+                <p class="fr-text--sm">Vous pouvez analyser la répartition des surfaces artificialisées sur la période en pourcentage avec le camembert, ou en volume au dernier millésime avec l'histogramme.</p>
             </div>
         </div>
     </div>

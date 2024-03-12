@@ -687,7 +687,7 @@ class DetailCouvArtifChart(ProjectChart):
                 "name": "Artificialisation",
                 "data": [
                     {
-                        "name": item["code_prefix"],
+                        "name": f"{item['code_prefix']} {item['label']}",
                         "y": item["artif"],
                     }
                     for item in self.get_series()
@@ -699,7 +699,7 @@ class DetailCouvArtifChart(ProjectChart):
                 "name": "Renaturation",
                 "data": [
                     {
-                        "name": item["code_prefix"],
+                        "name": f"{item['code_prefix']} {item['label']}",
                         "y": item["renat"],
                     }
                     for item in self.get_series()
