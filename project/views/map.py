@@ -1020,6 +1020,7 @@ class MyArtifMapView(BaseMap):
         ]
 
     def get_layers_list(self):
+        available_millesimes = self.object.get_available_millesimes()
         return super().get_layers_list() + [
             {
                 "id": "zones-artificielles-fill-layer",
@@ -1042,7 +1043,7 @@ class MyArtifMapView(BaseMap):
                             {
                                 "method": "showInfoBox",
                                 "options": {
-                                    "title": "Zones artificielles",
+                                    "title": "Surfaces Artificialisées",
                                     "properties": [
                                         {"name": "Commune", "key": "city"},
                                         {
@@ -1090,12 +1091,16 @@ class MyArtifMapView(BaseMap):
                     "type": "raw",
                     "data": [
                         {
-                            "value": "Zones artificialisées",
+                            "value": "Artificialisation",
                             "color": "#FC4F4F",
                         },
                         {
-                            "value": "Zones renaturées",
+                            "value": "Renaturation",
                             "color": "#43d360",
+                        },
+                        {
+                            "value": f"Surfaces artificialisées ({available_millesimes[-1]})",  # Last year
+                            "color": "#F88E55",
                         },
                     ],
                 },
@@ -1174,7 +1179,7 @@ class MyArtifMapView(BaseMap):
     def get_filters_list(self):
         return super().get_filters_list() + [
             {
-                "name": "Zones artificielles",
+                "name": "Surfaces Artificialisées",
                 "z-index": 4,
                 "filters": [
                     {
