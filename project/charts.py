@@ -59,7 +59,9 @@ class ConsoComparisonChart(ProjectChart):
     name = "conso comparison"
     param = {
         "title": {"text": "Consommation proportionnelle à la surface (‰)"},
-        "yAxis": {"title": {"text": "Consommation d'espace proportionnelle à la surface du territoire (‰)"}},
+        "yAxis": {
+            "title": {"text": "Consommation d'espace proportionnelle à la surface du territoire (‰ - pour mille)"}
+        },
         "xAxis": {"type": "category"},
         "legend": {"layout": "vertical", "align": "right", "verticalAlign": "top"},
         "tooltip": {
