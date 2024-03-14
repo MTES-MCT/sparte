@@ -710,19 +710,13 @@ class Project(BaseProject):
 
     _conso_per_year = None
 
-    def get_conso_per_year(self):
+    def get_conso_per_year(self, coef=1):
         """Return Cerema data for the project, transposed and named after year"""
-        if not self._conso_per_year:
-            qs = self.get_cerema_cities()
-            fields = Cerema.get_art_field(self.analyse_start_date, self.analyse_end_date)
-            args = (Sum(field) for field in fields)
-            qs = qs.aggregate(*args)
-            self._conso_per_year = {
-                f"20{key[3:5]}": val / 10000
-                for key, val in qs.items()
-                # if val is not None
-            }
-        return self._conso_per_year
+        qs = self.get_cerema_cities()
+        fields = Cerema.get_art_field(self.analyse_start_date, self.analyse_end_date)
+        args = (Sum(field) for field in fields)
+        qs = qs.aggregate(*args)
+        return {f"20{key[3:5]}": float(val / 10000) * float(coef) for key, val in qs.items()}
 
     def get_pop_change_per_year(self, criteria: Literal["pop", "household"] = "pop") -> Dict:
         cities = (

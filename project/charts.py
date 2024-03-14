@@ -11,7 +11,7 @@ from public_data.models import AdminRef, CouvertureSol, OcsgeDiff, UsageSol
 
 
 class ProjectChart(charts.Chart):
-    def __init__(self, project, group_name=None):
+    def __init__(self, project: Project, group_name=None):
         self.project = project
         self.group_name = group_name
         super().__init__()
@@ -55,23 +55,43 @@ class ConsoChart(ProjectChart):
         super().add_series()
 
 
-class ConsoComparisonChart(ConsoChart):
+class ConsoComparisonChart(ProjectChart):
     name = "conso comparison"
     param = {
-        "title": {"text": "Consommation proportionnelle à la surface"},
-        "yAxis": {"visible": False},
+        "title": {"text": "Consommation proportionnelle à la surface (‰)"},
+        "yAxis": {
+            "title": {"text": "Consommation d'espace proportionnelle à la surface du territoire (‰ - pour mille)"}
+        },
         "xAxis": {"type": "category"},
         "legend": {"layout": "vertical", "align": "right", "verticalAlign": "top"},
-        "tooltip": {"enabled": False},
+        "tooltip": {
+            "headerFormat": "<b>{series.name}</b><br/>",
+            "pointFormat": "{point.name}: {point.y}",
+            "valueSuffix": " ‰",
+            "valueDecimals": 2,
+        },
         "series": [],
     }
+
+    def add_series(self):
+        self.add_serie(
+            self.project.name,
+            self.project.get_conso_per_year(
+                coef=1000 / self.project.area,
+            ),
+            **{
+                "color": "#ff0000",
+                "dashStyle": "ShortDash",
+            },
+        )
+        super().add_series()
 
     def get_series(self):
         return {
             land.name: land.get_conso_per_year(
                 self.project.analyse_start_date,
                 self.project.analyse_end_date,
-                coef=self.project.area / float(land.area),
+                coef=1000 / land.area,
             )
             for land in self.project.get_look_a_like()
         }
