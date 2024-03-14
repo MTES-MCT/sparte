@@ -1181,6 +1181,14 @@ class Project(BaseProject):
             str | float,
         ],
     ]:
+        zone_labels = {
+            "U": "zone urbaine",
+            "AUc": "zone à urbaniser",
+            "AUs": "zone à urbaniser bloquée",
+            "A": "zone agricole",
+            "N": "zone naturelle",
+        }
+
         """Return artif progression for each zone type.
 
         Returns:
@@ -1208,6 +1216,7 @@ class Project(BaseProject):
             if zone_type not in zone_list:
                 zone_list[zone_type] = {
                     "type_zone": zone_type,
+                    "type_zone_label": zone_labels.get(zone_type, ""),
                     "total_area": row["total_area"],
                     "first_artif_area": Decimal(0.0),
                     "last_artif_area": Decimal(0.0),
