@@ -1019,8 +1019,8 @@ class MyArtifMapView(BaseMap):
             },
         ]
 
-
     def get_layers_list(self):
+        available_millesimes = self.object.get_available_millesimes()
         return super().get_layers_list() + [
             {
                 "id": "zones-artificielles-fill-layer",
@@ -1235,7 +1235,6 @@ class MyArtifMapView(BaseMap):
                 "source": "ocsge-diff-source",
             },
         ]
-
 
 
 class CitySpaceConsoMapView(BaseMap):

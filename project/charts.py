@@ -28,7 +28,7 @@ class ConsoChart(ProjectChart):
             "headerFormat": "<b>{series.name}</b><br/>",
             "pointFormat": "{point.name}: {point.y}",
             "valueSuffix": " Ha",
-            "valueDecimals": 0,
+            "valueDecimals": 2,
         },
         "series": [],
     }
@@ -213,7 +213,7 @@ class ObjectiveChart(ProjectChart):
             "headerFormat": "<b>{series.name}</b><br/>",
             "pointFormat": "{point.name}: {point.y}",
             "valueSuffix": " Ha",
-            "valueDecimals": 1,
+            "valueDecimals": 2,
         },
         "series": [],
     }
@@ -325,7 +325,7 @@ class DeterminantPerYearChart(ProjectChart):
             "headerFormat": "<b>{point.key}</b><br/>",
             "pointFormat": "{series.name}: {point.y}",
             "valueSuffix": " Ha",
-            "valueDecimals": 1,
+            "valueDecimals": 2,
         },
         "xAxis": {"type": "category"},
         "legend": {"layout": "vertical", "align": "right", "verticalAlign": "middle"},
@@ -408,7 +408,7 @@ class EvolutionArtifChart(ProjectChart):
         "tooltip": {
             "pointFormat": "{series.name}: {point.y}",
             "valueSuffix": " Ha",
-            "valueDecimals": 1,
+            "valueDecimals": 2,
         },
         "xAxis": {"type": "category"},
         "legend": {"layout": "horizontal", "align": "center", "verticalAlign": "top"},
@@ -476,7 +476,7 @@ class WaterfallnArtifChart(ProjectChart):
         "tooltip": {
             "pointFormat": "{series.name}: {point.y}",
             "valueSuffix": " Ha",
-            "valueDecimals": 1,
+            "valueDecimals": 2,
         },
         "xAxis": {"type": "category"},
         "legend": {"enabled": False},
@@ -533,7 +533,7 @@ class CouvertureSolPieChart(ProjectChart):
         },
         "tooltip": {
             "valueSuffix": " Ha",
-            "valueDecimals": 0,
+            "valueDecimals": 2,
             "pointFormat": "<b>{point.y}</b><br/>{point.percent}",
         },
         "xAxis": {"type": "category"},
@@ -769,7 +769,7 @@ class ArtifCouvSolPieChart(ProjectChart):
         },
         "tooltip": {
             "valueSuffix": " Ha",
-            "valueDecimals": 0,
+            "valueDecimals": 2,
             "pointFormat": "<b>{point.y}</b><br/>{point.percent}",
         },
         "xAxis": {"type": "category"},
