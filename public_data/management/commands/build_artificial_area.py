@@ -113,6 +113,7 @@ class Command(BaseCommand):
                     year=result["year"],
                     mpoly=fix_poly(result["geom"]),
                     surface=result["surface"].sq_m / 10000,
+                    departement_id=city.departement_id,
                 )
                 for result in qs
             ]
