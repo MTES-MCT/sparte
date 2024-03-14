@@ -86,25 +86,25 @@ Rapport artificialisation
             <div class="fr-grid-row fr-grid-row--gutters">
               <div class="fr-col-12 fr-col-md-6 fr-col-lg-3 fr-grid-row">
                 <div class="fr-callout w-100">
-                  <p class="fr-callout__title">{{ new_artif|floatformat:0 }} ha</p>
+                  <p class="fr-callout__title">{{ new_artif|floatformat:1 }} ha</p>
                   <p><span class="dotted" data-toggle="tooltip" title="C'est la mutation d'un espace entre deux dates qui le transforme de zone non artificielle en zone artificielle." aria-hidden="true">Artificialisation</span></p>
                 </div>
               </div>
               <div class="fr-col-12 fr-col-md-6 fr-col-lg-3 fr-grid-row">
                 <div class="fr-callout w-100">
-                  <p class="fr-callout__title">{{ new_natural|floatformat:0 }} ha</p>
+                  <p class="fr-callout__title">{{ new_natural|floatformat:1 }} ha</p>
                   <p><span class="dotted" data-toggle="tooltip" title="C'est la mutation d'un espace entre deux dates qui le transforme de zone artificielle en zone non artificielle." aria-hidden="true">Renaturation</span></p>
                 </div>
               </div>
               <div class="fr-col-12 fr-col-md-6 fr-col-lg-3 fr-grid-row">
                 <div class="fr-callout w-100">
-                  <p class="fr-callout__title">{{ net_artif|floatformat:0 }} ha</p>
+                  <p class="fr-callout__title">{{ net_artif|floatformat:1 }} ha</p>
                   <p><span class="dotted" data-toggle="tooltip" title="C'est la différence entre les surfaces des zones artificialisées et renaturées." aria-hidden="true">Artificialisation nette</span></p>
                 </div>
               </div>
               <div class="fr-col-12 fr-col-md-6 fr-col-lg-3 fr-grid-row">
                 <div class="fr-callout w-100">
-                  <p class="fr-callout__title">{{ net_artif_rate|floatformat:0 }} %</p>
+                  <p class="fr-callout__title">{{ net_artif_rate|floatformat:1 }} %</p>
                   <p><span class="dotted" data-toggle="tooltip" title="C'est le rapport entre l'artificialisation nette et la surface des zones artificialisées." aria-hidden="true">Taux d'artificialisation nette</span></p>
                 </div>
               </div>
@@ -405,7 +405,7 @@ Rapport artificialisation
                                 <th scope="row" class="text-muted">Total :</th>
                                 <td align="right" class="text-muted">{{ detail_total_artif|floatformat:1 }}</td>
                                 <td align="right" class="text-muted">100%</td>
-                                <td align="right" class="text-muted">{{ detail_total_renat|floatformat:2 }}</td>
+                                <td align="right" class="text-muted">{{ detail_total_renat|floatformat:1 }}</td>
                                 <td align="right" class="text-muted">100%</td>
                                 <td align="right">{{ artif_area|floatformat:1 }}</td>
                             </tr>
@@ -516,7 +516,7 @@ Rapport artificialisation
                                 <th scope="row" class="text-muted">Total :</th>
                                 <td align="right" class="text-muted">{{ detail_total_artif|floatformat:1 }}</td>
                                 <td align="right" class="text-muted">100%</td>
-                                <td align="right" class="text-muted">{{ detail_total_renat|floatformat:2 }}</td>
+                                <td align="right" class="text-muted">{{ detail_total_renat|floatformat:1 }}</td>
                                 <td align="right" class="text-muted">100%</td>
                                 <td align="right">{{ artif_area|floatformat:1 }}</td>
                             </tr>
