@@ -22,6 +22,9 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         logger.info("Start mep_46")
 
+        call_command("fix_artificial_area_missing_departement")
+
+        # fix old projects
         Project.objects.filter(async_add_city_done=False).update(async_add_city_done=True)
 
         call_command("maintenance", on=True)
