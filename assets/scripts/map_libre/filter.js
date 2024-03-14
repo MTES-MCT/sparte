@@ -125,10 +125,8 @@ export default class Filter
     // Add change event
     select.addEventListener('change', (_event) =>
     {
-      this.value = _event.target.value
-
-      // Triggers layer methods
-      this.triggerFilters(this.options.find((_obj) => _obj.value === this.value)['data-value'])
+      const option = this.options.find((_obj) => _obj.value === _event.target.value)
+      this.triggerFilters(option['data-value'])
     })
 
     filter.appendChild(select)
