@@ -48,8 +48,8 @@ def trigger_async_tasks(project: Project, public_key: str | None = None) -> None
         group_1.append(t.find_first_and_last_ocsge.si(project.id))
     if not project.async_ocsge_coverage_status_done:
         group_1.append(t.calculate_project_ocsge_status.si(project.id))
-    if not project.async_add_neighboors_done:
-        group_1.append(t.add_neighboors.si(project.id))
+    if not project.async_add_comparison_lands_done:
+        group_1.append(t.add_comparison_lands.si(project.id))
     if group_1:
         tasks_chain.append(celery.group(*group_1))
 
@@ -84,7 +84,7 @@ def create_from_public_key(
         analyse_start_date=start,
         analyse_end_date=end,
         level=level,
-        land_ids=str(land.id),
+        land_id=str(land.id),
         land_type=land.land_type,
         territory_name=land.name,
         user=user if user and user.is_authenticated else None,
@@ -119,9 +119,7 @@ def update_period(project: Project, start: str, end: str) -> None:
 
 def update_ocsge(project: Project):
     """Update cached data if new OCSGE has been delivered.
-
     This function is mainly called after data migration when new a departement is added (or new millesime)
-
     What it does:
     * search if start and end period of OCS GE analysis has been changed
     * update ocs ge status (available, partial, unavailable...)

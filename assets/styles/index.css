@@ -232,6 +232,9 @@ form .control-group {
 .invalid-feedback::before {
     -webkit-mask-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCI+PHBhdGggZD0iTTE3LjUgMi41aC0xMUwxIDEybDUuNSA5LjVoMTFMMjMgMTJsLTUuNS05LjV6bS0xLjMgMTIuMy0xLjQgMS40LTIuOC0yLjgtMi44IDIuOC0xLjQtMS40IDIuOC0yLjgtMi44LTIuOCAxLjQtMS40IDIuOCAyLjggMi44LTIuOCAxLjQgMS40LTIuOCAyLjggMi44IDIuOHoiLz48L3N2Zz4=);
     mask-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCI+PHBhdGggZD0iTTE3LjUgMi41aC0xMUwxIDEybDUuNSA5LjVoMTFMMjMgMTJsLTUuNS05LjV6bS0xLjMgMTIuMy0xLjQgMS40LTIuOC0yLjgtMi44IDIuOC0xLjQtMS40IDIuOC0yLjgtMi44LTIuOCAxLjQtMS40IDIuOCAyLjggMi44LTIuOCAxLjQgMS40LTIuOCAyLjggMi44IDIuOHoiLz48L3N2Zz4=);
+}
+
+.invalid-feedback::before {
     --icon-size: 1rem;
     background-color: currentColor;
     content: "";
@@ -515,7 +518,8 @@ Progress bar gradient
     height: 22px;
     position: relative;
     display: inline-block;
-    width: 60px;
+    width: 100%;
+    max-width: 60px;
     background: #cecece;
 }
 
@@ -537,14 +541,28 @@ Progress bar gradient
 
 .progress-bar-value {
     position: absolute;
-    color: #fff;
+    color: #000;
     top: 0;
-    font-size: 12px;
+    font-size: 0.8rem;
+    line-height: 1.4rem;
     left: 0;
     font-weight: bold;
-    padding: 0 5px;
+    padding: 0 0.3rem;;
     text-align: right;
     width: 100%;
+}
+
+.progress-bar-container--big {
+    height: 32px;
+    max-width: 130px;
+}
+
+.progress-bar-container--big .progress-bar-value {
+    font-size: 1rem;
+    line-height: 2rem;
+    font-weight: bold;
+    padding: 0 0.8rem;
+    text-align: left; 
 }
 
 /*
