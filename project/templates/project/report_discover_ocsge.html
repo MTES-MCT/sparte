@@ -153,7 +153,7 @@
                                     {% if item.surface_diff == 0 %}-
                                     {% else %}
                                         {% if item.surface_diff > 0 %}+{% endif %}
-                                        {{ item.surface_diff|floatformat:1 }}
+                                        {{ item.surface_diff|floatformat:2 }}
                                     {% endif %}
                                 </td>
                                 <td align="right">{{ item.surface_last|floatformat:1 }}</td>
@@ -238,7 +238,7 @@
                                 {% for title, val in data.items %}
                                     <td align="right">
                                         <span data-toggle="tooltip" title="Passage de {{ name.code }} à {{ title.code }}">
-                                            {{ val|floatformat:1 }}
+                                            {{ val|floatformat:2 }}
                                         </span>
                                     </td>
                                 {% endfor %}
@@ -343,7 +343,7 @@
                                     {% if item.surface_diff == 0 %}-
                                     {% else %}
                                         {% if item.surface_diff > 0 %}+{% endif %}
-                                        {{ item.surface_diff|floatformat:1 }}
+                                        {{ item.surface_diff|floatformat:2 }}
                                     {% endif %}
                                 </td>
                                 <td align="right">{{ item.surface_last|floatformat:1 }}</td>
@@ -427,7 +427,7 @@
                                 {% for title, val in data.items %}
                                     <td align="right">
                                         <span data-toggle="tooltip" title="Passage de {{ name.code }} à {{ title.code }}">
-                                            {{ val|floatformat:1 }}
+                                            {{ val|floatformat:2 }}
                                         </span>
                                     </td>
                                 {% endfor %}

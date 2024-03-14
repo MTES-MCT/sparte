@@ -121,7 +121,7 @@ Synthèse
         <div class="fr-grid-row fr-grid-row--gutters">
           <div class="fr-col-12 fr-col-md-4 fr-grid-row">
             <div class="fr-callout w-100">
-              <p class="fr-callout__title">{{ net_artif|floatformat:1 }} ha</p>
+              <p class="fr-callout__title">{{ net_artif|floatformat:0 }} ha</p>
               <p>Artificialisation nette sur la période <i class="bi bi-question-circle" data-toggle="tooltip" title="= artificialisation - renaturation" aria-hidden="true"></i></p>
             </div>
           </div>
@@ -133,7 +133,7 @@ Synthèse
           </div>
           <div class="fr-col-12 fr-col-md-4 fr-grid-row">
             <div class="fr-callout w-100">
-              <p class="fr-callout__title">+{{ new_natural|floatformat:1 }} ha</p>
+              <p class="fr-callout__title">+{{ new_natural|floatformat:0 }} ha</p>
               <p>Total renaturation sur la période</p>
             </div>
           </div>
@@ -166,7 +166,7 @@ Synthèse
                     Zones {{ zone_type }}
                   </p>
                   <div class="progress-bar-container">
-                    <div class="progress-bar-indicator w-{{ zone.fill_up_rate|floatformat:1 }}"></div>
+                    <div class="progress-bar-indicator w-{{ zone.fill_up_rate|floatformat:0 }}"></div>
                     <div class="progress-bar-value">{{ zone.fill_up_rate|floatformat:1 }}%</div>
                   </div>
                 </div>
