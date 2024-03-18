@@ -100,24 +100,24 @@ Créer un diagnostic
                 <div class="fr-grid-row fr-grid-row--gutters">
                     <div class="fr-col-12 fr-col-lg-6">
                         <p class="fs-5 text-muted">Zone géographique:</p>
-                        <table class="border-0 fs-5 text-muted">
-                            <tr>
-                                <td width="200">Région:</td>
-                                <td>{{ form.region }}</td>
-                            </tr>
+                        <div class="border-0 fs-5 text-muted">
+                            <div>
+                                <div>Région:</div>
+                                <div>{{ form.region }}</div>
+                            </div>
                             {% if form.cleaned_data.region %}
-                            <tr>
-                                <td>Département:</td>
-                                <td>{{ form.departement }}</td>
-                            </tr>
+                            <div>
+                                <div>Département:</div>
+                                <div>{{ form.departement }}</div>
+                            </div>
                             {% endif %}
                             {% if form.cleaned_data.departement %}
-                            <tr>
-                                <td>EPCI:</td>
-                                <td>{{ form.epci }}</td>
-                            </tr>
+                            <div>
+                                <div>EPCI:</div>
+                                <div>{{ form.epci }}</div>
+                            </div>
                             {% endif %}
-                        </table>
+                        </div>
                     </div>
                     <div class="fr-col-12 fr-col-lg-6 border-start">
                         <p class="fs-5 text-muted mb-0">Type de territoire:</p>
@@ -149,24 +149,24 @@ Créer un diagnostic
                 <div class="row row-cols-1 row-cols-md-2">
                     <div class="col mb-5">
                         <p class="fs-5 text-muted">Restreindre les résultats à une zone géographique.</p>
-                        <table class="border-0 fs-5 text-muted">
-                            <tr>
-                                <td width="200">Une région :</td>
-                                <td>{{ form.region }}</td>
-                            </tr>
+                        <div class="border-0 fs-5 text-muted">
+                            <div>
+                                <div>Une région :</div>
+                                <div>{{ form.region }}</div>
+                            </div>
                             {% if form.cleaned_data.region %}
-                            <tr>
-                                <td>Un département :</td>
-                                <td>{{ form.departement }}</td>
-                            </tr>
+                            <div>
+                                <div>Un département :</div>
+                                <div>{{ form.departement }}</div>
+                            </div>
                             {% endif %}
                             {% if form.cleaned_data.departement %}
-                            <tr>
-                                <td>Un EPCI :</td>
-                                <td>{{ form.epci }}</td>
-                            </tr>
+                            <div>
+                                <div>Un EPCI :</div>
+                                <div>{{ form.epci }}</div>
+                            </div>
                             {% endif %}
-                        </table>
+                        </div>
                     </div>
                     <div class="col border-start mb-auto">
                         <p class="fs-5 text-muted mb-0">Vous recherchez :</p>

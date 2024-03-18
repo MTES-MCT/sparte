@@ -676,7 +676,6 @@ class Project(BaseProject):
                 year = f"20{key[3:5]}"
                 det = determinants[key[5:8]]
                 surface_in_sqm = val / 10000
-                # TODO: figure out why the vlaue below can be negative
                 results[det][year] = surface_in_sqm if surface_in_sqm >= 0 else 0
         return results
 
