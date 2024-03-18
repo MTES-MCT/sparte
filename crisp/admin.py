@@ -4,5 +4,5 @@ from .models import CrispWebhookNotification
 
 
 @admin.register(CrispWebhookNotification)
-class UsageSolAdmin(admin.ModelAdmin):
+class CrispNotificationAdmin(admin.ModelAdmin):
     model = CrispWebhookNotification
