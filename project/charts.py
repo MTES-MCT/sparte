@@ -9,6 +9,10 @@ from highcharts import charts
 from project.models.project_base import Project
 from public_data.models import AdminRef, CouvertureSol, OcsgeDiff, UsageSol
 
+DEFAULT_HEADER_FORMAT = "<b>{series.name}</b><br/>"
+DEFAULT_POINT_FORMAT = "{point.name}: {point.y}"
+DEFAULT_VALUE_DECIMALS = 2
+
 
 class ProjectChart(charts.Chart):
     def __init__(self, project: Project, group_name=None):
@@ -25,10 +29,10 @@ class ConsoChart(ProjectChart):
         "xAxis": {"type": "category"},
         "legend": {"layout": "vertical", "align": "right", "verticalAlign": "top"},
         "tooltip": {
-            "headerFormat": "<b>{series.name}</b><br/>",
-            "pointFormat": "{point.name}: {point.y}",
+            "headerFormat": DEFAULT_HEADER_FORMAT,
+            "pointFormat": DEFAULT_POINT_FORMAT,
             "valueSuffix": " Ha",
-            "valueDecimals": 2,
+            "valueDecimals": DEFAULT_VALUE_DECIMALS,
         },
         "series": [],
     }
@@ -65,10 +69,10 @@ class ConsoComparisonChart(ProjectChart):
         "xAxis": {"type": "category"},
         "legend": {"layout": "vertical", "align": "right", "verticalAlign": "top"},
         "tooltip": {
-            "headerFormat": "<b>{series.name}</b><br/>",
-            "pointFormat": "{point.name}: {point.y}",
+            "headerFormat": DEFAULT_HEADER_FORMAT,
+            "pointFormat": DEFAULT_POINT_FORMAT,
             "valueSuffix": " ‰",
-            "valueDecimals": 2,
+            "valueDecimals": DEFAULT_VALUE_DECIMALS,
         },
         "series": [],
     }
@@ -105,10 +109,10 @@ class ConsoCommuneChart(ProjectChart):
         "yAxis": {"title": {"text": "Consommé (ha)"}},
         "xAxis": {"type": "category"},
         "tooltip": {
-            "headerFormat": "<b>{series.name}</b><br/>",
-            "pointFormat": "{point.name}: {point.y}",
+            "headerFormat": DEFAULT_HEADER_FORMAT,
+            "pointFormat": DEFAULT_POINT_FORMAT,
             "valueSuffix": " Ha",
-            "valueDecimals": 2,
+            "valueDecimals": DEFAULT_VALUE_DECIMALS,
         },
         "legend": {
             "layout": "vertical",
@@ -210,10 +214,10 @@ class ObjectiveChart(ProjectChart):
         },
         "legend": {"layout": "horizontal", "align": "center", "verticalAlign": "top"},
         "tooltip": {
-            "headerFormat": "<b>{series.name}</b><br/>",
-            "pointFormat": "{point.name}: {point.y}",
+            "headerFormat": DEFAULT_HEADER_FORMAT,
+            "pointFormat": DEFAULT_POINT_FORMAT,
             "valueSuffix": " Ha",
-            "valueDecimals": 2,
+            "valueDecimals": DEFAULT_VALUE_DECIMALS,
         },
         "series": [],
     }
@@ -325,7 +329,7 @@ class DeterminantPerYearChart(ProjectChart):
             "headerFormat": "<b>{point.key}</b><br/>",
             "pointFormat": "{series.name}: {point.y}",
             "valueSuffix": " Ha",
-            "valueDecimals": 2,
+            "valueDecimals": DEFAULT_VALUE_DECIMALS,
         },
         "xAxis": {"type": "category"},
         "legend": {"layout": "vertical", "align": "right", "verticalAlign": "middle"},
@@ -408,7 +412,7 @@ class EvolutionArtifChart(ProjectChart):
         "tooltip": {
             "pointFormat": "{series.name}: {point.y}",
             "valueSuffix": " Ha",
-            "valueDecimals": 2,
+            "valueDecimals": DEFAULT_VALUE_DECIMALS,
         },
         "xAxis": {"type": "category"},
         "legend": {"layout": "horizontal", "align": "center", "verticalAlign": "top"},
@@ -476,7 +480,7 @@ class WaterfallnArtifChart(ProjectChart):
         "tooltip": {
             "pointFormat": "{series.name}: {point.y}",
             "valueSuffix": " Ha",
-            "valueDecimals": 2,
+            "valueDecimals": DEFAULT_VALUE_DECIMALS,
         },
         "xAxis": {"type": "category"},
         "legend": {"enabled": False},
@@ -533,7 +537,7 @@ class CouvertureSolPieChart(ProjectChart):
         },
         "tooltip": {
             "valueSuffix": " Ha",
-            "valueDecimals": 2,
+            "valueDecimals": DEFAULT_VALUE_DECIMALS,
             "pointFormat": "<b>{point.y}</b><br/>{point.percent}",
         },
         "xAxis": {"type": "category"},
@@ -596,7 +600,7 @@ class CouvertureSolProgressionChart(ProjectChart):
         "tooltip": {
             "pointFormat": "{series.name}: {point.y}",
             "valueSuffix": " Ha",
-            "valueDecimals": 2,
+            "valueDecimals": DEFAULT_VALUE_DECIMALS,
             "headerFormat": "",
         },
         "xAxis": {"type": "category"},
@@ -652,7 +656,7 @@ class DetailCouvArtifChart(ProjectChart):
         "tooltip": {
             "pointFormat": "{series.name}: {point.y}",
             "valueSuffix": " Ha",
-            "valueDecimals": 2,
+            "valueDecimals": DEFAULT_VALUE_DECIMALS,
             "headerFormat": "",
         },
         "xAxis": {"type": "category"},
@@ -769,7 +773,7 @@ class ArtifCouvSolPieChart(ProjectChart):
         },
         "tooltip": {
             "valueSuffix": " Ha",
-            "valueDecimals": 2,
+            "valueDecimals": DEFAULT_VALUE_DECIMALS,
             "pointFormat": "<b>{point.y}</b><br/>{point.percent}",
         },
         "xAxis": {"type": "category"},
