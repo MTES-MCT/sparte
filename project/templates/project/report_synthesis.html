@@ -63,7 +63,7 @@ Synthèse
           <div class="fr-col-12 fr-col-md-6 fr-grid-row">
             <div class="fr-callout w-100">
               <p class="fr-callout__title">+{{ objective_chart.conso_2031|floatformat:1 }} ha</p>
-              <p>Consommation cumulée de la période du 1er jan. 2021 au 31 déc. 2030 (10 ans) avec un seuil de réduction de {{ diagnostic.target_2031 }}%</p>
+              <p>Consommation cumulée de la période du 1er jan. 2021 au 31 déc. 2030 (10 ans) avec un objectif non-réglementaire de réduction de {{ diagnostic.target_2031 }}%</p>
             </div>
           </div>
         </div>
@@ -71,7 +71,7 @@ Synthèse
           <a class="fr-link" href="{% url 'project:trajectory:home' diagnostic.pk %}">Consulter les trajectoires</a>
         </div>
         <div class="fr-callout bg-white fr-p-2w mt-4">
-          <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data-1">Données</button>
+          <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data-1">Données et calcul</button>
           <div class="fr-collapse" id="target-data-1">
               <h6 class="fr-mt-2w">Source</h6>
               <p>Données d'évolution des fichiers fonciers produits et diffusés par le Cérema depuis 2009 à partir des fichiers MAJIC (Mise A Jour de  l'Information Cadastrale) de la DGFIP. Le dernier millésime de 2022 est la  photographie du territoire au 1er janvier 2022, intégrant les évolutions réalisées au cours de l'année 2021.</p>
@@ -102,7 +102,7 @@ Synthèse
           <a class="fr-link" href="{% url 'project:report_conso' diagnostic.pk %}">Consulter le bilan de consommation d'espaces</a>
         </div>
         <div class="fr-callout bg-white fr-p-2w mt-4">
-          <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data-2">Données</button>
+          <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data-2">Données et calcul</button>
           <div class="fr-collapse" id="target-data-2">
               <h6 class="fr-mt-2w">Source</h6>
               <p>Données d'évolution des fichiers fonciers produits et diffusés par le Cérema depuis 2009 à partir des fichiers MAJIC (Mise A Jour de  l'Information Cadastrale) de la DGFIP. Le dernier millésime de 2022 est la  photographie du territoire au 1er janvier 2022, intégrant les évolutions réalisées au cours de l'année 2021.</p>
@@ -121,7 +121,7 @@ Synthèse
         <div class="fr-grid-row fr-grid-row--gutters">
           <div class="fr-col-12 fr-col-md-4 fr-grid-row">
             <div class="fr-callout w-100">
-              <p class="fr-callout__title">{{ net_artif|floatformat:0 }} ha</p>
+              <p class="fr-callout__title">{{ net_artif|floatformat:1 }} ha</p>
               <p>Artificialisation nette sur la période <i class="bi bi-question-circle" data-toggle="tooltip" title="= artificialisation - renaturation" aria-hidden="true"></i></p>
             </div>
           </div>
@@ -133,7 +133,7 @@ Synthèse
           </div>
           <div class="fr-col-12 fr-col-md-4 fr-grid-row">
             <div class="fr-callout w-100">
-              <p class="fr-callout__title">+{{ new_natural|floatformat:0 }} ha</p>
+              <p class="fr-callout__title">+{{ new_natural|floatformat:1 }} ha</p>
               <p>Total renaturation sur la période</p>
             </div>
           </div>
@@ -142,7 +142,7 @@ Synthèse
           <a class="fr-link" href="{% url 'project:report_artif' project.pk %}">Consulter le bilan de l'artificialisation</a>
         </div>
         <div class="fr-callout bg-white fr-p-2w mt-4">
-          <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data-3">Données</button>
+          <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data-3">Données et calcul</button>
           <div class="fr-collapse" id="target-data-3">
               <h6 class="fr-mt-2w">Source</h6>
               <p>OCS GE (millésime min : 2013, millésime max : 2019).</p>
@@ -161,16 +161,17 @@ Synthèse
           {% for zone_type, zone in zone_list.items %}
             <div class="fr-col-12 fr-col-md-4 fr-grid-row">
               <div class="fr-callout w-100">
-                <div class="d-flex justify-content-between align-items-center">
-                  <p class="fr-callout__title">
-                    Zones {{ zone_type }}
-                  </p>
-                  <div class="progress-bar-container">
+                <p class="fr-callout__title">
+                  <div class="progress-bar-container progress-bar-container--big">
                     <div class="progress-bar-indicator w-{{ zone.fill_up_rate|floatformat:0 }}"></div>
                     <div class="progress-bar-value">{{ zone.fill_up_rate|floatformat:1 }}%</div>
                   </div>
-                </div>
+                </p>
                 <p>
+                  Taux d'artificialisation des zones <strong>{{ zone_type }}</strong>
+                  <span class="fr-text--sm">({{ zone.type_zone_label }})</span>
+                </p>
+                <p class="fr-text--sm fr-mt-1w">
                   Surface Totale: <strong>{{ zone.total_area|floatformat:1 }} ha</strong><br>
                 </p>
               </div>
@@ -182,13 +183,13 @@ Synthèse
           <a class="fr-link" href="{% url 'project:report_urban_zones' project.pk %}">Consulter les zonages d'urbanisme</a>
         </div>
         <div class="fr-callout bg-white fr-p-2w mt-4">
-          <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data-4">Données</button>
+          <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data-4">Données et calcul</button>
           <div class="fr-collapse" id="target-data-4">
             <h6 class="fr-mt-2w">Source</h6>
             <p>Données d'OCcupation des Sols à Grande Echelle (OCS GE) de l'IGN, sur la période d'analyse. Zonages d'Urbanisme issus du Géoportail de l'Urbanisme (GPU) en date de juin 2023: <a href="https://www.geoportail-urbanisme.gouv.fr/" target="_blank">https://www.geoportail-urbanisme.gouv.fr/</a></p>
 
             <h6 class="fr-mt-2w">Calcul</h6>
-            <p>Qualifier l'artificialisation de chaque parcelle OCS GE via la matrice d'artficialisation (<a href="{% url 'public_data:matrix' %}">consulter</a>). Puis comparer la surface totale des parcelles artificielles dans chaque zonage d'urbanisme à la surface de la zone pour connaître le taux d'occupation.</p>
+            <p>Qualifier l'artificialisation de chaque parcelle OCS GE via la matrice d'artficialisation (<a href="{% url 'public_data:matrix' %}">consulter</a>). Puis comparer la surface totale des parcelles artificialisées dans chaque zonage d'urbanisme à la surface de la zone pour connaître le taux d'occupation.</p>
           </div>
         </div>
       </div>

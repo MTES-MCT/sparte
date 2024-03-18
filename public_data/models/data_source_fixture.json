@@ -618,5 +618,80 @@
             "official_land_id": "83",
             "srid": 2154
         }
+    },
+    {
+        "model": "public_data.datasource",
+        "pk": 42,
+        "fields": {
+            "productor": "IGN",
+            "dataset": "OCSGE",
+            "name": "OCCUPATION_DU_SOL",
+            "millesimes": "[\"2018\"]",
+            "mapping": null,
+            "path": "val_de_marne_2018_corrige.zip",
+            "source_url": "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE-NG_1-1__SHP_LAMB93_D094_2018/OCS-GE-NG_1-1__SHP_LAMB93_D094_2018.7z",
+            "official_land_id": "94",
+            "srid": 2154
+        }
+    },
+    {
+        "model": "public_data.datasource",
+        "pk": 43,
+        "fields": {
+            "productor": "IGN",
+            "dataset": "OCSGE",
+            "name": "OCCUPATION_DU_SOL",
+            "millesimes": "[\"2021\"]",
+            "mapping": null,
+            "path": "val_de_marne_2021_corrige.zip",
+            "source_url": "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE-NG_1-1__SHP_LAMB93_D094_2021/OCS-GE-NG_1-1__SHP_LAMB93_D094_2021.7z",
+            "official_land_id": "94",
+            "srid": 2154
+        }
+    },
+    {
+        "model": "public_data.datasource",
+        "pk": 44,
+        "fields": {
+            "productor": "IGN",
+            "dataset": "OCSGE",
+            "name": "ZONE_CONSTRUITE",
+            "millesimes": "[\"2018\"]",
+            "mapping": null,
+            "path": "val_de_marne_zone_construite_2018.zip",
+            "source_url": "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE-NG_1-1__SHP_LAMB93_D094_2018/OCS-GE-NG_1-1__SHP_LAMB93_D094_2018.7z",
+            "official_land_id": "94",
+            "srid": 2154
+        }
+    },
+    {
+        "model": "public_data.datasource",
+        "pk": 45,
+        "fields": {
+            "productor": "IGN",
+            "dataset": "OCSGE",
+            "name": "ZONE_CONSTRUITE",
+            "millesimes": "[\"2021\"]",
+            "mapping": null,
+            "path": "val_de_marne_zone_construite_2021.zip",
+            "source_url": "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE-NG_1-1__SHP_LAMB93_D094_2021/OCS-GE-NG_1-1__SHP_LAMB93_D094_2021.7z",
+            "official_land_id": "94",
+            "srid": 2154
+        }
+    },
+    {
+        "model": "public_data.datasource",
+        "pk": 46,
+        "fields": {
+            "productor": "IGN",
+            "dataset": "OCSGE",
+            "name": "DIFFERENCE",
+            "millesimes": "[\"2018\", \"2021\"]",
+            "mapping": null,
+            "path": "val_de_marne_18_21_diff.zip",
+            "source_url": "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE-NG_1-1_DIFF_SHP_LAMB93_D094_2018-2021/OCS-GE-NG_1-1_DIFF_SHP_LAMB93_D094_2018-2021.7z",
+            "official_land_id": "94",
+            "srid": 2154
+        }
     }
 ]

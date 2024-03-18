@@ -317,14 +317,19 @@ class Project(BaseProject):
         null=True,
     )
     target_2031 = models.IntegerField(
-        "Seuil de réduction à 2031 (en %)",
+        "Objectif de réduction à 2031 (en %)",
         validators=[MinValueValidator(0), MaxValueValidator(100)],
         default=50,
         help_text=(
-            "A date, l'objectif national est de réduire de 50% la consommation "
-            "d'espaces d'ici à 2031. Ce seuil doit être personnalisé localement "
-            "par les SRADDET. Vous pouvez changer le seuil pour tester différents "
-            "scénarios."
+            "L'objectif fixé au niveau national par la loi Climat et résilience est de "
+            "réduire de 50% la consommation d'espaces sur 2021-2031 par rapport à la "
+            "décennie précédente.<br /><br />"
+            "Cet objectif doit être territorialisé et peut être "
+            "modulé via les documents de planification régionale ainsi que les documents "
+            "d'urbanisme (SCOT, PLU(i), cartes communales).<br /><br /> "
+            "Aussi, l'objectif de réduction fixé à défaut à -50% est indicatif et ne "
+            "correspond pas nécessairement à l'objectif qui sera fixé pour le territoire "
+            "sélectionné."
         ),
     )
 
@@ -670,7 +675,9 @@ class Project(BaseProject):
             if val is not None:
                 year = f"20{key[3:5]}"
                 det = determinants[key[5:8]]
-                results[det][year] = val / 10000
+                surface_in_sqm = val / 10000
+                # TODO: figure out why the vlaue below can be negative
+                results[det][year] = surface_in_sqm if surface_in_sqm >= 0 else 0
         return results
 
     def get_bilan_conso(self):
@@ -703,19 +710,13 @@ class Project(BaseProject):
 
     _conso_per_year = None
 
-    def get_conso_per_year(self):
+    def get_conso_per_year(self, coef=1):
         """Return Cerema data for the project, transposed and named after year"""
-        if not self._conso_per_year:
-            qs = self.get_cerema_cities()
-            fields = Cerema.get_art_field(self.analyse_start_date, self.analyse_end_date)
-            args = (Sum(field) for field in fields)
-            qs = qs.aggregate(*args)
-            self._conso_per_year = {
-                f"20{key[3:5]}": val / 10000
-                for key, val in qs.items()
-                # if val is not None
-            }
-        return self._conso_per_year
+        qs = self.get_cerema_cities()
+        fields = Cerema.get_art_field(self.analyse_start_date, self.analyse_end_date)
+        args = (Sum(field) for field in fields)
+        qs = qs.aggregate(*args)
+        return {f"20{key[3:5]}": float(val / 10000) * float(coef) for key, val in qs.items()}
 
     def get_pop_change_per_year(self, criteria: Literal["pop", "household"] = "pop") -> Dict:
         cities = (
@@ -1181,6 +1182,14 @@ class Project(BaseProject):
             str | float,
         ],
     ]:
+        zone_labels = {
+            "U": "zone urbaine",
+            "AUc": "zone à urbaniser",
+            "AUs": "zone à urbaniser bloquée",
+            "A": "zone agricole",
+            "N": "zone naturelle",
+        }
+
         """Return artif progression for each zone type.
 
         Returns:
@@ -1208,6 +1217,7 @@ class Project(BaseProject):
             if zone_type not in zone_list:
                 zone_list[zone_type] = {
                     "type_zone": zone_type,
+                    "type_zone_label": zone_labels.get(zone_type, ""),
                     "total_area": row["total_area"],
                     "first_artif_area": Decimal(0.0),
                     "last_artif_area": Decimal(0.0),
