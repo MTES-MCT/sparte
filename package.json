@@ -8,7 +8,11 @@
     "lint": "eslint --fix ./assets/scripts/*.js ./assets/scripts/**/*.js"
   },
   "devDependencies": {
+    "@babel/core": "^7.24.1",
     "@babel/eslint-parser": "^7.22.15",
+    "@babel/preset-env": "^7.24.1",
+    "@babel/preset-react": "^7.24.1",
+    "babel-loader": "^9.1.3",
     "css-loader": "^6.7.3",
     "eslint": "^8.52.0",
     "eslint-config-airbnb": "^19.0.4",
@@ -20,8 +24,11 @@
   },
   "dependencies": {
     "@gouvfr/dsfr": "^1.8.5",
+    "@types/react-dom": "^18.2.22",
     "htmx.org": "^1.8.4",
     "lodash.isequal": "^4.5.0",
-    "maplibre-gl": "^3.3.1"
+    "maplibre-gl": "^3.3.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
   }
 }
