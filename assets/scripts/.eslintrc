@@ -4,7 +4,7 @@
         "node": true
     },
     "parser": "@babel/eslint-parser",
-    "extends": ["airbnb/base"],
+    "extends": ["airbnb/base", "plugin:react/recommended"],
     "parserOptions": {
         "requireConfigFile": false
     },
