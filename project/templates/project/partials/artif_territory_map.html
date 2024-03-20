@@ -7,19 +7,6 @@
         <p class="fw-bold">
             Carte comprendre l'artificialisation de son territoire
         </p>
-        {% if project.theme_map_understand_artif %}
-            <img
-                src="{{ project.theme_map_understand_artif.url }}"
-                alt="Carte comprendre l'artificialisation de son territoire"
-            >
-        {% else %}
-            <div
-                class="skeleton-loader"
-                hx-get="{% url 'project:artif-territory-map' diagnostic.id %}"
-                hx-trigger="load delay:10s"
-                hx-target="#target-artif-territory-map"
-                hx-swap="outerHTML">
-            </div>
-        {% endif %}
+        <div id="react-carte-comprendre-artif"></div>
     </a>
 </div>
