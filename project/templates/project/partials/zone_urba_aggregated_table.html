@@ -49,15 +49,25 @@
 
     </div>
 
-    <div class="fr-callout bg-white fr-p-2w mt-4">
-        <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data-aggregated-table">Données et calcul</button>
-        <div class="fr-collapse" id="target-data-aggregated-table">
-            <h6 class="fr-mt-2w">Source</h6>
-            <p>Données d'OCcupation des Sols à Grande Echelle (OCS GE) de l'IGN, sur la période d'analyse. Zonages d'Urbanisme issus du Géoportail de l'Urbanisme (GPU) en date de juin 2023: <a href="https://www.geoportail-urbanisme.gouv.fr/" target="_blank">https://www.geoportail-urbanisme.gouv.fr/</a></p>
-
-            <h6 class="fr-mt-2w">Calcul</h6>
-            <p>Qualifier l'artificialisation de chaque parcelle OCS GE via la matrice d'artficialisation (<a href="{% url 'public_data:matrix' %}">consulter</a>). Puis comparer la surface totale des parcelles artificialisées dans chaque zonage d'urbanisme à la surface de la zone pour connaître le taux d'occupation.</p>
+    <div class="fr-notice fr-mt-4w">
+        <div class="fr-container">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <span class="fr-icon-information-line" aria-hidden="true"></span>
+                    <span class="fr-text--xs fr-mr-1w">Source de données: </span>
+                    <p class="fr-tag fr-tag--sm fr-tag--success">
+                        <strong>OCS GE</strong>
+                    </p>
+                </div>
+                <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data-aggregated-table">Détails données et calcul</button>
+            </div>
+            <div class="fr-collapse" id="target-data-aggregated-table">
+                <h6 class="fr-mt-2w">Source</h6>
+                <p class="fr-text--sm">Données d'OCcupation des Sols à Grande Echelle (OCS GE) de l'IGN, sur la période d'analyse. Zonages d'Urbanisme issus du Géoportail de l'Urbanisme (GPU) en date de juin 2023: <a href="https://www.geoportail-urbanisme.gouv.fr/" target="_blank">https://www.geoportail-urbanisme.gouv.fr/</a></p>
+    
+                <h6 class="fr-mt-2w">Calcul</h6>
+                <p class="fr-text--sm">Qualifier l'artificialisation de chaque parcelle OCS GE via la matrice d'artficialisation (<a href="{% url 'public_data:matrix' %}">consulter</a>). Puis comparer la surface totale des parcelles artificialisées dans chaque zonage d'urbanisme à la surface de la zone pour connaître le taux d'occupation.</p>
+            </div>
         </div>
     </div>
-
 </div>

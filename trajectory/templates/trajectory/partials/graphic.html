@@ -29,60 +29,71 @@
     </div>
 </div>
 
-<div class="fr-callout bg-white fr-p-2w mt-4">
-    <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data-1">Données</button>
-    <div class="fr-collapse" id="target-data-1">
-        <h6 class="fr-mt-2w">Source</h6>
-        <p>Fichiers fonciers du Cérema issus des données MAJIC  (Mise A Jour de l'Information Cadastrale) de la DGFIP (millésime min :  2009, millésime max : 2021)</p>
-
-        <h6 class="fr-mt-2w">Calcul</h6>
-        <p class="mb-3">
-            La consommation réelle annuelle et cumulée provient des données du Cérema.
-            Elles donnent la consommation d'espaces NAF par année, pour le territoire choisi.
-        </p>
-        <p class="mb-3">
-            Cette consommation est calculée avec le dernier millésime disponible des fichiers fonciers.
-            A l’occasion de la mise à jour annuelle des données par le CEREMA, des modifications peuvent apparaître sur les années précédentes.
-            Par exemple, la consommation d’ENAF de la CA Agglomération d’Agen était de 668 ha selon les fichiers fonciers au 1er janvier 2021&nbsp;;
-            elle a été mise à jour à 603,6 ha selon les fichiers fonciers au 1er janvier 2022.
-        </p>
-        <p class="mb-3">
-            Le millésime utilisé pour le calcul de la trajectoire nationale de réduction de la consommation d’ENAF est celui au 1er janvier 2021
-            (chiffres indiqués dans l’encadré bleu dans le tableau de bord du portail national de l’artificialisation des sols).
-        </p>
-
-        <h6 class="fr-mt-2w">Données</h6>
-
-        <table class="table table-striped table-sm table-hover">
-            <thead>
-                <tr>
-                    <th scope="col">Millésime</th>
-                    <th scope="col" class="text-end">Réelle (Ha)</th>
-                    <th scope="col" class="text-end">Réelle cumulée (Ha)</th>
-                    <th scope="col" class="text-end">Projection annualisée<br/>de l'objectif 2031 (Ha)</th>
-                    <th scope="col" class="text-end">Cumulé de la<br/>projection (Ha)</th>
-                    {% if has_related_trajectory %}
-                        <th scope="col" class="text-end">Trajectoire (Ha)</th>
-                        <th scope="col" class="text-end">Cumulé de la<br/>trajectoire (Ha)</th>
-                    {% endif %}
-                </tr>
-            </thead>
-            <tbody>
-                {% for line in trajectory_chart.get_data_table %}
-                <tr>
-                    <th scope="row">{{ line.year }}</th>
-                    <td align="right">{{ line.real|floatformat:1 }}</td>
-                    <td align="right">{{ line.added_real|floatformat:1 }}</td>
-                    <td align="right">{{ line.objective|floatformat:1 }}</td>
-                    <td align="right">{{ line.added_objective|floatformat:1 }}</td>
-                    {% if has_related_trajectory %}
-                        <td align="right">{{ line.trajectory|floatformat:1 }}</td>
-                        <td align="right">{{ line.added_trajectory|floatformat:1 }}</td>
-                    {% endif %}
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+<div class="fr-notice fr-mt-4w">
+    <div class="fr-container">
+        <div class="d-flex align-items-center justify-content-between">
+            <div>
+                <span class="fr-icon-information-line" aria-hidden="true"></span>
+                <span class="fr-text--xs fr-mr-1w">Source de données: </span>
+                <p class="fr-tag fr-tag--sm fr-tag--blue">
+                    <strong>FICHIERS FONCIERS</strong>
+                </p>
+            </div>
+            <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data-1">Détails données et calcul</button>
+        </div>
+        <div class="fr-collapse" id="target-data-1">
+            <h6 class="fr-mt-2w">Source</h6>
+            <p class="fr-text--sm">Fichiers fonciers du Cérema issus des données MAJIC  (Mise A Jour de l'Information Cadastrale) de la DGFIP (millésime min :  2009, millésime max : 2021)</p>
+    
+            <h6 class="fr-mt-2w">Calcul</h6>
+            <p class="mb-3 fr-text--sm">
+                La consommation réelle annuelle et cumulée provient des données du Cérema.
+                Elles donnent la consommation d'espaces NAF par année, pour le territoire choisi.
+            </p>
+            <p class="mb-3 fr-text--sm">
+                Cette consommation est calculée avec le dernier millésime disponible des fichiers fonciers.
+                A l’occasion de la mise à jour annuelle des données par le CEREMA, des modifications peuvent apparaître sur les années précédentes.
+                Par exemple, la consommation d’ENAF de la CA Agglomération d’Agen était de 668 ha selon les fichiers fonciers au 1er janvier 2021&nbsp;;
+                elle a été mise à jour à 603,6 ha selon les fichiers fonciers au 1er janvier 2022.
+            </p>
+            <p class="mb-3 fr-text--sm">
+                Le millésime utilisé pour le calcul de la trajectoire nationale de réduction de la consommation d’ENAF est celui au 1er janvier 2021
+                (chiffres indiqués dans l’encadré bleu dans le tableau de bord du portail national de l’artificialisation des sols).
+            </p>
+    
+            <h6 class="fr-mt-2w">Données</h6>
+    
+            <table class="table table-striped table-sm table-hover fr-text--sm">
+                <thead>
+                    <tr>
+                        <th scope="col">Millésime</th>
+                        <th scope="col" class="text-end">Réelle (Ha)</th>
+                        <th scope="col" class="text-end">Réelle cumulée (Ha)</th>
+                        <th scope="col" class="text-end">Projection annualisée<br/>de l'objectif 2031 (Ha)</th>
+                        <th scope="col" class="text-end">Cumulé de la<br/>projection (Ha)</th>
+                        {% if has_related_trajectory %}
+                            <th scope="col" class="text-end">Trajectoire (Ha)</th>
+                            <th scope="col" class="text-end">Cumulé de la<br/>trajectoire (Ha)</th>
+                        {% endif %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for line in trajectory_chart.get_data_table %}
+                    <tr>
+                        <th scope="row">{{ line.year }}</th>
+                        <td align="right">{{ line.real|floatformat:1 }}</td>
+                        <td align="right">{{ line.added_real|floatformat:1 }}</td>
+                        <td align="right">{{ line.objective|floatformat:1 }}</td>
+                        <td align="right">{{ line.added_objective|floatformat:1 }}</td>
+                        {% if has_related_trajectory %}
+                            <td align="right">{{ line.trajectory|floatformat:1 }}</td>
+                            <td align="right">{{ line.added_trajectory|floatformat:1 }}</td>
+                        {% endif %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 
