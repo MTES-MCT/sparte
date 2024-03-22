@@ -895,6 +895,7 @@ class MyArtifMapView(BaseMap):
         years = (
             self.object.cities.all().first().communediff_set.all().aggregate(old=Max("year_old"), new=Max("year_new"))
         )
+
         return super().get_sources_list() + [
             {
                 "key": "zones-artificielles-source",
