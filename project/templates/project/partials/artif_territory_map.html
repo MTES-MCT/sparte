@@ -1,15 +1,25 @@
 
 <div id="target-artif-territory-map" class="border theme-map-image-container h-100 fr-p-2w d-flex flex-column align-items-center justify-content-between">
-    <div class="d-flex justify-content-end align-items-center w-100 fr-mb-2w">
-        <a href="{% url 'project:theme-my-artif' project.pk %}" target="_blank">
-             <button class="fr-btn fr-icon-external-link-line fr-btn--tertiary fr-btn--sm"></button>
-        </a>
-    </div>
-    <p class="fw-bold">Carte comprendre l'artificialisation de son territoire</p>
-    {% if project.theme_map_understand_artif %}
-    <img src="{{ project.theme_map_understand_artif.url }}" alt="Carte comprendre l'artificialisation de son territoire">
-    {% else %}
-    <div class="skeleton-loader" hx-get="{% url 'project:artif-territory-map' diagnostic.id %}" hx-trigger="load delay:10s" hx-target="#target-artif-territory-map" hx-swap="outerHTML">
-    </div>
-    {% endif %}
+    <a href="{% url 'project:theme-my-artif' project.pk %}" target="_blank">
+        <div class="d-flex justify-content-end align-items-center w-100 fr-mb-2w">
+            <button class="fr-btn fr-icon-external-link-line fr-btn--tertiary fr-btn--sm"></button>
+        </div>
+        <p class="fw-bold">
+            Carte comprendre l'artificialisation de son territoire
+        </p>
+        {% if project.theme_map_understand_artif %}
+            <img
+                src="{{ project.theme_map_understand_artif.url }}"
+                alt="Carte comprendre l'artificialisation de son territoire"
+            >
+        {% else %}
+            <div
+                class="skeleton-loader"
+                hx-get="{% url 'project:artif-territory-map' diagnostic.id %}"
+                hx-trigger="load delay:10s"
+                hx-target="#target-artif-territory-map"
+                hx-swap="outerHTML">
+            </div>
+        {% endif %}
+    </a>
 </div>

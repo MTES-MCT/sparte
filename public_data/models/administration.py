@@ -178,7 +178,7 @@ class GetDataFromCeremaMixin:
         qs = self.get_qs_cerema()
         args = (Sum(field) for field in fields)
         qs = qs.aggregate(*args)
-        return {f"20{key[3:5]}": val * coef / 10000 for key, val in qs.items()}
+        return {f"20{key[3:5]}": float(val / 10000) * float(coef) for key, val in qs.items()}
 
 
 class LandMixin:

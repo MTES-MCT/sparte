@@ -76,5 +76,12 @@
         "value_type": "BOO",
         "value": "0",
         "is_global": false
+    },
+    {
+        "name": "URL vers le formulaire d'inscription aux webinaires",
+        "slug": "JOTFORM_URL",
+        "value_type": "STR",
+        "value": "https://form.jotform.com/231703451991355",
+        "is_global": true
     }
 ]

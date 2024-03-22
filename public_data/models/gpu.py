@@ -66,7 +66,7 @@ class ZoneUrba(models.Model):
 class ArtifAreaZoneUrba(models.Model):
     zone_urba = models.ForeignKey(ZoneUrba, on_delete=models.CASCADE)
     year = models.IntegerField("Millésime", validators=[MinValueValidator(2000), MaxValueValidator(2050)])
-    area = models.DecimalField("Surface artificielle", max_digits=15, decimal_places=4)
+    area = models.DecimalField("Surface artificialisée", max_digits=15, decimal_places=4)
 
     def __str__(self):
         return f"{self.zone_urba_id} {self.year} {self.area}Ha"

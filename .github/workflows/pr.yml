@@ -1,0 +1,69 @@
+name: 'Pull Request'
+
+on:
+  push:
+    branches-ignore:
+      - 'staging'
+      - 'master'
+
+env:
+  ENVIRONMENT: local
+  SECRET: ${{ secrets.SECRET }}
+  DEBUG: 1
+  ALLOWED_HOSTS: 127.0.0.1,localhost
+  DOMAIN_URL: http://localhost:8080/
+  EMAIL_ENGINE: local
+  EMAIL_FILE_PATH: ${GITHUB_WORKSPACE}/emails
+  HIGHCHART_SERVER: https://highcharts-export.osc-fr1.scalingo.io
+  POSTGRES_DB: postgres
+  CELERY_BROKER_URL: null
+  CELERY_RESULT_BACKEND: null
+  CELERY_TASK_ALWAYS_EAGER: null
+  API_KEY_SENDINBLUE: null
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_LOCATION: ${{ secrets.AWS_LOCATION }}
+  AWS_S3_REGION_NAME: ${{ secrets.AWS_S3_REGION_NAME }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  AWS_STORAGE_BUCKET_NAME: ${{ secrets.AWS_STORAGE_BUCKET_NAME }}
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pre-commit/action@v3.0.1
+        env:
+          SKIP: ggshield
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pipenv'
+      - run: curl https://raw.githubusercontent.com/pypa/pipenv/master/get-pipenv.py | python
+      - uses: nyurik/action-setup-postgis@v1
+        id: pg
+      - uses: scalingo-community/setup-scalingo@v0.1.1
+        with:
+          region: 'osc-fr1'
+          api_token: ${{ secrets.scalingo_api_token }}
+          app_name: 'sparte-staging'
+      - name: Cache DB Backup
+        id: cache-db-backup
+        uses: actions/cache@v4
+        with:
+          path: dump.tar.gz
+          key: db-backup
+      - name: Download DB Backup
+        if: steps.cache-db-backup.outputs.cache-hit != 'true'
+        run: scalingo --addon ad-bcec570b-e20a-4678-9cfc-7e715ef86d76 backups-download --output dump.tar.gz
+      - run: tar -xzvf dump.tar.gz -O > dump.pgsql
+      - run: psql -c "ALTER ROLE postgres SUPERUSER;"
+      - run: createdb test_postgres
+      - run: pg_restore --dbname test_postgres --no-owner --no-privileges --no-tablespaces --no-comments --clean --if-exists "dump.pgsql"
+      - run: pipenv install --dev
+      - run: pipenv run python manage.py test --keepdb
+        env:
+          DATABASE_URL: ${{ steps.pg.outputs.connection-uri }}

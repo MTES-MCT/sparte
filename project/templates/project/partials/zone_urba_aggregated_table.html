@@ -11,7 +11,7 @@
                             <th scope="col" class="text-end">Nombre<br/>de zones</th>
                             <th scope="col" class="text-end">Surface<br/>totale</th>
                             <th scope="col" class="text-end">Surface<br/>artificielle ({{ last_year_ocsge }})</th>
-                            <th scope="col" class="text-end">Taux de<br/>remplissage ({{ last_year_ocsge }})</th>
+                            <th scope="col" class="text-end">Taux d'artificialisation<br/> ({{ last_year_ocsge }})</th>
                             <th scope="col" class="text-end">Artificialisation<br/>({{ first_year_ocsge }} à {{ last_year_ocsge }})</th>
                         </tr>
                     </thead>
@@ -50,13 +50,13 @@
     </div>
 
     <div class="fr-callout bg-white fr-p-2w mt-4">
-        <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data-aggregated-table">Données</button>
+        <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data-aggregated-table">Données et calcul</button>
         <div class="fr-collapse" id="target-data-aggregated-table">
             <h6 class="fr-mt-2w">Source</h6>
             <p>Données d'OCcupation des Sols à Grande Echelle (OCS GE) de l'IGN, sur la période d'analyse. Zonages d'Urbanisme issus du Géoportail de l'Urbanisme (GPU) en date de juin 2023: <a href="https://www.geoportail-urbanisme.gouv.fr/" target="_blank">https://www.geoportail-urbanisme.gouv.fr/</a></p>
 
             <h6 class="fr-mt-2w">Calcul</h6>
-            <p>Qualifier l'artificialisation de chaque parcelle OCS GE via la matrice d'artficialisation (<a href="{% url 'public_data:matrix' %}">consulter</a>). Puis comparer la surface totale des parcelles artificielles dans chaque zonage d'urbanisme à la surface de la zone pour connaître le taux d'occupation.</p>
+            <p>Qualifier l'artificialisation de chaque parcelle OCS GE via la matrice d'artficialisation (<a href="{% url 'public_data:matrix' %}">consulter</a>). Puis comparer la surface totale des parcelles artificialisées dans chaque zonage d'urbanisme à la surface de la zone pour connaître le taux d'occupation.</p>
         </div>
     </div>
 

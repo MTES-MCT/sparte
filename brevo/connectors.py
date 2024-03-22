@@ -39,7 +39,7 @@ class Brevo:
     ) -> requests.Response:
         """Send user's data to Brevo."""
         response = requests.post(f"{self.url}/{end_point}", json=data, headers=headers or self.default_headers)
-        if response.status_code != 204:
+        if not response.ok:
             raise BrevoException("Error while sending user's data to Brevo.", response=response)
         return response
 
