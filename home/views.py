@@ -58,7 +58,6 @@ class PrivacyView(BreadCrumbMixin, TemplateView):
 class StatsView(BreadCrumbMixin, TemplateView):
     template_name = "home/stats.html"
 
-
     def get_context_data(self, **kwargs):
         kwargs["team_email"] = app_parameter.TEAM_EMAIL
         return super().get_context_data(**kwargs)
