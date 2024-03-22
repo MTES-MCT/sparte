@@ -83,6 +83,7 @@ export default class Events
 
     if (_event.features.length > 0)
     {
+
       let info = `<div class="info-box__title"><strong>${_options.title}</strong></div>`
 
       _options.properties.forEach((_obj) =>

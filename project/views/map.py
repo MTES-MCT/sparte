@@ -378,6 +378,7 @@ class MapTestView(BaseMap):
             },
         ]
 
+
     def get_layers_list(self):
         return super().get_layers_list() + [
             {
@@ -443,6 +444,7 @@ class MapTestView(BaseMap):
                 ],
             },
         ]
+
 
     def get_filters_list(self):
         return super().get_filters_list() + [
@@ -560,6 +562,7 @@ class UrbanZonesMapView(BaseMap):
                 "min_zoom": 12,
             },
         ]
+
 
     def get_layers_list(self):
         return super().get_layers_list() + [
@@ -750,6 +753,7 @@ class UrbanZonesMapView(BaseMap):
         couverture_colors.append("rgba(0, 0, 0, 0)")  # default color
 
         return super().get_filters_list() + [
+
             {
                 "name": "Zonages des documents d&rsquo;urbanisme",
                 "z-index": 4,
@@ -895,6 +899,7 @@ class MyArtifMapView(BaseMap):
         years = (
             self.object.cities.all().first().communediff_set.all().aggregate(old=Max("year_old"), new=Max("year_new"))
         )
+
         return super().get_sources_list() + [
             {
                 "key": "zones-artificielles-source",
@@ -1266,6 +1271,7 @@ class CitySpaceConsoMapView(BaseMap):
             },
         ]
 
+
     def get_layers_list(self):
         return super().get_layers_list() + [
             {
@@ -1414,6 +1420,7 @@ class CityArtifMapView(BaseMap):
     title = "Artificialisation des communes de mon territoire"
     scale_size = 5
     default_zoom = 10
+
 
     def get_sources_list(self):
         return super().get_sources_list() + [

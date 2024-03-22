@@ -119,7 +119,9 @@ def update_period(project: Project, start: str, end: str) -> None:
 
 def update_ocsge(project: Project):
     """Update cached data if new OCSGE has been delivered.
+
     This function is mainly called after data migration when new a departement is added (or new millesime)
+
     What it does:
     * search if start and end period of OCS GE analysis has been changed
     * update ocs ge status (available, partial, unavailable...)
