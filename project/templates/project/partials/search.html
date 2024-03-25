@@ -218,7 +218,7 @@
             results.hidden = false
         }
         if (!!e.target.id && e.target.id.startsWith('territory-')) {
-            const [, public_key] = e.target.id.split('territory-')
+            const public_key = e.target.id.split('territory-')[1]
             createDiagnostic(public_key)
         }
     })

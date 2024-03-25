@@ -4,8 +4,8 @@ import click
 
 ENVS = {
     "local": dict(),
-    "appreview": {
-        "app": "sparte-staging-pr127",
+    "4.6": {
+        "app": "sparte-staging-pr130",
         "region": "osc-fr1",
     },
     "staging": {
@@ -269,22 +269,14 @@ def migrate(ctx):
 
 @cli.command()
 @click.pass_context
-def mep_260(ctx):
-    """Trigger all data transformation to successful MEP release 2.4"""
-    click.secho("Start migration v2.6", fg="cyan")
-    click.secho("Nothing", fg="cyan")
-
-
-@cli.command()
-@click.pass_context
-def mep_450(ctx):
-    """Trigger all data transformation to successful MEP release 4.5"""
+def mep_46(ctx):
+    """Trigger all data transformation to successful MEP release 4.6"""
     connecter = ScalingoInterface(ctx.obj)
     connecter.detached = True
 
-    connecter.manage_py("mep_45")
+    connecter.manage_py("mep_46")
 
-    click.secho("End 4.5 migration", fg="cyan")
+    click.secho("End 4.6 migration", fg="cyan")
 
 
 if __name__ == "__main__":

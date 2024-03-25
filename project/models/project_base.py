@@ -13,7 +13,7 @@ from django.contrib.gis.geos import MultiPolygon, Polygon
 from django.core.cache import cache
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
-from django.db.models import Case, Count, DecimalField, F, Q, Sum, Value, When
+from django.db.models import Case, Count, DecimalField, F, Q, QuerySet, Sum, Value, When
 from django.db.models.functions import Cast, Coalesce, Concat
 from django.urls import reverse
 from django.utils import timezone
@@ -31,8 +31,11 @@ from public_data.models import (
     CommuneSol,
     CouvertureSol,
     Departement,
+    Epci,
     Land,
     OcsgeDiff,
+    Region,
+    Scot,
     UsageSol,
 )
 from public_data.models.administration import Commune
@@ -256,14 +259,19 @@ class Project(BaseProject):
 
     public_keys = models.CharField("Clé publiques", max_length=255, blank=True, null=True)
 
-    def recover_public_key(self):
-        try:
-            id_list = self.land_ids.split(",")
-        except AttributeError:
-            raise TooOldException("Project too old, no land id saved")
-        if len(id_list) > 1:
-            raise TooOldException("Too old project, it contains several territory.")
-        return f"{self.land_type}_{self.land_ids}"
+    def get_public_key(self) -> str:
+        """
+        Returns the public key of the land the project is based on.
+
+        Historically the app supported multiple lands, but it's not the case
+        anymore. This method is adapted for compatibility and will raise an
+        exception if the project is too old and contains several lands.
+        """
+
+        if "," in self.land_id:
+            raise TooOldException("Project too old, it contains several territory.")
+
+        return f"{self.land_type}_{self.land_id}"
 
     land_type = models.CharField(
         "Type de territoire",
@@ -278,13 +286,13 @@ class Project(BaseProject):
         blank=True,
         null=True,
     )
-    land_ids = models.CharField(
-        "Identifiants des territoires",
+    land_id = models.CharField(
+        "Identifiants du territoire du diagnostic",
         max_length=255,
         help_text=(
-            "Contient les identifiants qui composent le territoire du diagnostic. "
+            "Contient l'indentifiant du territoire du diagnostic. "
             "Il faut croiser cette donnée avec 'land_type' pour être en mesure de "
-            "de récupérer dans la base les instances correspondantes."
+            "de récupérer dans la base l'instances correspondante."
         ),
         blank=True,
         null=True,
@@ -413,7 +421,7 @@ class Project(BaseProject):
     async_set_combined_emprise_done = models.BooleanField(default=False)
     async_cover_image_done = models.BooleanField(default=False)
     async_find_first_and_last_ocsge_done = models.BooleanField(default=False)
-    async_add_neighboors_done = models.BooleanField(default=False)
+    async_add_comparison_lands_done = models.BooleanField(default=False)
     async_generate_theme_map_conso_done = models.BooleanField(default=False)
     async_generate_theme_map_artif_done = models.BooleanField(default=False)
     async_theme_map_understand_artif_done = models.BooleanField(default=False)
@@ -421,7 +429,9 @@ class Project(BaseProject):
     async_theme_map_fill_gpu_done = models.BooleanField(default=False)
     async_ocsge_coverage_status_done = models.BooleanField(default=False)
 
-    history = HistoricalRecords()
+    history = HistoricalRecords(
+        user_db_constraint=False,
+    )
 
     @property
     def async_complete(self):
@@ -431,7 +441,7 @@ class Project(BaseProject):
             & self.async_cover_image_done
             & self.async_find_first_and_last_ocsge_done
             & self.async_ocsge_coverage_status_done
-            & self.async_add_neighboors_done
+            & self.async_add_comparison_lands_done
             & self.async_generate_theme_map_conso_done
             & self.async_generate_theme_map_artif_done
             & self.async_theme_map_understand_artif_done
@@ -666,7 +676,6 @@ class Project(BaseProject):
                 year = f"20{key[3:5]}"
                 det = determinants[key[5:8]]
                 surface_in_sqm = val / 10000
-                # TODO: figure out why the vlaue below can be negative
                 results[det][year] = surface_in_sqm if surface_in_sqm >= 0 else 0
         return results
 
@@ -700,19 +709,13 @@ class Project(BaseProject):
 
     _conso_per_year = None
 
-    def get_conso_per_year(self):
+    def get_conso_per_year(self, coef=1):
         """Return Cerema data for the project, transposed and named after year"""
-        if not self._conso_per_year:
-            qs = self.get_cerema_cities()
-            fields = Cerema.get_art_field(self.analyse_start_date, self.analyse_end_date)
-            args = (Sum(field) for field in fields)
-            qs = qs.aggregate(*args)
-            self._conso_per_year = {
-                f"20{key[3:5]}": val / 10000
-                for key, val in qs.items()
-                # if val is not None
-            }
-        return self._conso_per_year
+        qs = self.get_cerema_cities()
+        fields = Cerema.get_art_field(self.analyse_start_date, self.analyse_end_date)
+        args = (Sum(field) for field in fields)
+        qs = qs.aggregate(*args)
+        return {f"20{key[3:5]}": float(val / 10000) * float(coef) for key, val in qs.items()}
 
     def get_pop_change_per_year(self, criteria: Literal["pop", "household"] = "pop") -> Dict:
         cities = (
@@ -1088,19 +1091,55 @@ class Project(BaseProject):
             .annotate(surface=Sum("surface"))
         )
 
-    def get_neighbors(self, land_type=None):
-        """Return all touching land of the project according to land_type.
+    @cached_property
+    def land(self) -> Commune | Departement | Epci | Region | Scot:
+        return Land(self.get_public_key()).land
 
-        Args:
-            land_type:
-
-        returns:
-            QuerySet of Lands
+    def get_arbitrary_comparison_lands(self) -> QuerySet[Departement] | QuerySet[Region] | None:
         """
-        if not land_type:
-            land_type = self.land_type
-        klass = AdminRef.get_class(land_type)
-        return klass.objects.all().filter(mpoly__touches=self.combined_emprise).order_by("name")
+        Return a queryset of lands if the project has arbitrary comparison lands
+        set, otherwise None.
+
+        Note that Guyane Française does not have arbitrary comparison lands the
+        same way as the other DROM-COM. It is because the territory is too
+        large to be compared with these territories.
+        """
+        arbitrary_comparison_source_ids = {
+            AdminRef.DEPARTEMENT: {
+                "971": ["972", "974"],
+                "972": ["971", "974"],
+                "974": ["971", "972"],
+            },
+            AdminRef.REGION: {
+                "01": ["02", "04"],
+                "02": ["01", "04"],
+                "04": ["01", "02"],
+            },
+        }
+
+        if self.land_type not in arbitrary_comparison_source_ids:
+            return None
+
+        if self.land.official_id not in arbitrary_comparison_source_ids[self.land_type]:
+            return None
+
+        comparison_source_ids = arbitrary_comparison_source_ids[self.land_type][self.land.official_id]
+
+        return AdminRef.get_class(name=self.land_type).objects.filter(source_id__in=comparison_source_ids)
+
+    def get_neighbors(self):
+        return AdminRef.get_class(self.land_type).objects.filter(mpoly__touches=self.combined_emprise)
+
+    def get_comparison_lands(
+        self, limit=9
+    ) -> QuerySet[Commune] | QuerySet[Departement] | QuerySet[Region] | QuerySet[Epci] | QuerySet[Scot]:
+        """
+        Returns a queryset of lands that the project is to be compared with.
+
+        By defaut, returns lands neighboring the project's combined emprise,
+        unless arbitrary comparison lands are defined.
+        """
+        return (self.get_arbitrary_comparison_lands() or self.get_neighbors()).order_by("name")[:limit]
 
     def get_matrix(self, sol: Literal["couverture", "usage"] = "couverture"):
         if sol == "usage":
@@ -1142,6 +1181,14 @@ class Project(BaseProject):
             str | float,
         ],
     ]:
+        zone_labels = {
+            "U": "zone urbaine",
+            "AUc": "zone à urbaniser",
+            "AUs": "zone à urbaniser bloquée",
+            "A": "zone agricole",
+            "N": "zone naturelle",
+        }
+
         """Return artif progression for each zone type.
 
         Returns:
@@ -1169,6 +1216,7 @@ class Project(BaseProject):
             if zone_type not in zone_list:
                 zone_list[zone_type] = {
                     "type_zone": zone_type,
+                    "type_zone_label": zone_labels.get(zone_type, ""),
                     "total_area": row["total_area"],
                     "first_artif_area": Decimal(0.0),
                     "last_artif_area": Decimal(0.0),

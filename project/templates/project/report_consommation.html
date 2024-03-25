@@ -76,7 +76,7 @@ Rapport consommation
                     </a>
                 </li>
                 <li>
-                    <a class="fr-summary__link" href="#territoires-de-comparaison">Comparaison du territoire avec les territoires voisins</a>
+                    <a class="fr-summary__link" href="#territoires-de-comparaison">Comparaison du territoire avec les territoires similaires</a>
                 </li>
                 <li>
                     <a class="fr-summary__link" href="#conso-relative-surface-anchor">Consommation d'espaces rapportée à la surface du territoire</a>
@@ -349,8 +349,8 @@ Rapport consommation
         </div>
 
         <div class="fr-mt-7w">
-            <h3 id="territoires-de-comparaison">Comparaison avec les territoires voisins</h3>
-
+            <h3 id="territoires-de-comparaison">Comparaison avec les territoires similaires</h3>
+            <p>Proposition de territoires de même maille administrative, il est possible de modifier cette selection dans la légende</p>
             <div class="border fr-p-2w">
                 <div class="d-flex justify-content-end align-items-center fr-mb-2w">
                     <a class="fr-mr-2w fr-btn fr-icon-add-circle-line fr-btn--tertiary fr-btn--sm" href="{% url 'project:lookalike' project.id %}?next={% url 'project:report_conso' project.id %}&anchor=territoires-de-comparaison" data-toggle="tooltip" title="Ajouter un territoire de comparaison" aria-hidden="true"></a>
@@ -475,12 +475,11 @@ Rapport consommation
             <div class="fr-modal__content">
                 <h1 class="fr-modal__title" id="comparaisonVoisinLabel">
                     <span class="fr-fi-arrow-right-line fr-fi--lg"></span>
-                    Astuces - Comparaison avec les voisins
+                    Astuces - Comparaison avec les territoires similaires
                 </h1>
                 <p class="fr-text--sm">
-                    La comparaison avec les voisins permet d'appréhender les dynamiques globales brutes de consommation d'espaces NAF et de les comparer entre elles.
-                    Par défaut, Mon Diagnostic Artificialisation vous permet de comparer votre territoire avec les territoires voisins de même niveau
-                    administratif : communes voisines, communes d'un même EPCI, EPCI d'un même département.
+                    La comparaison avec les territoires similaires permet d'appréhender les dynamiques globales brutes de consommation d'espaces NAF et de les comparer entre elles.
+                    Par défaut, Mon Diagnostic Artificialisation vous permet de comparer votre territoire avec les territoires voisins de même niveau administratif, à l'exception des territoires insulaires (notamment les DROM-COM) pour lesquelles une comparaison avec d'autres territoires similaires est proposée.
                 </p>
                 <p class="fr-text--sm">Pour réduire le nombre de territoires visibles dans le graphique, vous pouvez en masquer certains en cliquant sur eux dans la légende. Cliquez de nouveau dessus pour les ré-afficher.</p>
                 <p class="fr-text--sm">Avec le bouton <span class="fr-icon-drag-move-2-line fr-icon--sm" aria-hidden="true"></span>, vous pouvez afficher le graphique en plein écran.</p>

@@ -501,7 +501,6 @@ CSP_STYLE_SRC = [
 ]
 CSP_IMG_SRC = [
     "'self'",
-    "wxs.ign.fr",
     "data.geopf.fr",
     "data:",
     MEDIA_URL,
@@ -517,7 +516,6 @@ CSP_CONNECT_SRC = [
     "beta.gouv.fr",
     "sparte-metabase.osc-secnum-fr1.scalingo.io",
     "google.com",
-    "wxs.ign.fr",
     "data.geopf.fr",
     "https://raw.githack.com",
     "https://openmaptiles.geo.data.gouv.fr",

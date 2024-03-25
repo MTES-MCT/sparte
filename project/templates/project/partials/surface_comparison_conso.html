@@ -37,7 +37,7 @@
         <p>Données d'évolution des fichiers fonciers produits et diffusés par le Cérema depuis 2009 à partir des fichiers MAJIC (Mise A Jour de  l'Information Cadastrale) de la DGFIP. Le dernier millésime de 2022 est la  photographie du territoire au 1er janvier 2022, intégrant les évolutions réalisées au cours de l'année 2021.</p>
 
         <h6 class="fr-mt-2w">Calcul</h6>
-        <p>Calcul de l'air après projection <a href="https://epsg.io/2154" target="_blank">EPSG:2154 - Lambert 93</a></p>
+        <p>Données brutes, sans calcul</p>
 
         <h6 class="fr-mt-2w">Données</h6>
         <table class="table table-striped table-sm table-borderless">
@@ -96,13 +96,16 @@
         <p>Données d'évolution des fichiers fonciers produits et diffusés par le Cérema depuis 2009 à partir des fichiers MAJIC (Mise A Jour de  l'Information Cadastrale) de la DGFIP. Le dernier millésime de 2022 est la  photographie du territoire au 1er janvier 2022, intégrant les évolutions réalisées au cours de l'année 2021.</p>
 
         <h6 class="fr-mt-2w">Calcul</h6>
-        <p>La consommation de chaque territoire est divisée par sa propre surface puis multiplié par la surface de votre territoire.</p>
+        <p>
+            Pour chaque territoire, la consommation d'espace annuelle est multipliée par 1000 et divisée par
+            sa surface totale. Le résultat est exprimé en pour mille (‰).
+        </p>
 
         <h6 class="fr-mt-2w">Données</h6>
         <table class="table table-striped table-sm table-borderless">
             <thead>
                 <tr>
-                    <th scope="col">(Consommation d'espaces rapportée à la surface du territoire)</th>
+                    <th scope="col">Consommation proportionnelle du territoire (‰)</th>
                     {% for year in diagnostic.years %}
                     <th scope="col" class="text-end">{{ year }}</th>
                     {% endfor %}
@@ -141,7 +144,7 @@
                 <p class="fr-text--sm">
                     La consommation relative aux surfaces des territoires permet d'analyser la consommation d'espaces au regard de la surface totale du territoire.
                     Cette approche proportionnelle permet de comparer les territoires selon le pourcentage d'ha consommé par rapport au volume d'ha total du territoire.
-                    La comparaison avec les voisins permet d'appréhender les dynamiques globales brutes de consommation d'espaces NAF et de les comparer entre elles.
+                    La comparaison avec les territoires similaires permet d'appréhender les dynamiques globales brutes de consommation d'espaces NAF et de les comparer entre elles.
                 </p>
                 <p class="fr-text--sm">Avec le bouton <span class="fr-icon-drag-move-2-line fr-icon--sm" aria-hidden="true"></span>, vous pouvez afficher le graphique en plein écran.</p>
                 <p class="fr-text--sm">Avec le bouton <span class="fr-icon-download-line fr-icon--sm" aria-hidden="true"></span>, vous pouvez télécharger le graphique sous forme d'image (utilisez PNG si vous ne savez pas lequel choisir).</p>
