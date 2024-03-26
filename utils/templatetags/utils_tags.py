@@ -18,3 +18,12 @@ def adwords_google_tag_code(context):
         "CSP_NONCE": context["CSP_NONCE"],
         "GOOGLE_ADWORDS_ACTIVATE": settings.GOOGLE_ADWORDS_ACTIVATE,
     }
+
+
+@register.inclusion_tag("utils/crisp_tag.html", takes_context=True)
+def crisp_tag_code(context):
+    return {
+        "CSP_NONCE": context["CSP_NONCE"],
+        "CRISP_WEBSITE_ID": settings.CRISP_WEBSITE_ID,
+        "CRISP_ACTIVATED": settings.CRISP_ACTIVATED,
+    }
