@@ -396,9 +396,8 @@ class ProjectReportArtifView(ProjectReportBaseView):
         )
         pivot_df = pivot_df.swaplevel(0, 1, axis=1).sort_index(axis=1)
         pivot_df["total_net_artif"] = pivot_df.xs("net_artif", axis=1, level=1).sum(axis=1)
-        pivot_df["area"] = df.groupby("name")["area"].first()
+        pivot_df["area"] = df.groupby("name")["area"].first() * 10000
         pivot_df["net_artif_percentage"] = (pivot_df["total_net_artif"] / pivot_df["area"]) * 100
-        pivot_df["net_artif_percentage"] = pivot_df["net_artif_percentage"].apply(lambda x: f"{x:.4f}%")
         periods = [
             _ for _ in pivot_df.columns.levels[0] if _ not in ["total_net_artif", "area", "net_artif_percentage"]
         ]

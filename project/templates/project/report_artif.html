@@ -358,7 +358,7 @@ Rapport artificialisation
                                       <td class="text-end">{{ period.net_artif|floatformat:1 }}</td>
                                     {% endfor %}
                                     <td class="text-end">{{ record.total_net_artif|floatformat:1 }}</td>
-                                    <td class="text-end">{{ record.net_artif_percentage }}</td>
+                                    <td class="text-end">{{ record.net_artif_percentage|floatformat:2 }} %</td>
                                   </tr>
                                 {% endfor %}
                             </tbody>
