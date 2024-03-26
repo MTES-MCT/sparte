@@ -12,3 +12,5 @@ exclude =
     .mypy_cache,
     migrations,
     *.html
+per-file-ignores =
+    */migrations/*: E501

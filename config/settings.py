@@ -501,7 +501,7 @@ CSP_STYLE_SRC = [
 ]
 CSP_IMG_SRC = [
     "'self'",
-    "wxs.ign.fr",
+    "data.geopf.fr",
     "data:",
     MEDIA_URL,
     STATIC_URL,
@@ -516,7 +516,7 @@ CSP_CONNECT_SRC = [
     "beta.gouv.fr",
     "sparte-metabase.osc-secnum-fr1.scalingo.io",
     "google.com",
-    "wxs.ign.fr",
+    "data.geopf.fr",
     "https://raw.githack.com",
     "https://openmaptiles.geo.data.gouv.fr",
     "https://openmaptiles.github.io",
@@ -528,7 +528,7 @@ CSP_FRAME_ANCESTORS = ("'self'", "https://sparte-metabase.osc-secnum-fr1.scaling
 # MAP SETTINGS
 
 ORTHOPHOTO_URL = (
-    "https://wxs.ign.fr/ortho/geoportail/wmts?"
+    "https://data.geopf.fr/wmts?"
     "REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0&TILEMATRIXSET=PM"
     "&LAYER=ORTHOIMAGERY.ORTHOPHOTOS&STYLE=normal&FORMAT=image/jpeg"
     "&TILECOL={x}&TILEROW={y}&TILEMATRIX={z}"
