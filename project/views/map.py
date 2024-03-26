@@ -506,6 +506,7 @@ class UrbanZonesMapView(BaseMap):
 
     def get_sources_list(self):
         available_millesimes = self.object.get_available_millesimes(commit=True)
+
         return super().get_sources_list() + [
             {
                 "key": "ocs-ge-source",
@@ -560,6 +561,7 @@ class UrbanZonesMapView(BaseMap):
                 "min_zoom": 12,
             },
         ]
+
 
     def get_layers_list(self):
         return super().get_layers_list() + [
@@ -750,6 +752,7 @@ class UrbanZonesMapView(BaseMap):
         couverture_colors.append("rgba(0, 0, 0, 0)")  # default color
 
         return super().get_filters_list() + [
+
             {
                 "name": "Zonages des documents d&rsquo;urbanisme",
                 "z-index": 4,
@@ -1239,7 +1242,6 @@ class MyArtifMapView(BaseMap):
             },
         ]
 
-
 class CitySpaceConsoMapView(BaseMap):
     title = "Consommation d'espaces des communes de mon territoire"
     scale_size = 5
@@ -1247,6 +1249,7 @@ class CitySpaceConsoMapView(BaseMap):
 
     def get_sources_list(self):
         return super().get_sources_list() + [
+
             {
                 "key": "consommation-des-communes-source",
                 "params": {
@@ -1271,6 +1274,7 @@ class CitySpaceConsoMapView(BaseMap):
 
     def get_layers_list(self):
         return super().get_layers_list() + [
+
             {
                 "id": "consommation-des-communes-fill-layer",
                 "z-index": 4,
@@ -1498,6 +1502,7 @@ class CityArtifMapView(BaseMap):
 
     def get_filters_list(self):
         return super().get_filters_list() + [
+
             {
                 "name": "Artificialisation des communes",
                 "z-index": 3,

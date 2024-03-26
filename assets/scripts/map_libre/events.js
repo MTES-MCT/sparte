@@ -73,7 +73,6 @@ export default class Events
         { hover: false },
       )
     }
-
     this.hoveredPolygonId = null
   }
 

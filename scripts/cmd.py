@@ -4,10 +4,6 @@ import click
 
 ENVS = {
     "local": dict(),
-    "4.6": {
-        "app": "sparte-staging-pr130",
-        "region": "osc-fr1",
-    },
     "staging": {
         "app": "sparte-staging",
         "region": "osc-fr1",
@@ -265,18 +261,6 @@ def migrate(ctx):
     """Trigger migrate command to update database"""
     connecter = ScalingoInterface(ctx.obj)
     connecter.manage_py("migrate")
-
-
-@cli.command()
-@click.pass_context
-def mep_46(ctx):
-    """Trigger all data transformation to successful MEP release 4.6"""
-    connecter = ScalingoInterface(ctx.obj)
-    connecter.detached = True
-
-    connecter.manage_py("mep_46")
-
-    click.secho("End 4.6 migration", fg="cyan")
 
 
 if __name__ == "__main__":
