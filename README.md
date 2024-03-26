@@ -53,6 +53,7 @@ Le site est désormais accessible en local à cette adresse:
 | AWS_STORAGE_BUCKET_NAME | nom du bucket de stockage | sparte-staging |
 | CELERY_BROKER_URL | chaîne pour se connecter à redis | redis://127.0.0.1:6379/0 |
 | CELERY_RESULT_BACKEND | chaîne pour se connecter à redis | redis://127.0.0.1:6379/0 |
+| CRISP_WEBHOOK_SECRET_KEY | clef qui permet à l'application d'authentifier les requêtes webhook reçues depuis CRISP |  | 
 | CELERY_TASK_ALWAYS_EAGER | Rend celery synchrone | False |
 | DATABASE_URL | chaîne pour se connecter à la base de données Postgresql + gis | postgis://postgres:postgres@127.0.0.1:54321/postgres |
 | DB_LOGGING_LEVEL | détermine le niveau de log de la base de données | WARNING |

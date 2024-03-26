@@ -97,6 +97,7 @@ PROJECT_APPS = [
     "metabase.apps.MetabaseConfig",
     "brevo.apps.BrevoConfig",
     "documentation.apps.DocumentationConfig",
+    "crisp.apps.CrispConfig",
 ]
 
 
@@ -613,3 +614,7 @@ LOGGING = {
         },
     },
 }
+
+# CRISP
+
+CRISP_WEBHOOK_SECRET_KEY = env.str("CRISP_WEBHOOK_SECRET_KEY")
