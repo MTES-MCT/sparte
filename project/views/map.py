@@ -1239,6 +1239,7 @@ class MyArtifMapView(BaseMap):
             },
         ]
 
+
 class CitySpaceConsoMapView(BaseMap):
     title = "Consommation d'espaces des communes de mon territoire"
     scale_size = 5
