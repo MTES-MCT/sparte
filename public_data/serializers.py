@@ -4,14 +4,6 @@ from rest_framework_gis import serializers
 from public_data import models
 
 
-def get_label(code="", label=""):
-    if code is None:
-        code = "-"
-    if label is None:
-        label = "inconnu"
-    return f"{code} {label[:30]}"
-
-
 class CommuneSerializer(serializers.GeoFeatureModelSerializer):
     """Marker GeoJSON serializer."""
 
@@ -30,15 +22,6 @@ class CommuneSerializer(serializers.GeoFeatureModelSerializer):
 
 
 class OcsgeSerializer(serializers.GeoFeatureModelSerializer):
-    couverture = s.SerializerMethodField()
-    usage = s.SerializerMethodField()
-
-    def get_couverture(self, obj):
-        return get_label(code=obj.couverture, label=obj.couverture_label)
-
-    def get_usage(self, obj):
-        return get_label(code=obj.usage, label=obj.usage_label)
-
     class Meta:
         fields = (
             "id",
@@ -58,10 +41,6 @@ class OcsgeDiffSerializer(serializers.GeoFeatureModelSerializer):
             "id",
             "year_old",
             "year_new",
-            "cs_old_label",
-            "cs_new_label",
-            "us_old_label",
-            "us_new_label",
             "is_new_artif",
             "is_new_natural",
         )

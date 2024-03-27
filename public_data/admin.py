@@ -61,17 +61,13 @@ class OcsgeAdmin(admin.GeoModelAdmin):
     list_display = (
         "id",
         "couverture",
-        "couverture_label",
         "usage",
-        "usage_label",
         "year",
     )
     list_filter = ("year", "couverture", "usage")
     search_fields = (
         "couverture",
-        "couverture_label",
         "usage",
-        "usage_label",
         "year",
     )
 

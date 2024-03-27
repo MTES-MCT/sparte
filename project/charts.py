@@ -2,8 +2,7 @@ import collections
 from typing import Dict, List
 
 from django.contrib.gis.geos import MultiPolygon
-from django.db.models import F, Sum, Value
-from django.db.models.functions import Concat
+from django.db.models import Sum
 
 from highcharts import charts
 from project.models.project_base import Project
@@ -711,7 +710,7 @@ class DetailCouvArtifChart(ProjectChart):
                 "name": "Artificialisation",
                 "data": [
                     {
-                        "name": f"{item['code_prefix']} {item['label']}",
+                        "name": item["code_prefix"],
                         "y": item["artif"],
                     }
                     for item in self.get_series()
@@ -723,7 +722,7 @@ class DetailCouvArtifChart(ProjectChart):
                 "name": "Renaturation",
                 "data": [
                     {
-                        "name": f"{item['code_prefix']} {item['label']}",
+                        "name": item["code_prefix"],
                         "y": item["renat"],
                     }
                     for item in self.get_series()
@@ -1124,27 +1123,14 @@ class CouvWheelChart(ProjectChart):
                 year_old__gte=self.project.analyse_start_date,
                 year_new__lte=self.project.analyse_end_date,
             )
-            .annotate(
-                old_label=Concat(
-                    f"{self.prefix}_old",
-                    Value(" "),
-                    f"old_matrix__{self.name_sol}__label_short",
-                ),
-                new_label=Concat(
-                    f"{self.prefix}_new",
-                    Value(" "),
-                    f"new_matrix__{self.name_sol}__label_short",
-                ),
-                color=F(f"old_matrix__{self.name_sol}__map_color"),
-            )
-            .values("old_label", "new_label", "color")
+            .values(f"{self.prefix}_old", f"{self.prefix}_new")
             .annotate(total=Sum("surface") / 10000)
-            .order_by("old_label", "new_label", "color")
+            .order_by(f"{self.prefix}_old", f"{self.prefix}_new")
         )
         return [
-            [_["old_label"], _["new_label"], round(_["total"], 2), _["color"]]
+            [_[f"{self.prefix}_old"], _[f"{self.prefix}_new"], round(_["total"], 2)]
             for _ in self.data
-            if _["old_label"] != _["new_label"]
+            if _[f"{self.prefix}_old"] != _[f"{self.prefix}_new"]
         ]
 
 
