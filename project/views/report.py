@@ -225,9 +225,9 @@ class ProjectReportDicoverOcsgeView(ProjectReportBaseView):
                 "usa_pie_chart": charts.UsageSolPieChart(project),
                 "usa_progression_chart": charts.UsageSolProgressionChart(project),
                 "usa_leafs": UsageSol.get_leafs(),
-                "usage_nomenclature": {item.code_prefix_class: item for item in UsageSol.get_usage_nomenclature()},
+                "usage_nomenclature": {item.code_prefix_class: item for item in UsageSol.objects.all()},
                 "couv_leafs": CouvertureSol.get_leafs(),
-                "couv_nomenclature": {item.code_prefix_class: item for item in CouvertureSol.get_couv_nomenclature()},
+                "couv_nomenclature": {item.code_prefix_class: item for item in CouvertureSol.objects.all()},
             }
         )
 
