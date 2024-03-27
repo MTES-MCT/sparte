@@ -1246,7 +1246,6 @@ class CitySpaceConsoMapView(BaseMap):
 
     def get_sources_list(self):
         return super().get_sources_list() + [
-
             {
                 "key": "consommation-des-communes-source",
                 "params": {
