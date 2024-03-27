@@ -105,7 +105,7 @@ class Command(BaseCommand):
             .filter(
                 is_artificial=True,
                 year=city.last_millesime,
-                departement_id=city.departement_id,
+                departement=city.departement.source_id,
             )
             .aggregate(surface_artif=cast_sum_area("intersection_area"))["surface_artif"]
         )
@@ -126,18 +126,18 @@ class Command(BaseCommand):
         CommuneSol.objects.filter(city=city).delete()
         qs = (
             Ocsge.objects.intersect(city.mpoly)
-            .filter(departement_id=city.departement_id)
+            .filter(departement=city.departement.source_id)
             .exclude(matrix=None)
             .values("matrix_id", "year")
             .annotate(surface=cast_sum_area("intersection_area"))
         )
         CommuneSol.objects.bulk_create([CommuneSol(city=city, **_) for _ in qs])
 
-    def build_commune_diff(self, city):
+    def build_commune_diff(self, city: Commune):
         CommuneDiff.objects.filter(city=city).delete()
         qs = (
             OcsgeDiff.objects.intersect(city.mpoly)
-            .filter(departement_id=city.departement_id)
+            .filter(departement=city.departement.source_id)
             .values("year_old", "year_new")
             .annotate(
                 new_artif=cast_sum_area("intersection_area", filter=Q(is_new_artif=True)),

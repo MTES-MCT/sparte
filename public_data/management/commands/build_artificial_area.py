@@ -94,7 +94,7 @@ class Command(BaseCommand):
         qs = Ocsge.objects.filter(
             mpoly__intersects=city.mpoly,
             is_artificial=True,
-            departement_id=city.departement_id,
+            departement=city.departement.source_id,
         )
         if not qs.exists():
             return
@@ -113,7 +113,7 @@ class Command(BaseCommand):
                     year=result["year"],
                     mpoly=fix_poly(result["geom"]),
                     surface=result["surface"].sq_m / 10000,
-                    departement_id=city.departement_id,
+                    departement=city.departement.source_id,
                 )
                 for result in qs
             ]
