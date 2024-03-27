@@ -32,7 +32,7 @@ class ProjectAdmin(SimpleHistoryAdmin):
         "async_cover_image_done",
         "async_find_first_and_last_ocsge_done",
         "async_ocsge_coverage_status_done",
-        "async_add_neighboors_done",
+        "async_add_comparison_lands_done",
         "async_generate_theme_map_conso_done",
         "async_generate_theme_map_artif_done",
         "async_generate_theme_map_understand_artif_done",
@@ -79,7 +79,7 @@ class ProjectAdmin(SimpleHistoryAdmin):
             from project.models import trigger_async_tasks
 
             try:
-                public_key = obj.recover_public_key()
+                public_key = obj.get_public_key()
                 trigger_async_tasks(obj, public_key)
                 messages.add_message(request, messages.INFO, "Génération de l'image de couverture en cours")
             except TooOldException:

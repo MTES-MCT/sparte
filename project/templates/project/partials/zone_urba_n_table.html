@@ -2,7 +2,8 @@
     <h3>Zones naturelles ayant été le plus artificialisées sur la période</h3>
 
     <div class="overflow-auto">
-        <table class="table table-striped table-sm table-borderless table-custom">
+        <table class="table fr-table--no-caption table-striped table-sm table-borderless table-custom">
+            <caption>Données zones naturelles ayant été le plus artificialisées sur la période</caption>
             <thead>
                 <tr>
                     <th scope="col">Commune</th>
@@ -11,8 +12,8 @@
                     <th scope="col">Libellé long</th>
                     <th scope="col">Type de zone</th>
                     <th scope="col" class="text-end">Surface</th>
-                    <th scope="col" class="text-end">Surface artificielle ({{ last_year_ocsge }})</th>
-                    <th scope="col" class="text-end">Taux de remplissage ({{ last_year_ocsge }})</th>
+                    <th scope="col" class="text-end">Surface artificialisée ({{ last_year_ocsge }})</th>
+                    <th scope="col" class="text-end">Taux d'artificialisation ({{ last_year_ocsge }})</th>
                     <th scope="col" class="text-end">Artificialisation ({{ first_year_ocsge }} à {{ last_year_ocsge }})</th>
                 </tr>
             </thead>
@@ -39,15 +40,25 @@
         </table>
     </div>
 
-    <div class="fr-callout bg-white fr-p-2w mt-4">
-        <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data-n-table">Données</button>
-        <div class="fr-collapse" id="target-data-n-table">
-            <h6 class="fr-mt-2w">Source</h6>
-            <p>Données d'OCcupation des Sols à Grande Echelle (OCS GE) de l'IGN, sur la période d'analyse. Zonages d'Urbanisme issus du Géoportail de l'Urbanisme (GPU) en date de juin 2023: <a href="https://www.geoportail-urbanisme.gouv.fr/" target="_blank">https://www.geoportail-urbanisme.gouv.fr/</a></p>
-
-            <h6 class="fr-mt-2w">Calcul</h6>
-            <p>Qualifier l'artificialisation de chaque parcelle OCS GE via la matrice d'artficialisation (<a href="{% url 'public_data:matrix' %}">consulter</a>). Puis comparer la surface totale des parcelles artificielles, dans chaque zonage d'urbanisme N, à la surface de la zone pour connaître le taux d'occupation.</p>
+    <div class="fr-notice fr-mt-4w">
+        <div class="fr-container">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <span class="fr-icon-information-line" aria-hidden="true"></span>
+                    <span class="fr-text--xs fr-mr-1w">Source de données: </span>
+                    <p class="fr-tag fr-tag--sm fr-tag--success">
+                        <strong>OCS GE</strong>
+                    </p>
+                </div>
+                <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data-n-table">Détails données et calcul</button>
+            </div>
+            <div class="fr-collapse" id="target-data-n-table">
+                <h6 class="fr-mt-2w">Source</h6>
+                <p class="fr-text--sm">Données d'OCcupation des Sols à Grande Echelle (OCS GE) de l'IGN, sur la période d'analyse. Zonages d'Urbanisme issus du Géoportail de l'Urbanisme (GPU) en date de juin 2023: <a href="https://www.geoportail-urbanisme.gouv.fr/" target="_blank" rel="noopener">https://www.geoportail-urbanisme.gouv.fr/</a></p>
+    
+                <h6 class="fr-mt-2w">Calcul</h6>
+                <p class="fr-text--sm">Qualifier l'artificialisation de chaque parcelle OCS GE via la matrice d'artficialisation (<a href="{% url 'public_data:matrix' %}">consulter</a>). Puis comparer la surface totale des parcelles artificialisées, dans chaque zonage d'urbanisme N, à la surface de la zone pour connaître le taux d'occupation.</p>
+            </div>
         </div>
     </div>
-
 </div>

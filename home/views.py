@@ -22,7 +22,6 @@ from utils.functions import get_url_with_domain
 from utils.htmx import HtmxRedirectMixin, StandAloneMixin
 from utils.views_mixins import BreadCrumbMixin
 
-from . import charts
 from .forms import NewsletterForm
 from .models import AliveTimeStamp, ContactForm, Newsletter
 from .tasks import send_contact_form, send_nwl_confirmation, send_nwl_final
@@ -60,15 +59,7 @@ class StatsView(BreadCrumbMixin, TemplateView):
     template_name = "home/stats.html"
 
     def get_context_data(self, **kwargs):
-        kwargs = dict()
-        kwargs["nb_dl_portrait"] = Request.objects.all().count() + 1
-        kwargs["budget"] = app_parameter.BUDGET_CONSOMME
-        kwargs["cout_portrait"] = int(round(kwargs["budget"] / kwargs["nb_dl_portrait"], 0))
-        kwargs["diag_created_downloaded"] = charts.DiagAndDownloadChart()
-        kwargs["report_pie"] = charts.UseOfReportPieChart()
-        kwargs["date_budget"] = app_parameter.BUDGET_DATE
-        kwargs["organism_pie_chart"] = charts.OrganismPieChart()
-        # kwargs["function_pie_chart"] = charts.FunctionsPieChart()
+        kwargs["team_email"] = app_parameter.TEAM_EMAIL
         return super().get_context_data(**kwargs)
 
 

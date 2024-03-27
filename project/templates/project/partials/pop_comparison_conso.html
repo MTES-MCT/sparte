@@ -33,37 +33,49 @@
 </div>
 {% display_chart 'pop_chart' pop_chart CSP_NONCE %}
 
-<div class="fr-callout bg-white fr-p-2w mt-4">
-    <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data-pop-conso">Données</button>
-    <div class="fr-collapse" id="target-data-pop-conso">
-        <h6 class="fr-mt-2w">Source</h6>
-        <p>Recensement de la population (RP) de l'INSEE, sur la période d'analyse (millésime min : 2006, millésime max : 2019)  : <a href="https://www.insee.fr/fr/statistiques/3698339" target="_blank" rel="noreferrer noopener">L'historique des populations communales</a> (colonnes PMUN06 à PMUN19)</p>
-
-        <h6 class="fr-mt-2w">Calcul</h6>
-        <p>Données brutes.</p>
-
-        <h6 class="fr-mt-2w">Données</h6>
-        <table class="table table-striped table-sm table-borderless">
-            <thead>
-                <tr>
-                    <th scope="col"></th>
-                    {% for year in diagnostic.years %}
-                    <th scope="col" class="text-end">{{ year }}</th>
+<div class="fr-notice fr-mt-4w fr-mb-7w">
+    <div class="fr-container">
+        <div class="d-flex align-items-center justify-content-between">
+            <div>
+                <span class="fr-icon-information-line" aria-hidden="true"></span>
+                <span class="fr-text--xs fr-mr-1w">Source de données: </span>
+                <p class="fr-tag fr-tag--sm fr-tag--blue">
+                    <strong>FICHIERS FONCIERS</strong>
+                </p>
+            </div>
+            <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data-pop-conso">Détails données et calcul</button>
+        </div>
+        <div class="fr-collapse" id="target-data-pop-conso">
+            <h6 class="fr-mt-2w">Source</h6>
+            <p class="fr-text--sm">Recensement de la population (RP) de l'INSEE, sur la période d'analyse (millésime min : 2006, millésime max : 2019)  : <a href="https://www.insee.fr/fr/statistiques/3698339" target="_blank" rel="noreferrer noopener">L'historique des populations communales</a> (colonnes PMUN06 à PMUN19)</p>
+    
+            <h6 class="fr-mt-2w">Calcul</h6>
+            <p class="fr-text--sm">Données brutes.</p>
+    
+            <h6 class="fr-mt-2w">Données</h6>
+            <table class="table fr-table--no-caption table-striped table-sm table-borderless fr-text--sm">
+                <caption>Données évolution de la population du territoire</caption>
+                <thead>
+                    <tr>
+                        <th scope="col"></th>
+                        {% for year in diagnostic.years %}
+                        <th scope="col" class="text-end">{{ year }}</th>
+                        {% endfor %}
+                        <th scope="col" class="text-end">Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for city_name, data in pop_table.items %}
+                    <tr>
+                        <th scope="row">{{ city_name }}</th>
+                        {% for year, val in data.items %}
+                        <td align="right">{{ val|floatformat:1 }}</td>
+                        {% endfor %}
+                    </tr>
                     {% endfor %}
-                    <th scope="col" class="text-end">Total</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for city_name, data in pop_table.items %}
-                <tr>
-                    <th scope="row">{{ city_name }}</th>
-                    {% for year, val in data.items %}
-                    <td align="right">{{ val|floatformat:0 }}</td>
-                    {% endfor %}
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 
@@ -96,40 +108,52 @@
 </div>
 {% display_chart 'conso_pop_chart' conso_pop_chart CSP_NONCE %}
 
-<div class="fr-callout bg-white fr-p-2w mt-4">
-    <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data-4">Données</button>
-    <div class="fr-collapse" id="target-data-4">
-        <h6 class="fr-mt-2w">Sourcce</h6>
-        <ul>
-            <li>Recensement de la population (RP) de l'INSEE, sur la période d'analyse (millésime min : 2006, millésime max : 2019)  : <a href="https://www.insee.fr/fr/statistiques/3698339" target="_blank" rel="noreferrer noopener">L'historique des populations communales</a> (colonnes PMUN06 à PMUN19)</li>
-            <li>Données d'évolution des fichiers fonciers produits et diffusés par le Cérema depuis 2009 à partir des fichiers MAJIC (Mise A Jour de  l'Information Cadastrale) de la DGFIP. Le dernier millésime de 2022 est la  photographie du territoire au 1er janvier 2022, intégrant les évolutions réalisées au cours de l'année 2021.</li>
-        </ul>
-
-        <h6 class="fr-mt-2w">Calcul</h6>
-        <p>Consommation d'espaces NAF annuelle divisée par l'évolution de la population, par maille d'analyse du territoire de diagnostic.</p>
-
-        <h6 class="fr-mt-2w">Données</h6>
-        <table class="table table-striped table-sm table-borderless">
-            <thead>
-                <tr>
-                    <th scope="col" class="text-end">(Ha par nouvel habitant)</th>
-                    {% for year in diagnostic.years %}
-                    <th scope="col" class="text-end">{{ year }}</th>
+<div class="fr-notice fr-mt-4w">
+    <div class="fr-container">
+        <div class="d-flex align-items-center justify-content-between">
+            <div>
+                <span class="fr-icon-information-line" aria-hidden="true"></span>
+                <span class="fr-text--xs fr-mr-1w">Source de données: </span>
+                <p class="fr-tag fr-tag--sm fr-tag--blue">
+                    <strong>FICHIERS FONCIERS</strong>
+                </p>
+            </div>
+            <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data-4">Détails données et calcul</button>
+        </div>
+        <div class="fr-collapse" id="target-data-4">
+            <h6 class="fr-mt-2w">Source</h6>
+            <ul class="fr-text--sm">
+                <li>Recensement de la population (RP) de l'INSEE, sur la période d'analyse (millésime min : 2006, millésime max : 2019)  : <a href="https://www.insee.fr/fr/statistiques/3698339" target="_blank" rel="noreferrer noopener">L'historique des populations communales</a> (colonnes PMUN06 à PMUN19)</li>
+                <li>Données d'évolution des fichiers fonciers produits et diffusés par le Cerema depuis 2009 à partir des fichiers MAJIC (Mise A Jour de  l'Information Cadastrale) de la DGFIP. Le dernier millésime de 2022 est la  photographie du territoire au 1er janvier 2022, intégrant les évolutions réalisées au cours de l'année 2021.</li>
+            </ul>
+    
+            <h6 class="fr-mt-2w">Calcul</h6>
+            <p class="fr-text--sm">Consommation d'espaces NAF annuelle divisée par l'évolution de la population, par maille d'analyse du territoire de diagnostic.</p>
+    
+            <h6 class="fr-mt-2w">Données</h6>
+            <table class="table fr-table--no-caption table-striped table-sm table-borderless fr-text--sm">
+                <caption>Données Ha par nouvel habitant</caption>
+                <thead>
+                    <tr>
+                        <th scope="col" class="text-end">(Ha par nouvel habitant)</th>
+                        {% for year in diagnostic.years %}
+                        <th scope="col" class="text-end">{{ year }}</th>
+                        {% endfor %}
+                        <th scope="col" class="text-end">Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for city_name, data in conso_pop_table.items %}
+                    <tr>
+                        <th scope="row">{{ city_name }}</th>
+                        {% for year, val in data.items %}
+                        <td align="right">{{ val|floatformat:1 }}</td>
+                        {% endfor %}
+                    </tr>
                     {% endfor %}
-                    <th scope="col" class="text-end">Total</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for city_name, data in conso_pop_table.items %}
-                <tr>
-                    <th scope="row">{{ city_name }}</th>
-                    {% for year, val in data.items %}
-                    <td align="right">{{ val|floatformat:2 }}</td>
-                    {% endfor %}
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 

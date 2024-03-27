@@ -20,8 +20,9 @@ class ProjectReportTrajectoryView(ProjectReportBaseView):
     def get_context_data(self, **kwargs) -> Dict[str, Any]:
         diagnostic = self.get_object()
         kwargs |= {"diagnostic": diagnostic, "active_page": "trajectory"}
+        has_related_trajectory = diagnostic.trajectory_set.count() > 0
 
-        if diagnostic.trajectory_set.count() == 0:
+        if not has_related_trajectory:
             trajectory_chart = ObjectiveChart(diagnostic)
         else:
             trajectory_chart = TrajectoryChart(diagnostic)
@@ -36,6 +37,7 @@ class ProjectReportTrajectoryView(ProjectReportBaseView):
             "conso_2031": trajectory_chart.conso_2031,
             "annual_objective_2031": trajectory_chart.annual_objective_2031,
             "trajectory_chart": trajectory_chart,
+            "has_related_trajectory": has_related_trajectory,
         }
         return super().get_context_data(**kwargs)
 
@@ -146,7 +148,9 @@ class ProjectReportTrajectoryGraphView(StandAloneMixin, TemplateView):
 
     def get_context_data(self, **kwargs) -> Dict[str, Any]:
         diagnostic = Project.objects.get(id=self.kwargs["pk"])
-        if diagnostic.trajectory_set.count() == 0:
+        has_related_trajectory = diagnostic.trajectory_set.count() > 0
+
+        if not has_related_trajectory:
             trajectory_chart = ObjectiveChart(diagnostic)
         else:
             trajectory_chart = TrajectoryChart(diagnostic)
@@ -163,6 +167,7 @@ class ProjectReportTrajectoryGraphView(StandAloneMixin, TemplateView):
             "annual_real": trajectory_chart.annual_real,
             "conso_2031": trajectory_chart.conso_2031,
             "annual_objective_2031": trajectory_chart.annual_objective_2031,
+            "has_related_trajectory": has_related_trajectory,
         }
         return super().get_context_data(**kwargs)
 

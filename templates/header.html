@@ -38,7 +38,12 @@
                                     Créer un diagnostic
                                 </a>
                             </li>
-                        {% endif %}
+                            {% endif %}
+                            <li>
+                                <a class="fr-btn fr-ml-2w" target="_blank" href="{% url 'documentation:faq' %}" rel="noopener">
+                                    FAQ
+                                </a>
+                            </li>
                             {% if user.is_authenticated %}
                             <li>
                                 <button class="fr-btn" aria-expanded="false" aria-controls="menu-mon-compte">Mon compte</button>
@@ -70,7 +75,7 @@
                                         </li>
                                         <li>
                                             <a class="fr-nav__link" href="{{ METABASE_URL }}" target="_blank">Metabase</a>
-                                          </li>
+                                        </li>
                                         {% endif %}
                                         <li>
                                             <a class="fr-nav__link" href="{% url 'users:signout' %}" target="_self">Déconnexion</a>

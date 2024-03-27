@@ -9,9 +9,13 @@ from highcharts import charts
 from project.models.project_base import Project
 from public_data.models import AdminRef, CouvertureSol, OcsgeDiff, UsageSol
 
+DEFAULT_HEADER_FORMAT = "<b>{series.name}</b><br/>"
+DEFAULT_POINT_FORMAT = "{point.name}: {point.y}"
+DEFAULT_VALUE_DECIMALS = 2
+
 
 class ProjectChart(charts.Chart):
-    def __init__(self, project, group_name=None):
+    def __init__(self, project: Project, group_name=None):
         self.project = project
         self.group_name = group_name
         super().__init__()
@@ -25,10 +29,10 @@ class ConsoChart(ProjectChart):
         "xAxis": {"type": "category"},
         "legend": {"layout": "vertical", "align": "right", "verticalAlign": "top"},
         "tooltip": {
-            "headerFormat": "<b>{series.name}</b><br/>",
-            "pointFormat": "{point.name}: {point.y}",
+            "headerFormat": DEFAULT_HEADER_FORMAT,
+            "pointFormat": DEFAULT_POINT_FORMAT,
             "valueSuffix": " Ha",
-            "valueDecimals": 0,
+            "valueDecimals": DEFAULT_VALUE_DECIMALS,
         },
         "series": [],
     }
@@ -55,23 +59,43 @@ class ConsoChart(ProjectChart):
         super().add_series()
 
 
-class ConsoComparisonChart(ConsoChart):
+class ConsoComparisonChart(ProjectChart):
     name = "conso comparison"
     param = {
-        "title": {"text": "Consommation proportionnelle à la surface"},
-        "yAxis": {"visible": False},
+        "title": {"text": "Consommation proportionnelle à la surface (‰)"},
+        "yAxis": {
+            "title": {"text": "Consommation d'espace proportionnelle à la surface du territoire (‰ - pour mille)"}
+        },
         "xAxis": {"type": "category"},
         "legend": {"layout": "vertical", "align": "right", "verticalAlign": "top"},
-        "tooltip": {"enabled": False},
+        "tooltip": {
+            "headerFormat": DEFAULT_HEADER_FORMAT,
+            "pointFormat": DEFAULT_POINT_FORMAT,
+            "valueSuffix": " ‰",
+            "valueDecimals": DEFAULT_VALUE_DECIMALS,
+        },
         "series": [],
     }
+
+    def add_series(self):
+        self.add_serie(
+            self.project.name,
+            self.project.get_conso_per_year(
+                coef=1000 / self.project.area,
+            ),
+            **{
+                "color": "#ff0000",
+                "dashStyle": "ShortDash",
+            },
+        )
+        super().add_series()
 
     def get_series(self):
         return {
             land.name: land.get_conso_per_year(
                 self.project.analyse_start_date,
                 self.project.analyse_end_date,
-                coef=self.project.area / float(land.area),
+                coef=1000 / land.area,
             )
             for land in self.project.get_look_a_like()
         }
@@ -82,8 +106,14 @@ class ConsoCommuneChart(ProjectChart):
     param = {
         "chart": {"type": "area"},
         "title": {"text": ""},
-        "yAxis": {"title": {"text": "Consommé (en ha)"}},
+        "yAxis": {"title": {"text": "Consommé (ha)"}},
         "xAxis": {"type": "category"},
+        "tooltip": {
+            "headerFormat": DEFAULT_HEADER_FORMAT,
+            "pointFormat": DEFAULT_POINT_FORMAT,
+            "valueSuffix": " Ha",
+            "valueDecimals": DEFAULT_VALUE_DECIMALS,
+        },
         "legend": {
             "layout": "vertical",
             "align": "right",
@@ -184,10 +214,10 @@ class ObjectiveChart(ProjectChart):
         },
         "legend": {"layout": "horizontal", "align": "center", "verticalAlign": "top"},
         "tooltip": {
-            "headerFormat": "<b>{series.name}</b><br/>",
-            "pointFormat": "{point.name}: {point.y}",
+            "headerFormat": DEFAULT_HEADER_FORMAT,
+            "pointFormat": DEFAULT_POINT_FORMAT,
             "valueSuffix": " Ha",
-            "valueDecimals": 1,
+            "valueDecimals": DEFAULT_VALUE_DECIMALS,
         },
         "series": [],
     }
@@ -296,13 +326,13 @@ class DeterminantPerYearChart(ProjectChart):
             "stackLabels": {"enabled": True, "format": "{total:,.1f}"},
         },
         "tooltip": {
-            "headerFormat": "<b>{point.x}</b><br/>",
+            "headerFormat": "<b>{point.key}</b><br/>",
             "pointFormat": "{series.name}: {point.y}",
             "valueSuffix": " Ha",
-            "valueDecimals": 1,
+            "valueDecimals": DEFAULT_VALUE_DECIMALS,
         },
         "xAxis": {"type": "category"},
-        "legend": {"layout": "horizontal", "align": "center", "verticalAlign": "top"},
+        "legend": {"layout": "vertical", "align": "right", "verticalAlign": "middle"},
         "plotOptions": {
             "column": {
                 "stacking": "normal",
@@ -382,7 +412,7 @@ class EvolutionArtifChart(ProjectChart):
         "tooltip": {
             "pointFormat": "{series.name}: {point.y}",
             "valueSuffix": " Ha",
-            "valueDecimals": 1,
+            "valueDecimals": DEFAULT_VALUE_DECIMALS,
         },
         "xAxis": {"type": "category"},
         "legend": {"layout": "horizontal", "align": "center", "verticalAlign": "top"},
@@ -450,7 +480,7 @@ class WaterfallnArtifChart(ProjectChart):
         "tooltip": {
             "pointFormat": "{series.name}: {point.y}",
             "valueSuffix": " Ha",
-            "valueDecimals": 1,
+            "valueDecimals": DEFAULT_VALUE_DECIMALS,
         },
         "xAxis": {"type": "category"},
         "legend": {"enabled": False},
@@ -507,7 +537,7 @@ class CouvertureSolPieChart(ProjectChart):
         },
         "tooltip": {
             "valueSuffix": " Ha",
-            "valueDecimals": 0,
+            "valueDecimals": DEFAULT_VALUE_DECIMALS,
             "pointFormat": "<b>{point.y}</b><br/>{point.percent}",
         },
         "xAxis": {"type": "category"},
@@ -570,7 +600,7 @@ class CouvertureSolProgressionChart(ProjectChart):
         "tooltip": {
             "pointFormat": "{series.name}: {point.y}",
             "valueSuffix": " Ha",
-            "valueDecimals": 2,
+            "valueDecimals": DEFAULT_VALUE_DECIMALS,
             "headerFormat": "",
         },
         "xAxis": {"type": "category"},
@@ -626,7 +656,7 @@ class DetailCouvArtifChart(ProjectChart):
         "tooltip": {
             "pointFormat": "{series.name}: {point.y}",
             "valueSuffix": " Ha",
-            "valueDecimals": 2,
+            "valueDecimals": DEFAULT_VALUE_DECIMALS,
             "headerFormat": "",
         },
         "xAxis": {"type": "category"},
@@ -640,7 +670,7 @@ class DetailCouvArtifChart(ProjectChart):
         self.geom = geom
         super().__init__(project)
         self.chart["title"]["text"] = (
-            f"Evolution des surfaces artificielles par type de couverture de {self.first_millesime} à "
+            f"Evolution de l'artificialisation par type de couverture de {self.first_millesime} à "
             f"{self.last_millesime}"
         )
 
@@ -681,7 +711,7 @@ class DetailCouvArtifChart(ProjectChart):
                 "name": "Artificialisation",
                 "data": [
                     {
-                        "name": item["code_prefix"],
+                        "name": f"{item['code_prefix']} {item['label']}",
                         "y": item["artif"],
                     }
                     for item in self.get_series()
@@ -693,7 +723,7 @@ class DetailCouvArtifChart(ProjectChart):
                 "name": "Renaturation",
                 "data": [
                     {
-                        "name": item["code_prefix"],
+                        "name": f"{item['code_prefix']} {item['label']}",
                         "y": item["renat"],
                     }
                     for item in self.get_series()
@@ -708,8 +738,7 @@ class DetailUsageArtifChart(DetailCouvArtifChart):
     def __init__(self, project: Project, geom: MultiPolygon | None = None):
         super().__init__(project, geom=geom)
         self.chart["title"]["text"] = (
-            f"Evolution des surfaces artificielles par type d'usage de {self.first_millesime} à "
-            f"{self.last_millesime}"
+            f"Evolution de l'artificialisation par type d'usage de {self.first_millesime} à " f"{self.last_millesime}"
         )
 
     def get_series(self):
@@ -744,7 +773,7 @@ class ArtifCouvSolPieChart(ProjectChart):
         },
         "tooltip": {
             "valueSuffix": " Ha",
-            "valueDecimals": 0,
+            "valueDecimals": DEFAULT_VALUE_DECIMALS,
             "pointFormat": "<b>{point.y}</b><br/>{point.percent}",
         },
         "xAxis": {"type": "category"},
@@ -898,6 +927,12 @@ class ConsoComparisonPopChart(ProjectChart):
     param = {
         "title": {"text": ("Ha par nouvel habitant")},
         "yAxis": {"title": {"text": "Consommation par habitant (en ha)"}},
+        "tooltip": {
+            "headerFormat": DEFAULT_HEADER_FORMAT,
+            "valueSuffix": " Ha",
+            "valueDecimals": DEFAULT_VALUE_DECIMALS,
+            "pointFormat": DEFAULT_POINT_FORMAT,
+        },
         "xAxis": {"type": "category"},
         "legend": {"layout": "vertical", "align": "right", "verticalAlign": "middle"},
         "series": [],
@@ -964,6 +999,12 @@ class ConsoComparisonHouseholdChart(ProjectChart):
     name = "conso comparison"
     param = {
         "title": {"text": ("Ha par nouveau ménage accueilli")},
+        "tooltip": {
+            "headerFormat": DEFAULT_HEADER_FORMAT,
+            "valueSuffix": " Ha",
+            "valueDecimals": DEFAULT_VALUE_DECIMALS,
+            "pointFormat": DEFAULT_POINT_FORMAT,
+        },
         "yAxis": {"title": {"text": "Consommation par ménage (en ha)"}},
         "xAxis": {"type": "category"},
         "legend": {"layout": "vertical", "align": "right", "verticalAlign": "middle"},

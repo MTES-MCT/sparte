@@ -21,7 +21,7 @@ from django.core.exceptions import ImproperlyConfigured
 from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.redis import RedisIntegration
 
-OFFICIAL_VERSION = "4.5.0"
+OFFICIAL_VERSION = "4.6.0"
 
 root = environ.Path(__file__) - 2  # get root of the project
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -501,7 +501,6 @@ CSP_STYLE_SRC = [
 ]
 CSP_IMG_SRC = [
     "'self'",
-    "wxs.ign.fr",
     "data.geopf.fr",
     "data:",
     MEDIA_URL,
@@ -517,7 +516,6 @@ CSP_CONNECT_SRC = [
     "beta.gouv.fr",
     "sparte-metabase.osc-secnum-fr1.scalingo.io",
     "google.com",
-    "wxs.ign.fr",
     "data.geopf.fr",
     "https://raw.githack.com",
     "https://openmaptiles.geo.data.gouv.fr",

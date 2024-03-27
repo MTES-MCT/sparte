@@ -26,7 +26,8 @@ export default class Legend
 
     this.legendTitleNode = document.createElement('div')
     this.legendTitleNode.classList.add('legend-box__title')
-    this.legendTitleNode.innerHTML = `<strong>${this.title}</strong><i class='bi bi-info-circle'></i>`
+
+    this.legendTitleNode.innerHTML = `<strong>${this.title}</strong>`
     this.legendBoxNode.appendChild(this.legendTitleNode)
 
     if (this.subtitle)
