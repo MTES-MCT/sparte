@@ -2,12 +2,38 @@
 
 Ce changelog suit la méthode "keep a changelog" disponible ici: [https://keepachangelog.com/en/1.0.0/](https://keepachangelog.com/en/1.0.0/)
 
+## [4.6] Retours DGALN et Datactivist - 2024.03.27
+
+### Ajouté
+- Territoires similaires pré-définies pour les DROM (exceptée la Guyanne) [#125](https://github.com/MTES-MCT/sparte/pull/125)
+- Tags pour identifier plus facilement la source des données présentées [#180](https://github.com/MTES-MCT/sparte/pull/180)
+- Lien sur la page d'accueil pour participer au webinaire [#158](https://github.com/MTES-MCT/sparte/pull/158)
+
+### Modifié
+
+- Amélioration de l'affichage des zonages d'urbanisme sur la page synthèse [#162](https://github.com/MTES-MCT/sparte/pull/162)
+- Homogénéisation des notions de surfaces artificialisées (stock) et d'artificialisation (flux) [#140](https://github.com/MTES-MCT/sparte/pull/140)
+- Amélioration du graphique de consommation proportionnelle à la surface du territoire [#145](https://github.com/MTES-MCT/sparte/pull/145)
+- Bascule géoportail -> géoplateforme [#163](https://github.com/MTES-MCT/sparte/pull/163) et [#151](https://github.com/MTES-MCT/sparte/pull/151)
+
+### Corrigé
+
+- Bug qui empêchait à un utilisateur de supprimer son compte [#116](https://github.com/MTES-MCT/sparte/pull/116)
+- Bug qui empêchait de changer d'année sur l'explorateur des zonages d'urbanisme [#159](https://github.com/MTES-MCT/sparte/pull/159)
+
+## [4.5.1] OCS GE - 2024.03.22
+
+### Ajouté
+- Import OCS GE Var (83) - Millésimes 2017 et 2020
+- Import OCS GE Val-de-Marne (94) - Millésimes 2018 et 2021
+- Import OCS GE Ille-et-Vilaine (35) - Millésimes 2017 et 2020
+
 ## [4.5] Export conso - 2024.02.09
 
 ### Ajouté
 - Ajout de la consommation des territoires d'outre-mer (DROM-COM)
-- Import OCS GE Haut-de-Seine (92)
-- Import OCS GE Landes (40)
+- Import OCS GE Haut-de-Seine (92) - Millésimes 2018 et 2021
+- Import OCS GE Landes (40) - Millésimes 2018 et 2021
 
 ### Modifié
 - Ajouter de l'autocomplétion à la barre de recherche du tunnel de création
