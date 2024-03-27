@@ -1019,8 +1019,6 @@ class Project(BaseProject):
         [
             {
                 "code_prefix": "CS1.1.1",
-                "label": "Zone Bâti (maison,...)",
-                "label_short": "Zone Bâti",
                 "artif": 1000.0,
                 "renat":  100.0,
             },
@@ -1030,6 +1028,9 @@ class Project(BaseProject):
         if not geom:
             geom = self.combined_emprise
         Zero = Area(Polygon(((0, 0), (0, 0), (0, 0), (0, 0)), srid=2154))
+
+        short_sol = "us" if sol == "usage" else "cs"
+
         return (
             OcsgeDiff.objects.intersect(geom)
             .filter(
@@ -1039,22 +1040,14 @@ class Project(BaseProject):
             .filter(Q(is_new_artif=True) | Q(is_new_natural=True))
             .annotate(
                 code_prefix=Case(
-                    When(is_new_artif=True, then=F(f"new_matrix__{sol}__code_prefix")),
-                    default=F(f"old_matrix__{sol}__code_prefix"),
-                ),
-                label=Case(
-                    When(is_new_artif=True, then=F(f"new_matrix__{sol}__label")),
-                    default=F(f"old_matrix__{sol}__label"),
-                ),
-                label_short=Case(
-                    When(is_new_artif=True, then=F(f"new_matrix__{sol}__label_short")),
-                    default=F(f"old_matrix__{sol}__label_short"),
+                    When(is_new_artif=True, then=F(f"{short_sol}_new")),
+                    default=F(f"{short_sol}_old"),
                 ),
                 area_artif=Case(When(is_new_artif=True, then=F("intersection_area")), default=Zero),
                 area_renat=Case(When(is_new_natural=True, then=F("intersection_area")), default=Zero),
             )
-            .order_by("code_prefix", "label", "label_short")
-            .values("code_prefix", "label", "label_short")
+            .order_by("code_prefix")
+            .values("code_prefix")
             .annotate(
                 artif=Cast(Sum("area_artif") / 10000, DecimalField(max_digits=15, decimal_places=2)),
                 renat=Cast(Sum("area_renat") / 10000, DecimalField(max_digits=15, decimal_places=2)),
