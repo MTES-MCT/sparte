@@ -1270,7 +1270,6 @@ class CitySpaceConsoMapView(BaseMap):
 
     def get_layers_list(self):
         return super().get_layers_list() + [
-
             {
                 "id": "consommation-des-communes-fill-layer",
                 "z-index": 4,
