@@ -506,7 +506,6 @@ class UrbanZonesMapView(BaseMap):
 
     def get_sources_list(self):
         available_millesimes = self.object.get_available_millesimes(commit=True)
-
         return super().get_sources_list() + [
             {
                 "key": "ocs-ge-source",
