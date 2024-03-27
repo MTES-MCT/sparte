@@ -1497,7 +1497,6 @@ class CityArtifMapView(BaseMap):
 
     def get_filters_list(self):
         return super().get_filters_list() + [
-
             {
                 "name": "Artificialisation des communes",
                 "z-index": 3,
