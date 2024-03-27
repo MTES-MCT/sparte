@@ -561,7 +561,6 @@ class UrbanZonesMapView(BaseMap):
             },
         ]
 
-
     def get_layers_list(self):
         return super().get_layers_list() + [
             {
