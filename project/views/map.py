@@ -750,7 +750,6 @@ class UrbanZonesMapView(BaseMap):
         couverture_colors.append("rgba(0, 0, 0, 0)")  # default color
 
         return super().get_filters_list() + [
-
             {
                 "name": "Zonages des documents d&rsquo;urbanisme",
                 "z-index": 4,
