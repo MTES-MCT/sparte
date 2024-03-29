@@ -45,6 +45,11 @@ const common = {
                 loader: 'babel-loader',
                 options: { presets: ['@babel/preset-env', '@babel/preset-react'] }
             },
+            {
+                test: /\.tsx?$/,
+                use: 'ts-loader',
+                exclude: /node_modules/,
+            },
         ]
     },
     plugins: [
