@@ -6,7 +6,6 @@ from django.core.management.base import BaseCommand
 from project.models.project_base import ProjectCommune
 from public_data.models import Cerema, Commune, Epci
 from public_data.models.administration import Departement, Region, Scot
-from public_data.models.ocsge import ArtificialArea
 from utils.commands import PrintProgress
 from utils.db import fix_poly
 
@@ -116,5 +115,4 @@ class Command(BaseCommand):
     def delete_commune(self):
         to_delete = Commune.objects.exclude(insee__in=Cerema.objects.all().values_list("city_insee", flat=True))
         ProjectCommune.objects.filter(commune__in=to_delete).delete()
-        ArtificialArea.objects.filter(city__in=to_delete).delete()
         to_delete.delete()

@@ -62,10 +62,15 @@
                     title="L'OCS GE (données d'artificialisation) n'est pas disponible pour ce territoire."
                     aria-hidden="true"
                 {% endif %}
+                {% if not project.has_zonage_urbanisme %}
+                    data-toggle="tooltip"
+                    title="Les zonages d'urbanisme ne sont pas disponibles pour ce territoire."
+                    aria-hidden="true"
+                {% endif %}
             >
                 <a
                     class="fr-nav__link {% if not project.has_complete_uniform_ocsge_coverage %} disabled{% endif %}"
-                    {% if not project.has_complete_uniform_ocsge_coverage %}
+                    {% if not project.has_complete_uniform_ocsge_coverage or not project.has_zonage_urbanisme %}
                         role="link"
                         aria-disabled="true"
                     {% else %}

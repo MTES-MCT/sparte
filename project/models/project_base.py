@@ -555,6 +555,10 @@ class Project(BaseProject):
     def has_no_ocsge_coverage(self) -> bool:
         return self.ocsge_coverage_status == self.OcsgeCoverageStatus.NO_DATA
 
+    @cached_property
+    def has_zonage_urbanisme(self) -> bool:
+        return ArtifAreaZoneUrba.objects.filter(zone_urba__mpoly__intersects=self.combined_emprise).exists()
+
     def get_ocsge_millesimes(self):
         """Return all OCS GE millésimes available within project cities and between
         project analyse start and end date"""
@@ -1211,6 +1215,7 @@ class Project(BaseProject):
                     "type_zone": zone_type,
                     "type_zone_label": zone_labels.get(zone_type, ""),
                     "total_area": row["total_area"],
+                    "nb_zones": row["nb_zones"],
                     "first_artif_area": Decimal(0.0),
                     "last_artif_area": Decimal(0.0),
                     "fill_up_rate": Decimal(0.0),

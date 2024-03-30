@@ -489,7 +489,9 @@ def generate_theme_map_understand_artif(self, project_id):
 
         data = {"color": [], "geometry": []}
         # add artificial area to data
-        queryset = ArtificialArea.objects.filter(city__in=diagnostic.cities.all())
+        city_ids = diagnostic.cities.all().values_list("insee", flat=True)
+        queryset = ArtificialArea.objects.filter(city__in=city_ids)
+
         for row in queryset.only("mpoly"):
             srid, wkt = row.mpoly.ewkt.split(";")
             polygons = shapely.wkt.loads(wkt)

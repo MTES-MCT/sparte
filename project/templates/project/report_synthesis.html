@@ -188,6 +188,7 @@ Synthèse
         </div>
       </div>
 
+      {% if project.has_zonage_urbanisme %}
       <div class="fr-mt-12w">
         <h2>Croisement avec les zonages d'urbanisme</h2>
         <h4>Artificialisation des zonages d'urbanisme selon les documents d'urbanisme en vigueur</h4>
@@ -239,6 +240,7 @@ Synthèse
           <a class="fr-link" href="{% url 'project:report_urban_zones' project.pk %}">Consulter les zonages d'urbanisme</a>
         </div>
       </div>
+      {% endif %}
       {% endif %}
     </div>
 </div>
