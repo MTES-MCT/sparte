@@ -688,14 +688,23 @@ class DetailCouvArtifChart(ProjectChart):
         """
         return self.project.get_detail_artif(sol="couverture", geom=self.geom)
 
+    def get_serie_label(self, code_prefix) -> str:
+        return f"{code_prefix} {CouvertureSol.objects.get(code_prefix=code_prefix).label_short}"
+
     def get_series(self) -> List[Dict]:
         if not self.series:
             self.series = list(self.get_data())
-            if "CS1.1.2.2" not in [s["code_prefix"] for s in self.series]:
+
+            for serie in self.series:
+                serie["code_prefix"] = self.get_serie_label(serie["code_prefix"])
+
+            mandatory_serie_label = self.get_serie_label("CS1.1.2.2")
+
+            if mandatory_serie_label not in [s["code_prefix"] for s in self.series]:
                 required_couv = CouvertureSol.objects.get(code="1.1.2.2")
                 self.series.append(
                     {
-                        "code_prefix": required_couv.code_prefix,
+                        "code_prefix": mandatory_serie_label,
                         "label": required_couv.label,
                         "label_short": required_couv.label_short,
                         "artif": 0,
@@ -740,24 +749,19 @@ class DetailUsageArtifChart(DetailCouvArtifChart):
             f"Evolution de l'artificialisation par type d'usage de {self.first_millesime} à " f"{self.last_millesime}"
         )
 
+    def get_serie_label(self, code_prefix) -> str:
+        return f"{code_prefix} {UsageSol.objects.get(code_prefix=code_prefix).label_short}"
+
+    def get_data(self):
+        return self.project.get_detail_artif(sol="usage", geom=self.geom)
+
     def get_series(self):
-        if not self.series:
-            self.series = {  # TODO : tester que toutes les USAGES niveau 1 s'affichent.
-                u.code_prefix: {
-                    "code_prefix": u.code_prefix,
-                    "label": u.label,
-                    "label_short": u.label_short,
-                    "artif": 0,
-                    "renat": 0,
-                }
-                for u in UsageSol.objects.order_by("code_prefix")
-                if u.level == 1
-            }
-            for row in self.project.get_detail_artif(sol="usage", geom=self.geom):
-                code = row["code_prefix"].split(".")[0]
-                self.series[code]["artif"] += row["artif"]
-                self.series[code]["renat"] += row["renat"]
-        return list(self.series.values())
+        self.series = list(self.get_data())
+
+        for serie in self.series:
+            serie["code_prefix"] = self.get_serie_label(serie["code_prefix"])
+
+        return self.series
 
 
 class ArtifCouvSolPieChart(ProjectChart):
@@ -1116,6 +1120,9 @@ class CouvWheelChart(ProjectChart):
             }
         )
 
+    def get_serie_label(self, code_prefix) -> str:
+        return f"{code_prefix} {CouvertureSol.objects.get(code_prefix=code_prefix).label_short}"
+
     def get_data(self):
         self.data = (
             OcsgeDiff.objects.intersect(self.project.combined_emprise)
@@ -1127,6 +1134,11 @@ class CouvWheelChart(ProjectChart):
             .annotate(total=Sum("surface") / 10000)
             .order_by(f"{self.prefix}_old", f"{self.prefix}_new")
         )
+
+        for data in self.data:
+            data[f"{self.prefix}_old"] = self.get_serie_label(data[f"{self.prefix}_old"])
+            data[f"{self.prefix}_new"] = self.get_serie_label(data[f"{self.prefix}_new"])
+
         return [
             [_[f"{self.prefix}_old"], _[f"{self.prefix}_new"], round(_["total"], 2)]
             for _ in self.data
@@ -1140,3 +1152,6 @@ class UsageWheelChart(CouvWheelChart):
     prefix = "us"
     name_sol = "usage"
     items = UsageSol.objects.all()
+
+    def get_serie_label(self, code_prefix) -> str:
+        return f"{code_prefix} {UsageSol.objects.get(code_prefix=code_prefix).label_short}"

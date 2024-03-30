@@ -34,7 +34,9 @@ class Ocsge(TruncateTableMixin, DataColorationMixin, models.Model):
             models.Index(fields=["usage"]),
             models.Index(fields=["year"]),
             models.Index(fields=["is_artificial"]),
+            models.Index(fields=["departement"]),
         ]
+        unique_together = [["id_source", "year", "departement"]]
 
     @classmethod
     def get_groupby(cls, field_group_by, coveredby, year):
@@ -73,8 +75,6 @@ class OcsgeDiff(TruncateTableMixin, DataColorationMixin, models.Model):
         default=SRID.LAMBERT_93,
     )
     surface = models.DecimalField("surface", max_digits=15, decimal_places=4)
-    old_is_artif = models.BooleanField()
-    new_is_artif = models.BooleanField()
     is_new_artif = models.BooleanField()
     is_new_natural = models.BooleanField()
     departement = models.CharField("Département", max_length=15)
@@ -88,6 +88,7 @@ class OcsgeDiff(TruncateTableMixin, DataColorationMixin, models.Model):
         indexes = [
             models.Index(fields=["year_old"]),
             models.Index(fields=["year_new"]),
+            models.Index(fields=["departement"]),
         ]
 
 
@@ -103,18 +104,16 @@ class ArtificialArea(TruncateTableMixin, DataColorationMixin, models.Model):
         validators=[MinValueValidator(2000), MaxValueValidator(2050)],
     )
     surface = models.DecimalField("surface", max_digits=15, decimal_places=4)
-    city = models.ForeignKey("public_data.Commune", on_delete=models.CASCADE)
+    city = models.CharField("Commune", max_length=254)
     departement = models.CharField("Département", max_length=15)
     objects = IntersectManager()
 
     class Meta:
-        constraints = [
-            models.UniqueConstraint(fields=["city", "year"], name="artificialarea-city-year-unique"),
-        ]
+        constraints = []
         indexes = [
             models.Index(fields=["year"]),
             models.Index(fields=["city"]),
-            models.Index(fields=["city", "year"]),
+            models.Index(fields=["departement"]),
         ]
 
 
@@ -141,4 +140,5 @@ class ZoneConstruite(TruncateTableMixin, DataColorationMixin, models.Model):
     class Meta:
         indexes = [
             models.Index(fields=["year"]),
+            models.Index(fields=["departement"]),
         ]

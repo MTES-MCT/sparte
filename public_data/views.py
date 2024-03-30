@@ -377,7 +377,7 @@ class ArtificialAreaViewSet(OnlyBoundingBoxMixin, ZoomSimplificationMixin, Optim
     def get_sql_from(self):
         sql_from = [
             f"FROM {self.queryset.model._meta.db_table} o",
-            f"INNER JOIN {models.Commune._meta.db_table} c ON o.city_id = c.id",
+            f"INNER JOIN {models.Commune._meta.db_table} c ON o.city = c.insee",
             "INNER JOIN (SELECT ST_MakeEnvelope(%s, %s, %s, %s, 4326) as box) as b",
             "ON ST_Intersects(o.mpoly, b.box)",
         ]
