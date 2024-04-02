@@ -55,6 +55,8 @@ Le site est désormais accessible en local à cette adresse:
 | CELERY_BROKER_URL | chaîne pour se connecter à redis | redis://127.0.0.1:6379/0 |
 | CELERY_RESULT_BACKEND | chaîne pour se connecter à redis | redis://127.0.0.1:6379/0 |
 | CRISP_WEBHOOK_SECRET_KEY | clef qui permet à l'application d'authentifier les requêtes webhook reçues depuis CRISP |  | 
+| CRISP_WEBSITE_ID | Identifiant du site sur Crisp | |
+| CRISP_ACTIVATED | Active ou desactive Crisp | False |
 | CELERY_TASK_ALWAYS_EAGER | Rend celery synchrone | False |
 | DATABASE_URL | chaîne pour se connecter à la base de données Postgresql + gis | postgis://postgres:postgres@127.0.0.1:54321/postgres |
 | DB_LOGGING_LEVEL | détermine le niveau de log de la base de données | WARNING |
