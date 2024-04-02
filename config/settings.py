@@ -526,14 +526,15 @@ CSP_IMG_SRC = [
     "https://storage.crisp.chat",
 ] + ([STATIC_URL] if ENVIRONMENT != "local" else [])
 CSP_FRAME_SRC = (
+    "'self'",
     # Crisp
-    "https://game.crisp.chat"
+    "https://game.crisp.chat",
 )
 CSP_MEDIA_SRC = (
     # Crisp
     "https://client.crisp.chat"
 )
-CSP_INCLUDE_NONCE_IN = ["script-src", "style-src"]
+CSP_INCLUDE_NONCE_IN = ["script-src"]
 CSP_FONT_SRC = [
     "'self'",
     "data:",
