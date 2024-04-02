@@ -8,38 +8,49 @@
     {% display_chart_test 'household_chart' household_chart CSP_NONCE %}
 </div>
 
-
-<div class="fr-callout bg-white fr-p-2w mt-4">
-    <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data-5">Données et calcul</button>
-    <div class="fr-collapse" id="target-data-5">
-        <h6 class="fr-mt-2w">Source</h6>
-        <p>Ménages INSEE, sur la période d'analyse (millésimes 2008-2013-2018) : <a href="https://www.insee.fr/fr/statistiques/5395819?sommaire=5395886" target="_blank" rel="noreferrer noopener">Couples-Familles-Ménages en 2018</a> (colonnes C18_MEN, C13_MEN et C08_MEN)</p>
-
-        <h6 class="fr-mt-2w">Calcul</h6>
-        <p>Les données pour les années manquantes sont obtenues par approximation affine, les décalages liés aux arrondis sont lissés.</p>
-
-        <h6 class="fr-mt-2w">Données</h6>
-        <table class="table table-striped table-sm table-borderless">
-            <thead>
-                <tr>
-                    <th scope="col">{{ col_name }}</th>
-                    {% for year in project.years %}
-                    <th scope="col" class="text-end">{{ year }}</th>
+<div class="fr-notice fr-mt-4w fr-mb-7w">
+    <div class="fr-container">
+        <div class="d-flex align-items-center justify-content-between">
+            <div>
+                <span class="fr-icon-information-line" aria-hidden="true"></span>
+                <span class="fr-text--xs fr-mr-1w">Source de données: </span>
+                <p class="fr-tag fr-tag--sm fr-tag--blue">
+                    <strong>FICHIERS FONCIERS</strong>
+                </p>
+            </div>
+            <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data-5">Détails données et calcul</button>
+        </div>
+        <div class="fr-collapse" id="target-data-5">
+            <h6 class="fr-mt-2w">Source</h6>
+            <p class="fr-text--sm">Ménages INSEE, sur la période d'analyse (millésimes 2008-2013-2018) : <a href="https://www.insee.fr/fr/statistiques/5395819?sommaire=5395886" target="_blank" rel="noreferrer noopener">Couples-Familles-Ménages en 2018</a> (colonnes C18_MEN, C13_MEN et C08_MEN)</p>
+    
+            <h6 class="fr-mt-2w">Calcul</h6>
+            <p class="fr-text--sm">Les données pour les années manquantes sont obtenues par approximation affine, les décalages liés aux arrondis sont lissés.</p>
+    
+            <h6 class="fr-mt-2w">Données</h6>
+            <table class="table fr-table--no-caption table-striped table-sm table-borderless fr-text--sm">
+                <caption>Données évolution du nombre de ménages du territoire</caption>
+                <thead>
+                    <tr>
+                        <th scope="col">{{ col_name }}</th>
+                        {% for year in project.years %}
+                        <th scope="col" class="text-end">{{ year }}</th>
+                        {% endfor %}
+                        <th scope="col" class="text-end">Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for city_name, data in household_table.items %}
+                    <tr>
+                        <th scope="row">{{ city_name }}</th>
+                        {% for year, val in data.items %}
+                        <td align="right">{{ val|floatformat:1 }}</td>
+                        {% endfor %}
+                    </tr>
                     {% endfor %}
-                    <th scope="col" class="text-end">Total</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for city_name, data in household_table.items %}
-                <tr>
-                    <th scope="row">{{ city_name }}</th>
-                    {% for year, val in data.items %}
-                    <td align="right">{{ val|floatformat:1 }}</td>
-                    {% endfor %}
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 
@@ -72,40 +83,52 @@
 </div>
 {% display_chart 'conso_household_chart' conso_household_chart CSP_NONCE %}
 
-<div class="fr-callout bg-white fr-p-2w mt-4">
-    <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data-6">Données et calcul</button>
-    <div class="fr-collapse" id="target-data-6">
-        <h6 class="fr-mt-2w">Sourcce</h6>
-        <ul>
-            <li>Ménages INSEE, sur la période d'analyse (millésimes 2008-2013-2018) : <a href="https://www.insee.fr/fr/statistiques/5395819?sommaire=5395886" target="_blank" rel="noreferrer noopener">Couples-Familles-Ménages en 2018</a> (colonnes C18_MEN, C13_MEN et C08_MEN)</li>
-            <li>Données d'évolution des fichiers fonciers produits et diffusés par le Cérema depuis 2009 à partir des fichiers MAJIC (Mise A Jour de  l'Information Cadastrale) de la DGFIP. Le dernier millésime de 2022 est la  photographie du territoire au 1er janvier 2022, intégrant les évolutions réalisées au cours de l'année 2021.</li>
-        </ul>
-
-        <h6 class="fr-mt-2w">Calcul</h6>
-        <p>Consommation d'espaces NAF annuelle divisée par l'évolution des ménages, par maille d'analyse du territoire de diagnostic.</p>
-
-        <h6 class="fr-mt-2w">Données</h6>
-        <table class="table table-striped table-sm table-borderless">
-            <thead>
-                <tr>
-                    <th scope="col" class="text-end">(Ha par nouveau ménage accueilli)</th>
-                    {% for year in project.years %}
-                    <th scope="col" class="text-end">{{ year }}</th>
+<div class="fr-notice fr-mt-4w">
+    <div class="fr-container">
+        <div class="d-flex align-items-center justify-content-between">
+            <div>
+                <span class="fr-icon-information-line" aria-hidden="true"></span>
+                <span class="fr-text--xs fr-mr-1w">Source de données: </span>
+                <p class="fr-tag fr-tag--sm fr-tag--blue">
+                    <strong>FICHIERS FONCIERS</strong>
+                </p>
+            </div>
+            <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data-6">Détails données et calcul</button>
+        </div>
+        <div class="fr-collapse" id="target-data-6">
+            <h6 class="fr-mt-2w">Sourcce</h6>
+            <ul class="fr-text--sm">
+                <li>Ménages INSEE, sur la période d'analyse (millésimes 2008-2013-2018) : <a href="https://www.insee.fr/fr/statistiques/5395819?sommaire=5395886" target="_blank" rel="noreferrer noopener">Couples-Familles-Ménages en 2018</a> (colonnes C18_MEN, C13_MEN et C08_MEN)</li>
+                <li>Données d'évolution des fichiers fonciers produits et diffusés par le Cerema depuis 2009 à partir des fichiers MAJIC (Mise A Jour de  l'Information Cadastrale) de la DGFIP. Le dernier millésime de 2022 est la  photographie du territoire au 1er janvier 2022, intégrant les évolutions réalisées au cours de l'année 2021.</li>
+            </ul>
+    
+            <h6 class="fr-mt-2w">Calcul</h6>
+            <p class="fr-text--sm">Consommation d'espaces NAF annuelle divisée par l'évolution des ménages, par maille d'analyse du territoire de diagnostic.</p>
+    
+            <h6 class="fr-mt-2w">Données</h6>
+            <table class="table fr-table--no-caption table-striped table-sm table-borderless fr-text--sm">
+                <caption>Données Ha par nouveau ménage accueilli</caption>
+                <thead>
+                    <tr>
+                        <th scope="col" class="text-end">(Ha par nouveau ménage accueilli)</th>
+                        {% for year in project.years %}
+                        <th scope="col" class="text-end">{{ year }}</th>
+                        {% endfor %}
+                        <th scope="col" class="text-end">Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for city_name, data in conso_household_table.items %}
+                    <tr>
+                        <th scope="row">{{ city_name }}</th>
+                        {% for year, val in data.items %}
+                        <td align="right">{{ val|floatformat:1 }}</td>
+                        {% endfor %}
+                    </tr>
                     {% endfor %}
-                    <th scope="col" class="text-end">Total</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for city_name, data in conso_household_table.items %}
-                <tr>
-                    <th scope="row">{{ city_name }}</th>
-                    {% for year, val in data.items %}
-                    <td align="right">{{ val|floatformat:1 }}</td>
-                    {% endfor %}
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 

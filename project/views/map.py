@@ -1022,6 +1022,8 @@ class MyArtifMapView(BaseMap):
 
     def get_layers_list(self):
         available_millesimes = self.object.get_available_millesimes()
+        first_year = available_millesimes[0]
+        last_year = available_millesimes[-1]
         return super().get_layers_list() + [
             {
                 "id": "zones-artificielles-fill-layer",
@@ -1092,15 +1094,15 @@ class MyArtifMapView(BaseMap):
                     "type": "raw",
                     "data": [
                         {
-                            "value": "Artificialisation",
+                            "value": f"Artificialisation ({first_year} - {last_year})",
                             "color": "#FC4F4F",
                         },
                         {
-                            "value": "Renaturation",
+                            "value": f"Renaturation ({first_year} - {last_year})",
                             "color": "#43d360",
                         },
                         {
-                            "value": f"Surfaces artificialisées ({available_millesimes[-1]})",  # Last year
+                            "value": f"Surfaces artificialisées ({last_year})",
                             "color": "#F88E55",
                         },
                     ],
