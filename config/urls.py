@@ -39,6 +39,7 @@ urlpatterns = [
     path("statistiques/", include("metabase.urls")),
     path("fancy-cache", include("fancy_cache.urls")),
     path("documentation/", include("documentation.urls")),
+    path("crisp/", include("crisp.urls")),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
