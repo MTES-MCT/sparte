@@ -51,6 +51,7 @@ Le site est désormais accessible en local à cette adresse:
 | AWS_S3_REGION_NAME | région de AWS | eu-west-3 |
 | AWS_SECRET_ACCESS_KEY | secret pour se connecter à AWS |  |
 | AWS_STORAGE_BUCKET_NAME | nom du bucket de stockage | sparte-staging |
+| AWS_S3_ENDPOINT_URL | url de scaleway | https://s3.fr-par.scw.cloud |
 | CELERY_BROKER_URL | chaîne pour se connecter à redis | redis://127.0.0.1:6379/0 |
 | CELERY_RESULT_BACKEND | chaîne pour se connecter à redis | redis://127.0.0.1:6379/0 |
 | CELERY_TASK_ALWAYS_EAGER | Rend celery synchrone | False |

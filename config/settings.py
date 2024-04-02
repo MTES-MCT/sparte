@@ -220,6 +220,8 @@ AWS_S3_SIGNATURE_VERSION = "s3v4"
 # AWS_S3_CUSTOM_DOMAIN = f"{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com"
 AWS_S3_OBJECT_PARAMETERS = {"CacheControl": "max-age=86400"}
 
+AWS_S3_ENDPOINT_URL = "https://s3.fr-par.scw.cloud"
+
 STATICFILES_DIRS = [
     BASE_DIR / "static",
     # BASE_DIR / "htmlcov",
@@ -229,7 +231,7 @@ STATIC_URL = "/static/"
 STATIC_ROOT = str(BASE_DIR / "staticroot")
 
 PUBLIC_MEDIA_LOCATION = "media"
-MEDIA_URL = f"https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/{PUBLIC_MEDIA_LOCATION}/"
+MEDIA_URL = f"https://{AWS_STORAGE_BUCKET_NAME}.s3.fr-par.scw.cloud/{PUBLIC_MEDIA_LOCATION}/"
 
 
 # CORSHEADERS
@@ -502,6 +504,7 @@ CSP_STYLE_SRC = [
 CSP_IMG_SRC = [
     "'self'",
     "data.geopf.fr",
+    "s3.fr-par.scw.cloud",
     "data:",
     MEDIA_URL,
     STATIC_URL,
@@ -521,6 +524,7 @@ CSP_CONNECT_SRC = [
     "https://openmaptiles.geo.data.gouv.fr",
     "https://openmaptiles.github.io",
     "https://stats.beta.gouv.fr",
+    "https://s3.fr-par.scw.cloud",
 ]
 CSP_FRAME_ANCESTORS = ("'self'", "https://sparte-metabase.osc-secnum-fr1.scalingo.io")
 
