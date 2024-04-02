@@ -2,7 +2,7 @@
         "name": "Adresse e-mail de l'équipe",
         "slug": "TEAM_EMAIL",
         "value_type": "STR",
-        "value": "contact@mondiagartif.beta.gouv.fr"
+        "value": "equipe@support.mondiagartif.beta.gouv.fr"
     },
     {
         "name": "Exemple de bilan Andernos",
@@ -82,6 +82,13 @@
         "slug": "JOTFORM_URL",
         "value_type": "STR",
         "value": "https://form.jotform.com/231703451991355",
+        "is_global": true
+    },
+    {
+        "name": "URL vers la faq Crisp",
+        "slug": "FAQ_URL",
+        "value_type": "STR",
+        "value": "https://faq.mondiagartif.beta.gouv.fr/",
         "is_global": true
     }
 ]
