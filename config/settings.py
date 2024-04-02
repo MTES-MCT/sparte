@@ -500,14 +500,21 @@ CSP_SCRIPT_SRC = [
     "code.highcharts.com",
     STATIC_URL,
     "www.googletagmanager.com",
+    # Crisp
+    "https://client.crisp.chat",
+    "https://settings.crisp.chat",
 ]
 CSP_STYLE_SRC = [
     "'self'",
     "cdn.jsdelivr.net",
     STATIC_URL,
+    "'unsafe-inline'",
+    # Crisp
+    "https://client.crisp.chat",
 ]
 CSP_IMG_SRC = [
     "'self'",
+    "data:",
     "data.geopf.fr",
     "s3.fr-par.scw.cloud",
     "data:",
@@ -516,9 +523,28 @@ CSP_IMG_SRC = [
     "google.com",
     "google.fr",
     "googleads.g.doubleclick.net",
+    # Crisp
+    "https://client.crisp.chat",
+    "https://image.crisp.chat",
+    "https://storage.crisp.chat",
 ]
+CSP_FRAME_SRC = (
+    # Crisp
+    "https://game.crisp.chat"
+)
+CSP_MEDIA_SRC = (
+    # Crisp
+    "https://client.crisp.chat"
+)
 CSP_INCLUDE_NONCE_IN = ["script-src", "style-src"]
-CSP_FONT_SRC = ("'self'", "data:", "cdn.jsdelivr.net", STATIC_URL)
+CSP_FONT_SRC = (
+    "'self'",
+    "data:",
+    "cdn.jsdelivr.net",
+    STATIC_URL,
+    # Crisp
+    "https://client.crisp.chat",
+)
 CSP_CONNECT_SRC = [
     "'self'",
     "beta.gouv.fr",
@@ -530,6 +556,11 @@ CSP_CONNECT_SRC = [
     "https://openmaptiles.github.io",
     "https://stats.beta.gouv.fr",
     "https://s3.fr-par.scw.cloud",
+    # Crisp
+    "https://client.crisp.chat",
+    "https://storage.crisp.chat",
+    "wss://client.relay.crisp.chat",
+    "wss://stream.relay.crisp.chat",
 ]
 CSP_FRAME_ANCESTORS = ("'self'", "https://sparte-metabase.osc-secnum-fr1.scalingo.io")
 
