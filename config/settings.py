@@ -480,7 +480,7 @@ GOOGLE_ADWORDS_ACTIVATE = env.bool("GOOGLE_ADWORDS_ACTIVATE", default=False)
 
 # CRISP
 CRISP_WEBSITE_ID = env.str("CRISP_WEBSITE_ID")
-CRISP_ACTIVATED = env.bool("CRISP_ACTIVATED")
+CRISP_ACTIVATED = env.bool("CRISP_ACTIVATED", default=False)
 
 # SECURITY - Content Security Header Policy
 # https://django-csp.readthedocs.io
