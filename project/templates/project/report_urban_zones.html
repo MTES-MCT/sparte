@@ -36,21 +36,7 @@ Zonages d'urbanisme
 
             <div class="fr-custom-loader"></div>
         </div>
-
-        <div id="table-auu" class="fr-mt-7w" hx-get="{% url 'project:zone-urba-auu' project.id %}" hx-trigger="load delay:2s" hx-swap="outerHTML">
-            <h3>Taux d'artificialisation des zones AU et U</h3>
-
-            <div class="fr-custom-loader"></div>
-        </div>
-
-        <div id="table-n" class="fr-mt-7w" hx-get="{% url 'project:zone-urba-n' project.id %}" hx-trigger="load delay:3s" hx-swap="outerHTML">
-            <h3>Zones naturelles ayant été le plus artificialisées sur la période</h3>
-
-            <div class="fr-custom-loader"></div>
-        </div>
-
     </div>
-
 </div>
 {% endblock content %}
 

@@ -1,6 +1,5 @@
 from decimal import InvalidOperation
 from functools import cached_property
-from math import ceil
 from typing import Any, Dict
 
 import pandas as pd
@@ -16,12 +15,10 @@ from django.views.generic import CreateView, DetailView, TemplateView
 
 from brevo.tasks import send_request_to_brevo
 from project import charts, tasks
-from project.forms import FilterAUUTable
 from project.models import Project, ProjectCommune, Request
 from project.utils import add_total_line_column
 from public_data.models import CouvertureSol, UsageSol
-from public_data.models.administration import Commune
-from public_data.models.gpu import ArtifAreaZoneUrba, ZoneUrba
+from public_data.models.gpu import ZoneUrba
 from public_data.models.ocsge import Ocsge, OcsgeDiff
 from utils.htmx import StandAloneMixin
 from utils.views_mixins import CacheMixin
@@ -837,111 +834,6 @@ class ProjectReportGpuZoneSynthesisTable(CacheMixin, StandAloneMixin, TemplateVi
             "diagnostic": self.diagnostic,
             "first_year_ocsge": str(self.diagnostic.first_year_ocsge),
             "last_year_ocsge": str(self.diagnostic.last_year_ocsge),
-        }
-        return super().get_context_data(**kwargs)
-
-
-class ProjectReportGpuZoneAUUTable(CacheMixin, StandAloneMixin, TemplateView):
-    """Nom commune, code INSEE, libellé court, libellé long, type de zone, surface, surface artificialisée, taux de
-    remplissage, Progression"""
-
-    template_name = "project/partials/zone_urba_auu_table.html"
-
-    @cached_property
-    def diagnostic(self):
-        return Project.objects.get(pk=self.kwargs["pk"])
-
-    def should_cache(self, *args, **kwargs):
-        """Override to disable cache conditionnally"""
-        if not self.diagnostic.theme_map_fill_gpu:
-            return False
-        return True
-
-    def get_filters(self):
-        form = FilterAUUTable(data=self.request.GET)
-        if form.is_valid():
-            return {"page": form.cleaned_data["page_number"] or 1}
-        return {"page": 1}
-
-    def get_context_data(self, **kwargs):
-        filters = self.get_filters()
-        diagnostic = self.diagnostic
-        zone_urba = ZoneUrba.objects.intersect(diagnostic.combined_emprise)
-        qs = (
-            ArtifAreaZoneUrba.objects.filter(
-                zone_urba__in=zone_urba,
-                year__in=[diagnostic.first_year_ocsge, diagnostic.last_year_ocsge],
-                zone_urba__typezone__in=["U", "AUc", "AUs"],
-                zone_urba__area__gt=0,
-            )
-            .annotate(fill_up_rate=100 * F("area") / F("zone_urba__area"))  # TODO : pré-calculer
-            .select_related("zone_urba")
-            .order_by("-fill_up_rate", "zone_urba__insee", "zone_urba__typezone", "-year", "zone_urba__id")
-        )
-        code_insee = qs.values_list("zone_urba__insee", flat=True).distinct()
-        city_list = {
-            _["insee"]: _["name"]
-            for _ in Commune.objects.filter(insee__in=code_insee).order_by("insee").values("insee", "name")
-        }
-        zone_list = {}
-        for row in qs:
-            key = row.zone_urba.id
-            if key not in zone_list:
-                zone_list[key] = row
-                zone_list[key].city_name = city_list.get(row.zone_urba.insee, "")
-            if row.year == diagnostic.first_year_ocsge:
-                zone_list[key].new_artif = zone_list[key].area - row.area
-
-        mini = filters["page"] * 10 - 10
-        maxi = filters["page"] * 10
-        kwargs |= {
-            "zone_list": list(zone_list.values())[mini:maxi],
-            "current_page": filters["page"],
-            "pages": list(range(1, ceil(len(zone_list) / 10) + 1)),
-            "diagnostic": diagnostic,
-            "first_year_ocsge": str(diagnostic.first_year_ocsge),
-            "last_year_ocsge": str(diagnostic.last_year_ocsge),
-        }
-        return super().get_context_data(**kwargs)
-
-
-class ProjectReportGpuZoneNTable(CacheMixin, StandAloneMixin, TemplateView):
-    template_name = "project/partials/zone_urba_n_table.html"
-
-    def get_context_data(self, **kwargs):
-        diagnostic = Project.objects.get(pk=self.kwargs["pk"])
-        zone_urba = ZoneUrba.objects.intersect(diagnostic.combined_emprise)
-        qs = (
-            ArtifAreaZoneUrba.objects.filter(
-                zone_urba__in=zone_urba,
-                year__in=[diagnostic.first_year_ocsge, diagnostic.last_year_ocsge],
-                zone_urba__typezone="N",
-                zone_urba__area__gt=0,
-            )
-            .annotate(fill_up_rate=100 * F("area") / F("zone_urba__area"))
-            .select_related("zone_urba")
-            .order_by("-fill_up_rate", "zone_urba__insee", "zone_urba__typezone", "-year", "zone_urba__id")
-        )
-        code_insee = qs.values_list("zone_urba__insee", flat=True).distinct()
-        city_list = {
-            _["insee"]: _["name"]
-            for _ in Commune.objects.filter(insee__in=code_insee).order_by("insee").values("insee", "name")
-        }
-        zone_list = {}
-        for row in qs:
-            key = row.zone_urba.id
-            if key not in zone_list:
-                zone_list[key] = row
-                zone_list[key].city_name = city_list.get(row.zone_urba.insee, "")
-                zone_list[key].new_artif = 0
-            if row.year == diagnostic.first_year_ocsge:
-                zone_list[key].new_artif = zone_list[key].area - row.area
-        zone_list = sorted(zone_list.values(), key=lambda x: x.new_artif, reverse=True)
-        kwargs |= {
-            "zone_list": zone_list[:10],
-            "diagnostic": diagnostic,
-            "first_year_ocsge": str(diagnostic.first_year_ocsge),
-            "last_year_ocsge": str(diagnostic.last_year_ocsge),
         }
         return super().get_context_data(**kwargs)
 
