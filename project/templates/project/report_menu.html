@@ -88,7 +88,7 @@
             <div class="fr-container">
                 <div class="fr-notice__body">
                     <p class="fr-notice__title fr-text--sm">
-                        Vous êtes actuellement en mode "anonyme". Si vous souhaitez retrouver votre diagnostic ou vos trajectoires lors de votre prochaine visite
+                        Vous êtes actuellement en mode "anonyme". Si vous souhaitez retrouver votre diagnostic lors de votre prochaine visite
                         {% if user.is_authenticated %}
                             <a href="{% url 'project:claim' project.id %}" class="fr-link fr-link--sm fr-icon-arrow-right-line fr-link--icon-right">associez le à votre compte</a>.
                         {% else %}
