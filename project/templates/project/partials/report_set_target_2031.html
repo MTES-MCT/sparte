@@ -15,7 +15,7 @@
         _paq.push(['trackEvent', 'north_star_activation_funnel', 'success_form_set_target_2031', 'set_target_2031_form_success'])
     </script>
 {% else %}
-    <form hx-post="{% url 'project:trajectory:set_target_2031' diagnostic.pk %}" hx-ext="disable-element" hx-disable-element="#set_target_2031_btn">
+    <form hx-post="{% url 'project:set-target-2031' diagnostic.pk %}" hx-ext="disable-element" hx-disable-element="#set_target_2031_btn">
         {% csrf_token %}
         {{ form|crispy }}
         <ul class="fr-btns-group fr-btns-group--right fr-btns-group--inline-lg fr-mt-2w">

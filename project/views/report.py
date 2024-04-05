@@ -468,6 +468,47 @@ class ProjectReportDownloadView(BreadCrumbMixin, CreateView):
         return self.render_to_response(self.get_context_data(success_message=True))
 
 
+class ProjectReportTarget2031View(ProjectReportBaseView):
+    template_name = "project/report_target_2031.html"
+    breadcrumbs_title = "Rapport trajectoires"
+
+    def get_context_data(self, **kwargs):
+        diagnostic = self.get_object()
+        target_2031_chart = charts.ObjectiveChart(diagnostic)
+        kwargs.update(
+            {
+                "diagnostic": diagnostic,
+                "active_page": "target_2031",
+                "total_real": target_2031_chart.total_real,
+                "annual_real": target_2031_chart.annual_real,
+                "conso_2031": target_2031_chart.conso_2031,
+                "annual_objective_2031": target_2031_chart.annual_objective_2031,
+                "target_2031_chart": target_2031_chart,
+            }
+        )
+        return super().get_context_data(**kwargs)
+
+
+class ProjectReportTarget2031GraphView(ProjectReportBaseView):
+    template_name = "project/partials/report_target_2031_graphic.html"
+
+    def get_context_data(self, **kwargs) -> Dict[str, Any]:
+        diagnostic = self.get_object()
+        target_2031_chart = charts.ObjectiveChart(diagnostic)
+        kwargs.update(
+            {
+                "reload_kpi": True,
+                "diagnostic": diagnostic,
+                "target_2031_chart": target_2031_chart,
+                "total_real": target_2031_chart.total_real,
+                "annual_real": target_2031_chart.annual_real,
+                "conso_2031": target_2031_chart.conso_2031,
+                "annual_objective_2031": target_2031_chart.annual_objective_2031,
+            }
+        )
+        return super().get_context_data(**kwargs)
+
+
 class ProjectReportUrbanZonesView(ProjectReportBaseView):
     template_name = "project/report_urban_zones.html"
     breadcrumbs_title = "Rapport zonages d'urbanisme"

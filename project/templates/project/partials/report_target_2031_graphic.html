@@ -22,10 +22,10 @@
                 </ul>
             </div>
 
-            <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm fullscreen-chart" data-chart-target="trajectory_chart" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
+            <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm fullscreen-chart" data-chart-target="target_2031_chart" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
         </div>
 
-        <div id="trajectory_chart"></div>
+        <div id="target_2031_chart"></div>
     </div>
 </div>
 
@@ -72,24 +72,16 @@
                         <th scope="col" class="text-end">Réelle cumulée (Ha)</th>
                         <th scope="col" class="text-end">Projection annualisée<br/>de l'objectif 2031 (Ha)</th>
                         <th scope="col" class="text-end">Cumulé de la<br/>projection (Ha)</th>
-                        {% if has_related_trajectory %}
-                            <th scope="col" class="text-end">Trajectoire (Ha)</th>
-                            <th scope="col" class="text-end">Cumulé de la<br/>trajectoire (Ha)</th>
-                        {% endif %}
                     </tr>
                 </thead>
                 <tbody>
-                    {% for line in trajectory_chart.get_data_table %}
+                    {% for line in target_2031_chart.get_data_table %}
                     <tr>
                         <th scope="row">{{ line.year }}</th>
                         <td align="right">{{ line.real|floatformat:1 }}</td>
                         <td align="right">{{ line.added_real|floatformat:1 }}</td>
                         <td align="right">{{ line.objective|floatformat:1 }}</td>
                         <td align="right">{{ line.added_objective|floatformat:1 }}</td>
-                        {% if has_related_trajectory %}
-                            <td align="right">{{ line.trajectory|floatformat:1 }}</td>
-                            <td align="right">{{ line.added_trajectory|floatformat:1 }}</td>
-                        {% endif %}
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -98,7 +90,7 @@
     </div>
 </div>
 
-{% display_chart 'trajectory_chart' trajectory_chart CSP_NONCE %}
+{% display_chart 'target_2031_chart' target_2031_chart CSP_NONCE %}
 
 {% if reload_kpi %}
     <span id="objective-swapper" hx-swap-oob="true">{{ diagnostic.target_2031 }}</span>
@@ -106,11 +98,4 @@
     <span id="annual_real-swapper" hx-swap-oob="true">{{ annual_real|floatformat:1 }}</span>
     <span id="conso_2031-swapper" hx-swap-oob="true">{{ conso_2031|floatformat:1 }}</span>
     <span id="annual_objective-swapper" hx-swap-oob="true">{{ annual_objective_2031|floatformat:1 }}</span>
-    <div id="trajectory-swapper" hx-swap-oob="true">
-        <div class="d-flex fr-mb-1w">
-            <p class="fr-callout__title">+{{ conso_perso|floatformat:1 }} ha</p>
-            <p class="fr-tag fr-tag--sm fr-tag--blue fr-ml-2w"><strong>{{ annual_perso|floatformat:1 }} ha/an</strong></p>
-        </div>
-        <p class="fr-text--sm">Consommation cumulée de la période du 1er jan. 2021 au 31 déc. {{ trajectory.end|stringformat:"s" }}</p>
-    </div>
 {% endif %}
