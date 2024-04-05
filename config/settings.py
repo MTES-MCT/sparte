@@ -498,18 +498,20 @@ CSP_SCRIPT_SRC = [
     "'self'",
     "stats.beta.gouv.fr",
     "code.highcharts.com",
+    STATIC_URL,
     "www.googletagmanager.com",
     # Crisp
     "https://client.crisp.chat",
     "https://settings.crisp.chat",
-] + ([STATIC_URL] if ENVIRONMENT != "local" else [])
+]
 CSP_STYLE_SRC = [
     "'self'",
     "cdn.jsdelivr.net",
+    STATIC_URL,
     "'unsafe-inline'",
     # Crisp
     "https://client.crisp.chat",
-] + ([STATIC_URL] if ENVIRONMENT != "local" else [])
+]
 CSP_IMG_SRC = [
     "'self'",
     "data:",
@@ -517,6 +519,7 @@ CSP_IMG_SRC = [
     "s3.fr-par.scw.cloud",
     "data:",
     MEDIA_URL,
+    STATIC_URL,
     "google.com",
     "google.fr",
     "googleads.g.doubleclick.net",
@@ -524,7 +527,7 @@ CSP_IMG_SRC = [
     "https://client.crisp.chat",
     "https://image.crisp.chat",
     "https://storage.crisp.chat",
-] + ([STATIC_URL] if ENVIRONMENT != "local" else [])
+]
 CSP_FRAME_SRC = (
     "'self'",
     # Crisp
@@ -535,13 +538,14 @@ CSP_MEDIA_SRC = (
     "https://client.crisp.chat"
 )
 CSP_INCLUDE_NONCE_IN = ["script-src"]
-CSP_FONT_SRC = [
+CSP_FONT_SRC = (
     "'self'",
     "data:",
     "cdn.jsdelivr.net",
+    STATIC_URL,
     # Crisp
     "https://client.crisp.chat",
-] + ([STATIC_URL] if ENVIRONMENT != "local" else [])
+)
 CSP_CONNECT_SRC = [
     "'self'",
     "beta.gouv.fr",
