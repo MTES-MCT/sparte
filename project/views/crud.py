@@ -143,6 +143,20 @@ class ProjectUpdateView(GroupMixin, UpdateView):
         return redirect("project:splash", pk=self.object.id)
 
 
+class ProjectSetTarget2031View(UpdateView):
+    model = Project
+    template_name = "project/partials/report_set_target_2031.html"
+    fields = ["target_2031"]
+    context_object_name = "diagnostic"
+
+    def form_valid(self, form):
+        self.object = form.save()
+        return self.render_to_response(
+            self.get_context_data(success_message=True),
+            headers={"HX-Trigger": "load-graphic"},
+        )
+
+
 class SetProjectPeriodView(GroupMixin, RedirectURLMixin, UpdateView):
     model = Project
     template_name = "project/partials/report_set_period.html"
