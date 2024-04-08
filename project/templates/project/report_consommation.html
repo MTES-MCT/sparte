@@ -47,7 +47,7 @@ Rapport consommation
                     la consommation traduit un changement d'usage. A titre d'exemple, un bâtiment agricole artificialise mais ne consomme pas.
                 </p>
                 <p class="fr-text--sm mb-3">
-                    La consommation d'espaces NAF est mesurée avec les données d'évolution des fichiers fonciers produits et diffusés par le Cérema depuis 2009
+                    La consommation d'espaces NAF est mesurée avec les données d'évolution des fichiers fonciers produits et diffusés par le Cerema depuis 2009
                     à partir des fichiers MAJIC de la DGFIP. Le dernier millésime de 2022 est la  photographie du territoire au 1er janvier 2022, intégrant
                     les évolutions réalisées au cours de l'année 2021.
                 </p>
@@ -205,37 +205,49 @@ Rapport consommation
                 {% endif %}
             </div>
 
-            <div class="fr-callout bg-white fr-p-2w mt-4">
-                <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data-1">Données et calcul</button>
-                <div class="fr-collapse" id="target-data-1">
-                    <h6 class="fr-mt-2w">Source</h6>
-                    <p>Données d'évolution des fichiers fonciers produits et diffusés par le Cérema depuis 2009 à partir des fichiers MAJIC (Mise A Jour de  l'Information Cadastrale) de la DGFIP. Le dernier millésime de 2022 est la  photographie du territoire au 1er janvier 2022, intégrant les évolutions réalisées au cours de l'année 2021.</p>
-
-                    <h6 class="fr-mt-2w">Calcul</h6>
-                    <p>Données brutes, sans calcul</p>
-
-                    <h6 class="fr-mt-2w">Données</h6>
-                    <table class="table table-striped table-sm table-borderless">
-                        <thead>
-                            <tr>
-                                <th scope="col">{{ col_name }}</th>
-                                {% for year in project.years %}
-                                <th scope="col" class="text-end">{{ year }}</th>
+            <div class="fr-notice fr-mt-4w">
+                <div class="fr-container">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <span class="fr-icon-information-line" aria-hidden="true"></span>
+                            <span class="fr-text--xs fr-mr-1w">Source de données: </span>
+                            <p class="fr-tag fr-tag--sm fr-tag--blue">
+                                <strong>FICHIERS FONCIERS</strong>
+                            </p>
+                        </div>
+                        <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data-1">Détails données et calcul</button>
+                    </div>
+                    <div class="fr-collapse" id="target-data-1">
+                        <h6 class="fr-mt-2w">Source</h6>
+                        <p class="fr-text--sm">Données d'évolution des fichiers fonciers produits et diffusés par le Cerema depuis 2009 à partir des fichiers MAJIC (Mise A Jour de  l'Information Cadastrale) de la DGFIP. Le dernier millésime de 2022 est la  photographie du territoire au 1er janvier 2022, intégrant les évolutions réalisées au cours de l'année 2021.</p>
+    
+                        <h6 class="fr-mt-2w">Calcul</h6>
+                        <p class="fr-text--sm">Données brutes, sans calcul</p>
+    
+                        <h6 class="fr-mt-2w">Données</h6>
+                        <table class="table fr-table--no-caption table-striped table-sm table-borderless fr-text--sm">
+                            <caption>Données consommation d'espace annuelle sur le territoire</caption>
+                            <thead>
+                                <tr>
+                                    <th scope="col">{{ col_name }}</th>
+                                    {% for year in project.years %}
+                                    <th scope="col" class="text-end">{{ year }}</th>
+                                    {% endfor %}
+                                    <th scope="col" class="text-end">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for city_name, data in communes_data_table.items %}
+                                <tr>
+                                    <th scope="row">{{ city_name }}</th>
+                                    {% for year, val in data.items %}
+                                    <td align="right">+{{ val|floatformat:1 }}</td>
+                                    {% endfor %}
+                                </tr>
                                 {% endfor %}
-                                <th scope="col" class="text-end">Total</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for city_name, data in communes_data_table.items %}
-                            <tr>
-                                <th scope="row">{{ city_name }}</th>
-                                {% for year, val in data.items %}
-                                <td align="right">+{{ val|floatformat:1 }}</td>
-                                {% endfor %}
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
@@ -304,46 +316,58 @@ Rapport consommation
                 </div>
             </div>
 
-            <div class="fr-callout bg-white fr-p-2w mt-4">
-                <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data-3">Données et calcul</button>
-                <div class="fr-collapse" id="target-data-3">
-                    <h6 class="fr-mt-2w">Source</h6>
-                    <p>
-                        Données d'évolution des fichiers fonciers produits et diffusés
-                        par le Cérema depuis 2009 à partir des fichiers MAJIC (Mise A
-                        Jour de l'Information Cadastrale) de la DGFIP. Le dernier millésime
-                        de 2022 est la  photographie du territoire au 1er janvier 2022,
-                        intégrant les évolutions réalisées au cours de l'année 2021.
-                    </p>
-                    <p>
-                        La ligne "non renseigné" comprend les éléments dont la destination
-                        n’est pas définie dans les fichiers fonciers.
-                    </p>
-                    <h6 class="fr-mt-2w">Calcul</h6>
-                    <p>Données brutes, sans calcul</p>
-
-                    <h6 class="fr-mt-2w">Données</h6>
-                    <table class="table table-striped table-sm table-borderless">
-                        <thead>
-                            <tr>
-                                <th scope="col">Déterminant</th>
-                                {% for year in project.years %}
-                                <th scope="col" class="text-end">{{ year }}</th>
+            <div class="fr-notice fr-mt-4w">
+                <div class="fr-container">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <span class="fr-icon-information-line" aria-hidden="true"></span>
+                            <span class="fr-text--xs fr-mr-1w">Source de données: </span>
+                            <p class="fr-tag fr-tag--sm fr-tag--blue">
+                                <strong>FICHIERS FONCIERS</strong>
+                            </p>
+                        </div>
+                        <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data-3">Détails données et calcul</button>
+                    </div>
+                    <div class="fr-collapse" id="target-data-3">
+                        <h6 class="fr-mt-2w">Source</h6>
+                        <p class="fr-text--sm">
+                            Données d'évolution des fichiers fonciers produits et diffusés
+                            par le Cerema depuis 2009 à partir des fichiers MAJIC (Mise A
+                            Jour de l'Information Cadastrale) de la DGFIP. Le dernier millésime
+                            de 2022 est la  photographie du territoire au 1er janvier 2022,
+                            intégrant les évolutions réalisées au cours de l'année 2021.
+                        </p>
+                        <p class="fr-text--sm">
+                            La ligne "non renseigné" comprend les éléments dont la destination
+                            n’est pas définie dans les fichiers fonciers.
+                        </p>
+                        <h6 class="fr-mt-2w">Calcul</h6>
+                        <p class="fr-text--sm">Données brutes, sans calcul</p>
+    
+                        <h6 class="fr-mt-2w">Données</h6>
+                        <table class="table fr-table--no-caption table-striped table-sm table-borderless fr-text--sm">
+                            <caption>Données déterminants de la consommation</caption>
+                            <thead>
+                                <tr>
+                                    <th scope="col">Déterminant</th>
+                                    {% for year in project.years %}
+                                    <th scope="col" class="text-end">{{ year }}</th>
+                                    {% endfor %}
+                                    <th scope="col" class="text-end">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for determinant_name, data in data_determinant.items %}
+                                <tr>
+                                    <th scope="row">{{ determinant_name }}</th>
+                                    {% for year, val in data.items %}
+                                    <td align="right">+{{ val|floatformat:1 }}</td>
+                                    {% endfor %}
+                                </tr>
                                 {% endfor %}
-                                <th scope="col" class="text-end">Total</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for determinant_name, data in data_determinant.items %}
-                            <tr>
-                                <th scope="row">{{ determinant_name }}</th>
-                                {% for year, val in data.items %}
-                                <td align="right">+{{ val|floatformat:1 }}</td>
-                                {% endfor %}
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
@@ -381,63 +405,67 @@ Rapport consommation
                 <div id="chart_2"></div>
             </div>
 
-            <div class="fr-callout bg-white fr-p-2w mt-4">
-                <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data-2">Données et calcul</button>
-                <div class="fr-collapse" id="target-data-2">
-                    <h6 class="fr-mt-2w">Source</h6>
-                    <p>Données d'évolution des fichiers fonciers produits et diffusés par le Cérema depuis 2009 à partir des fichiers MAJIC (Mise A Jour de  l'Information Cadastrale) de la DGFIP. Le dernier millésime de 2022 est la  photographie du territoire au 1er janvier 2022, intégrant les évolutions réalisées au cours de l'année 2021.</p>
-
-                    <h6 class="fr-mt-2w">Calcul</h6>
-                    <p>Données brutes, sans calcul</p>
-
-                    <h6 class="fr-mt-2w">Données</h6>
-                    <table class="table table-striped table-sm table-borderless">
-                        <thead>
-                            <tr>
-                                <th scope="col">Communes</th>
-                                {% for year in project.years %}
-                                <th scope="col" class="text-end">{{ year }}</th>
+            <div class="fr-notice fr-mt-4w">
+                <div class="fr-container">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <span class="fr-icon-information-line" aria-hidden="true"></span>
+                            <span class="fr-text--xs fr-mr-1w">Source de données: </span>
+                            <p class="fr-tag fr-tag--sm fr-tag--blue">
+                                <strong>FICHIERS FONCIERS</strong>
+                            </p>
+                        </div>
+                        <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data-2">Détails données et calcul</button>
+                    </div>
+                    <div class="fr-collapse" id="target-data-2">
+                        <h6 class="fr-mt-2w">Source</h6>
+                        <p class="fr-text--sm">Données d'évolution des fichiers fonciers produits et diffusés par le Cerema depuis 2009 à partir des fichiers MAJIC (Mise A Jour de  l'Information Cadastrale) de la DGFIP. Le dernier millésime de 2022 est la  photographie du territoire au 1er janvier 2022, intégrant les évolutions réalisées au cours de l'année 2021.</p>
+    
+                        <h6 class="fr-mt-2w">Calcul</h6>
+                        <p class="fr-text--sm">Données brutes, sans calcul</p>
+    
+                        <h6 class="fr-mt-2w">Données</h6>
+                        <table class="table fr-table--no-caption table-striped table-sm table-borderless fr-text--sm">
+                            <caption>Données comparaison avec les territoires similaires</caption>
+                            <thead>
+                                <tr>
+                                    <th scope="col">Communes</th>
+                                    {% for year in project.years %}
+                                    <th scope="col" class="text-end">{{ year }}</th>
+                                    {% endfor %}
+                                    <th scope="col" class="text-end">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for city_name, data in data_comparison.items %}
+                                <tr>
+                                    <th scope="row">{{ city_name }}</th>
+                                    {% for year, val in data.items %}
+                                    <td align="right">+{{ val|floatformat:1 }}</td>
+                                    {% endfor %}
+                                </tr>
                                 {% endfor %}
-                                <th scope="col" class="text-end">Total</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for city_name, data in data_comparison.items %}
-                            <tr>
-                                <th scope="row">{{ city_name }}</th>
-                                {% for year, val in data.items %}
-                                <td align="right">+{{ val|floatformat:1 }}</td>
-                                {% endfor %}
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
 
         <div id="conso-relative-surface-anchor" class="fr-mt-7w" hx-get="{% url 'project:relative-surface' project.id %}" hx-trigger="revealed">
             <h3>Consommation d'espaces rapportée à la surface du territoire</h3>
-
-            <!-- TODO Sofian ajouter skeletton -->
             <div class="fr-custom-loader"></div>
-
         </div>
 
         <div id="conso-relative-pop-anchor" class="fr-mt-7w" hx-get="{% url 'project:relative-pop' project.id %}" hx-trigger="revealed">
             <h3>Consommation d'espaces par nouvel habitant</h3>
-
-            <!-- TODO Sofian ajouter skeletton -->
             <div class="fr-custom-loader"></div>
         </div>
 
         <div id="conso-relative-household-anchor" class="fr-mt-7w" hx-get="{% url 'project:relative-household' project.id %}" hx-trigger="revealed">
             <h3>Consommation d'espaces par ménages</h3>
-
-            <!-- TODO Sofian ajouter skeletton -->
             <div class="fr-custom-loader"></div>
         </div>
-
     </div>
 </div>
 
@@ -503,10 +531,10 @@ Rapport consommation
                     Astuces - Déterminants de la consommation
                 </h1>
                 <p class="fr-text--sm">
-                    Les déterminants de la consommation d'espaces NAF constituent les raisons pour lesquelles le territoire a consommé. Le camembert permet d'identifier via les pourcentages
-                    la répartition des  déterminants sur la période de la  consommation d'espaces NAF. Le Cerema extrait cette information et classe aujourd'hui la consommation d'espaces
-                    NAF en six catégories : habitat, activité, mixte (lorsqu'il y a un mélange d'habitat et d'activité, par exemple un commerce au rez de chaussée et des logements aux étages),
-                    route, ferré, non renseigné (lorsque les fichiers fonciers ne permettent pas de préciser la destination).
+                    Les déterminants indiquent les natures de la consommation de l’espace NAF.
+                    Ils sont définis en 6 catégories par le Cerema : habitat, activité, mixte (lorsqu'il y a un mélange d'habitat et d'activité,
+                    par exemple un commerce au rez de chaussée et des logements aux étages), route, ferré, non renseigné (lorsque les fichiers
+                    fonciers ne permettent pas de préciser la destination).
                 </p>
                 <p class="fr-text--sm">Pour zoomer sur un déterminant en particulier, vous pouvez masquer les autres en cliquant sur eux dans la légende. Cliquez de nouveau dessus pour les ré-afficher.</p>
                 <p class="fr-text--sm">Avec le bouton <span class="fr-icon-drag-move-2-line fr-icon--sm" aria-hidden="true"></span>, vous pouvez afficher le graphique en plein écran.</p>

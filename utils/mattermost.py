@@ -50,6 +50,13 @@ class SwannPrivate(Mattermost):
         super().__init__(channel="@Swann", *args, **kwargs)  # noqa: B026
 
 
+class Crisp(Mattermost):
+    """Send message to inform that a Crisp notification has been received"""
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(channel="sparte-crisp", *args, **kwargs)  # noqa: B026
+
+
 class BlockedDiagnostic(Mattermost):
     """Send message to inform that some diagnostics are blocked"""
 

@@ -21,7 +21,7 @@ from django.core.exceptions import ImproperlyConfigured
 from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.redis import RedisIntegration
 
-OFFICIAL_VERSION = "4.5.0"
+OFFICIAL_VERSION = "4.6.0"
 
 root = environ.Path(__file__) - 2  # get root of the project
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -97,6 +97,7 @@ PROJECT_APPS = [
     "metabase.apps.MetabaseConfig",
     "brevo.apps.BrevoConfig",
     "documentation.apps.DocumentationConfig",
+    "crisp.apps.CrispConfig",
 ]
 
 
@@ -220,6 +221,8 @@ AWS_S3_SIGNATURE_VERSION = "s3v4"
 # AWS_S3_CUSTOM_DOMAIN = f"{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com"
 AWS_S3_OBJECT_PARAMETERS = {"CacheControl": "max-age=86400"}
 
+AWS_S3_ENDPOINT_URL = "https://s3.fr-par.scw.cloud"
+
 STATICFILES_DIRS = [
     BASE_DIR / "static",
     # BASE_DIR / "htmlcov",
@@ -229,7 +232,7 @@ STATIC_URL = "/static/"
 STATIC_ROOT = str(BASE_DIR / "staticroot")
 
 PUBLIC_MEDIA_LOCATION = "media"
-MEDIA_URL = f"https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/{PUBLIC_MEDIA_LOCATION}/"
+MEDIA_URL = f"https://{AWS_STORAGE_BUCKET_NAME}.s3.fr-par.scw.cloud/{PUBLIC_MEDIA_LOCATION}/"
 
 
 # CORSHEADERS
@@ -477,6 +480,10 @@ MATOMO_ACTIVATE = env.bool("MATOMO_ACTIVATE", default=False)
 # GOOGLE TAG ADWORDS
 GOOGLE_ADWORDS_ACTIVATE = env.bool("GOOGLE_ADWORDS_ACTIVATE", default=False)
 
+# CRISP
+CRISP_WEBSITE_ID = env.str("CRISP_WEBSITE_ID")
+CRISP_ACTIVATED = env.bool("CRISP_ACTIVATED", default=False)
+
 # SECURITY - Content Security Header Policy
 # https://django-csp.readthedocs.io
 
@@ -502,6 +509,7 @@ CSP_STYLE_SRC = [
 CSP_IMG_SRC = [
     "'self'",
     "data.geopf.fr",
+    "s3.fr-par.scw.cloud",
     "data:",
     MEDIA_URL,
     STATIC_URL,
@@ -521,6 +529,7 @@ CSP_CONNECT_SRC = [
     "https://openmaptiles.geo.data.gouv.fr",
     "https://openmaptiles.github.io",
     "https://stats.beta.gouv.fr",
+    "https://s3.fr-par.scw.cloud",
 ]
 CSP_FRAME_ANCESTORS = ("'self'", "https://sparte-metabase.osc-secnum-fr1.scalingo.io")
 
@@ -609,3 +618,7 @@ LOGGING = {
         },
     },
 }
+
+# CRISP
+
+CRISP_WEBHOOK_SECRET_KEY = env.str("CRISP_WEBHOOK_SECRET_KEY")

@@ -927,6 +927,12 @@ class ConsoComparisonPopChart(ProjectChart):
     param = {
         "title": {"text": ("Ha par nouvel habitant")},
         "yAxis": {"title": {"text": "Consommation par habitant (en ha)"}},
+        "tooltip": {
+            "headerFormat": DEFAULT_HEADER_FORMAT,
+            "valueSuffix": " Ha",
+            "valueDecimals": DEFAULT_VALUE_DECIMALS,
+            "pointFormat": DEFAULT_POINT_FORMAT,
+        },
         "xAxis": {"type": "category"},
         "legend": {"layout": "vertical", "align": "right", "verticalAlign": "middle"},
         "series": [],
@@ -993,6 +999,12 @@ class ConsoComparisonHouseholdChart(ProjectChart):
     name = "conso comparison"
     param = {
         "title": {"text": ("Ha par nouveau ménage accueilli")},
+        "tooltip": {
+            "headerFormat": DEFAULT_HEADER_FORMAT,
+            "valueSuffix": " Ha",
+            "valueDecimals": DEFAULT_VALUE_DECIMALS,
+            "pointFormat": DEFAULT_POINT_FORMAT,
+        },
         "yAxis": {"title": {"text": "Consommation par ménage (en ha)"}},
         "xAxis": {"type": "category"},
         "legend": {"layout": "vertical", "align": "right", "verticalAlign": "middle"},

@@ -5,12 +5,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.db.models import F, Value
-from django.http import (
-    HttpRequest,
-    HttpResponse,
-    HttpResponseGone,
-    HttpResponseRedirect,
-)
+from django.http import HttpRequest, HttpResponse, HttpResponseGone
 from django.shortcuts import redirect
 from django.utils import timezone
 from django.views.generic import CreateView, FormView, RedirectView, TemplateView
@@ -24,7 +19,7 @@ from utils.views_mixins import BreadCrumbMixin
 
 from .forms import NewsletterForm
 from .models import AliveTimeStamp, ContactForm, Newsletter
-from .tasks import send_contact_form, send_nwl_confirmation, send_nwl_final
+from .tasks import send_nwl_confirmation, send_nwl_final
 
 
 class TestView(TemplateView):
@@ -74,11 +69,9 @@ class ContactView(CreateView):
     success_url = "/"
     fields = ["email", "content"]
 
-    def form_valid(self, form):
-        self.object = form.save()
-        send_contact_form.delay(self.object.id)
-        messages.success(self.request, "Votre message a été envoyé à l'équipe de Mon Diagnostic Artificialisation.")
-        return HttpResponseRedirect(self.get_success_url())
+    def get_context_data(self, **kwargs):
+        kwargs["crisp_website_id"] = settings.CRISP_WEBSITE_ID
+        return super().get_context_data(**kwargs)
 
 
 class NewsletterSubscriptionView(FormView):
