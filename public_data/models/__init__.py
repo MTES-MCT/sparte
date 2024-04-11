@@ -5,3 +5,4 @@ from .deprecated import *  # noqa: F401, F403
 from .gpu import *  # noqa: F401, F403
 from .mixins import *  # noqa: F401, F403
 from .ocsge import *  # noqa: F401, F403
+from .sudocuh import Sudocuh  # noqa: F401
