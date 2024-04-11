@@ -12,13 +12,19 @@ logger = logging.getLogger("management.commands")
 
 
 class Command(BaseCommand):
+    """
+    Data downloaded from:
+    https://www.data.gouv.fr/en/datasets/planification-nationale-des-documents-durbanisme-plu-plui-cc-rnu-donnees-sudocuh-dernier-etat-des-lieux-annuel-au-31-decembre-2023/ # noqa: E501
+    """
+
     help = "Import Sudocuh data from a csv file"
 
     def add_arguments(self, parser):
         parser.add_argument(
-            "filename",
+            "--filename",
             type=str,
             help="filename you want to import",
+            default="sudocuh_cog_2023.csv",
         )
         parser.add_argument(
             "--yes",
@@ -114,7 +120,10 @@ class Command(BaseCommand):
         reader = csv.reader(csv_file_as_list, delimiter=";")
         count = len(csv_file_as_list)
         logger.info(f"Importing {count} Sudocuh data")
-        for idx, row in enumerate(reader):
+
+        objects_to_create = []
+
+        for row in reader:
             data = dict(zip(headers, row))
 
             data = {key: self.empty_string_to_none(value) for key, value in data.items()}
@@ -141,7 +150,8 @@ class Command(BaseCommand):
                 else 0
             )
 
-            Sudocuh.objects.create(**data)
+            objects_to_create.append(Sudocuh(**data))
 
-            if idx % 100 == 0 or idx == count - 1:
-                logger.info(f"Imported {idx + 1}/{count}")
+        created_sudocuh = Sudocuh.objects.bulk_create(objects_to_create)
+
+        logger.info(f"Created {len(created_sudocuh)} Sudocuh data")
