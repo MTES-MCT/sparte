@@ -19,7 +19,7 @@ class Sudocuh(models.Model):
         "Collectivité porteuse", max_length=200, help_text="Nom de la collectivité qui a la compétence PLU (DU)"
     )
     siren_epci = models.CharField(
-        "SiREN EPCI",
+        "SIREN EPCI",
         max_length=200,
         help_text="Indiqué lorsque la collectivité porteuse est de type EPCI",
         blank=True,
