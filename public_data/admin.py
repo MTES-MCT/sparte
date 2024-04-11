@@ -12,6 +12,7 @@ from public_data.models import (
     Epci,
     Ocsge,
     Region,
+    Sudocuh,
     UsageSol,
 )
 
@@ -178,3 +179,20 @@ class AdminDataSource(admin.ModelAdmin):
         "official_land_id",
     )
     ordering = ("productor", "dataset", "name")
+
+
+@admin.register(Sudocuh)
+class SudocuhAdmin(admin.GeoModelAdmin):
+    model = Sudocuh
+    list_display = (
+        "nom_commune",
+        "code_insee",
+    )
+    search_fields = (
+        "code_insee",
+        "nom_region",
+        "code_departement",
+        "nom_commune",
+        "siren_epci",
+    )
+    ordering = ("nom_commune",)
