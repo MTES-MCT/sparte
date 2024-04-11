@@ -31,7 +31,7 @@ class Migration(migrations.Migration):
                         help_text="Indiqué lorsque la collectivité porteuse est de type EPCI",
                         max_length=200,
                         null=True,
-                        verbose_name="SiREN EPCI",
+                        verbose_name="SIREN EPCI",
                     ),
                 ),
                 (
