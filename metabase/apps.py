@@ -24,14 +24,6 @@ def do_request_post_save(instance, created: bool, **kwargs):
         async_create_stat_for_request.delay(instance.id)
 
 
-def do_trajectory_post_save(instance, created: bool, **kwargs):
-    from metabase.tasks import async_create_stat_for_trajectory
-
-    logger.info("Receiving post save trajectory signal then queue async_create_stat_for_project")
-    if created:
-        async_create_stat_for_trajectory.delay(instance.id)
-
-
 class MetabaseConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
     name = "metabase"
@@ -47,9 +39,4 @@ class MetabaseConfig(AppConfig):
             do_request_post_save,
             sender="project.Request",
             dispatch_uid="post_save_stat_diagnostic_for_request",
-        )
-        post_save.connect(
-            do_trajectory_post_save,
-            sender="trajectory.Trajectory",
-            dispatch_uid="post_save_stat_diagnostic_for_trajectory",
         )

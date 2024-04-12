@@ -4,7 +4,6 @@ from datetime import datetime
 from django.db import models
 
 from project.models import Project, Request
-from trajectory.models import Trajectory
 from utils.functions import get_url_with_domain
 
 logger = logging.getLogger(__name__)
@@ -52,9 +51,6 @@ class StatDiagnostic(models.Model):
     organism = models.CharField("Organisme", max_length=255, blank=True, null=True)
     group_organism = models.CharField("Groupe d'organisme", max_length=50, blank=True, null=True)
 
-    has_trajectory = models.BooleanField("A une trajectoire", default=False)
-    date_first_trajectory = models.DateTimeField("Date de la première trajectoire", null=True, blank=True)
-
     class Meta:
         verbose_name = "Statistique"
         ordering = ["-created_date"]
@@ -73,12 +69,6 @@ class StatDiagnostic(models.Model):
             self.organism = request.organism
             self.group_organism = GROUP_ORGANISM.get(request.organism, "AUTRE")
             self.date_first_download = request.created_date
-            self.save()
-
-    def update_with_trajectory(self, trajectory: Trajectory) -> None:
-        if not self.has_trajectory:
-            self.has_trajectory = True
-            self.date_first_trajectory = trajectory.created_at
             self.save()
 
     def update_locations(self, project: Project) -> None:
@@ -137,14 +127,3 @@ class StatDiagnostic(models.Model):
             od.update_with_request(req)
         except Request.DoesNotExist:
             logger.error("%d request does not exists, stats are not updated.", request_id)
-
-    @classmethod
-    def trajectory_post_save(cls, trajectory_id: int) -> None:
-        """Update StatDiagnostic when a Project has a trajectory.
-        Ensure that exception are catched to avoid breaking user doings."""
-        try:
-            trajectory = Trajectory.objects.get(id=trajectory_id)
-            od = cls.get_or_create(trajectory.project)
-            od.update_with_trajectory(trajectory)
-        except Request.DoesNotExist:
-            logger.error("%d trajectory does not exists, stats are not updated.", trajectory_id)
