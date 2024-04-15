@@ -293,6 +293,22 @@ class ProjectReportSynthesisView(ProjectReportBaseView):
         return super().get_context_data(**kwargs)
 
 
+class ProjectReportLocalView(ProjectReportBaseView):
+    template_name = "project/report_local.html"
+    breadcrumbs_title = "Rapport local"
+
+    def get_context_data(self, **kwargs):
+        project: Project = self.get_object()
+
+        kwargs.update(
+            {
+                "diagnostic": project,
+                "active_page": "local",
+            }
+        )
+        return super().get_context_data(**kwargs)
+
+
 class ProjectReportArtifView(ProjectReportBaseView):
     template_name = "project/report_artif.html"
     breadcrumbs_title = "Rapport artificialisation"

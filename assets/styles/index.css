@@ -530,6 +530,13 @@ Progress bar gradient
 }
 
 /*
+Tile
+*/
+.fr-tile__icon {
+    max-width: 40px;
+}
+
+/*
 Utilities
 */
 .w-0 { width: 0% !important; }
