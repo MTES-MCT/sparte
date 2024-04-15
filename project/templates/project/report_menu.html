@@ -76,6 +76,9 @@
                     {% endif %}>Zonages d'urbanisme</a>
             </li>
             <li class="fr-nav__item">
+                <a class="fr-nav__link" {% if active_page == 'local' %} aria-current="true"{% endif %} href="{% url 'project:report_local' project.pk %}">Rapport local</a>
+            </li>
+            <li class="fr-nav__item">
                 <a class="fr-nav__link" {% if active_page == 'update' %}aria-current="true"{% endif %} href="{% url 'project:update' project.pk %}">Paramètres</a>
             </li>
         </ul>
