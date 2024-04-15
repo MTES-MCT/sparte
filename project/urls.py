@@ -68,11 +68,6 @@ urlpatterns = [
         views.ProjectReportCityGroupView.as_view(),
         name="report_city_group",
     ),
-    # path(
-    #     "<int:pk>/tableau-de-bord/objectif-2031",
-    #     views.ProjectReportTarget2031View.as_view(),
-    #     name="report_target_2031",
-    # ),
     path(
         "<int:pk>/tableau-de-bord/zonages-d-urbanisme",
         views.ProjectReportUrbanZonesView.as_view(),
