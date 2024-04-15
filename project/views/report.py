@@ -471,28 +471,6 @@ class ProjectReportDownloadView(BreadCrumbMixin, CreateView):
         return self.render_to_response(self.get_context_data(success_message=True))
 
 
-class ProjectReportTarget2031View(ProjectReportBaseView):
-    template_name = "project/report_target_2031.html"
-    breadcrumbs_title = "Rapport objectif 2031"
-
-    def get_context_data(self, **kwargs):
-        project = self.get_object()
-        objective_chart = charts.ObjectiveChart(project)
-        kwargs.update(
-            {
-                "diagnostic": project,
-                "active_page": "target_2031",
-                "objective_chart": objective_chart,
-                "conso_2031_minus_10": objective_chart.conso_2031 * 0.9,
-                "conso_2031_annual_minus_10": objective_chart.annual_objective_2031 * 0.9,
-                "conso_2031_plus_10": objective_chart.conso_2031 * 1.1,
-                "conso_2031_annual_plus_10": objective_chart.annual_objective_2031 * 1.1,
-            }
-        )
-
-        return super().get_context_data(**kwargs)
-
-
 class ProjectReportUrbanZonesView(ProjectReportBaseView):
     template_name = "project/report_urban_zones.html"
     breadcrumbs_title = "Rapport zonages d'urbanisme"
