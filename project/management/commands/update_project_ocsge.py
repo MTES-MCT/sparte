@@ -9,7 +9,7 @@ logger = logging.getLogger("management.commands")
 
 
 class Command(BaseCommand):
-    help = "Update project after adding new OCS GE"
+    help = "Reset async task status for projects with new OCSGE data."
 
     def add_arguments(self, parser):
         parser.add_argument(
@@ -20,7 +20,7 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-        logger.info("Reevaluate ocsge for projects")
+        logger.info("Reset async task status for projects")
 
         projects = Project.objects.all()
 
@@ -32,10 +32,8 @@ class Command(BaseCommand):
 
         count = projects.count()
 
-        logger.info(f"Update project OCS GE cache for {count} projects")
-
         for i, project in enumerate(projects):
             logger.info(f"{i + 1}/{count} - Process project {project.id}")
             update_ocsge(project)
 
-        logger.info("End Reevaluate ocsge for project")
+        logger.info("Done resetting async task status for projects")

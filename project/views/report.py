@@ -10,12 +10,13 @@ from django.db import transaction
 from django.db.models import Case, CharField, DecimalField, F, Q, Sum, Value, When
 from django.db.models.functions import Cast, Concat
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
+from django.shortcuts import redirect
 from django.urls import reverse
 from django.views.generic import CreateView, DetailView, TemplateView
 
 from brevo.tasks import send_request_to_brevo
 from project import charts, tasks
-from project.models import Project, ProjectCommune, Request
+from project.models import Project, ProjectCommune, Request, trigger_async_tasks
 from project.utils import add_total_line_column
 from public_data.models import CouvertureSol, UsageSol
 from public_data.models.gpu import ZoneUrba
@@ -34,6 +35,10 @@ class ProjectReportBaseView(CacheMixin, GroupMixin, DetailView):
     @transaction.non_atomic_requests
     def dispatch(self, request, *args, **kwargs):
         # with this, be careful when doing row modification, autocommit is disabled
+        project: Project = self.get_object()
+        if not project.async_complete:
+            trigger_async_tasks(project)
+            return redirect("project:splash", pk=project.id)
         return super().dispatch(request, *args, **kwargs)
 
     def get_context_breadcrumbs(self):
