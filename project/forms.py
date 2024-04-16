@@ -1,6 +1,7 @@
 from django import forms
 
 from project.models import Project
+from project.models.enums import ProjectChangeReason
 from public_data.models import AdminRef, Departement, Epci, Region
 
 
@@ -63,7 +64,7 @@ class UpdateProjectForm(forms.ModelForm):
             self.fields["level"].choices = [(c, AdminRef.get_label(c)) for c in choices]
 
     def save(self, *args, **kwargs):
-        self.instance._change_reason = "update_project"
+        self.instance._change_reason = ProjectChangeReason.USER_UPDATED_PROJECT_FROM_PARAMS
         return super().save(*args, **kwargs)
 
 

@@ -21,6 +21,7 @@ from django.utils.functional import cached_property
 from simple_history.models import HistoricalRecords
 
 from config.storages import PublicMediaStorage
+from project.models.enums import ProjectChangeReason
 from project.models.exceptions import TooOldException
 from public_data.exceptions import LandException
 from public_data.models import (
@@ -153,7 +154,7 @@ class BaseProject(models.Model):
         self.import_date = timezone.now()
         self.import_error = None
         if save:
-            self.save()
+            self.save_without_historical_record()
 
     def set_failed(self, save=True, trace=None):
         self.import_status = self.Status.FAILED
@@ -163,7 +164,7 @@ class BaseProject(models.Model):
         else:
             self.import_error = traceback.format_exc()
         if save:
-            self.save()
+            self.save_without_historical_record()
 
     class Meta:
         abstract = True
@@ -434,6 +435,11 @@ class Project(BaseProject):
     )
 
     @property
+    def latest_change_is_ocsge_delivery(self) -> bool:
+        latest_change = self.history.first()
+        return latest_change.history_change_reason == ProjectChangeReason.NEW_OCSGE_HAS_BEEN_DELIVERED
+
+    @property
     def async_complete(self):
         return (
             self.async_add_city_done
@@ -508,7 +514,7 @@ class Project(BaseProject):
             )
         if not self.folder_name:
             self.folder_name = f"diag_{self.id:>06}"
-            self._change_reason = "set folder_name"
+            self._change_reason = ProjectChangeReason.FOLDER_CHANGED
             self.save(update_fields=["folder_name"])
         return self.folder_name
 

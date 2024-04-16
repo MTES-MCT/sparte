@@ -24,6 +24,7 @@ from project.forms import (
 )
 from project.models import Project, create_from_public_key
 from project.models.create import update_period
+from project.models.enums import ProjectChangeReason
 from public_data.exceptions import LandException
 from public_data.models import AdminRef, Land
 from utils.views_mixins import BreadCrumbMixin, RedirectURLMixin
@@ -43,7 +44,7 @@ class ClaimProjectView(LoginRequiredMixin, RedirectView):
                 "Vous pouvez retrouver ce diagnostic en utilisant le menu Diagnostic > Ouvrir",
             )
             project.user = request.user
-            project._change_reason = "Claim"
+            project._change_reason = ProjectChangeReason.USER_CLAIMED_PROJECT
             project.save()
         return super().get(request, *args, **kwargs)
 
@@ -212,7 +213,7 @@ class ProjectAddLookALike(GroupMixin, RedirectURLMixin, FormMixin, DetailView):
                 land = Land(add_public_key)
                 # use land.public_key to avoid injection
                 project.add_look_a_like(land.public_key)
-                project._change_reason = "add look a like"
+                project._change_reason = ProjectChangeReason.USER_ADDED_A_LOOK_A_LIKE
                 project.save(update_fields=["look_a_like"])
                 return HttpResponseRedirect(self.get_success_url())
             except LandException:
@@ -266,7 +267,7 @@ class ProjectRemoveLookALike(GroupMixin, RedirectURLMixin, DetailView):
         project = self.get_object()
         public_key = self.kwargs["public_key"]
         project.remove_look_a_like(public_key)
-        project._change_reason = "Remove look a like"
+        project._change_reason = ProjectChangeReason.USER_REMOVED_A_LOOK_A_LIKE
         project.save(update_fields=["look_a_like"])
         return HttpResponseRedirect(self.get_success_url())
 
