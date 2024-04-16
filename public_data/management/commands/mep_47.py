@@ -26,6 +26,10 @@ class Command(BaseCommand):
             command_name="import_gpu",
             departement=departement.source_id,
         )
+        call_command(
+            command_name="update_project_ocsge",
+            departement=departement.source_id,
+        )
 
     def handle(self, *args, **options):
         logger.info("Start mep_47")
