@@ -94,21 +94,17 @@ class DataSource(models.Model):
         )
 
     def delete_loaded_data(self):
-        klass = self.__class__
-
-        if not self.productor == klass.ProductorChoices.MDA:
+        if not self.productor == self.ProductorChoices.MDA:
             raise ValueError("Only MDA data can be deleted")
 
-        model_map = {
-            klass.DataNameChoices.OCCUPATION_DU_SOL: Ocsge,
-            klass.DataNameChoices.ZONE_CONSTRUITE: ZoneConstruite,
-            klass.DataNameChoices.ZONE_ARTIFICIELLE: ArtificialArea,
-            klass.DataNameChoices.DIFFERENCE: OcsgeDiff,
-        }
+        model: models.Model = {
+            self.DataNameChoices.OCCUPATION_DU_SOL: Ocsge,
+            self.DataNameChoices.ZONE_CONSTRUITE: ZoneConstruite,
+            self.DataNameChoices.ZONE_ARTIFICIELLE: ArtificialArea,
+            self.DataNameChoices.DIFFERENCE: OcsgeDiff,
+        }[self.name]
 
-        model = model_map[self.name]
-
-        if self.name == klass.DataNameChoices.DIFFERENCE:
+        if self.name == self.DataNameChoices.DIFFERENCE:
             return model.objects.filter(
                 departement=self.official_land_id,
                 year_old=min(self.millesimes),
