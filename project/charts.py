@@ -1,4 +1,5 @@
 import collections
+from collections import defaultdict
 from typing import Dict, List
 
 from django.contrib.gis.geos import MultiPolygon
@@ -689,7 +690,7 @@ class DetailCouvArtifChart(ProjectChart):
         return self.project.get_detail_artif(sol="couverture", geom=self.geom)
 
     def get_serie_label(self, code_prefix) -> str:
-        return f"{code_prefix} {CouvertureSol.objects.get(code_prefix=code_prefix).label_short}"
+        return f"{code_prefix} {CouvertureSol.objects.get(code_prefix=code_prefix).label}"
 
     def get_series(self) -> List[Dict]:
         if not self.series:
@@ -750,18 +751,31 @@ class DetailUsageArtifChart(DetailCouvArtifChart):
         )
 
     def get_serie_label(self, code_prefix) -> str:
-        return f"{code_prefix} {UsageSol.objects.get(code_prefix=code_prefix).label_short}"
+        return f"{code_prefix} {UsageSol.objects.get(code_prefix=code_prefix).label}"
 
     def get_data(self):
-        return self.project.get_detail_artif(sol="usage", geom=self.geom)
+        aggregate = defaultdict(lambda: {"artif": 0, "renat": 0})
+
+        for serie in self.project.get_detail_artif(sol="usage", geom=self.geom):
+            if serie["code_prefix"] == "US235":
+                level_one_code = "US235"
+            else:
+                first_number_after_us = serie["code_prefix"].split("US")[1][0]
+                level_one_code = f"US{first_number_after_us}"
+            aggregate[level_one_code]["artif"] += serie["artif"]
+            aggregate[level_one_code]["renat"] += serie["renat"]
+
+        return [
+            {
+                "code_prefix": self.get_serie_label(code),
+                "artif": value["artif"],
+                "renat": value["renat"],
+            }
+            for code, value in aggregate.items()
+        ]
 
     def get_series(self):
-        self.series = list(self.get_data())
-
-        for serie in self.series:
-            serie["code_prefix"] = self.get_serie_label(serie["code_prefix"])
-
-        return self.series
+        return self.get_data()
 
 
 class ArtifCouvSolPieChart(ProjectChart):
