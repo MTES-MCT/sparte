@@ -253,14 +253,15 @@ class OcsgeViewSet(OnlyBoundingBoxMixin, ZoomSimplificationMixin, OptimizedMixin
 
 
 class OcsgeDiffViewSet(ZoomSimplificationMixin, OptimizedMixins, DataViewSet):
+    # TODO : replace subqueries below by frontend logic
     queryset = models.OcsgeDiff.objects.all()
     serializer_class = serializers.OcsgeDiffSerializer
     optimized_fields = {
         # "o.id": "id",
-        "cs_old": "cs_old",
-        "us_old": "us_old",
-        "cs_new": "cs_new",
-        "us_new": "us_new",
+        "(SELECT code_prefix || ' ' || label_short FROM public_data_couverturesol AS pdcs WHERE pdcs.code_prefix = cs_old)": "cs_old",  # noqa: E501
+        "(SELECT code_prefix || ' ' || label_short FROM public_data_usagesol AS pdus WHERE pdus.code_prefix = us_old)": "us_old",  # noqa: E501
+        "(SELECT code_prefix || ' ' || label_short FROM public_data_couverturesol AS pdcs WHERE pdcs.code_prefix = cs_new)": "cs_new",  # noqa: E501
+        "(SELECT code_prefix || ' ' || label_short FROM public_data_usagesol AS pdus WHERE pdus.code_prefix = us_new)": "us_new",  # noqa: E501
         "year_new": "year_new",
         "year_old": "year_old",
         "is_new_artif": "is_new_artif",
