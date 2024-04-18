@@ -25,11 +25,7 @@ services:
   app:
     build: .
     image: sparte/backend:latest
-    # command: python manage.py runserver 0.0.0.0:8080
-    # required to attach vsc to the container and run debug
-    # command: tail -F anything
-    # command: ["sh", "-c", "python /tmp/debugpy --wait-for-client --listen 0.0.0.0:5678 manage.py runserver 0.0.0.0:8080 --nothreading --noreload"]
-    command: ["sh", "-c", "python /tmp/debugpy --listen 0.0.0.0:5678 manage.py runserver 0.0.0.0:8080 --nothreading"]
+    command: ["sh", "-c", "python manage.py runserver 0.0.0.0:8080 --nothreading"]
     volumes:
       - .:/app
     env_file: .env
@@ -39,32 +35,10 @@ services:
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
       - SCALINGO_REDIS_URL=redis://redis:6379/0
     ports:
-      - "5678:5678"
       - "8080:8080"
     depends_on:
       - db
       - redis
-    networks:
-      - app-network
-
-  jupyter:
-    image: sparte/backend:latest
-    command: python manage.py shell_plus --notebook
-    volumes:
-      - .:/app
-    env_file: .env
-    environment:
-      - DJANGO_ALLOW_ASYNC_UNSAFE=true
-      - JUPYTER_CONFIG_DIR=/app/config/
-      - DATABASE_URL=postgis://postgres:postgres@db:5432/postgres
-      - CELERY_BROKER_URL=redis://redis:6379/0
-      - CELERY_RESULT_BACKEND=redis://redis:6379/0
-      - SCALINGO_REDIS_URL=redis://redis:6379/0
-    depends_on:
-      - db
-      - redis
-    ports:
-      - 8888:8888
     networks:
       - app-network
 
@@ -77,12 +51,12 @@ services:
       - app-network
 
   worker-quick:
+    build: .
     image: sparte/backend:latest
     working_dir: /app
     volumes:
       - .:/app
     command: celery -A config.celery worker --loglevel debug --concurrency=4 --max-tasks-per-child=1
-    # command: tail -F anything
     env_file: .env
     environment:
       - DATABASE_URL=postgis://postgres:postgres@db:5432/postgres
@@ -97,12 +71,12 @@ services:
       - app-network
 
   worker-long:
+    build: .
     image: sparte/backend:latest
     working_dir: /app
     volumes:
       - .:/app
     command: celery -A config.celery worker --loglevel debug --concurrency=4 --max-tasks-per-child=1 -Q long
-    # command: tail -F anything
     env_file: .env
     environment:
       - DATABASE_URL=postgis://postgres:postgres@db:5432/postgres
@@ -117,6 +91,7 @@ services:
       - app-network
 
   worker-beat:
+    build: .
     image: sparte/backend:latest
     working_dir: /app
     volumes:

@@ -28,7 +28,7 @@ class Command(BaseCommand):
         )
         call_command(
             command_name="update_project_ocsge",
-            departement=departement.source_id,
+            departements=[departement.source_id],
         )
 
     def handle(self, *args, **options):
