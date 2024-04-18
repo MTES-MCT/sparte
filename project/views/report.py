@@ -34,11 +34,13 @@ class ProjectReportBaseView(CacheMixin, GroupMixin, DetailView):
 
     @transaction.non_atomic_requests
     def dispatch(self, request, *args, **kwargs):
-        # with this, be careful when doing row modification, autocommit is disabled
-        project: Project = self.get_object()
-        if not project.async_complete:
-            trigger_async_tasks(project)
-            return redirect("project:splash", pk=project.id)
+        referer = request.META.get("HTTP_REFERER")
+        previous_page_was_splash_screen = referer and "construction" in referer
+        if not previous_page_was_splash_screen:
+            project: Project = self.get_object()
+            if not project.is_ready_to_be_displayed:
+                trigger_async_tasks(project)
+                return redirect("project:splash", pk=project.id)
         return super().dispatch(request, *args, **kwargs)
 
     def get_context_breadcrumbs(self):

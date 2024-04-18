@@ -453,6 +453,15 @@ class Project(BaseProject):
             & self.async_theme_map_understand_artif_done
         )
 
+    @property
+    def is_ready_to_be_displayed(self) -> bool:
+        return (
+            self.async_add_city_done
+            & self.async_set_combined_emprise_done
+            & self.async_add_comparison_lands_done
+            & self.async_find_first_and_last_ocsge_done
+        )
+
     class Meta:
         ordering = ["-created_date"]
         verbose_name = "Diagnostic en ligne"
