@@ -11,6 +11,29 @@ from public_data.storages import DataStorage
 logger = logging.getLogger("management.commands")
 
 
+def empty_string_to_none(value: str):
+    if value == "":
+        return None
+    if value == " ":
+        return None
+    return value
+
+
+def parse_date(str_date: str, format: str = "%m/%d/%y"):
+    return datetime.datetime.strptime(str_date, format).date()
+
+
+def convert_superficie_to_ha(value: str, unit: str = "ha") -> float:
+    if unit == "km2":
+        return float(value) * 100
+    elif unit == "m2":
+        return float(value) / 10000
+    elif unit == "ha":
+        return float(value)
+
+    raise ValueError(f"Unknown superficie unit {unit}")
+
+
 class Command(BaseCommand):
     """
     Data downloaded from:
@@ -48,22 +71,6 @@ class Command(BaseCommand):
             default="km2",
             choices=["km2", "ha", "m2"],
         )
-
-    def empty_string_to_none(self, value: str):
-        if value == "":
-            return None
-        return value
-
-    def parse_date(self, str_date: str, format: str):
-        expected_format = "%m/%d/%y"
-        return datetime.datetime.strptime(str_date, expected_format).date()
-
-    def convert_superficie_to_ha(self, value: str, unit: str) -> float:
-        if unit == "km2":
-            return float(value) * 100
-        if unit == "m2":
-            return float(value) / 10000
-        return float(value)
 
     def handle(self, *args, **options):
         instructions = """
@@ -126,11 +133,11 @@ class Command(BaseCommand):
         for row in reader:
             data = dict(zip(headers, row))
 
-            data = {key: self.empty_string_to_none(value) for key, value in data.items()}
+            data = {key: empty_string_to_none(value) for key, value in data.items()}
 
             for column in date_fields:
                 data[column] = (
-                    self.parse_date(
+                    parse_date(
                         str_date=data[column],
                         format=options.get("date_format"),
                     )
@@ -142,7 +149,7 @@ class Command(BaseCommand):
                 logger.warning(f"Empty superficie field for {data['nom_commune']}, defaulting to 0")
 
             data[area_field] = (
-                self.convert_superficie_to_ha(
+                convert_superficie_to_ha(
                     value=data[area_field],
                     unit=options.get("superficie_unit"),
                 )
