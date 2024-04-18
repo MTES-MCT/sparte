@@ -537,6 +537,25 @@ Tile
 }
 
 /*
+Liens
+*/
+.fr-nav__link--highlight {
+    font-weight: 600 !important;
+    color: var(--background-action-high-blue-france) !important;
+}
+
+.fr-nav__link--highlight[aria-current]:not([aria-current="false"])::before {
+    background-color: var(--background-action-high-blue-france) !important;
+}
+
+/*
+Mise en exergue
+*/
+.fr-highlight--no-margin {
+    margin-left: 0 !important;
+}
+
+/*
 Utilities
 */
 .w-0 { width: 0% !important; }
