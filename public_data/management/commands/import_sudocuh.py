@@ -12,10 +12,12 @@ logger = logging.getLogger("management.commands")
 
 
 def empty_string_to_none(value: str):
-    if value == "":
+    if not isinstance(value, str):
+        raise ValueError(f"Value must be a string, got {type(value)}")
+
+    if not value.strip():
         return None
-    if value == " ":
-        return None
+
     return value
 
 
