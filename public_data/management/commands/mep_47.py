@@ -50,6 +50,7 @@ class Command(BaseCommand):
             "11",  # Aude
             "67",  # Bas-Rhin
             "84",  # Vaucluse
+            "32",  # Gers
         ]
 
         for source_id in departements_source_ids:
