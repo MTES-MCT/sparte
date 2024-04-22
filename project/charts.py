@@ -756,6 +756,10 @@ class DetailUsageArtifChart(DetailCouvArtifChart):
     def get_data(self):
         aggregate = defaultdict(lambda: {"artif": 0, "renat": 0})
 
+        for usage in UsageSol.objects.all():
+            if usage.level == 1:
+                aggregate[usage.code_prefix] = {"artif": 0, "renat": 0}
+
         for serie in self.project.get_detail_artif(sol="usage", geom=self.geom):
             if serie["code_prefix"] == "US235":
                 level_one_code = "US235"
