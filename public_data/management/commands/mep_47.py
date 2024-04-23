@@ -37,6 +37,10 @@ class Command(BaseCommand):
         call_command("maintenance", on=True)
 
         logger.info("Initialize data sources")
+        # Since we are editing the data sources for Gers, we need to delete them first,
+        # otherwise we will have duplicates for that departement
+        deleted, _ = DataSource.objects.all().delete()
+        logger.info(f"Deleted {deleted} data sources")
         call_command("loaddata", "public_data/models/data_source_fixture.json")
 
         logger.info("Load new OCS GE")
