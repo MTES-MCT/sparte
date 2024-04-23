@@ -9,7 +9,7 @@ logger = logging.getLogger("management.commands")
 
 
 class Command(BaseCommand):
-    help = "Dedicated to load data for 4.7 deployment"
+    help = "Dedicated to load data for 5.0 deployment"
 
     def load_departement(self, departement: Departement):
         call_command(
@@ -32,7 +32,7 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-        logger.info("Start mep_47")
+        logger.info("Start mep_5")
 
         call_command("maintenance", on=True)
 
@@ -62,4 +62,4 @@ class Command(BaseCommand):
             self.load_departement(departement)
 
         call_command("maintenance", off=True)
-        logger.info("End mep_47")
+        logger.info("End mep_5")
