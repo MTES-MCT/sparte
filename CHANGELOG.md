@@ -2,6 +2,30 @@
 
 Ce changelog suit la méthode "keep a changelog" disponible ici: [https://keepachangelog.com/en/1.0.0/](https://keepachangelog.com/en/1.0.0/)
 
+## [5.0] Nouveaux départements OCS GE
+
+### Ajouté
+- Nouvelles données OCS GE pour les départements [#233](https://github.com/MTES-MCT/sparte/pull/233) :
+    - Isère (38)
+    - Rhône (69)
+    - Indre et Loire (37)
+    - Finistère (29)
+    - Aude (11)
+    - Bas Rhin (67)
+    - Vaucluse (84)
+- Chatbot permettant aux utilisateurs de nous contacter et d'obtenir des réponses de la FAQ directement depuis n'importe quelle page du site [#200](https://github.com/MTES-MCT/sparte/issues/200)
+- Système de rechargement des diagnostics existant pour lesquels de nouvelles données OCS GE sont disponibles [#264](https://github.com/MTES-MCT/sparte/issues/264)
+
+### Modifié
+- Remplacement des données OCS GE du Gers (32) par les dernières disponibles sur le site de l'IGN [#233](https://github.com/MTES-MCT/sparte/pull/233)
+- Remplacement de la FAQ par un helpdesk sur Crisp [#177](https://github.com/MTES-MCT/sparte/pull/177)
+- Suppression des fonctionnalités de trajectoire personnalisée [#250](https://github.com/MTES-MCT/sparte/pull/250)
+- Diminution de l'opacité de la couche "zone artificielle" de la carte "Comprendre l'artificilisation de mon territoire" afin d'améliorer la lisibilité [#278](https://github.com/MTES-MCT/sparte/pull/278)
+
+### Corrigé
+- Bug qui empêchait la barre de recherche de s'afficher depuis l'onglet trajectoires [#275](https://github.com/MTES-MCT/sparte/issues/275)
+
+
 ## [4.6] Retours DGALN et Datactivist - 2024.03.27
 
 ### Ajouté
