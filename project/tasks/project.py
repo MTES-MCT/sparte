@@ -25,7 +25,7 @@ from django.utils import timezone
 from django_app_parameter import app_parameter
 from matplotlib_scalebar.scalebar import ScaleBar
 
-from project.models import Emprise, Project, Request
+from project.models import Emprise, Project, Request, RequestedDocumentChoices
 from public_data.models import ArtificialArea, Cerema, Land, OcsgeDiff
 from public_data.models.gpu import ArtifAreaZoneUrba, ZoneUrba
 from utils.db import fix_poly
@@ -280,7 +280,11 @@ class WordAlreadySentException(Exception):
 
 @shared_task(bind=True, max_retries=6, queue="long")
 def generate_word_diagnostic(self, request_id):
-    from diagnostic_word.renderers import Renderer
+    from diagnostic_word.renderers import (
+        BaseRenderer,
+        FullReportRenderer,
+        LocalReportRenderer,
+    )
     from highcharts.charts import RateLimitExceededException
 
     logger.info(f"Start generate word for request_id={request_id}")
@@ -296,7 +300,16 @@ def generate_word_diagnostic(self, request_id):
             raise WordAlreadySentException("Word already sent")
 
         logger.info("Start generating word")
-        with Renderer(project=req.project, word_template_slug="template-bilan-1") as renderer:
+
+        logger.info("Requested document: %s", req.requested_document)
+
+        Renderer = {
+            RequestedDocumentChoices.RAPPORT_COMPLET: FullReportRenderer,
+            RequestedDocumentChoices.RAPPORT_LOCAL: LocalReportRenderer,
+        }[req.requested_document]
+
+        with Renderer(request=req) as renderer:
+            renderer: BaseRenderer = renderer
             context = renderer.get_context_data()
             buffer = renderer.render_to_docx(context=context)
             filename = renderer.get_file_name()

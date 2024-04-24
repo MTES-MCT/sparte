@@ -11,6 +11,11 @@ def upload_in_project_folder(request: "Request", filename: str) -> str:
     return f"diagnostics/{request.project.get_folder_name()}/{filename}"
 
 
+class RequestedDocumentChoices(models.TextChoices):
+    RAPPORT_COMPLET = "rapport-complet", "Rapport complet"
+    RAPPORT_LOCAL = "rapport-local", "Rapport local"
+
+
 class Request(models.Model):
     first_name = models.CharField("Prénom", max_length=150)
     last_name = models.CharField("Nom", max_length=150)
@@ -34,7 +39,11 @@ class Request(models.Model):
     updated_date = models.DateTimeField(auto_now=True)
     sent_date = models.DateTimeField("date d'envoi", null=True, blank=True)
     done = models.BooleanField("A été envoyé ?", default=False)
-
+    requested_document = models.CharField(
+        "Document demandé",
+        max_length=30,
+        choices=RequestedDocumentChoices.choices,
+    )
     sent_file = models.FileField(upload_to=upload_in_project_folder, null=True, blank=True)
     history = HistoricalRecords()
 
