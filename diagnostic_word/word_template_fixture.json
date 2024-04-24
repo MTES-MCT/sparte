@@ -1,0 +1,22 @@
+[
+    {
+        "model": "diagnostic_word.wordtemplate",
+        "pk": "template-bilan-1",
+        "fields": {
+            "description": "Modèle Word pour générer le diagnostic complet.",
+            "docx": "word_templates/Modèle_de_portrait_v19.docx",
+            "last_update": "2023-10-23T16:21:55.544Z",
+            "filename_mask": "{diagnostic_name} - {start_date} à {end_date} - issu de MonDiagnosticArtificialisation.docx"
+        }
+    },
+    {
+        "model": "diagnostic_word.wordtemplate",
+        "pk": "template-bilan-2",
+        "fields": {
+            "description": "Modèle Word pour générer le rapport local V1.",
+            "docx": "word_templates/Modèle_de_portrait_v19.docx",
+            "last_update": "2023-10-23T16:21:55.544Z",
+            "filename_mask": "Rapport local - {diagnostic_name} - {start_date} à {end_date} - issu de MonDiagnosticArtificialisation.docx"
+        }
+    }
+]
