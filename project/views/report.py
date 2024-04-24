@@ -16,7 +16,13 @@ from django.views.generic import CreateView, DetailView, TemplateView
 
 from brevo.tasks import send_request_to_brevo
 from project import charts, tasks
-from project.models import Project, ProjectCommune, Request, trigger_async_tasks
+from project.models import (
+    Project,
+    ProjectCommune,
+    Request,
+    RequestedDocumentChoices,
+    trigger_async_tasks,
+)
 from project.utils import add_total_line_column
 from public_data.models import CouvertureSol, UsageSol
 from public_data.models.gpu import ZoneUrba
@@ -456,9 +462,14 @@ class ProjectReportDownloadView(BreadCrumbMixin, CreateView):
     ]
 
     def get_context_data(self, **kwargs):
+        if self.kwargs.get("requested_document") not in RequestedDocumentChoices.values:
+            raise ValueError(f"Invalid report type {self.kwargs.get('requested_document')}")
+
         kwargs.update(
             {
                 "project": Project.objects.get(pk=self.kwargs["pk"]),
+                "requested_document": self.kwargs["requested_document"],
+                "requested_document_label": RequestedDocumentChoices(self.kwargs["requested_document"]).label,
             }
         )
         return super().get_context_data(**kwargs)
@@ -483,6 +494,7 @@ class ProjectReportDownloadView(BreadCrumbMixin, CreateView):
         if self.request.user.is_authenticated:
             form.instance.user = self.request.user
         form.instance.project = Project.objects.get(pk=self.kwargs["pk"])
+        form.instance.requested_document = self.kwargs["requested_document"]
         form.instance._change_reason = "New request"
         new_request = form.save()
         send_request_to_brevo.delay(new_request.id)

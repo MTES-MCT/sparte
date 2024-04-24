@@ -186,7 +186,7 @@ urlpatterns = [
     ),
     # DOWNLOAD
     path(
-        "<int:pk>/tableau-de-bord/telechargement",
+        "<int:pk>/tableau-de-bord/telechargement/<slug:requested_document>",
         views.ProjectReportDownloadView.as_view(),
         name="report_download",
     ),

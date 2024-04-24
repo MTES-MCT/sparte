@@ -150,6 +150,7 @@ class RequestAdmin(admin.ModelAdmin):
                 )
             },
         ),
+        ("Requête", {"fields": ("requested_document",)}),
         (
             "Réponse",
             {
@@ -167,6 +168,7 @@ class RequestAdmin(admin.ModelAdmin):
     )
     inlines = [ErrorTrackingAdmin]
     readonly_fields = (
+        "requested_document",
         "first_name",
         "last_name",
         "function",

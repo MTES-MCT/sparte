@@ -21,7 +21,7 @@ from django.core.exceptions import ImproperlyConfigured
 from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.redis import RedisIntegration
 
-OFFICIAL_VERSION = "4.6.0"
+OFFICIAL_VERSION = "5.0.0"
 
 root = environ.Path(__file__) - 2  # get root of the project
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -497,7 +497,6 @@ CSP_SCRIPT_SRC = [
     "'self'",
     "stats.beta.gouv.fr",
     "code.highcharts.com",
-    STATIC_URL,
     "www.googletagmanager.com",
     # Crisp
     "https://client.crisp.chat",
@@ -506,7 +505,6 @@ CSP_SCRIPT_SRC = [
 CSP_STYLE_SRC = [
     "'self'",
     "cdn.jsdelivr.net",
-    STATIC_URL,
     "'unsafe-inline'",
     # Crisp
     "https://client.crisp.chat",
@@ -518,7 +516,6 @@ CSP_IMG_SRC = [
     "s3.fr-par.scw.cloud",
     "data:",
     MEDIA_URL,
-    STATIC_URL,
     "google.com",
     "google.fr",
     "googleads.g.doubleclick.net",
@@ -541,7 +538,6 @@ CSP_FONT_SRC = (
     "'self'",
     "data:",
     "cdn.jsdelivr.net",
-    STATIC_URL,
     # Crisp
     "https://client.crisp.chat",
 )
