@@ -12,8 +12,11 @@
         _paq.push(['trackEvent', 'diagnostic_download_funnel', 'succes_form_diagnostic_download_word', 'diagnostic_download_word_form_success'])
     </script>
 {% else %}
-    <form hx-post="{% url 'project:report_download' project.pk %}" hx-ext="disable-element" hx-disable-element="#dl_btn">
-        <p>Pour recevoir le diagnostic au format Word, veuillez compléter le formulaire ci-dessous. Une fois validé, vous recevrez sous quelques minutes le document par e-mail.</p>
+    <form hx-post="{% url 'project:report_download' requested_document=requested_document pk=project.pk %}" hx-ext="disable-element" hx-disable-element="#dl_btn">
+        <p>
+            Pour recevoir le {{ requested_document_label|lower }} au format Word, veuillez compléter le formulaire ci-dessous.
+            Une fois validé, vous recevrez sous quelques minutes le document par e-mail.
+        </p>
 
         {% csrf_token %}
         {{ form|crispy }}

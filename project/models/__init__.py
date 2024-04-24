@@ -7,11 +7,12 @@ __all__ = [
     "Request",
     "trigger_async_tasks",
     "user_directory_path",
+    "RequestedDocumentChoices",
 ]
 
 
 from .project_base import Emprise, Project, ProjectCommune
-from .request import ErrorTracking, Request
+from .request import ErrorTracking, Request, RequestedDocumentChoices
 from .utils import user_directory_path
 
 # isort: split
