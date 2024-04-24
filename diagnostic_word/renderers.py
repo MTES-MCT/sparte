@@ -9,7 +9,7 @@ from docxtpl import DocxTemplate, InlineImage, RichText
 
 from diagnostic_word.models import WordTemplate
 from project import charts
-from project.models import Project
+from project.models import Request
 from project.utils import add_total_line_column
 from utils.functions import get_url_with_domain
 
@@ -82,14 +82,15 @@ class ReprDetailArtif:
             self.renat_percent = "N/A"
 
 
-class Renderer:
-    def __init__(self, project: Project, word_template_slug: str):
-        self.project = project
+class BaseRenderer:
+    def __init__(self, request: Request, word_template_slug: str):
+        self.project = request.project
+        self.request = request
         self.word_template = WordTemplate.objects.get(slug=word_template_slug)
         self.context_opened = False
         self.engine = DocxTemplate(self.word_template.docx)
 
-    def __enter__(self) -> "Renderer":
+    def __enter__(self) -> "BaseRenderer":
         self.context_opened = True
         return self
 
@@ -397,3 +398,21 @@ class Renderer:
             start_date=self.project.analyse_start_date,
             end_date=self.project.analyse_end_date,
         )
+
+
+class FullReportRenderer(BaseRenderer):
+    def __init__(self, request: Request, word_template_slug="template-bilan-1"):
+        super().__init__(request=request, word_template_slug=word_template_slug)
+
+
+class LocalReportRenderer(BaseRenderer):
+    def __init__(self, request: Request, word_template_slug="template-bilan-2"):
+        super().__init__(request=request, word_template_slug=word_template_slug)
+
+    def get_context_data(self) -> Dict[str, Any]:
+        context = super().get_context_data()
+        # TODO: customize the context for the local report
+
+        context |= {"nom_territoire": "RAPPORT LOCAL"}
+
+        return context
