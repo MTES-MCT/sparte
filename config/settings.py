@@ -531,6 +531,7 @@ CSP_FRAME_SRC = (
     "'self'",
     # Crisp
     "https://game.crisp.chat",
+    "https://plugins.crisp.chat/",
 )
 CSP_MEDIA_SRC = (
     # Crisp
