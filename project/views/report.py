@@ -744,17 +744,26 @@ class ArtifDetailCouvChart(CacheMixin, TemplateView):
         qs = (
             Ocsge.objects.intersect(self.zone_urba.mpoly)
             .filter(is_artificial=True, year=self.diagnostic.last_year_ocsge)
-            .annotate(
-                code_prefix=F("matrix__couverture__code_prefix"),
-                label=F("matrix__couverture__label"),
-                label_short=F("matrix__couverture__label_short"),
-                map_color=F("matrix__couverture__map_color"),
-            )
-            .order_by("code_prefix", "label", "label_short", "map_color")
-            .values("code_prefix", "label", "label_short", "map_color")
+            .order_by("couverture")
+            .values("couverture")
             .annotate(surface=Sum("intersection_area") / 10000)
         )
-        return qs
+
+        groups = []
+
+        for group in qs:
+            couverture = CouvertureSol.objects.get(code_prefix=group["couverture"])
+            groups.append(
+                {
+                    "code_prefix": couverture.code_prefix,
+                    "label": couverture.label,
+                    "label_short": couverture.label_short,
+                    "map_color": couverture.map_color,
+                    "surface": group["surface"],
+                }
+            )
+
+        return groups
 
     def get_charts(self):
         if self.zone_urba:
@@ -815,17 +824,26 @@ class ArtifDetailUsaChart(CacheMixin, TemplateView):
         qs = (
             Ocsge.objects.intersect(self.zone_urba.mpoly)
             .filter(is_artificial=True, year=self.diagnostic.last_year_ocsge)
-            .annotate(
-                code_prefix=F("matrix__usage__code_prefix"),
-                label=F("matrix__usage__label"),
-                label_short=F("matrix__usage__label_short"),
-                map_color=F("matrix__usage__map_color"),
-            )
-            .order_by("code_prefix", "label", "label_short", "map_color")
-            .values("code_prefix", "label", "label_short", "map_color")
+            .order_by("usage")
+            .values("usage")
             .annotate(surface=Sum("intersection_area") / 10000)
         )
-        return qs
+
+        groups = []
+
+        for group in qs:
+            usage = UsageSol.objects.get(code_prefix=group["usage"])
+            groups.append(
+                {
+                    "code_prefix": usage.code_prefix,
+                    "label": usage.label,
+                    "label_short": usage.label_short,
+                    "map_color": usage.map_color,
+                    "surface": group["surface"],
+                }
+            )
+
+        return groups
 
     def get_charts(self):
         if self.zone_urba:
