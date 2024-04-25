@@ -33,7 +33,7 @@
                         Analyse complète
                     </a>
                 </li>
-                <li>
+                <li class="d-flex justify-content-between"> 
                     <a
                         id="download_diag_word_btn"
                         class="fr-nav__link"
@@ -43,7 +43,9 @@
                         data-fr-opened="false"
                         aria-controls="fr-modal-download-word"
                     >
-                        Rapport Local
+                        Rapport Local 
+                        <p class="fr-badge fr-badge--new fr-badge--sm">Nouveau</p>
+                        
                     </a>
                 </li>
                 <li>
@@ -84,9 +86,6 @@
                         <button class="fr-link--close fr-link" aria-controls="fr-modal-download-word">Fermer</button>
                     </div>
                     <div class="fr-modal__content">
-                        <h1 id="fr-modal-2-title" class="fr-modal__title">
-                            Recevoir le diagnostic par e-mail
-                        </h1>
                         <div id="diag_word_form"></div>
                     </div>
                 </div>
