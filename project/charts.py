@@ -365,7 +365,7 @@ class DeterminantPieChart(ProjectChart):
     name = "determinant overview"
     param = {
         "chart": {"type": "pie"},
-        "title": {"text": "Sur la période"},
+        "title": {"text": "TODO"},
         "yAxis": {
             "title": {"text": "Consommé (en ha)"},
             "stackLabels": {"enabled": True, "format": "{total:,.1f}"},
