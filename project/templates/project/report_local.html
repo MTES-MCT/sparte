@@ -23,8 +23,15 @@ Rapport local
 
     <div class="fr-container fr-py-3w">
         <div class="d-flex justify-content-between">
-            <p class="fr-badge fr-badge--new fr-badge--sm">Bientôt disponible</p>
-            <button class="fr-btn fr-btn--sm" disabled>
+            <p class="fr-badge fr-badge--new fr-badge--sm">Nouveau</p>
+            <button
+                hx-get="{% url 'project:report_download' requested_document='rapport-local' pk=project.pk %}"
+                hx-target="#diag_word_form"
+                href="#"
+                data-fr-opened="false"
+                aria-controls="fr-modal-download-word"
+                class="fr-btn fr-btn--sm"
+            >
                 Télécharger le rapport local
             </button>
         </div>
