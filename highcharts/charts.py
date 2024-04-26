@@ -33,8 +33,7 @@ class Chart:
         param = copy.deepcopy(self.param)
         param |= {
             "navigation": {"buttonOptions": {"enabled": False}},
-            "credits": {"enabled": False},
-            "legend": {**param.get("legend", {}), "width": 200, "itemStyle": {"word-wrap": "break-word"}},
+            "credits": {**param.get("credits", {"enabled": False})},
             "responsive": {
                 "rules": [
                     {
@@ -99,16 +98,8 @@ class Chart:
     def get_js_name(self) -> str:
         return slugify(self.get_name()).replace("-", "_")
 
-    def get_legend_for_paper(self) -> Dict[str, Any]:
-        return {
-            "layout": "vertical",
-            "align": "center",
-            "verticalAlign": "bottom",
-        }
-
     def request_b64_image_from_server(self) -> bytes:
         json_option = copy.deepcopy(self.chart)
-        json_option["legend"] = self.get_legend_for_paper()
         data = {
             "infile": json_option,
             "width": 1000,
@@ -119,7 +110,7 @@ class Chart:
         }
         r = requests.post(
             settings.HIGHCHART_SERVER,
-            data=json.dumps(data, default=decimal2float),
+            data=json.dumps(obj=data, default=decimal2float),
             headers={"content-type": "application/json"},
         )
         if r.content.startswith(b"0x04 error when performing chart generation"):
