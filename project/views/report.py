@@ -66,19 +66,19 @@ class ProjectReportConsoView(ProjectReportBaseView):
         level = self.request.GET.get("level_conso", project.level)
 
         # communes_data_graph
-        chart_conso_cities = charts.ConsoCommuneChart(project, level=level)
+        chart_conso_cities = charts.ConsoCommunes(project, level=level)
 
         target_2031_consumption = project.get_bilan_conso()
         current_conso = project.get_bilan_conso_time_scoped()
 
         # Déterminants
-        det_chart = charts.DeterminantPerYearChart(project)
+        det_chart = charts.AnnualConsoByDeterminantChart(project)
 
         # objectives
         objective_chart = charts.ObjectiveChart(project)
 
         # comparison chart
-        comparison_chart = charts.ConsoChart(project)
+        comparison_chart = charts.AnnualConsoComparisonChart(project)
 
         # Liste des groupes de communes
         groups_names = project.projectcommune_set.all().order_by("group_name")
@@ -106,7 +106,10 @@ class ProjectReportConsoView(ProjectReportBaseView):
                 },
                 # charts
                 "determinant_per_year_chart": det_chart,
-                "determinant_pie_chart": charts.DeterminantPieChart(project, series=det_chart.get_series()),
+                "determinant_pie_chart": charts.ConsoByDeterminantPieChart(
+                    project,
+                    series=det_chart.get_series(),
+                ),
                 "comparison_chart": comparison_chart,
                 "commune_chart": chart_conso_cities,
                 # tables
@@ -162,7 +165,7 @@ class ProjectReportCityGroupView(ProjectReportBaseView):
             return set(_.name for _ in group if _.name is not None)
 
         # Consommation des communes
-        chart_conso_cities = charts.ConsoCommuneChart(project, group_name=group_name)
+        chart_conso_cities = charts.ConsoCommunes(project, group_name=group_name)
         communes_table = dict()
         for city_name, data in chart_conso_cities.get_series().items():
             data.update({"Total": sum(data.values())})
@@ -181,7 +184,7 @@ class ProjectReportCityGroupView(ProjectReportBaseView):
             # Charts
             "chart_conso_cities": chart_conso_cities,
             "determinant_per_year_chart": det_chart,
-            "determinant_pie_chart": charts.DeterminantPieChart(
+            "determinant_pie_chart": charts.ConsoByDeterminantPieChart(
                 project, group_name=group_name, series=det_chart.get_series()
             ),
             # Tables
@@ -230,10 +233,10 @@ class ProjectReportDicoverOcsgeView(ProjectReportBaseView):
             {
                 "first_millesime": str(project.first_year_ocsge),
                 "last_millesime": str(project.last_year_ocsge),
-                "couv_pie_chart": charts.CouvertureSolPieChart(project),
-                "couv_progression_chart": charts.CouvertureSolProgressionChart(project),
-                "usa_pie_chart": charts.UsageSolPieChart(project),
-                "usa_progression_chart": charts.UsageSolProgressionChart(project),
+                "couv_pie_chart": charts.CouverturePieChart(project),
+                "couv_progression_chart": charts.CouvertureProgressionChart(project),
+                "usa_pie_chart": charts.UsagePieChart(project),
+                "usa_progression_chart": charts.UsageProgressionChart(project),
                 "usa_leafs": UsageSol.get_leafs(),
                 "usage_nomenclature": {item.code_prefix_class: item for item in UsageSol.get_usage_nomenclature()},
                 "couv_leafs": CouvertureSol.get_leafs(),
@@ -249,7 +252,7 @@ class ProjectReportDicoverOcsgeView(ProjectReportBaseView):
                 {
                     "couv_matrix_data": add_total_line_column(couv_matrix_data),
                     "couv_matrix_headers": list(couv_matrix_data.values())[0].keys(),
-                    "couv_wheel_chart": charts.CouvWheelChart(project),
+                    "couv_wheel_chart": charts.CouvertureChangeWheelChart(project),
                 }
             )
 
@@ -261,7 +264,7 @@ class ProjectReportDicoverOcsgeView(ProjectReportBaseView):
                 {
                     "usa_matrix_data": add_total_line_column(usa_matrix_data),
                     "usa_matrix_headers": list(usa_matrix_data.values())[0].keys(),
-                    "usa_whell_chart": charts.UsageWheelChart(project),
+                    "usa_whell_chart": charts.UsageChangeWheelChart(project),
                 }
             )
 
@@ -342,8 +345,8 @@ class ProjectReportArtifView(ProjectReportBaseView):
         artif_area = project.get_artif_area()
         rate_artif_area = round(100 * float(artif_area) / float(total_surface))
 
-        chart_evolution_artif = charts.EvolutionArtifChart(project)
-        chart_waterfall = charts.WaterfallnArtifChart(project)
+        chart_evolution_artif = charts.AnnualArtifChart(project)
+        chart_waterfall = charts.ArtifWaterfallChart(project)
 
         progression_time_scoped = chart_waterfall.get_series()
         net_artif = progression_time_scoped["net_artif"]
@@ -361,11 +364,11 @@ class ProjectReportArtifView(ProjectReportBaseView):
 
         chart_comparison = charts.NetArtifComparaisonChart(project, level=level)
 
-        detail_couv_artif_chart = charts.DetailCouvArtifChart(project)
-        detail_usage_artif_chart = charts.DetailUsageArtifChart(project)
+        detail_couv_artif_chart = charts.ArtifProgressionByCouvertureChart(project)
+        detail_usage_artif_chart = charts.ArtifProgressionByUsageChart(project)
 
-        couv_artif_sol = charts.ArtifCouvSolPieChart(project)
-        usage_artif_sol = charts.ArtifUsageSolPieChart(project)
+        couv_artif_sol = charts.ArtifByCouverturePieChart(project)
+        usage_artif_sol = charts.ArtifByUsagePieChart(project)
 
         detail_couv_artif_table = detail_couv_artif_chart.get_series()
         for i in range(len(detail_couv_artif_table)):
@@ -392,7 +395,6 @@ class ProjectReportArtifView(ProjectReportBaseView):
             "new_natural": progression_time_scoped["new_natural"],
             "net_artif": net_artif,
             "net_artif_rate": net_artif_rate,
-            "chart_evolution_artif": chart_evolution_artif,
             "table_evolution_artif": add_total_line_column(table_evolution_artif, line=False),
             "headers_evolution_artif": headers_evolution_artif,
             "detail_couv_artif_chart": detail_couv_artif_chart,
@@ -588,7 +590,7 @@ class ConsoRelativeSurfaceChart(CacheMixin, UserQuerysetOrPublicMixin, DetailVie
 
     def get_context_data(self, **kwargs):
         indicateur_chart = charts.SurfaceChart(self.object)
-        comparison_chart = charts.ConsoComparisonChart(self.object)
+        comparison_chart = charts.AnnualConsoProportionalComparisonChart(self.object)
         kwargs.update(
             {
                 "diagnostic": self.object,
@@ -607,8 +609,8 @@ class ConsoRelativePopChart(CacheMixin, UserQuerysetOrPublicMixin, DetailView):
     template_name = "project/partials/pop_comparison_conso.html"
 
     def get_context_data(self, **kwargs):
-        conso_pop_chart = charts.ConsoComparisonPopChart(self.object)
-        pop_chart = charts.PopChart(self.object)
+        conso_pop_chart = charts.AnnualConsoByPopChart(self.object)
+        pop_chart = charts.AnnualPopChart(self.object)
         kwargs.update(
             {
                 "diagnostic": self.object,
@@ -627,8 +629,8 @@ class ConsoRelativeHouseholdChart(CacheMixin, UserQuerysetOrPublicMixin, DetailV
     template_name = "project/partials/household_comparison_conso.html"
 
     def get_context_data(self, **kwargs):
-        household_chart = charts.HouseholdChart(self.object)
-        conso_household_chart = charts.ConsoComparisonHouseholdChart(self.object)
+        household_chart = charts.AnnualHouseholdChart(self.object)
+        conso_household_chart = charts.AnnualConsoByHouseholdChart(self.object)
         kwargs.update(
             {
                 "diagnostic": self.object,
@@ -781,13 +783,13 @@ class ArtifDetailCouvChart(CacheMixin, TemplateView):
         if self.zone_urba:
             # return chart with data within ZoneUrba polygon
             return (
-                charts.ArtifCouvSolPieChart(self.diagnostic, get_data=self.get_data),
-                charts.DetailCouvArtifChart(self.diagnostic, geom=self.zone_urba.mpoly),
+                charts.ArtifByCouverturePieChart(self.diagnostic, get_data=self.get_data),
+                charts.ArtifProgressionByCouvertureChart(self.diagnostic, geom=self.zone_urba.mpoly),
             )
         # return classical chart for complete project
         return (
-            charts.ArtifCouvSolPieChart(self.diagnostic),
-            charts.DetailCouvArtifChart(self.diagnostic),
+            charts.ArtifByCouverturePieChart(self.diagnostic),
+            charts.ArtifProgressionByCouvertureChart(self.diagnostic),
         )
 
     def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
@@ -861,13 +863,13 @@ class ArtifDetailUsaChart(CacheMixin, TemplateView):
         if self.zone_urba:
             # return chart with data within ZoneUrba polygon
             return (
-                charts.ArtifUsageSolPieChart(self.diagnostic, get_data=self.get_data),
-                charts.DetailUsageArtifChart(self.diagnostic, geom=self.zone_urba.mpoly),
+                charts.ArtifByUsagePieChart(self.diagnostic, get_data=self.get_data),
+                charts.ArtifProgressionByUsageChart(self.diagnostic, geom=self.zone_urba.mpoly),
             )
         # return classical chart for complete project
         return (
-            charts.ArtifUsageSolPieChart(self.diagnostic),
-            charts.DetailUsageArtifChart(self.diagnostic),
+            charts.ArtifByUsagePieChart(self.diagnostic),
+            charts.ArtifProgressionByUsageChart(self.diagnostic),
         )
 
     def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
