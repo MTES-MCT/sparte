@@ -1074,6 +1074,16 @@ Home Page
     color: var(--grey-1000-50);
 }
 
+.section-main form {
+    background-color: #fff;
+    padding: 4vh 2vw;
+    border-radius: 6px;
+}
+
+.section-main form p {
+    color: var(--text-mention-grey);
+}
+
 #hero-anim-map-container {
     position: absolute;
     top: 0;
@@ -1254,6 +1264,14 @@ Mise en exergue
 /*
 Utilities
 */
+.text-default-success {
+    color: var(--text-default-success) !important;
+}
+
+.text-default-error {
+    color: var(--text-default-error) !important;
+}
+
 .w-0 { width: 0% !important; }
 .w-1 { width: 1% !important; }
 .w-2 { width: 2% !important; }
