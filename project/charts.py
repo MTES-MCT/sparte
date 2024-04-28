@@ -689,30 +689,36 @@ class DetailCouvArtifChart(ProjectChart):
         """
         return self.project.get_detail_artif(sol="couverture", geom=self.geom)
 
-    def get_serie_label(self, code_prefix) -> str:
-        return f"{code_prefix} {CouvertureSol.objects.get(code_prefix=code_prefix).label}"
-
     def get_series(self) -> List[Dict]:
-        if not self.series:
-            self.series = list(self.get_data())
+        series = []
 
-            for serie in self.series:
-                serie["code_prefix"] = self.get_serie_label(serie["code_prefix"])
+        for item in self.get_data():
+            couverture = CouvertureSol.objects.get(code_prefix=item["code_prefix"])
+            series.append(
+                {
+                    "code_prefix": item["code_prefix"],
+                    "label": couverture.label,
+                    "label_short": couverture.label_short,
+                    "artif": item["artif"],
+                    "renat": item["renat"],
+                }
+            )
 
-            mandatory_serie_label = self.get_serie_label("CS1.1.2.2")
+        mandatory_serie_label = "CS1.1.2.2"
 
-            if mandatory_serie_label not in [s["code_prefix"] for s in self.series]:
-                required_couv = CouvertureSol.objects.get(code="1.1.2.2")
-                self.series.append(
-                    {
-                        "code_prefix": mandatory_serie_label,
-                        "label": required_couv.label,
-                        "label_short": required_couv.label_short,
-                        "artif": 0,
-                        "renat": 0,
-                    }
-                )
-        return self.series
+        if mandatory_serie_label not in [s["code_prefix"] for s in self.series]:
+            required_couv = CouvertureSol.objects.get(code_prefix=mandatory_serie_label)
+            series.append(
+                {
+                    "code_prefix": required_couv.code_prefix,
+                    "label": required_couv.label,
+                    "label_short": required_couv.label_short,
+                    "artif": 0,
+                    "renat": 0,
+                }
+            )
+
+        return series
 
     def add_series(self, *args, **kwargs) -> None:
         self.chart["series"].append(
@@ -720,7 +726,7 @@ class DetailCouvArtifChart(ProjectChart):
                 "name": "Artificialisation",
                 "data": [
                     {
-                        "name": item["code_prefix"],
+                        "name": f"{item['code_prefix']} {item['label']}",
                         "y": item["artif"],
                     }
                     for item in self.get_series()
@@ -732,7 +738,7 @@ class DetailCouvArtifChart(ProjectChart):
                 "name": "Renaturation",
                 "data": [
                     {
-                        "name": item["code_prefix"],
+                        "name": f"{item['code_prefix']} {item['label']}",
                         "y": item["renat"],
                     }
                     for item in self.get_series()
@@ -750,9 +756,6 @@ class DetailUsageArtifChart(DetailCouvArtifChart):
             f"Evolution de l'artificialisation par type d'usage de {self.first_millesime} à " f"{self.last_millesime}"
         )
 
-    def get_serie_label(self, code_prefix) -> str:
-        return f"{code_prefix} {UsageSol.objects.get(code_prefix=code_prefix).label}"
-
     def get_data(self):
         aggregate = defaultdict(lambda: {"artif": 0, "renat": 0})
 
@@ -769,14 +772,21 @@ class DetailUsageArtifChart(DetailCouvArtifChart):
             aggregate[level_one_code]["artif"] += serie["artif"]
             aggregate[level_one_code]["renat"] += serie["renat"]
 
-        return [
-            {
-                "code_prefix": self.get_serie_label(code),
-                "artif": value["artif"],
-                "renat": value["renat"],
-            }
-            for code, value in aggregate.items()
-        ]
+        series = []
+
+        for code, value in aggregate.items():
+            usage = UsageSol.objects.get(code_prefix=code)
+            series.append(
+                {
+                    "code_prefix": code,
+                    "label": usage.label,
+                    "label_short": usage.label_short,
+                    "artif": value["artif"],
+                    "renat": value["renat"],
+                }
+            )
+
+        return series
 
     def get_series(self):
         return self.get_data()
