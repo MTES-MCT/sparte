@@ -26,9 +26,6 @@ class ArtifProgressionByUsageChart(ArtifProgressionByCouvertureChart):
     def __init__(self, project: Project, geom: MultiPolygon | None = None):
         super().__init__(project, geom=geom)
 
-    def get_serie_label(self, code_prefix) -> str:
-        return f"{code_prefix} {UsageSol.objects.get(code_prefix=code_prefix).label}"
-
     def get_data(self):
         aggregate = defaultdict(lambda: {"artif": 0, "renat": 0})
 
@@ -45,14 +42,21 @@ class ArtifProgressionByUsageChart(ArtifProgressionByCouvertureChart):
             aggregate[level_one_code]["artif"] += serie["artif"]
             aggregate[level_one_code]["renat"] += serie["renat"]
 
-        return [
-            {
-                "code_prefix": self.get_serie_label(code),
-                "artif": value["artif"],
-                "renat": value["renat"],
-            }
-            for code, value in aggregate.items()
-        ]
+        series = []
+
+        for code, value in aggregate.items():
+            usage = UsageSol.objects.get(code_prefix=code)
+            series.append(
+                {
+                    "code_prefix": code,
+                    "label": usage.label,
+                    "label_short": usage.label_short,
+                    "artif": value["artif"],
+                    "renat": value["renat"],
+                }
+            )
+
+        return series
 
     def get_series(self):
         return self.get_data()
