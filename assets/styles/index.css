@@ -339,39 +339,6 @@ Diagnostic list
 }
 
 /*
-Remove trajectory select year invalid input icon
-*/
-select[name=start].is-invalid, select[name=end].is-invalid {
-    border: none;
-    box-shadow: inset 0 -2px 0 0 var(--border-plain-error);
-}
-
-.invalid-feedback {
-    margin-bottom: 0;
-}
-
-.invalid-feedback > strong {
-    font-weight: 400 !important;
-}
-
-/*
-Trajectory conso
-*/
-.form-set-year-conso > div {
-    margin-right: 25px;
-    margin-bottom: 25px;
-}
-
-.trajectory-select-year {
-    width: 100px;
-}
-
-.trajectory-table-input {
-    width: 90px;
-    font-size: 13px;
-}
-
-/*
 HTMX Indicator loader
 */
 .htmx-indicator {
@@ -560,6 +527,32 @@ Progress bar gradient
     font-weight: bold;
     padding: 0 0.8rem;
     text-align: left; 
+}
+
+/*
+Tile
+*/
+.fr-tile__icon {
+    max-width: 40px;
+}
+
+/*
+Liens
+*/
+.fr-nav__link--highlight {
+    font-weight: 600 !important;
+    color: var(--background-action-high-blue-france) !important;
+}
+
+.fr-nav__link--highlight[aria-current]:not([aria-current="false"])::before {
+    background-color: var(--background-action-high-blue-france) !important;
+}
+
+/*
+Mise en exergue
+*/
+.fr-highlight--no-margin {
+    margin-left: 0 !important;
 }
 
 /*

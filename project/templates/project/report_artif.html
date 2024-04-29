@@ -58,7 +58,7 @@ Rapport artificialisation
 
         <div class="fr-mt-12w">
             <h2>Etat des lieux du territoire au dernier millésime</h2>
-            <a class="fr-link" href="{% url 'documentation:faq' %}#accordion-4">
+            <a class="fr-link" href="{{ FAQ_URL }}article/quest-ce-quun-millesime-110ihlr/" target="_blank" rel="noopener noreferrer">
                 Qu'est-ce qu'un millésime ?
             </a>
 
@@ -449,7 +449,7 @@ Rapport artificialisation
                     </div>
                     <div class="fr-collapse" id="target-data-couv">
                         <h6 class="fr-mt-2w">Source</h6>
-                        <p class="fr-text--sm">Données d'OCcupation des Sols à Grande Echelle (OCS GE) de l'IGN, sur la période d'analyse (millésime min : 2013, millésime max : 2019).</p>
+                        <p class="fr-text--sm">Données d'OCcupation des Sols à Grande Echelle (OCS GE) de l'IGN, sur la période d'analyse (millésime min : {{ project.first_year_ocsge }}, millésime max : {{ project.last_year_ocsge }}).</p>
     
                         <h6 class="fr-mt-2w">Calcul</h6>
                         <p class="fr-text--sm">OCS GE traduite grâce à la matrice de passage.</p>
@@ -575,7 +575,7 @@ Rapport artificialisation
                     </div>
                     <div class="fr-collapse" id="target-data-usage">
                         <h6 class="fr-mt-2w">Source</h6>
-                        <p class="fr-text--sm">Données d'OCcupation des Sols à Grande Echelle (OCS GE) de l'IGN, sur la période d'analyse (millésime min : 2013, millésime max : 2019).</p>
+                        <p class="fr-text--sm">Données d'OCcupation des Sols à Grande Echelle (OCS GE) de l'IGN, sur la période d'analyse (millésime min : {{ project.first_year_ocsge }}, millésime max : {{ project.last_year_ocsge }}).</p>
     
                         <h6 class="fr-mt-2w">Calcul</h6>
                         <p class="fr-text--sm">OCS GE traduite grâce à la matrice de passage.</p>

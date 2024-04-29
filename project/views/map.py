@@ -1034,7 +1034,7 @@ class MyArtifMapView(BaseMap):
                 "maxzoom": 19,
                 "paint": {
                     "fill-color": "#f88e55",
-                    "fill-opacity": ["case", ["boolean", ["feature-state", "hover"], False], 1, 0.7],
+                    "fill-opacity": ["case", ["boolean", ["feature-state", "hover"], False], 0.5, 0.3],
                 },
                 "events": [
                     {
@@ -1087,7 +1087,7 @@ class MyArtifMapView(BaseMap):
                         "#43d360",
                         "#FC4F4F",  # Default color => zones is_new_artif
                     ],
-                    "fill-opacity": ["case", ["boolean", ["feature-state", "hover"], False], 1, 0.7],
+                    "fill-opacity": ["case", ["boolean", ["feature-state", "hover"], False], 0.7, 0.5],
                 },
                 "legend": {
                     "title": "Différentiel OCS GE",

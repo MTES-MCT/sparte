@@ -1,9 +1,9 @@
 import collections
+from collections import defaultdict
 from typing import Dict, List
 
 from django.contrib.gis.geos import MultiPolygon
-from django.db.models import F, Sum, Value
-from django.db.models.functions import Concat
+from django.db.models import Sum
 
 from highcharts import charts
 from project.models.project_base import Project
@@ -690,20 +690,35 @@ class DetailCouvArtifChart(ProjectChart):
         return self.project.get_detail_artif(sol="couverture", geom=self.geom)
 
     def get_series(self) -> List[Dict]:
-        if not self.series:
-            self.series = list(self.get_data())
-            if "CS1.1.2.2" not in [s["code_prefix"] for s in self.series]:
-                required_couv = CouvertureSol.objects.get(code="1.1.2.2")
-                self.series.append(
-                    {
-                        "code_prefix": required_couv.code_prefix,
-                        "label": required_couv.label,
-                        "label_short": required_couv.label_short,
-                        "artif": 0,
-                        "renat": 0,
-                    }
-                )
-        return self.series
+        series = []
+
+        for item in self.get_data():
+            couverture = CouvertureSol.objects.get(code_prefix=item["code_prefix"])
+            series.append(
+                {
+                    "code_prefix": item["code_prefix"],
+                    "label": couverture.label,
+                    "label_short": couverture.label_short,
+                    "artif": item["artif"],
+                    "renat": item["renat"],
+                }
+            )
+
+        mandatory_serie_label = "CS1.1.2.2"
+
+        if mandatory_serie_label not in [s["code_prefix"] for s in self.series]:
+            required_couv = CouvertureSol.objects.get(code_prefix=mandatory_serie_label)
+            series.append(
+                {
+                    "code_prefix": required_couv.code_prefix,
+                    "label": required_couv.label,
+                    "label_short": required_couv.label_short,
+                    "artif": 0,
+                    "renat": 0,
+                }
+            )
+
+        return series
 
     def add_series(self, *args, **kwargs) -> None:
         self.chart["series"].append(
@@ -741,24 +756,40 @@ class DetailUsageArtifChart(DetailCouvArtifChart):
             f"Evolution de l'artificialisation par type d'usage de {self.first_millesime} à " f"{self.last_millesime}"
         )
 
-    def get_series(self):
-        if not self.series:
-            self.series = {  # TODO : tester que toutes les USAGES niveau 1 s'affichent.
-                u.code_prefix: {
-                    "code_prefix": u.code_prefix,
-                    "label": u.label,
-                    "label_short": u.label_short,
-                    "artif": 0,
-                    "renat": 0,
+    def get_data(self):
+        aggregate = defaultdict(lambda: {"artif": 0, "renat": 0})
+
+        for usage in UsageSol.objects.all():
+            if usage.level == 1:
+                aggregate[usage.code_prefix] = {"artif": 0, "renat": 0}
+
+        for serie in self.project.get_detail_artif(sol="usage", geom=self.geom):
+            if serie["code_prefix"] == "US235":
+                level_one_code = "US235"
+            else:
+                first_number_after_us = serie["code_prefix"].split("US")[1][0]
+                level_one_code = f"US{first_number_after_us}"
+            aggregate[level_one_code]["artif"] += serie["artif"]
+            aggregate[level_one_code]["renat"] += serie["renat"]
+
+        series = []
+
+        for code, value in aggregate.items():
+            usage = UsageSol.objects.get(code_prefix=code)
+            series.append(
+                {
+                    "code_prefix": code,
+                    "label": usage.label,
+                    "label_short": usage.label_short,
+                    "artif": value["artif"],
+                    "renat": value["renat"],
                 }
-                for u in UsageSol.objects.order_by("code_prefix")
-                if u.level == 1
-            }
-            for row in self.project.get_detail_artif(sol="usage", geom=self.geom):
-                code = row["code_prefix"].split(".")[0]
-                self.series[code]["artif"] += row["artif"]
-                self.series[code]["renat"] += row["renat"]
-        return list(self.series.values())
+            )
+
+        return series
+
+    def get_series(self):
+        return self.get_data()
 
 
 class ArtifCouvSolPieChart(ProjectChart):
@@ -1117,6 +1148,9 @@ class CouvWheelChart(ProjectChart):
             }
         )
 
+    def get_serie_label(self, code_prefix) -> str:
+        return f"{code_prefix} {CouvertureSol.objects.get(code_prefix=code_prefix).label_short}"
+
     def get_data(self):
         self.data = (
             OcsgeDiff.objects.intersect(self.project.combined_emprise)
@@ -1124,27 +1158,19 @@ class CouvWheelChart(ProjectChart):
                 year_old__gte=self.project.analyse_start_date,
                 year_new__lte=self.project.analyse_end_date,
             )
-            .annotate(
-                old_label=Concat(
-                    f"{self.prefix}_old",
-                    Value(" "),
-                    f"old_matrix__{self.name_sol}__label_short",
-                ),
-                new_label=Concat(
-                    f"{self.prefix}_new",
-                    Value(" "),
-                    f"new_matrix__{self.name_sol}__label_short",
-                ),
-                color=F(f"old_matrix__{self.name_sol}__map_color"),
-            )
-            .values("old_label", "new_label", "color")
+            .values(f"{self.prefix}_old", f"{self.prefix}_new")
             .annotate(total=Sum("surface") / 10000)
-            .order_by("old_label", "new_label", "color")
+            .order_by(f"{self.prefix}_old", f"{self.prefix}_new")
         )
+
+        for data in self.data:
+            data[f"{self.prefix}_old"] = self.get_serie_label(data[f"{self.prefix}_old"])
+            data[f"{self.prefix}_new"] = self.get_serie_label(data[f"{self.prefix}_new"])
+
         return [
-            [_["old_label"], _["new_label"], round(_["total"], 2), _["color"]]
+            [_[f"{self.prefix}_old"], _[f"{self.prefix}_new"], round(_["total"], 2)]
             for _ in self.data
-            if _["old_label"] != _["new_label"]
+            if _[f"{self.prefix}_old"] != _[f"{self.prefix}_new"]
         ]
 
 
@@ -1154,3 +1180,6 @@ class UsageWheelChart(CouvWheelChart):
     prefix = "us"
     name_sol = "usage"
     items = UsageSol.objects.all()
+
+    def get_serie_label(self, code_prefix) -> str:
+        return f"{code_prefix} {UsageSol.objects.get(code_prefix=code_prefix).label_short}"

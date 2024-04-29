@@ -14,10 +14,6 @@ python manage.py migrate
 # load new parameters if any
 python manage.py load_param --no-update --file required_parameters.json
 
-# Execute data migrations if under 30 minutes
-# eg. python manage.py migrate_trajectory
-
-
 # clear cache
 python manage.py clear_cache
 

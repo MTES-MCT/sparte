@@ -21,6 +21,7 @@ from django.utils.functional import cached_property
 from simple_history.models import HistoricalRecords
 
 from config.storages import PublicMediaStorage
+from project.models.enums import ProjectChangeReason
 from project.models.exceptions import TooOldException
 from public_data.exceptions import LandException
 from public_data.models import (
@@ -153,7 +154,7 @@ class BaseProject(models.Model):
         self.import_date = timezone.now()
         self.import_error = None
         if save:
-            self.save()
+            self.save_without_historical_record()
 
     def set_failed(self, save=True, trace=None):
         self.import_status = self.Status.FAILED
@@ -163,7 +164,7 @@ class BaseProject(models.Model):
         else:
             self.import_error = traceback.format_exc()
         if save:
-            self.save()
+            self.save_without_historical_record()
 
     class Meta:
         abstract = True
@@ -434,6 +435,11 @@ class Project(BaseProject):
     )
 
     @property
+    def latest_change_is_ocsge_delivery(self) -> bool:
+        latest_change = self.history.first()
+        return latest_change.history_change_reason == ProjectChangeReason.NEW_OCSGE_HAS_BEEN_DELIVERED
+
+    @property
     def async_complete(self):
         return (
             self.async_add_city_done
@@ -445,6 +451,15 @@ class Project(BaseProject):
             & self.async_generate_theme_map_conso_done
             & self.async_generate_theme_map_artif_done
             & self.async_theme_map_understand_artif_done
+        )
+
+    @property
+    def is_ready_to_be_displayed(self) -> bool:
+        return (
+            self.async_add_city_done
+            & self.async_set_combined_emprise_done
+            & self.async_add_comparison_lands_done
+            & self.async_find_first_and_last_ocsge_done
         )
 
     class Meta:
@@ -508,7 +523,7 @@ class Project(BaseProject):
             )
         if not self.folder_name:
             self.folder_name = f"diag_{self.id:>06}"
-            self._change_reason = "set folder_name"
+            self._change_reason = ProjectChangeReason.FOLDER_CHANGED
             self.save(update_fields=["folder_name"])
         return self.folder_name
 
@@ -554,6 +569,10 @@ class Project(BaseProject):
     @cached_property
     def has_no_ocsge_coverage(self) -> bool:
         return self.ocsge_coverage_status == self.OcsgeCoverageStatus.NO_DATA
+
+    @cached_property
+    def has_zonage_urbanisme(self) -> bool:
+        return ArtifAreaZoneUrba.objects.filter(zone_urba__mpoly__intersects=self.combined_emprise).exists()
 
     def get_ocsge_millesimes(self):
         """Return all OCS GE millésimes available within project cities and between
@@ -1019,8 +1038,6 @@ class Project(BaseProject):
         [
             {
                 "code_prefix": "CS1.1.1",
-                "label": "Zone Bâti (maison,...)",
-                "label_short": "Zone Bâti",
                 "artif": 1000.0,
                 "renat":  100.0,
             },
@@ -1030,6 +1047,9 @@ class Project(BaseProject):
         if not geom:
             geom = self.combined_emprise
         Zero = Area(Polygon(((0, 0), (0, 0), (0, 0), (0, 0)), srid=2154))
+
+        short_sol = "us" if sol == "usage" else "cs"
+
         return (
             OcsgeDiff.objects.intersect(geom)
             .filter(
@@ -1039,22 +1059,14 @@ class Project(BaseProject):
             .filter(Q(is_new_artif=True) | Q(is_new_natural=True))
             .annotate(
                 code_prefix=Case(
-                    When(is_new_artif=True, then=F(f"new_matrix__{sol}__code_prefix")),
-                    default=F(f"old_matrix__{sol}__code_prefix"),
-                ),
-                label=Case(
-                    When(is_new_artif=True, then=F(f"new_matrix__{sol}__label")),
-                    default=F(f"old_matrix__{sol}__label"),
-                ),
-                label_short=Case(
-                    When(is_new_artif=True, then=F(f"new_matrix__{sol}__label_short")),
-                    default=F(f"old_matrix__{sol}__label_short"),
+                    When(is_new_artif=True, then=F(f"{short_sol}_new")),
+                    default=F(f"{short_sol}_old"),
                 ),
                 area_artif=Case(When(is_new_artif=True, then=F("intersection_area")), default=Zero),
                 area_renat=Case(When(is_new_natural=True, then=F("intersection_area")), default=Zero),
             )
-            .order_by("code_prefix", "label", "label_short")
-            .values("code_prefix", "label", "label_short")
+            .order_by("code_prefix")
+            .values("code_prefix")
             .annotate(
                 artif=Cast(Sum("area_artif") / 10000, DecimalField(max_digits=15, decimal_places=2)),
                 renat=Cast(Sum("area_renat") / 10000, DecimalField(max_digits=15, decimal_places=2)),
@@ -1218,6 +1230,7 @@ class Project(BaseProject):
                     "type_zone": zone_type,
                     "type_zone_label": zone_labels.get(zone_type, ""),
                     "total_area": row["total_area"],
+                    "nb_zones": row["nb_zones"],
                     "first_artif_area": Decimal(0.0),
                     "last_artif_area": Decimal(0.0),
                     "fill_up_rate": Decimal(0.0),

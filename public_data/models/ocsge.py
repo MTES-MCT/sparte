@@ -1,45 +1,21 @@
-"""
-Nouvelle VERSION lors de la 1.3.0 : on souhaite normaliser les données OCSGE
-pour la france entière.
-
-1. Ocsge
-Les données de l'OCSGE avec la couverture complète de la France, année par année.
-On stock ici tous les millésimes de tous les départements.
-
-
-2. OcsgeDiff
-Contient les différences entres les millésimes :qu'est-ce qui a été de nouveau
-naturalisé et qu'est ce qui a été artificialisé...
-Comme précédemment, on stock dans ce modèle tous les millésimes, tous les
-dépertements...
-
-
-Remarque : il est possible qu'il faille partitionner ces données à terme pour cause de
-problème de performance
-
-"""
 from django.contrib.gis.db import models
 from django.contrib.gis.db.models.functions import Area, Intersection, MakeValid
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db.models import Sum
 
-from public_data.models.couverture_usage import CouvertureUsageMatrix
 from public_data.models.enums import SRID
 from public_data.models.mixins import DataColorationMixin, TruncateTableMixin
 from utils.db import DynamicSRIDTransform, IntersectManager
 
 
 class Ocsge(TruncateTableMixin, DataColorationMixin, models.Model):
-    couverture = models.CharField("Couverture du sol", max_length=254, blank=True, null=True)
-    usage = models.CharField("Usage du sol", max_length=254, blank=True, null=True)
-    id_source = models.CharField("ID source", max_length=200, blank=True, null=True)
+    couverture = models.CharField("Couverture du sol", max_length=254)
+    usage = models.CharField("Usage du sol", max_length=254)
+    id_source = models.CharField("ID source", max_length=200)
     year = models.IntegerField("Année", validators=[MinValueValidator(2000), MaxValueValidator(2050)])
-    matrix = models.ForeignKey(CouvertureUsageMatrix, on_delete=models.PROTECT, null=True, blank=True)
-    couverture_label = models.CharField("Libellé couverture du sol", max_length=254, blank=True, null=True)
-    usage_label = models.CharField("Libellé usage du sol", max_length=254, blank=True, null=True)
-    is_artificial = models.BooleanField("Est artificiel", null=True, blank=True)
-    surface = models.DecimalField("surface", max_digits=15, decimal_places=4, blank=True, null=True)
-    departement = models.ForeignKey("public_data.Departement", on_delete=models.PROTECT, null=True, blank=True)
+    is_artificial = models.BooleanField("Est artificiel")
+    surface = models.DecimalField("surface", max_digits=15, decimal_places=4)
+    departement = models.CharField("Département", max_length=15)
 
     mpoly = models.MultiPolygonField(srid=4326)
     srid_source = models.IntegerField(
@@ -58,7 +34,9 @@ class Ocsge(TruncateTableMixin, DataColorationMixin, models.Model):
             models.Index(fields=["usage"]),
             models.Index(fields=["year"]),
             models.Index(fields=["is_artificial"]),
+            models.Index(fields=["departement"]),
         ]
+        unique_together = [["id_source", "year", "departement"]]
 
     @classmethod
     def get_groupby(cls, field_group_by, coveredby, year):
@@ -86,40 +64,20 @@ class Ocsge(TruncateTableMixin, DataColorationMixin, models.Model):
 class OcsgeDiff(TruncateTableMixin, DataColorationMixin, models.Model):
     year_old = models.IntegerField("Ancienne année", validators=[MinValueValidator(2000), MaxValueValidator(2050)])
     year_new = models.IntegerField("Nouvelle année", validators=[MinValueValidator(2000), MaxValueValidator(2050)])
-    cs_new = models.CharField("Code nouvelle couverture", max_length=12, blank=True, null=True)
-    cs_old = models.CharField("Code ancienne couverture", max_length=12, blank=True, null=True)
-    us_new = models.CharField("Code nouveau usage", max_length=12, blank=True, null=True)
-    us_old = models.CharField("Code ancien usage", max_length=12, blank=True, null=True)
+    cs_new = models.CharField("Code nouvelle couverture", max_length=12)
+    cs_old = models.CharField("Code ancienne couverture", max_length=12)
+    us_new = models.CharField("Code nouveau usage", max_length=12)
+    us_old = models.CharField("Code ancien usage", max_length=12)
     mpoly = models.MultiPolygonField(srid=4326)
     srid_source = models.IntegerField(
         "SRID",
         choices=SRID.choices,
         default=SRID.LAMBERT_93,
     )
-    surface = models.DecimalField("surface", max_digits=15, decimal_places=4, blank=True, null=True)
-    cs_old_label = models.CharField("Ancienne couverture", max_length=254, blank=True, null=True)
-    us_old_label = models.CharField("Ancien usage", max_length=254, blank=True, null=True)
-    cs_new_label = models.CharField("Nouvelle couverture", max_length=254, blank=True, null=True)
-    us_new_label = models.CharField("Nouveau usage", max_length=254, blank=True, null=True)
-    old_is_artif = models.BooleanField(blank=True, null=True)
-    new_is_artif = models.BooleanField(blank=True, null=True)
-    is_new_artif = models.BooleanField(blank=True, null=True)
-    is_new_natural = models.BooleanField(blank=True, null=True)
-    departement = models.ForeignKey("public_data.Departement", on_delete=models.PROTECT, null=True, blank=True)
-    old_matrix = models.ForeignKey(
-        CouvertureUsageMatrix,
-        on_delete=models.PROTECT,
-        null=True,
-        blank=True,
-        related_name="ocsge_dif_old",
-    )
-    new_matrix = models.ForeignKey(
-        CouvertureUsageMatrix,
-        on_delete=models.PROTECT,
-        null=True,
-        blank=True,
-        related_name="ocsge_difnew",
-    )
+    surface = models.DecimalField("surface", max_digits=15, decimal_places=4)
+    is_new_artif = models.BooleanField()
+    is_new_natural = models.BooleanField()
+    departement = models.CharField("Département", max_length=15)
 
     objects = IntersectManager()
 
@@ -130,6 +88,7 @@ class OcsgeDiff(TruncateTableMixin, DataColorationMixin, models.Model):
         indexes = [
             models.Index(fields=["year_old"]),
             models.Index(fields=["year_new"]),
+            models.Index(fields=["departement"]),
         ]
 
 
@@ -145,19 +104,16 @@ class ArtificialArea(TruncateTableMixin, DataColorationMixin, models.Model):
         validators=[MinValueValidator(2000), MaxValueValidator(2050)],
     )
     surface = models.DecimalField("surface", max_digits=15, decimal_places=4)
-    city = models.ForeignKey("public_data.Commune", on_delete=models.CASCADE)
-    departement = models.ForeignKey("public_data.Departement", on_delete=models.PROTECT, null=True, blank=True)
-
+    city = models.CharField("Commune", max_length=254)
+    departement = models.CharField("Département", max_length=15)
     objects = IntersectManager()
 
     class Meta:
-        constraints = [
-            models.UniqueConstraint(fields=["city", "year"], name="artificialarea-city-year-unique"),
-        ]
+        constraints = []
         indexes = [
             models.Index(fields=["year"]),
             models.Index(fields=["city"]),
-            models.Index(fields=["city", "year"]),
+            models.Index(fields=["departement"]),
         ]
 
 
@@ -175,15 +131,14 @@ class ZoneConstruite(TruncateTableMixin, DataColorationMixin, models.Model):
     year = models.IntegerField(
         "Année",
         validators=[MinValueValidator(2000), MaxValueValidator(2050)],
-        null=True,
-        blank=True,
     )
-    surface = models.DecimalField("surface", max_digits=15, decimal_places=4, blank=True, null=True)
-    departement = models.ForeignKey("public_data.Departement", on_delete=models.PROTECT, null=True, blank=True)
+    surface = models.DecimalField("surface", max_digits=15, decimal_places=4)
+    departement = models.CharField("Département", max_length=15)
 
     objects = IntersectManager()
 
     class Meta:
         indexes = [
             models.Index(fields=["year"]),
+            models.Index(fields=["departement"]),
         ]

@@ -1,6 +1,5 @@
 from decimal import InvalidOperation
 from functools import cached_property
-from math import ceil
 from typing import Any, Dict
 
 import pandas as pd
@@ -11,17 +10,16 @@ from django.db import transaction
 from django.db.models import Case, CharField, DecimalField, F, Q, Sum, Value, When
 from django.db.models.functions import Cast, Concat
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
+from django.shortcuts import redirect
 from django.urls import reverse
 from django.views.generic import CreateView, DetailView, TemplateView
 
 from brevo.tasks import send_request_to_brevo
 from project import charts, tasks
-from project.forms import FilterAUUTable
-from project.models import Project, ProjectCommune, Request
+from project.models import Project, ProjectCommune, Request, trigger_async_tasks
 from project.utils import add_total_line_column
 from public_data.models import CouvertureSol, UsageSol
-from public_data.models.administration import Commune
-from public_data.models.gpu import ArtifAreaZoneUrba, ZoneUrba
+from public_data.models.gpu import ZoneUrba
 from public_data.models.ocsge import Ocsge, OcsgeDiff
 from utils.htmx import StandAloneMixin
 from utils.views_mixins import CacheMixin
@@ -36,7 +34,13 @@ class ProjectReportBaseView(CacheMixin, GroupMixin, DetailView):
 
     @transaction.non_atomic_requests
     def dispatch(self, request, *args, **kwargs):
-        # with this, be careful when doing row modification, autocommit is disabled
+        referer = request.META.get("HTTP_REFERER")
+        previous_page_was_splash_screen = referer and "construction" in referer
+        if not previous_page_was_splash_screen:
+            project: Project = self.get_object()
+            if not project.is_ready_to_be_displayed:
+                trigger_async_tasks(project)
+                return redirect("project:splash", pk=project.id)
         return super().dispatch(request, *args, **kwargs)
 
     def get_context_breadcrumbs(self):
@@ -289,6 +293,22 @@ class ProjectReportSynthesisView(ProjectReportBaseView):
         return super().get_context_data(**kwargs)
 
 
+class ProjectReportLocalView(ProjectReportBaseView):
+    template_name = "project/report_local.html"
+    breadcrumbs_title = "Rapport local"
+
+    def get_context_data(self, **kwargs):
+        project: Project = self.get_object()
+
+        kwargs.update(
+            {
+                "diagnostic": project,
+                "active_page": "local",
+            }
+        )
+        return super().get_context_data(**kwargs)
+
+
 class ProjectReportArtifView(ProjectReportBaseView):
     template_name = "project/report_artif.html"
     breadcrumbs_title = "Rapport artificialisation"
@@ -473,23 +493,42 @@ class ProjectReportDownloadView(BreadCrumbMixin, CreateView):
 
 class ProjectReportTarget2031View(ProjectReportBaseView):
     template_name = "project/report_target_2031.html"
-    breadcrumbs_title = "Rapport objectif 2031"
+    breadcrumbs_title = "Rapport trajectoires"
 
     def get_context_data(self, **kwargs):
-        project = self.get_object()
-        objective_chart = charts.ObjectiveChart(project)
+        diagnostic = self.get_object()
+        target_2031_chart = charts.ObjectiveChart(diagnostic)
         kwargs.update(
             {
-                "diagnostic": project,
+                "diagnostic": diagnostic,
                 "active_page": "target_2031",
-                "objective_chart": objective_chart,
-                "conso_2031_minus_10": objective_chart.conso_2031 * 0.9,
-                "conso_2031_annual_minus_10": objective_chart.annual_objective_2031 * 0.9,
-                "conso_2031_plus_10": objective_chart.conso_2031 * 1.1,
-                "conso_2031_annual_plus_10": objective_chart.annual_objective_2031 * 1.1,
+                "total_real": target_2031_chart.total_real,
+                "annual_real": target_2031_chart.annual_real,
+                "conso_2031": target_2031_chart.conso_2031,
+                "annual_objective_2031": target_2031_chart.annual_objective_2031,
+                "target_2031_chart": target_2031_chart,
             }
         )
+        return super().get_context_data(**kwargs)
 
+
+class ProjectReportTarget2031GraphView(ProjectReportBaseView):
+    template_name = "project/partials/report_target_2031_graphic.html"
+
+    def get_context_data(self, **kwargs) -> Dict[str, Any]:
+        diagnostic = self.get_object()
+        target_2031_chart = charts.ObjectiveChart(diagnostic)
+        kwargs.update(
+            {
+                "reload_kpi": True,
+                "diagnostic": diagnostic,
+                "target_2031_chart": target_2031_chart,
+                "total_real": target_2031_chart.total_real,
+                "annual_real": target_2031_chart.annual_real,
+                "conso_2031": target_2031_chart.conso_2031,
+                "annual_objective_2031": target_2031_chart.annual_objective_2031,
+            }
+        )
         return super().get_context_data(**kwargs)
 
 
@@ -705,17 +744,26 @@ class ArtifDetailCouvChart(CacheMixin, TemplateView):
         qs = (
             Ocsge.objects.intersect(self.zone_urba.mpoly)
             .filter(is_artificial=True, year=self.diagnostic.last_year_ocsge)
-            .annotate(
-                code_prefix=F("matrix__couverture__code_prefix"),
-                label=F("matrix__couverture__label"),
-                label_short=F("matrix__couverture__label_short"),
-                map_color=F("matrix__couverture__map_color"),
-            )
-            .order_by("code_prefix", "label", "label_short", "map_color")
-            .values("code_prefix", "label", "label_short", "map_color")
+            .order_by("couverture")
+            .values("couverture")
             .annotate(surface=Sum("intersection_area") / 10000)
         )
-        return qs
+
+        groups = []
+
+        for group in qs:
+            couverture = CouvertureSol.objects.get(code_prefix=group["couverture"])
+            groups.append(
+                {
+                    "code_prefix": couverture.code_prefix,
+                    "label": couverture.label,
+                    "label_short": couverture.label_short,
+                    "map_color": couverture.map_color,
+                    "surface": group["surface"],
+                }
+            )
+
+        return groups
 
     def get_charts(self):
         if self.zone_urba:
@@ -776,17 +824,26 @@ class ArtifDetailUsaChart(CacheMixin, TemplateView):
         qs = (
             Ocsge.objects.intersect(self.zone_urba.mpoly)
             .filter(is_artificial=True, year=self.diagnostic.last_year_ocsge)
-            .annotate(
-                code_prefix=F("matrix__usage__code_prefix"),
-                label=F("matrix__usage__label"),
-                label_short=F("matrix__usage__label_short"),
-                map_color=F("matrix__usage__map_color"),
-            )
-            .order_by("code_prefix", "label", "label_short", "map_color")
-            .values("code_prefix", "label", "label_short", "map_color")
+            .order_by("usage")
+            .values("usage")
             .annotate(surface=Sum("intersection_area") / 10000)
         )
-        return qs
+
+        groups = []
+
+        for group in qs:
+            usage = UsageSol.objects.get(code_prefix=group["usage"])
+            groups.append(
+                {
+                    "code_prefix": usage.code_prefix,
+                    "label": usage.label,
+                    "label_short": usage.label_short,
+                    "map_color": usage.map_color,
+                    "surface": group["surface"],
+                }
+            )
+
+        return groups
 
     def get_charts(self):
         if self.zone_urba:
@@ -859,111 +916,6 @@ class ProjectReportGpuZoneSynthesisTable(CacheMixin, StandAloneMixin, TemplateVi
             "diagnostic": self.diagnostic,
             "first_year_ocsge": str(self.diagnostic.first_year_ocsge),
             "last_year_ocsge": str(self.diagnostic.last_year_ocsge),
-        }
-        return super().get_context_data(**kwargs)
-
-
-class ProjectReportGpuZoneAUUTable(CacheMixin, StandAloneMixin, TemplateView):
-    """Nom commune, code INSEE, libellé court, libellé long, type de zone, surface, surface artificialisée, taux de
-    remplissage, Progression"""
-
-    template_name = "project/partials/zone_urba_auu_table.html"
-
-    @cached_property
-    def diagnostic(self):
-        return Project.objects.get(pk=self.kwargs["pk"])
-
-    def should_cache(self, *args, **kwargs):
-        """Override to disable cache conditionnally"""
-        if not self.diagnostic.theme_map_fill_gpu:
-            return False
-        return True
-
-    def get_filters(self):
-        form = FilterAUUTable(data=self.request.GET)
-        if form.is_valid():
-            return {"page": form.cleaned_data["page_number"] or 1}
-        return {"page": 1}
-
-    def get_context_data(self, **kwargs):
-        filters = self.get_filters()
-        diagnostic = self.diagnostic
-        zone_urba = ZoneUrba.objects.intersect(diagnostic.combined_emprise)
-        qs = (
-            ArtifAreaZoneUrba.objects.filter(
-                zone_urba__in=zone_urba,
-                year__in=[diagnostic.first_year_ocsge, diagnostic.last_year_ocsge],
-                zone_urba__typezone__in=["U", "AUc", "AUs"],
-                zone_urba__area__gt=0,
-            )
-            .annotate(fill_up_rate=100 * F("area") / F("zone_urba__area"))  # TODO : pré-calculer
-            .select_related("zone_urba")
-            .order_by("-fill_up_rate", "zone_urba__insee", "zone_urba__typezone", "-year", "zone_urba__id")
-        )
-        code_insee = qs.values_list("zone_urba__insee", flat=True).distinct()
-        city_list = {
-            _["insee"]: _["name"]
-            for _ in Commune.objects.filter(insee__in=code_insee).order_by("insee").values("insee", "name")
-        }
-        zone_list = {}
-        for row in qs:
-            key = row.zone_urba.id
-            if key not in zone_list:
-                zone_list[key] = row
-                zone_list[key].city_name = city_list.get(row.zone_urba.insee, "")
-            if row.year == diagnostic.first_year_ocsge:
-                zone_list[key].new_artif = zone_list[key].area - row.area
-
-        mini = filters["page"] * 10 - 10
-        maxi = filters["page"] * 10
-        kwargs |= {
-            "zone_list": list(zone_list.values())[mini:maxi],
-            "current_page": filters["page"],
-            "pages": list(range(1, ceil(len(zone_list) / 10) + 1)),
-            "diagnostic": diagnostic,
-            "first_year_ocsge": str(diagnostic.first_year_ocsge),
-            "last_year_ocsge": str(diagnostic.last_year_ocsge),
-        }
-        return super().get_context_data(**kwargs)
-
-
-class ProjectReportGpuZoneNTable(CacheMixin, StandAloneMixin, TemplateView):
-    template_name = "project/partials/zone_urba_n_table.html"
-
-    def get_context_data(self, **kwargs):
-        diagnostic = Project.objects.get(pk=self.kwargs["pk"])
-        zone_urba = ZoneUrba.objects.intersect(diagnostic.combined_emprise)
-        qs = (
-            ArtifAreaZoneUrba.objects.filter(
-                zone_urba__in=zone_urba,
-                year__in=[diagnostic.first_year_ocsge, diagnostic.last_year_ocsge],
-                zone_urba__typezone="N",
-                zone_urba__area__gt=0,
-            )
-            .annotate(fill_up_rate=100 * F("area") / F("zone_urba__area"))
-            .select_related("zone_urba")
-            .order_by("-fill_up_rate", "zone_urba__insee", "zone_urba__typezone", "-year", "zone_urba__id")
-        )
-        code_insee = qs.values_list("zone_urba__insee", flat=True).distinct()
-        city_list = {
-            _["insee"]: _["name"]
-            for _ in Commune.objects.filter(insee__in=code_insee).order_by("insee").values("insee", "name")
-        }
-        zone_list = {}
-        for row in qs:
-            key = row.zone_urba.id
-            if key not in zone_list:
-                zone_list[key] = row
-                zone_list[key].city_name = city_list.get(row.zone_urba.insee, "")
-                zone_list[key].new_artif = 0
-            if row.year == diagnostic.first_year_ocsge:
-                zone_list[key].new_artif = zone_list[key].area - row.area
-        zone_list = sorted(zone_list.values(), key=lambda x: x.new_artif, reverse=True)
-        kwargs |= {
-            "zone_list": zone_list[:10],
-            "diagnostic": diagnostic,
-            "first_year_ocsge": str(diagnostic.first_year_ocsge),
-            "last_year_ocsge": str(diagnostic.last_year_ocsge),
         }
         return super().get_context_data(**kwargs)
 

@@ -42,8 +42,7 @@ def race_protection_save(project_id: int, fields: Dict[str, Any]) -> None:
         diagnostic = Project.objects.select_for_update().only(*fields_name).get(pk=project_id)
         for name, value in fields.items():
             setattr(diagnostic, name, value)
-        diagnostic._change_reason = "async"
-        diagnostic.save(update_fields=fields_name)
+        diagnostic.save_without_historical_record(update_fields=fields_name)
 
 
 def race_protection_save_map(
@@ -59,8 +58,7 @@ def race_protection_save_map(
         field_img.delete(save=False)
         field_img.save(img_name, img_data, save=False)
         setattr(diagnostic, field_flag_name, True)
-        diagnostic._change_reason = "async"
-        diagnostic.save(update_fields=[field_img_name, field_flag_name])
+        diagnostic.save_without_historical_record(update_fields=[field_img_name, field_flag_name])
 
 
 @shared_task(bind=True, max_retries=5)
@@ -489,7 +487,9 @@ def generate_theme_map_understand_artif(self, project_id):
 
         data = {"color": [], "geometry": []}
         # add artificial area to data
-        queryset = ArtificialArea.objects.filter(city__in=diagnostic.cities.all())
+        city_ids = diagnostic.cities.all().values_list("insee", flat=True)
+        queryset = ArtificialArea.objects.filter(city__in=city_ids)
+
         for row in queryset.only("mpoly"):
             srid, wkt = row.mpoly.ewkt.split(";")
             polygons = shapely.wkt.loads(wkt)

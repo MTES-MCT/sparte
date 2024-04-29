@@ -10,6 +10,7 @@ from typing import List
 import celery
 
 from project.models import Project
+from project.models.enums import ProjectChangeReason
 from public_data.models import AdminRef, Land
 from users.models import User
 
@@ -89,7 +90,7 @@ def create_from_public_key(
         territory_name=land.name,
         user=user if user and user.is_authenticated else None,
     )
-    project._change_reason = "create_from_public_key"
+    project._change_reason = ProjectChangeReason.CREATED_FROM_PUBLIC_KEY
     project.set_success(save=True)
 
     trigger_async_tasks(project, public_key)
@@ -111,7 +112,7 @@ def update_period(project: Project, start: str, end: str) -> None:
     project.async_theme_map_understand_artif_done = False
     project.async_theme_map_fill_gpu_done = False
 
-    project._change_reason = "update_project_period"
+    project._change_reason = ProjectChangeReason.USER_UPDATED_PROJECT_FROM_PARAMS
     project.save()
 
     trigger_async_tasks(project)
@@ -138,7 +139,5 @@ def update_ocsge(project: Project):
     project.async_theme_map_understand_artif_done = False
     project.async_theme_map_fill_gpu_done = False
 
-    project._change_reason = "new_ocsge_has_been_delivered"
+    project._change_reason = ProjectChangeReason.NEW_OCSGE_HAS_BEEN_DELIVERED
     project.save()
-
-    trigger_async_tasks(project)

@@ -6,6 +6,9 @@ const ESLintPlugin = require('eslint-webpack-plugin');
 
 const common = {
     entry: './assets/scripts/index.js',
+    resolve: {
+        extensions: [".js", ".jsx", ".ts", ".tsx"]
+      },
     output: {
         'path': path.resolve(__dirname, 'static'),
         'filename': 'assets/scripts/bundle.js',
@@ -35,6 +38,17 @@ const common = {
                     MiniCssExtractPlugin.loader,
                     'css-loader'
                 ],
+            },
+            {
+                test: /\.(js|jsx)$/,
+                exclude: /node_modules/,
+                loader: 'babel-loader',
+                options: { presets: ['@babel/preset-env', '@babel/preset-react'] }
+            },
+            {
+                test: /\.tsx?$/,
+                use: 'ts-loader',
+                exclude: /node_modules/,
             },
         ]
     },

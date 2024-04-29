@@ -11,14 +11,46 @@ from public_data.storages import DataStorage
 logger = logging.getLogger("management.commands")
 
 
+
+def empty_string_to_none(value: str):
+    if not isinstance(value, str):
+        raise ValueError(f"Value must be a string, got {type(value)}")
+
+    if not value.strip():
+        return None
+
+    return value
+
+
+def parse_date(str_date: str, format: str = "%m/%d/%y"):
+    return datetime.datetime.strptime(str_date, format).date()
+
+
+def convert_superficie_to_ha(value: str, unit: str = "ha") -> float:
+    if unit == "km2":
+        return float(value) * 100
+    elif unit == "m2":
+        return float(value) / 10000
+    elif unit == "ha":
+        return float(value)
+
+    raise ValueError(f"Unknown superficie unit {unit}")
+
+
 class Command(BaseCommand):
+    """
+    Data downloaded from:
+    https://www.data.gouv.fr/en/datasets/planification-nationale-des-documents-durbanisme-plu-plui-cc-rnu-donnees-sudocuh-dernier-etat-des-lieux-annuel-au-31-decembre-2023/ # noqa: E501
+    """
     help = "Import Sudocuh data from a csv file"
 
     def add_arguments(self, parser):
         parser.add_argument(
-            "filename",
+
+            "--filename",
             type=str,
             help="filename you want to import",
+            default="sudocuh_cog_2023.csv",
         )
         parser.add_argument(
             "--yes",
@@ -42,22 +74,6 @@ class Command(BaseCommand):
             default="km2",
             choices=["km2", "ha", "m2"],
         )
-
-    def empty_string_to_none(self, value: str):
-        if value == "":
-            return None
-        return value
-
-    def parse_date(self, str_date: str, format: str):
-        expected_format = "%m/%d/%y"
-        return datetime.datetime.strptime(str_date, expected_format).date()
-
-    def convert_superficie_to_ha(self, value: str, unit: str) -> float:
-        if unit == "km2":
-            return float(value) * 100
-        if unit == "m2":
-            return float(value) / 10000
-        return float(value)
 
     def handle(self, *args, **options):
         instructions = """
@@ -114,14 +130,17 @@ class Command(BaseCommand):
         reader = csv.reader(csv_file_as_list, delimiter=";")
         count = len(csv_file_as_list)
         logger.info(f"Importing {count} Sudocuh data")
-        for idx, row in enumerate(reader):
+
+        objects_to_create = []
+
+        for row in reader:
             data = dict(zip(headers, row))
 
-            data = {key: self.empty_string_to_none(value) for key, value in data.items()}
+            data = {key: empty_string_to_none(value) for key, value in data.items()}
 
             for column in date_fields:
                 data[column] = (
-                    self.parse_date(
+                    parse_date(
                         str_date=data[column],
                         format=options.get("date_format"),
                     )
@@ -133,7 +152,7 @@ class Command(BaseCommand):
                 logger.warning(f"Empty superficie field for {data['nom_commune']}, defaulting to 0")
 
             data[area_field] = (
-                self.convert_superficie_to_ha(
+                convert_superficie_to_ha(
                     value=data[area_field],
                     unit=options.get("superficie_unit"),
                 )
@@ -141,7 +160,9 @@ class Command(BaseCommand):
                 else 0
             )
 
-            Sudocuh.objects.create(**data)
+            objects_to_create.append(Sudocuh(**data))
 
-            if idx % 100 == 0 or idx == count - 1:
-                logger.info(f"Imported {idx + 1}/{count}")
+        created_sudocuh = Sudocuh.objects.bulk_create(objects_to_create)
+
+        logger.info(f"Created {len(created_sudocuh)} Sudocuh data")
+

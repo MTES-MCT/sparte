@@ -20,6 +20,8 @@ import './filter-diagnostic-list.js'
 // Import map
 import './map_libre/index.js'
 
+import './react-roots.js'
+
 // Import HTMX and inject it into the window scope
 window.htmx = require('htmx.org')
 // Fix CSP inline style

@@ -1,4 +1,4 @@
-from django.urls import include, path
+from django.urls import path
 from rest_framework import routers
 
 from . import views
@@ -36,6 +36,11 @@ urlpatterns = [
         views.SetProjectPeriodView.as_view(),
         name="set-period",
     ),
+    path(
+        "<int:pk>/set_target_2031",
+        views.ProjectSetTarget2031View.as_view(),
+        name="set-target-2031",
+    ),
     # REPORT
     path(
         "<int:pk>/tableau-de-bord/consommation",
@@ -52,12 +57,6 @@ urlpatterns = [
         views.ProjectReportDicoverOcsgeView.as_view(),
         name="report_discover",
     ),
-    # DEAD CODE - à retirer si aucun bug ne se produit
-    # path(
-    #     "<int:pk>/tableau-de-bord/usage",
-    #     views.ProjectReportUsageView.as_view(),
-    #     name="report_usage",
-    # ),
     path(
         "<int:pk>/tableau-de-bord/artificialisation",
         views.ProjectReportArtifView.as_view(),
@@ -68,11 +67,11 @@ urlpatterns = [
         views.ProjectReportCityGroupView.as_view(),
         name="report_city_group",
     ),
-    # path(
-    #     "<int:pk>/tableau-de-bord/objectif-2031",
-    #     views.ProjectReportTarget2031View.as_view(),
-    #     name="report_target_2031",
-    # ),
+    path(
+        "<int:pk>/tableau-de-bord/trajectoires",
+        views.ProjectReportTarget2031View.as_view(),
+        name="report_target_2031",
+    ),
     path(
         "<int:pk>/tableau-de-bord/zonages-d-urbanisme",
         views.ProjectReportUrbanZonesView.as_view(),
@@ -83,7 +82,17 @@ urlpatterns = [
         views.ProjectReportGpuView.as_view(),
         name="report_gpu",
     ),
+    path(
+        "<int:pk>/tableau-de-bord/rapport-local",
+        views.ProjectReportLocalView.as_view(),
+        name="report_local",
+    ),
     # REPORT PARTIALS
+    path(
+        "<int:pk>/target-2031-graphic",
+        views.ProjectReportTarget2031GraphView.as_view(),
+        name="target-2031-graphic",
+    ),
     path(
         "<int:pk>/tableau-de-bord/consommation-relative/surface",
         views.ConsoRelativeSurfaceChart.as_view(),
@@ -118,16 +127,6 @@ urlpatterns = [
         "<int:pk>/synthèse-des-zonages-d-urbanisme",
         views.ProjectReportGpuZoneSynthesisTable.as_view(),
         name="synthesis-zone-urba-all",
-    ),
-    path(
-        "<int:pk>/zonages-d-urbanisme-auu",
-        views.ProjectReportGpuZoneAUUTable.as_view(),
-        name="zone-urba-auu",
-    ),
-    path(
-        "<int:pk>/zonages-d-urbanisme-n",
-        views.ProjectReportGpuZoneNTable.as_view(),
-        name="zone-urba-n",
     ),
     path(
         "<int:pk>/zonages-d-urbanisme/carte-générale",
@@ -200,7 +199,6 @@ urlpatterns = [
     path("exports/", views.ExportListView.as_view(), name="excel"),
     path("<int:pk>/export-excel", views.ExportExcelView.as_view(), name="export-excel"),
     # SUB APPS
-    path("<int:pk>/trajectoires/", include("trajectory.urls", namespace="trajectory")),
     path("test", views.TestView.as_view(), name="test"),
 ]
 

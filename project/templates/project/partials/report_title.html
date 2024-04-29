@@ -17,18 +17,24 @@
 
         <div class="dropdown custom-dropdown mt-2">
             <button class="fr-btn" data-bs-toggle="dropdown" aria-expanded="false">
-                Télécharger mon diagnostic
+                Télécharger un rapport
             </button>
 
             <ul class="dropdown-menu w-100">
                 <li>
                     <a id="download_diag_word_btn" class="fr-nav__link" hx-get="{% url 'project:report_download' project.pk %}" hx-target="#diag_word_form" href="#" data-fr-opened="false" aria-controls="fr-modal-download-word">
-                        Word
+                        Analyse complète
                     </a>
                 </li>
                 <li>
+                    <div class="text-muted fr-nav__link">
+                        Rapport local
+                        <p class="fr-badge fr-badge--new fr-badge--sm">Bientôt disponible</p>
+                    </div>
+                </li>
+                <li>
                     <a id="download_diag_excel_btn" class="fr-nav__link" href="{% url 'project:export-excel' project.pk %}">
-                        Excel
+                        Format Excel
                     </a>
                 </li>
             </ul>

@@ -1,6 +1,7 @@
 import logging
 
 from django.core.management.base import BaseCommand
+from django.db import connection
 from django.db.models import F, Q
 
 from public_data.models import (
@@ -105,7 +106,7 @@ class Command(BaseCommand):
             .filter(
                 is_artificial=True,
                 year=city.last_millesime,
-                departement_id=city.departement_id,
+                departement=city.departement.source_id,
             )
             .aggregate(surface_artif=cast_sum_area("intersection_area"))["surface_artif"]
         )
@@ -124,20 +125,50 @@ class Command(BaseCommand):
 
     def build_commune_sol(self, city: Commune):
         CommuneSol.objects.filter(city=city).delete()
-        qs = (
-            Ocsge.objects.intersect(city.mpoly)
-            .filter(departement_id=city.departement_id)
-            .exclude(matrix=None)
-            .values("matrix_id", "year")
-            .annotate(surface=cast_sum_area("intersection_area"))
-        )
-        CommuneSol.objects.bulk_create([CommuneSol(city=city, **_) for _ in qs])
+        with connection.cursor() as cursor:
+            cursor.execute(
+                sql="""
+                INSERT INTO public_data_communesol (
+                    city_id,
+                    year,
+                    matrix_id,
+                    surface
+                )
+                SELECT
+                    com.id AS city_id,
+                    o.year,
+                    matrix.id AS matrix_id,
+                    St_Area(ST_Union(ST_Intersection(
+                        ST_Transform(com.mpoly, com.srid_source),
+                        ST_Transform(o.mpoly, o.srid_source)))
+                    ) / 10000 AS surface
+                FROM
+                    public_data_commune AS com
+                LEFT JOIN
+                    public_data_ocsge AS o ON
+                    ST_Intersects(com.mpoly, o.mpoly)
+                LEFT JOIN
+                    public_data_couverturesol AS cs ON
+                    o.couverture = cs.code_prefix
+                LEFT JOIN
+                    public_data_usagesol AS us ON
+                    o.usage = us.code_prefix
+                LEFT JOIN
+                    public_data_couvertureusagematrix AS matrix ON
+                    matrix.couverture_id = cs.id AND
+                    matrix.usage_id = us.id
+                WHERE
+                    com.insee = %s
+                GROUP BY com.insee, com.id, o.year, o.couverture, o.usage, matrix.id, cs.code_prefix, us.code_prefix
+            """,
+                params=[city.insee],
+            )
 
-    def build_commune_diff(self, city):
+    def build_commune_diff(self, city: Commune):
         CommuneDiff.objects.filter(city=city).delete()
         qs = (
             OcsgeDiff.objects.intersect(city.mpoly)
-            .filter(departement_id=city.departement_id)
+            .filter(departement=city.departement.source_id)
             .values("year_old", "year_new")
             .annotate(
                 new_artif=cast_sum_area("intersection_area", filter=Q(is_new_artif=True)),

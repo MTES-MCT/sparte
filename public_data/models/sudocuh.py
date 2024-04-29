@@ -9,6 +9,9 @@ class DocumentUrbanismeChoices(models.TextChoices):
     PLUi = "PLUi", "Plan local d'urbanisme intercommunal"
     PLUiS = "PLUiS", "Plan local d'urbanisme intercommunal simplifié"
 
+    @classmethod
+    def as_string(cls):
+        return ", ".join(map(lambda choice: choice[0], cls.choices))
 
 class Sudocuh(models.Model):
     code_insee = models.CharField(max_length=200, primary_key=True)
@@ -29,7 +32,7 @@ class Sudocuh(models.Model):
         "Code état",
         max_length=2,
         help_text=(
-            "Sur 2 caracteres, le premier codifie le document opposable "
+            "Sur 2 caracteres, le premier codifie le document opposable"
             "(1-CC, 2-POS, 3-PLU, 9-RNU), "
             "le 2e caractere codifie le type de DU de la procédure en cours "
             "(1-CC, 3-PLU, 9- Aucune procédure en cours)"
@@ -38,15 +41,18 @@ class Sudocuh(models.Model):
     du_opposable = models.CharField(
         "Document d'urbanisme opposable",
         max_length=200,
-        help_text="DU opposable sur la commune (RNU, CC, POS, PLU, PLUi ou PLUiS)",
+        help_text=(
+            f"Document d'urbanisme actuellement en vigueur sur la commune ({DocumentUrbanismeChoices.as_string()})"
+            "Valeur par défaut est RNU. Voir le commentaire sur data.gouv pour plus d'informations :"
+            "https://www.data.gouv.fr/en/datasets/planification-nationale-des-documents-durbanisme-plu-plui-cc-rnu-donnees-sudocuh-dernier-etat-des-lieux-annuel-au-31-decembre-2023/#/discussions:~:text=Claire%20Chaine,pour%20votre%20alerte"  # noqa: E501
+        ),
         choices=DocumentUrbanismeChoices.choices,
-        blank=True,
-        null=True,
+        default=DocumentUrbanismeChoices.RNU,
     )
     du_en_cours = models.CharField(
         "Document d'urbanisme en cours",
         max_length=200,
-        help_text="DU en cours sur la commune (Aucun, CC, PLU, PLUi ou PLUiS)",
+        help_text=f"Document d'urbanisme en cours de création / révision ({DocumentUrbanismeChoices.as_string()})",
         choices=DocumentUrbanismeChoices.choices,
         blank=True,
         null=True,

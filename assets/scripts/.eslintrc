@@ -4,7 +4,10 @@
         "node": true
     },
     "parser": "@babel/eslint-parser",
-    "extends": ["airbnb/base"],
+    "extends": [
+        "airbnb/base",
+        "plugin:react/recommended"
+    ],
     "parserOptions": {
         "requireConfigFile": false
     },
@@ -20,7 +23,7 @@
         "no-unreachable": ["error"],
         "no-unexpected-multiline": ["error"],
         "brace-style": ["error", "allman"],
-        "import/extensions": ["error", "always"],
+        "import/extensions": ["error", "ignorePackages"],
         "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }],
         "no-nested-ternary": "off",
         "no-new": "off"

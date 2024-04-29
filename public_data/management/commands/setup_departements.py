@@ -31,7 +31,7 @@ class Command(BaseCommand):
         logger.info("Departements and communes OCSGE properties resetted")
 
         sources = DataSource.objects.filter(
-            productor=DataSource.ProductorChoices.IGN,
+            productor=DataSource.ProductorChoices.MDA,
             dataset=DataSource.DatasetChoices.OCSGE,
         )
 

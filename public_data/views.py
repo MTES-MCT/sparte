@@ -207,10 +207,7 @@ class OcsgeViewSet(OnlyBoundingBoxMixin, ZoomSimplificationMixin, OptimizedMixin
     queryset = models.Ocsge.objects.all()
     serializer_class = serializers.OcsgeSerializer
     optimized_fields = {
-        # "o.id": "id",
-        "o.couverture_label": "couverture_label",
         "o.couverture": "code_couverture",
-        "o.usage_label": "usage_label",
         "o.usage": "code_usage",
         "o.surface": "surface",
         "o.year": "year",
@@ -229,20 +226,11 @@ class OcsgeViewSet(OnlyBoundingBoxMixin, ZoomSimplificationMixin, OptimizedMixin
             qs = qs.filter(year=year)
         return qs
 
-    def clean_surface(self, value):
-        try:
-            value = value / 10000
-            value = int(value * 100) / 100
-        except TypeError:
-            value = 0
-        return value
-
     def get_sql_from(self):
         from_parts = [
             super().get_sql_from(),
-            "INNER JOIN public_data_couvertureusagematrix pdcum ON o.matrix_id = pdcum.id",
-            "INNER JOIN public_data_couverturesol pdcs ON pdcum.couverture_id = pdcs.id",
-            "INNER JOIN public_data_usagesol pdus ON pdcum.usage_id = pdus.id",
+            "INNER JOIN public_data_couverturesol pdcs ON o.couverture = pdcs.code_prefix",
+            "INNER JOIN public_data_usagesol pdus ON o.usage = pdus.code_prefix",
         ]
         return " ".join(from_parts)
 
@@ -265,18 +253,15 @@ class OcsgeViewSet(OnlyBoundingBoxMixin, ZoomSimplificationMixin, OptimizedMixin
 
 
 class OcsgeDiffViewSet(ZoomSimplificationMixin, OptimizedMixins, DataViewSet):
+    # TODO : replace subqueries below by frontend logic
     queryset = models.OcsgeDiff.objects.all()
     serializer_class = serializers.OcsgeDiffSerializer
     optimized_fields = {
         # "o.id": "id",
-        "cs_new": "couverture_new",
-        "cs_old": "couverture_old",
-        "us_new": "usage_new",
-        "us_old": "usage_old",
-        "CONCAT(cs_old, ' ', cs_old_label)": "cs_old",
-        "CONCAT(us_old, ' ', us_old_label)": "us_old",
-        "CONCAT(cs_new, ' ', cs_new_label)": "cs_new",
-        "CONCAT(us_new, ' ', us_new_label)": "us_new",
+        "(SELECT code_prefix || ' ' || label_short FROM public_data_couverturesol AS pdcs WHERE pdcs.code_prefix = cs_old)": "cs_old",  # noqa: E501
+        "(SELECT code_prefix || ' ' || label_short FROM public_data_usagesol AS pdus WHERE pdus.code_prefix = us_old)": "us_old",  # noqa: E501
+        "(SELECT code_prefix || ' ' || label_short FROM public_data_couverturesol AS pdcs WHERE pdcs.code_prefix = cs_new)": "cs_new",  # noqa: E501
+        "(SELECT code_prefix || ' ' || label_short FROM public_data_usagesol AS pdus WHERE pdus.code_prefix = us_new)": "us_new",  # noqa: E501
         "year_new": "year_new",
         "year_old": "year_old",
         "is_new_artif": "is_new_artif",
@@ -393,7 +378,7 @@ class ArtificialAreaViewSet(OnlyBoundingBoxMixin, ZoomSimplificationMixin, Optim
     def get_sql_from(self):
         sql_from = [
             f"FROM {self.queryset.model._meta.db_table} o",
-            f"INNER JOIN {models.Commune._meta.db_table} c ON o.city_id = c.id",
+            f"INNER JOIN {models.Commune._meta.db_table} c ON o.city = c.insee",
             "INNER JOIN (SELECT ST_MakeEnvelope(%s, %s, %s, %s, 4326) as box) as b",
             "ON ST_Intersects(o.mpoly, b.box)",
         ]

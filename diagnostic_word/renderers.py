@@ -69,7 +69,7 @@ class ReprDetailArtif:
     total_renat = None
 
     def __init__(self, item):
-        self.label = f"{item['code_prefix'] } {item['label_short']}"
+        self.label = item["code_prefix"]
         self.artif = str(round(item["artif"], 1))
         self.renat = str(round(item["renat"], 1))
         if self.total_artif > 0:
