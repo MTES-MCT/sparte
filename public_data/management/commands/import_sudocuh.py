@@ -11,6 +11,7 @@ from public_data.storages import DataStorage
 logger = logging.getLogger("management.commands")
 
 
+
 def empty_string_to_none(value: str):
     if not isinstance(value, str):
         raise ValueError(f"Value must be a string, got {type(value)}")
@@ -41,11 +42,11 @@ class Command(BaseCommand):
     Data downloaded from:
     https://www.data.gouv.fr/en/datasets/planification-nationale-des-documents-durbanisme-plu-plui-cc-rnu-donnees-sudocuh-dernier-etat-des-lieux-annuel-au-31-decembre-2023/ # noqa: E501
     """
-
     help = "Import Sudocuh data from a csv file"
 
     def add_arguments(self, parser):
         parser.add_argument(
+
             "--filename",
             type=str,
             help="filename you want to import",
@@ -164,3 +165,4 @@ class Command(BaseCommand):
         created_sudocuh = Sudocuh.objects.bulk_create(objects_to_create)
 
         logger.info(f"Created {len(created_sudocuh)} Sudocuh data")
+
