@@ -79,7 +79,3 @@ class CouvertureChangeWheelChart(ProjectChart):
             for _ in self.data
             if _[f"{self.prefix}_old"] != _[f"{self.prefix}_new"]
         ]
-
-
-class CouvertureChangeWheelChartExport(CouvertureChangeWheelChart):
-    pass
