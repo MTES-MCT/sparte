@@ -345,7 +345,6 @@ class ProjectReportArtifView(ProjectReportBaseView):
         artif_area = project.get_artif_area()
         rate_artif_area = round(100 * float(artif_area) / float(total_surface))
 
-        chart_evolution_artif = charts.AnnualArtifChart(project)
         chart_waterfall = charts.ArtifWaterfallChart(project)
 
         progression_time_scoped = chart_waterfall.get_series()
@@ -359,7 +358,7 @@ class ProjectReportArtifView(ProjectReportBaseView):
             net_artif_rate = 0
             net_artif = "0"
 
-        table_evolution_artif = chart_evolution_artif.get_series()
+        table_evolution_artif = charts.AnnualArtifChart(project).get_series()
         headers_evolution_artif = table_evolution_artif["Artificialisation"].keys()
 
         chart_comparison = charts.NetArtifComparaisonChart(project, level=level)
