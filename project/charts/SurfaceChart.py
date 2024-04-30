@@ -50,4 +50,14 @@ class SurfaceChartExport(SurfaceChart):
                     f"({self.project.analyse_start_date} - {self.project.analyse_end_date})"
                 )
             },
+            "plotOptions": {
+                "column": {
+                    "dataLabels": {
+                        "enabled": True,
+                        "format": "{point.y:,.1f} ha",
+                        "allowOverlap": True,
+                    },
+                    "pointPadding": 0.3,
+                }
+            },
         }
