@@ -2,7 +2,12 @@
 
 Ce changelog suit la méthode "keep a changelog" disponible ici: [https://keepachangelog.com/en/1.0.0/](https://keepachangelog.com/en/1.0.0/)
 
-## [5.0] Nouveaux départements OCS GE
+## [5.1] Rapport Local - 2024.04.30
+
+### Ajouté
+- Nouvelle landing page dédiée au rapport local [#306](https://github.com/MTES-MCT/sparte/pull/306)
+
+## [5.0] Nouveaux départements OCS GE - 2024.04.29
 
 ### Ajouté
 - Nouvelles données OCS GE pour les départements [#233](https://github.com/MTES-MCT/sparte/pull/233) :
