@@ -1,6 +1,5 @@
 __all__ = [
     "AnnualArtifChart",
-    "AnnualArtifChartExport",
     "AnnualConsoByDeterminantChart",
     "AnnualConsoByDeterminantChartExport",
     "AnnualConsoByHouseholdChart",
@@ -50,7 +49,7 @@ __all__ = [
     "NetArtifComparaisonChart",
 ]
 
-from .AnnualArtifChart import AnnualArtifChart, AnnualArtifChartExport
+from .AnnualArtifChart import AnnualArtifChart
 from .AnnualConsoByDeterminantChart import (
     AnnualConsoByDeterminantChart,
     AnnualConsoByDeterminantChartExport,

@@ -1,5 +1,5 @@
 from project.charts.base_project_chart import ProjectChart
-from project.charts.constants import DEFAULT_VALUE_DECIMALS, OCSGE_CREDITS
+from project.charts.constants import DEFAULT_VALUE_DECIMALS
 
 
 class AnnualArtifChart(ProjectChart):
@@ -20,7 +20,7 @@ class AnnualArtifChart(ProjectChart):
         "legend": {"layout": "horizontal", "align": "center", "verticalAlign": "top"},
         "plotOptions": {
             "column": {
-                "dataLabels": {"enabled": True, "format": "{point.y:,.1f}"},
+                "dataLabels": {"enabled": True, "format": "{point.y:,.1f} ha"},
                 "pointPadding": 0.2,
                 "borderWidth": 0,
             }
@@ -68,17 +68,3 @@ class AnnualArtifChart(ProjectChart):
             # type="line",
             color="#0000ff",
         )
-
-
-class AnnualArtifChartExport(AnnualArtifChart):
-    @property
-    def param(self):
-        return super().param | {
-            "credits": OCSGE_CREDITS,
-            "title": {
-                "text": (
-                    f"Evolution de l'artificialisation de {self.project.territory_name}"
-                    f" entre {self.project.analyse_start_date} et {self.project.analyse_end_date} (en ha)"
-                )
-            },
-        }
