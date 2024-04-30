@@ -1,0 +1,140 @@
+{% extends "index.html" %}
+
+{% load static %}
+{% load sri %}
+
+{% block pagetitle %}Accueil{% endblock pagetitle %}
+
+{% block headers %}
+{% sri_static "home/css/home.css" %}
+{% endblock headers %}
+
+{% block body_class %}home{% endblock body_class %}
+
+<!-- Hide breadcrumbs on home page -->
+{% block breadcrumbs %}
+{% endblock breadcrumbs %}
+
+{% block content %}
+<section class="section-blue section-main">
+  <div class="fr-container">
+    <div class="fr-grid-row fr-grid-row--gutters fr-py-6w">
+      <div class="fr-col fr-col-12 fr-col-md-9">
+        <h1 class="fr-mb-0">Préparer le rapport local de suivi de l’artificialisation des sols avec Mon Diag Artif</h1>
+      </div>
+      <div class="fr-col fr-col-12 fr-col-md-8">
+        <p>Notre équipe travaille en partenariat avec la DGALN à la production automatique d'une trame pré-remplie du rapport local de suivi de l’artificialisation des sols de votre territoire.</p>
+        <p class="fr-badge fr-badge--new fr-badge--sm text-dark">Bientôt disponible</p>
+        <form hx-post="{% url 'home:nwl-subscription' %}" class="fr-mt-2w">
+          {% csrf_token %}
+          <div class="fr-input-group">
+            <label class="fr-label" for="newsletter-email">
+              Inscrivez-vous à notre lettre d'infos pour être notifié de la mise en ligne du rapport local
+            </label>
+            <div class="fr-input-wrap fr-input-wrap--addon">
+              <input class="fr-input" title="Votre adresse électronique (ex. : nom@domaine.fr)" autocomplete="email" attributes="[object Object]" aria-describedby="newsletter-email-hint-text newsletter-email-messages" placeholder="Votre adresse électronique (ex. : nom@domaine.fr)" id="newsletter-email" type="email" name="email">
+              <button class="fr-btn" id="newsletter-button" title="S'abonner à notre lettre d'information" type="submit">
+                S'abonner
+              </button>
+            </div>
+            <div class="fr-messages-group" id="newsletter-email-messages" aria-live="assertive"></div>
+          </div>
+          <p id="newsletter-email-hint-text" class="fr-hint-text">En renseignant votre adresse électronique, vous acceptez de recevoir nos actualités par courriel. Vous pouvez vous désinscrire à tout moment à l'aide des liens de désinscription ou en nous contactant.</p>
+        </form>
+        {% comment %} {% include "project/partials/search.html" %} {% endcomment %}
+      </div>
+    </div>
+  </div>
+  <div id="hero-anim-map-container">
+    <img src="{% static 'home/img/OCSGE.png' %}" id="hero-anim-map" alt="">
+  </div>
+</section>
+
+<section class="fr-py-6w">
+  <div class="fr-container">
+    <h4>Que doit contenir ce rapport ?</h4>
+    <div class="fr-tile fr-tile--sm fr-tile--horizontal">
+      <div class="fr-tile__body d-flex justify-content-between">
+        <div class="fr-tile__content">
+          <h3 class="fr-tile__title">
+            1° La consommation des espaces naturels, agricoles et forestiers, exprimée en nombre d'hectares, le cas échéant en la différenciant entre ces types d'espaces, et en pourcentage au regard de la superficie du territoire couvert.
+          </h3>
+          <p class="fr-tile__desc">
+            Sur le même territoire, le rapport peut préciser également la transformation effective d'espaces urbanisés ou construits en espaces naturels, agricoles et forestiers du fait d'une renaturation.
+          </p>
+          <p class="fr-tile__detail text-default-success">
+            Indicateur obligatoire. Disponible sur Mon Diag Artif d'ici juin 2024, France Métropolitaine, Corse et DROM (sauf Mayotte).
+          </p>
+        </div>
+        <div class="d-flex align-items-center fr-tile__icon fr-ml-7w"><img src="{% static 'project/img/success_icon.png' %}" class="w-100" /></div>
+      </div>
+    </div>
+    <div class="fr-tile fr-tile--sm fr-tile--horizontal fr-mt-3w">
+      <div class="fr-tile__body d-flex justify-content-between">
+        <div class="fr-tile__content">
+          <h3 class="fr-tile__title">
+            2° Le solde entre les surfaces artificialisées et les surfaces désartificialisées,
+          </h3>
+          <p class="fr-tile__desc">
+            telles que définies dans la nomenclature annexée à l'<a rel="noopener noreferrer" target="_blank" href="https://www.legifrance.gouv.fr/affichCodeArticle.do?cidTexte=LEGITEXT000006074075&idArticle=LEGIARTI000045729062&dateTexte=&categorieLien=cid">article R. 101-1 du code de l'urbanisme</a>.
+          </p>
+          <p class="fr-tile__detail text-default-error">
+            Indicateur non obligatoire. Bientôt disponible sur Mon Diag Artif, pour les territoires avec l'OCS GE.
+          </p>
+        </div>
+        <div class="d-flex align-items-center fr-tile__icon fr-ml-7w"><img src="{% static 'project/img/close_icon.png' %}" class="w-100" /></div>
+      </div>
+    </div>
+    <div class="fr-tile fr-tile--sm fr-tile--horizontal fr-mt-3w">
+      <div class="fr-tile__body d-flex justify-content-between">
+        <div class="fr-tile__content">
+          <h3 class="fr-tile__title">
+            3° Les surfaces dont les sols ont été rendus imperméables,
+          </h3>
+          <p class="fr-tile__desc">
+            au sens des 1° et 2° de la nomenclature annexée à <a rel="noopener noreferrer" target="_blank" href="https://www.legifrance.gouv.fr/affichCodeArticle.do?cidTexte=LEGITEXT000006074075&idArticle=LEGIARTI000045729062&dateTexte=&categorieLien=cid">l'article R. 101-1 du code de l'urbanisme</a>.
+          </p>
+          <p class="fr-tile__detail text-default-error">
+            Indicateur non obligatoire. Bientôt disponible sur Mon Diag Artif, pour les territoires avec l'OCS GE.
+          </p>
+        </div>
+        <div class="d-flex align-items-center fr-tile__icon fr-ml-7w"><img src="{% static 'project/img/close_icon.png' %}" class="w-100" /></div>
+      </div>
+    </div>
+    <div class="fr-tile fr-tile--sm fr-tile--horizontal fr-mt-3w">
+      <div class="fr-tile__body d-flex justify-content-between">
+        <div class="fr-tile__content">
+          <h3 class="fr-tile__title">
+            4° L'évaluation du respect des objectifs de réduction de la consommation d'espaces naturels, agricoles et forestiers et de lutte contre l'artificialisation des sols fixés dans les documents de planification et d'urbanisme.
+          </h3>
+          <p class="fr-tile__desc">
+            Les documents de planification sont ceux énumérés au <a rel="noopener noreferrer" target="_blank" href="https://www.legifrance.gouv.fr/affichCodeArticle.do?cidTexte=LEGITEXT000006074075&idArticle=LEGIARTI000045729062&dateTexte=&categorieLien=cid">III de l'article R. 101-1 du code de l'urbanisme</a>.
+          </p>
+          <p class="fr-tile__detail text-default-error">
+            Indicateur non obligatoire. Non prévu dans Mon Diag Artif.
+          </p>
+        </div>
+        <div class="d-flex align-items-center fr-tile__icon fr-ml-7w"><img src="{% static 'project/img/close_icon.png' %}" class="w-100" /></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="fr-py-6w section-legal">
+  <div class="fr-container">
+    <h2>Cadre réglementaire</h2>
+    <div class="fr-grid-row fr-grid-row--gutters">
+      <div class="fr-col-md-12">
+        <p class="fr-text--sm">Le rapport local triennal détaillé à l’<a rel="noopener noreferrer" target="_blank" href="https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000048470630">article R. 2231-1 du code général des collectivités territoriales</a> permet de mesurer et de communiquer régulièrement au sujet du rythme de l’artificialisation des sols, afin d’anticiper et de suivre la trajectoire et sa réduction.</p>
+        <p class="fr-pr-3w fr-text--sm fw-bold"><span class="fr-icon-check-line fr-mr-1w" aria-hidden="true"></span>
+          Cette trajectoire est mesurée, pour la période 2021-2031, en consommation d’espaces NAF (naturels, agricoles et forestiers), définie comme « la création ou l'extension effective d'espaces urbanisés sur le territoire concerné » (<a rel="noopener noreferrer" target="_blank" href="https://www.legifrance.gouv.fr/jorf/article_jo/JORFARTI000043957223">article 194, III, 5° de la loi Climat et résilience</a>).
+        </p>
+        <p class="fr-pr-3w fr-text--sm fw-bold"><span class="fr-icon-check-line fr-mr-1w" aria-hidden="true"></span>
+          A partir de 2031, cette trajectoire est également mesurée en artificialisation nette des sols, définie comme « le solde de l'artificialisation et de la renaturation des sols constatées sur un périmètre et sur une période donnés » (<a rel="noopener noreferrer" target="_blank" href="https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000043967077/2023-09-04">article L.101-2-1 du code de l’urbanisme</a>).
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+{% include  "home/partials/newsletter_form.html" %}
+{% endblock content %}
