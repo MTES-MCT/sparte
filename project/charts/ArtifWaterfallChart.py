@@ -4,29 +4,32 @@ from project.charts.constants import DEFAULT_VALUE_DECIMALS, OCSGE_CREDITS
 
 class ArtifWaterfallChart(ProjectChart):
     name = "Evolution de l'artificialisation"
-    param = {
-        "chart": {"type": "waterfall"},
-        "title": {"text": "Total pour l'ensemble du territoire du diagnostic"},
-        "yAxis": {
-            "title": {"text": "Surface (en ha)"},
-        },
-        "tooltip": {
-            "pointFormat": "{point.y}",
-            "valueSuffix": " Ha",
-            "valueDecimals": DEFAULT_VALUE_DECIMALS,
-            "headerFormat": "<b>{point.key}</b><br/>",
-        },
-        "xAxis": {"type": "category"},
-        "legend": {"enabled": False},
-        "plotOptions": {
-            "column": {
-                "dataLabels": {"enabled": True, "format": "{point.y:,.1f}"},
-                "pointPadding": 0.2,
-                "borderWidth": 0,
-            }
-        },
-        "series": [],
-    }
+
+    @property
+    def param(self):
+        return super().param | {
+            "chart": {"type": "waterfall"},
+            "title": {"text": "Total pour l'ensemble du territoire du diagnostic"},
+            "yAxis": {
+                "title": {"text": "Surface (en ha)"},
+            },
+            "tooltip": {
+                "pointFormat": "{point.y}",
+                "valueSuffix": " Ha",
+                "valueDecimals": DEFAULT_VALUE_DECIMALS,
+                "headerFormat": "<b>{point.key}</b><br/>",
+            },
+            "xAxis": {"type": "category"},
+            "legend": {"enabled": False},
+            "plotOptions": {
+                "column": {
+                    "dataLabels": {"enabled": True, "format": "{point.y:,.1f}"},
+                    "pointPadding": 0.2,
+                    "borderWidth": 0,
+                }
+            },
+            "series": [],
+        }
 
     def get_series(self):
         if not self.series:
