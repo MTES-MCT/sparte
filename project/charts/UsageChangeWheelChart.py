@@ -14,7 +14,7 @@ class UsageChangeWheelChart(CouvertureChangeWheelChart):
         return super().param | {
             "title": {
                 "text": (
-                    "Matrice d'évolution de l'usage des sols de"
+                    "Matrice d'évolution de l'usage des sols de "
                     f"{self.project.first_year_ocsge} à {self.project.last_year_ocsge}"
                 )
             },
