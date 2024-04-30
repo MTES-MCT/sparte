@@ -13,6 +13,7 @@ class DocumentUrbanismeChoices(models.TextChoices):
     def as_string(cls):
         return ", ".join(map(lambda choice: choice[0], cls.choices))
 
+
 class Sudocuh(models.Model):
     code_insee = models.CharField(max_length=200, primary_key=True)
     code_departement = models.CharField(max_length=200)
