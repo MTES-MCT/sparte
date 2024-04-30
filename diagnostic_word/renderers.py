@@ -156,14 +156,14 @@ class BaseRenderer:
         current_conso = diagnostic.get_bilan_conso_time_scoped()
 
         # Consommation des communes
-        chart_conso_cities = charts.ConsoCommuneChart(diagnostic, level=diagnostic.level)
+        chart_conso_cities = charts.AnnualConsoChartExport(diagnostic, level=diagnostic.level)
 
         # comparison charts
         nb_neighbors = diagnostic.nb_look_a_like
         voisins = list()
         if nb_neighbors > 0:
-            comparison_chart = charts.ConsoChart(diagnostic)
-            comparison_relative_chart = charts.ConsoComparisonChart(diagnostic)
+            comparison_chart = charts.AnnualConsoComparisonChartExport(diagnostic)
+            comparison_relative_chart = charts.AnnualConsoProportionalComparisonChartExport(diagnostic)
             voisins = diagnostic.get_look_a_like()
             context.update(
                 {
@@ -181,8 +181,8 @@ class BaseRenderer:
             )
 
         # Déterminants
-        det_chart = charts.DeterminantPerYearChart(diagnostic)
-        pie_det_chart = charts.DeterminantPieChart(diagnostic)
+        det_chart = charts.AnnualConsoByDeterminantChartExport(diagnostic)
+        pie_det_chart = charts.ConsoByDeterminantPieChartExport(diagnostic)
 
         # déterminant table, add total line and column
         det_data_table: Dict = {}
@@ -196,7 +196,7 @@ class BaseRenderer:
         det_data_table["Total"] = total
 
         # projection ZAN 2031
-        objective_chart = charts.ObjectiveChart(diagnostic)
+        objective_chart = charts.ObjectiveChartExport(diagnostic)
 
         url_diag = get_url_with_domain(diagnostic.get_absolute_url())
 
@@ -226,11 +226,11 @@ class BaseRenderer:
             "projection_zan_annuelle_objectif": round(objective_chart.annual_objective_2031),
         }
 
-        surface_chart = charts.SurfaceChart(diagnostic)
-        pop_chart = charts.PopChart(diagnostic)
-        conso_comparison_pop_chart = charts.ConsoComparisonPopChart(diagnostic)
-        household_chart = charts.HouseholdChart(diagnostic)
-        conso_comparison_household_chart = charts.ConsoComparisonHouseholdChart(diagnostic)
+        surface_chart = charts.SurfaceChartExport(diagnostic)
+        pop_chart = charts.AnnualPopChartExport(diagnostic)
+        conso_comparison_pop_chart = charts.AnnualConsoByPopChartExport(diagnostic)
+        household_chart = charts.AnnualHouseholdChartExport(diagnostic)
+        conso_comparison_household_chart = charts.AnnualConsoByHouseholdChartExport(diagnostic)
 
         context |= {
             "surface_chart": self.prep_chart(surface_chart),
@@ -262,8 +262,8 @@ class BaseRenderer:
             )
 
             SolInterface.surface_territory = surface_territory
-            donut_usage = charts.UsageSolPieChart(diagnostic)
-            graphique_usage = charts.UsageSolProgressionChart(diagnostic)
+            donut_usage = charts.UsagePieChartExport(diagnostic)
+            graphique_usage = charts.UsageProgressionChartExport(diagnostic)
             usage_data = [SolInterface(i) for i in graphique_usage.get_series()]
 
             context.update(
@@ -290,8 +290,8 @@ class BaseRenderer:
                     }
                 )
 
-            donut_couverture = charts.CouvertureSolPieChart(diagnostic)
-            graphique_couverture = charts.CouvertureSolProgressionChart(diagnostic)
+            donut_couverture = charts.CouverturePieChartExport(diagnostic)
+            graphique_couverture = charts.CouvertureProgressionChartExport(diagnostic)
             couverture_data = [SolInterface(i) for i in graphique_couverture.get_series()]
             context.update(
                 {
@@ -317,7 +317,7 @@ class BaseRenderer:
                     }
                 )
             # paragraphe 3.2.1
-            chart_waterfall = charts.WaterfallnArtifChart(diagnostic)
+            chart_waterfall = charts.ArtifWaterfallChartExport(diagnostic)
             waterfall_series = chart_waterfall.get_series()
             total_artif = diagnostic.get_artif_area()
             artif_net = waterfall_series["net_artif"]
@@ -337,7 +337,7 @@ class BaseRenderer:
                 }
             )
             # paragraphe 3.2.2
-            detail_artif_chart = charts.DetailCouvArtifChart(diagnostic)
+            detail_artif_chart = charts.ArtifProgressionByCouvertureChartExport(diagnostic)
             ReprDetailArtif.total_artif = artificialisation
             ReprDetailArtif.total_renat = renaturation
 
@@ -375,8 +375,8 @@ class BaseRenderer:
                 }
             )
             # paragraphe 3.2.4
-            couv_artif_sol = charts.ArtifCouvSolPieChart(diagnostic)
-            usage_artif_sol = charts.ArtifUsageSolPieChart(diagnostic)
+            couv_artif_sol = charts.ArtifByCouverturePieChartExport(diagnostic)
+            usage_artif_sol = charts.ArtifByUsagePieChartExport(diagnostic)
             context.update(
                 {
                     "graphique_determinant_couv_artif": self.prep_image(
