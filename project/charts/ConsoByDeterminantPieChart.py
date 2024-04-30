@@ -16,7 +16,7 @@ class ConsoByDeterminantPieChart(ProjectChart):
                 "cursor": "pointer",
                 "dataLabels": {
                     "enabled": True,
-                    "format": "{point.name}",
+                    "format": "{point.name} : {point.y:.1f} Ha",
                 },
             }
         },
