@@ -70,12 +70,19 @@ class AnnualConsoChart(ProjectChart):
 class AnnualConsoChartExport(AnnualConsoChart):
     @property
     def param(self):
+        if self.project.land_type == AdminRef.COMMUNE:
+            title = (
+                f"Consommation d'espace à {self.project.territory_name} "
+                f"entre {self.project.analyse_start_date} et {self.project.analyse_end_date} (en ha)"
+            )
+        else:
+            title = (
+                f"Consommation d'espace des communes composant {self.project.territory_name} "
+                f"entre {self.project.analyse_start_date} et {self.project.analyse_end_date} (en ha)"
+            )
         return super().param | {
+            "title": {"text": title},
             "credits": CEREMA_CREDITS,
-            "title": {
-                "text": (
-                    f"Consommation anuelle d'espace de {self.project.territory_name}"
-                    f"entre {self.project.analyse_start_date} et {self.project.analyse_end_date} (en ha)"
-                )
-            },
+            "chart": {"type": "column"},
+            "plotOptions": {"area": {"stacking": None}},
         }
