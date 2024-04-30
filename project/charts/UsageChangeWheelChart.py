@@ -22,7 +22,3 @@ class UsageChangeWheelChart(CouvertureChangeWheelChart):
 
     def get_serie_label(self, code_prefix) -> str:
         return f"{code_prefix} {UsageSol.objects.get(code_prefix=code_prefix).label_short}"
-
-
-class UsageChangeWheelChartExport(UsageChangeWheelChart):
-    pass  # TODO

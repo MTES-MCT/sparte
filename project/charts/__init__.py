@@ -29,7 +29,6 @@ __all__ = [
     "ConsoByDeterminantPieChart",
     "ConsoByDeterminantPieChartExport",
     "CouvertureChangeWheelChart",
-    "CouvertureChangeWheelChartExport",
     "CouverturePieChart",
     "CouverturePieChartExport",
     "CouvertureProgressionChart",
@@ -39,7 +38,6 @@ __all__ = [
     "SurfaceChart",
     "SurfaceChartExport",
     "UsageChangeWheelChart",
-    "UsageChangeWheelChartExport",
     "UsagePieChart",
     "UsagePieChartExport",
     "UsageProgressionChart",
@@ -86,10 +84,7 @@ from .ConsoByDeterminantPieChart import (
     ConsoByDeterminantPieChart,
     ConsoByDeterminantPieChartExport,
 )
-from .CouvertureChangeWheelChart import (
-    CouvertureChangeWheelChart,
-    CouvertureChangeWheelChartExport,
-)
+from .CouvertureChangeWheelChart import CouvertureChangeWheelChart
 from .CouverturePieChart import CouverturePieChart, CouverturePieChartExport
 from .CouvertureProgressionChart import (
     CouvertureProgressionChart,
@@ -98,7 +93,7 @@ from .CouvertureProgressionChart import (
 from .NetArtifComparaisonChart import NetArtifComparaisonChart
 from .ObjectiveChart import ObjectiveChart, ObjectiveChartExport
 from .SurfaceChart import SurfaceChart, SurfaceChartExport
-from .UsageChangeWheelChart import UsageChangeWheelChart, UsageChangeWheelChartExport
+from .UsageChangeWheelChart import UsageChangeWheelChart
 from .UsagePieChart import UsagePieChart, UsagePieChartExport
 from .UsageProgressionChart import UsageProgressionChart, UsageProgressionChartExport
 
