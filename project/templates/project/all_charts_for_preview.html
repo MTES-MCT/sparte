@@ -1,0 +1,42 @@
+{% extends "index.html" %}
+
+{% load highcharts_tags %}
+{% load static %}
+{% load project_tags %}
+{% load humanize %}
+{% load i18n %}
+{% load l10n %}
+{% load highcharts_tags %}
+{% load sri %}
+
+{% block headers %}
+{% sri_static "project/css/project.css" %}
+{% sri_static "highcharts/js/highcharts.js" %}
+{% sri_static "highcharts/js/highcharts-more.js" %}
+{% sri_static "highcharts/js/exporting.js" %}
+{% sri_static "highcharts/js/sankey.js" %}
+{% sri_static "highcharts/js/dependency-wheel.js" %}
+{% endblock headers %}
+
+{% block content %}
+<div class="row w-100 justify-content-center">
+    <div class="col-12 col-md-8 col-lg-6">
+{% for chart in all_charts %}
+    <h2>{{ chart.classname }}</h2>
+    <div id="{{chart.id}}"></div>
+    {% display_chart chart.id chart CSP_NONCE %}
+{% endfor %}
+    </div>
+</div>
+{% endblock content %}
+
+{% block bodyend %}
+
+{% localize off %}
+{% sri_static "highcharts/js/highcharts.js" %}
+{% sri_static "highcharts/js/highcharts-more.js" %}
+{% sri_static "highcharts/js/exporting.js" %}
+{% french_translation %}
+
+{% endlocalize %}
+{% endblock bodyend %}

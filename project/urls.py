@@ -191,6 +191,11 @@ urlpatterns = [
         name="report_download",
     ),
     path(
+        "<int:pk>/all_charts_for_preview",
+        views.AllChartsForPreview.as_view(),
+        name="all_charts_for_preview",
+    ),
+    path(
         "<int:request_id>/word/telechargement",
         views.DownloadWordView.as_view(),
         name="word_download",
