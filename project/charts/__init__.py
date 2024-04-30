@@ -1,4 +1,6 @@
 __all__ = [
+    "AnnualTotalConsoChart",
+    "AnnualTotalConsoChartExport",
     "AnnualArtifChart",
     "AnnualConsoByDeterminantChart",
     "AnnualConsoByDeterminantChartExport",
@@ -66,6 +68,7 @@ from .AnnualConsoProportionalComparisonChart import (
 )
 from .AnnualHouseholdChart import AnnualHouseholdChart, AnnualHouseholdChartExport
 from .AnnualPopChart import AnnualPopChart, AnnualPopChartExport
+from .AnnualTotalConsoChart import AnnualTotalConsoChart, AnnualTotalConsoChartExport
 from .ArtifByCouverturePieChart import (
     ArtifByCouverturePieChart,
     ArtifByCouverturePieChartExport,
@@ -96,5 +99,3 @@ from .SurfaceChart import SurfaceChart, SurfaceChartExport
 from .UsageChangeWheelChart import UsageChangeWheelChart
 from .UsagePieChart import UsagePieChart, UsagePieChartExport
 from .UsageProgressionChart import UsageProgressionChart, UsageProgressionChartExport
-
-# TODO : remove this line

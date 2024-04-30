@@ -216,6 +216,7 @@ class BaseRenderer:
             "project_scope_nb_years_before_31": diagnostic.nb_years_before_2031,
             "project_scope_forecast_2031": diagnostic.nb_years_before_2031 * current_conso / diagnostic.nb_years,
             # charts
+            "annual_total_conso_chart": self.prep_chart(charts.AnnualConsoChartExport(diagnostic)),
             "chart_conso_communes": self.prep_chart(chart_conso_cities),
             "chart_determinants": self.prep_chart(det_chart),
             "pie_chart_determinants": self.prep_chart(pie_det_chart),
