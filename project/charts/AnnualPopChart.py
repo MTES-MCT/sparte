@@ -1,19 +1,21 @@
 from project.charts.base_project_chart import ProjectChart
-from project.charts.constants import INSEE_CREDITS
+from project.charts.constants import INSEE_CREDITS, LEGEND_NAVIGATION_EXPORT
 
 
 class AnnualPopChart(ProjectChart):
     name = "Project population bar chart"
-    param = {
-        "chart": {"type": "column"},
-        "title": {"text": "Evolution de la population du territoire"},
-        "yAxis": {
-            "title": {"text": "Nouveaux habitants"},
-        },
-        "xAxis": {"type": "category"},
-        "legend": {"layout": "vertical", "align": "right", "verticalAlign": "middle"},
-        "series": [],
-    }
+
+    @property
+    def param(self):
+        return super().param | {
+            "chart": {"type": "column"},
+            "title": {"text": "Evolution de la population du territoire"},
+            "yAxis": {
+                "title": {"text": "Nouveaux habitants"},
+            },
+            "xAxis": {"type": "category"},
+            "series": [],
+        }
 
     def get_options(self, serie_name):
         if serie_name == self.project.name:
@@ -33,6 +35,10 @@ class AnnualPopChartExport(AnnualPopChart):
     def param(self):
         return super().param | {
             "credits": INSEE_CREDITS,
+            "legend": {
+                **super().param["legend"],
+                "navigation": LEGEND_NAVIGATION_EXPORT,
+            },
             "title": {
                 "text": (
                     f"Evolution de la population de {self.project.territory_name} "

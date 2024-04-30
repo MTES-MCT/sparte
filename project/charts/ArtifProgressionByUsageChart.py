@@ -2,7 +2,7 @@ from collections import defaultdict
 
 from django.contrib.gis.geos import MultiPolygon
 
-from project.charts.constants import OCSGE_CREDITS
+from project.charts.constants import LEGEND_NAVIGATION_EXPORT, OCSGE_CREDITS
 from project.models import Project
 from public_data.models import UsageSol
 
@@ -67,6 +67,10 @@ class ArtifProgressionByUsageChartExport(ArtifProgressionByUsageChart):
     def param(self):
         return super().param | {
             "credits": OCSGE_CREDITS,
+            "legend": {
+                **super().param["legend"],
+                "navigation": LEGEND_NAVIGATION_EXPORT,
+            },
             "title": {
                 "text": (
                     f"Evolution de l'artificialisation par type d'usage de {self.project.first_year_ocsge} à"

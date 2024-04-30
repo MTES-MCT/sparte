@@ -9,7 +9,7 @@ class CouverturePieChart(ProjectChart):
 
     @property
     def param(self):
-        return {
+        return super().param | {
             "chart": {"type": "pie"},
             "title": {
                 "text": f"Répartition de la couverture des sols en {self.project.last_year_ocsge}",

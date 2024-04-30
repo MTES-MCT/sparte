@@ -19,3 +19,5 @@ INSEE_CREDITS = {
     "text": "Source : INSEE",
     "style": {"cursor": "initial"},
 }
+
+LEGEND_NAVIGATION_EXPORT = {"enabled": False}

@@ -4,6 +4,7 @@ from project.charts.constants import (
     DEFAULT_HEADER_FORMAT,
     DEFAULT_POINT_FORMAT,
     DEFAULT_VALUE_DECIMALS,
+    LEGEND_NAVIGATION_EXPORT,
 )
 from public_data.models import AdminRef
 
@@ -11,29 +12,22 @@ from public_data.models import AdminRef
 class AnnualConsoChart(ProjectChart):
     name = "conso communes"
 
-    param = {
-        "chart": {"type": "area"},
-        "title": {"text": ""},
-        "yAxis": {"title": {"text": "Consommé (ha)"}},
-        "xAxis": {"type": "category"},
-        "tooltip": {
-            "headerFormat": DEFAULT_HEADER_FORMAT,
-            "pointFormat": DEFAULT_POINT_FORMAT,
-            "valueSuffix": " Ha",
-            "valueDecimals": DEFAULT_VALUE_DECIMALS,
-        },
-        "legend": {
-            "layout": "vertical",
-            "align": "right",
-            "verticalAlign": "bottom",
-            "padding": 3,
-            "margin": 25,
-            "itemMarginTop": 1,
-            "itemMarginBottom": 1,
-        },
-        "plotOptions": {"area": {"stacking": "normal"}},
-        "series": [],
-    }
+    @property
+    def param(self):
+        return super().param | {
+            "chart": {"type": "area"},
+            "title": {"text": ""},
+            "yAxis": {"title": {"text": "Consommé (ha)"}},
+            "xAxis": {"type": "category"},
+            "tooltip": {
+                "headerFormat": DEFAULT_HEADER_FORMAT,
+                "pointFormat": DEFAULT_POINT_FORMAT,
+                "valueSuffix": " Ha",
+                "valueDecimals": DEFAULT_VALUE_DECIMALS,
+            },
+            "plotOptions": {"area": {"stacking": "normal"}},
+            "series": [],
+        }
 
     def __init__(self, *args, **kwargs):
         self.level = kwargs.pop("level", AdminRef.COMMUNE)
@@ -82,6 +76,10 @@ class AnnualConsoChartExport(AnnualConsoChart):
             )
         return super().param | {
             "title": {"text": title},
+            "legend": {
+                **super().param["legend"],
+                "navigation": LEGEND_NAVIGATION_EXPORT,
+            },
             "credits": CEREMA_CREDITS,
             "chart": {"type": "column"},
             "plotOptions": {"area": {"stacking": None}},

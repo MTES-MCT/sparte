@@ -1,4 +1,4 @@
-from project.charts.constants import OCSGE_CREDITS
+from project.charts.constants import LEGEND_NAVIGATION_EXPORT, OCSGE_CREDITS
 from public_data.models import UsageSol
 
 from .ArtifByCouverturePieChart import ArtifByCouverturePieChart
@@ -38,6 +38,10 @@ class ArtifByUsagePieChartExport(ArtifByUsagePieChart):
     def param(self):
         return super().param | {
             "credits": OCSGE_CREDITS,
+            "legend": {
+                **super().param["legend"],
+                "navigation": LEGEND_NAVIGATION_EXPORT,
+            },
             "title": {
                 "text": (
                     f"Surfaces artificialisées par type d'usage en {self.millesime} pour {self.project.territory_name}"
