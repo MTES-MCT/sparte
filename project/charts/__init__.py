@@ -44,8 +44,6 @@ __all__ = [
     "UsagePieChartExport",
     "UsageProgressionChart",
     "UsageProgressionChartExport",
-    "ConsoCommunes",
-    "ConsoCommunesExport",
     "NetArtifComparaisonChart",
 ]
 
@@ -88,7 +86,6 @@ from .ConsoByDeterminantPieChart import (
     ConsoByDeterminantPieChart,
     ConsoByDeterminantPieChartExport,
 )
-from .ConsoCommunes import ConsoCommunes, ConsoCommunesExport
 from .CouvertureChangeWheelChart import (
     CouvertureChangeWheelChart,
     CouvertureChangeWheelChartExport,

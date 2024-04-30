@@ -156,7 +156,7 @@ class BaseRenderer:
         current_conso = diagnostic.get_bilan_conso_time_scoped()
 
         # Consommation des communes
-        chart_conso_cities = charts.ConsoCommunesExport(diagnostic, level=diagnostic.level)
+        chart_conso_cities = charts.AnnualConsoChartExport(diagnostic, level=diagnostic.level)
 
         # comparison charts
         nb_neighbors = diagnostic.nb_look_a_like
