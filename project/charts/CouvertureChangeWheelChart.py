@@ -12,7 +12,7 @@ class CouvertureChangeWheelChart(ProjectChart):
 
     @property
     def param(self):
-        return {
+        return super().param | {
             "chart": {"type": "dependencywheel"},
             "title": {
                 "text": (

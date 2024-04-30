@@ -6,24 +6,27 @@ from project.charts.constants import (
     DEFAULT_HEADER_FORMAT,
     DEFAULT_POINT_FORMAT,
     DEFAULT_VALUE_DECIMALS,
+    LEGEND_NAVIGATION_EXPORT,
 )
 
 
 class AnnualConsoByPopChart(ProjectChart):
     name = "conso comparison"
-    param = {
-        "title": {"text": "Consommation d'espace par nouvel habitant (en ha)"},
-        "yAxis": {"title": {"text": "Consommé (en ha)"}},
-        "tooltip": {
-            "headerFormat": DEFAULT_HEADER_FORMAT,
-            "valueSuffix": " Ha",
-            "valueDecimals": DEFAULT_VALUE_DECIMALS,
-            "pointFormat": DEFAULT_POINT_FORMAT,
-        },
-        "xAxis": {"type": "category"},
-        "legend": {"layout": "vertical", "align": "right", "verticalAlign": "middle"},
-        "series": [],
-    }
+
+    @property
+    def param(self):
+        return super().param | {
+            "title": {"text": "Consommation d'espace par nouvel habitant (en ha)"},
+            "yAxis": {"title": {"text": "Consommé (en ha)"}},
+            "tooltip": {
+                "headerFormat": DEFAULT_HEADER_FORMAT,
+                "valueSuffix": " Ha",
+                "valueDecimals": DEFAULT_VALUE_DECIMALS,
+                "pointFormat": DEFAULT_POINT_FORMAT,
+            },
+            "xAxis": {"type": "category"},
+            "series": [],
+        }
 
     def get_options(self, serie_name):
         if serie_name == self.project.name:
@@ -63,6 +66,10 @@ class AnnualConsoByPopChartExport(AnnualConsoByPopChart):
     def param(self):
         return super().param | {
             "credits": CEREMA_CREDITS,
+            "legend": {
+                **super().param["legend"],
+                "navigation": LEGEND_NAVIGATION_EXPORT,
+            },
             "title": {
                 "text": (
                     f"Consommation annuelle d'espace par nouvel habitant de {self.project.territory_name} "

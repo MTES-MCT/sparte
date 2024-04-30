@@ -4,34 +4,33 @@ from project.charts.constants import (
     DEFAULT_HEADER_FORMAT,
     DEFAULT_POINT_FORMAT,
     DEFAULT_VALUE_DECIMALS,
+    LEGEND_NAVIGATION_EXPORT,
 )
 
 
 class AnnualConsoComparisonChart(ProjectChart):
     name = "conso comparison"
-    param = {
-        "title": {"text": "Consommation d'espace du territoire et des territoires similaires (en ha)"},
-        "subtitle": {
-            "text": (
-                "Proposition de territoires de même maille administrative, "
-                "il est possible de modifier cette selection dans la légende"
-            ),
-        },
-        "yAxis": {"title": {"text": "Consommé (en ha)"}},
-        "xAxis": {"type": "category"},
-        "legend": {
-            "layout": "vertical",
-            "align": "right",
-            "verticalAlign": "middle",
-        },
-        "tooltip": {
-            "headerFormat": DEFAULT_HEADER_FORMAT,
-            "pointFormat": DEFAULT_POINT_FORMAT,
-            "valueSuffix": " Ha",
-            "valueDecimals": DEFAULT_VALUE_DECIMALS,
-        },
-        "series": [],
-    }
+
+    @property
+    def param(self):
+        return super().param | {
+            "title": {"text": "Consommation d'espace du territoire et des territoires similaires (en ha)"},
+            "subtitle": {
+                "text": (
+                    "Proposition de territoires de même maille administrative, "
+                    "il est possible de modifier cette selection dans la légende"
+                ),
+            },
+            "yAxis": {"title": {"text": "Consommé (en ha)"}},
+            "xAxis": {"type": "category"},
+            "tooltip": {
+                "headerFormat": DEFAULT_HEADER_FORMAT,
+                "pointFormat": DEFAULT_POINT_FORMAT,
+                "valueSuffix": " Ha",
+                "valueDecimals": DEFAULT_VALUE_DECIMALS,
+            },
+            "series": [],
+        }
 
     def get_series(self):
         return {
@@ -61,6 +60,10 @@ class AnnualConsoComparisonChartExport(AnnualConsoComparisonChart):
         return super().param | {
             "credits": CEREMA_CREDITS,
             "subtitle": "",
+            "legend": {
+                **super().param["legend"],
+                "navigation": LEGEND_NAVIGATION_EXPORT,
+            },
             "title": {
                 "text": (
                     f"Comparaison de la consommation annuelle d'espace entre {self.project.territory_name} "

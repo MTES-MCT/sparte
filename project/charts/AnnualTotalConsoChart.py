@@ -11,19 +11,21 @@ from public_data.models import AdminRef
 class AnnualTotalConsoChart(ProjectChart):
     name = "conso communes"
 
-    param = {
-        "chart": {"type": "column"},
-        "title": {"text": ""},
-        "yAxis": {"title": {"text": "Consommé (ha)"}},
-        "xAxis": {"type": "category"},
-        "tooltip": {
-            "headerFormat": DEFAULT_HEADER_FORMAT,
-            "pointFormat": DEFAULT_POINT_FORMAT,
-            "valueDecimals": DEFAULT_VALUE_DECIMALS,
-        },
-        "legend": {"enabled": False},
-        "series": [],
-    }
+    @property
+    def param(self):
+        return super().param | {
+            "chart": {"type": "column"},
+            "title": {"text": ""},
+            "yAxis": {"title": {"text": "Consommé (ha)"}},
+            "xAxis": {"type": "category"},
+            "tooltip": {
+                "headerFormat": DEFAULT_HEADER_FORMAT,
+                "pointFormat": DEFAULT_POINT_FORMAT,
+                "valueDecimals": DEFAULT_VALUE_DECIMALS,
+            },
+            "legend": {"enabled": False},
+            "series": [],
+        }
 
     def __init__(self, *args, **kwargs):
         self.level = kwargs.pop("level", AdminRef.COMMUNE)

@@ -10,7 +10,7 @@ class CouvertureProgressionChart(ProjectChart):
 
     @property
     def param(self):
-        return {
+        return super().param | {
             "chart": {"type": "column"},
             "title": {
                 "text": (

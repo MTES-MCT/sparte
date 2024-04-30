@@ -4,28 +4,27 @@ from project.charts.constants import (
     DEFAULT_HEADER_FORMAT,
     DEFAULT_POINT_FORMAT,
     DEFAULT_VALUE_DECIMALS,
+    LEGEND_NAVIGATION_EXPORT,
 )
 
 
 class AnnualConsoProportionalComparisonChart(ProjectChart):
     name = "conso comparison"
-    param = {
-        "title": {"text": "Consommation d'espace proportionnelle à la surface des territoires (‰ - pour mille)"},
-        "yAxis": {"title": {"text": "Proportion (‰ - pour mille)"}},
-        "xAxis": {"type": "category"},
-        "legend": {
-            "layout": "vertical",
-            "align": "right",
-            "verticalAlign": "middle",
-        },
-        "tooltip": {
-            "headerFormat": DEFAULT_HEADER_FORMAT,
-            "pointFormat": DEFAULT_POINT_FORMAT,
-            "valueSuffix": " ‰ (pour mille)",
-            "valueDecimals": DEFAULT_VALUE_DECIMALS,
-        },
-        "series": [],
-    }
+
+    @property
+    def param(self):
+        return super().param | {
+            "title": {"text": "Consommation d'espace proportionnelle à la surface des territoires (‰ - pour mille)"},
+            "yAxis": {"title": {"text": "Proportion (‰ - pour mille)"}},
+            "xAxis": {"type": "category"},
+            "tooltip": {
+                "headerFormat": DEFAULT_HEADER_FORMAT,
+                "pointFormat": DEFAULT_POINT_FORMAT,
+                "valueSuffix": " ‰ (pour mille)",
+                "valueDecimals": DEFAULT_VALUE_DECIMALS,
+            },
+            "series": [],
+        }
 
     def add_series(self):
         self.add_serie(
@@ -56,6 +55,10 @@ class AnnualConsoProportionalComparisonChartExport(AnnualConsoProportionalCompar
     def param(self):
         return super().param | {
             "credits": CEREMA_CREDITS,
+            "legend": {
+                **super().param["legend"],
+                "navigation": LEGEND_NAVIGATION_EXPORT,
+            },
             "title": {
                 "text": (
                     f"Comparaison de la consommation proportionnelle d'espace de {self.project.territory_name} "
