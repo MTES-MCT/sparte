@@ -6,26 +6,30 @@ from project.charts.constants import (
     DEFAULT_HEADER_FORMAT,
     DEFAULT_POINT_FORMAT,
     DEFAULT_VALUE_DECIMALS,
+    LEGEND_NAVIGATION_EXPORT,
 )
 
 
 class AnnualConsoByHouseholdChart(ProjectChart):
     name = "conso comparison"
-    param = {
-        "title": {
-            "text": "Consommation d'espace par nouveau ménage accueilli (en ha)",
-        },
-        "tooltip": {
-            "headerFormat": DEFAULT_HEADER_FORMAT,
-            "valueSuffix": " Ha",
-            "valueDecimals": DEFAULT_VALUE_DECIMALS,
-            "pointFormat": DEFAULT_POINT_FORMAT,
-        },
-        "yAxis": {"title": {"text": "Consommé (en ha)"}},
-        "xAxis": {"type": "category"},
-        "legend": {"layout": "vertical", "align": "right", "verticalAlign": "middle"},
-        "series": [],
-    }
+
+    @property
+    def param(self):
+        return super().param | {
+            "title": {
+                "text": "Consommation d'espace par nouveau ménage accueilli (en ha)",
+            },
+            "tooltip": {
+                "headerFormat": DEFAULT_HEADER_FORMAT,
+                "valueSuffix": " Ha",
+                "valueDecimals": DEFAULT_VALUE_DECIMALS,
+                "pointFormat": DEFAULT_POINT_FORMAT,
+            },
+            "yAxis": {"title": {"text": "Consommé (en ha)"}},
+            "xAxis": {"type": "category"},
+            "legend": {**super().param["legend"], "layout": "vertical", "align": "right", "verticalAlign": "middle"},
+            "series": [],
+        }
 
     def get_options(self, serie_name):
         if serie_name == self.project.name:
@@ -65,6 +69,10 @@ class AnnualConsoByHouseholdChartExport(AnnualConsoByHouseholdChart):
     def param(self):
         return super().param | {
             "credits": CEREMA_CREDITS,
+            "legend": {
+                **super().param["legend"],
+                "navigation": LEGEND_NAVIGATION_EXPORT,
+            },
             "title": {
                 "text": (
                     f"Consommation annuelle d'espace par ménage de {self.project.territory_name} "

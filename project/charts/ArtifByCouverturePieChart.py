@@ -1,32 +1,38 @@
 from project.charts.base_project_chart import ProjectChart
-from project.charts.constants import DEFAULT_VALUE_DECIMALS, OCSGE_CREDITS
+from project.charts.constants import (
+    DEFAULT_VALUE_DECIMALS,
+    LEGEND_NAVIGATION_EXPORT,
+    OCSGE_CREDITS,
+)
 
 
 class ArtifByCouverturePieChart(ProjectChart):
     _sol = "couverture"
     name = "Artificialisation usage and couverture pie chart"
-    param = {
-        "chart": {"type": "pie"},
-        "title": {"text": ""},
-        "yAxis": {
-            "title": {"text": "Consommé (en ha)"},
-            "stackLabels": {"enabled": True, "format": "{total:,.1f}"},
-        },
-        "tooltip": {
-            "valueSuffix": " Ha",
-            "valueDecimals": DEFAULT_VALUE_DECIMALS,
-            "pointFormat": "{point.y} - {point.percent}",
-            "headerFormat": "<b>{point.key}</b><br/>",
-        },
-        "xAxis": {"type": "category"},
-        "legend": {"layout": "horizontal", "align": "center", "verticalAlign": "top"},
-        "plotOptions": {
-            "pie": {
-                "innerSize": "60%",
-            }
-        },
-        "series": [],
-    }
+
+    @property
+    def param(self):
+        return super().param | {
+            "chart": {"type": "pie"},
+            "title": {"text": ""},
+            "yAxis": {
+                "title": {"text": "Consommé (en ha)"},
+                "stackLabels": {"enabled": True, "format": "{total:,.1f}"},
+            },
+            "tooltip": {
+                "valueSuffix": " Ha",
+                "valueDecimals": DEFAULT_VALUE_DECIMALS,
+                "pointFormat": "{point.y} - {point.percent}",
+                "headerFormat": "<b>{point.key}</b><br/>",
+            },
+            "xAxis": {"type": "category"},
+            "plotOptions": {
+                "pie": {
+                    "innerSize": "60%",
+                }
+            },
+            "series": [],
+        }
 
     def __init__(self, project, get_data=None):
         self.millesime = project.last_year_ocsge
@@ -78,6 +84,10 @@ class ArtifByCouverturePieChartExport(ArtifByCouverturePieChart):
     def param(self):
         return super().param | {
             "credits": OCSGE_CREDITS,
+            "legend": {
+                **super().param["legend"],
+                "navigation": LEGEND_NAVIGATION_EXPORT,
+            },
             "title": {
                 "text": (
                     f"Surfaces artificialisées par type de couverture en {self.millesime}"

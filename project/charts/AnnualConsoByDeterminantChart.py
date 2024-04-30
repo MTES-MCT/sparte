@@ -1,5 +1,9 @@
 from project.charts.base_project_chart import ProjectChart
-from project.charts.constants import CEREMA_CREDITS, DEFAULT_VALUE_DECIMALS
+from project.charts.constants import (
+    CEREMA_CREDITS,
+    DEFAULT_VALUE_DECIMALS,
+    LEGEND_NAVIGATION_EXPORT,
+)
 
 
 class AnnualConsoByDeterminantChart(ProjectChart):
@@ -10,33 +14,36 @@ class AnnualConsoByDeterminantChart(ProjectChart):
 
     name = "determinant per year"
 
-    param = {
-        "chart": {"type": "column"},
-        "title": {"text": "Par an"},
-        "yAxis": {
-            "title": {"text": "Consommation annuelle (en ha)"},
-            "stackLabels": {"enabled": True, "format": "{total:,.1f}"},
-        },
-        "tooltip": {
-            "headerFormat": "<b>{point.key}</b><br/>",
-            "pointFormat": "{series.name}: {point.y}",
-            "valueSuffix": " Ha",
-            "valueDecimals": DEFAULT_VALUE_DECIMALS,
-        },
-        "xAxis": {"type": "category"},
-        "legend": {
-            "layout": "vertical",
-            "align": "right",
-            "verticalAlign": "middle",
-        },
-        "plotOptions": {
-            "column": {
-                "stacking": "normal",
-                "dataLabels": {"enabled": True, "format": "{point.y:,.1f}"},
-            }
-        },
-        "series": [],
-    }
+    @property
+    def param(self):
+        return super().param | {
+            "chart": {"type": "column"},
+            "title": {"text": "Par an"},
+            "yAxis": {
+                "title": {"text": "Consommation annuelle (en ha)"},
+                "stackLabels": {"enabled": True, "format": "{total:,.1f}"},
+            },
+            "tooltip": {
+                "headerFormat": "<b>{point.key}</b><br/>",
+                "pointFormat": "{series.name}: {point.y}",
+                "valueSuffix": " Ha",
+                "valueDecimals": DEFAULT_VALUE_DECIMALS,
+            },
+            "xAxis": {"type": "category"},
+            "legend": {
+                **super().param["legend"],
+                "layout": "vertical",
+                "align": "right",
+                "verticalAlign": "middle",
+            },
+            "plotOptions": {
+                "column": {
+                    "stacking": "normal",
+                    "dataLabels": {"enabled": True, "format": "{point.y:,.1f}"},
+                }
+            },
+            "series": [],
+        }
 
     def get_series(self):
         if not self.series:
@@ -61,6 +68,10 @@ class AnnualConsoByDeterminantChartExport(AnnualConsoByDeterminantChart):
     @property
     def param(self):
         return super().param | {
+            "legend": {
+                **super().param["legend"],
+                "navigation": LEGEND_NAVIGATION_EXPORT,
+            },
             "credits": CEREMA_CREDITS,
             "title": {
                 "text": (

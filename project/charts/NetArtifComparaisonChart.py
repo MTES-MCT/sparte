@@ -10,23 +10,26 @@ from project.charts.constants import (
 
 class NetArtifComparaisonChart(ProjectChart):
     name = "Net artificialisation per cities"
-    param = {
-        "chart": {"type": "column"},
-        "title": {"text": "Répartition de l'artificialisation nette"},
-        "yAxis": {"title": {"text": "Artificialisation nette (en ha)"}},
-        "tooltip": {
-            "headerFormat": DEFAULT_HEADER_FORMAT,
-            "pointFormat": DEFAULT_POINT_FORMAT,
-            "valueSuffix": " Ha",
-            "valueDecimals": DEFAULT_VALUE_DECIMALS,
-        },
-        "xAxis": {"type": "category"},
-        "legend": {
-            "layout": "vertical",
-            "align": "right",
-        },
-        "series": [],
-    }
+
+    @property
+    def param(self):
+        return super().param | {
+            "chart": {"type": "column"},
+            "title": {"text": "Répartition de l'artificialisation nette"},
+            "yAxis": {"title": {"text": "Artificialisation nette (en ha)"}},
+            "tooltip": {
+                "headerFormat": DEFAULT_HEADER_FORMAT,
+                "pointFormat": DEFAULT_POINT_FORMAT,
+                "valueSuffix": " Ha",
+                "valueDecimals": DEFAULT_VALUE_DECIMALS,
+            },
+            "xAxis": {"type": "category"},
+            "legend": {
+                "layout": "vertical",
+                "align": "right",
+            },
+            "series": [],
+        }
 
     def __init__(self, *args, **kwargs):
         self.level = kwargs.pop("level")

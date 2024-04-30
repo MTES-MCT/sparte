@@ -4,24 +4,27 @@ from project.charts.constants import CEREMA_CREDITS
 
 class ConsoByDeterminantPieChart(ProjectChart):
     name = "determinant overview"
-    param = {
-        "chart": {"type": "pie"},
-        "title": {
-            "text": "Sur la période",
-        },
-        "tooltip": {"enabled": True, "pointFormat": "{point.y:.1f} Ha"},
-        "plotOptions": {
-            "pie": {
-                "allowPointSelect": True,
-                "cursor": "pointer",
-                "dataLabels": {
-                    "enabled": True,
-                    "format": "{point.name} : {point.y:.1f} Ha",
-                },
-            }
-        },
-        "series": [],
-    }
+
+    @property
+    def param(self):
+        return super().param | {
+            "chart": {"type": "pie"},
+            "title": {
+                "text": "Sur la période",
+            },
+            "tooltip": {"enabled": True, "pointFormat": "{point.y:.1f} Ha"},
+            "plotOptions": {
+                "pie": {
+                    "allowPointSelect": True,
+                    "cursor": "pointer",
+                    "dataLabels": {
+                        "enabled": True,
+                        "format": "{point.name} : {point.y:.1f} Ha",
+                    },
+                }
+            },
+            "series": [],
+        }
 
     def __init__(self, *args, **kwargs):
         if "series" in kwargs:
