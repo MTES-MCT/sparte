@@ -159,7 +159,6 @@ class BaseRenderer:
 
         # Consommation des communes
         chart_conso_cities = charts.AnnualConsoChartExport(diagnostic, level=diagnostic.level)
-        annual_total_conso_chart = charts.AnnualTotalConsoChartExport(diagnostic)
 
         # comparison charts
         nb_neighbors = diagnostic.nb_look_a_like
@@ -220,8 +219,6 @@ class BaseRenderer:
             "project_scope_nb_years_before_31": diagnostic.nb_years_before_2031,
             "project_scope_forecast_2031": diagnostic.nb_years_before_2031 * current_conso / diagnostic.nb_years,
             # charts
-            "annual_total_conso_chart": self.prep_chart(annual_total_conso_chart),
-            "annual_total_conso_data_table": add_total_line_column(annual_total_conso_chart.get_series(), True, False),
             "chart_conso_communes": self.prep_chart(chart_conso_cities),
             "chart_determinants": self.prep_chart(det_chart),
             "pie_chart_determinants": self.prep_chart(pie_det_chart),
@@ -416,9 +413,14 @@ class LocalReportRenderer(BaseRenderer):
         super().__init__(request=request, word_template_slug=word_template_slug)
 
     def get_context_data(self) -> Dict[str, Any]:
-        context = super().get_context_data()
-        # TODO: customize the context for the local report
+        diagnostic = self.project
+        annual_total_conso_chart = charts.AnnualTotalConsoChartExport(diagnostic)
 
-        # context |= {"nom_territoire": "RAPPORT LOCAL"}
-
-        return context
+        return super().get_context_data() | {
+            "annual_total_conso_chart": self.prep_chart(chart=annual_total_conso_chart),
+            "annual_total_conso_data_table": add_total_line_column(
+                series=annual_total_conso_chart.get_series(),
+                column=True,
+                line=False,
+            ),
+        }
