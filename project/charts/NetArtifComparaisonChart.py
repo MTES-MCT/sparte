@@ -46,3 +46,7 @@ class NetArtifComparaisonChart(ProjectChart):
         for data in self.get_series().values():
             for period, value in data.items():
                 total[period] += value
+
+
+class NetArtifComparaisonChartExport(NetArtifComparaisonChart):
+    pass
