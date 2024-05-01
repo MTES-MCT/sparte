@@ -69,6 +69,5 @@ class AnnualArtifChart(ProjectChart):
         self.add_serie(
             NET_ARTIFICIALISATION,
             series[NET_ARTIFICIALISATION],
-            # type="line",
             color="#0000ff",
         )
