@@ -280,11 +280,7 @@ class WordAlreadySentException(Exception):
 
 @shared_task(bind=True, max_retries=6, queue="long")
 def generate_word_diagnostic(self, request_id):
-    from diagnostic_word.renderers import (
-        BaseRenderer,
-        FullReportRenderer,
-        LocalReportRenderer,
-    )
+    from diagnostic_word.renderers import FullReportRenderer, LocalReportRenderer
     from highcharts.charts import RateLimitExceededException
 
     logger.info(f"Start generate word for request_id={request_id}")
@@ -303,13 +299,12 @@ def generate_word_diagnostic(self, request_id):
 
         logger.info("Requested document: %s", req.requested_document)
 
-        Renderer = {
+        renderer_class = {
             RequestedDocumentChoices.RAPPORT_COMPLET: FullReportRenderer,
             RequestedDocumentChoices.RAPPORT_LOCAL: LocalReportRenderer,
         }[req.requested_document]
 
-        with Renderer(request=req) as renderer:
-            renderer: BaseRenderer = renderer
+        with renderer_class(request=req) as renderer:
             context = renderer.get_context_data()
             buffer = renderer.render_to_docx(context=context)
             filename = renderer.get_file_name()
