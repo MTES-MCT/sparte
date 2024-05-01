@@ -8,4 +8,4 @@ class UsageProgressionChart(CouvertureProgressionChart):
 
 
 class UsageProgressionChartExport(UsageProgressionChart):
-    pass  # TODO
+    pass
