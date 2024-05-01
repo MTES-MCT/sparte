@@ -60,7 +60,7 @@ class Command(BaseCommand):
         return sources
 
     def handle(self, *args, **options):
-        if settings.ENVIRONNEMENT != "local":
+        if settings.ENVIRONMENT != "local":
             raise Exception("This command can only be run in local environnement")
 
         sources = self.get_sources_queryset(departement=options["land_id"])
