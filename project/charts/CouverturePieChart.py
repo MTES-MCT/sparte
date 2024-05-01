@@ -3,6 +3,11 @@ from project.charts.constants import DEFAULT_VALUE_DECIMALS, OCSGE_CREDITS
 
 
 class CouverturePieChart(ProjectChart):
+    """
+    Graphique représentant tous les types de couverture du sol
+    sur le territoire, qu'ils soient artificialisés ou non.
+    """
+
     _level = 2
     _sol = "couverture"
     name = "Sol usage and couverture pie chart"
@@ -13,10 +18,6 @@ class CouverturePieChart(ProjectChart):
             "chart": {"type": "pie"},
             "title": {
                 "text": f"Répartition de la couverture des sols en {self.project.last_year_ocsge}",
-                "floating": True,
-            },
-            "yAxis": {
-                "stackLabels": {"enabled": True, "format": "{total:,.1f}"},
             },
             "tooltip": {
                 "valueSuffix": " Ha",
@@ -24,7 +25,6 @@ class CouverturePieChart(ProjectChart):
                 "pointFormat": "{point.y} - {point.percent}",
                 "headerFormat": "<b>{point.key}</b><br/>",
             },
-            "xAxis": {"type": "category"},
             "plotOptions": {
                 "pie": {
                     "innerSize": "60%",

@@ -7,9 +7,13 @@ from .ArtifByCouverturePieChart import ArtifByCouverturePieChart
 class ArtifByUsagePieChart(ArtifByCouverturePieChart):
     _sol = "usage"
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.chart["title"]["text"] = f"Surfaces artificialisées par type d'usage en {self.millesime}"
+    @property
+    def param(self):
+        return super().param | {
+            "title": {
+                "text": f"Surfaces artificialisées par type d'usage en {self.project.last_year_ocsge}",
+            }
+        }
 
     def get_series(self):
         if not self.series:
@@ -42,9 +46,20 @@ class ArtifByUsagePieChartExport(ArtifByUsagePieChart):
                 **super().param["legend"],
                 "navigation": LEGEND_NAVIGATION_EXPORT,
             },
+            "plotOptions": {
+                **super().param["plotOptions"],
+                "pie": {
+                    **super().param["plotOptions"]["pie"],
+                    "dataLabels": {
+                        **super().param["plotOptions"]["pie"]["dataLabels"],
+                        "format": "<b>{key}</b><br/>{point.y:,.1f} ha",
+                    },
+                },
+            },
             "title": {
                 "text": (
-                    f"Surfaces artificialisées par type d'usage en {self.millesime} pour {self.project.territory_name}"
+                    f"Surfaces artificialisées par type d'usage à {self.project.territory_name} "
+                    f"en {self.project.last_year_ocsge} "
                 )
             },
         }
