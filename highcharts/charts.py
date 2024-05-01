@@ -80,8 +80,12 @@ class Chart:
         for serie_name, data in series.items():
             self.add_serie(serie_name, data, **options)
 
-    def dumps(self) -> str:
-        chart_dumped = json.dumps(self.chart, default=decimal2float)
+    def dumps(self, indent=None) -> str:
+        chart_dumped = json.dumps(
+            obj=self.chart,
+            default=decimal2float,
+            indent=indent,
+        )
         chart_dumped = chart_dumped.replace("'", "\\'")
         return mark_safe(chart_dumped)  # nosec
 

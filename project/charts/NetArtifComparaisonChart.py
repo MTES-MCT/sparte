@@ -5,6 +5,7 @@ from project.charts.constants import (
     DEFAULT_HEADER_FORMAT,
     DEFAULT_POINT_FORMAT,
     DEFAULT_VALUE_DECIMALS,
+    OCSGE_CREDITS,
 )
 
 
@@ -24,10 +25,6 @@ class NetArtifComparaisonChart(ProjectChart):
                 "valueDecimals": DEFAULT_VALUE_DECIMALS,
             },
             "xAxis": {"type": "category"},
-            "legend": {
-                "layout": "vertical",
-                "align": "right",
-            },
             "series": [],
         }
 
@@ -49,4 +46,23 @@ class NetArtifComparaisonChart(ProjectChart):
 
 
 class NetArtifComparaisonChartExport(NetArtifComparaisonChart):
-    pass
+    @property
+    def param(self):
+        return super().param | {
+            "credits": OCSGE_CREDITS,
+            "plotOptions": {
+                "column": {
+                    "dataLabels": {
+                        "enabled": True,
+                        "format": "{point.y:,.1f} ha",
+                        "allowOverlap": True,
+                    },
+                }
+            },
+            "title": {
+                "text": (
+                    f"Répartition de l'artificialisation nette par commune à {self.project.territory_name} "
+                    f"entre {self.project.analyse_start_date} et {self.project.analyse_end_date} (en ha)"
+                )
+            },
+        }

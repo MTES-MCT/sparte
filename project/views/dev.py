@@ -23,6 +23,7 @@ class AllChartsForPreview(ProjectReportBaseView):
             chart.id = "id_" + uuid
             chart.name = "chart_" + uuid
             chart.classname = chart.__class__.__name__
+            chart.json_data = chart.dumps(indent=4)
             all_charts.append(chart)
 
         return super().get_context_data(all_charts=all_charts, **kwargs)
