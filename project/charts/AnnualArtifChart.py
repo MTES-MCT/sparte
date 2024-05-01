@@ -1,6 +1,10 @@
 from project.charts.base_project_chart import ProjectChart
 from project.charts.constants import DEFAULT_VALUE_DECIMALS
 
+ARTIFICIALISATION = "Artificialisation"
+RENATURATION = "Renaturation"
+NET_ARTIFICIALISATION = "Artificialisation nette"
+
 
 class AnnualArtifChart(ProjectChart):
     name = "Evolution de l'artificialisation"
@@ -47,24 +51,24 @@ class AnnualArtifChart(ProjectChart):
     def get_series(self):
         if not self.series:
             self.series = {
-                "Artificialisation": dict(),
-                "Renaturation": dict(),
-                "Artificialisation nette": dict(),
+                ARTIFICIALISATION: dict(),
+                RENATURATION: dict(),
+                NET_ARTIFICIALISATION: dict(),
             }
             for prd in self.get_data():
                 key = prd["period"]
-                self.series["Artificialisation"][key] = prd["new_artif"]
-                self.series["Renaturation"][key] = prd["new_natural"]
-                self.series["Artificialisation nette"][key] = prd["net_artif"]
+                self.series[ARTIFICIALISATION][key] = prd["new_artif"]
+                self.series[RENATURATION][key] = prd["new_natural"]
+                self.series[NET_ARTIFICIALISATION][key] = prd["net_artif"]
         return self.series
 
     def add_series(self):
         series = self.get_series()
-        self.add_serie("Artificialisation", series["Artificialisation"], color="#ff0000")
-        self.add_serie("Renaturation", series["Renaturation"], color="#00ff00")
+        self.add_serie(ARTIFICIALISATION, series[ARTIFICIALISATION], color="#ff0000")
+        self.add_serie(RENATURATION, series[RENATURATION], color="#00ff00")
         self.add_serie(
-            "Artificialisation nette",
-            series["Artificialisation nette"],
+            NET_ARTIFICIALISATION,
+            series[NET_ARTIFICIALISATION],
             # type="line",
             color="#0000ff",
         )
