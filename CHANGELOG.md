@@ -2,6 +2,11 @@
 
 Ce changelog suit la méthode "keep a changelog" disponible ici: [https://keepachangelog.com/en/1.0.0/](https://keepachangelog.com/en/1.0.0/)
 
+## [5.2] OCS GE Pyrénées-Orientales - 2024.05.01
+
+## Ajouté 
+- Nouvelles données OCS GE pour le département Pyrénées-Orientales (66) [#314](https://github.com/MTES-MCT/sparte/pull/314)
+
 ## [5.1] Rapport Local - 2024.04.30
 
 ### Ajouté

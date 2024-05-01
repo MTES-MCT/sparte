@@ -1,9 +1,7 @@
 import logging
 import re
 import subprocess
-from concurrent.futures import ProcessPoolExecutor
 
-from django import setup as django_setup
 from django.conf import settings
 from django.core.management.base import BaseCommand
 
@@ -23,8 +21,6 @@ def find_years_in_url(url: str, count=1) -> list[int]:
         # this is to avoid getting other numbers in the path as years
         if str(result).startswith("20"):
             years.add(int(result))
-
-    print(years)
 
     if len(years) != count:
         raise ValueError("Years count does not match the expected count")
@@ -134,6 +130,5 @@ class Command(BaseCommand):
 
         urls = []
 
-        with ProcessPoolExecutor(max_workers=5, initializer=django_setup) as executor:
-            for url in urls:
-                executor.submit(process_url, url)
+        for url in urls:
+            process_url(url)
