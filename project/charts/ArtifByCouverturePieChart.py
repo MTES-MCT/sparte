@@ -14,32 +14,33 @@ class ArtifByCouverturePieChart(ProjectChart):
     def param(self):
         return super().param | {
             "chart": {"type": "pie"},
-            "title": {"text": ""},
-            "yAxis": {
-                "title": {"text": "Consommé (en ha)"},
-                "stackLabels": {"enabled": True, "format": "{total:,.1f}"},
-            },
+            "title": {"text": f"Surfaces artificialisées par type de couverture en {self.project.last_year_ocsge}"},
             "tooltip": {
                 "valueSuffix": " Ha",
                 "valueDecimals": DEFAULT_VALUE_DECIMALS,
                 "pointFormat": "{point.y} - {point.percent}",
                 "headerFormat": "<b>{point.key}</b><br/>",
             },
-            "xAxis": {"type": "category"},
             "plotOptions": {
                 "pie": {
                     "innerSize": "60%",
+                    "dataLabels": {
+                        "enabled": True,
+                        "overflow": "justify",
+                        "style": {
+                            "textOverflow": "clip",
+                            "width": "100px",
+                        },
+                    },
                 }
             },
             "series": [],
         }
 
     def __init__(self, project, get_data=None):
-        self.millesime = project.last_year_ocsge
         if get_data:
             self.get_data = get_data
         super().__init__(project)
-        self.chart["title"]["text"] = f"Surfaces artificialisées par type de couverture en {self.millesime}"
 
     def get_data(self):
         """Should return data formated like this:
@@ -88,9 +89,19 @@ class ArtifByCouverturePieChartExport(ArtifByCouverturePieChart):
                 **super().param["legend"],
                 "navigation": LEGEND_NAVIGATION_EXPORT,
             },
+            "plotOptions": {
+                **super().param["plotOptions"],
+                "pie": {
+                    **super().param["plotOptions"]["pie"],
+                    "dataLabels": {
+                        **super().param["plotOptions"]["pie"]["dataLabels"],
+                        "format": "<b>{key}</b><br/>{point.y:,.1f} ha",
+                    },
+                },
+            },
             "title": {
                 "text": (
-                    f"Surfaces artificialisées par type de couverture en {self.millesime}"
+                    f"Surfaces artificialisées par type de couverture en {self.project.last_year_ocsge}"
                     f"pour {self.project.territory_name}"
                 )
             },
