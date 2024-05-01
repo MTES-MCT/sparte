@@ -45,6 +45,7 @@ __all__ = [
     "UsageProgressionChart",
     "UsageProgressionChartExport",
     "NetArtifComparaisonChart",
+    "NetArtifComparaisonChartExport",
 ]
 
 from .AnnualArtifChart import AnnualArtifChart
@@ -93,7 +94,10 @@ from .CouvertureProgressionChart import (
     CouvertureProgressionChart,
     CouvertureProgressionChartExport,
 )
-from .NetArtifComparaisonChart import NetArtifComparaisonChart
+from .NetArtifComparaisonChart import (
+    NetArtifComparaisonChart,
+    NetArtifComparaisonChartExport,
+)
 from .ObjectiveChart import ObjectiveChart, ObjectiveChartExport
 from .SurfaceChart import SurfaceChart, SurfaceChartExport
 from .UsageChangeWheelChart import UsageChangeWheelChart
