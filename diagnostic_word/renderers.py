@@ -396,6 +396,14 @@ class BaseRenderer:
         return context
 
     def get_file_name(self) -> str:
+        raise NotImplementedError("The method get_file_name must be implemented in the child class.")
+
+
+class FullReportRenderer(BaseRenderer):
+    def __init__(self, request: Request, word_template_slug="template-bilan-1"):
+        super().__init__(request=request, word_template_slug=word_template_slug)
+
+    def get_file_name(self) -> str:
         return self.word_template.filename_mask.format(
             diagnostic_name=self.project.name,
             start_date=self.project.analyse_start_date,
@@ -403,14 +411,16 @@ class BaseRenderer:
         )
 
 
-class FullReportRenderer(BaseRenderer):
-    def __init__(self, request: Request, word_template_slug="template-bilan-1"):
-        super().__init__(request=request, word_template_slug=word_template_slug)
-
-
 class LocalReportRenderer(BaseRenderer):
     def __init__(self, request: Request, word_template_slug="template-bilan-2"):
         super().__init__(request=request, word_template_slug=word_template_slug)
+
+    def get_file_name(self) -> str:
+        return self.word_template.filename_mask.format(
+            diagnostic_name=self.project.territory_name,
+            start_date=self.project.analyse_start_date,
+            end_date=self.project.analyse_end_date,
+        )
 
     def get_context_data(self) -> Dict[str, Any]:
         diagnostic = self.project
