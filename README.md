@@ -58,7 +58,7 @@ Le site est désormais accessible en local à cette adresse:
 | CRISP_WEBSITE_ID | Identifiant du site sur Crisp | |
 | CRISP_ACTIVATED | Active ou desactive Crisp | False |
 | CELERY_TASK_ALWAYS_EAGER | Rend celery synchrone | False |
-| DATABASE_URL | chaîne pour se connecter à la base de données Postgresql + gis | postgis://postgres:postgres@127.0.0.1:54321/postgres |
+| DATABASE_URL | chaîne pour se connecter à la base de données Postgres | postgis://postgres:postgres@127.0.0.1:5432/postgres |
 | DB_LOGGING_LEVEL | détermine le niveau de log de la base de données | WARNING |
 | DEBUG | activer ou non les messages détaillés d'erreur | 1 |
 | DEBUG_TOOLBAR | activer la barre de debug de Django | 1 |
@@ -76,6 +76,10 @@ Le site est désormais accessible en local à cette adresse:
 | MATOMO_ACTIVATE | Détermine si des infos doivent être envoyé à Matomo | 0 |
 | MATOMO_SCRIPT_NAME | | |
 | MATOMO_TOKEN | Token pour envoyer les données à Matomo |  |
+| POSTGRES_DB | Nom de la base de donnée (local uniquement) | postgres |
+| POSTGRES_USER | Username par défaut de la base de donnée (local uniquement) | postgres |
+| POSTGRES_PASSWORD | Password par défaut de la base de donnée (local uniquement) | postgres |
+| POSTGRES_HOST | Nom de l'hôte où se trouve la base de donnée (local uniquement) | db |
 | SECRET | salt pour django | |
 | USE_SRI | Active l'utilisation des SRI même lorsque debug = 1 | 1 |
 | USE_CSP | Active l'utilisation des CSP même lorsque debug = 1 | 1 |
