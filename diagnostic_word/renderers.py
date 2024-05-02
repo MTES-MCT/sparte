@@ -140,6 +140,7 @@ class BaseRenderer:
         context = {
             "diagnostic": diagnostic,
             "export_datetime": timezone.localtime(timezone.now()).strftime("Créé le %d/%m/%Y à %H:%M:%S"),
+            "columns": diagnostic.years + ["Total"],
             "nom_territoire": diagnostic.get_territory_name(),
             "surface_totale": str(round(surface_territory, 2)),
             "ocsge_is_available": False,
