@@ -217,7 +217,7 @@ class Project(BaseProject):
 
         UNDEFINED = "UNDEFINED", "Non défini"
 
-    ANALYZE_YEARS = [(str(y), str(y)) for y in range(2009, 2022)]
+    ANALYZE_YEARS = [(str(y), str(y)) for y in range(2009, 2023)]
     LEVEL_CHOICES = AdminRef.CHOICES
 
     is_public = models.BooleanField(

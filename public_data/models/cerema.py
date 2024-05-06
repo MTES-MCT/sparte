@@ -38,6 +38,7 @@ class Cerema(DataColorationMixin, models.Model):
     epci_id = models.CharField(max_length=50, db_index=True)
     epci_name = models.CharField(max_length=70, db_index=True)
     scot = models.CharField(max_length=254, null=True)
+
     naf09art10 = models.FloatField(null=True)
     art09act10 = models.FloatField(null=True)
     art09hab10 = models.FloatField(null=True)
@@ -130,32 +131,45 @@ class Cerema(DataColorationMixin, models.Model):
     art21fer22 = models.FloatField(null=True)
     art21inc22 = models.FloatField(null=True)
 
+    # Millésime 2023
+    naf22art23 = models.FloatField(null=True)
+    art22act23 = models.FloatField(null=True)
+    art22hab23 = models.FloatField(null=True)
+    art22mix23 = models.FloatField(null=True)
+    art22rou23 = models.FloatField(null=True)
+    art22fer23 = models.FloatField(null=True)
+    art22inc23 = models.FloatField(null=True)
+
     # Data stored without current usage
-    naf09art22 = models.FloatField(null=True)
-    art09act22 = models.FloatField(null=True)
-    art09hab22 = models.FloatField(null=True)
-    art09mix22 = models.FloatField(null=True)
-    art09rou22 = models.FloatField(null=True)
-    art09fer22 = models.FloatField(null=True)
-    art09inc22 = models.FloatField(null=True)
-    artcom0922 = models.FloatField(null=True)
+    naf09art23 = models.FloatField(null=True)
+    art09act23 = models.FloatField(null=True)
+    art09hab23 = models.FloatField(null=True)
+    art09mix23 = models.FloatField(null=True)
+    art09rou23 = models.FloatField(null=True)
+    art09fer23 = models.FloatField(null=True)
+    art09inc23 = models.FloatField(null=True)
+
+    artcom0923 = models.FloatField(null=True)
+
     aav2020 = models.CharField(max_length=80, null=True)
-    libaav2020 = models.CharField(max_length=80, null=True)
     aav2020txt = models.CharField(max_length=1, null=True)
     aav2020_ty = models.CharField(max_length=6, null=True)
-    pop13 = models.BigIntegerField(null=True)
-    pop19 = models.BigIntegerField(null=True)
-    pop1319 = models.BigIntegerField(null=True)
-    men13 = models.BigIntegerField(null=True)
-    men19 = models.BigIntegerField(null=True)
-    men1319 = models.BigIntegerField(null=True)
-    emp13 = models.BigIntegerField(null=True)
-    emp19 = models.BigIntegerField(null=True)
-    emp1319 = models.BigIntegerField(null=True)
-    mepart1319 = models.FloatField(null=True)
-    menhab1319 = models.FloatField(null=True)
-    artpop1319 = models.FloatField(null=True)
-    surfcom2022 = models.FloatField(null=True)
+
+    pop14 = models.BigIntegerField(null=True)
+    pop20 = models.BigIntegerField(null=True)
+    pop1420 = models.BigIntegerField(null=True)
+    men14 = models.BigIntegerField(null=True)
+    men20 = models.BigIntegerField(null=True)
+    men1420 = models.BigIntegerField(null=True)
+    emp14 = models.BigIntegerField(null=True)
+    emp20 = models.BigIntegerField(null=True)
+    emp1420 = models.BigIntegerField(null=True)
+
+    mepart1420 = models.FloatField(null=True)
+    menhab1420 = models.FloatField(null=True)
+    artpop1420 = models.FloatField(null=True)
+
+    surfcom23 = models.FloatField(null=True)
     artcom2020 = models.FloatField(null=True)
 
     # calculated field :
@@ -204,10 +218,10 @@ class Cerema(DataColorationMixin, models.Model):
         end = int(end) - 2000
         start = int(start) - 2000
 
-        if not 9 <= start <= 21:
-            raise ValueError("'start' must be between 2009 and 2021")
-        if not 10 <= end <= 21:
-            raise ValueError("'end' must be between 2010 and 2021")
+        if not 9 <= start <= 22:
+            raise ValueError("'start' must be between 2009 and 2022")
+        if not 10 <= end <= 22:
+            raise ValueError("'end' must be between 2010 and 2022")
 
         if end < start:
             raise ValueError("start must be < to end")
