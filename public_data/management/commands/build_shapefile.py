@@ -583,7 +583,7 @@ class Command(BaseCommand):
         parser.add_argument("--dataset", type=str, required=True, choices=DataSource.DatasetChoices.values)
         parser.add_argument("--name", type=str, choices=DataSource.DataNameChoices.values)
         parser.add_argument("--parallel", action="store_true", help="Run the build in parallel", default=False)
-        parser.add_argument("--millesimes", type=str, help="Year of the data")
+        parser.add_argument("--millesimes", type=int, nargs="*", default=[])
         parser.add_argument(
             "--land_id",
             type=str,
@@ -596,17 +596,12 @@ class Command(BaseCommand):
         sources = DataSource.objects.filter(
             dataset=options.get("dataset"),
             productor=options.get("productor"),
+            millesimes__overlap=options.get("millesimes"),
         )
         if options.get("land_id"):
             sources = sources.filter(official_land_id=options.get("land_id"))
         if options.get("name"):
             sources = sources.filter(name=options.get("name"))
-        if options.get("millesimes"):
-            if "," in options.get("millesimes"):
-                millesimes = list(map(int, options.get("millesimes").split(",")))
-            else:
-                millesimes = [int(options.get("millesimes"))]
-            sources = sources.filter(millesimes=millesimes)
         return sources
 
     def handle(self, *args: Any, **options: Any) -> str | None:

@@ -67,6 +67,9 @@ jobs:
       - run: createdb test_postgres
       - run: pg_restore --dbname test_postgres --no-owner --no-privileges --no-tablespaces --no-comments --clean --if-exists "dump.pgsql"
       - run: pipenv install --dev
+      - run: sudo add-apt-repository ppa:ubuntugis/ppa -y
+      - run: sudo apt-get update
+      - run: sudo apt-get install -y gdal-bin
       - run: pipenv run python manage.py test --keepdb
         env:
           DATABASE_URL: ${{ steps.pg.outputs.connection-uri }}
