@@ -505,6 +505,7 @@ def build_consommation_espace(source: DataSource) -> tuple[DataSource, Path]:
         )
         habitat_fields = [field.replace("art", "hab").replace("naf", "art") for field in art_fields]
         activity_fields = [field.replace("art", "act").replace("naf", "art") for field in art_fields]
+
         sql = f"""
             SELECT
                 *,
@@ -512,6 +513,7 @@ def build_consommation_espace(source: DataSource) -> tuple[DataSource, Path]:
                 CAST(({' + '.join(art_fields)}) AS FLOAT) AS NAF11ART21,
                 CAST(({' + '.join(habitat_fields)}) AS FLOAT) AS ART11HAB21,
                 CAST(({' + '.join(activity_fields)}) AS FLOAT) AS ART11ACT21,
+                {"artcom0923" if source.srid == SRID.LAMBERT_93 else "NULL"} AS ARTCOM0923,
                 GEOMETRY AS MPOLY
             FROM
                 {Path(source.shapefile_name).stem}
@@ -536,6 +538,7 @@ def build_consommation_espace(source: DataSource) -> tuple[DataSource, Path]:
                 shell=True,
                 check=True,
                 stdout=f,
+                stderr=f,
             )
 
     output_source, _ = DataSource.objects.update_or_create(
