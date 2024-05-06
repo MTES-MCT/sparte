@@ -259,7 +259,7 @@ class Command(BaseCommand):
             "-f",
             '"PostgreSQL"',
             f'"PG:dbname={db["NAME"]} host={db["HOST"]} port={db["PORT"]} user={db["USER"]} password={db["PASSWORD"]}"',  # noqa: E501
-            str(shapefile_path.absolute()),
+            str(shapefile_path),
             "-s_srs",
             f"EPSG:{source.srid}",
             "-t_srs",
