@@ -22,21 +22,19 @@ Rapport local
     {% include "project/report_menu.html" %}
 
     <div class="fr-container fr-py-3w">
-        <div class="d-flex justify-content-between">
-            <p class="fr-badge fr-badge--new fr-badge--sm">Nouveau</p>
-            <button
-                hx-get="{% url 'project:report_download' requested_document='rapport-local' pk=project.pk %}"
-                hx-target="#diag_word_form"
-                href="#"
-                data-fr-opened="false"
-                aria-controls="fr-modal-download-word"
-                class="fr-btn fr-btn--sm"
-            >
-                Télécharger le rapport local
-            </button>
-        </div>
+        <p class="fr-badge fr-badge--new fr-badge--sm d-xs-none">Nouveau</p>
+        <button
+            hx-get="{% url 'project:report_download' requested_document='rapport-local' pk=project.pk %}"
+            hx-target="#diag_word_form"
+            href="#"
+            data-fr-opened="false"
+            aria-controls="fr-modal-download-word"
+            class="fr-btn local-report-download-btn"
+        >
+            Télécharger le rapport local <i class="bi bi-download"></i>
+        </button>
 
-        <div class="fr-mt-7w">
+        <div>
             <h4>Objet du rapport local de suivi de l’artificialisation des sols</h4>
             <div class="fr-highlight fr-highlight--no-margin">
                 <p class="fr-text--sm">Sur la décennie 2011-2021, 24 000 ha d’espaces naturels, agricoles et forestiers ont été consommés chaque année en moyenne en France, soit près de 5 terrains de football par heure. Les conséquences sont écologiques mais aussi socio-économiques.</p>
@@ -180,7 +178,7 @@ Rapport local
             </div>
         </div>
 
-        <div class="fr-mt-7w">
+        <div class="fr-mt-7w fr-mb-7w">
             <h4>Quelles sont les sources d’informations disponibles pour ce rapport ?</h4>
             <p class="fr-text--sm mb-3">Les données produites par l'<a rel="noopener noreferrer" target="_blank" href="https://artificialisation.developpement-durable.gouv.fr/">observatoire national de l'artificialisation</a> sont disponibles gratuitement.</p>
             <p class="fr-text--sm mb-3">MonDiagnosticArtificialisation vous propose une première trame de ce rapport local, en s’appuyant sur les données de l’observatoire nationale disponibles à date, soit:</p>
