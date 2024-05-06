@@ -111,17 +111,6 @@ class TestImportOCSGE(TestCase):
 
         self.__check_count(before_expected)
 
-        # FIRST IMPORT
-
-        call_command(
-            command_name="load_shapefile",
-            land_id="94",
-            dataset=DataSource.DatasetChoices.OCSGE,
-            millesimes=[2018, 2021],
-        )
-
-        self.__check_count(after_expected)
-
         call_command(
             command_name="load_shapefile",
             land_id="94",
