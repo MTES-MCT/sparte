@@ -145,7 +145,7 @@ class ShapefileFromSource:
     def __init__(self, source: DataSource, logger_name="management.commands") -> None:
         self.storage = DataStorage()
         self.source = source
-        self.output_path = Path("/app/tmp" + str(uuid4()))
+        self.output_path = Path("tmp" + str(uuid4()))
         self.shapefile_path = None
         self.shapefile_directory = None
         self.zipped_shapefile_path = None
@@ -177,7 +177,7 @@ class ShapefileFromURL:
     ) -> None:
         self.url = url
         self.shapefile_name = shapefile_name
-        self.output_path = Path("/app/tmp" + str(uuid4()))
+        self.output_path = Path("tmp" + str(uuid4()))
         self.shapefile_path = None
         self.shapefile_directory = None
         self.zipped_shapefile_path = None
