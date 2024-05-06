@@ -46,7 +46,7 @@ class TestCerema(TestCase):
 
     def test_too_high_date_raises_error(self):
         with self.assertRaises(ValueError):
-            Cerema.get_art_field(start=2009, end=2022)
+            Cerema.get_art_field(start=2009, end=2023)
 
     def test_too_low_date_raises_error(self):
         with self.assertRaises(ValueError):
