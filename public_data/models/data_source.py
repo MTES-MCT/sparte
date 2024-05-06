@@ -116,7 +116,7 @@ class DataSource(models.Model):
             if self.official_land_id == "MetropoleEtCorse":
                 return model.objects.filter(srid_source=self.srid).delete()
             else:
-                raise ValueError("Only MetropoleEtCorse can be deleted")
+                return model.objects.filter(dept_id=self.official_land_id).delete()
         else:
             return model.objects.filter(
                 departement=self.official_land_id,
