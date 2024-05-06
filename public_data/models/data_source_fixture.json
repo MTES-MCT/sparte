@@ -3020,5 +3020,37 @@
             "official_land_id": "66",
             "srid": 2154
         }
+    },
+    {
+        "model": "public_data.datasource",
+        "pk": 245,
+        "fields": {
+            "productor": "CEREMA",
+            "dataset": "MAJIC",
+            "name": "CONSOMMATION_ESPACE",
+            "millesimes": "[\"2009\", \"2023\"]",
+            "mapping": null,
+            "path": "cerema_2023.zip",
+            "shapefile_name": "cerema_2023.shp",
+            "source_url": "https://cerema.app.box.com/v/pnb-action7-indicateurs-ff/file/1512847131932",
+            "official_land_id": "MetropoleEtCorse",
+            "srid": 2154
+        }
+    },
+    {
+        "model": "public_data.datasource",
+        "pk": 246,
+        "fields": {
+            "productor": "MDA",
+            "dataset": "MAJIC",
+            "name": "CONSOMMATION_ESPACE",
+            "millesimes": "[\"2009\", \"2023\"]",
+            "mapping": null,
+            "path": "MAJIC_CONSOMMATION_ESPACE_MetropoleEtCorse_2009_2023_MDA.shp.zip",
+            "shapefile_name": "CONSOMMATION_ESPACE.shp",
+            "source_url": null,
+            "official_land_id": "MetropoleEtCorse",
+            "srid": 2154
+        }
     }
 ]
