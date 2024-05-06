@@ -9,7 +9,7 @@ from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.db import connection
 
-from public_data.models import DataSource
+from public_data.models import Cerema, DataSource
 from public_data.models.enums import SRID
 from public_data.shapefile import ShapefileFromSource
 from public_data.storages import DataStorage
@@ -491,9 +491,86 @@ def build_ign_source(source: DataSource) -> list[Path]:
     raise ValueError(f"Dataset {source.dataset} is not supported")
 
 
+def build_consommation_espace(source: DataSource) -> tuple[DataSource, Path]:
+    """
+    TODO: Add description
+    """
+
+    build_name = source.get_build_name()
+
+    with ShapefileFromSource(source=source) as shapefile_path:
+        art_fields = Cerema.get_art_field(
+            start=source.millesimes[0],
+            end=source.millesimes[1] - 1,
+        )
+        habitat_fields = [field.replace("art", "hab").replace("naf", "art") for field in art_fields]
+        activity_fields = [field.replace("art", "act").replace("naf", "art") for field in art_fields]
+        sql = f"""
+            SELECT
+                *,
+                '{source.srid}' AS SRID,
+                CAST(({' + '.join(art_fields)}) AS FLOAT) AS NAF11ART21,
+                CAST(({' + '.join(habitat_fields)}) AS FLOAT) AS ART11HAB21,
+                CAST(({' + '.join(activity_fields)}) AS FLOAT) AS ART11ACT21,
+                GEOMETRY AS MPOLY
+            FROM
+                {Path(source.shapefile_name).stem}
+        """
+        command = [
+            "ogr2ogr",
+            "-dialect SQLITE",
+            '-f "ESRI Shapefile"',
+            f'"{build_name}"',
+            str(shapefile_path.absolute()),
+            "-nlt MULTIPOLYGON",
+            "-nlt PROMOTE_TO_MULTI",
+            f"-nln {source.name}",
+            f"-a_srs EPSG:{source.srid}",
+            "-sql",
+            f'"{multiline_string_to_single_line(sql)}"',
+        ]
+
+        with open("output.txt", "w") as f:
+            subprocess.run(
+                args=" ".join(command),
+                shell=True,
+                check=True,
+                stdout=f,
+            )
+
+    output_source, _ = DataSource.objects.update_or_create(
+        productor=source.ProductorChoices.MDA,
+        dataset=source.dataset,
+        name=source.name,
+        millesimes=source.millesimes,
+        official_land_id=source.official_land_id,
+        defaults={
+            "mapping": None,
+            "path": build_name,
+            "shapefile_name": source.name + ".shp",
+            "srid": source.srid,
+        },
+    )
+    return output_source, Path(build_name)
+
+
+def build_cerema_source(source: DataSource) -> list[Path]:
+    if source.dataset == source.DatasetChoices.MAJIC:
+        if source.name == source.DataNameChoices.CONSOMMATION_ESPACE:
+            _, consommation_espace_shapefile_path = build_consommation_espace(
+                source=source,
+            )
+            return [consommation_espace_shapefile_path]
+
+        raise ValueError(f"DataName {source.name} is not supported")
+    raise ValueError(f"Dataset {source.dataset} is not supported")
+
+
 def build_source(source: DataSource) -> list[Path]:
     if source.productor == source.ProductorChoices.IGN:
         return build_ign_source(source=source)
+    if source.productor == source.ProductorChoices.CEREMA:
+        return build_cerema_source(source=source)
 
     raise ValueError(f"Productor {source.productor} is not supported")
 
@@ -505,7 +582,8 @@ class Command(BaseCommand):
         parser.add_argument("--productor", type=str, required=True, choices=DataSource.ProductorChoices.values)
         parser.add_argument("--dataset", type=str, required=True, choices=DataSource.DatasetChoices.values)
         parser.add_argument("--name", type=str, choices=DataSource.DataNameChoices.values)
-        parser.add_argument("--year", type=str)
+        parser.add_argument("--parallel", action="store_true", help="Run the build in parallel", default=False)
+        parser.add_argument("--millesimes", type=str, help="Year of the data")
         parser.add_argument(
             "--land_id",
             type=str,
@@ -523,8 +601,12 @@ class Command(BaseCommand):
             sources = sources.filter(official_land_id=options.get("land_id"))
         if options.get("name"):
             sources = sources.filter(name=options.get("name"))
-        if options.get("year"):
-            sources = sources.filter(millesimes__contains=[options.get("year")])
+        if options.get("millesimes"):
+            if "," in options.get("millesimes"):
+                millesimes = list(map(int, options.get("millesimes").split(",")))
+            else:
+                millesimes = [int(options.get("millesimes"))]
+            sources = sources.filter(millesimes=millesimes)
         return sources
 
     def handle(self, *args: Any, **options: Any) -> str | None:
@@ -534,9 +616,13 @@ class Command(BaseCommand):
 
         futures = []
 
-        with ProcessPoolExecutor(max_workers=5, initializer=django_setup) as executor:
+        if not options.get("parallel"):
             for source in self.get_sources_queryset(options).all():
-                futures.append(executor.submit(build_source, source))
+                build_source(source)
+        else:
+            with ProcessPoolExecutor(max_workers=5, initializer=django_setup) as executor:
+                for source in self.get_sources_queryset(options).all():
+                    futures.append(executor.submit(build_source, source))
 
         if options.get("upload"):
             with ProcessPoolExecutor(max_workers=5, initializer=django_setup) as executor:

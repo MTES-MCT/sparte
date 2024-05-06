@@ -3,6 +3,7 @@ from django.db import models
 
 from public_data.models.enums import SRID
 
+from .cerema import Cerema
 from .ocsge import ArtificialArea, Ocsge, OcsgeDiff, ZoneConstruite
 
 
@@ -102,6 +103,7 @@ class DataSource(models.Model):
             self.DataNameChoices.ZONE_CONSTRUITE: ZoneConstruite,
             self.DataNameChoices.ZONE_ARTIFICIELLE: ArtificialArea,
             self.DataNameChoices.DIFFERENCE: OcsgeDiff,
+            self.DataNameChoices.CONSOMMATION_ESPACE: Cerema,
         }[self.name]
 
         if self.name == self.DataNameChoices.DIFFERENCE:
@@ -110,6 +112,11 @@ class DataSource(models.Model):
                 year_old=min(self.millesimes),
                 year_new=max(self.millesimes),
             ).delete()
+        elif self.name == self.DataNameChoices.CONSOMMATION_ESPACE:
+            if self.official_land_id == "MetropoleEtCorse":
+                return model.objects.filter(srid_source=self.srid).delete()
+            else:
+                raise ValueError("Only MetropoleEtCorse can be deleted")
         else:
             return model.objects.filter(
                 departement=self.official_land_id,
