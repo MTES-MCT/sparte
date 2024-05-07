@@ -493,7 +493,8 @@ def build_ign_source(source: DataSource) -> list[Path]:
 
 def build_consommation_espace(source: DataSource) -> tuple[DataSource, Path]:
     """
-    TODO: Add description
+    Creates a new shapefile with the consommation d'espace from MAJIC.
+    Based on the consommation d'espace shapefile from CEREMA.
     """
 
     build_name = source.get_build_name()
