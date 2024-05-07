@@ -1372,10 +1372,10 @@ Utilities
 
 
 .local-report-download-btn {
-    display: block;
     position: sticky;
     top: 90vh;
-    margin: 0 auto;
+    left: 50%;
+    transform: translateX(-50%);
     z-index: 10;
     font-weight: bold;
 }
