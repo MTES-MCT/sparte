@@ -342,10 +342,10 @@ def build_artficial_area(
     occupation_du_sol_shapefile_path: Path,
 ) -> tuple[DataSource, Path]:
     cerema_source = DataSource.objects.get(
-        productor=DataSource.ProductorChoices.CEREMA,
+        productor=DataSource.ProductorChoices.MDA,
         dataset=DataSource.DatasetChoices.MAJIC,
         name=DataSource.DataNameChoices.CONSOMMATION_ESPACE,
-        srid=SRID.LAMBERT_93,
+        srid=occupation_du_sol_source.srid,
     )
     with ShapefileFromSource(source=cerema_source) as majic_shapefile_path:
         build_name = (
