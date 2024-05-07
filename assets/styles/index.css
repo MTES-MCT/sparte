@@ -682,12 +682,8 @@ Utilities
 .local-report-download-btn {
     display: block;
     position: sticky;
-    right: 0em;
-    top: 10vh;
     top: 90vh;
-    width: max-content;
-    margin-left: auto;
-    margin-right: auto;
+    margin: 0 auto;
     z-index: 10;
     font-weight: bold;
 }
