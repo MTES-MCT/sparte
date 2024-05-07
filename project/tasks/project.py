@@ -345,11 +345,22 @@ def send_word_diagnostic(self, request_id):
     logger.info(f"Start send word for request_id={request_id}")
     try:
         req = Request.objects.select_related("project").get(id=int(request_id))
+
+        template_id = {
+            RequestedDocumentChoices.RAPPORT_COMPLET: 8,
+            RequestedDocumentChoices.RAPPORT_LOCAL: 61,
+        }[req.requested_document]
+
+        diagnostic_name = {
+            RequestedDocumentChoices.RAPPORT_COMPLET: req.project.name,
+            RequestedDocumentChoices.RAPPORT_LOCAL: req.project.land.name,
+        }[req.requested_document]
+
         email = SibTemplateEmail(
-            template_id=8,
+            template_id=template_id,
             recipients=[{"name": f"{req.first_name} {req.last_name}", "email": req.email}],
             params={
-                "diagnostic_name": req.project.name,
+                "diagnostic_name": diagnostic_name,
                 "image_url": req.project.cover_image.url,
                 "ocsge_available": ""
                 if req.project.ocsge_coverage_status == req.project.OcsgeCoverageStatus.COMPLETE_UNIFORM
