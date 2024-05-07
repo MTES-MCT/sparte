@@ -7,9 +7,9 @@ logger = logging.getLogger("management.commands")
 
 
 class Command(BaseCommand):
-    help = "mep_6"
+    help = "mep_53"
 
     def handle(self, *args, **options):
-        logger.info("Start mep_6")
+        logger.info("Start mep_53")
         call_command("loaddata", "diagnostic_word/word_template_fixture.json")
-        logger.info("End mep_6")
+        logger.info("End mep_53")
