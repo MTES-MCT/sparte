@@ -2,6 +2,18 @@
 
 Ce changelog suit la méthode "keep a changelog" disponible ici: [https://keepachangelog.com/en/1.0.0/](https://keepachangelog.com/en/1.0.0/)
 
+## [5.3] Rapport local - 2024.05.07
+
+## Ajouté
+- Rapport local disponible au téléchargement [#287](https://github.com/MTES-MCT/sparte/pull/287)
+- Onglet dédié au rapport local (contexte légal, disponibilité des données etc.) [#272](https://github.com/MTES-MCT/sparte/pull/272)
+
+## Modifié
+- Amélioration de tous les graphiques (titre, légende, source etc.) [#293](https://github.com/MTES-MCT/sparte/pull/293)
+- Mention du rapport local sur la page d'accueil [#323](https://github.com/MTES-MCT/sparte/pull/323)
+- Date de début des diagnostics par défaut passé de 2009 à 2011 [#292](https://github.com/MTES-MCT/sparte/pull/292)
+- Remplacé l'inscription à la newsletter sur la landing page dédiée au rapport local par le formulaire de recherche de territoire [#327](https://github.com/MTES-MCT/sparte/pull/327)
+
 ## [5.2] OCS GE Pyrénées-Orientales - 2024.05.01
 
 ## Ajouté 
