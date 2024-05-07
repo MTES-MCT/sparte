@@ -23,25 +23,9 @@
         <h1 class="fr-mb-0">Préparer le rapport local de suivi de l’artificialisation des sols avec Mon Diag Artif</h1>
       </div>
       <div class="fr-col fr-col-12 fr-col-md-8">
-        <p>Notre équipe travaille en partenariat avec la DGALN à la production automatique d'une trame pré-remplie du rapport local de suivi de l’artificialisation des sols de votre territoire.</p>
-        <p class="fr-badge fr-badge--new fr-badge--sm text-dark">Bientôt disponible</p>
-        <form hx-post="{% url 'home:nwl-subscription' %}" class="fr-mt-2w">
-          {% csrf_token %}
-          <div class="fr-input-group">
-            <label class="fr-label" for="newsletter-email">
-              Inscrivez-vous à notre lettre d'infos pour être notifié de la mise en ligne du rapport local
-            </label>
-            <div class="fr-input-wrap fr-input-wrap--addon">
-              <input class="fr-input" title="Votre adresse électronique (ex. : nom@domaine.fr)" autocomplete="email" attributes="[object Object]" aria-describedby="newsletter-email-hint-text newsletter-email-messages" placeholder="Votre adresse électronique (ex. : nom@domaine.fr)" id="newsletter-email" type="email" name="email">
-              <button class="fr-btn" id="newsletter-button" title="S'abonner à notre lettre d'information" type="submit">
-                S'abonner
-              </button>
-            </div>
-            <div class="fr-messages-group" id="newsletter-email-messages" aria-live="assertive"></div>
-          </div>
-          <p id="newsletter-email-hint-text" class="fr-hint-text">En renseignant votre adresse électronique, vous acceptez de recevoir nos actualités par courriel. Vous pouvez vous désinscrire à tout moment à l'aide des liens de désinscription ou en nous contactant.</p>
-        </form>
-        {% comment %} {% include "project/partials/search.html" %} {% endcomment %}
+        <p class="text-white">Notre équipe travaille en partenariat avec la DGALN à la production automatique d'une trame pré-remplie du rapport local de suivi de l’artificialisation des sols de votre territoire.</p>
+        <p class="fr-badge fr-badge--new fr-badge--sm text-dark fr-mb-3w">Nouveau</p>
+        {% include "project/partials/search.html" %}
       </div>
     </div>
   </div>
