@@ -100,7 +100,10 @@ class ObjectiveChart(ProjectChart):
             },
         ]
         self.total_real = self.total_2020 = 0
-        for year, val in self.project.get_conso_per_year().items():
+        for year, val in self.project.land.get_conso_per_year(
+            start="2011",
+            end="2022",
+        ).items():
             if int(year) <= 2020:
                 self.total_2020 += val
             self.total_real += val
