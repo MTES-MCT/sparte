@@ -11,6 +11,7 @@ from django.utils import timezone
 from django.views.generic import CreateView, FormView, RedirectView, TemplateView
 from django_app_parameter import app_parameter
 
+from brevo.connectors import Brevo
 from project.models import Request
 from users.models import User
 from utils.functions import get_url_with_domain
@@ -102,6 +103,7 @@ class NewsLetterConfirmationView(RedirectView):
                 "Félicitation, vous êtes maintenant inscrit à la newsletter.",
             )
             send_nwl_final.delay(nwl.id)
+            Brevo().after_newsletter_subscription_confirmation(newsletter_sub=nwl)
         except Newsletter.DoesNotExist:
             messages.error(self.request, "Confirmation impossible, le jeton fourni est inconnu.")
         return "/"
