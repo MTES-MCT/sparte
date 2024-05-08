@@ -9,7 +9,7 @@ logger = logging.getLogger("management.commands")
 
 
 class Command(BaseCommand):
-    help = "mep_6"
+    help = "mep_54"
 
     def load_cerema_shapefile(self, land_id: str) -> None:
         call_command(
@@ -21,7 +21,7 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-        logger.info("Start mep_6")
+        logger.info("Start mep_54")
 
         DataSource.objects.all().delete()
         call_command("loaddata", "public_data/models/data_source_fixture.json")
