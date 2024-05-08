@@ -66,7 +66,7 @@ class ProjectReportConsoView(ProjectReportBaseView):
         level = self.request.GET.get("level_conso", project.level)
 
         # communes_data_graph
-        chart_conso_cities = charts.AnnualConsoChart(project, level=level)
+        chart_conso_cities = charts.AnnualTotalConsoChart(project, level=level)
 
         target_2031_consumption = project.get_bilan_conso()
         current_conso = project.get_bilan_conso_time_scoped()
@@ -165,7 +165,7 @@ class ProjectReportCityGroupView(ProjectReportBaseView):
             return set(_.name for _ in group if _.name is not None)
 
         # Consommation des communes
-        chart_conso_cities = charts.AnnualConsoChart(project, group_name=group_name)
+        chart_conso_cities = charts.AnnualTotalConsoChart(project, group_name=group_name)
         communes_table = dict()
         for city_name, data in chart_conso_cities.get_series().items():
             data.update({"Total": sum(data.values())})
