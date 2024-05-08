@@ -5,6 +5,7 @@
 @import '/assets/styles/map.css';
 @import 'maplibre-gl/dist/maplibre-gl.css';
 
+
 /*
 Header logo
 */
@@ -678,8 +679,13 @@ Utilities
 .local-report-download-btn {
     position: sticky;
     top: 90vh;
-    left: 50%;
-    transform: translateX(-50%);
     z-index: 10;
     font-weight: bold;
+}
+
+@media (min-width: 992px) {
+    .local-report-download-btn  {
+        left: 50%;
+        transform: translateX(-50%);
+    }
 }
