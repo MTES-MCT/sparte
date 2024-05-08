@@ -10,7 +10,7 @@ from public_data.models import DataSource
 class TestRepackOcsge(TestCase):
     def setUp(self) -> None:
         self.expected_files = {
-            "94_DIFFERENCE_2018_2021_IGN_REPACKED.shp.zip": "dd4fe7392d2873562d9c210aff04585e",
+            "94_DIFFERENCE_2018_2021_IGN_REPACKED.shp.zip": "ef0f7f02ca9e7e9ca4a27ab6634a08c7",
             "94_OCCUPATION_DU_SOL_2018_IGN_REPACKED.shp.zip": "779f9ffdb39489a34839d61a40037720",
             "94_OCCUPATION_DU_SOL_2021_IGN_REPACKED.shp.zip": "8d161c65aac9ce01efb29251ee8f6924",
             "94_ZONE_CONSTRUITE_2018_IGN_REPACKED.shp.zip": "b65e61ebfd7c7c68f779ec39b59bea28",
@@ -19,7 +19,7 @@ class TestRepackOcsge(TestCase):
 
     def tearDown(self) -> None:
         for file in self.expected_files:
-            # Path(file).unlink()
+            Path(file).unlink()
             print(file)
 
     def test_repack_ocsge_94(self) -> None:
