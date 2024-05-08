@@ -379,7 +379,7 @@ def build_artficial_area(
                 '{occupation_du_sol_source.srid}' AS SRID,
                 '{occupation_du_sol_source.millesimes[0]}' AS YEAR,
                 '{occupation_du_sol_source.official_land_id}' AS DPT,
-                IDCOM AS CITY,
+                idcom AS CITY,
                 ST_Multi(
                     ST_CollectionExtract(
                         ST_Union(
@@ -395,9 +395,9 @@ def build_artficial_area(
                 LEFT JOIN {temp_table_occupation_du_sol} AS artif ON
                 ST_Intersects(majic.mpoly, artif.mpoly)
             WHERE
-                IDDEP = '{occupation_du_sol_source.official_land_id}' AND
+                iddep = '{occupation_du_sol_source.official_land_id}' AND
                 IS_ARTIF = 1
-            GROUP BY IDCOM, majic.mpoly
+            GROUP BY idcom, majic.mpoly
         ) as foo
         """
 
