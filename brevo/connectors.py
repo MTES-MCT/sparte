@@ -9,6 +9,7 @@ from typing import Any, Dict
 import requests
 from django.conf import settings
 
+from home.models import Newsletter
 from project.models import Project, Request
 from users.models import User
 
@@ -91,5 +92,18 @@ class Brevo:
             },
             "updateEnabled": True,
             "email": request.email,
+        }
+        self._post("contacts", data=data)
+
+    def after_newsletter_subscription_confirmation(self, newsletter_sub: Newsletter) -> None:
+        """Send user's data to Brevo after newsletter subscription."""
+        data = {
+            "attributes": {
+                "EST_INSCRIT_NEWSLETTER": "OUI",
+                "DATE_INSCRIPTION_NEWSLETTER": newsletter_sub.created_date.strftime("%Y/%m/%d"),
+                "DATE_CONFIRMATION_INSCRIPTION_NEWSLETTER": newsletter_sub.confirmation_date.strftime("%Y/%m/%d"),
+            },
+            "updateEnabled": True,
+            "email": newsletter_sub.email,
         }
         self._post("contacts", data=data)
