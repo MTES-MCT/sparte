@@ -2,7 +2,7 @@
 
 Ce changelog suit la méthode "keep a changelog" disponible ici: [https://keepachangelog.com/en/1.0.0/](https://keepachangelog.com/en/1.0.0/)
 
-## [5.4] Millésime CEREMA 2023 - 2024.05.08
+## [5.4] Millésime CEREMA 2023 - 2024.05.09
 
 ## Ajouté
 - Nouvelles données 2023 d'évolution des fichiers fonciers CEREMA [#321](https://github.com/MTES-MCT/sparte/pull/321)
