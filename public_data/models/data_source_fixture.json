@@ -335,86 +335,6 @@
     },
     {
         "model": "public_data.datasource",
-        "pk": 27,
-        "fields": {
-            "productor": "CEREMA",
-            "dataset": "MAJIC",
-            "name": "CONSOMMATION_ESPACE",
-            "millesimes": "[\"2022\"]",
-            "mapping": null,
-            "path": "obs_artif_conso_com_2009_2022.zip",
-            "shapefile_name": "obs_artif_conso_com_2009_2022.shp",
-            "source_url": "https://cerema.app.box.com/v/pnb-action7-indicateurs-ff/file/1220325634602",
-            "official_land_id": "MetropoleEtCorse",
-            "srid": 2154
-        }
-    },
-    {
-        "model": "public_data.datasource",
-        "pk": 28,
-        "fields": {
-            "productor": "CEREMA",
-            "dataset": "MAJIC",
-            "name": "CONSOMMATION_ESPACE",
-            "millesimes": "[\"2022\"]",
-            "mapping": null,
-            "path": "obs_artif_conso_com_2009_2022_971.zip",
-            "shapefile_name": "obs_artif_conso_com_2009_2022_971.shp",
-            "source_url": "https://cerema.app.box.com/v/pnb-action7-indicateurs-ff/file/1220324623439",
-            "official_land_id": "971",
-            "srid": 32620
-        }
-    },
-    {
-        "model": "public_data.datasource",
-        "pk": 29,
-        "fields": {
-            "productor": "CEREMA",
-            "dataset": "MAJIC",
-            "name": "CONSOMMATION_ESPACE",
-            "millesimes": "[\"2022\"]",
-            "mapping": null,
-            "path": "obs_artif_conso_com_2009_2022_972.zip",
-            "shapefile_name": "obs_artif_conso_com_2009_2022_972.shp",
-            "source_url": "https://cerema.app.box.com/v/pnb-action7-indicateurs-ff/file/1220319992060",
-            "official_land_id": "972",
-            "srid": 32620
-        }
-    },
-    {
-        "model": "public_data.datasource",
-        "pk": 30,
-        "fields": {
-            "productor": "CEREMA",
-            "dataset": "MAJIC",
-            "name": "CONSOMMATION_ESPACE",
-            "millesimes": "[\"2022\"]",
-            "mapping": null,
-            "path": "obs_artif_conso_com_2009_2022_973.zip",
-            "shapefile_name": "obs_artif_conso_com_2009_2022_973.shp",
-            "source_url": "https://cerema.app.box.com/v/pnb-action7-indicateurs-ff/file/1220325269345",
-            "official_land_id": "973",
-            "srid": 2972
-        }
-    },
-    {
-        "model": "public_data.datasource",
-        "pk": 31,
-        "fields": {
-            "productor": "CEREMA",
-            "dataset": "MAJIC",
-            "name": "CONSOMMATION_ESPACE",
-            "millesimes": "[\"2022\"]",
-            "mapping": null,
-            "path": "obs_artif_conso_com_2009_2022_974.zip",
-            "shapefile_name": "obs_artif_conso_com_2009_2022_974.shp",
-            "source_url": "https://cerema.app.box.com/v/pnb-action7-indicateurs-ff/file/1220324321616",
-            "official_land_id": "974",
-            "srid": 2975
-        }
-    },
-    {
-        "model": "public_data.datasource",
         "pk": 32,
         "fields": {
             "productor": "IGN",
@@ -2591,22 +2511,6 @@
     },
     {
         "model": "public_data.datasource",
-        "pk": 213,
-        "fields": {
-            "productor": "IGN",
-            "dataset": "ADMIN_EXPRESS",
-            "name": "DEPARTEMENTS",
-            "millesimes": "[\"2024\"]",
-            "mapping": null,
-            "path": "departements_2154_2024.zip",
-            "shapefile_name": "DEPARTEMENT.shp",
-            "source_url": "https://data.geopf.fr/telechargement/download/ADMIN-EXPRESS/ADMIN-EXPRESS_3-2__SHP_LAMB93_FXX_2024-03-25/ADMIN-EXPRESS_3-2__SHP_LAMB93_FXX_2024-03-25.7z",
-            "official_land_id": "MetropoleEtCorse",
-            "srid": 2154
-        }
-    },
-    {
-        "model": "public_data.datasource",
         "pk": 218,
         "fields": {
             "productor": "IGN",
@@ -3019,6 +2923,166 @@
             "source_url": null,
             "official_land_id": "66",
             "srid": 2154
+        }
+    },
+    {
+        "model": "public_data.datasource",
+        "pk": 245,
+        "fields": {
+            "productor": "CEREMA",
+            "dataset": "MAJIC",
+            "name": "CONSOMMATION_ESPACE",
+            "millesimes": "[\"2009\", \"2023\"]",
+            "mapping": null,
+            "path": "cerema_2023.zip",
+            "shapefile_name": "cerema_2023.shp",
+            "source_url": "https://cerema.app.box.com/v/pnb-action7-indicateurs-ff/file/1512847131932",
+            "official_land_id": "MetropoleEtCorse",
+            "srid": 2154
+        }
+    },
+    {
+        "model": "public_data.datasource",
+        "pk": 246,
+        "fields": {
+            "productor": "MDA",
+            "dataset": "MAJIC",
+            "name": "CONSOMMATION_ESPACE",
+            "millesimes": "[\"2009\", \"2023\"]",
+            "mapping": null,
+            "path": "MAJIC_CONSOMMATION_ESPACE_MetropoleEtCorse_2009_2023_MDA.shp.zip",
+            "shapefile_name": "CONSOMMATION_ESPACE.shp",
+            "source_url": null,
+            "official_land_id": "MetropoleEtCorse",
+            "srid": 2154
+        }
+    },
+    {
+        "model": "public_data.datasource",
+        "pk": 247,
+        "fields": {
+            "productor": "CEREMA",
+            "dataset": "MAJIC",
+            "name": "CONSOMMATION_ESPACE",
+            "millesimes": "[\"2009\", \"2023\"]",
+            "mapping": null,
+            "path": "cerema_2023_971.zip",
+            "shapefile_name": "obs_artif_conso_com_2009_2023_971.shp",
+            "source_url": "https://cerema.app.box.com/v/pnb-action7-indicateurs-ff/file/1512838206072",
+            "official_land_id": "971",
+            "srid": 32620
+        }
+    },
+    {
+        "model": "public_data.datasource",
+        "pk": 248,
+        "fields": {
+            "productor": "CEREMA",
+            "dataset": "MAJIC",
+            "name": "CONSOMMATION_ESPACE",
+            "millesimes": "[\"2009\", \"2023\"]",
+            "mapping": null,
+            "path": "cerema_2023_972.zip",
+            "shapefile_name": "obs_artif_conso_com_2009_2023_972.shp",
+            "source_url": "https://cerema.app.box.com/v/pnb-action7-indicateurs-ff/file/1512827044358",
+            "official_land_id": "972",
+            "srid": 32620
+        }
+    },
+    {
+        "model": "public_data.datasource",
+        "pk": 249,
+        "fields": {
+            "productor": "CEREMA",
+            "dataset": "MAJIC",
+            "name": "CONSOMMATION_ESPACE",
+            "millesimes": "[\"2009\", \"2023\"]",
+            "mapping": null,
+            "path": "cerema_2023_973.zip",
+            "shapefile_name": "obs_artif_conso_com_2009_2023_973.shp",
+            "source_url": "https://cerema.app.box.com/v/pnb-action7-indicateurs-ff/file/1512828738470",
+            "official_land_id": "973",
+            "srid": 2972
+        }
+    },
+    {
+        "model": "public_data.datasource",
+        "pk": 250,
+        "fields": {
+            "productor": "CEREMA",
+            "dataset": "MAJIC",
+            "name": "CONSOMMATION_ESPACE",
+            "millesimes": "[\"2009\", \"2023\"]",
+            "mapping": null,
+            "path": "cerema_2023_974.zip",
+            "shapefile_name": "obs_artif_conso_com_2009_2023_974.shp",
+            "source_url": "https://cerema.app.box.com/v/pnb-action7-indicateurs-ff/file/1512840025235",
+            "official_land_id": "974",
+            "srid": 2975
+        }
+    },
+    {
+        "model": "public_data.datasource",
+        "pk": 251,
+        "fields": {
+            "productor": "MDA",
+            "dataset": "MAJIC",
+            "name": "CONSOMMATION_ESPACE",
+            "millesimes": "[\"2009\", \"2023\"]",
+            "mapping": null,
+            "path": "MAJIC_CONSOMMATION_ESPACE_971_2009_2023_MDA.shp.zip",
+            "shapefile_name": "CONSOMMATION_ESPACE.shp",
+            "source_url": null,
+            "official_land_id": "971",
+            "srid": 32620
+        }
+    },
+    {
+        "model": "public_data.datasource",
+        "pk": 252,
+        "fields": {
+            "productor": "MDA",
+            "dataset": "MAJIC",
+            "name": "CONSOMMATION_ESPACE",
+            "millesimes": "[\"2009\", \"2023\"]",
+            "mapping": null,
+            "path": "MAJIC_CONSOMMATION_ESPACE_972_2009_2023_MDA.shp.zip",
+            "shapefile_name": "CONSOMMATION_ESPACE.shp",
+            "source_url": null,
+            "official_land_id": "972",
+            "srid": 32620
+        }
+    },
+    {
+        "model": "public_data.datasource",
+        "pk": 253,
+        "fields": {
+            "productor": "MDA",
+            "dataset": "MAJIC",
+            "name": "CONSOMMATION_ESPACE",
+            "millesimes": "[\"2009\", \"2023\"]",
+            "mapping": null,
+            "path": "MAJIC_CONSOMMATION_ESPACE_973_2009_2023_MDA.shp.zip",
+            "shapefile_name": "CONSOMMATION_ESPACE.shp",
+            "source_url": null,
+            "official_land_id": "973",
+            "srid": 2972
+        }
+    },
+    {
+        "model": "public_data.datasource",
+        "pk": 254,
+        "fields": {
+            "productor": "MDA",
+            "dataset": "MAJIC",
+            "name": "CONSOMMATION_ESPACE",
+            "millesimes": "[\"2009\", \"2023\"]",
+            "mapping": null,
+            "path": "MAJIC_CONSOMMATION_ESPACE_974_2009_2023_MDA.shp.zip",
+            "shapefile_name": "CONSOMMATION_ESPACE.shp",
+            "source_url": null,
+            "official_land_id": "974",
+            "srid": 2975
         }
     }
 ]

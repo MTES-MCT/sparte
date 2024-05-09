@@ -3,7 +3,7 @@ import re
 import subprocess
 
 from django.conf import settings
-from django.core.management.base import BaseCommand
+from django.core.management.base import BaseCommand, CommandParser
 
 from public_data.models import DataSource
 from public_data.shapefile import ShapefileFromURL
@@ -124,11 +124,14 @@ class Command(BaseCommand):
         This command is intended to be used in local environment only.
     """
 
+    def add_arguments(self, parser: CommandParser) -> None:
+        parser.add_argument("--urls", nargs="+", type=str)
+
     def handle(self, *args, **options):
         if settings.ENVIRONMENT != "local":
             raise Exception("This command can only be run in local environment")
 
-        urls = []
+        urls = options.get("urls", [])
 
         for url in urls:
             process_url(url)

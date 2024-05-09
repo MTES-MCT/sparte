@@ -1374,9 +1374,16 @@ Utilities
 .local-report-download-btn {
     position: sticky;
     top: 90vh;
-    left: 50%;
-    transform: translateX(-50%);
     z-index: 10;
-    font-weight: bold;
+    justify-content: center;
+    width: 100%;
+}
+
+@media (min-width: 768px) {
+    .local-report-download-btn  {
+        left: 50%;
+        transform: translateX(-50%);
+        width: auto;
+    }
 }
 

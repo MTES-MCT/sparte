@@ -72,7 +72,7 @@ def trigger_async_tasks(project: Project, public_key: str | None = None) -> None
 def create_from_public_key(
     public_key: str,
     start: str = "2011",
-    end: str = "2021",
+    end: str = "2022",
     user: User | None = None,
 ) -> Project:
     """Create a project from one only public_key"""
