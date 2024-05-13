@@ -53,28 +53,30 @@
             <p class="fr-text--sm">Données brutes.</p>
     
             <h6 class="fr-mt-2w">Données</h6>
-            <table class="table fr-table--no-caption table-striped table-sm table-borderless fr-text--sm">
-                <caption>Données évolution de la population du territoire</caption>
-                <thead>
-                    <tr>
-                        <th scope="col"></th>
-                        {% for year in diagnostic.years %}
-                        <th scope="col" class="text-end">{{ year }}</th>
+            <div class="table-responsive">
+                <table class="fr-table fr-table--no-caption">
+                    <caption>Données évolution de la population du territoire</caption>
+                    <thead>
+                        <tr>
+                            <th scope="col"></th>
+                            {% for year in diagnostic.years %}
+                            <th scope="col" class="text-end">{{ year }}</th>
+                            {% endfor %}
+                            <th scope="col" class="text-end">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for city_name, data in pop_table.items %}
+                        <tr>
+                            <th scope="row">{{ city_name }}</th>
+                            {% for year, val in data.items %}
+                            <td class="text-end">{{ val|floatformat:1 }}</td>
+                            {% endfor %}
+                        </tr>
                         {% endfor %}
-                        <th scope="col" class="text-end">Total</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for city_name, data in pop_table.items %}
-                    <tr>
-                        <th scope="row">{{ city_name }}</th>
-                        {% for year, val in data.items %}
-                        <td align="right">{{ val|floatformat:1 }}</td>
-                        {% endfor %}
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
@@ -137,28 +139,30 @@
             <p class="fr-text--sm">Consommation d'espaces NAF annuelle divisée par l'évolution de la population, par maille d'analyse du territoire de diagnostic.</p>
     
             <h6 class="fr-mt-2w">Données</h6>
-            <table class="table fr-table--no-caption table-striped table-sm table-borderless fr-text--sm">
-                <caption>Données Ha par nouvel habitant</caption>
-                <thead>
-                    <tr>
-                        <th scope="col" class="text-end">(Ha par nouvel habitant)</th>
-                        {% for year in diagnostic.years %}
-                        <th scope="col" class="text-end">{{ year }}</th>
+            <div class="table-responsive">
+                <table class="fr-table fr-table--no-caption">
+                    <caption>Données Ha par nouvel habitant</caption>
+                    <thead>
+                        <tr>
+                            <th scope="col" class="text-end"></th>
+                            {% for year in diagnostic.years %}
+                            <th scope="col" class="text-end">{{ year }}</th>
+                            {% endfor %}
+                            <th scope="col" class="text-end">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for city_name, data in conso_pop_table.items %}
+                        <tr>
+                            <th scope="row">{{ city_name }}</th>
+                            {% for year, val in data.items %}
+                            <td class="text-end">{{ val|floatformat:1 }}</td>
+                            {% endfor %}
+                        </tr>
                         {% endfor %}
-                        <th scope="col" class="text-end">Total</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for city_name, data in conso_pop_table.items %}
-                    <tr>
-                        <th scope="row">{{ city_name }}</th>
-                        {% for year, val in data.items %}
-                        <td align="right">{{ val|floatformat:1 }}</td>
-                        {% endfor %}
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>

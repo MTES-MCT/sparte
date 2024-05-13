@@ -55,25 +55,27 @@
             <p class="fr-text--sm">Données brutes, sans calcul</p>
     
             <h6 class="fr-mt-2w">Données</h6>
-            <table class="table fr-table--no-caption table-striped table-sm table-borderless fr-text--sm">
-                <caption>Données surface des territoires</caption>
-                <thead>
-                    <tr>
-                        <th scope="col"></th>
-                        <th scope="col" class="text-end">Surface des territoires</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for city_name, data in indicateur_table.items %}
-                    <tr>
-                        <th scope="row">{{ city_name }}</th>
-                        {% for year, val in data.items %}
-                        <td align="right">{{ val|floatformat:0 }} Ha</td>
+            <div class="table-responsive">
+                <table class="fr-table fr-table--no-caption">
+                    <caption>Données surface des territoires</caption>
+                    <thead>
+                        <tr>
+                            <th scope="col"></th>
+                            <th scope="col" class="text-end">Surface des territoires</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for city_name, data in indicateur_table.items %}
+                        <tr>
+                            <th scope="row">{{ city_name }}</th>
+                            {% for year, val in data.items %}
+                            <td class="text-end">{{ val|floatformat:0 }} Ha</td>
+                            {% endfor %}
+                        </tr>
                         {% endfor %}
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
@@ -134,28 +136,30 @@
             </p>
     
             <h6 class="fr-mt-2w">Données</h6>
-            <table class="table fr-table--no-caption table-striped table-sm table-borderless fr-text--sm">
-                <caption>Données consommation proportionnelle à la surface (‰)</caption>
-                <thead>
-                    <tr>
-                        <th scope="col">Consommation proportionnelle du territoire (‰)</th>
-                        {% for year in diagnostic.years %}
-                        <th scope="col" class="text-end">{{ year }}</th>
+            <div class="table-responsive">
+                <table class="fr-table fr-table--no-caption table-last-column-bold">
+                    <caption>Données consommation proportionnelle à la surface (‰)</caption>
+                    <thead>
+                        <tr>
+                            <th scope="col"></th>
+                            {% for year in diagnostic.years %}
+                            <th scope="col" class="text-end">{{ year }}</th>
+                            {% endfor %}
+                            <th scope="col" class="text-end">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for city_name, data in comparison_table.items %}
+                        <tr>
+                            <th scope="row">{{ city_name }}</th>
+                            {% for year, val in data.items %}
+                            <td class="text-end">{{ val|floatformat:1 }}</td>
+                            {% endfor %}
+                        </tr>
                         {% endfor %}
-                        <th scope="col" class="text-end">Total</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for city_name, data in comparison_table.items %}
-                    <tr>
-                        <th scope="row">{{ city_name }}</th>
-                        {% for year, val in data.items %}
-                        <td align="right">{{ val|floatformat:1 }}</td>
-                        {% endfor %}
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>

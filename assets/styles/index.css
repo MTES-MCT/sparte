@@ -482,6 +482,18 @@ Table
     background-color: var(--background-action-low-blue-france);
 }
 
+.table-responsive table {
+    width: 100%;
+}
+
+.table-last-row-bold tr:last-child {
+    font-weight: bold !important;
+}
+
+.table-last-column-bold td:last-child {
+    font-weight: bold !important;
+}
+
 /*
 Progress bar gradient
 */

@@ -115,7 +115,7 @@ class ProjectReportConsoView(ProjectReportBaseView):
                 # tables
                 "communes_data_table": add_total_line_column(chart_conso_cities.get_series()),
                 "data_determinant": add_total_line_column(det_chart.get_series()),
-                "data_comparison": add_total_line_column(comparison_chart.get_series()),
+                "data_comparison": add_total_line_column(comparison_chart.get_series(), line=False),
                 "groups_names": groups_names,
                 "level": level,
                 "objective_chart": objective_chart,
@@ -394,7 +394,7 @@ class ProjectReportArtifView(ProjectReportBaseView):
             "new_natural": progression_time_scoped["new_natural"],
             "net_artif": net_artif,
             "net_artif_rate": net_artif_rate,
-            "table_evolution_artif": add_total_line_column(table_evolution_artif, line=False),
+            "table_evolution_artif": table_evolution_artif,
             "headers_evolution_artif": headers_evolution_artif,
             "detail_couv_artif_chart": detail_couv_artif_chart,
             "detail_couv_artif_table": detail_couv_artif_table,

@@ -61,29 +61,31 @@
     
             <h6 class="fr-mt-2w">Données</h6>
     
-            <table class="table fr-table--no-caption table-striped table-sm table-hover fr-text--sm">
-                <caption>Données trajectoire 2031</caption>
-                <thead>
-                    <tr>
-                        <th scope="col">Millésime</th>
-                        <th scope="col" class="text-end">Réelle (Ha)</th>
-                        <th scope="col" class="text-end">Réelle cumulée (Ha)</th>
-                        <th scope="col" class="text-end">Projection annualisée<br/>de l'objectif 2031 (Ha)</th>
-                        <th scope="col" class="text-end">Cumulé de la<br/>projection (Ha)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for line in target_2031_chart.get_data_table %}
-                    <tr>
-                        <th scope="row">{{ line.year }}</th>
-                        <td align="right">{{ line.real|floatformat:1 }}</td>
-                        <td align="right">{{ line.added_real|floatformat:1 }}</td>
-                        <td align="right">{{ line.objective|floatformat:1 }}</td>
-                        <td align="right">{{ line.added_objective|floatformat:1 }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+            <div class="table-responsive">
+                <table class="fr-table fr-table--no-caption">
+                    <caption>Données trajectoire 2031</caption>
+                    <thead>
+                        <tr>
+                            <th scope="col">Millésime</th>
+                            <th scope="col" class="text-end">Réelle (Ha)</th>
+                            <th scope="col" class="text-end">Réelle cumulée (Ha)</th>
+                            <th scope="col" class="text-end">Projection annualisée<br/>de l'objectif 2031 (Ha)</th>
+                            <th scope="col" class="text-end">Cumulé de la<br/>projection (Ha)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for line in target_2031_chart.get_data_table %}
+                        <tr>
+                            <th scope="row">{{ line.year }}</th>
+                            <td class="text-end">{{ line.real|floatformat:1 }}</td>
+                            <td class="text-end">{{ line.added_real|floatformat:1 }}</td>
+                            <td class="text-end">{{ line.objective|floatformat:1 }}</td>
+                            <td class="text-end">{{ line.added_objective|floatformat:1 }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
