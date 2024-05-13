@@ -719,9 +719,9 @@ class ArtifNetChart(CacheMixin, TemplateView):
     def get_chart(self):
         if self.zone_urba:
             # return chart with data within ZoneUrba polygon
-            return charts.EvolutionArtifChart(self.diagnostic, get_data=self.get_data)
+            return charts.AnnualArtifChart(self.diagnostic, get_data=self.get_data)
         # return classical chart for complete project
-        return charts.EvolutionArtifChart(self.diagnostic)
+        return charts.AnnualArtifChart(self.diagnostic)
 
     def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
         artif_net_chart = self.get_chart()
