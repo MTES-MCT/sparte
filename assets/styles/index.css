@@ -476,10 +476,12 @@ Table
     padding-right: 1rem;
     font-size: 14px;
     max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-.table-custom td input.annual-updated {
-    background-color: var(--background-action-low-blue-france);
+.fr-table th, .fr-table td {
+    padding: .5rem .75rem !important;
 }
 
 .table-responsive table {
