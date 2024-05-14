@@ -1195,6 +1195,13 @@ Table
     font-weight: bold !important;
 }
 
+.fr-table caption {
+    position: inherit !important;
+    font-size: 0.8em;
+    font-weight: 400;
+    color: var(--grey-425-625);
+}
+
 /*
 Progress bar gradient
 */
