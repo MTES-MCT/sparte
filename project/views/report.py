@@ -113,7 +113,7 @@ class ProjectReportConsoView(ProjectReportBaseView):
                 "comparison_chart": comparison_chart,
                 "commune_chart": chart_conso_cities,
                 # tables
-                "communes_data_table": add_total_line_column(chart_conso_cities.get_series()),
+                "communes_data_table": chart_conso_cities.get_series(),
                 "data_determinant": add_total_line_column(det_chart.get_series()),
                 "data_comparison": add_total_line_column(comparison_chart.get_series(), line=False),
                 "groups_names": groups_names,

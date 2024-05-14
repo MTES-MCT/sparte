@@ -232,7 +232,7 @@ Rapport consommation
     
                         <h6 class="fr-mt-2w">Données</h6>
                         <div class="table-responsive">
-                            <table class="fr-table fr-table--no-caption table-last-row-bold table-last-column-bold">
+                            <table class="fr-table fr-table--no-caption table-last-column-bold">
                                 <caption>Données consommation d'espace annuelle sur le territoire</caption>
                                 <thead>
                                     <tr>
@@ -240,7 +240,6 @@ Rapport consommation
                                         {% for year in project.years %}
                                         <th scope="col" class="text-end">{{ year }}</th>
                                         {% endfor %}
-                                        <th scope="col" class="text-end">Total</th>
                                     </tr>
                                 </thead>
                                 <tbody>
