@@ -616,7 +616,7 @@ class ConsoRelativePopChart(CacheMixin, UserQuerysetOrPublicMixin, DetailView):
                 "pop_chart": pop_chart,
                 "pop_table": pop_chart.get_series(),
                 "conso_pop_chart": conso_pop_chart,
-                "conso_pop_table": add_total_line_column(conso_pop_chart.get_series(), line=False),
+                "conso_pop_table": add_total_line_column(conso_pop_chart.get_series(), line=False, column=False),
             }
         )
         return super().get_context_data(**kwargs)
@@ -636,7 +636,9 @@ class ConsoRelativeHouseholdChart(CacheMixin, UserQuerysetOrPublicMixin, DetailV
                 "household_chart": household_chart,
                 "household_table": household_chart.get_series(),
                 "conso_household_chart": conso_household_chart,
-                "conso_household_table": add_total_line_column(conso_household_chart.get_series(), line=False),
+                "conso_household_table": add_total_line_column(
+                    conso_household_chart.get_series(), line=False, column=False
+                ),
             }
         )
         return super().get_context_data(**kwargs)

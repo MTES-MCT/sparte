@@ -37,7 +37,6 @@
                             {% for year in project.years %}
                             <th scope="col" class="text-end">{{ year }}</th>
                             {% endfor %}
-                            <th scope="col" class="text-end">Total</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -45,7 +44,7 @@
                         <tr>
                             <th scope="row">{{ city_name }}</th>
                             {% for year, val in data.items %}
-                            <td align="right">{{ val|floatformat:1 }}</td>
+                            <td class="text-end">{{ val|floatformat:1 }}</td>
                             {% endfor %}
                         </tr>
                         {% endfor %}
@@ -123,7 +122,6 @@
                             {% for year in project.years %}
                             <th scope="col" class="text-end">{{ year }}</th>
                             {% endfor %}
-                            <th scope="col" class="text-end">Total</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -131,7 +129,7 @@
                         <tr>
                             <th scope="row">{{ city_name }}</th>
                             {% for year, val in data.items %}
-                            <td align="right">{{ val|floatformat:1 }}</td>
+                            <td class="text-end">{{ val|floatformat:1 }}</td>
                             {% endfor %}
                         </tr>
                         {% endfor %}
