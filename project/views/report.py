@@ -304,7 +304,7 @@ class ProjectReportSynthesisView(ProjectReportBaseView):
 
 class ProjectReportLocalView(ProjectReportBaseView):
     template_name = "project/report_local.html"
-    breadcrumbs_title = "Rapport local"
+    breadcrumbs_title = "Rapport triennal local"
 
     def get_context_data(self, **kwargs):
         project: Project = self.get_object()
