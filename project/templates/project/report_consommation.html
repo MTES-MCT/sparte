@@ -473,7 +473,7 @@ Rapport consommation
             <div class="fr-custom-loader"></div>
         </div>
 
-        <div id="conso-relative-pop-anchor" class="fr-mt-7w" hx-get="{% url 'project:relative-pop' project.id %}" hx-trigger="revealed">
+        {% comment %} <div id="conso-relative-pop-anchor" class="fr-mt-7w" hx-get="{% url 'project:relative-pop' project.id %}" hx-trigger="revealed">
             <h3>Consommation d'espaces par nouvel habitant</h3>
             <div class="fr-custom-loader"></div>
         </div>
@@ -481,7 +481,7 @@ Rapport consommation
         <div id="conso-relative-household-anchor" class="fr-mt-7w" hx-get="{% url 'project:relative-household' project.id %}" hx-trigger="revealed">
             <h3>Consommation d'espaces par ménages</h3>
             <div class="fr-custom-loader"></div>
-        </div>
+        </div> {% endcomment %}
     </div>
 </div>
 
