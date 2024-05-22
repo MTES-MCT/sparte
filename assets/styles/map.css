@@ -10,16 +10,6 @@
     margin-right: 5px;
 }
 
-#data-tab .fr-grid-row {
-    display: flex;
-    flex-direction: column;
-}
-
-#data-tab .fr-grid-row>div {
-    max-width: 100% !important;
-    width: 100%;
-}
-
 #map__infos-box {
     position: absolute;
     bottom: 10px;
@@ -212,6 +202,20 @@ Tabs
 
 .tabs .tab select {
     outline: none;
+}
+
+#data-tab {
+    width: 50%;
+}
+
+#data-tab .fr-grid-row {
+    display: flex;
+    flex-direction: column;
+}
+
+#data-tab .fr-grid-row > div {
+    max-width: 100% !important;
+    width: 100%;
 }
 
 /*

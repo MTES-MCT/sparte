@@ -439,16 +439,6 @@
     margin-right: 5px;
 }
 
-#data-tab .fr-grid-row {
-    display: flex;
-    flex-direction: column;
-}
-
-#data-tab .fr-grid-row>div {
-    max-width: 100% !important;
-    width: 100%;
-}
-
 #map__infos-box {
     position: absolute;
     bottom: 10px;
@@ -641,6 +631,20 @@ Tabs
 
 .tabs .tab select {
     outline: none;
+}
+
+#data-tab {
+    width: 50%;
+}
+
+#data-tab .fr-grid-row {
+    display: flex;
+    flex-direction: column;
+}
+
+#data-tab .fr-grid-row > div {
+    max-width: 100% !important;
+    width: 100%;
 }
 
 /*
@@ -1171,10 +1175,31 @@ Table
     padding-right: 1rem;
     font-size: 14px;
     max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-.table-custom td input.annual-updated {
-    background-color: var(--background-action-low-blue-france);
+.fr-table th, .fr-table td {
+    padding: .5rem .75rem !important;
+}
+
+.table-responsive table {
+    width: 100%;
+}
+
+.table-last-row-bold tr:last-child {
+    font-weight: bold !important;
+}
+
+.table-last-column-bold td:last-child {
+    font-weight: bold !important;
+}
+
+.fr-table caption {
+    position: inherit !important;
+    font-size: 0.8em;
+    font-weight: 400;
+    color: var(--grey-425-625);
 }
 
 /*

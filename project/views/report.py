@@ -113,9 +113,9 @@ class ProjectReportConsoView(ProjectReportBaseView):
                 "comparison_chart": comparison_chart,
                 "commune_chart": chart_conso_cities,
                 # tables
-                "communes_data_table": add_total_line_column(chart_conso_cities.get_series()),
+                "communes_data_table": add_total_line_column(chart_conso_cities.get_series(), line=False),
                 "data_determinant": add_total_line_column(det_chart.get_series()),
-                "data_comparison": add_total_line_column(comparison_chart.get_series()),
+                "data_comparison": add_total_line_column(comparison_chart.get_series(), line=False),
                 "groups_names": groups_names,
                 "level": level,
                 "objective_chart": objective_chart,
@@ -394,7 +394,7 @@ class ProjectReportArtifView(ProjectReportBaseView):
             "new_natural": progression_time_scoped["new_natural"],
             "net_artif": net_artif,
             "net_artif_rate": net_artif_rate,
-            "table_evolution_artif": add_total_line_column(table_evolution_artif, line=False),
+            "table_evolution_artif": table_evolution_artif,
             "headers_evolution_artif": headers_evolution_artif,
             "detail_couv_artif_chart": detail_couv_artif_chart,
             "detail_couv_artif_table": detail_couv_artif_table,
@@ -616,7 +616,7 @@ class ConsoRelativePopChart(CacheMixin, UserQuerysetOrPublicMixin, DetailView):
                 "pop_chart": pop_chart,
                 "pop_table": pop_chart.get_series(),
                 "conso_pop_chart": conso_pop_chart,
-                "conso_pop_table": add_total_line_column(conso_pop_chart.get_series(), line=False),
+                "conso_pop_table": add_total_line_column(conso_pop_chart.get_series(), line=False, column=False),
             }
         )
         return super().get_context_data(**kwargs)
@@ -636,7 +636,9 @@ class ConsoRelativeHouseholdChart(CacheMixin, UserQuerysetOrPublicMixin, DetailV
                 "household_chart": household_chart,
                 "household_table": household_chart.get_series(),
                 "conso_household_chart": conso_household_chart,
-                "conso_household_table": add_total_line_column(conso_household_chart.get_series(), line=False),
+                "conso_household_table": add_total_line_column(
+                    conso_household_chart.get_series(), line=False, column=False
+                ),
             }
         )
         return super().get_context_data(**kwargs)
@@ -719,9 +721,9 @@ class ArtifNetChart(CacheMixin, TemplateView):
     def get_chart(self):
         if self.zone_urba:
             # return chart with data within ZoneUrba polygon
-            return charts.EvolutionArtifChart(self.diagnostic, get_data=self.get_data)
+            return charts.AnnualArtifChart(self.diagnostic, get_data=self.get_data)
         # return classical chart for complete project
-        return charts.EvolutionArtifChart(self.diagnostic)
+        return charts.AnnualArtifChart(self.diagnostic)
 
     def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
         artif_net_chart = self.get_chart()
