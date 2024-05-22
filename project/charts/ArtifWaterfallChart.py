@@ -9,7 +9,7 @@ class ArtifWaterfallChart(ProjectChart):
     def param(self):
         return super().param | {
             "chart": {"type": "waterfall"},
-            "title": {"text": "Total pour l'ensemble du territoire du diagnostic"},
+            "title": {"text": "Progression de l'artificialisation nette"},
             "yAxis": {
                 "title": {"text": "Surface (en ha)"},
             },
@@ -68,7 +68,7 @@ class ArtifWaterfallChartExport(ArtifWaterfallChart):
             "credits": OCSGE_CREDITS,
             "title": {
                 "text": (
-                    f"Evolution de l'artificialisation pour {self.project.territory_name}"
+                    f"Progression de l'artificialisation nette pour {self.project.territory_name}"
                     f" entre {self.project.analyse_start_date} et {self.project.analyse_end_date} (en ha)"
                 )
             },
