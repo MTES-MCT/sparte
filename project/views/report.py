@@ -172,7 +172,7 @@ class ProjectReportCityGroupView(ProjectReportBaseView):
             communes_table[city_name] = data
 
         # Déterminants
-        det_chart = charts.DeterminantPerYearChart(project, group_name=group_name)
+        det_chart = charts.ConsoByDeterminantPieChart(project, group_name=group_name)
 
         kwargs = {
             "active_page": "consommation",

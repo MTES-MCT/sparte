@@ -114,65 +114,6 @@ Rapport consommation
                 <div class="fr-col-12{% if nb_communes > 1 %} fr-col-lg-8{% endif %}">
                     <div class="border fr-p-2w h-100">
                         <div class="d-flex justify-content-end align-items-center fr-mb-2w">
-                            <div class="dropdown custom-dropdown fr-mr-2w">
-                                <button class="fr-btn fr-btn--tertiary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill" data-bs-toggle="dropdown" aria-expanded="false">
-                                    Maille d'analyse
-                                </button>
-
-                                <ul class="dropdown-menu">
-                                    <li>
-                                        <a class="fr-nav__link" {% if level == "COMM" %} aria-current="true"{% endif %} href="{% url "project:report_conso" project.id %}?level_conso=COMMUNE">Communes</a>
-                                    </li>
-                                    {% if land_type in "DEPART_REGION_COMP" %}
-                                    <li>
-                                        <a class="fr-nav__link" {% if level == "EPCI" %} aria-current="true"{% endif %} href="{% url "project:report_conso" project.id %}?level_conso=EPCI">EPCI</a>
-                                    </li>
-                                    {% endif %}
-                                    {% if land_type in "DEPART_REGION_COMP" %}
-                                    <li><a class="dropdown-item {% if level == "SCOT" %}active{% endif %}" href="{% url "project:report_conso" project.id %}?level_conso=SCOT">Scot</a></li>
-                                    {% endif %}
-                                    {% if land_type in "REGION_COMP" %}
-                                    <li>
-                                        <a class="fr-nav__link" {% if level == "DEPART" %} aria-current="true"{% endif %}  href="{% url "project:report_conso" project.id %}?level_conso=DEPART">Départements</a>
-                                    </li>
-                                    {% endif %}
-                                    {% if land_type in "COMP" %}
-                                    <li>
-                                        <a class="fr-nav__link" {% if level == "REGION" %} aria-current="true"{% endif %} href="{% url "project:report_conso" project.id %}?level_conso=REGION">Régions</a>
-                                    </li>
-                                    {% endif %}
-                                </ul>
-                            </div>
-
-                            <div class="dropdown custom-dropdown fr-mr-2w">
-                                <button class="fr-btn fr-btn--tertiary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill" data-bs-toggle="dropdown" aria-expanded="false">
-                                    Sélection
-                                </button>
-
-                                <ul class="dropdown-menu">
-                                    <li>
-                                        <a id="check" class="fr-nav__link" href="#" chart_target="chart">Tout</a>
-                                    </li>
-                                    <li>
-                                        <a id="uncheck" class="fr-nav__link" href="#" chart_target="chart">Aucun</a>
-                                    </li>
-                                    <li>
-                                        <a id="reverse" class="fr-nav__link" href="#" chart_target="chart">Inverser</a>
-                                    </li>
-                                    <li>
-                                        <h6 class="dropdown-header">Zoom sur un groupe de villes</h6>
-                                    </li>
-                                    {% for name in groups_names %}
-                                        <li>
-                                            <a class="fr-nav__link" href="{% url 'project:report_city_group' project.id %}?group_name={{ name }}">{{ name }}</a>
-                                        </li>
-                                    {% endfor %}
-                                    <li>
-                                        <a class="fr-nav__link" href="{% url 'project:report_city_group' project.id %}">Tous</a>
-                                    </li>
-                                </ul>
-                            </div>
-
                             <div class="dropdown custom-dropdown fr-mr-2w" data-toggle="tooltip" title="Exporter le graphique">
                                 <button class="fr-btn fr-icon-download-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="dropdown" aria-expanded="false"></button>
 
