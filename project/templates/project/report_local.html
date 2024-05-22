@@ -30,6 +30,7 @@ Rapport triennal local
             data-fr-opened="false"
             aria-controls="fr-modal-download-word"
             class="fr-btn local-report-download-btn fr-btn--icon-right fr-icon-download-fill"
+            id="local-report-download-btn"
         >
             Télécharger le rapport triennal local
         </button>
@@ -203,3 +204,15 @@ Rapport triennal local
 </div>
 
 {% endblock content %}
+
+{% block tagging %}
+<script language="javascript" nonce="[NONCE_PLACEHOLDER]">
+window.onload = function(event) {
+  _paq.push(['trackEvent', 'local_report_download_funnel', 'open_dashboard_local_report', 'local_report_dashboard_opened'])
+}
+
+document.getElementById("local-report-download-btn").onclick = function() {
+    _paq.push(['trackEvent', 'local_report_download_funnel', 'click_button_local_report_download', 'local_report_download_button_clicked'])
+}
+</script>
+{% endblock tagging %}
