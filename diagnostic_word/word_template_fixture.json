@@ -18,5 +18,15 @@
             "last_update": "2024-04-25T13:26:06.085Z",
             "filename_mask": "Rapport local {diagnostic_name} {start_date} à {end_date} issu de MonDiagnosticArtificialisation.docx"
         }
+    },
+    {
+        "model": "diagnostic_word.wordtemplate",
+        "pk": "template-bilan-conso",
+        "fields": {
+            "description": "Modèle Word pour générer le rapport de consommation.",
+            "docx": "word_templates/template-rapport-consommation.docx",
+            "last_update": "2024-04-25T13:26:06.085Z",
+            "filename_mask": "Analyse de consommation {diagnostic_name} {start_date} à {end_date} issu de MonDiagnosticArtificialisation.docx"
+        }
     }
 ]
