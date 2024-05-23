@@ -22,6 +22,19 @@
             <ul class="dropdown-menu w-100">
                 <li>
                     <a
+                        id="conso-report-download-btn"
+                        class="fr-nav__link"
+                        hx-get="{% url 'project:report_download' requested_document='rapport-conso' pk=project.pk %}"
+                        hx-target="#diag_word_form"
+                        href="#"
+                        data-fr-opened="false"
+                        aria-controls="fr-modal-download-word"
+                    >
+                        Analyse de consommation
+                    </a>
+                </li>
+                <li>
+                    <a
                         id="download_diag_word_btn"
                         class="fr-nav__link"
                         hx-get="{% url 'project:report_download' requested_document='rapport-complet' pk=project.pk %}"
