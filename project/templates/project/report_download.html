@@ -11,6 +11,10 @@
         <script language="javascript" nonce="[NONCE_PLACEHOLDER]">
             _paq.push(['trackEvent', 'diagnostic_download_funnel', 'succes_form_diagnostic_download_word', 'diagnostic_download_word_form_success'])
         </script>
+    {% elif requested_document == 'rapport-conso' %}
+        <script language="javascript" nonce="[NONCE_PLACEHOLDER]">
+            _paq.push(['trackEvent', 'conso_report_download_funnel', 'success_form_conso_report_download', 'conso_report_download_form_success'])
+        </script>
     {% elif requested_document == 'rapport-local' %}
         <script language="javascript" nonce="[NONCE_PLACEHOLDER]">
             _paq.push(['trackEvent', 'local_report_download_funnel', 'success_form_local_report_download', 'local_report_download_form_success'])
