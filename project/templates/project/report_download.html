@@ -7,11 +7,11 @@
         <p>N'hésitez pas à nous faire part de vos impressions et de vos suggestions d'amélioration en utilisant notre <a href="{% url 'home:contact' %}">formulaire de contact</a>.</p>
     </div>
 
-    {% if requested_document = 'rapport-complet' %}
+    {% if requested_document == 'rapport-complet' %}
         <script language="javascript" nonce="[NONCE_PLACEHOLDER]">
             _paq.push(['trackEvent', 'diagnostic_download_funnel', 'succes_form_diagnostic_download_word', 'diagnostic_download_word_form_success'])
         </script>
-    {% elif requested_document = 'rapport-local' %}
+    {% elif requested_document == 'rapport-local' %}
         <script language="javascript" nonce="[NONCE_PLACEHOLDER]">
             _paq.push(['trackEvent', 'local_report_download_funnel', 'success_form_local_report_download', 'local_report_download_form_success'])
         </script>
@@ -40,5 +40,4 @@
             </li>
         </ul>
     </form>
-    {% endif %}
 {% endif %}
