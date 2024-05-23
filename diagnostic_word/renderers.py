@@ -433,3 +433,28 @@ class LocalReportRenderer(BaseRenderer):
                 line=False,
             ),
         }
+
+
+class ConsoReportRenderer(BaseRenderer):
+    def __init__(self, request: Request, word_template_slug="template-bilan-conso"):
+        super().__init__(request=request, word_template_slug=word_template_slug)
+
+    def get_file_name(self) -> str:
+        return self.word_template.filename_mask.format(
+            diagnostic_name=self.project.territory_name,
+            start_date=self.project.analyse_start_date,
+            end_date=self.project.analyse_end_date,
+        )
+
+    def get_context_data(self) -> Dict[str, Any]:
+        diagnostic = self.project
+        annual_total_conso_chart = charts.AnnualTotalConsoChartExport(diagnostic)
+
+        return super().get_context_data() | {
+            "annual_total_conso_chart": self.prep_chart(chart=annual_total_conso_chart),
+            "annual_total_conso_data_table": add_total_line_column(
+                series=annual_total_conso_chart.get_series(),
+                column=True,
+                line=False,
+            ),
+        }
