@@ -372,7 +372,7 @@ class BaseRenderer:
             else:
                 table_comparison = chart_comparison_series
             header_comparison = list(list(table_comparison.values())[0].keys())
-            header_comparison = ["artificialisation nette entre " + entry for entry in header_comparison + " en (ha)"]
+            header_comparison = ["artificialisation nette entre " + entry + " en (ha)" for entry in header_comparison]
             context.update(
                 {
                     "graphique_evolution_artif": self.prep_image(
