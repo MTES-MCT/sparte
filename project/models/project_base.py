@@ -903,6 +903,14 @@ class Project(BaseProject):
         )
         return qs
 
+    def get_artif_periods(self) -> tuple[tuple[int]]:
+        """
+        Return example:
+        ((2013, 2016), (2016, 2019))
+        """
+        qs = CommuneDiff.objects.filter(city__in=self.cities.all())
+        return tuple(qs.values_list("year_old", "year_new").distinct())
+
     def get_land_artif_per_year(self, analysis_level):
         """Return artif evolution for all cities of the diagnostic
 
