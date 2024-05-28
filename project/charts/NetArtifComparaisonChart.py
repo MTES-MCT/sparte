@@ -8,6 +8,7 @@ from project.charts.constants import (
     LEGEND_NAVIGATION_EXPORT,
     OCSGE_CREDITS,
 )
+from project.utils import add_total_line_column
 
 
 class NetArtifComparaisonChart(ProjectChart):
@@ -37,6 +38,31 @@ class NetArtifComparaisonChart(ProjectChart):
         if not self.series:
             self.series = self.project.get_land_artif_per_year(self.level)
         return self.series
+
+    def get_table(self):
+        """
+        Return the series preformatted for the table:
+        - with a column total if there are multiple periods
+        - with a row total if there are multiple cities
+        """
+        more_than_one_period = len(self.project.get_artif_periods()) > 1
+
+        if more_than_one_period:
+            return add_total_line_column(
+                series=self.get_series(),
+                column=True,
+                line=False,
+            )
+
+        return self.get_series()
+
+    def get_table_headers(self) -> list[str]:
+        periods = self.project.get_artif_periods()
+
+        if len(periods) > 1:
+            return [f"{period[0] - period[1]}" for period in self.project.get_artif_periods()]
+
+        return [f"artificialisation nette entre {periods[0][0]} et {periods[0][1]} (ha)"]
 
     def add_series(self):
         super().add_series()
