@@ -366,8 +366,13 @@ class BaseRenderer:
             )
             # paragraphe 3.2.3
             chart_comparison = charts.NetArtifComparaisonChartExport(diagnostic, level=diagnostic.level)
-            table_comparison = add_total_line_column(chart_comparison.get_series())
+            chart_comparison_series = chart_comparison.get_series()
+            if len(list(chart_comparison_series.values())[0].keys()) > 1:
+                table_comparison = add_total_line_column(chart_comparison_series)
+            else:
+                table_comparison = chart_comparison_series
             header_comparison = list(list(table_comparison.values())[0].keys())
+            header_comparison = ["artificialisation nette entre " + entry for entry in header_comparison + " en (ha)"]
             context.update(
                 {
                     "graphique_evolution_artif": self.prep_image(
