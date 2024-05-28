@@ -5,6 +5,7 @@ from project.charts.constants import (
     DEFAULT_HEADER_FORMAT,
     DEFAULT_POINT_FORMAT,
     DEFAULT_VALUE_DECIMALS,
+    LEGEND_NAVIGATION_EXPORT,
     OCSGE_CREDITS,
 )
 
@@ -53,6 +54,12 @@ class NetArtifComparaisonChartExport(NetArtifComparaisonChart):
                 "type": "column",
                 "height": 600,
             },
+            "legend": {
+                **super().param["legend"],
+                "layout": "horizontal",
+                "verticalAlign": "bottom",
+                "navigation": LEGEND_NAVIGATION_EXPORT,
+            },
             "credits": OCSGE_CREDITS,
             "plotOptions": {
                 "column": {
@@ -69,5 +76,4 @@ class NetArtifComparaisonChartExport(NetArtifComparaisonChart):
                     f"entre {self.project.analyse_start_date} et {self.project.analyse_end_date} (en ha)"
                 )
             },
-            "legend": {"navigation": {"enabled": False}},
         }
