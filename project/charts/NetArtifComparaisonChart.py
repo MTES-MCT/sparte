@@ -49,6 +49,10 @@ class NetArtifComparaisonChartExport(NetArtifComparaisonChart):
     @property
     def param(self):
         return super().param | {
+            "chart": {
+                "type": "column",
+                "height": 600,
+            },
             "credits": OCSGE_CREDITS,
             "plotOptions": {
                 "column": {
@@ -65,4 +69,5 @@ class NetArtifComparaisonChartExport(NetArtifComparaisonChart):
                     f"entre {self.project.analyse_start_date} et {self.project.analyse_end_date} (en ha)"
                 )
             },
+            "legend": {"navigation": {"enabled": False}},
         }
