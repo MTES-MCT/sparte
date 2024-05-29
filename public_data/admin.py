@@ -23,7 +23,7 @@ class UsageSolResource(resources.ModelResource):
 
 
 @admin.register(UsageSol)
-class UsageSolAdmin(ImportExportMixin, admin.GeoModelAdmin):
+class UsageSolAdmin(ImportExportMixin, admin.GISModelAdmin):
     model = UsageSol
     list_display = ("code", "label", "parent", "map_color")
     list_filter = ("parent",)
@@ -45,7 +45,7 @@ class CouvertureSolImportResource(resources.ModelResource):
 
 
 @admin.register(CouvertureSol)
-class CouvertureSolAdmin(ImportExportMixin, admin.GeoModelAdmin):
+class CouvertureSolAdmin(ImportExportMixin, admin.GISModelAdmin):
     model = CouvertureSol
     list_display = ("code", "label", "parent", "map_color")
     list_filter = ("parent",)
@@ -56,7 +56,7 @@ class CouvertureSolAdmin(ImportExportMixin, admin.GeoModelAdmin):
 
 
 @admin.register(Ocsge)
-class OcsgeAdmin(admin.GeoModelAdmin):
+class OcsgeAdmin(admin.GISModelAdmin):
     model = Ocsge
     list_display = (
         "id",
@@ -80,7 +80,7 @@ class CouvertureUsageMatrixImportResource(resources.ModelResource):
 
 
 @admin.register(CouvertureUsageMatrix)
-class CouvertureUsageMatrixAdmin(ImportExportMixin, admin.GeoModelAdmin):
+class CouvertureUsageMatrixAdmin(ImportExportMixin, admin.GISModelAdmin):
     model = CouvertureUsageMatrix
     list_display = (
         "id",
@@ -95,7 +95,7 @@ class CouvertureUsageMatrixAdmin(ImportExportMixin, admin.GeoModelAdmin):
 
 
 @admin.register(Region)
-class RegionAdmin(admin.GeoModelAdmin):
+class RegionAdmin(admin.GISModelAdmin):
     model = Region
     list_display = (
         "id",
@@ -107,7 +107,7 @@ class RegionAdmin(admin.GeoModelAdmin):
 
 
 @admin.register(Departement)
-class DepartementAdmin(admin.GeoModelAdmin):
+class DepartementAdmin(admin.GISModelAdmin):
     model = Departement
     list_display = (
         "id",
@@ -120,7 +120,7 @@ class DepartementAdmin(admin.GeoModelAdmin):
 
 
 @admin.register(Epci)
-class EpciAdmin(admin.GeoModelAdmin):
+class EpciAdmin(admin.GISModelAdmin):
     model = Epci
     list_display = (
         "id",
@@ -132,7 +132,7 @@ class EpciAdmin(admin.GeoModelAdmin):
 
 
 @admin.register(Commune)
-class CommuneAdmin(admin.GeoModelAdmin):
+class CommuneAdmin(admin.GISModelAdmin):
     model = Commune
     list_display = (
         "insee",
@@ -143,7 +143,7 @@ class CommuneAdmin(admin.GeoModelAdmin):
 
 
 @admin.register(Cerema)
-class CeremaAdmin(admin.GeoModelAdmin):
+class CeremaAdmin(admin.GISModelAdmin):
     model = Cerema
     list_display = (
         "city_insee",
@@ -178,7 +178,7 @@ class AdminDataSource(admin.ModelAdmin):
 
 
 @admin.register(Sudocuh)
-class SudocuhAdmin(admin.GeoModelAdmin):
+class SudocuhAdmin(admin.GISModelAdmin):
     model = Sudocuh
     list_display = (
         "nom_commune",

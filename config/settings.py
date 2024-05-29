@@ -14,7 +14,6 @@ from pathlib import Path
 from typing import Any, Dict
 
 import environ
-import pkg_resources
 import sentry_sdk
 from django.contrib.messages import constants as messages
 from django.core.exceptions import ImproperlyConfigured
@@ -199,7 +198,14 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 
-DEFAULT_FILE_STORAGE = "config.storages.DefaultStorage"
+STORAGES = {
+    "default": {
+        "BACKEND": "config.storages.DefaultStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+    },
+}
 
 
 # credentials
@@ -408,22 +414,6 @@ SENDINBLUE_API_KEY = env.str("API_KEY_SENDINBLUE")
 
 DEFAULT_FROM_EMAIL = env.str("DEFAULT_FROM_EMAIL", default="johndoe@email.com")
 
-# Jupyter configuration
-
-# used by ./manage.py shell_plus --notebook
-if "django-extensions" in {pkg.key for pkg in pkg_resources.working_set}:
-    INSTALLED_APPS += [
-        "django_extensions",
-    ]
-    NOTEBOOK_ARGUMENTS = [
-        "--ip",
-        "0.0.0.0",
-        "--allow-root",
-        "--notebook-dir='notebooks/'",
-        "--NotebookApp.token=''",
-        "--NotebookApp.password=''",
-    ]
-
 # RESTRAMEWORK parameters
 # https://www.django-rest-framework.org
 
@@ -495,12 +485,14 @@ CSP_DEFAULT_SRC = ["'self'", "sparte-metabase.osc-secnum-fr1.scalingo.io", "blob
 CSP_WORKER_SRC = ["blob:"]
 CSP_SCRIPT_SRC = [
     "'self'",
+    "'unsafe-inline'",
     "stats.beta.gouv.fr",
     "code.highcharts.com",
     "www.googletagmanager.com",
     # Crisp
     "https://client.crisp.chat",
     "https://settings.crisp.chat",
+    "https://cdn.jsdelivr.net",
 ]
 CSP_STYLE_SRC = [
     "'self'",
@@ -523,6 +515,7 @@ CSP_IMG_SRC = [
     "https://client.crisp.chat",
     "https://image.crisp.chat",
     "https://storage.crisp.chat",
+    "https://tile.openstreetmap.org",
 ]
 CSP_FRAME_SRC = (
     "'self'",
@@ -534,7 +527,7 @@ CSP_MEDIA_SRC = (
     # Crisp
     "https://client.crisp.chat"
 )
-CSP_INCLUDE_NONCE_IN = ["script-src"]
+CSP_INCLUDE_NONCE_IN = []
 CSP_FONT_SRC = (
     "'self'",
     "data:",

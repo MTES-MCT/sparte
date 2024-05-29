@@ -1,7 +1,6 @@
 FROM python:3.11
 
-LABEL maintainer="swann.bouviermuller@gmail.com"
-LABEL vendor="Innov & Code"
+LABEL maintainer="alexis.athlani@beta.gouv.fr"
 
 # Setup GDAL
 RUN apt update
@@ -9,7 +8,6 @@ RUN apt install -y binutils libproj-dev gdal-bin libgdal-dev
 
 # upgrade pip
 RUN pip install --upgrade pip
-RUN pip install debugpy -t /tmp
 RUN pip install pipenv
 
 RUN mkdir -p /app
@@ -18,7 +16,7 @@ RUN mkdir -p /app
 # copy only pipfile to leverage docker cache
 COPY Pipfile.lock Pipfile /app/
 WORKDIR /app
-RUN pipenv install --dev --deploy --system --ignore-pipfile
+RUN pipenv install --dev --deploy --system
 
 EXPOSE 8080
 
