@@ -2,6 +2,20 @@
 
 Ce changelog suit la méthode "keep a changelog" disponible ici: [https://keepachangelog.com/en/1.0.0/](https://keepachangelog.com/en/1.0.0/)
 
+## [5.5] Rapport local v2 - 2024.05.30
+
+## Ajouté
+- Nouvelle partie sur l'artificialisation des sols dans le rapport triennal local [#355](https://github.com/MTES-MCT/sparte/issues/335)
+
+## Modifié
+- Améliorations diverses de la partie consommation du rapport triennal local [#344](https://github.com/MTES-MCT/sparte/issues/344)
+- Amélioration de la lisibilité des tableaux de données [#319](https://github.com/MTES-MCT/sparte/issues/319)
+- Les tableaux de données et graphiques relatifs à la démographie sont temporairement masqués pour être retravaillés [#351](https://github.com/MTES-MCT/sparte/issues/351)
+- Inversion du fonctionnement du % de réduction pour la fonctionnalité de trajectoire [#371](https://github.com/MTES-MCT/sparte/pull/371)
+
+## Corrigé
+- Bug d'affichage des graphiques présents sur l'explorateur des zonages d'urbanisme [#343](https://github.com/MTES-MCT/sparte/issues/343)
+
 ## [5.4] Millésime CEREMA 2023 - 2024.05.09
 
 ## Ajouté
