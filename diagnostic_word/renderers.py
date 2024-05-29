@@ -224,8 +224,8 @@ class BaseRenderer:
             "chart_determinants": self.prep_chart(det_chart),
             "pie_chart_determinants": self.prep_chart(pie_det_chart),
             "projection_zan_2031": self.prep_chart(objective_chart),
-            "projection_zan_cumulee_ref": round(objective_chart.total_real, 1),
-            "projection_zan_annuelle_ref": round(objective_chart.annual_real, 1),
+            "projection_zan_cumulee_ref": round(objective_chart.total_2020, 1),
+            "projection_zan_annuelle_ref": round(objective_chart.annual_2020, 1),
             "projection_zan_cumulee_objectif": round(objective_chart.conso_2031),
             "projection_zan_annuelle_objectif": round(objective_chart.annual_objective_2031),
         }
