@@ -23,6 +23,7 @@ from django.db.models import F, OuterRef, Q, Subquery
 from django.urls import reverse
 from django.utils import timezone
 from django_app_parameter import app_parameter
+from matplotlib.lines import Line2D
 from matplotlib_scalebar.scalebar import ScaleBar
 
 from project.models import Emprise, Project, Request, RequestedDocumentChoices
@@ -509,11 +510,15 @@ def generate_theme_map_understand_artif(self, project_id):
         city_ids = diagnostic.cities.all().values_list("insee", flat=True)
         queryset = ArtificialArea.objects.filter(city__in=city_ids)
 
+        artif_color = (0.97, 0.56, 0.33)
+        new_artif_color = (1, 0, 0)
+        new_natural_color = (0, 1, 0)
+
         for row in queryset.only("mpoly"):
             srid, wkt = row.mpoly.ewkt.split(";")
             polygons = shapely.wkt.loads(wkt)
             data["geometry"].append(polygons)
-            data["color"].append((0.97, 0.56, 0.33, 0.3))
+            data["color"].append(artif_color)
 
         # add new artificial area and new natural area to data
         qs_artif = OcsgeDiff.objects.intersect(diagnostic.combined_emprise).filter(
@@ -527,17 +532,49 @@ def generate_theme_map_understand_artif(self, project_id):
 
         fig, ax = plt.subplots(figsize=(15, 10))
         plt.axis("off")
-        fig.set_dpi(150)
+        fig.set_dpi(100)
 
-        artif_area_gdf.plot(ax=ax, color=artif_area_gdf["color"])
+        artif_area_gdf.plot(ax=ax, color=artif_area_gdf["color"], label="Artificialisation")
         gdf_emprise.plot(ax=ax, facecolor="none", edgecolor="yellow")
-        ax.add_artist(ScaleBar(1))
-        ax.set_title("Comprendre l'artificialisation de son territoire")
-        cx.add_basemap(ax, source=settings.ORTHOPHOTO_URL)
+        emprise_legend_label = Line2D([], [], color="yellow", linewidth=3, label=diagnostic.territory_name)
+        artif_legend_label = Line2D(
+            [],
+            [],
+            linestyle="none",
+            mfc=artif_color,
+            mec=artif_color,
+            marker="s",
+            label=f"Surfaces atificialisées en {diagnostic.last_year_ocsge}",
+        )
+        new_artif_legend_label = Line2D(
+            [], [], linestyle="none", mfc=new_artif_color, mec=new_artif_color, marker="s", label="Artificialisation"
+        )
+        new_natural_legend_label = Line2D(
+            [], [], linestyle="none", mfc=new_natural_color, mec=new_natural_color, marker="s", label="Renaturation"
+        )
+
+        ax.add_artist(ScaleBar(1, location="lower right"))
+        plt.legend(
+            loc="upper left",
+            handles=[
+                emprise_legend_label,
+                artif_legend_label,
+                new_artif_legend_label,
+                new_natural_legend_label,
+            ],
+        )
+        ax.set_title(
+            label=(
+                "Etat des lieux de l'artificialisation "
+                f"de {diagnostic.territory_name} entre {diagnostic.first_year_ocsge} à {diagnostic.last_year_ocsge}"
+            ),
+            loc="left",
+        )
+        cx.add_basemap(ax, source=settings.ORTHOPHOTO_URL, zoom_adjust=1, alpha=0.95)
+        cx.add_attribution(ax, text="Données: OCS GE (IGN)")
 
         img_data = io.BytesIO()
         plt.savefig(img_data, bbox_inches="tight")
-        plt.close()
         img_data.seek(0)
 
         race_protection_save_map(
