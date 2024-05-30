@@ -99,7 +99,8 @@ class ObjectiveChart(ProjectChart):
                 "zIndex": 1,
             },
         ]
-        self.total_real = self.total_2020 = 0
+        self.total_real = 0
+        self.total_2020 = 0
         for year, val in self.project.land.get_conso_per_year(
             start="2011",
             end="2022",
@@ -117,7 +118,7 @@ class ObjectiveChart(ProjectChart):
             self.series[0]["data"].append({"name": year, "y": val})
 
         self.annual_2020 = self.total_2020 / 10
-        self.annual_objective_2031 = self.total_2020 * self.project.target_2031 / 1000
+        self.annual_objective_2031 = self.annual_2020 - (self.annual_2020 / 100 * self.project.target_2031)
         self.annual_real = self.total_real / 10
         self.total_2031 = self.total_2020
         self.conso_2031 = self.annual_objective_2031 * 10
