@@ -109,7 +109,19 @@ def process_url(url: str) -> list[DataSource]:
             source.path = target_name
             source.shapefile_name = shapefile_name
 
-            source.save()
+            existing_source = DataSource.objects.filter(
+                dataset=source.dataset,
+                name=source.name,
+                productor=source.productor,
+                official_land_id=source.official_land_id,
+                millesimes=source.millesimes,
+            ).first()
+
+            if existing_source:
+                existing_source.delete()
+                source.save()
+            else:
+                source.save()
 
     return sources
 

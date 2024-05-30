@@ -366,16 +366,14 @@ class BaseRenderer:
             )
             # paragraphe 3.2.3
             chart_comparison = charts.NetArtifComparaisonChartExport(diagnostic, level=diagnostic.level)
-            table_comparison = add_total_line_column(chart_comparison.get_series())
-            header_comparison = list(list(table_comparison.values())[0].keys())
             context.update(
                 {
                     "graphique_evolution_artif": self.prep_image(
                         chart_comparison.get_temp_image(),
                         width=170,
                     ),
-                    "tableau_evolution_artif": table_comparison,
-                    "entetes_evolution_artif": header_comparison,
+                    "tableau_evolution_artif": chart_comparison.get_table(),
+                    "entetes_evolution_artif": chart_comparison.get_table_headers(),
                 }
             )
             # paragraphe 3.2.4

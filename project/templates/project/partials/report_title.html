@@ -35,7 +35,7 @@
                 </li>
                 <li class="d-flex justify-content-between"> 
                     <a
-                        id="download_diag_word_btn"
+                        id="local-report-download-btn"
                         class="fr-nav__link"
                         hx-get="{% url 'project:report_download' requested_document='rapport-local' pk=project.pk %}"
                         hx-target="#diag_word_form"
@@ -43,7 +43,7 @@
                         data-fr-opened="false"
                         aria-controls="fr-modal-download-word"
                     >
-                        Rapport Local 
+                        Rapport triennal local 
                         <p class="fr-badge fr-badge--new fr-badge--sm">Nouveau</p>
                         
                     </a>
@@ -102,5 +102,9 @@
     document.getElementById("download_diag_word_btn").onclick = function() {
         document.getElementById("diag_word_form").innerHTML = "<div class='fr-custom-loader'></div>";
         _paq.push(['trackEvent', 'diagnostic_download_funnel', 'click_button_diagnostic_download_word', 'diagnostic_download_word_button_clicked'])
+    }
+
+    document.getElementById("local-report-download-btn").onclick = function() {
+        _paq.push(['trackEvent', 'local_report_download_funnel', 'click_button_local_report_download', 'local_report_download_button_clicked'])
     }
 </script>

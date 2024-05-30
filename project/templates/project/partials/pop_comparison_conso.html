@@ -53,28 +53,29 @@
             <p class="fr-text--sm">Données brutes.</p>
     
             <h6 class="fr-mt-2w">Données</h6>
-            <table class="table fr-table--no-caption table-striped table-sm table-borderless fr-text--sm">
-                <caption>Données évolution de la population du territoire</caption>
-                <thead>
-                    <tr>
-                        <th scope="col"></th>
-                        {% for year in diagnostic.years %}
-                        <th scope="col" class="text-end">{{ year }}</th>
+            <div class="table-responsive">
+                <table class="fr-table">
+                    <caption>Évolution de la population sur territoire et les territoires similaires</caption>
+                    <thead>
+                        <tr>
+                            <th scope="col"></th>
+                            {% for year in diagnostic.years %}
+                            <th scope="col" class="text-end">{{ year }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for city_name, data in pop_table.items %}
+                        <tr>
+                            <th scope="row">{{ city_name }}</th>
+                            {% for year, val in data.items %}
+                            <td class="text-end">{{ val|floatformat:1 }}</td>
+                            {% endfor %}
+                        </tr>
                         {% endfor %}
-                        <th scope="col" class="text-end">Total</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for city_name, data in pop_table.items %}
-                    <tr>
-                        <th scope="row">{{ city_name }}</th>
-                        {% for year, val in data.items %}
-                        <td align="right">{{ val|floatformat:1 }}</td>
-                        {% endfor %}
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
@@ -129,6 +130,7 @@
                     partir des fichiers MAJIC (Mise A Jour de l'Information Cadastrale) de la DGFIP. Le dernier 
                     millésime de 2023 est la photographie du territoire au 1er janvier 2023, intégrant les évolutions 
                     réalisées au cours de l'année 2022.
+                    Pour plus d'informations sur <a class="fr-link" href="{{ FAQ_URL }}fr/article/quest-ce-quun-millesime-110ihlr/" target="_blank" rel="noopener noreferrer">"Qu'est-ce qu'un millésime ?"</a>.
                 </li>
             </ul>
     
@@ -136,28 +138,29 @@
             <p class="fr-text--sm">Consommation d'espaces NAF annuelle divisée par l'évolution de la population, par maille d'analyse du territoire de diagnostic.</p>
     
             <h6 class="fr-mt-2w">Données</h6>
-            <table class="table fr-table--no-caption table-striped table-sm table-borderless fr-text--sm">
-                <caption>Données Ha par nouvel habitant</caption>
-                <thead>
-                    <tr>
-                        <th scope="col" class="text-end">(Ha par nouvel habitant)</th>
-                        {% for year in diagnostic.years %}
-                        <th scope="col" class="text-end">{{ year }}</th>
+            <div class="table-responsive">
+                <table class="fr-table">
+                    <caption>Consommation d'espace annuelle par nouvel habitant sur le territoire et les territoires similaires (en ha)</caption>
+                    <thead>
+                        <tr>
+                            <th scope="col" class="text-end"></th>
+                            {% for year in diagnostic.years %}
+                            <th scope="col" class="text-end">{{ year }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for city_name, data in conso_pop_table.items %}
+                        <tr>
+                            <th scope="row">{{ city_name }}</th>
+                            {% for year, val in data.items %}
+                            <td class="text-end">{{ val|floatformat:1 }}</td>
+                            {% endfor %}
+                        </tr>
                         {% endfor %}
-                        <th scope="col" class="text-end">Total</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for city_name, data in conso_pop_table.items %}
-                    <tr>
-                        <th scope="row">{{ city_name }}</th>
-                        {% for year, val in data.items %}
-                        <td align="right">{{ val|floatformat:1 }}</td>
-                        {% endfor %}
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>

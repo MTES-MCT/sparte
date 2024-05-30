@@ -13,9 +13,11 @@
         <li>
             <p class="fr-tag fr-tag--sm">Libellé:&nbsp;<strong>{{ zone_urba.libelle }}</strong></p>
         </li>
+        {% if zone_urba.libelong %}
         <li>
             <p class="fr-tag fr-tag--sm">Libellé long:&nbsp;<strong>{{ zone_urba.libelong }}</strong></p>
         </li>
+        {% endif %}
     </ul>
     <p>Sur la période demandée, l'OCS GE couvre de {{ diagnostic.first_year_ocsge|stringformat:"s" }} à {{ diagnostic.last_year_ocsge|stringformat:"s" }}.</p>
 </div>
@@ -36,16 +38,15 @@
             <p>Taux d'artificialisation en {{ diagnostic.last_year_ocsge|stringformat:"s" }}</p>
         </div>
     </div>
-
 </div>
 
 
-<div class="fr-mt-7w" hx-get="{% url 'project:artif-net-chart' diagnostic.id %}?zone_urba_id={{ zone_urba.id|stringformat:"s" }}" hx-trigger="load">
-    <h3>Artificialisation net entre {{ diagnostic.first_year_ocsge|stringformat:"s" }} et {{ diagnostic.last_year_ocsge|stringformat:"s" }}</h3>
+<div class="fr-mt-7w">
+    <h3>Artificialisation nette entre {{ diagnostic.first_year_ocsge|stringformat:"s" }} et {{ diagnostic.last_year_ocsge|stringformat:"s" }}</h3>
 
-    <!-- TODO Sofian ajouter skeletton -->
-    <div class="fr-custom-loader"></div>
-
+    <div hx-get="{% url 'project:artif-net-chart' diagnostic.id %}?zone_urba_id={{ zone_urba.id|stringformat:"s" }}" hx-trigger="load">
+        <div class="fr-custom-loader"></div>
+    </div>
 </div>
 
 
@@ -58,10 +59,9 @@
         <div class="fr-custom-loader"></div>
     </div>
 
-    <h3>Grandes familles d'usages du sol des surfaces artificialisées</h3>
+    <h3 class="fr-mt-4w">Grandes familles d'usages du sol des surfaces artificialisées</h3>
 
     <div hx-get="{% url 'project:artif-detail-usa-chart' diagnostic.id %}?zone_urba_id={{ zone_urba.id|stringformat:"s" }}" hx-trigger="load 4s" hx-swap="outerHTML">
         <div class="fr-custom-loader"></div>
     </div>
-
 </div>

@@ -64,52 +64,69 @@
     </div>
 </div>
 
-<div class="fr-callout bg-white fr-p-2w mt-4">
-    <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data-couv">Données et calcul</button>
-    <div class="fr-collapse" id="target-data-couv">
-        <h6 class="fr-mt-2w">Source</h6>
-        <p>Données d'OCcupation des Sols à Grande Echelle (OCS GE) de l'IGN, sur la période d'analyse (millésime min : {{ project.first_year_ocsge }}, millésime max : {{ project.last_year_ocsge }}).</p>
+<div class="fr-notice fr-mt-4w">
+    <div class="fr-container">
+        <div class="d-flex align-items-center justify-content-between">
+            <div>
+                <span class="fr-icon-information-line" aria-hidden="true"></span>
+                <span class="fr-text--xs fr-mr-1w">Source de données: </span>
+                <p class="fr-tag fr-tag--sm fr-tag--success">
+                    <strong>OCS GE</strong>
+                </p>
+            </div>
+            <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data-couv">Détails données et calcul</button>
+        </div>
+        <div class="fr-collapse" id="target-data-couv">
+            <h6 class="fr-mt-2w">Source</h6>
+            <p class="fr-text--sm">Données d'OCcupation des Sols à Grande Echelle (OCS GE) de l'IGN, sur la période d'analyse (millésime min : {{ project.first_year_ocsge }}, millésime max : {{ project.last_year_ocsge }}).</p>
 
-        <h6 class="fr-mt-2w">Calcul</h6>
-        <p>OCS GE traduite grâce à la matrice de passage.</p>
+            <h6 class="fr-mt-2w">Calcul</h6>
+            <p class="fr-text--sm">OCS GE traduite grâce à la matrice de passage.</p>
 
-        <h6 class="fr-mt-2w">Exemple de lecture</h6>
-        <p>Il y a eu 7.5 ha de nouvelles Zones non bâties représentant 10% de la surface de toutes les nouvelles surfaces artificialisées et 2 ha d'anciennes Zones non bâties renaturées représentant 16% de la surface de toutes les zones renaturées.</p>
+            <h6 class="fr-mt-2w">Exemple de lecture</h6>
+            <p class="fr-text--sm">Il y a eu 7.5 ha de nouvelles Zones non bâties représentant 10% de la surface de toutes les nouvelles surfaces artificialisées et 2 ha d'anciennes Zones non bâties renaturées représentant 16% de la surface de toutes les zones renaturées.</p>
 
-        <h6 class="fr-mt-2w">Données</h6>
-        <p>En hectare (Ha).</p>
-        <table class="table table-striped table-sm table-borderless">
-            <thead>
-                <tr>
-                    <th scope="col"></th>
-                    <th scope="col" class="text-end">Artificialisation</th>
-                    <th scope="col" class="text-end" class="text-muted">%</th>
-                    <th scope="col" class="text-end">Renaturation</th>
-                    <th scope="col" class="text-end" class="text-muted">%</th>
-                    <th scope="col" class="text-end">Artificialisé en {{ last_millesime }}</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for couv in detail_couv_artif_table %}
-                <tr>
-                    <th scope="row">{{ couv.code_prefix }} {{ couv.label }}</th>
-                    <td align="right">{{ couv.artif|floatformat:1 }}</td>
-                    <td align="right" class="text-muted">{{ couv.artif|percent:detail_total_artif }}</td>
-                    <td align="right">{{ couv.renat|floatformat:1 }}</td>
-                    <td align="right" class="text-muted">{{ couv.renat|percent:detail_total_renat }}</td>
-                    <td align="right">{{ couv.last_millesime|floatformat:1 }}</td>
-                </tr>
-                {% endfor %}
-                <tr>
-                    <th scope="row" class="text-muted">Total :</th>
-                    <td align="right" class="text-muted">{{ detail_total_artif|floatformat:1 }}</td>
-                    <td align="right" class="text-muted">100%</td>
-                    <td align="right" class="text-muted">{{ detail_total_renat|floatformat:1 }}</td>
-                    <td align="right" class="text-muted">100%</td>
-                    <td align="right">{{ artif_area|floatformat:1 }}</td>
-                </tr>
-            </tbody>
-        </table>
+            <h6 class="fr-mt-2w">Données</h6>
+            <p class="fr-text--sm">En hectare (Ha).</p>
+            <div class="table-responsive">
+                <table class="fr-table table-custom table-last-row-bold">
+                    <caption>Évolution de l'artificialisation par type de couverture sur le territoire de {{ first_millesime }} à {{ last_millesime }} (en ha et %)</caption>
+                    <thead>
+                        <tr>
+                            <th scope="col"></th>
+                            <th scope="col" class="text-end">Artificialisation</th>
+                            <th scope="col" class="text-end text-muted">%</th>
+                            <th scope="col" class="text-end">Renaturation</th>
+                            <th scope="col" class="text-end text-muted">%</th>
+                            <th scope="col" class="text-end">Artificialisé en {{ last_millesime }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for couv in detail_couv_artif_table %}
+                        <tr>
+                            <th scope="row" aria-describedby="tooltip-{{ couv.code_prefix }}">
+                                {{ couv.code_prefix }} {{ couv.label }}
+                                <span class="fr-tooltip fr-placement" id="tooltip-{{ couv.code_prefix }}" role="tooltip" aria-hidden="true">{{ couv.code_prefix }} {{ couv.label }}</span>
+                            </th>
+                            <td class="text-end">{{ couv.artif|floatformat:1 }}</td>
+                            <td class="text-end text-muted">{{ couv.artif|percent:detail_total_artif }}</td>
+                            <td class="text-end">{{ couv.renat|floatformat:1 }}</td>
+                            <td class="text-end text-muted">{{ couv.renat|percent:detail_total_renat }}</td>
+                            <td class="text-end">{{ couv.last_millesime|floatformat:1 }}</td>
+                        </tr>
+                        {% endfor %}
+                        <tr>
+                            <th scope="row">Total</th>
+                            <td class="text-end">{{ detail_total_artif|floatformat:1 }}</td>
+                            <td class="text-end text-muted">100%</td>
+                            <td class="text-end">{{ detail_total_renat|floatformat:1 }}</td>
+                            <td class="text-end text-muted">100%</td>
+                            <td class="text-end">{{ artif_area|floatformat:1 }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 </div>
 
