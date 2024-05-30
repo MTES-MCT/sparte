@@ -2,7 +2,13 @@
 
 Ce changelog suit la méthode "keep a changelog" disponible ici: [https://keepachangelog.com/en/1.0.0/](https://keepachangelog.com/en/1.0.0/)
 
-## [5.5] Rapport local v2 - 2024.05.30
+## [5.5.1] Rapport local - V2 sur l'artif - 2024.05.30
+
+## Modifié
+- La logique de réduction de la trajectoire est inversée [#371](https://github.com/MTES-MCT/sparte/pull/371)
+- La carte "comprendre l'artificialisation" est améliorée [#378](https://github.com/MTES-MCT/sparte/pull/378)
+
+## [5.5] Rapport local - V2 sur l'artif - 2024.05.30
 
 ## Ajouté
 - Nouvelle partie sur l'artificialisation des sols dans le rapport triennal local [#355](https://github.com/MTES-MCT/sparte/issues/335)

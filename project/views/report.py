@@ -536,8 +536,8 @@ class ProjectReportTarget2031GraphView(ProjectReportBaseView):
                 "reload_kpi": True,
                 "diagnostic": diagnostic,
                 "target_2031_chart": target_2031_chart,
-                "total_real": target_2031_chart.total_real,
-                "annual_real": target_2031_chart.annual_real,
+                "total_2020": target_2031_chart.total_2020,
+                "annual_2020": target_2031_chart.annual_2020,
                 "conso_2031": target_2031_chart.conso_2031,
                 "annual_objective_2031": target_2031_chart.annual_objective_2031,
             }
