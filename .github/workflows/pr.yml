@@ -9,7 +9,7 @@ on:
 env:
   ENVIRONMENT: local
   SECRET: ${{ secrets.SECRET }}
-  DEBUG: 1
+  DEBUG: 0
   ALLOWED_HOSTS: 127.0.0.1,localhost
   DOMAIN_URL: http://localhost:8080/
   EMAIL_ENGINE: local
