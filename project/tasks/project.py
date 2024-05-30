@@ -36,6 +36,13 @@ from utils.mattermost import BlockedDiagnostic
 logger = logging.getLogger(__name__)
 
 
+def get_basemap_url(retry_count: int):
+    if retry_count == 0:
+        return settings.BASEMAP_URL
+
+    return settings.OSM_BASEMAP_URL
+
+
 def race_protection_save(project_id: int, fields: Dict[str, Any]) -> None:
     with transaction.atomic():
         fields_name = list(fields.keys())
@@ -244,7 +251,10 @@ def generate_cover_image(self, project_id):
 
         gdf_emprise.buffer(250000).plot(ax=ax, facecolor="none", edgecolor="none")
         gdf_emprise.plot(ax=ax, facecolor="none", edgecolor="yellow")
-        cx.add_basemap(ax, source=settings.ORTHOPHOTO_URL)
+        cx.add_basemap(
+            ax,
+            source=get_basemap_url(retry_count=self.request.retries),
+        )
 
         img_data = io.BytesIO()
         plt.savefig(img_data, bbox_inches="tight")
@@ -386,7 +396,12 @@ def to_shapely_polygons(mpoly):
     return shapely.wkt.loads(wkt)
 
 
-def get_img(queryset, color: str, title: str) -> io.BytesIO:
+def get_img(
+    queryset,
+    color: str,
+    title: str,
+    basemap_url: str,
+) -> io.BytesIO:
     data: Dict[Literal["level", "geometry"], Any] = {"level": [], "geometry": []}
     for row in queryset:
         data["geometry"].append(to_shapely_polygons(row.mpoly))
@@ -411,7 +426,7 @@ def get_img(queryset, color: str, title: str) -> io.BytesIO:
     )
     ax.add_artist(ScaleBar(1))
     ax.set_title(title)
-    cx.add_basemap(ax, source=settings.ORTHOPHOTO_URL)
+    cx.add_basemap(ax, source=basemap_url)
 
     img_data = io.BytesIO()
     plt.savefig(img_data, bbox_inches="tight")
@@ -436,6 +451,7 @@ def generate_theme_map_conso(self, project_id):
             queryset=qs,
             color="Blues",
             title="Consommation d'espaces des communes du territoire sur la période (en Ha)",
+            basemap_url=get_basemap_url(retry_count=self.request.retries),
         )
 
         race_protection_save_map(
@@ -470,6 +486,7 @@ def generate_theme_map_artif(self, project_id):
             queryset=qs,
             color="OrRd",
             title="Artificialisation des communes du territoire sur la période (en Ha)",
+            basemap_url=get_basemap_url(retry_count=self.request.retries),
         )
 
         race_protection_save_map(
@@ -533,7 +550,7 @@ def generate_theme_map_understand_artif(self, project_id):
         gdf_emprise.plot(ax=ax, facecolor="none", edgecolor="yellow")
         ax.add_artist(ScaleBar(1))
         ax.set_title("Comprendre l'artificialisation de son territoire")
-        cx.add_basemap(ax, source=settings.ORTHOPHOTO_URL)
+        cx.add_basemap(ax, source=get_basemap_url(retry_count=self.request.retries))
 
         img_data = io.BytesIO()
         plt.savefig(img_data, bbox_inches="tight")
@@ -589,7 +606,7 @@ def generate_theme_map_gpu(self, project_id):
         gdf_emprise.plot(ax=ax, facecolor="none", edgecolor="yellow")
         ax.add_artist(ScaleBar(1))
         ax.set_title("Les zones d'urbanisme de son territoire")
-        cx.add_basemap(ax, source=settings.ORTHOPHOTO_URL)
+        cx.add_basemap(ax, source=get_basemap_url(retry_count=self.request.retries))
 
         img_data = io.BytesIO()
         plt.savefig(img_data, bbox_inches="tight")
@@ -636,6 +653,7 @@ def generate_theme_map_fill_gpu(self, project_id):
                 queryset=qs,
                 color="OrRd",
                 title="Taux d'artificialisation des zones urbaines (U) et à urbaniser (AU)",
+                basemap_url=get_basemap_url(retry_count=self.request.retries),
             )
         else:
             geom = diagnostic.combined_emprise.transform("3857", clone=True)
@@ -648,7 +666,7 @@ def generate_theme_map_fill_gpu(self, project_id):
             gdf_emprise.plot(ax=ax, facecolor="none", edgecolor="yellow")
             ax.add_artist(ScaleBar(1))
             ax.set_title("Il n'y a pas de zone U ou AU")
-            cx.add_basemap(ax, source=settings.ORTHOPHOTO_URL)
+            cx.add_basemap(ax, source=get_basemap_url(retry_count=self.request.retries))
 
             img_data = io.BytesIO()
             plt.savefig(img_data, bbox_inches="tight")

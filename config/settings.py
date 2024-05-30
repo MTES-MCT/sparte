@@ -523,7 +523,9 @@ CSP_IMG_SRC = [
     "https://client.crisp.chat",
     "https://image.crisp.chat",
     "https://storage.crisp.chat",
+    "tile.openstreetmap.org",
 ]
+
 CSP_FRAME_SRC = (
     "'self'",
     # Crisp
@@ -548,6 +550,7 @@ CSP_CONNECT_SRC = [
     "sparte-metabase.osc-secnum-fr1.scalingo.io",
     "google.com",
     "data.geopf.fr",
+    "tile.openstreetmap.org",
     "https://raw.githack.com",
     "https://openmaptiles.geo.data.gouv.fr",
     "https://openmaptiles.github.io",
@@ -564,11 +567,34 @@ CSP_FRAME_ANCESTORS = ("'self'", "https://sparte-metabase.osc-secnum-fr1.scaling
 
 # MAP SETTINGS
 
+BASEMAP_URL = (
+    "https://data.geopf.fr/wmts?"
+    "SERVICE=WMTS"
+    "&REQUEST=GetTile"
+    "&VERSION=1.0.0"
+    "&LAYER=ADMINEXPRESS-COG-CARTO.LATEST"
+    "&STYLE=normal"
+    "&FORMAT=image%2Fpng"
+    "&TILEMATRIXSET=PM"
+    "&TILEMATRIX={z}"
+    "&TILEROW={y}"
+    "&TILECOL={x}"
+)
+
+OSM_BASEMAP_URL = "https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+
 ORTHOPHOTO_URL = (
     "https://data.geopf.fr/wmts?"
-    "REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0&TILEMATRIXSET=PM"
-    "&LAYER=ORTHOIMAGERY.ORTHOPHOTOS&STYLE=normal&FORMAT=image/jpeg"
-    "&TILECOL={x}&TILEROW={y}&TILEMATRIX={z}"
+    "REQUEST=GetTile"
+    "&SERVICE=WMTS"
+    "&VERSION=1.0.0"
+    "&TILEMATRIXSET=PM"
+    "&LAYER=ORTHOIMAGERY.ORTHOPHOTOS"
+    "&STYLE=normal"
+    "&FORMAT=image/jpeg"
+    "&TILECOL={x}"
+    "&TILEROW={y}"
+    "&TILEMATRIX={z}"
 )
 
 # MATTERMOST SETTINGS
