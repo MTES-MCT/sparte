@@ -465,13 +465,62 @@ def generate_theme_map_artif(self, project_id):
 
     try:
         diagnostic = Project.objects.get(id=int(project_id))
-        qs = diagnostic.cities.all().annotate(level=F("surface_artif"))
+        queryset = diagnostic.cities.all()
 
-        img_data = get_img(
-            queryset=qs,
-            color="OrRd",
-            title="Artificialisation des communes du territoire sur la période (en Ha)",
+        data = {
+            "surface_artif": [],
+            "geometry": [],
+            "text": [],
+        }
+        for row in queryset:
+            data["geometry"].append(to_shapely_polygons(row.mpoly))
+            data["surface_artif"].append(float(row.surface_artif or 0))
+            data["text"].append(row.name)
+
+        gdf = geopandas.GeoDataFrame(data, crs="EPSG:4326").to_crs(epsg=3857)
+
+        fig, ax = plt.subplots(figsize=(20, 10))
+        fig.set_dpi(100)
+        plt.axis("off")
+
+        for idx, row in gdf.iterrows():
+            x, y = row["geometry"].centroid.coords[0]
+            plt.text(
+                s=row["text"],
+                x=x,
+                y=y,
+                ha="center",
+            )
+
+        gdf.plot(
+            "surface_artif",
+            ax=ax,
+            scheme="natural_breaks",
+            k=5,
+            legend=True,
+            cmap="Reds",
+            alpha=0.8,
+            edgecolor="lightgrey",
+            legend_kwds={
+                "loc": "lower right",
+                "title": "En ha",
+                "interval": True,
+            },
         )
+
+        ax.add_artist(ScaleBar(1, location="upper right"))
+        ax.set_title(
+            (
+                f"Artificialisation des communes de {diagnostic.territory_name} "
+                f"entre {diagnostic.first_year_ocsge} et {diagnostic.last_year_ocsge}"
+            ),
+            loc="left",
+        )
+        cx.add_attribution(ax, text="Données: OCS GE (IGN)")
+
+        img_data = io.BytesIO()
+        plt.savefig(img_data, bbox_inches="tight")
+        img_data.seek(0)
 
         race_protection_save_map(
             diagnostic.pk,
