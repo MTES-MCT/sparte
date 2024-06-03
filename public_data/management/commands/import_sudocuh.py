@@ -2,10 +2,9 @@ import csv
 import datetime
 import logging
 
-import click
 from django.core.management.base import BaseCommand
 
-from public_data.models import Sudocuh
+from public_data.models import Sudocuh, SudocuhEpci
 from public_data.storages import DataStorage
 
 logger = logging.getLogger("management.commands")
@@ -25,15 +24,17 @@ def parse_date(str_date: str, format: str = "%m/%d/%y"):
     return datetime.datetime.strptime(str_date, format).date()
 
 
-def convert_superficie_to_ha(value: str, unit: str = "ha") -> float:
-    if unit == "km2":
-        return float(value) * 100
-    elif unit == "m2":
-        return float(value) / 10000
-    elif unit == "ha":
-        return float(value)
+def parse_boolean(value: str):
+    if value.lower() == "oui":
+        return True
+    elif value.lower() == "non":
+        return False
 
-    raise ValueError(f"Unknown superficie unit {unit}")
+    raise ValueError(f"Unknown boolean value {value}")
+
+
+def convert_km2_to_ha(value: str) -> float:
+    return float(value) * 100
 
 
 class Command(BaseCommand):
@@ -46,68 +47,19 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument(
-            "--filename",
+            "--sudocuh-file",
             type=str,
-            help="filename you want to import",
             default="sudocuh_cog_2023.csv",
         )
         parser.add_argument(
-            "--yes",
-            action="store_true",
-            help="Skip confirmation",
-            required=False,
-            default=False,
-        )
-        parser.add_argument(
-            "--date-format",
+            "--sudocuh-epci-file",
             type=str,
-            help="Date format to parse",
-            required=False,
-            default="%m/%d/%y",
-        )
-        parser.add_argument(
-            "--superficie-unit",
-            type=str,
-            help="Unit of the superficie",
-            required=False,
-            default="km2",
-            choices=["km2", "ha", "m2"],
+            default="sudocuh_epci_cog_2023.csv",
         )
 
-    def handle(self, *args, **options):
-        instructions = """
-        Before the import, make sure that the file is in the right format:
-        - The file must be a .csv file
-        - The columns must be renamed to match the Sudoch model's columns
-        - The value "Aucun" must be replaced by None (no value)
-            - Replace regex (vscode): ;Aucun; to ;;
-            - Attention, there is a commune named "Aucun"
-        - The numeric values must have their commas replaced by dots
-            - Replace regex (vscode): (,)(\d+) to .$2  # noqa: W605
-        - Spaces in numeric values must be removed
-            - Replace regex (vscode): (\s)(\d+) to $2  # noqa: W605
-        - Verify the data format matches the parser's date format
-        - Verify the superficie unit matches the superficie unit option
-        """
-
-        click.echo(instructions)
-
-        if not options.get("yes"):
-            click.confirm("Do you want to continue?", abort=True)
-
+    def import_communes_file(self, options):
         storage = DataStorage()
-        filename = options.get("filename")
-
-        if not storage.exists(filename):
-            raise FileNotFoundError(f"File {filename} not found on S3")
-
-        logger.info(f"Loading Sudocuh data from S3 file {filename}")
-
-        # open as binary from S3 to avoid decoding issues
-        sudocuh_file = storage.open(options.get("filename"), "rb").read()
-
-        logger.info("Sudocuh data loaded")
-
+        sudocuh_file = storage.open(options.get("sudocuh_file"), "rb").read()
         csv_file_as_list = sudocuh_file.decode("utf-8").split("\r\n")
         headers = csv_file_as_list.pop(0).split(";")
 
@@ -138,29 +90,77 @@ class Command(BaseCommand):
             data = {key: empty_string_to_none(value) for key, value in data.items()}
 
             for column in date_fields:
-                data[column] = (
-                    parse_date(
-                        str_date=data[column],
-                        format=options.get("date_format"),
-                    )
-                    if data[column]
-                    else None
-                )
+                data[column] = parse_date(str_date=data[column]) if data[column] else None
 
             if data[area_field] is None:
                 logger.warning(f"Empty superficie field for {data['nom_commune']}, defaulting to 0")
 
-            data[area_field] = (
-                convert_superficie_to_ha(
-                    value=data[area_field],
-                    unit=options.get("superficie_unit"),
-                )
-                if data[area_field]
-                else 0
-            )
+            data[area_field] = convert_km2_to_ha(value=data[area_field]) if data[area_field] else 0
 
             objects_to_create.append(Sudocuh(**data))
 
         created_sudocuh = Sudocuh.objects.bulk_create(objects_to_create)
 
         logger.info(f"Created {len(created_sudocuh)} Sudocuh data")
+
+    def import_epci_file(self, options):
+        storage = DataStorage()
+        sudocuh_epci_file = storage.open(options.get("sudocuh_epci_file"), "rb").read()
+        csv_file_as_list = sudocuh_epci_file.decode("utf-8").split("\n")
+        headers = csv_file_as_list.pop(0).split(";")
+
+        date_field = "date_creation_epci"
+
+        boolean_fields = [
+            "epci_interdepartemental",
+            "competence_plan",
+            "competence_scot",
+            "competence_plh",
+            "obligation_plh",
+        ]
+
+        area_field = "insee_superficie"
+
+        logger.info("Deleting previous Sudocuh EPCI data")
+
+        count, _ = SudocuhEpci.objects.all().delete()
+
+        logger.info(f"Deleted {count} previous Sudocuh EPCI data")
+
+        reader = csv.reader(csv_file_as_list, delimiter=";")
+        count = len(csv_file_as_list)
+        logger.info(f"Importing {count} Sudocuh EPCI data")
+
+        objects_to_create = []
+
+        for row in reader:
+            data = dict(zip(headers, row))
+
+            data = {key: empty_string_to_none(value) for key, value in data.items()}
+            data[date_field] = parse_date(data[date_field]) if data[date_field] else None
+            data[area_field] = convert_km2_to_ha(data[area_field])
+
+            for field in boolean_fields:
+                data[field] = parse_boolean(data[field])
+
+            objects_to_create.append(SudocuhEpci(**data))
+
+        created_sudocuh = SudocuhEpci.objects.bulk_create(objects_to_create)
+
+        logger.info(f"Created {len(created_sudocuh)} Sudocuh EPCI data")
+
+    def handle(self, *args, **options):
+        storage = DataStorage()
+        filename = options.get("sudocuh_file")
+        filename_epci = options.get("sudocuh_epci_file")
+
+        if not storage.exists(filename):
+            raise FileNotFoundError(f"File {filename} not found on S3")
+
+        if not storage.exists(filename_epci):
+            raise FileNotFoundError(f"File {filename_epci} not found on S3")
+
+        logger.info(f"Loading Sudocuh data from S3 file {filename} and {filename_epci}")
+
+        self.import_communes_file(options)
+        self.import_epci_file(options)

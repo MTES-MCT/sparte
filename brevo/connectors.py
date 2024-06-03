@@ -84,18 +84,22 @@ class Brevo:
 
         is_rapport_complet = request.requested_document == RequestedDocumentChoices.RAPPORT_COMPLET
         is_rapport_local = request.requested_document == RequestedDocumentChoices.RAPPORT_LOCAL
+        project: Project = request.project
 
         attributes = {
             "NOM": request.last_name or "",
             "PRENOM": request.first_name or "",
             "ORGANISME": request.organism or "",
             "FONCTION": request.function or "",
-            "NOM_TERRITOIRE": request.project.territory_name or "",
-            "LAST_DATE_DIAG_CREATED": self.__format_date(request.project.created_date),
+            "NOM_TERRITOIRE": project.territory_name or "",
+            "LAST_DATE_DIAG_CREATED": self.__format_date(project.created_date),
             "LAST_DATE_DL_DIAG": self.__format_date(request.created_date),
             "A_TELECHARGE_BILAN": "OUI" if is_rapport_complet else "NON",
             "A_TELECHARGE_RAPPORT_TRIENNAL": "OUI" if is_rapport_local else "NON",
             "VERSION_DERNIER_RAPPORT_TELECHARGE": settings.OFFICIAL_VERSION,
+            "LAST_DPT_DIAGNOSTIC": ", ".join(
+                project.cities.all().values_list("departement__source_id", flat=True).distinct(),
+            ),
         }
 
         if is_rapport_local:
@@ -107,7 +111,7 @@ class Brevo:
             attributes.update(
                 {
                     "DATE_CREATION_COMPTE": self.__format_date(user.date_joined),
-                    "FONCTION": attributes.get("FONCTION", user.function),
+                    "FONCTION": user.function or request.function or "",
                     "NB_DIAG_CREES": user.project_set.count(),
                     "NB_DIAG_TELECHARGES": user.request_set.count(),
                 }
