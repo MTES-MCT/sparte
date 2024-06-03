@@ -31,13 +31,6 @@ class PlanningCompetencyServiceSudocuh(PlanningCompetencyService):
 
     @staticmethod
     def has_planning_competency(land: Land) -> bool:
-        """
-        Whether the land has planning competency over its territory.
-        Only communes and EPCI have planning competency in the sense of this method.
-
-        Departement and region can have planning competency (RNU), but not over their entire
-        territory, so they are not considered here.
-        """
         if land.land_type == AdminRef.EPCI:
             return SudocuhEpci.objects.get(siren=land.official_id).competence_plan
 
