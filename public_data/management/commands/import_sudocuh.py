@@ -37,6 +37,10 @@ def convert_km2_to_ha(value: str) -> float:
     return float(value) * 100
 
 
+def parse_commune_insee(value: str) -> str:
+    return value.zfill(5)
+
+
 class Command(BaseCommand):
     """
     Data downloaded from:
@@ -95,6 +99,7 @@ class Command(BaseCommand):
             if data[area_field] is None:
                 logger.warning(f"Empty superficie field for {data['nom_commune']}, defaulting to 0")
 
+            data["code_insee"] = parse_commune_insee(data["code_insee"])
             data[area_field] = convert_km2_to_ha(value=data[area_field]) if data[area_field] else 0
 
             objects_to_create.append(Sudocuh(**data))

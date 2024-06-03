@@ -12,22 +12,22 @@ class PlanningCompetencyServiceSudocuhTestCase(TestCase):
         self.assertFalse(PlanningCompetencyServiceSudocuh.has_planning_competency(land))
 
     def test_commune_rnu_creating_planning_document_has_planning_competency(self):
-        bregnier_cordon = Commune.objects.get(insee="1058")
+        bregnier_cordon = Commune.objects.get(insee="01058")
         land = Land(public_key=f"COMM_{bregnier_cordon.id}")
         self.assertTrue(PlanningCompetencyServiceSudocuh.has_planning_competency(land))
 
     def test_epci_does_not_have_planning_competency(self):
-        cc_dombes = Epci.objects.get(insee="200069193")
+        cc_dombes = Epci.objects.get(source_id="200069193")
         land = Land(public_key=f"EPCI_{cc_dombes.id}")
         self.assertFalse(PlanningCompetencyServiceSudocuh.has_planning_competency(land))
 
     def test_commune_have_planning_competency(self):
-        ambronay = Commune.objects.get(insee="1007")
+        ambronay = Commune.objects.get(insee="01007")
         land = Land(public_key=f"COMM_{ambronay.id}")
         self.assertTrue(PlanningCompetencyServiceSudocuh.has_planning_competency(land))
 
     def test_epci_have_planning_competency(self):
-        ca_haut_bugey = Epci.objects.get(insee="200042935")
+        ca_haut_bugey = Epci.objects.get(source_id="200042935")
         land = Land(public_key=f"EPCI_{ca_haut_bugey.id}")
         self.assertTrue(PlanningCompetencyServiceSudocuh.has_planning_competency(land))
 
@@ -37,6 +37,6 @@ class PlanningCompetencyServiceSudocuhTestCase(TestCase):
         self.assertTrue(PlanningCompetencyServiceSudocuh.planning_document_in_revision(land))
 
     def test_commune_planning_document_not_in_revision(self):
-        ambronay = Commune.objects.get(insee="1007")
+        ambronay = Commune.objects.get(insee="01007")
         land = Land(public_key=f"COMM_{ambronay.id}")
         self.assertFalse(PlanningCompetencyServiceSudocuh.planning_document_in_revision(land))

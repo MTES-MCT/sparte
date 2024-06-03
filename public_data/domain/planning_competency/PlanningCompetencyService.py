@@ -8,12 +8,12 @@ class MissingPlanningCompetencyData(Exception):
 
 
 class PlanningCompetencyService(ABC):
-    @abstractmethod
     @staticmethod
+    @abstractmethod
     def planning_document_in_revision(self, land: Land) -> bool:
         pass
 
-    @abstractmethod
     @staticmethod
+    @abstractmethod
     def has_planning_competency(self, land: Land) -> bool:
         pass

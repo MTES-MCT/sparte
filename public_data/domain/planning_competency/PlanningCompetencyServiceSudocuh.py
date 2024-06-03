@@ -39,7 +39,7 @@ class PlanningCompetencyServiceSudocuh(PlanningCompetencyService):
         territory, so they are not considered here.
         """
         if land.land_type == AdminRef.EPCI:
-            return SudocuhEpci.objects.get(siren_epci=land.official_id).competence_plan
+            return SudocuhEpci.objects.get(siren=land.official_id).competence_plan
 
         if land.land_type == AdminRef.COMMUNE:
             return PlanningCompetencyServiceSudocuh.commune_has_planning_competency(
@@ -57,6 +57,10 @@ class PlanningCompetencyServiceSudocuh(PlanningCompetencyService):
 
         if land.land_type == AdminRef.EPCI:
             epci = Epci.objects.get(source_id=land.official_id)
-            return Sudocuh.objects.get(siren_epci=epci.source_id).du_en_cours is not None
+
+            try:
+                return Sudocuh.objects.get(siren_epci=epci.source_id).du_en_cours is not None
+            except Sudocuh.DoesNotExist:
+                return False
 
         return False
