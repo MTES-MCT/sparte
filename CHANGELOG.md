@@ -2,6 +2,12 @@
 
 Ce changelog suit la méthode "keep a changelog" disponible ici: [https://keepachangelog.com/en/1.0.0/](https://keepachangelog.com/en/1.0.0/)
 
+## [5.6] OCS GE Pas-de-Calais - 2024.06.03
+
+## Ajouté
+- Nouvelles données OCS GE pour le département Pas-de-Calais (62) [#383](https://github.com/MTES-MCT/sparte/pull/383)
+
+
 ## [5.5.1] Rapport local - V2 sur l'artif - 2024.05.30
 
 ## Modifié

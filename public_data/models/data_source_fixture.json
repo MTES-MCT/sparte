@@ -3084,5 +3084,197 @@
             "official_land_id": "974",
             "srid": 2975
         }
+    },
+    {
+        "model": "public_data.datasource",
+        "pk": 255,
+        "fields": {
+            "productor": "IGN",
+            "dataset": "OCSGE",
+            "name": "DIFFERENCE",
+            "millesimes": "[\"2018\", \"2021\"]",
+            "mapping": null,
+            "path": "62_DIFFERENCE_2018_2021_IGN_REPACKED.shp.zip",
+            "shapefile_name": "DIFF_62_2021_2019.shp",
+            "source_url": "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE-NG_1-1__SHP_LAMB93_D062_DIFF_2018-2021/OCS-GE-NG_1-1__SHP_LAMB93_D062_DIFF_2018-2021.7z",
+            "official_land_id": "62",
+            "srid": 2154
+        }
+    },
+    {
+        "model": "public_data.datasource",
+        "pk": 256,
+        "fields": {
+            "productor": "IGN",
+            "dataset": "OCSGE",
+            "name": "OCCUPATION_DU_SOL",
+            "millesimes": "[\"2018\"]",
+            "mapping": null,
+            "path": "62_OCCUPATION_DU_SOL_2018_IGN_REPACKED.shp.zip",
+            "shapefile_name": "OCCUPATION_SOL.shp",
+            "source_url": "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0__SHP_LAMB93_D062_2018-01-01/OCS-GE_2-0__SHP_LAMB93_D062_2018-01-01.7z",
+            "official_land_id": "62",
+            "srid": 2154
+        }
+    },
+    {
+        "model": "public_data.datasource",
+        "pk": 257,
+        "fields": {
+            "productor": "IGN",
+            "dataset": "OCSGE",
+            "name": "ZONE_CONSTRUITE",
+            "millesimes": "[\"2018\"]",
+            "mapping": null,
+            "path": "62_ZONE_CONSTRUITE_2018_IGN_REPACKED.shp.zip",
+            "shapefile_name": "ZONE_CONSTRUITE.shp",
+            "source_url": "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0__SHP_LAMB93_D062_2018-01-01/OCS-GE_2-0__SHP_LAMB93_D062_2018-01-01.7z",
+            "official_land_id": "62",
+            "srid": 2154
+        }
+    },
+    {
+        "model": "public_data.datasource",
+        "pk": 258,
+        "fields": {
+            "productor": "IGN",
+            "dataset": "OCSGE",
+            "name": "OCCUPATION_DU_SOL",
+            "millesimes": "[\"2021\"]",
+            "mapping": null,
+            "path": "62_OCCUPATION_DU_SOL_2021_IGN_REPACKED.shp.zip",
+            "shapefile_name": "OCCUPATION_SOL.shp",
+            "source_url": "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0__SHP_LAMB93_D062_2021-01-01/OCS-GE_2-0__SHP_LAMB93_D062_2021-01-01.7z",
+            "official_land_id": "62",
+            "srid": 2154
+        }
+    },
+    {
+        "model": "public_data.datasource",
+        "pk": 259,
+        "fields": {
+            "productor": "IGN",
+            "dataset": "OCSGE",
+            "name": "ZONE_CONSTRUITE",
+            "millesimes": "[\"2021\"]",
+            "mapping": null,
+            "path": "62_ZONE_CONSTRUITE_2021_IGN_REPACKED.shp.zip",
+            "shapefile_name": "ZONE_CONSTRUITE.shp",
+            "source_url": "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0__SHP_LAMB93_D062_2021-01-01/OCS-GE_2-0__SHP_LAMB93_D062_2021-01-01.7z",
+            "official_land_id": "62",
+            "srid": 2154
+        }
+    },
+    {
+        "model": "public_data.datasource",
+        "pk": 260,
+        "fields": {
+            "productor": "MDA",
+            "dataset": "OCSGE",
+            "name": "ZONE_CONSTRUITE",
+            "millesimes": "[\"2018\"]",
+            "mapping": null,
+            "path": "OCSGE_ZONE_CONSTRUITE_62_2018_MDA.shp.zip",
+            "shapefile_name": "ZONE_CONSTRUITE.shp",
+            "source_url": null,
+            "official_land_id": "62",
+            "srid": 2154
+        }
+    },
+    {
+        "model": "public_data.datasource",
+        "pk": 261,
+        "fields": {
+            "productor": "MDA",
+            "dataset": "OCSGE",
+            "name": "ZONE_CONSTRUITE",
+            "millesimes": "[\"2021\"]",
+            "mapping": null,
+            "path": "OCSGE_ZONE_CONSTRUITE_62_2021_MDA.shp.zip",
+            "shapefile_name": "ZONE_CONSTRUITE.shp",
+            "source_url": null,
+            "official_land_id": "62",
+            "srid": 2154
+        }
+    },
+    {
+        "model": "public_data.datasource",
+        "pk": 262,
+        "fields": {
+            "productor": "MDA",
+            "dataset": "OCSGE",
+            "name": "DIFFERENCE",
+            "millesimes": "[\"2018\", \"2021\"]",
+            "mapping": null,
+            "path": "OCSGE_DIFFERENCE_62_2018_2021_MDA.shp.zip",
+            "shapefile_name": "DIFFERENCE.shp",
+            "source_url": null,
+            "official_land_id": "62",
+            "srid": 2154
+        }
+    },
+    {
+        "model": "public_data.datasource",
+        "pk": 263,
+        "fields": {
+            "productor": "MDA",
+            "dataset": "OCSGE",
+            "name": "OCCUPATION_DU_SOL",
+            "millesimes": "[\"2018\"]",
+            "mapping": null,
+            "path": "OCSGE_OCCUPATION_DU_SOL_62_2018_MDA.shp.zip",
+            "shapefile_name": "OCCUPATION_DU_SOL.shp",
+            "source_url": null,
+            "official_land_id": "62",
+            "srid": 2154
+        }
+    },
+    {
+        "model": "public_data.datasource",
+        "pk": 264,
+        "fields": {
+            "productor": "MDA",
+            "dataset": "OCSGE",
+            "name": "OCCUPATION_DU_SOL",
+            "millesimes": "[\"2021\"]",
+            "mapping": null,
+            "path": "OCSGE_OCCUPATION_DU_SOL_62_2021_MDA.shp.zip",
+            "shapefile_name": "OCCUPATION_DU_SOL.shp",
+            "source_url": null,
+            "official_land_id": "62",
+            "srid": 2154
+        }
+    },
+    {
+        "model": "public_data.datasource",
+        "pk": 265,
+        "fields": {
+            "productor": "MDA",
+            "dataset": "OCSGE",
+            "name": "ZONE_ARTIFICIELLE",
+            "millesimes": "[\"2018\"]",
+            "mapping": null,
+            "path": "OCSGE_ZONE_ARTIFICIELLE_62_2018_MDA.shp.zip",
+            "shapefile_name": "ZONE_ARTIFICIELLE.shp",
+            "source_url": null,
+            "official_land_id": "62",
+            "srid": 2154
+        }
+    },
+    {
+        "model": "public_data.datasource",
+        "pk": 266,
+        "fields": {
+            "productor": "MDA",
+            "dataset": "OCSGE",
+            "name": "ZONE_ARTIFICIELLE",
+            "millesimes": "[\"2021\"]",
+            "mapping": null,
+            "path": "OCSGE_ZONE_ARTIFICIELLE_62_2021_MDA.shp.zip",
+            "shapefile_name": "ZONE_ARTIFICIELLE.shp",
+            "source_url": null,
+            "official_land_id": "62",
+            "srid": 2154
+        }
     }
 ]
