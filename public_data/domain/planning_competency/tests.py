@@ -1,3 +1,4 @@
+from django.core.management import call_command
 from django.test import TestCase
 
 from public_data.models.administration import Commune, Epci, Land
@@ -6,6 +7,9 @@ from .PlanningCompetencyServiceSudocuh import PlanningCompetencyServiceSudocuh
 
 
 class PlanningCompetencyServiceSudocuhTestCase(TestCase):
+    def setUp(self) -> None:
+        call_command(command_name="import_sudocuh")
+
     def test_commune_does_not_have_planning_competency(self):
         lyon = Commune.objects.get(insee="69123")
         land = Land(public_key=f"COMM_{lyon.id}")

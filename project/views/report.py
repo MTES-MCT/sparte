@@ -24,6 +24,7 @@ from project.models import (
     trigger_async_tasks,
 )
 from project.utils import add_total_line_column
+from public_data.domain.planning_competency import PlanningCompetencyServiceSudocuh
 from public_data.models import CouvertureSol, UsageSol
 from public_data.models.gpu import ZoneUrba
 from public_data.models.ocsge import Ocsge, OcsgeDiff
@@ -496,6 +497,12 @@ class ProjectReportDownloadView(BreadCrumbMixin, CreateView):
             form.instance.user = self.request.user
         form.instance.project = Project.objects.get(pk=self.kwargs["pk"])
         form.instance.requested_document = self.kwargs["requested_document"]
+        form.instance.du_en_cours = PlanningCompetencyServiceSudocuh.planning_document_in_revision(
+            form.instance.project.land
+        )
+        form.instance.competence_urba = PlanningCompetencyServiceSudocuh.has_planning_competency(
+            form.instance.project.land
+        )
         form.instance._change_reason = "New request"
         new_request = form.save()
         send_diagnostic_request_to_brevo.delay(new_request.id)

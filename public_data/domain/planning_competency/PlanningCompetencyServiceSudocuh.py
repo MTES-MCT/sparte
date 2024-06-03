@@ -58,9 +58,6 @@ class PlanningCompetencyServiceSudocuh(PlanningCompetencyService):
         if land.land_type == AdminRef.EPCI:
             epci = Epci.objects.get(source_id=land.official_id)
 
-            try:
-                return Sudocuh.objects.get(siren_epci=epci.source_id).du_en_cours is not None
-            except Sudocuh.DoesNotExist:
-                return False
+            return Sudocuh.objects.get(siren_epci=epci.source_id).du_en_cours is not None
 
         return False

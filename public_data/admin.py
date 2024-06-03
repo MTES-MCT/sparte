@@ -13,6 +13,7 @@ from public_data.models import (
     Ocsge,
     Region,
     Sudocuh,
+    SudocuhEpci,
     UsageSol,
 )
 
@@ -192,3 +193,17 @@ class SudocuhAdmin(admin.GeoModelAdmin):
         "siren_epci",
     )
     ordering = ("nom_commune",)
+
+
+@admin.register(SudocuhEpci)
+class SudocuhEpciAdmin(admin.GeoModelAdmin):
+    model = SudocuhEpci
+    list_display = (
+        "nom_epci",
+        "siren",
+    )
+    search_fields = (
+        "siren",
+        "nom_epci",
+    )
+    ordering = ("nom_epci",)

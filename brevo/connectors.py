@@ -97,9 +97,13 @@ class Brevo:
             "A_TELECHARGE_BILAN": "OUI" if is_rapport_complet else "NON",
             "A_TELECHARGE_RAPPORT_TRIENNAL": "OUI" if is_rapport_local else "NON",
             "VERSION_DERNIER_RAPPORT_TELECHARGE": settings.OFFICIAL_VERSION,
+            "DU_EN_COURS": request.du_en_cours,
+            "A_COMPETENCE_URBA": request.competence_urba,
             "LAST_DPT_DIAGNOSTIC": ", ".join(
                 project.cities.all().values_list("departement__source_id", flat=True).distinct(),
             ),
+            "DERNIER_DIAG_TYPE_TERRITOIRE": project.land_type,
+            "DERNIER_DIAG_ID_TERRITOIRE": project.land.official_id,
         }
 
         if is_rapport_local:
