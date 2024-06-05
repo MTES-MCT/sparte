@@ -491,13 +491,21 @@ class ProjectReportDownloadView(BreadCrumbMixin, CreateView):
         return initial
 
     def form_valid(self, form):
-        # required to set the user who is logged as creator
         if self.request.user.is_authenticated:
-            form.instance.user = self.request.user
+            user = self.request.user
+            form.instance.user = user
+            user.first_name = form.instance.first_name or user.first_name
+            user.last_name = form.instance.last_name or user.last_name
+            user.function = form.instance.function or user.function
+            user.organism = form.instance.organism or user.organism
+            user.email = form.instance.email or user.email
+            user.save()
+
         form.instance.project = Project.objects.get(pk=self.kwargs["pk"])
         form.instance.requested_document = self.kwargs["requested_document"]
         form.instance._change_reason = "New request"
-        new_request = form.save()
+
+        new_request: Request = form.save()
         send_request_to_brevo.delay(new_request.id)
         tasks.send_email_request_bilan.delay(new_request.id)
         tasks.generate_word_diagnostic.apply_async((new_request.id,), link=tasks.send_word_diagnostic.s())
