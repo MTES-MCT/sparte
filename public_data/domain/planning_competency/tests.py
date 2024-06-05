@@ -7,7 +7,8 @@ from .PlanningCompetencyServiceSudocuh import PlanningCompetencyServiceSudocuh
 
 
 class PlanningCompetencyServiceSudocuhTestCase(TestCase):
-    def setUp(self) -> None:
+    @classmethod
+    def setUpClass(cls) -> None:
         call_command(command_name="import_sudocuh")
 
     def test_commune_does_not_have_planning_competency(self):
