@@ -150,7 +150,16 @@ class RequestAdmin(admin.ModelAdmin):
                 )
             },
         ),
-        ("Requête", {"fields": ("requested_document",)}),
+        (
+            "Requête",
+            {
+                "fields": (
+                    "requested_document",
+                    "du_en_cours",
+                    "competence_urba",
+                )
+            },
+        ),
         (
             "Réponse",
             {
