@@ -7,7 +7,6 @@ from .PlanningCompetencyServiceSudocuh import PlanningCompetencyServiceSudocuh
 
 
 class PlanningCompetencyServiceSudocuhTestCase(TestCase):
-    @classmethod
     def setUpClass(cls) -> None:
         call_command(command_name="import_sudocuh")
 
