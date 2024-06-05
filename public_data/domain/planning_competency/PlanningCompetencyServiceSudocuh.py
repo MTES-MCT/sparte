@@ -51,6 +51,9 @@ class PlanningCompetencyServiceSudocuh(PlanningCompetencyService):
         if land.land_type == AdminRef.EPCI:
             epci = Epci.objects.get(source_id=land.official_id)
 
-            return Sudocuh.objects.get(siren_epci=epci.source_id).du_en_cours is not None
+            # below we use a combination of filter and first instead of get
+            # because using get could raise two exceptions: DoesNotExist and MultipleObjectsReturned
+            # we only want to know if at least one object exists
+            return Sudocuh.objects.filter(siren_epci=epci.source_id).first() is not None
 
         return False

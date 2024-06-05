@@ -7,7 +7,12 @@ class PlanningCompetencyService(ABC):
     @staticmethod
     @abstractmethod
     def planning_document_in_revision(self, land: Land) -> bool:
-        pass
+        """
+        Whether the land is currently revising its planning document.
+
+        This method can be used with any land type for convenience,
+        but technically only communes and EPCI can have planning documents.
+        """
 
     @staticmethod
     @abstractmethod
