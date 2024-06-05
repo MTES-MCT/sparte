@@ -3,10 +3,6 @@ from abc import ABC, abstractmethod
 from public_data.models.administration import Land
 
 
-class MissingPlanningCompetencyData(Exception):
-    pass
-
-
 class PlanningCompetencyService(ABC):
     @staticmethod
     @abstractmethod
