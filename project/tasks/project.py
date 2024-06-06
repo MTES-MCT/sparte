@@ -285,7 +285,11 @@ class WordAlreadySentException(Exception):
 
 @shared_task(bind=True, max_retries=6, queue="long")
 def generate_word_diagnostic(self, request_id):
-    from diagnostic_word.renderers import FullReportRenderer, LocalReportRenderer
+    from diagnostic_word.renderers import (
+        ConsoReportRenderer,
+        FullReportRenderer,
+        LocalReportRenderer,
+    )
     from highcharts.charts import RateLimitExceededException
 
     logger.info(f"Start generate word for request_id={request_id}")
@@ -307,6 +311,7 @@ def generate_word_diagnostic(self, request_id):
         renderer_class = {
             RequestedDocumentChoices.RAPPORT_COMPLET: FullReportRenderer,
             RequestedDocumentChoices.RAPPORT_LOCAL: LocalReportRenderer,
+            RequestedDocumentChoices.RAPPORT_CONSO: ConsoReportRenderer,
         }[req.requested_document]
 
         with renderer_class(request=req) as renderer:
@@ -354,11 +359,13 @@ def send_word_diagnostic(self, request_id):
         template_id = {
             RequestedDocumentChoices.RAPPORT_COMPLET: 8,
             RequestedDocumentChoices.RAPPORT_LOCAL: 61,
+            RequestedDocumentChoices.RAPPORT_CONSO: 8,
         }[req.requested_document]
 
         diagnostic_name = {
             RequestedDocumentChoices.RAPPORT_COMPLET: req.project.name,
             RequestedDocumentChoices.RAPPORT_LOCAL: req.project.land.name,
+            RequestedDocumentChoices.RAPPORT_CONSO: req.project.land.name,
         }[req.requested_document]
 
         email = SibTemplateEmail(
@@ -367,9 +374,11 @@ def send_word_diagnostic(self, request_id):
             params={
                 "diagnostic_name": diagnostic_name,
                 "image_url": req.project.cover_image.url,
-                "ocsge_available": ""
-                if req.project.ocsge_coverage_status == req.project.OcsgeCoverageStatus.COMPLETE_UNIFORM
-                else "display",
+                "ocsge_available": (
+                    ""
+                    if req.project.ocsge_coverage_status == req.project.OcsgeCoverageStatus.COMPLETE_UNIFORM
+                    else "display"
+                ),
                 "diagnostic_url": get_url_with_domain(reverse("project:word_download", args=[req.id])),
             },
         )
