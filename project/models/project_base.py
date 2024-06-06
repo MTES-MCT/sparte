@@ -45,8 +45,6 @@ from public_data.models.gpu import ArtifAreaZoneUrba, ZoneUrba
 from public_data.models.mixins import DataColorationMixin
 from utils.db import cast_sum_area
 
-from .utils import user_directory_path
-
 logger = logging.getLogger(__name__)
 
 
@@ -63,24 +61,11 @@ def upload_in_project_folder(project: "Project", filename: str) -> str:
 
 
 class BaseProject(models.Model):
-    class EmpriseOrigin(models.TextChoices):
-        UNSET = "UNSET", "Origine non renseignée"
-        FROM_SHP = "FROM_SHP", "Construit depuis un fichier shape"
-        FROM_CITIES = "FROM_CITIES", "Construit depuis une liste de villes"
-        WITH_EMPRISE = "WITH_EMPRISE", "Emprise déjà fournie"
-
     class Status(models.TextChoices):
         MISSING = "MISSING", "Emprise à renseigner"
         PENDING = "PENDING", "Traitement du fichier Shape en cours"
         SUCCESS = "SUCCESS", "Emprise renseignée"
         FAILED = "FAILED", "Création de l'emprise échouée"
-
-    emprise_origin = models.CharField(
-        "Origine de l'emprise",
-        max_length=20,
-        choices=EmpriseOrigin.choices,
-        default=EmpriseOrigin.UNSET,
-    )
 
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -90,14 +75,6 @@ class BaseProject(models.Model):
         null=True,
     )
     name = models.CharField("Nom", max_length=100)
-    description = models.TextField("Description", blank=True)
-    shape_file = models.FileField(
-        "Fichier .shp",
-        upload_to=user_directory_path,
-        max_length=100,
-        blank=True,
-        null=True,
-    )
     # fields to track the shape files importation into the database
     import_error = models.TextField(
         "Message d'erreur traitement emprise",
@@ -826,7 +803,6 @@ class Project(BaseProject):
         self.import_date = None
         self.import_error = None
         self.couverture_usage = None
-        self.shape_file.delete(save=save)
         if save:
             self.save()
 
