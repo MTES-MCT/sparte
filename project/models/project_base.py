@@ -417,7 +417,22 @@ class Project(BaseProject):
         return latest_change.history_change_reason == ProjectChangeReason.NEW_OCSGE_HAS_BEEN_DELIVERED
 
     @property
-    def async_complete(self):
+    def __async_complete_commune(self) -> bool:
+        return (
+            self.async_add_city_done
+            & self.async_set_combined_emprise_done
+            & self.async_cover_image_done
+            & self.async_find_first_and_last_ocsge_done
+            & self.async_ocsge_coverage_status_done
+            & self.async_add_comparison_lands_done
+            & self.async_theme_map_understand_artif_done
+        )
+
+    @property
+    def async_complete(self) -> bool:
+        if self.land_type == AdminRef.COMMUNE:
+            return self.__async_complete_commune
+
         return (
             self.async_add_city_done
             & self.async_set_combined_emprise_done
@@ -437,6 +452,7 @@ class Project(BaseProject):
             & self.async_set_combined_emprise_done
             & self.async_add_comparison_lands_done
             & self.async_find_first_and_last_ocsge_done
+            & self.async_ocsge_coverage_status_done
         )
 
     class Meta:
