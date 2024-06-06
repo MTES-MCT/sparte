@@ -248,7 +248,11 @@ def generate_cover_image(self, project_id):
         cx.add_basemap(ax, source=settings.ORTHOPHOTO_URL)
 
         img_data = io.BytesIO()
-        plt.savefig(img_data, bbox_inches="tight")
+        plt.savefig(
+            img_data,
+            bbox_inches="tight",
+            format="jpg",
+        )
         img_data.seek(0)
         plt.close()
 
@@ -256,7 +260,7 @@ def generate_cover_image(self, project_id):
             diagnostic.pk,
             "async_cover_image_done",
             "cover_image",
-            f"cover_{project_id}.png",
+            f"cover_{project_id}.jpg",
             img_data,
         )
 
@@ -397,7 +401,7 @@ def get_img(queryset, color: str, title: str) -> io.BytesIO:
 
     fig, ax = plt.subplots(figsize=(15, 10))
     plt.axis("off")
-    fig.set_dpi(150)
+    fig.set_dpi(100)
 
     gdf.plot(
         "level",
@@ -412,7 +416,7 @@ def get_img(queryset, color: str, title: str) -> io.BytesIO:
     )
     ax.add_artist(ScaleBar(1))
     ax.set_title(title)
-    cx.add_basemap(ax, source=settings.ORTHOPHOTO_URL)
+    cx.add_basemap(ax, source=settings.ORTHOPHOTO_URL, zoom_adjust=1, alpha=0.95)
 
     img_data = io.BytesIO()
     plt.savefig(img_data, bbox_inches="tight")
