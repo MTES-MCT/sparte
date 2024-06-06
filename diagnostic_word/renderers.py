@@ -170,6 +170,7 @@ class BaseRenderer:
             "photo_emprise": self.prep_image(diagnostic.cover_image, height=110),
             "carte_consommation": self.prep_image(diagnostic.theme_map_conso, width=170),
             # Charts
+            "annual_total_conso_chart": self.prep_chart(annual_total_conso_chart),
             "chart_determinants": self.prep_chart(det_chart),
             "pie_chart_determinants": self.prep_chart(pie_det_chart),
             "projection_zan_2031": self.prep_chart(objective_chart),
