@@ -213,7 +213,7 @@ AWS_S3_REGION_NAME = env.str("AWS_S3_REGION_NAME", default="eu-west-3")
 # append a prefix to all uploaded file (useful to not mix local, staging...)
 AWS_LOCATION = env.str("AWS_LOCATION", default="local")
 # avoid overriding a file if same key is provided
-AWS_S3_FILE_OVERWRITE = False
+AWS_S3_FILE_OVERWRITE = True
 # allow signed url to be accessed from all regions
 AWS_S3_SIGNATURE_VERSION = "s3v4"
 

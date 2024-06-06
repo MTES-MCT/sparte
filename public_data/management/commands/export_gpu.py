@@ -53,7 +53,6 @@ class Command(BaseCommand):
         logger.info("Export GPU to csv on s3")
 
         self.storage = DataStorage()
-        self.storage.file_overwrite = True
 
         qs = Departement.objects.all().order_by("name")
 
