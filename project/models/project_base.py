@@ -417,42 +417,47 @@ class Project(BaseProject):
         return latest_change.history_change_reason == ProjectChangeReason.NEW_OCSGE_HAS_BEEN_DELIVERED
 
     @property
-    def __async_complete_commune(self) -> bool:
-        return (
-            self.async_add_city_done
-            & self.async_set_combined_emprise_done
-            & self.async_cover_image_done
-            & self.async_find_first_and_last_ocsge_done
-            & self.async_ocsge_coverage_status_done
-            & self.async_add_comparison_lands_done
-            & self.async_theme_map_understand_artif_done
-        )
-
-    @property
     def async_complete(self) -> bool:
-        if self.land_type == AdminRef.COMMUNE:
-            return self.__async_complete_commune
-
-        return (
+        calculations_and_extend_ready = (
             self.async_add_city_done
-            & self.async_set_combined_emprise_done
-            & self.async_cover_image_done
-            & self.async_find_first_and_last_ocsge_done
-            & self.async_ocsge_coverage_status_done
-            & self.async_add_comparison_lands_done
-            & self.async_generate_theme_map_conso_done
-            & self.async_generate_theme_map_artif_done
-            & self.async_theme_map_understand_artif_done
+            and self.async_set_combined_emprise_done
+            and self.async_cover_image_done
+            and self.async_find_first_and_last_ocsge_done
+            and self.async_ocsge_coverage_status_done
+            and self.async_add_comparison_lands_done
         )
+
+        static_maps_ready = self.async_cover_image_done
+
+        not_a_commune = self.land_type != AdminRef.COMMUNE
+
+        # logic below is duplicated from map_tasks in create.py
+        # TODO : refactor this
+
+        if not_a_commune:
+            static_maps_ready = static_maps_ready and self.async_generate_theme_map_conso_done
+
+        if not_a_commune and self.has_complete_uniform_ocsge_coverage:
+            static_maps_ready = static_maps_ready and self.async_generate_theme_map_artif_done
+
+        if self.has_complete_uniform_ocsge_coverage:
+            static_maps_ready = static_maps_ready and self.async_theme_map_understand_artif_done
+
+        if self.has_zonage_urbanisme and self.has_complete_uniform_ocsge_coverage:
+            static_maps_ready = (
+                static_maps_ready and self.async_theme_map_gpu_done and self.async_theme_map_fill_gpu_done
+            )
+
+        return calculations_and_extend_ready and static_maps_ready
 
     @property
     def is_ready_to_be_displayed(self) -> bool:
         return (
             self.async_add_city_done
-            & self.async_set_combined_emprise_done
-            & self.async_add_comparison_lands_done
-            & self.async_find_first_and_last_ocsge_done
-            & self.async_ocsge_coverage_status_done
+            and self.async_set_combined_emprise_done
+            and self.async_add_comparison_lands_done
+            and self.async_find_first_and_last_ocsge_done
+            and self.async_ocsge_coverage_status_done
         )
 
     class Meta:
