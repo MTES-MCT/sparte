@@ -1,14 +1,9 @@
-""" Contains all logic to create a project
-
-REFACTORING : this module should be expanded to contain all business logics. It should include how to create a project,
-but also all function to handle project life such as change of period asked from a user, new OCS GE's delivery and so
-on. At last, it should be moved in domains/ folder.
-"""
 from types import ModuleType
 from typing import List
 
 import celery
 
+from project import tasks
 from project.models import Project
 from project.models.enums import ProjectChangeReason
 from public_data.models import AdminRef, Land
@@ -17,18 +12,23 @@ from users.models import User
 
 def get_map_generation_tasks(project: Project, t: ModuleType) -> List[celery.Task]:
     """Return a list of tasks to generate maps according to project state"""
-    return [
-        getattr(t, task_name).si(project.id)
-        for task_name, bool_field_name in [
-            ("generate_cover_image", "async_cover_image_done"),
-            ("generate_theme_map_conso", "async_generate_theme_map_conso_done"),
-            ("generate_theme_map_artif", "async_generate_theme_map_artif_done"),
-            ("generate_theme_map_understand_artif", "async_theme_map_understand_artif_done"),
-            ("generate_theme_map_gpu", "async_theme_map_gpu_done"),
-            ("generate_theme_map_fill_gpu", "async_theme_map_fill_gpu_done"),
-        ]
-        if getattr(project, bool_field_name) is False
-    ]
+
+    map_tasks = []
+
+    if not project.async_cover_image_done:
+        map_tasks.append(tasks.generate_cover_image.si(project.id))
+    if not project.async_generate_theme_map_conso_done and project.land_type != AdminRef.COMMUNE:
+        map_tasks.append(tasks.generate_theme_map_conso.si(project.id))
+    if not project.async_generate_theme_map_artif_done and project.land_type != AdminRef.COMMUNE:
+        map_tasks.append(tasks.generate_theme_map_artif.si(project.id))
+    if not project.async_theme_map_understand_artif_done:
+        map_tasks.append(tasks.generate_theme_map_understand_artif.si(project.id))
+    if not project.async_theme_map_gpu_done:
+        map_tasks.append(tasks.generate_theme_map_gpu.si(project.id))
+    if not project.async_theme_map_fill_gpu_done:
+        map_tasks.append(tasks.generate_theme_map_fill_gpu.si(project.id))
+
+    return map_tasks
 
 
 def trigger_async_tasks(project: Project, public_key: str | None = None) -> None:
