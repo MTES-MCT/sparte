@@ -26,10 +26,10 @@ def send_user_subscription_to_brevo(self, user_id: int) -> None:
 
 @shared_task(bind=True, max_retries=5)
 @log_function(logger)
-def send_request_to_brevo(self, request_id: int) -> None:
-    """Send subscription information to Brevo."""
+def send_diagnostic_request_to_brevo(self, request_id: int) -> None:
+    """Send diagnostic request information to Brevo."""
     try:
-        Brevo().after_request(Request.objects.get(pk=request_id))
+        Brevo().after_diagnostic_request(Request.objects.get(pk=request_id))
     except Request.DoesNotExist:
         logger.error(f"request_id={request_id} does not exist")
     except Exception as exc:

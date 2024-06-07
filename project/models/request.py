@@ -46,6 +46,14 @@ class Request(models.Model):
     )
     sent_file = models.FileField(upload_to=upload_in_project_folder, null=True, blank=True)
     history = HistoricalRecords()
+    du_en_cours = models.BooleanField(
+        "Le document d'urbanisme du territoire est-il en cours de revision (au moment de la demande)",
+        default=False,
+    )
+    competence_urba = models.BooleanField(
+        "Le territoire a-t-il la compétence urbanisme (au moment de la demande)",
+        default=False,
+    )
 
     def sent(self):
         self.done = True
