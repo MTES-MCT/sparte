@@ -7,8 +7,13 @@ from public_data.models.sudocuh import DocumentUrbanismeChoices, Sudocuh, Sudocu
 
 class PlanningCompetencyServiceSudocuh(PlanningCompetencyService):
     @staticmethod
-    def commune_has_planning_competency(commune: Commune):
-        sudocuh = Sudocuh.objects.get(code_insee=commune.insee)
+    def commune_has_planning_competency(commune: Commune) -> bool:
+        try:
+            sudocuh = Sudocuh.objects.get(code_insee=commune.insee)
+        except Sudocuh.DoesNotExist:
+            # The commune of Trois-Lacs is not in the Sudocuh data
+            # as of millesime 2023. This exception handler is for this case.
+            return False
         is_rnu = sudocuh.du_opposable == DocumentUrbanismeChoices.RNU
 
         if is_rnu and not sudocuh.du_en_cours:
@@ -46,7 +51,12 @@ class PlanningCompetencyServiceSudocuh(PlanningCompetencyService):
     def planning_document_in_revision(land: Land) -> bool:
         if land.land_type == AdminRef.COMMUNE:
             commune = Commune.objects.get(insee=land.official_id)
-            return Sudocuh.objects.get(code_insee=commune.insee).du_en_cours is not None
+            try:
+                return Sudocuh.objects.get(code_insee=commune.insee).du_en_cours is not None
+            except Sudocuh.DoesNotExist:
+                # The commune of Trois-Lacs is not in the Sudocuh data
+                # as of millesime 2023. This exception handler is for this case.
+                return False
 
         if land.land_type == AdminRef.EPCI:
             epci = Epci.objects.get(source_id=land.official_id)
