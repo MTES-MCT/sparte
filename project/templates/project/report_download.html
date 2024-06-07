@@ -25,6 +25,29 @@
             Pour recevoir votre {{ requested_document_label|lower }} au format Word, veuillez compléter le formulaire ci-dessous.
             Une fois validé, vous recevrez sous quelques minutes le document par e-mail.
         </p>
+        {% if not user.is_authenticated %}
+            <div class="fr-pb-3w">
+                <div class="fr-notice fr-notice--info">
+                    <div class="fr-container">
+                        <div class="fr-notice__body">
+                            <p class="fr-notice__title fr-text--sm">
+                                Vous êtes actuellement en mode "anonyme".
+                                Si vous souhaitez enregistrer vos informations ci-dessous pour éviter d'avoir à les entrer manuellement,
+                                <a
+                                    href="{% url 'users:signup' %}?next={% url 'project:claim' project.id %}"
+                                    class="fr-link fr-link--sm">
+                                    créez un compte
+                                </a> ou <a
+                                    class="fr-link fr-link--sm"
+                                    href="{% url 'users:signin' %}?next={% url 'project:claim' project.id %}">
+                                    connectez-vous
+                                </a>.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
 
         {% csrf_token %}
         {{ form|crispy }}

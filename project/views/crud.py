@@ -41,7 +41,10 @@ class ClaimProjectView(LoginRequiredMixin, RedirectView):
         else:
             messages.success(
                 request,
-                "Vous pouvez retrouver ce diagnostic en utilisant le menu Diagnostic > Ouvrir",
+                (
+                    "Vous pouvez retrouver ce diagnostic en cliquant sur le bouton 'Mon compte' "
+                    "en haut à droite de la page, puis 'Mes diagnostics'."
+                ),
             )
             project.user = request.user
             project._change_reason = ProjectChangeReason.USER_CLAIMED_PROJECT
