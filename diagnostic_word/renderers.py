@@ -142,7 +142,6 @@ class BaseRenderer:
         url_diag = get_url_with_domain(diagnostic.get_absolute_url())
 
         # Flags
-        has_ocsge = diagnostic.ocsge_coverage_status == diagnostic.OcsgeCoverageStatus.COMPLETE_UNIFORM
         has_different_zan_period = diagnostic.analyse_start_date != "2011" or diagnostic.analyse_end_date != "2020"
         has_neighbors = diagnostic.nb_look_a_like > 0
 
@@ -163,7 +162,7 @@ class BaseRenderer:
             "url": url_diag,
             "project_scope_consumed": current_conso,
             # Flags
-            "has_ocsge": has_ocsge,
+            "has_ocsge": diagnostic.has_complete_uniform_ocsge_coverage,
             "has_different_zan_period": has_different_zan_period,
             "has_neighbors": has_neighbors,
             # Maps
@@ -210,7 +209,7 @@ class BaseRenderer:
             }
 
         # OCS GE
-        if has_ocsge:
+        if diagnostic.has_complete_uniform_ocsge_coverage:
             # Charts
             couv_artif_sol = charts.ArtifByCouverturePieChartExport(diagnostic)
             usage_artif_sol = charts.ArtifByUsagePieChartExport(diagnostic)
