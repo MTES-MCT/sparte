@@ -26,7 +26,6 @@ def upload_file_to_s3(path: Path):
 
     with open(path, "b+r") as f:
         storage = DataStorage()
-        storage.file_overwrite = True
         storage.save(path.name, f)
 
     logger.info(f"Uploaded {path.name} to S3")

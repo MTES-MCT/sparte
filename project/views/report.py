@@ -14,7 +14,7 @@ from django.shortcuts import redirect
 from django.urls import reverse
 from django.views.generic import CreateView, DetailView, TemplateView
 
-from brevo.tasks import send_request_to_brevo
+from brevo.tasks import send_diagnostic_request_to_brevo
 from project import charts, tasks
 from project.models import (
     Project,
@@ -24,6 +24,7 @@ from project.models import (
     trigger_async_tasks,
 )
 from project.utils import add_total_line_column
+from public_data.domain.planning_competency import PlanningCompetencyServiceSudocuh
 from public_data.models import CouvertureSol, UsageSol
 from public_data.models.gpu import ZoneUrba
 from public_data.models.ocsge import Ocsge, OcsgeDiff
@@ -503,10 +504,15 @@ class ProjectReportDownloadView(BreadCrumbMixin, CreateView):
 
         form.instance.project = Project.objects.get(pk=self.kwargs["pk"])
         form.instance.requested_document = self.kwargs["requested_document"]
+        form.instance.du_en_cours = PlanningCompetencyServiceSudocuh.planning_document_in_revision(
+            form.instance.project.land
+        )
+        form.instance.competence_urba = PlanningCompetencyServiceSudocuh.has_planning_competency(
+            form.instance.project.land
+        )
         form.instance._change_reason = "New request"
-
-        new_request: Request = form.save()
-        send_request_to_brevo.delay(new_request.id)
+        new_request = form.save()
+        send_diagnostic_request_to_brevo.delay(new_request.id)
         tasks.send_email_request_bilan.delay(new_request.id)
         tasks.generate_word_diagnostic.apply_async((new_request.id,), link=tasks.send_word_diagnostic.s())
         return self.render_to_response(self.get_context_data(success_message=True))

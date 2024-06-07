@@ -10,7 +10,7 @@ import requests
 from django.conf import settings
 
 from home.models import Newsletter
-from project.models import Project, Request
+from project.models import Project, Request, RequestedDocumentChoices
 from users.models import User
 
 
@@ -28,12 +28,14 @@ class Brevo:
 
     def __init__(self):
         self.url = "https://api.brevo.com/v3".strip("/")
-        self.api_key = settings.SENDINBLUE_API_KEY
         self.default_headers = {
             "accept": "application/json",
-            "api-key": self.api_key,
+            "api-key": settings.SENDINBLUE_API_KEY,
             "content-type": "application/json",
         }
+
+    def __format_date(self, date: datetime) -> str:
+        return date.strftime("%Y/%m/%d")
 
     def _post(
         self, end_point: str, data: Dict[str, Any] | None = None, headers: Dict[str, str] | None = None
@@ -45,8 +47,7 @@ class Brevo:
         return response
 
     def after_subscription(self, user: User) -> None:
-        """Send user's data to Brevo after subscription.
-        Raise SubscribeUserException if the request fails (status code of response is not 204)."""
+        """Send user's data to Brevo after subscription."""
         date_creation_compte = user.date_joined if user.date_joined else datetime.now()
         data = {
             "attributes": {
@@ -54,7 +55,7 @@ class Brevo:
                 "PRENOM": user.first_name or "",
                 "ORGANISME": user.organism or "",
                 "FONCTION": user.function or "",
-                "DATE_CREATION_COMPTE": date_creation_compte.strftime("%Y/%m/%d"),
+                "DATE_CREATION_COMPTE": self.__format_date(date_creation_compte),
             },
             "updateEnabled": True,
             "email": user.email,
@@ -71,28 +72,61 @@ class Brevo:
                 "ORGANISME": project.user.organism or "",
                 "FONCTION": project.user.function or "",
                 "LAST_DPT_DIAGNOSTIC": ", ".join(qs),
-                "LAST_DATE_DIAG_CREATED": project.created_date.strftime("%Y/%m/%d"),
+                "LAST_DATE_DIAG_CREATED": self.__format_date(project.created_date),
             },
             "updateEnabled": True,
             "email": project.user.email,
         }
         self._post("contacts", data=data)
 
-    def after_request(self, request: Request) -> None:
+    def after_diagnostic_request(self, request: Request) -> None:
         """Send user's data to Brevo after requesting a diagnostic."""
+
+        is_rapport_complet = request.requested_document == RequestedDocumentChoices.RAPPORT_COMPLET
+        is_rapport_local = request.requested_document == RequestedDocumentChoices.RAPPORT_LOCAL
+        project: Project = request.project
+
+        attributes = {
+            "NOM": request.last_name or "",
+            "PRENOM": request.first_name or "",
+            "ORGANISME": request.organism or "",
+            "FONCTION": request.function or "",
+            "NOM_TERRITOIRE": project.territory_name or "",
+            "LAST_DATE_DIAG_CREATED": self.__format_date(project.created_date),
+            "LAST_DATE_DL_DIAG": self.__format_date(request.created_date),
+            "A_TELECHARGE_BILAN": "OUI" if is_rapport_complet else "NON",
+            "A_TELECHARGE_RAPPORT_TRIENNAL": "OUI" if is_rapport_local else "NON",
+            "VERSION_DERNIER_RAPPORT_TELECHARGE": settings.OFFICIAL_VERSION,
+            "DU_EN_COURS": request.du_en_cours,
+            "A_COMPETENCE_URBA": request.competence_urba,
+            "LAST_DPT_DIAGNOSTIC": ", ".join(
+                project.cities.all().values_list("departement__source_id", flat=True).distinct(),
+            ),
+            "DERNIER_DIAG_TYPE_TERRITOIRE": project.land_type,
+            "DERNIER_DIAG_ID_TERRITOIRE": project.land.official_id,
+        }
+
+        if is_rapport_local:
+            attributes["DATE_DERNIER_RAPPORT_LOCAL_TELECHARGE"] = self.__format_date(request.created_date)
+
+        user: User = request.user
+
+        if user:
+            attributes.update(
+                {
+                    "DATE_CREATION_COMPTE": self.__format_date(user.date_joined),
+                    "FONCTION": user.function or request.function or "",
+                    "NB_DIAG_CREES": user.project_set.count(),
+                    "NB_DIAG_TELECHARGES": user.request_set.count(),
+                }
+            )
+
         data = {
-            "attributes": {
-                "NOM": request.last_name or "",
-                "PRENOM": request.first_name or "",
-                "ORGANISME": request.organism or "",
-                "FONCTION": request.function or "",
-                "LAST_DATE_DIAG_CREATED": request.project.created_date.strftime("%Y/%m/%d"),
-                "LAST_DATE_DL_DIAG": request.created_date.strftime("%Y/%m/%d"),
-                "A_TELECHARGE_BILAN": "OUI",
-            },
+            "attributes": attributes,
             "updateEnabled": True,
             "email": request.email,
         }
+
         self._post("contacts", data=data)
 
     def after_newsletter_subscription_confirmation(self, newsletter_sub: Newsletter) -> None:
@@ -100,8 +134,8 @@ class Brevo:
         data = {
             "attributes": {
                 "EST_INSCRIT_NEWSLETTER": "OUI",
-                "DATE_INSCRIPTION_NEWSLETTER": newsletter_sub.created_date.strftime("%Y/%m/%d"),
-                "DATE_CONFIRMATION_INSCRIPTION_NEWSLETTER": newsletter_sub.confirmation_date.strftime("%Y/%m/%d"),
+                "DATE_INSCRIPTION_NEWSLETTER": self.__format_date(newsletter_sub.created_date),
+                "DATE_CONFIRMATION_INSCRIPTION_NEWSLETTER": self.__format_date(newsletter_sub.confirmation_date),
             },
             "updateEnabled": True,
             "email": newsletter_sub.email,
