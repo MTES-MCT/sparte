@@ -504,7 +504,7 @@
             "mapping": null,
             "path": "val_de_marne_2018_corrige.zip",
             "shapefile_name": "val_de_marne_2018_corrige.shp",
-            "source_url": "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE-NG_1-1__SHP_LAMB93_D094_2018/OCS-GE-NG_1-1__SHP_LAMB93_D094_2018.7z",
+            "source_url": "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0__SHP_LAMB93_D094_2018-01-01/OCS-GE_2-0__SHP_LAMB93_D094_2018-01-01.7z",
             "official_land_id": "94",
             "srid": 2154
         }
@@ -520,7 +520,7 @@
             "mapping": null,
             "path": "val_de_marne_2021_corrige.zip",
             "shapefile_name": "val_de_marne_2021_corrige.shp",
-            "source_url": "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE-NG_1-1__SHP_LAMB93_D094_2021/OCS-GE-NG_1-1__SHP_LAMB93_D094_2021.7z",
+            "source_url": "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0__SHP_LAMB93_D094_2021-01-01/OCS-GE_2-0__SHP_LAMB93_D094_2021-01-01.7z",
             "official_land_id": "94",
             "srid": 2154
         }
@@ -536,7 +536,7 @@
             "mapping": null,
             "path": "val_de_marne_zone_construite_2018.zip",
             "shapefile_name": "ZONE_CONSTRUITE.shp",
-            "source_url": "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE-NG_1-1__SHP_LAMB93_D094_2018/OCS-GE-NG_1-1__SHP_LAMB93_D094_2018.7z",
+            "source_url": "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0__SHP_LAMB93_D094_2018-01-01/OCS-GE_2-0__SHP_LAMB93_D094_2018-01-01.7z",
             "official_land_id": "94",
             "srid": 2154
         }
@@ -552,7 +552,7 @@
             "mapping": null,
             "path": "val_de_marne_zone_construite_2021.zip",
             "shapefile_name": "ZONE_CONSTRUITE.shp",
-            "source_url": "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE-NG_1-1__SHP_LAMB93_D094_2021/OCS-GE-NG_1-1__SHP_LAMB93_D094_2021.7z",
+            "source_url": "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0__SHP_LAMB93_D094_2021-01-01/OCS-GE_2-0__SHP_LAMB93_D094_2021-01-01.7z",
             "official_land_id": "94",
             "srid": 2154
         }

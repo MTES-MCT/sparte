@@ -23,8 +23,8 @@ class TestRepackOcsge(TestCase):
 
     def test_repack_ocsge_94(self) -> None:
         urls = [
-            "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0__SHP_LAMB93_D094_2021-01-01/OCS-GE_2-0__SHP_LAMB93_D094_2021-01-01.7z",  # noqa: E501
             "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0__SHP_LAMB93_D094_2018-01-01/OCS-GE_2-0__SHP_LAMB93_D094_2018-01-01.7z",  # noqa: E501
+            "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0__SHP_LAMB93_D094_2021-01-01/OCS-GE_2-0__SHP_LAMB93_D094_2021-01-01.7z",  # noqa: E501
             "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE-NG_1-1_DIFF_SHP_LAMB93_D094_2018-2021/OCS-GE-NG_1-1_DIFF_SHP_LAMB93_D094_2018-2021.7z",  # noqa: E501
         ]
 
