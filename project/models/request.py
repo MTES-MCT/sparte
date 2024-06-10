@@ -12,7 +12,7 @@ def upload_in_project_folder(request: "Request", filename: str) -> str:
 
 
 class RequestedDocumentChoices(models.TextChoices):
-    RAPPORT_CONSO = "rapport-conso", "Rapport conso"
+    RAPPORT_CONSO = "rapport-conso", "Rapport de consommation"
     RAPPORT_COMPLET = "rapport-complet", "Rapport complet"
     RAPPORT_LOCAL = "rapport-local", "Rapport local"
 
