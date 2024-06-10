@@ -12,6 +12,7 @@ from diagnostic_word.models import WordTemplate
 from project import charts
 from project.models import Request
 from project.utils import add_total_line_column
+from public_data.models.administration import AdminRef
 from utils.functions import get_url_with_domain
 
 
@@ -144,6 +145,7 @@ class BaseRenderer:
         # Flags
         has_different_zan_period = diagnostic.analyse_start_date != "2011" or diagnostic.analyse_end_date != "2020"
         has_neighbors = diagnostic.nb_look_a_like > 0
+        is_commune = diagnostic.land_type == AdminRef.COMMUNE
 
         # Charts
         chart_conso_cities = charts.AnnualConsoChartExport(diagnostic, level=diagnostic.level)
@@ -158,6 +160,7 @@ class BaseRenderer:
             "nom_territoire": diagnostic.get_territory_name(),
             "surface_totale": str(round(surface_territory, 2)),
             "nb_communes": diagnostic.cities.count(),
+            "is_commune": is_commune,
             "url_clickable": self.prep_link(link=url_diag),
             "url": url_diag,
             "project_scope_consumed": current_conso,
@@ -167,7 +170,6 @@ class BaseRenderer:
             "has_neighbors": has_neighbors,
             # Maps
             "photo_emprise": self.prep_image(diagnostic.cover_image, height=110),
-            "carte_consommation": self.prep_image(diagnostic.theme_map_conso, width=170),
             # Charts
             "annual_total_conso_chart": self.prep_chart(annual_total_conso_chart),
             "chart_determinants": self.prep_chart(det_chart),
@@ -207,6 +209,10 @@ class BaseRenderer:
                     comparison_relative_chart.get_series(), line=False
                 ),
             }
+
+        # Consommation
+        if not is_commune:
+            context |= {"carte_consommation": self.prep_image(diagnostic.theme_map_conso, width=170)}
 
         # OCS GE
         if diagnostic.has_complete_uniform_ocsge_coverage:
