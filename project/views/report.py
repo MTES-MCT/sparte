@@ -499,7 +499,6 @@ class ProjectReportDownloadView(BreadCrumbMixin, CreateView):
             user.last_name = form.instance.last_name or user.last_name
             user.function = form.instance.function or user.function
             user.organism = form.instance.organism or user.organism
-            user.email = form.instance.email or user.email
             user.save()
 
         form.instance.project = Project.objects.get(pk=self.kwargs["pk"])
