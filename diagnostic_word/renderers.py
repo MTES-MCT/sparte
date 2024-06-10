@@ -212,7 +212,10 @@ class BaseRenderer:
 
         # Consommation
         if not is_commune:
-            context |= {"carte_consommation": self.prep_image(diagnostic.theme_map_conso, width=170)}
+            context |= {
+                "carte_consommation": self.prep_image(diagnostic.theme_map_conso, width=170),
+                "level_label": diagnostic.level_label.lower(),
+            }
 
         # OCS GE
         if diagnostic.has_complete_uniform_ocsge_coverage:
