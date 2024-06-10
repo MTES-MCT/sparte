@@ -2,7 +2,7 @@
 
 Ce changelog suit la méthode "keep a changelog" disponible ici: [https://keepachangelog.com/en/1.0.0/](https://keepachangelog.com/en/1.0.0/)
 
-## [6.0] Export conso
+## [6.0] Export conso - 2024.06.10
 
 ## Ajouté
 - Nouvel export de conso [#359](https://github.com/MTES-MCT/sparte/pull/359)
