@@ -94,15 +94,14 @@ class AdminRef:
 
     @classmethod
     def get_analysis_default_level(cls, level):
-        default_analysis = {
+        return {
             cls.COMMUNE: cls.COMMUNE,
             cls.EPCI: cls.COMMUNE,
             cls.SCOT: cls.EPCI,
-            cls.DEPARTEMENT: cls.SCOT,
+            cls.DEPARTEMENT: cls.EPCI,
             cls.REGION: cls.DEPARTEMENT,
             cls.COMPOSITE: cls.COMMUNE,
-        }
-        return default_analysis[level]
+        }[level]
 
     @classmethod
     def get_admin_level(cls, type_list):
