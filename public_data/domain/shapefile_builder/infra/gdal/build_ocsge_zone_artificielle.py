@@ -11,6 +11,7 @@ from .is_artif_case import is_artif_case
 
 
 def build_ocsge_zone_artificielle(source: DataSource) -> tuple[DataSource, Path]:
+    # build name will look like this : OCSGE_ZONE_ARTIFICIELLE_94_2018_MDA.shp.zip
     build_name = (
         "_".join(
             [
@@ -29,13 +30,13 @@ def build_ocsge_zone_artificielle(source: DataSource) -> tuple[DataSource, Path]
         "usage": "CODE_US",
     }
 
-    temp_table = "occupation_sol"
-    temp_table_artif = "artif_table"
+    temp_table_occupation_du_sol = "temp_table_occupation_du_sol"
+    temp_table_artif = "temp_table_artif"
 
     db = settings.DATABASES["default"]
 
     with ShapefileFromSource(source=source) as shapefile_path:
-        command_occupation_du_sol = f'ogr2ogr -f "PostgreSQL" -overwrite "PG:dbname={db["NAME"]} host={db["HOST"]} port={db["PORT"]} user={db["USER"]} password={db["PASSWORD"]}" {shapefile_path.absolute()} -nln {temp_table} -a_srs EPSG:{source.srid} -nlt MULTIPOLYGON -nlt PROMOTE_TO_MULTI -lco GEOMETRY_NAME=mpoly -lco PRECISION=NO --config PG_USE_COPY YES'  # noqa: E501
+        command_occupation_du_sol = f'ogr2ogr -f "PostgreSQL" -overwrite "PG:dbname={db["NAME"]} host={db["HOST"]} port={db["PORT"]} user={db["USER"]} password={db["PASSWORD"]}" {shapefile_path.absolute()} -nln {temp_table_occupation_du_sol} -a_srs EPSG:{source.srid} -nlt MULTIPOLYGON -nlt PROMOTE_TO_MULTI -lco GEOMETRY_NAME=mpoly -lco PRECISION=NO --config PG_USE_COPY YES'  # noqa: E501
         subprocess.run(args=command_occupation_du_sol, check=True, shell=True)
 
         sql = f"""
@@ -51,7 +52,7 @@ def build_ocsge_zone_artificielle(source: DataSource) -> tuple[DataSource, Path]
                 false_value='FALSE',
             )} AS is_artificial
             FROM
-            occupation_sol
+            {temp_table_occupation_du_sol}
         ),
         clustered_ocsge AS ( /* group artificial and non_artficial objects by their proximity  */
             SELECT
@@ -136,7 +137,7 @@ def build_ocsge_zone_artificielle(source: DataSource) -> tuple[DataSource, Path]
             "-nlt MULTIPOLYGON",
             "-nlt PROMOTE_TO_MULTI",
             "-nln",
-            '"ZONE_ARTIFICIELLE"',
+            f'"{DataSource.DataNameChoices.ZONE_ARTIFICIELLE}"',
             f"-a_srs EPSG:{source.srid}",
             "-sql",
             f'"SELECT * FROM {temp_table_artif}"',
@@ -146,5 +147,20 @@ def build_ocsge_zone_artificielle(source: DataSource) -> tuple[DataSource, Path]
             subprocess.run(args=" ".join(command), shell=True, check=True, stdout=f, stderr=f)
 
         with connection.cursor() as cursor:
-            cursor.execute(sql=f"DROP TABLE IF EXISTS {temp_table};")
             cursor.execute(sql=f"DROP TABLE IF EXISTS {temp_table_artif};")
+            cursor.execute(sql=f"DROP TABLE IF EXISTS {temp_table_artif};")
+
+        output_source, _ = DataSource.objects.update_or_create(
+            productor=source.ProductorChoices.MDA,
+            dataset=source.dataset,
+            name=DataSource.DataNameChoices.ZONE_ARTIFICIELLE,
+            millesimes=source.millesimes,
+            official_land_id=source.official_land_id,
+            defaults={
+                "mapping": None,
+                "path": build_name,
+                "shapefile_name": f"{DataSource.DataNameChoices.ZONE_ARTIFICIELLE}.shp",
+                "srid": source.srid,
+            },
+        )
+    return output_source, Path(build_name)
