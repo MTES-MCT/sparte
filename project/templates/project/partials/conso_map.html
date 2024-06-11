@@ -8,7 +8,6 @@
     {% if project.theme_map_conso %}
     <img src="{{ project.theme_map_conso.url }}" alt="Carte consommation d'espaces des communes du territoire sur la période (en Ha)">
     {% else %}
-    <div class="skeleton-loader" hx-get="{% url 'project:conso-map' diagnostic.id %}" hx-trigger="load delay:10s" hx-target="#target-conso-map" hx-swap="outerHTML">
-    </div>
+    <div class="skeleton-loader"></div>
     {% endif %}
 </div>
