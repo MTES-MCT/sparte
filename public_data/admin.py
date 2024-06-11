@@ -1,0 +1,231 @@
+from django.contrib.gis import admin
+from import_export import resources
+from import_export.admin import ImportExportMixin
+
+from public_data.models import (
+    Cerema,
+    Commune,
+    CouvertureSol,
+    CouvertureUsageMatrix,
+    DataSource,
+    Departement,
+    Epci,
+    Ocsge,
+    Region,
+    Sudocuh,
+    SudocuhEpci,
+    UsageSol,
+    ZoneArtificielle,
+    ZoneConstruite,
+)
+
+
+class UsageSolResource(resources.ModelResource):
+    class Meta:
+        model = UsageSol
+
+
+@admin.register(UsageSol)
+class UsageSolAdmin(ImportExportMixin, admin.GeoModelAdmin):
+    model = UsageSol
+    list_display = ("code", "label", "parent", "map_color")
+    list_filter = ("parent",)
+    search_fields = (
+        "code",
+        "label",
+    )
+    ordering = ("code",)
+    # for importation
+    resource_class = UsageSolResource
+
+
+class CouvertureSolImportResource(resources.ModelResource):
+    class Meta:
+        model = CouvertureSol
+
+    def before_import(self, *args, **kwargs):
+        return super().before_import(*args, **kwargs)
+
+
+@admin.register(CouvertureSol)
+class CouvertureSolAdmin(ImportExportMixin, admin.GeoModelAdmin):
+    model = CouvertureSol
+    list_display = ("code", "label", "parent", "map_color")
+    list_filter = ("parent",)
+    search_fields = ("code", "label", "map_color")
+    ordering = ("code",)
+    # for importation
+    resource_class = CouvertureSolImportResource
+
+
+@admin.register(ZoneConstruite)
+class ZoneConstruiteAdmin(admin.GeoModelAdmin):
+    model = ZoneConstruite
+    list_display = (
+        "id",
+        "departement",
+        "year",
+    )
+
+
+@admin.register(ZoneArtificielle)
+class ZoneArtificielleAdmin(admin.GeoModelAdmin):
+    model = ZoneArtificielle
+    list_display = (
+        "id",
+        "departement",
+        "year",
+    )
+
+
+@admin.register(Ocsge)
+class OcsgeAdmin(admin.GeoModelAdmin):
+    model = Ocsge
+    list_display = (
+        "id",
+        "couverture",
+        "usage",
+        "year",
+    )
+    list_filter = ("year", "couverture", "usage")
+    search_fields = (
+        "couverture",
+        "usage",
+        "year",
+    )
+
+
+class CouvertureUsageMatrixImportResource(resources.ModelResource):
+    class Meta:
+        model = CouvertureUsageMatrix
+        import_id_fields = ("id",)
+        skip_unchanged = True
+
+
+@admin.register(CouvertureUsageMatrix)
+class CouvertureUsageMatrixAdmin(ImportExportMixin, admin.GeoModelAdmin):
+    model = CouvertureUsageMatrix
+    list_display = (
+        "id",
+        "couverture",
+        "usage",
+        "is_artificial",
+        "is_consumed",
+    )
+    list_filter = ("is_artificial", "is_consumed", "is_natural")
+    search_fields = ("couverture__code_prefix", "usage__code_prefix")
+    resource_class = CouvertureUsageMatrixImportResource
+
+
+@admin.register(Region)
+class RegionAdmin(admin.GeoModelAdmin):
+    model = Region
+    list_display = (
+        "id",
+        "name",
+        "source_id",
+    )
+    search_fields = ("name", "source_id")
+    ordering = ("name",)
+
+
+@admin.register(Departement)
+class DepartementAdmin(admin.GeoModelAdmin):
+    model = Departement
+    list_display = (
+        "id",
+        "name",
+        "source_id",
+        "region",
+    )
+    search_fields = ("name", "source_id")
+    ordering = ("name",)
+
+
+@admin.register(Epci)
+class EpciAdmin(admin.GeoModelAdmin):
+    model = Epci
+    list_display = (
+        "id",
+        "name",
+        "source_id",
+    )
+    search_fields = ("name", "source_id")
+    ordering = ("name",)
+
+
+@admin.register(Commune)
+class CommuneAdmin(admin.GeoModelAdmin):
+    model = Commune
+    list_display = (
+        "insee",
+        "name",
+    )
+    search_fields = ("name", "insee")
+    ordering = ("insee",)
+
+
+@admin.register(Cerema)
+class CeremaAdmin(admin.GeoModelAdmin):
+    model = Cerema
+    list_display = (
+        "city_insee",
+        "city_name",
+        "region_id",
+        "region_name",
+        "dept_id",
+        "dept_name",
+        "epci_id",
+        "epci_name",
+    )
+    search_fields = ("city_insee", "city_name", "region_name", "dept_name", "epci_name")
+    ordering = ("city_insee",)
+
+
+@admin.register(DataSource)
+class AdminDataSource(admin.ModelAdmin):
+    model = DataSource
+    list_display = (
+        "dataset",
+        "name",
+        "official_land_id",
+        "millesimes",
+    )
+    search_fields = (
+        "productor",
+        "dataset",
+        "name",
+        "official_land_id",
+    )
+    ordering = ("productor", "dataset", "name")
+
+
+@admin.register(Sudocuh)
+class SudocuhAdmin(admin.GeoModelAdmin):
+    model = Sudocuh
+    list_display = (
+        "nom_commune",
+        "code_insee",
+    )
+    search_fields = (
+        "code_insee",
+        "nom_region",
+        "code_departement",
+        "nom_commune",
+        "siren_epci",
+    )
+    ordering = ("nom_commune",)
+
+
+@admin.register(SudocuhEpci)
+class SudocuhEpciAdmin(admin.GeoModelAdmin):
+    model = SudocuhEpci
+    list_display = (
+        "nom_epci",
+        "siren",
+    )
+    search_fields = (
+        "siren",
+        "nom_epci",
+    )
+    ordering = ("nom_epci",)

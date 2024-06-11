@@ -4,7 +4,7 @@ from django.db import models
 from public_data.models.enums import SRID
 
 from .cerema import Cerema
-from .ocsge import ArtificialArea, Ocsge, OcsgeDiff, ZoneConstruite
+from .ocsge import Ocsge, OcsgeDiff, ZoneArtificielle, ZoneConstruite
 
 
 class DataSource(models.Model):
@@ -97,13 +97,13 @@ class DataSource(models.Model):
         )
 
     def delete_loaded_data(self):
-        if not self.productor == self.ProductorChoices.MDA:
+        if self.productor != self.ProductorChoices.MDA:
             raise ValueError("Only MDA data can be deleted")
 
         model: models.Model = {
             self.DataNameChoices.OCCUPATION_DU_SOL: Ocsge,
             self.DataNameChoices.ZONE_CONSTRUITE: ZoneConstruite,
-            self.DataNameChoices.ZONE_ARTIFICIELLE: ArtificialArea,
+            self.DataNameChoices.ZONE_ARTIFICIELLE: ZoneArtificielle,
             self.DataNameChoices.DIFFERENCE: OcsgeDiff,
             self.DataNameChoices.CONSOMMATION_ESPACE: Cerema,
         }[self.name]

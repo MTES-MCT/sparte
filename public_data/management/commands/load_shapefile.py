@@ -6,11 +6,11 @@ from django.conf import settings
 from django.core.management.base import BaseCommand
 
 from public_data.models import (
-    ArtificialArea,
     Cerema,
     DataSource,
     Ocsge,
     OcsgeDiff,
+    ZoneArtificielle,
     ZoneConstruite,
 )
 from public_data.shapefile import ShapefileFromSource
@@ -22,7 +22,7 @@ source_to_table_map = {
         DataSource.DataNameChoices.OCCUPATION_DU_SOL: Ocsge._meta.db_table,
         DataSource.DataNameChoices.DIFFERENCE: OcsgeDiff._meta.db_table,
         DataSource.DataNameChoices.ZONE_CONSTRUITE: ZoneConstruite._meta.db_table,
-        DataSource.DataNameChoices.ZONE_ARTIFICIELLE: ArtificialArea._meta.db_table,
+        DataSource.DataNameChoices.ZONE_ARTIFICIELLE: ZoneArtificielle._meta.db_table,
     },
     DataSource.DatasetChoices.MAJIC: {
         DataSource.DataNameChoices.CONSOMMATION_ESPACE: Cerema._meta.db_table,
@@ -70,7 +70,6 @@ field_mapping = {
             "departement": "DPT",
             "surface": "SURFACE",
             "srid_source": "SRID",
-            "city": "CITY",
             "mpoly": "GEOMETRY",
         },
     },
