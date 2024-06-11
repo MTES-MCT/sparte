@@ -20,6 +20,11 @@ class ProjectAdmin(SimpleHistoryAdmin):
         "analyse_start_date",
         "analyse_end_date",
     )
+    readonly_fields = (
+        "cities",
+        "async_complete",
+        "is_ready_to_be_displayed",
+    )
     search_fields = (
         "name",
         "user__email",
@@ -150,7 +155,16 @@ class RequestAdmin(admin.ModelAdmin):
                 )
             },
         ),
-        ("Requête", {"fields": ("requested_document",)}),
+        (
+            "Requête",
+            {
+                "fields": (
+                    "requested_document",
+                    "du_en_cours",
+                    "competence_urba",
+                )
+            },
+        ),
         (
             "Réponse",
             {

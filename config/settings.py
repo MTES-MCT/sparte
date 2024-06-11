@@ -21,7 +21,7 @@ from django.core.exceptions import ImproperlyConfigured
 from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.redis import RedisIntegration
 
-OFFICIAL_VERSION = "5.6"
+OFFICIAL_VERSION = "6.0"
 
 root = environ.Path(__file__) - 2  # get root of the project
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -213,7 +213,7 @@ AWS_S3_REGION_NAME = env.str("AWS_S3_REGION_NAME", default="eu-west-3")
 # append a prefix to all uploaded file (useful to not mix local, staging...)
 AWS_LOCATION = env.str("AWS_LOCATION", default="local")
 # avoid overriding a file if same key is provided
-AWS_S3_FILE_OVERWRITE = False
+AWS_S3_FILE_OVERWRITE = True
 # allow signed url to be accessed from all regions
 AWS_S3_SIGNATURE_VERSION = "s3v4"
 

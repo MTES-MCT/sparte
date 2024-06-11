@@ -14,6 +14,19 @@ class DocumentUrbanismeChoices(models.TextChoices):
         return ", ".join(map(lambda choice: choice[0], cls.choices))
 
 
+class TypeEpciChoices(models.TextChoices):
+    CC = "CC", "Communauté de communes"
+    CA = "CA", "Communauté d'agglomération"
+    CU = "CU", "Communauté urbaine"
+    EPT = "EPT", "Établissement public territorial"
+    MET = "MET", "Métropole"
+    PETR = "PETR", "Pôle d'équilibre territorial et rural"
+    PM = "PM", "Pays"
+    SM = "SM", "Syndicat mixte"
+    SI = "SI", "Syndicat intercommunal"
+    AUTRE = "AUTRE", "Autre"
+
+
 class Sudocuh(models.Model):
     code_insee = models.CharField(max_length=200, primary_key=True)
     code_departement = models.CharField(max_length=200)
@@ -71,3 +84,22 @@ class Sudocuh(models.Model):
     superficie = models.FloatField(
         "Superficie (en ha)",
     )
+
+
+class SudocuhEpci(models.Model):
+    nom_region = models.CharField(max_length=200)
+    code_departement = models.CharField(max_length=200)
+    nom_departement = models.CharField(max_length=200)
+    siren = models.CharField(max_length=200)
+    type_epci = models.CharField(max_length=200, choices=TypeEpciChoices.choices)
+    nom_epci = models.CharField(max_length=200)
+    date_creation_epci = models.DateField(null=True)
+    epci_interdepartemental = models.BooleanField()
+    competence_plan = models.BooleanField()
+    competence_scot = models.BooleanField()
+    competence_plh = models.BooleanField()
+    obligation_plh = models.BooleanField()
+    nb_communes = models.IntegerField()
+    insee_pop_tot_2021 = models.IntegerField()
+    insee_pop_municipale = models.IntegerField()
+    insee_superficie = models.FloatField()

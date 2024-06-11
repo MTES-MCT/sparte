@@ -22,6 +22,19 @@
             <ul class="dropdown-menu w-100">
                 <li>
                     <a
+                        id="conso-report-download-btn"
+                        class="fr-nav__link"
+                        hx-get="{% url 'project:report_download' requested_document='rapport-conso' pk=project.pk %}"
+                        hx-target="#diag_word_form"
+                        href="#"
+                        data-fr-opened="false"
+                        aria-controls="fr-modal-download-word"
+                    >
+                        Analyse de consommation
+                    </a>
+                </li>
+                <li>
+                    <a
                         id="download_diag_word_btn"
                         class="fr-nav__link"
                         hx-get="{% url 'project:report_download' requested_document='rapport-complet' pk=project.pk %}"
@@ -106,5 +119,9 @@
 
     document.getElementById("local-report-download-btn").onclick = function() {
         _paq.push(['trackEvent', 'local_report_download_funnel', 'click_button_local_report_download', 'local_report_download_button_clicked'])
+    }
+
+    document.getElementById("conso-report-download-btn").onclick = function() {
+        _paq.push(['trackEvent', 'diagnostic_download_funnel', 'click_button_conso_report_download', 'conso_report_download_button_clicked'])
     }
 </script>

@@ -248,7 +248,11 @@ def generate_cover_image(self, project_id):
         cx.add_basemap(ax, source=settings.ORTHOPHOTO_URL)
 
         img_data = io.BytesIO()
-        plt.savefig(img_data, bbox_inches="tight")
+        plt.savefig(
+            img_data,
+            bbox_inches="tight",
+            format="jpg",
+        )
         img_data.seek(0)
         plt.close()
 
@@ -256,7 +260,7 @@ def generate_cover_image(self, project_id):
             diagnostic.pk,
             "async_cover_image_done",
             "cover_image",
-            f"cover_{project_id}.png",
+            f"cover_{project_id}.jpg",
             img_data,
         )
 
@@ -281,7 +285,11 @@ class WordAlreadySentException(Exception):
 
 @shared_task(bind=True, max_retries=6, queue="long")
 def generate_word_diagnostic(self, request_id):
-    from diagnostic_word.renderers import FullReportRenderer, LocalReportRenderer
+    from diagnostic_word.renderers import (
+        ConsoReportRenderer,
+        FullReportRenderer,
+        LocalReportRenderer,
+    )
     from highcharts.charts import RateLimitExceededException
 
     logger.info(f"Start generate word for request_id={request_id}")
@@ -303,6 +311,7 @@ def generate_word_diagnostic(self, request_id):
         renderer_class = {
             RequestedDocumentChoices.RAPPORT_COMPLET: FullReportRenderer,
             RequestedDocumentChoices.RAPPORT_LOCAL: LocalReportRenderer,
+            RequestedDocumentChoices.RAPPORT_CONSO: ConsoReportRenderer,
         }[req.requested_document]
 
         with renderer_class(request=req) as renderer:
@@ -350,11 +359,13 @@ def send_word_diagnostic(self, request_id):
         template_id = {
             RequestedDocumentChoices.RAPPORT_COMPLET: 8,
             RequestedDocumentChoices.RAPPORT_LOCAL: 61,
+            RequestedDocumentChoices.RAPPORT_CONSO: 8,
         }[req.requested_document]
 
         diagnostic_name = {
             RequestedDocumentChoices.RAPPORT_COMPLET: req.project.name,
             RequestedDocumentChoices.RAPPORT_LOCAL: req.project.land.name,
+            RequestedDocumentChoices.RAPPORT_CONSO: req.project.land.name,
         }[req.requested_document]
 
         email = SibTemplateEmail(
@@ -363,9 +374,7 @@ def send_word_diagnostic(self, request_id):
             params={
                 "diagnostic_name": diagnostic_name,
                 "image_url": req.project.cover_image.url,
-                "ocsge_available": ""
-                if req.project.ocsge_coverage_status == req.project.OcsgeCoverageStatus.COMPLETE_UNIFORM
-                else "display",
+                "ocsge_available": ("" if req.project.has_complete_uniform_ocsge_coverage else "display"),
                 "diagnostic_url": get_url_with_domain(reverse("project:word_download", args=[req.id])),
             },
         )
@@ -397,7 +406,7 @@ def get_img(queryset, color: str, title: str) -> io.BytesIO:
 
     fig, ax = plt.subplots(figsize=(15, 10))
     plt.axis("off")
-    fig.set_dpi(150)
+    fig.set_dpi(100)
 
     gdf.plot(
         "level",
@@ -412,10 +421,10 @@ def get_img(queryset, color: str, title: str) -> io.BytesIO:
     )
     ax.add_artist(ScaleBar(1))
     ax.set_title(title)
-    cx.add_basemap(ax, source=settings.ORTHOPHOTO_URL)
+    cx.add_basemap(ax, source=settings.ORTHOPHOTO_URL, zoom_adjust=1, alpha=0.95)
 
     img_data = io.BytesIO()
-    plt.savefig(img_data, bbox_inches="tight")
+    plt.savefig(img_data, bbox_inches="tight", format="jpg")
     img_data.seek(0)
     plt.close()
     return img_data
@@ -443,7 +452,7 @@ def generate_theme_map_conso(self, project_id):
             diagnostic.pk,
             "async_generate_theme_map_conso_done",
             "theme_map_conso",
-            f"theme_map_conso_{project_id}.png",
+            f"theme_map_conso_{project_id}.jpg",
             img_data,
         )
 
@@ -477,7 +486,7 @@ def generate_theme_map_artif(self, project_id):
             diagnostic.pk,
             "async_generate_theme_map_artif_done",
             "theme_map_artif",
-            f"theme_map_artif_{project_id}.png",
+            f"theme_map_artif_{project_id}.jpg",
             img_data,
         )
 
@@ -574,14 +583,14 @@ def generate_theme_map_understand_artif(self, project_id):
         cx.add_attribution(ax, text="Données: OCS GE (IGN)")
 
         img_data = io.BytesIO()
-        plt.savefig(img_data, bbox_inches="tight")
+        plt.savefig(img_data, bbox_inches="tight", format="jpg")
         img_data.seek(0)
 
         race_protection_save_map(
             diagnostic.pk,
             "async_theme_map_understand_artif_done",
             "theme_map_understand_artif",
-            f"theme_map_understand_artif_{project_id}.png",
+            f"theme_map_understand_artif_{project_id}.jpg",
             img_data,
         )
 
@@ -629,7 +638,7 @@ def generate_theme_map_gpu(self, project_id):
         cx.add_basemap(ax, source=settings.ORTHOPHOTO_URL)
 
         img_data = io.BytesIO()
-        plt.savefig(img_data, bbox_inches="tight")
+        plt.savefig(img_data, bbox_inches="tight", format="jpg")
         plt.close()
         img_data.seek(0)
 
@@ -637,7 +646,7 @@ def generate_theme_map_gpu(self, project_id):
             diagnostic.pk,
             "async_theme_map_gpu_done",
             "theme_map_gpu",
-            f"theme_map_gpu_{project_id}.png",
+            f"theme_map_gpu_{project_id}.jpg",
             img_data,
         )
 
@@ -688,7 +697,7 @@ def generate_theme_map_fill_gpu(self, project_id):
             cx.add_basemap(ax, source=settings.ORTHOPHOTO_URL)
 
             img_data = io.BytesIO()
-            plt.savefig(img_data, bbox_inches="tight")
+            plt.savefig(img_data, bbox_inches="tight", format="jpg")
             plt.close()
             img_data.seek(0)
 
@@ -696,7 +705,7 @@ def generate_theme_map_fill_gpu(self, project_id):
             diagnostic.pk,
             "async_theme_map_fill_gpu_done",
             "theme_map_fill_gpu",
-            f"theme_map_fill_gpu_{project_id}.png",
+            f"theme_map_fill_gpu_{project_id}.jpg",
             img_data,
         )
 

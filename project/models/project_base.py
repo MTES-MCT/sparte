@@ -45,8 +45,6 @@ from public_data.models.gpu import ArtifAreaZoneUrba, ZoneUrba
 from public_data.models.mixins import DataColorationMixin
 from utils.db import cast_sum_area
 
-from .utils import user_directory_path
-
 logger = logging.getLogger(__name__)
 
 
@@ -63,24 +61,11 @@ def upload_in_project_folder(project: "Project", filename: str) -> str:
 
 
 class BaseProject(models.Model):
-    class EmpriseOrigin(models.TextChoices):
-        UNSET = "UNSET", "Origine non renseignée"
-        FROM_SHP = "FROM_SHP", "Construit depuis un fichier shape"
-        FROM_CITIES = "FROM_CITIES", "Construit depuis une liste de villes"
-        WITH_EMPRISE = "WITH_EMPRISE", "Emprise déjà fournie"
-
     class Status(models.TextChoices):
         MISSING = "MISSING", "Emprise à renseigner"
         PENDING = "PENDING", "Traitement du fichier Shape en cours"
         SUCCESS = "SUCCESS", "Emprise renseignée"
         FAILED = "FAILED", "Création de l'emprise échouée"
-
-    emprise_origin = models.CharField(
-        "Origine de l'emprise",
-        max_length=20,
-        choices=EmpriseOrigin.choices,
-        default=EmpriseOrigin.UNSET,
-    )
 
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -90,14 +75,6 @@ class BaseProject(models.Model):
         null=True,
     )
     name = models.CharField("Nom", max_length=100)
-    description = models.TextField("Description", blank=True)
-    shape_file = models.FileField(
-        "Fichier .shp",
-        upload_to=user_directory_path,
-        max_length=100,
-        blank=True,
-        null=True,
-    )
     # fields to track the shape files importation into the database
     import_error = models.TextField(
         "Message d'erreur traitement emprise",
@@ -440,26 +417,47 @@ class Project(BaseProject):
         return latest_change.history_change_reason == ProjectChangeReason.NEW_OCSGE_HAS_BEEN_DELIVERED
 
     @property
-    def async_complete(self):
-        return (
+    def async_complete(self) -> bool:
+        calculations_and_extend_ready = (
             self.async_add_city_done
-            & self.async_set_combined_emprise_done
-            & self.async_cover_image_done
-            & self.async_find_first_and_last_ocsge_done
-            & self.async_ocsge_coverage_status_done
-            & self.async_add_comparison_lands_done
-            & self.async_generate_theme_map_conso_done
-            & self.async_generate_theme_map_artif_done
-            & self.async_theme_map_understand_artif_done
+            and self.async_set_combined_emprise_done
+            and self.async_cover_image_done
+            and self.async_find_first_and_last_ocsge_done
+            and self.async_ocsge_coverage_status_done
+            and self.async_add_comparison_lands_done
         )
+
+        static_maps_ready = self.async_cover_image_done
+
+        not_a_commune = self.land_type != AdminRef.COMMUNE
+
+        # logic below is duplicated from map_tasks in create.py
+        # TODO : refactor this
+
+        if not_a_commune:
+            static_maps_ready = static_maps_ready and self.async_generate_theme_map_conso_done
+
+        if not_a_commune and self.has_complete_uniform_ocsge_coverage:
+            static_maps_ready = static_maps_ready and self.async_generate_theme_map_artif_done
+
+        if self.has_complete_uniform_ocsge_coverage:
+            static_maps_ready = static_maps_ready and self.async_theme_map_understand_artif_done
+
+        if self.has_zonage_urbanisme and self.has_complete_uniform_ocsge_coverage:
+            static_maps_ready = (
+                static_maps_ready and self.async_theme_map_gpu_done and self.async_theme_map_fill_gpu_done
+            )
+
+        return calculations_and_extend_ready and static_maps_ready
 
     @property
     def is_ready_to_be_displayed(self) -> bool:
         return (
             self.async_add_city_done
-            & self.async_set_combined_emprise_done
-            & self.async_add_comparison_lands_done
-            & self.async_find_first_and_last_ocsge_done
+            and self.async_set_combined_emprise_done
+            and self.async_add_comparison_lands_done
+            and self.async_find_first_and_last_ocsge_done
+            and self.async_ocsge_coverage_status_done
         )
 
     class Meta:
@@ -826,7 +824,6 @@ class Project(BaseProject):
         self.import_date = None
         self.import_error = None
         self.couverture_usage = None
-        self.shape_file.delete(save=save)
         if save:
             self.save()
 

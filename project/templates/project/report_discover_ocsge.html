@@ -162,11 +162,7 @@
                                         <td>{{ item.get_label_short }}</td>
                                         <td class="text-end">{{ item.surface_first|floatformat:1 }}</td>
                                         <td class="text-end">
-                                            {% if item.surface_diff == 0 %}-
-                                            {% else %}
-                                                {% if item.surface_diff > 0 %}+{% endif %}
-                                                {{ item.surface_diff|floatformat:1 }}
-                                            {% endif %}
+                                            {% if item.surface_diff > 0 %}+{% endif %}{{ item.surface_diff|floatformat:1 }}
                                         </td>
                                         <td class="text-end">{{ item.surface_last|floatformat:1 }}</td>
                                         <td class="text-end">{{ item.surface_last|percent:surface_territory }}</td>
@@ -379,11 +375,7 @@
                                         <td>{{ item.get_label_short }}</td>
                                         <td class="text-end">{{ item.surface_first|floatformat:1 }}</td>
                                         <td class="text-end">
-                                            {% if item.surface_diff == 0 %}-
-                                            {% else %}
-                                                {% if item.surface_diff > 0 %}+{% endif %}
-                                                {{ item.surface_diff|floatformat:1 }}
-                                            {% endif %}
+                                            {% if item.surface_diff > 0 %}+{% endif %}{{ item.surface_diff|floatformat:1 }}
                                         </td>
                                         <td class="text-end">{{ item.surface_last|floatformat:1 }}</td>
                                         <td class="text-end">{{ item.surface_last|percent:surface_territory }}</td>

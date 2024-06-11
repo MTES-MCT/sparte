@@ -1,34 +1,46 @@
-""" Contains all logic to create a project
-
-REFACTORING : this module should be expanded to contain all business logics. It should include how to create a project,
-but also all function to handle project life such as change of period asked from a user, new OCS GE's delivery and so
-on. At last, it should be moved in domains/ folder.
-"""
-from types import ModuleType
 from typing import List
 
 import celery
 
+from project import tasks
 from project.models import Project
 from project.models.enums import ProjectChangeReason
 from public_data.models import AdminRef, Land
 from users.models import User
 
 
-def get_map_generation_tasks(project: Project, t: ModuleType) -> List[celery.Task]:
+@celery.shared_task  # noqa: C901
+def map_tasks(project_id: str) -> List[celery.Task]:  # noqa: C901
     """Return a list of tasks to generate maps according to project state"""
-    return [
-        getattr(t, task_name).si(project.id)
-        for task_name, bool_field_name in [
-            ("generate_cover_image", "async_cover_image_done"),
-            ("generate_theme_map_conso", "async_generate_theme_map_conso_done"),
-            ("generate_theme_map_artif", "async_generate_theme_map_artif_done"),
-            ("generate_theme_map_understand_artif", "async_theme_map_understand_artif_done"),
-            ("generate_theme_map_gpu", "async_theme_map_gpu_done"),
-            ("generate_theme_map_fill_gpu", "async_theme_map_fill_gpu_done"),
-        ]
-        if getattr(project, bool_field_name) is False
-    ]
+
+    project = Project.objects.get(id=project_id)
+
+    map_tasks = []
+
+    not_a_commune = project.land_type != AdminRef.COMMUNE
+
+    if not project.async_cover_image_done:
+        map_tasks.append(tasks.generate_cover_image.si(project.id))
+
+    if not_a_commune:
+        if not project.async_generate_theme_map_conso_done:
+            map_tasks.append(tasks.generate_theme_map_conso.si(project.id))
+
+    if not_a_commune and project.has_complete_uniform_ocsge_coverage:
+        if not project.async_generate_theme_map_artif_done:
+            map_tasks.append(tasks.generate_theme_map_artif.si(project.id))
+
+    if project.has_complete_uniform_ocsge_coverage:
+        if not project.async_theme_map_understand_artif_done:
+            map_tasks.append(tasks.generate_theme_map_understand_artif.si(project.id))
+
+    if project.has_complete_uniform_ocsge_coverage and project.has_zonage_urbanisme:
+        if not project.async_theme_map_gpu_done:
+            map_tasks.append(tasks.generate_theme_map_gpu.si(project.id))
+        if not project.async_theme_map_fill_gpu_done:
+            map_tasks.append(tasks.generate_theme_map_fill_gpu.si(project.id))
+
+    celery.group(*map_tasks, immutable=True).apply_async()
 
 
 def trigger_async_tasks(project: Project, public_key: str | None = None) -> None:
@@ -36,37 +48,32 @@ def trigger_async_tasks(project: Project, public_key: str | None = None) -> None
     from metabase.tasks import async_create_stat_for_project
     from project import tasks as t
 
-    tasks_chain = []
+    before_calculations = []
+
     if not project.async_add_city_done:
-        if public_key is None:
-            raise ValueError("Cannot add_cities to project without public_key.")
-        tasks_chain.append(t.add_city.si(project.id, public_key))
+        before_calculations.append(t.add_city.si(project.id, public_key))
     if not project.async_set_combined_emprise_done:
-        tasks_chain.append(t.set_combined_emprise.si(project.id))
+        before_calculations.append(t.set_combined_emprise.si(project.id))
 
-    group_1 = []
+    calculations = []
+
     if not project.async_find_first_and_last_ocsge_done:
-        group_1.append(t.find_first_and_last_ocsge.si(project.id))
+        calculations.append(t.find_first_and_last_ocsge.si(project.id))
     if not project.async_ocsge_coverage_status_done:
-        group_1.append(t.calculate_project_ocsge_status.si(project.id))
+        calculations.append(t.calculate_project_ocsge_status.si(project.id))
     if not project.async_add_comparison_lands_done:
-        group_1.append(t.add_comparison_lands.si(project.id))
-    if group_1:
-        tasks_chain.append(celery.group(*group_1))
+        calculations.append(t.add_comparison_lands.si(project.id))
 
-    map_group = get_map_generation_tasks(project, t)
-    if map_group:
-        tasks_chain.append(celery.group(*map_group))
-
-    # Exécution de la chaîne
-    if tasks_chain:
-        celery.chain(
-            *tasks_chain,
-            celery.group(
-                async_create_stat_for_project.si(project.id, do_location=True),
-                send_diagnostic_to_brevo.si(project.id),
-            ),
-        ).apply_async()
+    return celery.chain(
+        *before_calculations,
+        celery.group(*calculations, immutable=True),
+        map_tasks.si(project.id),
+        celery.group(
+            async_create_stat_for_project.si(project.id, do_location=True),
+            send_diagnostic_to_brevo.si(project.id),
+            immutable=True,
+        ),
+    )()
 
 
 def create_from_public_key(

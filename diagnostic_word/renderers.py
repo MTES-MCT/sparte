@@ -12,6 +12,7 @@ from diagnostic_word.models import WordTemplate
 from project import charts
 from project.models import Request
 from project.utils import add_total_line_column
+from public_data.models.administration import AdminRef
 from utils.functions import get_url_with_domain
 
 
@@ -137,270 +138,129 @@ class BaseRenderer:
     def get_context_data(self) -> Dict[str, Any]:
         diagnostic = self.project
         surface_territory = diagnostic.area
+        target_2031_consumption = diagnostic.get_bilan_conso()
+        current_conso = diagnostic.get_bilan_conso_time_scoped()
+        url_diag = get_url_with_domain(diagnostic.get_absolute_url())
+
+        # Flags
+        has_different_zan_period = diagnostic.analyse_start_date != "2011" or diagnostic.analyse_end_date != "2020"
+        has_neighbors = diagnostic.nb_look_a_like > 0
+        is_commune = diagnostic.land_type == AdminRef.COMMUNE
+
+        # Charts
+        chart_conso_cities = charts.AnnualConsoChartExport(diagnostic, level=diagnostic.level)
+        annual_total_conso_chart = charts.AnnualTotalConsoChartExport(diagnostic)
+        det_chart = charts.AnnualConsoByDeterminantChartExport(diagnostic)
+        pie_det_chart = charts.ConsoByDeterminantPieChartExport(diagnostic)
+        objective_chart = charts.ObjectiveChartExport(diagnostic)
+
         context = {
             "diagnostic": diagnostic,
             "export_datetime": timezone.localtime(timezone.now()).strftime("Créé le %d/%m/%Y à %H:%M:%S"),
-            "columns": diagnostic.years + ["Total"],
             "nom_territoire": diagnostic.get_territory_name(),
             "surface_totale": str(round(surface_territory, 2)),
-            "ocsge_is_available": False,
-            "periode_differente_zan": (
-                diagnostic.analyse_start_date != "2011" or diagnostic.analyse_end_date != "2020"
-            ),
-            "project": diagnostic,
-            "photo_emprise": self.prep_image(diagnostic.cover_image, height=110),
             "nb_communes": diagnostic.cities.count(),
-            "carte_consommation": self.prep_image(diagnostic.theme_map_conso, width=170),
-            "carte_artificialisation": self.prep_image(diagnostic.theme_map_artif, width=170),
-            "carte_comprendre_artificialisation": self.prep_image(diagnostic.theme_map_understand_artif, width=170),
-        }
-
-        target_2031_consumption = diagnostic.get_bilan_conso()
-        current_conso = diagnostic.get_bilan_conso_time_scoped()
-
-        # Consommation des communes
-        chart_conso_cities = charts.AnnualConsoChartExport(diagnostic, level=diagnostic.level)
-
-        # comparison charts
-        nb_neighbors = diagnostic.nb_look_a_like
-        voisins = list()
-        if nb_neighbors > 0:
-            comparison_chart = charts.AnnualConsoComparisonChartExport(diagnostic)
-            comparison_relative_chart = charts.AnnualConsoProportionalComparisonChartExport(diagnostic)
-            voisins = diagnostic.get_look_a_like()
-            context.update(
-                {
-                    "voisins": voisins,
-                    "comparison_chart": self.prep_image(
-                        comparison_chart.get_temp_image(),
-                        width=170,
-                    ),
-                    "comparison_relative_chart": self.prep_image(
-                        comparison_relative_chart.get_temp_image(),
-                        width=170,
-                    ),
-                    "comparison_data_table": add_total_line_column(comparison_chart.get_series()),
-                    "comparison_relative_data_table": add_total_line_column(comparison_relative_chart.get_series()),
-                }
-            )
-
-        # Déterminants
-        det_chart = charts.AnnualConsoByDeterminantChartExport(diagnostic)
-        pie_det_chart = charts.ConsoByDeterminantPieChartExport(diagnostic)
-
-        # déterminant table, add total line and column
-        det_data_table: Dict = {}
-        total: Dict = {}
-        for name, data in det_chart.get_series().items():
-            det_data_table[name] = data.copy()
-            det_data_table[name]["total"] = sum(data.values())
-            for year, val in data.items():
-                total[year] = total.get(year, 0) + val
-        total["total"] = sum(total.values())
-        det_data_table["Total"] = total
-
-        # projection ZAN 2031
-        objective_chart = charts.ObjectiveChartExport(diagnostic)
-
-        url_diag = get_url_with_domain(diagnostic.get_absolute_url())
-
-        context |= {
-            "nb_voisins": nb_neighbors,
+            "is_commune": is_commune,
             "url_clickable": self.prep_link(link=url_diag),
             "url": url_diag,
-            "communes_data_table": add_total_line_column(chart_conso_cities.get_series()),
-            "determinants_data_table": add_total_line_column(det_chart.get_series()),
-            "target_2031_consumed": target_2031_consumption,
-            "target_2031_annual_avg": target_2031_consumption / 10,
-            "target_2031_target": target_2031_consumption / 2,
-            "target_2031_annual_forecast": target_2031_consumption / 20,
             "project_scope_consumed": current_conso,
-            "project_scope_annual_avg": current_conso / diagnostic.nb_years,
-            "project_scope_nb_years": diagnostic.nb_years,
-            "project_scope_nb_years_before_31": diagnostic.nb_years_before_2031,
-            "project_scope_forecast_2031": diagnostic.nb_years_before_2031 * current_conso / diagnostic.nb_years,
-            # charts
-            "chart_conso_communes": self.prep_chart(chart_conso_cities),
+            # Flags
+            "has_ocsge": diagnostic.has_complete_uniform_ocsge_coverage,
+            "has_different_zan_period": has_different_zan_period,
+            "has_neighbors": has_neighbors,
+            # Maps
+            "photo_emprise": self.prep_image(diagnostic.cover_image, height=110),
+            # Charts
+            "annual_total_conso_chart": self.prep_chart(annual_total_conso_chart),
             "chart_determinants": self.prep_chart(det_chart),
             "pie_chart_determinants": self.prep_chart(pie_det_chart),
             "projection_zan_2031": self.prep_chart(objective_chart),
-            "projection_zan_cumulee_ref": round(objective_chart.total_2020, 1),
-            "projection_zan_annuelle_ref": round(objective_chart.annual_2020, 1),
+            # Charts datatables
+            "table_headers_years": diagnostic.years + ["Total"],
+            "annual_total_conso_data_table": add_total_line_column(
+                series=annual_total_conso_chart.get_series(), line=False
+            ),
+            "communes_data_table": add_total_line_column(chart_conso_cities.get_series()),
+            "determinants_data_table": add_total_line_column(det_chart.get_series()),
+            # Target 2031
+            "target_2031_consumed": target_2031_consumption,
+            "projection_zan_cumulee_ref": round(objective_chart.total_real, 1),
+            "projection_zan_annuelle_ref": round(objective_chart.annual_real, 1),
             "projection_zan_cumulee_objectif": round(objective_chart.conso_2031),
             "projection_zan_annuelle_objectif": round(objective_chart.annual_objective_2031),
         }
 
-        surface_chart = charts.SurfaceChartExport(diagnostic)
-        pop_chart = charts.AnnualPopChartExport(diagnostic)
-        conso_comparison_pop_chart = charts.AnnualConsoByPopChartExport(diagnostic)
-        household_chart = charts.AnnualHouseholdChartExport(diagnostic)
-        conso_comparison_household_chart = charts.AnnualConsoByHouseholdChartExport(diagnostic)
+        # Comparison territories
+        if has_neighbors:
+            voisins = diagnostic.get_look_a_like()
+            # Charts
+            comparison_chart = charts.AnnualConsoComparisonChartExport(diagnostic)
+            comparison_surface_chart = charts.SurfaceChartExport(diagnostic)
+            comparison_relative_chart = charts.AnnualConsoProportionalComparisonChartExport(diagnostic)
+            context |= {
+                "voisins": voisins,
+                # Charts
+                "comparison_chart": self.prep_image(comparison_chart.get_temp_image(), width=170),
+                "comparison_surface_chart": self.prep_image(comparison_surface_chart.get_temp_image(), width=170),
+                "comparison_relative_chart": self.prep_image(comparison_relative_chart.get_temp_image(), width=170),
+                # Charts datatables
+                "comparison_data_table": add_total_line_column(comparison_chart.get_series(), line=False),
+                "comparison_relative_data_table": add_total_line_column(
+                    comparison_relative_chart.get_series(), line=False
+                ),
+            }
 
-        context |= {
-            "surface_chart": self.prep_chart(surface_chart),
-            "pop_chart": self.prep_chart(pop_chart),
-            "pop_table": add_total_line_column(pop_chart.get_series(), replace_none=True),
-            "conso_comparison_pop_chart": self.prep_chart(conso_comparison_pop_chart),
-            "conso_comparison_pop_table": add_total_line_column(
-                conso_comparison_pop_chart.get_series(), replace_none=True
-            ),
-            "household_chart": self.prep_chart(household_chart),
-            "household_table": add_total_line_column(household_chart.get_series(), replace_none=True),
-            "conso_comparison_household_chart": self.prep_chart(conso_comparison_household_chart),
-            "conso_comparison_household_table": add_total_line_column(
-                conso_comparison_household_chart.get_series(), replace_none=True
-            ),
-        }
+        # Consommation
+        if not is_commune:
+            context |= {
+                "carte_consommation": self.prep_image(diagnostic.theme_map_conso, width=170),
+                "level_label": diagnostic.level_label.lower(),
+            }
 
-        if diagnostic.ocsge_coverage_status == diagnostic.OcsgeCoverageStatus.COMPLETE_UNIFORM:
-            context.update(
-                {
-                    "ocsge_is_available": True,
-                    "debut_ocsge": str(diagnostic.first_year_ocsge),
-                    "fin_ocsge": str(diagnostic.last_year_ocsge),
-                    "usage_matrix_data": dict(),
-                    "usage_matrix_headers": dict(),
-                    "couverture_matrix_data": dict(),
-                    "couverture_matrix_headers": dict(),
-                }
-            )
-
-            SolInterface.surface_territory = surface_territory
-            donut_usage = charts.UsagePieChartExport(diagnostic)
-            graphique_usage = charts.UsageProgressionChartExport(diagnostic)
-            usage_data = [SolInterface(i) for i in graphique_usage.get_series()]
-
-            context.update(
-                {
-                    "donut_usage": self.prep_image(
-                        donut_usage.get_temp_image(),
-                        width=140,
-                    ),
-                    "graphique_usage": self.prep_image(
-                        graphique_usage.get_temp_image(),
-                        width=170,
-                    ),
-                    "usage_data": usage_data,
-                }
-            )
-
-            usage_matrix_data = diagnostic.get_matrix(sol="usage")
-            if usage_matrix_data:
-                headers = list(list(usage_matrix_data.values())[0].keys()) + ["Total"]
-                context.update(
-                    {
-                        "usage_matrix_data": add_total_line_column(usage_matrix_data),
-                        "usage_matrix_headers": headers,
-                    }
-                )
-
-            donut_couverture = charts.CouverturePieChartExport(diagnostic)
-            graphique_couverture = charts.CouvertureProgressionChartExport(diagnostic)
-            couverture_data = [SolInterface(i) for i in graphique_couverture.get_series()]
-            context.update(
-                {
-                    "donut_couverture": self.prep_image(
-                        donut_couverture.get_temp_image(),
-                        width=140,
-                    ),
-                    "graphique_couverture": self.prep_image(
-                        graphique_couverture.get_temp_image(),
-                        width=170,
-                    ),
-                    "couverture_data": couverture_data,
-                }
-            )
-
-            couverture_matrix_data = diagnostic.get_matrix(sol="couverture")
-            if couverture_matrix_data:
-                headers = list(list(couverture_matrix_data.values())[0].keys()) + ["Total"]
-                context.update(
-                    {
-                        "couverture_matrix_data": add_total_line_column(couverture_matrix_data),
-                        "couverture_matrix_headers": headers,
-                    }
-                )
-            # paragraphe 3.2.1
+        # OCS GE
+        if diagnostic.has_complete_uniform_ocsge_coverage:
+            # Charts
+            couv_artif_sol = charts.ArtifByCouverturePieChartExport(diagnostic)
+            usage_artif_sol = charts.ArtifByUsagePieChartExport(diagnostic)
             chart_waterfall = charts.ArtifWaterfallChartExport(diagnostic)
+
             waterfall_series = chart_waterfall.get_series()
             total_artif = diagnostic.get_artif_area()
             artif_net = waterfall_series["net_artif"]
             artificialisation = waterfall_series["new_artif"]
             renaturation = waterfall_series["new_natural"]
-            context.update(
-                {
-                    "surface_artificielle": str(round(total_artif, 2)),
-                    "graphique_artificialisation_nette": self.prep_image(
-                        chart_waterfall.get_temp_image(),
-                        width=170,
-                    ),
-                    "artificialisation_nette": str(round(artif_net, 2)),
-                    "artificialisation": str(round(artificialisation, 2)),
-                    "renaturation": str(round(renaturation, 2)),
-                    "taux_artificialisation_nette": str(round(100 * artif_net / total_artif, 1)),
-                }
-            )
-            # paragraphe 3.2.2
-            detail_artif_chart = charts.ArtifProgressionByCouvertureChartExport(diagnostic)
-            ReprDetailArtif.total_artif = artificialisation
-            ReprDetailArtif.total_renat = renaturation
+            context |= {
+                "debut_ocsge": str(diagnostic.first_year_ocsge),
+                "fin_ocsge": str(diagnostic.last_year_ocsge),
+                "surface_artificielle": str(round(total_artif, 2)),
+                "artificialisation_nette": str(round(artif_net, 2)),
+                "artificialisation": str(round(artificialisation, 2)),
+                "renaturation": str(round(renaturation, 2)),
+                "taux_artificialisation_nette": str(round(100 * artif_net / total_artif, 1)),
+                # Charts
+                "graphique_artificialisation_nette": self.prep_image(chart_waterfall.get_temp_image(), width=170),
+                "graphique_determinant_couv_artif": self.prep_image(couv_artif_sol.get_temp_image(), width=170),
+                "graphique_determinant_usage_artif": self.prep_image(usage_artif_sol.get_temp_image(), width=170),
+                # Maps
+                "carte_artificialisation": self.prep_image(diagnostic.theme_map_artif, width=170),
+                "carte_comprendre_artificialisation": self.prep_image(
+                    diagnostic.theme_map_understand_artif, width=170
+                ),
+            }
 
-            nouveau_bati = bati_renature = 0
-            for item in detail_artif_chart.get_series():
-                if item["code_prefix"] == "CS1.1.1.1":
-                    nouveau_bati = item["artif"]
-                    bati_renature = item["renat"]
-
-            context.update(
-                {
-                    "nouveau_bati": str(round(nouveau_bati, 2)),
-                    "bati_renature": str(round(bati_renature, 2)),
-                    "tableau_artificialisation_par_couverture": [
-                        ReprDetailArtif(i) for i in detail_artif_chart.get_series()
-                    ],
-                    "graphique_artificialisation_par_couverture": self.prep_image(
-                        detail_artif_chart.get_temp_image(),
-                        width=170,
-                    ),
+            # Artif comparison territories
+            if has_neighbors:
+                # Charts
+                artif_chart_comparison = charts.NetArtifComparaisonChartExport(diagnostic, level=diagnostic.level)
+                context |= {
+                    # Charts
+                    "graphique_evolution_artif": self.prep_image(artif_chart_comparison.get_temp_image(), width=170),
+                    # Charts datatables
+                    "tableau_evolution_artif": artif_chart_comparison.get_table(),
+                    "entetes_evolution_artif": artif_chart_comparison.get_table_headers(),
                 }
-            )
-            # paragraphe 3.2.3
-            chart_comparison = charts.NetArtifComparaisonChartExport(diagnostic, level=diagnostic.level)
-            context.update(
-                {
-                    "graphique_evolution_artif": self.prep_image(
-                        chart_comparison.get_temp_image(),
-                        width=170,
-                    ),
-                    "tableau_evolution_artif": chart_comparison.get_table(),
-                    "entetes_evolution_artif": chart_comparison.get_table_headers(),
-                }
-            )
-            # paragraphe 3.2.4
-            couv_artif_sol = charts.ArtifByCouverturePieChartExport(diagnostic)
-            usage_artif_sol = charts.ArtifByUsagePieChartExport(diagnostic)
-            context.update(
-                {
-                    "graphique_determinant_couv_artif": self.prep_image(
-                        couv_artif_sol.get_temp_image(),
-                        width=170,
-                    ),
-                    "graphique_determinant_usage_artif": self.prep_image(
-                        usage_artif_sol.get_temp_image(),
-                        width=170,
-                    ),
-                }
-            )
 
         return context
-
-    def get_file_name(self) -> str:
-        raise NotImplementedError("The method get_file_name must be implemented in the child class.")
-
-
-class FullReportRenderer(BaseRenderer):
-    def __init__(self, request: Request, word_template_slug="template-bilan-1"):
-        super().__init__(request=request, word_template_slug=word_template_slug)
 
     def get_file_name(self) -> str:
         return self.word_template.filename_mask.format(
@@ -410,26 +270,16 @@ class FullReportRenderer(BaseRenderer):
         )
 
 
+class FullReportRenderer(BaseRenderer):
+    def __init__(self, request: Request, word_template_slug="template-bilan-1"):
+        super().__init__(request=request, word_template_slug=word_template_slug)
+
+
 class LocalReportRenderer(BaseRenderer):
     def __init__(self, request: Request, word_template_slug="template-bilan-2"):
         super().__init__(request=request, word_template_slug=word_template_slug)
 
-    def get_file_name(self) -> str:
-        return self.word_template.filename_mask.format(
-            diagnostic_name=self.project.territory_name,
-            start_date=self.project.analyse_start_date,
-            end_date=self.project.analyse_end_date,
-        )
 
-    def get_context_data(self) -> Dict[str, Any]:
-        diagnostic = self.project
-        annual_total_conso_chart = charts.AnnualTotalConsoChartExport(diagnostic)
-
-        return super().get_context_data() | {
-            "annual_total_conso_chart": self.prep_chart(chart=annual_total_conso_chart),
-            "annual_total_conso_data_table": add_total_line_column(
-                series=annual_total_conso_chart.get_series(),
-                column=True,
-                line=False,
-            ),
-        }
+class ConsoReportRenderer(BaseRenderer):
+    def __init__(self, request: Request, word_template_slug="template-bilan-conso"):
+        super().__init__(request=request, word_template_slug=word_template_slug)
