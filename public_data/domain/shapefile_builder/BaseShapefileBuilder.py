@@ -5,25 +5,31 @@ from public_data.models import DataSource
 
 
 class BaseShapefileBuilder(ABC):
-    def build(self, source: DataSource) -> tuple[DataSource, Path]:
+    def build(self, source: DataSource) -> list[tuple[DataSource, Path]]:
         """
         Builds a shapefile from a DataSource.
         """
+        created = []
+
         if source.productor == source.ProductorChoices.IGN:
             if source.dataset == source.DatasetChoices.OCSGE:
                 if source.name == source.DataNameChoices.DIFFERENCE:
-                    return self.build_ocsge_difference(source)
+                    created.append(self.build_ocsge_difference(source))
                 elif source.name == source.DataNameChoices.ZONE_CONSTRUITE:
-                    return self.build_ocsge_zone_construite(source)
+                    created.append(self.build_ocsge_zone_construite(source))
                 elif source.name == source.DataNameChoices.OCCUPATION_DU_SOL:
-                    return self.build_ocsge_occupation_du_sol(source)
+                    created.append(self.build_ocsge_occupation_du_sol(source))
+                    created.append(self.build_ocsge_zone_artificielle(source))
                 elif source.name == source.DataNameChoices.ZONE_ARTIFICIELLE:
-                    return self.build_ocsge_zone_artificielle(source)
+                    created.append(self.build_ocsge_zone_artificielle(source))
         elif source.productor == source.ProductorChoices.CEREMA:
             if source.dataset == source.DatasetChoices.MAJIC:
-                return self.build_consommation_espace(source)
+                created.append(self.build_consommation_espace(source))
 
-        raise NotImplementedError(f"Building {source} is not implemented")
+        if not created:
+            raise NotImplementedError(f"Building {source} is not implemented")
+
+        return created
 
     @abstractmethod
     def build_ocsge_zone_artificielle(self, source: DataSource) -> tuple[DataSource, Path]:
