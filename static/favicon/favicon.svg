@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.2" viewBox="6.97 11.93 86.03 76.13">
+ <title>favicon</title>
+ <defs>
+  <linearGradient y2="0.50054" y1="0.50054" x1="-0.00035" x2="0.99993" id="g1">
+   <stop stop-color="#e26aff" offset="0"/>
+   <stop stop-color="#00f4fa" offset="1"/>
+  </linearGradient>
+  <linearGradient y2="0.19702" y1="0.79527" x1="0.00404" x2="1.01032" id="g2">
+   <stop stop-color="#008ddb" offset="0.051"/>
+   <stop stop-color="#11c6ea" offset="1"/>
+  </linearGradient>
+  <linearGradient y2="0.84792" y1="0.15823" x1="-0.05754" x2="1.05424" id="g3">
+   <stop stop-color="#7639f8" offset="0.051"/>
+   <stop stop-color="#0065cd" offset="1"/>
+  </linearGradient>
+  <linearGradient y2="0.51183" y1="0.47407" x1="-1.18161" x2="0.99797" id="g4">
+   <stop stop-color="#fda3d1" offset="0"/>
+   <stop stop-color="#00ff86" offset="1"/>
+  </linearGradient>
+  <linearGradient y2="0.5303" y1="0.47641" x1="-0.54418" x2="1.87764" id="g5">
+   <stop stop-color="#fda3d1" offset="0"/>
+   <stop stop-color="#00ff86" offset="1"/>
+  </linearGradient>
+  <linearGradient y2="0.5485" y1="0.48465" x1="-0.12856" x2="2.52053" id="g6">
+   <stop stop-color="#fda3d1" offset="0"/>
+   <stop stop-color="#00ff86" offset="1"/>
+  </linearGradient>
+  <linearGradient y2="0.53384" y1="0.46663" x1="-0.86304" x2="1.94236" id="g7">
+   <stop stop-color="#fda3d1" offset="0"/>
+   <stop stop-color="#00ff86" offset="1"/>
+  </linearGradient>
+ </defs>
+ <g>
+  <title>Layer 1</title>
+  <g id="Mon_diag_artif">
+   <g id="Layer">
+    <path fill="url(#g1)" opacity="0.4" d="m49.7,37.85l43.3,25.5l-43.3,24.7l-42.7,-25.1l42.7,-25.1z" class="s0" fill-rule="evenodd" id="Layer"/>
+    <g id="Layer">
+     <path fill="#ffffff" d="m49.7,11.95l43.3,25.4l-43.3,24.8l-42.7,-25.1l42.7,-25.1z" class="s1" fill-rule="evenodd" id="Layer"/>
+     <path fill="url(#g2)" d="m49.7,78.35l43.3,-24.8l0,-16.2l-43.3,24.8l0,16.2z" class="s2" fill-rule="evenodd" id="Layer"/>
+     <path fill="url(#g3)" d="m7,53.55l42.7,24.8l0,-16.2l-42.7,-25.1l0,16.5z" class="s3" fill-rule="evenodd" id="Layer"/>
+    </g>
+    <g id="Layer">
+     <path fill="url(#g4)" d="m52.1,29.05l10.9,6.4l0,19.1l30,-17.2l-27.5,-16.2l-13.4,7.9z" class="s4" fill-rule="evenodd" id="Layer"/>
+     <path fill="url(#g5)" d="m60,40.65l0,15.6l-10.3,5.9l-27,-15.9l13.2,-7.8l13.9,8.2l10.2,-6z" class="s5" fill-rule="evenodd" id="Layer"/>
+     <path fill="url(#g6)" d="m20.1,44.75l21,-12.3l-13.2,-7.7l-20.9,12.3l13.1,7.7z" class="s6" fill-rule="evenodd" id="Layer"/>
+     <path fill="url(#g7)" d="m30.6,23.15l13.1,7.8l19.1,-11.3l-13.1,-7.7l-19.1,11.2z" class="s7" fill-rule="evenodd" id="Layer"/>
+    </g>
+    <path fill="#f76161" d="m49.7,30.45l11,6.5l-11,6.3l-11,-6.4l11,-6.4z" class="s8" fill-rule="evenodd" id="Layer"/>
+   </g>
+  </g>
+ </g>
+</svg>
