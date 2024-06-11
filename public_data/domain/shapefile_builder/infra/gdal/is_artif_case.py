@@ -6,7 +6,9 @@ def is_artif_case(
 ) -> str:
     """
     true_value and false_value are optional parameters
-    The default values are for working with sqlite
+
+    The default values are for working with sqlite (which does not have a proper boolean type),
+    but you can change them to work with other databases.
     """
 
     return f""" CASE
