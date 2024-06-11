@@ -331,7 +331,7 @@ def generate_word_diagnostic(self, request_id):
         req.record_exception(exc)
         logger.error("Error while generating word: %s", exc)
         logger.exception(exc)
-        self.retry(exc=exc, countdown=2 ** (self.request.retries + 10))
+        self.retry(exc=exc, countdown=5 ** (self.request.retries + 1))
     except Request.DoesNotExist as exc:
         logger.error("Request doesn't not exist, no retry.")
         logger.exception(exc)
@@ -386,7 +386,7 @@ def send_word_diagnostic(self, request_id):
         req.record_exception(exc)
         logger.error("Error while sending email, error: %s", exc)
         logger.exception(exc)
-        self.retry(exc=exc, countdown=2 ** (self.request.retries + 10))
+        self.retry(exc=exc, countdown=5 ** (self.request.retries + 1))
     finally:
         logger.info(f"End send word for request={request_id}")
 
