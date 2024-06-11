@@ -117,11 +117,21 @@ def build_ocsge_zone_artificielle(source: DataSource) -> tuple[DataSource, Path]
                 artificial_union
             GROUP BY
                 is_artificial
+        ), artificial_geom_union_dump AS (
+            SELECT
+                (ST_Dump(mpoly)).geom AS MPOLY,
+                {source.millesimes[0]} AS YEAR,
+                {source.official_land_id} AS DPT,
+                {source.srid} as SRID
+
+            FROM
+                artificial_geom_union
         )
         SELECT
-            (ST_Dump(mpoly)).geom AS mpoly
+            *,
+            ST_Area(MPOLY) AS SURFACE
         FROM
-            artificial_geom_union;
+            artificial_geom_union_dump;
         """
 
         with connection.cursor() as cursor:

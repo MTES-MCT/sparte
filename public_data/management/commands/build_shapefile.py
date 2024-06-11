@@ -33,8 +33,10 @@ class Command(BaseCommand):
         sources = DataSource.objects.filter(
             dataset=options.get("dataset"),
             productor=options.get("productor"),
-            millesimes__overlap=options.get("millesimes"),
         )
+        if options.get("millisimes"):
+            sources = sources.filter(millesimes__overlap=options.get("millesimes"))
+
         if options.get("land_id"):
             sources = sources.filter(official_land_id=options.get("land_id"))
         if options.get("name"):
