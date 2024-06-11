@@ -142,3 +142,20 @@ class ZoneConstruite(TruncateTableMixin, DataColorationMixin, models.Model):
             models.Index(fields=["year"]),
             models.Index(fields=["departement"]),
         ]
+
+
+class ZoneArtificielle(models.Model):
+    millesime = models.CharField("Millesime", max_length=200)
+    srid_source = models.IntegerField(
+        "SRID",
+        choices=SRID.choices,
+        default=SRID.LAMBERT_93,
+    )
+    surface = models.DecimalField("surface", max_digits=15, decimal_places=4)
+    departement = models.CharField("Département", max_length=15)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=["millesime"]),
+            models.Index(fields=["departement"]),
+        ]
