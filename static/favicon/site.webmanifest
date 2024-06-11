@@ -1,6 +1,6 @@
 {
-    "name": "",
-    "short_name": "",
+    "name": "Mon Diagnostic Artificialisation",
+    "short_name": "MonDiagArtif",
     "icons": [
         {
             "src": "/android-chrome-192x192.png",
