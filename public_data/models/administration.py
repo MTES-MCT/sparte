@@ -93,16 +93,19 @@ class AdminRef:
         raise AttributeError(f"{name} is not an administrative layer")
 
     @classmethod
-    def get_analysis_default_level(cls, level):
-        default_analysis = {
+    def get_analysis_default_level(cls, level) -> Literal["COMM", "EPCI", "SCOT", "DEPART", "REGION"]:
+        """
+        Return the default analysis level for a given level
+        SCOT is never used as default analysis level, as it does not cover France uniformly
+        """
+        return {
             cls.COMMUNE: cls.COMMUNE,
             cls.EPCI: cls.COMMUNE,
             cls.SCOT: cls.EPCI,
-            cls.DEPARTEMENT: cls.SCOT,
+            cls.DEPARTEMENT: cls.EPCI,
             cls.REGION: cls.DEPARTEMENT,
             cls.COMPOSITE: cls.COMMUNE,
-        }
-        return default_analysis[level]
+        }[level]
 
     @classmethod
     def get_admin_level(cls, type_list):
@@ -114,8 +117,8 @@ class AdminRef:
             return cls.COMPOSITE
 
     @classmethod
-    def get_available_analysis_level(cls, land_type):
-        available = {
+    def get_available_analysis_level(cls, land_type) -> list[str]:
+        return {
             cls.COMMUNE: [cls.COMMUNE],
             cls.EPCI: [cls.COMMUNE],
             cls.SCOT: [
@@ -125,47 +128,19 @@ class AdminRef:
             cls.DEPARTEMENT: [
                 cls.COMMUNE,
                 cls.EPCI,
-                cls.SCOT,
             ],
             cls.REGION: [
                 cls.COMMUNE,
                 cls.EPCI,
-                cls.SCOT,
                 cls.DEPARTEMENT,
             ],
             cls.COMPOSITE: [
                 cls.COMMUNE,
                 cls.EPCI,
-                cls.SCOT,
                 cls.DEPARTEMENT,
                 cls.REGION,
             ],
-        }
-        return available[land_type]
-
-    @classmethod
-    def get_default_analysis_level(cls, type_list):
-        """When we have a group of lands, the smallest analysis level is selected
-        REGION > DEPARTEMENT > EPCI > COMMUNE
-        """
-        if isinstance(type_list, str):
-            type_list = [
-                type_list,
-            ]
-        elif not isinstance(type_list, list):
-            type_list = list(type_list)
-        if cls.COMMUNE in type_list:
-            return cls.COMMUNE
-        elif cls.EPCI in type_list:
-            return cls.EPCI
-        elif cls.SCOT in type_list:
-            return cls.SCOT
-        elif cls.DEPARTEMENT in type_list:
-            return cls.DEPARTEMENT
-        elif cls.REGION in type_list:
-            return cls.REGION
-        else:
-            return cls.COMMUNE
+        }[land_type]
 
 
 class GetDataFromCeremaMixin:
@@ -641,14 +616,6 @@ class Land:
         if not isinstance(public_keys, list):
             public_keys = [public_keys]
         return [Land(pk) for pk in public_keys]
-
-    @classmethod
-    def get_default_analysis_level(cls, lands):
-        """When we have a group of lands, the smallest analysis level is selected
-        REGION > DEPARTEMENT > EPCI > COMMUNE
-        """
-        available = {land.default_analysis_level for land in lands}
-        return AdminRef.get_default_analysis_level(available)
 
     @classmethod
     def get_land_class(cls, land_type):
