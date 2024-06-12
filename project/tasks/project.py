@@ -12,6 +12,7 @@ import logging
 from datetime import timedelta
 from typing import Any, Dict, Literal
 
+import celery
 import contextily as cx
 import geopandas
 import matplotlib.pyplot as plt
@@ -29,6 +30,7 @@ from matplotlib_scalebar.scalebar import ScaleBar
 from project.models import Emprise, Project, Request, RequestedDocumentChoices
 from public_data.models import ArtificialArea, Cerema, Land, OcsgeDiff
 from public_data.models.gpu import ArtifAreaZoneUrba, ZoneUrba
+from public_data.tasks import create_artificial_area_for_city
 from utils.db import fix_poly
 from utils.emails import SibTemplateEmail
 from utils.functions import get_url_with_domain
@@ -60,6 +62,18 @@ def race_protection_save_map(
         field_img.save(img_name, img_data, save=False)
         setattr(diagnostic, field_flag_name, True)
         diagnostic.save_without_historical_record(update_fields=[field_img_name, field_flag_name])
+
+
+@shared_task(bind=True, max_retries=5)
+def create_artificial_area_for_cities_in_project(self, project_id: int) -> None:
+    project = Project.objects.get(pk=project_id)
+
+    tasks = []
+
+    for city in project.cities.all():
+        tasks.append(create_artificial_area_for_city.si(city.insee))
+
+    celery.group(*tasks, immutable=True).apply_async()
 
 
 @shared_task(bind=True, max_retries=5)

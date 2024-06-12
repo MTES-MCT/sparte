@@ -55,18 +55,23 @@ def trigger_async_tasks(project: Project, public_key: str | None = None) -> None
     if not project.async_set_combined_emprise_done:
         before_calculations.append(t.set_combined_emprise.si(project.id))
 
-    calculations = []
+    land_calculations = [
+        t.create_artificial_area_for_cities_in_project.si(project.id),
+    ]
+
+    project_calculations = []
 
     if not project.async_find_first_and_last_ocsge_done:
-        calculations.append(t.find_first_and_last_ocsge.si(project.id))
+        project_calculations.append(t.find_first_and_last_ocsge.si(project.id))
     if not project.async_ocsge_coverage_status_done:
-        calculations.append(t.calculate_project_ocsge_status.si(project.id))
+        project_calculations.append(t.calculate_project_ocsge_status.si(project.id))
     if not project.async_add_comparison_lands_done:
-        calculations.append(t.add_comparison_lands.si(project.id))
+        project_calculations.append(t.add_comparison_lands.si(project.id))
 
     return celery.chain(
         *before_calculations,
-        celery.group(*calculations, immutable=True),
+        celery.group(*land_calculations, immutable=True),
+        celery.group(*project_calculations, immutable=True),
         map_tasks.si(project.id),
         celery.group(
             async_create_stat_for_project.si(project.id, do_location=True),
