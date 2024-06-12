@@ -18,7 +18,8 @@ class BaseShapefileBuilder(ABC):
                 elif source.name == source.DataNameChoices.ZONE_CONSTRUITE:
                     created.append(self.build_ocsge_zone_construite(source))
                 elif source.name == source.DataNameChoices.OCCUPATION_DU_SOL:
-                    created.append(self.build_ocsge_occupation_du_sol(source))
+                    # TODO: change below
+                    # created.append(self.build_ocsge_occupation_du_sol(source))
                     created.append(self.build_ocsge_zone_artificielle(source))
                 elif source.name == source.DataNameChoices.ZONE_ARTIFICIELLE:
                     created.append(self.build_ocsge_zone_artificielle(source))
