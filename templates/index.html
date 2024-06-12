@@ -12,7 +12,13 @@
 
         <title>{% block pagetitle %}{{ page_title }}{% endblock %}</title>
 
-        <link crossorigin="anonymous" rel="icon" href="{% static 'favicon.ico' %}" integrity="sha256-17516aeae70e8509e89871d53bcf8a423dfa4d0c59d18a706d3046f4e6f513f7">
+        <link crossorigin="anonymous" rel="icon" href="{% static 'favicon/favicon.svg' %}" integrity="sha256-9XtIvlxcpnXef29DOD0o+agM++e/ZB8xYC5vGqDiTLI=">
+        <link crossorigin="anonymous" rel="apple-touch-icon" sizes="180x180" href="{% static 'favicon/apple-touch-icon.png' %}" integrity="sha256-U4nRN5qiI5h+9kMtFZh/GkuJqlklIU4HLH999+7seYc=">
+        <link crossorigin="anonymous" rel="manifest" href="{% static 'favicon/site.webmanifest' %}" integrity="sha256-MQuGlDTw7p2ZoRDl72v7QerBFbziQo9WL/XfFDeFGf8=">
+        <link crossorigin="anonymous" rel="mask-icon" href="{% static 'favicon/safari-pinned-tab.svg' %}" color="#868686" integrity="sha256-L/SsNmrQdW36ZiLwYTlnMQpcXBAiDLWKiqj7Sos19nY=">
+        <meta name="msapplication-TileColor" content="#2b5797">
+        <meta name="theme-color" content="#ffffff">
+
         <!-- Core theme CSS (includes Bootstrap)-->
         {% sri_static "bootstrap522/css/bootstrap.min.css" %}
         <!-- Bootstrap icon -->
