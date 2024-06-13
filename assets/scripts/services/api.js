@@ -10,4 +10,20 @@ export const djangoApi = createApi({
   }),
 })
 
-export const { useGetProjectQuery } = djangoApi
+export const publicApi = createApi({
+  reducerPath: 'publicApi',
+  baseQuery: fetchBaseQuery({ baseUrl: '/public/' }),
+  endpoints: (builder) => ({
+    getDepartementList: builder.query({
+      query: () => 'departements/',
+    }),
+  }),
+})
+
+export const {
+  useGetProjectQuery,
+} = djangoApi
+
+export const {
+  useGetDepartementListQuery,
+} = publicApi
