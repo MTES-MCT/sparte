@@ -247,12 +247,7 @@
             "dataset": "OCSGE",
             "name": "OCCUPATION_DU_SOL",
             "millesimes": "[\"2017\"]",
-            "mapping": {
-                "mpoly": "MULTIPOLYGON",
-                "usage": "USAGE",
-                "id_source": "ID",
-                "couverture": "COUVERTURE"
-            },
+            "mapping": null,
             "path": "seine_et_marne_ocsge_2017.zip",
             "shapefile_name": "OCCUPATION_SOL.shp",
             "source_url": "https://wxs.ign.fr/c2vbqzbz832vi4tkvvmtsoh6/telechargement/inspire/OCSGE-NG-PACK_1-1$OCS-GE-NG_1-1__SHP_LAMB93_D077_2017-01-01/file/OCS-GE-NG_1-1__SHP_LAMB93_D077_2017-01-01.7z",
@@ -268,12 +263,7 @@
             "dataset": "OCSGE",
             "name": "OCCUPATION_DU_SOL",
             "millesimes": "[\"2021\"]",
-            "mapping": {
-                "mpoly": "MULTIPOLYGON",
-                "usage": "USAGE",
-                "id_source": "ID",
-                "couverture": "COUVERTURE"
-            },
+            "mapping": null,
             "path": "seine_et_marne_ocsge_2021.zip",
             "shapefile_name": "OCCUPATION_SOL.shp",
             "source_url": "https://wxs.ign.fr/c2vbqzbz832vi4tkvvmtsoh6/telechargement/inspire/OCSGE-NG-PACK_1-1$OCS-GE-NG_1-1__SHP_LAMB93_D077_2021-01-01/file/OCS-GE-NG_1-1__SHP_LAMB93_D077_2021-01-01.7z",
@@ -289,9 +279,7 @@
             "dataset": "OCSGE",
             "name": "ZONE_CONSTRUITE",
             "millesimes": "[\"2017\"]",
-            "mapping": {
-                "mpoly": "MULTIPOLYGON"
-            },
+            "mapping": null,
             "path": "seine_et_marne_zone_construite_2017.zip",
             "shapefile_name": "ZONE_CONSTRUITE.shp",
             "source_url": "https://wxs.ign.fr/c2vbqzbz832vi4tkvvmtsoh6/telechargement/inspire/OCSGE-NG-PACK_1-1$OCS-GE-NG_1-1__SHP_LAMB93_D077_2017-01-01/file/OCS-GE-NG_1-1__SHP_LAMB93_D077_2017-01-01.7z",
@@ -307,9 +295,7 @@
             "dataset": "OCSGE",
             "name": "ZONE_CONSTRUITE",
             "millesimes": "[\"2021\"]",
-            "mapping": {
-                "mpoly": "MULTIPOLYGON"
-            },
+            "mapping": null,
             "path": "seine_et_marne_zone_construite_2021.zip",
             "shapefile_name": "ZONE_CONSTRUITE.shp",
             "source_url": "https://wxs.ign.fr/c2vbqzbz832vi4tkvvmtsoh6/telechargement/inspire/OCSGE-NG-PACK_1-1$OCS-GE-NG_1-1__SHP_LAMB93_D077_2021-01-01/file/OCS-GE-NG_1-1__SHP_LAMB93_D077_2021-01-01.7z",
@@ -3274,6 +3260,70 @@
             "shapefile_name": "ZONE_ARTIFICIELLE.shp",
             "source_url": null,
             "official_land_id": "62",
+            "srid": 2154
+        }
+    },
+    {
+        "model": "public_data.datasource",
+        "pk": 268,
+        "fields": {
+            "productor": "MDA",
+            "dataset": "OCSGE",
+            "name": "ZONE_ARTIFICIELLE",
+            "millesimes": "[\"2018\"]",
+            "mapping": null,
+            "path": "OCSGE_ZONE_ARTIFICIELLE_91_2018_MDA.shp.zip",
+            "shapefile_name": "ZONE_ARTIFICIELLE.shp",
+            "source_url": null,
+            "official_land_id": "91",
+            "srid": 2154
+        }
+    },
+    {
+        "model": "public_data.datasource",
+        "pk": 269,
+        "fields": {
+            "productor": "MDA",
+            "dataset": "OCSGE",
+            "name": "ZONE_ARTIFICIELLE",
+            "millesimes": "[\"2021\"]",
+            "mapping": null,
+            "path": "OCSGE_ZONE_ARTIFICIELLE_91_2021_MDA.shp.zip",
+            "shapefile_name": "ZONE_ARTIFICIELLE.shp",
+            "source_url": null,
+            "official_land_id": "91",
+            "srid": 2154
+        }
+    },
+    {
+        "model": "public_data.datasource",
+        "pk": 270,
+        "fields": {
+            "productor": "MDA",
+            "dataset": "OCSGE",
+            "name": "ZONE_ARTIFICIELLE",
+            "millesimes": "[\"2018\"]",
+            "mapping": null,
+            "path": "OCSGE_ZONE_ARTIFICIELLE_92_2018_MDA.shp.zip",
+            "shapefile_name": "ZONE_ARTIFICIELLE.shp",
+            "source_url": null,
+            "official_land_id": "92",
+            "srid": 2154
+        }
+    },
+    {
+        "model": "public_data.datasource",
+        "pk": 271,
+        "fields": {
+            "productor": "IGN",
+            "dataset": "OCSGE",
+            "name": "ZONE_ARTIFICIELLE",
+            "millesimes": "[\"2021\"]",
+            "mapping": null,
+            "path": "OCSGE_ZONE_ARTIFICIELLE_92_2021_MDA.shp.zip",
+            "shapefile_name": "ZONE_ARTIFICIELLE.shp",
+            "source_url": null,
+            "official_land_id": "92",
             "srid": 2154
         }
     }
