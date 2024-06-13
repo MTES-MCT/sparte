@@ -50,6 +50,14 @@ const common = {
                 use: 'ts-loader',
                 exclude: /node_modules/,
             },
+            {
+                test: /\.json$/,
+                type: 'json',
+            },
+            {
+                test: /\.geojson$/,
+                use: 'json-loader',
+            },
         ]
     },
     plugins: [
