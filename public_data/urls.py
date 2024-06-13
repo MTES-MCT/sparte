@@ -21,7 +21,7 @@ router.register(r"ocsge/diff", views.OcsgeDiffViewSet)
 router.register(r"ocsge/diff-centroids", views.OcsgeDiffCentroidViewSet, basename="ocsgeDiffCentroids")
 router.register(r"ocsge/zones-construites", views.ZoneConstruiteViewSet)
 router.register(r"ocsge/zones-artificielles", views.ArtificialAreaViewSet)
-router.register(r"referentiel/departements", views.DepartementViewSet)
+router.register(r"departements", views.DepartementViewSet)
 router.register(r"referentiel/zones-urbaines", views.ZoneUrbaViewSet)
 
 urlpatterns += router.urls
