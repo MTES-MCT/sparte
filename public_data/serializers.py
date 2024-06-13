@@ -4,23 +4,6 @@ from rest_framework_gis import serializers
 from public_data import models
 
 
-class CommuneSerializer(serializers.GeoFeatureModelSerializer):
-    """Marker GeoJSON serializer."""
-
-    class Meta:
-        """Marker serializer meta class."""
-
-        fields = (
-            "id",
-            "name",
-            "insee",
-            "area",
-            "map_color",
-        )
-        geo_field = "mpoly"
-        model = models.Commune
-
-
 class OcsgeSerializer(serializers.GeoFeatureModelSerializer):
     class Meta:
         fields = (
@@ -70,49 +53,17 @@ class UsageSolSerializer(serializers.ModelSerializer):
         model = models.UsageSol
 
 
-class RegionSerializer(serializers.GeoFeatureModelSerializer):
-    class Meta:
-        fields = (
-            "id",
-            "name",
-        )
-        model = models.Region
-        geo_field = "mpoly"
-
-
-class DepartementSerializer(serializers.GeoFeatureModelSerializer):
+class DepartementSerializer(s.ModelSerializer):
     class Meta:
         fields = (
             "id",
             "source_id",
             "name",
             "region_id",
+            "is_artif_ready",
+            "ocsge_millesimes",
         )
         model = models.Departement
-        geo_field = "mpoly"
-
-
-class ScotSerializer(serializers.GeoFeatureModelSerializer):
-    class Meta:
-        fields = (
-            "id",
-            "name",
-            "region_id",
-            "departement_id",
-        )
-        model = models.Scot
-        geo_field = "mpoly"
-
-
-class EpciSerializer(serializers.GeoFeatureModelSerializer):
-    class Meta:
-        fields = (
-            "id",
-            "source_id",
-            "name",
-        )
-        model = models.Epci
-        geo_field = "mpoly"
 
 
 class ZoneConstruiteSerializer(serializers.GeoFeatureModelSerializer):
