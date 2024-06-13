@@ -32,7 +32,16 @@ interface GeoJSON {
   features: GeoJSONFeature[];
 }
 
-const highchartsMapOcsge: React.FC = () => {
+// Définir pointFormatter à l'extérieur du composant React
+const pointFormatter = function (this: any) {
+  const millesimes = this.properties.ocsge_millesimes;
+  const millesimesText = millesimes
+    ? `Millésimes OCS GE disponibles: ${millesimes.split(',').map((m: string) => m.trim()).join(', ')}`
+    : "OCS GE Non disponible";
+  return `<b>${this.properties.nom}</b><br>${millesimesText}`;
+};
+
+const HighchartsMapOcsge: React.FC = () => {
   const chartComponentRef = useRef<HighchartsReact.RefObject>(null);
   const [mapData, setMapData] = useState<GeoJSON | null>(null);
   const { data } = useGetDepartementListQuery(null);
@@ -53,45 +62,41 @@ const highchartsMapOcsge: React.FC = () => {
         joinBy: 'code',
         keys: ['code', 'value'],
         data: mapData
-          ? mapData.features.map(feature => [
-              feature.properties.code,
-              feature.properties.is_artif_ready ? 1 : 0
-            ])
+          ? mapData.features.map(feature => ({
+              code: feature.properties.code,
+              value: feature.properties.is_artif_ready ? 1 : 0,
+            }))
           : [],
-          states: {
-            hover: {
-              borderColor: '#cccccc',
-              brightness: 0.1,
-              borderWidth: 1,
-            }
+        states: {
+          hover: {
+            borderColor: '#cccccc',
+            brightness: 0.1,
+            borderWidth: 1,
           },
+        },
         dataLabels: {
           enabled: true,
           format: '{point.properties.nom}',
           style: {
             color: '#293273',
-          }
+          },
         },
         tooltip: {
           headerFormat: '',
-          pointFormatter: function () {
-            const millesimes = this.properties.ocsge_millesimes;
-            const millesimesText = millesimes ? `Millésimes OCS GE disponibles: ${millesimes.join(", ")}` : "OCS GE Non disponible";
-            return `<b>${this.properties.nom}</b><br>${millesimesText}`;
-          }
+          pointFormatter,
         },
         borderWidth: 1,
-      }
+      },
     ],
     mapNavigation: {
       enabled: true,
       buttonOptions: {
-          verticalAlign: 'bottom'
-      }
+        verticalAlign: 'bottom',
+      },
     },
     mapView: {
       projection: {
-        name: 'WebMercator'
+        name: 'WebMercator',
       },
     },
     colorAxis: {
@@ -100,16 +105,16 @@ const highchartsMapOcsge: React.FC = () => {
           from: 0,
           to: 0,
           color: '#cecece',
-          name: 'OCS GE Non disponible'
+          name: 'OCS GE Non disponible',
         },
         {
           from: 1,
           to: 1,
           color: '#6dd176',
-          name: 'OCS GE Disponible'
-        }
-      ]
-    }
+          name: 'OCS GE Disponible',
+        },
+      ],
+    },
   }), [mapData]);
 
   const updateGeoJSONProperties = (geojson: GeoJSON, departements: Departement[]): GeoJSON => {
@@ -125,11 +130,11 @@ const highchartsMapOcsge: React.FC = () => {
               ...feature.properties,
               is_artif_ready: departement.is_artif_ready,
               ocsge_millesimes: departement.ocsge_millesimes,
-            }
+            },
           };
         }
         return feature;
-      })
+      }),
     };
   };
 
@@ -156,4 +161,4 @@ const highchartsMapOcsge: React.FC = () => {
   );
 };
 
-export default highchartsMapOcsge;
+export default HighchartsMapOcsge;
