@@ -48,7 +48,8 @@ const HighchartsMapOcsge: React.FC = () => {
   const options = useMemo(() => ({
     chart: {
       map: mapData,
-      height: 500,
+      height: 550,
+      width: 600,
     },
     title: {
       text: "",
