@@ -30,7 +30,7 @@ from matplotlib_scalebar.scalebar import ScaleBar
 from project.models import Emprise, Project, Request, RequestedDocumentChoices
 from public_data.models import ArtificialArea, Cerema, Land, OcsgeDiff
 from public_data.models.gpu import ArtifAreaZoneUrba, ZoneUrba
-from public_data.tasks import create_artificial_area_for_city
+from public_data.tasks import create_commune_artificial_area_if_not_exists
 from utils.db import fix_poly
 from utils.emails import SibTemplateEmail
 from utils.functions import get_url_with_domain
@@ -71,7 +71,7 @@ def create_artificial_area_for_cities_in_project(self, project_id: int) -> None:
     tasks = []
 
     for city in project.cities.all():
-        tasks.append(create_artificial_area_for_city.si(city.insee))
+        tasks.append(create_commune_artificial_area_if_not_exists.si(city.insee))
 
     celery.group(*tasks, immutable=True).apply_async()
 
