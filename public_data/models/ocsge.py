@@ -155,7 +155,7 @@ class ZoneArtificielle(models.Model):
         default=SRID.LAMBERT_93,
     )
     surface = models.DecimalField("surface", max_digits=15, decimal_places=4)
-    departement = models.CharField("Département", max_length=15)
+    departement = models.CharField("Département", max_length=15, db_index=True)
     mpoly = models.MultiPolygonField(srid=4326)
 
     class Meta:

@@ -9,7 +9,7 @@ from public_data.models import AdminRef, Land
 from users.models import User
 
 
-@celery.shared_task  # noqa: C901
+@celery.shared_task
 def map_tasks(project_id: str) -> List[celery.Task]:  # noqa: C901
     """Return a list of tasks to generate maps according to project state"""
 
@@ -48,37 +48,17 @@ def trigger_async_tasks(project: Project, public_key: str | None = None) -> None
     from metabase.tasks import async_create_stat_for_project
     from project import tasks as t
 
-    before_calculations = []
-
-    if not project.async_add_city_done:
-        before_calculations.append(t.add_city.si(project.id, public_key))
-    if not project.async_set_combined_emprise_done:
-        before_calculations.append(t.set_combined_emprise.si(project.id))
-
-    land_calculations = [
-        t.create_artificial_area_for_cities_in_project_if_not_exists.si(project.id),
-    ]
-
-    project_calculations = []
-
-    if not project.async_find_first_and_last_ocsge_done:
-        project_calculations.append(t.find_first_and_last_ocsge.si(project.id))
-    if not project.async_ocsge_coverage_status_done:
-        project_calculations.append(t.calculate_project_ocsge_status.si(project.id))
-    if not project.async_add_comparison_lands_done:
-        project_calculations.append(t.add_comparison_lands.si(project.id))
-
     return celery.chain(
-        *before_calculations,
-        celery.group(*land_calculations, immutable=True),
-        celery.group(*project_calculations, immutable=True),
+        t.add_city.si(project.id, public_key),
+        t.set_combined_emprise.si(project.id),
+        t.find_first_and_last_ocsge.si(project.id),
+        t.calculate_project_ocsge_status.si(project.id),
+        t.add_comparison_lands.si(project.id),
+        t.create_artificial_area_for_project.si(project.id),
         map_tasks.si(project.id),
-        celery.group(
-            async_create_stat_for_project.si(project.id, do_location=True),
-            send_diagnostic_to_brevo.si(project.id),
-            immutable=True,
-        ),
-    )()
+        async_create_stat_for_project.si(project.id, do_location=True),
+        send_diagnostic_to_brevo.si(project.id),
+    ).apply_async()
 
 
 def create_from_public_key(

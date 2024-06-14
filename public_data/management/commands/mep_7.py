@@ -40,4 +40,4 @@ class Command(BaseCommand):
                         departement=departement,
                     ).all()
                 ]
-            ).apply_async()
+            ).apply_async(queue="long")
