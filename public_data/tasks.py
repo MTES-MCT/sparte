@@ -11,6 +11,6 @@ logging.basicConfig(level=logging.INFO)
 
 
 @shared_task(bind=True)
-def create_artificial_area_for_city(self, city_id: str):
+def create_commune_artificial_area_if_not_exists(self, city_id: str):
     commune = Commune.objects.get(insee=city_id)
     RetrieveFreshestCommuneArtificialAreas.execute(commune)
