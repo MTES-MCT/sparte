@@ -43,8 +43,6 @@
   </div>
 </section>
 
-<div id="react-highcharts-ocsge"></div>
-
 <section class="fr-py-6w section-product">
   <div class="fr-container">
     <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--center fr-pt-6w">
@@ -138,62 +136,69 @@
   </div>
 </section>
 
-<section class="fr-py-6w">
+<section class="fr-py-9w section-data">
   <div class="fr-container">
-    <h2 class="text-center">D'où proviennent nos données ?</h2>
+    <h3 class="text-center">D'où proviennent nos données ?</h3>
     <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--center fr-pt-6w">
       <div class="fr-col-12 fr-col-md-4">
-        <div class="fr-card">
-          <div class="fr-card__body">
-            <div class="fr-card__content">
-              <h3 class="fr-card__title">Données d'évolution des fichiers fonciers produites par le Cerema</h3>
-              <p class="fr-card__desc">
-                Données issues de sources fiscales (DGFIP), et notamment de la taxe foncière puis enrichis par le Cerema.
-                Disponible France entière et mis à jour chaque année. Production sous la maitrise d'ouvrage de la DGALN (Direction Générale de l'Aménagement, du Logement et de la Nature).
-              </p>
-            </div>
+        <div class="card">
+          <div class="card_header">
+            <div class="card_logo card_logo--cerema"></div>
           </div>
-          <div class="fr-card__header">
-            <div class="fr-card__img">
-              <img class="fr-responsive-img" src="{% static 'home/img/cerema-logo.png' %}" alt="">
+          <div class="card_content">
+            <div class="card_title">
+              Données d'évolution des fichiers fonciers produites par le Cerema
             </div>
-          </div>
-        </div>
-      </div>
-      <div class="fr-col-12 fr-col-md-4">
-        <div class="fr-card">
-          <div class="fr-card__body">
-            <div class="fr-card__content">
-              <h3 class="fr-card__title">OCS&nbsp;GE (Occupation du Sol à Grande Echelle) produite par l'IGN</h3>
-              <p class="fr-card__desc">
-                Base de données vectorielle de description de l'occupation et de l'usage du sol. 
-                Disponible France entière à horizon 2025 et mis à jour tous les 3 ans.
-                Production en sous la maitrise d'ouvrage de la DGALN (Direction Générale de l'Aménagement, du Logement et de la Nature).
-              </p>
-            </div>
-          </div>
-          <div class="fr-card__header">
-            <div class="fr-card__img">
-              <img class="fr-responsive-img" src="{% static 'home/img/ign-logo.png' %}" alt="">
+            <div class="card_description">
+              Données issues de sources fiscales (DGFIP), et notamment de la taxe foncière puis enrichis par le Cerema.
+              Disponible France entière et mis à jour chaque année. Production sous la maitrise d'ouvrage de la DGALN (Direction Générale de l'Aménagement, du Logement et de la Nature). 
             </div>
           </div>
         </div>
       </div>
       <div class="fr-col-12 fr-col-md-4">
-        <div class="fr-card">
-          <div class="fr-card__body">
-            <div class="fr-card__content">
-              <h3 class="fr-card__title">Données complémentaires</h3>
-              <p class="fr-card__desc">
-                Mon Diagnostic Artificialisation propose des croisements avec les données de l'INSEE (population) et le Géoportail de l'urbanisme (PLU, PLUi).
-              </p>
+        <div class="card">
+          <div class="card_header">
+            <div class="card_logo card_logo--ign"></div>
+          </div>
+          <div class="card_content">
+            <div class="card_title">
+              OCS GE (Occupation du Sol à Grande Echelle) produite par l'IGN
+            </div>
+            <div class="card_description">
+              Base de données vectorielle de description de l'occupation et de l'usage du sol. 
+              Disponible France entière à horizon 2025 et mis à jour tous les 3 ans.
+              Production en sous la maitrise d'ouvrage de la DGALN (Direction Générale de l'Aménagement, du Logement et de la Nature).
             </div>
           </div>
-          <div class="fr-card__header">
-            <div class="fr-card__img">
-              <img class="fr-responsive-img" src="{% static 'home/img/insee-geo-portail-urbanisme-logo.png' %}" alt="">
+        </div>
+      </div>
+      <div class="fr-col-12 fr-col-md-4">
+        <div class="card">
+          <div class="card_header">
+            <div class="card_logo">
+              <div class="card_logo card_logo--gpu"></div>
             </div>
           </div>
+          <div class="card_content">
+            <div class="card_title">
+              Données complémentaires
+            </div>
+            <div class="card_description">
+              Mon Diagnostic Artificialisation propose des croisements avec les données de l'INSEE (population) et le Géoportail de l'urbanisme (PLU, PLUi).
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card fr-mt-3w">
+      <div class="card_content">
+        <div class="card_title">
+          Déploiement de l'OCS GE sur Mon diagnostic Artificialisation
+          <p class="fr-text--xs text-muted">(Nous n'intégrons sur Mon Diagnostic Artificialisation que les millésimes OCS GE en version finalisée 1.1)</p>
+        </div>
+        <div class="card_content">
+          <div id="react-highcharts-ocsge"></div>
         </div>
       </div>
     </div>

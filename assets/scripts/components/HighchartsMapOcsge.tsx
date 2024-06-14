@@ -32,11 +32,10 @@ interface GeoJSON {
   features: GeoJSONFeature[];
 }
 
-// Définir pointFormatter à l'extérieur du composant React
 const pointFormatter = function (this: any) {
   const millesimes = this.properties.ocsge_millesimes;
   const millesimesText = millesimes
-    ? `Millésimes OCS GE disponibles: ${millesimes.split(',').map((m: string) => m.trim()).join(', ')}`
+    ? `Millésimes OCS GE disponibles: ${millesimes.join(', ')}`
     : "OCS GE Non disponible";
   return `<b>${this.properties.nom}</b><br>${millesimesText}`;
 };
@@ -49,6 +48,7 @@ const HighchartsMapOcsge: React.FC = () => {
   const options = useMemo(() => ({
     chart: {
       map: mapData,
+      height: 500,
     },
     title: {
       text: "",
@@ -62,10 +62,12 @@ const HighchartsMapOcsge: React.FC = () => {
         joinBy: 'code',
         keys: ['code', 'value'],
         data: mapData
-          ? mapData.features.map(feature => ({
-              code: feature.properties.code,
-              value: feature.properties.is_artif_ready ? 1 : 0,
-            }))
+          ? mapData.features
+              .filter(feature => feature.properties.is_artif_ready)
+              .map(feature => ({
+                code: feature.properties.code,
+                value: 1,
+              }))
           : [],
         states: {
           hover: {
@@ -101,12 +103,6 @@ const HighchartsMapOcsge: React.FC = () => {
     },
     colorAxis: {
       dataClasses: [
-        {
-          from: 0,
-          to: 0,
-          color: '#cecece',
-          name: 'OCS GE Non disponible',
-        },
         {
           from: 1,
           to: 1,
@@ -155,7 +151,7 @@ const HighchartsMapOcsge: React.FC = () => {
           ref={chartComponentRef}
         />
       ) : (
-        <div>Chargement...</div>
+        <div className="fr-custom-loader"></div>
       )}
     </div>
   );
