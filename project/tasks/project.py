@@ -64,7 +64,7 @@ def race_protection_save_map(
         diagnostic.save_without_historical_record(update_fields=[field_img_name, field_flag_name])
 
 
-@shared_task(bind=True, max_retries=5)
+@shared_task(bind=True, max_retries=5, queue="long")
 def create_artificial_area_for_cities_in_project_if_not_exists(self, project_id: int) -> None:
     project = Project.objects.get(pk=project_id)
 

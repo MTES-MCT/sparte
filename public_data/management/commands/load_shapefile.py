@@ -234,8 +234,10 @@ class Command(BaseCommand):
             dataset=options.get("dataset"),
             official_land_id=options.get("land_id"),
             productor=DataSource.ProductorChoices.MDA,
-            millesimes__overlap=options.get("millesimes"),
         )
+        if options.get("millesimes"):
+            sources = sources.filter(millesimes__overlap=options.get("millesimes"))
+
         if options.get("name"):
             sources = sources.filter(name=options.get("name"))
 
