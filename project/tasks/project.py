@@ -28,15 +28,43 @@ from matplotlib.lines import Line2D
 from matplotlib_scalebar.scalebar import ScaleBar
 
 from project.models import Emprise, Project, Request, RequestedDocumentChoices
-from public_data.models import ArtificialArea, Cerema, Land, OcsgeDiff
+from public_data.models import (
+    ArtificialArea,
+    Cerema,
+    CommuneDiff,
+    CommuneSol,
+    Land,
+    OcsgeDiff,
+)
 from public_data.models.gpu import ArtifAreaZoneUrba, ZoneUrba
-from public_data.tasks import create_commune_artificial_area_if_not_exists
+from public_data.tasks import (
+    calculate_commune_artificial_areas,
+    calculate_commune_diff,
+    calculate_commune_usage_et_couverture_repartition,
+)
 from utils.db import fix_poly
 from utils.emails import SibTemplateEmail
 from utils.functions import get_url_with_domain
 from utils.mattermost import BlockedDiagnostic
 
 logger = logging.getLogger(__name__)
+
+
+@shared_task
+def create_artificial_data_for_project(project_id: int) -> list[celery.Task]:
+    project = Project.objects.get(pk=project_id)
+
+    artif_data_tasks = []
+
+    for commune in project.cities.all():
+        if not ArtificialArea.objects.filter(city=commune.insee).exists():
+            artif_data_tasks.append(calculate_commune_artificial_areas.si(commune.insee))
+        if not CommuneDiff.objects.filter(city=commune).exists():
+            artif_data_tasks.append(calculate_commune_diff.si(commune.insee))
+        if not CommuneSol.objects.filter(city=commune).exists():
+            artif_data_tasks.append(calculate_commune_usage_et_couverture_repartition.si(commune.insee))
+
+    return celery.group(*artif_data_tasks).apply_async()
 
 
 def race_protection_save(project_id: int, fields: Dict[str, Any]) -> None:
@@ -65,19 +93,7 @@ def race_protection_save_map(
 
 
 @shared_task(bind=True, max_retries=5)
-def create_artificial_area_for_cities_in_project_if_not_exists(self, project_id: int) -> None:
-    project = Project.objects.get(pk=project_id)
-
-    tasks = []
-
-    for city in project.cities.all():
-        tasks.append(create_commune_artificial_area_if_not_exists.si(city.insee))
-
-    celery.group(*tasks, immutable=True).apply_async()
-
-
-@shared_task(bind=True, max_retries=5)
-def add_city(self, project_id: int, public_keys: str) -> None:
+def add_city(self, project_id: int, public_keys: str):
     """List all cities of selected territories and add them to the project
 
     :param project_id: primary key to find Project
@@ -102,20 +118,26 @@ def add_city(self, project_id: int, public_keys: str) -> None:
     finally:
         logger.info("End add_city project_id=%d", project_id)
 
+    return [city.insee for city in project.cities.all()]
+
 
 @shared_task(bind=True, max_retries=5)
-def set_combined_emprise(self, project_id: int) -> None:
+def set_combined_emprise(self, project_id: int):
     """Use linked cities to create project emprise."""
     logger.info("Start set_combined_emprise project_id==%d", project_id)
+
+    emprises = []
 
     try:
         project = Project.objects.get(pk=project_id)
 
         for city in project.cities.all():
-            Emprise.objects.create(
-                mpoly=fix_poly(city.mpoly),
-                srid_source=city.srid_source,
-                project=project,
+            emprises.append(
+                Emprise.objects.create(
+                    mpoly=fix_poly(city.mpoly),
+                    srid_source=city.srid_source,
+                    project=project,
+                )
             )
 
         race_protection_save(project_id, {"async_set_combined_emprise_done": True})
@@ -128,9 +150,11 @@ def set_combined_emprise(self, project_id: int) -> None:
     finally:
         logger.info("End set_combined_emprise project_id=%d", project_id)
 
+    return [emprise.id for emprise in emprises]
+
 
 @shared_task(bind=True, max_retries=5)
-def find_first_and_last_ocsge(self, project_id: int) -> None:
+def find_first_and_last_ocsge(self, project_id: int):
     """Use associated cities to find departements and available OCSGE millesime"""
     logger.info("Start find_first_and_last_ocsge id=%d", project_id)
     try:
@@ -154,14 +178,17 @@ def find_first_and_last_ocsge(self, project_id: int) -> None:
     finally:
         logger.info("End find_first_and_last_ocsge, project_id=%d", project_id)
 
+    return result
+
 
 @shared_task(bind=True, max_retries=5)
-def calculate_project_ocsge_status(self, project_id: int) -> None:
+def calculate_project_ocsge_status(self, project_id: int):
     try:
         project = Project.objects.get(pk=project_id)
+        status = project.get_ocsge_coverage_status()
         race_protection_save(
             project_id,
-            {"ocsge_coverage_status": project.get_ocsge_coverage_status(), "async_ocsge_coverage_status_done": True},
+            {"ocsge_coverage_status": status, "async_ocsge_coverage_status_done": True},
         )
     except Project.DoesNotExist:
         logger.error(f"project_id={project_id} does not exist")
@@ -171,6 +198,8 @@ def calculate_project_ocsge_status(self, project_id: int) -> None:
         self.retry(exc=e, countdown=300)
     finally:
         logger.info("End calculate_project_ocsge_status, project_id=%d", project_id)
+
+    return status
 
 
 @shared_task
@@ -228,12 +257,14 @@ def add_comparison_lands(self, project_id):
     except Exception as exc:
         logger.error(exc)
         logger.exception(exc)
-        self.retry(exc=exc, countdown=300)
+        self.retry(exc=exc, countdown=10)
     finally:
         logger.info("End add_comparison_lands, project_id=%d", project_id)
 
+    return [_land.official_id for _land in qs]
 
-@shared_task(bind=True, max_retries=5, queue="long")
+
+@shared_task(bind=True, max_retries=5)
 def generate_cover_image(self, project_id):
     logger.info("Start generate_cover_image, project_id=%d", project_id)
     try:
@@ -297,7 +328,7 @@ class WordAlreadySentException(Exception):
     pass
 
 
-@shared_task(bind=True, max_retries=6, queue="long")
+@shared_task(bind=True, max_retries=6)
 def generate_word_diagnostic(self, request_id):
     from diagnostic_word.renderers import (
         ConsoReportRenderer,
@@ -444,7 +475,7 @@ def get_img(queryset, color: str, title: str) -> io.BytesIO:
     return img_data
 
 
-@shared_task(bind=True, max_retries=5, queue="long")
+@shared_task(bind=True, max_retries=5)
 def generate_theme_map_conso(self, project_id):
     logger.info("Start generate_theme_map_conso, project_id=%d", project_id)
 
@@ -482,7 +513,7 @@ def generate_theme_map_conso(self, project_id):
         logger.info("End generate_theme_map_conso, project_id=%d", project_id)
 
 
-@shared_task(bind=True, max_retries=5, queue="long")
+@shared_task(bind=True, max_retries=5)
 def generate_theme_map_artif(self, project_id):
     logger.info("Start generate_theme_map_artif, project_id=%d", project_id)
 
@@ -516,7 +547,7 @@ def generate_theme_map_artif(self, project_id):
         logger.info("End generate_theme_map_artif, project_id=%d", project_id)
 
 
-@shared_task(bind=True, max_retries=5, queue="long")
+@shared_task(bind=True, max_retries=5)
 def generate_theme_map_understand_artif(self, project_id):
     logger.info("Start generate_theme_map_understand_artif, project_id=%d", project_id)
 
@@ -620,7 +651,7 @@ def generate_theme_map_understand_artif(self, project_id):
         logger.info("End generate_theme_map_understand_artif, project_id=%d", project_id)
 
 
-@shared_task(bind=True, max_retries=5, queue="long")
+@shared_task(bind=True, max_retries=5)
 def generate_theme_map_gpu(self, project_id):
     logger.info("Start generate_theme_map_gpu, project_id=%d", project_id)
     try:
@@ -676,7 +707,7 @@ def generate_theme_map_gpu(self, project_id):
         logger.info("End generate_theme_map_gpu, project_id=%d", project_id)
 
 
-@shared_task(bind=True, max_retries=5, queue="long")
+@shared_task(bind=True, max_retries=5)
 def generate_theme_map_fill_gpu(self, project_id):
     logger.info("Start generate_theme_map_fill_gpu, project_id=%d", project_id)
     try:

@@ -235,7 +235,8 @@ class Command(BaseCommand):
         )
         if options.get("land_id"):
             sources = sources.filter(official_land_id=options.get("land_id"))
-
+        if options.get("millesimes"):
+            sources = sources.filter(millesimes__overlap=options.get("millesimes"))
         if options.get("name"):
             sources = sources.filter(name=options.get("name"))
 

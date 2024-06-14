@@ -1,7 +1,7 @@
 from logging import Logger, getLogger
 from os import mkdir
 from pathlib import Path
-from urllib.request import urlretrieve
+from urllib.request import URLopener
 from uuid import uuid4
 from zipfile import ZipFile
 
@@ -40,10 +40,9 @@ def __download_url(
 
     output_zip_path = f"{output_path.name}/{filename_from_url}"
 
-    urlretrieve(
-        url=url,
-        filename=output_zip_path,
-    )
+    opener = URLopener()
+    opener.addheader("User-Agent", "Mozilla/5.0")
+    opener.retrieve(url=url, filename=output_zip_path)
 
     return Path(output_zip_path)
 

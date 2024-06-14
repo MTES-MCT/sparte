@@ -1,3 +1,4 @@
+from collections import defaultdict
 from logging import getLogger
 
 from django.contrib.gis.db.models import Union

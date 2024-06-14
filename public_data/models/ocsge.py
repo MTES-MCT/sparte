@@ -116,6 +116,7 @@ class ArtificialArea(TruncateTableMixin, DataColorationMixin, models.Model):
         verbose_name = "OCSGE - Artificialisation (par commune)"
         verbose_name_plural = verbose_name
         constraints = []
+        unique_together = [["year", "city"]]
         indexes = [
             models.Index(fields=["year"]),
             models.Index(fields=["city"]),
@@ -163,7 +164,7 @@ class ZoneArtificielle(models.Model):
         default=SRID.LAMBERT_93,
     )
     surface = models.DecimalField("surface", max_digits=15, decimal_places=4)
-    departement = models.CharField("Département", max_length=15)
+    departement = models.CharField("Département", max_length=15, db_index=True)
     mpoly = models.MultiPolygonField(srid=4326)
 
     class Meta:
