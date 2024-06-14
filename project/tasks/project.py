@@ -65,7 +65,7 @@ def race_protection_save_map(
 
 
 @shared_task(bind=True, max_retries=5)
-def create_artificial_area_for_cities_in_project(self, project_id: int) -> None:
+def create_artificial_area_for_cities_in_project_if_not_exists(self, project_id: int) -> None:
     project = Project.objects.get(pk=project_id)
 
     tasks = []
