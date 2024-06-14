@@ -56,7 +56,7 @@ def trigger_async_tasks(project: Project, public_key: str | None = None) -> None
         before_calculations.append(t.set_combined_emprise.si(project.id))
 
     land_calculations = [
-        t.create_artificial_area_for_cities_in_project.si(project.id),
+        t.create_artificial_area_for_cities_in_project_if_not_exists.si(project.id),
     ]
 
     project_calculations = []
