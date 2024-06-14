@@ -1,5 +1,6 @@
 from concurrent.futures import ProcessPoolExecutor
 from logging import getLogger
+from pathlib import Path
 from typing import Any
 
 from django import setup as django_setup
@@ -10,8 +11,19 @@ from public_data.domain.shapefile_builder.infra.gdal.GdalShapefileBuilder import
     GdalShapefileBuilder,
 )
 from public_data.models import DataSource
+from public_data.storages import DataStorage
 
 logger = getLogger("management.commands")
+
+
+def upload_file_to_s3(path: Path):
+    logger.info(f"Uploading {path.name} to S3")
+
+    with open(path, "b+r") as f:
+        storage = DataStorage()
+        storage.save(path.name, f)
+
+    logger.info(f"Uploaded {path.name} to S3")
 
 
 class Command(BaseCommand):
@@ -59,4 +71,7 @@ class Command(BaseCommand):
             # Running sequentially might be useful for debugging and necesary for
             # building the most complex shapefiles
             for source in self.get_sources_queryset(options).all():
-                builder.build(source)
+                for built in builder.build(source):
+                    if options.get("upload"):
+                        _, path = built
+                        upload_file_to_s3(path)

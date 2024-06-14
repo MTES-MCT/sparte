@@ -15,7 +15,6 @@ logger = getLogger(__name__)
 
 
 def build_ocsge_zone_artificielle(source: DataSource) -> tuple[DataSource, Path]:
-    # build name will look like this : OCSGE_ZONE_ARTIFICIELLE_94_2018_MDA.shp.zip
     logger.info(f"Building {source}")
     unique_string = "_".join(
         [
