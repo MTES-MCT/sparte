@@ -28,7 +28,6 @@ class TestBuildOcsge(TestCase):
             command_name="build_shapefile",
             productor=DataSource.ProductorChoices.IGN,
             dataset=DataSource.DatasetChoices.OCSGE,
-            millesimes=[2018, 2021],
             land_id="94",
         )
 
