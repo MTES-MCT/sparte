@@ -9,18 +9,16 @@ from .managers import UserManager
 class User(AbstractUser):
     class ORGANISMS(models.TextChoices):
         AGENCE_URBA = "AGENCE", "Agence d'urbanisme"
-        AMENAGEUR = "AMENAG", "Aménageur"
         ASSOCIATION = "ASSOCI", "Association"
         BUREAU_ETUDE = "BUREAU", "Bureau d'études"
         COMMUNE = "COMMUN", "Commune"
         DDT = "DDT", "DDT"
-        DEPARTEMENT = "DEPART", "Département"
+        DDTM = "DDTM", "DDTM"
+        DEAL = "DEAL", "DEAL"
         DREAL = "DREAL", "DREAL"
+        DRIEAT = "DRIEAT", "DRIEAT"
         EPCI = "EPCI", "EPCI"
-        EPF = "EPF", "EPF"
-        GIP = "GIP", "GIP"
         PARTICULIER = "PARTIC", "Particulier"
-        REGION = "REGION", "Région"
         SCOT = "SCOT", "SCOT"
         AUTRE = "AUTRE", "Autre"
 
@@ -49,13 +47,17 @@ class User(AbstractUser):
             User.ORGANISMS.COMMUNE,
             User.ORGANISMS.EPCI,
             User.ORGANISMS.SCOT,
-            User.ORGANISMS.DEPARTEMENT,
-            User.ORGANISMS.REGION,
         ]:
             return "Collectivités"
         elif organism in [User.ORGANISMS.AGENCE_URBA, User.ORGANISMS.BUREAU_ETUDE]:
             return "Bureaux d'études"
-        elif organism in [User.ORGANISMS.DDT, User.ORGANISMS.DREAL]:
+        elif organism in [
+            User.ORGANISMS.DDT,
+            User.ORGANISMS.DREAL,
+            User.ORGANISMS.DDTM,
+            User.ORGANISMS.DEAL,
+            User.ORGANISMS.DRIEAT,
+        ]:
             return "Services de l'Etat"
         elif organism in [User.ORGANISMS.ASSOCIATION, User.ORGANISMS.PARTICULIER]:
             return "Grand public"
