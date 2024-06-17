@@ -12,9 +12,8 @@ def fix_commune_mpoly(apps, schema_editor):
 
     to_update = []
 
-    progress_in_percent = 0
     communes = Commune.objects.all()
-    commune_count = communes.count()
+    communes.count()
 
     for commune in communes:
         cerema = Cerema.objects.get(city_insee=commune.insee)
@@ -25,8 +24,6 @@ def fix_commune_mpoly(apps, schema_editor):
         commune.mpoly = cerema.mpoly
         commune.srid_source = cerema.srid_source
         to_update.append(commune)
-        progress_in_percent = round((len(to_update) / commune_count) * 100, 2)
-        logger.info(f"Progress: {progress_in_percent}%")
 
     Commune.objects.bulk_update(
         to_update,
