@@ -40,7 +40,7 @@ def map_tasks(project_id: str) -> List[celery.Task]:  # noqa: C901
         if not project.async_theme_map_fill_gpu_done:
             map_tasks.append(tasks.generate_theme_map_fill_gpu.si(project.id))
 
-    celery.group(*map_tasks, immutable=True).apply_async()
+    celery.group(*map_tasks, immutable=True).apply_async(queue="long")
 
 
 def get_queue(project: Project) -> str:
