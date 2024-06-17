@@ -43,17 +43,13 @@ def map_tasks(project_id: str) -> List[celery.Task]:  # noqa: C901
     celery.group(*map_tasks, immutable=True).apply_async(queue="long")
 
 
-def get_queue(project: Project) -> str:
-    if project.land_type != AdminRef.COMMUNE:
-        return "long"
-
-    return "quick"
-
-
 def trigger_async_tasks(project: Project, public_key: str | None = None) -> None:
     from brevo.tasks import send_diagnostic_to_brevo
     from metabase.tasks import async_create_stat_for_project
     from project import tasks as t
+
+    if not public_key:
+        public_key = project.get_public_key()
 
     tasks_list = []
 
@@ -72,11 +68,6 @@ def trigger_async_tasks(project: Project, public_key: str | None = None) -> None
     if not project.async_add_comparison_lands_done:
         tasks_list.append(t.add_comparison_lands.si(project.id))
 
-    celery_kwargs = {}
-
-    if project.land_type != AdminRef.COMMUNE:
-        celery_kwargs["queue"] = "long"
-
     return celery.chain(
         *[
             *tasks_list,
@@ -84,7 +75,7 @@ def trigger_async_tasks(project: Project, public_key: str | None = None) -> None
             async_create_stat_for_project.si(project.id, do_location=True),
             send_diagnostic_to_brevo.si(project.id),
         ]
-    ).apply_async(*celery_kwargs)
+    ).apply_async()
 
 
 def create_from_public_key(
