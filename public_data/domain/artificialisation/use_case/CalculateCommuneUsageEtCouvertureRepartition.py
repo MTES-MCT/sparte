@@ -1,17 +1,12 @@
 from logging import getLogger
 
-from django.contrib.gis.db.models.functions import Area
-from django.contrib.gis.geos import Polygon
 from django.db import connection
 from django.db.models.query import QuerySet
 
 from public_data.models import CommuneSol
 from public_data.models.administration import Commune
-from public_data.models.enums import SRID
 
 logger = getLogger(__name__)
-
-Zero = Area(Polygon(((0, 0), (0, 0), (0, 0), (0, 0)), srid=SRID.LAMBERT_93))
 
 
 class CalculateCommuneUsageEtCouvertureRepartition:
