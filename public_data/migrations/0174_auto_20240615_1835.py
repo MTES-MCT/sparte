@@ -18,6 +18,10 @@ def fix_commune_mpoly(apps, schema_editor):
 
     for commune in communes:
         cerema = Cerema.objects.get(city_insee=commune.insee)
+
+        if commune.mpoly == cerema.mpoly:
+            # no need to update
+            break
         commune.mpoly = cerema.mpoly
         commune.srid_source = cerema.srid_source
         to_update.append(commune)
@@ -32,6 +36,7 @@ def fix_commune_mpoly(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
+    atomic = False
     dependencies = [
         ("public_data", "0173_alter_zoneartificielle_departement"),
     ]
