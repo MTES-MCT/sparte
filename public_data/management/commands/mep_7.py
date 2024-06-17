@@ -4,7 +4,7 @@ import celery
 from django.core.management import call_command
 from django.core.management.base import BaseCommand
 
-from public_data.models import ArtificialArea, Commune, Departement, ZoneArtificielle
+from public_data.models import Commune, Departement, ZoneArtificielle
 from public_data.tasks import calculate_commune_artificial_areas
 
 logger = logging.getLogger("management.commands")
@@ -28,8 +28,6 @@ class Command(BaseCommand):
 
         if not zone_artificielle_exists:
             raise Exception("ZoneArtificielle for Gers does not exist")
-
-        ArtificialArea.objects.filter(departement=gers_source_id).delete()
 
         celery.group(
             [
