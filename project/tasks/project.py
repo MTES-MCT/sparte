@@ -12,7 +12,6 @@ import logging
 from datetime import timedelta
 from typing import Any, Dict, Literal
 
-import celery
 import contextily as cx
 import geopandas
 import matplotlib.pyplot as plt
@@ -28,43 +27,14 @@ from matplotlib.lines import Line2D
 from matplotlib_scalebar.scalebar import ScaleBar
 
 from project.models import Emprise, Project, Request, RequestedDocumentChoices
-from public_data.models import (
-    ArtificialArea,
-    Cerema,
-    CommuneDiff,
-    CommuneSol,
-    Land,
-    OcsgeDiff,
-)
+from public_data.models import ArtificialArea, Cerema, Land, OcsgeDiff
 from public_data.models.gpu import ArtifAreaZoneUrba, ZoneUrba
-from public_data.tasks import (
-    calculate_commune_artificial_areas,
-    calculate_commune_diff,
-    calculate_commune_usage_et_couverture_repartition,
-)
 from utils.db import fix_poly
 from utils.emails import SibTemplateEmail
 from utils.functions import get_url_with_domain
 from utils.mattermost import BlockedDiagnostic
 
 logger = logging.getLogger(__name__)
-
-
-@shared_task
-def create_artificial_data_for_project(project_id: int) -> list[celery.Task]:
-    project = Project.objects.get(pk=project_id)
-
-    artif_data_tasks = []
-
-    for commune in project.cities.all():
-        if not ArtificialArea.objects.filter(city=commune.insee).exists():
-            artif_data_tasks.append(calculate_commune_artificial_areas.si(commune.insee))
-        if not CommuneDiff.objects.filter(city=commune).exists():
-            artif_data_tasks.append(calculate_commune_diff.si(commune.insee))
-        if not CommuneSol.objects.filter(city=commune).exists():
-            artif_data_tasks.append(calculate_commune_usage_et_couverture_repartition.si(commune.insee))
-
-    return celery.group(*artif_data_tasks).apply_async()
 
 
 def race_protection_save(project_id: int, fields: Dict[str, Any]) -> None:
