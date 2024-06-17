@@ -1,18 +1,13 @@
 from logging import getLogger
 
-from django.contrib.gis.db.models.functions import Area
-from django.contrib.gis.geos import Polygon
 from django.db.models import F, Q
 from django.db.models.query import QuerySet
 
 from public_data.models import CommuneDiff, OcsgeDiff
 from public_data.models.administration import Commune
-from public_data.models.enums import SRID
 from utils.db import cast_sum_area
 
 logger = getLogger(__name__)
-
-Zero = Area(Polygon(((0, 0), (0, 0), (0, 0), (0, 0)), srid=SRID.LAMBERT_93))
 
 
 class CalculateCommuneDiff:
