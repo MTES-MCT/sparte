@@ -40,6 +40,10 @@ const pointFormatter = function (this: any) {
   return `<b>${this.properties.nom}</b><br>${millesimesText}`;
 };
 
+const dataLabelFormatter = function (this: any) {
+  return this.point.properties.ocsge_millesimes ? this.point.properties.nom : '';
+};
+
 const HighchartsMapOcsge: React.FC = () => {
   const chartComponentRef = useRef<HighchartsReact.RefObject>(null);
   const [mapData, setMapData] = useState<GeoJSON | null>(null);
@@ -79,7 +83,7 @@ const HighchartsMapOcsge: React.FC = () => {
         },
         dataLabels: {
           enabled: true,
-          format: '{point.properties.nom}',
+          formatter: dataLabelFormatter,
           style: {
             color: '#293273',
           },
