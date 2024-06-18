@@ -232,7 +232,7 @@ class ProjectReportArtifView(ProjectReportBaseView):
             "total_surface": total_surface,
         }
 
-        if not project.ocsge_coverage_status == project.OcsgeCoverageStatus.COMPLETE_UNIFORM:
+        if project.ocsge_coverage_status != project.OcsgeCoverageStatus.COMPLETE_UNIFORM:
             return super().get_context_data(**kwargs)
 
         first_millesime = project.first_year_ocsge
