@@ -8,9 +8,12 @@ import { useGetDepartementListQuery } from '../services/api.js';
 HighchartsMap(Highcharts);
 
 interface Departement {
+  id: number;
   source_id: string;
-  is_artif_ready: boolean;
-  ocsge_millesimes: string | null;
+  name: string;
+  region_id: number;
+  is_artif_ready: boolean
+  ocsge_millesimes: number[] | null;
 }
 
 interface GeoJSONFeature {
