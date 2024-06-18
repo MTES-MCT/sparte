@@ -8,6 +8,14 @@ class UsagePieChart(CouverturePieChart):
     _level = 1
     _sol = "usage"
 
+    @property
+    def param(self):
+        return super().param | {
+            "title": {
+                "text": f"Répartition de l'usage des sols en {self.project.last_year_ocsge}",
+            },
+        }
+
 
 class UsagePieChartExport(UsagePieChart):
     def get_series_item_name(self, item: CouvertureSol | UsageSol) -> str:
