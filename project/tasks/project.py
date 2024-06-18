@@ -283,7 +283,7 @@ class WordAlreadySentException(Exception):
     pass
 
 
-@shared_task(bind=True, max_retries=6)
+@shared_task(bind=True, max_retries=6, queue="long")
 def generate_word_diagnostic(self, request_id) -> int:
     from diagnostic_word.renderers import (
         ConsoReportRenderer,
@@ -344,7 +344,7 @@ def generate_word_diagnostic(self, request_id) -> int:
         logger.info("End generate word for request=%d", request_id)
 
 
-@shared_task(bind=True, max_retries=5)
+@shared_task(bind=True, max_retries=5, queue="long")
 def send_word_diagnostic(self, request_id) -> None:
     """
     Paramètres de l'e-mail dans SendInBlue:
