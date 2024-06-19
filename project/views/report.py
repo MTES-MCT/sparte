@@ -18,7 +18,6 @@ from brevo.tasks import send_diagnostic_request_to_brevo
 from project import charts, tasks
 from project.models import (
     Project,
-    ProjectCommune,
     Request,
     RequestedDocumentChoices,
     trigger_async_tasks,
@@ -102,91 +101,6 @@ class ProjectReportConsoView(ProjectReportBaseView):
         )
 
         return super().get_context_data(**kwargs)
-
-
-class ProjectReportCityGroupView(ProjectReportBaseView):
-    template_name = "project/report_city_group.html"
-    breadcrumbs_title = "Zoom groupes de villes"
-
-    def get_context_breadcrumbs(self):
-        project = self.get_object()
-        breadcrumbs = super().get_context_breadcrumbs()
-        crumb = {
-            "href": reverse("project:report_conso", args=[project.id]),
-            "title": "Rapport consommation",
-        }
-        breadcrumbs.insert(-1, crumb)
-        return breadcrumbs
-
-    def get_context_data(self, **kwargs):
-        project = self.get_object()
-        group_name = self.request.GET.get("group_name", None)
-        if not group_name:
-            qs = ProjectCommune.objects.filter(project=project)
-            qs = qs.exclude(group_name=None).order_by("group_name").distinct()
-            qs = qs.values_list("group_name", flat=True)
-            group_name = qs.first()
-        # retrieve groups of cities
-        city_group_list = project.city_group_list
-
-        def city_without_group(city_group_list):
-            """Return cities without group (group_name==None)"""
-            for city_group in city_group_list:
-                if city_group.name is None:
-                    return city_group.cities
-
-        def groups_with_name(city_group_list):
-            """Return named group (exclude cities with group_name == None)"""
-            return [city_group for city_group in city_group_list if city_group.name is not None]
-
-        def groups_name(group):
-            return set(_.name for _ in group if _.name is not None)
-
-        # Consommation des communes
-        chart_conso_cities = charts.AnnualTotalConsoChart(project, group_name=group_name)
-        communes_table = dict()
-        for city_name, data in chart_conso_cities.get_series().items():
-            data.update({"Total": sum(data.values())})
-            communes_table[city_name] = data
-
-        # Déterminants
-        det_chart = charts.ConsoByDeterminantPieChart(project, group_name=group_name)
-
-        kwargs = {
-            "active_page": "consommation",
-            "group_name": group_name,
-            "project": project,
-            "groups_name": groups_name(city_group_list),
-            "city_group_list": groups_with_name(city_group_list),
-            "city_without_group": city_without_group(city_group_list),
-            # Charts
-            "chart_conso_cities": chart_conso_cities,
-            "determinant_per_year_chart": det_chart,
-            "determinant_pie_chart": charts.ConsoByDeterminantPieChart(
-                project, group_name=group_name, series=det_chart.get_series()
-            ),
-            # Tables
-            "communes_data_table": communes_table,
-            "data_determinant": det_chart.get_series(),
-        }
-        return super().get_context_data(**kwargs)
-
-    def post(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        groups = {
-            v1: [v2 for k2, v2 in request.POST.items() if k2.startswith(v1)]
-            for k1, v1 in request.POST.items()
-            if k1.startswith("group_name_")
-        }
-        base_qs = ProjectCommune.objects.filter(project=self.object)
-        base_qs.update(group_name=None)
-        for group_name, city_names in groups.items():
-            qs = base_qs.filter(commune__name__in=city_names)
-            if not group_name:
-                group_name = "sans_nom"
-            qs.update(group_name=group_name)
-        context = self.get_context_data(object=self.object)
-        return self.render_to_response(context)
 
 
 class ProjectReportDicoverOcsgeView(ProjectReportBaseView):
