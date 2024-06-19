@@ -7,7 +7,11 @@ def remove_hamp_epci(apps, schema_editor):
     # Remove the EPCI with the name "hamp" as it is not a real EPCI
     # and does not seem to match any real administrative entity
     Epci = apps.get_model("public_data", "Epci")
-    hamp = Epci.objects.get(name="hamp")
+
+    try:
+        hamp = Epci.objects.get(name="hamp")
+    except Epci.DoesNotExist:
+        return
 
     # Remove the EPCI from the communes that are linked to it
     for commune in hamp.commune_set.all():
