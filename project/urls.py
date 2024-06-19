@@ -99,16 +99,6 @@ urlpatterns = [
         name="relative-surface",
     ),
     path(
-        "<int:pk>/tableau-de-bord/consommation-relative/population",
-        views.ConsoRelativePopChart.as_view(),
-        name="relative-pop",
-    ),
-    path(
-        "<int:pk>/tableau-de-bord/consommation-relative/ménages",
-        views.ConsoRelativeHouseholdChart.as_view(),
-        name="relative-household",
-    ),
-    path(
         "<int:pk>/tableau-de-bord/artificialisation/évolution-nette",
         views.ArtifNetChart.as_view(),
         name="artif-net-chart",

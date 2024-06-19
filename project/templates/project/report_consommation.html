@@ -406,16 +406,6 @@ Rapport consommation
             <h3>Consommation d'espaces rapportée à la surface du territoire</h3>
             <div class="fr-custom-loader"></div>
         </div>
-
-        {% comment %} <div id="conso-relative-pop-anchor" class="fr-mt-7w" hx-get="{% url 'project:relative-pop' project.id %}" hx-trigger="revealed">
-            <h3>Consommation d'espaces par nouvel habitant</h3>
-            <div class="fr-custom-loader"></div>
-        </div>
-
-        <div id="conso-relative-household-anchor" class="fr-mt-7w" hx-get="{% url 'project:relative-household' project.id %}" hx-trigger="revealed">
-            <h3>Consommation d'espaces par ménages</h3>
-            <div class="fr-custom-loader"></div>
-        </div> {% endcomment %}
     </div>
 </div>
 
@@ -506,45 +496,5 @@ Rapport consommation
 {% display_chart 'chart_determinant' determinant_per_year_chart CSP_NONCE %}
 {% display_chart 'pie_determinant' determinant_pie_chart CSP_NONCE %}
 
-<script language="javascript" nonce="[NONCE_PLACEHOLDER]">
-    ///////////////////////////////
-    // Select / unselect all
-    ///////////////////////////////
-
-    $('#check').click(function(e) {
-        e.preventDefault();
-        let div_id = $(this).attr('chart_target');
-        let chart = $("#" + div_id).highcharts();
-        $(chart.series).each(function(){
-            this.setVisible(true, false)
-        })
-        chart.redraw()
-    })
-
-    $('#uncheck').click(function(e) {
-        e.preventDefault();
-        let div_id = $(this).attr('chart_target')
-        let chart = $("#" + div_id).highcharts()
-        //chart.series.forEach(serie => serie.hide())
-        $(chart.series).each(function(){
-            this.setVisible(false, false)
-        })
-        chart.redraw()
-    })
-
-    $('#reverse').click(function(e){
-        e.preventDefault();
-        let div_id = $(this).attr('chart_target');
-        let chart = $("#" + div_id).highcharts();
-        $(chart.series).each(function(){
-            if (this.visible){
-                this.setVisible(false, false)
-            }else{
-                this.setVisible(true, false)
-            }
-        })
-        chart.redraw()
-    })
-</script>
 {% endlocalize %}
 {% endblock bodyend %}
