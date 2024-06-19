@@ -2,7 +2,6 @@ import React, { useRef, useEffect, useState, useMemo } from 'react';
 import * as Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
 import HighchartsMap from 'highcharts/modules/map';
-import topology from '../../geojson/departements-1000m-dept-simpl-displaced-vertical.geojson';
 import { useGetDepartementListQuery } from '../services/api.js';
 
 HighchartsMap(Highcharts);
@@ -148,8 +147,13 @@ const HighchartsMapOcsge: React.FC = () => {
 
   useEffect(() => {
     if (data) {
-      const updatedTopology = updateGeoJSONProperties(topology as GeoJSON, data);
-      setMapData(updatedTopology);
+      fetch('https://gist.githubusercontent.com/alexisig/8003b3cb786ba1fcaf1801b81d42d755/raw/0715b61a3f6ef828f7dc90b8fa42167547673af4/departements-1000m-dept-simpl-displaced-vertical.geojson')
+        .then(response => response.json())
+        .then(geojson => {
+          const updatedTopology = updateGeoJSONProperties(geojson, data);
+          setMapData(updatedTopology);
+        })
+        .catch(error => console.error('Error fetching GeoJSON:', error));
     }
   }, [data]);
 
