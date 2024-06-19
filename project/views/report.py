@@ -67,44 +67,22 @@ class ProjectReportConsoView(ProjectReportBaseView):
         level = self.request.GET.get("level_conso", project.level)
 
         # communes_data_graph
-        chart_conso_cities = charts.AnnualTotalConsoChart(project, level=level)
+        annual_total_conso_chart = charts.AnnualTotalConsoChart(project, level=level)
 
-        target_2031_consumption = project.get_bilan_conso()
-        current_conso = project.get_bilan_conso_time_scoped()
+        conso_period = project.get_bilan_conso_time_scoped()
 
         # Déterminants
         det_chart = charts.AnnualConsoByDeterminantChart(project)
 
-        # objectives
-        objective_chart = charts.ObjectiveChart(project)
-
         # comparison chart
         comparison_chart = charts.AnnualConsoComparisonChart(project)
-
-        # Liste des groupes de communes
-        groups_names = project.projectcommune_set.all().order_by("group_name")
-        groups_names = groups_names.exclude(group_name=None).distinct()
-        groups_names = groups_names.values_list("group_name", flat=True)
 
         kwargs.update(
             {
                 "diagnostic": project,
                 "total_surface": project.area,
-                "land_type": project.land_type or "COMP",
                 "active_page": "consommation",
-                "target_2031": {
-                    "consummed": target_2031_consumption,
-                    "annual_avg": target_2031_consumption / 10,
-                    "target": target_2031_consumption / 2,
-                    "annual_forecast": target_2031_consumption / 20,
-                },
-                "project_scope": {
-                    "consummed": current_conso,
-                    "annual_avg": current_conso / project.nb_years,
-                    "nb_years": project.nb_years,
-                    "nb_years_before_31": project.nb_years_before_2031,
-                    "forecast_2031": project.nb_years_before_2031 * current_conso / project.nb_years,
-                },
+                "conso_period": conso_period,
                 # charts
                 "determinant_per_year_chart": det_chart,
                 "determinant_pie_chart": charts.ConsoByDeterminantPieChart(
@@ -112,14 +90,13 @@ class ProjectReportConsoView(ProjectReportBaseView):
                     series=det_chart.get_series(),
                 ),
                 "comparison_chart": comparison_chart,
-                "commune_chart": chart_conso_cities,
-                # tables
-                "communes_data_table": add_total_line_column(chart_conso_cities.get_series(), line=False),
+                "annual_total_conso_chart": annual_total_conso_chart,
+                # data tables
+                "annual_total_conso_data_table": add_total_line_column(
+                    annual_total_conso_chart.get_series(), line=False
+                ),
                 "data_determinant": add_total_line_column(det_chart.get_series()),
                 "data_comparison": add_total_line_column(comparison_chart.get_series(), line=False),
-                "groups_names": groups_names,
-                "level": level,
-                "objective_chart": objective_chart,
                 "nb_communes": project.cities.count(),
             }
         )
@@ -601,15 +578,17 @@ class ConsoRelativeSurfaceChart(CacheMixin, UserQuerysetOrPublicMixin, DetailVie
     template_name = "project/partials/surface_comparison_conso.html"
 
     def get_context_data(self, **kwargs):
-        indicateur_chart = charts.SurfaceChart(self.object)
-        comparison_chart = charts.AnnualConsoProportionalComparisonChart(self.object)
+        surface_chart = charts.SurfaceChart(self.object)
+        surface_proportional_chart = charts.AnnualConsoProportionalComparisonChart(self.object)
         kwargs.update(
             {
                 "diagnostic": self.object,
-                "indicateur_chart": indicateur_chart,
-                "indicateur_table": indicateur_chart.get_series(),
-                "comparison_chart": comparison_chart,
-                "comparison_table": add_total_line_column(comparison_chart.get_series(), line=False),
+                "surface_chart": surface_chart,
+                "surface_data_table": surface_chart.get_series(),
+                "surface_proportional_chart": surface_proportional_chart,
+                "surface_proportional_data_table": add_total_line_column(
+                    surface_proportional_chart.get_series(), line=False
+                ),
             }
         )
         return super().get_context_data(**kwargs)
