@@ -190,6 +190,8 @@ class Cerema(DataColorationMixin, models.Model):
     default_color = "pink"
 
     class Meta:
+        verbose_name = "Données du cerema"
+        verbose_name_plural = verbose_name
         indexes = [
             models.Index(fields=["scot"]),
             models.Index(fields=["region_id"]),
