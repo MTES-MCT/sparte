@@ -65,8 +65,10 @@ const updateGeoJSONProperties = (geojson: GeoJSON, departements: Departement[]):
             ocsge_millesimes: departement.ocsge_millesimes,
           },
         };
+      } else {
+        console.warn(`Le département "${code}" du GeoJSON n'a pas été trouvé dans les données.`);
+        return feature;
       }
-      return feature;
     }),
   };
 };
