@@ -1,20 +1,18 @@
 import logging
-from pydoc import locate
 
 from celery import shared_task
 
-from public_data.models.mixins import AutoLoadMixin
+from public_data.domain.artificialisation.use_case.CalculateCommuneArtificialAreas import (
+    CalculateCommuneArtificialAreas,
+)
+from public_data.models import Commune
 
-logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 @shared_task
-def load_data(class_name, verbose=False):
-    my_class: AutoLoadMixin = locate(class_name)
-
-    if not my_class:
-        raise ModuleNotFoundError(class_name)
-
-    logging.info("load data of %s (verbose=%s)", my_class, verbose)
-
-    my_class.load(verbose=verbose)
+def calculate_commune_artificial_area(commune_insee: str):
+    logger.info(f"Commune {commune_insee} - Calculating artificial areas")
+    commune = Commune.objects.get(insee=commune_insee)
+    artificial_areas = CalculateCommuneArtificialAreas.execute(commune)
+    logger.info(f"Commune {commune_insee} - Artificial areas calculated: {artificial_areas.count()}")

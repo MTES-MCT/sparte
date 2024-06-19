@@ -36,8 +36,7 @@ def is_artif_case(code_cs: str, code_us: str) -> str:
         /* CS 1.1 */
         WHEN {code_cs} = 'CS1.1.1.1' THEN 1
         WHEN {code_cs} = 'CS1.1.1.2' THEN 1
-        WHEN {code_cs} = 'CS1.1.1.1' AND {code_us} != 'US1.3' THEN 1
-        WHEN {code_cs} = 'CS1.1.2.1' THEN 1
+        WHEN {code_cs} = 'CS1.1.2.1' AND {code_us} != 'US1.3' THEN 1
         WHEN {code_cs} = 'CS1.1.2.2' THEN 1
 
         /* CS 2.2 */
@@ -599,7 +598,6 @@ class Command(BaseCommand):
         sources = DataSource.objects.filter(
             dataset=options.get("dataset"),
             productor=options.get("productor"),
-            millesimes__overlap=options.get("millesimes"),
         )
         if options.get("land_id"):
             sources = sources.filter(official_land_id=options.get("land_id"))
