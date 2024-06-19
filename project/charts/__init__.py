@@ -4,20 +4,12 @@ __all__ = [
     "AnnualArtifChart",
     "AnnualConsoByDeterminantChart",
     "AnnualConsoByDeterminantChartExport",
-    "AnnualConsoByHouseholdChart",
-    "AnnualConsoByHouseholdChartExport",
-    "AnnualConsoByPopChart",
-    "AnnualConsoByPopChartExport",
     "AnnualConsoChart",
     "AnnualConsoChartExport",
     "AnnualConsoComparisonChart",
     "AnnualConsoComparisonChartExport",
     "AnnualConsoProportionalComparisonChart",
     "AnnualConsoProportionalComparisonChartExport",
-    "AnnualHouseholdChart",
-    "AnnualHouseholdChartExport",
-    "AnnualPopChart",
-    "AnnualPopChartExport",
     "ArtifByCouverturePieChart",
     "ArtifByCouverturePieChartExport",
     "ArtifByUsagePieChart",
@@ -53,11 +45,6 @@ from .AnnualConsoByDeterminantChart import (
     AnnualConsoByDeterminantChart,
     AnnualConsoByDeterminantChartExport,
 )
-from .AnnualConsoByHouseholdChart import (
-    AnnualConsoByHouseholdChart,
-    AnnualConsoByHouseholdChartExport,
-)
-from .AnnualConsoByPopChart import AnnualConsoByPopChart, AnnualConsoByPopChartExport
 from .AnnualConsoChart import AnnualConsoChart, AnnualConsoChartExport
 from .AnnualConsoComparisonChart import (
     AnnualConsoComparisonChart,
@@ -67,8 +54,6 @@ from .AnnualConsoProportionalComparisonChart import (
     AnnualConsoProportionalComparisonChart,
     AnnualConsoProportionalComparisonChartExport,
 )
-from .AnnualHouseholdChart import AnnualHouseholdChart, AnnualHouseholdChartExport
-from .AnnualPopChart import AnnualPopChart, AnnualPopChartExport
 from .AnnualTotalConsoChart import AnnualTotalConsoChart, AnnualTotalConsoChartExport
 from .ArtifByCouverturePieChart import (
     ArtifByCouverturePieChart,
