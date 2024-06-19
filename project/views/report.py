@@ -615,48 +615,6 @@ class ConsoRelativeSurfaceChart(CacheMixin, UserQuerysetOrPublicMixin, DetailVie
         return super().get_context_data(**kwargs)
 
 
-class ConsoRelativePopChart(CacheMixin, UserQuerysetOrPublicMixin, DetailView):
-    context_object_name = "project"
-    queryset = Project.objects.all()
-    template_name = "project/partials/pop_comparison_conso.html"
-
-    def get_context_data(self, **kwargs):
-        conso_pop_chart = charts.AnnualConsoByPopChart(self.object)
-        pop_chart = charts.AnnualPopChart(self.object)
-        kwargs.update(
-            {
-                "diagnostic": self.object,
-                "pop_chart": pop_chart,
-                "pop_table": pop_chart.get_series(),
-                "conso_pop_chart": conso_pop_chart,
-                "conso_pop_table": add_total_line_column(conso_pop_chart.get_series(), line=False, column=False),
-            }
-        )
-        return super().get_context_data(**kwargs)
-
-
-class ConsoRelativeHouseholdChart(CacheMixin, UserQuerysetOrPublicMixin, DetailView):
-    context_object_name = "project"
-    queryset = Project.objects.all()
-    template_name = "project/partials/household_comparison_conso.html"
-
-    def get_context_data(self, **kwargs):
-        household_chart = charts.AnnualHouseholdChart(self.object)
-        conso_household_chart = charts.AnnualConsoByHouseholdChart(self.object)
-        kwargs.update(
-            {
-                "diagnostic": self.object,
-                "household_chart": household_chart,
-                "household_table": household_chart.get_series(),
-                "conso_household_chart": conso_household_chart,
-                "conso_household_table": add_total_line_column(
-                    conso_household_chart.get_series(), line=False, column=False
-                ),
-            }
-        )
-        return super().get_context_data(**kwargs)
-
-
 class ArtifZoneUrbaView(CacheMixin, StandAloneMixin, DetailView):
     """Content of the pannel in Urba Area Explorator."""
 
