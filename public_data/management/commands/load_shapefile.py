@@ -226,17 +226,17 @@ class Command(BaseCommand):
         land_ids = set([source.official_land_id for source in possible_sources])
 
         parser.add_argument("--dataset", type=str, required=True, choices=datasets)
-        parser.add_argument("--millesimes", type=int, nargs="*", default=[])
-        parser.add_argument("--land_id", type=str, required=True, choices=land_ids)
+        parser.add_argument("--land_id", type=str, choices=land_ids)
         parser.add_argument("--name", type=str, choices=names)
 
     def get_sources_queryset(self, options):
         sources = DataSource.objects.filter(
             dataset=options.get("dataset"),
-            official_land_id=options.get("land_id"),
             productor=DataSource.ProductorChoices.MDA,
-            millesimes__overlap=options.get("millesimes"),
         )
+        if options.get("land_id"):
+            sources = sources.filter(official_land_id=options.get("land_id"))
+
         if options.get("name"):
             sources = sources.filter(name=options.get("name"))
 
