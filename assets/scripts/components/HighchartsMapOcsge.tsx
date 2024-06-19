@@ -50,11 +50,44 @@ const dataLabelFormatter = function (this: any) {
   return this.point.properties.ocsge_millesimes ? this.point.properties.nom : '';
 };
 
+const updateGeoJSONProperties = (geojson: GeoJSON, departements: Departement[]): GeoJSON => {
+  return {
+    ...geojson,
+    features: geojson.features.map(feature => {
+      const code = feature.properties.code;
+      const departement = departements.find(dept => dept.source_id === code);
+      if (departement) {
+        return {
+          ...feature,
+          properties: {
+            ...feature.properties,
+            is_artif_ready: departement.is_artif_ready,
+            ocsge_millesimes: departement.ocsge_millesimes,
+          },
+        };
+      }
+      return feature;
+    }),
+  };
+};
+
 const HighchartsMapOcsge: React.FC = () => {
   const chartComponentRef = useRef<HighchartsReact.RefObject>(null);
   const [mapData, setMapData] = useState<GeoJSON | null>(null);
   const { data } = useGetDepartementListQuery(null);
 
+  useEffect(() => {
+    if (data) {
+      fetch('https://gist.githubusercontent.com/alexisig/8003b3cb786ba1fcaf1801b81d42d755/raw/0715b61a3f6ef828f7dc90b8fa42167547673af4/departements-1000m-dept-simpl-displaced-vertical.geojson')
+        .then(response => response.json())
+        .then(geojson => {
+          const updatedTopology = updateGeoJSONProperties(geojson, data);
+          setMapData(updatedTopology);
+        })
+        .catch(error => console.error('Error fetching GeoJSON:', error));
+    }
+  }, [data]);
+  
   const options = useMemo(() => ({
     chart: {
       map: mapData,
@@ -123,39 +156,6 @@ const HighchartsMapOcsge: React.FC = () => {
       ],
     },
   }), [mapData]);
-
-  const updateGeoJSONProperties = (geojson: GeoJSON, departements: Departement[]): GeoJSON => {
-    return {
-      ...geojson,
-      features: geojson.features.map(feature => {
-        const code = feature.properties.code;
-        const departement = departements.find(dept => dept.source_id === code);
-        if (departement) {
-          return {
-            ...feature,
-            properties: {
-              ...feature.properties,
-              is_artif_ready: departement.is_artif_ready,
-              ocsge_millesimes: departement.ocsge_millesimes,
-            },
-          };
-        }
-        return feature;
-      }),
-    };
-  };
-
-  useEffect(() => {
-    if (data) {
-      fetch('https://gist.githubusercontent.com/alexisig/8003b3cb786ba1fcaf1801b81d42d755/raw/0715b61a3f6ef828f7dc90b8fa42167547673af4/departements-1000m-dept-simpl-displaced-vertical.geojson')
-        .then(response => response.json())
-        .then(geojson => {
-          const updatedTopology = updateGeoJSONProperties(geojson, data);
-          setMapData(updatedTopology);
-        })
-        .catch(error => console.error('Error fetching GeoJSON:', error));
-    }
-  }, [data]);
 
   return (
     <div>
