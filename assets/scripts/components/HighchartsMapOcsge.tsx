@@ -12,27 +12,31 @@ interface Departement {
   source_id: string;
   name: string;
   region_id: number;
-  is_artif_ready: boolean
+  is_artif_ready: boolean;
   ocsge_millesimes: number[] | null;
-}
-
-interface GeoJSONFeature {
-  type: string;
-  geometry: {
-    type: string;
-    coordinates: any[];
-  };
-  properties: {
-    code: string;
-    nom: string;
-    is_artif_ready?: boolean;
-    ocsge_millesimes?: string | null;
-  };
 }
 
 interface GeoJSON {
   type: string;
-  features: GeoJSONFeature[];
+  features: Feature[];
+}
+
+interface Feature {
+  type: string;
+  geometry: Geometry;
+  properties: Properties;
+}
+
+interface Properties {
+  code: string;
+  nom: string;
+  is_artif_ready?: boolean;
+  ocsge_millesimes?: number[] | null;
+}
+
+interface Geometry {
+  type: string;
+  coordinates: (number[] | number)[][][];
 }
 
 const pointFormatter = function (this: any) {
