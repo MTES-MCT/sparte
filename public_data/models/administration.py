@@ -204,6 +204,9 @@ class LandMixin:
 
 
 class Region(LandMixin, GetDataFromCeremaMixin, models.Model):
+    class Meta:
+        verbose_name = "Région"
+
     source_id = models.CharField("Identifiant source", max_length=50)
     name = models.CharField("Nom", max_length=50)
     mpoly = models.MultiPolygonField(srid=4326)
@@ -254,6 +257,9 @@ class Region(LandMixin, GetDataFromCeremaMixin, models.Model):
 
 
 class Departement(LandMixin, GetDataFromCeremaMixin, models.Model):
+    class Meta:
+        verbose_name = "Département"
+
     source_id = models.CharField("Identifiant source", max_length=50)
     region = models.ForeignKey(Region, on_delete=models.CASCADE)
     is_artif_ready = models.BooleanField("Données artif disponibles", default=False)
@@ -341,6 +347,10 @@ class Scot(LandMixin, GetDataFromCeremaMixin, models.Model):
 
 
 class Epci(LandMixin, GetDataFromCeremaMixin, models.Model):
+    class Meta:
+        verbose_name = "EPCI"
+        verbose_name_plural = "EPCIs"
+
     source_id = models.CharField("Identifiant source", max_length=50)
     name = models.CharField("Nom", max_length=70)
     mpoly = models.MultiPolygonField(srid=4326)
@@ -524,6 +534,8 @@ class CommuneDiff(models.Model):
     )
 
     class Meta:
+        verbose_name = "OCSGE - Différence (par commune)"
+        verbose_name_plural = verbose_name
         indexes = [
             models.Index(fields=["year_old"]),
             models.Index(fields=["year_new"]),
@@ -544,6 +556,8 @@ class CommuneSol(models.Model):
     surface = models.DecimalField("Surface", max_digits=15, decimal_places=4, blank=True, null=True)
 
     class Meta:
+        verbose_name = "OCSGE - Couverture x usage des sols (par commune)"
+        verbose_name_plural = verbose_name
         indexes = [
             models.Index(name="communesol-triplet-index", fields=["city", "matrix", "year"]),
             models.Index(name="communesol-city-index", fields=["city"]),
@@ -553,6 +567,10 @@ class CommuneSol(models.Model):
 
 
 class CommunePop(models.Model):
+    class Meta:
+        verbose_name = "Population (par commune)"
+        verbose_name_plural = "Populations (par commune)"
+
     city = models.ForeignKey(Commune, verbose_name="Commune", on_delete=models.CASCADE, related_name="pop")
     year = models.IntegerField(
         "Millésime",

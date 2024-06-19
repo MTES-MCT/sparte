@@ -29,6 +29,8 @@ class Ocsge(TruncateTableMixin, DataColorationMixin, models.Model):
     default_property = "id"
 
     class Meta:
+        verbose_name = "OCSGE"
+        verbose_name_plural = verbose_name
         indexes = [
             models.Index(fields=["couverture"]),
             models.Index(fields=["usage"]),
@@ -85,6 +87,8 @@ class OcsgeDiff(TruncateTableMixin, DataColorationMixin, models.Model):
     default_color = "Red"
 
     class Meta:
+        verbose_name = "OCSGE - Différence"
+        verbose_name_plural = verbose_name
         indexes = [
             models.Index(fields=["year_old"]),
             models.Index(fields=["year_new"]),
@@ -109,6 +113,8 @@ class ArtificialArea(TruncateTableMixin, DataColorationMixin, models.Model):
     objects = IntersectManager()
 
     class Meta:
+        verbose_name = "OCSGE - Artificialisation (par commune)"
+        verbose_name_plural = verbose_name
         constraints = []
         indexes = [
             models.Index(fields=["year"]),
@@ -138,6 +144,8 @@ class ZoneConstruite(TruncateTableMixin, DataColorationMixin, models.Model):
     objects = IntersectManager()
 
     class Meta:
+        verbose_name = "OCSGE - Zone construite"
+        verbose_name_plural = verbose_name
         indexes = [
             models.Index(fields=["year"]),
             models.Index(fields=["departement"]),

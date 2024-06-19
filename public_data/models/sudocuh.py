@@ -28,6 +28,10 @@ class TypeEpciChoices(models.TextChoices):
 
 
 class Sudocuh(models.Model):
+    class Meta:
+        verbose_name = "Données Sudocuh (par commune)"
+        verbose_name_plural = verbose_name
+
     code_insee = models.CharField(max_length=200, primary_key=True)
     code_departement = models.CharField(max_length=200)
     nom_region = models.CharField(max_length=200)
@@ -87,6 +91,10 @@ class Sudocuh(models.Model):
 
 
 class SudocuhEpci(models.Model):
+    class Meta:
+        verbose_name = "Données Sudocuh (par EPCI)"
+        verbose_name_plural = verbose_name
+
     nom_region = models.CharField(max_length=200)
     code_departement = models.CharField(max_length=200)
     nom_departement = models.CharField(max_length=200)

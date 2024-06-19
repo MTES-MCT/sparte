@@ -9,6 +9,8 @@ from .ocsge import ArtificialArea, Ocsge, OcsgeDiff, ZoneConstruite
 
 class DataSource(models.Model):
     class Meta:
+        verbose_name = "Source de données"
+        verbose_name_plural = "Sources de données"
         unique_together = ["productor", "dataset", "name", "millesimes", "official_land_id"]
         ordering = ["official_land_id", "millesimes", "name"]
 
