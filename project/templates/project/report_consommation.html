@@ -166,7 +166,7 @@ Rapport consommation
     
                         <h6 class="fr-mt-2w">Données</h6>
                         <div class="table-responsive">
-                            <table class="fr-table table-last-column-bold">
+                            <table class="fr-table table-last-column-bold table-last-row-bold">
                                 <caption>Consommation d'espace annuelle sur le territoire (en ha)</caption>
                                 <thead>
                                     <tr>
@@ -178,7 +178,7 @@ Rapport consommation
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {% for item, data in annual_total_conso_data_table.items %}
+                                    {% for item, data in annual_conso_data_table.items %}
                                     <tr>
                                         <th scope="row">{{ item }}</th>
                                         {% for year, val in data.items %}

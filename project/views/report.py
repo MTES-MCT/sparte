@@ -25,6 +25,7 @@ from project.models import (
 from project.utils import add_total_line_column
 from public_data.domain.planning_competency import PlanningCompetencyServiceSudocuh
 from public_data.models import CouvertureSol, UsageSol
+from public_data.models.administration import AdminRef
 from public_data.models.gpu import ZoneUrba
 from public_data.models.ocsge import Ocsge, OcsgeDiff
 from utils.htmx import StandAloneMixin
@@ -67,6 +68,11 @@ class ProjectReportConsoView(ProjectReportBaseView):
 
         # communes_data_graph
         annual_total_conso_chart = charts.AnnualTotalConsoChart(project, level=level)
+        if project.land_type == AdminRef.COMMUNE:
+            annual_conso_data_table = add_total_line_column(annual_total_conso_chart.get_series(), line=False)
+        else:
+            annual_conso_chart = charts.AnnualConsoChart(project, level=level)
+            annual_conso_data_table = add_total_line_column(annual_conso_chart.get_series())
 
         conso_period = project.get_bilan_conso_time_scoped()
 
@@ -91,9 +97,7 @@ class ProjectReportConsoView(ProjectReportBaseView):
                 "comparison_chart": comparison_chart,
                 "annual_total_conso_chart": annual_total_conso_chart,
                 # data tables
-                "annual_total_conso_data_table": add_total_line_column(
-                    annual_total_conso_chart.get_series(), line=False
-                ),
+                "annual_conso_data_table": annual_conso_data_table,
                 "data_determinant": add_total_line_column(det_chart.get_series()),
                 "data_comparison": add_total_line_column(comparison_chart.get_series(), line=False),
                 "nb_communes": project.cities.count(),
