@@ -13,13 +13,7 @@
                 alt="Carte comprendre l'artificialisation de son territoire"
             >
         {% else %}
-            <div
-                class="skeleton-loader"
-                hx-get="{% url 'project:artif-territory-map' diagnostic.id %}"
-                hx-trigger="load delay:10s"
-                hx-target="#target-artif-territory-map"
-                hx-swap="outerHTML">
-            </div>
+            <div class="skeleton-loader"></div>
         {% endif %}
     </a>
 </div>
