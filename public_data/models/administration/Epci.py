@@ -10,6 +10,9 @@ from .LandMixin import LandMixin
 
 
 class Epci(LandMixin, GetDataFromCeremaMixin, models.Model):
+    class Meta:
+        verbose_name = "EPCI"
+
     source_id = models.CharField("Identifiant source", max_length=50)
     name = models.CharField("Nom", max_length=70)
     mpoly = models.MultiPolygonField(srid=4326)

@@ -3,6 +3,10 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 
 
 class CommunePop(models.Model):
+    class Meta:
+        verbose_name = "Population (par commune)"
+        verbose_name_plural = "Populations (par commune)"
+
     city = models.ForeignKey("Commune", verbose_name="Commune", on_delete=models.CASCADE, related_name="pop")
     year = models.IntegerField(
         "Millésime",

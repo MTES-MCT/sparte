@@ -3,6 +3,14 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 
 
 class CommuneDiff(models.Model):
+    class Meta:
+        verbose_name = "OCSGE - Différence (par commune)"
+        verbose_name_plural = verbose_name
+        indexes = [
+            models.Index(fields=["year_old"]),
+            models.Index(fields=["year_new"]),
+        ]
+
     city = models.ForeignKey("Commune", verbose_name="Commune", on_delete=models.CASCADE)
     year_old = models.IntegerField(
         "Ancienne année",
@@ -33,12 +41,6 @@ class CommuneDiff(models.Model):
         blank=True,
         null=True,
     )
-
-    class Meta:
-        indexes = [
-            models.Index(fields=["year_old"]),
-            models.Index(fields=["year_new"]),
-        ]
 
     @property
     def period(self):

@@ -11,6 +11,9 @@ from .LandMixin import LandMixin
 
 
 class Departement(LandMixin, GetDataFromCeremaMixin, models.Model):
+    class Meta:
+        verbose_name = "Département"
+
     source_id = models.CharField("Identifiant source", max_length=50)
     region = models.ForeignKey("Region", on_delete=models.CASCADE)
     is_artif_ready = models.BooleanField("Données artif disponibles", default=False)
