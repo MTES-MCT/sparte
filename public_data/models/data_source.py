@@ -4,7 +4,7 @@ from django.db import models
 from public_data.models.enums import SRID
 
 from .cerema import Cerema
-from .ocsge import Ocsge, OcsgeDiff, ZoneArtificielle, ZoneConstruite
+from .ocsge import Ocsge, OcsgeDiff, ZoneConstruite
 
 
 class DataSource(models.Model):
@@ -103,7 +103,6 @@ class DataSource(models.Model):
         model: models.Model = {
             self.DataNameChoices.OCCUPATION_DU_SOL: Ocsge,
             self.DataNameChoices.ZONE_CONSTRUITE: ZoneConstruite,
-            self.DataNameChoices.ZONE_ARTIFICIELLE: ZoneArtificielle,
             self.DataNameChoices.DIFFERENCE: OcsgeDiff,
             self.DataNameChoices.CONSOMMATION_ESPACE: Cerema,
         }[self.name]

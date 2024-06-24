@@ -15,7 +15,6 @@ from public_data.models import (
     Sudocuh,
     SudocuhEpci,
     UsageSol,
-    ZoneArtificielle,
     ZoneConstruite,
 )
 
@@ -61,16 +60,6 @@ class CouvertureSolAdmin(ImportExportMixin, admin.GeoModelAdmin):
 @admin.register(ZoneConstruite)
 class ZoneConstruiteAdmin(admin.GeoModelAdmin):
     model = ZoneConstruite
-    list_display = (
-        "id",
-        "departement",
-        "year",
-    )
-
-
-@admin.register(ZoneArtificielle)
-class ZoneArtificielleAdmin(admin.GeoModelAdmin):
-    model = ZoneArtificielle
     list_display = (
         "id",
         "departement",
