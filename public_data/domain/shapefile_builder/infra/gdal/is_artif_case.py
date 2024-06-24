@@ -15,8 +15,7 @@ def is_artif_case(
         /* CS 1.1 */
         WHEN {code_cs} = 'CS1.1.1.1' THEN {true_value}
         WHEN {code_cs} = 'CS1.1.1.2' THEN {true_value}
-        WHEN {code_cs} = 'CS1.1.1.1' AND {code_us} != 'US1.3' THEN {true_value}
-        WHEN {code_cs} = 'CS1.1.2.1' THEN {true_value}
+        WHEN {code_cs} = 'CS1.1.2.1' AND {code_us} != 'US1.3' THEN {true_value}
         WHEN {code_cs} = 'CS1.1.2.2' THEN {true_value}
 
         /* CS 2.2 */
