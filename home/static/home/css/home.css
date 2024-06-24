@@ -55,6 +55,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    flex-grow: 1;
 }
 
 .card_title {
@@ -67,6 +68,13 @@
     font-size: 0.9em;
     padding-top: 2rem;
     text-align: center;
+}
+
+.card_footer {
+    flex-grow: 1;
+    display: flex;
+    justify-content: end;
+    align-items: end;
 }
 
 /* Remove Footer margin-top on homepage */
