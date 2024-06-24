@@ -858,7 +858,20 @@ class Project(BaseProject):
                 net_artif=Coalesce(Sum("net_artif"), Decimal("0")),
             )
         )
-        return qs
+        if qs.exists():
+            return qs
+        else:
+            # TODO: remove this when we have a better way to handle empty data
+            # At the moment this is a workaround to avoid pages from crashing
+            # bug this will leave most figures empty (maps, graphs etc.)
+            return {
+                "name": "Non couvert",
+                "period": f"{self.analyse_start_date} - {self.analyse_end_date}",
+                "new_artif": [0],
+                "new_natural": [0],
+                "net_artif": [0],
+                "area": [0],
+            }
 
     def get_artif_progession_time_scoped(self):
         """Return example: {"new_artif": 12, "new_natural": 2: "net_artif": 10}"""
