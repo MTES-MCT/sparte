@@ -4,7 +4,7 @@ from django.core.management import call_command
 from django.db import connection
 from django.test import TestCase
 
-from public_data.management.commands.build_shapefile import is_artif_case
+from public_data.domain.shapefile_builder.infra.gdal.is_artif_case import is_artif_case
 from public_data.models import DataSource
 
 
