@@ -5,6 +5,7 @@ from public_data.models import DataSource
 from public_data.shapefile import ShapefileFromSource
 
 from .is_artif_case import is_artif_case
+from .is_impermeable_case import is_impermeable_case
 from .utils import multiline_string_to_single_line
 
 
@@ -29,6 +30,7 @@ def build_ocsge_occupation_du_sol(source: DataSource) -> tuple[DataSource, Path]
                 '{source.official_land_id}' AS DPT,
                 '{source.millesimes[0]}' AS YEAR,
                 '{source.srid}' AS SRID,
+                {is_impermeable_case(fields['couverture'])} AS IS_IMPER,
                 {is_artif_case(fields['couverture'], fields['usage'])} AS IS_ARTIF
             FROM
                 {Path(source.shapefile_name).stem}
