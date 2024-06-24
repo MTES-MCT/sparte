@@ -2,13 +2,13 @@ from pathlib import Path
 
 from django.core.management import call_command
 from django.db import connection
-from django.test import TestCase
+from django.test import TransactionTestCase
 
 from public_data.domain.shapefile_builder.infra.gdal.is_artif_case import is_artif_case
 from public_data.models import DataSource
 
 
-class TestBuildOcsge(TestCase):
+class TestBuildOcsge(TransactionTestCase):
     def setUp(self) -> None:
         DataSource.objects.all().delete()
         call_command("loaddata", "public_data/models/data_source_fixture.json")
