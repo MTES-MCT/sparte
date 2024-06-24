@@ -110,12 +110,14 @@ class ArtificialArea(TruncateTableMixin, DataColorationMixin, models.Model):
     surface = models.DecimalField("surface", max_digits=15, decimal_places=4)
     city = models.CharField("Commune", max_length=254)
     departement = models.CharField("Département", max_length=15)
+    new_method = models.BooleanField("Issu de la nouvelle méthode de calcul", default=True)
     objects = IntersectManager()
 
     class Meta:
         verbose_name = "OCSGE - Artificialisation (par commune)"
         verbose_name_plural = verbose_name
         constraints = []
+        unique_together = [["year", "city"]]
         indexes = [
             models.Index(fields=["year"]),
             models.Index(fields=["city"]),

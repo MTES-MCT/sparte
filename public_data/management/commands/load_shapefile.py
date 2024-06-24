@@ -5,14 +5,7 @@ from pathlib import Path
 from django.conf import settings
 from django.core.management.base import BaseCommand
 
-from public_data.models import (
-    ArtificialArea,
-    Cerema,
-    DataSource,
-    Ocsge,
-    OcsgeDiff,
-    ZoneConstruite,
-)
+from public_data.models import Cerema, DataSource, Ocsge, OcsgeDiff, ZoneConstruite
 from public_data.shapefile import ShapefileFromSource
 
 logger = logging.getLogger("management.commands")
@@ -22,7 +15,6 @@ source_to_table_map = {
         DataSource.DataNameChoices.OCCUPATION_DU_SOL: Ocsge._meta.db_table,
         DataSource.DataNameChoices.DIFFERENCE: OcsgeDiff._meta.db_table,
         DataSource.DataNameChoices.ZONE_CONSTRUITE: ZoneConstruite._meta.db_table,
-        DataSource.DataNameChoices.ZONE_ARTIFICIELLE: ArtificialArea._meta.db_table,
     },
     DataSource.DatasetChoices.MAJIC: {
         DataSource.DataNameChoices.CONSOMMATION_ESPACE: Cerema._meta.db_table,
@@ -70,7 +62,6 @@ field_mapping = {
             "departement": "DPT",
             "surface": "SURFACE",
             "srid_source": "SRID",
-            "city": "CITY",
             "mpoly": "GEOMETRY",
         },
     },
@@ -236,7 +227,8 @@ class Command(BaseCommand):
         )
         if options.get("land_id"):
             sources = sources.filter(official_land_id=options.get("land_id"))
-
+        if options.get("millesimes"):
+            sources = sources.filter(millesimes__overlap=options.get("millesimes"))
         if options.get("name"):
             sources = sources.filter(name=options.get("name"))
 

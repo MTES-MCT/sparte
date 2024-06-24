@@ -9,7 +9,7 @@ from public_data.models import AdminRef, Land
 from users.models import User
 
 
-@celery.shared_task  # noqa: C901
+@celery.shared_task
 def map_tasks(project_id: str) -> List[celery.Task]:  # noqa: C901
     """Return a list of tasks to generate maps according to project state"""
 
@@ -40,7 +40,7 @@ def map_tasks(project_id: str) -> List[celery.Task]:  # noqa: C901
         if not project.async_theme_map_fill_gpu_done:
             map_tasks.append(tasks.generate_theme_map_fill_gpu.si(project.id))
 
-    celery.group(*map_tasks, immutable=True).apply_async()
+    celery.group(*map_tasks, immutable=True).apply_async(queue="long")
 
 
 def trigger_async_tasks(project: Project, public_key: str | None = None) -> None:
@@ -48,32 +48,34 @@ def trigger_async_tasks(project: Project, public_key: str | None = None) -> None
     from metabase.tasks import async_create_stat_for_project
     from project import tasks as t
 
-    before_calculations = []
+    if not public_key:
+        public_key = project.get_public_key()
+
+    tasks_list = []
 
     if not project.async_add_city_done:
-        before_calculations.append(t.add_city.si(project.id, public_key))
-    if not project.async_set_combined_emprise_done:
-        before_calculations.append(t.set_combined_emprise.si(project.id))
+        tasks_list.append(t.add_city.si(project.id, public_key))
 
-    calculations = []
+    if not project.async_set_combined_emprise_done:
+        tasks_list.append(t.set_combined_emprise.si(project.id))
 
     if not project.async_find_first_and_last_ocsge_done:
-        calculations.append(t.find_first_and_last_ocsge.si(project.id))
+        tasks_list.append(t.find_first_and_last_ocsge.si(project.id))
+
     if not project.async_ocsge_coverage_status_done:
-        calculations.append(t.calculate_project_ocsge_status.si(project.id))
+        tasks_list.append(t.calculate_project_ocsge_status.si(project.id))
+
     if not project.async_add_comparison_lands_done:
-        calculations.append(t.add_comparison_lands.si(project.id))
+        tasks_list.append(t.add_comparison_lands.si(project.id))
 
     return celery.chain(
-        *before_calculations,
-        celery.group(*calculations, immutable=True),
-        map_tasks.si(project.id),
-        celery.group(
+        *[
+            *tasks_list,
+            map_tasks.si(project.id),
             async_create_stat_for_project.si(project.id, do_location=True),
             send_diagnostic_to_brevo.si(project.id),
-            immutable=True,
-        ),
-    )()
+        ]
+    ).apply_async()
 
 
 def create_from_public_key(
