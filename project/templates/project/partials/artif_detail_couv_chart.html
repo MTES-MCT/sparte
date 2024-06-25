@@ -78,7 +78,7 @@
         </div>
         <div class="fr-collapse" id="target-data-couv">
             <h6 class="fr-mt-2w">Source</h6>
-            <p class="fr-text--sm">Données d'OCcupation des Sols à Grande Echelle (OCS GE) de l'IGN, sur la période d'analyse (millésime min : {{ project.first_year_ocsge }}, millésime max : {{ project.last_year_ocsge }}).</p>
+            <p class="fr-text--sm">Données d'OCcupation des Sols à Grande Echelle (OCS GE) de l'IGN, sur la période d'analyse (millésime min : {{ first_millesime }}, millésime max : {{ last_millesime }}).</p>
 
             <h6 class="fr-mt-2w">Calcul</h6>
             <p class="fr-text--sm">OCS GE traduite grâce à la matrice de passage.</p>
@@ -121,7 +121,7 @@
                             <td class="text-end text-muted">100%</td>
                             <td class="text-end">{{ detail_total_renat|floatformat:1 }}</td>
                             <td class="text-end text-muted">100%</td>
-                            <td class="text-end">{{ artif_area|floatformat:1 }}</td>
+                            <td class="text-end">{{ detail_total_artif_period|floatformat:1 }}</td>
                         </tr>
                     </tbody>
                 </table>
