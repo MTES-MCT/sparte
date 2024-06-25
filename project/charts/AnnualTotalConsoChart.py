@@ -32,7 +32,7 @@ class AnnualTotalConsoChart(ProjectChart):
         super().__init__(*args, **kwargs)
 
     def get_series(self):
-        return {"Consommation (en ha)": self.project.get_conso_per_year()}
+        return {self.project.territory_name: self.project.get_conso_per_year()}
 
 
 class AnnualTotalConsoChartExport(AnnualTotalConsoChart):

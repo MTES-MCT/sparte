@@ -9,25 +9,25 @@
 
             <ul class="dropdown-menu">
                 <li>
-                    <a class="fr-nav__link export-chart" href="#" data-chart-target="indicateur_chart" data-type="image/png">PNG</a>
+                    <a class="fr-nav__link export-chart" href="#" data-chart-target="surface_chart" data-type="image/png">PNG</a>
                 </li>
                 <li>
-                    <a class="fr-nav__link export-chart" href="#" data-chart-target="indicateur_chart" data-type="image/jpeg">JPEG</a>
+                    <a class="fr-nav__link export-chart" href="#" data-chart-target="surface_chart" data-type="image/jpeg">JPEG</a>
                 </li>
                 <li>
-                    <a class="fr-nav__link export-chart" href="#" data-chart-target="indicateur_chart" data-type="application/pdf">PDF</a>
+                    <a class="fr-nav__link export-chart" href="#" data-chart-target="surface_chart" data-type="application/pdf">PDF</a>
                 </li>
                 <li>
-                    <a class="fr-nav__link export-chart" href="#" data-chart-target="indicateur_chart" data-type="image/svg+xml">Vectoriel</a>
+                    <a class="fr-nav__link export-chart" href="#" data-chart-target="surface_chart" data-type="image/svg+xml">Vectoriel</a>
                 </li>
             </ul>
         </div>
 
-        <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm fr-mr-2w fullscreen-chart" data-chart-target="indicateur_chart" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
+        <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm fr-mr-2w fullscreen-chart" data-chart-target="surface_chart" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
 
         <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#consoRelativeSurface" data-toggle="tooltip" title="Astuces pour lire le graphique" aria-hidden="true"></button>
     </div>
-    <div id="indicateur_chart"></div>
+    <div id="surface_chart"></div>
 </div>
 
 <div class="fr-notice fr-mt-4w fr-mb-7w">
@@ -65,7 +65,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for city_name, data in indicateur_table.items %}
+                        {% for city_name, data in surface_data_table.items %}
                         <tr>
                             <th scope="row">{{ city_name }}</th>
                             {% for year, val in data.items %}
@@ -87,25 +87,25 @@
 
             <ul class="dropdown-menu">
                 <li>
-                    <a class="fr-nav__link export-chart" href="#" data-chart-target="comparison_chart" data-type="image/png">PNG</a>
+                    <a class="fr-nav__link export-chart" href="#" data-chart-target="surface_proportional_chart" data-type="image/png">PNG</a>
                 </li>
                 <li>
-                    <a class="fr-nav__link export-chart" href="#" data-chart-target="comparison_chart" data-type="image/jpeg">JPEG</a>
+                    <a class="fr-nav__link export-chart" href="#" data-chart-target="surface_proportional_chart" data-type="image/jpeg">JPEG</a>
                 </li>
                 <li>
-                    <a class="fr-nav__link export-chart" href="#" data-chart-target="comparison_chart" data-type="application/pdf">PDF</a>
+                    <a class="fr-nav__link export-chart" href="#" data-chart-target="surface_proportional_chart" data-type="application/pdf">PDF</a>
                 </li>
                 <li>
-                    <a class="fr-nav__link export-chart" href="#" data-chart-target="comparison_chart" data-type="image/svg+xml">Vectoriel</a>
+                    <a class="fr-nav__link export-chart" href="#" data-chart-target="surface_proportional_chart" data-type="image/svg+xml">Vectoriel</a>
                 </li>
             </ul>
         </div>
 
-        <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm fr-mr-2w fullscreen-chart" data-chart-target="comparison_chart" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
+        <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm fr-mr-2w fullscreen-chart" data-chart-target="surface_proportional_chart" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
 
         <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#consoRelativeSurface" data-toggle="tooltip" title="Astuces pour lire le graphique" aria-hidden="true"></button>
     </div>
-    <div id="comparison_chart"></div>
+    <div id="surface_proportional_chart"></div>
 </div>
 
 <div class="fr-notice fr-mt-4w">
@@ -149,7 +149,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for city_name, data in comparison_table.items %}
+                        {% for city_name, data in surface_proportional_data_table.items %}
                         <tr>
                             <th scope="row">{{ city_name }}</th>
                             {% for year, val in data.items %}
@@ -164,8 +164,8 @@
     </div>
 </div>
 
-{% display_chart 'indicateur_chart' indicateur_chart CSP_NONCE %}
-{% display_chart 'comparison_chart' comparison_chart CSP_NONCE %}
+{% display_chart 'surface_chart' surface_chart CSP_NONCE %}
+{% display_chart 'surface_proportional_chart' surface_proportional_chart CSP_NONCE %}
 
 <!-- Modal -->
 <div class="modal fade" id="consoRelativeSurface" tabindex="-1" aria-labelledby="consoRelativeSurfaceLabel" aria-hidden="true">

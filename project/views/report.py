@@ -18,7 +18,6 @@ from brevo.tasks import send_diagnostic_request_to_brevo
 from project import charts, tasks
 from project.models import (
     Project,
-    ProjectCommune,
     Request,
     RequestedDocumentChoices,
     trigger_async_tasks,
@@ -26,6 +25,7 @@ from project.models import (
 from project.utils import add_total_line_column
 from public_data.domain.planning_competency import PlanningCompetencyServiceSudocuh
 from public_data.models import CouvertureSol, UsageSol
+from public_data.models.administration import AdminRef
 from public_data.models.gpu import ZoneUrba
 from public_data.models.ocsge import Ocsge, OcsgeDiff
 from utils.htmx import StandAloneMixin
@@ -67,44 +67,27 @@ class ProjectReportConsoView(ProjectReportBaseView):
         level = self.request.GET.get("level_conso", project.level)
 
         # communes_data_graph
-        chart_conso_cities = charts.AnnualTotalConsoChart(project, level=level)
+        annual_total_conso_chart = charts.AnnualTotalConsoChart(project, level=level)
+        if project.land_type == AdminRef.COMMUNE:
+            annual_conso_data_table = add_total_line_column(annual_total_conso_chart.get_series(), line=False)
+        else:
+            annual_conso_chart = charts.AnnualConsoChart(project, level=level)
+            annual_conso_data_table = add_total_line_column(annual_conso_chart.get_series())
 
-        target_2031_consumption = project.get_bilan_conso()
-        current_conso = project.get_bilan_conso_time_scoped()
+        conso_period = project.get_bilan_conso_time_scoped()
 
         # Déterminants
         det_chart = charts.AnnualConsoByDeterminantChart(project)
 
-        # objectives
-        objective_chart = charts.ObjectiveChart(project)
-
         # comparison chart
         comparison_chart = charts.AnnualConsoComparisonChart(project)
-
-        # Liste des groupes de communes
-        groups_names = project.projectcommune_set.all().order_by("group_name")
-        groups_names = groups_names.exclude(group_name=None).distinct()
-        groups_names = groups_names.values_list("group_name", flat=True)
 
         kwargs.update(
             {
                 "diagnostic": project,
                 "total_surface": project.area,
-                "land_type": project.land_type or "COMP",
                 "active_page": "consommation",
-                "target_2031": {
-                    "consummed": target_2031_consumption,
-                    "annual_avg": target_2031_consumption / 10,
-                    "target": target_2031_consumption / 2,
-                    "annual_forecast": target_2031_consumption / 20,
-                },
-                "project_scope": {
-                    "consummed": current_conso,
-                    "annual_avg": current_conso / project.nb_years,
-                    "nb_years": project.nb_years,
-                    "nb_years_before_31": project.nb_years_before_2031,
-                    "forecast_2031": project.nb_years_before_2031 * current_conso / project.nb_years,
-                },
+                "conso_period": conso_period,
                 # charts
                 "determinant_per_year_chart": det_chart,
                 "determinant_pie_chart": charts.ConsoByDeterminantPieChart(
@@ -112,104 +95,16 @@ class ProjectReportConsoView(ProjectReportBaseView):
                     series=det_chart.get_series(),
                 ),
                 "comparison_chart": comparison_chart,
-                "commune_chart": chart_conso_cities,
-                # tables
-                "communes_data_table": add_total_line_column(chart_conso_cities.get_series(), line=False),
+                "annual_total_conso_chart": annual_total_conso_chart,
+                # data tables
+                "annual_conso_data_table": annual_conso_data_table,
                 "data_determinant": add_total_line_column(det_chart.get_series()),
                 "data_comparison": add_total_line_column(comparison_chart.get_series(), line=False),
-                "groups_names": groups_names,
-                "level": level,
-                "objective_chart": objective_chart,
                 "nb_communes": project.cities.count(),
             }
         )
 
         return super().get_context_data(**kwargs)
-
-
-class ProjectReportCityGroupView(ProjectReportBaseView):
-    template_name = "project/report_city_group.html"
-    breadcrumbs_title = "Zoom groupes de villes"
-
-    def get_context_breadcrumbs(self):
-        project = self.get_object()
-        breadcrumbs = super().get_context_breadcrumbs()
-        crumb = {
-            "href": reverse("project:report_conso", args=[project.id]),
-            "title": "Rapport consommation",
-        }
-        breadcrumbs.insert(-1, crumb)
-        return breadcrumbs
-
-    def get_context_data(self, **kwargs):
-        project = self.get_object()
-        group_name = self.request.GET.get("group_name", None)
-        if not group_name:
-            qs = ProjectCommune.objects.filter(project=project)
-            qs = qs.exclude(group_name=None).order_by("group_name").distinct()
-            qs = qs.values_list("group_name", flat=True)
-            group_name = qs.first()
-        # retrieve groups of cities
-        city_group_list = project.city_group_list
-
-        def city_without_group(city_group_list):
-            """Return cities without group (group_name==None)"""
-            for city_group in city_group_list:
-                if city_group.name is None:
-                    return city_group.cities
-
-        def groups_with_name(city_group_list):
-            """Return named group (exclude cities with group_name == None)"""
-            return [city_group for city_group in city_group_list if city_group.name is not None]
-
-        def groups_name(group):
-            return set(_.name for _ in group if _.name is not None)
-
-        # Consommation des communes
-        chart_conso_cities = charts.AnnualTotalConsoChart(project, group_name=group_name)
-        communes_table = dict()
-        for city_name, data in chart_conso_cities.get_series().items():
-            data.update({"Total": sum(data.values())})
-            communes_table[city_name] = data
-
-        # Déterminants
-        det_chart = charts.ConsoByDeterminantPieChart(project, group_name=group_name)
-
-        kwargs = {
-            "active_page": "consommation",
-            "group_name": group_name,
-            "project": project,
-            "groups_name": groups_name(city_group_list),
-            "city_group_list": groups_with_name(city_group_list),
-            "city_without_group": city_without_group(city_group_list),
-            # Charts
-            "chart_conso_cities": chart_conso_cities,
-            "determinant_per_year_chart": det_chart,
-            "determinant_pie_chart": charts.ConsoByDeterminantPieChart(
-                project, group_name=group_name, series=det_chart.get_series()
-            ),
-            # Tables
-            "communes_data_table": communes_table,
-            "data_determinant": det_chart.get_series(),
-        }
-        return super().get_context_data(**kwargs)
-
-    def post(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        groups = {
-            v1: [v2 for k2, v2 in request.POST.items() if k2.startswith(v1)]
-            for k1, v1 in request.POST.items()
-            if k1.startswith("group_name_")
-        }
-        base_qs = ProjectCommune.objects.filter(project=self.object)
-        base_qs.update(group_name=None)
-        for group_name, city_names in groups.items():
-            qs = base_qs.filter(commune__name__in=city_names)
-            if not group_name:
-                group_name = "sans_nom"
-            qs.update(group_name=group_name)
-        context = self.get_context_data(object=self.object)
-        return self.render_to_response(context)
 
 
 class ProjectReportDicoverOcsgeView(ProjectReportBaseView):
@@ -337,7 +232,7 @@ class ProjectReportArtifView(ProjectReportBaseView):
             "total_surface": total_surface,
         }
 
-        if not project.ocsge_coverage_status == project.OcsgeCoverageStatus.COMPLETE_UNIFORM:
+        if project.ocsge_coverage_status != project.OcsgeCoverageStatus.COMPLETE_UNIFORM:
             return super().get_context_data(**kwargs)
 
         first_millesime = project.first_year_ocsge
@@ -601,56 +496,16 @@ class ConsoRelativeSurfaceChart(CacheMixin, UserQuerysetOrPublicMixin, DetailVie
     template_name = "project/partials/surface_comparison_conso.html"
 
     def get_context_data(self, **kwargs):
-        indicateur_chart = charts.SurfaceChart(self.object)
-        comparison_chart = charts.AnnualConsoProportionalComparisonChart(self.object)
+        surface_chart = charts.SurfaceChart(self.object)
+        surface_proportional_chart = charts.AnnualConsoProportionalComparisonChart(self.object)
         kwargs.update(
             {
                 "diagnostic": self.object,
-                "indicateur_chart": indicateur_chart,
-                "indicateur_table": indicateur_chart.get_series(),
-                "comparison_chart": comparison_chart,
-                "comparison_table": add_total_line_column(comparison_chart.get_series(), line=False),
-            }
-        )
-        return super().get_context_data(**kwargs)
-
-
-class ConsoRelativePopChart(CacheMixin, UserQuerysetOrPublicMixin, DetailView):
-    context_object_name = "project"
-    queryset = Project.objects.all()
-    template_name = "project/partials/pop_comparison_conso.html"
-
-    def get_context_data(self, **kwargs):
-        conso_pop_chart = charts.AnnualConsoByPopChart(self.object)
-        pop_chart = charts.AnnualPopChart(self.object)
-        kwargs.update(
-            {
-                "diagnostic": self.object,
-                "pop_chart": pop_chart,
-                "pop_table": pop_chart.get_series(),
-                "conso_pop_chart": conso_pop_chart,
-                "conso_pop_table": add_total_line_column(conso_pop_chart.get_series(), line=False, column=False),
-            }
-        )
-        return super().get_context_data(**kwargs)
-
-
-class ConsoRelativeHouseholdChart(CacheMixin, UserQuerysetOrPublicMixin, DetailView):
-    context_object_name = "project"
-    queryset = Project.objects.all()
-    template_name = "project/partials/household_comparison_conso.html"
-
-    def get_context_data(self, **kwargs):
-        household_chart = charts.AnnualHouseholdChart(self.object)
-        conso_household_chart = charts.AnnualConsoByHouseholdChart(self.object)
-        kwargs.update(
-            {
-                "diagnostic": self.object,
-                "household_chart": household_chart,
-                "household_table": household_chart.get_series(),
-                "conso_household_chart": conso_household_chart,
-                "conso_household_table": add_total_line_column(
-                    conso_household_chart.get_series(), line=False, column=False
+                "surface_chart": surface_chart,
+                "surface_data_table": surface_chart.get_series(),
+                "surface_proportional_chart": surface_proportional_chart,
+                "surface_proportional_data_table": add_total_line_column(
+                    surface_proportional_chart.get_series(), line=False
                 ),
             }
         )

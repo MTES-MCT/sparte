@@ -2,12 +2,14 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 
 export const djangoApi = createApi({
   reducerPath: 'djangoApi',
-  baseQuery: fetchBaseQuery({ baseUrl: '/api/v2/', credentials: 'include' }),
+  baseQuery: fetchBaseQuery({ credentials: 'include' }),
   endpoints: (builder) => ({
-    getProject: builder.query({
-      query: (id) => `projects/${id}/`,
+    getDepartementList: builder.query({
+      query: () => '/public/departements/',
     }),
   }),
 })
 
-export const { useGetProjectQuery } = djangoApi
+export const {
+  useGetDepartementListQuery,
+} = djangoApi

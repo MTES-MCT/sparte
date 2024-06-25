@@ -6,7 +6,8 @@ const store = configureStore({
   reducer: {
     [djangoApi.reducerPath]: djangoApi.reducer,
   },
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(djangoApi.middleware),
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware()
+    .concat(djangoApi.middleware),
 })
 
 setupListeners(store.dispatch)

@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 hello world
 """
+
 from pathlib import Path
 from typing import Any, Dict
 
@@ -558,6 +559,7 @@ CSP_CONNECT_SRC = [
     "https://storage.crisp.chat",
     "wss://client.relay.crisp.chat",
     "wss://stream.relay.crisp.chat",
+    "https://gist.githubusercontent.com",
 ]
 CSP_FRAME_ANCESTORS = ("'self'", "https://sparte-metabase.osc-secnum-fr1.scalingo.io")
 

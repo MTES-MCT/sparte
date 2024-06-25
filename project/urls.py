@@ -63,11 +63,6 @@ urlpatterns = [
         name="report_artif",
     ),
     path(
-        "<int:pk>/tableau-de-bord/groupes-communes",
-        views.ProjectReportCityGroupView.as_view(),
-        name="report_city_group",
-    ),
-    path(
         "<int:pk>/tableau-de-bord/trajectoires",
         views.ProjectReportTarget2031View.as_view(),
         name="report_target_2031",
@@ -97,16 +92,6 @@ urlpatterns = [
         "<int:pk>/tableau-de-bord/consommation-relative/surface",
         views.ConsoRelativeSurfaceChart.as_view(),
         name="relative-surface",
-    ),
-    path(
-        "<int:pk>/tableau-de-bord/consommation-relative/population",
-        views.ConsoRelativePopChart.as_view(),
-        name="relative-pop",
-    ),
-    path(
-        "<int:pk>/tableau-de-bord/consommation-relative/ménages",
-        views.ConsoRelativeHouseholdChart.as_view(),
-        name="relative-household",
     ),
     path(
         "<int:pk>/tableau-de-bord/artificialisation/évolution-nette",

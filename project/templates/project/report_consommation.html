@@ -94,7 +94,7 @@ Rapport consommation
             </div>
             <div class="fr-col-12 fr-col-md-6 fr-grid-row">
                 <div class="fr-callout w-100">
-                    <p class="fr-callout__title">+{{ project_scope.consummed|floatformat:1 }} ha</p>
+                    <p class="fr-callout__title">+{{ conso_period|floatformat:1 }} ha</p>
                     <p>Consommation {{ project.analyse_start_date }} à {{ project.analyse_end_date }}</p>
                 </div>
             </div>
@@ -130,7 +130,7 @@ Rapport consommation
 
                             <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#consoAnnuelle" data-toggle="tooltip" title="Astuces pour lire le graphique"></button>
                         </div>
-                        <div id="chart"></div>
+                        <div id="annual_total_conso_chart"></div>
                     </div>
                 </div>
                 {% if nb_communes > 1 %}
@@ -166,7 +166,7 @@ Rapport consommation
     
                         <h6 class="fr-mt-2w">Données</h6>
                         <div class="table-responsive">
-                            <table class="fr-table table-last-column-bold">
+                            <table class="fr-table table-last-column-bold table-last-row-bold">
                                 <caption>Consommation d'espace annuelle sur le territoire (en ha)</caption>
                                 <thead>
                                     <tr>
@@ -178,7 +178,7 @@ Rapport consommation
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {% for item, data in communes_data_table.items %}
+                                    {% for item, data in annual_conso_data_table.items %}
                                     <tr>
                                         <th scope="row">{{ item }}</th>
                                         {% for year, val in data.items %}
@@ -327,25 +327,25 @@ Rapport consommation
 
                         <ul class="dropdown-menu">
                             <li>
-                                <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_2" data-type="image/png">PNG</a>
+                                <a class="fr-nav__link export-chart" href="#" data-chart-target="comparison_chart" data-type="image/png">PNG</a>
                             </li>
                             <li>
-                                <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_2" data-type="image/jpeg">JPEG</a>
+                                <a class="fr-nav__link export-chart" href="#" data-chart-target="comparison_chart" data-type="image/jpeg">JPEG</a>
                             </li>
                             <li>
-                                <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_2" data-type="application/pdf">PDF</a>
+                                <a class="fr-nav__link export-chart" href="#" data-chart-target="comparison_chart" data-type="application/pdf">PDF</a>
                             </li>
                             <li>
-                                <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_2" data-type="image/svg+xml">Vectoriel</a>
+                                <a class="fr-nav__link export-chart" href="#" data-chart-target="comparison_chart" data-type="image/svg+xml">Vectoriel</a>
                             </li>
                         </ul>
                     </div>
 
-                    <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm fr-mr-2w fullscreen-chart" data-chart-target="chart_2" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
+                    <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm fr-mr-2w fullscreen-chart" data-chart-target="comparison_chart" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
 
                     <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#comparaisonVoisin" data-toggle="tooltip" title="Astuces pour lire le graphique" aria-hidden="true"></button>
                 </div>
-                <div id="chart_2"></div>
+                <div id="comparison_chart"></div>
             </div>
 
             <div class="fr-notice fr-mt-4w">
@@ -406,16 +406,6 @@ Rapport consommation
             <h3>Consommation d'espaces rapportée à la surface du territoire</h3>
             <div class="fr-custom-loader"></div>
         </div>
-
-        {% comment %} <div id="conso-relative-pop-anchor" class="fr-mt-7w" hx-get="{% url 'project:relative-pop' project.id %}" hx-trigger="revealed">
-            <h3>Consommation d'espaces par nouvel habitant</h3>
-            <div class="fr-custom-loader"></div>
-        </div>
-
-        <div id="conso-relative-household-anchor" class="fr-mt-7w" hx-get="{% url 'project:relative-household' project.id %}" hx-trigger="revealed">
-            <h3>Consommation d'espaces par ménages</h3>
-            <div class="fr-custom-loader"></div>
-        </div> {% endcomment %}
     </div>
 </div>
 
@@ -501,50 +491,10 @@ Rapport consommation
 {% sri_static "highcharts/js/highcharts.js" %}
 {% sri_static "highcharts/js/exporting.js" %}
 {% french_translation %}
-{% display_chart 'chart' commune_chart CSP_NONCE %}
-{% display_chart 'chart_2' comparison_chart CSP_NONCE %}
+{% display_chart 'annual_total_conso_chart' annual_total_conso_chart CSP_NONCE %}
+{% display_chart 'comparison_chart' comparison_chart CSP_NONCE %}
 {% display_chart 'chart_determinant' determinant_per_year_chart CSP_NONCE %}
 {% display_chart 'pie_determinant' determinant_pie_chart CSP_NONCE %}
 
-<script language="javascript" nonce="[NONCE_PLACEHOLDER]">
-    ///////////////////////////////
-    // Select / unselect all
-    ///////////////////////////////
-
-    $('#check').click(function(e) {
-        e.preventDefault();
-        let div_id = $(this).attr('chart_target');
-        let chart = $("#" + div_id).highcharts();
-        $(chart.series).each(function(){
-            this.setVisible(true, false)
-        })
-        chart.redraw()
-    })
-
-    $('#uncheck').click(function(e) {
-        e.preventDefault();
-        let div_id = $(this).attr('chart_target')
-        let chart = $("#" + div_id).highcharts()
-        //chart.series.forEach(serie => serie.hide())
-        $(chart.series).each(function(){
-            this.setVisible(false, false)
-        })
-        chart.redraw()
-    })
-
-    $('#reverse').click(function(e){
-        e.preventDefault();
-        let div_id = $(this).attr('chart_target');
-        let chart = $("#" + div_id).highcharts();
-        $(chart.series).each(function(){
-            if (this.visible){
-                this.setVisible(false, false)
-            }else{
-                this.setVisible(true, false)
-            }
-        })
-        chart.redraw()
-    })
-</script>
 {% endlocalize %}
 {% endblock bodyend %}

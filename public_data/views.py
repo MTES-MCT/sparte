@@ -455,59 +455,9 @@ class CouvertureSolViewset(viewsets.ReadOnlyModelViewSet):
 # Views for french adminisitrative territories
 
 
-class RegionViewSet(OnlyBoundingBoxMixin, ZoomSimplificationMixin, OptimizedMixins, DataViewSet):
-    queryset = models.Region.objects.all()
-    serializer_class = serializers.RegionSerializer
-    geo_field = "mpoly"
-    optimized_fields = {}
-
-    def get_sql_where(self):
-        return ""
-
-
-class DepartementViewSet(OnlyBoundingBoxMixin, ZoomSimplificationMixin, OptimizedMixins, DataViewSet):
+class DepartementViewSet(DataViewSet):
     queryset = models.Departement.objects.all()
     serializer_class = serializers.DepartementSerializer
-    geo_field = "mpoly"
-    optimized_fields = {}
-
-    def get_sql_where(self):
-        return ""
-
-
-class ScotViewSet(OnlyBoundingBoxMixin, ZoomSimplificationMixin, OptimizedMixins, DataViewSet):
-    queryset = models.Scot.objects.all()
-    serializer_class = serializers.ScotSerializer
-    geo_field = "mpoly"
-
-    def get_sql_where(self):
-        return ""
-
-
-class EpciViewSet(OnlyBoundingBoxMixin, ZoomSimplificationMixin, OptimizedMixins, DataViewSet):
-    """EPCI view set."""
-
-    queryset = models.Epci.objects.all()
-    serializer_class = serializers.EpciSerializer
-    geo_field = "mpoly"
-
-    min_zoom = 6
-
-    def get_sql_where(self):
-        return ""
-
-
-class CommuneViewSet(OnlyBoundingBoxMixin, ZoomSimplificationMixin, OptimizedMixins, DataViewSet):
-    """Commune view set."""
-
-    queryset = models.Commune.objects.all()
-    serializer_class = serializers.CommuneSerializer
-    geo_field = "mpoly"
-    optimized_fields = {}
-    min_zoom = 10
-
-    def get_sql_where(self):
-        return ""
 
 
 class grid_view(APIView):

@@ -1,12 +1,3 @@
-"""
-Asyn tasks runned by Celery
-
-Below functions are dedicated to loading a project data and pre calculate
-all the indicators required to speedup process
-
-REFACTORING : move all business logic to project/models/create.py (which should be also moved to folders domains/)
-"""
-
 import io
 import logging
 from datetime import timedelta
@@ -63,14 +54,8 @@ def race_protection_save_map(
 
 
 @shared_task(bind=True, max_retries=5)
-def add_city(self, project_id: int, public_keys: str) -> None:
-    """List all cities of selected territories and add them to the project
-
-    :param project_id: primary key to find Project
-    :type project_id: integer
-    :param public_keys: list of public keys separated by '-'
-    :type public_keys: string
-    """
+def add_city(self, project_id: int, public_keys: str) -> list[str]:
+    """Add cities to project."""
     logger.info("Start add_city project_id==%d", project_id)
     logger.info("public_keys=%s", public_keys)
     try:
@@ -88,20 +73,26 @@ def add_city(self, project_id: int, public_keys: str) -> None:
     finally:
         logger.info("End add_city project_id=%d", project_id)
 
+    return [city.insee for city in project.cities.all()]
+
 
 @shared_task(bind=True, max_retries=5)
-def set_combined_emprise(self, project_id: int) -> None:
+def set_combined_emprise(self, project_id: int) -> list[int]:
     """Use linked cities to create project emprise."""
     logger.info("Start set_combined_emprise project_id==%d", project_id)
+
+    emprises = []
 
     try:
         project = Project.objects.get(pk=project_id)
 
         for city in project.cities.all():
-            Emprise.objects.create(
-                mpoly=fix_poly(city.mpoly),
-                srid_source=city.srid_source,
-                project=project,
+            emprises.append(
+                Emprise.objects.create(
+                    mpoly=fix_poly(city.mpoly),
+                    srid_source=city.srid_source,
+                    project=project,
+                )
             )
 
         race_protection_save(project_id, {"async_set_combined_emprise_done": True})
@@ -114,9 +105,11 @@ def set_combined_emprise(self, project_id: int) -> None:
     finally:
         logger.info("End set_combined_emprise project_id=%d", project_id)
 
+    return [emprise.id for emprise in emprises]
+
 
 @shared_task(bind=True, max_retries=5)
-def find_first_and_last_ocsge(self, project_id: int) -> None:
+def find_first_and_last_ocsge(self, project_id: int) -> dict[str, Any] | dict[str, None]:
     """Use associated cities to find departements and available OCSGE millesime"""
     logger.info("Start find_first_and_last_ocsge id=%d", project_id)
     try:
@@ -140,14 +133,17 @@ def find_first_and_last_ocsge(self, project_id: int) -> None:
     finally:
         logger.info("End find_first_and_last_ocsge, project_id=%d", project_id)
 
+    return result
+
 
 @shared_task(bind=True, max_retries=5)
-def calculate_project_ocsge_status(self, project_id: int) -> None:
+def calculate_project_ocsge_status(self, project_id: int) -> str:
     try:
         project = Project.objects.get(pk=project_id)
+        status = project.get_ocsge_coverage_status()
         race_protection_save(
             project_id,
-            {"ocsge_coverage_status": project.get_ocsge_coverage_status(), "async_ocsge_coverage_status_done": True},
+            {"ocsge_coverage_status": status, "async_ocsge_coverage_status_done": True},
         )
     except Project.DoesNotExist:
         logger.error(f"project_id={project_id} does not exist")
@@ -158,9 +154,11 @@ def calculate_project_ocsge_status(self, project_id: int) -> None:
     finally:
         logger.info("End calculate_project_ocsge_status, project_id=%d", project_id)
 
+    return status
+
 
 @shared_task
-def send_email_request_bilan(request_id):
+def send_email_request_bilan(request_id) -> None:
     """Alerte envoyée à l'équipe pour les avertir d'une demande de Diagnostic."""
     logger.info("Start send_email_request_bilan, request_id=%s", request_id)
     if app_parameter.ALERTE_ON_DIAG_DL is False:
@@ -191,7 +189,7 @@ def send_email_request_bilan(request_id):
 
 
 @shared_task(bind=True, max_retries=5)
-def add_comparison_lands(self, project_id):
+def add_comparison_lands(self, project_id) -> list[str]:
     logger.info("Start add_comparison_lands, project_id=%d", project_id)
     try:
         project = Project.objects.get(pk=project_id)
@@ -214,13 +212,15 @@ def add_comparison_lands(self, project_id):
     except Exception as exc:
         logger.error(exc)
         logger.exception(exc)
-        self.retry(exc=exc, countdown=300)
+        self.retry(exc=exc, countdown=10)
     finally:
         logger.info("End add_comparison_lands, project_id=%d", project_id)
 
+    return [_land.official_id for _land in qs]
 
-@shared_task(bind=True, max_retries=5, queue="long")
-def generate_cover_image(self, project_id):
+
+@shared_task(bind=True, max_retries=5)
+def generate_cover_image(self, project_id) -> None:
     logger.info("Start generate_cover_image, project_id=%d", project_id)
     try:
         diagnostic = Project.objects.get(id=int(project_id))
@@ -284,7 +284,7 @@ class WordAlreadySentException(Exception):
 
 
 @shared_task(bind=True, max_retries=6, queue="long")
-def generate_word_diagnostic(self, request_id):
+def generate_word_diagnostic(self, request_id) -> int:
     from diagnostic_word.renderers import (
         ConsoReportRenderer,
         FullReportRenderer,
@@ -344,8 +344,8 @@ def generate_word_diagnostic(self, request_id):
         logger.info("End generate word for request=%d", request_id)
 
 
-@shared_task(bind=True, max_retries=5)
-def send_word_diagnostic(self, request_id):
+@shared_task(bind=True, max_retries=5, queue="long")
+def send_word_diagnostic(self, request_id) -> None:
     """
     Paramètres de l'e-mail dans SendInBlue:
     - diagnostic_url : lien pour télécharger le diagnostic
@@ -430,8 +430,8 @@ def get_img(queryset, color: str, title: str) -> io.BytesIO:
     return img_data
 
 
-@shared_task(bind=True, max_retries=5, queue="long")
-def generate_theme_map_conso(self, project_id):
+@shared_task(bind=True, max_retries=5)
+def generate_theme_map_conso(self, project_id) -> None:
     logger.info("Start generate_theme_map_conso, project_id=%d", project_id)
 
     try:
@@ -468,8 +468,8 @@ def generate_theme_map_conso(self, project_id):
         logger.info("End generate_theme_map_conso, project_id=%d", project_id)
 
 
-@shared_task(bind=True, max_retries=5, queue="long")
-def generate_theme_map_artif(self, project_id):
+@shared_task(bind=True, max_retries=5)
+def generate_theme_map_artif(self, project_id) -> None:
     logger.info("Start generate_theme_map_artif, project_id=%d", project_id)
 
     try:
@@ -502,8 +502,8 @@ def generate_theme_map_artif(self, project_id):
         logger.info("End generate_theme_map_artif, project_id=%d", project_id)
 
 
-@shared_task(bind=True, max_retries=5, queue="long")
-def generate_theme_map_understand_artif(self, project_id):
+@shared_task(bind=True, max_retries=5)
+def generate_theme_map_understand_artif(self, project_id) -> None:
     logger.info("Start generate_theme_map_understand_artif, project_id=%d", project_id)
 
     try:
@@ -606,8 +606,8 @@ def generate_theme_map_understand_artif(self, project_id):
         logger.info("End generate_theme_map_understand_artif, project_id=%d", project_id)
 
 
-@shared_task(bind=True, max_retries=5, queue="long")
-def generate_theme_map_gpu(self, project_id):
+@shared_task(bind=True, max_retries=5)
+def generate_theme_map_gpu(self, project_id) -> None:
     logger.info("Start generate_theme_map_gpu, project_id=%d", project_id)
     try:
         diagnostic = Project.objects.get(id=int(project_id))
@@ -662,8 +662,8 @@ def generate_theme_map_gpu(self, project_id):
         logger.info("End generate_theme_map_gpu, project_id=%d", project_id)
 
 
-@shared_task(bind=True, max_retries=5, queue="long")
-def generate_theme_map_fill_gpu(self, project_id):
+@shared_task(bind=True, max_retries=5)
+def generate_theme_map_fill_gpu(self, project_id) -> None:
     logger.info("Start generate_theme_map_fill_gpu, project_id=%d", project_id)
     try:
         diagnostic = Project.objects.get(pk=project_id)
@@ -722,7 +722,7 @@ def generate_theme_map_fill_gpu(self, project_id):
 
 
 @shared_task(bind=True, max_retries=5)
-def alert_on_blocked_diagnostic(self):
+def alert_on_blocked_diagnostic(self) -> None:
     logger.info("Start alert_on_blocked_diagnostic")
     try:
         # set to done request with no project

@@ -38,7 +38,7 @@ def find_departement_in_url(url: str) -> str:
         result = results[0]
 
     if str(result).startswith("0"):
-        return str(result).replace("0", "")
+        return str(result).replace("0", "", 1)
 
     if not result:
         raise ValueError("Departement not found in the path")

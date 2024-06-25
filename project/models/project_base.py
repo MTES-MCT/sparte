@@ -98,31 +98,6 @@ class BaseProject(models.Model):
         else:
             return MultiPolygon()
 
-    @property
-    def area(self) -> float:
-        """
-        The area of the combined emprise of the project in hectare.
-
-        As this value should not change after the creation of a project,
-        we cache it for an arbitrary long time.
-        """
-        cache_key = f"project/{self.id}/area"
-
-        if cache.has_key(cache_key):
-            return cache.get(cache_key)
-
-        total_area = 0
-
-        for emprise in self.emprise_set.all():
-            total_area += emprise.mpoly.transform(emprise.srid_source, clone=True).area
-
-        total_area /= 10000
-
-        ONE_MONTH = 60 * 60 * 24 * 30
-        cache.set(key=cache_key, value=total_area, timeout=ONE_MONTH)
-
-        return total_area
-
     def __str__(self):
         return self.name
 
@@ -525,6 +500,30 @@ class Project(BaseProject):
             self.save(update_fields=["folder_name"])
         return self.folder_name
 
+    @property
+    def area(self) -> float:
+        """
+        The area of the combined emprise of the project in hectare.
+        As this value should not change after the creation of a project,
+        we cache it for an arbitrary long time.
+        """
+        cache_key = f"project/{self.id}/area"
+
+        if cache.has_key(cache_key):
+            return cache.get(cache_key)
+
+        total_area = 0
+
+        for emprise in self.emprise_set.all():
+            total_area += emprise.mpoly.transform(emprise.srid_source, clone=True).area
+
+        total_area /= 10000
+
+        ONE_MONTH = 60 * 60 * 24 * 30
+        cache.set(key=cache_key, value=total_area, timeout=ONE_MONTH)
+
+        return total_area
+
     @cached_property
     def __related_departements(self):
         return self.cities.values_list("departement_id", flat=True).distinct().all()
@@ -858,7 +857,20 @@ class Project(BaseProject):
                 net_artif=Coalesce(Sum("net_artif"), Decimal("0")),
             )
         )
-        return qs
+        if qs.exists():
+            return qs
+        else:
+            # TODO: remove this when we have a better way to handle empty data
+            # At the moment this is a workaround to avoid pages from crashing
+            # bug this will leave most figures empty (maps, graphs etc.)
+            return {
+                "name": "Non couvert",
+                "period": f"{self.analyse_start_date} - {self.analyse_end_date}",
+                "new_artif": [0],
+                "new_natural": [0],
+                "net_artif": [0],
+                "area": [0],
+            }
 
     def get_artif_progession_time_scoped(self):
         """Return example: {"new_artif": 12, "new_natural": 2: "net_artif": 10}"""
