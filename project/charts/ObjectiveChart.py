@@ -28,7 +28,7 @@ class ObjectiveChart(ProjectChart):
             "categories": [str(i) for i in range(2011, 2031)],
             "plotBands": [
                 {
-                    "color": "#f4faff",
+                    "color": "#e5f3ff",
                     "from": 0,
                     "to": 9,
                     "label": {
