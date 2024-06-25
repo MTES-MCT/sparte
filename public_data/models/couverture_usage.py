@@ -172,7 +172,7 @@ class CouvertureUsageMatrix(models.Model):
     couverture = models.ForeignKey("CouvertureSol", on_delete=models.PROTECT, blank=True, null=True)
     usage = models.ForeignKey("UsageSol", on_delete=models.PROTECT, blank=True, null=True)
     is_artificial = models.BooleanField("Artificiel", default=False, blank=True, null=True)
-    is_consumed = models.BooleanField("Consommé", default=None, blank=True, null=True)
+    is_impermeable = models.BooleanField("Imperméable", blank=True, null=True)
     is_natural = models.BooleanField("Naturel", default=None, blank=True, null=True)
     label = models.CharField(
         "Libellé",
