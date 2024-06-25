@@ -29,6 +29,14 @@ __all__ = [
     "CouvertureProgressionChartExport",
     "ObjectiveChart",
     "ObjectiveChartExport",
+    "ImperByCouverturePieChart",
+    "ImperByCouverturePieChartExport",
+    "ImperByUsagePieChart",
+    "ImperByUsagePieChartExport",
+    "ImperProgressionByCouvertureChart",
+    "ImperProgressionByCouvertureChartExport",
+    "ImperProgressionByUsageChart",
+    "ImperProgressionByUsageChartExport",
     "SurfaceChart",
     "SurfaceChartExport",
     "UsageChangeWheelChart",
@@ -78,6 +86,22 @@ from .CouverturePieChart import CouverturePieChart, CouverturePieChartExport
 from .CouvertureProgressionChart import (
     CouvertureProgressionChart,
     CouvertureProgressionChartExport,
+)
+from .impermeabilisation.ImperByCouverturePieChart import (
+    ImperByCouverturePieChart,
+    ImperByCouverturePieChartExport,
+)
+from .impermeabilisation.ImperByUsagePieChart import (
+    ImperByUsagePieChart,
+    ImperByUsagePieChartExport,
+)
+from .impermeabilisation.ImperProgressionByCouvertureChart import (
+    ImperProgressionByCouvertureChart,
+    ImperProgressionByCouvertureChartExport,
+)
+from .impermeabilisation.ImperProgressionByUsageChart import (
+    ImperProgressionByUsageChart,
+    ImperProgressionByUsageChartExport,
 )
 from .NetArtifComparaisonChart import (
     NetArtifComparaisonChart,
