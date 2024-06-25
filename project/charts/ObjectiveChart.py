@@ -29,7 +29,7 @@ class ObjectiveChart(ProjectChart):
             "plotBands": [
                 {
                     "color": "#e5f3ff",
-                    "from": 0,
+                    "from": -1,
                     "to": 9,
                     "label": {
                         "text": "Période de référence de la loi Climat & Résilience",
