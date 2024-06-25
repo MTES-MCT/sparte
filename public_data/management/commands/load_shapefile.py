@@ -33,6 +33,7 @@ field_mapping = {
             "departement": "DPT",
             "surface": "SURFACE",
             "mpoly": "GEOMETRY",
+            "is_impermeable": "IS_IMPER",
         },
         DataSource.DataNameChoices.DIFFERENCE: {
             "year_old": "YEAR_OLD",
@@ -47,6 +48,8 @@ field_mapping = {
             "is_new_natural": "NEW_NAT",
             "departement": "DPT",
             "mpoly": "GEOMETRY",
+            "is_new_impermeable": "NEW_IMPER",
+            "is_new_not_impermeable": "NEWNOIMPER",
         },
         DataSource.DataNameChoices.ZONE_CONSTRUITE: {
             "id_source": "ID",

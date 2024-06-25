@@ -14,6 +14,9 @@ class Ocsge(TruncateTableMixin, DataColorationMixin, models.Model):
     id_source = models.CharField("ID source", max_length=200)
     year = models.IntegerField("Année", validators=[MinValueValidator(2000), MaxValueValidator(2050)])
     is_artificial = models.BooleanField("Est artificiel")
+    is_impermeable = models.BooleanField(
+        "Est imperméable",
+    )
     surface = models.DecimalField("surface", max_digits=15, decimal_places=4)
     departement = models.CharField("Département", max_length=15)
 
@@ -78,7 +81,14 @@ class OcsgeDiff(TruncateTableMixin, DataColorationMixin, models.Model):
     )
     surface = models.DecimalField("surface", max_digits=15, decimal_places=4)
     is_new_artif = models.BooleanField()
-    is_new_natural = models.BooleanField()
+    is_new_natural = models.BooleanField(
+        "Aussi appelé désartificialisation",
+    )
+    is_new_impermeable = models.BooleanField()
+    is_new_not_impermeable = models.BooleanField(
+        "Aussi appelé désimperméabilisation",
+    )
+
     departement = models.CharField("Département", max_length=15)
 
     objects = IntersectManager()
