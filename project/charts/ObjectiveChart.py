@@ -29,23 +29,13 @@ class ObjectiveChart(ProjectChart):
             "plotBands": [
                 {
                     "color": "#f4faff",
-                    "from": 2011,
-                    "to": 2021,
+                    "from": 0,
+                    "to": 9,
                     "label": {
-                        "text": "Période de référence",
+                        "text": "Période de référence de la loi Climat & Résilience",
                         "style": {"color": "#95ceff", "fontWeight": "bold"},
                     },
                     "className": "plotband_blue",
-                },
-                {
-                    "color": "#f6fff4",
-                    "from": 2022,
-                    "to": 2031,
-                    "label": {
-                        "text": "Projection 2031",
-                        "style": {"color": "#87cc78", "fontWeight": "bold"},
-                    },
-                    "className": "plotband_green",
                 },
             ],
         },
