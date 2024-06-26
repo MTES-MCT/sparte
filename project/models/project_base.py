@@ -34,6 +34,7 @@ from public_data.models import (
     Departement,
     Epci,
     Land,
+    LandStaticFigure,
     OcsgeDiff,
     Region,
     Scot,
@@ -321,12 +322,14 @@ class Project(BaseProject):
         help_text=("C'est le nom qui est utilisé pour désigner votre territoire, notamment " "dans le rapport word."),
     )
 
-    cover_image = models.ImageField(
-        upload_to=upload_in_project_folder,
-        blank=True,
-        null=True,
-        storage=PublicMediaStorage(),
-    )
+    @property
+    def cover_image(self):
+        return LandStaticFigure.objects.get(
+            land_type=self.land_type,
+            land_id=self.land_id,
+            figure_name=LandStaticFigure.LandStaticFigureNameChoices.cover_image,
+            params_hash=self.get_params_hash(),
+        ).figure
 
     theme_map_conso = models.ImageField(
         upload_to=upload_in_project_folder,
@@ -385,6 +388,28 @@ class Project(BaseProject):
     history = HistoricalRecords(
         user_db_constraint=False,
     )
+
+    def get_params(self):
+        """
+        Return a dict of all custom parameters of the project
+        """
+        return {
+            "analyse_start_date": self.analyse_end_date,
+            "analyse_end_date": self.analyse_end_date,
+            "first_year_ocsge": self.last_year_ocsge,
+            "last_year_ocsge": self.last_year_ocsge,
+            "look_a_like": self.look_a_like,
+            "name": self.name,
+            "territory_name": self.territory_name,
+            "level": self.level,
+            "target_2031": self.target_2031,
+        }
+
+    def get_params_hash(self) -> str:
+        """
+        Return a hash of all custom parameters of the project
+        """
+        return str(hash(frozenset(self.get_params().items())))
 
     @property
     def latest_change_is_ocsge_delivery(self) -> bool:
@@ -472,10 +497,6 @@ class Project(BaseProject):
                     self._city_group_list.append(CityGroup(project_commune.group_name))
                 self._city_group_list[-1].append(project_commune)
         return self._city_group_list
-
-    def delete(self):
-        self.cover_image.delete(save=False)
-        return super().delete()
 
     def save(self, *args, **kwargs):
         logger.info("Saving project %d: update_fields=%s", self.id, str(kwargs.get("update_fields", [])))

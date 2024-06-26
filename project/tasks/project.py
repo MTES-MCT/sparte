@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 import shapely
 from celery import shared_task
 from django.conf import settings
+from django.core.files.images import ImageFile
 from django.db import transaction
 from django.db.models import F, OuterRef, Q, Subquery
 from django.urls import reverse
@@ -18,7 +19,7 @@ from matplotlib.lines import Line2D
 from matplotlib_scalebar.scalebar import ScaleBar
 
 from project.models import Emprise, Project, Request, RequestedDocumentChoices
-from public_data.models import ArtificialArea, Cerema, Land, OcsgeDiff
+from public_data.models import ArtificialArea, Cerema, Land, LandStaticFigure, OcsgeDiff
 from public_data.models.gpu import ArtifAreaZoneUrba, ZoneUrba
 from utils.db import fix_poly
 from utils.emails import SibTemplateEmail
@@ -224,6 +225,20 @@ def generate_cover_image(self, project_id) -> None:
     logger.info("Start generate_cover_image, project_id=%d", project_id)
     try:
         diagnostic = Project.objects.get(id=int(project_id))
+
+        figure = LandStaticFigure.objects.filter(
+            land_id=diagnostic.land_id,
+            land_type=diagnostic.land_type,
+            figure_name=LandStaticFigure.LandStaticFigureNameChoices.cover_image,
+            params_hash=diagnostic.get_params_hash(),
+        )
+
+        if figure.exists():
+            logger.info("Cover image already generated")
+            diagnostic.async_cover_image_done = True
+            diagnostic.save(update_fields=["async_cover_image_done"])
+            return
+
         geom = diagnostic.combined_emprise
         polygons = shapely.wkt.loads(geom.wkt)
 
@@ -256,13 +271,19 @@ def generate_cover_image(self, project_id) -> None:
         img_data.seek(0)
         plt.close()
 
-        race_protection_save_map(
-            diagnostic.pk,
-            "async_cover_image_done",
-            "cover_image",
-            f"cover_{project_id}.jpg",
-            img_data,
+        LandStaticFigure.objects.update_or_create(
+            land_id=diagnostic.land_id,
+            land_type=diagnostic.land_type,
+            figure_name=LandStaticFigure.LandStaticFigureNameChoices.cover_image,
+            params_hash=diagnostic.get_params_hash(),
+            defaults={
+                "figure": ImageFile(img_data, name=f"cover_{project_id}.jpg"),
+                "params": diagnostic.get_params(),
+            },
         )
+
+        diagnostic.async_cover_image_done = True
+        diagnostic.save(update_fields=["async_cover_image_done"])
 
     except Project.DoesNotExist as exc:
         logger.error(f"project_id={project_id} does not exist")
