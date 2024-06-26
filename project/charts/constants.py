@@ -18,7 +18,7 @@ DEFAULT_CREDIT_POSITION = {
 }
 
 
-def get_multiple_line_credit_position(line_count=2) -> dict[str, float]:
+def get_multiple_line_credit_position(line_count=2) -> dict[str, int]:
     return {
         "y": CREDIT_PIXEL_SIZE * -1 * line_count,
     }
