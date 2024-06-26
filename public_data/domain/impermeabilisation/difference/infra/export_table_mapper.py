@@ -30,7 +30,7 @@ class ImpermeabilisationDifferenceToExportTableMapper:
             ],
             "rows": [
                 [
-                    {item.code_prefix},
+                    f"{item.code_prefix} {item.label_short}",
                     {item.imper},
                     f"{item.imper * 100 / total_imper}%",
                     {item.desimper},

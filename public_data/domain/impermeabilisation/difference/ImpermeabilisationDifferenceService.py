@@ -3,7 +3,7 @@ from django.contrib.gis.geos import MultiPolygon, Polygon
 from django.db.models import Case, DecimalField, F, Q, Sum, When
 from django.db.models.functions import Cast
 
-from public_data.models import OcsgeDiff
+from public_data.models import CouvertureSol, OcsgeDiff, UsageSol
 
 from .ImpermeabilisationDifference import (
     ImpermeabilisationDifference,
@@ -56,9 +56,23 @@ class ImpermeabilisationDifferenceService:
 
             for item in result:
                 if sol == "usage":
-                    usage.append(ImpermeabilisationDifferenceSol(**item))
+                    sol_object = UsageSol.objects.get(code_prefix=item["code_prefix"])
+                    usage.append(
+                        ImpermeabilisationDifferenceSol(
+                            **item,
+                            label=sol_object.label,
+                            label_short=sol_object.label_short,
+                        )
+                    )
                 else:
-                    difference.couverture.append(ImpermeabilisationDifferenceSol(**item))
+                    sol_object = CouvertureSol.objects.get(code_prefix=item["code_prefix"])
+                    difference.couverture.append(
+                        ImpermeabilisationDifferenceSol(
+                            **item,
+                            label=sol_object.label,
+                            label_short=sol_object.label_short,
+                        )
+                    )
 
         grouped: dict[str, ImpermeabilisationDifferenceSol] = {}
 
@@ -76,12 +90,17 @@ class ImpermeabilisationDifferenceService:
                     code_prefix=level_one_code,
                     imper=item.imper + existing_aggregate.imper,
                     desimper=item.desimper + existing_aggregate.desimper,
+                    label=existing_aggregate.label,
+                    label_short=existing_aggregate.label_short,
                 )
             else:
+                sol_object = UsageSol.objects.get(code_prefix=level_one_code)
                 grouped[level_one_code] = ImpermeabilisationDifferenceSol(
                     code_prefix=level_one_code,
                     imper=item.imper,
                     desimper=item.desimper,
+                    label=sol_object.label,
+                    label_short=sol_object.label_short,
                 )
 
         for value in grouped.values():

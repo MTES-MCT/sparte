@@ -4,6 +4,8 @@ from dataclasses import dataclass
 @dataclass(frozen=True)
 class ImpermeabilisationDifferenceSol:
     code_prefix: str
+    label: str
+    label_short: str
     imper: float
     desimper: float
 

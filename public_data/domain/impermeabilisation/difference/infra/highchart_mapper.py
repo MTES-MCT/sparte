@@ -21,7 +21,7 @@ class ImpermeabilisationDifferenceToHighchartMapper:
                 "name": "Imperméabilisation",
                 "data": [
                     {
-                        "name": item.code_prefix,
+                        "name": f"{item.code_prefix} {item.label_short}",
                         "y": item.imper,
                     }
                     for item in usage
@@ -31,7 +31,7 @@ class ImpermeabilisationDifferenceToHighchartMapper:
                 "name": "Désimperméabilisation",
                 "data": [
                     {
-                        "name": item.code_prefix,
+                        "name": f"{item.code_prefix} {item.label_short}",
                         "y": item.desimper,
                     }
                     for item in usage
@@ -46,7 +46,7 @@ class ImpermeabilisationDifferenceToHighchartMapper:
                 "name": "Imperméabilisation",
                 "data": [
                     {
-                        "name": item.code_prefix,
+                        "name": f"{item.code_prefix} {item.label_short}",
                         "y": item.imper,
                     }
                     for item in couverture
@@ -56,7 +56,7 @@ class ImpermeabilisationDifferenceToHighchartMapper:
                 "name": "Désimperméabilisation",
                 "data": [
                     {
-                        "name": item.code_prefix,
+                        "name": f"{item.code_prefix} {item.label_short}",
                         "y": item.desimper,
                     }
                     for item in couverture
