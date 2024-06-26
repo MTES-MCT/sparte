@@ -4,8 +4,11 @@ from project.charts.constants import (
     IMPERMEABLE_OCSGE_CREDITS,
     LEGEND_NAVIGATION_EXPORT,
 )
-from public_data.domain.impermeabilisation.get_communes_imper_us_cs_repartition import (
-    get_communes_imper_us_cs_repartition,
+from public_data.domain.impermeabilisation.repartition.infra.highchart_mapper import (
+    RepartitionOfImpermeabilisationToHighchartMapper,
+)
+from public_data.domain.impermeabilisation.repartition.RepartitionOfImpermeabilisationService import (
+    RepartitionOfImpermeabilisationService,
 )
 
 
@@ -40,29 +43,14 @@ class ImperByCouverturePieChart(ProjectChart):
             "series": [],
         }
 
-    def get_series(self):
-        if not self.series:
-            self.series = get_communes_imper_us_cs_repartition(
-                communes=self.project.cities.all(),
-                year=self.project.last_year_ocsge,
-            )[self._sol]
-        return self.series
-
-    def add_series(self):
-        surface_total = sum(_["surface"] for _ in self.get_series())
-        self.chart["series"].append(
-            {
-                "name": "Sol imperméable",
-                "data": [
-                    {
-                        "name": f"{item['code_prefix']} {item['label_short']}",
-                        "y": item["surface"],
-                        "percent": f"{int(100 * item['surface'] / surface_total)}%",
-                    }
-                    for item in self.get_series()
-                ],
-            }
+    def add_series(self) -> None:
+        repartition = RepartitionOfImpermeabilisationService.get_by_communes(
+            communes=self.project.cities.all(),
+            year=self.project.last_year_ocsge,
         )
+        self.chart["series"] = RepartitionOfImpermeabilisationToHighchartMapper.map(
+            repartition=repartition,
+        )[self._sol]
 
 
 class ImperByCouverturePieChartExport(ImperByCouverturePieChart):

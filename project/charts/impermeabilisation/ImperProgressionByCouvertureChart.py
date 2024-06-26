@@ -10,13 +10,16 @@ from project.charts.constants import (
     LEGEND_NAVIGATION_EXPORT,
 )
 from project.models import Project
-from public_data.domain.impermeabilisation.get_geom_new_imper_and_desimper import (
-    get_geom_new_imper_and_desimper,
+from public_data.domain.impermeabilisation.difference.ImpermeabilisationDifferenceService import (
+    ImpermeabilisationDifferenceService,
+)
+from public_data.domain.impermeabilisation.difference.infra.highchart_mapper import (
+    ImpermeabilisationDifferenceToHighchartMapper,
 )
 
 
 class ImperProgressionByCouvertureChart(ProjectChart):
-    name = "Progression des principaux postes de la couverture du sol"
+    _sol = "couverture"
 
     @property
     def param(self):
@@ -24,7 +27,7 @@ class ImperProgressionByCouvertureChart(ProjectChart):
             "chart": {"type": "column", "alignThresholds": True},
             "title": {
                 "text": (
-                    f"Evolution de l'imperméabilisation par type de couverture de {self.project.first_year_ocsge} à "
+                    f"Evolution de l'imperméabilisation par type de {self._sol} de {self.project.first_year_ocsge} à "
                     f"{self.project.last_year_ocsge}"
                 )
             },
@@ -46,38 +49,14 @@ class ImperProgressionByCouvertureChart(ProjectChart):
         self.geom = geom
         super().__init__(project)
 
-    def get_data(self):
-        return get_geom_new_imper_and_desimper(
-            geom=self.project.combined_emprise,
-            analyse_start_date=self.project.first_year_ocsge,
-            analyse_end_date=self.project.last_year_ocsge,
-        )["couverture"]
-
     def add_series(self) -> List[Dict]:
-        self.chart["series"].append(
-            {
-                "name": "Imperméabilisation",
-                "data": [
-                    {
-                        "name": item["code_prefix"],
-                        "y": item["imper"],
-                    }
-                    for item in self.get_data()
-                ],
-            }
+        difference = ImpermeabilisationDifferenceService.get_by_geom(
+            geom=self.project.combined_emprise,
+            start_date=self.project.first_year_ocsge,
+            end_date=self.project.last_year_ocsge,
         )
-        self.chart["series"].append(
-            {
-                "name": "Désimperméabilisation",
-                "data": [
-                    {
-                        "name": item["code_prefix"],
-                        "y": item["desimper"],
-                    }
-                    for item in self.get_data()
-                ],
-            }
-        )
+        series = ImpermeabilisationDifferenceToHighchartMapper.map(difference)
+        self.chart["series"] = series[self._sol]
 
 
 class ImperProgressionByCouvertureChartExport(ImperProgressionByCouvertureChart):
@@ -95,7 +74,7 @@ class ImperProgressionByCouvertureChartExport(ImperProgressionByCouvertureChart)
             },
             "title": {
                 "text": (
-                    f"Evolution de l'imperméabilisation par type de couverture de {self.project.first_year_ocsge} à "
+                    f"Evolution de l'imperméabilisation par type de {self._sol} de {self.project.first_year_ocsge} à "
                     f"{self.project.last_year_ocsge} à {self.project.territory_name}"
                 )
             },
