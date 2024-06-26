@@ -30,6 +30,7 @@ class Command(BaseCommand):
         call_command("maintenance", on=True)
 
         logger.info("Initialize data sources")
+        DataSource.objects.all().delete()
         call_command("loaddata", "public_data/models/data_source_fixture.json")
 
         logger.info("Load new OCS GE")
