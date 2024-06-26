@@ -13,8 +13,8 @@ from project.models import Project
 from public_data.domain.impermeabilisation.difference.ImpermeabilisationDifferenceService import (
     ImpermeabilisationDifferenceService,
 )
-from public_data.domain.impermeabilisation.difference.infra.highchart_mapper import (
-    ImpermeabilisationDifferenceToHighchartMapper,
+from public_data.domain.impermeabilisation.difference.infra.highchart.ImperProgressionMapper import (
+    ImperProgressionMapper,
 )
 
 
@@ -55,7 +55,7 @@ class ImperProgressionByCouvertureChart(ProjectChart):
             start_date=self.project.first_year_ocsge,
             end_date=self.project.last_year_ocsge,
         )
-        series = ImpermeabilisationDifferenceToHighchartMapper.map(difference)
+        series = ImperProgressionMapper.map(difference)
         self.chart["series"] = series[self._sol]
 
 

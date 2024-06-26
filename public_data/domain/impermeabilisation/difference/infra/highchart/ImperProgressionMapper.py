@@ -4,14 +4,12 @@ from public_data.domain.impermeabilisation.difference.ImpermeabilisationDifferen
 )
 
 
-class ImpermeabilisationDifferenceToHighchartMapper:
+class ImperProgressionMapper:
     @staticmethod
     def map(difference: ImpermeabilisationDifference) -> dict:
         return {
-            "usage": ImpermeabilisationDifferenceToHighchartMapper._map_usage(usage=difference.usage),
-            "couverture": ImpermeabilisationDifferenceToHighchartMapper._map_couverture(
-                couverture=difference.couverture
-            ),
+            "usage": ImperProgressionMapper._map_usage(usage=difference.usage),
+            "couverture": ImperProgressionMapper._map_couverture(couverture=difference.couverture),
         }
 
     @staticmethod

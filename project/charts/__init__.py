@@ -46,6 +46,8 @@ __all__ = [
     "UsageProgressionChartExport",
     "NetArtifComparaisonChart",
     "NetArtifComparaisonChartExport",
+    "ImperNetteProgression",
+    "ImperNetteProgressionExport",
 ]
 
 from .AnnualArtifChart import AnnualArtifChart
@@ -94,6 +96,10 @@ from .impermeabilisation.ImperByCouverturePieChart import (
 from .impermeabilisation.ImperByUsagePieChart import (
     ImperByUsagePieChart,
     ImperByUsagePieChartExport,
+)
+from .impermeabilisation.ImperNetteProgression import (
+    ImperNetteProgression,
+    ImperNetteProgressionExport,
 )
 from .impermeabilisation.ImperProgressionByCouvertureChart import (
     ImperProgressionByCouvertureChart,
