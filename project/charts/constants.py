@@ -38,8 +38,9 @@ OCSGE_CREDITS = {
     "position": DEFAULT_CREDIT_POSITION,
 }
 
+PAGE_INDICATEUR_URL = "https://artificialisation.developpement-durable.gouv.fr/mesurer-lartificialisation-avec-locsge/acceder-aux-analyses-realisees-partir-des-donnees-ocsge"  # noqa E501
 IMPERMEABLE_OCSGE_CREDITS_ANCHOR_FORMATTED = format_anchor_for_credits(
-    link="https://artificialisation.developpement-durable.gouv.fr/mesurer-lartificialisation-avec-locsge/acceder-aux-analyses-realisees-partir-des-donnees-ocsge",  # noqa E501
+    link=PAGE_INDICATEUR_URL,
     text="fiche indicateur du portail de l'artificialisation",
 )
 
