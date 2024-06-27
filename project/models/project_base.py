@@ -14,6 +14,7 @@ from django.core.cache import cache
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import Case, Count, DecimalField, F, Q, QuerySet, Sum, Value, When
+from django.db.models.fields.files import ImageFieldFile
 from django.db.models.functions import Cast, Coalesce, Concat
 from django.urls import reverse
 from django.utils import timezone
@@ -323,20 +324,28 @@ class Project(BaseProject):
     )
 
     @property
-    def cover_image(self):
-        return LandStaticFigure.objects.get(
-            land_type=self.land_type,
-            land_id=self.land_id,
-            figure_name=LandStaticFigure.LandStaticFigureNameChoices.cover_image,
-            params_hash=self.get_params_hash(),
-        ).figure
+    def cover_image(self) -> ImageFieldFile:
+        try:
+            return LandStaticFigure.objects.get(
+                land_type=self.land_type,
+                land_id=self.land_id,
+                figure_name=LandStaticFigure.LandStaticFigureNameChoices.cover_image,
+                params_hash=self.get_params_hash(),
+            ).figure
+        except LandStaticFigure.DoesNotExist:
+            return None
 
-    theme_map_conso = models.ImageField(
-        upload_to=upload_in_project_folder,
-        blank=True,
-        null=True,
-        storage=PublicMediaStorage(),
-    )
+    @property
+    def theme_map_conso(self):
+        try:
+            return LandStaticFigure.objects.get(
+                land_type=self.land_type,
+                land_id=self.land_id,
+                figure_name=LandStaticFigure.LandStaticFigureNameChoices.theme_map_conso,
+                params_hash=self.get_params_hash(),
+            ).figure
+        except LandStaticFigure.DoesNotExist:
+            return None
 
     theme_map_artif = models.ImageField(
         upload_to=upload_in_project_folder,

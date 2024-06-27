@@ -12,6 +12,8 @@ def upload_in_land_folder(instance: "LandStaticFigure", filename: str) -> str:
 class LandStaticFigure(models.Model):
     class LandStaticFigureNameChoices(models.TextChoices):
         cover_image = "cover_image", "Image de couverture"
+        theme_map_conso = "theme_map_conso", "Carte choroplèthe de consommation d'espace"
+        theme_map_artif = "theme_map_artif", "Carte choroplèthe d'artificialisation"
 
     class Meta:
         verbose_name = "Figure statique"

@@ -54,6 +54,35 @@ def race_protection_save_map(
         diagnostic.save_without_historical_record(update_fields=[field_img_name, field_flag_name])
 
 
+def check_if_figure_for_project_exists(
+    project: Project,
+    figure_name: str,
+) -> bool:
+    return LandStaticFigure.objects.filter(
+        land_id=project.land_id,
+        land_type=project.land_type,
+        figure_name=figure_name,
+        params_hash=project.get_params_hash(),
+    ).exists()
+
+
+def update_or_create_figure_for_project(
+    project: Project,
+    figure_name: str,
+    figure: ImageFile,
+) -> tuple[LandStaticFigure, bool]:
+    return LandStaticFigure.objects.update_or_create(
+        land_id=project.land_id,
+        land_type=project.land_type,
+        figure_name=figure_name,
+        params_hash=project.get_params_hash(),
+        defaults={
+            "figure": figure,
+            "params": project.get_params(),
+        },
+    )
+
+
 @shared_task(bind=True, max_retries=5)
 def add_city(self, project_id: int, public_keys: str) -> list[str]:
     """Add cities to project."""
@@ -226,14 +255,10 @@ def generate_cover_image(self, project_id) -> None:
     try:
         diagnostic = Project.objects.get(id=int(project_id))
 
-        figure = LandStaticFigure.objects.filter(
-            land_id=diagnostic.land_id,
-            land_type=diagnostic.land_type,
+        if check_if_figure_for_project_exists(
+            project=diagnostic,
             figure_name=LandStaticFigure.LandStaticFigureNameChoices.cover_image,
-            params_hash=diagnostic.get_params_hash(),
-        )
-
-        if figure.exists():
+        ):
             logger.info("Cover image already generated")
             diagnostic.async_cover_image_done = True
             diagnostic.save(update_fields=["async_cover_image_done"])
@@ -271,15 +296,10 @@ def generate_cover_image(self, project_id) -> None:
         img_data.seek(0)
         plt.close()
 
-        LandStaticFigure.objects.update_or_create(
-            land_id=diagnostic.land_id,
-            land_type=diagnostic.land_type,
+        update_or_create_figure_for_project(
+            project=diagnostic,
             figure_name=LandStaticFigure.LandStaticFigureNameChoices.cover_image,
-            params_hash=diagnostic.get_params_hash(),
-            defaults={
-                "figure": ImageFile(img_data, name=f"cover_{project_id}.jpg"),
-                "params": diagnostic.get_params(),
-            },
+            figure=ImageFile(img_data, name=f"cover_{project_id}.jpg"),
         )
 
         diagnostic.async_cover_image_done = True
@@ -457,6 +477,16 @@ def generate_theme_map_conso(self, project_id) -> None:
 
     try:
         diagnostic = Project.objects.get(id=int(project_id))
+
+        if check_if_figure_for_project_exists(
+            project=diagnostic,
+            figure_name=LandStaticFigure.LandStaticFigureNameChoices.theme_map_conso,
+        ):
+            logger.info("Theme map conso already generated")
+            diagnostic.async_generate_theme_map_conso_done = True
+            diagnostic.save(update_fields=["async_generate_theme_map_conso_done"])
+            return
+
         fields = Cerema.get_art_field(diagnostic.analyse_start_date, diagnostic.analyse_end_date)
         sub_qs = Cerema.objects.annotate(conso=sum(F(f) for f in fields))
         qs = diagnostic.cities.all().annotate(
@@ -469,13 +499,14 @@ def generate_theme_map_conso(self, project_id) -> None:
             title="Consommation d'espaces des communes du territoire sur la période (en Ha)",
         )
 
-        race_protection_save_map(
-            diagnostic.pk,
-            "async_generate_theme_map_conso_done",
-            "theme_map_conso",
-            f"theme_map_conso_{project_id}.jpg",
-            img_data,
+        update_or_create_figure_for_project(
+            project=diagnostic,
+            figure_name=LandStaticFigure.LandStaticFigureNameChoices.theme_map_conso,
+            figure=ImageFile(img_data, name=f"theme_map_conso_{project_id}.jpg"),
         )
+
+        diagnostic.async_generate_theme_map_conso_done = True
+        diagnostic.save(update_fields=["async_generate_theme_map_conso_done"])
 
     except Project.DoesNotExist:
         logger.error(f"project_id={project_id} does not exist")
