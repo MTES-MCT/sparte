@@ -4,11 +4,11 @@ from project.charts.constants import (
     IMPERMEABLE_OCSGE_CREDITS,
     LEGEND_NAVIGATION_EXPORT,
 )
-from public_data.domain.impermeabilisation.repartition.infra.highchart_mapper import (
-    RepartitionOfImpermeabilisationToHighchartMapper,
-)
 from public_data.domain.impermeabilisation.repartition.RepartitionOfImpermeabilisationService import (
     RepartitionOfImpermeabilisationService,
+)
+from public_data.infra.impermeabilisation.repartition.highchart_mapper import (
+    RepartitionOfImpermeabilisationToHighchartMapper,
 )
 
 

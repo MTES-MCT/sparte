@@ -7,7 +7,7 @@ from project.charts.constants import (
 from public_data.domain.impermeabilisation.difference.ImpermeabilisationDifferenceService import (
     ImpermeabilisationDifferenceService,
 )
-from public_data.domain.impermeabilisation.difference.infra.highchart.ImperNetteMapper import (
+from public_data.infra.impermeabilisation.difference.highchart.ImperNetteMapper import (
     ImperNetteMapper,
 )
 

@@ -13,7 +13,7 @@ from project.models import Project
 from public_data.domain.impermeabilisation.difference.ImpermeabilisationDifferenceService import (
     ImpermeabilisationDifferenceService,
 )
-from public_data.domain.impermeabilisation.difference.infra.highchart.ImperProgressionMapper import (
+from public_data.infra.impermeabilisation.difference.highchart.ImperProgressionMapper import (
     ImperProgressionMapper,
 )
 

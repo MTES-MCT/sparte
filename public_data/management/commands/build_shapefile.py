@@ -7,7 +7,7 @@ from django import setup as django_setup
 from django.conf import settings
 from django.core.management.base import BaseCommand
 
-from public_data.domain.shapefile_builder.infra.gdal.GdalShapefileBuilder import (
+from public_data.infra.shapefile_builder.gdal.GdalShapefileBuilder import (
     GdalShapefileBuilder,
 )
 from public_data.models import DataSource
