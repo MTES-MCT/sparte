@@ -7,7 +7,25 @@ def move_cover_image_from_project_to_landstaticfigure(apps, schema_editor):
     Project = apps.get_model("project", "Project")
     LandStaticFigure = apps.get_model("public_data", "LandStaticFigure")
 
-    for project in Project.objects.all().filter(land_id__isnull=False):
+    for project in (
+        Project.objects.all()
+        .filter(land_id__isnull=False)
+        .only(
+            "analyse_start_date",
+            "analyse_end_date",
+            "first_year_ocsge",
+            "last_year_ocsge",
+            "look_a_like",
+            "name",
+            "territory_name",
+            "level",
+            "target_2031",
+            "cover_image",
+            "land_type",
+            "land_id",
+        )
+        .iterator()
+    ):
         params = {
             "analyse_start_date": project.analyse_end_date,
             "analyse_end_date": project.analyse_end_date,
