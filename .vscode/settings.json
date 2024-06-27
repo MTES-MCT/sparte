@@ -28,4 +28,7 @@
     "git.autoStash": false,
     "git.fetchOnPull": true,
     "git.followTagsWhenSync": true,
+    "[json]": {
+        "editor.defaultFormatter": "vscode.json-language-features"
+    },
 }
