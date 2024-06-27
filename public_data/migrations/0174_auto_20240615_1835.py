@@ -6,32 +6,6 @@ from logging import getLogger
 logger = getLogger(__name__)
 
 
-def fix_commune_mpoly(apps, schema_editor):
-    Commune = apps.get_model("public_data", "Commune")
-    Cerema = apps.get_model("public_data", "Cerema")
-
-    to_update = []
-
-    communes = Commune.objects.all()
-    communes.count()
-
-    for commune in communes:
-        cerema = Cerema.objects.get(city_insee=commune.insee)
-
-        if commune.mpoly == cerema.mpoly:
-            # no need to update
-            break
-        commune.mpoly = cerema.mpoly
-        commune.srid_source = cerema.srid_source
-        to_update.append(commune)
-
-    Commune.objects.bulk_update(
-        to_update,
-        ["mpoly", "srid_source"],
-        batch_size=1000,
-    )
-
-
 class Migration(migrations.Migration):
     atomic = False
     dependencies = [
@@ -39,5 +13,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(fix_commune_mpoly),
+        migrations.RunPython(migrations.RunPython.noop, migrations.RunPython.noop),
     ]
