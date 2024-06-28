@@ -7,8 +7,8 @@ from project.charts.constants import (
 from public_data.domain.impermeabilisation.repartition.RepartitionOfImpermeabilisationService import (
     RepartitionOfImpermeabilisationService,
 )
-from public_data.infra.impermeabilisation.repartition.highchart_mapper import (
-    RepartitionOfImpermeabilisationToHighchartMapper,
+from public_data.infra.impermeabilisation.repartition.highchart.ImperRepartitionMapper import (
+    ImperRepartitionMapper,
 )
 
 
@@ -48,7 +48,7 @@ class ImperByCouverturePieChart(ProjectChart):
             communes=self.project.cities.all(),
             year=self.project.last_year_ocsge,
         )
-        self.chart["series"] = RepartitionOfImpermeabilisationToHighchartMapper.map(
+        self.chart["series"] = ImperRepartitionMapper.map(
             repartition=repartition,
         )[self._sol]
 

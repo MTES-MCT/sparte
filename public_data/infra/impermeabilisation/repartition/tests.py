@@ -5,7 +5,7 @@ from public_data.domain.impermeabilisation.repartition.RepartitionOfImpermeabili
     RepartitionOfImpermeabilisationByCommunesSol,
 )
 
-from .highchart_mapper import RepartitionOfImpermeabilisationToHighchartMapper
+from .highchart.ImperRepartitionMapper import ImperRepartitionMapper
 
 
 class TestHighchartMapper(TestCase):
@@ -37,7 +37,7 @@ class TestHighchartMapper(TestCase):
         )
 
     def test_map_to_highchart(self):
-        result = RepartitionOfImpermeabilisationToHighchartMapper.map(repartition=self.repartition)
+        result = ImperRepartitionMapper.map(repartition=self.repartition)
         expected_couverture = [
             {
                 "name": "Sol imperméable",
