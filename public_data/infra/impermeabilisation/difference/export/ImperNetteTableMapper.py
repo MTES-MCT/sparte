@@ -6,7 +6,6 @@ from public_data.domain.impermeabilisation.difference.ImpermeabilisationDifferen
 class ImperNetteTableMapper:
     @staticmethod
     def map(difference: ImpermeabilisationDifference) -> dict:
-        # TODO : Manage multiple difference
         total_imper = sum(item.imper for item in difference.usage + difference.couverture)
         total_desimper = sum(item.desimper for item in difference.usage + difference.couverture)
         imper_nette = total_imper - total_desimper
