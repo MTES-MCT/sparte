@@ -23,7 +23,9 @@ from project.models import (
     trigger_async_tasks,
 )
 from project.utils import add_total_line_column
-from public_data.infra.planning_competency import PlanningCompetencyServiceSudocuh
+from public_data.infra.planning_competency.PlanningCompetencyServiceSudocuh import (
+    PlanningCompetencyServiceSudocuh,
+)
 from public_data.models import CouvertureSol, UsageSol
 from public_data.models.administration import AdminRef
 from public_data.models.gpu import ZoneUrba
