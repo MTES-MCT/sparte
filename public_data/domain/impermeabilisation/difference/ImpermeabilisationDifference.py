@@ -16,3 +16,15 @@ class ImpermeabilisationDifference:
     end_date: int
     usage: list[ImpermeabilisationDifferenceSol]
     couverture: list[ImpermeabilisationDifferenceSol]
+
+    @property
+    def total_imper(self) -> float:
+        return sum(item.imper for item in self.usage)
+
+    @property
+    def total_desimper(self) -> float:
+        return sum(item.desimper for item in self.usage)
+
+    @property
+    def imper_nette(self) -> float:
+        return self.total_imper - self.total_desimper
