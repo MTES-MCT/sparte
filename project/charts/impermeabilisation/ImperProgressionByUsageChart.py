@@ -20,6 +20,8 @@ class ImperProgressionByUsageChart(ImperProgressionByCouvertureChart):
 
 
 class ImperProgressionByUsageChartExport(ImperProgressionByCouvertureChartExport):
+    _sol = "usage"
+
     @property
     def param(self):
         return super().param | {
