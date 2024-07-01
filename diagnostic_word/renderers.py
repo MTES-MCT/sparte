@@ -12,6 +12,15 @@ from diagnostic_word.models import WordTemplate
 from project import charts
 from project.models import Request
 from project.utils import add_total_line_column
+from public_data.domain.impermeabilisation.difference.ImpermeabilisationDifferenceService import (
+    ImpermeabilisationDifferenceService,
+)
+from public_data.infra.impermeabilisation.difference.export.ImperNetteTableMapper import (
+    ImperNetteTableMapper,
+)
+from public_data.infra.impermeabilisation.difference.export.ImperSolTableMapper import (
+    ImperSolTableMapper,
+)
 from public_data.models.administration import AdminRef
 from utils.functions import get_url_with_domain
 
@@ -230,6 +239,7 @@ class BaseRenderer:
             artificialisation = waterfall_series["new_artif"]
             renaturation = waterfall_series["new_natural"]
             context |= {
+                # Charts datatables
                 "debut_ocsge": str(diagnostic.first_year_ocsge),
                 "fin_ocsge": str(diagnostic.last_year_ocsge),
                 "surface_artificielle": str(round(total_artif, 2)),
@@ -278,6 +288,43 @@ class FullReportRenderer(BaseRenderer):
 class LocalReportRenderer(BaseRenderer):
     def __init__(self, request: Request, word_template_slug="template-bilan-2"):
         super().__init__(request=request, word_template_slug=word_template_slug)
+
+    def get_context_data(self) -> Dict[str, Any]:
+        diagnostic = self.project
+
+        context = super().get_context_data()
+
+        if diagnostic.has_complete_uniform_ocsge_coverage:
+            difference = ImpermeabilisationDifferenceService.get_by_geom(
+                geom=diagnostic.combined_emprise,
+                start_date=diagnostic.first_year_ocsge,
+                end_date=diagnostic.last_year_ocsge,
+            )
+            # Charts datatables
+            imper_nette_data_table = ImperNetteTableMapper.map(difference)
+            imper_progression_couv_data_table = ImperSolTableMapper.map(difference)["couverture"]
+            imper_progression_usage_data_table = ImperSolTableMapper.map(difference)["usage"]
+            # Charts
+            imper_net_chart = charts.ImperNetteProgressionExport(diagnostic)
+            imper_progression_couv_chart = charts.ImperProgressionByCouvertureChartExport(diagnostic)
+            imper_repartition_couv_chart = charts.ImperByCouverturePieChartExport(diagnostic)
+            imper_progression_usage_chart = charts.ImperProgressionByUsageChartExport(diagnostic)
+            imper_repartition_usage_chart = charts.ImperByUsagePieChartExport(diagnostic)
+
+            context |= {
+                # Charts datatables
+                "imper_nette_data_table": imper_nette_data_table,
+                "imper_progression_couv_data_table": imper_progression_couv_data_table,
+                "imper_progression_usage_data_table": imper_progression_usage_data_table,
+                # Charts
+                "graphique_imper_nette": self.prep_chart(chart=imper_net_chart),
+                "graphique_progression_imper_couv": self.prep_chart(chart=imper_progression_couv_chart),
+                "graphique_repartition_imper_couv": self.prep_chart(chart=imper_repartition_couv_chart),
+                "graphique_progression_imper_usage": self.prep_chart(chart=imper_progression_usage_chart),
+                "graphique_repartition_imper_usage": self.prep_chart(chart=imper_repartition_usage_chart),
+            }
+
+        return context
 
 
 class ConsoReportRenderer(BaseRenderer):
