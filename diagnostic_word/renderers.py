@@ -292,7 +292,8 @@ class LocalReportRenderer(BaseRenderer):
     def get_context_data(self) -> Dict[str, Any]:
         diagnostic = self.project
 
-        # OCS GE
+        context = super().get_context_data()
+
         if diagnostic.has_complete_uniform_ocsge_coverage:
             difference = ImpermeabilisationDifferenceService.get_by_geom(
                 geom=diagnostic.combined_emprise,
@@ -310,7 +311,7 @@ class LocalReportRenderer(BaseRenderer):
             imper_progression_usage_chart = charts.ImperProgressionByUsageChartExport(diagnostic)
             imper_repartition_usage_chart = charts.ImperByUsagePieChartExport(diagnostic)
 
-            return super().get_context_data() | {
+            context |= {
                 # Charts datatables
                 "imper_nette_data_table": imper_nette_data_table,
                 "imper_progression_couv_data_table": imper_progression_couv_data_table,
@@ -322,6 +323,8 @@ class LocalReportRenderer(BaseRenderer):
                 "graphique_progression_imper_usage": self.prep_chart(chart=imper_progression_usage_chart),
                 "graphique_repartition_imper_usage": self.prep_chart(chart=imper_repartition_usage_chart),
             }
+
+        return context
 
 
 class ConsoReportRenderer(BaseRenderer):
