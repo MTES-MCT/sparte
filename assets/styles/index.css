@@ -332,6 +332,12 @@ Custom links
     background-image: none;
 }
 
+@media (min-width: 62em) {
+    .fr-nav__btn, .fr-nav__link {
+        font-size: .848rem !important;
+    }
+}
+
 /*
 Diagnostic list
 */
@@ -482,6 +488,10 @@ Table
 
 .fr-table th, .fr-table td {
     padding: .5rem .75rem !important;
+}
+
+.fr-table tfoot td {
+    font-weight: 700;
 }
 
 .table-responsive table {
