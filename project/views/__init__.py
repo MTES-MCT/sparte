@@ -4,3 +4,4 @@ from .dev import *
 from .export import *
 from .map import *
 from .report import *
+from .RNUPackagesProgressView import RNUPackagesProgressView
