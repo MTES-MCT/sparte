@@ -5,6 +5,10 @@ import celery
 from project import tasks
 from project.models import Project
 from project.models.enums import ProjectChangeReason
+from project.models.request import Request, RequestedDocumentChoices
+from public_data.infra.planning_competency.PlanningCompetencyServiceSudocuh import (
+    PlanningCompetencyServiceSudocuh,
+)
 from public_data.models import AdminRef, Land
 from users.models import User
 
@@ -150,3 +154,57 @@ def update_ocsge(project: Project):
 
     project._change_reason = ProjectChangeReason.NEW_OCSGE_HAS_BEEN_DELIVERED
     project.save()
+
+
+@celery.shared_task
+def create_request_rnu_package_one_off(project_id: int) -> None:
+    project = Project.objects.get(pk=project_id)
+    user: User = project.user
+    request = Request.objects.create(
+        project=project,
+        first_name=user.first_name,
+        last_name=user.last_name,
+        function=user.function,
+        organism=user.organism,
+        email=user.email,
+        user=user,
+        requested_document=RequestedDocumentChoices.RAPPORT_LOCAL,
+        du_en_cours=PlanningCompetencyServiceSudocuh.planning_document_in_revision(project.land),
+        competence_urba=False,
+    )
+    return request.id
+
+
+def trigger_async_tasks_rnu_pakage_one_off(project: Project, public_key: str | None = None) -> None:
+    from metabase.tasks import async_create_stat_for_project
+    from project import tasks as t
+
+    if not public_key:
+        public_key = project.get_public_key()
+
+    tasks_list = []
+
+    if not project.async_add_city_done:
+        tasks_list.append(t.add_city.si(project.id, public_key))
+
+    if not project.async_set_combined_emprise_done:
+        tasks_list.append(t.set_combined_emprise.si(project.id))
+
+    if not project.async_find_first_and_last_ocsge_done:
+        tasks_list.append(t.find_first_and_last_ocsge.si(project.id))
+
+    if not project.async_ocsge_coverage_status_done:
+        tasks_list.append(t.calculate_project_ocsge_status.si(project.id))
+
+    if not project.async_add_comparison_lands_done:
+        tasks_list.append(t.add_comparison_lands.si(project.id))
+
+    return celery.chain(
+        *[
+            *tasks_list,
+            map_tasks.si(project.id),
+        ],
+        async_create_stat_for_project.si(project.id, do_location=True),
+        create_request_rnu_package_one_off.si(project.id),
+        t.generate_word_diagnostic_rnu_package_one_off.si(project.id),
+    ).apply_async()

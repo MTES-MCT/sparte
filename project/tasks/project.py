@@ -285,6 +285,71 @@ class WordAlreadySentException(Exception):
 
 
 @shared_task(bind=True, max_retries=6, queue="long")
+def generate_word_diagnostic_rnu_package_one_off(self, project_id) -> int:
+    from diagnostic_word.renderers import (
+        ConsoReportRenderer,
+        FullReportRenderer,
+        LocalReportRenderer,
+    )
+    from highcharts.charts import RateLimitExceededException
+
+    project = Project.objects.get(id=int(project_id))
+    request = Request.objects.filter(project=project).first()
+    request_id = request.id
+
+    logger.info(f"Start generate word for request_id={request_id}")
+    try:
+        req = Request.objects.select_related("project").get(id=int(request_id))
+
+        if not req.project:
+            raise Project.DoesNotExist("Project does not exist")
+        elif not req.project.async_complete:
+            msg = "Not all async tasks are completed, retry later"
+            raise WaitAsyncTaskException(msg)
+        elif req.sent_file:
+            raise WordAlreadySentException("Word already sent")
+
+        logger.info("Start generating word")
+
+        logger.info("Requested document: %s", req.requested_document)
+
+        renderer_class = {
+            RequestedDocumentChoices.RAPPORT_COMPLET: FullReportRenderer,
+            RequestedDocumentChoices.RAPPORT_LOCAL: LocalReportRenderer,
+            RequestedDocumentChoices.RAPPORT_CONSO: ConsoReportRenderer,
+        }[req.requested_document]
+
+        with renderer_class(request=req) as renderer:
+            context = renderer.get_context_data()
+            buffer = renderer.render_to_docx(context=context)
+            filename = renderer.get_file_name()
+            req.sent_file.save(filename, buffer, save=True)
+            logger.info("Word created and saved")
+            return request_id
+
+    except (
+        RateLimitExceededException,
+        Project.DoesNotExist,
+        WaitAsyncTaskException,
+        WordAlreadySentException,
+    ) as exc:
+        req.record_exception(exc)
+        logger.error("Error while generating word: %s", exc)
+        logger.exception(exc)
+        self.retry(exc=exc, countdown=5 ** (self.request.retries + 1))
+    except Request.DoesNotExist as exc:
+        logger.error("Request doesn't not exist, no retry.")
+        logger.exception(exc)
+    except Exception as exc:
+        logger.error("Unknow exception, please investigate.")
+        req.record_exception(exc)
+        logger.exception(exc)
+        self.retry(exc=exc, countdown=900)
+    finally:
+        logger.info("End generate word for request=%d", request_id)
+
+
+@shared_task(bind=True, max_retries=6, queue="long")
 def generate_word_diagnostic(self, request_id) -> int:
     from diagnostic_word.renderers import (
         ConsoReportRenderer,
