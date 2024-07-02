@@ -1,18 +1,28 @@
+from django.core.cache import cache
 from django.db.models import Sum
 from django.db.models.query import QuerySet
 
+from public_data.domain.ClassCacher import ClassCacher
+from public_data.infra.PickleClassCacher import PickleClassCacher
 from public_data.models import Cerema, Commune
 
-from .ConsommationProgression import AnnualConsommation, ConsommationProgression
+from .ConsommationProgression import (
+    AnnualConsommation,
+    ConsommationProgressionAggregation,
+    ConsommationProgressionByCommune,
+)
 
 
 class ConsommationProgressionService:
-    @staticmethod
-    def get_by_communes(
+    def __init__(self, class_cacher: ClassCacher):
+        self.class_cacher = class_cacher
+
+    def get_by_communes_aggregation(
+        self,
         communes: QuerySet[Commune],
         start_date: int,
         end_date: int,
-    ) -> ConsommationProgression:
+    ) -> ConsommationProgressionAggregation:
         artif_fields = Cerema.get_art_field(
             start=str(start_date),
             end=str(end_date),
@@ -55,7 +65,12 @@ class ConsommationProgressionService:
                 det = key[5:8]
                 results[year][det] = val
 
-        progression = ConsommationProgression(start_date=start_date, end_date=end_date, consommation=[])
+        progression = ConsommationProgressionAggregation(
+            start_date=start_date,
+            end_date=end_date,
+            consommation=[],
+            communes_code_insee=[commune.insee for commune in communes],
+        )
 
         for year in results:
             progression.consommation.append(
@@ -72,3 +87,49 @@ class ConsommationProgressionService:
             )
 
         return progression
+
+    def get_by_communes(
+        self,
+        communes: QuerySet[Commune],
+        start_date: int,
+        end_date: int,
+    ) -> list[ConsommationProgressionByCommune]:
+        key = f"{start_date}-{end_date}-{communes.values_list('insee', flat=True)}"
+
+        if self.class_cacher.exists(key):
+            return self.class_cacher.get(key)
+
+        output = []
+
+        for commune in communes:
+            output.append(
+                ConsommationProgressionByCommune(
+                    commune_code_insee=commune.insee,
+                    start_date=start_date,
+                    end_date=end_date,
+                    consommation=self.get_by_communes_aggregation(
+                        communes=Commune.objects.filter(insee=commune.insee),
+                        start_date=start_date,
+                        end_date=end_date,
+                    ).consommation,
+                )
+            )
+
+        self.class_cacher.set(key, output)
+
+        return output
+
+
+gers = Commune.objects.filter(insee__startswith="32")
+
+service = ConsommationProgressionService(
+    class_cacher=PickleClassCacher(cache=cache),
+)
+
+print(
+    service.get_by_communes(
+        communes=gers,
+        start_date=2011,
+        end_date=2022,
+    )
+)
