@@ -1,5 +1,6 @@
 from django.db.models import F, IntegerField, Sum
 from django.db.models.functions import Cast
+from django.utils import timezone
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -18,8 +19,10 @@ class RNUPackagesProgressView(APIView):
         )
         of_those_with_ocsge_count = of_those_with_ocsge.count()
         diagnostic_to_create_count = diagnostic_to_create.count()
+        mda_user = User.objects.get(email="rnu.package@mondiagartif.beta.gouv.fr")
+
         diagnostic_created = Project.objects.filter(
-            user=User.objects.get(email="rnu.package@mondiagartif.beta.gouv.fr"),
+            user=mda_user,
         )
         diagnostic_created_count = diagnostic_created.count()
 
@@ -59,8 +62,14 @@ class RNUPackagesProgressView(APIView):
                 )
             )
 
+        time_diff = timezone.now() - mda_user.date_joined
+        hours = time_diff.seconds // 3600
+        minutes = (time_diff.seconds % 3600) // 60
+        seconds = time_diff.seconds % 60
+
         return Response(
             {
+                "elapsed_time": f"{hours}h {minutes}m {seconds}s",
                 "diagnostic_to_create_count": diagnostic_to_create_count,
                 "of_those_with_ocsge_count": of_those_with_ocsge_count,
                 "diagnostic_created_count": diagnostic_created_count,
