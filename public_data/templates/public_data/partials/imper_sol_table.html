@@ -1,0 +1,35 @@
+<div class="table-responsive">
+    <table class="fr-table">
+        <caption>Évolution de l'Imperméabilisation par type {{ label_caption }} sur le territoire de
+        {{ start_date }} à {{ end_date }} (en ha et %)</caption>
+        <thead>
+            <tr>
+                <th scope="col"></th>
+                <th scope="col" class="text-end">Imperméabilisation (en ha)</th>
+                <th scope="col" class="text-end text-muted">%</th>
+                <th scope="col" class="text-end">Désimperméabilisation (en ha)</th>
+                <th scope="col" class="text-end text-muted">%</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in sol %}
+            <tr>
+                <th scope="row">{{ item.label }}</th>
+                <td class="text-end">{{ item.imper|floatformat:1 }}</td>
+                <td class="text-end text-muted">{{ item.imper_percent|floatformat:1 }}</td>
+                <td class="text-end">{{ item.desimper|floatformat:1 }}</td>
+                <td class="text-end text-muted">{{ item.desimper_percent|floatformat:1 }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr>
+                <th scope="row">Total</th>
+                <td class="text-end">{{ total_imper|floatformat:1 }}</td>
+                <td class="text-end text-muted">100</td>
+                <td class="text-end">{{ total_desimper|floatformat:1 }}</td>
+                <td class="text-end text-muted">100</td>
+            </tr>
+        </tfoot>
+    </table>
+</div>
