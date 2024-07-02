@@ -1,6 +1,4 @@
-# Changelog
-
-Ce changelog suit la méthode "keep a changelog" disponible ici: [https://keepachangelog.com/en/1.0.0/](https://keepachangelog.com/en/1.0.0/)
+# IMPORTANT: Ce changelog n'est plus maintenu et a été remplacé par [la page release du dépot github](https://github.com/MTES-MCT/sparte/releases).
 
 ## [6.1] Favicon - 2024.06.12
 
