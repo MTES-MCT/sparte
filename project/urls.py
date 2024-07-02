@@ -58,6 +58,11 @@ urlpatterns = [
         name="report_discover",
     ),
     path(
+        "<int:pk>/tableau-de-bord/impermeabilisation",
+        views.ProjectReportImperView.as_view(),
+        name="report_imper",
+    ),
+    path(
         "<int:pk>/tableau-de-bord/artificialisation",
         views.ProjectReportArtifView.as_view(),
         name="report_artif",

@@ -1,0 +1,28 @@
+<div class="table-responsive">
+    <table class="fr-table">
+        <caption>
+            Évolution de l'imperméabilisation sur le territoire
+            entre {{ start_date }} et {{ end_date }} (en ha)
+        </caption>
+        <thead>
+            <tr>
+                <th scope="col"></th>
+                <th scope="col" class="text-end">{{ start_date }} - {{ end_date }}</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th scope="row">Imperméabilisation (en ha)</th>
+                <td class="text-end">{{ total_imper|floatformat:1 }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Désimperméabilisation (en ha)</th>
+                <td class="text-end">{{ total_desimper|floatformat:1 }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Imperméabilisation nette (en ha)</th>
+                <td class="text-end">{{ imper_nette|floatformat:1 }}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>

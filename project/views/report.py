@@ -23,6 +23,15 @@ from project.models import (
     trigger_async_tasks,
 )
 from project.utils import add_total_line_column
+from public_data.domain.impermeabilisation.difference.ImpermeabilisationDifferenceService import (
+    ImpermeabilisationDifferenceService,
+)
+from public_data.domain.impermeabilisation.difference.ImperNetteTableMapper import (
+    ImperNetteTableMapper,
+)
+from public_data.domain.impermeabilisation.difference.ImperSolTableMapper import (
+    ImperSolTableMapper,
+)
 from public_data.infra.planning_competency.PlanningCompetencyServiceSudocuh import (
     PlanningCompetencyServiceSudocuh,
 )
@@ -211,6 +220,41 @@ class ProjectReportLocalView(ProjectReportBaseView):
             {
                 "diagnostic": project,
                 "active_page": "local",
+            }
+        )
+        return super().get_context_data(**kwargs)
+
+
+class ProjectReportImperView(ProjectReportBaseView):
+    template_name = "project/report_imper.html"
+    breadcrumbs_title = "Rapport imperméabilisation"
+
+    def get_context_data(self, **kwargs):
+        project: Project = self.get_object()
+
+        difference = ImpermeabilisationDifferenceService.get_by_geom(
+            geom=project.combined_emprise,
+            start_date=project.first_year_ocsge,
+            end_date=project.last_year_ocsge,
+        )
+        imper_nette_data_table = ImperNetteTableMapper.map(difference)
+        imper_progression_couv_data_table = ImperSolTableMapper.map(difference)["couverture"]
+        imper_progression_usage_data_table = ImperSolTableMapper.map(difference)["usage"]
+
+        kwargs.update(
+            {
+                "diagnostic": project,
+                "active_page": "impermeabilisation",
+                "first_millesime": str(project.first_year_ocsge),
+                "last_millesime": str(project.last_year_ocsge),
+                "imper_nette_chart": charts.ImperNetteProgression(project),
+                "imper_progression_couv_chart": charts.ImperProgressionByCouvertureChart(project),
+                "imper_repartition_couv_chart": charts.ImperByCouverturePieChart(project),
+                "imper_progression_usage_chart": charts.ImperProgressionByUsageChart(project),
+                "imper_repartition_usage_chart": charts.ImperByUsagePieChart(project),
+                "imper_nette_data_table": imper_nette_data_table,
+                "imper_progression_couv_data_table": imper_progression_couv_data_table,
+                "imper_progression_usage_data_table": imper_progression_usage_data_table,
             }
         )
         return super().get_context_data(**kwargs)
