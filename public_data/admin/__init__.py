@@ -4,6 +4,7 @@ from .CommunePopAdmin import CommunePopAdmin
 from .DataSourceAdmin import DataSourceAdmin
 from .DepartementAdmin import DepartementAdmin
 from .EpciAdmin import EpciAdmin
+from .LandStaticFigureAdmin import LandStaticFigureAdmin
 from .OcsgeAdmin import OcsgeAdmin
 from .OcsgeArtificialAreaAdmin import OcsgeArtificialAreaAdmin
 from .OcsgeCommuneDiffAdmin import OcsgeCommuneDiffAdmin
@@ -32,4 +33,5 @@ __all__ = [
     "ScotAdmin",
     "SudocuhAdmin",
     "SudocuhEpciAdmin",
+    "LandStaticFigureAdmin",
 ]
