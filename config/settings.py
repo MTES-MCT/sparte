@@ -572,6 +572,7 @@ ORTHOPHOTO_URL = (
     "&LAYER=ORTHOIMAGERY.ORTHOPHOTOS&STYLE=normal&FORMAT=image/jpeg"
     "&TILECOL={x}&TILEROW={y}&TILEMATRIX={z}"
 )
+OPENSTREETMAP_URL = "https://tile.openstreetmap.org/{z}/{x}/{y}.png"
 
 # MATTERMOST SETTINGS
 

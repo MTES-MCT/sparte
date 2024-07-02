@@ -245,7 +245,7 @@ def generate_cover_image(self, project_id) -> None:
 
         gdf_emprise.buffer(250000).plot(ax=ax, facecolor="none", edgecolor="none")
         gdf_emprise.plot(ax=ax, facecolor="none", edgecolor="yellow")
-        cx.add_basemap(ax, source=settings.ORTHOPHOTO_URL)
+        cx.add_basemap(ax, source=settings.OPENSTREETMAP_URL)
 
         img_data = io.BytesIO()
         plt.savefig(
@@ -421,7 +421,7 @@ def get_img(queryset, color: str, title: str) -> io.BytesIO:
     )
     ax.add_artist(ScaleBar(1))
     ax.set_title(title)
-    cx.add_basemap(ax, source=settings.ORTHOPHOTO_URL, zoom_adjust=1, alpha=0.95)
+    cx.add_basemap(ax, source=settings.OPENSTREETMAP_URL, zoom_adjust=1, alpha=0.95)
 
     img_data = io.BytesIO()
     plt.savefig(img_data, bbox_inches="tight", format="jpg")
@@ -579,7 +579,7 @@ def generate_theme_map_understand_artif(self, project_id) -> None:
             ),
             loc="left",
         )
-        cx.add_basemap(ax, source=settings.ORTHOPHOTO_URL, zoom_adjust=1, alpha=0.95)
+        cx.add_basemap(ax, source=settings.OPENSTREETMAP_URL, zoom_adjust=1, alpha=0.95)
         cx.add_attribution(ax, text="Données: OCS GE (IGN)")
 
         img_data = io.BytesIO()
@@ -635,7 +635,7 @@ def generate_theme_map_gpu(self, project_id) -> None:
         gdf_emprise.plot(ax=ax, facecolor="none", edgecolor="yellow")
         ax.add_artist(ScaleBar(1))
         ax.set_title("Les zones d'urbanisme de son territoire")
-        cx.add_basemap(ax, source=settings.ORTHOPHOTO_URL)
+        cx.add_basemap(ax, source=settings.OPENSTREETMAP_URL)
 
         img_data = io.BytesIO()
         plt.savefig(img_data, bbox_inches="tight", format="jpg")
@@ -694,7 +694,7 @@ def generate_theme_map_fill_gpu(self, project_id) -> None:
             gdf_emprise.plot(ax=ax, facecolor="none", edgecolor="yellow")
             ax.add_artist(ScaleBar(1))
             ax.set_title("Il n'y a pas de zone U ou AU")
-            cx.add_basemap(ax, source=settings.ORTHOPHOTO_URL)
+            cx.add_basemap(ax, source=settings.OPENSTREETMAP_URL)
 
             img_data = io.BytesIO()
             plt.savefig(img_data, bbox_inches="tight", format="jpg")
