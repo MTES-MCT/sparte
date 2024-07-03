@@ -26,9 +26,9 @@ class ImperSolTableMapper:
                     "name": f"{item.code_prefix} {item.label_short}",
                     "data": [
                         item.imper,
-                        item.imper * 100 / difference.total_imper,
+                        item.imper * 100 / difference.total_imper if difference.total_imper > 0 else 0,
                         item.desimper,
-                        item.desimper * 100 / difference.total_desimper,
+                        item.desimper * 100 / difference.total_desimper if difference.total_desimper > 0 else 0,
                     ],
                 }
                 for item in sol
