@@ -23,7 +23,9 @@ from project.models import (
     trigger_async_tasks,
 )
 from project.utils import add_total_line_column
-from public_data.domain.planning_competency import PlanningCompetencyServiceSudocuh
+from public_data.infra.planning_competency.PlanningCompetencyServiceSudocuh import (
+    PlanningCompetencyServiceSudocuh,
+)
 from public_data.models import CouvertureSol, UsageSol
 from public_data.models.administration import AdminRef
 from public_data.models.gpu import ZoneUrba
@@ -672,11 +674,14 @@ class ArtifDetailCouvChart(CacheMixin, TemplateView):
                     detail_couv_artif_table[i]["last_millesime"] = row["surface"]
                     break
         kwargs |= {
+            "first_millesime": str(self.diagnostic.first_year_ocsge),
+            "last_millesime": str(self.diagnostic.last_year_ocsge),
             "couv_artif_sol": couv_artif_sol,
             "detail_couv_artif_chart": detail_couv_artif_chart,
             "detail_couv_artif_table": detail_couv_artif_table,
             "detail_total_artif": sum(_["artif"] for _ in detail_couv_artif_chart.get_series()),
             "detail_total_renat": sum(_["renat"] for _ in detail_couv_artif_chart.get_series()),
+            "detail_total_artif_period": sum(_["last_millesime"] for _ in detail_couv_artif_table),
         }
         return super().get_context_data(**kwargs)
 
@@ -752,11 +757,14 @@ class ArtifDetailUsaChart(CacheMixin, TemplateView):
                     detail_usage_artif_table[i]["last_millesime"] = row["surface"]
                     break
         kwargs |= {
+            "first_millesime": str(self.diagnostic.first_year_ocsge),
+            "last_millesime": str(self.diagnostic.last_year_ocsge),
             "usage_artif_sol": usage_artif_sol,
             "detail_usage_artif_chart": detail_usage_artif_chart,
             "detail_usage_artif_table": detail_usage_artif_table,
             "detail_total_artif": sum(_["artif"] for _ in detail_usage_artif_chart.get_series()),
             "detail_total_renat": sum(_["renat"] for _ in detail_usage_artif_chart.get_series()),
+            "detail_total_artif_period": sum(_["last_millesime"] for _ in detail_usage_artif_table),
         }
         return super().get_context_data(**kwargs)
 

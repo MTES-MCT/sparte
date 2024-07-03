@@ -5,6 +5,7 @@ from public_data.models import DataSource
 from public_data.shapefile import ShapefileFromSource
 
 from .is_artif_case import is_artif_case
+from .is_impermeable_case import is_impermeable_case
 from .utils import multiline_string_to_single_line
 
 
@@ -34,6 +35,14 @@ def build_ocsge_difference(source: DataSource) -> tuple[DataSource, Path]:
                 DPT AS DPT,
                 GEOMETRY,
                 CASE
+                    WHEN OLD_IS_IMPER = 0 AND NEW_IS_IMPER = 1 THEN 1
+                    ELSE 0
+                END AS NEW_IMPER,
+                CASE
+                    WHEN OLD_IS_IMPER = 1 AND NEW_IS_IMPER = 0 THEN 1
+                    ELSE 0
+                END AS NEWNOIMPER,
+                CASE
                     WHEN OLD_IS_ARTIF = 0 AND NEW_IS_ARTIF = 1 THEN 1
                     ELSE 0
                 END AS NEW_ARTIF,
@@ -52,7 +61,9 @@ def build_ocsge_difference(source: DataSource) -> tuple[DataSource, Path]:
                     '{source.srid}' AS SRID,
                     round(ST_Area(GEOMETRY), 4) AS SURFACE,
                     {is_artif_case(fields['cs_old'], fields['us_old'])} AS OLD_IS_ARTIF,
+                    {is_impermeable_case(fields['cs_old'])} AS OLD_IS_IMPER,
                     {is_artif_case(fields['cs_new'], fields['us_new'])} AS NEW_IS_ARTIF,
+                    {is_impermeable_case(fields['cs_new'])} AS NEW_IS_IMPER,
                     '{source.official_land_id}' AS DPT,
                     GEOMETRY
                 FROM

@@ -160,7 +160,7 @@ carto/media/ref_plan/
 *.Identifier
 
 *.pgsql
-notebooks/*.xlsx
+notebooks
 *.tar.gz
 staticroot/*
 public_data/static/SSCH*
