@@ -22,7 +22,7 @@ from django.core.exceptions import ImproperlyConfigured
 from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.redis import RedisIntegration
 
-OFFICIAL_VERSION = "6.1"
+OFFICIAL_VERSION = "7.1"
 
 root = environ.Path(__file__) - 2  # get root of the project
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -572,6 +572,7 @@ ORTHOPHOTO_URL = (
     "&LAYER=ORTHOIMAGERY.ORTHOPHOTOS&STYLE=normal&FORMAT=image/jpeg"
     "&TILECOL={x}&TILEROW={y}&TILEMATRIX={z}"
 )
+OPENSTREETMAP_URL = "https://tile.openstreetmap.org/{z}/{x}/{y}.png"
 
 # MATTERMOST SETTINGS
 

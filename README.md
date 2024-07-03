@@ -23,11 +23,6 @@ L'application a été renommée, précédemment elle s'appelait SPARTE, c'est po
 Le site est désormais accessible en local à cette adresse:
 [http://localhost:8080/](http://localhost:8080/)
 
-### Optionnel
-
-11. Créer un super utilisateur `python manage.py createsuperuser` (pour accéder à l'interface d'administration)
-12. Copier les fichiers de données OCS GE et Cérema sur votre bucket AWS (étapes décrites ci-dessous)
-13. Lancer l'installation des données `python scripts/cmd.py --env local rebuild`
 
 ## Installation frontend
 
@@ -94,60 +89,3 @@ Variables d'environnement spécifique à Scalingo. Voir les valeurs sur Scalingo
 | PROJ_LIB | requis pour le buildpack qui install GeoDjango |
 | SCALINGO_POSTGRESQL_URL | Ajouté lorsque l'addon postgres est activé |
 | SCALINGO_REDIS_URL | Ajouté lorsque l'addon redis est activé |
-
-
-## Contribution
-
-### Avant de commit
-- Vérifier la couverture des tests unitaires `coverage run -m pytest && coverage report -m`
-- Vérifier le formatage `flake8`
-
-Si vous souhaitez ignorer le pre-commit hook (utile pour ajouter des fichiers shapes sans les modifier):
-```
-git commit --no-verify
-```
-
-### Récupérer un backup de production
-
-1. Récupérer un backup sur scalingo en parcourant le menu: app > ressources > pg dashboard > backup, download last backup (par exemple 20220830000404_sparte_1396.tar.gz)
-2. Décompresser le backup `tar -xf 20220830000404_sparte_1396.tar.gz`
-3. Charger le backup dans la base de donnée  `pg_restore --clean --if-exists --no-owner --no-privileges --no-comments --dbname postgres://postgres:postgres@127.0.0.1:5432/postgres 20220830000404_sparte_1396.pgsql`
-
-
-### Update OCS GE
-
-The process is not stable yet. Use it with caution.
-
-1. Download shape files from IGN's website [https://geoservices.ign.fr](https://geoservices.ign.fr) "Catalogue > OCS GE"
-2. Extract shape files and zip them by name, remove anysubfolder, the zip should contain only files
-3. Name zip file accordingly to expected name in [public_data/management/commands/config_load_ocsge.json](public_data/management/commands/config_load_ocsge.json).
-4. Upload the zip in the bucket, in data folder.
-5. Load the data with the command `python scripts/cmd.py --env prod load_ocsge --departement Gers`
-6. Update all precalculated data: build_commune_data, build_artificial_area
-7. Update official data origin in [gitbook](https://app.gitbook.com/o/-MMQU-ngAOgQAqCm4mf3/s/OgEtEJQsOvgZrMPdWEIo/)
-8. Update admin's [Départements](https://sparte.beta.gouv.fr/admin/public_data/departement/) if new OCS GE has been added
-
-Example, update Gers OCS GE with 2022-06 data:
-```bash
-export ENV='local'
-python scripts/cmd.py --env $ENV run 'python manage.py load_ocsge --departement Gers' &&
-python scripts/cmd.py --env $ENV run 'python manage.py build_commune_data --departement Gers' && \
-python scripts/cmd.py --env $ENV run 'python manage.py build_artificial_area --departement Gers'
-```
-
-
-## Migration Cerema avec données 2021 (réalisée en septembre 2023)
-
-On ne peut pas exécuter le code de migration directement sur le serveur car il n'y a pas assez de RAM.
-
-1. Mettre l'application en mode maintenance: `/admin/django_app_parameter/parameter/11/change/`
-2. Via git, merger la branche staging dans master
-3. Attendre la fin du déploiement
-4. Ouvrir un tunnel vers la db de prod: `scalingo --app sparte --region osc-secnum-fr1 db-tunnel DATABASE_URL`
-5. Modifier le .env pour utiliser la db de prod depuis votre poste postgis://username:password@127.0.0.1:10000/dbname?sslmode=prefer
-6. Dans un terminal, sourcer le .env pour être sûr de tapper dans la db de prod
-7. Charger les données du Cerema `scalingo --app sparte --region osc-secnum-fr1 run 'python manage.py load_cerema'`
-7. Exécuter les scripts de migration `python manage.py update_administration_layer`
-
-
-https://google.github.io/styleguide/pyguide.html#38-comments-and-docstrings
