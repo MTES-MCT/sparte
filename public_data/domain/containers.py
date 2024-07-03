@@ -12,11 +12,9 @@ from .consommation.progression.ConsommationProgressionService import (
 class PublicDataContainer(containers.DeclarativeContainer):
     config = providers.Configuration()
 
-    cache = providers.Singleton(django_cache)
-
     class_cacher: ClassCacher = providers.Factory(
         PickleClassCacher,
-        cache=cache,
+        cache=django_cache,
     )
 
     consommation_progression_service = providers.Factory(

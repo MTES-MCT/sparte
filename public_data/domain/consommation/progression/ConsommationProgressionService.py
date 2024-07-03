@@ -1,9 +1,7 @@
-from django.core.cache import cache
 from django.db.models import Sum
 from django.db.models.query import QuerySet
 
 from public_data.domain.ClassCacher import ClassCacher
-from public_data.infra.PickleClassCacher import PickleClassCacher
 from public_data.models import Cerema, Commune
 
 from .ConsommationProgression import (
@@ -94,7 +92,10 @@ class ConsommationProgressionService:
         start_date: int,
         end_date: int,
     ) -> list[ConsommationProgressionByCommune]:
-        key = f"{start_date}-{end_date}-{communes.values_list('insee', flat=True)}"
+        if not communes.exists():
+            return []
+        communes_key = "-".join(communes.values_list("insee", flat=True))
+        key = f"{start_date}-{end_date}-{communes_key}"
 
         if self.class_cacher.exists(key):
             return self.class_cacher.get(key)
@@ -118,18 +119,3 @@ class ConsommationProgressionService:
         self.class_cacher.set(key, output)
 
         return output
-
-
-gers = Commune.objects.filter(insee__startswith="32")
-
-service = ConsommationProgressionService(
-    class_cacher=PickleClassCacher(cache=cache),
-)
-
-print(
-    service.get_by_communes(
-        communes=gers,
-        start_date=2011,
-        end_date=2022,
-    )
-)
