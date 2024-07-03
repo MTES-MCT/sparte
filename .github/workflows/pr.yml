@@ -48,28 +48,10 @@ jobs:
       - run: curl https://raw.githubusercontent.com/pypa/pipenv/master/get-pipenv.py | python
       - uses: nyurik/action-setup-postgis@v1
         id: pg
-      - uses: scalingo-community/setup-scalingo@v0.1.1
-        with:
-          region: 'osc-fr1'
-          api_token: ${{ secrets.scalingo_api_token }}
-          app_name: 'sparte-staging'
-      - name: Cache DB Backup
-        id: cache-db-backup
-        uses: actions/cache@v4
-        with:
-          path: dump.tar.gz
-          key: db-backup
-      - name: Download DB Backup
-        if: steps.cache-db-backup.outputs.cache-hit != 'true'
-        run: scalingo --addon ad-bcec570b-e20a-4678-9cfc-7e715ef86d76 backups-download --output dump.tar.gz
-      - run: tar -xzvf dump.tar.gz -O > dump.pgsql
-      - run: psql -c "ALTER ROLE postgres SUPERUSER;"
-      - run: createdb test_postgres
-      - run: pg_restore --dbname test_postgres --no-owner --no-privileges --no-tablespaces --no-comments --clean --if-exists "dump.pgsql"
       - run: pipenv install --dev
       - run: sudo apt-add-repository ppa:ubuntugis/ubuntugis-unstable
       - run: sudo apt-get update
       - run: sudo apt-get install -y gdal-bin libgdal-dev
-      - run: pipenv run python -Wa manage.py test --keepdb
+      - run: pipenv run python -Wa manage.py test
         env:
           DATABASE_URL: ${{ steps.pg.outputs.connection-uri }}
