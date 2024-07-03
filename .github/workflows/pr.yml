@@ -48,6 +48,7 @@ jobs:
       - run: curl https://raw.githubusercontent.com/pypa/pipenv/master/get-pipenv.py | python
       - uses: nyurik/action-setup-postgis@v1
         id: pg
+      - run: psql -c "ALTER ROLE postgres SUPERUSER;"
       - run: pipenv install --dev
       - run: sudo apt-add-repository ppa:ubuntugis/ubuntugis-unstable
       - run: sudo apt-get update
