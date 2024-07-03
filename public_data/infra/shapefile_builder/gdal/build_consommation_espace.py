@@ -12,20 +12,20 @@ def build_consommation_espace(source: DataSource) -> tuple[DataSource, Path]:
     build_name = source.get_build_name()
 
     with ShapefileFromSource(source=source) as shapefile_path:
-        art_fields = Cerema.get_art_field(
-            start=source.millesimes[0],
-            end=source.millesimes[1] - 1,
+        art_fields_11_21 = Cerema.get_art_field(
+            start=2011,
+            end=2020,
         )
-        habitat_fields = [field.replace("art", "hab").replace("naf", "art") for field in art_fields]
-        activity_fields = [field.replace("art", "act").replace("naf", "art") for field in art_fields]
+        habitat_fields_11_21 = [field.replace("art", "hab").replace("naf", "art") for field in art_fields_11_21]
+        activity_fields_11_21 = [field.replace("art", "act").replace("naf", "art") for field in art_fields_11_21]
 
         sql = f"""
             SELECT
                 *,
                 '{source.srid}' AS SRID,
-                CAST(({' + '.join(art_fields)}) AS FLOAT) AS NAF11ART21,
-                CAST(({' + '.join(habitat_fields)}) AS FLOAT) AS ART11HAB21,
-                CAST(({' + '.join(activity_fields)}) AS FLOAT) AS ART11ACT21,
+                CAST(({' + '.join(art_fields_11_21)}) AS FLOAT) AS NAF11ART21,
+                CAST(({' + '.join(habitat_fields_11_21)}) AS FLOAT) AS ART11HAB21,
+                CAST(({' + '.join(activity_fields_11_21)}) AS FLOAT) AS ART11ACT21,
                 {"artcom0923" if source.srid == SRID.LAMBERT_93 else "NULL"} AS ARTCOM0923,
                 GEOMETRY AS MPOLY
             FROM
