@@ -1,0 +1,34 @@
+{% extends "index.html" %}
+
+{% load static %}
+{% load sri %}
+
+{% block pagetitle %}Accueil{% endblock pagetitle %}
+
+{% block headers %}
+{% sri_static "home/css/home.css" %}
+{% endblock headers %}
+
+{% block body_class %}home{% endblock body_class %}
+
+<!-- Hide breadcrumbs on home page -->
+{% block breadcrumbs %}
+{% endblock breadcrumbs %}
+
+{% block content %}
+<section class="fr-py-6w">
+  <div class="fr-container">
+    <h1>Téléchargements</h1>
+    <h2>Trames de rapport triennal local des communes sous RNU</h2>    
+  </div>
+</section>
+{% include  "home/partials/newsletter_form.html" %}
+{% endblock content %}
+
+{% block tagging %}
+<script language="javascript" nonce="[NONCE_PLACEHOLDER]">
+window.onload = function(event) {
+  _paq.push(['trackEvent', 'local_report_download_funnel', 'open_home_local_report', 'local_report_home_opened'])
+}
+</script>
+{% endblock tagging %}

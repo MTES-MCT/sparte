@@ -35,6 +35,14 @@ class HomeView(BreadCrumbMixin, TemplateView):
         return super().get_context_data(**kwargs)
 
 
+class DownloadView(BreadCrumbMixin, TemplateView):
+    template_name = "home/download.html"
+
+    def get_context_data(self, **kwargs):
+        kwargs["form"] = NewsletterForm()
+        return super().get_context_data(**kwargs)
+
+
 class HomeRapportLocalView(BreadCrumbMixin, TemplateView):
     template_name = "home/home_rapport_local.html"
 
