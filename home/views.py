@@ -13,6 +13,7 @@ from django_app_parameter import app_parameter
 
 from brevo.connectors import Brevo
 from project.models import Request
+from public_data.models import Departement
 from users.models import User
 from utils.functions import get_url_with_domain
 from utils.htmx import HtmxRedirectMixin, StandAloneMixin
@@ -39,7 +40,10 @@ class DownloadView(BreadCrumbMixin, TemplateView):
     template_name = "home/download.html"
 
     def get_context_data(self, **kwargs):
-        kwargs["form"] = NewsletterForm()
+        kwargs |= {
+            "form": NewsletterForm(),
+            "departements": Departement.objects.all().order_by("source_id"),
+        }
         return super().get_context_data(**kwargs)
 
 
