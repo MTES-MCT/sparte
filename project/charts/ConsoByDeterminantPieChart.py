@@ -34,7 +34,7 @@ class ConsoByDeterminantPieChart(ProjectChart):
     def get_series(self):
         if not self.series:
             self.series = self.project.get_determinants(group_name=self.group_name)
-        return {"Déterminants": {n: sum(v.values()) for n, v in self.series.items()}}
+        return {"Destinations": {n: sum(v.values()) for n, v in self.series.items()}}
 
     def add_series(self):
         super().add_series(sliced=True)
@@ -47,7 +47,7 @@ class ConsoByDeterminantPieChartExport(ConsoByDeterminantPieChart):
             "credits": CEREMA_CREDITS,
             "title": {
                 "text": (
-                    f"Déterminants de la consommation d'espace de {self.project.territory_name}"
+                    f"Destinations de la consommation d'espace de {self.project.territory_name}"
                     f" entre {self.project.analyse_start_date} et {self.project.analyse_end_date} (en ha)"
                 )
             },
