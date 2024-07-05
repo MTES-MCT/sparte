@@ -258,8 +258,8 @@ class BaseRenderer:
                 ),
             }
 
-            # Artif comparison territories
-            if has_neighbors:
+            # Artif territories sub level
+            if not is_commune:
                 # Charts
                 artif_chart_comparison = charts.NetArtifComparaisonChartExport(diagnostic, level=diagnostic.level)
                 context |= {
