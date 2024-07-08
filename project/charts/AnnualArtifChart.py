@@ -2,7 +2,7 @@ from project.charts.base_project_chart import ProjectChart
 from project.charts.constants import DEFAULT_VALUE_DECIMALS
 
 ARTIFICIALISATION = "Artificialisation"
-RENATURATION = "Renaturation"
+RENATURATION = "Désartificialisation"
 NET_ARTIFICIALISATION = "Artificialisation nette"
 
 

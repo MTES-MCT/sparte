@@ -559,7 +559,13 @@ def generate_theme_map_understand_artif(self, project_id) -> None:
             [], [], linestyle="none", mfc=new_artif_color, mec=new_artif_color, marker="s", label="Artificialisation"
         )
         new_natural_legend_label = Line2D(
-            [], [], linestyle="none", mfc=new_natural_color, mec=new_natural_color, marker="s", label="Renaturation"
+            [],
+            [],
+            linestyle="none",
+            mfc=new_natural_color,
+            mec=new_natural_color,
+            marker="s",
+            label="Désartificialisation",
         )
 
         ax.add_artist(ScaleBar(1, location="lower right"))

@@ -82,7 +82,6 @@ export default class Events
 
     if (_event.features.length > 0)
     {
-
       let info = `<div class="info-box__title"><strong>${_options.title}</strong></div>`
 
       _options.properties.forEach((_obj) =>
@@ -108,7 +107,7 @@ export default class Events
     {
       this.infoBoxNode.innerHTML = `<div class="info-box__title"><strong>${_options.title}</strong></div>
                 <ul class="fr-badge-group">
-                    <li><p class="fr-badge fr-badge--${_event.features[0].properties.is_new_artif ? 'error' : 'success'} fr-badge--sm fr-badge--no-icon text-capitalize">${_event.features[0].properties.is_new_artif ? 'Artificialiation' : 'Renaturation'}</p></li>
+                    <li><p class="fr-badge fr-badge--${_event.features[0].properties.is_new_artif ? 'error' : 'success'} fr-badge--sm fr-badge--no-icon text-capitalize">${_event.features[0].properties.is_new_artif ? 'Artificialiation' : 'Désartificialisation'}</p></li>
                     <li><p class="fr-badge fr-badge--blue-ecume fr-badge--sm fr-badge--no-icon text-capitalize">Surface&nbsp;:&nbsp;<strong>${formatData('number', ['fr-FR', 'unit', 'hectare', 3], _event.features[0].properties.surface)}</strong></p></li>
                 </ul>
                 <table class="table table-striped table-sm table-borderless table-custom">
@@ -156,7 +155,7 @@ export default class Events
                 <thead>
                     <tr>
                         <th scope="col" class="fr-text--xs">Surface artificialisée</th>
-                        <th scope="col" class="fr-text--xs">Surface renaturée</th>
+                        <th scope="col" class="fr-text--xs">Surface désartificialisée</th>
                         <th scope="col" class="fr-text--xs">Artificialisation nette</th>
                     </tr>
                 </thead>
