@@ -1098,7 +1098,7 @@ class MyArtifMapView(BaseMap):
                             "color": "#FC4F4F",
                         },
                         {
-                            "value": f"Renaturation ({first_year} - {last_year})",
+                            "value": f"Désartificialisation ({first_year} - {last_year})",
                             "color": "#43d360",
                         },
                         {
