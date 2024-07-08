@@ -47,7 +47,7 @@ class ArtifWaterfallChart(ProjectChart):
                         "color": "#ff0000",
                     },
                     {
-                        "name": "Renaturation",
+                        "name": "Désartificialisation",
                         "y": series["new_natural"] * -1,
                         "color": "#00ff00",
                     },
