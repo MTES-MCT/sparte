@@ -244,7 +244,7 @@ def generate_cover_image(self, project_id) -> None:
         fig.set_dpi(72)
 
         gdf_emprise.buffer(250000).plot(ax=ax, facecolor="none", edgecolor="none")
-        gdf_emprise.plot(ax=ax, facecolor="none", edgecolor="yellow")
+        gdf_emprise.plot(ax=ax, facecolor="none", edgecolor="black")
         cx.add_basemap(ax, source=settings.OPENSTREETMAP_URL)
 
         img_data = io.BytesIO()
@@ -544,8 +544,8 @@ def generate_theme_map_understand_artif(self, project_id) -> None:
         fig.set_dpi(100)
 
         artif_area_gdf.plot(ax=ax, color=artif_area_gdf["color"], label="Artificialisation")
-        gdf_emprise.plot(ax=ax, facecolor="none", edgecolor="yellow")
-        emprise_legend_label = Line2D([], [], color="yellow", linewidth=3, label=diagnostic.territory_name)
+        gdf_emprise.plot(ax=ax, facecolor="none", edgecolor="black")
+        emprise_legend_label = Line2D([], [], color="black", linewidth=3, label=diagnostic.territory_name)
         artif_legend_label = Line2D(
             [],
             [],
@@ -638,7 +638,7 @@ def generate_theme_map_gpu(self, project_id) -> None:
         fig.set_dpi(150)
 
         zone_urba_gdf.plot(ax=ax, color=zone_urba_gdf["color"])
-        gdf_emprise.plot(ax=ax, facecolor="none", edgecolor="yellow")
+        gdf_emprise.plot(ax=ax, facecolor="none", edgecolor="black")
         ax.add_artist(ScaleBar(1))
         ax.set_title("Les zones d'urbanisme de son territoire")
         cx.add_basemap(ax, source=settings.OPENSTREETMAP_URL)
@@ -697,7 +697,7 @@ def generate_theme_map_fill_gpu(self, project_id) -> None:
             fig, ax = plt.subplots(figsize=(15, 10))
             plt.axis("off")
             fig.set_dpi(150)
-            gdf_emprise.plot(ax=ax, facecolor="none", edgecolor="yellow")
+            gdf_emprise.plot(ax=ax, facecolor="none", edgecolor="black")
             ax.add_artist(ScaleBar(1))
             ax.set_title("Il n'y a pas de zone U ou AU")
             cx.add_basemap(ax, source=settings.OPENSTREETMAP_URL)
