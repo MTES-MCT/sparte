@@ -8,11 +8,7 @@ from public_data.domain.consommation.progression.ConsommationProgression import 
 class ConsoProportionalComparisonTableMapper:
     @staticmethod
     def map(consommation_progression: list[ConsommationProgressionLand]):
-        first_land_consommation = consommation_progression[0] if consommation_progression else None
-
-        if not first_land_consommation:
-            raise ValueError("No consommation progression found")
-
+        first_land_consommation = consommation_progression[0]
         land_type_label = first_land_consommation.land.land_type_label
 
         headers = [land_type_label] + [str(conso.year) for conso in first_land_consommation.consommation] + ["Total"]
