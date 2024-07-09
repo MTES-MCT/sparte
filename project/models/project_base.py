@@ -677,7 +677,7 @@ class Project(BaseProject):
             "mix": "Mixte",
             "rou": "Route",
             "fer": "Ferré",
-            "inc": "Non renseigné",
+            "inc": "Inconnu",
         }
         results = {f: dict() for f in determinants.values()}
         args = []

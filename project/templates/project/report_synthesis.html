@@ -138,7 +138,7 @@ Synthèse
                 réalisées au cours de l'année 2022.
               </p>
               <h6 class="fr-mt-2w">Calcul</h6>
-              <p class="fr-text--sm">Les données du Cerema donnent la consommation d'espaces NAF (Naturels, Agricoles et Forestiers) par année, par déterminant et par commune.</p>
+              <p class="fr-text--sm">Les données du Cerema donnent la consommation d'espaces NAF (Naturels, Agricoles et Forestiers) par année, par destination et par commune.</p>
             </div>
           </div>
         </div>
@@ -157,7 +157,7 @@ Synthèse
           <div class="fr-col-12 fr-col-md-4 fr-grid-row">
             <div class="fr-callout w-100">
               <p class="fr-callout__title">{{ net_artif|floatformat:1 }} ha</p>
-              <p>Artificialisation nette sur la période <i class="bi bi-question-circle" data-toggle="tooltip" title="= artificialisation - renaturation" aria-hidden="true"></i></p>
+              <p>Artificialisation nette sur la période <i class="bi bi-question-circle" data-toggle="tooltip" title="= artificialisation - désartificialisation" aria-hidden="true"></i></p>
             </div>
           </div>
           <div class="fr-col-12 fr-col-md-4 fr-grid-row">
@@ -169,7 +169,7 @@ Synthèse
           <div class="fr-col-12 fr-col-md-4 fr-grid-row">
             <div class="fr-callout w-100">
               <p class="fr-callout__title">+{{ new_natural|floatformat:1 }} ha</p>
-              <p>Total renaturation sur la période</p>
+              <p>Total désartificialisation sur la période</p>
             </div>
           </div>
         </div>
@@ -189,7 +189,7 @@ Synthèse
               <h6 class="fr-mt-2w">Source</h6>
               <p class="fr-text--sm">OCS GE (millésime min : {{ project.first_year_ocsge }}, millésime max : {{ project.last_year_ocsge }}).</p>
               <h6 class="fr-mt-2w">Calcul</h6>
-              <p class="fr-text--sm">L'artificialisation nette = artificialisation - renaturation sur la période.</p>
+              <p class="fr-text--sm">L'artificialisation nette = artificialisation - désartificialisation sur la période.</p>
             </div>
           </div>
         </div>

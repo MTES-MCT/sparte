@@ -105,7 +105,7 @@ class ArtifProgressionByCouvertureChart(ProjectChart):
         )
         self.chart["series"].append(
             {
-                "name": "Renaturation",
+                "name": "Désartificialisation",
                 "data": [
                     {
                         "name": item["code_prefix"],
