@@ -42,13 +42,11 @@ class ConsommationProgressionService:
             "inc",
         ]
         years = [str(i) for i in range(start_date, end_date + 1)]
-        determinants_fields = []
-
-        for year in years:
-            start = year[-2:]
-            end = str(int(year) + 1)[-2:]
-            for det in determinants:
-                determinants_fields.append(f"art{start}{det}{end}")
+        determinants_fields = [
+            f"art{year[-2:]}{det}{str(int(year) + 1)[-2:]}"
+            for year in years
+            for det in determinants
+        ]
 
         fields = artif_fields + determinants_fields + [surface_field]
 
