@@ -23,6 +23,7 @@ from project.models import (
     trigger_async_tasks,
 )
 from project.utils import add_total_line_column
+from public_data.domain.containers import PublicDataContainer
 from public_data.domain.impermeabilisation.difference.ImpermeabilisationDifferenceService import (
     ImpermeabilisationDifferenceService,
 )
@@ -32,7 +33,6 @@ from public_data.domain.impermeabilisation.difference.ImperNetteTableMapper impo
 from public_data.domain.impermeabilisation.difference.ImperSolTableMapper import (
     ImperSolTableMapper,
 )
-from public_data.domain.containers import PublicDataContainer
 from public_data.infra.consommation.progression.table.ConsoComparisonTableMapper import (
     ConsoComparisonMapper,
 )
