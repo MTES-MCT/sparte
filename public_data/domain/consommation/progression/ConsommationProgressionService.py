@@ -79,21 +79,20 @@ class ConsommationProgressionService:
             communes_code_insee=[commune.insee for commune in communes],
         )
 
-        for year in results:
-            conso_totale = results[year]["total"]
-            progression.consommation.append(
-                AnnualConsommation(
-                    year=year,
-                    total=conso_totale / 10000,
-                    habitat=results[year]["hab"] / 10000,
-                    activite=results[year]["act"] / 10000,
-                    mixte=results[year]["mix"] / 10000,
-                    route=results[year]["rou"] / 10000,
-                    ferre=results[year]["fer"] / 10000,
-                    non_reseigne=results[year]["inc"] / 10000,
-                    per_mille_of_area=conso_totale / surface * 1000,
-                )
+        progression.consommation = [
+            AnnualConsommation(
+                year=year,
+                total=results[year]["total"] / 10000,
+                habitat=results[year]["hab"] / 10000,
+                activite=results[year]["act"] / 10000,
+                mixte=results[year]["mix"] / 10000,
+                route=results[year]["rou"] / 10000,
+                ferre=results[year]["fer"] / 10000,
+                non_reseigne=results[year]["inc"] / 10000,
+                per_mille_of_area=results[year]["total"] / surface * 1000,
             )
+            for year in results
+        ]
 
         self.class_cacher.set(key, value=progression)
 
