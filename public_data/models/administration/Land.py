@@ -28,6 +28,9 @@ class Land:
 
     def __init__(self, public_key):
         self.public_key = public_key
+        self.land_type: str
+        self.id: str
+        self.land: Commune | Epci | Scot | Departement | Region
 
         try:
             self.land_type, self.id = public_key.strip().split("_")
@@ -50,8 +53,22 @@ class Land:
     def get_cities(self):
         return self.land.get_cities()
 
-    def __getattr__(self, name):
-        return getattr(self.land, name)
+    def get_cities_queryset(self):
+        if self.land_type == AdminRef.COMMUNE:
+            return Commune.objects.filter(pk=self.id)
+        return self.land.commune_set.all()
+
+    @property
+    def area(self):
+        return self.land.area
+
+    @property
+    def land_type_label(self):
+        return AdminRef.CHOICES_DICT[self.land_type]
+
+    @property
+    def name(self):
+        return self.land.name
 
     def __str__(self):
         return f"Land({str(self.land)})"

@@ -2,12 +2,12 @@ from django.db.models import Sum
 from django.db.models.query import QuerySet
 
 from public_data.domain.ClassCacher import ClassCacher
-from public_data.models import Cerema, Commune
+from public_data.models import Cerema, Commune, Land
 
 from .ConsommationProgression import (
     AnnualConsommation,
     ConsommationProgressionAggregation,
-    ConsommationProgressionByCommune,
+    ConsommationProgressionLand,
 )
 
 
@@ -21,6 +21,14 @@ class ConsommationProgressionService:
         start_date: int,
         end_date: int,
     ) -> ConsommationProgressionAggregation:
+        communes_key = "-".join(communes.values_list("insee", flat=True))
+        key = f"{start_date}-{end_date}-{communes_key}"
+
+        if self.class_cacher.exists(key):
+            return self.class_cacher.get(key)
+
+        surface_field = "surfcom23"
+
         artif_fields = Cerema.get_art_field(
             start=str(start_date),
             end=str(end_date),
@@ -42,15 +50,18 @@ class ConsommationProgressionService:
             for det in determinants:
                 determinants_fields.append(f"art{start}{det}{end}")
 
-        fields = artif_fields + determinants_fields
+        fields = artif_fields + determinants_fields + [surface_field]
 
         qs = Cerema.objects.filter(city_insee__in=communes.values("insee"))
         args = {field: Sum(field) for field in fields}
         qs = qs.aggregate(**args)
 
         results = {}
+        surface = qs[surface_field]
 
         for key, val in qs.items():
+            if key == surface_field:
+                continue
             year = int(f"20{key[3:5]}")
 
             if year not in results:
@@ -71,51 +82,48 @@ class ConsommationProgressionService:
         )
 
         for year in results:
+            conso_totale = results[year]["total"]
             progression.consommation.append(
                 AnnualConsommation(
                     year=year,
-                    total=results[year]["total"] / 10000,
+                    total=conso_totale / 10000,
                     habitat=results[year]["hab"] / 10000,
                     activite=results[year]["act"] / 10000,
                     mixte=results[year]["mix"] / 10000,
                     route=results[year]["rou"] / 10000,
                     ferre=results[year]["fer"] / 10000,
                     non_reseigne=results[year]["inc"] / 10000,
+                    per_mille_of_area=conso_totale / surface * 1000,
                 )
             )
 
+        self.class_cacher.set(key, value=progression)
+
         return progression
 
-    def get_by_communes(
+    def get_by_lands(
         self,
-        communes: QuerySet[Commune],
+        lands: list[Land],
         start_date: int,
         end_date: int,
-    ) -> list[ConsommationProgressionByCommune]:
-        if not communes.exists():
+    ) -> list[ConsommationProgressionLand]:
+        if not lands:
             return []
-        communes_key = "-".join(communes.values_list("insee", flat=True))
-        key = f"{start_date}-{end_date}-{communes_key}"
-
-        if self.class_cacher.exists(key):
-            return self.class_cacher.get(key)
 
         output = []
 
-        for commune in communes:
+        for land in lands:
             output.append(
-                ConsommationProgressionByCommune(
-                    commune_code_insee=commune.insee,
+                ConsommationProgressionLand(
+                    land=land,
                     start_date=start_date,
                     end_date=end_date,
                     consommation=self.get_by_communes_aggregation(
-                        communes=Commune.objects.filter(insee=commune.insee),
+                        communes=land.get_cities_queryset(),
                         start_date=start_date,
                         end_date=end_date,
                     ).consommation,
                 )
             )
-
-        self.class_cacher.set(key, output)
 
         return output
