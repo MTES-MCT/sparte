@@ -8,10 +8,10 @@ from public_data.domain.consommation.progression.ConsommationProgression import 
 class ConsoComparisonMapper:
     @staticmethod
     def map(consommation_progression: list[ConsommationProgressionLand]):
-        first_land_consommation = consommation_progression[0] if consommation_progression else None
-
-        if not first_land_consommation:
+        if not consommation_progression:
             raise ValueError("No consommation progression found")
+        
+        first_land_consommation = consommation_progression[0]
 
         land_type_label = first_land_consommation.land.land_type_label
 
