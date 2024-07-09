@@ -266,9 +266,16 @@ CACHES = {
         },
     }
 }
-if ENVIRONMENT not in ["local"]:
-    FANCY_REMEMBER_ALL_URLS = True
-    FANCY_REMEMBER_STATS_ALL_URLS = True
+FANCY_REMEMBER_ALL_URLS = True
+FANCY_REMEMBER_STATS_ALL_URLS = True
+
+
+if ENVIRONMENT == "local":
+    CACHES = {
+        "default": {
+            "BACKEND": "config.cache_backends.RedisDummyCache",
+        },
+    }
 # SESSION
 
 SESSION_CACHE_ALIAS = "default"
