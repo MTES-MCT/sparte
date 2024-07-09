@@ -43,9 +43,7 @@ class ConsommationProgressionService:
         ]
         years = [str(i) for i in range(start_date, end_date + 1)]
         determinants_fields = [
-            f"art{year[-2:]}{det}{str(int(year) + 1)[-2:]}"
-            for year in years
-            for det in determinants
+            f"art{year[-2:]}{det}{str(int(year) + 1)[-2:]}" for year in years for det in determinants
         ]
 
         fields = artif_fields + determinants_fields + [surface_field]
