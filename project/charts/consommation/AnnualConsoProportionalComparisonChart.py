@@ -6,6 +6,10 @@ from project.charts.constants import (
     DEFAULT_VALUE_DECIMALS,
     LEGEND_NAVIGATION_EXPORT,
 )
+from public_data.domain.containers import PublicDataContainer
+from public_data.infra.consommation.progression.highchart.ConsoProportionalComparisonMapper import (
+    ConsoProportionalComparisonMapper,
+)
 
 
 class AnnualConsoProportionalComparisonChart(ProjectChart):
@@ -27,27 +31,14 @@ class AnnualConsoProportionalComparisonChart(ProjectChart):
         }
 
     def add_series(self):
-        self.add_serie(
-            self.project.name,
-            self.project.get_conso_per_year(
-                coef=1000 / self.project.area,
+        self.chart["series"] = ConsoProportionalComparisonMapper.map(
+            land_id_to_highlight=self.project.land.official_id,
+            consommation_progression=PublicDataContainer.consommation_progression_service().get_by_lands(
+                lands=self.project.comparison_lands_and_self_land(),
+                start_date=int(self.project.analyse_start_date),
+                end_date=int(self.project.analyse_end_date),
             ),
-            **{
-                "color": "#ff0000",
-                "dashStyle": "ShortDash",
-            },
         )
-        super().add_series()
-
-    def get_series(self):
-        return {
-            land.name: land.get_conso_per_year(
-                self.project.analyse_start_date,
-                self.project.analyse_end_date,
-                coef=1000 / land.area,
-            )
-            for land in self.project.get_look_a_like()
-        }
 
 
 class AnnualConsoProportionalComparisonChartExport(AnnualConsoProportionalComparisonChart):

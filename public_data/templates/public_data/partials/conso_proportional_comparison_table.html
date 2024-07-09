@@ -1,0 +1,20 @@
+<div class="table-responsive">
+    <table class="fr-table table-last-column-bold">
+        <caption>Consommation d'espace annuelle proportionnelle à la surface du territoire sur les territoires similaires (en ‰ - pour mille)</caption>
+        <thead>
+            <tr>
+                {% for header in headers %}
+                    <th scope="col">{{ header }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in data %}
+                <tr>
+                    {% for cell in row %}
+                        <td>{{ cell }}</td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+    </table>
+</div>

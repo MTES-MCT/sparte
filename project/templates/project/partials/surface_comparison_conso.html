@@ -136,30 +136,7 @@
             </p>
     
             <h6 class="fr-mt-2w">Données</h6>
-            <div class="table-responsive">
-                <table class="fr-table table-last-column-bold">
-                    <caption>Consommation d'espace annuelle proportionnelle à la surface du territoire sur les territoires similaires (en ‰ - pour mille)</caption>
-                    <thead>
-                        <tr>
-                            <th scope="col"></th>
-                            {% for year in diagnostic.years %}
-                            <th scope="col" class="text-end">{{ year }}</th>
-                            {% endfor %}
-                            <th scope="col" class="text-end">Total</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for city_name, data in surface_proportional_data_table.items %}
-                        <tr>
-                            <th scope="row">{{ city_name }}</th>
-                            {% for year, val in data.items %}
-                            <td class="text-end">{{ val|floatformat:1 }}</td>
-                            {% endfor %}
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
+            {{ surface_proportional_data_table }}
         </div>
     </div>
 </div>
