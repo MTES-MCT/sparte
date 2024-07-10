@@ -86,43 +86,51 @@
 
             <h6 class="fr-mt-2w">Données</h6>
             <p class="fr-text--sm">En hectare (Ha).</p>
-            <div class="table-responsive">
-                <table class="fr-table table-custom table-last-row-bold">
-                    <caption>Évolution de l'artificialisation par type d'usage sur le territoire de {{ first_millesime }} à {{ last_millesime }} (en ha et %)</caption>
-                    <thead>
-                        <tr>
-                            <th scope="col"></th>
-                            <th scope="col" class="text-end">Artificialisation</th>
-                            <th scope="col" class="text-end text-muted">%</th>
-                            <th scope="col" class="text-end">Désartificialisation</th>
-                            <th scope="col" class="text-end text-muted">%</th>
-                            <th scope="col" class="text-end">Artificialisé en {{ last_millesime }}</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for item in detail_usage_artif_table %}
-                        <tr>
-                            <th scope="row" aria-describedby="tooltip-{{ item.code_prefix }}">
-                                {{ item.code_prefix }} {{ item.label }}
-                                <span class="fr-tooltip fr-placement" id="tooltip-{{ item.code_prefix }}" role="tooltip" aria-hidden="true">{{ item.code_prefix }} {{ item.label }}</span>
-                            </th>
-                            <td class="text-end">{{ item.artif|floatformat:1 }}</td>
-                            <td class="text-end text-muted">{{ item.artif|percent:detail_total_artif }}</td>
-                            <td class="text-end">{{ item.renat|floatformat:1 }}</td>
-                            <td class="text-end text-muted">{{ item.renat|percent:detail_total_renat }}</td>
-                            <td class="text-end">{{ item.last_millesime|floatformat:1 }}</td>
-                        </tr>
-                        {% endfor %}
-                        <tr>
-                            <th scope="row">Total</th>
-                            <td class="text-end">{{ detail_total_artif|floatformat:1 }}</td>
-                            <td class="text-end text-muted">100%</td>
-                            <td class="text-end">{{ detail_total_renat|floatformat:1 }}</td>
-                            <td class="text-end text-muted">100%</td>
-                            <td class="text-end">{{ detail_total_artif_period|floatformat:1 }}</td>
-                        </tr>
-                    </tbody>
-                </table>
+            <div class="fr-table fr-table--bordered">
+                <div class="fr-table__wrapper">
+                    <div class="fr-table__container">
+                        <div class="fr-table__content">
+                            <table>
+                                <caption>
+                                    Évolution de l'artificialisation par type d'usage sur le territoire de {{ first_millesime }} à {{ last_millesime }} (en ha et %)
+                                </caption>
+                                <thead>
+                                    <tr>
+                                        <th scope="col"></th>
+                                        <th scope="col" class="fr-cell--right">Artificialisation</th>
+                                        <th scope="col" class="fr-cell--right text-muted">%</th>
+                                        <th scope="col" class="fr-cell--right">Désartificialisation</th>
+                                        <th scope="col" class="fr-cell--right text-muted">%</th>
+                                        <th scope="col" class="fr-cell--right">Artificialisé en {{ last_millesime }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in detail_usage_artif_table %}
+                                    <tr>
+                                        <th scope="row" aria-describedby="tooltip-{{ item.code_prefix }}">
+                                            {{ item.code_prefix }} {{ item.label }}
+                                            <span class="fr-tooltip fr-placement" id="tooltip-{{ item.code_prefix }}" role="tooltip" aria-hidden="true">{{ item.code_prefix }} {{ item.label }}</span>
+                                        </th>
+                                        <td class="fr-cell--right">{{ item.artif|floatformat:1 }}</td>
+                                        <td class="fr-cell--right text-muted">{{ item.artif|percent:detail_total_artif }}</td>
+                                        <td class="fr-cell--right">{{ item.renat|floatformat:1 }}</td>
+                                        <td class="fr-cell--right text-muted">{{ item.renat|percent:detail_total_renat }}</td>
+                                        <td class="fr-cell--right">{{ item.last_millesime|floatformat:1 }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                    <tr>
+                                        <th scope="row">Total</th>
+                                        <th class="fr-cell--right">{{ detail_total_artif|floatformat:1 }}</th>
+                                        <th class="fr-cell--right text-muted">100%</th>
+                                        <th class="fr-cell--right">{{ detail_total_renat|floatformat:1 }}</th>
+                                        <th class="fr-cell--right text-muted">100%</th>
+                                        <th class="fr-cell--right">{{ detail_total_artif_period|floatformat:1 }}</th>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

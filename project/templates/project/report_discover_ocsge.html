@@ -142,34 +142,42 @@
     
                         <h6 class="fr-mt-2w">Données</h6>
                         <strong class="fr-text--sm">Progression de {{ first_millesime }} à {{ last_millesime }}</strong>
-                        <div class="table-responsive">
-                            <table class="fr-table">
-                                <caption>Évolution de la couverture des sols sur le territoire de {{ first_millesime }} à {{ last_millesime }}</caption>
-                                <thead>
-                                    <tr>
-                                        <th scope="col">Code</th>
-                                        <th scope="col">Libellé</th>
-                                        <th scope="col" class="text-end">Surface {{ first_millesime }} (ha)</th>
-                                        <th scope="col" class="text-end">Evolution (ha)</th>
-                                        <th scope="col" class="text-end">Surface {{ last_millesime }} (ha)</th>
-                                        <th scope="col" class="text-end">Surface {{ last_millesime }} (%)</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for item in couv_progression_chart.get_series %}
-                                    <tr {% if item.level == 1 %}class="fw-bold"{% endif %}>
-                                        <th scope="row">{{ item.level|space }} {{ item.code }}</th>
-                                        <td>{{ item.get_label_short }}</td>
-                                        <td class="text-end">{{ item.surface_first|floatformat:1 }}</td>
-                                        <td class="text-end">
-                                            {% if item.surface_diff > 0 %}+{% endif %}{{ item.surface_diff|floatformat:1 }}
-                                        </td>
-                                        <td class="text-end">{{ item.surface_last|floatformat:1 }}</td>
-                                        <td class="text-end">{{ item.surface_last|percent:surface_territory }}</td>
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
+                        <div class="fr-table fr-table--bordered">
+                            <div class="fr-table__wrapper">
+                                <div class="fr-table__container">
+                                    <div class="fr-table__content">
+                                        <table>
+                                            <caption>
+                                                Évolution de la couverture des sols sur le territoire de {{ first_millesime }} à {{ last_millesime }}
+                                            </caption>
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col" class="fr-cell--fixed">Code</th>
+                                                    <th scope="col">Libellé</th>
+                                                    <th scope="col" class="fr-cell--right">Surface {{ first_millesime }} (ha)</th>
+                                                    <th scope="col" class="fr-cell--right">Evolution (ha)</th>
+                                                    <th scope="col" class="fr-cell--right">Surface {{ last_millesime }} (ha)</th>
+                                                    <th scope="col" class="fr-cell--right">Surface {{ last_millesime }} (%)</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for item in couv_progression_chart.get_series %}
+                                                <tr {% if item.level == 1 %}class="fw-bold"{% endif %}>
+                                                    <th scope="row" class="fr-cell--fixed">{{ item.level|space }} {{ item.code }}</th>
+                                                    <td>{{ item.get_label_short }}</td>
+                                                    <td class="fr-cell--right">{{ item.surface_first|floatformat:1 }}</td>
+                                                    <td class="fr-cell--right">
+                                                        {% if item.surface_diff > 0 %}+{% endif %}{{ item.surface_diff|floatformat:1 }}
+                                                    </td>
+                                                    <td class="fr-cell--right">{{ item.surface_last|floatformat:1 }}</td>
+                                                    <td class="fr-cell--right">{{ item.surface_last|percent:surface_territory }}</td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -227,46 +235,53 @@
                         <h6 class="fr-mt-2w">Données</h6>
                         <p class="text-muted fr-text--sm">En hectare (Ha).</p>
                         <p class="text-muted fr-text--sm">Les lignes indiquent la couverture {{ first_millesime }} et les colonnes indiquent la couverture {{ last_millesime }}. Par conséquent, à l'intersection se trouve la superficie qui est passée d'une couverture l'autre.</p>
-    
-                        <div class="table-responsive">
-                            <table class="fr-table table-last-row-bold table-last-column-bold">
-                                <caption>Matrice d'évolution de la couverture des sols sur le territoire de {{ first_millesime }} à {{ last_millesime }} (en ha)</caption>
-                                <thead>
-                                    <tr>
-                                        <th scope="col"></th>
-                                        {% for header in couv_matrix_headers %}
-                                        <th scope="col" class="text-end">
-                                            <span class="tooltiped" data-toggle="tooltip" title="{{ header.label }}">
-                                                {{ header.code }}
-                                            </span>
-                                        </th>
-                                        {% endfor %}
-                                        <th scope="col" class="text-end">Total</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for name, data in couv_matrix_data.items %}
-                                    <tr>
-                                        <th scope="row">
-                                            {% if name.code %}
-                                            <span class="tooltiped" data-toggle="tooltip" title="{{ name.label }}">
-                                                {{ name.code }} {{ name.label_short }}
-                                            </span>
-                                            {% else %}
-                                                Total
-                                            {% endif %}
-                                        </th>
-                                        {% for title, val in data.items %}
-                                            <td class="text-end">
-                                                <span data-toggle="tooltip" title="Passage de {{ name.code }} à {{ title.code }}">
-                                                    {{ val|floatformat:1 }}
-                                                </span>
-                                            </td>
-                                        {% endfor %}
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
+                        <div class="fr-table fr-table--bordered">
+                            <div class="fr-table__wrapper">
+                                <div class="fr-table__container">
+                                    <div class="fr-table__content">
+                                        <table class="fr-table table-last-row-bold table-last-column-bold">
+                                            <caption>
+                                                Matrice d'évolution de la couverture des sols sur le territoire de {{ first_millesime }} à {{ last_millesime }} (en ha)
+                                            </caption>
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col" class="fr-cell--fixed"></th>
+                                                    {% for header in couv_matrix_headers %}
+                                                    <th scope="col" class="fr-cell--right">
+                                                        <span class="tooltiped" data-toggle="tooltip" title="{{ header.label }}">
+                                                            {{ header.code }}
+                                                        </span>
+                                                    </th>
+                                                    {% endfor %}
+                                                    <th scope="col" class="fr-cell--right">Total</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for name, data in couv_matrix_data.items %}
+                                                <tr>
+                                                    <th scope="row" class="fr-cell--fixed">
+                                                        {% if name.code %}
+                                                        <span class="tooltiped" data-toggle="tooltip" title="{{ name.label }}">
+                                                            {{ name.code }} {{ name.label_short }}
+                                                        </span>
+                                                        {% else %}
+                                                            Total
+                                                        {% endif %}
+                                                    </th>
+                                                    {% for title, val in data.items %}
+                                                        <td class="fr-cell--right">
+                                                            <span data-toggle="tooltip" title="Passage de {{ name.code }} à {{ title.code }}">
+                                                                {{ val|floatformat:1 }}
+                                                            </span>
+                                                        </td>
+                                                    {% endfor %}
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -355,34 +370,42 @@
     
                         <h6 class="fr-mt-2w">Données</h6>
                         <strong class="fr-text--sm">Progression de {{ first_millesime }} à {{ last_millesime }}</strong>
-                        <div class="table-responsive">
-                            <table class="fr-table">
-                                <caption>Évolution de l'usage des sols sur le territoire de {{ first_millesime }} à {{ last_millesime }}</caption>
-                                <thead>
-                                    <tr>
-                                        <th scope="col">Code</th>
-                                        <th scope="col">Libellé</th>
-                                        <th scope="col" class="text-end">Surface {{ first_millesime }} (ha)</th>
-                                        <th scope="col" class="text-end">Evolution (ha)</th>
-                                        <th scope="col" class="text-end">Surface {{ last_millesime }} (ha)</th>
-                                        <th scope="col" class="text-end">Surface {{ last_millesime }} (%)</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for item in usa_progression_chart.get_series %}
-                                    <tr {% if item.level == 1 %}class="fw-bold"{% endif %}>
-                                        <th scope="row">{{ item.level|space }} {{ item.code }}</th>
-                                        <td>{{ item.get_label_short }}</td>
-                                        <td class="text-end">{{ item.surface_first|floatformat:1 }}</td>
-                                        <td class="text-end">
-                                            {% if item.surface_diff > 0 %}+{% endif %}{{ item.surface_diff|floatformat:1 }}
-                                        </td>
-                                        <td class="text-end">{{ item.surface_last|floatformat:1 }}</td>
-                                        <td class="text-end">{{ item.surface_last|percent:surface_territory }}</td>
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
+                        <div class="fr-table fr-table--bordered">
+                            <div class="fr-table__wrapper">
+                                <div class="fr-table__container">
+                                    <div class="fr-table__content">
+                                        <table>
+                                            <caption>
+                                                Évolution de l'usage des sols sur le territoire de {{ first_millesime }} à {{ last_millesime }}
+                                            </caption>
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col" class="fr-cell--fixed">Code</th>
+                                                    <th scope="col">Libellé</th>
+                                                    <th scope="col" class="fr-cell--right">Surface {{ first_millesime }} (ha)</th>
+                                                    <th scope="col" class="fr-cell--right">Evolution (ha)</th>
+                                                    <th scope="col" class="fr-cell--right">Surface {{ last_millesime }} (ha)</th>
+                                                    <th scope="col" class="fr-cell--right">Surface {{ last_millesime }} (%)</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for item in usa_progression_chart.get_series %}
+                                                <tr {% if item.level == 1 %}class="fw-bold"{% endif %}>
+                                                    <th scope="row" class="fr-cell--fixed">{{ item.level|space }} {{ item.code }}</th>
+                                                    <td>{{ item.get_label_short }}</td>
+                                                    <td class="fr-cell--right">{{ item.surface_first|floatformat:1 }}</td>
+                                                    <td class="fr-cell--right">
+                                                        {% if item.surface_diff > 0 %}+{% endif %}{{ item.surface_diff|floatformat:1 }}
+                                                    </td>
+                                                    <td class="fr-cell--right">{{ item.surface_last|floatformat:1 }}</td>
+                                                    <td class="fr-cell--right">{{ item.surface_last|percent:surface_territory }}</td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -440,46 +463,53 @@
                         <h6 class="fr-mt-2w">Données</h6>
                         <p class="text-muted fr-text--sm">En hectare (Ha).</p>
                         <p class="fr-text--sm">Les lignes indiquent l'usage {{ first_millesime }} et les colonnes indiquent l'usage {{ last_millesime }}. Par conséquent, à l'intersection se trouve la superficie qui est passée d'une couverture l'autre.</p>
-    
-                        <div class="table-responsive">
-                            <table class="fr-table table-last-row-bold table-last-column-bold">
-                                <caption>Matrice d'évolution de l'usage des sols sur le territoire de {{ first_millesime }} à {{ last_millesime }} (en ha)</caption>
-                                <thead>
-                                    <tr>
-                                        <th scope="col"></th>
-                                        {% for header in usa_matrix_headers %}
-                                        <th scope="col" class="text-end">
-                                            <span class="tooltiped" data-toggle="tooltip" title="{{ header.label }}">
-                                                {{ header.code }}
-                                            </span>
-                                        </th>
-                                        {% endfor %}
-                                        <th scope="col" class="text-end">Total</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for name, data in usa_matrix_data.items %}
-                                    <tr>
-                                        <th scope="row">
-                                            {% if name.code %}
-                                            <span class="tooltiped" data-toggle="tooltip" title="{{ name.label }}">
-                                                {{ name.code }} {{ name.label_short }}
-                                            </span>
-                                            {% else %}
-                                                Total
-                                            {% endif %}
-                                        </th>
-                                        {% for title, val in data.items %}
-                                            <td class="text-end">
-                                                <span data-toggle="tooltip" title="Passage de {{ name.code }} à {{ title.code }}">
-                                                    {{ val|floatformat:1 }}
-                                                </span>
-                                            </td>
-                                        {% endfor %}
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
+                        <div class="fr-table fr-table--bordered">
+                            <div class="fr-table__wrapper">
+                                <div class="fr-table__container">
+                                    <div class="fr-table__content">
+                                        <table class="fr-table table-last-row-bold table-last-column-bold">
+                                            <caption>
+                                                Matrice d'évolution de l'usage des sols sur le territoire de {{ first_millesime }} à {{ last_millesime }} (en ha)
+                                            </caption>
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col" class="fr-cell--fixed"></th>
+                                                    {% for header in usa_matrix_headers %}
+                                                    <th scope="col" class="fr-cell--right">
+                                                        <span class="tooltiped" data-toggle="tooltip" title="{{ header.label }}">
+                                                            {{ header.code }}
+                                                        </span>
+                                                    </th>
+                                                    {% endfor %}
+                                                    <th scope="col" class="fr-cell--right">Total</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for name, data in usa_matrix_data.items %}
+                                                <tr>
+                                                    <th scope="row" class="fr-cell--fixed">
+                                                        {% if name.code %}
+                                                        <span class="tooltiped" data-toggle="tooltip" title="{{ name.label }}">
+                                                            {{ name.code }} {{ name.label_short }}
+                                                        </span>
+                                                        {% else %}
+                                                            Total
+                                                        {% endif %}
+                                                    </th>
+                                                    {% for title, val in data.items %}
+                                                        <td class="fr-cell--right">
+                                                            <span data-toggle="tooltip" title="Passage de {{ name.code }} à {{ title.code }}">
+                                                                {{ val|floatformat:1 }}
+                                                            </span>
+                                                        </td>
+                                                    {% endfor %}
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

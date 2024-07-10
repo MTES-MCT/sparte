@@ -3,40 +3,47 @@
 
     <div class="fr-grid-row fr-grid-row--gutters">
         <div class="fr-col-12 fr-col-lg-8">
-            <div class="overflow-auto">
-                <div class="table-responsive">
-                    <table class="fr-table fr-table--no-caption">
-                        <caption>Données synthèse des zonages d'urbanisme</caption>
-                        <thead>
-                            <tr>
-                                <th scope="col">Type de<br/>zone</th>
-                                <th scope="col" class="text-end">Nombre<br/>de zones</th>
-                                <th scope="col" class="text-end">Surface<br/>totale</th>
-                                <th scope="col" class="text-end">Surface<br/>artificielle ({{ last_year_ocsge }})</th>
-                                <th scope="col" class="text-end">Taux d'artificialisation<br/> ({{ last_year_ocsge }})</th>
-                                <th scope="col" class="text-end">Artificialisation<br/>({{ first_year_ocsge }} à {{ last_year_ocsge }})</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for zone_type, zone in zone_list.items %}
-                            <tr>
-                                <th scope="row" class="text-nowrap">{{ zone_type }}</th>
-                                <td class="text-end">{{ zone.nb_zones }}</td>
-                                <td class="text-end">{{ zone.total_area|floatformat:1 }} ha</td>
-                                <td class="text-end">{{ zone.last_artif_area|floatformat:1 }} ha</td>
-                                <td class="text-end">
-                                    <div class="progress-bar-container">
-                                        <div class="progress-bar-indicator w-{{ zone.fill_up_rate|floatformat:0 }}"></div>
-                                        <div class="progress-bar-value">{{ zone.fill_up_rate|floatformat:1 }}%</div>
-                                    </div>
-                                </td>
-                                <td class="text-end">{{ zone.new_artif|floatformat:1 }} ha</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+            <div class="fr-table fr-table--bordered">
+                <div class="fr-table__wrapper">
+                    <div class="fr-table__container">
+                        <div class="fr-table__content">
+                            <table>
+                                <caption>
+                                    Données synthèse des zonages d'urbanisme
+                                </caption>
+                                <thead>
+                                    <tr>
+                                        <th scope="col" class="fr-cell--fixed">Type de<br/>zone</th>
+                                        <th scope="col" class="fr-cell--right">Nombre<br/>de zones</th>
+                                        <th scope="col" class="fr-cell--right">Surface<br/>totale</th>
+                                        <th scope="col" class="fr-cell--right">Surface<br/>artificielle ({{ last_year_ocsge }})</th>
+                                        <th scope="col" class="fr-cell--right">Taux d'artificialisation<br/> ({{ last_year_ocsge }})</th>
+                                        <th scope="col" class="fr-cell--right">Artificialisation<br/>({{ first_year_ocsge }} à {{ last_year_ocsge }})</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for zone_type, zone in zone_list.items %}
+                                    <tr>
+                                        <th scope="row" class="fr-cell--fixed">{{ zone_type }}</th>
+                                        <td class="fr-cell--right">{{ zone.nb_zones }}</td>
+                                        <td class="fr-cell--right">{{ zone.total_area|floatformat:1 }} ha</td>
+                                        <td class="fr-cell--right">{{ zone.last_artif_area|floatformat:1 }} ha</td>
+                                        <td class="fr-cell--right">
+                                            <div class="progress-bar-container">
+                                                <div class="progress-bar-indicator w-{{ zone.fill_up_rate|floatformat:0 }}"></div>
+                                                <div class="progress-bar-value">{{ zone.fill_up_rate|floatformat:1 }}%</div>
+                                            </div>
+                                        </td>
+                                        <td class="fr-cell--right">{{ zone.new_artif|floatformat:1 }} ha</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </div>
+
             <p class="my-3">Les types de zone d'après le Standard CNIG PLU v2022 - rev. octobre 2022:
             <br/><span class="fw-bold">U</span> : zone urbaine
             <br/><span class="fw-bold">AUc</span> : zone à urbaniser

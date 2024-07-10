@@ -1,20 +1,29 @@
-<div class="table-responsive">
-    <table class="fr-table table-last-column-bold">
-        <caption>Consommation d'espaces annuelle proportionnelle à la surface du territoire sur les territoires similaires (en ‰ - pour mille)</caption>
-        <thead>
-            <tr>
-                {% for header in headers %}
-                    <th scope="col">{{ header }}</th>
-                {% endfor %}
-            </tr>
-        </thead>
-        <tbody>
-            {% for row in data %}
-                <tr>
-                    {% for cell in row %}
-                        <td>{{ cell }}</td>
-                    {% endfor %}
-                </tr>
-            {% endfor %}
-    </table>
+<div class="fr-table fr-table--bordered">
+    <div class="fr-table__wrapper">
+        <div class="fr-table__container">
+            <div class="fr-table__content">
+                <table class="table-last-column-bold">
+                    <caption>
+                        Consommation d'espaces annuelle proportionnelle à la surface du territoire sur les territoires similaires (en ‰ - pour mille)
+                    </caption>
+                    <thead>
+                        <tr>
+                            {% for header in headers %}
+                                <th scope="col">{{ header }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in data %}
+                            <tr>
+                                {% for cell in row %}
+                                    <td>{{ cell }}</td>
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 </div>
