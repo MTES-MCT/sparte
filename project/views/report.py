@@ -49,7 +49,12 @@ from public_data.models.ocsge import Ocsge, OcsgeDiff
 from utils.htmx import StandAloneMixin
 from utils.views_mixins import CacheMixin
 
-from .mixins import BreadCrumbMixin, GroupMixin, UserQuerysetOrPublicMixin
+from .mixins import (
+    BreadCrumbMixin,
+    GroupMixin,
+    OcsgeCoverageMixin,
+    UserQuerysetOrPublicMixin,
+)
 
 
 class ProjectReportBaseView(CacheMixin, GroupMixin, DetailView):
@@ -131,9 +136,9 @@ class ProjectReportConsoView(ProjectReportBaseView):
         return super().get_context_data(**kwargs)
 
 
-class ProjectReportDicoverOcsgeView(ProjectReportBaseView):
+class ProjectReportDicoverOcsgeView(OcsgeCoverageMixin, ProjectReportBaseView):
     template_name = "project/report_discover_ocsge.html"
-    breadcrumbs_title = "Rapport découvrir l'OCS GE"
+    breadcrumbs_title = "Découvrir l'OCS GE"
 
     def get_context_data(self, **kwargs):
         project: Project = self.get_object()
@@ -145,9 +150,6 @@ class ProjectReportDicoverOcsgeView(ProjectReportBaseView):
             "surface_territory": surface_territory,
             "active_page": "discover",
         }
-
-        if not project.ocsge_coverage_status == project.OcsgeCoverageStatus.COMPLETE_UNIFORM:
-            return super().get_context_data(**kwargs)
 
         kwargs.update(
             {
@@ -238,9 +240,9 @@ class ProjectReportLocalView(ProjectReportBaseView):
         return super().get_context_data(**kwargs)
 
 
-class ProjectReportImperView(ProjectReportBaseView):
+class ProjectReportImperView(OcsgeCoverageMixin, ProjectReportBaseView):
     template_name = "project/report_imper.html"
-    breadcrumbs_title = "Rapport imperméabilisation"
+    breadcrumbs_title = "Imperméabilisation"
 
     def get_context_data(self, **kwargs):
         project: Project = self.get_object()
@@ -273,9 +275,9 @@ class ProjectReportImperView(ProjectReportBaseView):
         return super().get_context_data(**kwargs)
 
 
-class ProjectReportArtifView(ProjectReportBaseView):
+class ProjectReportArtifView(OcsgeCoverageMixin, ProjectReportBaseView):
     template_name = "project/report_artif.html"
-    breadcrumbs_title = "Rapport artificialisation"
+    breadcrumbs_title = "Artificialisation"
 
     def get_context_data(self, **kwargs):
         project: Project = self.get_object()
@@ -512,9 +514,9 @@ class ProjectReportTarget2031GraphView(ProjectReportBaseView):
         return super().get_context_data(**kwargs)
 
 
-class ProjectReportUrbanZonesView(ProjectReportBaseView):
+class ProjectReportUrbanZonesView(OcsgeCoverageMixin, ProjectReportBaseView):
     template_name = "project/report_urban_zones.html"
-    breadcrumbs_title = "Rapport zonages d'urbanisme"
+    breadcrumbs_title = "Zonages d'urbanisme"
 
     def get_context_data(self, **kwargs):
         project = self.get_object()
