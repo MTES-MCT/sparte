@@ -12,7 +12,7 @@ from project.serializers import CityArtifMapSerializer, CitySpaceConsoMapSeriali
 from public_data.models import Cerema, CouvertureSol, UsageSol
 from utils.colors import get_dark_blue_gradient, get_yellow2red_gradient
 
-from .mixins import GroupMixin
+from .mixins import GroupMixin, OcsgeCoverageMixin
 
 
 class BaseMap(GroupMixin, DetailView):
@@ -500,8 +500,8 @@ class MapTestView(BaseMap):
         return data
 
 
-class UrbanZonesMapView(BaseMap):
-    title = "Explorateur des zonages d'urbanisme"
+class UrbanZonesMapView(OcsgeCoverageMixin, BaseMap):
+    breadcrumbs_title = title = "Explorateur des zonages d'urbanisme"
     default_zoom = 12
 
     def get_sources_list(self):
@@ -887,8 +887,8 @@ class UrbanZonesMapView(BaseMap):
         ]
 
 
-class MyArtifMapView(BaseMap):
-    title = "Comprendre l'artificialisation du territoire"
+class MyArtifMapView(OcsgeCoverageMixin, BaseMap):
+    breadcrumbs_title = ttitle = "Comprendre l'artificialisation du territoire"
     default_zoom = 10
 
     def get_sources_list(self):
@@ -1413,8 +1413,8 @@ class CitySpaceConsoMapView(BaseMap):
             return self.render_to_response(context)
 
 
-class CityArtifMapView(BaseMap):
-    title = "Artificialisation des communes de mon territoire"
+class CityArtifMapView(OcsgeCoverageMixin, BaseMap):
+    breadcrumbs_title = ttitle = "Artificialisation des communes de mon territoire"
     scale_size = 5
     default_zoom = 10
 
