@@ -373,30 +373,7 @@ Rapport consommation
                         <p class="fr-text--sm">Données brutes, sans calcul</p>
     
                         <h6 class="fr-mt-2w">Données</h6>
-                        <div class="table-responsive">
-                            <table class="fr-table table-last-column-bold">
-                                <caption>Consommation d'espace annuelle sur les territoires similaires (en ha)</caption>
-                                <thead>
-                                    <tr>
-                                        <th scope="col">Communes</th>
-                                        {% for year in project.years %}
-                                        <th scope="col" class="text-end">{{ year }}</th>
-                                        {% endfor %}
-                                        <th scope="col" class="text-end">Total</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for city_name, data in data_comparison.items %}
-                                    <tr>
-                                        <th scope="row">{{ city_name }}</th>
-                                        {% for year, val in data.items %}
-                                        <td class="text-end">+{{ val|floatformat:1 }}</td>
-                                        {% endfor %}
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
+                        {{ comparison_table}}
                     </div>
                 </div>
             </div>

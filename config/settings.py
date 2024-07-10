@@ -24,6 +24,7 @@ from sentry_sdk.integrations.redis import RedisIntegration
 
 OFFICIAL_VERSION = "7.1"
 
+
 root = environ.Path(__file__) - 2  # get root of the project
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(root())
@@ -254,11 +255,12 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 CACHES: Dict[str, Any] = {}
 
-if ENVIRONMENT in ["local"]:
+
+if ENVIRONMENT == "local":
     CACHES = {
         "default": {
             "BACKEND": "config.cache_backends.RedisDummyCache",
-        }
+        },
     }
 else:
     CACHES = {
