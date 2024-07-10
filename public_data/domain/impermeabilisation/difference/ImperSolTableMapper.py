@@ -31,7 +31,7 @@ class ImperSolTableMapper:
                     "imper_percent": (item.imper * 100 / difference.total_imper) if difference.total_imper > 0 else 0,
                     "desimper": item.desimper,
                     "desimper_percent": (
-                        (item.desimper * 100 / difference.total_desimper) if difference.total_desimper > 0 else 0,
+                        (item.desimper * 100 / difference.total_desimper) if difference.total_desimper > 0 else 0
                     ),
                 }
             )

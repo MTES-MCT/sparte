@@ -165,29 +165,37 @@ Rapport consommation
                         <p class="fr-text--sm">Données brutes, sans calcul</p>
     
                         <h6 class="fr-mt-2w">Données</h6>
-                        <div class="table-responsive">
-                            <table class="fr-table table-last-column-bold table-last-row-bold">
-                                <caption>Consommation d'espace annuelle sur le territoire (en ha)</caption>
-                                <thead>
-                                    <tr>
-                                        <th scope="col"></th>
-                                        {% for year in project.years %}
-                                        <th scope="col" class="text-end">{{ year }}</th>
-                                        {% endfor %}
-                                        <th scope="col" class="text-end">Total</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for item, data in annual_conso_data_table.items %}
-                                    <tr>
-                                        <th scope="row">{{ item }}</th>
-                                        {% for year, val in data.items %}
-                                        <td class="text-end">+{{ val|floatformat:1 }}</td>
-                                        {% endfor %}
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
+                        <div class="fr-table fr-table--bordered">
+                            <div class="fr-table__wrapper">
+                                <div class="fr-table__container">
+                                    <div class="fr-table__content">
+                                        <table class="table-last-column-bold table-last-row-bold">
+                                            <caption>
+                                                Consommation d'espace annuelle sur le territoire (en ha)
+                                            </caption>
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col" class="fr-cell--fixed"></th>
+                                                    {% for year in project.years %}
+                                                    <th scope="col" class="fr-cell--right">{{ year }}</th>
+                                                    {% endfor %}
+                                                    <th scope="col" class="fr-cell--right">Total</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for item, data in annual_conso_data_table.items %}
+                                                <tr>
+                                                    <th scope="row" class="fr-cell--fixed">{{ item }}</th>
+                                                    {% for year, val in data.items %}
+                                                    <td class="fr-cell--right">+{{ val|floatformat:1 }}</td>
+                                                    {% endfor %}
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -287,29 +295,37 @@ Rapport consommation
                         <p class="fr-text--sm">Données brutes, sans calcul</p>
     
                         <h6 class="fr-mt-2w">Données</h6>
-                        <div class="table-responsive">
-                            <table class="fr-table table-last-row-bold table-last-column-bold">
-                                <caption>Consommation d'espace annuelle sur le territoire par destination (en ha)</caption>
-                                <thead>
-                                    <tr>
-                                        <th scope="col">Destination</th>
-                                        {% for year in project.years %}
-                                        <th scope="col" class="text-end">{{ year }}</th>
-                                        {% endfor %}
-                                        <th scope="col" class="text-end">Total</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for determinant_name, data in data_determinant.items %}
-                                    <tr>
-                                        <th scope="row">{{ determinant_name }}</th>
-                                        {% for year, val in data.items %}
-                                        <td class="text-end">+{{ val|floatformat:1 }}</td>
-                                        {% endfor %}
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
+                        <div class="fr-table fr-table--bordered">
+                            <div class="fr-table__wrapper">
+                                <div class="fr-table__container">
+                                    <div class="fr-table__content">
+                                        <table class="table-last-column-bold table-last-row-bold">
+                                            <caption>
+                                                Consommation d'espace annuelle sur le territoire par destination (en ha)
+                                            </caption>
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col" class="fr-cell--fixed">Destination</th>
+                                                    {% for year in project.years %}
+                                                    <th scope="col" class="fr-cell--right">{{ year }}</th>
+                                                    {% endfor %}
+                                                    <th scope="col" class="fr-cell--right">Total</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for determinant_name, data in data_determinant.items %}
+                                                <tr>
+                                                    <th scope="row" class="fr-cell--fixed">{{ determinant_name }}</th>
+                                                    {% for year, val in data.items %}
+                                                    <td class="fr-cell--right">+{{ val|floatformat:1 }}</td>
+                                                    {% endfor %}
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
