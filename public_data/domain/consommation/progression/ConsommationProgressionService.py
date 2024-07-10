@@ -73,24 +73,22 @@ class ConsommationProgressionService:
         progression = ConsommationProgressionAggregation(
             start_date=start_date,
             end_date=end_date,
-            consommation=[],
             communes_code_insee=[commune.insee for commune in communes],
+            consommation=[
+                AnnualConsommation(
+                    year=year,
+                    total=results[year]["total"] / 10000,
+                    habitat=results[year]["hab"] / 10000,
+                    activite=results[year]["act"] / 10000,
+                    mixte=results[year]["mix"] / 10000,
+                    route=results[year]["rou"] / 10000,
+                    ferre=results[year]["fer"] / 10000,
+                    non_reseigne=results[year]["inc"] / 10000,
+                    per_mille_of_area=results[year]["total"] / surface * 1000,
+                )
+                for year in results
+            ],
         )
-
-        progression.consommation = [
-            AnnualConsommation(
-                year=year,
-                total=results[year]["total"] / 10000,
-                habitat=results[year]["hab"] / 10000,
-                activite=results[year]["act"] / 10000,
-                mixte=results[year]["mix"] / 10000,
-                route=results[year]["rou"] / 10000,
-                ferre=results[year]["fer"] / 10000,
-                non_reseigne=results[year]["inc"] / 10000,
-                per_mille_of_area=results[year]["total"] / surface * 1000,
-            )
-            for year in results
-        ]
 
         self.class_cacher.set(key, value=progression)
 
@@ -114,7 +112,7 @@ class ConsommationProgressionService:
                     start_date=start_date,
                     end_date=end_date,
                     consommation=self.get_by_communes_aggregation(
-                        communes=land.get_cities_queryset(),
+                        communes=land.get_cities(),
                         start_date=start_date,
                         end_date=end_date,
                     ).consommation,

@@ -2,6 +2,7 @@ from typing import Dict
 
 from django.contrib.gis.db import models
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models.query import QuerySet
 
 from public_data.exceptions import LandException
 
@@ -50,13 +51,8 @@ class Land:
     def get_conso_per_year(self, start="2010", end="2020", coef=1):
         return self.land.get_conso_per_year(start, end, coef)
 
-    def get_cities(self):
+    def get_cities(self) -> QuerySet[Commune]:
         return self.land.get_cities()
-
-    def get_cities_queryset(self):
-        if self.land_type == AdminRef.COMMUNE:
-            return Commune.objects.filter(pk=self.id)
-        return self.land.commune_set.all()
 
     @property
     def area(self):
