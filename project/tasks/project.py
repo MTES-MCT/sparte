@@ -10,7 +10,7 @@ import shapely
 from celery import shared_task
 from django.conf import settings
 from django.db import transaction
-from django.db.models import F, OuterRef, Q, Subquery
+from django.db.models import F, Q
 from django.urls import reverse
 from django.utils import timezone
 from django_app_parameter import app_parameter
@@ -18,7 +18,8 @@ from matplotlib.lines import Line2D
 from matplotlib_scalebar.scalebar import ScaleBar
 
 from project.models import Emprise, Project, Request, RequestedDocumentChoices
-from public_data.models import ArtificialArea, Cerema, Land, OcsgeDiff
+from public_data.domain.containers import PublicDataContainer
+from public_data.models import AdminRef, ArtificialArea, Land, OcsgeDiff
 from public_data.models.gpu import ArtifAreaZoneUrba, ZoneUrba
 from utils.db import fix_poly
 from utils.emails import SibTemplateEmail
@@ -399,8 +400,8 @@ def to_shapely_polygons(mpoly):
 def get_img(queryset, color: str, title: str) -> io.BytesIO:
     data: Dict[Literal["level", "geometry"], Any] = {"level": [], "geometry": []}
     for row in queryset:
-        data["geometry"].append(to_shapely_polygons(row.mpoly))
-        data["level"].append(float(row.level) if row.level else 0)
+        data["geometry"].append(to_shapely_polygons(row["mpoly"]))
+        data["level"].append(float(row["level"]) if row["level"] else 0)
 
     gdf = geopandas.GeoDataFrame(data, crs="EPSG:4326").to_crs(epsg=3857)
 
@@ -436,16 +437,33 @@ def generate_theme_map_conso(self, project_id) -> None:
 
     try:
         diagnostic = Project.objects.get(id=int(project_id))
-        fields = Cerema.get_art_field(diagnostic.analyse_start_date, diagnostic.analyse_end_date)
-        sub_qs = Cerema.objects.annotate(conso=sum(F(f) for f in fields))
-        qs = diagnostic.cities.all().annotate(
-            level=Subquery(sub_qs.filter(city_insee=OuterRef("insee")).values("conso")[:1]) / 10000
+        diagnostic_communes_as_lands = [
+            Land(public_key=f"{AdminRef.COMMUNE}_{commune.id}") for commune in diagnostic.cities.all()
+        ]
+
+        land_progressions = PublicDataContainer.consommation_progression_service().get_by_lands(
+            lands=diagnostic_communes_as_lands,
+            start_date=int(diagnostic.analyse_start_date),
+            end_date=int(diagnostic.analyse_end_date),
+        )
+
+        data = [
+            {
+                "mpoly": land_progression.land.mpoly,
+                "level": sum(annual_conso.per_mille_of_area for annual_conso in land_progression.consommation),
+            }
+            for land_progression in land_progressions
+        ]
+
+        image_title = (
+            f"Taux de consommation d'espaces des communes du territoire «{diagnostic.land.name}» "
+            f"entre {diagnostic.analyse_start_date} et {diagnostic.analyse_end_date} (en ‰ - pour mille)"
         )
 
         img_data = get_img(
-            queryset=qs,
+            queryset=data,
             color="Blues",
-            title="Consommation d'espaces des communes du territoire sur la période (en Ha)",
+            title=image_title,
         )
 
         race_protection_save_map(
@@ -474,12 +492,25 @@ def generate_theme_map_artif(self, project_id) -> None:
 
     try:
         diagnostic = Project.objects.get(id=int(project_id))
-        qs = diagnostic.cities.all().annotate(level=F("surface_artif"))
+        qs = diagnostic.cities.all().annotate(level=F("surface_artif") * 100 / F("area"))
+
+        data = [
+            {
+                "mpoly": row.mpoly,
+                "level": row.level,
+            }
+            for row in qs
+        ]
+
+        title = (
+            f"Taux d'artificialisation des communes du territoire "
+            f"«{diagnostic.land.name}» en {diagnostic.last_year_ocsge} (en % - pour cent)"
+        )
 
         img_data = get_img(
-            queryset=qs,
+            queryset=data,
             color="OrRd",
-            title="Artificialisation des communes du territoire sur la période (en Ha)",
+            title=title,
         )
 
         race_protection_save_map(
@@ -581,7 +612,8 @@ def generate_theme_map_understand_artif(self, project_id) -> None:
         ax.set_title(
             label=(
                 "Etat des lieux de l'artificialisation "
-                f"de {diagnostic.territory_name} entre {diagnostic.first_year_ocsge} à {diagnostic.last_year_ocsge}"
+                f"de territoire «{diagnostic.land.name}» entre {diagnostic.first_year_ocsge} à "
+                f"{diagnostic.last_year_ocsge}"
             ),
             loc="left",
         )
@@ -640,7 +672,9 @@ def generate_theme_map_gpu(self, project_id) -> None:
         zone_urba_gdf.plot(ax=ax, color=zone_urba_gdf["color"])
         gdf_emprise.plot(ax=ax, facecolor="none", edgecolor="black")
         ax.add_artist(ScaleBar(1))
-        ax.set_title("Les zones d'urbanisme de son territoire")
+        ax.set_title(
+            f"Les zones d'urbanisme du territoire «{diagnostic.territory_name}» en {diagnostic.analyse_end_date}"
+        )
         cx.add_basemap(ax, source=settings.OPENSTREETMAP_URL)
 
         img_data = io.BytesIO()
@@ -683,11 +717,25 @@ def generate_theme_map_fill_gpu(self, project_id) -> None:
             level=100 * F("area") / F("zone_urba__area"),
             mpoly=F("zone_urba__mpoly"),
         )
+
+        data = [
+            {
+                "mpoly": item.mpoly,
+                "level": item.level,
+            }
+            for item in qs
+        ]
+
+        title = (
+            f"Taux d'artificialisation des zones urbaines (U) et à urbaniser (AU) du territoire "
+            f"«{diagnostic.land.name}» en {diagnostic.last_year_ocsge} (en % - pour cent)"
+        )
+
         if qs.count() > 0:
             img_data = get_img(
-                queryset=qs,
+                queryset=data,
                 color="OrRd",
-                title="Taux d'artificialisation des zones urbaines (U) et à urbaniser (AU)",
+                title=title,
             )
         else:
             geom = diagnostic.combined_emprise.transform("3857", clone=True)
