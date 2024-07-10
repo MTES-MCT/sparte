@@ -61,30 +61,38 @@
     
             <h6 class="fr-mt-2w">Données</h6>
     
-            <div class="table-responsive">
-                <table class="fr-table">
-                    <caption>Consommation réelle et projettée, annuelle et cumulée (en ha)</caption>
-                    <thead>
-                        <tr>
-                            <th scope="col">Millésime</th>
-                            <th scope="col" class="text-end">Réelle (Ha)</th>
-                            <th scope="col" class="text-end">Réelle cumulée (Ha)</th>
-                            <th scope="col" class="text-end">Projection annualisée<br/>de l'objectif 2031 (Ha)</th>
-                            <th scope="col" class="text-end">Cumulé de la<br/>projection (Ha)</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for line in target_2031_chart.get_data_table %}
-                        <tr>
-                            <th scope="row">{{ line.year }}</th>
-                            <td class="text-end">{{ line.real|floatformat:1 }}</td>
-                            <td class="text-end">{{ line.added_real|floatformat:1 }}</td>
-                            <td class="text-end">{{ line.objective|floatformat:1 }}</td>
-                            <td class="text-end">{{ line.added_objective|floatformat:1 }}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+            <div class="fr-table fr-table--bordered">
+                <div class="fr-table__wrapper">
+                    <div class="fr-table__container">
+                        <div class="fr-table__content">
+                            <table>
+                                <caption>
+                                    Consommation réelle et projettée, annuelle et cumulée (en ha)
+                                </caption>
+                                <thead>
+                                    <tr>
+                                        <th scope="col" class="fr-cell--fixed">Millésime</th>
+                                        <th scope="col" class="fr-cell--right">Réelle (Ha)</th>
+                                        <th scope="col" class="fr-cell--right">Réelle cumulée (Ha)</th>
+                                        <th scope="col" class="fr-cell--right">Projection annualisée<br/>de l'objectif 2031 (Ha)</th>
+                                        <th scope="col" class="fr-cell--right">Cumulé de la<br/>projection (Ha)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for line in target_2031_chart.get_data_table %}
+                                    <tr>
+                                        <th scope="row" class="fr-cell--fixed">{{ line.year }}</th>
+                                        <td class="fr-cell--right">{{ line.real|floatformat:1 }}</td>
+                                        <td class="fr-cell--right">{{ line.added_real|floatformat:1 }}</td>
+                                        <td class="fr-cell--right">{{ line.objective|floatformat:1 }}</td>
+                                        <td class="fr-cell--right">{{ line.added_objective|floatformat:1 }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
