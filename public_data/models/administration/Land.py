@@ -59,6 +59,10 @@ class Land:
         return self.land.area
 
     @property
+    def mpoly(self):
+        return self.land.mpoly
+
+    @property
     def land_type_label(self):
         return AdminRef.CHOICES_DICT[self.land_type]
 
