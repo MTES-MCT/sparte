@@ -1,10 +1,5 @@
-<div id="target-zone-urba-general-map" class="border theme-map-image-container h-100 fr-p-2w d-flex flex-column align-items-center justify-content-between">
-    <div class="d-flex justify-content-end align-items-center w-100 fr-mb-2w">
-        <a href="{% url 'project:map-urban-zones' diagnostic.pk %}" target="_blank">
-            <button class="fr-btn fr-icon-external-link-line fr-btn--tertiary fr-btn--sm"></button>
-        </a>
-    </div>
-    <p class="fw-bold">Carte présentant l'artificialisation des zonages d'urbanisme</p>
+<div id="target-zone-urba-general-map" class="border theme-map-image-container fr-p-2w d-flex flex-column align-items-center">
+    <p class="fw-bold">Carte présentant les zonages d'urbanisme du territoire</p>
     {% if diagnostic.theme_map_gpu %}
         <img src="{{ diagnostic.theme_map_gpu.url }}" alt="Carte présentant les zonages d'urbanisme">
     {% else %}
