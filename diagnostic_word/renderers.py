@@ -12,8 +12,15 @@ from diagnostic_word.models import WordTemplate
 from project import charts
 from project.models import Request
 from project.utils import add_total_line_column
+from public_data.domain.containers import PublicDataContainer
 from public_data.domain.impermeabilisation.difference.ImpermeabilisationDifferenceService import (
     ImpermeabilisationDifferenceService,
+)
+from public_data.infra.consommation.progression.export.ConsoComparisonExportTableMapper import (
+    ConsoComparisonExportTableMapper,
+)
+from public_data.infra.consommation.progression.export.ConsoProportionalComparisonExportTableMapper import (
+    ConsoProportionalComparisonExportTableMapper,
 )
 from public_data.infra.impermeabilisation.difference.export.ImperNetteTableMapper import (
     ImperNetteTableMapper,
@@ -213,9 +220,19 @@ class BaseRenderer:
                 "comparison_surface_chart": self.prep_image(comparison_surface_chart.get_temp_image(), width=170),
                 "comparison_relative_chart": self.prep_image(comparison_relative_chart.get_temp_image(), width=170),
                 # Charts datatables
-                "comparison_data_table": add_total_line_column(comparison_chart.get_series(), line=False),
-                "comparison_relative_data_table": add_total_line_column(
-                    comparison_relative_chart.get_series(), line=False
+                "comparison_data_table": ConsoComparisonExportTableMapper.map(
+                    consommation_progression=PublicDataContainer.consommation_progression_service().get_by_lands(
+                        lands=diagnostic.comparison_lands_and_self_land(),
+                        start_date=int(diagnostic.analyse_start_date),
+                        end_date=int(diagnostic.analyse_end_date),
+                    )
+                ),
+                "comparison_relative_data_table": ConsoProportionalComparisonExportTableMapper.map(
+                    consommation_progression=PublicDataContainer.consommation_progression_service().get_by_lands(
+                        lands=diagnostic.comparison_lands_and_self_land(),
+                        start_date=int(diagnostic.analyse_start_date),
+                        end_date=int(diagnostic.analyse_end_date),
+                    )
                 ),
             }
 
