@@ -512,7 +512,7 @@ Rapport artificialisation
                             <div class="fr-table__wrapper">
                                 <div class="fr-table__container">
                                     <div class="fr-table__content">
-                                        <table>
+                                        <table class="table-last-row-bold">
                                             <caption>
                                                 Évolution de l'artificialisation par type de couverture sur le territoire de {{ first_millesime }} à {{ last_millesime }} (en ha et %)
                                             </caption>
@@ -539,11 +539,11 @@ Rapport artificialisation
                                                 {% endfor %}
                                                 <tr>
                                                     <th scope="row">Total</th>
-                                                    <th class="fr-cell--right">{{ detail_total_artif|floatformat:1 }}</th>
-                                                    <th class="fr-cell--right text-muted">100%</th>
-                                                    <th class="fr-cell--right">{{ detail_total_renat|floatformat:1 }}</th>
-                                                    <th class="fr-cell--right text-muted">100%</th>
-                                                    <th class="fr-cell--right">{{ artif_area|floatformat:1 }}</th>
+                                                    <td class="fr-cell--right">{{ detail_total_artif|floatformat:1 }}</td>
+                                                    <td class="fr-cell--right text-muted">100%</td>
+                                                    <td class="fr-cell--right">{{ detail_total_renat|floatformat:1 }}</td>
+                                                    <td class="fr-cell--right text-muted">100%</td>
+                                                    <td class="fr-cell--right">{{ artif_area|floatformat:1 }}</td>
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -645,7 +645,7 @@ Rapport artificialisation
                             <div class="fr-table__wrapper">
                                 <div class="fr-table__container">
                                     <div class="fr-table__content">
-                                        <table>
+                                        <table class="table-last-row-bold">
                                             <caption>
                                                 Évolution de l'artificialisation par type d'usage sur le territoire de {{ first_millesime }} à {{ last_millesime }} (en ha et %)
                                             </caption>
@@ -672,11 +672,11 @@ Rapport artificialisation
                                                 {% endfor %}
                                                 <tr>
                                                     <th scope="row">Total</th>
-                                                    <th class="fr-cell--right">{{ detail_total_artif|floatformat:1 }}</th>
-                                                    <th class="fr-cell--right text-muted">100%</th>
-                                                    <th class="fr-cell--right">{{ detail_total_renat|floatformat:1 }}</th>
-                                                    <th class="fr-cell--right text-muted">100%</th>
-                                                    <th class="fr-cell--right">{{ artif_area|floatformat:1 }}</th>
+                                                    <td class="fr-cell--right">{{ detail_total_artif|floatformat:1 }}</td>
+                                                    <td class="fr-cell--right text-muted">100%</td>
+                                                    <td class="fr-cell--right">{{ detail_total_renat|floatformat:1 }}</td>
+                                                    <td class="fr-cell--right text-muted">100%</td>
+                                                    <td class="fr-cell--right">{{ artif_area|floatformat:1 }}</td>
                                                 </tr>
                                             </tbody>
                                         </table>

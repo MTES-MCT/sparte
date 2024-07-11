@@ -2,7 +2,7 @@
     <div class="fr-table__wrapper">
         <div class="fr-table__container">
             <div class="fr-table__content">
-                <table>
+                <table class="table-last-row-bold">
                     <caption>
                         Évolution de l'imperméabilisation par type {{ label_caption }} sur le territoire de {{ start_date }} à {{ end_date }} (en ha et %)
                     </caption>
@@ -27,10 +27,10 @@
                         {% endfor %}
                         <tr>
                             <th scope="row">Total</th>
-                            <th class="fr-cell--right">{{ total_imper|floatformat:1 }}</th>
-                            <th class="fr-cell--right text-muted">100</th>
-                            <th class="fr-cell--right">{{ total_desimper|floatformat:1 }}</th>
-                            <th class="fr-cell--right text-muted">100</th>
+                            <td class="fr-cell--right">{{ total_imper|floatformat:1 }}</td>
+                            <td class="fr-cell--right text-muted">100</td>
+                            <td class="fr-cell--right">{{ total_desimper|floatformat:1 }}</td>
+                            <td class="fr-cell--right text-muted">100</td>
                         </tr>
                     </tbody>
                 </table>
