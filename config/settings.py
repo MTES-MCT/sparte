@@ -75,6 +75,7 @@ RESTFRAMEWORK_APPS = [
 ]
 
 THIRD_APPS = [
+    "import_export",
     "crispy_forms",
     "crispy_bootstrap5",
     "django_app_parameter",
@@ -293,6 +294,11 @@ MESSAGE_TAGS = {
 # default is INFO
 if DEBUG is True:
     MESSAGE_LEVEL = messages.DEBUG
+
+
+# django-import-export
+# https://django-import-export.readthedocs.io/en/latest/
+IMPORT_EXPORT_USE_TRANSACTIONS = True
 
 
 # Crispy configuration
