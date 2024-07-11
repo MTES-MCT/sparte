@@ -470,8 +470,6 @@ if ENVIRONMENT != "local":
         release=f"MonDiagArtif@{OFFICIAL_VERSION}",
         environment=ENVIRONMENT,
         debug=False,
-        request_bodies="always",
-        with_locals=True,
     )
 
 
