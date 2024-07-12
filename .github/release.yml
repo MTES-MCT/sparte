@@ -1,0 +1,23 @@
+changelog:
+  exclude:
+    labels:
+      - dependencies
+      - documentation
+      - tech
+    authors:
+      - dependabot
+  categories:
+    - title: Fonctionnalités
+      labels:
+        - fonctionnalité
+        - carto
+    - title: Correctifs
+      labels:
+        - bug
+    - title: Données
+      labels:
+        - data
+        - export
+    - title: Autre
+      labels:
+        - "*"
