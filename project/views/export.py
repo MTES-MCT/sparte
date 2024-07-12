@@ -60,7 +60,7 @@ class ExportExcelView(View):
             self.get_excel_as_buffer(),
             content_type=("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;" "charset=utf-8"),
             as_attachment=True,
-            filename=f"données du diagnostic {self.project.name}.xlsx",
+            filename=f"données du diagnostic {self.project.territory_name}.xlsx",
         )
 
     def get_excel_as_buffer(self) -> io.BytesIO:
