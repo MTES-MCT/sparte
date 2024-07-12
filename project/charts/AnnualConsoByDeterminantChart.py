@@ -54,7 +54,7 @@ class AnnualConsoByDeterminantChart(ProjectChart):
         super().add_series()
         if not self.group_name:
             self.add_serie(
-                self.project.name,
+                "Total",
                 self.project.get_conso_per_year(),
                 **{
                     "type": "line",
