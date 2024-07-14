@@ -26,8 +26,6 @@ class Command(BaseCommand):
             defaults={"email_checked": timezone.now()},
         )
 
-        emprise_to_create = []
-
         for commune in Commune.objects.filter(
             insee__in=[Sudocuh.objects.filter(du_opposable=DocumentUrbanismeChoices.RNU).values("code_insee")]
         ):
@@ -55,23 +53,24 @@ class Command(BaseCommand):
                 else Project.OcsgeCoverageStatus.NO_DATA,
                 async_ocsge_coverage_status_done=True,
                 async_set_combined_emprise_done=True,
-            )
-            project.cities.add(commune)
-
-            emprise_to_create.append(
-                Emprise(
-                    mpoly=fix_poly(commune.mpoly),
-                    srid_source=commune.srid_source,
-                    project=project,
-                )
+                async_theme_map_gpu_done=True,
+                async_theme_map_fill_gpu_done=True,
+                async_add_comparison_lands_done=True,
             )
 
-            if len(emprise_to_create) > 100:
-                Emprise.objects.bulk_create(emprise_to_create)
-                emprise_to_create = []
+            Emprise.objects.create(
+                mpoly=fix_poly(commune.mpoly),
+                srid_source=commune.srid_source,
+                project=project,
+            )
 
-        if emprise_to_create:
-            Emprise.objects.bulk_create(emprise_to_create)
+            similar_lands_public_keys = [
+                comparison_land.public_key for comparison_land in project.get_comparison_lands()
+            ]
+
+            project.refresh_from_db()
+
+            project = project.add_look_a_like(public_key=similar_lands_public_keys, many=True)
 
         for project in Project.objects.filter(user=mondiagartif_user):
             trigger_async_tasks_rnu_pakage_one_off(project)
