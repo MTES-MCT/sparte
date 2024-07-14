@@ -1,5 +1,6 @@
 import io
 import logging
+import zipfile
 from datetime import timedelta
 from typing import Any, Dict, Literal
 
@@ -17,9 +18,14 @@ from django_app_parameter import app_parameter
 from matplotlib.lines import Line2D
 from matplotlib_scalebar.scalebar import ScaleBar
 
-from project.models import Emprise, Project, Request, RequestedDocumentChoices
-from public_data.domain.containers import PublicDataContainer
-from public_data.models import AdminRef, ArtificialArea, Land, OcsgeDiff
+from project.models import (
+    Emprise,
+    Project,
+    Request,
+    RequestedDocumentChoices,
+    RNUPackage,
+)
+from public_data.models import ArtificialArea, Departement, Land, OcsgeDiff
 from public_data.models.gpu import ArtifAreaZoneUrba, ZoneUrba
 from utils.db import fix_poly
 from utils.emails import SibTemplateEmail
@@ -883,3 +889,26 @@ def alert_on_blocked_diagnostic(self) -> None:
 
     finally:
         logger.info("End alert_on_blocked_diagnostic")
+
+
+@shared_task(max_retries=5)
+def create_zip_departement_rnu_package_one_off(departement_id: str) -> None:
+    departement = Departement.objects.get(source_id=departement_id)
+    requests_created_by_the_rnu_package_service_account = Request.objects.filter(
+        email="rnu.package@mondiagartif.beta.gouv.fr",
+        project__land_id=departement.pk,
+    )
+
+    file_name = f"rnu_package_departement_{departement_id}.zip"
+
+    with zipfile.ZipFile(file_name, "a", compression=zipfile.ZIP_DEFLATED) as zipf:
+        for request in requests_created_by_the_rnu_package_service_account:
+            file_name_in_zip = f"{departement_id}_COMM_{request.project.land.official_id}.docx"
+            zipf.write(
+                filename=request.sent_file,
+                arcname=file_name_in_zip,
+            )
+        RNUPackage.objects.create(
+            departement_official_id=departement.source_id,
+            file_name=file_name,
+        )

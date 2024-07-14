@@ -8,11 +8,13 @@ __all__ = [
     "trigger_async_tasks",
     "user_directory_path",
     "RequestedDocumentChoices",
+    "RNUPackage",
 ]
 
 
 from .project_base import Emprise, Project, ProjectCommune
 from .request import ErrorTracking, Request, RequestedDocumentChoices
+from .RNUPackage import RNUPackage
 from .utils import user_directory_path
 
 # isort: split
