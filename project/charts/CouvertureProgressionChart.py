@@ -1,5 +1,9 @@
 from project.charts.base_project_chart import ProjectChart
-from project.charts.constants import DEFAULT_VALUE_DECIMALS, OCSGE_CREDITS
+from project.charts.constants import (
+    DEFAULT_VALUE_DECIMALS,
+    LANG_MISSING_OCSGE_DIFF_ARTIF,
+    OCSGE_CREDITS,
+)
 
 
 class CouvertureProgressionChart(ProjectChart):
@@ -18,6 +22,7 @@ class CouvertureProgressionChart(ProjectChart):
                     f"{self.project.first_year_ocsge} à {self.project.last_year_ocsge}"
                 )
             },
+            "lang": LANG_MISSING_OCSGE_DIFF_ARTIF,
             "yAxis": {
                 "title": {"text": "Surface (en ha)"},
                 "plotLines": [{"value": 0, "width": 2, "color": "#ff0000"}],
@@ -58,7 +63,7 @@ class CouvertureProgressionChart(ProjectChart):
                         "color": couv.map_color,
                     }
                     for couv in self.get_series()
-                    if couv.level == self._level
+                    if couv.level == self._level and couv.surface_diff != 0
                 ],
             }
         )

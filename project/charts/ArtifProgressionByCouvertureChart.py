@@ -6,6 +6,7 @@ from project.charts.base_project_chart import ProjectChart
 from project.charts.constants import (
     DEFAULT_HEADER_FORMAT,
     DEFAULT_VALUE_DECIMALS,
+    LANG_MISSING_OCSGE_DIFF_ARTIF,
     LEGEND_NAVIGATION_EXPORT,
     OCSGE_CREDITS,
 )
@@ -29,6 +30,7 @@ class ArtifProgressionByCouvertureChart(ProjectChart):
             "yAxis": {
                 "title": {"text": "Progression (en ha)"},
             },
+            "lang": LANG_MISSING_OCSGE_DIFF_ARTIF,
             "tooltip": {
                 "pointFormat": "{point.y}",
                 "valueSuffix": " Ha",
@@ -71,20 +73,6 @@ class ArtifProgressionByCouvertureChart(ProjectChart):
                     "label_short": couverture.label_short,
                     "artif": item["artif"],
                     "renat": item["renat"],
-                }
-            )
-
-        mandatory_serie_label = "CS1.1.2.2"
-
-        if mandatory_serie_label not in [s["code_prefix"] for s in self.series]:
-            required_couv = CouvertureSol.objects.get(code_prefix=mandatory_serie_label)
-            series.append(
-                {
-                    "code_prefix": required_couv.code_prefix,
-                    "label": required_couv.label,
-                    "label_short": required_couv.label_short,
-                    "artif": 0,
-                    "renat": 0,
                 }
             )
 
