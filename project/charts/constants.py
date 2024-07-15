@@ -62,7 +62,7 @@ def missing_ocsge_diff_message(missing_indicateur: str) -> str:
     return (
         "Aucune différence d'usage ou de couverture du sol n'a été enregistrée sur cette période "
         "pour ce territoire.<br>"
-        f"Il n'est donc impossible d'observer des mouvements d'{missing_indicateur}."
+        f"Il est donc impossible d'observer des mouvements d'{missing_indicateur}."
     )
 
 
