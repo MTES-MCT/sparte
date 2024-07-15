@@ -47,8 +47,8 @@ class ArtifWaterfallChart(ProjectChart):
 
         years_str = f"{self.project.first_year_ocsge} - {self.project.last_year_ocsge}"
         new_artif = series["new_artif"]
-        new_desartif = series["new_natural"] * -1
-        artif_nette = new_artif + new_desartif
+        new_desartif = series["new_natural"]
+        artif_nette = new_artif - new_desartif
         total_artif_data = [{"name": years_str, "y": new_artif}] if new_artif != 0 else []
         total_desartif_data = [{"name": years_str, "y": new_desartif}] if new_desartif != 0 else []
         artif_nette_data = [{"name": years_str, "y": artif_nette}] if artif_nette != 0 else []
