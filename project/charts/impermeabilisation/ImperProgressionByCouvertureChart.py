@@ -7,6 +7,7 @@ from project.charts.constants import (
     DEFAULT_HEADER_FORMAT,
     DEFAULT_VALUE_DECIMALS,
     IMPERMEABLE_OCSGE_CREDITS,
+    LANG_MISSING_OCSGE_DIFF_IMPER,
     LEGEND_NAVIGATION_EXPORT,
 )
 from project.models import Project
@@ -34,6 +35,7 @@ class ImperProgressionByCouvertureChart(ProjectChart):
             "yAxis": {
                 "title": {"text": "Progression (en ha)"},
             },
+            "lang": LANG_MISSING_OCSGE_DIFF_IMPER,
             "tooltip": {
                 "pointFormat": "{point.y}",
                 "valueSuffix": " Ha",

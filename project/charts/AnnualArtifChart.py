@@ -1,5 +1,8 @@
 from project.charts.base_project_chart import ProjectChart
-from project.charts.constants import DEFAULT_VALUE_DECIMALS
+from project.charts.constants import (
+    DEFAULT_VALUE_DECIMALS,
+    LANG_MISSING_OCSGE_DIFF_ARTIF,
+)
 
 ARTIFICIALISATION = "Artificialisation"
 RENATURATION = "Désartificialisation"
@@ -29,6 +32,7 @@ class AnnualArtifChart(ProjectChart):
                 "borderWidth": 0,
             }
         },
+        "lang": LANG_MISSING_OCSGE_DIFF_ARTIF,
         "series": [],
     }
 
@@ -57,9 +61,10 @@ class AnnualArtifChart(ProjectChart):
             }
             for prd in self.get_data():
                 key = prd["period"]
-                self.series[ARTIFICIALISATION][key] = prd["new_artif"]
-                self.series[RENATURATION][key] = prd["new_natural"]
-                self.series[NET_ARTIFICIALISATION][key] = prd["net_artif"]
+                if prd["new_artif"] or prd["new_natural"]:
+                    self.series[ARTIFICIALISATION][key] = prd["new_artif"]
+                    self.series[RENATURATION][key] = prd["new_natural"]
+                    self.series[NET_ARTIFICIALISATION][key] = prd["net_artif"]
         return self.series
 
     def add_series(self):

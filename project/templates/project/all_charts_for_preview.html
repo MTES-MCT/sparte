@@ -9,22 +9,13 @@
 {% load highcharts_tags %}
 {% load sri %}
 
-{% block headers %}
-{% sri_static "project/css/project.css" %}
-{% sri_static "highcharts/js/highcharts.js" %}
-{% sri_static "highcharts/js/highcharts-more.js" %}
-{% sri_static "highcharts/js/exporting.js" %}
-{% sri_static "highcharts/js/sankey.js" %}
-{% sri_static "highcharts/js/dependency-wheel.js" %}
-{% endblock headers %}
-
 {% block content %}
 <div class="row w-100 justify-content-center">
     <div class="col-12 col-md-8 col-lg-6">
 {% for chart in all_charts %}
     <h2>{{ chart.classname }}</h2>
     <div id="{{chart.id}}"></div>
-    {% display_chart chart.id chart CSP_NONCE %}
+    
     <button
         class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0"
         aria-expanded="false"
@@ -37,15 +28,25 @@
 {% endfor %}
     </div>
 </div>
+
+
+
+
+
 {% endblock content %}
 
 {% block bodyend %}
-
 {% localize off %}
 {% sri_static "highcharts/js/highcharts.js" %}
 {% sri_static "highcharts/js/highcharts-more.js" %}
 {% sri_static "highcharts/js/exporting.js" %}
+{% sri_static "highcharts/js/no-data.js" %}
+{% sri_static "highcharts/js/sankey.js" %}
+{% sri_static "highcharts/js/dependency-wheel.js" %}
 {% french_translation %}
+{% for chart in all_charts %}
+{% display_chart chart.id chart CSP_NONCE %}
+{% endfor %}
 
 {% endlocalize %}
 {% endblock bodyend %}

@@ -3,6 +3,8 @@ from django.db.models import Sum
 from project.charts.base_project_chart import ProjectChart
 from public_data.models import CouvertureSol, OcsgeDiff
 
+from .constants import LANG_MISSING_OCSGE_DIFF_ARTIF
+
 
 class CouvertureChangeWheelChart(ProjectChart):
     name = "Matrice de passage de la couverture"
@@ -20,6 +22,7 @@ class CouvertureChangeWheelChart(ProjectChart):
                     f"{self.project.first_year_ocsge} à {self.project.last_year_ocsge}"
                 ),
             },
+            "lang": LANG_MISSING_OCSGE_DIFF_ARTIF,
             "accessibility": {
                 "point": {
                     "valueDescriptionFormat": "{index}. From {point.from} to {point.to}: {point.weight}.",
