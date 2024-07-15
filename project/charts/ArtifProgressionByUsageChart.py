@@ -46,6 +46,8 @@ class ArtifProgressionByUsageChart(ArtifProgressionByCouvertureChart):
 
         for code, value in aggregate.items():
             usage = UsageSol.objects.get(code_prefix=code)
+            if value["artif"] == 0 and value["renat"] == 0:
+                continue
             series.append(
                 {
                     "code_prefix": code,

@@ -5,6 +5,7 @@ from project.charts.constants import (
     DEFAULT_HEADER_FORMAT,
     DEFAULT_POINT_FORMAT,
     DEFAULT_VALUE_DECIMALS,
+    LANG_MISSING_OCSGE_DIFF_ARTIF,
     LEGEND_NAVIGATION_EXPORT,
     OCSGE_CREDITS,
 )
@@ -27,6 +28,7 @@ class NetArtifComparaisonChart(ProjectChart):
                 "valueDecimals": DEFAULT_VALUE_DECIMALS,
             },
             "xAxis": {"type": "category"},
+            "lang": LANG_MISSING_OCSGE_DIFF_ARTIF,
             "series": [],
         }
 
@@ -62,7 +64,7 @@ class NetArtifComparaisonChart(ProjectChart):
         if len(periods) > 1:
             return [f"{period[0] - period[1]}" for period in self.project.get_artif_periods()]
 
-        return [f"artificialisation nette entre {periods[0][0]} et {periods[0][1]} (ha)"]
+        return [f"Artificialisation nette entre {periods[0][0]} et {periods[0][1]} (ha)"]
 
     def add_series(self):
         super().add_series()

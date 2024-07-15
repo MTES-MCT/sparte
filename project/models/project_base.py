@@ -917,8 +917,17 @@ class Project(BaseProject):
         Return example:
         ((2013, 2016), (2016, 2019))
         """
-        qs = CommuneDiff.objects.filter(city__in=self.cities.all())
-        return tuple(qs.values_list("year_old", "year_new").distinct())
+        departement: Departement = self.cities.first().departement
+
+        if not departement.ocsge_millesimes:
+            return ()
+
+        periods = ()
+
+        for i in range(len(departement.ocsge_millesimes) - 1):
+            periods += ((departement.ocsge_millesimes[i], departement.ocsge_millesimes[i + 1]),)
+
+        return periods
 
     def get_land_artif_per_year(self, analysis_level):
         """Return artif evolution for all cities of the diagnostic
