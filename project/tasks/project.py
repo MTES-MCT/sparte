@@ -25,7 +25,8 @@ from project.models import (
     RequestedDocumentChoices,
     RNUPackage,
 )
-from public_data.models import ArtificialArea, Departement, Land, OcsgeDiff
+from public_data.domain.containers import PublicDataContainer
+from public_data.models import AdminRef, ArtificialArea, Departement, Land, OcsgeDiff
 from public_data.models.gpu import ArtifAreaZoneUrba, ZoneUrba
 from utils.db import fix_poly
 from utils.emails import SibTemplateEmail
@@ -330,6 +331,8 @@ def generate_word_diagnostic_rnu_package_one_off(self, project_id) -> int:
             buffer = renderer.render_to_docx(context=context)
             filename = renderer.get_file_name()
             req.sent_file.save(filename, buffer, save=True)
+            req.done = True
+            req.save(update_fields=["done"])
             logger.info("Word created and saved")
             return request_id
 
