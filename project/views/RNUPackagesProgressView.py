@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from project.models import Project
-from public_data.models import Commune
+from public_data.models import Commune, Departement
 from public_data.models.sudocuh import DocumentUrbanismeChoices, Sudocuh
 from users.models import User
 
@@ -13,8 +13,10 @@ from users.models import User
 class RNUPackagesProgressView(APIView):
     def get(self, request):
         diagnostic_to_create = Sudocuh.objects.filter(du_opposable=DocumentUrbanismeChoices.RNU)
-        of_those_with_ocsge = Commune.objects.filter(
+        from_commune_table = Commune.objects.filter(
             insee__in=diagnostic_to_create.values("code_insee"),
+        )
+        of_those_with_ocsge = from_commune_table.filter(
             ocsge_available=True,
         )
         of_those_with_ocsge_count = of_those_with_ocsge.count()
@@ -37,8 +39,6 @@ class RNUPackagesProgressView(APIView):
 
         async_fields_with_ocsge = [
             "async_theme_map_understand_artif_done",
-            "async_theme_map_gpu_done",
-            "async_theme_map_fill_gpu_done",
         ]
 
         aggregate_results = []
@@ -67,13 +67,26 @@ class RNUPackagesProgressView(APIView):
         minutes = (time_diff.seconds % 3600) // 60
         seconds = time_diff.seconds % 60
 
-        return Response(
-            {
-                "elapsed_time": f"{hours}h {minutes}m {seconds}s",
-                "diagnostic_to_create_count": diagnostic_to_create_count,
-                "of_those_with_ocsge_count": of_those_with_ocsge_count,
-                "diagnostic_created_count": diagnostic_created_count,
-                "diangostic_created_percentage": f"{diagnostic_created_count / diagnostic_to_create_count * 100}%",
-                "async_operations_progress": aggregate_results,
+        response_data = {
+            "elapsed_time": f"{hours}h {minutes}m {seconds}s",
+            "diagnostic_to_create_count": diagnostic_to_create_count,
+            "of_those_with_ocsge_count": of_those_with_ocsge_count,
+            "diagnostic_created_count": diagnostic_created_count,
+            "diangostic_created_percentage": f"{diagnostic_created_count / diagnostic_to_create_count * 100}%",
+            "async_operations_progress": aggregate_results,
+        }
+
+        for departement in Departement.objects.all():
+            response_data[f"department_{departement.source_id}"] = {
+                "diagnostic_to_create_count": diagnostic_to_create.filter(
+                    code_insee__startswith=departement.source_id
+                ).count(),
+                "of_those_with_ocsge_count": of_those_with_ocsge.filter(departement=departement).count(),
+                "diagnostic_created_count": diagnostic_created.annotate(
+                    land_id_as_int=Cast("land_id", output_field=IntegerField())
+                )
+                .filter(land_id_as_int__in=from_commune_table.filter(departement=departement).values("id"))
+                .count(),
             }
-        )
+
+        return Response(response_data)

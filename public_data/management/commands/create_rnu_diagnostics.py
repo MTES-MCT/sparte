@@ -16,6 +16,9 @@ logger = logging.getLogger("management.commands")
 class Command(BaseCommand):
     help = "create_rnu_diagnostics"
 
+    def add_arguments(self, parser):
+        parser.add_argument("--departement", type=str, required=True)
+
     def handle(self, *args, **options):
         mondiagartif_user, _ = User.objects.get_or_create(
             email="rnu.package@mondiagartif.beta.gouv.fr",
@@ -26,8 +29,11 @@ class Command(BaseCommand):
             defaults={"email_checked": timezone.now()},
         )
 
+        projects = []
+
         for commune in Commune.objects.filter(
-            insee__in=[Sudocuh.objects.filter(du_opposable=DocumentUrbanismeChoices.RNU).values("code_insee")]
+            departement__source_id=options["departement"],
+            insee__in=[Sudocuh.objects.filter(du_opposable=DocumentUrbanismeChoices.RNU).values("code_insee")],
         ):
             land = Land(public_key=f"COMM_{commune.pk}")
             project = Project.objects.create(
@@ -58,6 +64,8 @@ class Command(BaseCommand):
                 async_add_comparison_lands_done=True,
             )
 
+            project.cities.add(commune)
+
             Emprise.objects.create(
                 mpoly=fix_poly(commune.mpoly),
                 srid_source=commune.srid_source,
@@ -70,7 +78,9 @@ class Command(BaseCommand):
 
             project.refresh_from_db()
 
-            project = project.add_look_a_like(public_key=similar_lands_public_keys, many=True)
+            project.add_look_a_like(public_key=similar_lands_public_keys, many=True)
 
-        for project in Project.objects.filter(user=mondiagartif_user):
+            projects.append(project)
+
+        for project in projects:
             trigger_async_tasks_rnu_pakage_one_off(project)
