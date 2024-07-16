@@ -42,7 +42,7 @@ class Command(BaseCommand):
             raise ValueError(
                 (
                     f"Commune count ({commune_count}) does not match "
-                    "request for communes count ({request_for_communes_count})"
+                    f"request for communes count ({request_for_communes_count})"
                 )
             )
         else:
