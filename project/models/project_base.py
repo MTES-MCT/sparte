@@ -677,7 +677,7 @@ class Project(BaseProject):
             "mix": "Mixte",
             "rou": "Route",
             "fer": "Ferré",
-            "inc": "Non renseigné",
+            "inc": "Inconnu",
         }
         results = {f: dict() for f in determinants.values()}
         args = []
@@ -917,8 +917,17 @@ class Project(BaseProject):
         Return example:
         ((2013, 2016), (2016, 2019))
         """
-        qs = CommuneDiff.objects.filter(city__in=self.cities.all())
-        return tuple(qs.values_list("year_old", "year_new").distinct())
+        departement: Departement = self.cities.first().departement
+
+        if not departement.ocsge_millesimes:
+            return ()
+
+        periods = ()
+
+        for i in range(len(departement.ocsge_millesimes) - 1):
+            periods += ((departement.ocsge_millesimes[i], departement.ocsge_millesimes[i + 1]),)
+
+        return periods
 
     def get_land_artif_per_year(self, analysis_level):
         """Return artif evolution for all cities of the diagnostic
@@ -1124,6 +1133,10 @@ class Project(BaseProject):
     def land(self) -> Commune | Departement | Epci | Region | Scot:
         return Land(self.get_public_key()).land
 
+    @cached_property
+    def land_proxy(self) -> Land:
+        return Land(self.get_public_key())
+
     def get_arbitrary_comparison_lands(self) -> QuerySet[Departement] | QuerySet[Region] | None:
         """
         Return a queryset of lands if the project has arbitrary comparison lands
@@ -1169,6 +1182,11 @@ class Project(BaseProject):
         unless arbitrary comparison lands are defined.
         """
         return (self.get_arbitrary_comparison_lands() or self.get_neighbors()).order_by("name")[:limit]
+
+    def comparison_lands_and_self_land(self) -> list[Land]:
+        return [self.land_proxy] + [
+            Land(public_key=f"{land.land_type}_{land.id}") for land in self.get_comparison_lands()
+        ]
 
     def get_matrix(self, sol: Literal["couverture", "usage"] = "couverture"):
         if sol == "usage":

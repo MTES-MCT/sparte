@@ -22,7 +22,8 @@ from django.core.exceptions import ImproperlyConfigured
 from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.redis import RedisIntegration
 
-OFFICIAL_VERSION = "7.1"
+OFFICIAL_VERSION = "7.3"
+
 
 root = environ.Path(__file__) - 2  # get root of the project
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -254,11 +255,12 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 CACHES: Dict[str, Any] = {}
 
-if ENVIRONMENT in ["local"]:
+
+if ENVIRONMENT == "local":
     CACHES = {
         "default": {
             "BACKEND": "config.cache_backends.RedisDummyCache",
-        }
+        },
     }
 else:
     CACHES = {
@@ -468,8 +470,6 @@ if ENVIRONMENT != "local":
         release=f"MonDiagArtif@{OFFICIAL_VERSION}",
         environment=ENVIRONMENT,
         debug=False,
-        request_bodies="always",
-        with_locals=True,
     )
 
 

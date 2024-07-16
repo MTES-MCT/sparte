@@ -12,8 +12,15 @@ from diagnostic_word.models import WordTemplate
 from project import charts
 from project.models import Request
 from project.utils import add_total_line_column
+from public_data.domain.containers import PublicDataContainer
 from public_data.domain.impermeabilisation.difference.ImpermeabilisationDifferenceService import (
     ImpermeabilisationDifferenceService,
+)
+from public_data.infra.consommation.progression.export.ConsoComparisonExportTableMapper import (
+    ConsoComparisonExportTableMapper,
+)
+from public_data.infra.consommation.progression.export.ConsoProportionalComparisonExportTableMapper import (
+    ConsoProportionalComparisonExportTableMapper,
 )
 from public_data.infra.impermeabilisation.difference.export.ImperNetteTableMapper import (
     ImperNetteTableMapper,
@@ -193,8 +200,8 @@ class BaseRenderer:
             "determinants_data_table": add_total_line_column(det_chart.get_series()),
             # Target 2031
             "target_2031_consumed": target_2031_consumption,
-            "projection_zan_cumulee_ref": round(objective_chart.total_real, 1),
-            "projection_zan_annuelle_ref": round(objective_chart.annual_real, 1),
+            "projection_zan_cumulee_ref": round(objective_chart.total_2020, 1),
+            "projection_zan_annuelle_ref": round(objective_chart.annual_2020, 1),
             "projection_zan_cumulee_objectif": round(objective_chart.conso_2031),
             "projection_zan_annuelle_objectif": round(objective_chart.annual_objective_2031),
         }
@@ -213,9 +220,19 @@ class BaseRenderer:
                 "comparison_surface_chart": self.prep_image(comparison_surface_chart.get_temp_image(), width=170),
                 "comparison_relative_chart": self.prep_image(comparison_relative_chart.get_temp_image(), width=170),
                 # Charts datatables
-                "comparison_data_table": add_total_line_column(comparison_chart.get_series(), line=False),
-                "comparison_relative_data_table": add_total_line_column(
-                    comparison_relative_chart.get_series(), line=False
+                "comparison_data_table": ConsoComparisonExportTableMapper.map(
+                    consommation_progression=PublicDataContainer.consommation_progression_service().get_by_lands(
+                        lands=diagnostic.comparison_lands_and_self_land(),
+                        start_date=int(diagnostic.analyse_start_date),
+                        end_date=int(diagnostic.analyse_end_date),
+                    )
+                ),
+                "comparison_relative_data_table": ConsoProportionalComparisonExportTableMapper.map(
+                    consommation_progression=PublicDataContainer.consommation_progression_service().get_by_lands(
+                        lands=diagnostic.comparison_lands_and_self_land(),
+                        start_date=int(diagnostic.analyse_start_date),
+                        end_date=int(diagnostic.analyse_end_date),
+                    )
                 ),
             }
 
@@ -258,8 +275,8 @@ class BaseRenderer:
                 ),
             }
 
-            # Artif comparison territories
-            if has_neighbors:
+            # Artif territories sub level
+            if not is_commune:
                 # Charts
                 artif_chart_comparison = charts.NetArtifComparaisonChartExport(diagnostic, level=diagnostic.level)
                 context |= {

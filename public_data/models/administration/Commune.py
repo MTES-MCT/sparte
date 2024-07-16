@@ -77,7 +77,7 @@ class Commune(DataColorationMixin, LandMixin, GetDataFromCeremaMixin, models.Mod
         return self.departement.ocsge_millesimes
 
     def get_cities(self):
-        return [self]
+        return Commune.objects.filter(id=self.id).all()
 
     def get_official_id(self) -> str:
         return self.insee if self.insee is not None else ""

@@ -1,7 +1,11 @@
 """Mixins available for all views."""
-from django.db.models import Q
-from django.urls import reverse_lazy
 
+from django.contrib import messages
+from django.db.models import Q
+from django.shortcuts import redirect
+from django.urls import reverse, reverse_lazy
+
+from project.models import Project
 from utils.views_mixins import BreadCrumbMixin, GetObjectMixin
 
 
@@ -51,3 +55,18 @@ class GroupMixin(GetObjectMixin, UserQuerysetOrPublicMixin, BreadCrumbMixin):
         except AttributeError:
             pass
         return breadcrumbs
+
+
+class OcsgeCoverageMixin:
+    def dispatch(self, request, *args, **kwargs):
+        project: Project = self.get_object()
+        if project.ocsge_coverage_status != project.OcsgeCoverageStatus.COMPLETE_UNIFORM:
+            message = self._build_error_message()
+            messages.error(request, message)
+            return redirect(reverse("project:report_synthesis", kwargs={"pk": project.pk}))
+        return super().dispatch(request, *args, **kwargs)
+
+    def _build_error_message(self):
+        page_name = getattr(self, "breadcrumbs_title", "cette page")
+        page_name_literal = "à la page " + page_name if page_name != "cette page" else page_name
+        return f"Vous ne pouvez pas accéder {page_name_literal} car l'OCS GE n'est pas disponible pour ce territoire."

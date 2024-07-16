@@ -16,9 +16,9 @@ class AllChartsForPreview(ProjectReportBaseView):
 
         for chart in map(charts.__dict__.get, charts.__all__):
             try:
-                chart = chart(project)
-            except Exception:
                 chart = chart(project, level=project.level)
+            except Exception:
+                chart = chart(project)
             uuid = str(uuid4()).replace("-", "_")
             chart.id = "id_" + uuid
             chart.name = "chart_" + uuid

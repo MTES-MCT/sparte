@@ -28,14 +28,14 @@ class SurfaceChart(ProjectChart):
         }
 
     def get_options(self, serie_name):
-        if serie_name == self.project.name:
+        if serie_name == self.project.territory_name:
             return {"color": "#ff0000"}
         else:
             return super().get_options(serie_name)
 
     def get_series(self):
         if not self.series:
-            self.series = {self.project.name: {"Territoire": self.project.area}}
+            self.series = {self.project.territory_name: {"Territoire": self.project.area}}
             self.series.update({land.name: {"Territoire": land.area} for land in self.project.get_look_a_like()})
 
         return self.series

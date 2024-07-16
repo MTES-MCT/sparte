@@ -60,7 +60,7 @@ class ExportExcelView(View):
             self.get_excel_as_buffer(),
             content_type=("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;" "charset=utf-8"),
             as_attachment=True,
-            filename=f"données du diagnostic {self.project.name}.xlsx",
+            filename=f"données du diagnostic {self.project.territory_name}.xlsx",
         )
 
     def get_excel_as_buffer(self) -> io.BytesIO:
@@ -198,7 +198,7 @@ class ExportExcelView(View):
             Surface artificielle dernier millésime
             Pour chaque différentiel (entre 2 millésimes) :
                 artificialisation
-                renaturation
+                désartificialisation
                 artificialisation nette
                 taux d'artificialisation nette (artif nette / surface du territoire)
         """
@@ -269,13 +269,13 @@ class ExportExcelView(View):
             .annotate(
                 **{_["name"]: _["db"] for _ in config},
                 Artificialisation=F("new_artif"),
-                Renaturation=F("new_natural"),
+                Désartificialisation=F("new_natural"),
                 Artificialisation_nette=F("net_artif"),
             )
             .values(
                 *[_["name"] for _ in config],
                 "Artificialisation",
-                "Renaturation",
+                "Désartificialisation",
                 "Artificialisation_nette",
             )
         )
@@ -287,7 +287,7 @@ class ExportExcelView(View):
                 index=[_["name"] for _ in config if _["type"] == "index"],
                 values=[
                     "Artificialisation",
-                    "Renaturation",
+                    "Désartificialisation",
                     "Artificialisation_nette",
                 ],
             )
@@ -307,10 +307,10 @@ class ExportExcelView(View):
         Plus récent millésime
         pour chaque couverture clé:
             Artificialisation
-            Renaturation
+            Désartificialisation
         Pour chaque usage clé:
             Artificialisation
-            Renaturation
+            Désartificialisation
         """
         config = [
             {"name": "Commune", "db": F("city__name"), "type": "index"},

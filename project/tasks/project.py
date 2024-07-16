@@ -1,5 +1,7 @@
 import io
 import logging
+import os
+import zipfile
 from datetime import timedelta
 from typing import Any, Dict, Literal
 
@@ -10,15 +12,22 @@ import shapely
 from celery import shared_task
 from django.conf import settings
 from django.db import transaction
-from django.db.models import F, OuterRef, Q, Subquery
+from django.db.models import F, Q
 from django.urls import reverse
 from django.utils import timezone
 from django_app_parameter import app_parameter
 from matplotlib.lines import Line2D
 from matplotlib_scalebar.scalebar import ScaleBar
 
-from project.models import Emprise, Project, Request, RequestedDocumentChoices
-from public_data.models import ArtificialArea, Cerema, Land, OcsgeDiff
+from project.models import (
+    Emprise,
+    Project,
+    Request,
+    RequestedDocumentChoices,
+    RNUPackage,
+)
+from public_data.domain.containers import PublicDataContainer
+from public_data.models import AdminRef, ArtificialArea, Departement, Land, OcsgeDiff
 from public_data.models.gpu import ArtifAreaZoneUrba, ZoneUrba
 from utils.db import fix_poly
 from utils.emails import SibTemplateEmail
@@ -244,7 +253,7 @@ def generate_cover_image(self, project_id) -> None:
         fig.set_dpi(72)
 
         gdf_emprise.buffer(250000).plot(ax=ax, facecolor="none", edgecolor="none")
-        gdf_emprise.plot(ax=ax, facecolor="none", edgecolor="yellow")
+        gdf_emprise.plot(ax=ax, facecolor="none", edgecolor="black")
         cx.add_basemap(ax, source=settings.OPENSTREETMAP_URL)
 
         img_data = io.BytesIO()
@@ -281,6 +290,57 @@ class WaitAsyncTaskException(Exception):
 
 class WordAlreadySentException(Exception):
     pass
+
+
+@shared_task(bind=True, max_retries=10, queue="long")
+def generate_word_diagnostic_rnu_package_one_off(self, project_id) -> int:
+    from diagnostic_word.renderers import (
+        ConsoReportRenderer,
+        FullReportRenderer,
+        LocalReportRenderer,
+    )
+
+    project = Project.objects.get(id=int(project_id))
+    request = Request.objects.filter(project=project).first()
+    request_id = request.id
+
+    logger.info(f"Start generate word for request_id={request_id}")
+    try:
+        req = Request.objects.select_related("project").get(id=int(request_id))
+
+        if not req.project:
+            raise Project.DoesNotExist("Project does not exist")
+        elif not req.project.async_complete:
+            msg = "Not all async tasks are completed, retry later"
+            raise WaitAsyncTaskException(msg)
+        elif req.sent_file:
+            raise WordAlreadySentException("Word already sent")
+
+        logger.info("Start generating word")
+
+        logger.info("Requested document: %s", req.requested_document)
+
+        renderer_class = {
+            RequestedDocumentChoices.RAPPORT_COMPLET: FullReportRenderer,
+            RequestedDocumentChoices.RAPPORT_LOCAL: LocalReportRenderer,
+            RequestedDocumentChoices.RAPPORT_CONSO: ConsoReportRenderer,
+        }[req.requested_document]
+
+        with renderer_class(request=req) as renderer:
+            context = renderer.get_context_data()
+            buffer = renderer.render_to_docx(context=context)
+            filename = renderer.get_file_name()
+            req.sent_file.save(filename, buffer, save=True)
+            req.done = True
+            req.save(update_fields=["done"])
+            logger.info("Word created and saved")
+            return request_id
+
+    except Exception as exc:
+        req.record_exception(exc)
+        logger.error("Error while generating word: %s", exc)
+        logger.exception(exc)
+        self.retry(exc=exc, countdown=10)
 
 
 @shared_task(bind=True, max_retries=6, queue="long")
@@ -399,8 +459,8 @@ def to_shapely_polygons(mpoly):
 def get_img(queryset, color: str, title: str) -> io.BytesIO:
     data: Dict[Literal["level", "geometry"], Any] = {"level": [], "geometry": []}
     for row in queryset:
-        data["geometry"].append(to_shapely_polygons(row.mpoly))
-        data["level"].append(float(row.level) if row.level else 0)
+        data["geometry"].append(to_shapely_polygons(row["mpoly"]))
+        data["level"].append(float(row["level"]) if row["level"] else 0)
 
     gdf = geopandas.GeoDataFrame(data, crs="EPSG:4326").to_crs(epsg=3857)
 
@@ -436,16 +496,33 @@ def generate_theme_map_conso(self, project_id) -> None:
 
     try:
         diagnostic = Project.objects.get(id=int(project_id))
-        fields = Cerema.get_art_field(diagnostic.analyse_start_date, diagnostic.analyse_end_date)
-        sub_qs = Cerema.objects.annotate(conso=sum(F(f) for f in fields))
-        qs = diagnostic.cities.all().annotate(
-            level=Subquery(sub_qs.filter(city_insee=OuterRef("insee")).values("conso")[:1]) / 10000
+        diagnostic_communes_as_lands = [
+            Land(public_key=f"{AdminRef.COMMUNE}_{commune.id}") for commune in diagnostic.cities.all()
+        ]
+
+        land_progressions = PublicDataContainer.consommation_progression_service().get_by_lands(
+            lands=diagnostic_communes_as_lands,
+            start_date=int(diagnostic.analyse_start_date),
+            end_date=int(diagnostic.analyse_end_date),
+        )
+
+        data = [
+            {
+                "mpoly": land_progression.land.mpoly,
+                "level": sum(annual_conso.per_mille_of_area for annual_conso in land_progression.consommation),
+            }
+            for land_progression in land_progressions
+        ]
+
+        image_title = (
+            f"Taux de consommation d'espaces des communes du territoire «{diagnostic.land.name}» "
+            f"entre {diagnostic.analyse_start_date} et {diagnostic.analyse_end_date} (en ‰ - pour mille)"
         )
 
         img_data = get_img(
-            queryset=qs,
+            queryset=data,
             color="Blues",
-            title="Consommation d'espaces des communes du territoire sur la période (en Ha)",
+            title=image_title,
         )
 
         race_protection_save_map(
@@ -474,12 +551,25 @@ def generate_theme_map_artif(self, project_id) -> None:
 
     try:
         diagnostic = Project.objects.get(id=int(project_id))
-        qs = diagnostic.cities.all().annotate(level=F("surface_artif"))
+        qs = diagnostic.cities.all().annotate(level=F("surface_artif") * 100 / F("area"))
+
+        data = [
+            {
+                "mpoly": row.mpoly,
+                "level": row.level,
+            }
+            for row in qs
+        ]
+
+        title = (
+            f"Taux d'artificialisation des communes du territoire "
+            f"«{diagnostic.land.name}» en {diagnostic.last_year_ocsge} (en % - pour cent)"
+        )
 
         img_data = get_img(
-            queryset=qs,
+            queryset=data,
             color="OrRd",
-            title="Artificialisation des communes du territoire sur la période (en Ha)",
+            title=title,
         )
 
         race_protection_save_map(
@@ -544,8 +634,8 @@ def generate_theme_map_understand_artif(self, project_id) -> None:
         fig.set_dpi(100)
 
         artif_area_gdf.plot(ax=ax, color=artif_area_gdf["color"], label="Artificialisation")
-        gdf_emprise.plot(ax=ax, facecolor="none", edgecolor="yellow")
-        emprise_legend_label = Line2D([], [], color="yellow", linewidth=3, label=diagnostic.territory_name)
+        gdf_emprise.plot(ax=ax, facecolor="none", edgecolor="black")
+        emprise_legend_label = Line2D([], [], color="black", linewidth=3, label=diagnostic.territory_name)
         artif_legend_label = Line2D(
             [],
             [],
@@ -559,7 +649,13 @@ def generate_theme_map_understand_artif(self, project_id) -> None:
             [], [], linestyle="none", mfc=new_artif_color, mec=new_artif_color, marker="s", label="Artificialisation"
         )
         new_natural_legend_label = Line2D(
-            [], [], linestyle="none", mfc=new_natural_color, mec=new_natural_color, marker="s", label="Renaturation"
+            [],
+            [],
+            linestyle="none",
+            mfc=new_natural_color,
+            mec=new_natural_color,
+            marker="s",
+            label="Désartificialisation",
         )
 
         ax.add_artist(ScaleBar(1, location="lower right"))
@@ -575,7 +671,8 @@ def generate_theme_map_understand_artif(self, project_id) -> None:
         ax.set_title(
             label=(
                 "Etat des lieux de l'artificialisation "
-                f"de {diagnostic.territory_name} entre {diagnostic.first_year_ocsge} à {diagnostic.last_year_ocsge}"
+                f"de territoire «{diagnostic.land.name}» entre {diagnostic.first_year_ocsge} à "
+                f"{diagnostic.last_year_ocsge}"
             ),
             loc="left",
         )
@@ -632,9 +729,11 @@ def generate_theme_map_gpu(self, project_id) -> None:
         fig.set_dpi(150)
 
         zone_urba_gdf.plot(ax=ax, color=zone_urba_gdf["color"])
-        gdf_emprise.plot(ax=ax, facecolor="none", edgecolor="yellow")
+        gdf_emprise.plot(ax=ax, facecolor="none", edgecolor="black")
         ax.add_artist(ScaleBar(1))
-        ax.set_title("Les zones d'urbanisme de son territoire")
+        ax.set_title(
+            f"Les zones d'urbanisme du territoire «{diagnostic.territory_name}» en {diagnostic.analyse_end_date}"
+        )
         cx.add_basemap(ax, source=settings.OPENSTREETMAP_URL)
 
         img_data = io.BytesIO()
@@ -677,11 +776,25 @@ def generate_theme_map_fill_gpu(self, project_id) -> None:
             level=100 * F("area") / F("zone_urba__area"),
             mpoly=F("zone_urba__mpoly"),
         )
+
+        data = [
+            {
+                "mpoly": item.mpoly,
+                "level": item.level,
+            }
+            for item in qs
+        ]
+
+        title = (
+            f"Taux d'artificialisation des zones urbaines (U) et à urbaniser (AU) du territoire "
+            f"«{diagnostic.land.name}» en {diagnostic.last_year_ocsge} (en % - pour cent)"
+        )
+
         if qs.count() > 0:
             img_data = get_img(
-                queryset=qs,
+                queryset=data,
                 color="OrRd",
-                title="Taux d'artificialisation des zones urbaines (U) et à urbaniser (AU)",
+                title=title,
             )
         else:
             geom = diagnostic.combined_emprise.transform("3857", clone=True)
@@ -691,7 +804,7 @@ def generate_theme_map_fill_gpu(self, project_id) -> None:
             fig, ax = plt.subplots(figsize=(15, 10))
             plt.axis("off")
             fig.set_dpi(150)
-            gdf_emprise.plot(ax=ax, facecolor="none", edgecolor="yellow")
+            gdf_emprise.plot(ax=ax, facecolor="none", edgecolor="black")
             ax.add_artist(ScaleBar(1))
             ax.set_title("Il n'y a pas de zone U ou AU")
             cx.add_basemap(ax, source=settings.OPENSTREETMAP_URL)
@@ -764,3 +877,42 @@ def alert_on_blocked_diagnostic(self) -> None:
 
     finally:
         logger.info("End alert_on_blocked_diagnostic")
+
+
+@shared_task(max_retries=5)
+def create_zip_departement_rnu_package_one_off(departement_id: str) -> None:
+    departement = Departement.objects.get(source_id=departement_id)
+    commune_in_departement_ids_as_string = [
+        str(commune_id) for commune_id in departement.commune_set.values_list("id", flat=True)
+    ]
+    requests_created_by_the_rnu_package_service_account = Request.objects.filter(
+        email="rnu.package@mondiagartif.beta.gouv.fr",
+        project__land_id__in=commune_in_departement_ids_as_string,
+    )
+
+    file_name = f"rnu_package_departement_{departement_id}.zip"
+
+    with zipfile.ZipFile(file_name, "a", compression=zipfile.ZIP_DEFLATED) as zipf:
+        for request in requests_created_by_the_rnu_package_service_account:
+            if not request.sent_file:
+                raise ValueError(f"Request {request.id} has no sent file")
+
+            file_name_in_zip = f"{departement_id}_COMM_{request.project.land.official_id}.docx"
+            zipf.writestr(file_name_in_zip, request.sent_file.read())
+
+    try:
+        package = RNUPackage.objects.get(
+            departement_official_id=departement.source_id,
+        )
+        package.app_version = settings.OFFICIAL_VERSION
+        package.save()
+    except RNUPackage.DoesNotExist:
+        package = RNUPackage.objects.create(
+            departement_official_id=departement.source_id,
+            app_version=settings.OFFICIAL_VERSION,
+        )
+
+    with open(file_name, "rb") as buffer:
+        package.file.save(name=file_name, content=buffer, save=True)
+
+    os.remove(file_name)

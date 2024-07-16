@@ -2,6 +2,7 @@ from project.charts.base_project_chart import ProjectChart
 from project.charts.constants import (
     DEFAULT_VALUE_DECIMALS,
     IMPERMEABLE_OCSGE_CREDITS,
+    LANG_MISSING_OCSGE_DIFF_IMPER,
     LEGEND_NAVIGATION_EXPORT,
 )
 from public_data.domain.impermeabilisation.difference.ImpermeabilisationDifferenceService import (
@@ -11,18 +12,17 @@ from public_data.infra.impermeabilisation.difference.highchart.ImperNetteMapper 
     ImperNetteMapper,
 )
 
-IMPERMEABILISATION = "Imperméabilisation"
-
 
 class ImperNetteProgression(ProjectChart):
     name = "Evolution de l'imperméabilisation"
     param = {
         "chart": {"type": "column"},
-        "title": {"text": f"{IMPERMEABILISATION} sur la période"},
+        "title": {"text": "Imperméabilisation sur la période"},
         "yAxis": {
             "title": {"text": "Surface (en ha)"},
             "stackLabels": {"enabled": True, "format": "{total:,.1f}"},
         },
+        "lang": LANG_MISSING_OCSGE_DIFF_IMPER,
         "tooltip": {
             "pointFormat": "{series.name}: {point.y}",
             "valueSuffix": " Ha",

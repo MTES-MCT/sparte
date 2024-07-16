@@ -73,11 +73,11 @@ Rapport consommation
                 </li>
                 <li>
                     <a class="fr-summary__link" href="#determinants-conso">
-                        Déterminants de sa consommation d'espaces
+                        Destinations de la consommation d'espaces
                     </a>
                 </li>
                 <li>
-                    <a class="fr-summary__link" href="#territoires-de-comparaison">Comparaison du territoire avec les territoires similaires</a>
+                    <a class="fr-summary__link" href="#territoires-de-comparaison">Comparaison avec les territoires similaires</a>
                 </li>
                 <li>
                     <a class="fr-summary__link" href="#conso-relative-surface-anchor">Consommation d'espaces rapportée à la surface du territoire</a>
@@ -165,29 +165,37 @@ Rapport consommation
                         <p class="fr-text--sm">Données brutes, sans calcul</p>
     
                         <h6 class="fr-mt-2w">Données</h6>
-                        <div class="table-responsive">
-                            <table class="fr-table table-last-column-bold table-last-row-bold">
-                                <caption>Consommation d'espace annuelle sur le territoire (en ha)</caption>
-                                <thead>
-                                    <tr>
-                                        <th scope="col"></th>
-                                        {% for year in project.years %}
-                                        <th scope="col" class="text-end">{{ year }}</th>
-                                        {% endfor %}
-                                        <th scope="col" class="text-end">Total</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for item, data in annual_conso_data_table.items %}
-                                    <tr>
-                                        <th scope="row">{{ item }}</th>
-                                        {% for year, val in data.items %}
-                                        <td class="text-end">+{{ val|floatformat:1 }}</td>
-                                        {% endfor %}
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
+                        <div class="fr-table fr-table--bordered">
+                            <div class="fr-table__wrapper">
+                                <div class="fr-table__container">
+                                    <div class="fr-table__content">
+                                        <table class="table-last-column-bold table-last-row-bold">
+                                            <caption>
+                                                Consommation d'espace annuelle sur le territoire (en ha)
+                                            </caption>
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col" class="fr-cell--fixed"></th>
+                                                    {% for year in project.years %}
+                                                    <th scope="col" class="fr-cell--right">{{ year }}</th>
+                                                    {% endfor %}
+                                                    <th scope="col" class="fr-cell--right">Total</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for item, data in annual_conso_data_table.items %}
+                                                <tr>
+                                                    <th scope="row" class="fr-cell--fixed">{{ item }}</th>
+                                                    {% for year, val in data.items %}
+                                                    <td class="fr-cell--right">+{{ val|floatformat:1 }}</td>
+                                                    {% endfor %}
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -195,7 +203,7 @@ Rapport consommation
         </div>
 
         <div class="fr-mt-7w">
-            <h3 id="determinants-conso">Déterminants de la consommation</h3>
+            <h3 id="determinants-conso">Destinations de la consommation d'espaces</h3>
 
             <div class="fr-grid-row fr-grid-row--gutters">
                 <div class="fr-col-12 fr-col-lg-4">
@@ -280,36 +288,44 @@ Rapport consommation
                             Pour plus d'informations sur <a class="fr-link" href="{{ FAQ_URL }}fr/article/quest-ce-quun-millesime-110ihlr/" target="_blank" rel="noopener noreferrer">"Qu'est-ce qu'un millésime ?"</a>.
                         </p>
                         <p class="fr-text--sm">
-                            La ligne "non renseigné" comprend les éléments dont la destination
+                            La ligne "inconnu" comprend les éléments dont la destination
                             n’est pas définie dans les fichiers fonciers.
                         </p>
                         <h6 class="fr-mt-2w">Calcul</h6>
                         <p class="fr-text--sm">Données brutes, sans calcul</p>
     
                         <h6 class="fr-mt-2w">Données</h6>
-                        <div class="table-responsive">
-                            <table class="fr-table table-last-row-bold table-last-column-bold">
-                                <caption>Consommation d'espace annuelle sur le territoire par déterminant (en ha)</caption>
-                                <thead>
-                                    <tr>
-                                        <th scope="col">Déterminant</th>
-                                        {% for year in project.years %}
-                                        <th scope="col" class="text-end">{{ year }}</th>
-                                        {% endfor %}
-                                        <th scope="col" class="text-end">Total</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for determinant_name, data in data_determinant.items %}
-                                    <tr>
-                                        <th scope="row">{{ determinant_name }}</th>
-                                        {% for year, val in data.items %}
-                                        <td class="text-end">+{{ val|floatformat:1 }}</td>
-                                        {% endfor %}
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
+                        <div class="fr-table fr-table--bordered">
+                            <div class="fr-table__wrapper">
+                                <div class="fr-table__container">
+                                    <div class="fr-table__content">
+                                        <table class="table-last-column-bold table-last-row-bold">
+                                            <caption>
+                                                Consommation d'espace annuelle sur le territoire par destination (en ha)
+                                            </caption>
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col" class="fr-cell--fixed">Destination</th>
+                                                    {% for year in project.years %}
+                                                    <th scope="col" class="fr-cell--right">{{ year }}</th>
+                                                    {% endfor %}
+                                                    <th scope="col" class="fr-cell--right">Total</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for determinant_name, data in data_determinant.items %}
+                                                <tr>
+                                                    <th scope="row" class="fr-cell--fixed">{{ determinant_name }}</th>
+                                                    {% for year, val in data.items %}
+                                                    <td class="fr-cell--right">+{{ val|floatformat:1 }}</td>
+                                                    {% endfor %}
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -373,30 +389,7 @@ Rapport consommation
                         <p class="fr-text--sm">Données brutes, sans calcul</p>
     
                         <h6 class="fr-mt-2w">Données</h6>
-                        <div class="table-responsive">
-                            <table class="fr-table table-last-column-bold">
-                                <caption>Consommation d'espace annuelle sur les territoires similaires (en ha)</caption>
-                                <thead>
-                                    <tr>
-                                        <th scope="col">Communes</th>
-                                        {% for year in project.years %}
-                                        <th scope="col" class="text-end">{{ year }}</th>
-                                        {% endfor %}
-                                        <th scope="col" class="text-end">Total</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for city_name, data in data_comparison.items %}
-                                    <tr>
-                                        <th scope="row">{{ city_name }}</th>
-                                        {% for year, val in data.items %}
-                                        <td class="text-end">+{{ val|floatformat:1 }}</td>
-                                        {% endfor %}
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
+                        {{ comparison_table }}
                     </div>
                 </div>
             </div>
@@ -468,15 +461,15 @@ Rapport consommation
             <div class="fr-modal__content">
                 <h1 class="fr-modal__title" id="determinantLabel">
                     <span class="fr-fi-arrow-right-line fr-fi--lg"></span>
-                    Astuces - Déterminants de la consommation
+                    Astuces - Destinations de la consommation
                 </h1>
                 <p class="fr-text--sm">
-                    Les déterminants indiquent les natures de la consommation de l’espace NAF (Naturel, Agricole et Forestier).
+                    Les destinations indiquent les natures de la consommation de l’espace NAF (Naturel, Agricole et Forestier).
                     Ils sont définis en 6 catégories par le Cerema : habitat, activité, mixte (lorsqu'il y a un mélange d'habitat et d'activité,
-                    par exemple un commerce au rez de chaussée et des logements aux étages), route, ferré, non renseigné (lorsque les fichiers
+                    par exemple un commerce au rez de chaussée et des logements aux étages), route, ferré, inconnu (lorsque les fichiers
                     fonciers ne permettent pas de préciser la destination).
                 </p>
-                <p class="fr-text--sm">Pour zoomer sur un déterminant en particulier, vous pouvez masquer les autres en cliquant sur eux dans la légende. Cliquez de nouveau dessus pour les ré-afficher.</p>
+                <p class="fr-text--sm">Pour zoomer sur une destination en particulier, vous pouvez masquer les autres en cliquant sur eux dans la légende. Cliquez de nouveau dessus pour les ré-afficher.</p>
                 <p class="fr-text--sm">Avec le bouton <span class="fr-icon-drag-move-2-line fr-icon--sm" aria-hidden="true"></span>, vous pouvez afficher le graphique en plein écran.</p>
                 <p class="fr-text--sm">Avec le bouton <span class="fr-icon-download-line fr-icon--sm" aria-hidden="true"></span>, vous pouvez télécharger le graphique sous forme d'image (utilisez PNG si vous ne savez pas lequel choisir).</p>
             </div>

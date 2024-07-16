@@ -8,7 +8,7 @@ from project.charts.constants import (
 
 class AnnualConsoByDeterminantChart(ProjectChart):
     """
-    Graphique en barre de consommation annuelle par déterminant (habitat, activité, mixte etc.)
+    Graphique en barre de consommation annuelle par destination (habitat, activité, mixte etc.)
     avec une courbe de consommation totale en pointillés.
     """
 
@@ -54,7 +54,7 @@ class AnnualConsoByDeterminantChart(ProjectChart):
         super().add_series()
         if not self.group_name:
             self.add_serie(
-                self.project.name,
+                "Total",
                 self.project.get_conso_per_year(),
                 **{
                     "type": "line",
@@ -75,7 +75,7 @@ class AnnualConsoByDeterminantChartExport(AnnualConsoByDeterminantChart):
             "credits": CEREMA_CREDITS,
             "title": {
                 "text": (
-                    f"Consommation annuelle d'espace par déterminant de {self.project.territory_name}"
+                    f"Consommation annuelle d'espace par destination de {self.project.territory_name}"
                     f" entre {self.project.analyse_start_date} et {self.project.analyse_end_date} (en ha)"
                 )
             },

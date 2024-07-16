@@ -23,6 +23,7 @@ from project.models import (
     trigger_async_tasks,
 )
 from project.utils import add_total_line_column
+from public_data.domain.containers import PublicDataContainer
 from public_data.domain.impermeabilisation.difference.ImpermeabilisationDifferenceService import (
     ImpermeabilisationDifferenceService,
 )
@@ -31,6 +32,12 @@ from public_data.domain.impermeabilisation.difference.ImperNetteTableMapper impo
 )
 from public_data.domain.impermeabilisation.difference.ImperSolTableMapper import (
     ImperSolTableMapper,
+)
+from public_data.infra.consommation.progression.table.ConsoComparisonTableMapper import (
+    ConsoComparisonMapper,
+)
+from public_data.infra.consommation.progression.table.ConsoProportionalComparisonTableMapper import (
+    ConsoProportionalComparisonTableMapper,
 )
 from public_data.infra.planning_competency.PlanningCompetencyServiceSudocuh import (
     PlanningCompetencyServiceSudocuh,
@@ -42,7 +49,12 @@ from public_data.models.ocsge import Ocsge, OcsgeDiff
 from utils.htmx import StandAloneMixin
 from utils.views_mixins import CacheMixin
 
-from .mixins import BreadCrumbMixin, GroupMixin, UserQuerysetOrPublicMixin
+from .mixins import (
+    BreadCrumbMixin,
+    GroupMixin,
+    OcsgeCoverageMixin,
+    UserQuerysetOrPublicMixin,
+)
 
 
 class ProjectReportBaseView(CacheMixin, GroupMixin, DetailView):
@@ -72,7 +84,7 @@ class ProjectReportConsoView(ProjectReportBaseView):
     breadcrumbs_title = "Rapport consommation"
 
     def get_context_data(self, **kwargs):
-        project = self.get_object()
+        project: Project = self.get_object()
 
         # Retrieve request level of analysis
         level = self.request.GET.get("level_conso", project.level)
@@ -110,7 +122,13 @@ class ProjectReportConsoView(ProjectReportBaseView):
                 # data tables
                 "annual_conso_data_table": annual_conso_data_table,
                 "data_determinant": add_total_line_column(det_chart.get_series()),
-                "data_comparison": add_total_line_column(comparison_chart.get_series(), line=False),
+                "comparison_table": ConsoComparisonMapper.map(
+                    consommation_progression=PublicDataContainer.consommation_progression_service().get_by_lands(
+                        lands=project.comparison_lands_and_self_land(),
+                        start_date=int(project.analyse_start_date),
+                        end_date=int(project.analyse_end_date),
+                    )
+                ),
                 "nb_communes": project.cities.count(),
             }
         )
@@ -118,9 +136,9 @@ class ProjectReportConsoView(ProjectReportBaseView):
         return super().get_context_data(**kwargs)
 
 
-class ProjectReportDicoverOcsgeView(ProjectReportBaseView):
+class ProjectReportDicoverOcsgeView(OcsgeCoverageMixin, ProjectReportBaseView):
     template_name = "project/report_discover_ocsge.html"
-    breadcrumbs_title = "Rapport découvrir l'OCS GE"
+    breadcrumbs_title = "Découvrir l'OCS GE"
 
     def get_context_data(self, **kwargs):
         project: Project = self.get_object()
@@ -132,9 +150,6 @@ class ProjectReportDicoverOcsgeView(ProjectReportBaseView):
             "surface_territory": surface_territory,
             "active_page": "discover",
         }
-
-        if not project.ocsge_coverage_status == project.OcsgeCoverageStatus.COMPLETE_UNIFORM:
-            return super().get_context_data(**kwargs)
 
         kwargs.update(
             {
@@ -225,9 +240,9 @@ class ProjectReportLocalView(ProjectReportBaseView):
         return super().get_context_data(**kwargs)
 
 
-class ProjectReportImperView(ProjectReportBaseView):
+class ProjectReportImperView(OcsgeCoverageMixin, ProjectReportBaseView):
     template_name = "project/report_imper.html"
-    breadcrumbs_title = "Rapport imperméabilisation"
+    breadcrumbs_title = "Imperméabilisation"
 
     def get_context_data(self, **kwargs):
         project: Project = self.get_object()
@@ -260,9 +275,9 @@ class ProjectReportImperView(ProjectReportBaseView):
         return super().get_context_data(**kwargs)
 
 
-class ProjectReportArtifView(ProjectReportBaseView):
+class ProjectReportArtifView(OcsgeCoverageMixin, ProjectReportBaseView):
     template_name = "project/report_artif.html"
-    breadcrumbs_title = "Rapport artificialisation"
+    breadcrumbs_title = "Artificialisation"
 
     def get_context_data(self, **kwargs):
         project: Project = self.get_object()
@@ -499,9 +514,9 @@ class ProjectReportTarget2031GraphView(ProjectReportBaseView):
         return super().get_context_data(**kwargs)
 
 
-class ProjectReportUrbanZonesView(ProjectReportBaseView):
+class ProjectReportUrbanZonesView(OcsgeCoverageMixin, ProjectReportBaseView):
     template_name = "project/report_urban_zones.html"
-    breadcrumbs_title = "Rapport zonages d'urbanisme"
+    breadcrumbs_title = "Zonages d'urbanisme"
 
     def get_context_data(self, **kwargs):
         project = self.get_object()
@@ -542,17 +557,25 @@ class ConsoRelativeSurfaceChart(CacheMixin, UserQuerysetOrPublicMixin, DetailVie
     template_name = "project/partials/surface_comparison_conso.html"
 
     def get_context_data(self, **kwargs):
+        project: Project = self.get_object()
         surface_chart = charts.SurfaceChart(self.object)
         surface_proportional_chart = charts.AnnualConsoProportionalComparisonChart(self.object)
+
+        surface_proportional_table = ConsoProportionalComparisonTableMapper.map(
+            consommation_progression=PublicDataContainer.consommation_progression_service().get_by_lands(
+                lands=project.comparison_lands_and_self_land(),
+                start_date=int(project.analyse_start_date),
+                end_date=int(project.analyse_end_date),
+            )
+        )
+
         kwargs.update(
             {
                 "diagnostic": self.object,
                 "surface_chart": surface_chart,
                 "surface_data_table": surface_chart.get_series(),
                 "surface_proportional_chart": surface_proportional_chart,
-                "surface_proportional_data_table": add_total_line_column(
-                    surface_proportional_chart.get_series(), line=False
-                ),
+                "surface_proportional_data_table": surface_proportional_table,
             }
         )
         return super().get_context_data(**kwargs)

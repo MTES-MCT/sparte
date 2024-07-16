@@ -56,14 +56,6 @@ from .AnnualConsoByDeterminantChart import (
     AnnualConsoByDeterminantChartExport,
 )
 from .AnnualConsoChart import AnnualConsoChart, AnnualConsoChartExport
-from .AnnualConsoComparisonChart import (
-    AnnualConsoComparisonChart,
-    AnnualConsoComparisonChartExport,
-)
-from .AnnualConsoProportionalComparisonChart import (
-    AnnualConsoProportionalComparisonChart,
-    AnnualConsoProportionalComparisonChartExport,
-)
 from .AnnualTotalConsoChart import AnnualTotalConsoChart, AnnualTotalConsoChartExport
 from .ArtifByCouverturePieChart import (
     ArtifByCouverturePieChart,
@@ -82,6 +74,14 @@ from .ArtifWaterfallChart import ArtifWaterfallChart, ArtifWaterfallChartExport
 from .ConsoByDeterminantPieChart import (
     ConsoByDeterminantPieChart,
     ConsoByDeterminantPieChartExport,
+)
+from .consommation.AnnualConsoComparisonChart import (
+    AnnualConsoComparisonChart,
+    AnnualConsoComparisonChartExport,
+)
+from .consommation.AnnualConsoProportionalComparisonChart import (
+    AnnualConsoProportionalComparisonChart,
+    AnnualConsoProportionalComparisonChartExport,
 )
 from .CouvertureChangeWheelChart import CouvertureChangeWheelChart
 from .CouverturePieChart import CouverturePieChart, CouverturePieChartExport

@@ -23,6 +23,44 @@ Rapport artificialisation
     {% include "project/report_menu.html" %}
 
     <div class="fr-container fr-py-3w">
+        <div class="fr-notice fr-notice--warning fr-mb-3w">
+            <div class="fr-container">
+                <div class="fr-notice__body">
+                    <p>
+                        <span class="fr-notice__title">
+                            L’artificialisation présentée ne prend pas encore en compte
+                            les seuils et les exceptions du décret du 27 novembre 2023.
+                        </span>
+                    </p>
+                    <p class="fr-mt-1w">
+                        <span class="fr-notice__desc fr-text--sm">
+                            <p class="fr-text--sm mb-3">
+                            Nous travaillons actuellement à intégrer la
+                            <a rel="noopener noreferrer" target="_blank" href="https://artificialisation.developpement-durable.gouv.fr/mesurer-lartificialisation-avec-locsge/acceder-aux-analyses-realisees-partir-des-donnees-ocsge">
+                                méthode de calcul de l'artificialisation proposée par le portail de l'artificialisation
+                            </a>
+                            </p>
+                            <p class="fr-text--sm mb-3">
+                            Celle-ci prend en compte les seuils tels que définis par le decret du 27 novembre 2023.
+                            Cependant cette méthode ne prend pas encore en compte les exceptions définies par le décret,
+                            à savoir : les surfaces végétalisées à usage de parc ou jardin public,
+                            quel que soit le type de couvert (boisé ou herbacé) qui pourront être considérées comme étant non artificialisées,
+                            et les surfaces végétalisées sur lesquelles seront implantées des installations de panneaux photovoltaïques
+                            qui respectent des conditions techniques garantissant qu'elles n'affectent pas durablement les fonctions
+                            écologiques du sol ainsi que son potentiel agronomique.
+                            </p>
+                            <p class="fr-text--sm mb-3">
+                            Suite aux évolutions réglementaires de novembre 2023, la méthode de calcul proposée par le portail de
+                            l'artificialisation est en version provisoire et donc susceptible d’évoluer en fonction des retours des utilisateurs.
+                            Pour toute question ou suggestion, n’hésitez pas à contacter le Cerema directement :
+                            <a href="mailto:pole-web@cerema.fr">pole-web@cerema.fr</a>
+                            </p>
+                        </span>
+                    </p>
+                </div>
+            </div>
+        </div>
+        
         <div class="fr-callout fr-callout--brown-caramel fr-fi-information-line fr-callout-read-more">
             <div class="fr-callout-read-more__excerpt">
                 <p class="fr-text--sm mb-3">L'article 192 de la Loi Climat & Résilience votée en août 2021 définit l'artificialisation comme « une surface dont les sols sont :</p>
@@ -46,7 +84,7 @@ Rapport artificialisation
                 <p class="fr-text--sm mb-3">L'application applique ici un croisement des données de l'OCS GE pour définir l'artificialisation conformément aux attendus de la loi Climat & Résilience, et au décret « nomenclature de l'artificialisation des sols» <a rel="noopener noreferrer" target="_blank" href="https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000045727061">(Décret n° 2022-763 du 29 avril 2022 relatif à la nomenclature de l'artificialisation des sols pour la fixation et le suivi des objectifs dans les documents de planification et d'urbanisme)</a>.</p>
                 <p class="fr-text--sm mb-3"><strong>Définition de l'artificialisation des sols</strong></p>
                 <p class="fr-text--sm mb-3">La nomenclature précise que les surfaces dont les sols sont soit imperméabilisés en raison du bâti ou d'un revêtement, soit stabilisés et compactés, soit constitués de matériaux composites sont qualifiées de surfaces artificialisées. De même, les surfaces végétalisées herbacées (c'est-à-dire non ligneuses) et qui sont à usage résidentiel, de production secondaire ou tertiaire, ou d'infrastructures, sont considérées comme artificialisées, y compris lorsqu'elles sont en chantier ou à l'état d'abandon.</p>
-                <p class="fr-text--sm mb-3">L'artificialisation nette est définie comme « le solde de l'artificialisation et de la renaturation des sols constatées sur un périmètre et sur une période donnés » (article L.101-2-1 du code de l'urbanisme). </p>
+                <p class="fr-text--sm mb-3">L'artificialisation nette est définie comme « le solde de l'artificialisation et de la désartificialisation des sols constatées sur un périmètre et sur une période donnés » (article L.101-2-1 du code de l'urbanisme). </p>
                 <p class="fr-text--sm mb-3">Au niveau national, l'artificialisation est mesurée par l'occupation des sols à grande échelle (OCS GE), en cours d'élaboration, dont la production sera engagée sur l'ensemble du territoire national d'ici fin 2024.</p>
                 <img src="{% static 'project/img/ocs_ge_matrice_passage.png' %}" class="w-100" />
             </div>
@@ -120,7 +158,7 @@ Rapport artificialisation
                         data-toggle="tooltip"
                         title="Evolution des surfaces artificialisées en surface non-artificialisées"
                         aria-hidden="true">
-                            Renaturation
+                            Désartificialisation
                     </span>
                     </p>
                 </div>
@@ -132,7 +170,7 @@ Rapport artificialisation
                     <span
                         class="dotted"
                         data-toggle="tooltip"
-                        title="Différence entre l'artificialisation et la renaturation"
+                        title="Différence entre l'artificialisation et la désartificialisation"
                         aria-hidden="true">
                             Artificialisation nette
                     </span>
@@ -212,31 +250,39 @@ Rapport artificialisation
                         <p class="fr-text--sm">Données d'OCcupation des Sols à Grande Echelle (OCS GE) de l'IGN, sur la période d'analyse traduite grâce à la matrice de passage.</p>
 
                         <h6 class="fr-mt-2w">Calcul</h6>
-                        <p class="fr-text--sm">Artificialisation sur la période - renaturation sur la période.</p>
+                        <p class="fr-text--sm">Artificialisation sur la période - désartificialisation sur la période.</p>
 
                         <h6 class="fr-mt-2w">Données</h6>
-                        <div class="table-responsive">
-                            <table class="fr-table table-last-row-bold">
-                                <caption>Évolution de l'artificialisation sur le territoire entre {{ first_millesime }} et {{ last_millesime }} (en ha)</caption>
-                                <thead>
-                                    <tr>
-                                        <th scope="col"></th>
-                                        {% for period in headers_evolution_artif %}
-                                        <th scope="col" class="text-end">{{ period }} (Ha)</th>
-                                        {% endfor %}
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for serie_name, data in table_evolution_artif.items %}
-                                    <tr>
-                                        <th scope="row">{{ serie_name }}</th>
-                                        {% for period, val in data.items %}
-                                        <td class="text-end">{{ val|floatformat:1 }}</td>
-                                        {% endfor %}
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
+                        <div class="fr-table fr-table--bordered">
+                            <div class="fr-table__wrapper">
+                                <div class="fr-table__container">
+                                    <div class="fr-table__content">
+                                        <table class="table-last-row-bold">
+                                            <caption>
+                                                Évolution de l'artificialisation sur le territoire entre {{ first_millesime }} et {{ last_millesime }} (en ha)
+                                            </caption>
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col"></th>
+                                                    {% for period in headers_evolution_artif %}
+                                                    <th scope="col" class="fr-cell--right">{{ period }} (Ha)</th>
+                                                    {% endfor %}
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for serie_name, data in table_evolution_artif.items %}
+                                                <tr>
+                                                    <th scope="row">{{ serie_name }}</th>
+                                                    {% for period, val in data.items %}
+                                                    <td class="fr-cell--right">{{ val|floatformat:1 }}</td>
+                                                    {% endfor %}
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -327,39 +373,44 @@ Rapport artificialisation
                         <p class="fr-text--sm">OCS GE traduite grâce à la matrice de passage.</p>
     
                         <h6 class="fr-mt-2w">Données</h6>
-    
-                        <div class="table-responsive">
-                            <table class="fr-table">
-                                <caption>Artificialisation nette sur les communes du territoire entre {{ first_millesime }} et {{ last_millesime }} (en ha)</caption>
-                                <thead>
-                                    <tr>
-                                        <th scope="col" rowspan="2">Commune</th>
-                                        <th scope="col" class="text-end" rowspan="2">Surface</th>
-                                        {% for period in table_artif_net_periods %}
-                                            <th scope="col" class="text-end">Artificialisation ({{ period }})</th>
-                                            <th scope="col" class="text-end">Renaturation ({{ period }})</th>
-                                            <th scope="col" class="text-end">Artificialisation nette ({{ period }})</th>
-                                        {% endfor %}
-                                        <th scope="col" class="text-end" rowspan="2">Artificialisation nette totale</th>
-                                        <th scope="col" class="text-end" rowspan="2">% d'artificialisation nette total</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for record in table_artif_net_records %}
-                                    <tr>
-                                        <th scope="row">{{ record.name }}</th>
-                                        <td class="text-end">{{ record.area|floatformat:1 }}</td>
-                                        {% for period in record.periods %}
-                                        <td class="text-end">{{ period.new_artif|floatformat:1 }}</td>
-                                        <td class="text-end">{{ period.new_natural|floatformat:1 }}</td>
-                                        <td class="text-end">{{ period.net_artif|floatformat:1 }}</td>
-                                        {% endfor %}
-                                        <td class="text-end">{{ record.total_net_artif|floatformat:1 }}</td>
-                                        <td class="text-end">{{ record.net_artif_percentage|floatformat:2 }} %</td>
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
+                        <div class="fr-table fr-table--bordered">
+                            <div class="fr-table__wrapper">
+                                <div class="fr-table__container">
+                                    <div class="fr-table__content">
+                                        <table>
+                                            <caption>
+                                                Artificialisation nette sur le territoire entre {{ first_millesime }} et {{ last_millesime }} (en ha)
+                                            </caption>
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col" class="fr-cell--fixed"></th>
+                                                    <th scope="col" class="fr-cell--right">Surface (en ha)</th>
+                                                    {% for period in table_artif_net_periods %}
+                                                        <th scope="col" class="fr-cell--right">Artificialisation ({{ period }})</th>
+                                                        <th scope="col" class="fr-cell--right">Désartificialisation ({{ period }})</th>
+                                                        <th scope="col" class="fr-cell--right">Artificialisation nette ({{ period }})</th>
+                                                    {% endfor %}
+                                                    <th scope="col" class="fr-cell--right">% d'artificialisation nette total</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for record in table_artif_net_records %}
+                                                <tr>
+                                                    <th scope="row" class="fr-cell--fixed">{{ record.name }}</th>
+                                                    <td class="fr-cell--right">{{ record.area|floatformat:1 }}</td>
+                                                    {% for period in record.periods %}
+                                                    <td class="fr-cell--right">{{ period.new_artif|floatformat:1 }}</td>
+                                                    <td class="fr-cell--right">{{ period.new_natural|floatformat:1 }}</td>
+                                                    <td class="fr-cell--right">{{ period.net_artif|floatformat:1 }}</td>
+                                                    {% endfor %}
+                                                    <td class="fr-cell--right">{{ record.net_artif_percentage|floatformat:2 }} %</td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -453,44 +504,52 @@ Rapport artificialisation
                         <p class="fr-text--sm">OCS GE traduite grâce à la matrice de passage.</p>
     
                         <h6 class="fr-mt-2w">Exemple de lecture</h6>
-                        <p class="fr-text--sm">Il y a eu 7.5 ha de nouvelles Zones non bâties représentant 10% de la surface de toutes les nouvelles surfaces artificialisées et 2 ha d'anciennes Zones non bâties renaturées représentant 16% de la surface de toutes les zones renaturées.</p>
+                        <p class="fr-text--sm">Il y a eu 7.5 ha de nouvelles Zones non bâties représentant 10% de la surface de toutes les nouvelles surfaces artificialisées et 2 ha d'anciennes Zones non bâties désartificialisées représentant 16% de la surface de toutes les zones désartificialisées.</p>
     
                         <h6 class="fr-mt-2w">Données</h6>
                         <p class="fr-text--sm">En hectare (Ha).</p>
-                        <div class="table-responsive">
-                            <table class="fr-table fr-table--no-caption table-last-row-bold">
-                                <caption>Évolution de l'artificialisation par type de couverture sur le territoire de {{ first_millesime }} à {{ last_millesime }} (en ha et %)</caption>
-                                <thead>
-                                    <tr>
-                                        <th scope="col"></th>
-                                        <th scope="col" class="text-end">Artificialisation</th>
-                                        <th scope="col" class="text-end text-muted">%</th>
-                                        <th scope="col" class="text-end">Renaturation</th>
-                                        <th scope="col" class="text-end text-muted">%</th>
-                                        <th scope="col" class="text-end">Artificialisé en {{ last_millesime }}</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for couv in detail_couv_artif_table %}
-                                    <tr>
-                                        <th scope="row">{{ couv.code_prefix }} {{ couv.label }}</th>
-                                        <td class="text-end">{{ couv.artif|floatformat:1 }}</td>
-                                        <td class="text-end text-muted">{{ couv.artif|percent:detail_total_artif }}</td>
-                                        <td class="text-end">{{ couv.renat|floatformat:1 }}</td>
-                                        <td class="text-end text-muted">{{ couv.renat|percent:detail_total_renat }}</td>
-                                        <td class="text-end">{{ couv.last_millesime|floatformat:1 }}</td>
-                                    </tr>
-                                    {% endfor %}
-                                    <tr>
-                                        <th scope="row">Total</th>
-                                        <td class="text-end">{{ detail_total_artif|floatformat:1 }}</td>
-                                        <td class="text-end text-muted">100%</td>
-                                        <td class="text-end">{{ detail_total_renat|floatformat:1 }}</td>
-                                        <td class="text-end text-muted">100%</td>
-                                        <td class="text-end">{{ artif_area|floatformat:1 }}</td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                        <div class="fr-table fr-table--bordered">
+                            <div class="fr-table__wrapper">
+                                <div class="fr-table__container">
+                                    <div class="fr-table__content">
+                                        <table class="table-last-row-bold">
+                                            <caption>
+                                                Évolution de l'artificialisation par type de couverture sur le territoire de {{ first_millesime }} à {{ last_millesime }} (en ha et %)
+                                            </caption>
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col">Type de couverture</th>
+                                                    <th scope="col" class="fr-cell--right">Artificialisation</th>
+                                                    <th scope="col" class="fr-cell--right text-muted">%</th>
+                                                    <th scope="col" class="fr-cell--right">Désartificialisation</th>
+                                                    <th scope="col" class="fr-cell--right text-muted">%</th>
+                                                    <th scope="col" class="fr-cell--right">Artificialisé en {{ last_millesime }}</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for couv in detail_couv_artif_table %}
+                                                <tr>
+                                                    <th scope="row">{{ couv.code_prefix }} {{ couv.label }}</th>
+                                                    <td class="fr-cell--right">{{ couv.artif|floatformat:1 }}</td>
+                                                    <td class="fr-cell--right text-muted">{{ couv.artif|percent:detail_total_artif }}</td>
+                                                    <td class="fr-cell--right">{{ couv.renat|floatformat:1 }}</td>
+                                                    <td class="fr-cell--right text-muted">{{ couv.renat|percent:detail_total_renat }}</td>
+                                                    <td class="fr-cell--right">{{ couv.last_millesime|floatformat:1 }}</td>
+                                                </tr>
+                                                {% endfor %}
+                                                <tr>
+                                                    <th scope="row">Total</th>
+                                                    <td class="fr-cell--right">{{ detail_total_artif|floatformat:1 }}</td>
+                                                    <td class="fr-cell--right text-muted">100%</td>
+                                                    <td class="fr-cell--right">{{ detail_total_renat|floatformat:1 }}</td>
+                                                    <td class="fr-cell--right text-muted">100%</td>
+                                                    <td class="fr-cell--right">{{ artif_area|floatformat:1 }}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -582,40 +641,48 @@ Rapport artificialisation
     
                         <h6 class="fr-mt-2w">Données</h6>
                         <p class="fr-text--sm">En hectare (Ha).</p>
-                        <div class="table-responsive">
-                            <table class="fr-table table-last-row-bold">
-                                <caption>Évolution de l'artificialisation par type d'usage sur le territoire de {{ first_millesime }} à {{ last_millesime }} (en ha et %)</caption>
-                                <thead>
-                                    <tr>
-                                        <th scope="col"></th>
-                                        <th scope="col" class="text-end">Artificialisation</th>
-                                        <th scope="col" class="text-end text-muted">%</th>
-                                        <th scope="col" class="text-end">Renaturation</th>
-                                        <th scope="col" class="text-end text-muted">%</th>
-                                        <th scope="col" class="text-end">Artificialisé en {{ last_millesime }}</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for item in detail_usage_artif_table %}
-                                    <tr>
-                                        <th scope="row">{{ item.code_prefix }} {{ item.label }}</th>
-                                        <td class="text-end">{{ item.artif|floatformat:1 }}</td>
-                                        <td class="text-end text-muted">{{ item.artif|percent:detail_total_artif }}</td>
-                                        <td class="text-end">{{ item.renat|floatformat:1 }}</td>
-                                        <td class="text-end text-muted">{{ item.renat|percent:detail_total_renat }}</td>
-                                        <td class="text-end">{{ item.last_millesime|floatformat:1 }}</td>
-                                    </tr>
-                                    {% endfor %}
-                                    <tr>
-                                        <th scope="row">Total</th>
-                                        <td class="text-end">{{ detail_total_artif|floatformat:1 }}</td>
-                                        <td class="text-end text-muted">100%</td>
-                                        <td class="text-end">{{ detail_total_renat|floatformat:1 }}</td>
-                                        <td class="text-end text-muted">100%</td>
-                                        <td class="text-end">{{ artif_area|floatformat:1 }}</td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                        <div class="fr-table fr-table--bordered">
+                            <div class="fr-table__wrapper">
+                                <div class="fr-table__container">
+                                    <div class="fr-table__content">
+                                        <table class="table-last-row-bold">
+                                            <caption>
+                                                Évolution de l'artificialisation par type d'usage sur le territoire de {{ first_millesime }} à {{ last_millesime }} (en ha et %)
+                                            </caption>
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col">Type d'usage</th>
+                                                    <th scope="col" class="fr-cell--right">Artificialisation</th>
+                                                    <th scope="col" class="fr-cell--right text-muted">%</th>
+                                                    <th scope="col" class="fr-cell--right">Désartificialisation</th>
+                                                    <th scope="col" class="fr-cell--right text-muted">%</th>
+                                                    <th scope="col" class="fr-cell--right">Artificialisé en {{ last_millesime }}</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for item in detail_usage_artif_table %}
+                                                <tr>
+                                                    <th scope="row">{{ item.code_prefix }} {{ item.label }}</th>
+                                                    <td class="fr-cell--right">{{ item.artif|floatformat:1 }}</td>
+                                                    <td class="fr-cell--right text-muted">{{ item.artif|percent:detail_total_artif }}</td>
+                                                    <td class="fr-cell--right">{{ item.renat|floatformat:1 }}</td>
+                                                    <td class="fr-cell--right text-muted">{{ item.renat|percent:detail_total_renat }}</td>
+                                                    <td class="fr-cell--right">{{ item.last_millesime|floatformat:1 }}</td>
+                                                </tr>
+                                                {% endfor %}
+                                                <tr>
+                                                    <th scope="row">Total</th>
+                                                    <td class="fr-cell--right">{{ detail_total_artif|floatformat:1 }}</td>
+                                                    <td class="fr-cell--right text-muted">100%</td>
+                                                    <td class="fr-cell--right">{{ detail_total_renat|floatformat:1 }}</td>
+                                                    <td class="fr-cell--right text-muted">100%</td>
+                                                    <td class="fr-cell--right">{{ artif_area|floatformat:1 }}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -673,6 +740,7 @@ Rapport artificialisation
 {% sri_static "highcharts/js/highcharts.js" %}
 {% sri_static "highcharts/js/highcharts-more.js" %}
 {% sri_static "highcharts/js/exporting.js" %}
+{% sri_static "highcharts/js/no-data.js" %}
 {% french_translation %}
 {% display_chart 'detail_couv_artif_chart' detail_couv_artif_chart CSP_NONCE %}
 {% display_chart 'couv_artif_sol' couv_artif_sol CSP_NONCE %}
