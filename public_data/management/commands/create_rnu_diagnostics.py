@@ -3,7 +3,7 @@ import logging
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 
-from project.models import Emprise, Project
+from project.models import Emprise, Project, Request
 from project.models.create import trigger_async_tasks_rnu_pakage_one_off
 from public_data.models import Commune, Land
 from public_data.models.sudocuh import DocumentUrbanismeChoices, Sudocuh
@@ -31,18 +31,35 @@ class Command(BaseCommand):
 
         projects = []
 
-        for commune in Commune.objects.filter(
+        communes = Commune.objects.filter(
             departement__source_id=options["departement"],
             insee__in=[Sudocuh.objects.filter(du_opposable=DocumentUrbanismeChoices.RNU).values("code_insee")],
-        ):
-            land = Land(public_key=f"COMM_{commune.pk}")
+        )
+
+        logger.info(f"Found {len(communes)} RNU communes")
+
+        projects_to_delete = Project.objects.filter(
+            user=mondiagartif_user,
+            land_id__in=[str(commune.id) for commune in communes],
+        )
+
+        request_to_delete = Request.objects.filter(project__in=projects_to_delete)
+
+        _, detail_request_deleted = request_to_delete.delete()
+        _, detail_project_deleted = projects_to_delete.delete()
+
+        logger.info(f"Deleted : {detail_request_deleted}")
+        logger.info(f"Deleted : {detail_project_deleted}")
+
+        for commune in communes:
+            land = Land(public_key=f"COMM_{commune.id}")
             project = Project.objects.create(
                 name=f"Diagnostic de {land.name}",
                 is_public=True,
                 analyse_start_date="2011",
                 analyse_end_date="2022",
                 level="COMM",
-                land_id=str(land.id),
+                land_id=str(commune.id),
                 land_type=land.land_type,
                 territory_name=land.name,
                 user=mondiagartif_user,
@@ -82,5 +99,9 @@ class Command(BaseCommand):
 
             projects.append(project)
 
+        logger.info(f"Created {len(projects)} projects")
+
         for project in projects:
             trigger_async_tasks_rnu_pakage_one_off(project)
+
+        logger.info("All projects have been created and async tasks have been triggered")

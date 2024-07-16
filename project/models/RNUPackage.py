@@ -2,7 +2,11 @@ from django.db import models
 
 
 class RNUPackage(models.Model):
-    file = models.FileField(upload_to="rnu_packages/")
+    file = models.FileField(upload_to="rnu_packages", blank=True, null=True)
+    app_version = models.CharField(max_length=10)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    departement_official_id = models.CharField(max_length=10)
+    departement_official_id = models.CharField(
+        max_length=10,
+        unique=True,
+    )

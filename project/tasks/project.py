@@ -1,5 +1,6 @@
 import io
 import logging
+import os
 import zipfile
 from datetime import timedelta
 from typing import Any, Dict, Literal
@@ -291,14 +292,13 @@ class WordAlreadySentException(Exception):
     pass
 
 
-@shared_task(bind=True, max_retries=6, queue="long")
+@shared_task(bind=True, max_retries=10, queue="long")
 def generate_word_diagnostic_rnu_package_one_off(self, project_id) -> int:
     from diagnostic_word.renderers import (
         ConsoReportRenderer,
         FullReportRenderer,
         LocalReportRenderer,
     )
-    from highcharts.charts import RateLimitExceededException
 
     project = Project.objects.get(id=int(project_id))
     request = Request.objects.filter(project=project).first()
@@ -336,26 +336,11 @@ def generate_word_diagnostic_rnu_package_one_off(self, project_id) -> int:
             logger.info("Word created and saved")
             return request_id
 
-    except (
-        RateLimitExceededException,
-        Project.DoesNotExist,
-        WaitAsyncTaskException,
-        WordAlreadySentException,
-    ) as exc:
+    except Exception as exc:
         req.record_exception(exc)
         logger.error("Error while generating word: %s", exc)
         logger.exception(exc)
-        self.retry(exc=exc, countdown=5 ** (self.request.retries + 1))
-    except Request.DoesNotExist as exc:
-        logger.error("Request doesn't not exist, no retry.")
-        logger.exception(exc)
-    except Exception as exc:
-        logger.error("Unknow exception, please investigate.")
-        req.record_exception(exc)
-        logger.exception(exc)
-        self.retry(exc=exc, countdown=900)
-    finally:
-        logger.info("End generate word for request=%d", request_id)
+        self.retry(exc=exc, countdown=10)
 
 
 @shared_task(bind=True, max_retries=6, queue="long")
@@ -914,7 +899,20 @@ def create_zip_departement_rnu_package_one_off(departement_id: str) -> None:
 
             file_name_in_zip = f"{departement_id}_COMM_{request.project.land.official_id}.docx"
             zipf.writestr(file_name_in_zip, request.sent_file.read())
-        RNUPackage.objects.create(
+
+    try:
+        package = RNUPackage.objects.get(
             departement_official_id=departement.source_id,
-            file=file_name,
         )
+        package.app_version = settings.OFFICIAL_VERSION
+        package.save()
+    except RNUPackage.DoesNotExist:
+        package = RNUPackage.objects.create(
+            departement_official_id=departement.source_id,
+            app_version=settings.OFFICIAL_VERSION,
+        )
+
+    with open(file_name, "rb") as buffer:
+        package.file.save(name=file_name, content=buffer, save=True)
+
+    os.remove(file_name)
