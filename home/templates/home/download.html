@@ -1,0 +1,43 @@
+{% extends "index.html" %}
+
+{% load static %}
+{% load sri %}
+
+{% block pagetitle %}Téléchargements{% endblock pagetitle %}
+
+{% block headers %}
+{% sri_static "home/css/home.css" %}
+{% endblock headers %}
+
+{% block body_class %}home{% endblock body_class %}
+
+<!-- Hide breadcrumbs on home page -->
+{% block breadcrumbs %}
+{% endblock breadcrumbs %}
+
+{% block content %}
+<section class="fr-py-6w">
+  <div class="fr-container">
+    <h1>Téléchargements</h1>
+    <h2>Trames de rapport triennal local des communes sous RNU</h2>
+    <p>Mon Diagnostic Artificialisation met à disposition des DDT les trames de rapport triennal local par paquets de leurs communes sous RNU</p>
+    <ul>
+      {% for departement in departements %}
+        <li class="fr-mb-2w">
+          <div>{{ departement.source_id }} {{ departement.name }}</div>
+          <div><a href="#" target="_blank">Lien de téléchargement</a></div>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+</section>
+{% include  "home/partials/newsletter_form.html" %}
+{% endblock content %}
+
+{% block tagging %}
+<script language="javascript" nonce="[NONCE_PLACEHOLDER]">
+window.onload = function(event) {
+  _paq.push(['trackEvent', 'local_report_download_funnel', 'open_home_local_report', 'local_report_home_opened'])
+}
+</script>
+{% endblock tagging %}
