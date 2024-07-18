@@ -18,17 +18,38 @@
 {% block content %}
 <section class="fr-py-6w">
   <div class="fr-container">
-    <h1>Téléchargements</h1>
-    <h2>Trames de rapport triennal local des communes sous RNU</h2>
-    <p>Mon Diagnostic Artificialisation met à disposition des DDT les trames de rapport triennal local par paquets de leurs communes sous RNU</p>
-    <ul>
-      {% for departement in departements %}
-        <li class="fr-mb-2w">
-          <div>{{ departement.source_id }} {{ departement.name }}</div>
-          <div><a href="#" target="_blank">Lien de téléchargement</a></div>
-        </li>
-      {% endfor %}
-    </ul>
+    <h1>Trames de rapport triennal local des communes au RNU</h1>
+    <p>
+      Mon Diagnostic Artificialisation met à disposition des DDT les trames de rapport triennal local par paquets de leurs communes au RNU
+    </p>
+    <div class="fr-table fr-table--bordered">
+      <div class="fr-table__wrapper">
+          <div class="fr-table__container">
+              <div class="fr-table__content fr-table--no-scrol">
+                <table>
+                  <thead>
+                      <tr>
+                          <th scope="col">Département</th>
+                          <th scope="col">Nombre de communes au RNU</th>
+                          <th scope="col">Date de création</th>
+                          <th scope="col">Lien</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                    {% for package in rnu_packages %}
+                      <tr>
+                          <td>{{ package.departement_official_id }} - {{ package.departement.name }}</td>
+                          <td>{{ package.communes|length }}</td>
+                          <td>{{ package.created_at }}</td>
+                          <td><a target="_blank" rel="noopener noreferrer" href="{{ package.file.url }}">Lien de téléchargement</a></td>
+                      </tr>
+                      {% endfor %}
+                  </tbody>
+              </table>
+              </div>
+          </div>
+      </div>
+    </div>
   </div>
 </section>
 {% include  "home/partials/newsletter_form.html" %}

@@ -29,6 +29,7 @@ from project.models import (
 from public_data.domain.containers import PublicDataContainer
 from public_data.models import AdminRef, ArtificialArea, Departement, Land, OcsgeDiff
 from public_data.models.gpu import ArtifAreaZoneUrba, ZoneUrba
+from public_data.storages import DataStorage
 from utils.db import fix_poly
 from utils.emails import SibTemplateEmail
 from utils.functions import get_url_with_domain
@@ -890,9 +891,18 @@ def create_zip_departement_rnu_package_one_off(departement_id: str) -> None:
         project__land_id__in=commune_in_departement_ids_as_string,
     )
 
+    notice_file_path = f"rnu_packages/NOTICE_{departement_id}.pdf"
+    rnu_communes_map_file_path = f"rnu_packages/COMM_DU_{departement_id}.pdf"
+
     file_name = f"rnu_package_departement_{departement_id}.zip"
 
-    with zipfile.ZipFile(file_name, "a", compression=zipfile.ZIP_DEFLATED) as zipf:
+    with zipfile.ZipFile(file_name, "a", compression=zipfile.ZIP_DEFLATED, compresslevel=9) as zipf:
+        notice_file = DataStorage().open(notice_file_path, "rb")
+        rnu_communes_map_file = DataStorage().open(rnu_communes_map_file_path, "rb")
+
+        zipf.writestr(f"NOTICE_{departement_id}.pdf", notice_file.read())
+        zipf.writestr(f"COMM_DU_{departement_id}.pdf", rnu_communes_map_file.read())
+
         for request in requests_created_by_the_rnu_package_service_account:
             if not request.sent_file:
                 raise ValueError(f"Request {request.id} has no sent file")

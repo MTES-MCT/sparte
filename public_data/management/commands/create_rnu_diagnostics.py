@@ -17,7 +17,7 @@ class Command(BaseCommand):
     help = "create_rnu_diagnostics"
 
     def add_arguments(self, parser):
-        parser.add_argument("--departement", type=str, required=True)
+        parser.add_argument("--departement", type=str)
 
     def handle(self, *args, **options):
         mondiagartif_user, _ = User.objects.get_or_create(
@@ -32,9 +32,11 @@ class Command(BaseCommand):
         projects = []
 
         communes = Commune.objects.filter(
-            departement__source_id=options["departement"],
             insee__in=[Sudocuh.objects.filter(du_opposable=DocumentUrbanismeChoices.RNU).values("code_insee")],
         )
+
+        if options["departement"]:
+            communes = communes.filter(departement__source_id=options["departement"])
 
         logger.info(f"Found {len(communes)} RNU communes")
 

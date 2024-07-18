@@ -1,0 +1,83 @@
+{% load sri %}
+{% sri_static "assets/styles/main.css" %}
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+    a:visited { color:blue }
+    body {
+        height: 842px;
+        width: 595px;
+        /* to centre page on screen*/
+        margin-left: auto;
+        margin-right: auto;
+    }
+    h1 {
+        font-size: 2em;
+    }
+    </style>
+  </head>
+  <body>
+    <h1>Paquet de rapports locaux des communes au RNU du département {{ object.departement.name }} ({{ object.departement.source_id }})</h1>
+    <ul>
+        <li>Date de production du paquet : {{ object.created_at }}</li>
+        <li>Source de donnée ayant permis de déterminer la liste des communes au RNU :
+            <a target="_blank" rel="noreferrer noopener" href="https://www.data.gouv.fr/fr/datasets/planification-nationale-des-documents-durbanisme-plu-plui-cc-rnu-donnees-sudocuh-dernier-etat-des-lieux-annuel-au-31-decembre-2023/#/resources">
+                Sudocuh
+            </a>
+        </li>
+    </ul>
+    <p>
+        Ce paquet de trames de rapport local s'adresse aux DDT.
+        Il contient un rapport local par commune au RNU du département {{ object.departement.name }} ({{ object.departement.source_id }}).
+    </p>
+    <p>
+        Une version web de ces diagnostics est disponible.
+        Un lien est disponible dans le bas de page de chaque rapport.
+    </p>
+
+    <div class="fr-table fr-table--bordered">
+        <div class="fr-table__wrapper">
+            <div class="fr-table__container">
+                <div class="fr-table__content fr-table--no-scrol">
+                    <table>
+                        <caption>
+                            Liste des fichiers du paquet
+                        </caption>
+                        <thead>
+                            <tr>
+                                <th scope="col">Fichier</th>
+                                <th scope="col">Chemin</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="meta_row">
+                                <td>Ce document</td>
+                                <td>NOTICE_{{ object.departement_official_id }}.pdf</td>
+                            </tr>
+                            <tr class="meta_row">
+                                <td>Carte des communes au RNU du département</td>
+                                <td>COMM_DU_{{ object.departement_official_id }}.pdf</td>
+                            </tr>
+                            {% for commune in communes %}
+                            <tr>
+                                <td>Rapport de                 <a target="_blank" rel="noreferrer noopener" href="https://www.insee.fr/fr/statistiques/2011101?geo=COM-{{ commune.insee }}">
+                                    {{ commune.name }}
+                                </a></td>
+                                <td>{{ commune.departement.source_id }}_COMM_{{ commune.insee }}.docx</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr>
+    <p>
+        Crée par <a target="_blank" rel="noopener noreferrer" href="https://mondiagartif.beta.gouv.fr">Mon Diagnostic Artificialisation</a>
+    </p>
+
+  </body>
+</html>

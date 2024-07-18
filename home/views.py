@@ -3,7 +3,7 @@ from typing import Any
 
 from django.conf import settings
 from django.contrib import messages
-from django.contrib.auth.mixins import UserPassesTestMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.db.models import F, Value
 from django.http import HttpRequest, HttpResponse, HttpResponseGone
 from django.shortcuts import redirect
@@ -12,8 +12,7 @@ from django.views.generic import CreateView, FormView, RedirectView, TemplateVie
 from django_app_parameter import app_parameter
 
 from brevo.connectors import Brevo
-from project.models import Request
-from public_data.models import Departement
+from project.models import Request, RNUPackage
 from users.models import User
 from utils.functions import get_url_with_domain
 from utils.htmx import HtmxRedirectMixin, StandAloneMixin
@@ -36,13 +35,13 @@ class HomeView(BreadCrumbMixin, TemplateView):
         return super().get_context_data(**kwargs)
 
 
-class DownloadView(BreadCrumbMixin, TemplateView):
+class DownloadView(LoginRequiredMixin, BreadCrumbMixin, TemplateView):
     template_name = "home/download.html"
 
     def get_context_data(self, **kwargs):
         kwargs |= {
             "form": NewsletterForm(),
-            "departements": Departement.objects.all().order_by("source_id"),
+            "rnu_packages": RNUPackage.objects.all().order_by("departement_official_id"),
         }
         return super().get_context_data(**kwargs)
 

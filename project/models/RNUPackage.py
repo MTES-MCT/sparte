@@ -1,4 +1,8 @@
 from django.db import models
+from django.utils.functional import cached_property
+
+from public_data.models import Departement
+from public_data.models.sudocuh import DocumentUrbanismeChoices, Sudocuh
 
 
 class RNUPackage(models.Model):
@@ -10,3 +14,14 @@ class RNUPackage(models.Model):
         max_length=10,
         unique=True,
     )
+
+    @cached_property
+    def departement(self):
+        return Departement.objects.get(source_id=self.departement_official_id)
+
+    @cached_property
+    def communes(self):
+        sudocuh = Sudocuh.objects.filter(du_opposable=DocumentUrbanismeChoices.RNU)
+        return self.departement.commune_set.filter(
+            insee__in=sudocuh.values("code_insee"),
+        )
