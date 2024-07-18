@@ -38,12 +38,13 @@ class Command(BaseCommand):
                     f"request for communes count ({request_for_communes_count})"
                 )
             )
+            return False
         else:
             logger.info(
                 f"Commune count ({commune_count}) matches request for communes count ({request_for_communes_count})"
             )
 
-        return True
+            return True
 
     def handle(self, *args, **options):
         tasks = []
