@@ -39,6 +39,9 @@ class User(AbstractUser):
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS: List[str] = []
 
+    created_at = models.DateTimeField("Créé le", auto_now_add=True, blank=True, null=True)
+    updated_at = models.DateTimeField("Mis à jour le", auto_now=True, blank=True, null=True)
+
     objects = UserManager()
 
     @staticmethod
