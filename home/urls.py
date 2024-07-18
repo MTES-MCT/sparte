@@ -9,6 +9,7 @@ urlpatterns = [
     path("", views.HomeView.as_view(), name="home"),
     path("rapport-local", views.HomeRapportLocalView.as_view(), name="home_rapport_local"),
     path("telechargements", views.DownloadView.as_view(), name="downloads"),
+    path("telechargements/rnu-package/<str:departement>", views.download_package_request, name="download_rnu_package"),
     path("mentions-legales", views.LegalNoticeView.as_view(), name="cgv"),
     path("confidentialité", views.PrivacyView.as_view(), name="privacy"),
     path("test", views.TestView.as_view(), name="test"),

@@ -3,6 +3,7 @@ from typing import Any
 
 from django.conf import settings
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.db.models import F, Value
 from django.http import HttpRequest, HttpResponse, HttpResponseGone
@@ -12,7 +13,7 @@ from django.views.generic import CreateView, FormView, RedirectView, TemplateVie
 from django_app_parameter import app_parameter
 
 from brevo.connectors import Brevo
-from project.models import Request, RNUPackage
+from project.models import Request, RNUPackage, RNUPackageRequest
 from users.models import User
 from utils.functions import get_url_with_domain
 from utils.htmx import HtmxRedirectMixin, StandAloneMixin
@@ -44,6 +45,22 @@ class DownloadView(LoginRequiredMixin, BreadCrumbMixin, TemplateView):
             "rnu_packages": RNUPackage.objects.all().order_by("departement_official_id"),
         }
         return super().get_context_data(**kwargs)
+
+
+@login_required
+def download_package_request(request: Request, departement: str) -> HttpResponse:
+    rnu_package = RNUPackage.objects.get(departement_official_id=departement)
+    user: User = request.user
+    RNUPackageRequest.objects.create(
+        user=request.user,
+        rnu_package=rnu_package,
+        departement_official_id=rnu_package.departement_official_id,
+        email=user.email,
+        requested_at=timezone.now(),
+        requested_diagnostics_before_package_request=user.request_set.filter(done=True).count(),
+        account_created_for_package=user.created_today,
+    )
+    return redirect(rnu_package.file.url)
 
 
 class HomeRapportLocalView(BreadCrumbMixin, TemplateView):

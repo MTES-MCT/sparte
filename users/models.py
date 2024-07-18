@@ -2,6 +2,7 @@ from typing import List
 
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.utils import timezone
 
 from .managers import UserManager
 
@@ -74,6 +75,10 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.email
+
+    @property
+    def created_today(self):
+        return self.created_at.date() == timezone.now().date()
 
     def save(self, *args, **kwargs):
         self.organism_group = User.get_group(self.organism)

@@ -41,7 +41,7 @@
                           <td>{{ package.departement_official_id }} - {{ package.departement.name }}</td>
                           <td>{{ package.communes|length }}</td>
                           <td>{{ package.created_at }}</td>
-                          <td><a target="_blank" rel="noopener noreferrer" href="{{ package.file.url }}">Lien de téléchargement</a></td>
+                          <td><a target="_blank" rel="noopener noreferrer" href="{% url 'home:download_rnu_package' package.departement.source_id %}">Lien de téléchargement</a></td>
                       </tr>
                       {% endfor %}
                   </tbody>
