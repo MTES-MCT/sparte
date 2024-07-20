@@ -23,8 +23,17 @@
         <h1 class="fr-mb-0">Préparer le rapport triennal local de suivi de l’artificialisation des sols avec Mon Diag Artif</h1>
       </div>
       <div class="fr-col fr-col-12 fr-col-md-8">
-        <p class="text-white">Notre équipe travaille en partenariat avec la DGALN à la production automatique d'une trame pré-remplie du rapport triennal local de suivi de l’artificialisation des sols de votre territoire.</p>
         <p class="fr-badge fr-badge--new fr-badge--sm text-dark fr-mb-3w">Nouveau</p>
+        <p class="text-white">Notre équipe travaille en partenariat avec la DGALN à la production automatique d'une trame pré-remplie du rapport triennal local de suivi de l’artificialisation des sols de votre territoire.</p>
+        <div class="fr-notice fr-notice--info fr-mb-3w rounded">
+          <div class="fr-container">
+            <div class="fr-notice__body">
+              <p class="fr-text--sm">
+                <strong>Pour les DDT, ces trames sont disponibles en <a href="{% url 'home:downloads' %}">téléchargement par paquets</a> pour les communes au RNU.</strong>
+              </p>
+            </div>
+          </div>
+        </div>
         {% include "project/partials/search.html" %}
       </div>
     </div>

@@ -8,8 +8,28 @@
 
 <div class="d-flex justify-content-center mt-5">
     <div class="col-12 col-md-5 col-lg-4">
-
+        
         <h1 class="mb-5 fw-bold text-center">Connexion</h1>
+        {% if next == '/telechargements' %}
+            <div class="fr-container">
+                <div class="fr-notice fr-notice--warning fr-mb-3w">
+                    <div class="fr-container">
+                        <div class="fr-notice__body">
+                            <p>
+                            La page de téléchargement de paquet de rapports locaux est uniquement accessible aux utilisateurs enregistrés et connectés.
+                            </p>
+                            <br>
+                            <p>
+                                <b>
+                                    Vous pouvez vous connecter ci-dessous, ou <a href="{% url 'users:signup' %}?next={{ next }}">créer un compte</a>.
+                                </b>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+        
 
         <form {% if next %}action="?next={{ next }}" {% endif %}method="post">
             {% csrf_token %}
@@ -19,7 +39,7 @@
 
         <p class="fr-mb-0 fr-mt-2w fr-text--sm text-center text-muted">
             Mot de pass oublié ? <a href="{% url 'users:password_reset' %}">Réinitialisez le</a>.
-            <br/>Pas encore de compte ? <a href="{% url 'users:signup' %}">Inscrivez-vous</a>.
+            <br/>Pas encore de compte ? <a href="{% url 'users:signup' %}?next={{ next }}">Inscrivez-vous</a>.
         </p>
     </div>
 </div>

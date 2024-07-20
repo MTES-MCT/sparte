@@ -6,7 +6,13 @@ from django.utils.html import format_html
 from simple_history.admin import SimpleHistoryAdmin
 
 from project import tasks
-from project.models import ErrorTracking, Project, Request
+from project.models import (
+    ErrorTracking,
+    Project,
+    Request,
+    RNUPackage,
+    RNUPackageRequest,
+)
 from project.models.exceptions import TooOldException
 
 
@@ -243,3 +249,29 @@ class RequestAdmin(admin.ModelAdmin):
             messages.add_message(request, messages.INFO, msg)
             return HttpResponseRedirect(".")
         return super().response_change(request, obj)
+
+
+@admin.register(RNUPackage)
+class RNUPackageAdmin(admin.ModelAdmin):
+    model = RNUPackage
+    list_display = (
+        "departement_official_id",
+        "created_at",
+        "updated_at",
+    )
+    search_fields = ("departement_official_id",)
+    readonly_fields = (
+        "created_at",
+        "updated_at",
+    )
+
+
+@admin.register(RNUPackageRequest)
+class RNUPackageRequestAdmin(admin.ModelAdmin):
+    model = RNUPackageRequest
+    list_display = (
+        "user",
+        "rnu_package",
+        "departement_official_id",
+    )
+    search_fields = ("email",)

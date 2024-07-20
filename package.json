@@ -1,6 +1,6 @@
 {
   "name": "sparte",
-  "version": "7.3",
+  "version": "7.4",
   "private": true,
   "scripts": {
     "dev": "webpack --watch --mode development",
