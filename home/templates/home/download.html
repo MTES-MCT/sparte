@@ -1,0 +1,64 @@
+{% extends "index.html" %}
+
+{% load static %}
+{% load sri %}
+
+{% block pagetitle %}Téléchargements{% endblock pagetitle %}
+
+{% block headers %}
+{% sri_static "home/css/home.css" %}
+{% endblock headers %}
+
+{% block body_class %}home{% endblock body_class %}
+
+<!-- Hide breadcrumbs on home page -->
+{% block breadcrumbs %}
+{% endblock breadcrumbs %}
+
+{% block content %}
+<section class="fr-py-6w">
+  <div class="fr-container">
+    <h1>Trames de rapport triennal local des communes au RNU</h1>
+    <p>
+      Mon Diagnostic Artificialisation met à disposition des DDT les trames de rapport triennal local par paquets de leurs communes au RNU
+    </p>
+    <div class="fr-table fr-table--bordered">
+      <div class="fr-table__wrapper">
+          <div class="fr-table__container">
+              <div class="fr-table__content fr-table--no-scrol">
+                <table>
+                  <thead>
+                      <tr>
+                          <th scope="col">Département</th>
+                          <th scope="col">Nombre de communes au RNU</th>
+                          <th scope="col">Date de création</th>
+                          <th scope="col">Lien</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                    {% for package in rnu_packages %}
+                      <tr>
+                          <td>{{ package.departement_official_id }} - {{ package.departement.name }}</td>
+                          <td>{{ package.communes|length }}</td>
+                          <td>{{ package.created_at }}</td>
+                          <td><a target="_blank" rel="noopener noreferrer" href="{% url 'home:download_rnu_package' package.departement.source_id %}">Lien de téléchargement</a></td>
+                      </tr>
+                      {% endfor %}
+                  </tbody>
+              </table>
+              </div>
+          </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% include  "home/partials/newsletter_form.html" %}
+{% endblock content %}
+
+{% block tagging %}
+<script language="javascript" nonce="[NONCE_PLACEHOLDER]">
+window.onload = function(event) {
+  _paq.push(['trackEvent', 'local_report_download_funnel', 'open_home_local_report', 'local_report_home_opened'])
+}
+</script>
+{% endblock tagging %}
