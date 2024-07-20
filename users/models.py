@@ -78,6 +78,8 @@ class User(AbstractUser):
 
     @property
     def created_today(self):
+        if not self.created_at:
+            return False
         return self.created_at.date() == timezone.now().date()
 
     def save(self, *args, **kwargs):
