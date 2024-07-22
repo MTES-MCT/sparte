@@ -169,7 +169,9 @@ class Cerema(DataColorationMixin, models.Model):
     menhab1420 = models.FloatField(null=True)
     artpop1420 = models.FloatField(null=True)
 
+    # The field below is not reliable as it is sometimes equal to None
     surfcom23 = models.FloatField(null=True)
+
     artcom2020 = models.FloatField(null=True)
 
     # calculated field :
