@@ -27,8 +27,6 @@ class ConsommationProgressionService:
         if self.class_cacher.exists(key):
             return self.class_cacher.get(key)
 
-        surface_field = "surfcom23"
-
         artif_fields = Cerema.get_art_field(
             start=str(start_date),
             end=str(end_date),
@@ -46,18 +44,17 @@ class ConsommationProgressionService:
             f"art{year[-2:]}{det}{str(int(year) + 1)[-2:]}" for year in years for det in determinants
         ]
 
-        fields = artif_fields + determinants_fields + [surface_field]
+        fields = artif_fields + determinants_fields
 
         qs = Cerema.objects.filter(city_insee__in=communes.values("insee"))
         args = {field: Sum(field) for field in fields}
         qs = qs.aggregate(**args)
 
         results = {}
-        surface = qs[surface_field]
+
+        surface = float(sum([commune.area for commune in communes]))
 
         for key, val in qs.items():
-            if key == surface_field:
-                continue
             year = int(f"20{key[3:5]}")
 
             if year not in results:
@@ -84,7 +81,7 @@ class ConsommationProgressionService:
                     route=results[year]["rou"] / 10000,
                     ferre=results[year]["fer"] / 10000,
                     non_reseigne=results[year]["inc"] / 10000,
-                    per_mille_of_area=results[year]["total"] / surface * 1000,
+                    per_mille_of_area=results[year]["total"] / 10000 / surface * 1000,
                 )
                 for year in results
             ],
