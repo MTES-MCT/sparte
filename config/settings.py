@@ -262,6 +262,8 @@ if ENVIRONMENT == "local":
             "BACKEND": "config.cache_backends.RedisDummyCache",
         },
     }
+    # to use qgis locally :
+    X_FRAME_OPTIONS = "ALLOW"
 else:
     CACHES = {
         "default": {
