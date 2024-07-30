@@ -6,12 +6,13 @@ from django.db import connection
 from django.http import HttpResponse
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView
-from rest_framework import viewsets
+from rest_framework import renderers, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet
 from rest_framework_gis import filters
+from vectortiles.postgis.views import MVTView
 
 from public_data import models, serializers
 from public_data.models.administration import Land
@@ -347,6 +348,48 @@ class ZoneConstruiteViewSet(OnlyBoundingBoxMixin, ZoomSimplificationMixin, Optim
 
     def get_sql_where(self):
         return "WHERE o.year = %s"
+
+
+class MVTRenderer(renderers.BaseRenderer):
+    media_type = "application/vnd.mapbox-vector-tile"
+    format = "pbf"
+
+    def render(self, data, accepted_media_type=None, renderer_context=None):
+        return data
+
+
+class ArtificialAreaMVTView(MVTView, APIView):
+    model = models.ArtificialArea
+    vector_tile_layer_name = "artificial_area"  # name for data layer in vector tile
+    vector_tile_fields = ("year", "city")  # model fields or queryset annotates to include in tile
+    vector_tile_content_type = "application/x-protobuf"  # if you want to use custom content_type
+    vector_tile_geom_name = "mpoly"  # geom field to consider in qs
+    renderer_classes = (MVTRenderer,)
+    accepted_renderer = MVTRenderer
+
+    def get_vector_tile_queryset(self):
+        year = self.request.GET.get("year")
+        city = str(self.request.GET.get("city"))
+
+        if not year:
+            raise ValueError("year parameter must be set")
+        if city and year:
+            return models.ArtificialArea.objects.filter(city=city, year=year)
+        if city:
+            return models.ArtificialArea.objects.filter(city=city)
+        if year:
+            return models.ArtificialArea.objects.filter(year=year)
+
+    def get(self, request, *args, **kwargs):
+        response = Response(
+            self.get_tile(
+                kwargs.get("x"),
+                kwargs.get("y"),
+                kwargs.get("z"),
+            )
+        )
+        response._csp_exempt = True
+        return response
 
 
 class ArtificialAreaViewSet(OnlyBoundingBoxMixin, ZoomSimplificationMixin, OptimizedMixins, DataViewSet):

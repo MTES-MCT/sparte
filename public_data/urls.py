@@ -10,6 +10,11 @@ urlpatterns = [
     path("matrix", views.DisplayMatrix.as_view(), name="matrix"),
     path("grid", views.grid_view.as_view(), name="grid"),
     path("search-land", views.SearchLandApiView.as_view({"post": "post"}), name="search-land"),
+    path(
+        "ocsge/zones-artificielle-v2/<int:z>/<int:x>/<int:y>",
+        views.ArtificialAreaMVTView.as_view(),
+        name="ArtificialAreaMVTView",
+    ),
 ]
 
 
