@@ -1,0 +1,233 @@
+{% include "project/components/layout/breadcrumb.html" %}
+
+<div class="fr-callout fr-callout--brown-caramel fr-fi-information-line fr-callout-read-more">
+  <div class="fr-callout-read-more__excerpt">
+    <p class="fr-text--sm mb-3">L'article 191 de la Loi Climat & Résilience exprime que :</p>
+    <p class="fr-text--sm mb-3"><i>« Afin d'atteindre l'objectif national d'absence de toute artificialisation nette des sols en 2050, le rythme de <strong>l'artificialisation des sols</strong> dans les dix années suivant la promulgation de la présente loi doit être tel que, sur cette période, <strong>la consommation totale d'espaces</strong> observée à l'échelle nationale soit inférieure à la moitié de celle observée sur les dix années précédant cette date.»</i></p>
+  </div>
+  <div class="fr-callout-read-more__text" id="synthesis_1" hidden>
+    <p class="fr-text--sm mb-3">L'article 191 de la Loi Climat & Résilience exprime que :</p>
+    <p class="fr-text--sm mb-3"><i>« Afin d'atteindre l'objectif national d'absence de toute artificialisation nette des sols en 2050, le rythme de <strong>l'artificialisation des sols</strong> dans les dix années suivant la promulgation de la présente loi doit être tel que, sur cette période, <strong>la consommation totale d'espaces</strong> observée à l'échelle nationale soit inférieure à la moitié de celle observée sur les dix années précédant cette date.»</i></p>
+    <p class="fr-text--sm mb-3">Informations clés à retenir sur la mise en œuvre&nbsp;:</p>
+    <ul class="fr-text--sm">
+      <li>Entre 2021 et 2031 à l'échelle de la région, il est demandé de diviser par 2 la consommation d'espaces NAF (Naturels, Agricoles et Forestiers) mesurée entre 2011 et 2021.</li>
+      <li>D'ici février 2024, les schémas régionaux territorialiseront les objectifs de diminution.</li>
+      <li>Les SCoT (Schéma de Cohérence Territoriale) auront jusqu'en février 2027 pour intégrer ces objectifs</li>
+      <li>Les PLU et cartes communales jusqu'en février 2028</li>
+    </ul>
+    <br />
+    <p class="fr-text--sm mb-3">Mon Diagnostic Artificialisation vous accompagne dans le suivi de ces nouvelles règles en produisant des indicateurs s'appuyant sur&nbsp;:</p>
+    <ul class="fr-text--sm mb-0">
+      <li>la base de données d'OCcupation des Sols à Grande Echelle (OCS GE) de l'IGN ;</li>
+      <li>les fichiers fonciers du Cerema issus des données MAJIC (Mise A Jour de l'Information Cadastrale) de la DGFIP ;</li>
+      <li>les données, en particulier du recensement, de l'INSEE</li>
+    </ul>
+  </div>
+
+  <button class="fr-btn fr-btn--secondary fr-btn--sm fr-callout-read-more__btn" aria-expanded="false" aria-controls="synthesis_1">
+    Lire plus
+  </button>
+</div>
+
+{% include "project/components/widgets/ocsge_status.html" %}
+
+<div class="fr-mt-7w">
+  <h2>Trajectoires</h2>
+  <h4>Estimation de la trajectoire 2031</h4>
+  <div class="fr-grid-row fr-grid-row--gutters">
+    <div class="fr-col-12 fr-col-md-6 fr-grid-row">
+      <div class="fr-callout w-100">
+        <p class="fr-callout__title">+{{ objective_chart.total_2020|floatformat:1 }} ha</p>
+        <p>Bilan consommation d'espaces 2011-2020</p>
+      </div>
+    </div>
+    <div class="fr-col-12 fr-col-md-6 fr-grid-row">
+      <div class="fr-callout w-100">
+        <p class="fr-callout__title">+{{ objective_chart.conso_2031|floatformat:1 }} ha</p>
+        <p>Consommation cumulée de la période du 1er jan. 2021 au 31 déc. 2030 (10 ans) avec un objectif non-réglementaire de réduction de {{ diagnostic.target_2031 }}%</p>
+      </div>
+    </div>
+  </div>
+  <div class="fr-notice bg-white">
+    <div class="fr-container">
+      <div class="d-flex align-items-center justify-content-between">
+        <div>
+          <span class="fr-icon-information-line" aria-hidden="true"></span>
+          <span class="fr-text--xs fr-mr-1w">Source de données: </span>
+          <p class="fr-tag fr-tag--sm fr-tag--blue">
+            <strong>FICHIERS FONCIERS</strong>
+          </p>
+        </div>
+        <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data-1">Détails données et calcul</button>
+      </div>
+      <div class="fr-collapse" id="target-data-1">
+        <h6 class="fr-mt-2w">Source</h6>
+        <p class="fr-text--sm">
+          Données d'évolution des fichiers fonciers produits et diffusés par le Cerema depuis 2009 à 
+          partir des fichiers MAJIC (Mise A Jour de l'Information Cadastrale) de la DGFIP. Le dernier 
+          millésime de 2023 est la photographie du territoire au 1er janvier 2023, intégrant les évolutions 
+          réalisées au cours de l'année 2022.
+        </p>
+        <h6 class="fr-mt-2w">Calcul</h6>
+        <p class="fr-text--sm">La Loi Climat & Résilience recommande entre 2021 et 2031 à l'échelle régionale, de diviser par 2 la consommation d'espaces NAF (Naturels, Agricoles et Forestiers) mesurée entre 2011 et 2021 ; le même calcul a été appliqué à l'échelle du territoire comme scénario standard.</p>
+      </div>
+    </div>
+  </div>
+  <div class="fr-mt-3w">
+    <a class="fr-link" href="{% url 'project:report_target_2031' diagnostic.pk %}">Consulter les trajectoires</a>
+  </div>
+</div>
+
+<div class="fr-mt-12w">
+  <h2>Consommation</h2>
+  <h4>Bilan de la consommation d'espaces</h4>
+  <div class="fr-grid-row fr-grid-row--gutters">
+    <div class="fr-col-12 fr-col-md-6 fr-grid-row">
+      <div class="fr-callout w-100">
+        <p class="fr-callout__title">+{{ current_conso|floatformat:1 }} ha</p>
+        <p>Consommation d'espaces {{ diagnostic.analyse_start_date }}-{{ diagnostic.analyse_end_date }}</p>
+      </div>
+    </div>
+    <div class="fr-col-12 fr-col-md-6 fr-grid-row">
+      <div class="fr-callout w-100">
+        <p class="fr-callout__title">+{{ year_avg_conso|floatformat:1 }} ha</p>
+        <p>Consommation d'espaces moyenne par an entre {{ diagnostic.analyse_start_date }}-{{ diagnostic.analyse_end_date }}</p>
+      </div>
+    </div>
+  </div>
+  <div class="fr-notice bg-white">
+    <div class="fr-container">
+      <div class="d-flex align-items-center justify-content-between">
+        <div>
+          <span class="fr-icon-information-line" aria-hidden="true"></span>
+          <span class="fr-text--xs fr-mr-1w">Source de données: </span>
+          <p class="fr-tag fr-tag--sm fr-tag--blue">
+            <strong>FICHIERS FONCIERS</strong>
+          </p>
+        </div>
+        <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data-2">Détails données et calcul</button>
+      </div>
+      <div class="fr-collapse" id="target-data-2">
+        <h6 class="fr-mt-2w">Source</h6>
+        <p class="fr-text--sm">
+          Données d'évolution des fichiers fonciers produits et diffusés par le Cerema depuis 2009 à 
+          partir des fichiers MAJIC (Mise A Jour de l'Information Cadastrale) de la DGFIP. Le dernier 
+          millésime de 2023 est la photographie du territoire au 1er janvier 2023, intégrant les évolutions 
+          réalisées au cours de l'année 2022.
+        </p>
+        <h6 class="fr-mt-2w">Calcul</h6>
+        <p class="fr-text--sm">Les données du Cerema donnent la consommation d'espaces NAF (Naturels, Agricoles et Forestiers) par année, par destination et par commune.</p>
+      </div>
+    </div>
+  </div>
+  <div class="fr-mt-3w">
+    <a class="fr-link" href="{% url 'project:report_conso' diagnostic.pk %}">Consulter le bilan de consommation d'espaces</a>
+  </div>
+</div>
+
+{% if diagnostic.has_complete_uniform_ocsge_coverage %}
+<div class="fr-mt-12w">
+  <h2>Artificialisation</h2>
+  <h4>Bilan de l'artificialisation nette entre {{ diagnostic.analyse_start_date }} et {{ diagnostic.analyse_end_date }}</h4>
+  <p><strong>Objectif zéro artificialisation nette en 2050</strong></p>
+  <p>Sur la période demandée, l'OCS GE couvre de {{ first_millesime }} à {{ last_millesime }}.</p>
+  <div class="fr-grid-row fr-grid-row--gutters">
+    <div class="fr-col-12 fr-col-md-4 fr-grid-row">
+      <div class="fr-callout w-100">
+        <p class="fr-callout__title">{{ net_artif|floatformat:1 }} ha</p>
+        <p>Artificialisation nette sur la période <i class="bi bi-question-circle" data-toggle="tooltip" title="= artificialisation - désartificialisation" aria-hidden="true"></i></p>
+      </div>
+    </div>
+    <div class="fr-col-12 fr-col-md-4 fr-grid-row">
+      <div class="fr-callout w-100">
+        <p class="fr-callout__title">+{{ new_artif|floatformat:1 }} ha</p>
+        <p>Total artificialisation sur la période</p>
+      </div>
+    </div>
+    <div class="fr-col-12 fr-col-md-4 fr-grid-row">
+      <div class="fr-callout w-100">
+        <p class="fr-callout__title">+{{ new_natural|floatformat:1 }} ha</p>
+        <p>Total désartificialisation sur la période</p>
+      </div>
+    </div>
+  </div>
+  <div class="fr-notice bg-white">
+    <div class="fr-container">
+      <div class="d-flex align-items-center justify-content-between">
+        <div>
+          <span class="fr-icon-information-line" aria-hidden="true"></span>
+          <span class="fr-text--xs fr-mr-1w">Source de données: </span>
+          <p class="fr-tag fr-tag--sm fr-tag--success">
+            <strong>OCS GE</strong>
+          </p>
+        </div>
+        <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data-3">Détails données et calcul</button>
+      </div>
+      <div class="fr-collapse" id="target-data-3">
+        <h6 class="fr-mt-2w">Source</h6>
+        <p class="fr-text--sm">OCS GE (millésime min : {{ project.first_year_ocsge }}, millésime max : {{ project.last_year_ocsge }}).</p>
+        <h6 class="fr-mt-2w">Calcul</h6>
+        <p class="fr-text--sm">L'artificialisation nette = artificialisation - désartificialisation sur la période.</p>
+      </div>
+    </div>
+  </div>
+  <div class="fr-mt-3w">
+    <a class="fr-link" href="{% url 'project:report_artif' project.pk %}">Consulter le bilan de l'artificialisation</a>
+  </div>
+</div>
+
+{% if project.has_zonage_urbanisme %}
+<div class="fr-mt-12w">
+  <h2>Croisement avec les zonages d'urbanisme</h2>
+  <h4>Artificialisation des zonages d'urbanisme selon les documents d'urbanisme en vigueur</h4>
+  <p>Sur la période demandée, l'OCS GE couvre de {{ first_millesime }} à {{ last_millesime }}.</p>
+  <div class="fr-grid-row fr-grid-row--gutters">
+    {% for zone_type, zone in zone_list.items %}
+      <div class="fr-col-12 fr-col-md-4 fr-grid-row">
+        <div class="fr-callout w-100">
+          <p class="fr-callout__title">
+            <div class="progress-bar-container progress-bar-container--big">
+              <div class="progress-bar-indicator w-{{ zone.fill_up_rate|floatformat:0 }}"></div>
+              <div class="progress-bar-value">{{ zone.fill_up_rate|floatformat:1 }}%</div>
+            </div>
+          </p>
+          <p>
+            Taux d'artificialisation des zones <strong>{{ zone_type }}</strong>
+            <span class="fr-text--sm">({{ zone.type_zone_label }})</span>
+          </p>
+          <p class="fr-text--sm fr-mt-1w">
+            Surface Totale: <strong>{{ zone.total_area|floatformat:1 }} ha</strong><br>
+          </p>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+  <div class="fr-notice bg-white">
+    <div class="fr-container">
+      <div class="d-flex align-items-center justify-content-between">
+        <div>
+          <span class="fr-icon-information-line" aria-hidden="true"></span>
+          <span class="fr-text--xs fr-mr-1w">Source de données: </span>
+          <p class="fr-tag fr-tag--sm fr-tag--success">
+            <strong>OCS GE</strong>
+          </p>
+        </div>
+        <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data-4">Détails données et calcul</button>
+      </div>
+      <div class="fr-collapse" id="target-data-4">
+        <h6 class="fr-mt-2w">Source</h6>
+        <p class="fr-text--sm">Données OCS GE (OCcupation des Sols à Grande Echelle) de l'IGN, sur la période d'analyse. Zonages d'Urbanisme issus du GPU (Géoportail de l'Urbanisme) en date de juin 2023: <a href="https://www.geoportail-urbanisme.gouv.fr/" target="_blank" rel="noopener">https://www.geoportail-urbanisme.gouv.fr/</a></p>
+
+        <h6 class="fr-mt-2w">Calcul</h6>
+        <p class="fr-text--sm">Qualifier l'artificialisation de chaque parcelle OCS GE via la matrice d'artficialisation (<a href="{% url 'public_data:matrix' %}">consulter</a>). Puis comparer la surface totale des parcelles artificialisées dans chaque zonage d'urbanisme à la surface de la zone pour connaître le taux d'occupation.</p>
+      </div>
+    </div>
+  </div>
+  <div class="fr-mt-3w">
+    <a class="fr-link" href="{% url 'project:report_urban_zones' project.pk %}">Consulter les zonages d'urbanisme</a>
+  </div>
+</div>
+{% endif %}
+{% endif %}
+</div>

@@ -1,0 +1,18 @@
+<div class="fr-callout fr-fi-information-line">
+    <h3 class="fr-callout__title">Découvrez notre explorateur des zonages d'urbanisme</h3>
+    <p class="fr-callout__text">
+        Croisez les zonages d'urbanisme avec les données de l'OCS GE afin de comprendre l'artificialisation de votre territoire.
+    </p>
+    <a href="{% url 'project:map-urban-zones' project.pk %}">
+        <button class="fr-btn">
+            Explorer les zonages d'urbanisme
+        </button>
+    </a>
+</div>
+
+
+<div class="fr-mt-7w" hx-get="{% url 'project:synthesis-zone-urba-all' project.id %}" hx-trigger="load delay:1s" hx-swap="outerHTML">
+    <h3>Synthèse des zonages d'urbanisme</h3>
+
+    <div class="fr-custom-loader"></div>
+</div>
