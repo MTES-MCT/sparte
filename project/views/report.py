@@ -58,9 +58,16 @@ from .mixins import (
 
 
 class ProjectReportBaseView(CacheMixin, GroupMixin, DetailView):
+    htmx_template_name = ""
+    full_template_name = ""
     breadcrumbs_title = "To be set"
     context_object_name = "project"
     queryset = Project.objects.all()
+
+    def get_template_names(self):
+        if self.request.htmx:
+            return [self.htmx_template_name]
+        return [self.full_template_name]
 
     @transaction.non_atomic_requests
     def dispatch(self, request, *args, **kwargs):
@@ -80,7 +87,8 @@ class ProjectReportBaseView(CacheMixin, GroupMixin, DetailView):
 
 
 class ProjectReportConsoView(ProjectReportBaseView):
-    template_name = "project/report_consommation.html"
+    htmx_template_name = "project/components/dashboard/consommation.html"
+    full_template_name = "project/page/consommation.html"
     breadcrumbs_title = "Rapport consommation"
 
     def get_context_data(self, **kwargs):
@@ -137,7 +145,8 @@ class ProjectReportConsoView(ProjectReportBaseView):
 
 
 class ProjectReportDicoverOcsgeView(OcsgeCoverageMixin, ProjectReportBaseView):
-    template_name = "project/report_discover_ocsge.html"
+    htmx_template_name = "project/components/dashboard/ocsge.html"
+    full_template_name = "project/page/ocsge.html"
     breadcrumbs_title = "Découvrir l'OCS GE"
 
     def get_context_data(self, **kwargs):
@@ -194,7 +203,8 @@ class ProjectReportDicoverOcsgeView(OcsgeCoverageMixin, ProjectReportBaseView):
 
 
 class ProjectReportSynthesisView(ProjectReportBaseView):
-    template_name = "project/report_synthesis.html"
+    htmx_template_name = "project/components/dashboard/synthese.html"
+    full_template_name = "project/page/synthese.html"
     breadcrumbs_title = "Synthèse consommation d'espaces et artificialisation"
 
     def get_context_data(self, **kwargs):
@@ -225,7 +235,8 @@ class ProjectReportSynthesisView(ProjectReportBaseView):
 
 
 class ProjectReportLocalView(ProjectReportBaseView):
-    template_name = "project/report_local.html"
+    htmx_template_name = "project/components/dashboard/rapport_local.html"
+    full_template_name = "project/page/rapport_local.html"
     breadcrumbs_title = "Rapport triennal local"
 
     def get_context_data(self, **kwargs):
@@ -241,7 +252,8 @@ class ProjectReportLocalView(ProjectReportBaseView):
 
 
 class ProjectReportImperView(OcsgeCoverageMixin, ProjectReportBaseView):
-    template_name = "project/report_imper.html"
+    htmx_template_name = "project/components/dashboard/impermeabilisation.html"
+    full_template_name = "project/page/impermeabilisation.html"
     breadcrumbs_title = "Imperméabilisation"
 
     def get_context_data(self, **kwargs):
@@ -276,7 +288,8 @@ class ProjectReportImperView(OcsgeCoverageMixin, ProjectReportBaseView):
 
 
 class ProjectReportArtifView(OcsgeCoverageMixin, ProjectReportBaseView):
-    template_name = "project/report_artif.html"
+    htmx_template_name = "project/components/dashboard/artificialisation.html"
+    full_template_name = "project/page/artificialisation.html"
     breadcrumbs_title = "Artificialisation"
 
     def get_context_data(self, **kwargs):
@@ -474,7 +487,8 @@ class ProjectReportDownloadView(BreadCrumbMixin, CreateView):
 
 
 class ProjectReportTarget2031View(ProjectReportBaseView):
-    template_name = "project/report_target_2031.html"
+    htmx_template_name = "project/components/dashboard/trajectoires.html"
+    full_template_name = "project/page/trajectoires.html"
     breadcrumbs_title = "Rapport trajectoires"
 
     def get_context_data(self, **kwargs):
@@ -515,7 +529,8 @@ class ProjectReportTarget2031GraphView(ProjectReportBaseView):
 
 
 class ProjectReportUrbanZonesView(OcsgeCoverageMixin, ProjectReportBaseView):
-    template_name = "project/report_urban_zones.html"
+    htmx_template_name = "project/components/dashboard/gpu.html"
+    full_template_name = "project/page/gpu.html"
     breadcrumbs_title = "Zonages d'urbanisme"
 
     def get_context_data(self, **kwargs):

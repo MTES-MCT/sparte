@@ -1,0 +1,340 @@
+{% load static %}
+{% load highcharts_tags %}
+
+{% include "project/components/layout/breadcrumb.html" %}
+
+<div class="fr-callout fr-callout--brown-caramel fr-fi-information-line fr-callout-read-more">
+    <div class="fr-callout-read-more__excerpt">
+        <p class="fr-text--sm mb-3">Le <a rel="noopener noreferrer" target="_blank" href="https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000048465959">Décret n° 2023-1096 du 27 novembre 2023 relatif à l'évaluation et au suivi de l'Imperméabilisation des sols</a> précise que le rapport relatif à l'Imperméabilisation des sols prévu à l'article L. 2231-1 présente, pour les années civiles sur lesquelles il porte et au moins tous les trois ans, les indicateurs et données suivants:</p>
+        <ul class="fr-text--sm mb-3">
+            <li>« 1° La consommation des espaces naturels, agricoles et forestiers, exprimée en nombre d'hectares, le cas échéant en la différenciant entre ces types d'espaces, et en pourcentage au regard de la superficie du territoire couvert. Sur le même territoire, le rapport peut préciser également la transformation effective d'espaces urbanisés ou construits en espaces naturels, agricoles et forestiers du fait d'une Désimperméabilisation ;</li>
+            <li>« 2° Le solde entre les surfaces Impericialisées et les surfaces désImpericialisées, telles que définies dans la nomenclature annexée à l'<a rel="noopener noreferrer" target="_blank" href="https://www.legifrance.gouv.fr/affichCodeArticle.do?cidTexte=LEGITEXT000006074075&idArticle=LEGIARTI000045729062&dateTexte=&categorieLien=cid">article R. 101-1 du code de l'urbanisme</a> ;</li>
+        </ul>
+    </div>
+    <div class="fr-callout-read-more__text" id="imper_1" hidden>
+        <p class="fr-text--sm mb-3">Le <a rel="noopener noreferrer" target="_blank" href="https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000048465959">Décret n° 2023-1096 du 27 novembre 2023 relatif à l'évaluation et au suivi de l'Imperméabilisation des sols</a> précise que le rapport relatif à l'Imperméabilisation des sols prévu à l'article L. 2231-1 présente, pour les années civiles sur lesquelles il porte et au moins tous les trois ans, les indicateurs et données suivants:</p>
+        <ul class="fr-text--sm mb-3">
+            <li>« 1° La consommation des espaces naturels, agricoles et forestiers, exprimée en nombre d'hectares, le cas échéant en la différenciant entre ces types d'espaces, et en pourcentage au regard de la superficie du territoire couvert. Sur le même territoire, le rapport peut préciser également la transformation effective d'espaces urbanisés ou construits en espaces naturels, agricoles et forestiers du fait d'une Désimperméabilisation ;</li>
+            <li>« 2° Le solde entre les surfaces Impericialisées et les surfaces désImpericialisées, telles que définies dans la nomenclature annexée à l'<a rel="noopener noreferrer" target="_blank" href="https://www.legifrance.gouv.fr/affichCodeArticle.do?cidTexte=LEGITEXT000006074075&idArticle=LEGIARTI000045729062&dateTexte=&categorieLien=cid">article R. 101-1 du code de l'urbanisme</a> ;</li>
+            <li>« 3° Les surfaces dont les sols ont été rendus imperméables, au sens des 1° et 2° de la nomenclature annexée à l'<a rel="noopener noreferrer" target="_blank" href="https://www.legifrance.gouv.fr/affichCodeArticle.do?cidTexte=LEGITEXT000006074075&idArticle=LEGIARTI000045729062&dateTexte=&categorieLien=cid">article R. 101-1 du code de l'urbanisme</a> ;</li>
+            <li>« 4° L'évaluation du respect des objectifs de réduction de la consommation d'espaces naturels, agricoles et forestiers et de lutte contre l'Imperméabilisation des sols fixés dans les documents de planification et d'urbanisme. Les documents de planification sont ceux énumérés au <a rel="noopener noreferrer" target="_blank" href="https://www.legifrance.gouv.fr/affichCodeArticle.do?cidTexte=LEGITEXT000006074075&idArticle=LEGIARTI000045729062&dateTexte=&categorieLien=cid">III de l'article R. 101-1 du code de l'urbanisme</a>.</li>
+        </ul>
+        <p class="fr-text--sm mb-3">
+            L’imperméabilisation des sols est donc définie comme:
+        </p>
+        <ul class="fr-text--sm mb-3">
+            <li>1° Surfaces dont les sols sont imperméabilisés en raison du bâti (constructions, aménagements, ouvrages ou installations).</li>
+            <li>2° Surfaces dont les sols sont imperméabilisés en raison d'un revêtement (Impericiel, asphalté, bétonné, couvert de pavés ou de dalles).</li>
+        </ul>
+        <p class="fr-text--sm mb-3">
+            Au niveau national, l’imperméabilisation est mesurée par l'occupation des sols à grande échelle (OCS GE), en cours d'élaboration, dont la production sera engagée sur l'ensemble du territoire national d'ici mi 2025.
+        </p>
+        <p class="fr-text--sm mb-3">
+            Dans la nomenclature OCS GE, les zones imperméables correspondent aux deux classes commençant par le code CS1.1.1
+        </p>
+    </div>
+
+    <button class="fr-btn fr-btn--secondary fr-btn--sm fr-callout-read-more__btn" aria-expanded="false" aria-controls="imper_1">
+        Lire plus
+    </button>
+</div>
+
+<div class="fr-mt-12w">
+    <h2>Aperçu de l'imperméabilisation</h2>
+
+    <h3>Evolution de l'imperméabilisation entre {{ first_millesime }} et {{ last_millesime }}</h3>
+
+    <div class="fr-grid-row fr-grid-row--gutters">
+        <div class="fr-col-12">
+            <div class="border fr-p-2w h-100">
+                <div class="d-flex justify-content-end align-items-center fr-mb-2w">
+                    <div class="dropdown custom-dropdown fr-mr-2w" data-toggle="tooltip" title="Exporter le graphique">
+                        <button class="fr-btn fr-icon-download-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="dropdown" aria-expanded="false"></button>
+
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_waterfall" data-type="image/png">PNG</a>
+                            </li>
+                            <li>
+                                <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_waterfall" data-type="image/jpeg">JPEG</a>
+                            </li>
+                            <li>
+                                <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_waterfall" data-type="application/pdf">PDF</a>
+                            </li>
+                            <li>
+                                <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_waterfall" data-type="image/svg+xml">Vectoriel</a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm fullscreen-chart" data-chart-target="chart_waterfall" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
+                </div>
+                <div id="imper_nette_chart"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="fr-notice fr-mt-4w">
+        <div class="fr-container">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <span class="fr-icon-information-line" aria-hidden="true"></span>
+                    <span class="fr-text--xs fr-mr-1w">Source de données: </span>
+                    <p class="fr-tag fr-tag--sm fr-tag--success">
+                        <strong>OCS GE</strong>
+                    </p>
+                </div>
+                <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data-2">Détails données et calcul</button>
+            </div>
+            <div class="fr-collapse" id="target-data-2">
+                <h6 class="fr-mt-2w">Source</h6>
+                <p class="fr-text--sm">Données d'OCcupation des Sols à Grande Echelle (OCS GE) de l'IGN, sur la période d'analyse traduite grâce à la matrice de passage.</p>
+
+                <h6 class="fr-mt-2w">Calcul</h6>
+                <p class="fr-text--sm">Imperméabilisation nette = Imperméabilisation sur la période - Désimperméabilisation sur la période.</p>
+
+                <h6 class="fr-mt-2w">Données</h6>
+                {{ imper_nette_data_table }}
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="fr-mt-7w">
+    <h2>Détails de l'Imperméabilisation entre {{ first_millesime }} et {{ last_millesime }}</h2>
+
+    <h3>Familles de couverture des sols des surfaces imperméabilisées</h3>
+
+    <div class="fr-grid-row fr-grid-row--gutters">
+        <div class="fr-col-12 fr-col-lg-4">
+            <div class="border fr-p-2w">
+                <div class="d-flex justify-content-end align-items-center fr-mb-2w">
+                    <div class="dropdown custom-dropdown fr-mr-2w" data-toggle="tooltip" title="Exporter le graphique">
+                        <button class="fr-btn fr-icon-download-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="dropdown" aria-expanded="false"></button>
+
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="fr-nav__link export-chart" href="#" data-chart-target="couv_Imper_sol" data-type="image/png">PNG</a>
+                            </li>
+                            <li>
+                                <a class="fr-nav__link export-chart" href="#" data-chart-target="couv_Imper_sol" data-type="image/jpeg">JPEG</a>
+                            </li>
+                            <li>
+                                <a class="fr-nav__link export-chart" href="#" data-chart-target="couv_Imper_sol" data-type="application/pdf">PDF</a>
+                            </li>
+                            <li>
+                                <a class="fr-nav__link export-chart" href="#" data-chart-target="couv_Imper_sol" data-type="image/svg+xml">Vectoriel</a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm fr-mr-2w fullscreen-chart" data-chart-target="couv_Imper_sol" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
+
+                    <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#couvImperSol" data-toggle="tooltip" title="Astuces pour lire le graphique" aria-hidden="true"></button>
+                </div>
+                <div id="imper_repartition_couv_chart"></div>
+            </div>
+        </div>
+        <div class="fr-col-12 fr-col-lg-8">
+            <div class="border fr-p-2w">
+                <div class="d-flex justify-content-end align-items-center fr-mb-2w">
+                    <div class="dropdown custom-dropdown fr-mr-2w" data-toggle="tooltip" title="Exporter le graphique">
+                        <button class="fr-btn fr-icon-download-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="dropdown" aria-expanded="false"></button>
+
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="fr-nav__link export-chart" href="#" data-chart-target="detail_couv_Imper_chart" data-type="image/png">PNG</a>
+                            </li>
+                            <li>
+                                <a class="fr-nav__link export-chart" href="#" data-chart-target="detail_couv_Imper_chart" data-type="image/jpeg">JPEG</a>
+                            </li>
+                            <li>
+                                <a class="fr-nav__link export-chart" href="#" data-chart-target="detail_couv_Imper_chart" data-type="application/pdf">PDF</a>
+                            </li>
+                            <li>
+                                <a class="fr-nav__link export-chart" href="#" data-chart-target="detail_couv_Imper_chart" data-type="image/svg+xml">Vectoriel</a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm fr-mr-2w fullscreen-chart" data-chart-target="detail_couv_Imper_chart" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
+
+                    <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#couvImperSol" data-toggle="tooltip" title="Astuces pour lire le graphique" aria-hidden="true"></button>
+                </div>
+                <div id="imper_progression_couv_chart"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="fr-notice fr-mt-4w">
+        <div class="fr-container">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <span class="fr-icon-information-line" aria-hidden="true"></span>
+                    <span class="fr-text--xs fr-mr-1w">Source de données: </span>
+                    <p class="fr-tag fr-tag--sm fr-tag--success">
+                        <strong>OCS GE</strong>
+                    </p>
+                </div>
+                <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data-couv">Détails données et calcul</button>
+            </div>
+            <div class="fr-collapse" id="target-data-couv">
+                <h6 class="fr-mt-2w">Source</h6>
+                <p class="fr-text--sm">Données d'OCcupation des Sols à Grande Echelle (OCS GE) de l'IGN, sur la période d'analyse (millésime min : {{ project.first_year_ocsge }}, millésime max : {{ project.last_year_ocsge }}).</p>
+
+                <h6 class="fr-mt-2w">Calcul</h6>
+                <p class="fr-text--sm">OCS GE traduite grâce à la matrice de passage.</p>
+
+                <h6 class="fr-mt-2w">Exemple de lecture</h6>
+                <p class="fr-text--sm">Il y a eu 7.5 ha de nouvelles Zones non bâties représentant 10% de la surface de toutes les nouvelles surfaces imperméabilisées et 2 ha d'anciennes Zones non bâties désimperméabilisée représentant 16% de la surface de toutes les zones désimperméabilisées.</p>
+
+                <h6 class="fr-mt-2w">Données</h6>
+                <p class="fr-text--sm">En hectare (ha).</p>
+                {{ imper_progression_couv_data_table  }}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="fr-mt-7w">
+    <h3>Grandes familles d'usages du sol des surfaces imperméabilisées</h3>
+
+    <div class="fr-grid-row fr-grid-row--gutters">
+        <div class="fr-col-12 fr-col-lg-4">
+            <div class="border fr-p-2w">
+                <div class="d-flex justify-content-end align-items-center fr-mb-2w">
+                    <div class="dropdown custom-dropdown fr-mr-2w" data-toggle="tooltip" title="Exporter le graphique">
+                        <button class="fr-btn fr-icon-download-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="dropdown" aria-expanded="false"></button>
+
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="fr-nav__link export-chart" href="#" data-chart-target="usage_Imper_sol" data-type="image/png">PNG</a>
+                            </li>
+                            <li>
+                                <a class="fr-nav__link export-chart" href="#" data-chart-target="usage_Imper_sol" data-type="image/jpeg">JPEG</a>
+                            </li>
+                            <li>
+                                <a class="fr-nav__link export-chart" href="#" data-chart-target="usage_Imper_sol" data-type="application/pdf">PDF</a>
+                            </li>
+                            <li>
+                                <a class="fr-nav__link export-chart" href="#" data-chart-target="usage_Imper_sol" data-type="image/svg+xml">Vectoriel</a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm fr-mr-2w fullscreen-chart" data-chart-target="usage_Imper_sol" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
+
+                    <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#usageImperSol" data-toggle="tooltip" title="Astuces pour lire le graphique" aria-hidden="true"></button>
+                </div>
+                <div id="imper_repartition_usage_chart"></div>
+            </div>
+        </div>
+        <div class="fr-col-12 fr-col-lg-8">
+            <div class="border fr-p-2w">
+                <div class="d-flex justify-content-end align-items-center fr-mb-2w">
+                    <div class="dropdown custom-dropdown fr-mr-2w" data-toggle="tooltip" title="Exporter le graphique">
+                        <button class="fr-btn fr-icon-download-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="dropdown" aria-expanded="false"></button>
+
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="fr-nav__link export-chart" href="#" data-chart-target="detail_usage_Imper_chart" data-type="image/png">PNG</a>
+                            </li>
+                            <li>
+                                <a class="fr-nav__link export-chart" href="#" data-chart-target="detail_usage_Imper_chart" data-type="image/jpeg">JPEG</a>
+                            </li>
+                            <li>
+                                <a class="fr-nav__link export-chart" href="#" data-chart-target="detail_usage_Imper_chart" data-type="application/pdf">PDF</a>
+                            </li>
+                            <li>
+                                <a class="fr-nav__link export-chart" href="#" data-chart-target="detail_usage_Imper_chart" data-type="image/svg+xml">Vectoriel</a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm fr-mr-2w fullscreen-chart" data-chart-target="detail_usage_Imper_chart" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
+
+                    <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#usageImperSol" data-toggle="tooltip" title="Astuces pour lire le graphique" aria-hidden="true"></button>
+                </div>
+                <div id="imper_progression_usage_chart"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="fr-notice fr-mt-4w">
+        <div class="fr-container">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <span class="fr-icon-information-line" aria-hidden="true"></span>
+                    <span class="fr-text--xs fr-mr-1w">Source de données: </span>
+                    <p class="fr-tag fr-tag--sm fr-tag--success">
+                        <strong>OCS GE</strong>
+                    </p>
+                </div>
+                <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data-usage">Détails données et calcul</button>
+            </div>
+            <div class="fr-collapse" id="target-data-usage">
+                <h6 class="fr-mt-2w">Source</h6>
+                <p class="fr-text--sm">Données d'OCcupation des Sols à Grande Echelle (OCS GE) de l'IGN, sur la période d'analyse (millésime min : {{ project.first_year_ocsge }}, millésime max : {{ project.last_year_ocsge }}).</p>
+
+                <h6 class="fr-mt-2w">Calcul</h6>
+                <p class="fr-text--sm">OCS GE traduite grâce à la matrice de passage.</p>
+
+                <h6 class="fr-mt-2w">Données</h6>
+                <p class="fr-text--sm">En hectare (ha).</p>
+                {{ imper_progression_usage_data_table  }}
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="couvImperSol" tabindex="-1" aria-labelledby="couvImperSolLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+        <div class="fr-modal__body">
+            <div class="fr-modal__header">
+                <button class="fr-link--close fr-link" data-bs-dismiss="modal" aria-label="Close">Fermer</button>
+            </div>
+            <div class="fr-modal__content">
+                <h1 class="fr-modal__title" id="couvImperSolLabel">
+                    <span class="fr-fi-arrow-right-line fr-fi--lg"></span>
+                    Astuces - Familles de couverture des sols des surfaces imperméabilisées
+                </h1>
+                <p class="fr-text--sm">Avec le bouton <span class="fr-icon-drag-move-2-line fr-icon--sm" aria-hidden="true"></span>, vous pouvez afficher le graphique en plein écran.</p>
+                <p class="fr-text--sm">Avec le bouton <span class="fr-icon-download-line fr-icon--sm" aria-hidden="true"></span>, vous pouvez télécharger le graphique sous forme d'image (utilisez PNG si vous ne savez pas lequel choisir).</p>
+                <p class="fr-text--sm">Exemple de lecture: 8% des nouvelles surfaces imperméabilisées le sont pour des Zones bâties.</p>
+                <p class="fr-text--sm">Vous pouvez analyser la répartition des surfaces imperméabilisées sur la période en pourcentage avec le camembert, ou en volume au dernier millésime avec l'histogramme.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="usageImperSol" tabindex="-1" aria-labelledby="usageImperSolLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+        <div class="fr-modal__body">
+            <div class="fr-modal__header">
+                <button class="fr-link--close fr-link" data-bs-dismiss="modal" aria-label="Close">Fermer</button>
+            </div>
+            <div class="fr-modal__content">
+                <h1 class="fr-modal__title" id="usageImperSolLabel">
+                    <span class="fr-fi-arrow-right-line fr-fi--lg"></span>
+                    Astuces - Graphique grandes familles d'usages du sol des surfaces imperméabilisées
+                </h1>
+                <p class="fr-text--sm">Avec le bouton <span class="fr-icon-drag-move-2-line fr-icon--sm" aria-hidden="true"></span>, vous pouvez afficher le graphique en plein écran.</p>
+                <p class="fr-text--sm">Avec le bouton <span class="fr-icon-download-line fr-icon--sm" aria-hidden="true"></span>, vous pouvez télécharger le graphique sous forme d'image (utilisez PNG si vous ne savez pas lequel choisir).</p>
+                <p class="fr-text--sm">Exemple de lecture: 55% des nouvelles surfaces imperméabilisées le sont pour des Zones résidentielles.</p>
+                <p class="fr-text--sm">Vous pouvez analyser la répartition des surfaces imperméabilisées sur la période en pourcentage avec le camembert, ou en volume au dernier millésime avec l'histogramme.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block bodyend %}
+{% display_chart 'imper_nette_chart' imper_nette_chart CSP_NONCE %}
+{% display_chart 'imper_progression_couv_chart' imper_progression_couv_chart CSP_NONCE %}
+{% display_chart 'imper_repartition_couv_chart' imper_repartition_couv_chart CSP_NONCE %}
+{% display_chart 'imper_progression_usage_chart' imper_progression_usage_chart CSP_NONCE %}
+{% display_chart 'imper_repartition_usage_chart' imper_repartition_usage_chart CSP_NONCE %}
+{% endblock bodyend %}
