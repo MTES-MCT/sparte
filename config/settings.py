@@ -107,6 +107,7 @@ INSTALLED_APPS = DJANGO_APPS + RESTFRAMEWORK_APPS + THIRD_APPS + PROJECT_APPS
 
 MIDDLEWARE = [
     "django.middleware.gzip.GZipMiddleware",
+    "config.middlewares.HtmxMiddleware",
     "config.middlewares.LogIncomingRequest",
     "config.middlewares.MaintenanceModeMiddleware",
     "django.middleware.security.SecurityMiddleware",
