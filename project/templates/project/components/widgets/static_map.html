@@ -1,0 +1,18 @@
+<div class="bg-white theme-map-image-container h-100 fr-p-2w d-flex flex-column align-items-center justify-content-between">
+    <a href="{{ dynamic_map_url }}" target="_blank">
+        <div class="d-flex justify-content-end align-items-center w-100 fr-mb-2w">
+            <span class="fr-icon-external-link-line fr-icon--sm" aria-hidden="true"></span>
+        </div>
+        <p class="fw-bold">
+            {{ title }}
+        </p>
+        {% if project.theme_map_understand_artif %}
+            <img
+                src="{{ src }}"
+                alt="{{ title }}"
+            >
+        {% else %}
+            <div class="skeleton-loader"></div>
+        {% endif %}
+    </a>
+</div>
