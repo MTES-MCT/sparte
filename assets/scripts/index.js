@@ -9,10 +9,10 @@ import '../styles/index.css'
 import '@gouvfr/dsfr/dist/dsfr.module.min.js'
 
 // Import fr-callout-read-more
-import './fr-callout-read-more.js'
+// import './fr-callout-read-more.js'
 
 // Import highcharts custom buttons
-import './highcharts-custom-buttons.js'
+// import './highcharts-custom-buttons.js'
 
 // Import filter diagnostic list
 import './filter-diagnostic-list.js'
