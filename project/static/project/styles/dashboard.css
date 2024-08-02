@@ -1,0 +1,37 @@
+.fr-header {
+    filter: none;
+}
+
+.dashboard-wrapper {
+    display: flex;
+    align-items: stretch;
+}
+
+.dashboard-sidebar {
+    background-color: #fff;
+    border-top: 1px solid #f4f7fe;
+    padding-top: 4vh;
+    height: 100vh;
+    position: sticky;
+    top: 0;
+    overflow-y: auto;
+    flex: 0 0 250px;
+}
+
+.dashboard-content {
+    background: #f4f7fe;
+    padding: 0 2vw 10vh 2vw;
+    width: 100%;
+}
+
+.fr-breadcrumb li {
+    color: #707EAE !important;
+}
+
+.fr-custom-loader {
+    display: none;
+}
+
+.fr-callout {
+    background-color: #fff !important;
+}
