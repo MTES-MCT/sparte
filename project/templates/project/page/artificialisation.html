@@ -1,0 +1,7 @@
+{% extends "project/layout/base.html" %}
+
+{% block pagetitle %}{{ project.name }} | Mon Diagnostic Artificialisation{% endblock pagetitle %}
+
+{% block dashboard_content %}
+    {% include "project/components/dashboard/artificialisation.html" %}
+{% endblock dashboard_content %}
