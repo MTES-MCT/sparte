@@ -855,10 +855,6 @@ class ArtifDetailUsaChart(CacheMixin, TemplateView):
         return super().get_context_data(**kwargs)
 
 
-class TestView(TemplateView):
-    template_name = "project/test.html"
-
-
 class ProjectReportGpuView(ProjectReportBaseView):
     template_name = "project/report_gpu.html"
     breadcrumbs_title = "Rapport Zones d'urbanisme"
