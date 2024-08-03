@@ -193,8 +193,6 @@ urlpatterns = [
     # EXPORT
     path("exports/", views.ExportListView.as_view(), name="excel"),
     path("<int:pk>/export-excel", views.ExportExcelView.as_view(), name="export-excel"),
-    # SUB APPS
-    path("test", views.TestView.as_view(), name="test"),
 ]
 
 
