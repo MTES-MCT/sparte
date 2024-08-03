@@ -24,10 +24,6 @@ from .models import AliveTimeStamp, ContactForm, Newsletter
 from .tasks import send_nwl_confirmation, send_nwl_final
 
 
-class TestView(TemplateView):
-    template_name = "home/test.html"
-
-
 class HomeView(BreadCrumbMixin, TemplateView):
     template_name = "home/home.html"
 
