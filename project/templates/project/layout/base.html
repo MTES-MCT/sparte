@@ -69,6 +69,11 @@
                     "label": "Zonages d'urbanisme",
                     "icon": "bi bi-x-diamond",
                     "url": "{% url 'project:report_urban_zones' project.pk %}"
+                },
+                {
+                    "label": "Paramètres",
+                    "icon": "bi bi-gear-fill",
+                    "url": "{% url 'project:update' project.pk %}"
                 }
             ],
             "currentUrl": "{{ request.path }}"
