@@ -212,7 +212,8 @@
             </div>
         </div>
         <div class="fr-col-12 fr-col-lg-4">
-            {% include "project/partials/artif_territory_map.html" %}
+            {% url 'project:theme-my-artif' project.pk as dynamic_map_url %}
+            {% include "project/components/widgets/static_map.html" with dynamic_map_url=dynamic_map_url src=project.theme_map_understand_artif.url title="Carte comprendre l'artificialisation de son territoire" %}
         </div>
     </div>
 
@@ -332,7 +333,8 @@
             </div>
         </div>
         <div class="fr-col-12 fr-col-lg-4">
-            {% include "project/partials/artif_cities_map.html" %}
+            {% url 'project:theme-city-artif' project.pk as dynamic_map_url %}
+            {% include "project/components/widgets/static_map.html" with dynamic_map_url=dynamic_map_url src=project.theme_map_artif.url title="Carte artificialisation des communes du territoire sur la période (en ha)" %}
         </div>
     </div>
 
