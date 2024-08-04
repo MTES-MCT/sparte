@@ -1,9 +1,0 @@
-<div id="target-zone-urba-general-map" class="border theme-map-image-container fr-p-2w d-flex flex-column align-items-center">
-    <p class="fw-bold">Carte présentant les zonages d'urbanisme du territoire</p>
-    {% if diagnostic.theme_map_gpu %}
-        <img src="{{ diagnostic.theme_map_gpu.url }}" alt="Carte présentant les zonages d'urbanisme">
-    {% else %}
-        <div class="skeleton-loader" hx-get="{% url 'project:zone-urba-general-map' diagnostic.id %}" hx-trigger="load delay:10s" hx-target="#target-zone-urba-general-map" hx-swap="outerHTML">
-        </div>
-    {% endif %}
-</div>
