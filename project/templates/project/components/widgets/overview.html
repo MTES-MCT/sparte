@@ -1,0 +1,125 @@
+
+<div class="d-flex justify-content-between fr-mb-3w">
+    <div>
+        <h1 class="mb-3">{{ project.name }}</h1>
+        <ul class="fr-tags-group">
+            <li>
+                <p class="fr-tag">Surface du territoire:&nbsp;<strong>{{ project.area|floatformat:0 }} ha</strong></p>
+            </li>
+            <li>
+                <a href="#" data-bs-toggle="modal" data-bs-target="#fr-modal-update-period" class="fr-tag" hx-get="{% url 'project:set-period' project.pk %}" hx-target="#update_period_form">Période demandée:&nbsp;<strong>De {{ project.analyse_start_date }} à {{ project.analyse_end_date }}</strong><span class="fr-icon-pencil-fill fr-icon--sm custom-tag-icon" aria-hidden="true"></span></a>
+            </li>
+            <li>
+                <p class="fr-tag">Maille d'analyse:&nbsp;<strong>{{ project.level_label }}</strong></p>
+            </li>
+        </ul>
+    </div>
+    <div class="dropdown custom-dropdown mt-2">
+        <button class="fr-btn" data-bs-toggle="dropdown" aria-expanded="false">
+            Télécharger un rapport
+        </button>
+        <ul class="dropdown-menu w-100">
+            <li>
+                <a
+                    id="conso-report-download-btn"
+                    class="fr-nav__link"
+                    hx-get="{% url 'project:report_download' requested_document='rapport-conso' pk=project.pk %}"
+                    hx-target="#diag_word_form"
+                    href="#"
+                    data-fr-opened="false"
+                    aria-controls="fr-modal-download-word"
+                >
+                    Analyse de consommation
+                </a>
+            </li>
+            <li>
+                <a
+                    id="download_diag_word_btn"
+                    class="fr-nav__link"
+                    hx-get="{% url 'project:report_download' requested_document='rapport-complet' pk=project.pk %}"
+                    hx-target="#diag_word_form"
+                    href="#"
+                    data-fr-opened="false"
+                    aria-controls="fr-modal-download-word"
+                >
+                    Analyse complète
+                </a>
+            </li>
+            <li class="d-flex justify-content-between"> 
+                <a
+                    id="local-report-download-btn"
+                    class="fr-nav__link"
+                    hx-get="{% url 'project:report_download' requested_document='rapport-local' pk=project.pk %}"
+                    hx-target="#diag_word_form"
+                    href="#"
+                    data-fr-opened="false"
+                    aria-controls="fr-modal-download-word"
+                >
+                    Rapport triennal local 
+                    <p class="fr-badge fr-badge--new fr-badge--sm">Nouveau</p>
+                    
+                </a>
+            </li>
+            <li>
+                <a id="download_diag_excel_btn" class="fr-nav__link" href="{% url 'project:export-excel' project.pk %}">
+                    Format Excel
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="fr-modal-update-period" tabindex="-1" role="dialog" aria-labelledby="updatePeriodLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+        <div class="fr-modal__body">
+            <div class="fr-modal__header">
+                <button class="fr-link--close fr-link" data-bs-dismiss="modal" aria-label="Close" id="close-update-period">Fermer</button>
+            </div>
+            <div class="fr-modal__content">
+                <h1 class="fr-modal__title" id="updatePeriodLabel">
+                    Modifier la période du diagnostic
+                </h1>
+                <div id="update_period_form">
+                    <div class="fr-custom-loader"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<dialog aria-labelledby="fr-modal-2-title" id="fr-modal-download-word" class="fr-modal" role="dialog" >
+    <div class="fr-container fr-container--fluid fr-container-md">
+        <div class="fr-grid-row fr-grid-row--center">
+            <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+                <div class="fr-modal__body">
+                    <div class="fr-modal__header">
+                        <button class="fr-link--close fr-link" aria-controls="fr-modal-download-word">Fermer</button>
+                    </div>
+                    <div class="fr-modal__content">
+                        <div id="diag_word_form"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</dialog>
+
+<script language="javascript" nonce="[NONCE_PLACEHOLDER]">
+    document.getElementById("download_diag_excel_btn").onclick = function() {
+        _paq.push(['trackEvent', 'diagnostic_download_funnel', 'click_button_diagnostic_download_excel', 'diagnostic_download_excel_success'])
+    }
+
+    document.getElementById("download_diag_word_btn").onclick = function() {
+        document.getElementById("diag_word_form").innerHTML = "<div class='fr-custom-loader'></div>";
+        _paq.push(['trackEvent', 'diagnostic_download_funnel', 'click_button_diagnostic_download_word', 'diagnostic_download_word_button_clicked'])
+    }
+
+    document.getElementById("local-report-download-btn").onclick = function() {
+        _paq.push(['trackEvent', 'local_report_download_funnel', 'click_button_local_report_download', 'local_report_download_button_clicked'])
+    }
+
+    document.getElementById("conso-report-download-btn").onclick = function() {
+        _paq.push(['trackEvent', 'diagnostic_download_funnel', 'click_button_conso_report_download', 'conso_report_download_button_clicked'])
+    }
+</script>
