@@ -107,7 +107,7 @@ class CreateProjectViews(BreadCrumbMixin, FormView):
 
 class ProjectUpdateView(GroupMixin, UpdateView):
     model = Project
-    template_name = "project/update.html"
+    template_name = "project/page/update.html"
     form_class = UpdateProjectForm
     context_object_name = "project"
 
@@ -180,7 +180,7 @@ class SetProjectPeriodView(GroupMixin, RedirectURLMixin, UpdateView):
 
 class ProjectDeleteView(GroupMixin, LoginRequiredMixin, DeleteView):
     model = Project
-    template_name = "project/delete.html"
+    template_name = "project/page/delete.html"
     success_url = reverse_lazy("project:list")
 
     def get_context_breadcrumbs(self):
@@ -191,7 +191,7 @@ class ProjectDeleteView(GroupMixin, LoginRequiredMixin, DeleteView):
 
 class ProjectAddLookALike(GroupMixin, RedirectURLMixin, FormMixin, DetailView):
     model = Project
-    template_name = "project/add_look_a_like.html"
+    template_name = "project/page/add_territoire_de_comparaison.html"
     context_object_name = "project"
     form_class = KeywordForm
 
@@ -276,7 +276,7 @@ class ProjectRemoveLookALike(GroupMixin, RedirectURLMixin, DetailView):
 
 
 class ProjectListView(GroupMixin, LoginRequiredMixin, ListView):
-    template_name = "project/list.html"
+    template_name = "project/page/list.html"
     context_object_name = "projects"  # override to add an "s"
 
     def get_queryset(self):
