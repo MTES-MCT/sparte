@@ -2,6 +2,8 @@
 
 {% include "project/components/layout/breadcrumb.html" %}
 
+{% include "project/components/widgets/overview.html" %}
+
 <p class="fr-badge fr-badge--new fr-badge--sm d-xs-none">Nouveau</p>
         <button
             hx-get="{% url 'project:report_download' requested_document='rapport-local' pk=project.pk %}"
