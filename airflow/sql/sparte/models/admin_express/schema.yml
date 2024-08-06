@@ -1,0 +1,22 @@
+
+version: 2
+
+models:
+  - name: commune_with_checksum
+  - name: land
+
+sources:
+  - name: public
+    tables:
+    - name: arrondissement
+    - name: arrondissement_municipal
+    - name: canton
+    - name: chflieu_arrondissement_municipal
+    - name: chflieu_commune
+    - name: chflieu_commune_associee_ou_deleguee
+    - name: collectivite_territoriale
+    - name: commune
+    - name: commune_associee_ou_deleguee
+    - name: departement
+    - name: epci
+    - name: region

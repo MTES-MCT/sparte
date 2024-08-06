@@ -1,0 +1,12 @@
+sparte:
+  outputs:
+    dev:
+      dbname: "{{ env_var('DBT_DB_NAME') }}"
+      host: "{{ env_var('DBT_DB_HOST') }}"
+      pass: "{{ env_var('DBT_DB_PASSWORD') }}"
+      port: "{{ env_var('DBT_DB_PORT') | as_number }}"
+      schema: "{{ env_var('DBT_DB_SCHEMA') }}"
+      threads: 1
+      type: "postgres"
+      user: "{{ env_var('DBT_DB_USER') }}"
+  target: dev

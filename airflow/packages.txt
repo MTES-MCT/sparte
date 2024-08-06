@@ -1,0 +1,11 @@
+binutils
+libproj-dev
+gdal-bin
+libgdal-dev
+libpq-dev
+python3-dev
+gcc
+g++
+wget
+p7zip-full
+postgresql-client
