@@ -132,7 +132,7 @@ def ocsge_zone_construite_normalization_sql(
     """
 
 
-def get_table_name(shapefile_name: str) -> str:
+def get_table_name(shapefile_name: str) -> str | None:
     shapefile_name = shapefile_name.lower()
     if "diff" in shapefile_name:
         return "ocsge_diff"
