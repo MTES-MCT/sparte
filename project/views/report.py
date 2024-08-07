@@ -891,38 +891,3 @@ class ProjectReportGpuZoneSynthesisTable(CacheMixin, StandAloneMixin, TemplateVi
             "last_year_ocsge": str(self.diagnostic.last_year_ocsge),
         }
         return super().get_context_data(**kwargs)
-
-
-class ProjectReportGpuZoneGeneralMap(StandAloneMixin, TemplateView):
-    template_name = "project/partials/zone_urba_general_map.html"
-
-    def get_context_data(self, **kwargs):
-        return super().get_context_data(diagnostic=Project.objects.get(pk=self.kwargs["pk"]), **kwargs)
-
-
-class ProjectReportGpuZoneFillMap(StandAloneMixin, TemplateView):
-    template_name = "project/partials/zone_urba_fill_map.html"
-
-    def get_context_data(self, **kwargs):
-        return super().get_context_data(diagnostic=Project.objects.get(pk=self.kwargs["pk"]), **kwargs)
-
-
-class ProjectReportConsoMap(StandAloneMixin, TemplateView):
-    template_name = "project/partials/conso_map.html"
-
-    def get_context_data(self, **kwargs):
-        return super().get_context_data(diagnostic=Project.objects.get(pk=self.kwargs["pk"]), **kwargs)
-
-
-class ProjectReportArtifTerritoryMap(StandAloneMixin, TemplateView):
-    template_name = "project/partials/artif_territory_map.html"
-
-    def get_context_data(self, **kwargs):
-        return super().get_context_data(diagnostic=Project.objects.get(pk=self.kwargs["pk"]), **kwargs)
-
-
-class ProjectReportArtifCitiesMap(StandAloneMixin, TemplateView):
-    template_name = "project/partials/artif_cities_map.html"
-
-    def get_context_data(self, **kwargs):
-        return super().get_context_data(diagnostic=Project.objects.get(pk=self.kwargs["pk"]), **kwargs)
