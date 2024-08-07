@@ -23,13 +23,14 @@ import os
 import re
 import tempfile
 
+import pendulum
 import py7zr
 import requests
 from airflow.decorators import dag, task
+from airflow.models.param import Param
 from airflow.operators.bash import BashOperator
 from dependencies.container import Container
 from dependencies.utils import multiline_string_to_single_line
-from pendulum import datetime
 
 
 def find_years_in_url(url: str) -> list[int]:
@@ -68,11 +69,7 @@ def find_departement_in_url(url: str) -> str:
     return result
 
 
-def ocsge_diff_normalization_sql(
-    years: list[int],
-    departement: str,
-    source_name: str,
-) -> str:
+def ocsge_diff_normalization_sql(years: list[int], departement: str, source_name: str, loaded_date: float) -> str:
     fields = {
         "cs_new": f"CS_{years[1]}",
         "cs_old": f"CS_{years[0]}",
@@ -84,7 +81,7 @@ def ocsge_diff_normalization_sql(
 
     return f"""
     SELECT
-        CreateUUID() AS guid,
+        {loaded_date} AS loaded_date,
         {fields['year_old']} AS year_old,
         {fields['year_new']} AS year_new,
         {fields['cs_new']} AS cs_new,
@@ -102,9 +99,10 @@ def ocsge_occupation_du_sol_normalization_sql(
     years: list[int],
     departement: str,
     source_name: str,
+    loaded_date: float,
 ) -> str:
     return f""" SELECT
-        CreateUUID() AS guid,
+        {loaded_date} AS loaded_date,
         ID AS id,
         code_cs AS code_cs,
         code_us AS code_us,
@@ -120,9 +118,10 @@ def ocsge_zone_construite_normalization_sql(
     years: list[int],
     departement: str,
     source_name: str,
+    loaded_date: float,
 ) -> str:
     return f""" SELECT
-        CreateUUID() AS guid,
+        {loaded_date} AS loaded_date,
         ID AS id,
         {years[0]} AS year,
         {departement} AS departement,
@@ -144,206 +143,290 @@ def get_table_name(shapefile_name: str) -> str | None:
     return None
 
 
-def get_normalization_sql(table_name: str, source_name: str, years: list[int], departement: str) -> str:
+def get_normalization_sql(
+    table_name: str,
+    source_name: str,
+    years: list[int],
+    departement: str,
+    loaded_date: float,
+) -> str:
     return {
         "ocsge_diff": ocsge_diff_normalization_sql,
         "ocsge_occupation_du_sol": ocsge_occupation_du_sol_normalization_sql,
         "ocsge_zone_construite": ocsge_zone_construite_normalization_sql,
-    }[table_name](years=years, departement=departement, source_name=source_name)
+    }[table_name](
+        years=years,
+        departement=departement,
+        source_name=source_name,
+        loaded_date=loaded_date,
+    )
 
 
 configs = {  # noqa: E501
-    "94": [
-        "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0__SHP_LAMB93_D094_2021-01-01/OCS-GE_2-0__SHP_LAMB93_D094_2021-01-01.7z",  # noqa: E501
-        "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0__SHP_LAMB93_D094_2018-01-01/OCS-GE_2-0__SHP_LAMB93_D094_2018-01-01.7z",  # noqa: E501
-        "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0_DIFF_SHP_LAMB93_D094_2018-2021/OCS-GE_2-0_DIFF_SHP_LAMB93_D094_2018-2021.7z",  # noqa: E501
-    ],
-    "69": [
-        "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0__SHP_LAMB93_D069_2020-01-01/OCS-GE_2-0__SHP_LAMB93_D069_2020-01-01.7z",  # noqa: E501
-        "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0__SHP_LAMB93_D069_2017-01-01/OCS-GE_2-0__SHP_LAMB93_D069_2017-01-01.7z",  # noqa: E501
-        "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0__SHP_LAMB93_D069_DIFF_2017-2020/OCS-GE_2-0__SHP_LAMB93_D069_DIFF_2017-2020.7z",  # noqa: E501
-    ],
-    "75": [
-        "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0__SHP_LAMB93_D075_2021-01-01/OCS-GE_2-0__SHP_LAMB93_D075_2021-01-01.7z",  # noqa: E501
-        "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0__SHP_LAMB93_D075_2018-01-01/OCS-GE_2-0__SHP_LAMB93_D075_2018-01-01.7z",  # noqa: E501
-        "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0__SHP_LAMB93_D075_DIFF_2018-2021/OCS-GE_2-0__SHP_LAMB93_D075_DIFF_2018-2021.7z",  # noqa: E501
-    ],
-    "92": [
-        "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0__SHP_LAMB93_D092_2021-01-01/OCS-GE_2-0__SHP_LAMB93_D092_2021-01-01.7z",  # noqa: E501
-        "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0__SHP_LAMB93_D092_2018-01-01/OCS-GE_2-0__SHP_LAMB93_D092_2018-01-01.7z",  # noqa: E501
-        "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0_DIFF_SHP_LAMB93_D092_2018-2021/OCS-GE_2-0_DIFF_SHP_LAMB93_D092_2018-2021.7z",  # noqa: E501
-    ],
-    "91": [
-        "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0__SHP_LAMB93_D091_2021-01-01/OCS-GE_2-0__SHP_LAMB93_D091_2021-01-01.7z",  # noqa: E501
-        "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0__SHP_LAMB93_D091_2018-01-01/OCS-GE_2-0__SHP_LAMB93_D091_2018-01-01.7z",  # noqa: E501
-        "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0_DIFF_SHP_LAMB93_D091_2018-2021/OCS-GE_2-0_DIFF_SHP_LAMB93_D091_2018-2021.7z",  # noqa: E501
-    ],
-    "66": [
-        "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0__SHP_LAMB93_D066_2021-01-01/OCS-GE_2-0__SHP_LAMB93_D066_2021-01-01.7z",  # noqa: E501
-        "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0__SHP_LAMB93_D066_2018-01-01/OCS-GE_2-0__SHP_LAMB93_D066_2018-01-01.7z",  # noqa: E501
-        "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0_DIFF_SHP_LAMB93_D066_2018-2021/OCS-GE_2-0_DIFF_SHP_LAMB93_D066_2018-2021.7z",  # noqa: E501
-    ],
+    "91": {
+        "occupation_du_sol_et_zone_construite": {
+            2018: "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0__SHP_LAMB93_D091_2018-01-01/OCS-GE_2-0__SHP_LAMB93_D091_2018-01-01.7z",  # noqa: E501
+            2021: "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0__SHP_LAMB93_D091_2021-01-01/OCS-GE_2-0__SHP_LAMB93_D091_2021-01-01.7z",  # noqa: E501
+        },
+        "difference": {
+            (
+                2018,
+                2021,
+            ): "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0_DIFF_SHP_LAMB93_D091_2018-2021/OCS-GE_2-0_DIFF_SHP_LAMB93_D091_2018-2021.7z",  # noqa: E501
+        },
+    },
+    "92": {
+        "occupation_du_sol_et_zone_construite": {
+            2018: "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0__SHP_LAMB93_D092_2018-01-01/OCS-GE_2-0__SHP_LAMB93_D092_2018-01-01.7z",  # noqa: E501
+            2021: "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0__SHP_LAMB93_D092_2021-01-01/OCS-GE_2-0__SHP_LAMB93_D092_2021-01-01.7z",  # noqa: E501
+        },
+        "difference": {
+            (
+                2018,
+                2021,
+            ): "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0_DIFF_SHP_LAMB93_D092_2018-2021/OCS-GE_2-0_DIFF_SHP_LAMB93_D092_2018-2021.7z",  # noqa: E501
+        },
+    },
+    "78": {
+        "occupation_du_sol_et_zone_construite": {
+            2018: "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0__SHP_LAMB93_D078_2018-01-01/OCS-GE_2-0__SHP_LAMB93_D078_2018-01-01.7z",  # noqa: E501
+            2021: "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0__SHP_LAMB93_D078_2021-01-01/OCS-GE_2-0__SHP_LAMB93_D078_2021-01-01.7z",  # noqa: E501
+        },
+        "difference": {
+            (
+                2018,
+                2021,
+            ): "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0__SHP_LAMB93_D078_DIFF_2018-2021/OCS-GE_2-0__SHP_LAMB93_D078_DIFF_2018-2021.7z"  # noqa: E501
+        },
+    },
+    "94": {
+        "occupation_du_sol_et_zone_construite": {
+            2018: "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0__SHP_LAMB93_D094_2018-01-01/OCS-GE_2-0__SHP_LAMB93_D094_2018-01-01.7z",  # noqa: E501
+            2021: "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0__SHP_LAMB93_D094_2021-01-01/OCS-GE_2-0__SHP_LAMB93_D094_2021-01-01.7z",  # noqa: E501
+        },
+        "difference": {
+            (
+                2018,
+                2021,
+            ): "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0_DIFF_SHP_LAMB93_D094_2018-2021/OCS-GE_2-0_DIFF_SHP_LAMB93_D094_2018-2021.7z",  # noqa: E501
+        },
+    },
+    "75": {
+        "occupation_du_sol_et_zone_construite": {
+            2018: "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0__SHP_LAMB93_D075_2018-01-01/OCS-GE_2-0__SHP_LAMB93_D075_2018-01-01.7z",  # noqa: E501
+            2021: "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0__SHP_LAMB93_D075_2021-01-01/OCS-GE_2-0__SHP_LAMB93_D075_2021-01-01.7z",  # noqa: E501
+        },
+        "difference": {
+            (
+                2018,
+                2021,
+            ): "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0_DIFF_SHP_LAMB93_D075_2018-2021/OCS-GE_2-0_DIFF_SHP_LAMB93_D075_2018-2021.7z",  # noqa: E501
+        },
+    },
 }
 
 
-for departement_str, urls in configs.items():  # noqa: C901
-    dag_id = f"ingest_ocsge_{departement_str}"
+departement_list = list(configs.keys())
 
-    # Define the basic parameters of the DAG, like schedule and start_date
-    @dag(
-        dag_id=dag_id,
-        start_date=datetime(2024, 1, 1),
-        schedule="@once",
-        catchup=False,
-        doc_md=__doc__,
-        default_args={"owner": "Alexis Athlani", "retries": 3},
-        tags=["OCS GE"],
-    )
-    def ocsge(config):
-        bucket_name = "airflow-staging"
-        config: dict = config.resolve({})
-        urls = config.get("urls")
 
-        def download_ocsge(url) -> str:
-            response = requests.get(url, allow_redirects=True)
+@dag(
+    dag_id="ingest_ocsge",
+    start_date=pendulum.datetime(2024, 1, 1),
+    schedule="@once",
+    catchup=False,
+    doc_md=__doc__,
+    default_args={"owner": "Alexis Athlani", "retries": 3},
+    tags=["OCS GE"],
+    params={
+        "departement": Param("75", type="string", enum=departement_list),
+        "years": Param([2018], type="array"),
+        "dataset": Param(
+            "occupation_du_sol_et_zone_construite",
+            type="string",
+            enum=[
+                "occupation_du_sol_et_zone_construite",
+                "difference",
+            ],
+        ),
+    },
+)
+def ocsge():  # noqa: C901
+    bucket_name = "airflow-staging"
 
-            if not response.ok:
-                raise ValueError(f"Failed to download {url}. Response : {response.content}")
-            header = response.headers["content-disposition"]
-            _, params = cgi.parse_header(header)
-            filename = params.get("filename")
+    @task.python
+    def get_url_from_config(**context) -> str:
+        departement = context["params"]["departement"]
+        years = tuple(map(int, context["params"]["years"]))
+        dataset = context["params"]["dataset"]
 
-            path_on_bucket = f"{bucket_name}/{os.path.basename(filename)}"
-            with Container().s3().open(path_on_bucket, "wb") as distant_file:
-                distant_file.write(response.content)
+        if len(years) == 1:
+            years = years[0]
 
-            return path_on_bucket
+        print(departement, dataset, years)
 
-        @task.python
-        def download_ocsge_first_millesime() -> str:
-            return download_ocsge(urls[0])
+        url = configs.get(departement, {}).get(dataset, {}).get(years)
 
-        @task.python
-        def download_ocsge_second_millesime() -> str:
-            return download_ocsge(urls[1])
+        print(url)
+        return url
 
-        @task.python
-        def download_ocsge_diff() -> str:
-            return download_ocsge(urls[2])
+    @task.python
+    def download_ocsge(url) -> str:
+        response = requests.get(url, allow_redirects=True)
 
-        @task.python
-        def delete_tables_before():
-            conn = Container().postgres_conn()
-            cur = conn.cursor()
+        if not response.ok:
+            raise ValueError(f"Failed to download {url}. Response : {response.content}")
+        header = response.headers["content-disposition"]
+        _, params = cgi.parse_header(header)
+        filename = params.get("filename")
 
-            cur.execute("DROP TABLE IF EXISTS ocsge_diff;")
-            cur.execute("DROP TABLE IF EXISTS ocsge_occupation_du_sol;")
-            cur.execute("DROP TABLE IF EXISTS ocsge_zone_construite;")
+        path_on_bucket = f"{bucket_name}/{os.path.basename(filename)}"
+        with Container().s3().open(path_on_bucket, "wb") as distant_file:
+            distant_file.write(response.content)
 
-        @task.python(trigger_rule="all_done")
-        def delete_tables_after():
-            conn = Container().postgres_conn()
-            cur = conn.cursor()
+        return path_on_bucket
 
-            cur.execute("DROP TABLE IF EXISTS ocsge_diff;")
-            cur.execute("DROP TABLE IF EXISTS ocsge_occupation_du_sol;")
-            cur.execute("DROP TABLE IF EXISTS ocsge_zone_construite;")
+    @task.python
+    def ingest_ocsge(path, **context) -> int:
+        loaded_date = int(pendulum.now().timestamp())
+        departement = context["params"]["departement"]
+        years = context["params"]["years"]
+        print(loaded_date)
+        with Container().s3().open(path, "rb") as f:
+            extract_dir = tempfile.mkdtemp()
+            py7zr.SevenZipFile(f, mode="r").extractall(path=extract_dir)
 
-        @task.python
-        def ingest_ocsge(paths: list[str]) -> str:
-            for path in paths:
-                years = find_years_in_url(path)
-                print("find_years_in_url", years, path)
-                departement = find_departement_in_url(path)
+            for dirpath, _, filenames in os.walk(extract_dir):
+                for filename in filenames:
+                    if filename.endswith(".shp"):
+                        path = os.path.abspath(os.path.join(dirpath, filename))
+                        table_name = get_table_name(shapefile_name=filename)
+                        print("get_table_name", table_name)
+                        if not table_name:
+                            continue
+                        sql = multiline_string_to_single_line(
+                            get_normalization_sql(
+                                source_name=os.path.basename(path).replace(".shp", ""),
+                                table_name=table_name,
+                                years=years,
+                                departement=departement,
+                                loaded_date=loaded_date,
+                            )
+                        )
+                        cmd = [
+                            "ogr2ogr",
+                            "-dialect",
+                            "SQLITE",
+                            "-f",
+                            '"PostgreSQL"',
+                            f'"{Container().postgres_conn_str_ogr2ogr()}"',
+                            "-append",
+                            "-lco",
+                            "GEOMETRY_NAME=geom",
+                            "-a_srs",
+                            "EPSG:2154",
+                            "-nlt",
+                            "MULTIPOLYGON",
+                            "-nlt",
+                            "PROMOTE_TO_MULTI",
+                            "-nln",
+                            table_name,
+                            path,
+                            "--config",
+                            "PG_USE_COPY",
+                            "YES",
+                            "-sql",
+                            f'"{sql}"',
+                        ]
+                        BashOperator(
+                            task_id=f"ingest_{table_name}",
+                            bash_command=" ".join(cmd),
+                        ).execute(context={})
 
-                with Container().s3().open(path, "rb") as f:
-                    extract_dir = tempfile.mkdtemp()
-                    py7zr.SevenZipFile(f, mode="r").extractall(path=extract_dir)
+        return loaded_date
 
-                    for dirpath, _, filenames in os.walk(extract_dir):
-                        for filename in filenames:
-                            if filename.endswith(".shp"):
-                                path = os.path.abspath(os.path.join(dirpath, filename))
-                                table_name = get_table_name(shapefile_name=filename)
-                                print("get_table_name", table_name)
-                                if not table_name:
-                                    continue
-                                sql = multiline_string_to_single_line(
-                                    get_normalization_sql(
-                                        source_name=os.path.basename(path).replace(".shp", ""),
-                                        table_name=table_name,
-                                        years=years,
-                                        departement=departement,
-                                    )
-                                )
-                                cmd = [
-                                    "ogr2ogr",
-                                    "-dialect",
-                                    "SQLITE",
-                                    "-f",
-                                    '"PostgreSQL"',
-                                    f'"{Container().postgres_conn_str_ogr2ogr()}"',
-                                    "-overwrite",
-                                    "-lco",
-                                    "GEOMETRY_NAME=geom",
-                                    "-a_srs",
-                                    "EPSG:2154",
-                                    "-nlt",
-                                    "MULTIPOLYGON",
-                                    "-nlt",
-                                    "PROMOTE_TO_MULTI",
-                                    "-nln",
-                                    table_name,
-                                    path,
-                                    "--config",
-                                    "PG_USE_COPY",
-                                    "YES",
-                                    "-sql",
-                                    f'"{sql}"',
-                                ]
-                                BashOperator(
-                                    task_id=f"ingest_{table_name}",
-                                    bash_command=" ".join(cmd),
-                                ).execute(context={})
+    @task.bash(retries=0)
+    def dbt_test_ocsge(**context):
+        dataset = context["params"]["dataset"]
 
-        build_dbt = BashOperator(
-            task_id="build_dbt",
-            bash_command='cd "${AIRFLOW_HOME}/sql/sparte" && dbt build -s ocsge',
-            retries=0,
-        )
+        if dataset == "occupation_du_sol_et_zone_construite":
+            selector = "source:sparte.public.ocsge_occupation_du_sol source:sparte.public.ocsge_zone_construite"
+        elif dataset == "difference":
+            selector = "source:sparte.public.ocsge_diff"
+        else:
+            raise ValueError(f"Unknown dataset {dataset}")
 
-        @task.python
-        def export_table():
-            conn = Container().postgres_conn()
-            cur = conn.cursor()
+        return 'cd "${AIRFLOW_HOME}/sql/sparte" && dbt test -s ' + selector
 
-            filename = "occupation_du_sol.csv"
-            temp_file = f"/tmp/{filename}"
-            temp_archive = f"/tmp/{filename}.7z"
-            path_on_bucket = f"{bucket_name}/{filename}.7z"
+    @task.bash(retries=0, trigger_rule="all_success")
+    def dbt_run_ocsge(**context):
+        dataset = context["params"]["dataset"]
 
-            with open(temp_file, "w") as csv_file:
-                cur.copy_expert(
-                    "COPY (SELECT * FROM public_ocsge.occupation_du_sol) TO STDOUT WITH CSV HEADER", csv_file
-                )
+        if dataset == "occupation_du_sol_et_zone_construite":
+            selector = "source:sparte.public.ocsge_occupation_du_sol+ source:sparte.public.ocsge_zone_construite+"
+        elif dataset == "difference":
+            selector = "source:sparte.public.ocsge_diff+"
+        else:
+            raise ValueError(f"Unknown dataset {dataset}")
 
-            with py7zr.SevenZipFile(temp_archive, mode="w") as archive:
-                archive.write(temp_file, filename)
+        return 'cd "${AIRFLOW_HOME}/sql/sparte" && dbt run -s ' + selector
 
-            with open(temp_archive, "rb") as archive:
-                with Container().s3().open(path_on_bucket, "wb") as f:
-                    f.write(archive.read())
+    @task.python(trigger_rule="one_failed")
+    def rollback_append(loaded_date: float, **context):
+        dataset = context["params"]["dataset"]
 
-        paths = [
-            download_ocsge_diff(),
-            download_ocsge_first_millesime(),
-            download_ocsge_second_millesime(),
+        if dataset == "occupation_du_sol_et_zone_construite":
+            tables = ["ocsge_occupation_du_sol", "ocsge_zone_construite"]
+        elif dataset == "difference":
+            tables = ["ocsge_diff"]
+        else:
+            raise ValueError(f"Unknown dataset {dataset}")
+
+        conn = Container().postgres_conn()
+        cur = conn.cursor()
+
+        results = {}
+
+        for table in tables:
+            print(f"DELETE FROM public.{table} WHERE loaded_date = {loaded_date}")
+            cur.execute(f"DELETE FROM public.{table} WHERE loaded_date = {loaded_date}")
+            results[table] = cur.rowcount
+
+        conn.commit()
+        conn.close()
+
+        return results
+
+    @task.python
+    def export_table():
+        conn = Container().postgres_conn()
+        cur = conn.cursor()
+
+        filename = "occupation_du_sol.csv"
+        temp_file = f"/tmp/{filename}"
+        temp_archive = f"/tmp/{filename}.7z"
+        path_on_bucket = f"{bucket_name}/{filename}.7z"
+
+        with open(temp_file, "w") as csv_file:
+            cur.copy_expert("COPY (SELECT * FROM public_ocsge.occupation_du_sol) TO STDOUT WITH CSV HEADER", csv_file)
+
+        with py7zr.SevenZipFile(temp_archive, mode="w") as archive:
+            archive.write(temp_file, filename)
+
+        with open(temp_archive, "rb") as archive:
+            with Container().s3().open(path_on_bucket, "wb") as f:
+                f.write(archive.read())
+
+    url = get_url_from_config()
+    path = download_ocsge(url=url)
+    loaded_date = ingest_ocsge(path=path)
+    (
+        loaded_date
+        >> dbt_test_ocsge()
+        >> [
+            rollback_append(loaded_date=loaded_date),
+            dbt_run_ocsge(),
         ]
+    )
 
-        paths >> delete_tables_before()
 
-        ingest_ocsge(paths) >> build_dbt >> export_table() >> delete_tables_after()
-
-    config = {"urls": urls}
-
-    ocsge(config)
+ocsge()

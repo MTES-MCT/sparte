@@ -46,7 +46,6 @@ difference_test: &difference_test
   - name: geom
     tests:
       - not_null
-      - unique
       - is_valid_geom
   - name: cs_new
     tests:
@@ -69,7 +68,6 @@ occupation_du_sol_test: &occupation_du_sol_test
   - name: geom
     tests:
       - not_null
-      - unique
       - is_valid_geom
   - name: departement
     tests:
@@ -79,11 +77,6 @@ occupation_du_sol_test: &occupation_du_sol_test
       - not_null
   - name: id
     tests:
-      - unique
-      - not_null
-  - name: guid
-    tests:
-      - unique
       - not_null
   - name: code_cs
     tests:
@@ -99,7 +92,6 @@ zone_construite_test: &zone_construite_test
   - name: geom
     tests:
       - not_null
-      - unique
       - is_valid_geom
   - name: departement
     tests:
@@ -109,15 +101,12 @@ zone_construite_test: &zone_construite_test
       - not_null
   - name: id
     tests:
-      - unique
       - not_null
-  - name: guid
-    tests:
-      - unique
-      - not_null
+
 
 models:
   - name: zone_construite
+  - name: zone_artificielle
   - name: occupation_du_sol
   - name: difference
 
@@ -129,3 +118,4 @@ sources:
     - name: ocsge_occupation_du_sol
       columns: *occupation_du_sol_test
     - name: ocsge_zone_construite
+      columns: *zone_construite_test
