@@ -6,7 +6,7 @@ from .report import ProjectReportBaseView
 
 
 class AllChartsForPreview(ProjectReportBaseView):
-    template_name = "project/all_charts_for_preview.html"
+    template_name = "project/dev/all_charts_for_preview.html"
     breadcrumbs_title = "Rapport consommation"
 
     def get_context_data(self, **kwargs):
