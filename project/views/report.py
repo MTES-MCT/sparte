@@ -89,7 +89,7 @@ class ProjectReportBaseView(CacheMixin, GroupMixin, DetailView):
 
 class ProjectReportConsoView(ProjectReportBaseView):
     htmx_template_name = "project/components/dashboard/consommation.html"
-    full_template_name = "project/page/consommation.html"
+    full_template_name = "project/pages/consommation.html"
     breadcrumbs_title = "Rapport consommation"
 
     def get_context_data(self, **kwargs):
@@ -147,7 +147,7 @@ class ProjectReportConsoView(ProjectReportBaseView):
 
 class ProjectReportDicoverOcsgeView(OcsgeCoverageMixin, ProjectReportBaseView):
     htmx_template_name = "project/components/dashboard/ocsge.html"
-    full_template_name = "project/page/ocsge.html"
+    full_template_name = "project/pages/ocsge.html"
     breadcrumbs_title = "Découvrir l'OCS GE"
 
     def get_context_data(self, **kwargs):
@@ -205,7 +205,7 @@ class ProjectReportDicoverOcsgeView(OcsgeCoverageMixin, ProjectReportBaseView):
 
 class ProjectReportSynthesisView(ProjectReportBaseView):
     htmx_template_name = "project/components/dashboard/synthese.html"
-    full_template_name = "project/page/synthese.html"
+    full_template_name = "project/pages/synthese.html"
     breadcrumbs_title = "Synthèse consommation d'espaces et artificialisation"
 
     def get_context_data(self, **kwargs):
@@ -237,7 +237,7 @@ class ProjectReportSynthesisView(ProjectReportBaseView):
 
 class ProjectReportLocalView(ProjectReportBaseView):
     htmx_template_name = "project/components/dashboard/rapport_local.html"
-    full_template_name = "project/page/rapport_local.html"
+    full_template_name = "project/pages/rapport_local.html"
     breadcrumbs_title = "Rapport triennal local"
 
     def get_context_data(self, **kwargs):
@@ -254,7 +254,7 @@ class ProjectReportLocalView(ProjectReportBaseView):
 
 class ProjectReportImperView(OcsgeCoverageMixin, ProjectReportBaseView):
     htmx_template_name = "project/components/dashboard/impermeabilisation.html"
-    full_template_name = "project/page/impermeabilisation.html"
+    full_template_name = "project/pages/impermeabilisation.html"
     breadcrumbs_title = "Imperméabilisation"
 
     def get_context_data(self, **kwargs):
@@ -290,7 +290,7 @@ class ProjectReportImperView(OcsgeCoverageMixin, ProjectReportBaseView):
 
 class ProjectReportArtifView(OcsgeCoverageMixin, ProjectReportBaseView):
     htmx_template_name = "project/components/dashboard/artificialisation.html"
-    full_template_name = "project/page/artificialisation.html"
+    full_template_name = "project/pages/artificialisation.html"
     breadcrumbs_title = "Artificialisation"
 
     def get_context_data(self, **kwargs):
@@ -424,7 +424,7 @@ class ProjectReportArtifView(OcsgeCoverageMixin, ProjectReportBaseView):
 
 class ProjectReportDownloadView(BreadCrumbMixin, CreateView):
     model = Request
-    template_name = "project/report_download.html"
+    template_name = "project/components/forms/report_download.html"
     fields = [
         "first_name",
         "last_name",
@@ -489,7 +489,7 @@ class ProjectReportDownloadView(BreadCrumbMixin, CreateView):
 
 class ProjectReportTarget2031View(ProjectReportBaseView):
     htmx_template_name = "project/components/dashboard/trajectoires.html"
-    full_template_name = "project/page/trajectoires.html"
+    full_template_name = "project/pages/trajectoires.html"
     breadcrumbs_title = "Rapport trajectoires"
 
     def get_context_data(self, **kwargs):
@@ -510,7 +510,7 @@ class ProjectReportTarget2031View(ProjectReportBaseView):
 
 
 class ProjectReportTarget2031GraphView(ProjectReportBaseView):
-    template_name = "project/partials/report_target_2031_graphic.html"
+    template_name = "project/components/charts/report_target_2031_graphic.html"
 
     def get_context_data(self, **kwargs) -> Dict[str, Any]:
         diagnostic = self.get_object()
@@ -531,7 +531,7 @@ class ProjectReportTarget2031GraphView(ProjectReportBaseView):
 
 class ProjectReportUrbanZonesView(OcsgeCoverageMixin, ProjectReportBaseView):
     htmx_template_name = "project/components/dashboard/gpu.html"
-    full_template_name = "project/page/gpu.html"
+    full_template_name = "project/pages/gpu.html"
     breadcrumbs_title = "Zonages d'urbanisme"
 
     def get_context_data(self, **kwargs):
@@ -547,7 +547,7 @@ class ProjectReportUrbanZonesView(OcsgeCoverageMixin, ProjectReportBaseView):
 
 
 class DownloadWordView(TemplateView):
-    template_name = "project/error_download_word.html"
+    template_name = "project/pages/error_download_word.html"
 
     def get(self, request, *args, **kwargs):
         """Redirect vers le fichier word du diagnostic si: le diagnostic est public ou est associé à l'utilisateur
@@ -570,7 +570,7 @@ class DownloadWordView(TemplateView):
 class ConsoRelativeSurfaceChart(CacheMixin, UserQuerysetOrPublicMixin, DetailView):
     context_object_name = "project"
     queryset = Project.objects.all()
-    template_name = "project/partials/surface_comparison_conso.html"
+    template_name = "project/components/charts/surface_comparison_conso.html"
 
     def get_context_data(self, **kwargs):
         project: Project = self.get_object()
@@ -602,7 +602,7 @@ class ArtifZoneUrbaView(CacheMixin, StandAloneMixin, DetailView):
 
     queryset = ZoneUrba.objects.all()
     context_object_name = "zone_urba"
-    template_name = "project/partials/artif_zone_urba.html"
+    template_name = "project/components/charts/artif_zone_urba.html"
 
     def get_object(self) -> QuerySet[Any]:
         return ZoneUrba.objects.get(checksum=self.kwargs["checksum"])
@@ -628,7 +628,7 @@ class ArtifZoneUrbaView(CacheMixin, StandAloneMixin, DetailView):
 
 
 class ArtifNetChart(CacheMixin, TemplateView):
-    template_name = "project/partials/artif_net_chart.html"
+    template_name = "project/components/charts/artif_net_chart.html"
 
     def get(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         self.diagnostic = Project.objects.get(pk=self.kwargs["pk"])
@@ -690,7 +690,7 @@ class ArtifNetChart(CacheMixin, TemplateView):
 
 
 class ArtifDetailCouvChart(CacheMixin, TemplateView):
-    template_name = "project/partials/artif_detail_couv_chart.html"
+    template_name = "project/components/charts/artif_detail_couv_chart.html"
 
     def get(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         self.diagnostic = Project.objects.get(pk=self.kwargs["pk"])
@@ -773,7 +773,7 @@ class ArtifDetailCouvChart(CacheMixin, TemplateView):
 
 
 class ArtifDetailUsaChart(CacheMixin, TemplateView):
-    template_name = "project/partials/artif_detail_usage_chart.html"
+    template_name = "project/components/charts/artif_detail_usage_chart.html"
 
     def get(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         self.diagnostic = Project.objects.get(pk=self.kwargs["pk"])
@@ -872,7 +872,7 @@ class ProjectReportGpuView(ProjectReportBaseView):
 
 
 class ProjectReportGpuZoneSynthesisTable(CacheMixin, StandAloneMixin, TemplateView):
-    template_name = "project/partials/zone_urba_aggregated_table.html"
+    template_name = "project/components/tables/zone_urba_aggregated_table.html"
 
     @cached_property
     def diagnostic(self):
