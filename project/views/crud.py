@@ -53,7 +53,7 @@ class ClaimProjectView(LoginRequiredMixin, RedirectView):
 
 
 class CreateProjectViews(BreadCrumbMixin, FormView):
-    template_name = "project/create/advanced_search.html"
+    template_name = "project/pages/advanced_search.html"
     form_class = SelectTerritoryForm
 
     def get_context_breadcrumbs(self):
@@ -107,7 +107,7 @@ class CreateProjectViews(BreadCrumbMixin, FormView):
 
 class ProjectUpdateView(GroupMixin, UpdateView):
     model = Project
-    template_name = "project/page/update.html"
+    template_name = "project/pages/update.html"
     form_class = UpdateProjectForm
     context_object_name = "project"
 
@@ -149,7 +149,7 @@ class ProjectUpdateView(GroupMixin, UpdateView):
 
 class ProjectSetTarget2031View(UpdateView):
     model = Project
-    template_name = "project/partials/report_set_target_2031.html"
+    template_name = "project/components/forms/report_set_target_2031.html"
     fields = ["target_2031"]
     context_object_name = "diagnostic"
 
@@ -163,7 +163,7 @@ class ProjectSetTarget2031View(UpdateView):
 
 class SetProjectPeriodView(GroupMixin, RedirectURLMixin, UpdateView):
     model = Project
-    template_name = "project/partials/report_set_period.html"
+    template_name = "project/components/forms/report_set_period.html"
     form_class = UpdateProjectPeriodForm
     context_object_name = "diagnostic"
 
@@ -180,7 +180,7 @@ class SetProjectPeriodView(GroupMixin, RedirectURLMixin, UpdateView):
 
 class ProjectDeleteView(GroupMixin, LoginRequiredMixin, DeleteView):
     model = Project
-    template_name = "project/page/delete.html"
+    template_name = "project/pages/delete.html"
     success_url = reverse_lazy("project:list")
 
     def get_context_breadcrumbs(self):
@@ -191,7 +191,7 @@ class ProjectDeleteView(GroupMixin, LoginRequiredMixin, DeleteView):
 
 class ProjectAddLookALike(GroupMixin, RedirectURLMixin, FormMixin, DetailView):
     model = Project
-    template_name = "project/page/add_territoire_de_comparaison.html"
+    template_name = "project/pages/add_territoire_de_comparaison.html"
     context_object_name = "project"
     form_class = KeywordForm
 
@@ -276,7 +276,7 @@ class ProjectRemoveLookALike(GroupMixin, RedirectURLMixin, DetailView):
 
 
 class ProjectListView(GroupMixin, LoginRequiredMixin, ListView):
-    template_name = "project/page/list.html"
+    template_name = "project/pages/list.html"
     context_object_name = "projects"  # override to add an "s"
 
     def get_queryset(self):
@@ -285,7 +285,7 @@ class ProjectListView(GroupMixin, LoginRequiredMixin, ListView):
 
 class SplashScreenView(GroupMixin, DetailView):
     model = Project
-    template_name = "project/create/splash_screen.html"
+    template_name = "project/pages/splash_screen.html"
     context_object_name = "diagnostic"
 
     def get_context_breadcrumbs(self):
@@ -298,7 +298,7 @@ class SplashScreenView(GroupMixin, DetailView):
 
 class SplashProgressionView(GroupMixin, DetailView):
     model = Project
-    template_name = "project/create/fragment_splash_progress.html"
+    template_name = "project/components/widgets/fragment_splash_progress.html"
     context_object_name = "diagnostic"
 
     def dispatch(self, *args, **kwargs):
