@@ -109,6 +109,7 @@ models:
   - name: zone_artificielle
   - name: occupation_du_sol
   - name: difference
+  - name: occupation_du_sol_zonage_urbanisme
 
 sources:
   - name: public

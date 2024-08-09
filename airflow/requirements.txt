@@ -8,3 +8,5 @@ apache-airflow-providers-postgres==5.11.2
 requests
 dbt-core
 dbt-postgres
+tqdm==4.66.5
+pysftp==0.2.9

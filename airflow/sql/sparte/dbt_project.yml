@@ -33,10 +33,7 @@ models:
   sparte:
     ocsge:
       +schema: ocsge
-      +indexes:
-        - columns: [geom]
-          type: gist
-
     admin_express:
       +schema: admin_express
-    # Config indicated by + and applies to all files under models/example/
+    gpu:
+      +schema: gpu

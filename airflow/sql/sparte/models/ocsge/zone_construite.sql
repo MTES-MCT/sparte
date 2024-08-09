@@ -12,7 +12,11 @@ WITH latest_loaded_date AS (
         departement
 )
 SELECT
-    ocsge.*
+    ocsge.loaded_date,
+    ocsge.id,
+    ocsge.year,
+    ocsge.departement,
+    ocsge.geom
 FROM
     {{ source('public', 'ocsge_zone_construite') }} as ocsge
 JOIN

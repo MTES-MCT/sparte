@@ -88,7 +88,7 @@ def ocsge_diff_normalization_sql(years: list[int], departement: str, source_name
         {fields['cs_old']} AS cs_old,
         {fields['us_new']} AS us_new,
         {fields['us_old']} AS us_old,
-        {departement} AS departement,
+        cast({departement} as text) AS departement,
         GEOMETRY as geom
     FROM
         {source_name}
@@ -107,7 +107,7 @@ def ocsge_occupation_du_sol_normalization_sql(
         code_cs AS code_cs,
         code_us AS code_us,
         GEOMETRY AS geom,
-        {departement} AS departement,
+        cast({departement} as text) AS departement,
         {years[0]} AS year
     FROM
         {source_name}
@@ -124,7 +124,7 @@ def ocsge_zone_construite_normalization_sql(
         {loaded_date} AS loaded_date,
         ID AS id,
         {years[0]} AS year,
-        {departement} AS departement,
+        cast({departement} as text) AS departement,
         GEOMETRY AS geom
     FROM
         {source_name}
@@ -221,6 +221,18 @@ configs = {  # noqa: E501
                 2018,
                 2021,
             ): "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0_DIFF_SHP_LAMB93_D075_2018-2021/OCS-GE_2-0_DIFF_SHP_LAMB93_D075_2018-2021.7z",  # noqa: E501
+        },
+    },
+    "32": {
+        "occupation_du_sol_et_zone_construite": {
+            2016: "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0__SHP_LAMB93_D032_2016-01-01/OCS-GE_2-0__SHP_LAMB93_D032_2016-01-01.7z",  # noqa: E501
+            2019: "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0__SHP_LAMB93_D032_2019-01-01/OCS-GE_2-0__SHP_LAMB93_D032_2019-01-01.7z",  # noqa: E501
+        },
+        "difference": {
+            (
+                2016,
+                2019,
+            ): "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0__SHP_LAMB93_D032_DIFF_2016-2019/OCS-GE_2-0__SHP_LAMB93_D032_DIFF_2016-2019.7z",  # noqa: E501
         },
     },
 }

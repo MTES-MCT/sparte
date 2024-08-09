@@ -1,5 +1,6 @@
 from os import getenv
 
+import pysftp
 from airflow.hooks.base import BaseHook
 from dependency_injector import containers, providers
 from psycopg2 import connect
@@ -38,4 +39,17 @@ class Container(containers.DeclarativeContainer):
         password=getenv("DBT_DB_PASSWORD"),
         host=getenv("DBT_DB_HOST"),
         port=getenv("DBT_DB_PORT"),
+    )
+
+    cnopts = pysftp.CnOpts()
+    cnopts.hostkeys = None
+
+    gpu_sftp = providers.Factory(
+        provides=pysftp.Connection,
+        host=getenv("GPU_SFTP_HOST"),
+        username=getenv("GPU_SFTP_USER"),
+        password=getenv("GPU_SFTP_PASSWORD"),
+        port=int(getenv("GPU_SFTP_PORT")),
+        default_path="/pub/export-wfs/latest/",
+        cnopts=cnopts,
     )

@@ -5,6 +5,7 @@
         materialized='table',
         indexes=[
             {'columns': ['departement','year'], 'type': 'btree'},
+            {'columns': ['departement'], 'type': 'btree'},
             {'columns': ['geom'], 'type': 'gist'}
         ]
     )
@@ -22,10 +23,16 @@ WITH latest_loaded_date AS (
         departement
 )
 SELECT
-    ocsge.*,
+    ocsge.loaded_date,
+    ocsge.id,
+    ocsge.code_cs,
+    ocsge.code_us,
+    ocsge.departement,
+    ocsge.year,
     ST_area(geom) AS surface,
     {{ is_impermeable('code_cs') }} as is_impermeable,
-    {{ is_artificial('code_cs', 'code_us') }} as is_artificial
+    {{ is_artificial('code_cs', 'code_us') }} as is_artificial,
+    ocsge.geom
 FROM
     {{ source('public', 'ocsge_occupation_du_sol') }} AS ocsge
 JOIN

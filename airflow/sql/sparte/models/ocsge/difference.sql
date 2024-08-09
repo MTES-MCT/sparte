@@ -15,7 +15,15 @@ WITH latest_loaded_date AS (
         departement
 )
 SELECT
-    *,
+    loaded_date,
+    year_old,
+    year_new,
+    cs_new,
+    cs_old,
+    us_new,
+    us_old,
+    departement,
+    surface,
     CASE
         WHEN
             old_is_imper = false AND
@@ -42,7 +50,8 @@ SELECT
             old_is_artif = true AND
             new_is_artif = false THEN true
         ELSE false
-    END AS new_not_artificial
+    END AS new_not_artificial,
+    geom
 FROM (
     SELECT
         ocsge.*,

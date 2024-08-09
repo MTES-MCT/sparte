@@ -2,7 +2,7 @@
 version: 2
 
 models:
-  - name: commune_with_checksum
+  - name: commune
 
 sources:
   - name: public
