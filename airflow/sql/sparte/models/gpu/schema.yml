@@ -1,0 +1,10 @@
+
+version: 2
+
+models:
+  - name: zonage_urbanisme
+
+sources:
+  - name: public
+    tables:
+    - name: zone_urba
