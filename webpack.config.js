@@ -3,12 +3,18 @@ const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPl
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const ESLintPlugin = require('eslint-webpack-plugin');
+const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 
 const common = {
     entry: './assets/scripts/index.js',
     resolve: {
-        extensions: [".js", ".jsx", ".ts", ".tsx"]
-      },
+        extensions: [".js", ".jsx", ".ts", ".tsx"],
+        plugins: [
+            new TsconfigPathsPlugin({
+                configFile: path.resolve(__dirname, 'tsconfig.json')
+            })
+        ]
+    },
     output: {
         'path': path.resolve(__dirname, 'static'),
         'filename': 'assets/scripts/bundle.js',
@@ -69,7 +75,7 @@ const common = {
             extensions: ['js'],
             emitWarning: true,
             fix: true
-        }),
+        })
     ]
 }
 
