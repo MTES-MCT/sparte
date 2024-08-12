@@ -25,7 +25,6 @@ SELECT
     datappro as date_approbation,
     datvalid as date_validation,
     idurba as id_document_urbanisme,
-    ST_Area(geom) as surface,
-    geom
+    ST_MakeValid(ST_transform(geom, 2154)) as geom
  FROM
     {{ source('public', 'zone_urba') }}

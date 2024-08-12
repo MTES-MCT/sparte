@@ -6,7 +6,7 @@ sparte:
       pass: "{{ env_var('DBT_DB_PASSWORD') }}"
       port: "{{ env_var('DBT_DB_PORT') | as_number }}"
       schema: "{{ env_var('DBT_DB_SCHEMA') }}"
-      threads: 1
+      threads: 2
       type: "postgres"
       user: "{{ env_var('DBT_DB_USER') }}"
   target: dev
