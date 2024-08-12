@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 
 interface MenuItem {
@@ -8,12 +9,7 @@ interface MenuItem {
     icon?: string;
 }
 
-interface SidebarProps {
-    menuItems: MenuItem[];
-    currentUrl: string;
-}
-
-const SidebarContainer = styled.nav`
+const NavbarContainer = styled.nav`
     width: 100%;
     height: 100%;
     display: flex;
@@ -90,31 +86,26 @@ const Icon = styled.i`
     margin-right: 0.7em;
 `;
 
-// const BottomSection = styled.div`
-//     margin: 1em;
-//     padding: 3em 1em;
-//     border: 2px solid #4318FF;
-//     border-radius: 8px;
-//     text-align: center;
-//     font-size: 0.9em;
-//     color: #fff;
-//     display: flex;
-//     align-items: center;
-//     justify-content: center;
+const Navbar: React.FC = () => {
+    const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
+    const [currentUrl, setCurrentUrl] = useState<string>('');
+    const location = useLocation();
+    const path = location.pathname;
+    const projectIdMatch = path.match(/\/project\/(\d+)/);
+    const projectId = projectIdMatch ? projectIdMatch[1] : null;
 
-//     i {
-//         margin-right: 0.5em;
-//     }
-// `;
-
-const Sidebar: React.FC<SidebarProps> = ({ menuItems, currentUrl }) => {
-    const [activeUrl, setActiveUrl] = useState<string | null>(currentUrl);
-
-    const handleClick = (url?: string) => {
-        if (url) {
-            setActiveUrl(url);
-        }
-    };
+    useEffect(() => {
+        const getNavbarData = () => {
+            const scriptElement = document.getElementById('navbar-data');
+            if (scriptElement) {
+                const { menuItems, currentUrl } = JSON.parse(scriptElement.textContent || '{}');
+                setMenuItems(menuItems);
+                setCurrentUrl(currentUrl);
+            }
+        };
+        
+        getNavbarData();
+    }, []);
 
     const renderMenuItems = (items: MenuItem[], isSubMenu: boolean = false) => (
         <MenuList role="tree" aria-label="Sidebar menu">
@@ -122,26 +113,22 @@ const Sidebar: React.FC<SidebarProps> = ({ menuItems, currentUrl }) => {
                 <MenuItemContainer
                     key={item.label}
                     role="treeitem"
-                    className={`${activeUrl === item.url ? 'active' : ''} ${isSubMenu ? '' : 'is-menu'}`}
+                    className={`${location.pathname === item.url ? 'active' : ''} ${isSubMenu ? '' : 'is-menu'}`}
                 >
                     {item.url ? (
-                        <a 
-                            href={item.url}
-                            hx-get={item.url}
-                            aria-current={activeUrl === item.url ? 'page' : undefined}
-                            hx-target="#htmx-dashboard-content"
-                            hx-push-url="true"
-                            onClick={() => handleClick(item.url)}
+                        <Link 
+                            to={item.url.replace(':projectId', projectId || '')}
+                            aria-current={currentUrl === item.url ? 'page' : undefined}
                         >
-                            {!isSubMenu && item.icon && <Icon className={item.icon} />}
+                            {item.icon && <Icon className={`bi ${item.icon}`} />}
                             {item.label}
-                        </a>
+                        </Link>
                     ) : (
                         <span
                             role="button"
                             aria-haspopup="true"
                         >
-                            {!isSubMenu && item.icon && <Icon className={item.icon} />}
+                            {item.icon && <Icon className={`bi ${item.icon}`} />}
                             {item.label}
                         </span>
                     )}
@@ -156,19 +143,11 @@ const Sidebar: React.FC<SidebarProps> = ({ menuItems, currentUrl }) => {
     );
 
     return (
-        <SidebarContainer aria-label="Sidebar">
+        <NavbarContainer aria-label="Sidebar">
             {renderMenuItems(menuItems)}
-            {/* <BottomSection>
-                <Icon className="bi bi-tree-fill" />
-                <p className="fr-logo">
-                    <span className="fr-logo__text">
-                        République
-                        Française
-                    </span>
-                </p>
-            </BottomSection> */}
-        </SidebarContainer>
+        </NavbarContainer>
     );
 };
 
-export default Sidebar;
+export default Navbar;
+
