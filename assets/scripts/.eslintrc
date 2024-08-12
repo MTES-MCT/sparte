@@ -27,5 +27,10 @@
         "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }],
         "no-nested-ternary": "off",
         "no-new": "off"
+    },
+    "settings": {
+        "react": {
+          "version": "detect"
+        }
     }
 }
