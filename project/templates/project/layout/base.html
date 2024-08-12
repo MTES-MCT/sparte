@@ -8,87 +8,73 @@
 {% sri_static "highcharts/js/exporting.js" %}
 {% sri_static "highcharts/js/sankey.js" %}
 {% sri_static "highcharts/js/dependency-wheel.js" %}
-
-<meta name="htmx-config" content='{"inlineScriptNonce":"[NONCE_PLACEHOLDER]"}'>
 {% endblock %}
 
 {% block content %}
-<div class="dashboard-wrapper">
-    <div id="react-dashboard-sidebar" class="dashboard-sidebar"></div>
-    <script id="sidebar-data" type="application/json">
-        {
-            "menuItems": [
-                {
-                    "label": "Synthèse",
-                    "url": "{% url 'project:report_synthesis' project.pk %}",
-                    "icon": "bi bi-grid-1x2-fill"
-                },
-                {
-                    "label": "Espaces NAF",
-                    "icon": "bi bi-tree-fill",
-                    "subMenu": [
-                        {
-                            "label": "Consommation",
-                            "url": "{% url 'project:report_conso' project.pk %}"
-                        },
-                        {
-                            "label": "Trajectoires",
-                            "url": "{% url 'project:report_target_2031' project.pk %}"
-                        }
-                    ]
-                },
-                {
-                    "label": "OCS GE",
-                    "icon": "bi bi-bar-chart-fill",
-                    "subMenu": [
-                        {
-                            "label": "Découvrir l'OCS GE",
-                            "url": "{% url 'project:report_discover' project.pk %}"
-                        },
-                        {
-                            "label": "Artificialisation",
-                            "url": "{% url 'project:report_artif' project.pk %}"
-                        },
-                        {
-                            "label": "Imperméabilisation",
-                            "url": "{% url 'project:report_imper' project.pk %}"
-                        }
-                    ]
-                },
-                {
-                    "label": "Les attendus de la loi C&R",
-                    "icon": "bi bi-list-check",
-                    "subMenu": [
-                        {
-                            "label": "Rapport local",
-                            "url": "{% url 'project:report_local' project.pk %}"
-                        }
-                    ]
-                },
-                {
-                    "label": "Zonages d'urbanisme",
-                    "icon": "bi bi-x-diamond",
-                    "url": "{% url 'project:report_urban_zones' project.pk %}"
-                },
-                {
-                    "label": "Paramètres",
-                    "icon": "bi bi-gear-fill",
-                    "url": "{% url 'project:update' project.pk %}"
-                }
-            ],
-            "currentUrl": "{{ request.path }}"
-        }
-    </script>
-    <div id="htmx-dashboard-content" class="dashboard-content">
-        {% block dashboard_content %}
-        {% endblock %}
-    </div>
-</div>
+<div id="react-root">Chargement...</div>
+<script id="navbar-data" type="application/json">
+    {
+        "menuItems": [
+            {
+                "label": "Synthèse",
+                "url": "{% url 'project:report_synthesis' project.pk %}",
+                "icon": "bi bi-grid-1x2-fill"
+            },
+            {
+                "label": "Espaces NAF",
+                "icon": "bi bi-tree-fill",
+                "subMenu": [
+                    {
+                        "label": "Consommation",
+                        "url": "{% url 'project:report_conso' project.pk %}"
+                    },
+                    {
+                        "label": "Trajectoires",
+                        "url": "{% url 'project:report_target_2031' project.pk %}"
+                    }
+                ]
+            },
+            {
+                "label": "OCS GE",
+                "icon": "bi bi-bar-chart-fill",
+                "subMenu": [
+                    {
+                        "label": "Découvrir l'OCS GE",
+                        "url": "{% url 'project:report_discover' project.pk %}"
+                    },
+                    {
+                        "label": "Artificialisation",
+                        "url": "{% url 'project:report_artif' project.pk %}"
+                    },
+                    {
+                        "label": "Imperméabilisation",
+                        "url": "{% url 'project:report_imper' project.pk %}"
+                    }
+                ]
+            },
+            {
+                "label": "Les attendus de la loi C&R",
+                "icon": "bi bi-list-check",
+                "subMenu": [
+                    {
+                        "label": "Rapport local",
+                        "url": "{% url 'project:report_local' project.pk %}"
+                    }
+                ]
+            },
+            {
+                "label": "Zonages d'urbanisme",
+                "icon": "bi bi-x-diamond",
+                "url": "{% url 'project:report_urban_zones' project.pk %}"
+            },
+            {
+                "label": "Paramètres",
+                "icon": "bi bi-gear-fill",
+                "url": "{% url 'project:update' project.pk %}"
+            }
+        ]
+    }
+</script>
 {% endblock content %}
-
-{% block bodyend %}
-{% sri_static "project/scripts/highcharts-custom-buttons.js" %}
-{% sri_static "project/scripts/fr-callout-read-more.js" %}
-{% endblock bodyend %}
 
 {% block footer %}{% endblock footer %}
