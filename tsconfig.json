@@ -15,6 +15,7 @@
             "@components/*": ["components/*"],
             "@hooks/*": ["hooks/*"],
             "@store/*": ["store/*"],
+            "@services/*": ["services/*"],
         }
     },
 }
