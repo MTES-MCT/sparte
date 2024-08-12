@@ -43,13 +43,13 @@ class Container(containers.DeclarativeContainer):
         port=getenv("DBT_DB_PORT"),
     )
 
-    gdal_prod_conn = providers.Factory(
+    gdal_app_conn = providers.Factory(
         PgConnectionString,
-        dbname="alexis_test",
-        user=getenv("DBT_DB_USER"),
-        password=getenv("DBT_DB_PASSWORD"),
-        host=getenv("DBT_DB_HOST"),
-        port=getenv("DBT_DB_PORT"),
+        dbname=getenv("APP_DB_NAME"),
+        user=getenv("APP_DB_USER"),
+        password=getenv("APP_DB_PASSWORD"),
+        host=getenv("APP_DB_HOST"),
+        port=getenv("APP_DB_PORT"),
     )
 
     postgres_conn: connection = providers.Factory(

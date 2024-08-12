@@ -1,23 +1,3 @@
-"""
-## Astronaut ETL example DAG
-
-This DAG queries the list of astronauts currently in space from the
-Open Notify API and prints each astronaut's name and flying craft.
-
-There are two tasks, one to get the data from the API and save the results,
-and another to print the results. Both tasks are written in Python using
-Airflow's TaskFlow API, which allows you to easily turn Python functions into
-Airflow tasks, and automatically infer dependencies and pass data.
-
-The second task uses dynamic task mapping to create a copy of the task for
-each Astronaut in the list retrieved from the API. This list will change
-depending on how many Astronauts are in space, and the DAG will adjust
-accordingly each time it runs.
-
-For more explanation and getting started instructions, see our Write your
-first DAG tutorial: https://docs.astronomer.io/learn/get-started-with-airflow
-"""
-
 from airflow.decorators import dag, task
 from dependencies.container import Container
 from gdaltools import ogr2ogr
@@ -29,21 +9,38 @@ from pendulum import datetime
     start_date=datetime(2024, 1, 1),
     schedule="@once",
     catchup=False,
-    doc_md=__doc__,
     default_args={"owner": "Alexis Athlani", "retries": 3},
     tags=["GPU"],
 )
-def parquet_test():
+def copy_to_prod():
     @task.python
     def export() -> str:
         ogr = ogr2ogr()
-        ogr.config_options["PG_USE_COPY"] = "YES"
-        ogr.layer_creation_options["SPATIAL_INDEX"] = "YES"
-        ogr.set_input(Container().gdal_dw_conn(), table_name="departement", srs="EPSG:2154")
-        ogr.set_output(Container().gdal_prod_conn(), table_name="prod_departement", srs="EPSG:4326")
+        ogr.config_options = {"PG_USE_COPY": "YES"}
+
+        source_schema = "public_ocsge"
+        source_table_name = "occupation_du_sol"
+        source_sql = f"SELECT * FROM {source_schema}.{source_table_name} WHERE departement = '75'"
+
+        ogr.set_input(
+            Container().gdal_dw_conn(schema=source_schema),
+            table_name=source_table_name,
+            srs="EPSG:2154",
+        )
+        ogr.set_sql(source_sql)
+
+        destination_table_name = "prod_occupation_du_sol"
+
+        ogr.set_output(
+            Container().gdal_app_conn(),
+            table_name=destination_table_name,
+            srs="EPSG:4326",
+        )
+        ogr.set_output_mode(layer_mode=ogr.MODE_LAYER_APPEND)
+
         ogr.execute()
 
     export()
 
 
-parquet_test()
+copy_to_prod()
