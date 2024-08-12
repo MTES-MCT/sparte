@@ -2,7 +2,7 @@ import React, { useRef, useEffect, useState, useMemo } from 'react';
 import * as Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
 import HighchartsMap from 'highcharts/modules/map';
-import { useGetDepartementListQuery } from '../services/api.js';
+import { useGetDepartementListQuery } from '@services/api.js';
 
 HighchartsMap(Highcharts);
 
