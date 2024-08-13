@@ -7,9 +7,13 @@ export const djangoApi = createApi({
     getDepartementList: builder.query({
       query: () => '/public/departements/',
     }),
+    getProject: builder.query({
+      query: (id) => `/projects/${id}/`,
+    }),
   }),
 })
 
 export const {
   useGetDepartementListQuery,
+  useGetProjectQuery,
 } = djangoApi
