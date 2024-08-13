@@ -86,6 +86,17 @@ class ProjectReportBaseView(CacheMixin, GroupMixin, DetailView):
         breadcrumbs.append({"href": None, "title": self.breadcrumbs_title})
         return breadcrumbs
 
+    def get_context_data(self, **kwargs):
+        project: Project = self.get_object()
+
+        kwargs.update(
+            {
+                "project_id": project.id,
+            }
+        )
+
+        return super().get_context_data(**kwargs)
+
 
 class ProjectReportConsoView(ProjectReportBaseView):
     partial_template_name = "project/components/dashboard/consommation.html"
