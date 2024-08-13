@@ -8,7 +8,7 @@ export const djangoApi = createApi({
       query: () => '/public/departements/',
     }),
     getProject: builder.query({
-      query: (id) => `/projects/${id}/`,
+      query: (id) => `/project/${id}/detail`,
     }),
   }),
 })

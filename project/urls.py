@@ -2,7 +2,7 @@ from django.urls import path
 from rest_framework import routers
 
 from . import views
-from .api_views import EmpriseViewSet, ProjectViewSet
+from .api_views import EmpriseViewSet, ProjectDetailView, ProjectViewSet
 
 app_name = "project"
 
@@ -22,6 +22,7 @@ urlpatterns = [
     # CRUD
     path("", views.ProjectListView.as_view(), name="list"),
     path("<int:pk>/", views.ProjectReportSynthesisView.as_view(), name="detail"),
+    path("<int:pk>/detail", ProjectDetailView.as_view(), name="project-detail"),
     path("<int:pk>/ajouter", views.ClaimProjectView.as_view(), name="claim"),
     path("<int:pk>/edit", views.ProjectUpdateView.as_view(), name="update"),
     path("<int:pk>/delete/", views.ProjectDeleteView.as_view(), name="delete"),
