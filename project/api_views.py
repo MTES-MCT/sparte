@@ -1,8 +1,9 @@
 """Public data API views."""
+
 from django.contrib.gis.geos import Polygon
 from django.db.models import F, OuterRef, Subquery
 from django.http import JsonResponse
-from rest_framework import viewsets
+from rest_framework import generics, viewsets
 from rest_framework.decorators import action
 from rest_framework.exceptions import ParseError
 
@@ -11,7 +12,11 @@ from public_data.models.gpu import ZoneUrba
 from public_data.serializers import ZoneUrbaSerializer
 
 from .models import Emprise, Project
-from .serializers import EmpriseSerializer, ProjectCommuneSerializer
+from .serializers import (
+    EmpriseSerializer,
+    ProjectCommuneSerializer,
+    ProjectDetailSerializer,
+)
 from .views.mixins import UserQuerysetOrPublicMixin
 
 
@@ -32,6 +37,11 @@ class EmpriseViewSet(viewsets.ReadOnlyModelViewSet):
             raise ParseError("id parameter must be an int.")
 
         return self.queryset.filter(**{self.filter_field: id})
+
+
+class ProjectDetailView(generics.RetrieveAPIView):
+    queryset = Project.objects.all()
+    serializer_class = ProjectDetailSerializer
 
 
 class ProjectViewSet(UserQuerysetOrPublicMixin, viewsets.ReadOnlyModelViewSet):
