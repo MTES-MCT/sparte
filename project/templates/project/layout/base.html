@@ -11,7 +11,7 @@
 {% endblock %}
 
 {% block content %}
-<div id="react-root">Chargement...</div>
+<div id="react-root" data-project-id="{{ project_id|safe }}">Chargement...</div>
 <script id="navbar-data" type="application/json">
     {
         "menuItems": [

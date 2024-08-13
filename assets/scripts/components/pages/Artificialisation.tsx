@@ -12,8 +12,6 @@ const Synthese: React.FC = () => {
 
     return (
         <div>
-            <h1>Artif</h1>
-            <div>Total Surface</div>
             {/* Autres composants React */}
             <div dangerouslySetInnerHTML={{ __html: content }} />
         </div>
