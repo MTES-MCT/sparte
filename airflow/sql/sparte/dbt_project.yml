@@ -31,6 +31,8 @@ clean-targets:         # directories to be removed by `dbt clean`
 # files using the `{{ config(...) }}` macro.
 models:
   sparte:
+    app:
+      +schema: app
     ocsge:
       +schema: ocsge
     admin_express:

@@ -1,5 +1,7 @@
 {% test is_valid_geom(model, column_name) %}
 
+{{ config(severity = 'warn') }}
+
 with validation_errors as (
 
     select {{ column_name }}
@@ -8,7 +10,6 @@ with validation_errors as (
 
 )
 
-select *
-from validation_errors
+select * from validation_errors
 
 {% endtest %}

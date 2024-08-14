@@ -22,7 +22,7 @@ SELECT
     insee_reg as region,
     siren_epci as epci,
     ST_Area(geom) as surface,
-    md5(commune::text),
+    gen_random_uuid() as uuid,
     geom
 FROM
     {{ source('public', 'commune') }} as commune

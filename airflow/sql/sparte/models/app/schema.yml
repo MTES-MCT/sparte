@@ -1,0 +1,18 @@
+
+version: 2
+
+models:
+  - name: app_commune
+  - name: app_departement
+  - name: app_region
+  - name: app_epci
+  - name: app_scot
+
+sources:
+  - name: public
+    tables:
+    - name: app_commune
+    - name: app_departement
+    - name: app_region
+    - name: app_epci
+    - name: app_scot

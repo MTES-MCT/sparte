@@ -1,0 +1,19 @@
+{{ config(materialized='table')}}
+
+SELECT *, ST_Area(mpoly) as surface FROM (
+    SELECT
+        ocsge.departement,
+        ocsge.year,
+        ocsge.commune_code as city,
+        ARRAY_AGG(ocsge.uuid) AS uuids,
+        ST_Union(geom) AS mpoly
+    FROM
+        {{ ref("occupation_du_sol_commune") }} AS ocsge
+    WHERE
+        ocsge.is_artificial = true
+    GROUP BY
+        ocsge.commune_code,
+        ocsge.departement,
+        ocsge.year,
+        ocsge.loaded_date
+) as foo

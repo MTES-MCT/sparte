@@ -43,16 +43,16 @@ class Container(containers.DeclarativeContainer):
         port=getenv("DBT_DB_PORT"),
     )
 
-    gdal_app_conn = providers.Factory(
-        PgConnectionString,
-        dbname=getenv("APP_DB_NAME"),
-        user=getenv("APP_DB_USER"),
-        password=getenv("APP_DB_PASSWORD"),
-        host=getenv("APP_DB_HOST"),
-        port=getenv("APP_DB_PORT"),
+    gdal_dw_conn_str = providers.Factory(
+        db_str_for_ogr2ogr,
+        dbname=getenv("DBT_DB_NAME"),
+        user=getenv("DBT_DB_USER"),
+        password=getenv("DBT_DB_PASSWORD"),
+        host=getenv("DBT_DB_HOST"),
+        port=getenv("DBT_DB_PORT"),
     )
 
-    postgres_conn: connection = providers.Factory(
+    psycopg2_dw_conn: connection = providers.Factory(
         provides=connect,
         dbname=getenv("DBT_DB_NAME"),
         user=getenv("DBT_DB_USER"),
@@ -61,13 +61,22 @@ class Container(containers.DeclarativeContainer):
         port=getenv("DBT_DB_PORT"),
     )
 
-    postgres_conn_str_ogr2ogr = providers.Factory(
-        db_str_for_ogr2ogr,
-        dbname=getenv("DBT_DB_NAME"),
-        user=getenv("DBT_DB_USER"),
-        password=getenv("DBT_DB_PASSWORD"),
-        host=getenv("DBT_DB_HOST"),
-        port=getenv("DBT_DB_PORT"),
+    psycopg2_app_conn: connection = providers.Factory(
+        provides=connect,
+        dbname=getenv("APP_DB_NAME"),
+        user=getenv("APP_DB_USER"),
+        password=getenv("APP_DB_PASSWORD"),
+        host=getenv("APP_DB_HOST"),
+        port=getenv("APP_DB_PORT"),
+    )
+
+    gdal_app_conn = providers.Factory(
+        PgConnectionString,
+        dbname=getenv("APP_DB_NAME"),
+        user=getenv("APP_DB_USER"),
+        password=getenv("APP_DB_PASSWORD"),
+        host=getenv("APP_DB_HOST"),
+        port=getenv("APP_DB_PORT"),
     )
 
     cnopts = pysftp.CnOpts()

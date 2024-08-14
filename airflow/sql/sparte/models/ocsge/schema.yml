@@ -87,7 +87,6 @@ occupation_du_sol_test: &occupation_du_sol_test
       - not_null
       - accepted_values: *us_accepted_values
 
-
 zone_construite_test: &zone_construite_test
   - name: geom
     tests:
@@ -114,9 +113,15 @@ models:
 sources:
   - name: public
     tables:
-    - name: ocsge_diff
+    - name: ocsge_difference_staging
+      columns: *difference_test
+    - name: ocsge_difference
       columns: *difference_test
     - name: ocsge_occupation_du_sol
       columns: *occupation_du_sol_test
+    - name: ocsge_occupation_du_sol_staging
+      columns: *occupation_du_sol_test
     - name: ocsge_zone_construite
+      columns: *zone_construite_test
+    - name: ocsge_zone_construite_staging
       columns: *zone_construite_test

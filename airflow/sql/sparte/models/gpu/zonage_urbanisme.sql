@@ -25,6 +25,7 @@ SELECT
     datappro as date_approbation,
     datvalid as date_validation,
     idurba as id_document_urbanisme,
+    gen_random_uuid() as uuid,
     ST_MakeValid(ST_transform(geom, 2154)) as geom
  FROM
     {{ source('public', 'zone_urba') }}

@@ -1,27 +1,17 @@
-{{ config(materialized='table') }}
+{{
+    config(
+        materialized='table',
+        post_hook="CREATE INDEX ON {{ this }} USING GIST (geom)"
+    )
+}}
 
-WITH latest_loaded_date AS (
-    SELECT
-        year,
-        departement,
-        MAX(loaded_date) AS max_loaded_date
-    FROM
-        {{ source('public', 'ocsge_zone_construite') }}
-    GROUP BY
-        year,
-        departement
-)
 SELECT
-    ocsge.loaded_date,
-    ocsge.id,
-    ocsge.year,
-    ocsge.departement,
-    ocsge.geom
+    loaded_date,
+    id,
+    year,
+    departement,
+    ST_MakeValid(geom) AS geom,
+    ST_Area(geom) as surface,
+    uuid
 FROM
     {{ source('public', 'ocsge_zone_construite') }} as ocsge
-JOIN
-    latest_loaded_date AS ld
-ON
-    ocsge.year = ld.year
-    AND ocsge.departement = ld.departement
-    AND ocsge.loaded_date = ld.max_loaded_date
