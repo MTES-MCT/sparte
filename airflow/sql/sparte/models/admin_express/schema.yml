@@ -3,6 +3,7 @@ version: 2
 
 models:
   - name: commune
+  - name: departement
 
 sources:
   - name: public
