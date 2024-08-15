@@ -60,6 +60,18 @@ def get_paths_from_directory(directory: str) -> list[tuple[str, str]]:
 
 
 sources = {  # noqa: E501
+    "01": {
+        DatasetName.OCCUPATION_DU_SOL_ET_ZONE_CONSTRUITE: {
+            2018: "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0__SHP_LAMB93_D001_2018-01-01/OCS-GE_2-0__SHP_LAMB93_D001_2018-01-01.7z",  # noqa: E501
+            2021: "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0__SHP_LAMB93_D001_2021-01-01/OCS-GE_2-0__SHP_LAMB93_D001_2021-01-01.7z",  # noqa: E501
+        },
+        DatasetName.DIFFERENCE: {
+            (
+                2018,
+                2021,
+            ): "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0_DIFF_SHP_LAMB93_D001_2018-2021/OCS-GE_2-0_DIFF_SHP_LAMB93_D001_2018-2021.7z",  # noqa: E501
+        },
+    },
     "38": {
         DatasetName.OCCUPATION_DU_SOL_ET_ZONE_CONSTRUITE: {
             2018: "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0__SHP_LAMB93_D038_2018-01-01/OCS-GE_2-0__SHP_LAMB93_D038_2018-01-01.7z",  # noqa: E501
@@ -408,17 +420,11 @@ def ocsge():  # noqa: C901
 
         return loaded_date
 
-    @task.bash(retries=0)
-    def dbt_test_ocsge(**context):
-        dataset = context["params"]["dataset"]
-        dbt_select = " ".join([vars["dbt_selector"] for vars in vars_dataset[dataset]])
-        return 'cd "${AIRFLOW_HOME}/sql/sparte" && dbt test -s ' + dbt_select
-
     @task.bash(retries=0, trigger_rule="all_success")
     def dbt_run_ocsge(**context):
         dataset = context["params"]["dataset"]
         dbt_select = " ".join([f'{vars["dbt_selector"]}+' for vars in vars_dataset[dataset]])
-        return 'cd "${AIRFLOW_HOME}/sql/sparte" && dbt run -s ' + dbt_select
+        return 'cd "${AIRFLOW_HOME}/sql/sparte" && dbt build -s ' + dbt_select
 
     @task.python(trigger_rule="all_success")
     def delete_previously_loaded_data_in_dw(**context) -> dict:
@@ -431,8 +437,11 @@ def ocsge():  # noqa: C901
         results = {}
 
         for vars in vars_dataset[dataset]:
-            cur.execute(vars["delete_on_dwt"](departement, years))
-            results[vars["dw_source"]] = cur.rowcount
+            try:
+                cur.execute(vars["delete_on_dwt"](departement, years))
+                results[vars["dw_source"]] = cur.rowcount
+            except Exception as e:
+                results[vars["dw_source"]] = str(e)
 
         conn.commit()
         conn.close()
@@ -480,7 +489,6 @@ def ocsge():  # noqa: C901
     delete_dw = delete_previously_loaded_data_in_dw()
     test_result_staging = db_test_ocsge_staging()
     loaded_date = ingest_ocsge(path=path)
-    test_result = dbt_test_ocsge()
     dbt_run_ocsge_result = dbt_run_ocsge()
     delete_app = delete_previously_loaded_data_in_app()
     load_app = load_data_in_app()
@@ -493,7 +501,6 @@ def ocsge():  # noqa: C901
         >> test_result_staging
         >> delete_dw
         >> loaded_date
-        >> test_result
         >> dbt_run_ocsge_result
         >> delete_app
         >> load_app

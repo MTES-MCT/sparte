@@ -22,7 +22,7 @@ def ocsge_diff_normalization_sql(
         {fields['cs_old']} AS cs_old,
         {fields['us_new']} AS us_new,
         {fields['us_old']} AS us_old,
-        cast({departement} as text) AS departement,
+        '{departement}' AS departement,
         CreateUUID() as uuid,
         GEOMETRY as geom
     FROM
@@ -42,7 +42,7 @@ def ocsge_occupation_du_sol_normalization_sql(
         code_cs AS code_cs,
         code_us AS code_us,
         GEOMETRY AS geom,
-        cast({departement} as text) AS departement,
+        '{departement}' AS departement,
         {years[0]} AS year,
         CreateUUID() as uuid
     FROM
@@ -60,7 +60,7 @@ def ocsge_zone_construite_normalization_sql(
         {loaded_date} AS loaded_date,
         ID AS id,
         {years[0]} AS year,
-        cast({departement} as text) AS departement,
+        '{departement}' AS departement,
         CreateUUID() as uuid,
         GEOMETRY AS geom
     FROM

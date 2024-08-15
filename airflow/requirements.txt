@@ -4,7 +4,7 @@ dependency-injector==4.41.0
 py7zr==0.21.1
 apache-airflow-providers-postgres==5.11.2
 requests==2.32.3
-dbt-core==1.8.5
+dbt-core==1.8.2
 dbt-postgres==1.8.2
 tqdm==4.66.5
 pysftp==0.2.9

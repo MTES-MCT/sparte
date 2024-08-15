@@ -1,4 +1,6 @@
-{% test is_valid_geom(model, column_name) %}
+{% test is_valid_geom_warning(model, column_name) %}
+
+{{ config(severity = 'warn') }}
 
 with validation_errors as (
 

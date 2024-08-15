@@ -63,4 +63,9 @@ FROM (
         ocsge.uuid
     FROM
         {{ source('public', 'ocsge_difference') }} AS ocsge
+    WHERE
+        cs_new IS NOT NULL AND
+        cs_old IS NOT NULL AND
+        us_new IS NOT NULL AND
+        us_old IS NOT NULL
 ) AS foo

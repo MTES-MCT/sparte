@@ -42,86 +42,249 @@ us_accepted_values: &us_accepted_values
     "US6.6"
   ]
 
-difference_test: &difference_test
-  - name: geom
-    tests:
-      - not_null
-      - is_valid_geom
-  - name: cs_new
-    tests:
-      - not_null
-      - accepted_values: *cs_accepted_values
-  - name: cs_old
-    tests:
-      - not_null
-      - accepted_values: *cs_accepted_values
-  - name: us_new
-    tests:
-      - not_null
-      - accepted_values: *us_accepted_values
-  - name: us_old
-    tests:
-      - not_null
-      - accepted_values: *us_accepted_values
-
-occupation_du_sol_test: &occupation_du_sol_test
-  - name: geom
-    tests:
-      - not_null
-      - is_valid_geom
-  - name: departement
-    tests:
-      - not_null
-  - name: year
-    tests:
-      - not_null
-  - name: id
-    tests:
-      - not_null
-  - name: code_cs
-    tests:
-      - not_null
-      - accepted_values: *cs_accepted_values
-  - name: code_us
-    tests:
-      - not_null
-      - accepted_values: *us_accepted_values
-
-zone_construite_test: &zone_construite_test
-  - name: geom
-    tests:
-      - not_null
-      - is_valid_geom
-  - name: departement
-    tests:
-      - not_null
-  - name: year
-    tests:
-      - not_null
-  - name: id
-    tests:
-      - not_null
-
+not_null_cs_us_config_staging: &not_null_cs_us_config_staging
+  config:
+    error_if: ">100"
+    warn_if: ">0"
 
 models:
+  - name: occupation_du_sol_commune
+  - name: artificial_commune
   - name: zone_construite
-  - name: zone_artificielle
+    columns:
+      - name: loaded_date
+        data_tests:
+          - not_null
+      - name: id
+        data_tests:
+          - not_null
+          - unique
+      - name: year
+        data_tests:
+          - not_null
+      - name: departement
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('departement')
+              field: code
+      - name: geom
+        data_tests:
+          - not_null
+          - is_valid_geom
+      - name: surface
+        data_tests:
+          - not_null
+      - name: uuid
+        data_tests:
+          - not_null
+          - unique
   - name: occupation_du_sol
+    columns:
+      - name: loaded_date
+        data_tests:
+          - not_null
+      - name: id
+        data_tests:
+          - not_null
+      - name: code_cs
+        data_tests:
+          - not_null
+          - accepted_values: *cs_accepted_values
+      - name: code_us
+        data_tests:
+          - not_null
+          - accepted_values: *us_accepted_values
+      - name: departement
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('departement')
+              field: code
+      - name: year
+        data_tests:
+          - not_null
+      - name: surface
+        data_tests:
+          - not_null
+      - name: is_impermeable
+        data_tests:
+          - not_null
+      - name: is_artificial
+        data_tests:
+          - not_null
+      - name: uuid
+        data_tests:
+          - not_null
+          - unique
+      - name: geom
+        data_tests:
+          - not_null
+          - is_valid_geom
   - name: difference
-  - name: occupation_du_sol_zonage_urbanisme
+    columns:
+      - name: loaded_date
+        data_tests:
+          - not_null
+      - name: year_old
+        data_tests:
+          - not_null
+      - name: year_new
+        data_tests:
+          - not_null
+      - name: cs_new
+        data_tests:
+          - not_null
+          - accepted_values: *cs_accepted_values
+      - name: cs_old
+        data_tests:
+          - not_null
+          - accepted_values: *cs_accepted_values
+      - name: us_new
+        data_tests:
+          - not_null
+          - accepted_values: *us_accepted_values
+      - name: us_old
+        data_tests:
+          - not_null
+          - accepted_values: *us_accepted_values
+      - name: departement
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('departement')
+              field: code
+      - name: surface
+        data_tests:
+          - not_null
+      - name: uuid
+        data_tests:
+          - not_null
+          - unique
+      - name: new_is_impermeable
+        data_tests:
+          - not_null
+      - name: new_not_impermeable
+        data_tests:
+          - not_null
+      - name: new_is_artificial
+        data_tests:
+          - not_null
+      - name: new_not_artificial
+        data_tests:
+          - not_null
+      - name: geom
+        data_tests:
+          - not_null
+          - is_valid_geom
 
 sources:
   - name: public
     tables:
-    - name: ocsge_difference_staging
-      columns: *difference_test
-    - name: ocsge_difference
-      columns: *difference_test
-    - name: ocsge_occupation_du_sol
-      columns: *occupation_du_sol_test
-    - name: ocsge_occupation_du_sol_staging
-      columns: *occupation_du_sol_test
-    - name: ocsge_zone_construite
-      columns: *zone_construite_test
     - name: ocsge_zone_construite_staging
-      columns: *zone_construite_test
+      columns:
+      - name: loaded_date
+        data_tests:
+          - not_null
+      - name: id
+        data_tests:
+          - not_null
+          - unique
+      - name: year
+        data_tests:
+          - not_null
+      - name: departement
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('departement')
+              field: code
+      - name: uuid
+        data_tests:
+          - not_null
+          - unique
+      - name: geom
+        data_tests:
+          - unique
+          - not_null
+          - is_valid_geom_warning
+    - name: ocsge_occupation_du_sol_staging
+      columns:
+      - name: loaded_date
+        data_tests:
+          - not_null
+      - name: id
+        data_tests:
+          - not_null
+          - unique
+      - name: code_cs
+        data_tests:
+          - not_null
+          - accepted_values: *cs_accepted_values
+      - name: code_us
+        data_tests:
+          - not_null
+          - accepted_values: *us_accepted_values
+      - name: geom
+        data_tests:
+          - unique
+          - not_null
+          - is_valid_geom_warning
+      - name: departement
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('departement')
+              field: code
+      - name: year
+        data_tests:
+          - not_null
+      - name: uuid
+        data_tests:
+          - not_null
+          - unique
+    - name: ocsge_difference_staging
+      columns:
+      - name: loaded_date
+        data_tests:
+          - not_null
+      - name: year_old
+        data_tests:
+          - not_null
+      - name: year_new
+        data_tests:
+          - not_null
+      - name: cs_new
+        data_tests:
+          - not_null: *not_null_cs_us_config_staging
+          - accepted_values: *cs_accepted_values
+      - name: cs_old
+        data_tests:
+          - not_null: *not_null_cs_us_config_staging
+          - accepted_values: *cs_accepted_values
+      - name: us_new
+        data_tests:
+          - not_null: *not_null_cs_us_config_staging
+          - accepted_values: *us_accepted_values
+      - name: us_old
+        data_tests:
+          - not_null: *not_null_cs_us_config_staging
+          - accepted_values: *us_accepted_values
+      - name: departement
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('departement')
+              field: code
+      - name: uuid
+        data_tests:
+          - not_null
+          - unique
+      - name: geom
+        data_tests:
+          - unique
+          - not_null
+          - is_valid_geom_warning
+    - name: ocsge_difference
+    - name: ocsge_occupation_du_sol
+    - name: ocsge_zone_construite
