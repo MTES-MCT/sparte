@@ -1,6 +1,7 @@
 from airflow.decorators import dag, task
 from airflow.operators.bash import BashOperator
 from dependencies.container import Container
+from dependencies.utils import multiline_string_to_single_line
 from pendulum import datetime
 
 
@@ -30,6 +31,36 @@ def gpu():
     def ingest(path_on_bucket: str) -> str:
         wfs_du_temp = f"/tmp/{wfs_du_filename}"
         Container().s3().get_file(path_on_bucket, wfs_du_temp)
+        sql = """
+            SELECT
+                MD5Checksum(
+                    ST_AsText(geom) || CastToText(gpu_timestamp)
+                ) AS checksum,
+                gpu_doc_id,
+                gpu_status
+                gpu_timestamp,
+                partition,
+                libelle,
+                libelong,
+                typezone,
+                destdomi,
+                nomfic,
+                urlfic,
+                insee,
+                datappro,
+                datvalid,
+                idurba,
+                idzone,
+                lib_idzone,
+                formdomi,
+                destoui,
+                destcdt,
+                destnon,
+                symbole,
+                geom
+            FROM
+                zone_urba
+        """
         cmd = [
             "ogr2ogr",
             "-dialect",
@@ -42,12 +73,15 @@ def gpu():
             "GEOMETRY_NAME=geom",
             "-a_srs",
             "EPSG:4236",
+            "-nln",
+            "zone_urba",
             "-nlt",
             "MULTIPOLYGON",
             "-nlt",
             "PROMOTE_TO_MULTI",
             wfs_du_temp,
-            "zone_urba",
+            "-sql",
+            f'"{multiline_string_to_single_line(sql)}"',
             "--config",
             "PG_USE_COPY",
             "YES",
