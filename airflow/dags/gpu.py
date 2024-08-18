@@ -37,7 +37,7 @@ def gpu():
                     ST_AsText(geom) || CastToText(gpu_timestamp)
                 ) AS checksum,
                 gpu_doc_id,
-                gpu_status
+                gpu_status,
                 gpu_timestamp,
                 partition,
                 libelle,
@@ -74,7 +74,7 @@ def gpu():
             "-a_srs",
             "EPSG:4236",
             "-nln",
-            "zone_urba",
+            "gpu_zone_urba",
             "-nlt",
             "MULTIPOLYGON",
             "-nlt",

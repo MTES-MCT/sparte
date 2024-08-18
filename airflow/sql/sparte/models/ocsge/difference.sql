@@ -7,7 +7,7 @@
 }}
 
 SELECT
-    foo.loaded_date,
+    to_timestamp(foo.loaded_date) as loaded_date,
     foo.year_old,
     foo.year_new,
     cs_new,
@@ -60,7 +60,7 @@ FROM (
         {{ is_impermeable('cs_old') }} AS old_is_imper,
         {{ is_artificial('cs_new', 'us_new') }} AS new_is_artif,
         {{ is_impermeable('cs_new') }} AS new_is_imper,
-        ocsge.uuid
+        ocsge.uuid::uuid
     FROM
         {{ source('public', 'ocsge_difference') }} AS ocsge
     WHERE

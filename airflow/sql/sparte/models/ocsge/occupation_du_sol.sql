@@ -13,7 +13,7 @@
 }}
 
 SELECT
-    loaded_date,
+    to_timestamp(loaded_date) as loaded_date,
     id,
     code_cs,
     code_us,
@@ -22,7 +22,7 @@ SELECT
     ST_area(geom) AS surface,
     {{ is_impermeable('code_cs') }} as is_impermeable,
     {{ is_artificial('code_cs', 'code_us') }} as is_artificial,
-    uuid,
+    uuid::uuid,
     ST_MakeValid(geom) AS geom
 FROM
     {{ source('public', 'ocsge_occupation_du_sol') }} AS ocsge

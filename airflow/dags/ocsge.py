@@ -31,15 +31,14 @@ from gdaltools import ogr2ogr
 
 
 def copy_table_from_dw_to_app(
-    source_sql: str,
-    destination_table_name: str,
+    from_table: str,
+    to_table: str,
 ):
     ogr = ogr2ogr()
     ogr.config_options = {"PG_USE_COPY": "YES"}
-    ogr.set_input(Container().gdal_dw_conn(schema="public_ocsge"))
-    ogr.set_sql(source_sql)
-    ogr.set_output(Container().gdal_app_conn(), table_name=destination_table_name)
-    ogr.set_output_mode(layer_mode=ogr.MODE_LAYER_APPEND)
+    ogr.set_input(Container().gdal_dw_conn(schema="public_ocsge"), table_name=from_table)
+    ogr.set_output(Container().gdal_app_conn(), table_name=to_table)
+    ogr.set_output_mode(layer_mode=ogr.MODE_LAYER_OVERWRITE)
     ogr.execute()
 
 
@@ -153,7 +152,7 @@ sources = {  # noqa: E501
             (
                 2018,
                 2021,
-            ): "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0_DIFF_SHP_LAMB93_D075_2018-2021/OCS-GE_2-0_DIFF_SHP_LAMB93_D075_2018-2021.7z",  # noqa: E501
+            ): "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0__SHP_LAMB93_D075_DIFF_2018-2021/OCS-GE_2-0__SHP_LAMB93_D075_DIFF_2018-2021.7z",  # noqa: E501
         },
     },
     "32": {
@@ -181,12 +180,16 @@ vars = {
         "normalization_sql": ocsge_occupation_du_sol_normalization_sql,
         "delete_on_dwt": delete_occupation_du_sol_in_dw_sql,
         "delete_on_app": delete_occupation_du_sol_in_app_sql,
-        "mapping": {
-            "public_ocsge.app_ocsge": {
+        "mapping": [
+            {
+                "from_table": "public_ocsge.app_ocsge",
                 "to_table": "public.public_data_ocsge",
-                "select": lambda departement, years: f"SELECT * FROM public_ocsge.app_ocsge WHERE departement = '{departement}' AND year = {years[0]}",  # noqa: E501
             },
-        },
+            {
+                "from_table": "public_ocsge.app_artificialarea",
+                "to_table": "public.public_data_artificialarea",
+            },
+        ],
     },
     SourceName.ZONE_CONSTRUITE: {
         "shapefile_name": "ZONE_CONSTRUITE",
@@ -198,12 +201,12 @@ vars = {
         "normalization_sql": ocsge_zone_construite_normalization_sql,
         "delete_on_dwt": delete_zone_construite_in_dw_sql,
         "delete_on_app": delete_zone_construite_in_app_sql,
-        "mapping": {
-            "public_ocsge.app_zoneconstruite": {
+        "mapping": [
+            {
+                "from_table": "public_ocsge.app_zoneconstruite",
                 "to_table": "public.public_data_zoneconstruite",
-                "select": lambda departement, years: f"SELECT * FROM public_ocsge.app_zoneconstruite WHERE departement = '{departement}' AND year = {years[0]}",  # noqa: E501
-            },
-        },
+            }
+        ],
     },
     SourceName.DIFFERENCE: {
         "shapefile_name": "DIFFERENCE",
@@ -216,12 +219,16 @@ vars = {
         "normalization_sql": ocsge_diff_normalization_sql,
         "delete_on_dwt": delete_difference_in_dw_sql,
         "delete_on_app": delete_difference_in_app_sql,
-        "mapping": {
-            "public_ocsge.app_ocsgediff": {
+        "mapping": [
+            {
+                "from_table": "public_ocsge.app_ocsgediff",
                 "to_table": "public.public_data_ocsgediff",
-                "select": lambda departement, years: f"SELECT * FROM public_ocsge.app_ocsgediff WHERE departement = '{departement}' AND year_old = {years[0]} AND year_new = {years[1]}",  # noqa: E501
             },
-        },
+            {
+                "from_table": "public_ocsge.app_communediff",
+                "to_table": "public.public_data_communediff",
+            },
+        ],
     },
 }
 
@@ -449,37 +456,13 @@ def ocsge():  # noqa: C901
         return results
 
     @task.python(trigger_rule="all_success")
-    def delete_previously_loaded_data_in_app(**context) -> str:
-        dataset = context["params"]["dataset"]
-        departement = context["params"]["departement"]
-        years = context["params"]["years"]
-
-        conn = Container().psycopg2_app_conn()
-        cur = conn.cursor()
-
-        results = {}
-
-        for vars in vars_dataset[dataset]:
-            cur.execute(vars["delete_on_app"](departement, years))
-            results[vars["app_table_names"]] = cur.rowcount
-
-        conn.commit()
-        conn.close()
-
-        return str(results)
-
-    @task.python(trigger_rule="all_success")
     def load_data_in_app(**context):
         dataset = context["params"]["dataset"]
-        departement = context["params"]["departement"]
-        years = context["params"]["years"]
-
         for vars in vars_dataset[dataset]:
-            for from_table in vars["mapping"]:
-                values = vars["mapping"][from_table]
+            for mapping in vars["mapping"]:
                 copy_table_from_dw_to_app(
-                    source_sql=values["select"](departement, years),
-                    destination_table_name=values["to_table"],
+                    from_table=mapping["from_table"],
+                    to_table=mapping["to_table"],
                 )
 
     url = get_url()
@@ -490,7 +473,6 @@ def ocsge():  # noqa: C901
     test_result_staging = db_test_ocsge_staging()
     loaded_date = ingest_ocsge(path=path)
     dbt_run_ocsge_result = dbt_run_ocsge()
-    delete_app = delete_previously_loaded_data_in_app()
     load_app = load_data_in_app()
 
     (
@@ -502,7 +484,6 @@ def ocsge():  # noqa: C901
         >> delete_dw
         >> loaded_date
         >> dbt_run_ocsge_result
-        >> delete_app
         >> load_app
     )
 
