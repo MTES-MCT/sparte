@@ -27,7 +27,6 @@ class Commune(DataColorationMixin, LandMixin, GetDataFromCeremaMixin, models.Mod
     objects = IntersectManager()
 
     # Calculated fields
-    map_color = models.CharField("Couleur d'affichage", max_length=30, null=True, blank=True)
     first_millesime = models.IntegerField(
         "Premier millésime disponible",
         validators=[MinValueValidator(2000), MaxValueValidator(2050)],

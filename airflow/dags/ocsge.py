@@ -1,4 +1,5 @@
 import cgi
+import json
 import os
 import tempfile
 from typing import Literal
@@ -10,11 +11,6 @@ from airflow.decorators import dag, task
 from airflow.models.param import Param
 from airflow.operators.bash import BashOperator
 from dependencies.container import Container
-from dependencies.ocsge.delete_in_app import (
-    delete_difference_in_app_sql,
-    delete_occupation_du_sol_in_app_sql,
-    delete_zone_construite_in_app_sql,
-)
 from dependencies.ocsge.delete_in_dw import (
     delete_difference_in_dw_sql,
     delete_occupation_du_sol_in_dw_sql,
@@ -35,7 +31,7 @@ def copy_table_from_dw_to_app(
     to_table: str,
 ):
     ogr = ogr2ogr()
-    ogr.config_options = {"PG_USE_COPY": "YES"}
+    ogr.config_options = {"PG_USE_COPY": "YES", "OGR_TRUNCATE": "NO"}
     ogr.set_input(Container().gdal_dw_conn(schema="public_ocsge"), table_name=from_table)
     ogr.set_output(Container().gdal_app_conn(), table_name=to_table)
     ogr.set_output_mode(layer_mode=ogr.MODE_LAYER_OVERWRITE)
@@ -58,116 +54,8 @@ def get_paths_from_directory(directory: str) -> list[tuple[str, str]]:
     return paths
 
 
-sources = {  # noqa: E501
-    "01": {
-        DatasetName.OCCUPATION_DU_SOL_ET_ZONE_CONSTRUITE: {
-            2018: "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0__SHP_LAMB93_D001_2018-01-01/OCS-GE_2-0__SHP_LAMB93_D001_2018-01-01.7z",  # noqa: E501
-            2021: "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0__SHP_LAMB93_D001_2021-01-01/OCS-GE_2-0__SHP_LAMB93_D001_2021-01-01.7z",  # noqa: E501
-        },
-        DatasetName.DIFFERENCE: {
-            (
-                2018,
-                2021,
-            ): "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0_DIFF_SHP_LAMB93_D001_2018-2021/OCS-GE_2-0_DIFF_SHP_LAMB93_D001_2018-2021.7z",  # noqa: E501
-        },
-    },
-    "38": {
-        DatasetName.OCCUPATION_DU_SOL_ET_ZONE_CONSTRUITE: {
-            2018: "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0__SHP_LAMB93_D038_2018-01-01/OCS-GE_2-0__SHP_LAMB93_D038_2018-01-01.7z",  # noqa: E501
-            2021: "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0__SHP_LAMB93_D038_2021-01-01/OCS-GE_2-0__SHP_LAMB93_D038_2021-01-01.7z",  # noqa: E501
-        },
-        DatasetName.DIFFERENCE: {
-            (
-                2018,
-                2021,
-            ): "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0__SHP_LAMB93_D038_DIFF_2018-2021/OCS-GE_2-0__SHP_LAMB93_D038_DIFF_2018-2021.7z",  # noqa: E501
-        },
-    },
-    "69": {
-        DatasetName.OCCUPATION_DU_SOL_ET_ZONE_CONSTRUITE: {
-            2017: "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0__SHP_LAMB93_D069_2017-01-01/OCS-GE_2-0__SHP_LAMB93_D069_2017-01-01.7z",  # noqa: E501
-            2020: "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0__SHP_LAMB93_D069_2020-01-01/OCS-GE_2-0__SHP_LAMB93_D069_2020-01-01.7z",  # noqa: E501
-        },
-        DatasetName.DIFFERENCE: {
-            (
-                2017,
-                2020,
-            ): "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0__SHP_LAMB93_D069_DIFF_2017-2020/OCS-GE_2-0__SHP_LAMB93_D069_DIFF_2017-2020.7z",  # noqa: E501
-        },
-    },
-    "91": {
-        "occupation_du_sol_et_zone_construite": {
-            2018: "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0__SHP_LAMB93_D091_2018-01-01/OCS-GE_2-0__SHP_LAMB93_D091_2018-01-01.7z",  # noqa: E501
-            2021: "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0__SHP_LAMB93_D091_2021-01-01/OCS-GE_2-0__SHP_LAMB93_D091_2021-01-01.7z",  # noqa: E501
-        },
-        "difference": {
-            (
-                2018,
-                2021,
-            ): "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0_DIFF_SHP_LAMB93_D091_2018-2021/OCS-GE_2-0_DIFF_SHP_LAMB93_D091_2018-2021.7z",  # noqa: E501
-        },
-    },
-    "92": {
-        "occupation_du_sol_et_zone_construite": {
-            2018: "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0__SHP_LAMB93_D092_2018-01-01/OCS-GE_2-0__SHP_LAMB93_D092_2018-01-01.7z",  # noqa: E501
-            2021: "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0__SHP_LAMB93_D092_2021-01-01/OCS-GE_2-0__SHP_LAMB93_D092_2021-01-01.7z",  # noqa: E501
-        },
-        "difference": {
-            (
-                2018,
-                2021,
-            ): "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0_DIFF_SHP_LAMB93_D092_2018-2021/OCS-GE_2-0_DIFF_SHP_LAMB93_D092_2018-2021.7z",  # noqa: E501
-        },
-    },
-    "78": {
-        "occupation_du_sol_et_zone_construite": {
-            2018: "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0__SHP_LAMB93_D078_2018-01-01/OCS-GE_2-0__SHP_LAMB93_D078_2018-01-01.7z",  # noqa: E501
-            2021: "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0__SHP_LAMB93_D078_2021-01-01/OCS-GE_2-0__SHP_LAMB93_D078_2021-01-01.7z",  # noqa: E501
-        },
-        "difference": {
-            (
-                2018,
-                2021,
-            ): "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0__SHP_LAMB93_D078_DIFF_2018-2021/OCS-GE_2-0__SHP_LAMB93_D078_DIFF_2018-2021.7z"  # noqa: E501
-        },
-    },
-    "94": {
-        "occupation_du_sol_et_zone_construite": {
-            2018: "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0__SHP_LAMB93_D094_2018-01-01/OCS-GE_2-0__SHP_LAMB93_D094_2018-01-01.7z",  # noqa: E501
-            2021: "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0__SHP_LAMB93_D094_2021-01-01/OCS-GE_2-0__SHP_LAMB93_D094_2021-01-01.7z",  # noqa: E501
-        },
-        "difference": {
-            (
-                2018,
-                2021,
-            ): "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0_DIFF_SHP_LAMB93_D094_2018-2021/OCS-GE_2-0_DIFF_SHP_LAMB93_D094_2018-2021.7z",  # noqa: E501
-        },
-    },
-    "75": {
-        "occupation_du_sol_et_zone_construite": {
-            2018: "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0__SHP_LAMB93_D075_2018-01-01/OCS-GE_2-0__SHP_LAMB93_D075_2018-01-01.7z",  # noqa: E501
-            2021: "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0__SHP_LAMB93_D075_2021-01-01/OCS-GE_2-0__SHP_LAMB93_D075_2021-01-01.7z",  # noqa: E501
-        },
-        "difference": {
-            (
-                2018,
-                2021,
-            ): "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0__SHP_LAMB93_D075_DIFF_2018-2021/OCS-GE_2-0__SHP_LAMB93_D075_DIFF_2018-2021.7z",  # noqa: E501
-        },
-    },
-    "32": {
-        "occupation_du_sol_et_zone_construite": {
-            2016: "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0__SHP_LAMB93_D032_2016-01-01/OCS-GE_2-0__SHP_LAMB93_D032_2016-01-01.7z",  # noqa: E501
-            2019: "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0__SHP_LAMB93_D032_2019-01-01/OCS-GE_2-0__SHP_LAMB93_D032_2019-01-01.7z",  # noqa: E501
-        },
-        "difference": {
-            (
-                2016,
-                2019,
-            ): "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0__SHP_LAMB93_D032_DIFF_2016-2019/OCS-GE_2-0__SHP_LAMB93_D032_DIFF_2016-2019.7z",  # noqa: E501
-        },
-    },
-}
+with open("dependencies/ocsge/sources.json", "r") as f:
+    sources = json.load(f)
 
 vars = {
     SourceName.OCCUPATION_DU_SOL: {
@@ -176,10 +64,8 @@ vars = {
         "dbt_selector_staging": "source:sparte.public.ocsge_occupation_du_sol_staging",
         "dw_staging": "ocsge_occupation_du_sol_staging",
         "dw_source": "ocsge_occupation_du_sol",
-        "app_table_names": ("public_data_ocsge",),
         "normalization_sql": ocsge_occupation_du_sol_normalization_sql,
         "delete_on_dwt": delete_occupation_du_sol_in_dw_sql,
-        "delete_on_app": delete_occupation_du_sol_in_app_sql,
         "mapping": [
             {
                 "from_table": "public_ocsge.app_ocsge",
@@ -189,6 +75,22 @@ vars = {
                 "from_table": "public_ocsge.app_artificialarea",
                 "to_table": "public.public_data_artificialarea",
             },
+            {
+                "from_table": "public_ocsge.app_artifareazoneurba",
+                "to_table": "public.public_data_artifareazoneurba",
+            },
+            {
+                "from_table": "public_ocsge.for_app_commune",
+                "to_table": "public.public_data_commune",
+            },
+            {
+                "from_table": "public_ocsge.for_app_departement",
+                "to_table": "public.public_data_departement",
+            },
+            {
+                "from_table": "public_ocsge.app_communesol",
+                "to_table": "public.public_data_communesol",
+            },
         ],
     },
     SourceName.ZONE_CONSTRUITE: {
@@ -197,10 +99,8 @@ vars = {
         "dbt_selector_staging": "source:sparte.public.ocsge_zone_construite_staging",
         "dw_staging": "ocsge_zone_construite_staging",
         "dw_source": "ocsge_zone_construite",
-        "app_table_names": ("public_data_zoneconstruite",),
         "normalization_sql": ocsge_zone_construite_normalization_sql,
         "delete_on_dwt": delete_zone_construite_in_dw_sql,
-        "delete_on_app": delete_zone_construite_in_app_sql,
         "mapping": [
             {
                 "from_table": "public_ocsge.app_zoneconstruite",
@@ -215,10 +115,8 @@ vars = {
         "dw_staging": "ocsge_difference_staging",
         "dw_source": "ocsge_difference",
         "dw_final_table_name": "app_ocsgediff",
-        "app_table_names": ("public_data_ocsgediff",),
         "normalization_sql": ocsge_diff_normalization_sql,
         "delete_on_dwt": delete_difference_in_dw_sql,
-        "delete_on_app": delete_difference_in_app_sql,
         "mapping": [
             {
                 "from_table": "public_ocsge.app_ocsgediff",
@@ -352,11 +250,11 @@ def ocsge():  # noqa: C901
     @task.python()
     def get_url(**context) -> str:
         departement = context["params"]["departement"]
-        years = tuple(map(int, context["params"]["years"]))
+        years = "_".join(map(str, context["params"]["years"]))
         dataset = context["params"]["dataset"]
 
         if len(years) == 1:
-            years = years[0]
+            years = str(years[0])
 
         return sources.get(departement, {}).get(dataset, {}).get(years)
 

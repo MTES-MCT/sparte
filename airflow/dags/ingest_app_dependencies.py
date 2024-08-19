@@ -43,11 +43,28 @@ def ingest_app_dependencies():
     def ingest_scot():
         ingest_table(source_table_name="public_data_scot", destination_table_name="app_scot")
 
+    @task.python
+    def ingest_couverturesol():
+        ingest_table(source_table_name="public_data_couverturesol", destination_table_name="app_couverturesol")
+
+    @task.python
+    def ingest_usagesol():
+        ingest_table(source_table_name="public_data_usagesol", destination_table_name="app_usagesol")
+
+    @task.python
+    def ingest_couvertureusagematrix():
+        ingest_table(
+            source_table_name="public_data_couvertureusagematrix", destination_table_name="app_couvertureusagematrix"
+        )
+
     ingest_region()
     ingest_departement()
     ingest_commune()
     ingest_epci()
     ingest_scot()
+    ingest_couverturesol()
+    ingest_usagesol()
+    ingest_couvertureusagematrix()
 
 
 ingest_app_dependencies()

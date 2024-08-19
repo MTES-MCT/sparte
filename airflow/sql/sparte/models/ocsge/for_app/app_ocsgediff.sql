@@ -9,7 +9,7 @@ SELECT
     us_new,
     us_old,
     ST_Transform(geom, 4326) as mpoly,
-    surface,
+    surface / 10000 as surface,
     2154 as srid_source,
     departement,
     new_is_artificial as is_new_artif,

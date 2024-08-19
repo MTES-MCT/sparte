@@ -2,7 +2,7 @@
 
 SELECT
     year,
-    surface,
+    surface / 10000,
     2154 as srid_source,
     departement,
     commune_code as city,

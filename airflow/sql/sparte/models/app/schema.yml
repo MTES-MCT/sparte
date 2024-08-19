@@ -7,6 +7,9 @@ models:
   - name: app_region
   - name: app_epci
   - name: app_scot
+  - name: app_usagesol
+  - name: app_couverturesol
+  - name: app_couvertureusagematrix
 
 sources:
   - name: public
@@ -16,3 +19,6 @@ sources:
     - name: app_region
     - name: app_epci
     - name: app_scot
+    - name: app_usagesol
+    - name: app_couverturesol
+    - name: app_couvertureusagematrix

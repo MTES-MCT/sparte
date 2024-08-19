@@ -11,8 +11,8 @@ FROM (
     SELECT
         year_old,
         year_new,
-        SUM(CASE WHEN new_is_artificial THEN surface ELSE 0 END) AS new_artif,
-        SUM(CASE WHEN new_not_artificial THEN surface ELSE 0 END) AS new_natural,
+        SUM(CASE WHEN new_is_artificial THEN surface ELSE 0 END) / 10000 AS new_artif,
+        SUM(CASE WHEN new_not_artificial THEN surface ELSE 0 END) / 10000 AS new_natural,
         commune_code
     FROM
         {{ ref("difference_commune") }}

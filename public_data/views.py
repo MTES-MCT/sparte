@@ -401,7 +401,6 @@ class ZoneUrbaViewSet(OnlyBoundingBoxMixin, ZoomSimplificationMixin, OptimizedMi
         "o.libelle": "libelle",
         "o.libelong": "libelong",
         "o.typezone": "typezone",
-        "o.urlfic": "urlfic",
         "o.datappro": "datappro",
         "o.datvalid": "datvalid",
         "ST_AsEWKT((ST_MaximumInscribedCircle(o.mpoly)).center)": "label_center",
