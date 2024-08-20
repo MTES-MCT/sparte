@@ -17,3 +17,4 @@ SQLAlchemy==1.4.53
 psycopg2==2.9.9
 pygeos
 pygdaltools==1.4.2
+beautifulsoup4

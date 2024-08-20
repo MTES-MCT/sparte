@@ -14,13 +14,12 @@ def ingest_table(source_table_name: str, destination_table_name: str):
     ogr.execute()
 
 
-# Define the basic parameters of the DAG, like schedule and start_date
 @dag(
     start_date=datetime(2024, 1, 1),
     schedule="@once",
     catchup=False,
     default_args={"owner": "Alexis Athlani", "retries": 3},
-    tags=["app"],
+    tags=["App"],
 )
 def ingest_app_dependencies():
     @task.python

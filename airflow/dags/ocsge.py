@@ -305,6 +305,21 @@ def ocsge():  # noqa: C901
 
         return results
 
+    @task.python
+    def log_to_mattermost(**context):
+        refresh_source = "Oui" if context["params"]["refresh_source"] else "Non"
+        if not context["params"]["refresh_source"]:
+            refresh_source += " (le fichier a été téléchargé depuis le bucket)"
+        years = ", ".join(context["params"]["years"])
+        message = f"""
+### Calcul de données OCS GE terminé
+- Jeu de donnée : {context["params"]["dataset"]}
+- Departement : {context["params"]["departement"]}
+- Année(s) : {years}
+- Téléchargé : {refresh_source}
+"""
+        Container().mattermost().send(message)
+
     url = get_url()
     url_exists = check_url_exists(url=url)
     path = download_ocsge(url=url)
@@ -313,6 +328,7 @@ def ocsge():  # noqa: C901
     test_result_staging = db_test_ocsge_staging()
     loaded_date = ingest_ocsge(path=path)
     dbt_run_ocsge_result = dbt_run_ocsge()
+    log = log_to_mattermost()
 
     (
         url
@@ -323,6 +339,7 @@ def ocsge():  # noqa: C901
         >> delete_dw
         >> loaded_date
         >> dbt_run_ocsge_result
+        >> log
     )
 
 

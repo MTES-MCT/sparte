@@ -1,23 +1,3 @@
-"""
-## Astronaut ETL example DAG
-
-This DAG queries the list of astronauts currently in space from the
-Open Notify API and prints each astronaut's name and flying craft.
-
-There are two tasks, one to get the data from the API and save the results,
-and another to print the results. Both tasks are written in Python using
-Airflow's TaskFlow API, which allows you to easily turn Python functions into
-Airflow tasks, and automatically infer dependencies and pass data.
-
-The second task uses dynamic task mapping to create a copy of the task for
-each Astronaut in the list retrieved from the API. This list will change
-depending on how many Astronauts are in space, and the DAG will adjust
-accordingly each time it runs.
-
-For more explanation and getting started instructions, see our Write your
-first DAG tutorial: https://docs.astronomer.io/learn/get-started-with-airflow
-"""
-
 import os
 import subprocess
 from urllib.request import URLopener
@@ -27,10 +7,7 @@ from airflow.decorators import dag, task
 from dependencies.container import Container
 from pendulum import datetime
 
-from airflow import Dataset
 
-
-# Define the basic parameters of the DAG, like schedule and start_date
 @dag(
     start_date=datetime(2024, 1, 1),
     schedule="@once",
@@ -39,7 +16,7 @@ from airflow import Dataset
     default_args={"owner": "Alexis Athlani", "retries": 3},
     tags=["Admin Express"],
 )
-def admin_express():
+def ingest_admin_express():
     admin_express_archive_file = "admin_express.7z"
     bucket_name = "airflow-staging"
     path_on_bucket = f"{bucket_name}/{admin_express_archive_file}"
@@ -56,20 +33,8 @@ def admin_express():
             with Container().s3().open(path_on_bucket, "wb") as distant_file:
                 distant_file.write(local_file.read())
 
-    @task(
-        outlets=[
-            Dataset("arrondissement"),
-            Dataset("arrondissement_municipal"),
-            Dataset("canton"),
-            Dataset("collectivite_territoriale"),
-            Dataset("commune"),
-            Dataset("commune_associee_ou_deleguee"),
-            Dataset("departement"),
-            Dataset("epci"),
-            Dataset("region"),
-        ]
-    )
-    def ingest_admin_express() -> str:
+    @task.python
+    def ingest() -> str:
         with Container().s3().open(path_on_bucket, "rb") as f:
             py7zr.SevenZipFile(f, mode="r").extractall()
             for dirpath, _, filenames in os.walk("."):
@@ -83,8 +48,8 @@ def admin_express():
     def dbt_run(**context):
         return 'cd "${AIRFLOW_HOME}/sql/sparte" && dbt run -s admin_express'
 
-    download_admin_express() >> ingest_admin_express() >> dbt_run()
+    download_admin_express() >> ingest() >> dbt_run()
 
 
 # Instantiate the DAG
-admin_express()
+ingest_admin_express()

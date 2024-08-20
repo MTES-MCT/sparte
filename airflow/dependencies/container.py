@@ -9,6 +9,8 @@ from psycopg2 import connect
 from psycopg2.extensions import connection
 from s3fs import S3FileSystem
 
+from .mattermost import Mattermost
+
 
 def db_str_for_ogr2ogr(dbname: str, user: str, password: str, host: str, port: int) -> str:
     return f"PG:dbname='{dbname}' host='{host}' port='{port}' user='{user}' password='{password}'"
@@ -90,4 +92,10 @@ class Container(containers.DeclarativeContainer):
         port=int(getenv("GPU_SFTP_PORT")),
         default_path="/pub/export-wfs/latest/",
         cnopts=cnopts,
+    )
+
+    mattermost = providers.Factory(
+        Mattermost,
+        mattermost_webhook_url=getenv("MATTERMOST_WEBHOOK_URL"),
+        channel=getenv("MATTERMOST_CHANNEL"),
     )

@@ -71,7 +71,7 @@ params = {map["to_table"]: Param(True) for map in mapping}
     catchup=False,
     doc_md=__doc__,
     default_args={"owner": "Alexis Athlani", "retries": 3},
-    tags=["Admin Express"],
+    tags=["App"],
     params=params,
 )
 def update_app():

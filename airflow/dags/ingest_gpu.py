@@ -13,7 +13,7 @@ from pendulum import datetime
     default_args={"owner": "Alexis Athlani", "retries": 3},
     tags=["GPU"],
 )
-def gpu():
+def ingest_gpu():
     bucket_name = "airflow-staging"
     wfs_du_filename = "wfs_du.gpkg"
 
@@ -93,4 +93,4 @@ def gpu():
     ingest(path_on_bucket)
 
 
-gpu()
+ingest_gpu()
