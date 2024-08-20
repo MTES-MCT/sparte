@@ -1,5 +1,9 @@
-
-{{ config(materialized='table') }}
+{{
+    config(
+        materialized='table',
+        docs={'node_color': 'purple'}
+    )
+}}
 
 SELECT
     code_cs as couverture,

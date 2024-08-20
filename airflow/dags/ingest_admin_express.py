@@ -79,7 +79,11 @@ def admin_express():
                         cmd = f'ogr2ogr -f "PostgreSQL" "{Container().gdal_dw_conn_str()}" -overwrite -lco GEOMETRY_NAME=geom -a_srs EPSG:2154 -nlt MULTIPOLYGON -nlt PROMOTE_TO_MULTI {path} --config PG_USE_COPY YES'  # noqa: E501
                         subprocess.run(cmd, shell=True, check=True)
 
-    download_admin_express() >> ingest_admin_express()
+    @task.bash(retries=0, trigger_rule="all_success")
+    def dbt_run(**context):
+        return 'cd "${AIRFLOW_HOME}/sql/sparte" && dbt run -s admin_express'
+
+    download_admin_express() >> ingest_admin_express() >> dbt_run()
 
 
 # Instantiate the DAG

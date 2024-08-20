@@ -1,5 +1,9 @@
-
-{{ config(materialized='table') }}
+{{
+    config(
+        materialized='table',
+        docs={'node_color': 'purple'}
+    )
+}}
 
 SELECT
     year_old,
@@ -9,7 +13,7 @@ SELECT
     us_new,
     us_old,
     ST_Transform(geom, 4326) as mpoly,
-    surface / 10000 as surface,
+    surface,
     2154 as srid_source,
     departement,
     new_is_artificial as is_new_artif,

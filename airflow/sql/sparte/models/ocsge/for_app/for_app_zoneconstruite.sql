@@ -1,5 +1,9 @@
-
-{{ config(materialized='table') }}
+{{
+    config(
+        materialized='table',
+        docs={'node_color': 'purple'}
+    )
+}}
 
 SELECT
     id as id_source,

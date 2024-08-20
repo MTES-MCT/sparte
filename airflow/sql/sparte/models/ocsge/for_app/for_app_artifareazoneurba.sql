@@ -1,4 +1,9 @@
-{{ config(materialized='table') }}
+{{
+    config(
+        materialized='table',
+        docs={'node_color': 'purple'}
+    )
+}}
 
 SELECT
     zonage_checksum as zone_urba_id,

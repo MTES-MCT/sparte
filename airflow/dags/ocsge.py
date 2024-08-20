@@ -23,19 +23,6 @@ from dependencies.ocsge.normalization import (
     ocsge_zone_construite_normalization_sql,
 )
 from dependencies.utils import multiline_string_to_single_line
-from gdaltools import ogr2ogr
-
-
-def copy_table_from_dw_to_app(
-    from_table: str,
-    to_table: str,
-):
-    ogr = ogr2ogr()
-    ogr.config_options = {"PG_USE_COPY": "YES", "OGR_TRUNCATE": "NO"}
-    ogr.set_input(Container().gdal_dw_conn(schema="public_ocsge"), table_name=from_table)
-    ogr.set_output(Container().gdal_app_conn(), table_name=to_table)
-    ogr.set_output_mode(layer_mode=ogr.MODE_LAYER_OVERWRITE)
-    ogr.execute()
 
 
 def get_paths_from_directory(directory: str) -> list[tuple[str, str]]:
@@ -66,32 +53,6 @@ vars = {
         "dw_source": "ocsge_occupation_du_sol",
         "normalization_sql": ocsge_occupation_du_sol_normalization_sql,
         "delete_on_dwt": delete_occupation_du_sol_in_dw_sql,
-        "mapping": [
-            {
-                "from_table": "public_ocsge.app_ocsge",
-                "to_table": "public.public_data_ocsge",
-            },
-            {
-                "from_table": "public_ocsge.app_artificialarea",
-                "to_table": "public.public_data_artificialarea",
-            },
-            {
-                "from_table": "public_ocsge.app_artifareazoneurba",
-                "to_table": "public.public_data_artifareazoneurba",
-            },
-            {
-                "from_table": "public_ocsge.for_app_commune",
-                "to_table": "public.public_data_commune",
-            },
-            {
-                "from_table": "public_ocsge.for_app_departement",
-                "to_table": "public.public_data_departement",
-            },
-            {
-                "from_table": "public_ocsge.app_communesol",
-                "to_table": "public.public_data_communesol",
-            },
-        ],
     },
     SourceName.ZONE_CONSTRUITE: {
         "shapefile_name": "ZONE_CONSTRUITE",
@@ -101,12 +62,6 @@ vars = {
         "dw_source": "ocsge_zone_construite",
         "normalization_sql": ocsge_zone_construite_normalization_sql,
         "delete_on_dwt": delete_zone_construite_in_dw_sql,
-        "mapping": [
-            {
-                "from_table": "public_ocsge.app_zoneconstruite",
-                "to_table": "public.public_data_zoneconstruite",
-            }
-        ],
     },
     SourceName.DIFFERENCE: {
         "shapefile_name": "DIFFERENCE",
@@ -117,16 +72,6 @@ vars = {
         "dw_final_table_name": "app_ocsgediff",
         "normalization_sql": ocsge_diff_normalization_sql,
         "delete_on_dwt": delete_difference_in_dw_sql,
-        "mapping": [
-            {
-                "from_table": "public_ocsge.app_ocsgediff",
-                "to_table": "public.public_data_ocsgediff",
-            },
-            {
-                "from_table": "public_ocsge.app_communediff",
-                "to_table": "public.public_data_communediff",
-            },
-        ],
     },
 }
 
@@ -242,6 +187,7 @@ def load_shapefile_to_dw(
                 DatasetName.DIFFERENCE,
             ],
         ),
+        "refresh_source": Param(False, type="boolean"),
     },
 )
 def ocsge():  # noqa: C901
@@ -270,8 +216,14 @@ def ocsge():  # noqa: C901
         }
 
     @task.python
-    def download_ocsge(url) -> str:
-        response = requests.get(url, allow_redirects=True)
+    def download_ocsge(url, **context) -> str:
+        if not context["params"]["refresh_source"]:
+            filename = url.split("/")[-1]
+            path_on_bucket = f"{bucket_name}/{filename}"
+            if Container().s3().exists(path_on_bucket):
+                return path_on_bucket
+
+        response = requests.get(url)
 
         if not response.ok:
             raise ValueError(f"Failed to download {url}. Response : {response.content}")
@@ -353,16 +305,6 @@ def ocsge():  # noqa: C901
 
         return results
 
-    @task.python(trigger_rule="all_success")
-    def load_data_in_app(**context):
-        dataset = context["params"]["dataset"]
-        for vars in vars_dataset[dataset]:
-            for mapping in vars["mapping"]:
-                copy_table_from_dw_to_app(
-                    from_table=mapping["from_table"],
-                    to_table=mapping["to_table"],
-                )
-
     url = get_url()
     url_exists = check_url_exists(url=url)
     path = download_ocsge(url=url)
@@ -371,7 +313,6 @@ def ocsge():  # noqa: C901
     test_result_staging = db_test_ocsge_staging()
     loaded_date = ingest_ocsge(path=path)
     dbt_run_ocsge_result = dbt_run_ocsge()
-    load_app = load_data_in_app()
 
     (
         url
@@ -382,7 +323,6 @@ def ocsge():  # noqa: C901
         >> delete_dw
         >> loaded_date
         >> dbt_run_ocsge_result
-        >> load_app
     )
 
 
