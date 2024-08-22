@@ -1,6 +1,6 @@
 from airflow.decorators import dag, task
-from dependencies.container import Container
 from gdaltools import ogr2ogr
+from include.container import Container
 from pendulum import datetime
 
 

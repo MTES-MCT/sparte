@@ -10,19 +10,19 @@ import requests
 from airflow.decorators import dag, task
 from airflow.models.param import Param
 from airflow.operators.bash import BashOperator
-from dependencies.container import Container
-from dependencies.ocsge.delete_in_dw import (
+from include.container import Container
+from include.ocsge.delete_in_dw import (
     delete_difference_in_dw_sql,
     delete_occupation_du_sol_in_dw_sql,
     delete_zone_construite_in_dw_sql,
 )
-from dependencies.ocsge.enums import DatasetName, SourceName
-from dependencies.ocsge.normalization import (
+from include.ocsge.enums import DatasetName, SourceName
+from include.ocsge.normalization import (
     ocsge_diff_normalization_sql,
     ocsge_occupation_du_sol_normalization_sql,
     ocsge_zone_construite_normalization_sql,
 )
-from dependencies.utils import multiline_string_to_single_line
+from include.utils import multiline_string_to_single_line
 
 
 def get_paths_from_directory(directory: str) -> list[tuple[str, str]]:
@@ -41,7 +41,7 @@ def get_paths_from_directory(directory: str) -> list[tuple[str, str]]:
     return paths
 
 
-with open("dependencies/ocsge/sources.json", "r") as f:
+with open("include/ocsge/sources.json", "r") as f:
     sources = json.load(f)
 
 vars = {
@@ -259,7 +259,7 @@ def ocsge():  # noqa: C901
     def db_test_ocsge_staging(**context):
         dataset = context["params"]["dataset"]
         dbt_select = " ".join([vars["dbt_selector_staging"] for vars in vars_dataset[dataset]])
-        return 'cd "${AIRFLOW_HOME}/sql/sparte" && dbt test -s ' + dbt_select
+        return 'cd "${AIRFLOW_HOME}/include/sql/sparte" && dbt test -s ' + dbt_select
 
     @task.python
     def ingest_ocsge(path, **context) -> int:
@@ -281,7 +281,7 @@ def ocsge():  # noqa: C901
     def dbt_run_ocsge(**context):
         dataset = context["params"]["dataset"]
         dbt_select = " ".join([f'{vars["dbt_selector"]}+' for vars in vars_dataset[dataset]])
-        return 'cd "${AIRFLOW_HOME}/sql/sparte" && dbt build -s ' + dbt_select
+        return 'cd "${AIRFLOW_HOME}/include/sql/sparte" && dbt build -s ' + dbt_select
 
     @task.python(trigger_rule="all_success")
     def delete_previously_loaded_data_in_dw(**context) -> dict:

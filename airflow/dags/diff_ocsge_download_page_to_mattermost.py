@@ -3,7 +3,7 @@ import difflib
 import requests
 from airflow.decorators import dag, task
 from bs4 import BeautifulSoup
-from dependencies.container import Container
+from include.container import Container
 from pendulum import datetime
 
 

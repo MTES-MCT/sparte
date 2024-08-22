@@ -1,7 +1,7 @@
 from airflow.decorators import dag, task
 from airflow.operators.bash import BashOperator
-from dependencies.container import Container
-from dependencies.utils import multiline_string_to_single_line
+from include.container import Container
+from include.utils import multiline_string_to_single_line
 from pendulum import datetime
 
 

@@ -4,7 +4,7 @@ from urllib.request import URLopener
 
 import py7zr
 from airflow.decorators import dag, task
-from dependencies.container import Container
+from include.container import Container
 from pendulum import datetime
 
 
@@ -46,7 +46,7 @@ def ingest_admin_express():
 
     @task.bash(retries=0, trigger_rule="all_success")
     def dbt_run(**context):
-        return 'cd "${AIRFLOW_HOME}/sql/sparte" && dbt run -s admin_express'
+        return 'cd "${AIRFLOW_HOME}/include/sql/sparte" && dbt run -s admin_express'
 
     download_admin_express() >> ingest() >> dbt_run()
 
