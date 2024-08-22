@@ -6,6 +6,7 @@
 }}
 
 SELECT
+    uuid,
     code_cs as couverture,
     code_us as usage,
     year,

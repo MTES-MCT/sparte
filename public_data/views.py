@@ -397,7 +397,7 @@ class ZoneUrbaViewSet(OnlyBoundingBoxMixin, ZoomSimplificationMixin, OptimizedMi
     queryset = models.ZoneUrba.objects.all()
     serializer_class = serializers.ZoneUrbaSerializer
     optimized_fields = {
-        "o.id": "id",
+        "o.checksum": "id",
         "o.libelle": "libelle",
         "o.libelong": "libelong",
         "o.typezone": "typezone",

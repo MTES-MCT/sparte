@@ -6,8 +6,9 @@
 }}
 
 SELECT
+    commune_year_id,
     year,
-    surface / 10000,
+    surface / 10000 as surface,
     2154 as srid_source,
     departement,
     commune_code as city,

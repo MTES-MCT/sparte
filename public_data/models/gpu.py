@@ -13,7 +13,7 @@ class ZoneUrbaManager(IntersectMixin, models.Manager):
 
 
 class ZoneUrba(models.Model):
-    id = models.TextField("id", primary_key=True)
+    checksum = models.TextField("checksum", unique=True)
     libelle = models.CharField("libelle", max_length=80, blank=True, null=True)
     libelong = models.CharField("libelong", max_length=254, blank=True, null=True)
     idurba = models.CharField("idurba", max_length=80, blank=True, null=True)
@@ -45,21 +45,22 @@ class ZoneUrba(models.Model):
         return f"{self.insee} {self.typezone} {self.area}Ha"
 
     class Meta:
-        indexes = [
-            models.Index(fields=["typezone"]),
-        ]
+        managed = False
 
 
 class ArtifAreaZoneUrba(models.Model):
-    zone_urba = models.ForeignKey(ZoneUrba, on_delete=models.CASCADE)
+    zone_urba = models.ForeignKey(
+        ZoneUrba,
+        on_delete=models.DO_NOTHING,
+        to_field="checksum",
+        db_column="zone_urba",
+    )
     year = models.IntegerField("Millésime", validators=[MinValueValidator(2000), MaxValueValidator(2050)])
     departement = models.CharField("Département", max_length=3)
     area = models.DecimalField("Surface artificialisée", max_digits=15, decimal_places=4)
 
     def __str__(self):
-        return f"{self.zone_urba_id} {self.year} {self.area}Ha"
+        return f"{self.zone_urba} {self.year} {self.area}Ha"
 
     class Meta:
-        indexes = [
-            models.Index(fields=["year"]),
-        ]
+        managed = False

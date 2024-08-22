@@ -43,7 +43,7 @@ SELECT
         ELSE commune.ocsge_available
     END AS ocsge_available,
     millesimes.first_millesime as first_millesime,
-    millesimes.last_millesime as  last_millesime,
+    millesimes.last_millesime as last_millesime,
     COALESCE(
         CASE
             WHEN

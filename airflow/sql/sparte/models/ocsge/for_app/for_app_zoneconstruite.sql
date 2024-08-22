@@ -6,6 +6,7 @@
 }}
 
 SELECT
+    uuid,
     id as id_source,
     year as millesime,
     ST_Transform(geom, 4326) as mpoly,

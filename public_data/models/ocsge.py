@@ -4,11 +4,12 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db.models import Sum
 
 from public_data.models.enums import SRID
-from public_data.models.mixins import DataColorationMixin, TruncateTableMixin
+from public_data.models.mixins import DataColorationMixin
 from utils.db import DynamicSRIDTransform, IntersectManager
 
 
-class Ocsge(TruncateTableMixin, DataColorationMixin, models.Model):
+class Ocsge(DataColorationMixin, models.Model):
+    id = models.TextField("ID", primary_key=True)
     couverture = models.CharField("Couverture du sol", max_length=254)
     usage = models.CharField("Usage du sol", max_length=254)
     id_source = models.CharField("ID source", max_length=200)
@@ -32,6 +33,7 @@ class Ocsge(TruncateTableMixin, DataColorationMixin, models.Model):
     default_property = "id"
 
     class Meta:
+        managed = False
         verbose_name = "OCSGE"
         verbose_name_plural = verbose_name
         indexes = [
@@ -66,7 +68,8 @@ class Ocsge(TruncateTableMixin, DataColorationMixin, models.Model):
         return data
 
 
-class OcsgeDiff(TruncateTableMixin, DataColorationMixin, models.Model):
+class OcsgeDiff(DataColorationMixin, models.Model):
+    id = models.TextField("ID", primary_key=True)
     year_old = models.IntegerField("Ancienne année", validators=[MinValueValidator(2000), MaxValueValidator(2050)])
     year_new = models.IntegerField("Nouvelle année", validators=[MinValueValidator(2000), MaxValueValidator(2050)])
     cs_new = models.CharField("Code nouvelle couverture", max_length=12)
@@ -97,6 +100,7 @@ class OcsgeDiff(TruncateTableMixin, DataColorationMixin, models.Model):
     default_color = "Red"
 
     class Meta:
+        managed = False
         verbose_name = "OCSGE - Différence"
         verbose_name_plural = verbose_name
         indexes = [
@@ -106,7 +110,8 @@ class OcsgeDiff(TruncateTableMixin, DataColorationMixin, models.Model):
         ]
 
 
-class ArtificialArea(TruncateTableMixin, DataColorationMixin, models.Model):
+class ArtificialArea(DataColorationMixin, models.Model):
+    id = models.TextField("ID", primary_key=True)
     mpoly = models.MultiPolygonField(srid=4326)
     srid_source = models.IntegerField(
         "SRID",
@@ -123,6 +128,7 @@ class ArtificialArea(TruncateTableMixin, DataColorationMixin, models.Model):
     objects = IntersectManager()
 
     class Meta:
+        managed = False
         verbose_name = "OCSGE - Artificialisation (par commune)"
         verbose_name_plural = verbose_name
         constraints = []
@@ -134,7 +140,8 @@ class ArtificialArea(TruncateTableMixin, DataColorationMixin, models.Model):
         ]
 
 
-class ZoneConstruite(TruncateTableMixin, DataColorationMixin, models.Model):
+class ZoneConstruite(DataColorationMixin, models.Model):
+    id = models.TextField("ID", primary_key=True)
     id_source = models.CharField("ID Source", max_length=200)
     millesime = models.CharField("Millesime", max_length=200)
     mpoly = models.MultiPolygonField(srid=4326)
@@ -155,6 +162,7 @@ class ZoneConstruite(TruncateTableMixin, DataColorationMixin, models.Model):
     objects = IntersectManager()
 
     class Meta:
+        managed = False
         verbose_name = "OCSGE - Zone construite"
         verbose_name_plural = verbose_name
         indexes = [

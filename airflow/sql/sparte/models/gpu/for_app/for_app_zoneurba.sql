@@ -6,7 +6,7 @@
 }}
 
 SELECT
-    checksum as id,
+    checksum,
     libelle,
     libelle_long as libelong,
     id_document_urbanisme as idurba,

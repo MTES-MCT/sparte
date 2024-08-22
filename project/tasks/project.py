@@ -608,15 +608,14 @@ def generate_theme_map_understand_artif(self, project_id) -> None:
         data = {"color": [], "geometry": []}
         # add artificial area to data
         city_ids = diagnostic.cities.all().values_list("insee", flat=True)
-        queryset = ArtificialArea.objects.filter(city__in=city_ids)
+        artif_areas = ArtificialArea.objects.filter(city__in=city_ids)
 
         artif_color = (0.97, 0.56, 0.33)
         new_artif_color = (1, 0, 0)
         new_natural_color = (0, 1, 0)
 
-        for row in queryset.only("mpoly"):
-            srid, wkt = row.mpoly.ewkt.split(";")
-            polygons = shapely.wkt.loads(wkt)
+        for artif_area in artif_areas:
+            polygons = shapely.wkt.loads(artif_area.mpoly.wkt)
             data["geometry"].append(polygons)
             data["color"].append(artif_color)
 

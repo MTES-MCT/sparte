@@ -569,9 +569,7 @@ class Project(BaseProject):
 
     @property
     def has_zonage_urbanisme(self) -> bool:
-        has = ArtifAreaZoneUrba.objects.filter(zone_urba__mpoly__intersects=self.combined_emprise).exists()
-        print("has_zonage_urbanisme", has)
-        return has
+        return ArtifAreaZoneUrba.objects.filter(zone_urba__mpoly__intersects=self.combined_emprise).exists()
 
     def get_ocsge_millesimes(self):
         """Return all OCS GE millésimes available within project cities and between
@@ -1252,7 +1250,7 @@ class Project(BaseProject):
         zone_urba = (
             ZoneUrba.objects.annotate(pos=PointOnSurface("mpoly"))
             .filter(pos__intersects=self.combined_emprise)
-            .values_list("id", flat=True)
+            .values_list("checksum", flat=True)
         )
 
         qs = (

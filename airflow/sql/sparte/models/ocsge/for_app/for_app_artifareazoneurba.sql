@@ -6,7 +6,7 @@
 }}
 
 SELECT
-    zonage_checksum as zone_urba_id,
+    zonage_checksum as zone_urba,
     year,
     max(departement) as departement,
     sum(ST_Area(ST_Transform(geom, 2154))) / 10000 as area

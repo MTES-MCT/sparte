@@ -6,6 +6,7 @@
 }}
 
 SELECT
+    uuid,
     year_old,
     year_new,
     cs_new,
