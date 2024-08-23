@@ -26,3 +26,19 @@ def display_chart(div_id, chart, nonce):
             }
         )
     return context
+
+
+@register.inclusion_tag("highcharts/display_chart_data.html")
+def display_chart_data(div_id, chart, nonce):
+    context = {
+        "div_id": div_id,
+        "CSP_NONCE": nonce,
+    }
+    if chart:
+        context.update(
+            {
+                "chart_name": chart.get_name(),
+                "json_options": chart.dict(),
+            }
+        )
+    return context

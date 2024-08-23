@@ -44,6 +44,18 @@ class Chart:
                     }
                 ]
             },
+            "colors": [
+                "#6a6af4",
+                "#53e19f",
+                "#00e272",
+                "#fe6a35",
+                "#6b8abc",
+                "#d568fb",
+                "#2ee0ca",
+                "#fa4b42",
+                "#feb56a",
+                "#91e8e1",
+            ],
         }
         return param
 
@@ -92,6 +104,15 @@ class Chart:
             return mark_safe(chart_dumped)  # nosec
         else:
             return chart_dumped
+
+    def dict(self) -> Dict[str, Any]:
+        chart_dumped = json.dumps(
+            obj=self.chart,
+            default=decimal2float,
+            indent=None,
+        )
+
+        return mark_safe(chart_dumped)
 
     def get_name(self) -> str:
         if not self.name:
