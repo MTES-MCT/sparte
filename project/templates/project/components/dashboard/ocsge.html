@@ -486,11 +486,9 @@
     </div>
 </div>
 
-{% block bodyend %}
-{% display_chart 'chart_couv_pie' couv_pie_chart CSP_NONCE %}
-{% display_chart 'chart_couv_prog' couv_progression_chart CSP_NONCE %}
-{% display_chart 'chart_usa_pie' usa_pie_chart CSP_NONCE %}
-{% display_chart 'chart_usa_prog' usa_progression_chart CSP_NONCE %}
-{% display_chart 'chart_couv_wheel' couv_wheel_chart CSP_NONCE %}
-{% display_chart 'chart_usa_wheel' usa_whell_chart CSP_NONCE %}
-{% endblock bodyend %}
+{% display_chart_data 'chart_couv_pie' couv_pie_chart CSP_NONCE %}
+{% display_chart_data 'chart_couv_prog' couv_progression_chart CSP_NONCE %}
+{% display_chart_data 'chart_usa_pie' usa_pie_chart CSP_NONCE %}
+{% display_chart_data 'chart_usa_prog' usa_progression_chart CSP_NONCE %}
+{% display_chart_data 'chart_couv_wheel' couv_wheel_chart CSP_NONCE %}
+{% display_chart_data 'chart_usa_wheel' usa_whell_chart CSP_NONCE %}

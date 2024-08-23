@@ -1,45 +1,7 @@
 {% load highcharts_tags %}
 {% load sri %}
 
-<div class="fr-callout fr-callout--brown-caramel fr-fi-information-line fr-callout-read-more">
-    <div class="fr-callout-read-more__excerpt">
-        <p class="fr-text--sm mb-3">
-            La consommation d'espaces NAF (Naturels, Agricoles et Forestiers) est entendue comme
-            <i>« la création ou l'extension effective d'espaces urbanisés sur le territoire concerné »</i> (article 194 de la loi Climat et résilience).
-        </p>
-        <p class="fr-text--sm mb-3">
-            Cet article exprime le fait que le caractère urbanisé d'un espace est la traduction de l'usage qui en est fait.
-            Un espace urbanisé n'est plus un espace d'usage NAF (Naturel, Agricole et Forestier). Si l'artificialisation des sols traduit globalement un changement de couverture physique,
-            la consommation traduit un changement d'usage. A titre d'exemple, un bâtiment agricole artificialise mais ne consomme pas.
-        </p>
-    </div>
-    <div class="fr-callout-read-more__text" id="conso_1" hidden>
-        <p class="fr-text--sm mb-3">
-            La consommation d'espaces NAF (Naturels, Agricoles et Forestiers) est entendue comme
-            <i>« la création ou l'extension effective d'espaces urbanisés sur le territoire concerné »</i> (article 194 de la loi Climat et résilience).
-        </p>
-        <p class="fr-text--sm mb-3">
-            Cet article exprime le fait que le caractère urbanisé d'un espace est la traduction de l'usage qui en est fait.
-            Un espace urbanisé n'est plus un espace d'usage NAF (Naturel, Agricole et Forestier). Si l'artificialisation des sols traduit globalement un changement de couverture physique,
-            la consommation traduit un changement d'usage. A titre d'exemple, un bâtiment agricole artificialise mais ne consomme pas.
-        </p>
-        <p class="fr-text--sm mb-3">
-            La consommation d'espaces NAF (Naturels, Agricoles et Forestiers) est mesurée avec les données d'évolution des fichiers fonciers produits
-            et diffusés par le Cerema depuis 2009 à  partir des fichiers MAJIC (Mise A Jour de l'Information Cadastrale)
-            de la DGFIP. Le dernier millésime de 2023 est la photographie du territoire au 1er janvier 2023, intégrant
-            les évolutions réalisées au cours de l'année 2022.
-        </p>
-        <p class="fr-text--sm mb-3">
-            Les données de l'INSEE sont également intégrées pour mettre en perspective la consommation d'espaces vis à vis de l'évolution de la population.
-        </p>
-        <p class="fr-text--sm mb-3"><a href="https://artificialisation.developpement-durable.gouv.fr/bases-donnees/les-fichiers-fonciers" target="_blank" id="cerema-link">Plus d'informations sur les fichiers fonciers (source : Cerema)</a></p>
-    </div>
-    <button class="fr-btn fr-btn--secondary fr-btn--sm fr-callout-read-more__btn" aria-expanded="false" aria-controls="conso_1">
-        Lire plus
-    </button>
-</div>
-
-<div class="fr-grid-row fr-grid-row--gutters">
+ <div class="fr-grid-row fr-grid-row--gutters">
     <div class="fr-col-12 fr-col-md-6 fr-grid-row">
         {% include "project/components/widgets/statistic.html" with title=total_surface|floatformat:0|add:" ha" description="Surface du territoire" %}
     </div>
@@ -89,7 +51,7 @@
         {% endif %}
     </div>
 
-    <div class="fr-notice bg-white bg-white fr-mt-4w">
+    <div class="fr-notice bg-white fr-mt-4w">
         <div class="fr-container">
             <div class="d-flex align-items-center justify-content-between">
                 <div>
@@ -344,9 +306,155 @@
     </div>
 </div>
 
-<div id="conso-relative-surface-anchor" class="fr-mt-7w" hx-get="{% url 'project:relative-surface' project.id %}" hx-trigger="revealed">
+<div class="fr-mt-7w">
     <h3>Consommation d'espaces rapportée à la surface du territoire</h3>
-    <div class="fr-custom-loader"></div>
+
+    <div class="bg-white fr-p-2w">
+        <div class="d-flex justify-content-end align-items-center fr-mb-2w">
+            <div class="dropdown custom-dropdown fr-mr-2w" data-toggle="tooltip" title="Exporter le graphique">
+                <button class="fr-btn fr-icon-download-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="dropdown" aria-expanded="false"></button>
+    
+                <ul class="dropdown-menu">
+                    <li>
+                        <a class="fr-nav__link export-chart" href="#" data-chart-target="surface_chart" data-type="image/png">PNG</a>
+                    </li>
+                    <li>
+                        <a class="fr-nav__link export-chart" href="#" data-chart-target="surface_chart" data-type="image/jpeg">JPEG</a>
+                    </li>
+                    <li>
+                        <a class="fr-nav__link export-chart" href="#" data-chart-target="surface_chart" data-type="application/pdf">PDF</a>
+                    </li>
+                    <li>
+                        <a class="fr-nav__link export-chart" href="#" data-chart-target="surface_chart" data-type="image/svg+xml">Vectoriel</a>
+                    </li>
+                </ul>
+            </div>
+    
+            <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm fr-mr-2w fullscreen-chart" data-chart-target="surface_chart" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
+    
+            <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#consoRelativeSurface" data-toggle="tooltip" title="Astuces pour lire le graphique" aria-hidden="true"></button>
+        </div>
+        <div id="surface_chart"></div>
+    </div>
+    
+    <div class="fr-notice bg-white fr-mt-4w fr-mb-7w">
+        <div class="fr-container">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <span class="fr-icon-information-line" aria-hidden="true"></span>
+                    <span class="fr-text--xs fr-mr-1w">Source de données: </span>
+                    <p class="fr-tag fr-tag--sm fr-tag--blue">
+                        <strong>FICHIERS FONCIERS</strong>
+                    </p>
+                </div>
+                <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="surface-data">Détails données et calcul</button>
+            </div>
+            <div class="fr-collapse" id="surface-data">
+                <h6 class="fr-mt-2w">Source</h6>
+                <p class="fr-text--sm">
+                    Données d'évolution des fichiers fonciers produits et diffusés par le Cerema depuis 2009 à 
+                    partir des fichiers MAJIC (Mise A Jour de l'Information Cadastrale) de la DGFIP. Le dernier 
+                    millésime de 2023 est la photographie du territoire au 1er janvier 2023, intégrant les évolutions 
+                    réalisées au cours de l'année 2022.
+                    Pour plus d'informations sur <a class="fr-link" href="{{ FAQ_URL }}fr/article/quest-ce-quun-millesime-110ihlr/" target="_blank" rel="noopener noreferrer">"Qu'est-ce qu'un millésime ?"</a>.
+                </p>    
+                <h6 class="fr-mt-2w">Calcul</h6>
+                <p class="fr-text--sm">Données brutes, sans calcul</p>
+        
+                <h6 class="fr-mt-2w">Données</h6>
+                <div class="fr-table fr-table--bordered">
+                    <div class="fr-table__wrapper">
+                        <div class="fr-table__container">
+                            <div class="fr-table__content">
+                                <table>
+                                    <caption>
+                                        Surface des territoires similaires (en ha)
+                                    </caption>
+                                    <thead>
+                                        <tr>
+                                            <th scope="col"></th>
+                                            <th scope="col" class="fr-cell--right">Surface des territoires</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for city_name, data in surface_data_table.items %}
+                                        <tr>
+                                            <th scope="row">{{ city_name }}</th>
+                                            {% for year, val in data.items %}
+                                            <td class="fr-cell--right">{{ val|floatformat:0 }} Ha</td>
+                                            {% endfor %}
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="bg-white fr-p-2w">
+        <div class="d-flex justify-content-end align-items-center fr-mb-2w">
+            <div class="dropdown custom-dropdown fr-mr-2w" data-toggle="tooltip" title="Exporter le graphique">
+                <button class="fr-btn fr-icon-download-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="dropdown" aria-expanded="false"></button>
+    
+                <ul class="dropdown-menu">
+                    <li>
+                        <a class="fr-nav__link export-chart" href="#" data-chart-target="surface_proportional_chart" data-type="image/png">PNG</a>
+                    </li>
+                    <li>
+                        <a class="fr-nav__link export-chart" href="#" data-chart-target="surface_proportional_chart" data-type="image/jpeg">JPEG</a>
+                    </li>
+                    <li>
+                        <a class="fr-nav__link export-chart" href="#" data-chart-target="surface_proportional_chart" data-type="application/pdf">PDF</a>
+                    </li>
+                    <li>
+                        <a class="fr-nav__link export-chart" href="#" data-chart-target="surface_proportional_chart" data-type="image/svg+xml">Vectoriel</a>
+                    </li>
+                </ul>
+            </div>
+    
+            <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm fr-mr-2w fullscreen-chart" data-chart-target="surface_proportional_chart" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
+    
+            <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#consoRelativeSurface" data-toggle="tooltip" title="Astuces pour lire le graphique" aria-hidden="true"></button>
+        </div>
+        <div id="surface_proportional_chart"></div>
+    </div>
+    
+    <div class="fr-notice bg-white fr-mt-4w">
+        <div class="fr-container">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <span class="fr-icon-information-line" aria-hidden="true"></span>
+                    <span class="fr-text--xs fr-mr-1w">Source de données: </span>
+                    <p class="fr-tag fr-tag--sm fr-tag--blue">
+                        <strong>FICHIERS FONCIERS</strong>
+                    </p>
+                </div>
+                <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="surface-relative-comparison-data">Détails données et calcul</button>
+            </div>
+            <div class="fr-collapse" id="surface-relative-comparison-data">
+                <h6 class="fr-mt-2w">Source</h6>
+                <p class="fr-text--sm">
+                    Données d'évolution des fichiers fonciers produits et diffusés par le Cerema depuis 2009 à 
+                    partir des fichiers MAJIC (Mise A Jour de l'Information Cadastrale) de la DGFIP. Le dernier 
+                    millésime de 2023 est la photographie du territoire au 1er janvier 2023, intégrant les évolutions 
+                    réalisées au cours de l'année 2022.
+                    Pour plus d'informations sur <a class="fr-link" href="{{ FAQ_URL }}fr/article/quest-ce-quun-millesime-110ihlr/" target="_blank" rel="noopener noreferrer">"Qu'est-ce qu'un millésime ?"</a>.
+                </p>    
+                <h6 class="fr-mt-2w">Calcul</h6>
+                <p class="fr-text--sm">
+                    Pour chaque territoire, la consommation d'espace annuelle est multipliée par 1000 et divisée par
+                    sa surface totale. Le résultat est exprimé en pour mille (‰).
+                </p>
+        
+                <h6 class="fr-mt-2w">Données</h6>
+                {{ surface_proportional_data_table }}
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- Modal -->
@@ -423,7 +531,33 @@
     </div>
 </div>
 
-{% display_chart 'annual_total_conso_chart' annual_total_conso_chart CSP_NONCE %}
-{% display_chart 'comparison_chart' comparison_chart CSP_NONCE %}
-{% display_chart 'chart_determinant' determinant_per_year_chart CSP_NONCE %}
-{% display_chart 'pie_determinant' determinant_pie_chart CSP_NONCE %}
+<!-- Modal -->
+<div class="modal fade" id="consoRelativeSurface" tabindex="-1" aria-labelledby="consoRelativeSurfaceLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+        <div class="fr-modal__body">
+            <div class="fr-modal__header">
+                <button class="fr-link--close fr-link" data-bs-dismiss="modal" aria-label="Close">Fermer</button>
+            </div>
+            <div class="fr-modal__content">
+                <h1 class="fr-modal__title" id="consoRelativeSurfaceLabel">
+                    <span class="fr-fi-arrow-right-line fr-fi--lg"></span>
+                    Astuces - Graphique consommation d'espaces rapportée à la surface du territoire
+                </h1>
+                <p class="fr-text--sm">
+                    La consommation relative aux surfaces des territoires permet d'analyser la consommation d'espaces au regard de la surface totale du territoire.
+                    Cette approche proportionnelle permet de comparer les territoires selon le pourcentage d'ha consommé par rapport au volume d'ha total du territoire.
+                    La comparaison avec les territoires similaires permet d'appréhender les dynamiques globales brutes de consommation d'espaces NAF (Naturels, Agricoles et Forestiers) et de les comparer entre elles.
+                </p>
+                <p class="fr-text--sm">Avec le bouton <span class="fr-icon-drag-move-2-line fr-icon--sm" aria-hidden="true"></span>, vous pouvez afficher le graphique en plein écran.</p>
+                <p class="fr-text--sm">Avec le bouton <span class="fr-icon-download-line fr-icon--sm" aria-hidden="true"></span>, vous pouvez télécharger le graphique sous forme d'image (utilisez PNG si vous ne savez pas lequel choisir).</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% display_chart_data 'annual_total_conso_chart' annual_total_conso_chart CSP_NONCE %}
+{% display_chart_data 'comparison_chart' comparison_chart CSP_NONCE %}
+{% display_chart_data 'chart_determinant' determinant_per_year_chart CSP_NONCE %}
+{% display_chart_data 'pie_determinant' determinant_pie_chart CSP_NONCE %}
+{% display_chart_data 'surface_chart' surface_chart CSP_NONCE %}
+{% display_chart_data 'surface_proportional_chart' surface_proportional_chart CSP_NONCE %}
