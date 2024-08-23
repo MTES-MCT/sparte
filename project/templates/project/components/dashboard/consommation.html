@@ -17,27 +17,7 @@
         <div class="fr-col-12{% if nb_communes > 1 %} fr-col-lg-8{% endif %}">
             <div class="bg-white fr-p-2w h-100">
                 <div class="d-flex justify-content-end align-items-center fr-mb-2w">
-                    <div class="dropdown custom-dropdown fr-mr-2w" data-toggle="tooltip" title="Exporter le graphique">
-                        <button class="fr-btn fr-icon-download-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="dropdown" aria-expanded="false"></button>
-
-                        <ul class="dropdown-menu">
-                            <li>
-                                <a class="fr-nav__link export-chart" href="#" data-chart-target="chart" data-type="image/png">PNG</a>
-                            </li>
-                            <li>
-                                <a class="fr-nav__link export-chart" href="#" data-chart-target="chart" data-type="image/jpeg">JPEG</a>
-                            </li>
-                            <li>
-                                <a class="fr-nav__link export-chart" href="#" data-chart-target="chart" data-type="application/pdf">PDF</a>
-                            </li>
-                            <li>
-                                <a class="fr-nav__link export-chart" href="#" data-chart-target="chart" data-type="image/svg+xml">Vectoriel</a>
-                            </li>
-                        </ul>
-                    </div>
-
-                    <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm fr-mr-2w fullscreen-chart" data-chart-target="chart" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
-
+                    {% include "project/components/widgets/chart_buttons.html" with chart="annual_total_conso_chart" %}
                     <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#consoAnnuelle" data-toggle="tooltip" title="Astuces pour lire le graphique"></button>
                 </div>
                 <div id="annual_total_conso_chart"></div>
@@ -120,27 +100,7 @@
         <div class="fr-col-12 fr-col-lg-4">
             <div class="bg-white fr-p-2w">
                 <div class="d-flex justify-content-end align-items-center fr-mb-2w">
-                    <div class="dropdown custom-dropdown fr-mr-2w" data-toggle="tooltip" title="Exporter le graphique">
-                        <button class="fr-btn fr-icon-download-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="dropdown" aria-expanded="false"></button>
-
-                        <ul class="dropdown-menu">
-                            <li>
-                                <a class="fr-nav__link export-chart" href="#" data-chart-target="pie_determinant" data-type="image/png">PNG</a>
-                            </li>
-                            <li>
-                                <a class="fr-nav__link export-chart" href="#" data-chart-target="pie_determinant" data-type="image/jpeg">JPEG</a>
-                            </li>
-                            <li>
-                                <a class="fr-nav__link export-chart" href="#" data-chart-target="pie_determinant" data-type="application/pdf">PDF</a>
-                            </li>
-                            <li>
-                                <a class="fr-nav__link export-chart" href="#" data-chart-target="pie_determinant" data-type="image/svg+xml">Vectoriel</a>
-                            </li>
-                        </ul>
-                    </div>
-
-                    <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm fr-mr-2w fullscreen-chart" data-chart-target="pie_determinant" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
-
+                    {% include "project/components/widgets/chart_buttons.html" with chart="pie_determinant" %}
                     <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#determinantModal" data-toggle="tooltip" title="Astuces pour lire le graphique" aria-hidden="true"></button>
                 </div>
                 <div id="pie_determinant"></div>
@@ -149,27 +109,7 @@
         <div class="fr-col-12 fr-col-lg-8">
             <div class="bg-white fr-p-2w">
                 <div class="d-flex justify-content-end align-items-center fr-mb-2w">
-                    <div class="dropdown custom-dropdown fr-mr-2w" data-toggle="tooltip" title="Exporter le graphique">
-                        <button class="fr-btn fr-icon-download-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="dropdown" aria-expanded="false"></button>
-
-                        <ul class="dropdown-menu">
-                            <li>
-                                <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_determinant" data-type="image/png">PNG</a>
-                            </li>
-                            <li>
-                                <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_determinant" data-type="image/jpeg">JPEG</a>
-                            </li>
-                            <li>
-                                <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_determinant" data-type="application/pdf">PDF</a>
-                            </li>
-                            <li>
-                                <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_determinant" data-type="image/svg+xml">Vectoriel</a>
-                            </li>
-                        </ul>
-                    </div>
-
-                    <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm fr-mr-2w fullscreen-chart" data-chart-target="chart_determinant" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
-
+                    {% include "project/components/widgets/chart_buttons.html" with chart="chart_determinant" %}
                     <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#determinantModal" data-toggle="tooltip" title="Astuces pour lire le graphique" aria-hidden="true"></button>
                 </div>
                 <div id="chart_determinant"></div>
@@ -248,28 +188,7 @@
     <div class="bg-white fr-p-2w">
         <div class="d-flex justify-content-end align-items-center fr-mb-2w">
             <a class="fr-mr-2w fr-btn fr-icon-add-circle-line fr-btn--tertiary fr-btn--sm" href="{% url 'project:lookalike' project.id %}?next={% url 'project:report_conso' project.id %}&anchor=territoires-de-comparaison" data-toggle="tooltip" title="Ajouter un territoire de comparaison" aria-hidden="true"></a>
-
-            <div class="dropdown custom-dropdown fr-mr-2w" data-toggle="tooltip" title="Exporter le graphique">
-                <button class="fr-btn fr-icon-download-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="dropdown" aria-expanded="false"></button>
-
-                <ul class="dropdown-menu">
-                    <li>
-                        <a class="fr-nav__link export-chart" href="#" data-chart-target="comparison_chart" data-type="image/png">PNG</a>
-                    </li>
-                    <li>
-                        <a class="fr-nav__link export-chart" href="#" data-chart-target="comparison_chart" data-type="image/jpeg">JPEG</a>
-                    </li>
-                    <li>
-                        <a class="fr-nav__link export-chart" href="#" data-chart-target="comparison_chart" data-type="application/pdf">PDF</a>
-                    </li>
-                    <li>
-                        <a class="fr-nav__link export-chart" href="#" data-chart-target="comparison_chart" data-type="image/svg+xml">Vectoriel</a>
-                    </li>
-                </ul>
-            </div>
-
-            <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm fr-mr-2w fullscreen-chart" data-chart-target="comparison_chart" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
-
+            {% include "project/components/widgets/chart_buttons.html" with chart="comparison_chart" %}
             <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#comparaisonVoisin" data-toggle="tooltip" title="Astuces pour lire le graphique" aria-hidden="true"></button>
         </div>
         <div id="comparison_chart"></div>
@@ -311,27 +230,7 @@
 
     <div class="bg-white fr-p-2w">
         <div class="d-flex justify-content-end align-items-center fr-mb-2w">
-            <div class="dropdown custom-dropdown fr-mr-2w" data-toggle="tooltip" title="Exporter le graphique">
-                <button class="fr-btn fr-icon-download-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="dropdown" aria-expanded="false"></button>
-    
-                <ul class="dropdown-menu">
-                    <li>
-                        <a class="fr-nav__link export-chart" href="#" data-chart-target="surface_chart" data-type="image/png">PNG</a>
-                    </li>
-                    <li>
-                        <a class="fr-nav__link export-chart" href="#" data-chart-target="surface_chart" data-type="image/jpeg">JPEG</a>
-                    </li>
-                    <li>
-                        <a class="fr-nav__link export-chart" href="#" data-chart-target="surface_chart" data-type="application/pdf">PDF</a>
-                    </li>
-                    <li>
-                        <a class="fr-nav__link export-chart" href="#" data-chart-target="surface_chart" data-type="image/svg+xml">Vectoriel</a>
-                    </li>
-                </ul>
-            </div>
-    
-            <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm fr-mr-2w fullscreen-chart" data-chart-target="surface_chart" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
-    
+            {% include "project/components/widgets/chart_buttons.html" with chart="surface_chart" %}
             <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#consoRelativeSurface" data-toggle="tooltip" title="Astuces pour lire le graphique" aria-hidden="true"></button>
         </div>
         <div id="surface_chart"></div>
@@ -397,27 +296,7 @@
     
     <div class="bg-white fr-p-2w">
         <div class="d-flex justify-content-end align-items-center fr-mb-2w">
-            <div class="dropdown custom-dropdown fr-mr-2w" data-toggle="tooltip" title="Exporter le graphique">
-                <button class="fr-btn fr-icon-download-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="dropdown" aria-expanded="false"></button>
-    
-                <ul class="dropdown-menu">
-                    <li>
-                        <a class="fr-nav__link export-chart" href="#" data-chart-target="surface_proportional_chart" data-type="image/png">PNG</a>
-                    </li>
-                    <li>
-                        <a class="fr-nav__link export-chart" href="#" data-chart-target="surface_proportional_chart" data-type="image/jpeg">JPEG</a>
-                    </li>
-                    <li>
-                        <a class="fr-nav__link export-chart" href="#" data-chart-target="surface_proportional_chart" data-type="application/pdf">PDF</a>
-                    </li>
-                    <li>
-                        <a class="fr-nav__link export-chart" href="#" data-chart-target="surface_proportional_chart" data-type="image/svg+xml">Vectoriel</a>
-                    </li>
-                </ul>
-            </div>
-    
-            <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm fr-mr-2w fullscreen-chart" data-chart-target="surface_proportional_chart" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
-    
+            {% include "project/components/widgets/chart_buttons.html" with chart="surface_proportional_chart" %}
             <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#consoRelativeSurface" data-toggle="tooltip" title="Astuces pour lire le graphique" aria-hidden="true"></button>
         </div>
         <div id="surface_proportional_chart"></div>

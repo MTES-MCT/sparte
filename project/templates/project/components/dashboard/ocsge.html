@@ -38,26 +38,7 @@
         <div class="fr-col-12 fr-col-lg-6">
             <div class="bg-white fr-p-2w">
                 <div class="d-flex justify-content-end align-items-center fr-mb-2w">
-                    <div class="dropdown custom-dropdown fr-mr-2w" data-toggle="tooltip" title="Exporter le graphique">
-                        <button class="fr-btn fr-icon-download-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="dropdown" aria-expanded="false"></button>
-
-                        <ul class="dropdown-menu">
-                            <li>
-                                <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_couv_pie" data-type="image/png">PNG</a>
-                            </li>
-                            <li>
-                                <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_couv_pie" data-type="image/jpeg">JPEG</a>
-                            </li>
-                            <li>
-                                <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_couv_pie" data-type="application/pdf">PDF</a>
-                            </li>
-                            <li>
-                                <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_couv_pie" data-type="image/svg+xml">Vectoriel</a>
-                            </li>
-                        </ul>
-                    </div>
-
-                    <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm fullscreen-chart" data-chart-target="chart_couv_pie" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
+                    {% include "project/components/widgets/chart_buttons.html" with chart="chart_couv_pie" %}
                 </div>
                 <div id="chart_couv_pie"></div>
             </div>
@@ -65,26 +46,7 @@
         <div class="fr-col-12 fr-col-lg-6">
             <div class="bg-white fr-p-2w">
                 <div class="d-flex justify-content-end align-items-center fr-mb-2w">
-                    <div class="dropdown custom-dropdown fr-mr-2w" data-toggle="tooltip" title="Exporter le graphique">
-                        <button class="fr-btn fr-icon-download-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="dropdown" aria-expanded="false"></button>
-
-                        <ul class="dropdown-menu">
-                            <li>
-                                <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_couv_prog" data-type="image/png">PNG</a>
-                            </li>
-                            <li>
-                                <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_couv_prog" data-type="image/jpeg">JPEG</a>
-                            </li>
-                            <li>
-                                <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_couv_prog" data-type="application/pdf">PDF</a>
-                            </li>
-                            <li>
-                                <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_couv_prog" data-type="image/svg+xml">Vectoriel</a>
-                            </li>
-                        </ul>
-                    </div>
-
-                    <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm fullscreen-chart" data-chart-target="chart_couv_prog" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
+                    {% include "project/components/widgets/chart_buttons.html" with chart="chart_couv_prog" %}
                 </div>
                 <div id="chart_couv_prog"></div>
             </div>
@@ -159,26 +121,7 @@
 
     <div class="bg-white fr-p-2w">
         <div class="d-flex justify-content-end align-items-center fr-mb-2w">
-            <div class="dropdown custom-dropdown fr-mr-2w" data-toggle="tooltip" title="Exporter le graphique">
-                <button class="fr-btn fr-icon-download-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="dropdown" aria-expanded="false"></button>
-
-                <ul class="dropdown-menu">
-                    <li>
-                        <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_couv_wheel" data-type="image/png">PNG</a>
-                    </li>
-                    <li>
-                        <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_couv_wheel" data-type="image/jpeg">JPEG</a>
-                    </li>
-                    <li>
-                        <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_couv_wheel" data-type="application/pdf">PDF</a>
-                    </li>
-                    <li>
-                        <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_couv_wheel" data-type="image/svg+xml">Vectoriel</a>
-                    </li>
-                </ul>
-            </div>
-
-            <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm fullscreen-chart" data-chart-target="chart_couv_wheel" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
+            {% include "project/components/widgets/chart_buttons.html" with chart="chart_couv_wheel" %}
         </div>
         <div id="chart_couv_wheel"></div>
     </div>
@@ -266,26 +209,7 @@
         <div class="fr-col-12 fr-col-lg-6">
             <div class="bg-white fr-p-2w">
                 <div class="d-flex justify-content-end align-items-center fr-mb-2w">
-                    <div class="dropdown custom-dropdown fr-mr-2w" data-toggle="tooltip" title="Exporter le graphique">
-                        <button class="fr-btn fr-icon-download-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="dropdown" aria-expanded="false"></button>
-
-                        <ul class="dropdown-menu">
-                            <li>
-                                <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_usa_pie" data-type="image/png">PNG</a>
-                            </li>
-                            <li>
-                                <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_usa_pie" data-type="image/jpeg">JPEG</a>
-                            </li>
-                            <li>
-                                <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_usa_pie" data-type="application/pdf">PDF</a>
-                            </li>
-                            <li>
-                                <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_usa_pie" data-type="image/svg+xml">Vectoriel</a>
-                            </li>
-                        </ul>
-                    </div>
-
-                    <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm fullscreen-chart" data-chart-target="chart_usa_pie" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
+                    {% include "project/components/widgets/chart_buttons.html" with chart="chart_usa_pie" %}
                 </div>
                 <div id="chart_usa_pie"></div>
             </div>
@@ -293,26 +217,7 @@
         <div class="fr-col-12 fr-col-lg-6">
             <div class="bg-white fr-p-2w">
                 <div class="d-flex justify-content-end align-items-center fr-mb-2w">
-                    <div class="dropdown custom-dropdown fr-mr-2w" data-toggle="tooltip" title="Exporter le graphique">
-                        <button class="fr-btn fr-icon-download-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="dropdown" aria-expanded="false"></button>
-
-                        <ul class="dropdown-menu">
-                            <li>
-                                <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_usa_prog" data-type="image/png">PNG</a>
-                            </li>
-                            <li>
-                                <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_usa_prog" data-type="image/jpeg">JPEG</a>
-                            </li>
-                            <li>
-                                <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_usa_prog" data-type="application/pdf">PDF</a>
-                            </li>
-                            <li>
-                                <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_usa_prog" data-type="image/svg+xml">Vectoriel</a>
-                            </li>
-                        </ul>
-                    </div>
-
-                    <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm fullscreen-chart" data-chart-target="chart_usa_prog" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
+                    {% include "project/components/widgets/chart_buttons.html" with chart="chart_usa_prog" %}
                 </div>
                 <div id="chart_usa_prog"></div>
             </div>
@@ -387,26 +292,7 @@
 
     <div class="bg-white fr-p-2w">
         <div class="d-flex justify-content-end align-items-center fr-mb-2w">
-            <div class="dropdown custom-dropdown fr-mr-2w" data-toggle="tooltip" title="Exporter le graphique">
-                <button class="fr-btn fr-icon-download-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="dropdown" aria-expanded="false"></button>
-
-                <ul class="dropdown-menu">
-                    <li>
-                        <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_usa_wheel" data-type="image/png">PNG</a>
-                    </li>
-                    <li>
-                        <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_usa_wheel" data-type="image/jpeg">JPEG</a>
-                    </li>
-                    <li>
-                        <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_usa_wheel" data-type="application/pdf">PDF</a>
-                    </li>
-                    <li>
-                        <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_usa_wheel" data-type="image/svg+xml">Vectoriel</a>
-                    </li>
-                </ul>
-            </div>
-
-            <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm fullscreen-chart" data-chart-target="chart_usa_wheel" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
+            {% include "project/components/widgets/chart_buttons.html" with chart="chart_usa_wheel" %}
         </div>
         <div id="chart_usa_wheel"></div>
     </div>
