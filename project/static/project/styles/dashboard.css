@@ -1,35 +1,27 @@
-.fr-header {
-    filter: none;
+body, html {
+    height: 100%;
 }
 
-.dashboard-wrapper {
-    display: flex;
-    align-items: stretch;
-}
-
-.dashboard-sidebar {
-    background-color: #fff;
-    border-top: 1px solid #f4f7fe;
-    padding-top: 4vh;
-    height: 100vh;
-    position: sticky;
-    top: 0;
-    overflow-y: auto;
-    flex: 0 0 250px;
-}
-
-.dashboard-content {
-    background: #f4f7fe;
-    padding: 2vw;
+.dashboard-header {
+    height: 79px;
     width: 100%;
+    padding: 1rem;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background: #fff;
+    z-index: 999;
+    border-bottom: 1px solid #EEF2F7;
+}
+
+.header-brand {
+    display: flex;
+    gap: 1rem;
+    height: 100%;
 }
 
 .fr-breadcrumb li {
     color: #707EAE !important;
-}
-
-.fr-custom-loader {
-    display: none;
 }
 
 .fr-callout {

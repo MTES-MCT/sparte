@@ -181,7 +181,7 @@
 
     <div class="fr-grid-row fr-grid-row--gutters">
         <div class="fr-col-12 fr-col-lg-8">
-            <div class="border fr-p-2w h-100">
+            <div class="bg-white fr-p-2w h-100">
                 <div class="d-flex justify-content-end align-items-center fr-mb-2w">
                     <div class="dropdown custom-dropdown fr-mr-2w" data-toggle="tooltip" title="Exporter le graphique">
                         <button class="fr-btn fr-icon-download-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="dropdown" aria-expanded="false"></button>
@@ -213,7 +213,7 @@
         </div>
     </div>
 
-    <div class="fr-notice fr-mt-4w">
+    <div class="fr-notice bg-white fr-mt-4w">
         <div class="fr-container">
             <div class="d-flex align-items-center justify-content-between">
                 <div>
@@ -275,7 +275,7 @@
 
     <div class="fr-grid-row fr-grid-row--gutters">
         <div class="fr-col-12 fr-col-lg-8">
-            <div class="border fr-p-2w h-100">
+            <div class="bg-white fr-p-2w h-100">
                 <div class="d-flex justify-content-end align-items-center fr-mb-2w">
                     <div class="dropdown custom-dropdown fr-mr-2w">
                         <button class="fr-btn fr-btn--tertiary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill" data-bs-toggle="dropdown" aria-expanded="false">
@@ -334,7 +334,7 @@
         </div>
     </div>
 
-    <div class="fr-notice fr-mt-4w">
+    <div class="fr-notice bg-white fr-mt-4w">
         <div class="fr-container">
             <div class="d-flex align-items-center justify-content-between">
                 <div>
@@ -406,7 +406,7 @@
 
     <div class="fr-grid-row fr-grid-row--gutters">
         <div class="fr-col-12 fr-col-lg-4">
-            <div class="border fr-p-2w">
+            <div class="bg-white fr-p-2w">
                 <div class="d-flex justify-content-end align-items-center fr-mb-2w">
                     <div class="dropdown custom-dropdown fr-mr-2w" data-toggle="tooltip" title="Exporter le graphique">
                         <button class="fr-btn fr-icon-download-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="dropdown" aria-expanded="false"></button>
@@ -435,7 +435,7 @@
             </div>
         </div>
         <div class="fr-col-12 fr-col-lg-8">
-            <div class="border fr-p-2w">
+            <div class="bg-white fr-p-2w">
                 <div class="d-flex justify-content-end align-items-center fr-mb-2w">
                     <div class="dropdown custom-dropdown fr-mr-2w" data-toggle="tooltip" title="Exporter le graphique">
                         <button class="fr-btn fr-icon-download-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="dropdown" aria-expanded="false"></button>
@@ -465,7 +465,7 @@
         </div>
     </div>
 
-    <div class="fr-notice fr-mt-4w">
+    <div class="fr-notice bg-white fr-mt-4w">
         <div class="fr-container">
             <div class="d-flex align-items-center justify-content-between">
                 <div>
@@ -542,7 +542,7 @@
 
     <div class="fr-grid-row fr-grid-row--gutters">
         <div class="fr-col-12 fr-col-lg-4">
-            <div class="border fr-p-2w">
+            <div class="bg-white fr-p-2w">
                 <div class="d-flex justify-content-end align-items-center fr-mb-2w">
                     <div class="dropdown custom-dropdown fr-mr-2w" data-toggle="tooltip" title="Exporter le graphique">
                         <button class="fr-btn fr-icon-download-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="dropdown" aria-expanded="false"></button>
@@ -571,7 +571,7 @@
             </div>
         </div>
         <div class="fr-col-12 fr-col-lg-8">
-            <div class="border fr-p-2w">
+            <div class="bg-white fr-p-2w">
                 <div class="d-flex justify-content-end align-items-center fr-mb-2w">
                     <div class="dropdown custom-dropdown fr-mr-2w" data-toggle="tooltip" title="Exporter le graphique">
                         <button class="fr-btn fr-icon-download-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="dropdown" aria-expanded="false"></button>
@@ -601,7 +601,7 @@
         </div>
     </div>
 
-    <div class="fr-notice fr-mt-4w">
+    <div class="fr-notice bg-white fr-mt-4w">
         <div class="fr-container">
             <div class="d-flex align-items-center justify-content-between">
                 <div>
@@ -713,11 +713,9 @@
     </div>
 </div>
 
-{% block bodyend %}
-{% display_chart 'detail_couv_artif_chart' detail_couv_artif_chart CSP_NONCE %}
-{% display_chart 'couv_artif_sol' couv_artif_sol CSP_NONCE %}
-{% display_chart 'detail_usage_artif_chart' detail_usage_artif_chart CSP_NONCE %}
-{% display_chart 'usage_artif_sol' usage_artif_sol CSP_NONCE %}
-{% display_chart 'chart_comparison' chart_comparison CSP_NONCE %}
-{% display_chart 'chart_waterfall' chart_waterfall CSP_NONCE %}
-{% endblock bodyend %}
+{% display_chart_data 'detail_couv_artif_chart' detail_couv_artif_chart CSP_NONCE %}
+{% display_chart_data 'couv_artif_sol' couv_artif_sol CSP_NONCE %}
+{% display_chart_data 'detail_usage_artif_chart' detail_usage_artif_chart CSP_NONCE %}
+{% display_chart_data 'usage_artif_sol' usage_artif_sol CSP_NONCE %}
+{% display_chart_data 'chart_comparison' chart_comparison CSP_NONCE %}
+{% display_chart_data 'chart_waterfall' chart_waterfall CSP_NONCE %}

@@ -90,11 +90,6 @@ urlpatterns = [
         name="target-2031-graphic",
     ),
     path(
-        "<int:pk>/tableau-de-bord/consommation-relative/surface",
-        views.ConsoRelativeSurfaceChart.as_view(),
-        name="relative-surface",
-    ),
-    path(
         "<int:pk>/tableau-de-bord/artificialisation/évolution-nette",
         views.ArtifNetChart.as_view(),
         name="artif-net-chart",
@@ -108,11 +103,6 @@ urlpatterns = [
         "<int:pk>/tableau-de-bord/artificialisation/détail-usage",
         views.ArtifDetailUsaChart.as_view(),
         name="artif-detail-usa-chart",
-    ),
-    path(
-        "<int:pk>/synthèse-des-zonages-d-urbanisme",
-        views.ProjectReportGpuZoneSynthesisTable.as_view(),
-        name="synthesis-zone-urba-all",
     ),
     # MAP
     path(

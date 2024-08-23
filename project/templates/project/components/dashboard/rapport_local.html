@@ -1,184 +1,175 @@
 {% load static %}
 
 <p class="fr-badge fr-badge--new fr-badge--sm d-xs-none">Nouveau</p>
-        <button
-            hx-get="{% url 'project:report_download' requested_document='rapport-local' pk=project.pk %}"
-            hx-target="#diag_word_form"
-            href="#"
-            data-fr-opened="false"
-            aria-controls="fr-modal-download-word"
-            class="fr-btn local-report-download-btn fr-btn--icon-right fr-icon-download-fill"
-            id="local-report-download-btn"
-        >
-            Télécharger le rapport triennal local
-        </button>
 
-        <div>
-            <h4>Objet du rapport triennal local de suivi de l’artificialisation des sols</h4>
-            <div class="fr-highlight fr-highlight--no-margin">
-                <p class="fr-text--sm">Sur la décennie 2011-2021, 24 000 ha d’espaces naturels, agricoles et forestiers ont été consommés chaque année en moyenne en France, soit près de 5 terrains de football par heure. Les conséquences sont écologiques mais aussi socio-économiques.</p>
+<div class="fr-mt-2w">
+    <h4>Objet du rapport triennal local de suivi de l’artificialisation des sols</h4>
+    <div class="fr-highlight fr-highlight--no-margin">
+        <p class="fr-text--sm">Sur la décennie 2011-2021, 24 000 ha d’espaces naturels, agricoles et forestiers ont été consommés chaque année en moyenne en France, soit près de 5 terrains de football par heure. Les conséquences sont écologiques mais aussi socio-économiques.</p>
+    </div>
+    <div class="fr-mt-3w">
+        <p class="fr-text--sm mb-3">La France s’est donc fixée, dans le cadre de la <a rel="noopener noreferrer" target="_blank" href="https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000043956924">loi n° 2021-1104 du 22 août 2021</a> dite « Climat et résilience » complétée par la <a rel="noopener noreferrer" target="_blank" href="https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000047866733">loi n° 2023-630 du 20 juillet 2023</a>, l’objectif d’atteindre le « zéro artificialisation nette des sols » en 2050, avec un objectif intermédiaire de réduction de moitié de la consommation d’espaces NAF (Naturels, Agricoles et Forestiers) sur 2021-2031 par rapport à la décennie précédente.</p>
+        <p class="fr-text--sm mb-3">Cette trajectoire progressive est à décliner territorialement dans les documents de planification et d’urbanisme.</p> 
+        <p class="fr-text--sm mb-3">Cette trajectoire est mesurée, pour la période 2021-2031, en consommation d’espaces NAF (Naturels, Agricoles et Forestiers), définie comme « la création ou l'extension effective d'espaces urbanisés sur le territoire concerné » (<a rel="noopener noreferrer" target="_blank" href="https://www.legifrance.gouv.fr/jorf/article_jo/JORFARTI000043957223">article 194, III, 5° de la loi Climat et résilience</a>). Le bilan de consommation d'espaces NAF (Naturels, Agricoles et Forestiers) s'effectue à l'échelle d'un document de planification ou d'urbanisme.</p>
+        <p class="fr-text--sm mb-3">A partir de 2031, cette trajectoire est également mesurée en artificialisation nette des sols, définie comme « le solde de l'artificialisation et de la désartificialisation des sols constatées sur un périmètre et sur une période donnés » (<a rel="noopener noreferrer" target="_blank" href="https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000043967077/2023-09-04">article L.101-2-1 du code de l’urbanisme</a>). L'artificialisation nette des sols se calcule à l'échelle d'un document de planification ou d'urbanisme.</p>
+    </div>
+</div>
+
+<div class="fr-mt-7w">
+    <h4>Qui doit établir ce rapport ?</h4>
+    <div class="fr-container--fluid">
+        <div class="fr-grid-row fr-grid-row--gutters">
+            <div class="fr-col-12 fr-col-md-4">
+                <div class="fr-tile fr-tile--sm">
+                    <div class="fr-tile__body">
+                        <div class="fr-tile__content">
+                            <h3 class="fr-tile__title">
+                                Les communes
+                            </h3>
+                            <p class="fr-tile__desc">dotées d’un document d'urbanisme</p>
+                        </div>
+                    </div>
+                    <div class="fr-tile__header">
+                        <div class="fr-tile__pictogram">
+                            <img src="{% static 'project/img/ecole_icon.png' %}" class="w-100" />
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="fr-mt-3w">
-                <p class="fr-text--sm mb-3">La France s’est donc fixée, dans le cadre de la <a rel="noopener noreferrer" target="_blank" href="https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000043956924">loi n° 2021-1104 du 22 août 2021</a> dite « Climat et résilience » complétée par la <a rel="noopener noreferrer" target="_blank" href="https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000047866733">loi n° 2023-630 du 20 juillet 2023</a>, l’objectif d’atteindre le « zéro artificialisation nette des sols » en 2050, avec un objectif intermédiaire de réduction de moitié de la consommation d’espaces NAF (Naturels, Agricoles et Forestiers) sur 2021-2031 par rapport à la décennie précédente.</p>
-                <p class="fr-text--sm mb-3">Cette trajectoire progressive est à décliner territorialement dans les documents de planification et d’urbanisme.</p> 
-                <p class="fr-text--sm mb-3">Cette trajectoire est mesurée, pour la période 2021-2031, en consommation d’espaces NAF (Naturels, Agricoles et Forestiers), définie comme « la création ou l'extension effective d'espaces urbanisés sur le territoire concerné » (<a rel="noopener noreferrer" target="_blank" href="https://www.legifrance.gouv.fr/jorf/article_jo/JORFARTI000043957223">article 194, III, 5° de la loi Climat et résilience</a>). Le bilan de consommation d'espaces NAF (Naturels, Agricoles et Forestiers) s'effectue à l'échelle d'un document de planification ou d'urbanisme.</p>
-                <p class="fr-text--sm mb-3">A partir de 2031, cette trajectoire est également mesurée en artificialisation nette des sols, définie comme « le solde de l'artificialisation et de la désartificialisation des sols constatées sur un périmètre et sur une période donnés » (<a rel="noopener noreferrer" target="_blank" href="https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000043967077/2023-09-04">article L.101-2-1 du code de l’urbanisme</a>). L'artificialisation nette des sols se calcule à l'échelle d'un document de planification ou d'urbanisme.</p>
+            <div class="fr-col-12 fr-col-md-4">
+                <div class="fr-tile fr-tile--sm">
+                    <div class="fr-tile__body">
+                        <div class="fr-tile__content">
+                            <h3 class="fr-tile__title">
+                                Les établissements publics de coopération intercommunale
+                            </h3>
+                            <p class="fr-tile__desc">dotés d’un document d'urbanisme</p>
+                        </div>
+                    </div>
+                    <div class="fr-tile__header">
+                        <div class="fr-tile__pictogram">
+                            <img src="{% static 'project/img/mairie_icon.png' %}" class="w-100" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="fr-col-12 fr-col-md-4">
+                <div class="fr-tile fr-tile--sm">
+                    <div class="fr-tile__body">
+                        <div class="fr-tile__content">
+                            <h3 class="fr-tile__title">
+                                Les services déconcentrés de l’Etat (DDT)
+                            </h3>
+                            <p class="fr-tile__desc">Pour les territoires soumis au règlement national d’urbanisme (RNU)</p>
+                        </div>
+                    </div>
+                    <div class="fr-tile__header">
+                        <div class="fr-tile__pictogram">
+                            <img src="{% static 'project/img/appartement_icon.png' %}" class="w-100" />
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
+    </div>
+    <p class="fr-text--sm mt-3">L’enjeu est de mesurer et de communiquer régulièrement au sujet du rythme de l’artificialisation des sols, afin d’anticiper et de suivre la trajectoire et sa réduction. Ce rapport doit être présenté à l’organe délibérant, faire l’objet d’un débat et d’une délibération du conseil municipal ou communautaire, et de mesures de publicité. Le rapport est transmis dans un délai de quinze jours suivant sa publication aux préfets de région et de département, au président du conseil régional, au président de l’EPCI dont la commune est membre ou aux maires des communes membres de l’EPCI compétent ainsi qu’aux observatoires locaux de l’habitat et du foncier.</p>
+</div>
 
-        <div class="fr-mt-7w">
-            <h4>Qui doit établir ce rapport ?</h4>
-            <div class="fr-grid-row fr-grid-row--gutters">
-                <div class="fr-col-12 fr-col-md-4">
-                    <div class="fr-tile fr-tile--sm">
-                        <div class="fr-tile__body">
-                            <div class="fr-tile__content">
-                                <h3 class="fr-tile__title">
-                                    Les communes
-                                </h3>
-                                <p class="fr-tile__desc">dotées d’un document d'urbanisme</p>
-                            </div>
-                        </div>
-                        <div class="fr-tile__header">
-                            <div class="fr-tile__pictogram">
-                                <img src="{% static 'project/img/ecole_icon.png' %}" class="w-100" />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="fr-col-12 fr-col-md-4">
-                    <div class="fr-tile fr-tile--sm">
-                        <div class="fr-tile__body">
-                            <div class="fr-tile__content">
-                                <h3 class="fr-tile__title">
-                                    Les établissements publics de coopération intercommunale
-                                </h3>
-                                <p class="fr-tile__desc">dotés d’un document d'urbanisme</p>
-                            </div>
-                        </div>
-                        <div class="fr-tile__header">
-                            <div class="fr-tile__pictogram">
-                                <img src="{% static 'project/img/mairie_icon.png' %}" class="w-100" />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="fr-col-12 fr-col-md-4">
-                    <div class="fr-tile fr-tile--sm">
-                        <div class="fr-tile__body">
-                            <div class="fr-tile__content">
-                                <h3 class="fr-tile__title">
-                                    Les services déconcentrés de l’Etat (DDT)
-                                </h3>
-                                <p class="fr-tile__desc">Pour les territoires soumis au règlement national d’urbanisme (RNU)</p>
-                            </div>
-                        </div>
-                        <div class="fr-tile__header">
-                            <div class="fr-tile__pictogram">
-                                <img src="{% static 'project/img/appartement_icon.png' %}" class="w-100" />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <p class="fr-text--sm mt-3">L’enjeu est de mesurer et de communiquer régulièrement au sujet du rythme de l’artificialisation des sols, afin d’anticiper et de suivre la trajectoire et sa réduction. Ce rapport doit être présenté à l’organe délibérant, faire l’objet d’un débat et d’une délibération du conseil municipal ou communautaire, et de mesures de publicité. Le rapport est transmis dans un délai de quinze jours suivant sa publication aux préfets de région et de département, au président du conseil régional, au président de l’EPCI dont la commune est membre ou aux maires des communes membres de l’EPCI compétent ainsi qu’aux observatoires locaux de l’habitat et du foncier.</p>
-        </div>
+<div class="fr-mt-7w">
+    <h4>Quand doit être établi ce rapport et sur quelle période ?</h4>
+    <p class="fr-text--sm mb-3">Le premier rapport doit être réalisé 3 ans après l'entrée en vigueur de la loi, soit en 2024.</p>
+    <p class="fr-text--sm mb-3">A noter que c'est le rapport qui est triennal, et non la période à couvrir par le rapport :</p>
+    <ul class="fr-text--sm mb-3">
+        <li>Il faut que le rapport soit produit a minima tous les 3 ans. Il est donc possible pour une collectivité qui le souhaite, de produire un rapport, par exemple tous les ans ou tous les 2 ans.</li>
+        <li>La période à couvrir n'est pas précisée dans les textes. Étant donné que l’État met à disposition les données des fichiers fonciers depuis le 1er janvier 2011 (le début de la période de référence de la loi CR), il serait intéressant que le rapport présente la chronique des données du 1er janvier 2011 et jusqu'au dernier millésime disponible, pour apprécier la trajectoire du territoire concerné avec le recul nécessaire (les variations annuelles étant toujours à prendre avec prudence car pouvant refléter de simples biais méthodologiques dans les données sources).</li>
+    </ul>  
+</div>
 
-        <div class="fr-mt-7w">
-            <h4>Quand doit être établi ce rapport et sur quelle période ?</h4>
-            <p class="fr-text--sm mb-3">Le premier rapport doit être réalisé 3 ans après l'entrée en vigueur de la loi, soit en 2024.</p>
-            <p class="fr-text--sm mb-3">A noter que c'est le rapport qui est triennal, et non la période à couvrir par le rapport :</p>
-            <ul class="fr-text--sm mb-3">
-                <li>Il faut que le rapport soit produit a minima tous les 3 ans. Il est donc possible pour une collectivité qui le souhaite, de produire un rapport, par exemple tous les ans ou tous les 2 ans.</li>
-                <li>La période à couvrir n'est pas précisée dans les textes. Étant donné que l’État met à disposition les données des fichiers fonciers depuis le 1er janvier 2011 (le début de la période de référence de la loi CR), il serait intéressant que le rapport présente la chronique des données du 1er janvier 2011 et jusqu'au dernier millésime disponible, pour apprécier la trajectoire du territoire concerné avec le recul nécessaire (les variations annuelles étant toujours à prendre avec prudence car pouvant refléter de simples biais méthodologiques dans les données sources).</li>
-            </ul>  
+<div class="fr-mt-7w">
+    <h4>Que doit contenir ce rapport ?</h4>
+    <p class="fr-text--sm mb-3">Le contenu minimal obligatoire est détaillé à l’<a rel="noopener noreferrer" target="_blank" href="https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000048470630">article R. 2231-1 du code général des collectivités territoriales</a>:</p>
+    <div class="fr-tile fr-tile--sm fr-tile--horizontal">
+        <div class="fr-tile__body d-flex justify-content-between">
+            <div class="fr-tile__content">
+                <h3 class="fr-tile__title">
+                    1° La consommation des espaces naturels, agricoles et forestiers, exprimée en nombre d'hectares, le cas échéant en la différenciant entre ces types d'espaces, et en pourcentage au regard de la superficie du territoire couvert.
+                </h3>
+                <p class="fr-tile__desc">
+                    Sur le même territoire, le rapport peut préciser également la transformation effective d'espaces urbanisés ou construits en espaces naturels, agricoles et forestiers du fait d'une désartificialisation.
+                </p>
+                <p class="fr-tile__detail d-flex flex-column">
+                    <span class="fw-bold fr-text--sm">Indicateur obligatoire.</span>
+                    <span class="text-default-success">Disponible sur Mon Diag Artif, France Métropolitaine, Corse et DROM (sauf Mayotte).</span>
+                </p>
+            </div>
+            <div class="d-flex align-items-center fr-tile__icon fr-ml-7w"><img src="{% static 'project/img/success_icon.png' %}" class="w-100" /></div>
         </div>
+    </div>
+    <div class="fr-tile fr-tile--sm fr-tile--horizontal fr-mt-3w">
+        <div class="fr-tile__body d-flex justify-content-between">
+            <div class="fr-tile__content">
+                <h3 class="fr-tile__title">
+                    2° Le solde entre les surfaces artificialisées et les surfaces désartificialisées,
+                </h3>
+                <p class="fr-tile__desc">
+                    telles que définies dans la nomenclature annexée à l'<a rel="noopener noreferrer" target="_blank" href="https://www.legifrance.gouv.fr/affichCodeArticle.do?cidTexte=LEGITEXT000006074075&idArticle=LEGIARTI000045729062&dateTexte=&categorieLien=cid">article R. 101-1 du code de l'urbanisme</a>.
+                </p>
+                <p class="fr-tile__detail d-flex flex-column">
+                    <span class="fw-bold fr-text--sm">Indicateur non obligatoire.</span>
+                    <span class="text-default-success">Disponible sur Mon Diag Artif, pour les territoires avec l'OCS GE.</span>
+                </p>
+            </div>
+            <div class="d-flex align-items-center fr-tile__icon fr-ml-7w"><img src="{% static 'project/img/success_icon.png' %}" class="w-100" /></div>
+        </div>
+    </div>
+    <div class="fr-tile fr-tile--sm fr-tile--horizontal fr-mt-3w">
+        <div class="fr-tile__body d-flex justify-content-between">
+            <div class="fr-tile__content">
+                <h3 class="fr-tile__title">
+                    3° Les surfaces dont les sols ont été rendus imperméables,
+                </h3>
+                <p class="fr-tile__desc">
+                    au sens des 1° et 2° de la nomenclature annexée à <a rel="noopener noreferrer" target="_blank" href="https://www.legifrance.gouv.fr/affichCodeArticle.do?cidTexte=LEGITEXT000006074075&idArticle=LEGIARTI000045729062&dateTexte=&categorieLien=cid">l'article R. 101-1 du code de l'urbanisme</a>.
+                </p>
+                <p class="fr-tile__detail d-flex flex-column">
+                    <span class="fw-bold fr-text--sm">Indicateur non obligatoire.</span>
+                    <span class="text-default-success">Disponible sur Mon Diag Artif, pour les territoires avec l'OCS GE.</span>
+                </p>
+            </div>
+            <div class="d-flex align-items-center fr-tile__icon fr-ml-7w"><img src="{% static 'project/img/success_icon.png' %}" class="w-100" /></div>
+        </div>
+    </div>
+    <div class="fr-tile fr-tile--sm fr-tile--horizontal fr-mt-3w">
+        <div class="fr-tile__body d-flex justify-content-between">
+            <div class="fr-tile__content">
+                <h3 class="fr-tile__title">
+                    4° L'évaluation du respect des objectifs de réduction de la consommation d'espaces naturels, agricoles et forestiers et de lutte contre l'artificialisation des sols fixés dans les documents de planification et d'urbanisme.
+                </h3>
+                <p class="fr-tile__desc">
+                    Les documents de planification sont ceux énumérés au <a rel="noopener noreferrer" target="_blank" href="https://www.legifrance.gouv.fr/affichCodeArticle.do?cidTexte=LEGITEXT000006074075&idArticle=LEGIARTI000045729062&dateTexte=&categorieLien=cid">III de l'article R. 101-1 du code de l'urbanisme</a>.
+                </p>
+                <p class="fr-tile__detail d-flex flex-column">
+                    <span class="fw-bold fr-text--sm">Indicateur non obligatoire.</span>
+                    <span class="text-muted">Non prévu dans Mon Diag Artif.</span>
+                </p>
+            </div>
+            <div class="d-flex align-items-center fr-tile__icon fr-ml-7w"><img src="{% static 'project/img/success_icon_disabled.png' %}" class="w-100" /></div>
+        </div>
+    </div>
+    <div class="fr-highlight fr-highlight--no-margin fr-mt-3w">
+        <p class="fr-text--sm">Avant 2031, il n’est pas obligatoire de renseigner les indicateurs 2°, 3° et 4° tant que les documents d'urbanisme n'ont pas intégré cet objectif.</p>
+    </div>
+</div>
 
-        <div class="fr-mt-7w">
-            <h4>Que doit contenir ce rapport ?</h4>
-            <p class="fr-text--sm mb-3">Le contenu minimal obligatoire est détaillé à l’<a rel="noopener noreferrer" target="_blank" href="https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000048470630">article R. 2231-1 du code général des collectivités territoriales</a>:</p>
-            <div class="fr-tile fr-tile--sm fr-tile--horizontal">
-                <div class="fr-tile__body d-flex justify-content-between">
-                    <div class="fr-tile__content">
-                        <h3 class="fr-tile__title">
-                            1° La consommation des espaces naturels, agricoles et forestiers, exprimée en nombre d'hectares, le cas échéant en la différenciant entre ces types d'espaces, et en pourcentage au regard de la superficie du territoire couvert.
-                        </h3>
-                        <p class="fr-tile__desc">
-                            Sur le même territoire, le rapport peut préciser également la transformation effective d'espaces urbanisés ou construits en espaces naturels, agricoles et forestiers du fait d'une désartificialisation.
-                        </p>
-                        <p class="fr-tile__detail d-flex flex-column">
-                            <span class="fw-bold fr-text--sm">Indicateur obligatoire.</span>
-                            <span class="text-default-success">Disponible sur Mon Diag Artif, France Métropolitaine, Corse et DROM (sauf Mayotte).</span>
-                        </p>
-                    </div>
-                    <div class="d-flex align-items-center fr-tile__icon fr-ml-7w"><img src="{% static 'project/img/success_icon.png' %}" class="w-100" /></div>
-                </div>
-            </div>
-            <div class="fr-tile fr-tile--sm fr-tile--horizontal fr-mt-3w">
-                <div class="fr-tile__body d-flex justify-content-between">
-                    <div class="fr-tile__content">
-                        <h3 class="fr-tile__title">
-                            2° Le solde entre les surfaces artificialisées et les surfaces désartificialisées,
-                        </h3>
-                        <p class="fr-tile__desc">
-                            telles que définies dans la nomenclature annexée à l'<a rel="noopener noreferrer" target="_blank" href="https://www.legifrance.gouv.fr/affichCodeArticle.do?cidTexte=LEGITEXT000006074075&idArticle=LEGIARTI000045729062&dateTexte=&categorieLien=cid">article R. 101-1 du code de l'urbanisme</a>.
-                        </p>
-                        <p class="fr-tile__detail d-flex flex-column">
-                            <span class="fw-bold fr-text--sm">Indicateur non obligatoire.</span>
-                            <span class="text-default-success">Disponible sur Mon Diag Artif, pour les territoires avec l'OCS GE.</span>
-                        </p>
-                    </div>
-                    <div class="d-flex align-items-center fr-tile__icon fr-ml-7w"><img src="{% static 'project/img/success_icon.png' %}" class="w-100" /></div>
-                </div>
-            </div>
-            <div class="fr-tile fr-tile--sm fr-tile--horizontal fr-mt-3w">
-                <div class="fr-tile__body d-flex justify-content-between">
-                    <div class="fr-tile__content">
-                        <h3 class="fr-tile__title">
-                            3° Les surfaces dont les sols ont été rendus imperméables,
-                        </h3>
-                        <p class="fr-tile__desc">
-                            au sens des 1° et 2° de la nomenclature annexée à <a rel="noopener noreferrer" target="_blank" href="https://www.legifrance.gouv.fr/affichCodeArticle.do?cidTexte=LEGITEXT000006074075&idArticle=LEGIARTI000045729062&dateTexte=&categorieLien=cid">l'article R. 101-1 du code de l'urbanisme</a>.
-                        </p>
-                        <p class="fr-tile__detail d-flex flex-column">
-                            <span class="fw-bold fr-text--sm">Indicateur non obligatoire.</span>
-                            <span class="text-default-success">Disponible sur Mon Diag Artif, pour les territoires avec l'OCS GE.</span>
-                        </p>
-                    </div>
-                    <div class="d-flex align-items-center fr-tile__icon fr-ml-7w"><img src="{% static 'project/img/success_icon.png' %}" class="w-100" /></div>
-                </div>
-            </div>
-            <div class="fr-tile fr-tile--sm fr-tile--horizontal fr-mt-3w">
-                <div class="fr-tile__body d-flex justify-content-between">
-                    <div class="fr-tile__content">
-                        <h3 class="fr-tile__title">
-                            4° L'évaluation du respect des objectifs de réduction de la consommation d'espaces naturels, agricoles et forestiers et de lutte contre l'artificialisation des sols fixés dans les documents de planification et d'urbanisme.
-                        </h3>
-                        <p class="fr-tile__desc">
-                            Les documents de planification sont ceux énumérés au <a rel="noopener noreferrer" target="_blank" href="https://www.legifrance.gouv.fr/affichCodeArticle.do?cidTexte=LEGITEXT000006074075&idArticle=LEGIARTI000045729062&dateTexte=&categorieLien=cid">III de l'article R. 101-1 du code de l'urbanisme</a>.
-                        </p>
-                        <p class="fr-tile__detail d-flex flex-column">
-                            <span class="fw-bold fr-text--sm">Indicateur non obligatoire.</span>
-                            <span class="text-muted">Non prévu dans Mon Diag Artif.</span>
-                        </p>
-                    </div>
-                    <div class="d-flex align-items-center fr-tile__icon fr-ml-7w"><img src="{% static 'project/img/success_icon_disabled.png' %}" class="w-100" /></div>
-                </div>
-            </div>
-            <div class="fr-highlight fr-highlight--no-margin fr-mt-3w">
-                <p class="fr-text--sm">Avant 2031, il n’est pas obligatoire de renseigner les indicateurs 2°, 3° et 4° tant que les documents d'urbanisme n'ont pas intégré cet objectif.</p>
-            </div>
-        </div>
-
-        <div class="fr-mt-7w fr-mb-7w">
-            <h4>Quelles sont les sources d’informations disponibles pour ce rapport ?</h4>
-            <p class="fr-text--sm mb-3">Les données produites par l'<a rel="noopener noreferrer" target="_blank" href="https://artificialisation.developpement-durable.gouv.fr/">observatoire national de l'artificialisation</a> sont disponibles gratuitement.</p>
-            <p class="fr-text--sm mb-3">MonDiagnosticArtificialisation vous propose une première trame de ce rapport triennal local, en s’appuyant sur les données de l’observatoire nationale disponibles à date, soit:</p>
-            <ul class="fr-text--sm">
-                <li>concernant la consommation d’espaces naturels, agricoles et forestiers, les données issues des fichiers fonciers produites annuellement par le Cerema ;</li>
-                <li>concernant l’artificialisation nette des sols, les données issues de l’occupation des sols à grande échelle (OCS GE) en cours de production par l’IGN, qui seront disponibles sur l’ensemble du territoire national d’ici fin 2025.</li>
-            </ul>
-            <p class="fr-text--sm mb-3">Il n'est, bien évidemment, pas demandé d'inventer des données non encore disponibles : pour le premier rapport triennal à produire d'ici août 2024 il est possible d'utiliser les fichiers fonciers au 1er janvier 2023, couvrant la consommation d'espaces NAF (Naturels, Agricoles et Forestiers) au titre de l'année 2022. La consommation d'espaces NAF (Naturels, Agricoles et Forestiers) au titre de l’année 2023 n’étant pas disponible à ce jour.</p>
-            <p class="fr-text--sm mb-3">Il est également possible d’utiliser les données locales, notamment celles des observatoires de l’habitat et du foncier <a rel="noopener noreferrer" target="_blank" href="https://www.legifrance.gouv.fr/affichCodeArticle.do?cidTexte=LEGITEXT000006074096&idArticle=LEGIARTI000006824763&dateTexte=&categorieLien=cid">(art. L. 302-1 du code de la construction et de l'habitation)</a> et de s'appuyer sur les analyses réalisées dans le cadre de l'évaluation du schéma de cohérence territoriale (ScoT – <a rel="noopener noreferrer" target="_blank" href="https://www.legifrance.gouv.fr/affichCodeArticle.do?cidTexte=LEGITEXT000006074075&idArticle=LEGIARTI000031211077&dateTexte=&categorieLien=cid">art. L. 143-28 du code de l'urbanisme</a>) et de celle du plan local d'urbanisme (<a rel="noopener noreferrer" target="_blank" href="https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000043977819">art. L. 153-27 du code de l’urbanisme</a>).</p>
-            <p class="fr-text--sm">Ces données locales doivent être conformes aux définitions légales de la consommation d'espaces (et le cas échéant de l'artificialisation nette des sols), homogènes et cohérentes sur la décennie de référence de la loi (1er janvier 2011-1er janvier 2021) et sur la décennie en cours (1er janvier 2021-1er janvier 2031).</p>
-        </div>
+<div class="fr-mt-7w fr-mb-7w">
+    <h4>Quelles sont les sources d’informations disponibles pour ce rapport ?</h4>
+    <p class="fr-text--sm mb-3">Les données produites par l'<a rel="noopener noreferrer" target="_blank" href="https://artificialisation.developpement-durable.gouv.fr/">observatoire national de l'artificialisation</a> sont disponibles gratuitement.</p>
+    <p class="fr-text--sm mb-3">MonDiagnosticArtificialisation vous propose une première trame de ce rapport triennal local, en s’appuyant sur les données de l’observatoire nationale disponibles à date, soit:</p>
+    <ul class="fr-text--sm">
+        <li>concernant la consommation d’espaces naturels, agricoles et forestiers, les données issues des fichiers fonciers produites annuellement par le Cerema ;</li>
+        <li>concernant l’artificialisation nette des sols, les données issues de l’occupation des sols à grande échelle (OCS GE) en cours de production par l’IGN, qui seront disponibles sur l’ensemble du territoire national d’ici fin 2025.</li>
+    </ul>
+    <p class="fr-text--sm mb-3">Il n'est, bien évidemment, pas demandé d'inventer des données non encore disponibles : pour le premier rapport triennal à produire d'ici août 2024 il est possible d'utiliser les fichiers fonciers au 1er janvier 2023, couvrant la consommation d'espaces NAF (Naturels, Agricoles et Forestiers) au titre de l'année 2022. La consommation d'espaces NAF (Naturels, Agricoles et Forestiers) au titre de l’année 2023 n’étant pas disponible à ce jour.</p>
+    <p class="fr-text--sm mb-3">Il est également possible d’utiliser les données locales, notamment celles des observatoires de l’habitat et du foncier <a rel="noopener noreferrer" target="_blank" href="https://www.legifrance.gouv.fr/affichCodeArticle.do?cidTexte=LEGITEXT000006074096&idArticle=LEGIARTI000006824763&dateTexte=&categorieLien=cid">(art. L. 302-1 du code de la construction et de l'habitation)</a> et de s'appuyer sur les analyses réalisées dans le cadre de l'évaluation du schéma de cohérence territoriale (ScoT – <a rel="noopener noreferrer" target="_blank" href="https://www.legifrance.gouv.fr/affichCodeArticle.do?cidTexte=LEGITEXT000006074075&idArticle=LEGIARTI000031211077&dateTexte=&categorieLien=cid">art. L. 143-28 du code de l'urbanisme</a>) et de celle du plan local d'urbanisme (<a rel="noopener noreferrer" target="_blank" href="https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000043977819">art. L. 153-27 du code de l’urbanisme</a>).</p>
+    <p class="fr-text--sm">Ces données locales doivent être conformes aux définitions légales de la consommation d'espaces (et le cas échéant de l'artificialisation nette des sols), homogènes et cohérentes sur la décennie de référence de la loi (1er janvier 2011-1er janvier 2021) et sur la décennie en cours (1er janvier 2021-1er janvier 2031).</p>
+</div>
