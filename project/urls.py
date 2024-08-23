@@ -79,11 +79,6 @@ urlpatterns = [
         name="report_urban_zones",
     ),
     path(
-        "<int:pk>/tableau-de-bord/zones-urbanismes",
-        views.ProjectReportGpuView.as_view(),
-        name="report_gpu",
-    ),
-    path(
         "<int:pk>/tableau-de-bord/rapport-local",
         views.ProjectReportLocalView.as_view(),
         name="report_local",
