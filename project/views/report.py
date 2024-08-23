@@ -1,5 +1,4 @@
 from decimal import InvalidOperation
-from functools import cached_property
 from typing import Any, Dict
 
 import pandas as pd
@@ -11,7 +10,7 @@ from django.db.models import Case, CharField, DecimalField, F, Q, Sum, Value, Wh
 from django.db.models.functions import Cast, Concat
 from django.db.models.query import QuerySet
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.views.generic import CreateView, DetailView, TemplateView
 
@@ -50,12 +49,7 @@ from public_data.models.ocsge import Ocsge, OcsgeDiff
 from utils.htmx import StandAloneMixin
 from utils.views_mixins import CacheMixin
 
-from .mixins import (
-    BreadCrumbMixin,
-    GroupMixin,
-    OcsgeCoverageMixin,
-    UserQuerysetOrPublicMixin,
-)
+from .mixins import BreadCrumbMixin, GroupMixin, OcsgeCoverageMixin
 
 
 class ProjectReportBaseView(CacheMixin, GroupMixin, DetailView):
@@ -121,9 +115,25 @@ class ProjectReportConsoView(ProjectReportBaseView):
 
         # Déterminants
         det_chart = charts.AnnualConsoByDeterminantChart(project)
+        det_pie_chart = charts.ConsoByDeterminantPieChart(
+            project,
+            series=det_chart.get_series(),
+        )
 
         # comparison chart
         comparison_chart = charts.AnnualConsoComparisonChart(project)
+
+        # surface
+        surface_chart = charts.SurfaceChart(self.object)
+        surface_proportional_chart = charts.AnnualConsoProportionalComparisonChart(self.object)
+
+        surface_proportional_table = ConsoProportionalComparisonTableMapper.map(
+            consommation_progression=PublicDataContainer.consommation_progression_service().get_by_lands(
+                lands=project.comparison_lands_and_self_land(),
+                start_date=int(project.analyse_start_date),
+                end_date=int(project.analyse_end_date),
+            )
+        )
 
         kwargs.update(
             {
@@ -131,14 +141,14 @@ class ProjectReportConsoView(ProjectReportBaseView):
                 "total_surface": project.area,
                 "active_page": "consommation",
                 "conso_period": conso_period,
+                "nb_communes": project.cities.count(),
                 # charts
                 "determinant_per_year_chart": det_chart,
-                "determinant_pie_chart": charts.ConsoByDeterminantPieChart(
-                    project,
-                    series=det_chart.get_series(),
-                ),
+                "determinant_pie_chart": det_pie_chart,
                 "comparison_chart": comparison_chart,
                 "annual_total_conso_chart": annual_total_conso_chart,
+                "surface_chart": surface_chart,
+                "surface_proportional_chart": surface_proportional_chart,
                 # data tables
                 "annual_conso_data_table": annual_conso_data_table,
                 "data_determinant": add_total_line_column(det_chart.get_series()),
@@ -149,7 +159,8 @@ class ProjectReportConsoView(ProjectReportBaseView):
                         end_date=int(project.analyse_end_date),
                     )
                 ),
-                "nb_communes": project.cities.count(),
+                "surface_data_table": surface_chart.get_series(),
+                "surface_proportional_data_table": surface_proportional_table,
             }
         )
 
@@ -515,6 +526,7 @@ class ProjectReportTarget2031View(ProjectReportBaseView):
                 "conso_2031": target_2031_chart.conso_2031,
                 "annual_objective_2031": target_2031_chart.annual_objective_2031,
                 "target_2031_chart": target_2031_chart,
+                "target_2031_chart_data": target_2031_chart.dict(),
             }
         )
         return super().get_context_data(**kwargs)
@@ -539,6 +551,12 @@ class ProjectReportTarget2031GraphView(ProjectReportBaseView):
         )
         return super().get_context_data(**kwargs)
 
+    def get(self, request, *args, **kwargs):
+        # Récupération du contexte via la méthode dédiée
+        context = self.get_context_data(**kwargs)
+        # Rendu du template avec le contexte obtenu
+        return render(request, self.template_name, context)
+
 
 class ProjectReportUrbanZonesView(OcsgeCoverageMixin, ProjectReportBaseView):
     partial_template_name = "project/components/dashboard/gpu.html"
@@ -550,7 +568,9 @@ class ProjectReportUrbanZonesView(OcsgeCoverageMixin, ProjectReportBaseView):
         kwargs.update(
             {
                 "diagnostic": project,
-                "active_page": "urban_zones",
+                "zone_list": project.get_artif_per_zone_urba_type(),
+                "first_year_ocsge": str(project.first_year_ocsge),
+                "last_year_ocsge": str(project.last_year_ocsge),
             }
         )
 
@@ -576,36 +596,6 @@ class DownloadWordView(TemplateView):
         if request.user.id == req.user_id:
             return HttpResponseRedirect(req.sent_file.url)
         return super().get(request, *args, **kwargs)
-
-
-class ConsoRelativeSurfaceChart(CacheMixin, UserQuerysetOrPublicMixin, DetailView):
-    context_object_name = "project"
-    queryset = Project.objects.all()
-    template_name = "project/components/charts/surface_comparison_conso.html"
-
-    def get_context_data(self, **kwargs):
-        project: Project = self.get_object()
-        surface_chart = charts.SurfaceChart(self.object)
-        surface_proportional_chart = charts.AnnualConsoProportionalComparisonChart(self.object)
-
-        surface_proportional_table = ConsoProportionalComparisonTableMapper.map(
-            consommation_progression=PublicDataContainer.consommation_progression_service().get_by_lands(
-                lands=project.comparison_lands_and_self_land(),
-                start_date=int(project.analyse_start_date),
-                end_date=int(project.analyse_end_date),
-            )
-        )
-
-        kwargs.update(
-            {
-                "diagnostic": self.object,
-                "surface_chart": surface_chart,
-                "surface_data_table": surface_chart.get_series(),
-                "surface_proportional_chart": surface_proportional_chart,
-                "surface_proportional_data_table": surface_proportional_table,
-            }
-        )
-        return super().get_context_data(**kwargs)
 
 
 class ArtifZoneUrbaView(CacheMixin, StandAloneMixin, DetailView):
@@ -862,27 +852,5 @@ class ArtifDetailUsaChart(CacheMixin, TemplateView):
             "detail_total_artif": sum(_["artif"] for _ in detail_usage_artif_chart.get_series()),
             "detail_total_renat": sum(_["renat"] for _ in detail_usage_artif_chart.get_series()),
             "detail_total_artif_period": sum(_["last_millesime"] for _ in detail_usage_artif_table),
-        }
-        return super().get_context_data(**kwargs)
-
-
-class ProjectReportGpuZoneSynthesisTable(CacheMixin, StandAloneMixin, TemplateView):
-    template_name = "project/components/tables/zone_urba_aggregated_table.html"
-
-    @cached_property
-    def diagnostic(self):
-        return Project.objects.get(pk=self.kwargs["pk"])
-
-    def should_cache(self, *args, **kwargs):
-        if not self.diagnostic.theme_map_gpu:
-            return False
-        return True
-
-    def get_context_data(self, **kwargs):
-        kwargs |= {
-            "zone_list": self.diagnostic.get_artif_per_zone_urba_type(),
-            "diagnostic": self.diagnostic,
-            "first_year_ocsge": str(self.diagnostic.first_year_ocsge),
-            "last_year_ocsge": str(self.diagnostic.last_year_ocsge),
         }
         return super().get_context_data(**kwargs)

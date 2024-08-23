@@ -10,7 +10,21 @@ from .models import Emprise
 class ProjectDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Project
-        fields = ["level_label", "analyse_start_date", "analyse_end_date", "territory_name", "area"]
+        fields = [
+            "id",
+            "level_label",
+            "analyse_start_date",
+            "analyse_end_date",
+            "territory_name",
+            "area",
+            "target_2031",
+            "get_bilan_conso_time_scoped",
+            "theme_map_conso",
+            "theme_map_artif",
+            "theme_map_understand_artif",
+            "theme_map_gpu",
+            "ocsge_coverage_status",
+        ]
 
 
 class EmpriseSerializer(gis_serializers.GeoFeatureModelSerializer):
