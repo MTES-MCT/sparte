@@ -1,33 +1,16 @@
 {% load crispy_forms_tags %}
 
-<script language="javascript" nonce="[NONCE_PLACEHOLDER]">
-    var modalUpdatePeriod = bootstrap.Modal.getInstance(document.getElementById("fr-modal-update-period"));
-
-    modalUpdatePeriod._config.backdrop = true;
-    modalUpdatePeriod._config.keyboard = true;
-    document.getElementById("close-update-period").disabled = false;
-
-    {% if success_message %}
-        setTimeout(() => {
-            if (modalUpdatePeriod) {
-                modalUpdatePeriod.hide();
-            }
-            window.location.replace('{{next}}');
-        }, 2500);
-    {% else %}
-        document.getElementById("set_period_btn").onclick = function() {
-            modalUpdatePeriod._config.backdrop = false;
-            modalUpdatePeriod._config.keyboard = false;
-            document.getElementById("close-update-period").disabled = true;
-        }
-    {% endif %}
-</script>
-
 {% if success_message %}
     <div class="fade-in fr-alert fr-alert--success fr-alert--sm" role="alert">
         <h3 class="fr-alert__title">La période de votre diagnostic a été mise à jour.</h3>
         <p>Vous allez être redirigé sur la page de construction de votre diagnostic.</p>
     </div>
+
+    <script language="javascript" nonce="[NONCE_PLACEHOLDER]">
+        setTimeout(() => {
+            window.location.replace('{{next}}');
+        }, 2000);
+    </script>
 {% else %}
     <form hx-post="{% url 'project:set-period' diagnostic.pk %}" hx-ext="disable-element" hx-disable-element="#set_period_btn">
         {% csrf_token %}

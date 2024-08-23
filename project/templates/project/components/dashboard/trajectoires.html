@@ -81,9 +81,10 @@
     </div>
 </div>
 
-<div id="graphic" class="fr-mt-7w" hx-get="{% url 'project:target-2031-graphic' project.pk %}" hx-trigger="load-graphic from:body">
+<div id="graphic" class="fr-mt-7w">
     {% include "project/components/charts/report_target_2031_graphic.html" %}
 </div>
+
 
 <!-- Modal pour personnaliser l'objectif -->
 <div class="modal fade" id="setTarget" tabindex="-1" aria-labelledby="setTargetLabel" aria-hidden="true">

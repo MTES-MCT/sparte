@@ -1,5 +1,5 @@
-{% load static %}
 {% load highcharts_tags %}
+{% load static %}
 
 <div class="fr-callout fr-callout--brown-caramel fr-fi-information-line fr-callout-read-more">
     <div class="fr-callout-read-more__excerpt">
@@ -44,7 +44,7 @@
 
     <div class="fr-grid-row fr-grid-row--gutters">
         <div class="fr-col-12">
-            <div class="border fr-p-2w h-100">
+            <div class="bg-white fr-p-2w h-100">
                 <div class="d-flex justify-content-end align-items-center fr-mb-2w">
                     <div class="dropdown custom-dropdown fr-mr-2w" data-toggle="tooltip" title="Exporter le graphique">
                         <button class="fr-btn fr-icon-download-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="dropdown" aria-expanded="false"></button>
@@ -72,7 +72,7 @@
         </div>
     </div>
 
-    <div class="fr-notice fr-mt-4w">
+    <div class="fr-notice bg-white fr-mt-4w">
         <div class="fr-container">
             <div class="d-flex align-items-center justify-content-between">
                 <div>
@@ -106,7 +106,7 @@
 
     <div class="fr-grid-row fr-grid-row--gutters">
         <div class="fr-col-12 fr-col-lg-4">
-            <div class="border fr-p-2w">
+            <div class="bg-white fr-p-2w">
                 <div class="d-flex justify-content-end align-items-center fr-mb-2w">
                     <div class="dropdown custom-dropdown fr-mr-2w" data-toggle="tooltip" title="Exporter le graphique">
                         <button class="fr-btn fr-icon-download-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="dropdown" aria-expanded="false"></button>
@@ -135,7 +135,7 @@
             </div>
         </div>
         <div class="fr-col-12 fr-col-lg-8">
-            <div class="border fr-p-2w">
+            <div class="bg-white fr-p-2w">
                 <div class="d-flex justify-content-end align-items-center fr-mb-2w">
                     <div class="dropdown custom-dropdown fr-mr-2w" data-toggle="tooltip" title="Exporter le graphique">
                         <button class="fr-btn fr-icon-download-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="dropdown" aria-expanded="false"></button>
@@ -165,7 +165,7 @@
         </div>
     </div>
 
-    <div class="fr-notice fr-mt-4w">
+    <div class="fr-notice bg-white fr-mt-4w">
         <div class="fr-container">
             <div class="d-flex align-items-center justify-content-between">
                 <div>
@@ -200,7 +200,7 @@
 
     <div class="fr-grid-row fr-grid-row--gutters">
         <div class="fr-col-12 fr-col-lg-4">
-            <div class="border fr-p-2w">
+            <div class="bg-white fr-p-2w">
                 <div class="d-flex justify-content-end align-items-center fr-mb-2w">
                     <div class="dropdown custom-dropdown fr-mr-2w" data-toggle="tooltip" title="Exporter le graphique">
                         <button class="fr-btn fr-icon-download-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="dropdown" aria-expanded="false"></button>
@@ -229,7 +229,7 @@
             </div>
         </div>
         <div class="fr-col-12 fr-col-lg-8">
-            <div class="border fr-p-2w">
+            <div class="bg-white fr-p-2w">
                 <div class="d-flex justify-content-end align-items-center fr-mb-2w">
                     <div class="dropdown custom-dropdown fr-mr-2w" data-toggle="tooltip" title="Exporter le graphique">
                         <button class="fr-btn fr-icon-download-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="dropdown" aria-expanded="false"></button>
@@ -259,7 +259,7 @@
         </div>
     </div>
 
-    <div class="fr-notice fr-mt-4w">
+    <div class="fr-notice bg-white fr-mt-4w">
         <div class="fr-container">
             <div class="d-flex align-items-center justify-content-between">
                 <div>
@@ -329,10 +329,8 @@
     </div>
 </div>
 
-{% block bodyend %}
-{% display_chart 'imper_nette_chart' imper_nette_chart CSP_NONCE %}
-{% display_chart 'imper_progression_couv_chart' imper_progression_couv_chart CSP_NONCE %}
-{% display_chart 'imper_repartition_couv_chart' imper_repartition_couv_chart CSP_NONCE %}
-{% display_chart 'imper_progression_usage_chart' imper_progression_usage_chart CSP_NONCE %}
-{% display_chart 'imper_repartition_usage_chart' imper_repartition_usage_chart CSP_NONCE %}
-{% endblock bodyend %}
+{% display_chart_data 'imper_nette_chart' imper_nette_chart CSP_NONCE %}
+{% display_chart_data 'imper_progression_couv_chart' imper_progression_couv_chart CSP_NONCE %}
+{% display_chart_data 'imper_repartition_couv_chart' imper_repartition_couv_chart CSP_NONCE %}
+{% display_chart_data 'imper_progression_usage_chart' imper_progression_usage_chart CSP_NONCE %}
+{% display_chart_data 'imper_repartition_usage_chart' imper_repartition_usage_chart CSP_NONCE %}
