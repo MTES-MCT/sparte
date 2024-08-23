@@ -1,80 +1,136 @@
-{% extends "index.html" %}
-
+{% load static %}
+{% load utils_tags %}
 {% load sri %}
 
-{% block headers %}
-{% sri_static "project/styles/dashboard.css" %}
-{% sri_static "highcharts/js/highcharts.js" %}
-{% sri_static "highcharts/js/exporting.js" %}
-{% sri_static "highcharts/js/sankey.js" %}
-{% sri_static "highcharts/js/dependency-wheel.js" %}
-{% endblock %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
 
-{% block content %}
-<div id="react-root" data-project-id="{{ project_id|safe }}">Chargement...</div>
-<script id="navbar-data" type="application/json">
-    {
-        "menuItems": [
+        <title>{% block pagetitle %}{{ page_title }}{% endblock %}</title>
+
+        <link crossorigin="anonymous" rel="icon" href="{% static 'favicon/favicon.svg' %}" integrity="sha256-9XtIvlxcpnXef29DOD0o+agM++e/ZB8xYC5vGqDiTLI=">
+        <link crossorigin="anonymous" rel="apple-touch-icon" sizes="180x180" href="{% static 'favicon/apple-touch-icon.png' %}" integrity="sha256-U4nRN5qiI5h+9kMtFZh/GkuJqlklIU4HLH999+7seYc=">
+        <link crossorigin="anonymous" rel="manifest" href="{% static 'favicon/site.webmanifest' %}" integrity="sha256-MQuGlDTw7p2ZoRDl72v7QerBFbziQo9WL/XfFDeFGf8=">
+        <link crossorigin="anonymous" rel="mask-icon" href="{% static 'favicon/safari-pinned-tab.svg' %}" color="#868686" integrity="sha256-L/SsNmrQdW36ZiLwYTlnMQpcXBAiDLWKiqj7Sos19nY=">
+        <meta name="msapplication-TileColor" content="#2b5797">
+        <meta name="theme-color" content="#ffffff">
+
+        <!-- Core theme CSS (includes Bootstrap)-->
+        {% sri_static "bootstrap522/css/bootstrap.min.css" %}
+        <!-- Bootstrap icon -->
+        <link crossorigin="anonymous" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css" integrity="sha256-8M+b2Hj+vy/2J5tZ9pYDHeuPD59KsaEZn1XXj3xVhjg=">
+        <!-- Webpack Bundle CSS -->
+        {% sri_static "assets/styles/main.css" %}
+        <!-- Dashboard CSS -->
+        {% sri_static "project/styles/dashboard.css" %}
+        <!-- subtemplate header injection -->
+        {% block headers %}{% endblock %}
+        <!-- matomo -->
+        {% tracking_code %}
+        <!-- google adwords -->
+        {% adwords_google_tag_code %}
+        <!-- crisp -->
+        {% crisp_tag_code %}
+    </head>
+    
+    <body class="{% block body_class %}{% endblock %}">
+        <div id="react-root" data-project-id="{{ project_id|safe }}">
+            {% block content %}
+            {% endblock content %}
+        </div>
+        <script id="navbar-data" type="application/json">
             {
-                "label": "Synthèse",
-                "url": "{% url 'project:report_synthesis' project.pk %}",
-                "icon": "bi bi-grid-1x2-fill"
-            },
-            {
-                "label": "Espaces NAF",
-                "icon": "bi bi-tree-fill",
-                "subMenu": [
+                "logo": "{% static '/img/logo-mon-diagnostic-artificialisation.svg' %}",
+                "menus": [
                     {
-                        "label": "Consommation",
-                        "url": "{% url 'project:report_conso' project.pk %}"
+                        "title": "Diagnostic",
+                        "menuItems": [
+                            {
+                                "label": "Synthèse",
+                                "url": "{% url 'project:report_synthesis' project.pk %}",
+                                "icon": "bi bi-grid-1x2-fill"
+                            },
+                            {
+                                "label": "Les attendus de la loi C&R",
+                                "icon": "bi bi-list-check",
+                                "subMenu": [
+                                    {
+                                        "label": "Rapport triennal local",
+                                        "url": "{% url 'project:report_local' project.pk %}"
+                                    },
+                                    {
+                                        "label": "Trajectoire ZAN",
+                                        "url": "{% url 'project:report_target_2031' project.pk %}"
+                                    }
+                                ]
+                            },
+                            {
+                                "label": "Pilotage territorial",
+                                "icon": "bi bi-x-diamond",
+                                "subMenu": [
+                                    {
+                                        "label": "Consommation d'espaces NAF",
+                                        "url": "{% url 'project:report_conso' project.pk %}"
+                                    },
+                                    {
+                                        "label": "Zonages d'urbanisme",
+                                        "url": "{% url 'project:report_urban_zones' project.pk %}"
+                                    }
+                                ]
+                            },
+                            {
+                                "label": "Enjeux environnementaux",
+                                "icon": "bi bi-tree-fill",
+                                "subMenu": [
+                                    {
+                                        "label": "Usage et couverture du sol (OCS GE)",
+                                        "url": "{% url 'project:report_discover' project.pk %}"
+                                    },
+                                    {
+                                        "label": "Artificialisation",
+                                        "url": "{% url 'project:report_artif' project.pk %}"
+                                    },
+                                    {
+                                        "label": "Imperméabilisation",
+                                        "url": "{% url 'project:report_imper' project.pk %}"
+                                    }
+                                ]
+                            },
+                            {
+                                "label": "Paramètres",
+                                "icon": "bi bi-gear-fill",
+                                "url": "{% url 'project:update' project.pk %}"
+                            }
+                        ]
                     },
                     {
-                        "label": "Trajectoires",
-                        "url": "{% url 'project:report_target_2031' project.pk %}"
+                        "title": "Mon compte",
+                        "menuItems": [
+                            {
+                                "label": "Mon profil",
+                                "url": "{% url 'project:report_local' project.pk %}",
+                                "icon": "bi bi-person-circle"
+                            },
+                            {
+                                "label": "Mes diagnostics",
+                                "url": "{% url 'project:report_local' project.pk %}",
+                                "icon": "bi bi-star"
+                            }
+                        ]
                     }
                 ]
-            },
-            {
-                "label": "OCS GE",
-                "icon": "bi bi-bar-chart-fill",
-                "subMenu": [
-                    {
-                        "label": "Découvrir l'OCS GE",
-                        "url": "{% url 'project:report_discover' project.pk %}"
-                    },
-                    {
-                        "label": "Artificialisation",
-                        "url": "{% url 'project:report_artif' project.pk %}"
-                    },
-                    {
-                        "label": "Imperméabilisation",
-                        "url": "{% url 'project:report_imper' project.pk %}"
-                    }
-                ]
-            },
-            {
-                "label": "Les attendus de la loi C&R",
-                "icon": "bi bi-list-check",
-                "subMenu": [
-                    {
-                        "label": "Rapport local",
-                        "url": "{% url 'project:report_local' project.pk %}"
-                    }
-                ]
-            },
-            {
-                "label": "Zonages d'urbanisme",
-                "icon": "bi bi-x-diamond",
-                "url": "{% url 'project:report_urban_zones' project.pk %}"
-            },
-            {
-                "label": "Paramètres",
-                "icon": "bi bi-gear-fill",
-                "url": "{% url 'project:update' project.pk %}"
             }
-        ]
-    }
-</script>
-{% endblock content %}
+        </script>
 
-{% block footer %}{% endblock footer %}
+        {% sri_static "bootstrap522/js/bootstrap.bundle.min.js" %}
+        <!-- Webpack Bundle -->
+        {% sri_static "assets/scripts/bundle.js" %}
+
+        <!-- subtemplate footer injection -->
+        {% block bodyend %}{% endblock bodyend %}
+        <!-- Tagging injection -->
+        {% block tagging %}{% endblock tagging %}
+    </body>
+</html>

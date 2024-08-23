@@ -1,7 +1,7 @@
 {% load highcharts_tags %}
 
 <div class="fr-mt-7w">
-    <div class="border fr-p-2w">
+    <div class="bg-white fr-p-2w">
         <div class="d-flex justify-content-end align-items-center fr-mb-2w">
             <div class="dropdown custom-dropdown fr-mr-2w" data-toggle="tooltip" title="Exporter le graphique">
                 <button class="fr-btn fr-icon-download-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="dropdown" aria-expanded="false"></button>
@@ -29,7 +29,7 @@
     </div>
 </div>
 
-<div class="fr-notice fr-mt-4w">
+<div class="fr-notice bg-white fr-mt-4w">
     <div class="fr-container">
         <div class="d-flex align-items-center justify-content-between">
             <div>
@@ -98,12 +98,4 @@
     </div>
 </div>
 
-{% display_chart 'target_2031_chart' target_2031_chart CSP_NONCE %}
-
-{% if reload_kpi %}
-    <span id="objective-swapper" hx-swap-oob="true">{{ diagnostic.target_2031 }}</span>
-    <span id="total_real-swapper" hx-swap-oob="true">{{ total_2020|floatformat:1 }}</span>
-    <span id="annual_real-swapper" hx-swap-oob="true">{{ annual_2020|floatformat:1 }}</span>
-    <span id="conso_2031-swapper" hx-swap-oob="true">{{ conso_2031|floatformat:1 }}</span>
-    <span id="annual_objective-swapper" hx-swap-oob="true">{{ annual_objective_2031|floatformat:1 }}</span>
-{% endif %}
+{% display_chart_data 'target_2031_chart' target_2031_chart CSP_NONCE %}
