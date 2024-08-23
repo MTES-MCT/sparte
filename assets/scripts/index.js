@@ -8,15 +8,6 @@ import '../styles/index.css'
 // Import dsfr
 import '@gouvfr/dsfr/dist/dsfr.module.min.js'
 
-// Import fr-callout-read-more
-// import './fr-callout-read-more.js'
-
-// Import highcharts custom buttons
-// import './highcharts-custom-buttons.js'
-
-// Import filter diagnostic list
-import './filter-diagnostic-list.js'
-
 // Import map
 import './map_libre/index.js'
 

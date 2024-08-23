@@ -183,26 +183,7 @@
         <div class="fr-col-12 fr-col-lg-8">
             <div class="bg-white fr-p-2w h-100">
                 <div class="d-flex justify-content-end align-items-center fr-mb-2w">
-                    <div class="dropdown custom-dropdown fr-mr-2w" data-toggle="tooltip" title="Exporter le graphique">
-                        <button class="fr-btn fr-icon-download-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="dropdown" aria-expanded="false"></button>
-
-                        <ul class="dropdown-menu">
-                            <li>
-                                <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_waterfall" data-type="image/png">PNG</a>
-                            </li>
-                            <li>
-                                <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_waterfall" data-type="image/jpeg">JPEG</a>
-                            </li>
-                            <li>
-                                <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_waterfall" data-type="application/pdf">PDF</a>
-                            </li>
-                            <li>
-                                <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_waterfall" data-type="image/svg+xml">Vectoriel</a>
-                            </li>
-                        </ul>
-                    </div>
-
-                    <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm fullscreen-chart" data-chart-target="chart_waterfall" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
+                    {% include "project/components/widgets/chart_buttons.html" with chart="chart_waterfall" %}
                 </div>
                 <div id="chart_waterfall"></div>
             </div>
@@ -304,26 +285,7 @@
                         </ul>
                     </div>
 
-                    <div class="dropdown custom-dropdown fr-mr-2w" data-toggle="tooltip" title="Exporter le graphique">
-                        <button class="fr-btn fr-icon-download-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="dropdown" aria-expanded="false"></button>
-
-                        <ul class="dropdown-menu">
-                            <li>
-                                <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_comparison" data-type="image/png">PNG</a>
-                            </li>
-                            <li>
-                                <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_comparison" data-type="image/jpeg">JPEG</a>
-                            </li>
-                            <li>
-                                <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_comparison" data-type="application/pdf">PDF</a>
-                            </li>
-                            <li>
-                                <a class="fr-nav__link export-chart" href="#" data-chart-target="chart_comparison" data-type="image/svg+xml">Vectoriel</a>
-                            </li>
-                        </ul>
-                    </div>
-
-                    <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm fullscreen-chart" data-chart-target="chart_comparison" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
+                    {% include "project/components/widgets/chart_buttons.html" with chart="chart_comparison" %}
                 </div>
                 <div id="chart_comparison"></div>
             </div>
@@ -408,27 +370,7 @@
         <div class="fr-col-12 fr-col-lg-4">
             <div class="bg-white fr-p-2w">
                 <div class="d-flex justify-content-end align-items-center fr-mb-2w">
-                    <div class="dropdown custom-dropdown fr-mr-2w" data-toggle="tooltip" title="Exporter le graphique">
-                        <button class="fr-btn fr-icon-download-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="dropdown" aria-expanded="false"></button>
-
-                        <ul class="dropdown-menu">
-                            <li>
-                                <a class="fr-nav__link export-chart" href="#" data-chart-target="couv_artif_sol" data-type="image/png">PNG</a>
-                            </li>
-                            <li>
-                                <a class="fr-nav__link export-chart" href="#" data-chart-target="couv_artif_sol" data-type="image/jpeg">JPEG</a>
-                            </li>
-                            <li>
-                                <a class="fr-nav__link export-chart" href="#" data-chart-target="couv_artif_sol" data-type="application/pdf">PDF</a>
-                            </li>
-                            <li>
-                                <a class="fr-nav__link export-chart" href="#" data-chart-target="couv_artif_sol" data-type="image/svg+xml">Vectoriel</a>
-                            </li>
-                        </ul>
-                    </div>
-
-                    <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm fr-mr-2w fullscreen-chart" data-chart-target="couv_artif_sol" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
-
+                    {% include "project/components/widgets/chart_buttons.html" with chart="couv_artif_sol" %}
                     <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#couvArtifSol" data-toggle="tooltip" title="Astuces pour lire le graphique" aria-hidden="true"></button>
                 </div>
                 <div id="couv_artif_sol"></div>
@@ -437,27 +379,7 @@
         <div class="fr-col-12 fr-col-lg-8">
             <div class="bg-white fr-p-2w">
                 <div class="d-flex justify-content-end align-items-center fr-mb-2w">
-                    <div class="dropdown custom-dropdown fr-mr-2w" data-toggle="tooltip" title="Exporter le graphique">
-                        <button class="fr-btn fr-icon-download-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="dropdown" aria-expanded="false"></button>
-
-                        <ul class="dropdown-menu">
-                            <li>
-                                <a class="fr-nav__link export-chart" href="#" data-chart-target="detail_couv_artif_chart" data-type="image/png">PNG</a>
-                            </li>
-                            <li>
-                                <a class="fr-nav__link export-chart" href="#" data-chart-target="detail_couv_artif_chart" data-type="image/jpeg">JPEG</a>
-                            </li>
-                            <li>
-                                <a class="fr-nav__link export-chart" href="#" data-chart-target="detail_couv_artif_chart" data-type="application/pdf">PDF</a>
-                            </li>
-                            <li>
-                                <a class="fr-nav__link export-chart" href="#" data-chart-target="detail_couv_artif_chart" data-type="image/svg+xml">Vectoriel</a>
-                            </li>
-                        </ul>
-                    </div>
-
-                    <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm fr-mr-2w fullscreen-chart" data-chart-target="detail_couv_artif_chart" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
-
+                    {% include "project/components/widgets/chart_buttons.html" with chart="detail_couv_artif_chart" %}
                     <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#couvArtifSol" data-toggle="tooltip" title="Astuces pour lire le graphique" aria-hidden="true"></button>
                 </div>
                 <div id="detail_couv_artif_chart"></div>
@@ -544,27 +466,7 @@
         <div class="fr-col-12 fr-col-lg-4">
             <div class="bg-white fr-p-2w">
                 <div class="d-flex justify-content-end align-items-center fr-mb-2w">
-                    <div class="dropdown custom-dropdown fr-mr-2w" data-toggle="tooltip" title="Exporter le graphique">
-                        <button class="fr-btn fr-icon-download-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="dropdown" aria-expanded="false"></button>
-
-                        <ul class="dropdown-menu">
-                            <li>
-                                <a class="fr-nav__link export-chart" href="#" data-chart-target="usage_artif_sol" data-type="image/png">PNG</a>
-                            </li>
-                            <li>
-                                <a class="fr-nav__link export-chart" href="#" data-chart-target="usage_artif_sol" data-type="image/jpeg">JPEG</a>
-                            </li>
-                            <li>
-                                <a class="fr-nav__link export-chart" href="#" data-chart-target="usage_artif_sol" data-type="application/pdf">PDF</a>
-                            </li>
-                            <li>
-                                <a class="fr-nav__link export-chart" href="#" data-chart-target="usage_artif_sol" data-type="image/svg+xml">Vectoriel</a>
-                            </li>
-                        </ul>
-                    </div>
-
-                    <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm fr-mr-2w fullscreen-chart" data-chart-target="usage_artif_sol" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
-
+                    {% include "project/components/widgets/chart_buttons.html" with chart="usage_artif_sol" %}
                     <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#usageArtifSol" data-toggle="tooltip" title="Astuces pour lire le graphique" aria-hidden="true"></button>
                 </div>
                 <div id="usage_artif_sol"></div>
@@ -573,27 +475,7 @@
         <div class="fr-col-12 fr-col-lg-8">
             <div class="bg-white fr-p-2w">
                 <div class="d-flex justify-content-end align-items-center fr-mb-2w">
-                    <div class="dropdown custom-dropdown fr-mr-2w" data-toggle="tooltip" title="Exporter le graphique">
-                        <button class="fr-btn fr-icon-download-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="dropdown" aria-expanded="false"></button>
-
-                        <ul class="dropdown-menu">
-                            <li>
-                                <a class="fr-nav__link export-chart" href="#" data-chart-target="detail_usage_artif_chart" data-type="image/png">PNG</a>
-                            </li>
-                            <li>
-                                <a class="fr-nav__link export-chart" href="#" data-chart-target="detail_usage_artif_chart" data-type="image/jpeg">JPEG</a>
-                            </li>
-                            <li>
-                                <a class="fr-nav__link export-chart" href="#" data-chart-target="detail_usage_artif_chart" data-type="application/pdf">PDF</a>
-                            </li>
-                            <li>
-                                <a class="fr-nav__link export-chart" href="#" data-chart-target="detail_usage_artif_chart" data-type="image/svg+xml">Vectoriel</a>
-                            </li>
-                        </ul>
-                    </div>
-
-                    <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm fr-mr-2w fullscreen-chart" data-chart-target="detail_usage_artif_chart" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
-
+                    {% include "project/components/widgets/chart_buttons.html" with chart="detail_usage_artif_chart" %}
                     <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#usageArtifSol" data-toggle="tooltip" title="Astuces pour lire le graphique" aria-hidden="true"></button>
                 </div>
                 <div id="detail_usage_artif_chart"></div>
