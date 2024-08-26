@@ -69,8 +69,12 @@
 
         {% sri_static "js/jquery-3.6.0.min.js" %}
         {% sri_static "bootstrap522/js/bootstrap.bundle.min.js" %}
-        <!-- Webpack Bundle -->
-        {% sri_static "assets/scripts/bundle.js" %}
+        <!-- Webpack Bundle JS -->
+        {% if debug %}
+            <script src="http://localhost:3000/assets/scripts/bundle.dev.js"></script>
+        {% else %}
+            <script src="{% static 'assets/scripts/bundle.prod.js' %}"></script>
+        {% endif %}
 
         <script nonce="[NONCE_PLACEHOLDER]">
         // initialize les tooltips

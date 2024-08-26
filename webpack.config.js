@@ -4,6 +4,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const ESLintPlugin = require('eslint-webpack-plugin');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
+const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 
 const common = {
     entry: './assets/scripts/index.js',
@@ -14,10 +15,6 @@ const common = {
                 configFile: path.resolve(__dirname, 'tsconfig.json')
             })
         ]
-    },
-    output: {
-        'path': path.resolve(__dirname, 'static'),
-        'filename': 'assets/scripts/bundle.js',
     },
     performance: {
         hints: false
@@ -32,7 +29,7 @@ const common = {
                 }
             },
             {
-                'test': /\.(png|jpe?g|gif|svg)$/i,
+                test: /\.(png|jpe?g|gif|svg)$/i,
                 type: 'asset/resource',
                 generator: {
                     filename: 'assets/images/[hash][ext][query]'
@@ -46,15 +43,22 @@ const common = {
                 ],
             },
             {
-                test: /\.(js|jsx)$/,
+                test: /\.(js|jsx|ts|tsx)$/,
                 exclude: /node_modules/,
-                loader: 'babel-loader',
-                options: { presets: ['@babel/preset-env', '@babel/preset-react'] }
-            },
-            {
-                test: /\.tsx?$/,
-                use: 'ts-loader',
-                exclude: /node_modules/,
+                use: {
+                    loader: 'babel-loader',
+                    options: {
+                        presets: [
+                            '@babel/preset-env',
+                            '@babel/preset-react',
+                            '@babel/preset-typescript'
+                        ],
+                        plugins: [
+                            // Ajout de React Refresh uniquement en mode développement
+                            process.env.NODE_ENV === 'development' && require.resolve('react-refresh/babel')
+                        ].filter(Boolean),
+                    }
+                }
             },
             {
                 test: /\.json$/,
@@ -77,24 +81,44 @@ const common = {
             fix: true
         })
     ]
-}
+};
 
 const development = {
     ...common,
     mode: 'development',
-    // devtool: 'cheap-source-map',
+    output: {
+        path: path.resolve(__dirname, 'static'),
+        filename: 'assets/scripts/bundle.dev.js',
+    },
+    devtool: 'cheap-module-source-map',
+    devServer: {
+        hot: true,
+        open: false,
+        liveReload: false,
+        static: path.resolve(__dirname, 'static'),
+        port: 3000,
+        headers: {
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Headers": "X-Requested-With, Content-Type",
+        },
+    },
     plugins: [
         ...common.plugins,
         new BundleAnalyzerPlugin({
             analyzerPort: '8989',
             openAnalyzer: false
-        })
+        }),
+        new ReactRefreshWebpackPlugin(),
     ]
-}
+};
 
 const production = {
     ...common,
     mode: 'production',
+    output: {
+        path: path.resolve(__dirname, 'static'),
+        filename: 'assets/scripts/bundle.prod.js',
+    },
     optimization: {
         minimize: true,
         minimizer: [new TerserPlugin({
@@ -109,7 +133,7 @@ const production = {
     plugins: [
         ...common.plugins
     ]
-}
+};
 
 module.exports = (env, argv) => {
     const mode = argv.mode || 'development';
