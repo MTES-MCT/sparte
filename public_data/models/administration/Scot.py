@@ -10,6 +10,9 @@ from .LandMixin import LandMixin
 
 
 class Scot(LandMixin, GetDataFromCeremaMixin, models.Model):
+    class Meta:
+        managed = False
+
     name = models.CharField("Nom", max_length=250)
     mpoly = models.MultiPolygonField(srid=4326, null=True, blank=True)
     srid_source = models.IntegerField(

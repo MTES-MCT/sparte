@@ -61,8 +61,4 @@ class Migration(migrations.Migration):
             name="zoneurba",
             options={"managed": False},
         ),
-        migrations.RemoveField(
-            model_name="commune",
-            name="map_color",
-        ),
     ]

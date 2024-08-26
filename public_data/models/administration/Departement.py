@@ -13,6 +13,7 @@ from .LandMixin import LandMixin
 class Departement(LandMixin, GetDataFromCeremaMixin, models.Model):
     class Meta:
         verbose_name = "Département"
+        managed = False
 
     source_id = models.CharField("Identifiant source", max_length=50)
     region = models.ForeignKey("Region", on_delete=models.CASCADE)
