@@ -166,3 +166,7 @@ staticroot/*
 public_data/static/SSCH*
 diff_bfc_*
 .idea
+
+# Webpack bundles
+static/assets/scripts/
+static/assets/styles/*.css.map
