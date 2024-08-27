@@ -1,7 +1,12 @@
 from airflow.decorators import dag, task
-from gdaltools import ogr2ogr
+from gdaltools import ogr2ogr, ogrinfo
 from include.container import Container
 from pendulum import datetime
+
+
+def create_spatial_index(table_name: str, column_name="mpoly"):
+    sql = f"CREATE INDEX IF NO EXISTS ON {table_name} USING GIST ({column_name});"
+    return ogrinfo(Container().gdal_app_conn(), sql=sql)
 
 
 def copy_table_from_dw_to_app(
@@ -30,11 +35,17 @@ def copy_table_from_dw_to_app(
 def update_app():  # noqa: C901
     @task.python
     def copy_public_data_ocsge():
-        return copy_table_from_dw_to_app("public_ocsge.for_app_ocsge", "public.public_data_ocsge")
+        to_table = "public.public_data_ocsge"
+        copy_result = copy_table_from_dw_to_app("public_ocsge.for_app_ocsge", to_table)
+        create_spatial_index(to_table)
+        return copy_result
 
     @task.python
     def copy_public_data_artificialarea():
-        return copy_table_from_dw_to_app("public_ocsge.for_app_artificialarea", "public.public_data_artificialarea")
+        to_table = "public.public_data_artificialarea"
+        copy_result = copy_table_from_dw_to_app("public_ocsge.for_app_artificialarea", to_table)
+        create_spatial_index(to_table)
+        return copy_result
 
     @task.python
     def copy_public_data_artifareazoneurba():
@@ -44,11 +55,17 @@ def update_app():  # noqa: C901
 
     @task.python
     def copy_public_data_commune():
-        return copy_table_from_dw_to_app("public_ocsge.for_app_commune", "public.public_data_commune")
+        to_table = "public.public_data_commune"
+        copy_result = copy_table_from_dw_to_app("public_ocsge.for_app_commune", to_table)
+        create_spatial_index(to_table)
+        return copy_result
 
     @task.python
     def copy_public_data_departement():
-        return copy_table_from_dw_to_app("public_ocsge.for_app_departement", "public.public_data_departement")
+        to_table = "public.public_data_departement"
+        copy_result = copy_table_from_dw_to_app("public_ocsge.for_app_departement", to_table)
+        create_spatial_index(to_table)
+        return copy_result
 
     @task.python
     def copy_public_data_communesol():
@@ -56,7 +73,10 @@ def update_app():  # noqa: C901
 
     @task.python
     def copy_public_data_ocsgediff():
-        return copy_table_from_dw_to_app("public_ocsge.for_app_ocsgediff", "public.public_data_ocsgediff")
+        to_table = "public.public_data_ocsgediff"
+        copy_result = copy_table_from_dw_to_app("public_ocsge.for_app_ocsgediff", to_table)
+        create_spatial_index(to_table)
+        return copy_result
 
     @task.python
     def copy_public_data_communediff():
@@ -64,11 +84,17 @@ def update_app():  # noqa: C901
 
     @task.python
     def copy_public_data_zoneconstruite():
-        return copy_table_from_dw_to_app("public_ocsge.for_app_zoneconstruite", "public.public_data_zoneconstruite")
+        to_table = "public.public_data_zoneconstruite"
+        copy_result = copy_table_from_dw_to_app("public_ocsge.for_app_zoneconstruite", to_table)
+        create_spatial_index(to_table)
+        return copy_result
 
     @task.python
     def copy_public_data_zoneurba():
-        return copy_table_from_dw_to_app("public_gpu.for_app_zoneurba", "public.public_data_zoneurba")
+        to_table = "public.public_data_zoneurba"
+        copy_result = copy_table_from_dw_to_app("public_gpu.for_app_zoneurba", to_table)
+        create_spatial_index(to_table)
+        return copy_result
 
     (
         copy_public_data_ocsge()
