@@ -1,3 +1,5 @@
+airflow:
+  expose_port: true
 project:
     name: airflow
 postgres:
