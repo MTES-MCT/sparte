@@ -5,7 +5,7 @@ from pendulum import datetime
 
 
 def create_spatial_index(table_name: str, column_name="mpoly"):
-    sql = f"CREATE INDEX IF NO EXISTS ON {table_name} USING GIST ({column_name});"
+    sql = f"CREATE INDEX IF NOT EXISTS ON {table_name} USING GIST ({column_name});"
     return ogrinfo(Container().gdal_app_conn(), sql=sql)
 
 
