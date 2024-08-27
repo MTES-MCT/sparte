@@ -19,54 +19,23 @@ def copy_table_from_dw_to_app(
     ogr.execute()
 
 
-mapping = [
-    {
-        "from_table": "public_ocsge.for_app_ocsge",
-        "to_table": "public.public_data_ocsge",
-    },
-    {
-        "from_table": "public_ocsge.for_app_artificialarea",
-        "to_table": "public.public_data_artificialarea",
-    },
-    {
-        "from_table": "public_ocsge.for_app_artifareazoneurba",
-        "to_table": "public.public_data_artifareazoneurba",
-    },
-    {
-        "from_table": "public_ocsge.for_app_commune",
-        "to_table": "public.public_data_commune",
-    },
-    {
-        "from_table": "public_ocsge.for_app_departement",
-        "to_table": "public.public_data_departement",
-    },
-    {
-        "from_table": "public_ocsge.for_app_communesol",
-        "to_table": "public.public_data_communesol",
-    },
-    {
-        "from_table": "public_ocsge.for_app_ocsgediff",
-        "to_table": "public.public_data_ocsgediff",
-    },
-    {
-        "from_table": "public_ocsge.for_app_communediff",
-        "to_table": "public.public_data_communediff",
-    },
-    {
-        "from_table": "public_gpu.for_app_zoneurba",
-        "to_table": "public.public_data_zoneurba",
-    },
-    {
-        "from_table": "public_ocsge.for_app_zoneconstruite",
-        "to_table": "public.public_data_zoneconstruite",
-    },
-]
+mapping = {
+    "public_ocsge.for_app_ocsge": "public.public_data_ocsge",
+    "public_ocsge.for_app_artificialarea": "public.public_data_artificialarea",
+    "public_ocsge.for_app_artifareazoneurba": "public.public_data_artifareazoneurba",
+    "public_ocsge.for_app_commune": "public.public_data_commune",
+    "public_ocsge.for_app_departement": "public.public_data_departement",
+    "public_ocsge.for_app_communesol": "public.public_data_communesol",
+    "public_ocsge.for_app_ocsgediff": "public.public_data_ocsgediff",
+    "public_ocsge.for_app_communediff": "public.public_data_communediff",
+    "public_gpu.for_app_zoneurba": "public.public_data_zoneurba",
+    "public_ocsge.for_app_zoneconstruite": "public.public_data_zoneconstruite",
+}
 
 
-params = {map["to_table"]: Param(True) for map in mapping}
+params = {table: Param(True) for table in mapping.values()}
 
 
-# Define the basic parameters of the DAG, like schedule and start_date
 @dag(
     start_date=datetime(2024, 1, 1),
     schedule="@once",
@@ -77,19 +46,14 @@ params = {map["to_table"]: Param(True) for map in mapping}
     params=params,
 )
 def update_app():
-    tasks = []
-    for map in mapping:
-        to_table_str = map["to_table"].split(".")[1]
+    for from_table, to_table in mapping.items():
+        to_table_short_name = to_table.split(".")[1]
 
-        @task.python(task_id=f"copy_{to_table_str}", retries=0)
-        def copy_table(from_table=map["from_table"], to_table=map["to_table"], **context):
-            if context["params"][to_table]:
-                copy_table_from_dw_to_app(from_table, to_table)
-            else:
-                print(f"Skipping {to_table_str}")
+        @task.python(task_id=f"copy_{to_table_short_name}", retries=0)
+        def copy_table(from_table=from_table, to_table=to_table, **context):
+            copy_table_from_dw_to_app(from_table, to_table)
 
-        tasks.append(copy_table())
+        copy_table()
 
 
-# Instantiate the DAG
 update_app()
