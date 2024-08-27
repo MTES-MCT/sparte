@@ -1,5 +1,4 @@
 from airflow.decorators import dag, task
-from airflow.models.param import Param
 from gdaltools import ogr2ogr
 from include.container import Container
 from pendulum import datetime
@@ -17,23 +16,7 @@ def copy_table_from_dw_to_app(
     ogr.set_output(Container().gdal_app_conn(), table_name=to_table)
     ogr.set_output_mode(layer_mode=ogr.MODE_LAYER_OVERWRITE)
     ogr.execute()
-
-
-mapping = {
-    "public_ocsge.for_app_ocsge": "public.public_data_ocsge",
-    "public_ocsge.for_app_artificialarea": "public.public_data_artificialarea",
-    "public_ocsge.for_app_artifareazoneurba": "public.public_data_artifareazoneurba",
-    "public_ocsge.for_app_commune": "public.public_data_commune",
-    "public_ocsge.for_app_departement": "public.public_data_departement",
-    "public_ocsge.for_app_communesol": "public.public_data_communesol",
-    "public_ocsge.for_app_ocsgediff": "public.public_data_ocsgediff",
-    "public_ocsge.for_app_communediff": "public.public_data_communediff",
-    "public_gpu.for_app_zoneurba": "public.public_data_zoneurba",
-    "public_ocsge.for_app_zoneconstruite": "public.public_data_zoneconstruite",
-}
-
-
-params = {table: Param(True) for table in mapping.values()}
+    return ogr.safe_args
 
 
 @dag(
@@ -43,17 +26,62 @@ params = {table: Param(True) for table in mapping.values()}
     doc_md=__doc__,
     default_args={"owner": "Alexis Athlani", "retries": 3},
     tags=["App"],
-    params=params,
 )
-def update_app():
-    for from_table, to_table in mapping.items():
-        to_table_short_name = to_table.split(".")[1]
+def update_app():  # noqa: C901
+    @task.python
+    def copy_public_data_ocsge():
+        return copy_table_from_dw_to_app("public_ocsge.for_app_ocsge", "public.public_data_ocsge")
 
-        @task.python(task_id=f"copy_{to_table_short_name}", retries=0)
-        def copy_table(from_table=from_table, to_table=to_table, **context):
-            copy_table_from_dw_to_app(from_table, to_table)
+    @task.python
+    def copy_public_data_artificialarea():
+        return copy_table_from_dw_to_app("public_ocsge.for_app_artificialarea", "public.public_data_artificialarea")
 
-        copy_table()
+    @task.python
+    def copy_public_data_artifareazoneurba():
+        return copy_table_from_dw_to_app(
+            "public_ocsge.for_app_artifareazoneurba", "public.public_data_artifareazoneurba"
+        )
+
+    @task.python
+    def copy_public_data_commune():
+        return copy_table_from_dw_to_app("public_ocsge.for_app_commune", "public.public_data_commune")
+
+    @task.python
+    def copy_public_data_departement():
+        return copy_table_from_dw_to_app("public_ocsge.for_app_departement", "public.public_data_departement")
+
+    @task.python
+    def copy_public_data_communesol():
+        return copy_table_from_dw_to_app("public_ocsge.for_app_communesol", "public.public_data_communesol")
+
+    @task.python
+    def copy_public_data_ocsgediff():
+        return copy_table_from_dw_to_app("public_ocsge.for_app_ocsgediff", "public.public_data_ocsgediff")
+
+    @task.python
+    def copy_public_data_communediff():
+        return copy_table_from_dw_to_app("public_ocsge.for_app_communediff", "public.public_data_communediff")
+
+    @task.python
+    def copy_public_data_zoneconstruite():
+        return copy_table_from_dw_to_app("public_ocsge.for_app_zoneconstruite", "public.public_data_zoneconstruite")
+
+    @task.python
+    def copy_public_data_zoneurba():
+        return copy_table_from_dw_to_app("public_gpu.for_app_zoneurba", "public.public_data_zoneurba")
+
+    (
+        copy_public_data_ocsge()
+        >> copy_public_data_artificialarea()
+        >> copy_public_data_artifareazoneurba()
+        >> copy_public_data_commune()
+        >> copy_public_data_departement()
+        >> copy_public_data_communesol()
+        >> copy_public_data_ocsgediff()
+        >> copy_public_data_communediff()
+        >> copy_public_data_zoneconstruite()
+        >> copy_public_data_zoneurba()
+    )
 
 
 update_app()
