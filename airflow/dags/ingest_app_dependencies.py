@@ -23,9 +23,9 @@ mapping = {
     "public_data_couverturesol": "app_couverturesol",
     "public_data_usagesol": "app_usagesol",
     "public_data_couvertureusagematrix": "app_couvertureusagematrix",
-    "public_data_epci_departements": "app_epcidepartements",
-    "public_data_scot_departements": "app_scotdepartements",
-    "public_data_scot_regions": "app_scotregions",
+    "public_data_epci_departements": "app_epci_departements",
+    "public_data_scot_departements": "app_scot_departements",
+    "public_data_scot_regions": "app_scot_regions",
 }
 
 
