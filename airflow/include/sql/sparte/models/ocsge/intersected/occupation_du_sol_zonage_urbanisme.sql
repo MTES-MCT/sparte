@@ -26,7 +26,12 @@ la surface totale de l'objet sera conservée.
 
 */
 
-with occupation_du_sol_zonage_urbanisme_without_surface as (
+
+with max_ocsge_loaded_date as (
+    SELECT max(loaded_date) as ocsge_loaded_date FROM {{ this }}
+), max_zonage_gpu_timestamp as (
+    SELECT max(gpu_timestamp) as zonage_gpu_timestamp FROM {{ this }}
+), occupation_du_sol_zonage_urbanisme_without_surface as (
     SELECT
         concat(ocsge.uuid::text, '_', zonage.checksum::text) as ocsge_zonage_id, -- surrogate key
         -- les attributs spécifiques aux zonages sont préfixés par zonage_
@@ -52,11 +57,8 @@ with occupation_du_sol_zonage_urbanisme_without_surface as (
         ST_Intersects(zonage.geom, ocsge.geom)
 
     {% if is_incremental() %}
-        WHERE ocsge.loaded_date >
-            (SELECT max(foo.ocsge_loaded_date) FROM {{ this }} as foo)
-        OR
-        zonage.gpu_timestamp >
-            (SELECT max(bar.zonage_gpu_timestamp) FROM {{ this }} as bar)
+        where ocsge.loaded_date > (select ocsge_loaded_date from max_ocsge_loaded_date)
+        or zonage.gpu_timestamp > (select zonage_gpu_timestamp from max_zonage_gpu_timestamp)
     {% endif %}
 )
 

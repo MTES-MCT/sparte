@@ -23,8 +23,9 @@ la surface totale de l'objet sera conservée.
 
 */
 
-
-with occupation_du_sol_commune_without_surface as (
+with max_ocsge_loaded_date as (
+    SELECT max(loaded_date) as ocsge_loaded_date FROM {{ this }}
+), occupation_du_sol_commune_without_surface as (
     SELECT
         concat(ocsge.uuid::text, '_', commune.code::text) as ocsge_commune_id, -- surrogate key
         -- les attributs spécifiques aux communes sont préfixés par commune_
@@ -50,8 +51,7 @@ with occupation_du_sol_commune_without_surface as (
         ST_Intersects(commune.geom, ocsge.geom)
 
     {% if is_incremental() %}
-        WHERE ocsge.loaded_date >
-            (SELECT max(foo.ocsge_loaded_date) FROM {{ this }} as foo)
+        WHERE ocsge.loaded_date > (select ocsge_loaded_date from max_ocsge_loaded_date)
     {% endif %}
 )
 
