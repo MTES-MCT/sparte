@@ -3,12 +3,16 @@
 {{
     config(
         materialized='table',
+        unlogged=True,
         indexes=[
+            {'columns': ['loaded_date'], 'type': 'btree'},
             {'columns': ['departement','year'], 'type': 'btree'},
             {'columns': ['departement'], 'type': 'btree'},
-            {'columns': ['uuid'], 'type': 'btree'}
-        ],
-        post_hook="CREATE INDEX ON {{ this }} USING GIST (geom)"
+            {'columns': ['uuid'], 'type': 'btree'},
+            {'columns': ['code_cs'], 'type': 'btree'},
+            {'columns': ['code_us'], 'type': 'btree'},
+            {'columns': ['geom'], 'type': 'gist'}
+        ]
     )
 }}
 

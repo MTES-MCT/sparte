@@ -1,8 +1,18 @@
-
 {{
     config(
         materialized='table',
-        post_hook="CREATE INDEX ON {{ this }} USING GIST (geom)"
+        indexes=[
+            {'columns': ['loaded_date'], 'type': 'btree'},
+            {'columns': ['year_old'], 'type': 'btree'},
+            {'columns': ['year_new'], 'type': 'btree'},
+            {'columns': ['departement'], 'type': 'btree'},
+            {'columns': ['uuid'], 'type': 'btree'},
+            {'columns': ['cs_old'], 'type': 'btree'},
+            {'columns': ['cs_new'], 'type': 'btree'},
+            {'columns': ['us_old'], 'type': 'btree'},
+            {'columns': ['us_new'], 'type': 'btree'},
+            {'columns': ['geom'], 'type': 'gist'}
+        ]
     )
 }}
 

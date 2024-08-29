@@ -1,7 +1,13 @@
 {{
     config(
         materialized='table',
-        post_hook="CREATE INDEX ON {{ this }} USING GIST (geom)"
+        indexes=[
+            {'columns': ['loaded_date'], 'type': 'btree'},
+            {'columns': ['departement','year'], 'type': 'btree'},
+            {'columns': ['departement'], 'type': 'btree'},
+            {'columns': ['uuid'], 'type': 'btree'},
+            {'columns': ['geom'], 'type': 'gist'}
+        ]
     )
 }}
 
