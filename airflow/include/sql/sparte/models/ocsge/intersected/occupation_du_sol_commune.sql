@@ -24,7 +24,7 @@ la surface totale de l'objet sera conservée.
 */
 
 with max_ocsge_loaded_date as (
-    SELECT max(loaded_date) as ocsge_loaded_date FROM {{ this }}
+    SELECT max(ocsge_loaded_date) as ocsge_loaded_date FROM {{ this }}
 ), occupation_du_sol_commune_without_surface as (
     SELECT
         concat(ocsge.uuid::text, '_', commune.code::text) as ocsge_commune_id, -- surrogate key

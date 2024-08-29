@@ -28,9 +28,9 @@ la surface totale de l'objet sera conservée.
 
 
 with max_ocsge_loaded_date as (
-    SELECT max(loaded_date) as ocsge_loaded_date FROM {{ this }}
+    SELECT max(ocsge_loaded_date) as ocsge_loaded_date FROM {{ this }}
 ), max_zonage_gpu_timestamp as (
-    SELECT max(gpu_timestamp) as zonage_gpu_timestamp FROM {{ this }}
+    SELECT max(zonage_gpu_timestamp) as zonage_gpu_timestamp FROM {{ this }}
 ), occupation_du_sol_zonage_urbanisme_without_surface as (
     SELECT
         concat(ocsge.uuid::text, '_', zonage.checksum::text) as ocsge_zonage_id, -- surrogate key
