@@ -5,7 +5,10 @@
             {'columns': ['departement'], 'type': 'btree'},
             {'columns': ['year'], 'type': 'btree'},
             {'columns': ['uuid'], 'type': 'btree'},
-            {'columns': ['zonage_checksum'], 'type': 'btree'}
+            {'columns': ['zonage_checksum'], 'type': 'btree'},
+            {'columns': ['ocsge_loaded_date'], 'type': 'btree'},
+            {'columns': ['zonage_gpu_timestamp'], 'type': 'btree'},
+            {'columns': ['geom'], 'type': 'gist'}
         ],
         post_hook=[
             "{{ delete_from_this_where_field_not_in('ocsge_loaded_date', 'occupation_du_sol', 'loaded_date') }}",

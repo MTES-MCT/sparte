@@ -8,7 +8,8 @@
             {'columns': ['uuid'], 'type': 'btree'},
             {'columns': ['commune_code'], 'type': 'btree'},
             {'columns': ['ocsge_uuid'], 'type': 'btree'},
-            {'columns': ['geom'], 'type': 'gist'}
+            {'columns': ['geom'], 'type': 'gist'},
+            {'columns': ['ocsge_loaded_date'], 'type': 'btree'}
         ]
     )
 }}
@@ -49,7 +50,8 @@ with occupation_du_sol_commune_without_surface as (
         ST_Intersects(commune.geom, ocsge.geom)
 
     {% if is_incremental() %}
-        WHERE ocsge.uuid not in (SELECT foo.ocsge_uuid from {{ this }} as foo)
+        WHERE ocsge.loaded_date >
+            (SELECT max(foo.ocsge_loaded_date) FROM {{ this }} as foo)
     {% endif %}
 )
 

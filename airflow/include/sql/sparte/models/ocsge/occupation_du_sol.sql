@@ -3,7 +3,6 @@
 {{
     config(
         materialized='table',
-        unlogged=True,
         indexes=[
             {'columns': ['loaded_date'], 'type': 'btree'},
             {'columns': ['departement','year'], 'type': 'btree'},
