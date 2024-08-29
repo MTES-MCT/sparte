@@ -208,7 +208,7 @@ def ocsge():  # noqa: C901
     def check_url_exists(url) -> dict:
         response = requests.head(url)
         if not response.ok:
-            raise ValueError(f"Failed to download {url}. Response : {response.content}")
+            print(f"Failed to download {url}. Response : {response.content}")
 
         return {
             "url": url,
