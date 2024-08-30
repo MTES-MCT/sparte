@@ -176,7 +176,7 @@ def send_email_request_bilan(request_id) -> None:
         return
     request = Request.objects.get(pk=request_id)
     diagnostic = request.project
-    project_url = get_url_with_domain(reverse("project:detail", args=[diagnostic.id]))
+    project_url = get_url_with_domain(reverse("project:home", args=[diagnostic.id]))
     relative_url = get_url_with_domain(reverse("admin:project_request_change", kwargs={"object_id": request.id}))
     image_url = "https://creative-assets.mailinblue.com/editor/image_placeholder.png"
     if diagnostic.cover_image:

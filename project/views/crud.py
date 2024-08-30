@@ -29,7 +29,7 @@ from public_data.exceptions import LandException
 from public_data.models import AdminRef, Land
 from utils.views_mixins import BreadCrumbMixin, RedirectURLMixin
 
-from .mixins import GroupMixin
+from .mixins import GroupMixin, ReactMixin
 
 
 class ClaimProjectView(LoginRequiredMixin, RedirectView):
@@ -105,9 +105,10 @@ class CreateProjectViews(BreadCrumbMixin, FormView):
                 return redirect("project:splash", pk=project.id)
 
 
-class ProjectUpdateView(GroupMixin, UpdateView):
+class ProjectUpdateView(ReactMixin, UpdateView):
     model = Project
-    template_name = "project/pages/update.html"
+    partial_template_name = "project/components/dashboard/update.html"
+    full_template_name = "project/pages/update.html"
     form_class = UpdateProjectForm
     context_object_name = "project"
 
@@ -117,15 +118,10 @@ class ProjectUpdateView(GroupMixin, UpdateView):
         kwargs.update(
             {
                 "diagnostic": project,
-                "active_page": "update",
+                "project_id": project.id,
             }
         )
         return super().get_context_data(**kwargs)
-
-    def get_context_breadcrumbs(self):
-        breadcrumbs = super().get_context_breadcrumbs()
-        breadcrumbs.append({"href": None, "title": "Editer"})
-        return breadcrumbs
 
     def form_valid(self, form):
         """If the form is valid, save the associated model."""
@@ -304,7 +300,7 @@ class SplashProgressionView(GroupMixin, DetailView):
     def dispatch(self, *args, **kwargs):
         response = super().dispatch(*args, **kwargs)
         if self.object.is_ready_to_be_displayed:
-            response["HX-Redirect"] = reverse("project:detail", kwargs=self.kwargs)
+            response["HX-Redirect"] = reverse("project:home", kwargs=self.kwargs)
         return response
 
     def get_context_data(self, **kwargs):

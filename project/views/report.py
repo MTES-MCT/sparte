@@ -49,20 +49,12 @@ from public_data.models.ocsge import Ocsge, OcsgeDiff
 from utils.htmx import StandAloneMixin
 from utils.views_mixins import CacheMixin
 
-from .mixins import BreadCrumbMixin, GroupMixin, OcsgeCoverageMixin
+from .mixins import OcsgeCoverageMixin, ReactMixin
 
 
-class ProjectReportBaseView(CacheMixin, GroupMixin, DetailView):
-    partial_template_name = ""
-    full_template_name = ""
-    breadcrumbs_title = "To be set"
+class ProjectReportBaseView(ReactMixin, CacheMixin, DetailView):
     context_object_name = "project"
     queryset = Project.objects.all()
-
-    def get_template_names(self):
-        if self.request.headers.get("X-Requested-With") == "XMLHttpRequest":
-            return [self.partial_template_name]
-        return [self.full_template_name]
 
     @transaction.non_atomic_requests
     def dispatch(self, request, *args, **kwargs):
@@ -74,11 +66,6 @@ class ProjectReportBaseView(CacheMixin, GroupMixin, DetailView):
                 trigger_async_tasks(project)
                 return redirect("project:splash", pk=project.id)
         return super().dispatch(request, *args, **kwargs)
-
-    def get_context_breadcrumbs(self):
-        breadcrumbs = super().get_context_breadcrumbs()
-        breadcrumbs.append({"href": None, "title": self.breadcrumbs_title})
-        return breadcrumbs
 
     def get_context_data(self, **kwargs):
         project: Project = self.get_object()
@@ -95,7 +82,6 @@ class ProjectReportBaseView(CacheMixin, GroupMixin, DetailView):
 class ProjectReportConsoView(ProjectReportBaseView):
     partial_template_name = "project/components/dashboard/consommation.html"
     full_template_name = "project/pages/consommation.html"
-    breadcrumbs_title = "Rapport consommation"
 
     def get_context_data(self, **kwargs):
         project: Project = self.get_object()
@@ -139,7 +125,6 @@ class ProjectReportConsoView(ProjectReportBaseView):
             {
                 "diagnostic": project,
                 "total_surface": project.area,
-                "active_page": "consommation",
                 "conso_period": conso_period,
                 "nb_communes": project.cities.count(),
                 # charts
@@ -170,21 +155,15 @@ class ProjectReportConsoView(ProjectReportBaseView):
 class ProjectReportDicoverOcsgeView(OcsgeCoverageMixin, ProjectReportBaseView):
     partial_template_name = "project/components/dashboard/ocsge.html"
     full_template_name = "project/pages/ocsge.html"
-    breadcrumbs_title = "Découvrir l'OCS GE"
 
     def get_context_data(self, **kwargs):
         project: Project = self.get_object()
 
-        surface_territory = project.area
-        kwargs = {
-            "diagnostic": project,
-            "nom": "Rapport découvrir l'OCS GE",
-            "surface_territory": surface_territory,
-            "active_page": "discover",
-        }
-
         kwargs.update(
             {
+                "diagnostic": project,
+                "nom": "Rapport découvrir l'OCS GE",
+                "surface_territory": project.area,
                 "first_millesime": str(project.first_year_ocsge),
                 "last_millesime": str(project.last_year_ocsge),
                 "couv_pie_chart": charts.CouverturePieChart(project),
@@ -228,7 +207,6 @@ class ProjectReportDicoverOcsgeView(OcsgeCoverageMixin, ProjectReportBaseView):
 class ProjectReportSynthesisView(ProjectReportBaseView):
     partial_template_name = "project/components/dashboard/synthese.html"
     full_template_name = "project/pages/synthese.html"
-    breadcrumbs_title = "Synthèse consommation d'espaces et artificialisation"
 
     def get_context_data(self, **kwargs):
         project: Project = self.get_object()
@@ -241,7 +219,6 @@ class ProjectReportSynthesisView(ProjectReportBaseView):
         kwargs.update(
             {
                 "diagnostic": project,
-                "active_page": "synthesis",
                 "total_surface": total_surface,
                 "new_artif": progression_time_scoped["new_artif"],
                 "new_natural": progression_time_scoped["new_natural"],
@@ -260,7 +237,6 @@ class ProjectReportSynthesisView(ProjectReportBaseView):
 class ProjectReportLocalView(ProjectReportBaseView):
     partial_template_name = "project/components/dashboard/rapport_local.html"
     full_template_name = "project/pages/rapport_local.html"
-    breadcrumbs_title = "Rapport triennal local"
 
     def get_context_data(self, **kwargs):
         project: Project = self.get_object()
@@ -268,7 +244,6 @@ class ProjectReportLocalView(ProjectReportBaseView):
         kwargs.update(
             {
                 "diagnostic": project,
-                "active_page": "local",
             }
         )
         return super().get_context_data(**kwargs)
@@ -277,7 +252,6 @@ class ProjectReportLocalView(ProjectReportBaseView):
 class ProjectReportImperView(OcsgeCoverageMixin, ProjectReportBaseView):
     partial_template_name = "project/components/dashboard/impermeabilisation.html"
     full_template_name = "project/pages/impermeabilisation.html"
-    breadcrumbs_title = "Imperméabilisation"
 
     def get_context_data(self, **kwargs):
         project: Project = self.get_object()
@@ -294,7 +268,6 @@ class ProjectReportImperView(OcsgeCoverageMixin, ProjectReportBaseView):
         kwargs.update(
             {
                 "diagnostic": project,
-                "active_page": "impermeabilisation",
                 "first_millesime": str(project.first_year_ocsge),
                 "last_millesime": str(project.last_year_ocsge),
                 "imper_nette_chart": charts.ImperNetteProgression(project),
@@ -313,7 +286,6 @@ class ProjectReportImperView(OcsgeCoverageMixin, ProjectReportBaseView):
 class ProjectReportArtifView(OcsgeCoverageMixin, ProjectReportBaseView):
     partial_template_name = "project/components/dashboard/artificialisation.html"
     full_template_name = "project/pages/artificialisation.html"
-    breadcrumbs_title = "Artificialisation"
 
     def get_context_data(self, **kwargs):
         project: Project = self.get_object()
@@ -325,7 +297,6 @@ class ProjectReportArtifView(OcsgeCoverageMixin, ProjectReportBaseView):
         kwargs = {
             "land_type": project.land_type or "COMP",
             "diagnostic": project,
-            "active_page": "artificialisation",
             "total_surface": total_surface,
         }
 
@@ -444,7 +415,7 @@ class ProjectReportArtifView(OcsgeCoverageMixin, ProjectReportBaseView):
         }
 
 
-class ProjectReportDownloadView(BreadCrumbMixin, CreateView):
+class ProjectReportDownloadView(CreateView):
     model = Request
     template_name = "project/components/forms/report_download.html"
     fields = [
@@ -512,7 +483,6 @@ class ProjectReportDownloadView(BreadCrumbMixin, CreateView):
 class ProjectReportTarget2031View(ProjectReportBaseView):
     partial_template_name = "project/components/dashboard/trajectoires.html"
     full_template_name = "project/pages/trajectoires.html"
-    breadcrumbs_title = "Rapport trajectoires"
 
     def get_context_data(self, **kwargs):
         diagnostic = self.get_object()
@@ -520,7 +490,6 @@ class ProjectReportTarget2031View(ProjectReportBaseView):
         kwargs.update(
             {
                 "diagnostic": diagnostic,
-                "active_page": "target_2031",
                 "total_real": target_2031_chart.total_real,
                 "annual_real": target_2031_chart.annual_real,
                 "conso_2031": target_2031_chart.conso_2031,
@@ -540,7 +509,6 @@ class ProjectReportTarget2031GraphView(ProjectReportBaseView):
         target_2031_chart = charts.ObjectiveChart(diagnostic)
         kwargs.update(
             {
-                "reload_kpi": True,
                 "diagnostic": diagnostic,
                 "target_2031_chart": target_2031_chart,
                 "total_2020": target_2031_chart.total_2020,
@@ -561,7 +529,6 @@ class ProjectReportTarget2031GraphView(ProjectReportBaseView):
 class ProjectReportUrbanZonesView(OcsgeCoverageMixin, ProjectReportBaseView):
     partial_template_name = "project/components/dashboard/gpu.html"
     full_template_name = "project/pages/gpu.html"
-    breadcrumbs_title = "Zonages d'urbanisme"
 
     def get_context_data(self, **kwargs):
         project = self.get_object()
