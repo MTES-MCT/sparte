@@ -792,7 +792,7 @@ class Project(BaseProject):
         }
 
     def get_absolute_url(self):
-        return reverse("project:detail", kwargs={"pk": self.pk})
+        return reverse("project:home", kwargs={"pk": self.pk})
 
     def get_artif_area(self):
         """Return artificial surface total for all city inside diagnostic"""
