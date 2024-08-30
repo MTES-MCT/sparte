@@ -813,7 +813,7 @@ class Project(BaseProject):
         }
 
     def get_absolute_url(self):
-        return reverse("project:detail", kwargs={"pk": self.pk})
+        return reverse("project:home", kwargs={"pk": self.pk})
 
     def reset(self, save=False):
         """Remove everything from project dependencies
