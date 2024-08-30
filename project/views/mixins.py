@@ -48,7 +48,7 @@ class GroupMixin(GetObjectMixin, UserQuerysetOrPublicMixin, BreadCrumbMixin):
             project = self.get_object()
             breadcrumbs.append(
                 {
-                    "href": reverse_lazy("project:detail", kwargs={"pk": project.id}),
+                    "href": reverse_lazy("project:home", kwargs={"pk": project.id}),
                     "title": project.name,
                 }
             )
@@ -70,3 +70,13 @@ class OcsgeCoverageMixin:
         page_name = getattr(self, "breadcrumbs_title", "cette page")
         page_name_literal = "à la page " + page_name if page_name != "cette page" else page_name
         return f"Vous ne pouvez pas accéder {page_name_literal} car l'OCS GE n'est pas disponible pour ce territoire."
+
+
+class ReactMixin:
+    partial_template_name = ""
+    full_template_name = ""
+
+    def get_template_names(self):
+        if self.request.headers.get("X-Requested-With") == "XMLHttpRequest":
+            return [self.partial_template_name]
+        return [self.full_template_name]

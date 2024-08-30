@@ -215,7 +215,7 @@ class RequestAdmin(admin.ModelAdmin):
 
     def link_to_project(self, obj):
         try:
-            link = reverse("project:detail", args=[obj.project_id])
+            link = reverse("project:home", args=[obj.project_id])
             return format_html(f'<a href="{link}">Accès à la fiche</a>')
         except exceptions.NoReverseMatch:
             return format_html("Diagnostic inconnu")

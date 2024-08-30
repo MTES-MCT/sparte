@@ -1,4 +1,5 @@
 from django.urls import path
+from django.views.generic.base import RedirectView
 from rest_framework import routers
 
 from . import views
@@ -20,8 +21,8 @@ urlpatterns = [
         name="splash-progress",
     ),
     # CRUD
-    path("", views.ProjectListView.as_view(), name="list"),
-    path("<int:pk>/", views.ProjectReportSynthesisView.as_view(), name="detail"),
+    path("mes-diagnostics", views.ProjectListView.as_view(), name="list"),
+    path("<int:pk>/", RedirectView.as_view(pattern_name="project:report_synthesis", permanent=True), name="home"),
     path("<int:pk>/detail", ProjectDetailView.as_view(), name="project-detail"),
     path("<int:pk>/ajouter", views.ClaimProjectView.as_view(), name="claim"),
     path("<int:pk>/edit", views.ProjectUpdateView.as_view(), name="update"),
