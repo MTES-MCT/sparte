@@ -1,7 +1,3 @@
-/** *******************
- * TODO: WEBPACK Code splitting
- ******************* */
-
 // Import styles
 import '../styles/index.css'
 
