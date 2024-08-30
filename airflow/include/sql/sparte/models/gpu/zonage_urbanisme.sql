@@ -30,13 +30,13 @@ SELECT *, ST_Area(geom) as surface FROM (
         row_number() OVER (PARTITION BY geom ORDER BY gpu_timestamp),
         CASE
             WHEN ST_IsValid(geom) THEN ST_transform(geom, 2154)
-            ELSE st_multi(
+            ELSE ST_MakeValid(st_multi(
                     st_collectionextract(
                         st_makevalid(
                             ST_transform(geom, 2154)
                         ),
                     3)
-                )
+                ))
         END as geom
     FROM
         {{ source('public', 'gpu_zone_urba') }}
