@@ -72,6 +72,10 @@ def ocsge_occupation_du_sol_normalization_sql(
             "code_us": "code_us",
         },
         {
+            "code_cs": "CODE_CS",
+            "code_us": "CODE_US",
+        },
+        {
             "code_cs": "couverture",
             "code_us": "usage",
         },
