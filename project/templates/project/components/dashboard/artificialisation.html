@@ -40,40 +40,7 @@
     </div>
 </div>
 
-<div class="fr-callout fr-callout--brown-caramel fr-fi-information-line fr-callout-read-more">
-    <div class="fr-callout-read-more__excerpt">
-        <p class="fr-text--sm mb-3">L'article 192 de la Loi Climat & Résilience votée en août 2021 définit l'artificialisation comme « une surface dont les sols sont :</p>
-        <ul class="fr-text--sm mb-3">
-            <li>soit imperméabilisés en raison du bâti ou d'un revêtement,</li>
-            <li>soit stabilisés et compactés,</li>
-            <li>soit constitués de matériaux composites »</li>
-        </ul>
-    </div>
-    <div class="fr-callout-read-more__text" id="artif_1" hidden>
-        <p class="fr-text--sm mb-3">
-            L'article 192 de la Loi Climat & Résilience votée en août 2021 définit
-            l'artificialisation comme « une surface dont les sols sont :
-        </p>
-        <ul class="fr-text--sm mb-3">
-            <li>soit imperméabilisés en raison du bâti ou d'un revêtement,</li>
-            <li>soit stabilisés et compactés,</li>
-            <li>soit constitués de matériaux composites »</li>
-        </ul>
-        <p class="fr-text--sm mb-3">Elle se traduit dans l'OCS GE nationale comme la somme des  objets anthropisés dans la description de la couverture des sols.</p>
-        <p class="fr-text--sm mb-3">L'application applique ici un croisement des données de l'OCS GE pour définir l'artificialisation conformément aux attendus de la loi Climat & Résilience, et au décret « nomenclature de l'artificialisation des sols» <a rel="noopener noreferrer" target="_blank" href="https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000045727061">(Décret n° 2022-763 du 29 avril 2022 relatif à la nomenclature de l'artificialisation des sols pour la fixation et le suivi des objectifs dans les documents de planification et d'urbanisme)</a>.</p>
-        <p class="fr-text--sm mb-3"><strong>Définition de l'artificialisation des sols</strong></p>
-        <p class="fr-text--sm mb-3">La nomenclature précise que les surfaces dont les sols sont soit imperméabilisés en raison du bâti ou d'un revêtement, soit stabilisés et compactés, soit constitués de matériaux composites sont qualifiées de surfaces artificialisées. De même, les surfaces végétalisées herbacées (c'est-à-dire non ligneuses) et qui sont à usage résidentiel, de production secondaire ou tertiaire, ou d'infrastructures, sont considérées comme artificialisées, y compris lorsqu'elles sont en chantier ou à l'état d'abandon.</p>
-        <p class="fr-text--sm mb-3">L'artificialisation nette est définie comme « le solde de l'artificialisation et de la désartificialisation des sols constatées sur un périmètre et sur une période donnés » (article L.101-2-1 du code de l'urbanisme). </p>
-        <p class="fr-text--sm mb-3">Au niveau national, l'artificialisation est mesurée par l'occupation des sols à grande échelle (OCS GE), en cours d'élaboration, dont la production sera engagée sur l'ensemble du territoire national d'ici fin 2024.</p>
-        <img src="{% static 'project/img/ocs_ge_matrice_passage.png' %}" class="w-100" />
-    </div>
-
-    <button class="fr-btn fr-btn--secondary fr-btn--sm fr-callout-read-more__btn" aria-expanded="false" aria-controls="artif_1">
-        Lire plus
-    </button>
-</div>
-
-<div class="fr-mt-12w">
+<div class="fr-mt-5w">
     <h2>Etat des lieux du territoire au dernier millésime</h2>
     <a class="fr-link" href="{{ FAQ_URL }}fr/article/quest-ce-quun-millesime-110ihlr/" target="_blank" rel="noopener noreferrer">
         Qu'est-ce qu'un millésime ?
@@ -82,13 +49,13 @@
     <div class="fr-mt-7w">
         <div class="fr-grid-row fr-grid-row--gutters">
             <div class="fr-col-12 fr-col-md-4 fr-grid-row">
-                <div class="fr-callout w-100">
+                <div class="fr-callout bg-white w-100">
                 <p class="fr-callout__title">{{ total_surface|floatformat:0 }} ha</p>
                 <p>Surface du territoire</p>
                 </div>
             </div>
             <div class="fr-col-12 fr-col-md-4 fr-grid-row">
-                <div class="fr-callout w-100">
+                <div class="fr-callout bg-white w-100">
                 <p class="fr-callout__title">{{ artif_area|floatformat:0 }} ha</p>
                 <p>
                     <span
@@ -102,7 +69,7 @@
                 </div>
             </div>
             <div class="fr-col-12 fr-col-md-4 fr-grid-row">
-                <div class="fr-callout w-100">
+                <div class="fr-callout bg-white w-100">
                 <p class="fr-callout__title">{{ rate_artif_area|floatformat:0 }}%</p>
                 <p>Taux de surfaces artificialisées</p>
                 </div>
@@ -115,7 +82,7 @@
     <h2>Evolution en volume de {{ first_millesime }} à {{ last_millesime }}</h2>
     <div class="fr-grid-row fr-grid-row--gutters">
       <div class="fr-col-12 fr-col-md-6 fr-col-lg-3 fr-grid-row">
-        <div class="fr-callout w-100">
+        <div class="fr-callout bg-white w-100">
           <p class="fr-callout__title">{{ new_artif|floatformat:1 }} ha</p>
           <p>
             <span
@@ -129,7 +96,7 @@
         </div>
       </div>
       <div class="fr-col-12 fr-col-md-6 fr-col-lg-3 fr-grid-row">
-        <div class="fr-callout w-100">
+        <div class="fr-callout bg-white w-100">
           <p class="fr-callout__title">{{ new_natural|floatformat:1 }} ha</p>
           <p>
             <span
@@ -143,7 +110,7 @@
         </div>
       </div>
       <div class="fr-col-12 fr-col-md-6 fr-col-lg-3 fr-grid-row">
-        <div class="fr-callout w-100">
+        <div class="fr-callout bg-white w-100">
           <p class="fr-callout__title">{{ net_artif|floatformat:1 }} ha</p>
           <p>
             <span
@@ -158,7 +125,7 @@
         </div>
       </div>
       <div class="fr-col-12 fr-col-md-6 fr-col-lg-3 fr-grid-row">
-        <div class="fr-callout w-100">
+        <div class="fr-callout bg-white w-100">
           <p class="fr-callout__title">{{ net_artif_rate|floatformat:1 }} %</p>
             <p>
                 <span

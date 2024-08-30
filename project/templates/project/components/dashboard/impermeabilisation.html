@@ -1,46 +1,8 @@
 {% load highcharts_tags %}
 {% load static %}
 
-<div class="fr-callout fr-callout--brown-caramel fr-fi-information-line fr-callout-read-more">
-    <div class="fr-callout-read-more__excerpt">
-        <p class="fr-text--sm mb-3">Le <a rel="noopener noreferrer" target="_blank" href="https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000048465959">Décret n° 2023-1096 du 27 novembre 2023 relatif à l'évaluation et au suivi de l'Imperméabilisation des sols</a> précise que le rapport relatif à l'Imperméabilisation des sols prévu à l'article L. 2231-1 présente, pour les années civiles sur lesquelles il porte et au moins tous les trois ans, les indicateurs et données suivants:</p>
-        <ul class="fr-text--sm mb-3">
-            <li>« 1° La consommation des espaces naturels, agricoles et forestiers, exprimée en nombre d'hectares, le cas échéant en la différenciant entre ces types d'espaces, et en pourcentage au regard de la superficie du territoire couvert. Sur le même territoire, le rapport peut préciser également la transformation effective d'espaces urbanisés ou construits en espaces naturels, agricoles et forestiers du fait d'une Désimperméabilisation ;</li>
-            <li>« 2° Le solde entre les surfaces Impericialisées et les surfaces désImpericialisées, telles que définies dans la nomenclature annexée à l'<a rel="noopener noreferrer" target="_blank" href="https://www.legifrance.gouv.fr/affichCodeArticle.do?cidTexte=LEGITEXT000006074075&idArticle=LEGIARTI000045729062&dateTexte=&categorieLien=cid">article R. 101-1 du code de l'urbanisme</a> ;</li>
-        </ul>
-    </div>
-    <div class="fr-callout-read-more__text" id="imper_1" hidden>
-        <p class="fr-text--sm mb-3">Le <a rel="noopener noreferrer" target="_blank" href="https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000048465959">Décret n° 2023-1096 du 27 novembre 2023 relatif à l'évaluation et au suivi de l'Imperméabilisation des sols</a> précise que le rapport relatif à l'Imperméabilisation des sols prévu à l'article L. 2231-1 présente, pour les années civiles sur lesquelles il porte et au moins tous les trois ans, les indicateurs et données suivants:</p>
-        <ul class="fr-text--sm mb-3">
-            <li>« 1° La consommation des espaces naturels, agricoles et forestiers, exprimée en nombre d'hectares, le cas échéant en la différenciant entre ces types d'espaces, et en pourcentage au regard de la superficie du territoire couvert. Sur le même territoire, le rapport peut préciser également la transformation effective d'espaces urbanisés ou construits en espaces naturels, agricoles et forestiers du fait d'une Désimperméabilisation ;</li>
-            <li>« 2° Le solde entre les surfaces Impericialisées et les surfaces désImpericialisées, telles que définies dans la nomenclature annexée à l'<a rel="noopener noreferrer" target="_blank" href="https://www.legifrance.gouv.fr/affichCodeArticle.do?cidTexte=LEGITEXT000006074075&idArticle=LEGIARTI000045729062&dateTexte=&categorieLien=cid">article R. 101-1 du code de l'urbanisme</a> ;</li>
-            <li>« 3° Les surfaces dont les sols ont été rendus imperméables, au sens des 1° et 2° de la nomenclature annexée à l'<a rel="noopener noreferrer" target="_blank" href="https://www.legifrance.gouv.fr/affichCodeArticle.do?cidTexte=LEGITEXT000006074075&idArticle=LEGIARTI000045729062&dateTexte=&categorieLien=cid">article R. 101-1 du code de l'urbanisme</a> ;</li>
-            <li>« 4° L'évaluation du respect des objectifs de réduction de la consommation d'espaces naturels, agricoles et forestiers et de lutte contre l'Imperméabilisation des sols fixés dans les documents de planification et d'urbanisme. Les documents de planification sont ceux énumérés au <a rel="noopener noreferrer" target="_blank" href="https://www.legifrance.gouv.fr/affichCodeArticle.do?cidTexte=LEGITEXT000006074075&idArticle=LEGIARTI000045729062&dateTexte=&categorieLien=cid">III de l'article R. 101-1 du code de l'urbanisme</a>.</li>
-        </ul>
-        <p class="fr-text--sm mb-3">
-            L’imperméabilisation des sols est donc définie comme:
-        </p>
-        <ul class="fr-text--sm mb-3">
-            <li>1° Surfaces dont les sols sont imperméabilisés en raison du bâti (constructions, aménagements, ouvrages ou installations).</li>
-            <li>2° Surfaces dont les sols sont imperméabilisés en raison d'un revêtement (Impericiel, asphalté, bétonné, couvert de pavés ou de dalles).</li>
-        </ul>
-        <p class="fr-text--sm mb-3">
-            Au niveau national, l’imperméabilisation est mesurée par l'occupation des sols à grande échelle (OCS GE), en cours d'élaboration, dont la production sera engagée sur l'ensemble du territoire national d'ici mi 2025.
-        </p>
-        <p class="fr-text--sm mb-3">
-            Dans la nomenclature OCS GE, les zones imperméables correspondent aux deux classes commençant par le code CS1.1.1
-        </p>
-    </div>
-
-    <button class="fr-btn fr-btn--secondary fr-btn--sm fr-callout-read-more__btn" aria-expanded="false" aria-controls="imper_1">
-        Lire plus
-    </button>
-</div>
-
-<div class="fr-mt-12w">
-    <h2>Aperçu de l'imperméabilisation</h2>
-
-    <h3>Evolution de l'imperméabilisation entre {{ first_millesime }} et {{ last_millesime }}</h3>
+<div class="fr-mt-5w">
+    <h4>Evolution de l'imperméabilisation entre {{ first_millesime }} et {{ last_millesime }}</h4>
 
     <div class="fr-grid-row fr-grid-row--gutters">
         <div class="fr-col-12">
@@ -81,9 +43,9 @@
 
 
 <div class="fr-mt-7w">
-    <h2>Détails de l'Imperméabilisation entre {{ first_millesime }} et {{ last_millesime }}</h2>
+    <h3>Détails de l'Imperméabilisation entre {{ first_millesime }} et {{ last_millesime }}</h3>
 
-    <h3>Familles de couverture des sols des surfaces imperméabilisées</h3>
+    <h4>Familles de couverture des sols des surfaces imperméabilisées</h4>
 
     <div class="fr-grid-row fr-grid-row--gutters">
         <div class="fr-col-12 fr-col-lg-4">
@@ -137,7 +99,7 @@
 </div>
 
 <div class="fr-mt-7w">
-    <h3>Grandes familles d'usages du sol des surfaces imperméabilisées</h3>
+    <h4>Grandes familles d'usages du sol des surfaces imperméabilisées</h4>
 
     <div class="fr-grid-row fr-grid-row--gutters">
         <div class="fr-col-12 fr-col-lg-4">

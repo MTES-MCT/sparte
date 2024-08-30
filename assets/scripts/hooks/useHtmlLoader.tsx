@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 
 export const useHtmlLoader = (endpoint: string) => {
     const [content, setContent] = useState<string>('');
-    const [loading, setLoading] = useState<boolean>(true);
+    const [isLoading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
@@ -30,5 +30,5 @@ export const useHtmlLoader = (endpoint: string) => {
         loadContent();
     }, [endpoint]);
 
-    return { content, loading, error };
+    return { content, isLoading, error };
 };

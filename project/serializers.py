@@ -12,6 +12,7 @@ class ProjectDetailSerializer(serializers.ModelSerializer):
         model = Project
         fields = [
             "id",
+            "created_date",
             "level_label",
             "analyse_start_date",
             "analyse_end_date",

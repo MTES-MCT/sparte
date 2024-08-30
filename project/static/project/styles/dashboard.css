@@ -1,29 +1,5 @@
-body, html {
-    height: 100%;
-}
-
-.dashboard-header {
-    height: 79px;
-    width: 100%;
-    padding: 1rem;
-    position: fixed;
-    top: 0;
-    left: 0;
-    background: #fff;
-    z-index: 999;
-    border-bottom: 1px solid #EEF2F7;
-}
-
-.header-brand {
+#react-root {
+    min-height: 100vh;
     display: flex;
-    gap: 1rem;
-    height: 100%;
-}
-
-.fr-breadcrumb li {
-    color: #707EAE !important;
-}
-
-.fr-callout {
-    background-color: #fff !important;
+    flex-direction: column;
 }

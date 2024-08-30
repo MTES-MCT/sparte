@@ -35,94 +35,153 @@
         {% crisp_tag_code %}
     </head>
     
-    <body class="{% block body_class %}{% endblock %}">
-        <div id="react-root" data-project-id="{{ project_id|safe }}">
-            {% block content %}
-            {% endblock content %}
-        </div>
+    <body>
+        <div id="react-root" data-project-id="{{ project_id|safe }}"></div>
+
+        <script id="header-data" type="application/json">
+            {
+
+                "logos": [
+                    {
+                        "src": "{% static '/img/republique-francaise-logo.svg' %}",
+                        "alt": "Logo République Française",
+                        "height": "70px"
+                    },
+                    {
+                        "src": "{% static '/img/logo-mon-diagnostic-artificialisation.svg' %}",
+                        "alt": "Logo Mon Diagnostic Artificialisation",
+                        "url": "/",
+                        "height": "50px"
+                    }
+                ],
+                "menuItems": [
+                    {
+                        "label": "FAQ",
+                        "url": "{{ FAQ_URL }}",
+                        "target": "_blank"
+                    },
+                    {% if user.is_authenticated %}
+                    {
+                        "label": "Mes diagnostics",
+                        "url": "{% url 'project:list' %}"
+                    },
+                    {
+                        "label": "Mon compte",
+                        "url": "{% url 'users:profile' %}"
+                    }
+                    {% else %}
+                    {
+                        "label": "Se connecter",
+                        "url": "{% url 'users:signin' %}"
+                    },
+                    {
+                        "label": "S'inscrire",
+                        "url": "{% url 'users:signup' %}"
+                    }
+                    {% endif %}
+                ]
+            }
+        </script>
+
         <script id="navbar-data" type="application/json">
             {
-                "logo": "{% static '/img/logo-mon-diagnostic-artificialisation.svg' %}",
-                "menus": [
+                "menuItems": [
                     {
-                        "title": "Diagnostic",
-                        "menuItems": [
+                        "label": "Synthèse",
+                        "url": "{% url 'project:report_synthesis' project.pk %}",
+                        "icon": "bi bi-grid-1x2-fill"
+                    },
+                    {
+                        "label": "Les attendus de la loi C&R",
+                        "icon": "bi bi-check-square-fill",
+                        "subMenu": [
                             {
-                                "label": "Synthèse",
-                                "url": "{% url 'project:report_synthesis' project.pk %}",
-                                "icon": "bi bi-grid-1x2-fill"
+                                "label": "Rapport triennal local",
+                                "url": "{% url 'project:report_local' project.pk %}"
                             },
                             {
-                                "label": "Les attendus de la loi C&R",
-                                "icon": "bi bi-list-check",
-                                "subMenu": [
-                                    {
-                                        "label": "Rapport triennal local",
-                                        "url": "{% url 'project:report_local' project.pk %}"
-                                    },
-                                    {
-                                        "label": "Trajectoire ZAN",
-                                        "url": "{% url 'project:report_target_2031' project.pk %}"
-                                    }
-                                ]
-                            },
-                            {
-                                "label": "Pilotage territorial",
-                                "icon": "bi bi-x-diamond",
-                                "subMenu": [
-                                    {
-                                        "label": "Consommation d'espaces NAF",
-                                        "url": "{% url 'project:report_conso' project.pk %}"
-                                    },
-                                    {
-                                        "label": "Zonages d'urbanisme",
-                                        "url": "{% url 'project:report_urban_zones' project.pk %}"
-                                    }
-                                ]
-                            },
-                            {
-                                "label": "Enjeux environnementaux",
-                                "icon": "bi bi-tree-fill",
-                                "subMenu": [
-                                    {
-                                        "label": "Usage et couverture du sol (OCS GE)",
-                                        "url": "{% url 'project:report_discover' project.pk %}"
-                                    },
-                                    {
-                                        "label": "Artificialisation",
-                                        "url": "{% url 'project:report_artif' project.pk %}"
-                                    },
-                                    {
-                                        "label": "Imperméabilisation",
-                                        "url": "{% url 'project:report_imper' project.pk %}"
-                                    }
-                                ]
-                            },
-                            {
-                                "label": "Paramètres",
-                                "icon": "bi bi-gear-fill",
-                                "url": "{% url 'project:update' project.pk %}"
+                                "label": "Trajectoires ZAN",
+                                "url": "{% url 'project:report_target_2031' project.pk %}"
                             }
                         ]
                     },
                     {
-                        "title": "Mon compte",
-                        "menuItems": [
+                        "label": "Pilotage territorial",
+                        "icon": "bi bi-bar-chart-fill",
+                        "subMenu": [
                             {
-                                "label": "Mon profil",
-                                "url": "{% url 'project:report_local' project.pk %}",
-                                "icon": "bi bi-person-circle"
+                                "label": "Évolutions foncières (ENAF)",
+                                "url": "{% url 'project:report_conso' project.pk %}"
                             },
                             {
-                                "label": "Mes diagnostics",
-                                "url": "{% url 'project:report_local' project.pk %}",
-                                "icon": "bi bi-star"
+                                "label": "Artificialisation des zonages d'urbanisme",
+                                "url": "{% url 'project:report_urban_zones' project.pk %}"
                             }
-                        ]
+                        ]                        
+                    },
+                    {
+                        "label": "Enjeux environnementaux",
+                        "icon": "bi bi-tree-fill",
+                        "subMenu": [
+                            {
+                                "label": "Usage et couverture du sol (OCS GE)",
+                                "url": "{% url 'project:report_discover' project.pk %}"
+                            },
+                            {
+                                "label": "Artificialisation",
+                                "url": "{% url 'project:report_artif' project.pk %}"
+                            },
+                            {
+                                "label": "Imperméabilisation",
+                                "url": "{% url 'project:report_imper' project.pk %}"
+                            }
+                        ]  
+                    },
+                    {
+                        "label": "Paramètres",
+                        "icon": "bi bi-gear-fill",
+                        "url": "{% url 'project:update' project.pk %}"
                     }
                 ]
             }
         </script>
+
+        <dialog aria-labelledby="fr-modal-title-modal-1" role="dialog" id="fr-modal-1" class="fr-modal">
+            <div class="fr-container fr-container--fluid fr-container-md">
+                <div class="fr-grid-row fr-grid-row--center">
+                    <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+                        <div class="fr-modal__body">
+                            <div class="fr-modal__header">
+                                <button class="fr-btn--close fr-btn" title="Fermer la fenêtre modale" aria-controls="fr-modal-1">Fermer</button>
+                            </div>
+                            <div class="fr-modal__content">
+                                <h1 id="fr-modal-title-modal-1" class="fr-modal__title">Modifier la période d'analyse du diagnostic</h1>
+                                <div id="update_period_form">
+                                    <div class="fr-custom-loader"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </dialog>
+
+        <dialog aria-labelledby="fr-modal-2-title" id="fr-modal-download-word" class="fr-modal" role="dialog" >
+            <div class="fr-container fr-container--fluid fr-container-md">
+                <div class="fr-grid-row fr-grid-row--center">
+                    <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+                        <div class="fr-modal__body">
+                            <div class="fr-modal__header">
+                                <button class="fr-link--close fr-link" aria-controls="fr-modal-download-word">Fermer</button>
+                            </div>
+                            <div class="fr-modal__content">
+                                <div id="diag_word_form"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </dialog>
 
         {% sri_static "bootstrap522/js/bootstrap.bundle.min.js" %}
         <!-- Webpack Bundle JS -->
