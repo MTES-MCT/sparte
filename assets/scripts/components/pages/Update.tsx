@@ -4,9 +4,9 @@ import { useHtmlLoader } from '@hooks/useHtmlLoader';
 import Loader from '@components/ui/Loader';
 import PageTitle from '@components/widgets/PageTitle';
 
-const RapportLocal: React.FC = () => {
+const Update: React.FC = () => {
     const { projectId } = useParams<{ projectId: string }>();
-    const endpoint = `/project/${projectId}/tableau-de-bord/rapport-local`;
+    const endpoint = `/project/${projectId}/edit`;
     const { content, isLoading, error } = useHtmlLoader(endpoint);
 
     if (isLoading) return <Loader />;
@@ -16,7 +16,7 @@ const RapportLocal: React.FC = () => {
         <div className="fr-container--fluid fr-p-3w">
             <div className="fr-grid-row fr-grid-row--gutters">
                 <div className="fr-col-12">
-                    <PageTitle title="Rapport triennal local" />
+                    <PageTitle title="Paramètres du diagnostic" />
                     <div dangerouslySetInnerHTML={{ __html: content }} />
                 </div>
             </div>
@@ -24,4 +24,4 @@ const RapportLocal: React.FC = () => {
     );
 };
 
-export default RapportLocal;
+export default Update;

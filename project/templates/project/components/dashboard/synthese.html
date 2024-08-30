@@ -1,17 +1,16 @@
 {% include "project/components/widgets/ocsge_status.html" %}
 
 <div>
-  <h2>Trajectoires</h2>
   <h4>Estimation de la trajectoire 2031</h4>
   <div class="fr-grid-row fr-grid-row--gutters">
     <div class="fr-col-12 fr-col-md-6 fr-grid-row">
-      <div class="fr-callout w-100">
+      <div class="fr-callout bg-white w-100">
         <p class="fr-callout__title">+{{ objective_chart.total_2020|floatformat:1 }} ha</p>
         <p>Bilan consommation d'espaces 2011-2020</p>
       </div>
     </div>
     <div class="fr-col-12 fr-col-md-6 fr-grid-row">
-      <div class="fr-callout w-100">
+      <div class="fr-callout bg-white w-100">
         <p class="fr-callout__title">+{{ objective_chart.conso_2031|floatformat:1 }} ha</p>
         <p>Consommation cumulée de la période du 1er jan. 2021 au 31 déc. 2030 (10 ans) avec un objectif non-réglementaire de réduction de {{ diagnostic.target_2031 }}%</p>
       </div>
@@ -52,13 +51,13 @@
   <h4>Bilan de la consommation d'espaces</h4>
   <div class="fr-grid-row fr-grid-row--gutters">
     <div class="fr-col-12 fr-col-md-6 fr-grid-row">
-      <div class="fr-callout w-100">
+      <div class="fr-callout bg-white w-100">
         <p class="fr-callout__title">+{{ current_conso|floatformat:1 }} ha</p>
         <p>Consommation d'espaces {{ diagnostic.analyse_start_date }}-{{ diagnostic.analyse_end_date }}</p>
       </div>
     </div>
     <div class="fr-col-12 fr-col-md-6 fr-grid-row">
-      <div class="fr-callout w-100">
+      <div class="fr-callout bg-white w-100">
         <p class="fr-callout__title">+{{ year_avg_conso|floatformat:1 }} ha</p>
         <p>Consommation d'espaces moyenne par an entre {{ diagnostic.analyse_start_date }}-{{ diagnostic.analyse_end_date }}</p>
       </div>
@@ -102,19 +101,19 @@
   <p>Sur la période demandée, l'OCS GE couvre de {{ first_millesime }} à {{ last_millesime }}.</p>
   <div class="fr-grid-row fr-grid-row--gutters">
     <div class="fr-col-12 fr-col-md-4 fr-grid-row">
-      <div class="fr-callout w-100">
+      <div class="fr-callout bg-white w-100">
         <p class="fr-callout__title">{{ net_artif|floatformat:1 }} ha</p>
         <p>Artificialisation nette sur la période <i class="bi bi-question-circle" data-toggle="tooltip" title="= artificialisation - désartificialisation" aria-hidden="true"></i></p>
       </div>
     </div>
     <div class="fr-col-12 fr-col-md-4 fr-grid-row">
-      <div class="fr-callout w-100">
+      <div class="fr-callout bg-white w-100">
         <p class="fr-callout__title">+{{ new_artif|floatformat:1 }} ha</p>
         <p>Total artificialisation sur la période</p>
       </div>
     </div>
     <div class="fr-col-12 fr-col-md-4 fr-grid-row">
-      <div class="fr-callout w-100">
+      <div class="fr-callout bg-white w-100">
         <p class="fr-callout__title">+{{ new_natural|floatformat:1 }} ha</p>
         <p>Total désartificialisation sur la période</p>
       </div>
@@ -153,7 +152,7 @@
   <div class="fr-grid-row fr-grid-row--gutters">
     {% for zone_type, zone in zone_list.items %}
       <div class="fr-col-12 fr-col-md-4 fr-grid-row">
-        <div class="fr-callout w-100">
+        <div class="fr-callout bg-white w-100">
           <p class="fr-callout__title">
             <div class="progress-bar-container progress-bar-container--big">
               <div class="progress-bar-indicator w-{{ zone.fill_up_rate|floatformat:0 }}"></div>
