@@ -28,16 +28,13 @@ SELECT *, ST_Area(geom) as surface FROM (
         NULLIF(idurba, '') as id_document_urbanisme,
         checksum,
         row_number() OVER (PARTITION BY geom ORDER BY gpu_timestamp),
-        CASE
-            WHEN ST_IsValid(geom) THEN ST_transform(geom, 2154)
-            ELSE ST_MakeValid(st_multi(
+        ST_MakeValid(st_multi(
                     st_collectionextract(
                         st_makevalid(
                             ST_transform(geom, 2154)
                         ),
                     3)
-                ))
-        END as geom
+        )) as geom
     FROM
         {{ source('public', 'gpu_zone_urba') }}
 ) as foo
