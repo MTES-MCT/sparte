@@ -22,6 +22,7 @@ from include.ocsge.normalization import (
     ocsge_occupation_du_sol_normalization_sql,
     ocsge_zone_construite_normalization_sql,
 )
+from include.shapefile import get_shapefile_fields
 from include.utils import multiline_string_to_single_line
 
 
@@ -106,7 +107,7 @@ def get_vars_by_shapefile_name(shapefile_name: str) -> dict | None:
     return vars[source_name]
 
 
-def load_shapefile_to_dw(
+def load_shapefiles_to_dw(
     path: str,
     years: list[int],
     departement: str,
@@ -126,12 +127,15 @@ def load_shapefile_to_dw(
         if not variables:
             continue
 
+        fields = get_shapefile_fields(file_path)
+
         sql = multiline_string_to_single_line(
             variables["normalization_sql"](
                 shapefile_name=filename.split(".")[0],
                 years=years,
                 departement=departement,
                 loaded_date=loaded_date,
+                fields=fields,
             )
         )
         table_name = variables[table_key]
@@ -244,7 +248,7 @@ def ocsge():  # noqa: C901
         departement = context["params"]["departement"]
         years = context["params"]["years"]
 
-        load_shapefile_to_dw(
+        load_shapefiles_to_dw(
             path=path,
             years=years,
             departement=departement,
@@ -267,7 +271,7 @@ def ocsge():  # noqa: C901
         departement = context["params"]["departement"]
         years = context["params"]["years"]
 
-        load_shapefile_to_dw(
+        load_shapefiles_to_dw(
             path=path,
             years=years,
             departement=departement,
