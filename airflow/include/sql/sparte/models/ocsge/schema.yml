@@ -58,7 +58,7 @@ models:
       - name: id
         data_tests:
           - not_null
-          - unique
+          # - unique -> the same object can be present in different departement. TODO: replace the departement field by an array
       - name: year
         data_tests:
           - not_null
@@ -87,6 +87,7 @@ models:
       - name: id
         data_tests:
           - not_null
+          # - unique -> the same object can be present in different departement. TODO: replace the departement field by an array
       - name: code_cs
         data_tests:
           - not_null
