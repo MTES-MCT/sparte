@@ -10,12 +10,13 @@
         "allowSyntheticDefaultImports": true,
         "esModuleInterop": true,
         "typeRoots": ["./node_modules/@types", "./assets/types"],
-        "baseUrl": "./assets/scripts",
+        "baseUrl": "./assets",
         "paths": {
-            "@components/*": ["components/*"],
-            "@hooks/*": ["hooks/*"],
-            "@store/*": ["store/*"],
-            "@services/*": ["services/*"],
+            "@components/*": ["scripts/components/*"],
+            "@hooks/*": ["scripts/hooks/*"],
+            "@store/*": ["scripts/store/*"],
+            "@services/*": ["scripts/services/*"],
+            "@images/*": ["images/*"],
         }
     },
 }

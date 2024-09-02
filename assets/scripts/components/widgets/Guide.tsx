@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import Drawer from '@components/ui/Drawer';
+import InformationIcon from '@images/information.svg';
+
+const StyledInformationIcon = styled(InformationIcon)`
+    max-width: 75px;
+    height: auto;
+    fill: #48d5a7;
+`;
 
 const Container = styled.div`
     display: flex;
@@ -8,9 +15,7 @@ const Container = styled.div`
     gap: 1.5rem;
     padding: 1rem;
     border-radius: 6px;
-    background: #111245;
-    background: -webkit-linear-gradient(277deg, #111245 0%, #5521a0 100%);
-    background: linear-gradient(277deg, #111245 0%, #5521a0 100%);
+    background: #C8F2E5;
     margin-bottom: 2rem;
 
     img {
@@ -23,19 +28,21 @@ const Title = styled.div`
     font-weight: 600;
     font-size: 0.9em;
     margin-bottom: 0.4rem;
-    color: #fff;
 `;
 
 const Content = styled.div`
     font-size: 0.8em;
-    color: #fff;
     padding: 0;
     margin: 0;
     margin-bottom: 0.4rem;
 `;
 
 const Button = styled.button`
-    background: #fff;
+    transition: color .3s ease, background .3s ease;
+    &:hover {
+        background: #000091 !important;
+        color: #fff !important;
+    }
 `;
 
 interface GuideProps {
@@ -55,7 +62,7 @@ const Guide: React.FC<GuideProps> = ({ title, contentHtml, DrawerTitle, DrawerCo
     return (
         <>
             <Container>
-                <img src="/static/project/img/information.svg" alt="" />
+                <StyledInformationIcon />
                 <div>
                     <Title>{ title }</Title>
                     <Content dangerouslySetInnerHTML={{ __html: contentHtml }} />
