@@ -40,7 +40,6 @@
 
         <script id="header-data" type="application/json">
             {
-
                 "logos": [
                     {
                         "src": "{% static '/img/republique-francaise-logo.svg' %}",
@@ -54,6 +53,9 @@
                         "height": "50px"
                     }
                 ],
+                "search": {
+                    "createUrl": "{% url 'project:create' %}"
+                },
                 "menuItems": [
                     {
                         "label": "FAQ",
@@ -110,7 +112,7 @@
                         "icon": "bi bi-bar-chart-fill",
                         "subMenu": [
                             {
-                                "label": "Évolutions foncières (ENAF)",
+                                "label": "Consommation d'Espaces NAF",
                                 "url": "{% url 'project:report_conso' project.pk %}"
                             },
                             {
