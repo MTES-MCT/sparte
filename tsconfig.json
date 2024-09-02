@@ -17,6 +17,7 @@
             "@store/*": ["scripts/store/*"],
             "@services/*": ["scripts/services/*"],
             "@images/*": ["images/*"],
+            "@utils/*": ["scripts/utils/*"],
         }
     },
 }
