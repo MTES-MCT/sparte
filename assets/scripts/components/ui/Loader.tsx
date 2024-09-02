@@ -39,21 +39,32 @@ const LoaderWrapper = styled.div`
     flex-grow: 1;
 `;
 
-const LoaderContainer = styled.div`
+const LoaderContainer = styled.div<{ size: number }>`
     color: darkblue;
-    width: 53px;
-    height: 30px;
+    width: ${({ size }) => size}px;
+    height: ${({ size }) => size * 0.566}px; /* Garder la proportion */
     --d: radial-gradient(farthest-side, currentColor 90%, #0000);
     background: var(--d), var(--d), var(--d);
-    background-size: 12px 12px;
+    background-size: ${({ size }) => size * 0.226}px ${({ size }) => size * 0.226}px;
     background-repeat: no-repeat;
     animation: ${m} 1s infinite;
 `;
 
-const Loader: React.FC = () => {
-    return <LoaderWrapper>
-        <LoaderContainer></LoaderContainer>
-    </LoaderWrapper>;
+interface LoaderProps {
+    size?: number;
+    wrap?: boolean;
+}
+
+const Loader: React.FC<LoaderProps> = ({ size = 53, wrap = true }) => {
+    const content = <LoaderContainer size={size} />;
+
+    return wrap ? (
+        <LoaderWrapper>
+            {content}
+        </LoaderWrapper>
+    ) : (
+        content
+    );
 };
 
 export default Loader;
