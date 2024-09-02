@@ -29,7 +29,22 @@ const common = {
                 }
             },
             {
-                test: /\.(png|jpe?g|gif|svg)$/i,
+                test: /\.svg$/,
+                oneOf: [
+                    {
+                        issuer: /\.(js|jsx|ts|tsx)$/,
+                        use: ['@svgr/webpack'],
+                    },
+                    {
+                        type: 'asset/resource',
+                        generator: {
+                            filename: 'assets/images/[hash][ext][query]'
+                        }
+                    }
+                ]
+            },
+            {
+                test: /\.(png|jpe?g|gif)$/i,
                 type: 'asset/resource',
                 generator: {
                     filename: 'assets/images/[hash][ext][query]'
