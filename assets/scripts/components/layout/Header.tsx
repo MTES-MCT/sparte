@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
+import SearchBar from '@components/widgets/SearchBar';
 
 interface HeaderData {
     logos: Logo[];
+    search: {
+        createUrl: string;
+    };
     menuItems: MenuItem[];
 }
 
@@ -42,6 +46,7 @@ const LogoContainer = styled.div`
     display: flex;
     align-items: center;
     gap: 2rem;
+    padding-right: 0.75rem;
 `;
 
 const Logo = styled.img<{ width?: string; height?: string }>`
@@ -87,7 +92,7 @@ const NavLink = styled.a`
     }
 `;
 
-const Header: React.FC = () => {
+const Header: React.FC<{ headerData: HeaderData }> = ({ headerData }) => {
     const [data, setData] = useState<HeaderData | null>(null);
 
     useEffect(() => {
@@ -121,6 +126,7 @@ const Header: React.FC = () => {
                     )
                 ))}
             </LogoContainer>
+            <SearchBar createUrl={data?.search.createUrl} />
             <NavLinks>
                 {data?.menuItems.map((item, index) => (
                     <NavLink key={index} href={item.url} target={item.target} rel="noopener noreferrer">
