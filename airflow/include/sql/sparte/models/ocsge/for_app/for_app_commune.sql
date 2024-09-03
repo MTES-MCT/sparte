@@ -36,6 +36,7 @@ SELECT
     commune.departement_id,
     commune.epci_id,
     commune.scot_id,
+    commune.map_color,
     CASE
         WHEN
             artif_commune.surface IS NOT NULL
