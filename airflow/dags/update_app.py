@@ -62,9 +62,12 @@ def copy_table_from_dw_to_app(
         for columns in btree_index_columns:
             index_requests.append(get_btree_index_request(to_table, columns))
 
-    with connections[PSYCOPG].cursor() as cursor:
-        for request in index_requests:
-            cursor.execute(request)
+    conn = connections[PSYCOPG]
+    cur = conn.cursor()
+    for request in index_requests:
+        cur.execute(request)
+    conn.commit()
+    conn.close()
 
     return {"index_requests": index_requests, "ogr2ogr_request": ogr.safe_args}
 
