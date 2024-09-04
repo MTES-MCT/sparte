@@ -36,10 +36,11 @@ def copy_table_from_dw_to_app(
 ):
     ogr = ogr2ogr()
     ogr.config_options = {"PG_USE_COPY": "YES", "OGR_TRUNCATE": "NO"}
-    conn = get_database_connection_string(environment)
-    ogr.set_input(conn, table_name=from_table)
+    ogr.set_input(Container().gdal_dbt_conn(), table_name=from_table)
     # the option below will an id column to the table only if it does not exist
     ogr.layer_creation_options = {"FID": "id"}
+
+    conn = get_database_connection_string(environment)
     ogr.set_output(conn, table_name=to_table)
     ogr.set_output_mode(layer_mode=ogr.MODE_LAYER_OVERWRITE)
     ogr.execute()
