@@ -49,7 +49,7 @@ from public_data.models.ocsge import Ocsge, OcsgeDiff
 from utils.htmx import StandAloneMixin
 from utils.views_mixins import CacheMixin
 
-from .mixins import OcsgeCoverageMixin, ReactMixin
+from .mixins import ReactMixin
 
 
 class ProjectReportBaseView(ReactMixin, CacheMixin, DetailView):
@@ -152,7 +152,7 @@ class ProjectReportConsoView(ProjectReportBaseView):
         return super().get_context_data(**kwargs)
 
 
-class ProjectReportDicoverOcsgeView(OcsgeCoverageMixin, ProjectReportBaseView):
+class ProjectReportDicoverOcsgeView(ProjectReportBaseView):
     partial_template_name = "project/components/dashboard/ocsge.html"
     full_template_name = "project/pages/ocsge.html"
 
@@ -249,7 +249,7 @@ class ProjectReportLocalView(ProjectReportBaseView):
         return super().get_context_data(**kwargs)
 
 
-class ProjectReportImperView(OcsgeCoverageMixin, ProjectReportBaseView):
+class ProjectReportImperView(ProjectReportBaseView):
     partial_template_name = "project/components/dashboard/impermeabilisation.html"
     full_template_name = "project/pages/impermeabilisation.html"
 
@@ -283,7 +283,7 @@ class ProjectReportImperView(OcsgeCoverageMixin, ProjectReportBaseView):
         return super().get_context_data(**kwargs)
 
 
-class ProjectReportArtifView(OcsgeCoverageMixin, ProjectReportBaseView):
+class ProjectReportArtifView(ProjectReportBaseView):
     partial_template_name = "project/components/dashboard/artificialisation.html"
     full_template_name = "project/pages/artificialisation.html"
 
@@ -526,7 +526,7 @@ class ProjectReportTarget2031GraphView(ProjectReportBaseView):
         return render(request, self.template_name, context)
 
 
-class ProjectReportUrbanZonesView(OcsgeCoverageMixin, ProjectReportBaseView):
+class ProjectReportUrbanZonesView(ProjectReportBaseView):
     partial_template_name = "project/components/dashboard/gpu.html"
     full_template_name = "project/pages/gpu.html"
 
