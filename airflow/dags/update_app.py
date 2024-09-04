@@ -4,7 +4,7 @@ Ce dag met à jour les données de l'application à partir des données de l'ent
 
 from airflow.decorators import dag, task
 from airflow.models.param import Param
-from gdaltools import PgConnectionString, ogr2ogr, ogrinfo
+from gdaltools import PgConnectionString, ogr2ogr
 from include.container import Container
 from pendulum import datetime
 
@@ -12,26 +12,24 @@ STAGING = "staging"
 PRODUCTION = "production"
 DEV = "dev"
 
+GDAL = "gdal"
+PSYCOPG = "psycopg"
+
 
 def get_database_connection_string(environment: str) -> PgConnectionString:
     return {
         STAGING: Container().gdal_staging_conn(),
         PRODUCTION: Container().gdal_prod_conn(),
-        DEV: Container().gdal_dev_conn(),
+        DEV: {GDAL: Container().gdal_dev_conn(), PSYCOPG: Container().psycopg2_dev_conn()},
     }[environment]
 
 
-def create_spatial_index(table_name: str, column_name: str, conn: PgConnectionString):
-    sql = f"CREATE INDEX IF NOT EXISTS ON {table_name} USING GIST ({column_name});"
-    print(sql)
-    return ogrinfo(conn, sql=sql)
+def get_spatial_index_request(table_name: str, column_name: str):
+    return f"CREATE INDEX IF NOT EXISTS ON {table_name} USING GIST ({column_name});"
 
 
-def create_btree_index(table_name: str, columns_name: list[str], conn: PgConnectionString):
-    idx_name = f"idx_{'_'.join(columns_name)}_{table_name}"
-    sql = f"CREATE INDEX IF NOT EXISTS {idx_name} ON {table_name} USING btree ({', '.join(columns_name)});"
-    print(sql)
-    return ogrinfo(conn, sql=sql)
+def get_btree_index_request(table_name: str, columns_name: list[str]):
+    return f"CREATE INDEX IF NOT EXISTS ON {table_name} USING btree ({', '.join(columns_name)});"
 
 
 def copy_table_from_dw_to_app(
@@ -47,27 +45,28 @@ def copy_table_from_dw_to_app(
     # the option below will an id column to the table only if it does not exist
     ogr.layer_creation_options = {"FID": "id"}
 
-    conn = get_database_connection_string(environment)
-    ogr.set_output(conn, table_name=to_table)
+    connections = get_database_connection_string(environment)
+
+    ogr.set_output(connections[GDAL], table_name=to_table)
     ogr.set_output_mode(layer_mode=ogr.MODE_LAYER_OVERWRITE)
     ogr.execute()
 
+    index_requests = []
+    index_results = []
+
     if spatial_index_column:
-        create_spatial_index(
-            table_name=to_table,
-            column_name=spatial_index_column,
-            conn=conn,
-        )
+        index_requests.append(get_spatial_index_request(to_table, spatial_index_column))
 
     if btree_index_columns:
         for columns in btree_index_columns:
-            create_btree_index(
-                table_name=to_table,
-                columns_name=columns,
-                conn=conn,
-            )
+            index_requests.append(get_btree_index_request(to_table, columns))
 
-    return ogr.safe_args
+    with connections[PSYCOPG].cursor() as cursor:
+        for request in index_requests:
+            result = cursor.execute(request)
+            index_results.append(result.fetchall())
+
+    return {"index_requests": index_requests, "index_results": index_results, "ogr2ogr_request": ogr.safe_args}
 
 
 @dag(

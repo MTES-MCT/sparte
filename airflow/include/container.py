@@ -56,6 +56,14 @@ class Container(containers.DeclarativeContainer):
         host=getenv("DEV_DB_HOST"),
         port=getenv("DEV_DB_PORT"),
     )
+    psycopg2_dev_conn: connection = providers.Factory(
+        provides=connect,
+        dbname=getenv("DEV_DB_NAME"),
+        user=getenv("DEV_DB_USER"),
+        password=getenv("DEV_DB_PASSWORD"),
+        host=getenv("DEV_DB_HOST"),
+        port=getenv("DEV_DB_PORT"),
+    )
 
     gdal_prod_conn = providers.Factory(
         PgConnectionString,
