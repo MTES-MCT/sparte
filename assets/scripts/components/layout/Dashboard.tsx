@@ -17,6 +17,7 @@ import Ocsge from '@components/pages/Ocsge';
 import Trajectoires from '@components/pages/Trajectoires';
 import RapportLocal from '@components/pages/RapportLocal';
 import Update from '@components/pages/Update';
+import OcsgeStatus from '@components/widgets/OcsgeStatus';
 
 interface DashboardProps {
     projectId: string;
@@ -65,19 +66,19 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                 />
                                 <Route
                                     path="/project/:projectId/tableau-de-bord/découvrir-l-ocsge"
-                                    element={<Ocsge />}
+                                    element={data.ocsge_coverage_status === "COMPLETE_UNIFORM" ? <Ocsge /> : <OcsgeStatus status={data.ocsge_coverage_status} />}
                                 />
                                 <Route
                                     path="/project/:projectId/tableau-de-bord/artificialisation"
-                                    element={<Artificialisation />}
+                                    element={data.ocsge_coverage_status === "COMPLETE_UNIFORM" ? <Artificialisation /> : <OcsgeStatus status={data.ocsge_coverage_status} />}
                                 />
                                 <Route
                                     path="/project/:projectId/tableau-de-bord/impermeabilisation"
-                                    element={<Impermeabilisation />}
+                                    element={data.ocsge_coverage_status === "COMPLETE_UNIFORM" ? <Impermeabilisation /> : <OcsgeStatus status={data.ocsge_coverage_status} />}
                                 />
                                 <Route
                                     path="/project/:projectId/tableau-de-bord/zonages-d-urbanisme"
-                                    element={<Gpu />}
+                                    element={data.ocsge_coverage_status === "COMPLETE_UNIFORM" ? <Gpu /> : <OcsgeStatus status={data.ocsge_coverage_status} />}
                                 />
                                 <Route
                                     path="/project/:projectId/tableau-de-bord/rapport-local"
