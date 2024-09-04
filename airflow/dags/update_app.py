@@ -24,11 +24,6 @@ def get_database_connection_string(environment: str) -> PgConnectionString:
     }[environment]
 
 
-def get_spatial_index_request(table_name: str, column_name: str):
-    idx_name = f"{table_name.replace('.', '')}_{column_name}_idx"
-    return f"CREATE INDEX IF NOT EXISTS {idx_name} ON {table_name} USING GIST ({column_name});"
-
-
 def get_btree_index_request(table_name: str, columns_name: list[str]):
     idx_name = f"{table_name.replace('.', '')}_{'_'.join(columns_name)}_idx"
     return f"CREATE INDEX IF NOT EXISTS {idx_name} ON {table_name} USING btree ({', '.join(columns_name)});"
@@ -38,7 +33,6 @@ def copy_table_from_dw_to_app(
     from_table: str,
     to_table: str,
     environment: str,
-    spatial_index_column: str = None,
     btree_index_columns: list[list[str]] = None,
 ):
     ogr = ogr2ogr()
@@ -54,9 +48,6 @@ def copy_table_from_dw_to_app(
     ogr.execute()
 
     index_requests = []
-
-    if spatial_index_column:
-        index_requests.append(get_spatial_index_request(to_table, spatial_index_column))
 
     if btree_index_columns:
         for columns in btree_index_columns:
@@ -98,7 +89,6 @@ def update_app():  # noqa: C901
             from_table="public_ocsge.for_app_ocsge",
             to_table="public.public_data_ocsge",
             environment=context["params"]["environment"],
-            spatial_index_column="mpoly",
         )
 
     @task.python
@@ -107,7 +97,6 @@ def update_app():  # noqa: C901
             from_table="public_ocsge.for_app_artificialarea",
             to_table="public.public_data_artificialarea",
             environment=context["params"]["environment"],
-            spatial_index_column="mpoly",
         )
 
     @task.python
@@ -128,7 +117,6 @@ def update_app():  # noqa: C901
             from_table="public_ocsge.for_app_commune",
             to_table="public.public_data_commune",
             environment=context["params"]["environment"],
-            spatial_index_column="mpoly",
             btree_index_columns=[
                 ["insee"],
             ],
@@ -140,7 +128,6 @@ def update_app():  # noqa: C901
             from_table="public_ocsge.for_app_departement",
             to_table="public.public_data_departement",
             environment=context["params"]["environment"],
-            spatial_index_column="mpoly",
             btree_index_columns=[
                 ["source_id"],
             ],
@@ -165,7 +152,6 @@ def update_app():  # noqa: C901
             from_table="public_ocsge.for_app_ocsgediff",
             to_table="public.public_data_ocsgediff",
             environment=context["params"]["environment"],
-            spatial_index_column="mpoly",
             btree_index_columns=[
                 ["year_old"],
                 ["year_new"],
@@ -196,7 +182,6 @@ def update_app():  # noqa: C901
             from_table="public_ocsge.for_app_zoneconstruite",
             to_table="public.public_data_zoneconstruite",
             environment=context["params"]["environment"],
-            spatial_index_column="mpoly",
             btree_index_columns=[
                 ["millesime"],
                 ["year"],
@@ -210,7 +195,6 @@ def update_app():  # noqa: C901
             from_table="public_gpu.for_app_zoneurba",
             to_table="public.public_data_zoneurba",
             environment=context["params"]["environment"],
-            spatial_index_column="mpoly",
             btree_index_columns=[
                 ["checksum"],
                 ["libelle"],
