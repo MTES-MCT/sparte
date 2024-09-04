@@ -18,8 +18,8 @@ PSYCOPG = "psycopg"
 
 def get_database_connection_string(environment: str) -> PgConnectionString:
     return {
-        STAGING: Container().gdal_staging_conn(),
-        PRODUCTION: Container().gdal_prod_conn(),
+        STAGING: {GDAL: Container().gdal_staging_conn(), PSYCOPG: Container().psycopg2_staging_conn()},
+        PRODUCTION: {GDAL: Container().gdal_prod_conn(), PSYCOPG: Container().psycopg2_prod_conn()},
         DEV: {GDAL: Container().gdal_dev_conn(), PSYCOPG: Container().psycopg2_dev_conn()},
     }[environment]
 
