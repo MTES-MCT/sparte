@@ -1,3 +1,9 @@
+"""
+Ce dag télécharge tous les fichiers OCS GE depuis les sources définies
+dans `sources.json` et les stocke dans un bucket S3.
+"""
+
+
 import cgi
 import json
 import os
@@ -46,7 +52,6 @@ def download_file_to_s3(url: str):
 
 
 @dag(
-    dag_id="download_all_ocsge",
     start_date=pendulum.datetime(2024, 1, 1),
     schedule="@once",
     catchup=False,

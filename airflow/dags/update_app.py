@@ -1,3 +1,7 @@
+"""
+Ce dag met à jour les données de l'application à partir des données de l'entrepôt de données.
+"""
+
 from airflow.decorators import dag, task
 from airflow.models.param import Param
 from gdaltools import PgConnectionString, ogr2ogr, ogrinfo
@@ -103,6 +107,10 @@ def update_app():  # noqa: C901
             from_table="public_ocsge.for_app_artifareazoneurba",
             to_table="public.public_data_artifareazoneurba",
             environment=context["params"]["environment"],
+            btree_index_columns=[
+                ["zone_urba"],
+                ["year"],
+            ],
         )
 
     @task.python
@@ -112,6 +120,9 @@ def update_app():  # noqa: C901
             to_table="public.public_data_commune",
             environment=context["params"]["environment"],
             spatial_index_column="mpoly",
+            btree_index_columns=[
+                ["insee"],
+            ],
         )
 
     @task.python
@@ -121,6 +132,9 @@ def update_app():  # noqa: C901
             to_table="public.public_data_departement",
             environment=context["params"]["environment"],
             spatial_index_column="mpoly",
+            btree_index_columns=[
+                ["source_id"],
+            ],
         )
 
     @task.python
@@ -129,6 +143,11 @@ def update_app():  # noqa: C901
             from_table="public_ocsge.for_app_communesol",
             to_table="public.public_data_communesol",
             environment=context["params"]["environment"],
+            btree_index_columns=[
+                ["city_id"],
+                ["matrix_id"],
+                ["year"],
+            ],
         )
 
     @task.python
@@ -138,6 +157,15 @@ def update_app():  # noqa: C901
             to_table="public.public_data_ocsgediff",
             environment=context["params"]["environment"],
             spatial_index_column="mpoly",
+            btree_index_columns=[
+                ["year_old"],
+                ["year_new"],
+                ["departement"],
+                ["cs_new"],
+                ["cs_old"],
+                ["us_new"],
+                ["us_old"],
+            ],
         )
 
     @task.python
@@ -146,6 +174,11 @@ def update_app():  # noqa: C901
             from_table="public_ocsge.for_app_communediff",
             to_table="public.public_data_communediff",
             environment=context["params"]["environment"],
+            btree_index_columns=[
+                ["year_old"],
+                ["year_new"],
+                ["city_id"],
+            ],
         )
 
     @task.python
@@ -155,6 +188,11 @@ def update_app():  # noqa: C901
             to_table="public.public_data_zoneconstruite",
             environment=context["params"]["environment"],
             spatial_index_column="mpoly",
+            btree_index_columns=[
+                ["millesime"],
+                ["year"],
+                ["departement"],
+            ],
         )
 
     @task.python
@@ -164,6 +202,11 @@ def update_app():  # noqa: C901
             to_table="public.public_data_zoneurba",
             environment=context["params"]["environment"],
             spatial_index_column="mpoly",
+            btree_index_columns=[
+                ["checksum"],
+                ["libelle"],
+                ["typezone"],
+            ],
         )
 
     (

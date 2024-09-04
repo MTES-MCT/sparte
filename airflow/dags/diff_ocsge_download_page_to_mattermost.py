@@ -1,3 +1,8 @@
+"""
+Ce dag compare le contenu de la page de téléchargement de l'IGN OCS GE
+et envoie un message sur Mattermost en cas de différence.
+"""
+
 import difflib
 
 import requests
@@ -7,14 +12,13 @@ from include.container import Container
 from pendulum import datetime
 
 
-# Define the basic parameters of the DAG, like schedule and start_date
 @dag(
     start_date=datetime(2024, 1, 1),
-    schedule="0 10 * * *",
+    schedule="0 10 * * *",  # every day at 10:00
     catchup=False,
     doc_md=__doc__,
     default_args={"owner": "Alexis Athlani", "retries": 3},
-    tags=["App"],
+    tags=["OCS GE"],
 )
 def diff_ocsge_download_page_to_mattermost():
     @task.python
@@ -57,5 +61,4 @@ def diff_ocsge_download_page_to_mattermost():
     diff()
 
 
-# Instantiate the DAG
 diff_ocsge_download_page_to_mattermost()

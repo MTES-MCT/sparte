@@ -1,3 +1,8 @@
+"""
+Ce dag télécharge et importe les données de l'IGN Admin Express dans une base de données PostgreSQL,
+puis lance un job dbt pour les transformer.
+"""
+
 import os
 import subprocess
 from urllib.request import URLopener

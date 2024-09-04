@@ -1,3 +1,8 @@
+"""
+Ce dag ingère les données de l'IGN OCS GE dans une base de données
+PostgreSQL, puis lance un job dbt pour les transformer.
+"""
+
 import cgi
 import json
 import os

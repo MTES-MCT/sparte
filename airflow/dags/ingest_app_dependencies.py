@@ -1,3 +1,8 @@
+"""
+Ce dag ingère les dépendances de l'application dans une base de
+données PostgreSQL, puis lance un job dbt pour les transformer.
+"""
+
 from airflow.decorators import dag, task
 from gdaltools import ogr2ogr
 from include.container import Container
