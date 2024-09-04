@@ -29,7 +29,7 @@ def create_spatial_index(table_name: str, column_name: str, conn: PgConnectionSt
 
 def create_btree_index(table_name: str, columns_name: list[str], conn: PgConnectionString):
     idx_name = f"idx_{'_'.join(columns_name)}_{table_name}"
-    sql = f"CREATE INDEX IF NOT EXISTS {idx_name} ON {table_name} ({', '.join(columns_name)});"
+    sql = f"CREATE INDEX IF NOT EXISTS {idx_name} ON {table_name} USING btree ({', '.join(columns_name)});"
     print(sql)
     return ogrinfo(conn, sql=sql)
 
