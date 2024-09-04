@@ -65,7 +65,7 @@ def ingest_gpu():
             "SQLITE",
             "-f",
             '"PostgreSQL"',
-            f'"{Container().gdal_dw_conn_str()}"',
+            f'"{Container().gdal_dbt_conn().encode()}"',
             "-overwrite",
             "-lco",
             "GEOMETRY_NAME=geom",

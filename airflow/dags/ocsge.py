@@ -146,7 +146,7 @@ def load_shapefiles_to_dw(
             "SQLITE",
             "-f",
             '"PostgreSQL"',
-            f'"{Container().gdal_dw_conn_str()}"',
+            f'"{Container().gdal_dbt_conn().encode()}"',
             f"-{mode}",
             "-lco",
             "GEOMETRY_NAME=geom",
@@ -292,7 +292,7 @@ def ocsge():  # noqa: C901
         dataset = context["params"]["dataset"]
         departement = context["params"]["departement"]
         years = context["params"]["years"]
-        conn = Container().psycopg2_dw_conn()
+        conn = Container().psycopg2_dbt_conn()
         cur = conn.cursor()
 
         results = {}

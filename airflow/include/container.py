@@ -31,12 +31,7 @@ class Container(containers.DeclarativeContainer):
         },
     )
 
-    postgres_conn_sqlalchemy = providers.Factory(
-        create_sql_alchemy_conn,
-        url=getenv("AIRFLOW_CONN_DATA_WAREHOUSE"),
-    )
-
-    gdal_dw_conn = providers.Factory(
+    gdal_dbt_conn = providers.Factory(
         PgConnectionString,
         dbname=getenv("DBT_DB_NAME"),
         user=getenv("DBT_DB_USER"),
@@ -44,17 +39,7 @@ class Container(containers.DeclarativeContainer):
         host=getenv("DBT_DB_HOST"),
         port=getenv("DBT_DB_PORT"),
     )
-
-    gdal_dw_conn_str = providers.Factory(
-        db_str_for_ogr2ogr,
-        dbname=getenv("DBT_DB_NAME"),
-        user=getenv("DBT_DB_USER"),
-        password=getenv("DBT_DB_PASSWORD"),
-        host=getenv("DBT_DB_HOST"),
-        port=getenv("DBT_DB_PORT"),
-    )
-
-    psycopg2_dw_conn: connection = providers.Factory(
+    psycopg2_dbt_conn: connection = providers.Factory(
         provides=connect,
         dbname=getenv("DBT_DB_NAME"),
         user=getenv("DBT_DB_USER"),
@@ -63,22 +48,31 @@ class Container(containers.DeclarativeContainer):
         port=getenv("DBT_DB_PORT"),
     )
 
-    psycopg2_app_conn: connection = providers.Factory(
-        provides=connect,
-        dbname=getenv("APP_DB_NAME"),
-        user=getenv("APP_DB_USER"),
-        password=getenv("APP_DB_PASSWORD"),
-        host=getenv("APP_DB_HOST"),
-        port=getenv("APP_DB_PORT"),
+    gdal_dev_conn = providers.Factory(
+        PgConnectionString,
+        dbname=getenv("DEV_DB_NAME"),
+        user=getenv("DEV_DB_USER"),
+        password=getenv("DEV_DB_PASSWORD"),
+        host=getenv("DEV_DB_HOST"),
+        port=getenv("DEV_DB_PORT"),
     )
 
-    gdal_app_conn = providers.Factory(
+    gdal_prod_conn = providers.Factory(
         PgConnectionString,
-        dbname=getenv("APP_DB_NAME"),
-        user=getenv("APP_DB_USER"),
-        password=getenv("APP_DB_PASSWORD"),
-        host=getenv("APP_DB_HOST"),
-        port=getenv("APP_DB_PORT"),
+        dbname=getenv("PROD_DB_NAME"),
+        user=getenv("PROD_DB_USER"),
+        password=getenv("PROD_DB_PASSWORD"),
+        host=getenv("PROD_DB_HOST"),
+        port=getenv("PROD_DB_PORT"),
+    )
+
+    gdal_staging_conn = providers.Factory(
+        PgConnectionString,
+        dbname=getenv("STAGING_DB_NAME"),
+        user=getenv("STAGING_DB_USER"),
+        password=getenv("STAGING_DB_PASSWORD"),
+        host=getenv("STAGING_DB_HOST"),
+        port=getenv("STAGING_DB_PORT"),
     )
 
     cnopts = pysftp.CnOpts()

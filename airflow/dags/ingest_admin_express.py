@@ -41,7 +41,7 @@ def ingest_admin_express():
                 for filename in filenames:
                     if filename.endswith(".shp"):
                         path = os.path.abspath(os.path.join(dirpath, filename))
-                        cmd = f'ogr2ogr -f "PostgreSQL" "{Container().gdal_dw_conn_str()}" -overwrite -lco GEOMETRY_NAME=geom -a_srs EPSG:2154 -nlt MULTIPOLYGON -nlt PROMOTE_TO_MULTI {path} --config PG_USE_COPY YES'  # noqa: E501
+                        cmd = f'ogr2ogr -f "PostgreSQL" "{Container().gdal_dbt_conn().encode()}" -overwrite -lco GEOMETRY_NAME=geom -a_srs EPSG:2154 -nlt MULTIPOLYGON -nlt PROMOTE_TO_MULTI {path} --config PG_USE_COPY YES'  # noqa: E501
                         subprocess.run(cmd, shell=True, check=True)
 
     @task.bash(retries=0, trigger_rule="all_success")

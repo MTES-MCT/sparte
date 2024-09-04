@@ -8,8 +8,8 @@ def ingest_table(source_table_name: str, destination_table_name: str):
     ogr = ogr2ogr()
     ogr.config_options = {"PG_USE_COPY": "YES", "OGR_TRUNCATE": "NO"}
     ogr.set_preserve_fid(True)
-    ogr.set_input(Container().gdal_app_conn(), table_name=source_table_name, srs="EPSG:4326")
-    ogr.set_output(Container().gdal_dw_conn(), table_name=destination_table_name, srs="EPSG:4326")
+    ogr.set_input(Container().gdal_prod_conn(), table_name=source_table_name, srs="EPSG:4326")
+    ogr.set_output(Container().gdal_dbt_conn(), table_name=destination_table_name, srs="EPSG:4326")
     ogr.set_output_mode(layer_mode=ogr.MODE_LAYER_OVERWRITE)
     ogr.execute()
     return ogr.safe_args
