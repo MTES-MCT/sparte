@@ -25,11 +25,13 @@ def get_database_connection_string(environment: str) -> PgConnectionString:
 
 
 def get_spatial_index_request(table_name: str, column_name: str):
-    return f"CREATE INDEX IF NOT EXISTS ON {table_name} USING GIST ({column_name});"
+    idx_name = f"{table_name}_{column_name}_idx"
+    return f"CREATE INDEX IF NOT EXISTS {idx_name} ON {table_name} USING GIST ({column_name});"
 
 
 def get_btree_index_request(table_name: str, columns_name: list[str]):
-    return f"CREATE INDEX IF NOT EXISTS ON {table_name} USING btree ({', '.join(columns_name)});"
+    idx_name = f"{table_name}_{'_'.join(columns_name)}_idx"
+    return f"CREATE INDEX IF NOT EXISTS {idx_name} ON {table_name} USING btree ({', '.join(columns_name)});"
 
 
 def copy_table_from_dw_to_app(
