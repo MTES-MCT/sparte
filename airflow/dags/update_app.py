@@ -219,8 +219,7 @@ def update_app():  # noqa: C901
         )
 
     (
-        copy_public_data_ocsge()
-        >> copy_public_data_artificialarea()
+        copy_public_data_artificialarea()
         >> copy_public_data_artifareazoneurba()
         >> copy_public_data_commune()
         >> copy_public_data_departement()
@@ -228,6 +227,7 @@ def update_app():  # noqa: C901
         >> copy_public_data_ocsgediff()
         >> copy_public_data_communediff()
         >> copy_public_data_zoneconstruite()
+        >> copy_public_data_ocsge()
         >> copy_public_data_zoneurba()
     )
 
