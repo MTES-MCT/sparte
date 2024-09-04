@@ -54,7 +54,6 @@ def copy_table_from_dw_to_app(
     ogr.execute()
 
     index_requests = []
-    index_results = []
 
     if spatial_index_column:
         index_requests.append(get_spatial_index_request(to_table, spatial_index_column))
@@ -66,9 +65,8 @@ def copy_table_from_dw_to_app(
     with connections[PSYCOPG].cursor() as cursor:
         for request in index_requests:
             cursor.execute(request)
-            index_results.append(cursor.fetchall())
 
-    return {"index_requests": index_requests, "index_results": index_results, "ogr2ogr_request": ogr.safe_args}
+    return {"index_requests": index_requests, "ogr2ogr_request": ogr.safe_args}
 
 
 @dag(
