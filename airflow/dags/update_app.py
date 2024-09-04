@@ -65,8 +65,8 @@ def copy_table_from_dw_to_app(
 
     with connections[PSYCOPG].cursor() as cursor:
         for request in index_requests:
-            result = cursor.execute(request)
-            index_results.append(result.fetchall())
+            cursor.execute(request)
+            index_results.append(cursor.fetchall())
 
     return {"index_requests": index_requests, "index_results": index_results, "ogr2ogr_request": ogr.safe_args}
 
