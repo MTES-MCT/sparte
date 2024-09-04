@@ -23,11 +23,13 @@ def get_database_connection_string(environment: str) -> PgConnectionString:
 
 def create_spatial_index(table_name: str, column_name: str, conn: PgConnectionString):
     sql = f"CREATE INDEX IF NOT EXISTS ON {table_name} USING GIST ({column_name});"
+    print(sql)
     return ogrinfo(conn, sql=sql)
 
 
 def create_btree_index(table_name: str, columns_name: list[str], conn: PgConnectionString):
     sql = f"CREATE INDEX IF NOT EXISTS ON {table_name} ({', '.join(columns_name)});"
+    print(sql)
     return ogrinfo(conn, sql=sql)
 
 
@@ -58,7 +60,11 @@ def copy_table_from_dw_to_app(
 
     if btree_index_columns:
         for columns in btree_index_columns:
-            create_btree_index(table_name=to_table, columns_name=columns, conn=conn)
+            create_btree_index(
+                table_name=to_table,
+                columns_name=columns,
+                conn=conn,
+            )
 
     return ogr.safe_args
 
