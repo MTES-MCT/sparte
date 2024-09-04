@@ -30,7 +30,7 @@ class Container(containers.DeclarativeContainer):
             "region_name": BaseHook.get_connection("scaleway_airflow_bucket").extra_dejson.get("region_name")
         },
     )
-
+    # DBT connections
     gdal_dbt_conn = providers.Factory(
         PgConnectionString,
         dbname=getenv("DBT_DB_NAME"),
@@ -48,6 +48,7 @@ class Container(containers.DeclarativeContainer):
         port=getenv("DBT_DB_PORT"),
     )
 
+    # DEV connections
     gdal_dev_conn = providers.Factory(
         PgConnectionString,
         dbname=getenv("DEV_DB_NAME"),
@@ -56,7 +57,7 @@ class Container(containers.DeclarativeContainer):
         host=getenv("DEV_DB_HOST"),
         port=getenv("DEV_DB_PORT"),
     )
-    psycopg2_dev_conn: connection = providers.Factory(
+    psycopg2_dev_conn = providers.Factory(
         provides=connect,
         dbname=getenv("DEV_DB_NAME"),
         user=getenv("DEV_DB_USER"),
@@ -65,6 +66,7 @@ class Container(containers.DeclarativeContainer):
         port=getenv("DEV_DB_PORT"),
     )
 
+    # PROD connections
     gdal_prod_conn = providers.Factory(
         PgConnectionString,
         dbname=getenv("PROD_DB_NAME"),
@@ -73,9 +75,26 @@ class Container(containers.DeclarativeContainer):
         host=getenv("PROD_DB_HOST"),
         port=getenv("PROD_DB_PORT"),
     )
+    psycopg2_prod_conn = providers.Factory(
+        provides=connect,
+        dbname=getenv("PROD_DB_NAME"),
+        user=getenv("PROD_DB_USER"),
+        password=getenv("PROD_DB_PASSWORD"),
+        host=getenv("PROD_DB_HOST"),
+        port=getenv("PROD_DB_PORT"),
+    )
 
+    # STAGING connections
     gdal_staging_conn = providers.Factory(
         PgConnectionString,
+        dbname=getenv("STAGING_DB_NAME"),
+        user=getenv("STAGING_DB_USER"),
+        password=getenv("STAGING_DB_PASSWORD"),
+        host=getenv("STAGING_DB_HOST"),
+        port=getenv("STAGING_DB_PORT"),
+    )
+    psycopg2_staging_conn = providers.Factory(
+        provides=connect,
         dbname=getenv("STAGING_DB_NAME"),
         user=getenv("STAGING_DB_USER"),
         password=getenv("STAGING_DB_PASSWORD"),
