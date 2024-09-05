@@ -1,28 +1,24 @@
-
 {{
     config(
         materialized='table',
         indexes=[
-            {'columns': ['departement'], 'type': 'btree'},
+            {'columns': ['id'], 'type': 'btree'},
             {'columns': ['code'], 'type': 'btree'},
-            {'columns': ['geom'], 'type': 'gist'}
-        ])
+            {'columns': ['name'], 'type': 'btree'},
+            {'columns': ['departement'], 'type': 'btree'},
+            {'columns': ['region'], 'type': 'btree'},
+            {'columns': ['epci'], 'type': 'btree'},
+            {'columns': ['geom'], 'type': 'gist'},
+        ]
+    )
 }}
 
-SELECT
-    id,
-    nom as name,
-    nom_m as name_uppercase,
-    insee_com as code,
-    statut as type,
-    population as population,
-    insee_can as canton,
-    insee_arr as arrondissement,
-    insee_dep as departement,
-    insee_reg as region,
-    siren_epci as epci,
-    ST_Area(geom) as surface,
-    gen_random_uuid() as uuid,
-    geom
-FROM
-    {{ source('public', 'commune') }} as commune
+SELECT *, 32620 as srid_source FROM {{ ref('commune_guadeloupe') }}
+UNION ALL
+SELECT *, 32620 as srid_source FROM {{ ref('commune_martinique') }}
+UNION ALL
+SELECT *, 2972 as srid_source FROM {{ ref('commune_guyane') }}
+UNION ALL
+SELECT *, 2975 as srid_source FROM {{ ref('commune_reunion') }}
+UNION ALL
+SELECT *, 2154 as srid_source FROM {{ ref('commune_metropole') }}

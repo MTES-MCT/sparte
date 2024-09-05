@@ -1,0 +1,49 @@
+[
+    {
+        "name": "France Métropolitaine",
+        "url": "https://data.geopf.fr/telechargement/download/ADMIN-EXPRESS-COG/ADMIN-EXPRESS-COG_3-2__SHP_LAMB93_FXX_2024-02-22/ADMIN-EXPRESS-COG_3-2__SHP_LAMB93_FXX_2024-02-22.7z",
+        "srid": 2154,
+        "shapefile_to_table": {
+            "COMMUNE.shp": "commune_metropole",
+            "DEPARTEMENT.shp": "departement_metropole"
+        },
+        "dbt_model": "commune_metropole.sql"
+    }, {
+        "name": "Guadeloupe",
+        "url": "https://data.geopf.fr/telechargement/download/ADMIN-EXPRESS-COG/ADMIN-EXPRESS-COG_3-2__SHP_RGAF09UTM20_GLP_2024-02-22/ADMIN-EXPRESS-COG_3-2__SHP_RGAF09UTM20_GLP_2024-02-22.7z",
+        "srid": 32620,
+        "shapefile_to_table": {
+            "COMMUNE.shp": "commune_guadeloupe",
+            "DEPARTEMENT.shp": "departement_guadeloupe"
+        },
+        "dbt_model": "commune_guadeloupe.sql"
+
+    }, {
+        "name": "Martinique",
+        "url": "https://data.geopf.fr/telechargement/download/ADMIN-EXPRESS-COG/ADMIN-EXPRESS-COG_3-2__SHP_RGAF09UTM20_MTQ_2024-02-22/ADMIN-EXPRESS-COG_3-2__SHP_RGAF09UTM20_MTQ_2024-02-22.7z",
+        "srid": 32620,
+        "shapefile_to_table": {
+            "COMMUNE.shp": "commune_martinique",
+            "DEPARTEMENT.shp": "departement_martinique"
+        },
+        "dbt_model": "commune_martinique.sql"
+    }, {
+        "name": "Guyanne",
+        "url": "https://data.geopf.fr/telechargement/download/ADMIN-EXPRESS-COG/ADMIN-EXPRESS-COG_3-2__SHP_UTM22RGFG95_GUF_2024-02-22/ADMIN-EXPRESS-COG_3-2__SHP_UTM22RGFG95_GUF_2024-02-22.7z",
+        "srid": 2972,
+        "shapefile_to_table": {
+            "COMMUNE.shp": "commune_guyane",
+            "DEPARTEMENT.shp": "departement_guyane"
+        },
+        "dbt_model": "commune_guyane.sql"
+    }, {
+        "name": "La Réunion",
+        "url": "https://data.geopf.fr/telechargement/download/ADMIN-EXPRESS-COG/ADMIN-EXPRESS-COG_3-2__SHP_RGR92UTM40S_REU_2024-02-22/ADMIN-EXPRESS-COG_3-2__SHP_RGR92UTM40S_REU_2024-02-22.7z",
+        "srid": 2975,
+        "shapefile_to_table": {
+            "COMMUNE.shp": "commune_reunion",
+            "DEPARTEMENT.shp": "departement_reunion"
+        },
+        "dbt_model": "commune_reunion.sql"
+    }
+]

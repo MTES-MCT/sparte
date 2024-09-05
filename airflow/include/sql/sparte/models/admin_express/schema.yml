@@ -3,20 +3,28 @@ version: 2
 
 models:
   - name: commune
+  - name: commune_guadeloupe
+  - name: commune_guyane
+  - name: commune_martinique
+  - name: commune_reunion
   - name: departement
+  - name: departement_guadeloupe
+  - name: departement_guyane
+  - name: departement_martinique
+  - name: departement_reunion
 
 sources:
   - name: public
     tables:
-    - name: arrondissement
-    - name: arrondissement_municipal
-    - name: canton
-    - name: chflieu_arrondissement_municipal
-    - name: chflieu_commune
-    - name: chflieu_commune_associee_ou_deleguee
-    - name: collectivite_territoriale
-    - name: commune
-    - name: commune_associee_ou_deleguee
-    - name: departement
+    - name: commune_metropole
+    - name: commune_guadeloupe
+    - name: commune_guyane
+    - name: commune_martinique
+    - name: commune_reunion
+    - name: departement_metropole
+    - name: departement_guadeloupe
+    - name: departement_guyane
+    - name: departement_martinique
+    - name: departement_reunion
     - name: epci
     - name: region

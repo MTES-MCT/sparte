@@ -3,14 +3,24 @@ Ce dag télécharge et importe les données de l'IGN Admin Express dans une base
 puis lance un job dbt pour les transformer.
 """
 
+import json
 import os
 import subprocess
 from urllib.request import URLopener
 
 import py7zr
 from airflow.decorators import dag, task
+from airflow.models.param import Param
 from include.container import Container
 from pendulum import datetime
+
+with open("include/admin_express/sources.json", "r") as f:
+    sources = json.load(f)
+    zones = [source["name"] for source in sources]
+
+
+def get_source_by_name(name: str) -> dict:
+    return [source for source in sources if source["name"] == name][0]
 
 
 @dag(
@@ -20,40 +30,90 @@ from pendulum import datetime
     doc_md=__doc__,
     default_args={"owner": "Alexis Athlani", "retries": 3},
     tags=["Admin Express"],
+    params={
+        "zone": Param(
+            default=zones[0],
+            description="Zone à ingérer",
+            type="string",
+            enum=zones,
+        ),
+        "refresh_source": Param(
+            default=False,
+            description="Rafraîchir la source",
+            type="boolean",
+        ),
+    },
 )
 def ingest_admin_express():
-    admin_express_archive_file = "admin_express.7z"
     bucket_name = "airflow-staging"
-    path_on_bucket = f"{bucket_name}/{admin_express_archive_file}"
 
     @task.python
-    def download_admin_express() -> str:
-        url = "https://data.geopf.fr/telechargement/download/ADMIN-EXPRESS-COG/ADMIN-EXPRESS-COG_3-2__SHP_LAMB93_FXX_2024-02-22/ADMIN-EXPRESS-COG_3-2__SHP_LAMB93_FXX_2024-02-22.7z"  # noqa: E501
+    def download_admin_express(**context) -> str:
+        url = get_source_by_name(context["params"]["zone"])["url"]
+
+        filename = url.split("/")[-1]
+        path_on_bucket = f"{bucket_name}/{filename}"
+        print(path_on_bucket)
+
+        file_exists = Container().s3().exists(path_on_bucket)
+
+        if file_exists and not context["params"]["refresh_source"]:
+            return path_on_bucket
 
         opener = URLopener()
         opener.addheader("User-Agent", "Mozilla/5.0")
-        opener.retrieve(url=url, filename=admin_express_archive_file)
+        opener.retrieve(url=url, filename=filename)
 
-        with open(admin_express_archive_file, "rb") as local_file:
-            with Container().s3().open(path_on_bucket, "wb") as distant_file:
-                distant_file.write(local_file.read())
+        Container().s3().put_file(filename, path_on_bucket)
+
+        return path_on_bucket
 
     @task.python
-    def ingest() -> str:
+    def ingest(path_on_bucket, **context) -> str:
+        srid = get_source_by_name(context["params"]["zone"])["srid"]
+        shp_to_table_map = get_source_by_name(context["params"]["zone"])["shapefile_to_table"]
+
         with Container().s3().open(path_on_bucket, "rb") as f:
             py7zr.SevenZipFile(f, mode="r").extractall()
             for dirpath, _, filenames in os.walk("."):
                 for filename in filenames:
                     if filename.endswith(".shp"):
+                        table_name = shp_to_table_map.get(filename)
+                        if not table_name:
+                            continue
                         path = os.path.abspath(os.path.join(dirpath, filename))
-                        cmd = f'ogr2ogr -f "PostgreSQL" "{Container().gdal_dbt_conn().encode()}" -overwrite -lco GEOMETRY_NAME=geom -a_srs EPSG:2154 -nlt MULTIPOLYGON -nlt PROMOTE_TO_MULTI {path} --config PG_USE_COPY YES'  # noqa: E501
-                        subprocess.run(cmd, shell=True, check=True)
+                        cmd = [
+                            "ogr2ogr",
+                            "-f",
+                            '"PostgreSQL"',
+                            f'"{Container().gdal_dbt_conn().encode()}"',
+                            "-overwrite",
+                            "-lco",
+                            "GEOMETRY_NAME=geom",
+                            "-a_srs",
+                            f"EPSG:{srid}",
+                            "-nlt",
+                            "MULTIPOLYGON",
+                            "-nlt",
+                            "PROMOTE_TO_MULTI",
+                            "-nln",
+                            table_name,
+                            path,
+                            "--config",
+                            "PG_USE_COPY",
+                            "YES",
+                        ]
+                        subprocess.run(" ".join(cmd), shell=True, check=True)
 
     @task.bash(retries=0, trigger_rule="all_success")
     def dbt_run(**context):
-        return 'cd "${AIRFLOW_HOME}/include/sql/sparte" && dbt run -s admin_express'
+        dbt_model = get_source_by_name(context["params"]["zone"])["dbt_model"]
+        dbt_run_cmd = f"dbt run -s {dbt_model}"
+        return 'cd "${AIRFLOW_HOME}/include/sql/sparte" && ' + dbt_run_cmd
 
-    download_admin_express() >> ingest() >> dbt_run()
+    path_on_bucket = download_admin_express()
+    ingest_result = ingest(path_on_bucket)
+    ingest_result >> dbt_run()
 
 
 # Instantiate the DAG
