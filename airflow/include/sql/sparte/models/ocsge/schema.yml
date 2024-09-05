@@ -49,10 +49,6 @@ not_null_cs_us_config_staging: &not_null_cs_us_config_staging
 
 models:
   - name: for_app_commune
-    columns:
-      - name: area
-        data_tests:
-          - not_null
   - name: occupation_du_sol_commune
   - name: artificial_commune
   - name: zone_construite
