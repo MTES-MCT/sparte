@@ -26,6 +26,7 @@ SELECT
     {{ is_impermeable('code_cs') }} as is_impermeable,
     {{ is_artificial('code_cs', 'code_us') }} as is_artificial,
     uuid::uuid,
-    ST_MakeValid(geom) AS geom
+    ST_MakeValid(geom) AS geom,
+    2154 as srid_source
 FROM
     {{ source('public', 'ocsge_occupation_du_sol') }} AS ocsge

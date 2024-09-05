@@ -40,6 +40,7 @@ with max_ocsge_loaded_date as (
         ocsge.code_us,
         ocsge.is_artificial,
         ocsge.is_impermeable,
+        ocsge.srid_source,
         ST_Intersection(commune.geom, ocsge.geom) AS geom
     FROM
         {{ ref("commune") }} AS commune
@@ -47,6 +48,8 @@ with max_ocsge_loaded_date as (
         {{ ref("occupation_du_sol") }} AS ocsge
     ON
         ocsge.departement = commune.departement
+    AND
+        ocsge.srid_source = commune.srid_source
     AND
         ST_Intersects(commune.geom, ocsge.geom)
 

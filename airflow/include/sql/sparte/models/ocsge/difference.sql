@@ -54,7 +54,8 @@ SELECT
             new_is_artif = false THEN true
         ELSE false
     END AS new_not_artificial,
-    geom
+    geom,
+    2154 as srid_source
 FROM (
     SELECT
         ocsge.loaded_date,

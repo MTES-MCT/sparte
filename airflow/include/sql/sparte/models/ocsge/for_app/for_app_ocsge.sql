@@ -14,7 +14,7 @@ SELECT
     id as id_source,
     is_artificial,
     surface,
-    2154 as srid_source,
+    srid_source,
     departement,
     is_impermeable
 FROM

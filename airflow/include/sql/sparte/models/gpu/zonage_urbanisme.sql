@@ -34,7 +34,8 @@ SELECT *, ST_Area(geom) as surface FROM (
                             ST_transform(geom, 2154)
                         ),
                     3)
-        )) as geom
+        )) as geom,
+        2154 as srid_source
     FROM
         {{ source('public', 'gpu_zone_urba') }}
 ) as foo

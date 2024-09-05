@@ -18,6 +18,7 @@ SELECT
     departement,
     ST_MakeValid(geom) AS geom,
     ST_Area(geom) as surface,
-    uuid::uuid
+    uuid::uuid,
+    2154 as srid_source
 FROM
     {{ source('public', 'ocsge_zone_construite') }} as ocsge

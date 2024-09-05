@@ -35,6 +35,7 @@ with difference_commune_without_surface as (
         ocsge.us_old,
         ocsge.cs_new,
         ocsge.us_new,
+        ocsge.srid_source,
         ST_Intersection(commune.geom, ocsge.geom) AS geom
     FROM
         {{ ref("commune") }} AS commune
@@ -42,6 +43,8 @@ with difference_commune_without_surface as (
         {{ ref("difference") }} AS ocsge
     ON
         ocsge.departement = commune.departement
+    AND
+        ocsge.srid_source = commune.srid_source
     AND
         ST_Intersects(commune.geom, ocsge.geom)
 

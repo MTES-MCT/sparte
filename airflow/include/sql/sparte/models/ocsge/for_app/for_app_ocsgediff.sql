@@ -15,7 +15,7 @@ SELECT
     us_old,
     ST_Transform(geom, 4326) as mpoly,
     surface,
-    2154 as srid_source,
+    srid_source,
     departement,
     new_is_artificial as is_new_artif,
     new_not_artificial as is_new_natural,

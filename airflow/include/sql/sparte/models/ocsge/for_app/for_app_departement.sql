@@ -22,7 +22,7 @@ SELECT
     array_length(millesimes.ocsge_millesimes, 1) > 1 AS is_artif_ready,
     millesimes.ocsge_millesimes,
     ST_Transform(admin_express_departement.geom, 4326) as mpoly,
-    2154 as srid_source
+    admin_express_departement.srid_source
 FROM
     {{ ref('app_departement') }} as app_departement
 LEFT JOIN

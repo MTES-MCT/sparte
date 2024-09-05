@@ -57,7 +57,7 @@ SELECT
     ) as surface_artif,
     admin_express_commune.surface / 10000 as area,
     ST_Transform(admin_express_commune.geom, 4326) as mpoly,
-    commune.srid_source as srid_source
+    admin_express_commune.srid_source as srid_source
 FROM
     {{ ref('app_commune') }} as commune
 LEFT JOIN

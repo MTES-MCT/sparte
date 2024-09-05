@@ -48,6 +48,7 @@ with max_ocsge_loaded_date as (
         ocsge.uuid,
         ocsge.is_artificial,
         ocsge.is_impermeable,
+        ocsge.srid_source,
         ST_Intersection(zonage.geom, ocsge.geom) AS geom
     FROM
         {{ ref("zonage_urbanisme") }} AS zonage
@@ -55,6 +56,8 @@ with max_ocsge_loaded_date as (
         {{ ref("occupation_du_sol") }} AS ocsge
     ON
         ST_Intersects(zonage.geom, ocsge.geom)
+    AND
+        zonage.srid_source = ocsge.srid_source
 
     {% if is_incremental() %}
         where ocsge.loaded_date > (select ocsge_loaded_date from max_ocsge_loaded_date)
