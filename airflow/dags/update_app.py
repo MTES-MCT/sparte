@@ -89,6 +89,14 @@ def update_app():  # noqa: C901
             from_table="public_ocsge.for_app_ocsge",
             to_table="public.public_data_ocsge",
             environment=context["params"]["environment"],
+            btree_index_columns=[
+                ["departement"],
+                ["year"],
+                ["departement", "year"],
+                ["code_cs"],
+                ["code_us"],
+                ["code_cs", "code_us"],
+            ],
         )
 
     @task.python
