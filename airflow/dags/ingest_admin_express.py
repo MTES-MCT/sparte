@@ -28,6 +28,7 @@ def get_source_by_name(name: str) -> dict:
     schedule="@once",
     catchup=False,
     doc_md=__doc__,
+    max_active_runs=1,
     default_args={"owner": "Alexis Athlani", "retries": 3},
     tags=["Admin Express"],
     params={
@@ -108,7 +109,7 @@ def ingest_admin_express():
     @task.bash(retries=0, trigger_rule="all_success")
     def dbt_run(**context):
         dbt_model = get_source_by_name(context["params"]["zone"])["dbt_model"]
-        dbt_run_cmd = f"dbt run -s {dbt_model}"
+        dbt_run_cmd = f"dbt run -s {dbt_model}+"
         return 'cd "${AIRFLOW_HOME}/include/sql/sparte" && ' + dbt_run_cmd
 
     path_on_bucket = download_admin_express()
