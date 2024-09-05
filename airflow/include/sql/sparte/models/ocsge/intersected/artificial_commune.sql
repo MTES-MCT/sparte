@@ -37,7 +37,8 @@ with artificial_commune_without_surface as (
         ocsge.commune_code,
         ocsge.departement,
         ocsge.year,
-        ocsge.ocsge_loaded_date
+        ocsge.ocsge_loaded_date,
+        ocsge.srid_source
 )
 SELECT
     *,
