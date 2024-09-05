@@ -108,8 +108,8 @@ def ingest_admin_express():
 
     @task.bash(retries=0, trigger_rule="all_success")
     def dbt_run(**context):
-        dbt_model = get_source_by_name(context["params"]["zone"])["dbt_model"]
-        dbt_run_cmd = f"dbt run -s {dbt_model}+"
+        dbt_selector = get_source_by_name(context["params"]["zone"])["dbt_selector"]
+        dbt_run_cmd = f"dbt build -s {dbt_selector}"
         return 'cd "${AIRFLOW_HOME}/include/sql/sparte" && ' + dbt_run_cmd
 
     path_on_bucket = download_admin_express()
