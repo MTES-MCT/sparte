@@ -23,7 +23,7 @@ interface DashboardProps {
     projectId: string;
 }
 
-const Content = styled.main`
+const Main = styled.main`
     margin-left: 280px;
     margin-top: 80px;
     flex-grow: 1;
@@ -31,6 +31,11 @@ const Content = styled.main`
     flex-direction: column;
     background: #f4f7fe;
 `;
+
+const Content = styled.div`
+    flex-grow: 1;
+`;
+
 
 const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
     const dispatch = useDispatch();
@@ -49,48 +54,50 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                     <Header />
                     <Router>
                         <Navbar />
-                        <Content>
+                        <Main>
                             <TopBar />
-                            <Routes>
-                                <Route
-                                    path="/project/:projectId/tableau-de-bord/synthesis"
-                                    element={<Synthese />}
-                                />
-                                <Route
-                                    path="/project/:projectId/tableau-de-bord/consommation"
-                                    element={<Consommation />}
-                                />
-                                <Route
-                                    path="/project/:projectId/tableau-de-bord/trajectoires"
-                                    element={<Trajectoires />}
-                                />
-                                <Route
-                                    path="/project/:projectId/tableau-de-bord/découvrir-l-ocsge"
-                                    element={data.ocsge_coverage_status === "COMPLETE_UNIFORM" ? <Ocsge /> : <OcsgeStatus status={data.ocsge_coverage_status} />}
-                                />
-                                <Route
-                                    path="/project/:projectId/tableau-de-bord/artificialisation"
-                                    element={data.ocsge_coverage_status === "COMPLETE_UNIFORM" ? <Artificialisation /> : <OcsgeStatus status={data.ocsge_coverage_status} />}
-                                />
-                                <Route
-                                    path="/project/:projectId/tableau-de-bord/impermeabilisation"
-                                    element={data.ocsge_coverage_status === "COMPLETE_UNIFORM" ? <Impermeabilisation /> : <OcsgeStatus status={data.ocsge_coverage_status} />}
-                                />
-                                <Route
-                                    path="/project/:projectId/tableau-de-bord/zonages-d-urbanisme"
-                                    element={data.ocsge_coverage_status === "COMPLETE_UNIFORM" ? <Gpu /> : <OcsgeStatus status={data.ocsge_coverage_status} />}
-                                />
-                                <Route
-                                    path="/project/:projectId/tableau-de-bord/rapport-local"
-                                    element={<RapportLocal />}
-                                />
-                                <Route
-                                    path="/project/:projectId/edit"
-                                    element={<Update />}
-                                />
-                            </Routes>
+                            <Content>
+                                <Routes>
+                                    <Route
+                                        path="/project/:projectId/tableau-de-bord/synthesis"
+                                        element={<Synthese />}
+                                    />
+                                    <Route
+                                        path="/project/:projectId/tableau-de-bord/consommation"
+                                        element={<Consommation />}
+                                    />
+                                    <Route
+                                        path="/project/:projectId/tableau-de-bord/trajectoires"
+                                        element={<Trajectoires />}
+                                    />
+                                    <Route
+                                        path="/project/:projectId/tableau-de-bord/découvrir-l-ocsge"
+                                        element={data.ocsge_coverage_status === "COMPLETE_UNIFORM" ? <Ocsge /> : <OcsgeStatus status={data.ocsge_coverage_status} />}
+                                    />
+                                    <Route
+                                        path="/project/:projectId/tableau-de-bord/artificialisation"
+                                        element={data.ocsge_coverage_status === "COMPLETE_UNIFORM" ? <Artificialisation /> : <OcsgeStatus status={data.ocsge_coverage_status} />}
+                                    />
+                                    <Route
+                                        path="/project/:projectId/tableau-de-bord/impermeabilisation"
+                                        element={data.ocsge_coverage_status === "COMPLETE_UNIFORM" ? <Impermeabilisation /> : <OcsgeStatus status={data.ocsge_coverage_status} />}
+                                    />
+                                    <Route
+                                        path="/project/:projectId/tableau-de-bord/zonages-d-urbanisme"
+                                        element={data.ocsge_coverage_status === "COMPLETE_UNIFORM" ? <Gpu /> : <OcsgeStatus status={data.ocsge_coverage_status} />}
+                                    />
+                                    <Route
+                                        path="/project/:projectId/tableau-de-bord/rapport-local"
+                                        element={<RapportLocal />}
+                                    />
+                                    <Route
+                                        path="/project/:projectId/edit"
+                                        element={<Update />}
+                                    />
+                                </Routes>
+                            </Content>
                             <Footer />
-                        </Content>
+                        </Main>
                     </Router>
                 </>
             )}
