@@ -10,12 +10,12 @@
         ])
 }}
 
-SELECT * FROM {{ ref('departement_guadeloupe') }}
+SELECT *, 32620 as srid_source FROM {{ ref('departement_guadeloupe') }}
 UNION ALL
-SELECT * FROM {{ ref('departement_martinique') }}
+SELECT *, 32620 as srid_source FROM {{ ref('departement_martinique') }}
 UNION ALL
-SELECT * FROM {{ ref('departement_guyane') }}
+SELECT *, 2972 as srid_source FROM {{ ref('departement_guyane') }}
 UNION ALL
-SELECT * FROM {{ ref('departement_reunion') }}
+SELECT *, 2975 as srid_source FROM {{ ref('departement_reunion') }}
 UNION ALL
-SELECT * FROM {{ ref('departement_metropole') }}
+SELECT *, 2154 as srid_source FROM {{ ref('departement_metropole') }}
