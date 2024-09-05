@@ -148,6 +148,47 @@
             }
         </script>
 
+        <script id="footer-data" type="application/json">
+            {
+                "menuItems": [
+                    {
+                        "label": "Accessibilité: {{ SITE_CONFIG.get_accessibility_status_display|default:'non' }} conforme",
+                        "url": "{% url 'home:accessibilite' %}"
+                    },
+                    {
+                        "label": "Mentions légales",
+                        "url": "{% url 'home:cgv' %}"
+                    },
+                    {
+                        "label": "Données personnelles",
+                        "url": "{% url 'home:privacy' %}"
+                    },
+                    {
+                        "label": "Statistiques",
+                        "url": "{% url 'metabase:stats' %}"
+                    },
+                    {
+                        "label": "Documentations",
+                        "url": "{{ EXTERNAL_DOC }}",
+                        "target": "_blank"
+                    },
+                    {
+                        "label": "FAQ",
+                        "url": "{{ FAQ_URL }}",
+                        "target": "_blank"
+                    },
+                    {
+                        "label": "Tutoriel",
+                        "url": "{% url 'documentation:tutoriel' %}"
+                    },
+                    {
+                        "label": "Contactez-nous",
+                        "url": "{% url 'home:contact' %}"
+                    }
+                ]
+            }
+        </script>
+
         <dialog aria-labelledby="fr-modal-title-modal-1" role="dialog" id="fr-modal-1" class="fr-modal">
             <div class="fr-container fr-container--fluid fr-container-md">
                 <div class="fr-grid-row fr-grid-row--center">
