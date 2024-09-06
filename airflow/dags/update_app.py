@@ -94,9 +94,9 @@ def update_app():  # noqa: C901
                 ["departement"],
                 ["year"],
                 ["departement", "year"],
-                ["code_cs"],
-                ["code_us"],
-                ["code_cs", "code_us"],
+                ["couverture"],
+                ["usage"],
+                ["couverture", "usage"],
             ],
         )
 
