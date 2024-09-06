@@ -17,45 +17,34 @@
 }}
 
 SELECT
-    to_timestamp(foo.loaded_date) as loaded_date,
     foo.year_old,
     foo.year_new,
-    cs_new,
-    cs_old,
-    us_new,
-    us_old,
+    foo.cs_new,
+    foo.cs_old,
+    foo.us_new,
+    foo.us_old,
     foo.departement,
-    ST_Area(geom) AS surface,
-    uuid,
-    CASE
-        WHEN
-            old_is_imper = false AND
-            new_is_imper = true
-            THEN true
-        ELSE false
-    END AS new_is_impermeable,
-    CASE
-        WHEN
-            old_is_imper = true AND
-            new_is_imper = false
-            THEN true
-        ELSE false
-    END AS new_not_impermeable,
-    CASE
-        WHEN
-            old_is_artif = false AND
-            new_is_artif = true
-            THEN true
-        ELSE false
-    END AS new_is_artificial,
-    CASE
-        WHEN
-            old_is_artif = true AND
-            new_is_artif = false THEN true
-        ELSE false
-    END AS new_not_artificial,
-    geom,
-    2154 as srid_source
+    foo.uuid,
+    foo.geom,
+    2154                          AS srid_source,
+    to_timestamp(foo.loaded_date) AS loaded_date,
+    st_area(foo.geom)             AS surface,
+    coalesce(
+        foo.old_is_imper = false
+        AND foo.new_is_imper = true, false
+    )                             AS new_is_impermeable,
+    coalesce(
+        foo.old_is_imper = true
+        AND foo.new_is_imper = false, false
+    )                             AS new_not_impermeable,
+    coalesce(
+        foo.old_is_artif = false
+        AND foo.new_is_artif = true, false
+    )                             AS new_is_artificial,
+    coalesce(
+        foo.old_is_artif = true
+        AND foo.new_is_artif = false, false
+    )                             AS new_not_artificial
 FROM (
     SELECT
         ocsge.loaded_date,
@@ -66,7 +55,7 @@ FROM (
         ocsge.us_new,
         ocsge.us_old,
         ocsge.departement,
-        ST_MakeValid(ocsge.geom) AS geom,
+        st_makevalid(ocsge.geom) AS geom,
         {{ is_artificial('cs_old', 'us_old') }} AS old_is_artif,
         {{ is_impermeable('cs_old') }} AS old_is_imper,
         {{ is_artificial('cs_new', 'us_new') }} AS new_is_artif,
@@ -75,8 +64,8 @@ FROM (
     FROM
         {{ source('public', 'ocsge_difference') }} AS ocsge
     WHERE
-        cs_new IS NOT NULL AND
-        cs_old IS NOT NULL AND
-        us_new IS NOT NULL AND
-        us_old IS NOT NULL
+        ocsge.cs_new IS NOT null
+        AND ocsge.cs_old IS NOT null
+        AND ocsge.us_new IS NOT null
+        AND ocsge.us_old IS NOT null
 ) AS foo

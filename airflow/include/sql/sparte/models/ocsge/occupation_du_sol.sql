@@ -1,5 +1,3 @@
-
-
 {{
     config(
         materialized='table',
@@ -15,18 +13,19 @@
     )
 }}
 
+
 SELECT
-    to_timestamp(loaded_date) as loaded_date,
+    to_timestamp(loaded_date) AS loaded_date,
     id,
     code_cs,
     code_us,
     departement,
     year,
-    ST_area(geom) AS surface,
-    {{ is_impermeable('code_cs') }} as is_impermeable,
-    {{ is_artificial('code_cs', 'code_us') }} as is_artificial,
+    st_area(geom)             AS surface,
+    {{ is_impermeable('code_cs') }} AS is_impermeable,
+    {{ is_artificial('code_cs', 'code_us') }} AS is_artificial,
     uuid::uuid,
-    ST_MakeValid(geom) AS geom,
-    2154 as srid_source
+    st_makevalid(geom)        AS geom,
+    2154                      AS srid_source
 FROM
-    {{ source('public', 'ocsge_occupation_du_sol') }} AS ocsge
+    {{ source('public', 'ocsge_occupation_du_sol') }}
