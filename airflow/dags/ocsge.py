@@ -27,6 +27,7 @@ from include.ocsge.normalization import (
     ocsge_occupation_du_sol_normalization_sql,
     ocsge_zone_construite_normalization_sql,
 )
+from include.pools import DBT_POOL, OCSGE_STAGING_POOL
 from include.shapefile import get_shapefile_fields
 from include.utils import multiline_string_to_single_line
 
@@ -247,7 +248,7 @@ def ocsge():  # noqa: C901
 
         return path_on_bucket
 
-    @task.python
+    @task.python(pool=OCSGE_STAGING_POOL)
     def ingest_staging(path, **context) -> int:
         loaded_date = int(pendulum.now().timestamp())
         departement = context["params"]["departement"]
@@ -264,7 +265,7 @@ def ocsge():  # noqa: C901
 
         return loaded_date
 
-    @task.bash
+    @task.bash(pool=OCSGE_STAGING_POOL)
     def db_test_ocsge_staging(**context):
         dataset = context["params"]["dataset"]
         dbt_select = " ".join([vars["dbt_selector_staging"] for vars in vars_dataset[dataset]])
@@ -286,7 +287,7 @@ def ocsge():  # noqa: C901
 
         return loaded_date
 
-    @task.bash(retries=0, trigger_rule="all_success")
+    @task.bash(retries=0, trigger_rule="all_success", pool=DBT_POOL)
     def dbt_run_ocsge(**context):
         dataset = context["params"]["dataset"]
         dbt_select = " ".join([f'{vars["dbt_selector"]}+' for vars in vars_dataset[dataset]])

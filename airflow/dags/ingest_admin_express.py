@@ -12,6 +12,7 @@ import py7zr
 from airflow.decorators import dag, task
 from airflow.models.param import Param
 from include.container import Container
+from include.pools import DBT_POOL
 from pendulum import datetime
 
 with open("include/admin_express/sources.json", "r") as f:
@@ -106,7 +107,7 @@ def ingest_admin_express():
                         ]
                         subprocess.run(" ".join(cmd), shell=True, check=True)
 
-    @task.bash(retries=0, trigger_rule="all_success")
+    @task.bash(retries=0, trigger_rule="all_success", pool=DBT_POOL)
     def dbt_run(**context):
         dbt_selector = get_source_by_name(context["params"]["zone"])["dbt_selector"]
         dbt_run_cmd = f"dbt build -s {dbt_selector}"
