@@ -44,19 +44,19 @@ select
         when
             millesimes.first_millesime is not NULL
             then millesimes.first_millesime
-        when commune.name is NULL then 2016
+        when admin_express_commune.name is NULL then 2016
     end                                                as first_millesime,
     case
         when
             millesimes.last_millesime is not NULL
             then millesimes.last_millesime
-        when commune.name is NULL then 2021
+        when admin_express_commune.name is NULL then 2021
     end                                                as last_millesime,
     coalesce(admin_express_commune.name, commune.name) as name,  -- noqa: L029
     coalesce(admin_express_commune.srid_source, 2154)  as srid_source,
     case
         when artif_commune.surface is not NULL then TRUE
-        when commune.name is NULL then TRUE
+        when admin_express_commune.name is NULL then TRUE
         else FALSE
     end                                                as ocsge_available,
     case
