@@ -6,69 +6,75 @@
 }}
 
 with artif_commune_partitionned as (
-    SELECT
-        row_number() OVER (PARTITION BY commune_code ORDER BY year DESC) as rn,
-        *
-    FROM
+    select
+        *,
+        row_number() over (partition by commune_code order by year desc) as rn
+    from
         {{ ref('artificial_commune') }}
 
-), latest_year_artif_commune as (
-    SELECT
-        *
-    FROM
+),
+
+latest_year_artif_commune as (
+    select *
+    from
         artif_commune_partitionned
-    WHERE
+    where
         rn = 1
-), first_and_last_millesimes as (
-    SELECT
+),
+
+first_and_last_millesimes as (
+    select
         commune_code,
-        MIN(year) as first_millesime,
-        MAX(year) as last_millesime
-    FROM
+        min(year) as first_millesime,
+        max(year) as last_millesime
+    from
         {{ ref('occupation_du_sol_commune') }}
-    GROUP BY
+    group by
         commune_code
 )
-SELECT
+
+select
     commune.id,
     commune.insee,
-    commune.name,
+    admin_express_commune.name,
     commune.departement_id,
     commune.epci_id,
     commune.scot_id,
     commune.map_color,
-    CASE
-        WHEN
-            artif_commune.surface IS NOT NULL
-            THEN true
-        ELSE commune.ocsge_available
-    END AS ocsge_available,
-    millesimes.first_millesime as first_millesime,
-    millesimes.last_millesime as last_millesime,
-    COALESCE(
-        CASE
-            WHEN
-                artif_commune.surface IS NOT NULL
-                THEN artif_commune.surface / 10000
-            ELSE
-                NULL
-        END,
-        commune.surface_artif
-    ) as surface_artif,
-    admin_express_commune.surface / 10000 as area,
-    ST_Transform(admin_express_commune.geom, 4326) as mpoly,
-    admin_express_commune.srid_source as srid_source
-FROM
+    millesimes.first_millesime,
+    millesimes.last_millesime,
+    admin_express_commune.srid_source,
+    coalesce(artif_commune.surface is not NULL, FALSE) as ocsge_available,
+    case
+        when
+            artif_commune.surface is not NULL
+            then artif_commune.surface / 10000
+    end                                                as surface_artif,
+    case
+        when
+            admin_express_commune.surface is not NULL
+            then admin_express_commune.surface / 10000
+        else
+            0
+    end                                                as area,
+    case
+        when
+            admin_express_commune.geom is not NULL
+            then st_transform(admin_express_commune.geom, 4326)
+        else
+            st_setsrid('MULTIPOLYGON EMPTY'::geometry, 4326)
+    end                                                as mpoly
+from
     {{ ref('app_commune') }} as commune
-LEFT JOIN
+left join
     latest_year_artif_commune as artif_commune
-ON
-    commune.insee = artif_commune.commune_code
-LEFT JOIN
+    on
+        commune.insee = artif_commune.commune_code
+left join
     first_and_last_millesimes as millesimes
-ON
-    commune.insee = millesimes.commune_code
-LEFT JOIN
+    on
+        commune.insee = millesimes.commune_code
+left join
     {{ ref('commune') }} as admin_express_commune
-ON
-    commune.insee = admin_express_commune.code
+    on
+        commune.insee = admin_express_commune.code
