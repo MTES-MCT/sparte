@@ -50,7 +50,7 @@ select
         when
             millesimes.last_millesime is not NULL
             then millesimes.last_millesime
-        when commune.name is NULL then 2019
+        when commune.name is NULL then 2021
     end                                                as last_millesime,
     coalesce(admin_express_commune.name, commune.name) as name,  -- noqa: L029
     coalesce(admin_express_commune.srid_source, 2154)  as srid_source,
