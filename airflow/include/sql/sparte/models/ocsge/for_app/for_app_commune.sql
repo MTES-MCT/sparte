@@ -44,7 +44,11 @@ select
     millesimes.last_millesime,
     coalesce(admin_express_commune.name, commune.name) as name,  -- noqa: L029
     coalesce(admin_express_commune.srid_source, 2154)  as srid_source,
-    coalesce(artif_commune.surface is not NULL, FALSE) as ocsge_available,
+    case
+        when artif_commune.surface is not NULL then TRUE
+        when commune.name is NULL then TRUE
+        else FALSE
+    end                                                as ocsge_available,
     case
         when
             artif_commune.surface is not NULL
