@@ -86,6 +86,19 @@
 .advanced-search:hover {
     opacity: 0.7;
 }
+
+.disabled {
+    color: #B0B0B0 !important;
+    pointer-events: none;
+}
+
+.disabled .text-muted {
+    color: #B0B0B0 !important;
+}
+
+.disabled-land-message {
+    margin-left: auto;
+}
 </style>
 
 <div class="fr-search-bar fr-search-bar--red position-relative d-flex flex-column" role="search">
@@ -155,13 +168,18 @@
                     count++
 
                     return `
-                        <div class='level'>${levels[key]}</div>
-                        ${response[key].map(obj => (
-                            `<div class="territory" id="territory-${obj.public_key}">
+                        <div class='level'>${levels[key]}</div>*
+                        ${response[key].map(obj => {
+                            const disabledLand = obj.area === 0
+                            return `<div
+                                class="territory ${disabledLand ? "disabled" : ""}"
+                                id="territory-${obj.public_key}"
+                            >
                                 <div class='fr-mr-2v'>${obj.name}</div>
                                 ${obj.source_id !== "" ? `<div class='text-muted'>(${obj.source_id})</div>` : ``}
+                                ${disabledLand ? ` <i class="disabled-land-message">Territoire supprimé en 2024</i>` : ``}
                             </div>`
-                        )).join('')}
+                }).join('')}
                     `
                 }
             }).join('')
@@ -224,6 +242,10 @@
             }
             else if (pathname === "/rapport-local") {
                 _paq.push(['trackEvent', 'local_report_download_funnel', 'search_territory', 'local_report_home_search_territory_selected'])
+            }
+
+            if (e.target.classList.contain('disabled')) {
+                return
             }
 
             const public_key = e.target.id.split('territory-')[1]
