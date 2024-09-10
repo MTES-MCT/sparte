@@ -36,14 +36,14 @@ first_and_last_millesimes as (
 select
     commune.id,
     commune.insee,
-    admin_express_commune.name,
     commune.departement_id,
     commune.epci_id,
     commune.scot_id,
     commune.map_color,
     millesimes.first_millesime,
     millesimes.last_millesime,
-    admin_express_commune.srid_source,
+    coalesce(admin_express_commune.name, commune.name) as name,  -- noqa: L029
+    coalesce(admin_express_commune.srid_source, 2154)  as srid_source,
     coalesce(artif_commune.surface is not NULL, FALSE) as ocsge_available,
     case
         when
