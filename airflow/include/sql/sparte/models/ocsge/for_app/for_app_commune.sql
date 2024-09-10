@@ -40,8 +40,18 @@ select
     commune.epci_id,
     commune.scot_id,
     commune.map_color,
-    millesimes.first_millesime,
-    millesimes.last_millesime,
+    case
+        when
+            millesimes.first_millesime is not NULL
+            then millesimes.first_millesime
+        when commune.name is NULL then 2016
+    end                                                as first_millesime,
+    case
+        when
+            millesimes.last_millesime is not NULL
+            then millesimes.last_millesime
+        when commune.name is NULL then 2019
+    end                                                as last_millesime,
     coalesce(admin_express_commune.name, commune.name) as name,  -- noqa: L029
     coalesce(admin_express_commune.srid_source, 2154)  as srid_source,
     case
