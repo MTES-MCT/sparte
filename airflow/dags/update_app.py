@@ -80,7 +80,22 @@ def copy_table_from_dw_to_app(
                 PRODUCTION,
                 DEV,
             ],
-        )
+        ),
+        "tasks": Param(
+            default=[
+                "copy_public_data_ocsge",
+                "copy_public_data_artificialarea",
+                "copy_public_data_artifareazoneurba",
+                "copy_public_data_commune",
+                "copy_public_data_departement",
+                "copy_public_data_communesol",
+                "copy_public_data_ocsgediff",
+                "copy_public_data_communediff",
+                "copy_public_data_zoneconstruite",
+                "copy_public_data_zoneurba",
+            ],
+            type="array",
+        ),
     },
 )
 def update_app():  # noqa: C901
@@ -211,18 +226,22 @@ def update_app():  # noqa: C901
             ],
         )
 
-    (
-        copy_public_data_artificialarea()
-        >> copy_public_data_artifareazoneurba()
-        >> copy_public_data_commune()
-        >> copy_public_data_departement()
-        >> copy_public_data_communesol()
-        >> copy_public_data_ocsgediff()
-        >> copy_public_data_communediff()
-        >> copy_public_data_zoneconstruite()
-        >> copy_public_data_ocsge()
-        >> copy_public_data_zoneurba()
-    )
+    @task.branch
+    def copy_public_data_branch(**context):
+        return context["params"]["tasks"]
+
+    copy_public_data_branch() >> [
+        copy_public_data_ocsge(),
+        copy_public_data_artificialarea(),
+        copy_public_data_artifareazoneurba(),
+        copy_public_data_commune(),
+        copy_public_data_departement(),
+        copy_public_data_communesol(),
+        copy_public_data_ocsgediff(),
+        copy_public_data_communediff(),
+        copy_public_data_zoneconstruite(),
+        copy_public_data_zoneurba(),
+    ]
 
 
 update_app()
