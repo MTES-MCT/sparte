@@ -6,12 +6,7 @@ class CommuneSol(models.Model):
     class Meta:
         verbose_name = "OCSGE - Couverture x usage des sols (par commune)"
         verbose_name_plural = verbose_name
-        indexes = [
-            models.Index(name="communesol-triplet-index", fields=["city", "matrix", "year"]),
-            models.Index(name="communesol-city-index", fields=["city"]),
-            models.Index(name="communesol-year-index", fields=["year"]),
-            models.Index(name="communesol-matrix-index", fields=["matrix"]),
-        ]
+        managed = False
 
     city = models.ForeignKey("Commune", verbose_name="Commune", on_delete=models.CASCADE)
     year = models.IntegerField(

@@ -27,11 +27,6 @@ repos:
   hooks:
     - id: black
       language_version: python3
-# - repo: https://github.com/pycqa/bandit
-#   rev: 1.7.0
-#   hooks:
-#     - id: bandit
-#       args: ['-iii', '-ll']
 -   repo: https://github.com/PyCQA/autoflake
     rev: v2.2.1
     hooks:
@@ -41,6 +36,19 @@ repos:
     hooks:
     -   id: flake8
         args: ['--config', 'flake8']
+-   repo: https://github.com/sqlfluff/sqlfluff
+    rev: 3.1.1
+    hooks:
+      - id: sqlfluff-lint
+        additional_dependencies: [
+          'dbt-postgres==1.8.2',
+          'sqlfluff-templater-dbt'
+        ]
+      - id: sqlfluff-fix
+        additional_dependencies: [
+          'dbt-postgres==1.8.2',
+          'sqlfluff-templater-dbt'
+        ]
 -   repo: https://github.com/gitguardian/ggshield
     rev: v1.24.0
     hooks:

@@ -170,7 +170,7 @@ urlpatterns = [
         name="map-test",
     ),
     path(
-        "<int:project_id>/carte/detail-zone-urbaine/<int:pk>",
+        "<int:project_id>/carte/detail-zone-urbaine/<str:checksum>",
         views.ArtifZoneUrbaView.as_view(),
         name="map-pane-artif-zone-urba",
     ),

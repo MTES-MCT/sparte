@@ -8,7 +8,7 @@ import pandas as pd
 from django.conf import settings
 from django.contrib.gis.db import models as gis_models
 from django.contrib.gis.db.models import Extent, Union
-from django.contrib.gis.db.models.functions import Area, Centroid
+from django.contrib.gis.db.models.functions import Area, Centroid, PointOnSurface
 from django.contrib.gis.geos import MultiPolygon, Polygon
 from django.core.cache import cache
 from django.core.validators import MaxValueValidator, MinValueValidator
@@ -567,7 +567,7 @@ class Project(BaseProject):
     def has_no_ocsge_coverage(self) -> bool:
         return self.ocsge_coverage_status == self.OcsgeCoverageStatus.NO_DATA
 
-    @cached_property
+    @property
     def has_zonage_urbanisme(self) -> bool:
         return ArtifAreaZoneUrba.objects.filter(zone_urba__mpoly__intersects=self.combined_emprise).exists()
 
@@ -1246,8 +1246,15 @@ class Project(BaseProject):
                 last_artif_area (float): artificial area of zone in last year
                 fill_up_rate (float): percentage of zone filled up
         """
+
+        zone_urba = (
+            ZoneUrba.objects.annotate(pos=PointOnSurface("mpoly"))
+            .filter(pos__intersects=self.combined_emprise)
+            .values_list("checksum", flat=True)
+        )
+
         qs = (
-            ArtifAreaZoneUrba.objects.filter(zone_urba__in=ZoneUrba.objects.intersect(self.combined_emprise))
+            ArtifAreaZoneUrba.objects.filter(zone_urba__in=zone_urba)
             .filter(year__in=[self.first_year_ocsge, self.last_year_ocsge])
             .order_by("zone_urba__typezone", "year")
             .values("zone_urba__typezone", "year")
@@ -1257,6 +1264,7 @@ class Project(BaseProject):
                 nb_zones=Count("zone_urba_id"),
             )
         )
+
         zone_list = dict()
         for row in qs:
             zone_type = row["zone_urba__typezone"]  # A, U, AUs...
