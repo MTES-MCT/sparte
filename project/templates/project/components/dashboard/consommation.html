@@ -183,11 +183,49 @@
     </div>
 </div>
 
-<div class="fr-mt-7w">
-    <h3 id="territoires-de-comparaison">Comparaison avec les territoires similaires</h3>
+<div class="fr-mt-7w" id="territoires-de-comparaison">
+    <h3>Comparaison avec les territoires similaires</h3>
+
+    <div class="fr-callout bg-white">
+        <p class="fr-callout__text fr-text--sm">
+            Par défaut, les territoires de comparaison incluent les territoires voisins. Vous pouvez en retirer ou en ajouter selon vos besoins.
+        </p>
+        {% if project.look_a_like %}
+            <ul class="fr-tags-group fr-mt-2w">
+                {% for land in project.get_look_a_like %}
+                    <li>
+                        <form 
+                            hx-post="{% url 'project:rm-lookalike' project.id %}"
+                            hx-ext="disable-element" 
+                            hx-disable-element="#land_{{ land.name|slugify }}"
+                        >
+                            {% csrf_token %}
+                            <input type="hidden" name="public_key" value="{{ land.public_key }}">
+                            <button type="submit" class="fr-tag fr-tag--sm fr-icon-close-line fr-tag--icon-left" aria-describedby="tooltip-{{ land.name|slugify }}" aria-label="Retirer le territoire {{ land.name }}" id="land_{{ land.name|slugify }}">{{ land.name }}</button>
+                            <span class="fr-tooltip fr-placement" id="tooltip-{{ land.name|slugify }}" role="tooltip" aria-hidden="true">Retirer le territoire de comparaison {{ land.name }}</span>
+                        </form>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="text-muted fr-text--sm fr-mt-1w">Il n'y a aucun territoire de comparaison de configuré.</p>
+        {% endif %}
+        <button 
+            class="fr-btn fr-btn--sm fr-btn--icon-left fr-icon-add-circle-line fr-mt-1w"
+            data-toggle="tooltip"
+            aria-hidden="true"
+            data-fr-opened="false" 
+            aria-controls="fr-modal-3" 
+            title="Ajouter un territoire de comparaison" 
+            hx-get="{% url 'project:lookalike' project.id %}"
+            hx-target="#add_lookalike_form"
+        >
+            Ajouter un territoire de comparaison
+        </button>
+    </div>
+    
     <div class="bg-white fr-p-2w">
         <div class="d-flex justify-content-end align-items-center fr-mb-2w">
-            <a class="fr-mr-2w fr-btn fr-icon-add-circle-line fr-btn--tertiary fr-btn--sm" href="{% url 'project:lookalike' project.id %}?next={% url 'project:report_conso' project.id %}&anchor=territoires-de-comparaison" data-toggle="tooltip" title="Ajouter un territoire de comparaison" aria-hidden="true"></a>
             {% include "project/components/widgets/chart_buttons.html" with chart="comparison_chart" %}
             <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#comparaisonVoisin" data-toggle="tooltip" title="Astuces pour lire le graphique" aria-hidden="true"></button>
         </div>
@@ -433,6 +471,27 @@
         </div>
     </div>
 </div>
+
+<!-- Modal -->
+<dialog aria-labelledby="fr-modal-title-modal-3" role="dialog" id="fr-modal-3" class="fr-modal">
+    <div class="fr-container fr-container--fluid fr-container-md">
+        <div class="fr-grid-row fr-grid-row--center">
+            <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+                <div class="fr-modal__body">
+                    <div class="fr-modal__header">
+                        <button class="fr-btn--close fr-btn" title="Fermer la fenêtre modale" aria-controls="fr-modal-3">Fermer</button>
+                    </div>
+                    <div class="fr-modal__content">
+                        <h1 id="fr-modal-title-modal-1" class="fr-modal__title">Ajouter un territoire de comparaison</h1>
+                        <div id="add_lookalike_form">
+                            <div class="fr-custom-loader"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</dialog>
 
 {% display_chart_data 'annual_total_conso_chart' annual_total_conso_chart CSP_NONCE %}
 {% display_chart_data 'comparison_chart' comparison_chart CSP_NONCE %}
