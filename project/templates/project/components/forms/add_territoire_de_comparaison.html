@@ -1,0 +1,52 @@
+{% load crispy_forms_tags %}
+
+<div id="lookalike_form_target">
+    <form hx-post="{% url 'project:lookalike' project.id %}" hx-ext="disable-element" hx-disable-element="#add_lookalike" hx-swap="outerHTML" hx-target="#lookalike_form_target">
+        {% csrf_token %}
+        <div class="input-group">
+            <div class="input-group-text"><i class="bi bi-search"></i></div>
+            <input type="text" name="keyword" class="form-control" id="id_keyword" value="{{ form.cleaned_data.keyword }}" placeholder="Rechercher un territoire">
+            <button id="add_lookalike" type="submit" class="fr-btn">Chercher</button>
+        </div>
+    </form>
+
+    {% if success_message %}
+        <div class="fade-in fr-alert fr-alert--success fr-alert--sm fr-mt-3w" role="alert">
+            <h3 class="fr-alert__title">Territoire ajouté avec succès.</h3>
+        </div>
+    {% endif %}
+
+    {% if results %}
+        <div class="fr-mt-3w">
+            <h3 class="fr-mb-2w">Résultats</h3>
+            <div class="fr-accordions-group">
+                {% for land, data in results.items %}
+                    {% if data %}
+                        <section class="fr-accordion">
+                            <h3 class="fr-accordion__title">
+                                <button class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-{{ land }}">
+                                    <span class="fr-mr-2w">{{ land }}</span>
+                                    <span class="badge bg-primary">{{ data|length }}</span>
+                                </button>
+                            </h3>
+                            <div class="fr-collapse" id="accordion-{{ land }}">
+                                {% for result in data %}
+                                    <div class="d-flex justify-content-between fr-mb-1w">
+                                        {{ result.name }} {% if result.insee %}({{ result.insee }}){% endif %}
+                                        <form hx-post="{% url 'project:lookalike' project.id %}" hx-target="#lookalike_form_target" hx-swap="outerHTML">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="add" value="{{ result.public_key }}">
+                                            <button type="submit" class="fr-btn fr-btn--tertiary fr-btn--sm fr-btn--icon-left fr-icon-add-circle-line" title="Ajouter le territoire {{ result.name }} {% if result.insee %}({{ result.insee }}){% endif %}">
+                                                Ajouter
+                                            </button>
+                                        </form>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </section>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+</div>

@@ -1184,9 +1184,8 @@ class Project(BaseProject):
         return (self.get_arbitrary_comparison_lands() or self.get_neighbors()).order_by("name")[:limit]
 
     def comparison_lands_and_self_land(self) -> list[Land]:
-        return [self.land_proxy] + [
-            Land(public_key=f"{land.land_type}_{land.id}") for land in self.get_comparison_lands()
-        ]
+        look_a_likes = self.get_look_a_like()
+        return [self.land_proxy] + look_a_likes
 
     def get_matrix(self, sol: Literal["couverture", "usage"] = "couverture"):
         if sol == "usage":
