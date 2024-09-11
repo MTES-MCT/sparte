@@ -13,10 +13,12 @@ const Synthese: React.FC = () => {
     if (error) return <div>Erreur : {error}</div>;
 
     return (
-        <div className="fr-grid-row fr-grid-row--gutters fr-p-3w">
-            <div className="fr-col-12">
-                <PageTitle title="Synthèse du diagnostic" />
-                <div dangerouslySetInnerHTML={{ __html: content }} />
+        <div className="fr-container--fluid fr-p-3w">
+            <div className="fr-grid-row fr-grid-row--gutters">
+                <div className="fr-col-12">
+                    <PageTitle title="Synthèse" />
+                    <div dangerouslySetInnerHTML={{ __html: content }} />
+                </div>
             </div>
         </div>
     );
