@@ -208,13 +208,11 @@ class BaseRenderer:
 
         # Comparison territories
         if has_neighbors:
-            voisins = diagnostic.get_look_a_like()
             # Charts
             comparison_chart = charts.AnnualConsoComparisonChartExport(diagnostic)
             comparison_surface_chart = charts.SurfaceChartExport(diagnostic)
             comparison_relative_chart = charts.AnnualConsoProportionalComparisonChartExport(diagnostic)
             context |= {
-                "voisins": voisins,
                 # Charts
                 "comparison_chart": self.prep_image(comparison_chart.get_temp_image(), width=170),
                 "comparison_surface_chart": self.prep_image(comparison_surface_chart.get_temp_image(), width=170),

@@ -29,7 +29,7 @@ urlpatterns = [
     path("<int:pk>/delete/", views.ProjectDeleteView.as_view(), name="delete"),
     path("<int:pk>/ajouter-voisin", views.ProjectAddLookALike.as_view(), name="lookalike"),
     path(
-        "<int:pk>/retirer-voisin/<slug:public_key>",
+        "<int:pk>/retirer-voisin",
         views.ProjectRemoveLookALike.as_view(),
         name="rm-lookalike",
     ),
