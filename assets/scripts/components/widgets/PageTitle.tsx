@@ -6,9 +6,7 @@ interface StatisticProps {
 }
 
 const Title = styled.h2`
-    font-size: 1.5em;
-    color: #2B3674;
-    margin-bottom: 2rem;
+    margin: 1rem 0 3rem 0;
 `;
 
 const PageTitle: React.FC<StatisticProps> = ({ title }) => {
