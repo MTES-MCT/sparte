@@ -53,7 +53,7 @@ const SearchContainer = styled.div`
 `;
 
 const Icon = styled.i`
-    color: #A3AED0;
+    color: #000091;
     margin: 0 0.5rem;
 `;
 
@@ -61,6 +61,7 @@ const Input = styled.input`
     flex-grow: 1;
     border: none;
     font-size: 0.9em;
+    color: #000091;
 
     &:focus {
         outline: none;

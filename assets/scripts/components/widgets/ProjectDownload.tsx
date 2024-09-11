@@ -17,7 +17,7 @@ const Container = styled.div`
     margin: 1rem;
     padding: 1rem;
     border-radius: 6px;
-    border: 1px solid #4318FF;
+    background: #cacafb;
     
     &:hover ${DownloadList} {
         height: 192px;
@@ -57,9 +57,8 @@ const DownloadButtonStyle = css`
     align-items: center;
     padding: 0.5rem;
     border-radius: 6px;
-    color: #96A1C2;
+    color: #4318FF;
     font-size: 0.8em;
-    background-color: #fff;
     transition: color 0.3s ease, background-color 0.3s ease;
     width: 100%;
     background: none;

@@ -34,7 +34,7 @@ const Content = styled.div`
     font-size: 0.8em;
     padding: 0;
     margin: 0;
-    margin-bottom: 0.4rem;
+    margin-bottom: 1rem;
 `;
 
 const Button = styled.button`

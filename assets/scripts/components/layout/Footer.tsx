@@ -30,7 +30,7 @@ const NavLink = styled.a`
     background-image: none;
     -webkit-tap-highlight-color: transparent;
     transition: color .3s ease;
-    color: #A3AED0;
+    color: #979FB8;
 
     &:hover {
         color: #4318FF;

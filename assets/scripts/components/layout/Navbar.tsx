@@ -20,6 +20,9 @@ interface subMenu {
     icon: string;
 }
 
+const primaryColor = 'var(--text-title-grey)';
+const activeColor = '#4318FF';
+
 const MenuStyle = css`
     display: flex;
     align-items: center;
@@ -31,13 +34,16 @@ const MenuStyle = css`
 const LinkStyle = css<{ $isActive: boolean }>`
     text-decoration: none;
     background-image: none;
+    background-color: inherit !important;
     border-right: 4px solid transparent;
     -webkit-tap-highlight-color: transparent;
     transition: color 0.2s ease, border-color 0.3s ease;
-    border-right: ${({ $isActive }) => ($isActive ? '4px solid #6A6AF4' : '4px solid transparent')};
+    border-right: 4px solid transparent;
+    border-color: ${({ $isActive }) => ($isActive ? "#6a6af4" : "transparent")};
+    color: ${({ $isActive }) => ($isActive ? activeColor : primaryColor)};
 
     &:hover {
-        color: #4318FF;
+        color: ${activeColor};
     }
     &:active {
         background: none;
@@ -52,17 +58,16 @@ const Container = styled.aside`
     width: 280px;
     display: flex;
     flex-direction: column;
-    background: #fff;
+    background: ##04023c;
     border-right: 1px solid #EEF2F7;
 `;
 
 const MenuList = styled.ul`
     list-style: none;
-    padding: 0;
+    padding: 1rem 0 0;
     margin: 0;
     flex: 1 1 0%;
     overflow-y: auto;
-    margin-top: 1rem;
 `;
 
 const Menu = styled.li`
@@ -72,14 +77,13 @@ const Menu = styled.li`
 
 const MenuTitle = styled.div`
     ${MenuStyle}
-    color: #2B3674;
+    color: ${primaryColor};
     cursor: default;
 `;
 
 const MenuTitleLink = styled(Link)<{ $isActive: boolean }>`
     ${MenuStyle}
     ${LinkStyle}
-    color: ${({ $isActive }) => ($isActive ? '#4318FF' : '#2B3674')};
 `;
 
 const SubMenuList = styled.ul`
@@ -92,14 +96,14 @@ const SubMenuList = styled.ul`
 
 const SubMenu = styled.li`
     padding-left: 0.1rem;
-    border-left: 1px solid #dae0ef;
+    border-left: 1px solid #E0E1FF;
     margin-left: 1.4rem;
+    position: relative;
 `;
 
 const SubMenuTitleLink = styled(Link)<{ $isActive: boolean }>`
     ${MenuStyle}
     ${LinkStyle}
-    color: ${({ $isActive }) => ($isActive ? '#4318FF' : '#A3AED0')};
 `;
 
 const Icon = styled.i`

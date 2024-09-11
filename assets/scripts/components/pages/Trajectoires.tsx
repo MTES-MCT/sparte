@@ -10,9 +10,7 @@ import PageTitle from '@components/widgets/PageTitle';
 const Trajectoires: React.FC = () => {
     const { projectId } = useParams<{ projectId: string }>();
     const endpoint = `/project/${projectId}/tableau-de-bord/trajectoires`;
-
     const [refreshKey, setRefreshKey] = useState(0);
-
     const { content, isLoading, error } = useHtmlLoader(endpoint + `?refreshKey=${refreshKey}`);
     const htmxRef = useHtmx([isLoading]);
 
@@ -50,7 +48,7 @@ const Trajectoires: React.FC = () => {
         <div className="fr-container--fluid fr-p-3w" ref={htmxRef}>
             <div className="fr-grid-row fr-grid-row--gutters">
                 <div className="fr-col-12">
-                    <PageTitle title="Trajectoires Zero Artificialisation Nette" />
+                    <PageTitle title="Trajectoire ZAN" />
                     <Guide
                         title="Cadre réglementaire"
                         contentHtml={`La loi Climat & Résilience fixe<strong> l’objectif d’atteindre le « zéro artificialisation nette des sols » en 2050, avec un objectif intermédiaire

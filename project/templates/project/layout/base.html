@@ -91,28 +91,28 @@
                     {
                         "label": "Synthèse",
                         "url": "{% url 'project:report_synthesis' project.pk %}",
-                        "icon": "bi bi-grid-1x2-fill"
+                        "icon": "bi bi-grid-1x2"
                     },
                     {
                         "label": "Les attendus de la loi C&R",
-                        "icon": "bi bi-check-square-fill",
+                        "icon": "bi bi-check-square",
                         "subMenu": [
                             {
                                 "label": "Rapport triennal local",
                                 "url": "{% url 'project:report_local' project.pk %}"
                             },
                             {
-                                "label": "Trajectoires ZAN",
+                                "label": "Trajectoire ZAN",
                                 "url": "{% url 'project:report_target_2031' project.pk %}"
                             }
                         ]
                     },
                     {
                         "label": "Pilotage territorial",
-                        "icon": "bi bi-bar-chart-fill",
+                        "icon": "bi bi-bar-chart",
                         "subMenu": [
                             {
-                                "label": "Consommation d'Espaces NAF",
+                                "label": "Consommation d'espaces NAF",
                                 "url": "{% url 'project:report_conso' project.pk %}"
                             },
                             {
@@ -123,7 +123,7 @@
                     },
                     {
                         "label": "Enjeux environnementaux",
-                        "icon": "bi bi-tree-fill",
+                        "icon": "bi bi-tree",
                         "subMenu": [
                             {
                                 "label": "Usage et couverture du sol (OCS GE)",
@@ -218,7 +218,9 @@
                                 <button class="fr-link--close fr-link" aria-controls="fr-modal-download-word">Fermer</button>
                             </div>
                             <div class="fr-modal__content">
-                                <div id="diag_word_form"></div>
+                                <div id="diag_word_form">
+                                    <div class="fr-custom-loader"></div>
+                                </div>
                             </div>
                         </div>
                     </div>

@@ -6,11 +6,15 @@ import styled from 'styled-components';
 import useHtmx from '@hooks/useHtmx';
 import Divider from '@components/ui/Divider';
 
+const primaryColor = 'var(--text-title-grey)';
+const activeColor = '#4318FF';
+const secondaryColor = '#a1a1f8';
+
 const Container = styled.div`
     position: sticky;
     top: 80px;
     background: rgba(255, 255, 255, 0.8);
-    border-bottom: 1px solid #EEF2F7;
+    border-bottom: 1px solid #EBEBEC;
     z-index: 998;
     padding: 1rem;
     backdrop-filter: blur(8px);
@@ -20,7 +24,7 @@ const Container = styled.div`
 `;
 
 const Title = styled.h1`
-    color: #4318FF;
+    color: ${activeColor};
     margin: 0;
     padding: 0;
     font-size: 2em;
@@ -28,7 +32,7 @@ const Title = styled.h1`
 `;
 
 const SubTitle = styled.div`
-    color: #A3AED0;
+    color: ${secondaryColor};
     font-size: 0.8em;
 `;
 
@@ -45,13 +49,13 @@ const Item = styled.div`
 const ItemTitle = styled.div`
     display: flex;
     gap: 0.8rem;
-    color: #2B3674;
+    color: ${primaryColor};
     font-size: 0.85em;
     font-weight: 500;
 `;
 
 const ItemContent = styled.div`
-    color: #A3AED0;
+    color: ${secondaryColor};
     font-size: 0.85em;
     padding-left: 1.7rem;
     line-height: 0.8rem;
@@ -61,7 +65,7 @@ const ItemContent = styled.div`
         transition: color .3s ease;
 
         &:hover {
-            color: #4318FF;
+            color: ${activeColor};
         }
     }
 `;
