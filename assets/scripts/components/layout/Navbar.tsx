@@ -11,10 +11,10 @@ interface MenuItems {
     label: string;
     url?: string;
     icon: string;
-    subMenu?: subMenu[];
+    subMenu?: SubMenu[];
 }
 
-interface subMenu {
+interface SubMenu {
     label: string;
     url: string;
     icon: string;
