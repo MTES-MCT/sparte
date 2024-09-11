@@ -53,10 +53,10 @@ interface GuideProps {
 }
 
 const Guide: React.FC<GuideProps> = ({ title, contentHtml, DrawerTitle, DrawerContentHtml }) => {
-    const [isDrawerOpen, setDrawerOpen] = useState(false);
+    const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
     const toggleDrawer = () => {
-        setDrawerOpen(!isDrawerOpen);
+        setIsDrawerOpen(!isDrawerOpen);
     };
 
     return (
