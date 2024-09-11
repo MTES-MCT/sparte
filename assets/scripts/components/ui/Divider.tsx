@@ -8,7 +8,7 @@ interface DividerProps {
 }
 
 const StyledDivider = styled.div<DividerProps>`
-    background-color: ${({ color }) => color || '#EEF2F7'};
+    background-color: ${({ color }) => color || '#E0E1FF'};
     ${({ orientation, size }) =>
         orientation === 'vertical'
         ? `
