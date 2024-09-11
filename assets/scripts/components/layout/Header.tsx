@@ -92,7 +92,7 @@ const NavLink = styled.a`
     }
 `;
 
-const Header: React.FC<{ headerData: HeaderData }> = ({ headerData }) => {
+const Header = () => {
     const [data, setData] = useState<HeaderData | null>(null);
 
     useEffect(() => {
@@ -129,7 +129,12 @@ const Header: React.FC<{ headerData: HeaderData }> = ({ headerData }) => {
             <SearchBar createUrl={data?.search.createUrl} />
             <NavLinks>
                 {data?.menuItems.map((item, index) => (
-                    <NavLink key={index} href={item.url} target={item.target} rel="noopener noreferrer">
+                    <NavLink
+                        key={index}
+                        href={item.url}
+                        target={item.target}
+                        rel={item.target === "_blank" ? "noopener noreferrer" : undefined}
+                    >
                         {item.label}
                     </NavLink>
                 ))}
