@@ -7,14 +7,12 @@ class ScalingoClient:
         api_token: str,
         app_name: str,
         addon_id: str,
-        backup_dir: str,
         scalingo_subdomain: str,
         scalingo_subdomain_db: str,
     ):
         self.api_token = api_token
         self.app_name = app_name
         self.addon_id = addon_id
-        self.backup_dir = backup_dir
         self.scalingo_subdomain = scalingo_subdomain
         self.scalingo_subdomain_db = scalingo_subdomain_db
 
