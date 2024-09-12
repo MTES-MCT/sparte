@@ -101,7 +101,7 @@
             <div class="bg-white fr-p-2w">
                 <div class="d-flex justify-content-end align-items-center fr-mb-2w">
                     {% include "project/components/widgets/chart_buttons.html" with chart="pie_determinant" %}
-                    <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#determinantModal" data-toggle="tooltip" title="Astuces pour lire le graphique" aria-hidden="true"></button>
+                    <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#determinantModal" data-toggle="tooltip" title="Astuces pour lire le graphique"></button>
                 </div>
                 <div id="pie_determinant"></div>
             </div>
@@ -110,7 +110,7 @@
             <div class="bg-white fr-p-2w">
                 <div class="d-flex justify-content-end align-items-center fr-mb-2w">
                     {% include "project/components/widgets/chart_buttons.html" with chart="chart_determinant" %}
-                    <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#determinantModal" data-toggle="tooltip" title="Astuces pour lire le graphique" aria-hidden="true"></button>
+                    <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#determinantModal" data-toggle="tooltip" title="Astuces pour lire le graphique"></button>
                 </div>
                 <div id="chart_determinant"></div>
             </div>
@@ -213,7 +213,6 @@
         <button 
             class="fr-btn fr-btn--sm fr-btn--icon-left fr-icon-add-circle-line fr-mt-1w"
             data-toggle="tooltip"
-            aria-hidden="true"
             data-fr-opened="false" 
             aria-controls="fr-modal-3" 
             title="Ajouter un territoire de comparaison" 
@@ -227,7 +226,7 @@
     <div class="bg-white fr-p-2w">
         <div class="d-flex justify-content-end align-items-center fr-mb-2w">
             {% include "project/components/widgets/chart_buttons.html" with chart="comparison_chart" %}
-            <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#comparaisonVoisin" data-toggle="tooltip" title="Astuces pour lire le graphique" aria-hidden="true"></button>
+            <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#comparaisonVoisin" data-toggle="tooltip" title="Astuces pour lire le graphique"></button>
         </div>
         <div id="comparison_chart"></div>
     </div>
@@ -269,7 +268,7 @@
     <div class="bg-white fr-p-2w">
         <div class="d-flex justify-content-end align-items-center fr-mb-2w">
             {% include "project/components/widgets/chart_buttons.html" with chart="surface_chart" %}
-            <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#consoRelativeSurface" data-toggle="tooltip" title="Astuces pour lire le graphique" aria-hidden="true"></button>
+            <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#consoRelativeSurface" data-toggle="tooltip" title="Astuces pour lire le graphique"></button>
         </div>
         <div id="surface_chart"></div>
     </div>
@@ -335,7 +334,7 @@
     <div class="bg-white fr-p-2w">
         <div class="d-flex justify-content-end align-items-center fr-mb-2w">
             {% include "project/components/widgets/chart_buttons.html" with chart="surface_proportional_chart" %}
-            <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#consoRelativeSurface" data-toggle="tooltip" title="Astuces pour lire le graphique" aria-hidden="true"></button>
+            <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#consoRelativeSurface" data-toggle="tooltip" title="Astuces pour lire le graphique"></button>
         </div>
         <div id="surface_proportional_chart"></div>
     </div>
@@ -473,7 +472,7 @@
 </div>
 
 <!-- Modal -->
-<dialog aria-labelledby="fr-modal-title-modal-3" role="dialog" id="fr-modal-3" class="fr-modal">
+<dialog aria-labelledby="fr-modal-title-modal-3" id="fr-modal-3" class="fr-modal">
     <div class="fr-container fr-container--fluid fr-container-md">
         <div class="fr-grid-row fr-grid-row--center">
             <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
