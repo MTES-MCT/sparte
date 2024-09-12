@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
-import getCsrfToken from '../utils/csrf.ts'
+import getCsrfToken from '@utils/csrf'
 
 export const djangoApi = createApi({
   reducerPath: 'djangoApi',

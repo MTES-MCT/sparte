@@ -1,7 +1,7 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { setupListeners } from '@reduxjs/toolkit/query';
-import { djangoApi } from '../services/api.js';
-import projectReducer from './projectSlice.js';
+import { djangoApi } from '@services/api';
+import projectReducer from '@store/projectSlice';
 
 const store = configureStore({
   reducer: {
