@@ -12,6 +12,9 @@ from .LandMixin import LandMixin
 
 
 class Commune(DataColorationMixin, LandMixin, GetDataFromCeremaMixin, models.Model):
+    class Meta:
+        managed = False
+
     insee = models.CharField("Code INSEE", max_length=7)
     name = models.CharField("Nom", max_length=50)
     departement = models.ForeignKey("Departement", on_delete=models.PROTECT)
@@ -27,7 +30,6 @@ class Commune(DataColorationMixin, LandMixin, GetDataFromCeremaMixin, models.Mod
     objects = IntersectManager()
 
     # Calculated fields
-    map_color = models.CharField("Couleur d'affichage", max_length=30, null=True, blank=True)
     first_millesime = models.IntegerField(
         "Premier millésime disponible",
         validators=[MinValueValidator(2000), MaxValueValidator(2050)],

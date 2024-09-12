@@ -9,6 +9,7 @@ from django.contrib.gis.geos import Polygon
 from django.db import transaction
 from django.db.models import Case, CharField, DecimalField, F, Q, Sum, Value, When
 from django.db.models.functions import Cast, Concat
+from django.db.models.query import QuerySet
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect
 from django.urls import reverse
@@ -584,9 +585,12 @@ class ConsoRelativeSurfaceChart(CacheMixin, UserQuerysetOrPublicMixin, DetailVie
 class ArtifZoneUrbaView(CacheMixin, StandAloneMixin, DetailView):
     """Content of the pannel in Urba Area Explorator."""
 
-    context_object_name = "zone_urba"
     queryset = ZoneUrba.objects.all()
+    context_object_name = "zone_urba"
     template_name = "project/partials/artif_zone_urba.html"
+
+    def get_object(self) -> QuerySet[Any]:
+        return ZoneUrba.objects.get(checksum=self.kwargs["checksum"])
 
     def get_context_data(self, **kwargs):
         diagnostic = Project.objects.get(pk=self.kwargs["project_id"])
@@ -615,7 +619,7 @@ class ArtifNetChart(CacheMixin, TemplateView):
         self.diagnostic = Project.objects.get(pk=self.kwargs["pk"])
         self.zone_urba = None
         if "zone_urba_id" in self.request.GET:
-            self.zone_urba = ZoneUrba.objects.get(pk=self.request.GET.get("zone_urba_id"))
+            self.zone_urba = ZoneUrba.objects.get(checksum=self.request.GET.get("zone_urba_id"))
         return super().get(request, *args, **kwargs)
 
     def get_data(self):
@@ -677,7 +681,7 @@ class ArtifDetailCouvChart(CacheMixin, TemplateView):
         self.diagnostic = Project.objects.get(pk=self.kwargs["pk"])
         self.zone_urba = None
         if "zone_urba_id" in self.request.GET:
-            self.zone_urba = ZoneUrba.objects.get(pk=self.request.GET.get("zone_urba_id"))
+            self.zone_urba = ZoneUrba.objects.get(checksum=self.request.GET.get("zone_urba_id"))
         return super().get(request, *args, **kwargs)
 
     def get_data(self):
@@ -760,7 +764,7 @@ class ArtifDetailUsaChart(CacheMixin, TemplateView):
         self.diagnostic = Project.objects.get(pk=self.kwargs["pk"])
         self.zone_urba = None
         if "zone_urba_id" in self.request.GET:
-            self.zone_urba = ZoneUrba.objects.get(pk=self.request.GET.get("zone_urba_id"))
+            self.zone_urba = ZoneUrba.objects.get(checksum=self.request.GET.get("zone_urba_id"))
         return super().get(request, *args, **kwargs)
 
     def get_data(self):

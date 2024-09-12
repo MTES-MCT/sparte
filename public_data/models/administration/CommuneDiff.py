@@ -6,10 +6,7 @@ class CommuneDiff(models.Model):
     class Meta:
         verbose_name = "OCSGE - Différence (par commune)"
         verbose_name_plural = verbose_name
-        indexes = [
-            models.Index(fields=["year_old"]),
-            models.Index(fields=["year_new"]),
-        ]
+        managed = False
 
     city = models.ForeignKey("Commune", verbose_name="Commune", on_delete=models.CASCADE)
     year_old = models.IntegerField(

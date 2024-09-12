@@ -1,0 +1,30 @@
+
+version: 2
+
+models:
+  - name: app_commune
+  - name: app_departement
+  - name: app_region
+  - name: app_epci
+  - name: app_scot
+  - name: app_usagesol
+  - name: app_couverturesol
+  - name: app_couvertureusagematrix
+  - name: app_scot_regions
+  - name: app_scot_departements
+  - name: app_epci_departements
+
+sources:
+  - name: public
+    tables:
+    - name: app_commune
+    - name: app_departement
+    - name: app_region
+    - name: app_epci
+    - name: app_scot
+    - name: app_usagesol
+    - name: app_couverturesol
+    - name: app_couvertureusagematrix
+    - name: app_scot_regions
+    - name: app_scot_departements
+    - name: app_epci_departements

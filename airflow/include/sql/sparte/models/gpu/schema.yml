@@ -1,0 +1,17 @@
+
+version: 2
+
+models:
+  - name: zonage_urbanisme
+    columns:
+    - name: gpu_timestamp
+      data_tests:
+      - not_null
+    - name: geom
+      data_tests:
+      - unique
+
+sources:
+  - name: public
+    tables:
+    - name: gpu_zone_urba

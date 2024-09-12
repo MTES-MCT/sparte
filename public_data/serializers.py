@@ -102,6 +102,7 @@ class LandSerializer(s.Serializer):
     name = s.CharField()
     source_id = s.SerializerMethodField()
     public_key = s.CharField()
+    area = s.FloatField()
 
     def get_source_id(self, obj) -> str:
         return obj.get_official_id()

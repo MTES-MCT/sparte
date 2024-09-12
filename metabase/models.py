@@ -72,7 +72,7 @@ class StatDiagnostic(models.Model):
             self.save()
 
     def update_locations(self, project: Project) -> None:
-        qs = project.cities.all().select_related("epci", "departement", "scot", "departement__region")
+        qs = project.cities.all()
 
         if qs.count() == 1:
             city = qs.first()
