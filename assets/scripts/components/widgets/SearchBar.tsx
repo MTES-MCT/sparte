@@ -222,7 +222,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ createUrl }) => {
                 />
                 {isLoading && <Loader size={25} wrap={false} />}
                 {data && (
-                    <ResultsContainer role="listbox">
+                    <ResultsContainer>
                         {['COMM', 'EPCI', 'SCOT', 'DEPART', 'REGION'].map((category) => {
                             const territories = data[category as keyof SearchTerritoryResponse] || [];
                             return territories.length > 0 ? (
