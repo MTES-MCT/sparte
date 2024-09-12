@@ -53,9 +53,9 @@ const Footer = () => {
             <div className="fr-grid-row">
                 <div className="fr-col-12">
                     <NavLinks>
-                        {data?.menuItems.map((item, index) => (
+                        {data?.menuItems.map((item) => (
                             <NavLink
-                                key={index}
+                                key={item.label}
                                 href={item.url}
                                 target={item.target}
                                 rel={item.target === "_blank" ? "noopener noreferrer" : undefined}

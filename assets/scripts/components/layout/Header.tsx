@@ -106,11 +106,10 @@ const Header = () => {
     return (
         <HeaderContainer>
             <LogoContainer>
-                {data?.logos.map((logo, index) => (
+                {data?.logos.map((logo) => (
                     logo.url ? (
-                        <LogoLink key={index} href={logo.url} rel="noopener noreferrer">
+                        <LogoLink key={logo.src}  href={logo.url} rel="noopener noreferrer">
                             <Logo
-                                key={index}
                                 src={logo.src}
                                 alt={logo.alt}
                                 height={logo.height}
@@ -118,7 +117,7 @@ const Header = () => {
                         </LogoLink>
                     ) : (
                         <Logo
-                            key={index}
+                            key={logo.src}
                             src={logo.src}
                             alt={logo.alt}
                             height={logo.height}
@@ -128,9 +127,9 @@ const Header = () => {
             </LogoContainer>
             <SearchBar createUrl={data?.search.createUrl} />
             <NavLinks>
-                {data?.menuItems.map((item, index) => (
+                {data?.menuItems.map((item) => (
                     <NavLink
-                        key={index}
+                        key={item.label}
                         href={item.url}
                         target={item.target}
                         rel={item.target === "_blank" ? "noopener noreferrer" : undefined}

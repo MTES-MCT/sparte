@@ -160,13 +160,15 @@ const SearchBar: React.FC<SearchBarProps> = ({ createUrl }) => {
         if (!query) return text;
 
         const parts = text.split(new RegExp(`(${query})`, 'gi'));
-        return parts.map((part, index) =>
-            part.toLowerCase() === query.toLowerCase() ? (
-                <HighlightedText key={index}>{part}</HighlightedText>
+        return parts.map((part, index) => {
+            const key = `${part}-${index}`;
+    
+            return part.toLowerCase() === query.toLowerCase() ? (
+                <HighlightedText key={key}>{part}</HighlightedText>
             ) : (
                 part
-            )
-        );
+            );
+        });
     };
 
     // Solution temporaire
@@ -229,7 +231,6 @@ const SearchBar: React.FC<SearchBarProps> = ({ createUrl }) => {
                                     {territories.map((territory: Territory) => (
                                         <ResultItem
                                             key={territory.id}
-                                            role="option"
                                             onClick={() => createDiagnostic(territory.public_key)}
                                         >
                                             {highlightMatch(territory.name, query)}

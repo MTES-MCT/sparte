@@ -91,11 +91,11 @@ const ProjectDownload: React.FC = () => {
         <Container ref={htmxRef}>
             <DownloadTitle>
                 <i className="bi bi-box-arrow-down"></i>
-                Téléchargements
+                <div>Téléchargements</div>
             </DownloadTitle>
             { projectData && (
-                <DownloadList role="list">
-                    <DownloadListItem role="listitem">
+                <DownloadList>
+                    <DownloadListItem>
                         <DownloadButton
                             hx-get={`/project/${projectData.id}/tableau-de-bord/telechargement/rapport-conso`}
                             hx-target="#diag_word_form"
@@ -106,7 +106,7 @@ const ProjectDownload: React.FC = () => {
                             Analyse de Consommation
                         </DownloadButton>
                     </DownloadListItem>
-                    <DownloadListItem role="listitem">
+                    <DownloadListItem>
                         <DownloadButton
                             hx-get={`/project/${projectData.id}/tableau-de-bord/telechargement/rapport-complet`}
                             hx-target="#diag_word_form"
@@ -117,7 +117,7 @@ const ProjectDownload: React.FC = () => {
                             Analyse complète
                         </DownloadButton>
                     </DownloadListItem>
-                    <DownloadListItem role="listitem">
+                    <DownloadListItem>
                         <DownloadButton
                             hx-get={`/project/${projectData.id}/tableau-de-bord/telechargement/rapport-local`}
                             hx-target="#diag_word_form"
@@ -128,7 +128,7 @@ const ProjectDownload: React.FC = () => {
                             Rapport triennal local
                         </DownloadButton>
                     </DownloadListItem>
-                    <DownloadListItem role="listitem">
+                    <DownloadListItem>
                         <DownloadLink href={`/project/${projectData.id}/export-excel`}>
                             <DownloadItemIcon aria-hidden="true" className="bi bi-file-earmark-excel"></DownloadItemIcon>
                             Export Excel

@@ -2,12 +2,12 @@ import { useEffect, useState } from 'react';
 
 export const useHtmlLoader = (endpoint: string) => {
     const [content, setContent] = useState<string>('');
-    const [isLoading, setLoading] = useState<boolean>(true);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         const loadContent = async () => {
-            setLoading(true);
+            setIsLoading(true);
             setError(null);
             try {
                 const response = await fetch(endpoint, {
@@ -23,7 +23,7 @@ export const useHtmlLoader = (endpoint: string) => {
             } catch (err) {
                 setError(err.message);
             } finally {
-                setLoading(false);
+                setIsLoading(false);
             }
         };
 

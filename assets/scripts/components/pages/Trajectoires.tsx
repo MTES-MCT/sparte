@@ -20,18 +20,21 @@ const Trajectoires: React.FC = () => {
 
     useEffect(() => {
         const handleLoadGraphic = () => {
-            setTimeout(() => {
-                // Ferme la modal Bootstrap
-                const modalElement = document.getElementById("setTarget");
-                if (modalElement) {
-                    const modalInstance = window.bootstrap.Modal.getInstance(modalElement);
-                    if (modalInstance) {
-                        modalInstance.hide();
-                    }
+            setTimeout(handleModalClose, 1800);
+        };
+
+        const handleModalClose = () => {
+            // Ferme la modal Bootstrap
+            const modalElement = document.getElementById("setTarget");
+            if (modalElement) {
+                const modalInstance = window.bootstrap.Modal.getInstance(modalElement);
+                if (modalInstance) {
+                    modalInstance.hide();
                 }
-                // Rafraîchit la clé après avoir fermé la modal pour recharger le contenu
-                setRefreshKey(prevKey => prevKey + 1);
-            }, 1800);
+            }
+
+            // Rafraîchit la clé après avoir fermé la modal pour recharger le contenu
+            setRefreshKey(prevKey => prevKey + 1);
         };
 
         document.addEventListener('load-graphic', handleLoadGraphic);

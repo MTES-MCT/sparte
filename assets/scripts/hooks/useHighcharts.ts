@@ -21,9 +21,17 @@ const useHighcharts = (chartIds: string[], loading: boolean) => {
                     const chartOptions = JSON.parse(chartDataElement.textContent || '{}');
                     const chart = Highcharts.chart(chartId, chartOptions);
 
-                    const fullscreenButton = document.querySelector(`[data-chart-fullscreen="${chartId}"]`) as HTMLButtonElement;
-                    const exportPngButton = document.querySelector(`[data-chart-exportpng="${chartId}"]`) as HTMLButtonElement;
-                    const exportCsvButton = document.querySelector(`[data-chart-exportcsv="${chartId}"]`) as HTMLButtonElement;
+                    const fullscreenButton = document.querySelector<HTMLButtonElement>(
+                        `[data-chart-fullscreen="${chartId}"]`
+                    );
+                    
+                    const exportPngButton = document.querySelector<HTMLButtonElement>(
+                        `[data-chart-exportpng="${chartId}"]`
+                    );
+                    
+                    const exportCsvButton = document.querySelector<HTMLButtonElement>(
+                        `[data-chart-exportcsv="${chartId}"]`
+                    );
 
                     if (fullscreenButton) {
                         fullscreenButton.onclick = (e) => {

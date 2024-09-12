@@ -124,7 +124,7 @@ const Navbar: React.FC = () => {
 
     const isActive = (url?: string) => location.pathname === url;
 
-    const renderMenuItems = (items: subMenu[]) => (
+    const renderMenuItems = (items: SubMenu[]) => (
         <SubMenuList>
             {items.map(item => (
                 <SubMenu
@@ -143,8 +143,8 @@ const Navbar: React.FC = () => {
     return (
         <Container aria-label="Sidebar">
             <MenuList role="tree" aria-label="Sidebar menu">
-                {data?.menuItems.map((menu, index) => (
-                    <Menu key={index}>
+                {data?.menuItems.map((menu) => (
+                    <Menu key={menu.label}>
                         {menu.url ? (
                             <MenuTitleLink to={menu.url} $isActive={isActive(menu.url)}>
                                 {menu.icon && <Icon className={`bi ${menu.icon}`} />}
