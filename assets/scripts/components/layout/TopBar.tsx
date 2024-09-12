@@ -91,8 +91,8 @@ const TopBar: React.FC = () => {
                             data-fr-opened="false" 
                             aria-controls="fr-modal-1" 
                             title="Modifier la période d'analyse du diagnostic" 
-                            hx-get={`/project/${memoizedProjectData?.id}/set-period`} 
-                            hx-target="#update_period_form">
+                            data-hx-get={`/project/${memoizedProjectData?.id}/set-period`} 
+                            data-hx-target="#update_period_form">
                             <span className="fr-icon-pencil-fill fr-icon--sm" aria-hidden="true"></span>
                         </button>
                     </ItemContent>

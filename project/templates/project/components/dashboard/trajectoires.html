@@ -20,7 +20,7 @@
                 <p class="fr-tag fr-tag--sm fr-tag--blue fr-ml-2w"><strong>+<span id="annual_objective-swapper">{{ annual_objective_2031|floatformat:1 }}</span> ha/an</strong></p>
             </div>
             <p class="fr-text--sm">Consommation cumulée de la période du 1er jan. 2021 au 31 déc. 2030 (10 ans) avec un objectif non-réglementaire de réduction de <span id="objective-swapper">{{ diagnostic.target_2031 }}</span>%</p>
-            <p><button id="btn-change-objective" class="fr-btn fr-btn--primary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#setTarget" aria-hidden="true" hx-get="{% url 'project:set-target-2031' project.pk %}" hx-target="#setTargetForm">Personnaliser mon objectif de réduction</button></p>
+            <p><button id="btn-change-objective" class="fr-btn fr-btn--primary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#setTarget" hx-get="{% url 'project:set-target-2031' project.pk %}" hx-target="#setTargetForm">Personnaliser mon objectif de réduction</button></p>
         </div>
     </div>
 </div>
