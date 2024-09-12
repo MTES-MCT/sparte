@@ -8,7 +8,8 @@ import Dashboard from './components/layout/Dashboard';
 const dashboard = document.getElementById('react-root');
 
 if (dashboard) {
-  const projectId = dashboard.dataset.projectId as string;
+  const projectId = dashboard.dataset.projectId;
+  
   createRoot(dashboard).render(
     <ErrorBoundary>
       <Provider store={store}>
