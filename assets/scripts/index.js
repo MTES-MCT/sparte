@@ -7,7 +7,7 @@ import '@gouvfr/dsfr/dist/dsfr.module.min.js'
 // Import map
 import './map_libre/index.js'
 
-import './react-roots.js'
+import './react-roots.tsx'
 
 // Import HTMX and inject it into the window scope
 window.htmx = require('htmx.org')
