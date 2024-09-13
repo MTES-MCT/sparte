@@ -6,7 +6,7 @@ import styled from 'styled-components';
 import useHtmx from '@hooks/useHtmx';
 import Divider from '@components/ui/Divider';
 
-const primaryColor = 'var(--text-title-grey)';
+const primaryColor = '#313178';
 const activeColor = '#4318FF';
 const secondaryColor = '#a1a1f8';
 

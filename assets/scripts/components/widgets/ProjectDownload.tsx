@@ -97,8 +97,8 @@ const ProjectDownload: React.FC = () => {
                 <DownloadList>
                     <DownloadListItem>
                         <DownloadButton
-                            hx-get={`/project/${projectData.id}/tableau-de-bord/telechargement/rapport-conso`}
-                            hx-target="#diag_word_form"
+                            data-hx-get={`/project/${projectData.id}/tableau-de-bord/telechargement/rapport-conso`}
+                            data-hx-target="#diag_word_form"
                             data-fr-opened="false"
                             aria-controls="fr-modal-download-word"
                         >
@@ -108,8 +108,8 @@ const ProjectDownload: React.FC = () => {
                     </DownloadListItem>
                     <DownloadListItem>
                         <DownloadButton
-                            hx-get={`/project/${projectData.id}/tableau-de-bord/telechargement/rapport-complet`}
-                            hx-target="#diag_word_form"
+                            data-hx-get={`/project/${projectData.id}/tableau-de-bord/telechargement/rapport-complet`}
+                            data-hx-target="#diag_word_form"
                             data-fr-opened="false"
                             aria-controls="fr-modal-download-word"
                         >
@@ -119,8 +119,8 @@ const ProjectDownload: React.FC = () => {
                     </DownloadListItem>
                     <DownloadListItem>
                         <DownloadButton
-                            hx-get={`/project/${projectData.id}/tableau-de-bord/telechargement/rapport-local`}
-                            hx-target="#diag_word_form"
+                            data-hx-get={`/project/${projectData.id}/tableau-de-bord/telechargement/rapport-local`}
+                            data-hx-target="#diag_word_form"
                             data-fr-opened="false"
                             aria-controls="fr-modal-download-word"
                         >

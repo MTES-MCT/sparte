@@ -20,7 +20,7 @@ interface SubMenu {
     icon: string;
 }
 
-const primaryColor = 'var(--text-title-grey)';
+const primaryColor = '#313178';
 const activeColor = '#4318FF';
 
 const MenuStyle = css`
