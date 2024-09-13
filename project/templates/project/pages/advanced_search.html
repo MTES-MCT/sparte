@@ -78,102 +78,102 @@ Créer un diagnostic
 {% endblock headers %}
 
 {% block content %}
-<div class="row w-100 justify-content-center">
-    <div class="col-12 col-md-8 col-lg-6">
+<div class="fr-container">
+    <div class="fr-grid-row justify-content-center">
+        <div class="fr-col-12 fr-col-md-8">
+            <h2>Sélectionner un territoire à diagnostiquer</h2>
 
-        <h2 class="fr-mb-12v">Sélectionner un territoire à diagnostiquer</h2>
+            <form id="main-form" action="?next={{ next }}" method="post">
+                {% csrf_token %}
+                <label class="visually-hidden" for="inlineFormInputGroupUsername">Mot clé</label>
 
-        <form id="main-form" action="?next={{ next }}" method="post">
-            {% csrf_token %}
-            <label class="visually-hidden" for="inlineFormInputGroupUsername">Mot clé</label>
+                <div class="fr-search-bar fr-search-bar--red fr-search-bar--lg" id="search-2" role="search">
+                    <input class="fr-input" placeholder="Rechercher un territoire (Commune, EPCI, Département, Région...)" type="search" id="search-787-input" name="keyword" value="{{ form.cleaned_data.keyword }}">
+                    <button class="fr-btn">
+                        Rechercher
+                    </button>
+                </div>
 
-            <div class="fr-search-bar fr-search-bar--red fr-search-bar--lg" id="search-2" role="search">
-                <input class="fr-input" placeholder="Rechercher un territoire (Commune, EPCI, Département, Région...)" type="search" id="search-787-input" name="keyword" value="{{ form.cleaned_data.keyword }}">
-                <button class="fr-btn">
-                    Rechercher
-                </button>
-            </div>
+                <input type="hidden" name="selection" id="id_selection" value="">
 
-            <input type="hidden" name="selection" id="id_selection" value="">
-
-            <div class="fr-container--fluid fr-mt-5v fr-p-3v border rounded">
-                <div class="fr-grid-row fr-grid-row--gutters">
-                    <div class="fr-col-12 fr-col-lg-6">
-                        <p class="fs-5 text-muted">Zone géographique:</p>
-                        <div class="d-flex flex-column">
-                            <div class="d-flex justify-content-between mb-2">
-                                <div>Région:</div>
-                                <div>{{ form.region }}</div>
+                <div class="fr-container--fluid fr-mt-5v fr-p-3v border rounded">
+                    <div class="fr-grid-row fr-grid-row--gutters">
+                        <div class="fr-col-12 fr-col-lg-6">
+                            <p class="fs-5 text-muted">Zone géographique:</p>
+                            <div class="d-flex flex-column">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <div>Région:</div>
+                                    <div>{{ form.region }}</div>
+                                </div>
+                                {% if form.cleaned_data.region %}
+                                <div class="d-flex justify-content-between mb-2">
+                                    <div>Département:</div>
+                                    <div>{{ form.departement }}</div>
+                                </div>
+                                {% endif %}
+                                {% if form.cleaned_data.departement %}
+                                <div class="d-flex justify-content-between">
+                                    <div>EPCI:</div>
+                                    <div>{{ form.epci }}</div>
+                                </div>
+                                {% endif %}
                             </div>
-                            {% if form.cleaned_data.region %}
-                            <div class="d-flex justify-content-between mb-2">
-                                <div>Département:</div>
-                                <div>{{ form.departement }}</div>
+                        </div>
+                        <div class="fr-col-12 fr-col-lg-6 border-start">
+                            <p class="fs-5 text-muted mb-0">Type de territoire:</p>
+                            <div class="ps-0 form-check form-switch mb-0">
+                                {{ form.search_commune }}
+                                <label class="form-check-label fs-5 text-muted" for="id_search_commune">une commune</label>
                             </div>
-                            {% endif %}
-                            {% if form.cleaned_data.departement %}
-                            <div class="d-flex justify-content-between">
-                                <div>EPCI:</div>
-                                <div>{{ form.epci }}</div>
+                            <div class="ps-0 form-check form-switch mb-0">
+                                {{ form.search_epci }}
+                                <label class="form-check-label fs-5 text-muted" for="id_search_epci">un EPCI</label>
                             </div>
-                            {% endif %}
-                        </div>
-                    </div>
-                    <div class="fr-col-12 fr-col-lg-6 border-start">
-                        <p class="fs-5 text-muted mb-0">Type de territoire:</p>
-                        <div class="ps-0 form-check form-switch mb-0">
-                            {{ form.search_commune }}
-                            <label class="form-check-label fs-5 text-muted" for="id_search_commune">une commune</label>
-                        </div>
-                        <div class="ps-0 form-check form-switch mb-0">
-                            {{ form.search_epci }}
-                            <label class="form-check-label fs-5 text-muted" for="id_search_epci">un EPCI</label>
-                        </div>
-                        <div class="ps-0 form-check form-switch mb-0">
-                            {{ form.search_scot }}
-                            <label class="form-check-label fs-5 text-muted" for="id_search_scot">un SCoT</label>
-                        </div>
-                        <div class="ps-0 form-check form-switch mb-0">
-                            {{ form.search_departement }}
-                            <label class="form-check-label fs-5 text-muted" for="id_search_departement">un département</label>
-                        </div>
-                        <div class="ps-0 form-check form-switch">
-                            {{ form.search_region }}
-                            <label class="form-check-label fs-5 text-muted" for="id_search_region">une région</label>
+                            <div class="ps-0 form-check form-switch mb-0">
+                                {{ form.search_scot }}
+                                <label class="form-check-label fs-5 text-muted" for="id_search_scot">un SCoT</label>
+                            </div>
+                            <div class="ps-0 form-check form-switch mb-0">
+                                {{ form.search_departement }}
+                                <label class="form-check-label fs-5 text-muted" for="id_search_departement">un département</label>
+                            </div>
+                            <div class="ps-0 form-check form-switch">
+                                {{ form.search_region }}
+                                <label class="form-check-label fs-5 text-muted" for="id_search_region">une région</label>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </form>
+            </form>
 
-        {% if results %}
-        <h3 class="my-5">Résultats</h3>
+            {% if results %}
+            <h3 class="my-5">Résultats</h3>
 
-        <div class="accordion" id="results-panel">
-            {% for land, data in results.items %}
-            <div class="accordion-item">
-              <h2 class="accordion-header" id="{{ land }}-heading">
+            <div class="accordion" id="results-panel">
+                {% for land, data in results.items %}
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="{{ land }}-heading">
 
-                <button class="accordion-button{% if not data %} collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#{{ land }}-collapse" aria-expanded="{% if data %}true{% else %}false{% endif %}" aria-controls="{{ land }}-collapse" {% if not data %} disabled{% endif %}>
-                    <span class="badge bg-light float-end text-dark me-5">{{ data|length }}</span> {{ land }}
-                </button>
-              </h2>
-              <div id="{{ land }}-collapse" class="accordion-collapse collapse{% if data %} show{% endif %}" aria-labelledby="{{ land }}-heading">
-                <div class="accordion-body">
-                    {% for result in data %}
-                    <div class="position-relative">
-                        <a href="#" class="stretched-link" public-key="{{ result.public_key }}">
-                            {{ result.name }} {% if result.insee %}({{ result.insee }}){% endif %}
-                        </a>
+                    <button class="accordion-button{% if not data %} collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#{{ land }}-collapse" aria-expanded="{% if data %}true{% else %}false{% endif %}" aria-controls="{{ land }}-collapse" {% if not data %} disabled{% endif %}>
+                        <span class="badge bg-light float-end text-dark me-5">{{ data|length }}</span> {{ land }}
+                    </button>
+                    </h2>
+                    <div id="{{ land }}-collapse" class="accordion-collapse collapse{% if data %} show{% endif %}" aria-labelledby="{{ land }}-heading">
+                    <div class="accordion-body">
+                        {% for result in data %}
+                        <div class="position-relative">
+                            <a href="#" class="stretched-link" public-key="{{ result.public_key }}">
+                                {{ result.name }} {% if result.insee %}({{ result.insee }}){% endif %}
+                            </a>
+                        </div>
+                    {% endfor %}
                     </div>
+                    </div>
+                </div>
                 {% endfor %}
-                </div>
-              </div>
             </div>
-            {% endfor %}
+            {% endif %}
         </div>
-        {% endif %}
-
     </div>
 </div>
 {% endblock content %}
