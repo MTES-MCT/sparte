@@ -8,83 +8,114 @@ Mes diagnostics
 {% endblock pagetitle %}
 
 {% block content %}
-<div class="px-4">
-    <div class="fr-container">
-        <div class="d-flex justify-content-between align-items-center fr-mb-2w">
-            <h1>Mes diagnostics</h1>
-            <div class="fr-search-bar" id="header-search" role="search">
-                <input class="fr-input" placeholder="Rechercher" type="search" id="filter-diagnostic-list-input">
-                <button class="fr-btn" title="Rechercher"></button>
-             </div>
-        </div>
+<div class="fr-container">
+    <div class="d-flex justify-content-between align-items-center fr-mb-2w">
+        <h1>Mes diagnostics</h1>
+        <div class="fr-search-bar" id="header-search" role="search">
+            <input class="fr-input" placeholder="Rechercher" type="search" id="filter-diagnostic-list-input">
+            <button class="fr-btn" title="Rechercher"></button>
+         </div>
     </div>
-
-    <div class="fr-container">
-        <div class="fr-grid-row fr-grid-row--gutters">
-            {% for project in projects %}
-            <div class="fr-col-12 fr-col-md-12 diagnostic-list-item">
-                <div class="fr-card fr-card--horizontal fr-card--horizontal-tier">
-                    <div class="fr-card__body">
-                        <div class="fr-card__content">
-                            <div class="fr-card__title d-flex justify-content-between align-items-start">
-                                <h3 class="diagnostic-list-item-key" data-key="{{ project.name }}">
-                                    {{ project.name }}
-                                </h3>
-                                <a href="{% url 'project:delete' project.pk %}" class="fr-link--text-decoration-none">
-                                    <button class="fr-btn fr-btn--sm fr-icon-delete-line fr-btn--tertiary-no-outline text-danger" title="Supprimer le diagnostic"></button>
-                                </a>
-                            </div>
-                            <div class="fr-card__end">
-                                <ul class="fr-tags-group">
-                                    <li>
-                                        <p class="fr-tag fr-tag--sm">Surface du territoire:&nbsp;<strong>{{ project.area|floatformat:0 }} ha</strong></p>
-                                    </li>
-                                    <li>
-                                        <p class="fr-tag fr-tag--sm">Période demandée:&nbsp;<strong>De {{ project.analyse_start_date }} à {{ project.analyse_end_date }}</strong></p>
-                                    </li>
-                                    <li>
-                                        <p class="fr-tag fr-tag--sm">Maille d'analyse:&nbsp;<strong>{{ project.level_label }}</strong></p>
-                                    </li>
-                                    {% if project.has_complete_uniform_ocsge_coverage %}
-                                    <li>
-                                        <p class="fr-tag fr-tag--sm fr-tag--success"><strong>OCS GE</strong><span class="fr-icon-success-fill fr-icon--sm fr-ml-1v" aria-hidden="true"></span></p>
-                                    </li>
-                                    {% endif %}
-                                </ul>
-                            </div>
+    <div class="fr-grid-row fr-grid-row--gutters">
+        {% for project in projects %}
+        <div class="fr-col-12 fr-col-md-12 diagnostic-list-item">
+            <div class="fr-card fr-card--horizontal fr-card--horizontal-tier">
+                <div class="fr-card__body">
+                    <div class="fr-card__content">
+                        <div class="fr-card__title d-flex justify-content-between align-items-start">
+                            <h3 class="diagnostic-list-item-key" data-key="{{ project.name }}">
+                                {{ project.name }}
+                            </h3>
+                            <a href="{% url 'project:delete' project.pk %}" class="fr-link--text-decoration-none">
+                                <button class="fr-btn fr-btn--sm fr-icon-delete-line fr-btn--tertiary-no-outline text-danger" title="Supprimer le diagnostic"></button>
+                            </a>
                         </div>
-                        <div class="fr-card__footer">
-                            <div class="d-flex">
-                                <a href="{% url 'project:home' project.id %}" class="fr-mr-2w fr-link--text-decoration-none">
-                                    <button class="fr-btn fr-btn--secondary fr-btn--icon-right fr-icon-arrow-right-line">
-                                        Diagnostic
-                                    </button>
-                                </a>
-
-                                <a href="{% url 'project:report_target_2031' project.id %}" class="fr-link--text-decoration-none">
-                                    <button class="fr-btn fr-btn--secondary fr-btn--icon-right fr-icon-arrow-right-line">
-                                        Simuler une trajectoire
-                                    </button>
-                                </a>
-                            </div>
+                        <div class="fr-card__end">
+                            <ul class="fr-tags-group">
+                                <li>
+                                    <p class="fr-tag fr-tag--sm">Surface du territoire:&nbsp;<strong>{{ project.area|floatformat:0 }} ha</strong></p>
+                                </li>
+                                <li>
+                                    <p class="fr-tag fr-tag--sm">Période demandée:&nbsp;<strong>De {{ project.analyse_start_date }} à {{ project.analyse_end_date }}</strong></p>
+                                </li>
+                                <li>
+                                    <p class="fr-tag fr-tag--sm">Maille d'analyse:&nbsp;<strong>{{ project.level_label }}</strong></p>
+                                </li>
+                                {% if project.has_complete_uniform_ocsge_coverage %}
+                                <li>
+                                    <p class="fr-tag fr-tag--sm fr-tag--success"><strong>OCS GE</strong><span class="fr-icon-success-fill fr-icon--sm fr-ml-1v" aria-hidden="true"></span></p>
+                                </li>
+                                {% endif %}
+                            </ul>
                         </div>
                     </div>
-                    <div class="fr-card__header">
-                        <div class="fr-card__img">
-                            {% if project.cover_image %}
-                            <img  class="fr-responsive-img" src="{{ project.cover_image.url }}" alt="Couverture diagnostic">
-                            {% else %}
-                            <div class="skeleton-loader"></div>
-                            {% endif %}
+                    <div class="fr-card__footer">
+                        <div class="d-flex">
+                            <a href="{% url 'project:home' project.id %}" class="fr-mr-2w fr-link--text-decoration-none">
+                                <button class="fr-btn fr-btn--secondary fr-btn--icon-right fr-icon-arrow-right-line">
+                                    Diagnostic
+                                </button>
+                            </a>
+                            <a href="{% url 'project:report_target_2031' project.id %}" class="fr-link--text-decoration-none">
+                                <button class="fr-btn fr-btn--secondary fr-btn--icon-right fr-icon-arrow-right-line">
+                                    Simuler une trajectoire
+                                </button>
+                            </a>
                         </div>
                     </div>
                 </div>
+                <div class="fr-card__header">
+                    <div class="fr-card__img">
+                        {% if project.cover_image %}
+                        <img  class="fr-responsive-img" src="{{ project.cover_image.url }}" alt="Couverture diagnostic">
+                        {% else %}
+                        <div class="skeleton-loader"></div>
+                        {% endif %}
+                    </div>
+                </div>
             </div>
-            {% empty %}
-            <p class="text-muted">Vous n'avez aucun diagnostic.</p>
-            {% endfor %}
         </div>
-        <p id="diagnostic-list-empty-message" hidden>Il n'y a aucun diagnostic correspondant à votre recherche.</p>
+        {% empty %}
+        <p class="text-muted">Vous n'avez aucun diagnostic.</p>
+        {% endfor %}
     </div>
+    <p id="diagnostic-list-empty-message" hidden>Il n'y a aucun diagnostic correspondant à votre recherche.</p>
 </div>
 {% endblock content %}
+
+{% block bodyend %}
+<script nonce="[NONCE_PLACEHOLDER]">
+    const filterDiagnosticListInput = document.getElementById('filter-diagnostic-list-input')
+
+    if (filterDiagnosticListInput) {
+        filterDiagnosticListInput.onkeyup = () => {
+            const keyword = filterDiagnosticListInput.value.toLowerCase()
+            let elements = document.querySelectorAll('.diagnostic-list-item')
+            elements = Array.from(elements)
+
+            elements.forEach((element) => {
+                const name = element.querySelector('.diagnostic-list-item-key').dataset.key.toLowerCase()
+                if (name.indexOf(keyword) !== -1) {
+                    element.removeAttribute('hidden')
+                    element.style.visibility = 'visible'
+                }
+                else {
+                    element.setAttribute('hidden', true)
+                    element.style.visibility = 'hidden'
+                }
+            })
+
+            // Get hidden elements count
+            const emptyMessage = document.getElementById('diagnostic-list-empty-message')
+            if (elements.length === elements.filter((obj) => obj.hidden).length) {
+                emptyMessage.removeAttribute('hidden')
+                emptyMessage.style.visibility = 'visible'
+            }
+            else {
+                emptyMessage.setAttribute('hidden', true)
+                emptyMessage.style.visibility = 'hidden'
+            }
+        }
+    }
+</script>
+{% endblock bodyend %}
