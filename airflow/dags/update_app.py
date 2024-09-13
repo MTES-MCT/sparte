@@ -15,6 +15,8 @@ DEV = "dev"
 GDAL = "gdal"
 PSYCOPG = "psycopg"
 
+DEFAULT_SUBSET_GEOM_SELECT = "SELECT mpoly FROM public_ocsge.for_app_departement WHERE source_id = '75'"
+
 
 def get_database_connection_string(environment: str) -> PgConnectionString:
     return {
@@ -33,11 +35,15 @@ def copy_table_from_dw_to_app(
     from_table: str,
     to_table: str,
     environment: str,
+    use_subset: bool = False,
+    subset_where: str = None,
     btree_index_columns: list[list[str]] = None,
 ):
     ogr = ogr2ogr()
     ogr.config_options = {"PG_USE_COPY": "YES", "OGR_TRUNCATE": "NO"}
     ogr.set_input(Container().gdal_dbt_conn(), table_name=from_table)
+    if use_subset:
+        ogr.set_sql(f"SELECT * FROM {from_table} WHERE {subset_where}")
     # the option below will an id column to the table only if it does not exist
     ogr.layer_creation_options = {"FID": "id"}
 
@@ -96,6 +102,8 @@ def copy_table_from_dw_to_app(
             ],
             type="array",
         ),
+        "subset_geom": Param(default=DEFAULT_SUBSET_GEOM_SELECT, type="string"),
+        "use_subset": Param(default=False, type="boolean"),
     },
 )
 def update_app():  # noqa: C901
@@ -104,6 +112,8 @@ def update_app():  # noqa: C901
         return copy_table_from_dw_to_app(
             from_table="public_ocsge.for_app_ocsge",
             to_table="public.public_data_ocsge",
+            use_subset=context["params"]["use_subset"],
+            subset_where=f"mpoly && ({context['params']['subset_geom']})",
             environment=context["params"]["environment"],
             btree_index_columns=[
                 ["departement"],
@@ -120,6 +130,8 @@ def update_app():  # noqa: C901
         return copy_table_from_dw_to_app(
             from_table="public_ocsge.for_app_artificialarea",
             to_table="public.public_data_artificialarea",
+            use_subset=context["params"]["use_subset"],
+            subset_where=f"mpoly && ({context['params']['subset_geom']})",
             environment=context["params"]["environment"],
         )
 
@@ -218,6 +230,8 @@ def update_app():  # noqa: C901
         return copy_table_from_dw_to_app(
             from_table="public_gpu.for_app_zoneurba",
             to_table="public.public_data_zoneurba",
+            use_subset=context["params"]["use_subset"],
+            subset_where=f"mpoly && ({context['params']['subset_geom']})",
             environment=context["params"]["environment"],
             btree_index_columns=[
                 ["checksum"],
