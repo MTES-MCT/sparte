@@ -1,2 +1,4 @@
 assets/scripts
 assets/styles
+assets/types
+/node_modules
