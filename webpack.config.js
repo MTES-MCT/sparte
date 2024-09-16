@@ -134,6 +134,7 @@ const production = {
         path: path.resolve(__dirname, 'static'),
         filename: 'assets/scripts/bundle.prod.js',
     },
+    devtool: false,
     optimization: {
         minimize: true,
         minimizer: [new TerserPlugin({
