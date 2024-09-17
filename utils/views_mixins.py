@@ -55,13 +55,21 @@ class CacheMixin:
     cache_timeout = 60 * 15  # cache pour 15 minutes
 
     def should_cache(self, *args, **kwargs):
-        """Override to disable cache conditionnally"""
+        """Override to disable cache conditionally"""
         return True
 
-    def prefixer(request):
+    def prefixer(self, request):
         if request.method != "GET" or request.GET.get("no-cache"):
             return None
-        return request.get_full_path()
+        # Distinction pour les requêtes AJAX
+        if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+            return f"partial_{request.get_full_path()}"
+        return f"full_{request.get_full_path()}"
+
+    def cached_dispatch(self, request, *args, **kwargs):
+        # Utiliser la méthode de classe pour le préfixe
+        key_prefix = self.prefixer(request)
+        return cache_page(self.cache_timeout, key_prefix=key_prefix)(super().dispatch)(request, *args, **kwargs)
 
     @method_decorator(
         cache_control(
@@ -71,10 +79,6 @@ class CacheMixin:
             must_revalidate=True,
         )
     )
-    @method_decorator(cache_page(cache_timeout, key_prefix=prefixer))
-    def cached_dispatch(self, request, *args, **kwargs):
-        return super().dispatch(request, *args, **kwargs)
-
     def dispatch(self, request, *args, **kwargs):
         if self.should_cache():
             return self.cached_dispatch(request, *args, **kwargs)
