@@ -126,7 +126,7 @@ class ProjectReportConsoView(ProjectReportBaseView):
                 "diagnostic": project,
                 "total_surface": project.area,
                 "conso_period": conso_period,
-                "nb_communes": project.cities.count(),
+                "is_commune": project.land_type == AdminRef.COMMUNE,
                 # charts
                 "determinant_per_year_chart": det_chart,
                 "determinant_pie_chart": det_pie_chart,
@@ -290,19 +290,30 @@ class ProjectReportArtifView(ProjectReportBaseView):
     def get_context_data(self, **kwargs):
         project: Project = self.get_object()
         total_surface = project.area
-
-        # Retrieve request level of analysis
         level = self.request.GET.get("level_conso", project.level)
+        is_commune = (project.land_type == AdminRef.COMMUNE,)
 
         kwargs = {
             "land_type": project.land_type or "COMP",
             "diagnostic": project,
             "total_surface": total_surface,
+            "is_commune": is_commune,
+            "level": level,
         }
 
         if project.ocsge_coverage_status != project.OcsgeCoverageStatus.COMPLETE_UNIFORM:
             return super().get_context_data(**kwargs)
 
+        kwargs |= self.get_ocsge_context(project, total_surface)
+
+        if not is_commune:
+            kwargs |= self.get_comparison_context(project, level)
+
+        kwargs |= self.get_artif_net_table(project)
+
+        return super().get_context_data(**kwargs)
+
+    def get_ocsge_context(self, project, total_surface):
         first_millesime = project.first_year_ocsge
         last_millesime = project.last_year_ocsge
 
@@ -310,8 +321,8 @@ class ProjectReportArtifView(ProjectReportBaseView):
         rate_artif_area = round(100 * float(artif_area) / float(total_surface))
 
         chart_waterfall = charts.ArtifWaterfallChart(project)
-
         progression_time_scoped = chart_waterfall.get_series()
+
         net_artif = progression_time_scoped["net_artif"]
 
         try:
@@ -324,8 +335,6 @@ class ProjectReportArtifView(ProjectReportBaseView):
 
         table_evolution_artif = charts.AnnualArtifChart(project).get_series()
         headers_evolution_artif = table_evolution_artif["Artificialisation"].keys()
-
-        chart_comparison = charts.NetArtifComparaisonChart(project, level=level)
 
         detail_couv_artif_chart = charts.ArtifProgressionByCouvertureChart(project)
         detail_usage_artif_chart = charts.ArtifProgressionByUsageChart(project)
@@ -349,7 +358,7 @@ class ProjectReportArtifView(ProjectReportBaseView):
                     usage_row["last_millesime"] = row["surface"]
                     break
 
-        kwargs |= {
+        return {
             "first_millesime": str(first_millesime),
             "last_millesime": str(last_millesime),
             "artif_area": artif_area,
@@ -368,16 +377,16 @@ class ProjectReportArtifView(ProjectReportBaseView):
             "detail_usage_artif_chart": detail_usage_artif_chart,
             "couv_artif_sol": couv_artif_sol,
             "usage_artif_sol": usage_artif_sol,
-            "chart_comparison": chart_comparison,
-            "table_comparison": add_total_line_column(chart_comparison.get_series()),
-            "level": level,
             "chart_waterfall": chart_waterfall,
-            "nb_communes": project.cities.count(),
         }
 
-        kwargs |= self.get_artif_net_table(project)
+    def get_comparison_context(self, project, level):
+        chart_comparison = charts.NetArtifComparaisonChart(project, level=level)
 
-        return super().get_context_data(**kwargs)
+        return {
+            "chart_comparison": chart_comparison,
+            "table_comparison": add_total_line_column(chart_comparison.get_series()),
+        }
 
     def get_artif_net_table(self, project):
         qs = project.get_artif_per_maille_and_period()

@@ -217,7 +217,7 @@
     </div>
 </div>
 
-{% if nb_communes > 1 %}
+{% if not is_commune %}
 <div class="fr-mt-12w">
     <h3 id="conso-annuelle">Artificialisation nette entre {{ first_millesime }} et {{ last_millesime }}</h3>
 
@@ -566,5 +566,7 @@
 {% display_chart_data 'couv_artif_sol' couv_artif_sol CSP_NONCE %}
 {% display_chart_data 'detail_usage_artif_chart' detail_usage_artif_chart CSP_NONCE %}
 {% display_chart_data 'usage_artif_sol' usage_artif_sol CSP_NONCE %}
-{% display_chart_data 'chart_comparison' chart_comparison CSP_NONCE %}
 {% display_chart_data 'chart_waterfall' chart_waterfall CSP_NONCE %}
+{% if not is_commune %}
+    {% display_chart_data 'chart_comparison' chart_comparison CSP_NONCE %}
+{% endif %}

@@ -14,7 +14,7 @@
     <h3 id="conso-annuelle">Consommation d'espace annuelle sur le territoire</h3>
 
     <div class="fr-grid-row fr-grid-row--gutters">
-        <div class="fr-col-12{% if nb_communes > 1 %} fr-col-lg-8{% endif %}">
+        <div class="fr-col-12{% if not is_commune %} fr-col-lg-8{% endif %}">
             <div class="bg-white fr-p-2w h-100">
                 <div class="d-flex justify-content-end align-items-center fr-mb-2w">
                     {% include "project/components/widgets/chart_buttons.html" with chart="annual_total_conso_chart" %}
@@ -23,7 +23,7 @@
                 <div id="annual_total_conso_chart"></div>
             </div>
         </div>
-        {% if nb_communes > 1 %}
+        {% if not is_commune %}
         <div class="fr-col-12 fr-col-lg-4">
             {% url 'project:theme-city-conso' project.pk as dynamic_map_url %}
             {% include "project/components/widgets/static_map.html" with dynamic_map_url=dynamic_map_url src=project.theme_map_conso.url title="Carte consommation d'espaces des communes du territoire sur la période (en ha)" %}
