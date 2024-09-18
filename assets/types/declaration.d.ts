@@ -7,3 +7,5 @@ declare module '*.geojson' {
     const value: any;
     export default value;
 }
+
+declare var _paq: any;
