@@ -208,7 +208,7 @@
           <p class="fr-text--xs text-muted">(Nous intégrons sur Mon Diagnostic Artificialisation les millésimes OCS GE en version finalisée 1.1 et 2.0)</p>
         </div>
         <div class="card_content">
-          <div id="react-highcharts-ocsge"></div>
+          {% comment %} <div id="react-highcharts-ocsge"></div> {% endcomment %}
         </div>
       </div>
     </div>
@@ -220,7 +220,7 @@
 {% block tagging %}
 <script language="javascript" nonce="[NONCE_PLACEHOLDER]">
 window.onload = function(event) {
-  _paq.push(['trackEvent', 'north_star_activation_funnel', 'open_homepage', 'step_0_north_star_activation_funnel'])
+  trackEvent('north_star_activation_funnel', 'open_homepage', 'step_0_north_star_activation_funnel')
 }
 </script>
 {% endblock tagging %}

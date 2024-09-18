@@ -1,7 +1,7 @@
 import React, { memo, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '@store/store';
-import { formatDateTime } from '../../utils/formatUtils';
+import { formatDateTime } from '@utils/formatUtils';
 import styled from 'styled-components';
 import useHtmx from '@hooks/useHtmx';
 import Divider from '@components/ui/Divider';

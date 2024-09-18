@@ -141,7 +141,7 @@
 {% block tagging %}
 <script language="javascript" nonce="[NONCE_PLACEHOLDER]">
 window.onload = function(event) {
-  _paq.push(['trackEvent', 'local_report_download_funnel', 'open_home_local_report', 'local_report_home_opened'])
+  trackEvent('local_report_download_funnel', 'open_home_local_report', 'local_report_home_opened')
 }
 </script>
 {% endblock tagging %}

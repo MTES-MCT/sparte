@@ -1,9 +1,11 @@
 import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import { useGetProjectQuery } from '../../services/api';
-import { setProjectData } from '../../store/projectSlice';
 import styled from 'styled-components';
+import { useGetProjectQuery } from '@services/api';
+import { setProjectData } from '@store/projectSlice';
+import useMatomoTracking from '@hooks/useMatomoTracking';
+import usePageTitle from '@hooks/usePageTitle';
 import Footer from '@components/layout/Footer';
 import Header from '@components/layout/Header';
 import Navbar from '@components/layout/Navbar';
@@ -54,6 +56,7 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                 <>
                     <Header />
                     <Router>
+                        <TrackingWrapper />
                         <Navbar />
                         <Main>
                             <TopBar />
@@ -104,6 +107,12 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
             )}
         </>
     );
+};
+
+const TrackingWrapper: React.FC = () => {
+    usePageTitle();
+    useMatomoTracking();
+    return null; // Ce composant ne rend rien
 };
 
 export default Dashboard;

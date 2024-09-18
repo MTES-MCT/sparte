@@ -52,11 +52,11 @@
 {% block tagging %}
 <script language="javascript" nonce="[NONCE_PLACEHOLDER]">
 window.onload = function(event) {
-    _paq.push(['trackEvent', 'north_star_activation_funnel', 'open_dashboard_trajectory', 'step_3_north_star_activation_funnel'])
+    trackEvent('north_star_activation_funnel', 'open_dashboard_trajectory', 'step_3_north_star_activation_funnel')
 }
 
 document.getElementById("btn-change-objective").onclick = function() {
-    _paq.push(['trackEvent', 'north_star_activation_funnel', 'click_button_set_target_2031', 'set_target_2031_button_clicked'])
+    trackEvent('north_star_activation_funnel', 'click_button_set_target_2031', 'set_target_2031_button_clicked')
 }
 </script>
 {% endblock tagging %}

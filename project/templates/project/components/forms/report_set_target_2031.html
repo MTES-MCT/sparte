@@ -6,7 +6,7 @@
     </div>
 
     <script language="javascript" nonce="[NONCE_PLACEHOLDER]">
-        _paq.push(['trackEvent', 'north_star_activation_funnel', 'success_form_set_target_2031', 'set_target_2031_form_success'])
+        trackEvent('north_star_activation_funnel', 'success_form_set_target_2031', 'set_target_2031_form_success')
     </script>
 {% else %}
     <form hx-post="{% url 'project:set-target-2031' diagnostic.pk %}" hx-ext="disable-element" hx-disable-element="#set_target_2031_btn">
@@ -21,7 +21,7 @@
 
     <script language="javascript" nonce="[NONCE_PLACEHOLDER]">
         document.getElementById("set_target_2031_btn").onclick = function() {
-            _paq.push(['trackEvent', 'north_star_activation_funnel', 'submit_form_set_target_2031', 'set_target_2031_form_submitted'])
+            trackEvent('north_star_activation_funnel', 'submit_form_set_target_2031', 'set_target_2031_form_submitted')
         }
     </script>
 {% endif %}
