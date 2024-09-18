@@ -238,10 +238,10 @@
         if (!!e.target.id && e.target.id.startsWith('territory-')) {
             const { pathname } = window.location
             if (pathname === "/") {
-                _paq.push(['trackEvent', 'north_star_activation_funnel', 'search_territory', 'step_1_north_star_activation_funnel'])
+                trackEvent('north_star_activation_funnel', 'search_territory', 'step_1_north_star_activation_funnel')
             }
             else if (pathname === "/rapport-local") {
-                _paq.push(['trackEvent', 'local_report_download_funnel', 'search_territory', 'local_report_home_search_territory_selected'])
+                trackEvent('local_report_download_funnel', 'search_territory', 'local_report_home_search_territory_selected')
             }
 
             if (e.target.classList.contains('disabled')) {
