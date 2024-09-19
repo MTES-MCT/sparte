@@ -32,18 +32,10 @@ const levels: Record<string, string> = {
     REGION: 'Région',
 };
 
-const Container = styled.div`
-    flex-grow: 1;
-    margin: 0 2rem;
-    display: flex;
-    justify-content: end;
-`;
-
 const SearchContainer = styled.div`
     display: flex;
     align-items: center;
     width: 100%;
-    max-width: 550px;
     border: 1px solid #d5d9de;
     border-radius: 6px;
     padding: 0.5rem;
@@ -86,8 +78,8 @@ const Overlay = styled.div<{ $visible: boolean }>`
     position: fixed;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
+    width: 100vw;
+    height: 100vh;
     background: rgba(0, 0, 0, 0.2);
     z-index: 1000;
 `;
@@ -207,7 +199,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ createUrl }) => {
     };
 
     return (
-        <Container>
+        <>
             <Overlay $visible={isFocused} />
             <SearchContainer>
                 <Icon className="bi bi-search" />
@@ -245,7 +237,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ createUrl }) => {
                 </ResultsContainer>
                 )}
             </SearchContainer>
-        </Container>
+        </>
     );
 };
 
