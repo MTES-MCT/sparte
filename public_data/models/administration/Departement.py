@@ -1,5 +1,6 @@
 from django.contrib.gis.db import models
 from django.contrib.postgres.fields import ArrayField
+from django.contrib.postgres.search import TrigramSimilarity
 
 from public_data.models.cerema import Cerema
 from public_data.models.enums import SRID
@@ -47,10 +48,13 @@ class Departement(LandMixin, GetDataFromCeremaMixin, models.Model):
 
     @classmethod
     def search(cls, needle, region=None, departement=None, epci=None):
-        qs = cls.objects.filter(name__unaccent__trigram_word_similar=needle)
+        qs = cls.objects.annotate(similarity=TrigramSimilarity("name", needle))
+        qs = qs.filter(similarity__gt=0.15)  # Filtrer par un score minimum de similarité
+        qs = qs.order_by("-similarity")  # Trier par score décroissant
+
         if region:
             qs = qs.filter(region=region)
         if departement:
             qs = qs.filter(id=departement.id)
-        qs = qs.order_by("name")
+
         return qs
