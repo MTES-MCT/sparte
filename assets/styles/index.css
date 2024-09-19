@@ -14,6 +14,14 @@ Header logo
 }
 
 /*
+Header search
+*/
+.search-bar-no-home {
+    flex-grow: 1;
+    max-width: 550px;
+}
+
+/*
 Custom tag icon
 */
 .custom-tag-icon {
