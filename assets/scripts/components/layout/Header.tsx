@@ -58,6 +58,20 @@ const LogoLink = styled.a`
     text-decoration: none;
 `;
 
+const ButtonContainer = styled.div`
+    display: flex;
+    flex-grow: 1;
+    justify-content: end;
+`;
+
+const SearchBarContainer = styled.div`
+    flex-grow: 1;
+    margin: 0 2rem;
+    display: flex;
+    justify-content: end;
+    max-width: 550px;
+`;
+
 const NavLinks = styled.nav`
     display: flex;
     align-items: center;
@@ -125,19 +139,23 @@ const Header = () => {
                     )
                 ))}
             </LogoContainer>
-            <SearchBar createUrl={data?.search.createUrl} />
-            <NavLinks>
-                {data?.menuItems.map((item) => (
-                    <NavLink
-                        key={item.label}
-                        href={item.url}
-                        target={item.target}
-                        rel={item.target === "_blank" ? "noopener noreferrer" : undefined}
-                    >
-                        {item.label}
-                    </NavLink>
-                ))}
-            </NavLinks>
+            <ButtonContainer>
+                <SearchBarContainer>
+                    <SearchBar createUrl={data?.search.createUrl} />
+                </SearchBarContainer>
+                <NavLinks>
+                    {data?.menuItems.map((item) => (
+                        <NavLink
+                            key={item.label}
+                            href={item.url}
+                            target={item.target}
+                            rel={item.target === "_blank" ? "noopener noreferrer" : undefined}
+                        >
+                            {item.label}
+                        </NavLink>
+                    ))}
+                </NavLinks>
+            </ButtonContainer>
         </HeaderContainer>
     );
 };
