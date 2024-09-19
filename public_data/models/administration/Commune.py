@@ -1,4 +1,5 @@
 from django.contrib.gis.db import models
+from django.contrib.postgres.search import TrigramSimilarity
 from django.core.validators import MaxValueValidator, MinValueValidator
 
 from public_data.models.cerema import Cerema
@@ -86,11 +87,13 @@ class Commune(DataColorationMixin, LandMixin, GetDataFromCeremaMixin, models.Mod
 
     @classmethod
     def search(cls, needle, region=None, departement=None, epci=None):
+        qs = cls.objects.annotate(similarity=TrigramSimilarity("name", needle))
+
         if needle.isdigit():
             qs = cls.objects.filter(insee__icontains=needle)
         else:
-            qs = cls.objects.all()
-            qs = qs.filter(name__unaccent__trigram_word_similar=needle)
+            qs = qs.filter(similarity__gt=0.2)  # Filtrer par un score minimum de similarité
+            qs = qs.order_by("-similarity")  # Trier par score décroissant
 
         if region:
             qs = qs.filter(departement__region=region)
@@ -98,7 +101,7 @@ class Commune(DataColorationMixin, LandMixin, GetDataFromCeremaMixin, models.Mod
             qs = qs.filter(departement=departement)
         if epci:
             qs = qs.filter(epci=epci)
-        qs = qs.order_by("name")
+
         return qs
 
     @classmethod
