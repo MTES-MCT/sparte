@@ -569,7 +569,32 @@ class Project(BaseProject):
 
     @property
     def has_zonage_urbanisme(self) -> bool:
-        return ArtifAreaZoneUrba.objects.filter(zone_urba__mpoly__intersects=self.combined_emprise).exists()
+        """
+        Cette fonction vérifie si l'emprise du diagnostic intersecte
+        des zonages d'urbanisme. Pour effectuer cette vérification,
+        on commence par sélectionner les zonages avec ST_Intersects,
+        puis on vérifie que le point central de chaque zone est
+        bien dans l'emprise du diagnostic. Cette vérification est
+        nécessaire car la méthode ST_Intersects peut retourner des
+        zones qui intersectent très légèrement l'emprise du projet
+        sur un bord.
+        """
+        zone_urbas_intersecting = ArtifAreaZoneUrba.objects.filter(
+            zone_urba__mpoly__intersects=self.combined_emprise,
+        ).values_list("zone_urba")
+
+        return (
+            ZoneUrba.objects.filter(
+                checksum__in=zone_urbas_intersecting,
+            )
+            .annotate(
+                point_on_surface=PointOnSurface("mpoly"),
+            )
+            .filter(
+                point_on_surface__intersects=self.combined_emprise,
+            )
+            .exists()
+        )
 
     def get_ocsge_millesimes(self):
         """Return all OCS GE millésimes available within project cities and between
