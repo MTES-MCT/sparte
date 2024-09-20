@@ -87,6 +87,7 @@ const ResultItem = styled.div<{ $disabled: boolean }>`
     font-size: 0.9em;
     cursor: ${({ $disabled }) => ($disabled ? 'not-allowed' : 'pointer')};
     transition: background 0.3s ease, color 0.3s ease;
+    color: ${primaryColor};
 
     &:not(:last-child) {
         border-bottom: 1px solid #EBEBEC;
@@ -102,7 +103,7 @@ const TerritoryTitle = styled.div`
     display: flex;
     align-otems: center;
     justify-content: space-between;
-    color: ${primaryColor};
+    font-weight: 500;
 `;
 
 const TerritoryDetails = styled.div`
@@ -139,18 +140,22 @@ const SearchBar: React.FC<SearchBarProps> = ({ createUrl }) => {
     const [isFocused, setIsFocused] = useState<boolean>(false);
     const [data, setData] = useState<Territory[] | undefined>(undefined);
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-    const debouncedQuery = useDebounce(query, 300);
-    const { data: queryData, isLoading } = useSearchTerritoryQuery(debouncedQuery, {
+    const debouncedQuery = useDebounce(query, 500);
+    const { data: queryData, isFetching } = useSearchTerritoryQuery(debouncedQuery, {
         skip: debouncedQuery.length < 2,
     });
 
     useEffect(() => {
-        if (debouncedQuery.length >= 2) {
-            setData(queryData);
-        } else {
+        if (isFetching) {
             setData(undefined);
         }
-    }, [queryData, debouncedQuery]);
+    
+        if (!isFetching && debouncedQuery.length >= 2) {
+            setData(queryData);
+        } else if (!isFetching) {
+            setData(undefined);
+        }
+    }, [isFetching, queryData, debouncedQuery]);
 
     const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
         const newQuery = event.target.value;
@@ -163,21 +168,6 @@ const SearchBar: React.FC<SearchBarProps> = ({ createUrl }) => {
             setIsFocused(false);
             setData(undefined);
         }, 150);
-    };
-
-    const highlightMatch = (text: string, query: string) => {
-        if (!query) return text;
-
-        const parts = text.split(new RegExp(`(${query})`, 'gi'));
-        return parts.map((part, index) => {
-            const key = `${part}-${index}`;
-    
-            return part.toLowerCase() === query.toLowerCase() ? (
-                <HighlightedText key={key}>{part}</HighlightedText>
-            ) : (
-                part
-            );
-        });
     };
 
     // Solution temporaire
@@ -229,7 +219,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ createUrl }) => {
                     placeholder="Rechercher un territoire (Commune, EPCI, Département, Région...)"
                     aria-label="Rechercher un territoire"
                 />
-                {isLoading && <Loader size={25} wrap={false} />}
+                {isFetching && <Loader size={25} wrap={false} />}
                 {data && (
                     <ResultsContainer>
                         {data.length > 0 ? (
@@ -243,7 +233,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ createUrl }) => {
                                     >
                                         <div>
                                             <TerritoryTitle>
-                                                <div>{highlightMatch(territory.name, query)}</div>
+                                                <div>{territory.name}</div>
                                                 <Badge className="fr-badge">{territoryLabels[territory.land_type]}</Badge>
                                             </TerritoryTitle>
                                             <TerritoryDetails>
