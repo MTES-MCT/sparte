@@ -27,12 +27,14 @@
 
 {% block tagging %}
 <script language="javascript" nonce="[NONCE_PLACEHOLDER]">
-    $( window ).on('load', function () {
-        // Google adwords
-        gtag('event', 'conversion', {
-            'send_to': 'AW-11157347812/iZaJCM7iz6kYEOS7nsgp',
-            'value': 5.0,
-        });
-    })
+    window.onload = function() {
+        if (typeof gtag !== 'undefined') {
+            // Google adwords
+            gtag('event', 'conversion', {
+                'send_to': 'AW-11157347812/iZaJCM7iz6kYEOS7nsgp',
+                'value': 5.0,
+            });
+        }
+    }
 </script>
 {% endblock tagging %}
