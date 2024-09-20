@@ -1,8 +1,8 @@
 import React, { useEffect, ChangeEvent, useState } from 'react';
 import styled from 'styled-components';
-import { useSearchTerritoryQuery } from '../../services/api';
+import { useSearchTerritoryQuery } from '@services/api';
 import useDebounce from '@hooks/useDebounce';
-import getCsrfToken from '@utils/csrf'
+import getCsrfToken from '@utils/csrf';
 import Loader from '@components/ui/Loader';
 
 interface SearchBarProps {
@@ -14,23 +14,21 @@ export interface Territory {
     name: string;
     source_id: string;
     public_key: string;
+    area: number;
+    land_type: string;
 }
 
-export interface SearchTerritoryResponse {
-    COMM: Territory[];
-    EPCI: Territory[];
-    SCOT: Territory[];
-    DEPART: Territory[];
-    REGION: Territory[];
-}
-
-const levels: Record<string, string> = {
+const territoryLabels: Record<string, string> = {
     COMM: 'Commune',
     EPCI: 'EPCI',
     SCOT: 'SCOT',
     DEPART: 'Département',
     REGION: 'Région',
 };
+
+const primaryColor = '#313178';
+const activeColor = '#4318FF';
+const secondaryColor = '#a1a1f8';
 
 const SearchContainer = styled.div`
     display: flex;
@@ -45,7 +43,7 @@ const SearchContainer = styled.div`
 `;
 
 const Icon = styled.i`
-    color: #000091;
+    color: ${primaryColor};
     margin: 0 0.5rem;
 `;
 
@@ -53,7 +51,7 @@ const Input = styled.input`
     flex-grow: 1;
     border: none;
     font-size: 0.9em;
-    color: #000091;
+    color: ${primaryColor};
 
     &:focus {
         outline: none;
@@ -84,43 +82,55 @@ const Overlay = styled.div<{ $visible: boolean }>`
     z-index: 1000;
 `;
 
-const CategoryTitle = styled.div`
-    margin: 0;
-    padding: 0.5rem;
-    font-size: 1em;
-    font-weight: 500;
-    background: #f4f7fe;
-    border-bottom: 1px solid #EEF2F7;
-`;
-
 const ResultItem = styled.div`
     padding: 0.5rem;
     font-size: 0.9em;
     cursor: pointer;
-    transition: background .3s ease, color .3s ease;
+    transition: background 0.3s ease, color 0.3s ease;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+
+    &:not(:last-child) {
+        border-bottom: 1px solid #EBEBEC;
+    }
 
     &:hover {
         background: #f4f7fe;
-        color: #4318FF;
+        color: ${activeColor};
     }
 `;
+
+const TerritoryDetails = styled.div`
+    font-size:  0.8em;
+    color: ${secondaryColor};
+`;
+
+const Badge = styled.p`
+    font-size:  0.8em;
+    font-weight: 400;
+    background: #e3e3fd;
+    color: ${primaryColor};
+    text-transform: none;
+`;
+
 
 const NoResultsMessage = styled.div`
     padding: 0.5rem;
     font-size: 0.9em;
-    color: #A3AED0;
+    color: ${secondaryColor};
     text-align: center;
 `;
 
 const HighlightedText = styled.span`
     font-weight: bold;
-    color: #4318FF;
+    color: ${activeColor};
 `;
 
 const SearchBar: React.FC<SearchBarProps> = ({ createUrl }) => {
     const [query, setQuery] = useState<string>('');
     const [isFocused, setIsFocused] = useState<boolean>(false);
-    const [data, setData] = useState<SearchTerritoryResponse | undefined>(undefined);
+    const [data, setData] = useState<Territory[] | undefined>(undefined);
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
     const debouncedQuery = useDebounce(query, 300);
     const { data: queryData, isLoading } = useSearchTerritoryQuery(debouncedQuery, {
@@ -141,11 +151,11 @@ const SearchBar: React.FC<SearchBarProps> = ({ createUrl }) => {
     };
 
     const handleBlur = () => {
-        setTimeout(() => {
-            setQuery('');
-            setIsFocused(false);
-            setData(undefined);
-        }, 150);
+        // setTimeout(() => {
+        //     setQuery('');
+        //     setIsFocused(false);
+        //     setData(undefined);
+        // }, 150);
     };
 
     const highlightMatch = (text: string, query: string) => {
@@ -215,26 +225,25 @@ const SearchBar: React.FC<SearchBarProps> = ({ createUrl }) => {
                 {isLoading && <Loader size={25} wrap={false} />}
                 {data && (
                     <ResultsContainer>
-                        {['COMM', 'EPCI', 'SCOT', 'DEPART', 'REGION'].map((category) => {
-                            const territories = data[category as keyof SearchTerritoryResponse] || [];
-                            return territories.length > 0 ? (
-                                <div key={category}>
-                                    <CategoryTitle>{levels[category]}</CategoryTitle>
-                                    {territories.map((territory: Territory) => (
-                                        <ResultItem
-                                            key={territory.id}
-                                            onClick={() => createDiagnostic(territory.public_key)}
-                                        >
-                                            {highlightMatch(territory.name, query)}
-                                        </ResultItem>
-                                    ))}
-                                </div>
-                            ) : null;
-                        })}
-                        {Object.values(data).every(category => (category as Territory[]).length === 0) && (
-                            <NoResultsMessage>Aucun résultat trouvé pour votre recherche.</NoResultsMessage>
+                        {data.length > 0 ? (
+                            data.map((territory: Territory) => (
+                                <ResultItem
+                                    key={territory.id}
+                                    onClick={() => createDiagnostic(territory.public_key)}
+                                >
+                                    <div>
+                                        <div>{highlightMatch(territory.name, query)}</div>
+                                        <TerritoryDetails>Code INSEE: {territory.source_id}</TerritoryDetails>
+                                    </div>
+                                    <Badge className="fr-badge">{territoryLabels[territory.land_type]}</Badge>
+                                </ResultItem>
+                            ))
+                        ) : (
+                            <NoResultsMessage>
+                                Aucun résultat trouvé pour votre recherche.
+                            </NoResultsMessage>
                         )}
-                </ResultsContainer>
+                    </ResultsContainer>
                 )}
             </SearchContainer>
         </>
