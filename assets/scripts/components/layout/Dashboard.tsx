@@ -20,6 +20,7 @@ import Trajectoires from '@components/pages/Trajectoires';
 import RapportLocal from '@components/pages/RapportLocal';
 import Update from '@components/pages/Update';
 import OcsgeStatus from '@components/widgets/OcsgeStatus';
+import GpuStatus from '@components/widgets/GpuStatus';
 
 interface DashboardProps {
     projectId: string;
@@ -88,7 +89,21 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                     />
                                     <Route
                                         path="/project/:projectId/tableau-de-bord/zonages-d-urbanisme"
-                                        element={data.ocsge_coverage_status === "COMPLETE_UNIFORM" ? <Gpu /> : <OcsgeStatus status={data.ocsge_coverage_status} />}
+                                        element={
+                                            <>
+                                                {data.ocsge_coverage_status === "COMPLETE_UNIFORM" && data.has_zonage_urbanisme && (
+                                                    <Gpu />
+                                                )}
+                                                {(data.ocsge_coverage_status !== "COMPLETE_UNIFORM" || !data.has_zonage_urbanisme) && (
+                                                    <>
+                                                        {data.ocsge_coverage_status !== "COMPLETE_UNIFORM" && (
+                                                            <OcsgeStatus status={data.ocsge_coverage_status} />
+                                                        )}
+                                                        {!data.has_zonage_urbanisme && <GpuStatus />}
+                                                    </>
+                                                )}
+                                            </>
+                                        }
                                     />
                                     <Route
                                         path="/project/:projectId/tableau-de-bord/rapport-local"
