@@ -10,9 +10,10 @@ import SearchBar from '@components/widgets/SearchBar'
 const searchBar = document.getElementById('react-search-bar')
 if (searchBar)
 {
+  const createUrl = searchBar.dataset.createUrl;
   createRoot(searchBar).render(
     <Provider store={store}>
-      <SearchBar createUrl=""/>
+      <SearchBar createUrl={createUrl}/>
     </Provider>,
   )
 }
