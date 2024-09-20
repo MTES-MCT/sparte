@@ -29,7 +29,7 @@
                 <div class="fr-header__tools">
                     <div class="fr-header__tools-links">
                         {% if request.resolver_match.url_name not in 'home,create,home_rapport_local' %}
-                            <div id="react-search-bar" class="search-bar-no-home d-none d-lg-block"></div>
+                            <div id="react-search-bar" class="search-bar-no-home d-none d-lg-block" data-create-url="{% url 'project:create' %}"></div>
                         {% endif %}
                         <ul class="fr-btns-group">
                             {% if request.resolver_match.url_name not in 'home,create,home_rapport_local' %}
