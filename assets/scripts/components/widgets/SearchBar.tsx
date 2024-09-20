@@ -82,14 +82,11 @@ const Overlay = styled.div<{ $visible: boolean }>`
     z-index: 1000;
 `;
 
-const ResultItem = styled.div`
+const ResultItem = styled.div<{ $disabled: boolean }>`
     padding: 0.5rem;
     font-size: 0.9em;
-    cursor: pointer;
+    cursor: ${({ $disabled }) => ($disabled ? 'not-allowed' : 'pointer')};
     transition: background 0.3s ease, color 0.3s ease;
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
 
     &:not(:last-child) {
         border-bottom: 1px solid #EBEBEC;
@@ -101,9 +98,19 @@ const ResultItem = styled.div`
     }
 `;
 
+const TerritoryTitle = styled.div`
+    display: flex;
+    align-otems: center;
+    justify-content: space-between;
+    color: ${primaryColor};
+`;
+
 const TerritoryDetails = styled.div`
-    font-size:  0.8em;
+    font-size: 0.8em;
     color: ${secondaryColor};
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
 `;
 
 const Badge = styled.p`
@@ -151,11 +158,11 @@ const SearchBar: React.FC<SearchBarProps> = ({ createUrl }) => {
     };
 
     const handleBlur = () => {
-        // setTimeout(() => {
-        //     setQuery('');
-        //     setIsFocused(false);
-        //     setData(undefined);
-        // }, 150);
+        setTimeout(() => {
+            setQuery('');
+            setIsFocused(false);
+            setData(undefined);
+        }, 150);
     };
 
     const highlightMatch = (text: string, query: string) => {
@@ -174,8 +181,8 @@ const SearchBar: React.FC<SearchBarProps> = ({ createUrl }) => {
     };
 
     // Solution temporaire
-    const createDiagnostic = (publicKey: string) => {
-        if (isSubmitting) return;
+    const createDiagnostic = (publicKey: string, disabled: boolean) => {
+        if (isSubmitting || disabled) return;
     
         setIsSubmitting(true);
     
@@ -226,18 +233,29 @@ const SearchBar: React.FC<SearchBarProps> = ({ createUrl }) => {
                 {data && (
                     <ResultsContainer>
                         {data.length > 0 ? (
-                            data.map((territory: Territory) => (
-                                <ResultItem
-                                    key={territory.id}
-                                    onClick={() => createDiagnostic(territory.public_key)}
-                                >
-                                    <div>
-                                        <div>{highlightMatch(territory.name, query)}</div>
-                                        <TerritoryDetails>Code INSEE: {territory.source_id}</TerritoryDetails>
-                                    </div>
-                                    <Badge className="fr-badge">{territoryLabels[territory.land_type]}</Badge>
-                                </ResultItem>
-                            ))
+                            data.map((territory: Territory) => {
+                                const isDisabled = territory.area === 0;
+                                return (
+                                    <ResultItem
+                                        key={territory.id}
+                                        $disabled={isDisabled}
+                                        onClick={() => createDiagnostic(territory.public_key, isDisabled)}
+                                    >
+                                        <div>
+                                            <TerritoryTitle>
+                                                <div>{highlightMatch(territory.name, query)}</div>
+                                                <Badge className="fr-badge">{territoryLabels[territory.land_type]}</Badge>
+                                            </TerritoryTitle>
+                                            <TerritoryDetails>
+                                                <div>Code INSEE: {territory.source_id}</div>
+                                                {isDisabled && 
+                                                    <div><i className="bi bi-info-circle fr-mr-1w"></i>Données indisponibles: Territoire supprimé en 2024</div>
+                                                 }
+                                            </TerritoryDetails>
+                                        </div>
+                                    </ResultItem>
+                                );
+                            })
                         ) : (
                             <NoResultsMessage>
                                 Aucun résultat trouvé pour votre recherche.
