@@ -49,7 +49,7 @@ const Consommation: React.FC = () => {
     if (error) return <div>Erreur : {error}</div>;
       
     return (
-        <div className="fr-container--fluid fr-p-3w" ref={htmxRef}>
+        <div className="fr-container--fluid fr-p-3w w-100" ref={htmxRef}>
             <div className="fr-grid-row fr-grid-row--gutters">
                 <div className="fr-col-12">
                     <PageTitle title="Consommation d'espaces NAF"/>
