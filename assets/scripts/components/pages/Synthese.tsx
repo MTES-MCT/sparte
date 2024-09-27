@@ -13,7 +13,7 @@ const Synthese: React.FC = () => {
     if (error) return <div>Erreur : {error}</div>;
 
     return (
-        <div className="fr-container--fluid fr-p-3w">
+        <div className="fr-container--fluid fr-p-3w w-100">
             <div className="fr-grid-row fr-grid-row--gutters">
                 <div className="fr-col-12">
                     <PageTitle title="Synthèse" />
