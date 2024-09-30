@@ -1,6 +1,7 @@
 from django.contrib.gis.db import models
 from django.contrib.postgres.search import TrigramSimilarity
 from django.core.validators import MaxValueValidator, MinValueValidator
+from django.db.models.functions import Lower
 
 from public_data.models.cerema import Cerema
 from public_data.models.enums import SRID
@@ -87,7 +88,7 @@ class Commune(DataColorationMixin, LandMixin, GetDataFromCeremaMixin, models.Mod
 
     @classmethod
     def search(cls, needle, region=None, departement=None, epci=None):
-        qs = cls.objects.annotate(similarity=TrigramSimilarity("name", needle))
+        qs = cls.objects.annotate(similarity=TrigramSimilarity(Lower("name__unaccent"), needle.lower()))
 
         if needle.isdigit():
             qs = cls.objects.filter(insee__icontains=needle)
