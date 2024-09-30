@@ -5,6 +5,7 @@ from simple_history.models import HistoricalRecords
 
 from project.models import Project
 from users.models import User
+from utils.validators import is_alpha_validator
 
 
 def upload_in_project_folder(request: "Request", filename: str) -> str:
@@ -18,14 +19,15 @@ class RequestedDocumentChoices(models.TextChoices):
 
 
 class Request(models.Model):
-    first_name = models.CharField("Prénom", max_length=150)
-    last_name = models.CharField("Nom", max_length=150)
-    function = models.CharField("Fonction", max_length=250, null=True)
+    first_name = models.CharField("Prénom", max_length=150, validators=[is_alpha_validator], null=True)
+    last_name = models.CharField("Nom", max_length=150, validators=[is_alpha_validator], null=True)
+    function = models.CharField("Fonction", max_length=250, validators=[is_alpha_validator], null=True)
     organism = models.CharField(
         "Organisme",
         max_length=30,
         choices=User.ORGANISMS.choices,
         default=User.ORGANISMS.COMMUNE,
+        validators=[is_alpha_validator],
     )
     email = models.EmailField("E-mail")
     project = models.ForeignKey(Project, on_delete=models.SET_NULL, verbose_name="Projet", blank=True, null=True)
@@ -41,9 +43,7 @@ class Request(models.Model):
     sent_date = models.DateTimeField("date d'envoi", null=True, blank=True)
     done = models.BooleanField("A été envoyé ?", default=False)
     requested_document = models.CharField(
-        "Document demandé",
-        max_length=30,
-        choices=RequestedDocumentChoices.choices,
+        "Document demandé", max_length=30, choices=RequestedDocumentChoices.choices, validators=[is_alpha_validator]
     )
     sent_file = models.FileField(upload_to=upload_in_project_folder, null=True, blank=True)
     history = HistoricalRecords()
