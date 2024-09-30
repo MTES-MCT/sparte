@@ -141,21 +141,19 @@ const SearchBar: React.FC<SearchBarProps> = ({ createUrl }) => {
     const [data, setData] = useState<Territory[] | undefined>(undefined);
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
     const debouncedQuery = useDebounce(query, 500);
+    const minimumCharCountForSearch = 2;
+    const shouldQueryBeSkipped = debouncedQuery.length < minimumCharCountForSearch;
     const { data: queryData, isFetching } = useSearchTerritoryQuery(debouncedQuery, {
-        skip: debouncedQuery.length < 2,
+        skip: shouldQueryBeSkipped,
     });
 
     useEffect(() => {
-        if (isFetching) {
+        if (shouldQueryBeSkipped || isFetching) {
             setData(undefined);
-        }
-    
-        if (!isFetching && debouncedQuery.length >= 2) {
+        } else {
             setData(queryData);
-        } else if (!isFetching) {
-            setData(undefined);
         }
-    }, [isFetching, queryData, debouncedQuery]);
+    }, [isFetching, queryData, debouncedQuery, shouldQueryBeSkipped]);
 
     const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
         const newQuery = event.target.value;
