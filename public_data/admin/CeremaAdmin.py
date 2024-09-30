@@ -4,7 +4,7 @@ from public_data.models import Cerema
 
 
 @admin.register(Cerema)
-class CeremaAdmin(admin.GeoModelAdmin):
+class CeremaAdmin(admin.GISModelAdmin):
     model = Cerema
     list_display = (
         "city_insee",

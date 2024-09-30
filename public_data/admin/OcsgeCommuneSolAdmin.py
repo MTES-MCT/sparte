@@ -4,5 +4,5 @@ from public_data.models import CommuneSol
 
 
 @admin.register(CommuneSol)
-class OcsgeCommuneSolAdmin(admin.GeoModelAdmin):
+class OcsgeCommuneSolAdmin(admin.GISModelAdmin):
     model = CommuneSol
