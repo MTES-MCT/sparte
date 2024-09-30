@@ -4,5 +4,5 @@ from public_data.models import CommuneDiff
 
 
 @admin.register(CommuneDiff)
-class OcsgeCommuneDiffAdmin(admin.GeoModelAdmin):
+class OcsgeCommuneDiffAdmin(admin.GISModelAdmin):
     model = CommuneDiff

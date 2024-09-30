@@ -4,5 +4,5 @@ from public_data.models import ArtificialArea
 
 
 @admin.register(ArtificialArea)
-class OcsgeArtificialAreaAdmin(admin.GeoModelAdmin):
+class OcsgeArtificialAreaAdmin(admin.GISModelAdmin):
     model = ArtificialArea

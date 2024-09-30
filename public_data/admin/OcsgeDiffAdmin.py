@@ -4,5 +4,5 @@ from public_data.models import OcsgeDiff
 
 
 @admin.register(OcsgeDiff)
-class OcsgeDiffAdmin(admin.GeoModelAdmin):
+class OcsgeDiffAdmin(admin.GISModelAdmin):
     model = OcsgeDiff

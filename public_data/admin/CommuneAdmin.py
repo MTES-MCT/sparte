@@ -4,7 +4,7 @@ from public_data.models import Commune
 
 
 @admin.register(Commune)
-class CommuneAdmin(admin.GeoModelAdmin):
+class CommuneAdmin(admin.GISModelAdmin):
     model = Commune
     list_display = (
         "insee",
