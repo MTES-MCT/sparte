@@ -1,6 +1,7 @@
 from django.apps import apps
 from django.contrib.gis.db import models
 from django.contrib.postgres.search import TrigramSimilarity
+from django.db.models.functions import Lower
 
 from public_data.models.enums import SRID
 from utils.db import IntersectManager
@@ -58,7 +59,7 @@ class Epci(LandMixin, GetDataFromCeremaMixin, models.Model):
 
     @classmethod
     def search(cls, needle, region=None, departement=None, epci=None):
-        qs = cls.objects.annotate(similarity=TrigramSimilarity("name", needle))
+        qs = cls.objects.annotate(similarity=TrigramSimilarity(Lower("name__unaccent"), needle.lower()))
         qs = qs.filter(similarity__gt=0.15)  # Filtrer par un score minimum de similarité
         qs = qs.order_by("-similarity")  # Trier par score décroissant
 
