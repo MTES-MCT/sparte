@@ -149,7 +149,7 @@ const Header = () => {
                             key={item.label}
                             href={item.url}
                             target={item.target}
-                            rel={item.target === "_blank" ? "noopener noreferrer" : undefined}
+                            rel={item.target === "_blank" && "noopener noreferrer"}
                         >
                             {item.label}
                         </NavLink>
