@@ -1,6 +1,5 @@
 import collections
 import logging
-import traceback
 from decimal import Decimal
 from typing import Dict, List, Literal
 
@@ -16,7 +15,6 @@ from django.db import models
 from django.db.models import Case, Count, DecimalField, F, Q, QuerySet, Sum, Value, When
 from django.db.models.functions import Cast, Coalesce, Concat
 from django.urls import reverse
-from django.utils import timezone
 from django.utils.functional import cached_property
 from simple_history.models import HistoricalRecords
 
@@ -44,6 +42,7 @@ from public_data.models.enums import SRID
 from public_data.models.gpu import ArtifAreaZoneUrba, ZoneUrba
 from public_data.models.mixins import DataColorationMixin
 from utils.db import cast_sum_area
+from utils.validators import is_alpha_validator
 
 logger = logging.getLogger(__name__)
 
@@ -74,20 +73,7 @@ class BaseProject(models.Model):
         blank=True,
         null=True,
     )
-    name = models.CharField("Nom", max_length=100)
-    # fields to track the shape files importation into the database
-    import_error = models.TextField(
-        "Message d'erreur traitement emprise",
-        null=True,
-        blank=True,
-    )
-    import_date = models.DateTimeField("Date et heure d'import", null=True, blank=True)
-    import_status = models.CharField(
-        "Statut import",
-        max_length=10,
-        choices=Status.choices,
-        default=Status.MISSING,
-    )
+    name = models.CharField("Nom", max_length=100, validators=[is_alpha_validator])
 
     @cached_property
     def combined_emprise(self) -> MultiPolygon:
@@ -100,23 +86,6 @@ class BaseProject(models.Model):
 
     def __str__(self):
         return self.name
-
-    def set_success(self, save=True):
-        self.import_status = self.Status.SUCCESS
-        self.import_date = timezone.now()
-        self.import_error = None
-        if save:
-            self.save_without_historical_record()
-
-    def set_failed(self, save=True, trace=None):
-        self.import_status = self.Status.FAILED
-        self.import_date = timezone.now()
-        if trace:
-            self.import_error = trace
-        else:
-            self.import_error = traceback.format_exc()
-        if save:
-            self.save_without_historical_record()
 
     class Meta:
         abstract = True
@@ -318,7 +287,8 @@ class Project(BaseProject):
         max_length=250,
         blank=True,
         null=True,
-        help_text=("C'est le nom qui est utilisé pour désigner votre territoire, notamment " "dans le rapport word."),
+        help_text="C'est le nom qui est utilisé pour désigner votre territoire, notamment dans le rapport word.",
+        validators=[is_alpha_validator],
     )
 
     cover_image = models.ImageField(
@@ -658,20 +628,6 @@ class Project(BaseProject):
             self.save(update_fields=["look_a_like"])
         return sorted(lands, key=lambda x: x.name)
 
-    # calculated fields
-    # Following field contains calculated dict :
-    # {
-    #     '2015': {  # millésime
-    #         'couverture': {  # covering type
-    #             'cs1.1.1': 123,  # code and area in km square
-    #             'cs1.1.2': 23,
-    #         },
-    #         'usage': { ... },  # same as couverture
-    #     },
-    #     '2018': { ... },  # same as 2015
-    # }
-    couverture_usage = models.JSONField(blank=True, null=True)
-
     def get_cerema_cities(self, group_name=None):
         if not group_name:
             code_insee = self.cities.all().values_list("insee", flat=True)
@@ -737,8 +693,6 @@ class Project(BaseProject):
         analyze_start_data and analyze_end_date)
         Evaluation is based on city consumption, not geo work."""
         qs = self.get_cerema_cities()
-        # if not qs.exists():
-        #     return 0
         fields = Cerema.get_art_field(self.analyse_start_date, self.analyse_end_date)
         sum_function = sum([F(f) for f in fields])
         qs = qs.annotate(line_sum=sum_function)
@@ -839,17 +793,6 @@ class Project(BaseProject):
 
     def get_absolute_url(self):
         return reverse("project:detail", kwargs={"pk": self.pk})
-
-    def reset(self, save=False):
-        """Remove everything from project dependencies
-        ..TODO:: overload delete to remove files"""
-        self.emprise_set.all().delete()
-        self.import_status = BaseProject.Status.MISSING
-        self.import_date = None
-        self.import_error = None
-        self.couverture_usage = None
-        if save:
-            self.save()
 
     def get_artif_area(self):
         """Return artificial surface total for all city inside diagnostic"""
@@ -1014,7 +957,6 @@ class Project(BaseProject):
         return list(result["bbox"])
 
     def get_centroid(self):
-        # result = self.emprise_set.aggregate(bbox=Extent('mpoly'))
         result = self.emprise_set.aggregate(center=Centroid(Union("mpoly")))
         return result["center"]
 
