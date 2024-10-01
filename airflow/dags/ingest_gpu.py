@@ -20,21 +20,23 @@ from pendulum import datetime
 def ingest_gpu():
     bucket_name = "airflow-staging"
     wfs_du_filename = "wfs_du.gpkg"
+    path_on_bucket = f"{bucket_name}/gpu/{wfs_du_filename}"
+    wfs_folder = "/pub/export-wfs/latest/gpkg/"
+    wfs_filepath = f"{wfs_folder}{wfs_du_filename}"
+    localpath = f"/tmp/{wfs_du_filename}"
 
     @task.python
     def download() -> str:
-        path_on_bucket = f"{bucket_name}/gpu/{wfs_du_filename}"
         with Container.gpu_sftp() as sftp:
-            sftp.get(f"/pub/export-wfs/latest/gpkg/{wfs_du_filename}", f"/tmp/{wfs_du_filename}")
+            sftp.get(wfs_filepath, localpath)
 
-        Container().s3().put_file(f"/tmp/{wfs_du_filename}", path_on_bucket)
+        Container().s3().put_file(localpath, path_on_bucket)
 
         return path_on_bucket
 
     @task.python
-    def ingest(path_on_bucket: str) -> str:
-        wfs_du_temp = f"/tmp/{wfs_du_filename}"
-        Container().s3().get_file(path_on_bucket, wfs_du_temp)
+    def ingest():
+        Container().s3().get_file(path_on_bucket, localpath)
         sql = """
             SELECT
                 MD5Checksum(ST_AsText(geom)) AS checksum,
@@ -81,7 +83,7 @@ def ingest_gpu():
             "MULTIPOLYGON",
             "-nlt",
             "PROMOTE_TO_MULTI",
-            wfs_du_temp,
+            localpath,
             "-sql",
             f'"{multiline_string_to_single_line(sql)}"',
             "--config",
@@ -93,8 +95,15 @@ def ingest_gpu():
             bash_command=" ".join(cmd),
         ).execute(context={})
 
-    path_on_bucket = download()
-    ingest(path_on_bucket)
+    @task.bash
+    def dbt_build() -> str:
+        return 'cd "${AIRFLOW_HOME}/include/sql/sparte" && dbt build -s zonage_urbanisme.sql+'
+
+    @task.bash
+    def cleanup() -> str:
+        return f"rm -f {localpath}"
+
+    download() >> ingest() >> dbt_build() >> cleanup()
 
 
 ingest_gpu()
