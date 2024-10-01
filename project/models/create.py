@@ -104,7 +104,8 @@ def create_from_public_key(
         user=user if user and user.is_authenticated else None,
     )
     project._change_reason = ProjectChangeReason.CREATED_FROM_PUBLIC_KEY
-    project.set_success(save=True)
+
+    project.save()
 
     trigger_async_tasks(project, public_key)
 
