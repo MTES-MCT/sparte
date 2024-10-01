@@ -105,6 +105,8 @@ def create_from_public_key(
     )
     project._change_reason = ProjectChangeReason.CREATED_FROM_PUBLIC_KEY
 
+    project.save()
+
     trigger_async_tasks(project, public_key)
 
     return project
