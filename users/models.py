@@ -4,6 +4,8 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils import timezone
 
+from utils.validators import is_alpha_validator
+
 from .managers import UserManager
 
 
@@ -24,8 +26,8 @@ class User(AbstractUser):
         AUTRE = "AUTRE", "Autre"
 
     username = None
-    first_name = models.CharField("Prénom", max_length=150, blank=True)
-    last_name = models.CharField("Nom", max_length=150, blank=True)
+    first_name = models.CharField("Prénom", max_length=150, validators=[is_alpha_validator])
+    last_name = models.CharField("Nom", max_length=150, validators=[is_alpha_validator])
     email = models.EmailField("E-mail", unique=True)
     email_checked = models.DateTimeField("E-mail vérifie", blank=True, null=True)
     organism = models.CharField(
@@ -33,9 +35,10 @@ class User(AbstractUser):
         max_length=250,
         choices=ORGANISMS.choices,
         default=ORGANISMS.COMMUNE,
+        validators=[is_alpha_validator],
     )
     organism_group = models.CharField("Groupe d'organisme", max_length=250, blank=True, null=True)
-    function = models.CharField("Fonction", max_length=250)
+    function = models.CharField("Fonction", max_length=250, validators=[is_alpha_validator])
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS: List[str] = []

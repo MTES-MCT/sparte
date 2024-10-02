@@ -1,0 +1,170 @@
+[
+    {
+        "model": "django_app_parameter.parameter",
+        "pk": 1,
+        "fields": {
+            "name": "Adresse e-mail de l'équipe",
+            "slug": "TEAM_EMAIL",
+            "value_type": "STR",
+            "description": "",
+            "value": "sparte@beta.gouv.fr",
+            "is_global": false
+        }
+    },
+    {
+        "model": "django_app_parameter.parameter",
+        "pk": 2,
+        "fields": {
+            "name": "Exemple de bilan",
+            "slug": "BILAN_EXAMPLE",
+            "value_type": "STR",
+            "description": "",
+            "value": "https://drive.google.com/file/d/11tnGnZDTyJy61f2f796kMak1dV250zHX/view?usp=sharing",
+            "is_global": false
+        }
+    },
+    {
+        "model": "django_app_parameter.parameter",
+        "pk": 3,
+        "fields": {
+            "name": "Titre lien téléchargement du bilan",
+            "slug": "BILAN_EXAMPLE_TITLE",
+            "value_type": "STR",
+            "description": "",
+            "value": "bilan d'Andernos-les-bains",
+            "is_global": true
+        }
+    },
+    {
+        "model": "django_app_parameter.parameter",
+        "pk": 4,
+        "fields": {
+            "name": "Budget consommé",
+            "slug": "BUDGET_CONSOMME",
+            "value_type": "INT",
+            "description": "",
+            "value": "14100",
+            "is_global": true
+        }
+    },
+    {
+        "model": "django_app_parameter.parameter",
+        "pk": 5,
+        "fields": {
+            "name": "Date de mise à jour du budget conso",
+            "slug": "BUDGET_DATE",
+            "value_type": "STR",
+            "description": "",
+            "value": "1er juin 2022",
+            "is_global": true
+        }
+    },
+    {
+        "model": "django_app_parameter.parameter",
+        "pk": 6,
+        "fields": {
+            "name": "Lien vers la documentation externe",
+            "slug": "EXTERNAL_DOC",
+            "value_type": "STR",
+            "description": "",
+            "value": "https://fabrique-numerique.gitbook.io/sparte/",
+            "is_global": true
+        }
+    },
+    {
+        "model": "django_app_parameter.parameter",
+        "pk": 7,
+        "fields": {
+            "name": "Téléphone de contact",
+            "slug": "PHONE_CONTACT",
+            "value_type": "STR",
+            "description": "",
+            "value": "+33 6 07 33 56 19",
+            "is_global": false
+        }
+    },
+    {
+        "model": "django_app_parameter.parameter",
+        "pk": 8,
+        "fields": {
+            "name": "URL vers métabase",
+            "slug": "METABASE_URL",
+            "value_type": "STR",
+            "description": "",
+            "value": "https://sparte-metabase.osc-secnum-fr1.scalingo.io/",
+            "is_global": true
+        }
+    },
+    {
+        "model": "django_app_parameter.parameter",
+        "pk": 9,
+        "fields": {
+            "name": "Hauteur de l'iframe des statistiques (px)",
+            "slug": "STATS_HEIGHT",
+            "value_type": "STR",
+            "description": "",
+            "value": "1300",
+            "is_global": false
+        }
+    },
+    {
+        "model": "django_app_parameter.parameter",
+        "pk": 10,
+        "fields": {
+            "name": "URL de l'iframe des statistiques (px)",
+            "slug": "STATS_URL",
+            "value_type": "STR",
+            "description": "",
+            "value": "http://sparte-metabase.osc-secnum-fr1.scalingo.io/public/dashboard/67c2adfb-b21d-4d53-bd88-2be2186eccd6",
+            "is_global": false
+        }
+    },
+    {
+        "model": "django_app_parameter.parameter",
+        "pk": 11,
+        "fields": {
+            "name": "Mise en maintenance du site",
+            "slug": "MAINTENANCE_MODE",
+            "value_type": "BOO",
+            "description": "",
+            "value": "0",
+            "is_global": false
+        }
+    },
+    {
+        "model": "django_app_parameter.parameter",
+        "pk": 12,
+        "fields": {
+            "name": "Envoyer une alerte lorsqu'un diag est dl.",
+            "slug": "ALERTE_ON_DIAG_DL",
+            "value_type": "BOO",
+            "description": "",
+            "value": "0",
+            "is_global": false
+        }
+    },
+    {
+        "model": "django_app_parameter.parameter",
+        "pk": 13,
+        "fields": {
+            "name": "URL vers le formulaire d'inscription aux webinaires",
+            "slug": "JOTFORM_URL",
+            "value_type": "STR",
+            "description": "",
+            "value": "https://form.jotform.com/231703451991355",
+            "is_global": true
+        }
+    },
+    {
+        "model": "django_app_parameter.parameter",
+        "pk": 14,
+        "fields": {
+            "name": "URL vers la faq Crisp",
+            "slug": "FAQ_URL",
+            "value_type": "STR",
+            "description": "",
+            "value": "https://faq.mondiagartif.beta.gouv.fr/",
+            "is_global": true
+        }
+    }
+]
