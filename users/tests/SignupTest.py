@@ -62,3 +62,20 @@ class SignupTest(TestCase):
             field="password2",
             errors="Les mots de passe ne sont pas identiques",
         )
+
+    def test_allowed_characters_are_accepted(self) -> None:
+        fields_to_test = {
+            "first_name": "John-Doe",
+            "last_name": "John Do'e",
+            "function": "Test",
+        }
+
+        data = {**valid_payload, **fields_to_test}
+
+        response = self.client.post(path=form_url, data=data)
+        self.assertFormError(
+            response=response,
+            form="form",
+            field=None,
+            errors=[],
+        )
