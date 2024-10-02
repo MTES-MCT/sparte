@@ -2,7 +2,8 @@ from django.core.exceptions import ValidationError
 
 
 def is_alpha_valid(value: str) -> bool:
-    return all(char.isalpha() or char == " " or char == "-" for char in value)
+    special_chars_allowed = [" ", "-", "'"]
+    return all(char.isalpha() or char in special_chars_allowed for char in value)
 
 
 def is_alpha_validator(value: str) -> bool:
