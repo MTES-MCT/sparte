@@ -24,3 +24,5 @@ models:
       +schema: admin_express
     gpu:
       +schema: gpu
+    majic:
+      +schema: majic
