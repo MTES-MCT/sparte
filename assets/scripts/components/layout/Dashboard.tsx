@@ -44,6 +44,7 @@ const Content = styled.div`
 const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
     const dispatch = useDispatch();
     const { data, error, isLoading } = useGetProjectQuery(projectId);
+    const OCSGE_COVERAGE_COMPLETE_UNIFORM = "COMPLETE_UNIFORM";
 
     useEffect(() => {
     if (data) {        
@@ -77,26 +78,26 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                     />
                                     <Route
                                         path="/project/:projectId/tableau-de-bord/découvrir-l-ocsge"
-                                        element={data.ocsge_coverage_status === "COMPLETE_UNIFORM" ? <Ocsge /> : <OcsgeStatus status={data.ocsge_coverage_status} />}
+                                        element={data.ocsge_coverage_status === OCSGE_COVERAGE_COMPLETE_UNIFORM ? <Ocsge /> : <OcsgeStatus status={data.ocsge_coverage_status} />}
                                     />
                                     <Route
                                         path="/project/:projectId/tableau-de-bord/artificialisation"
-                                        element={data.ocsge_coverage_status === "COMPLETE_UNIFORM" ? <Artificialisation /> : <OcsgeStatus status={data.ocsge_coverage_status} />}
+                                        element={data.ocsge_coverage_status === OCSGE_COVERAGE_COMPLETE_UNIFORM ? <Artificialisation /> : <OcsgeStatus status={data.ocsge_coverage_status} />}
                                     />
                                     <Route
                                         path="/project/:projectId/tableau-de-bord/impermeabilisation"
-                                        element={data.ocsge_coverage_status === "COMPLETE_UNIFORM" ? <Impermeabilisation /> : <OcsgeStatus status={data.ocsge_coverage_status} />}
+                                        element={data.ocsge_coverage_status === OCSGE_COVERAGE_COMPLETE_UNIFORM ? <Impermeabilisation /> : <OcsgeStatus status={data.ocsge_coverage_status} />}
                                     />
                                     <Route
                                         path="/project/:projectId/tableau-de-bord/zonages-d-urbanisme"
                                         element={
                                             <>
-                                                {data.ocsge_coverage_status === "COMPLETE_UNIFORM" && data.has_zonage_urbanisme && (
+                                                {data.ocsge_coverage_status === OCSGE_COVERAGE_COMPLETE_UNIFORM && data.has_zonage_urbanisme && (
                                                     <Gpu />
                                                 )}
-                                                {(data.ocsge_coverage_status !== "COMPLETE_UNIFORM" || !data.has_zonage_urbanisme) && (
+                                                {(data.ocsge_coverage_status !== OCSGE_COVERAGE_COMPLETE_UNIFORM || !data.has_zonage_urbanisme) && (
                                                     <>
-                                                        {data.ocsge_coverage_status !== "COMPLETE_UNIFORM" && (
+                                                        {data.ocsge_coverage_status !== OCSGE_COVERAGE_COMPLETE_UNIFORM && (
                                                             <OcsgeStatus status={data.ocsge_coverage_status} />
                                                         )}
                                                         {!data.has_zonage_urbanisme && <GpuStatus />}
