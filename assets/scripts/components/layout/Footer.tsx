@@ -40,6 +40,7 @@ const NavLink = styled.a`
 const Footer = () => {
     const [data, setData] = useState<FooterData | null>(null);
 
+    // La composition du footer et notamment les urls des liens sont récupérés via le contexte Django => project/templates/layout/base.html => #footer-data
     useEffect(() => {
         const dataElement = document.getElementById('footer-data');
         if (dataElement) {
