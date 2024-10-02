@@ -79,3 +79,13 @@ class SignupTest(TestCase):
             field=None,
             errors=[],
         )
+
+    def test_accents_are_accepted(self):
+        data = {**valid_payload, **{"first_name": "Jérôme"}}
+        response = self.client.post(path=form_url, data=data)
+        self.assertFormError(
+            response=response,
+            form="form",
+            field=None,
+            errors=[],
+        )
