@@ -59,7 +59,6 @@ class Migration(migrations.Migration):
                 ),
             ],
             bases=(
-                public_data.models.mixins.AutoLoadMixin,
                 public_data.models.mixins.DataColorationMixin,
                 models.Model,
             ),
