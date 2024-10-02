@@ -150,7 +150,6 @@ class Migration(migrations.Migration):
                 ("is_new_naf", models.BooleanField(blank=True, null=True)),
             ],
             bases=(
-                public_data.models.mixins.AutoLoadMixin,
                 public_data.models.mixins.DataColorationMixin,
                 models.Model,
             ),
