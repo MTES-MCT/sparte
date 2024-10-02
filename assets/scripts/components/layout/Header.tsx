@@ -109,6 +109,7 @@ const NavLink = styled.a`
 const Header = () => {
     const [data, setData] = useState<HeaderData | null>(null);
 
+    // La composition du header et notamment les urls des liens sont récupérés via le contexte Django => project/templates/layout/base.html => #header-data
     useEffect(() => {
         const dataElement = document.getElementById('header-data');
         if (dataElement) {
@@ -149,7 +150,7 @@ const Header = () => {
                             key={item.label}
                             href={item.url}
                             target={item.target}
-                            rel={item.target === "_blank" && "noopener noreferrer"}
+                            rel={item.target === "_blank" ? "noopener noreferrer" : undefined}
                         >
                             {item.label}
                         </NavLink>
