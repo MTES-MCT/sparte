@@ -61,7 +61,7 @@ class CacheMixin:
     def prefixer(self, request):
         if request.method != "GET" or request.GET.get("no-cache"):
             return None
-        # Distinction pour les requêtes AJAX
+        # Permet de bien séparer la mise en cache des pages complètes et des fragments chargés via React.
         if request.headers.get("X-Requested-With") == "XMLHttpRequest":
             return f"partial_{request.get_full_path()}"
         return f"full_{request.get_full_path()}"

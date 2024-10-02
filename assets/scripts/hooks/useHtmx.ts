@@ -8,6 +8,7 @@ const useHtmx = (dependencies: React.DependencyList = []) => {
         // Configurer HTMX et définir l'extension disable-element
         htmx.config.includeIndicatorStyles = false;
 
+        // Désactive temporairement le bouton sur lequel l'utilisateur vient de cliquer pendant les requêtes HTMX
         htmx.defineExtension('disable-element', {
             onEvent(name, evt) {
                 if (name === 'htmx:beforeRequest' || name === 'htmx:afterRequest') {

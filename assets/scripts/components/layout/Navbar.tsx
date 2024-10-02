@@ -114,6 +114,7 @@ const Navbar: React.FC = () => {
     const location = useLocation();
     const [data, setData] = useState<NavbarData | null>(null);
 
+    // La composition de la navbar et notamment les urls des liens sont récupérés via le contexte Django => project/templates/layout/base.html => #navbar-data
     useEffect(() => {
         const dataElement = document.getElementById('navbar-data');
         if (dataElement) {
