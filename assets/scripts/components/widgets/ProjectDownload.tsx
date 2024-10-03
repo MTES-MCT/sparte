@@ -2,6 +2,7 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '@store/store';
 import useHtmx from '@hooks/useHtmx';
+import useUrls from '@hooks/useUrls';
 import styled, { css } from 'styled-components';
 
 const DownloadList = styled.ul`
@@ -84,8 +85,8 @@ const DownloadItemIcon = styled.i`
 
 const ProjectDownload: React.FC = () => {
     const projectData = useSelector((state: RootState) => state.project.projectData);
-    
     const htmxRef = useHtmx([projectData]);
+    const urls = useUrls();
 
     return (
         <Container ref={htmxRef}>
@@ -93,11 +94,11 @@ const ProjectDownload: React.FC = () => {
                 <i className="bi bi-box-arrow-down"></i>
                 <div>Téléchargements</div>
             </DownloadTitle>
-            { projectData && (
+            { projectData && urls && (
                 <DownloadList>
                     <DownloadListItem>
                         <DownloadButton
-                            data-hx-get={`/project/${projectData.id}/tableau-de-bord/telechargement/rapport-conso`}
+                            data-hx-get={urls.dowloadConsoReport}
                             data-hx-target="#diag_word_form"
                             data-fr-opened="false"
                             aria-controls="fr-modal-download-word"
@@ -108,7 +109,7 @@ const ProjectDownload: React.FC = () => {
                     </DownloadListItem>
                     <DownloadListItem>
                         <DownloadButton
-                            data-hx-get={`/project/${projectData.id}/tableau-de-bord/telechargement/rapport-complet`}
+                            data-hx-get={urls.dowloadFullReport}
                             data-hx-target="#diag_word_form"
                             data-fr-opened="false"
                             aria-controls="fr-modal-download-word"
@@ -119,7 +120,7 @@ const ProjectDownload: React.FC = () => {
                     </DownloadListItem>
                     <DownloadListItem>
                         <DownloadButton
-                            data-hx-get={`/project/${projectData.id}/tableau-de-bord/telechargement/rapport-local`}
+                            data-hx-get={urls.dowloadLocalReport}
                             data-hx-target="#diag_word_form"
                             data-fr-opened="false"
                             aria-controls="fr-modal-download-word"
@@ -129,7 +130,7 @@ const ProjectDownload: React.FC = () => {
                         </DownloadButton>
                     </DownloadListItem>
                     <DownloadListItem>
-                        <DownloadLink href={`/project/${projectData.id}/export-excel`}>
+                        <DownloadLink href={urls.dowloadCsvReport}>
                             <DownloadItemIcon aria-hidden="true" className="bi bi-file-earmark-excel"></DownloadItemIcon>
                             Export Excel
                         </DownloadLink>

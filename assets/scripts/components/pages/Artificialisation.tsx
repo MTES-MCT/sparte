@@ -1,10 +1,11 @@
 import React from 'react';
-import { useParams } from 'react-router-dom';
 import { useHtmlLoader } from '@hooks/useHtmlLoader';
 import useHighcharts from '@hooks/useHighcharts';
+import { isOcsgeAvailable } from '@utils/project';
 import Loader from '@components/ui/Loader';
 import PageTitle from '@components/widgets/PageTitle';
 import Guide from '@components/widgets/Guide';
+import OcsgeStatus, { OcsgeStatusProps } from '@components/widgets/OcsgeStatus';
 
 /*
 Ce composant est un composant hybride qui permet de récupérer du contenu côté serveur via Django et de l'intégrer directement dans l'interface React.
@@ -19,9 +20,22 @@ Cela est nécessaire pour rendre du contenu HTML généré côté serveur, mais 
 Dans ce cas, les données provenant de Django sont considérées comme fiables.
 */
 
-const Artificialisation: React.FC = () => {
-    const { projectId } = useParams<{ projectId: string }>();
-    const endpoint = `/project/${projectId}/tableau-de-bord/artificialisation`;
+const Artificialisation: React.FC<{ endpoint: string; ocsgeStatus: OcsgeStatusProps['status'] }> = ({ endpoint, ocsgeStatus }) => {
+    const pageTitle = "Artificialisation";
+
+    if (!isOcsgeAvailable(ocsgeStatus)) {
+        return (
+            <div className="fr-container--fluid fr-p-3w w-100">
+                <div className="fr-grid-row fr-grid-row--gutters">
+                    <div className="fr-col-12">
+                        <PageTitle title={pageTitle} />
+                        <OcsgeStatus status={ocsgeStatus} />
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
     const { content, isLoading, error } = useHtmlLoader(endpoint);
 
     useHighcharts([
@@ -40,7 +54,7 @@ const Artificialisation: React.FC = () => {
         <div className="fr-container--fluid fr-p-3w w-100">
             <div className="fr-grid-row fr-grid-row--gutters">
                 <div className="fr-col-12">
-                    <PageTitle title="Artificialisation" />
+                    <PageTitle title={pageTitle} />
                     <Guide
                         title="Cadre réglementaire"
                         contentHtml={`L'article 192 de la Loi Climat & Résilience votée en août 2021 définit l'artificialisation comme « une surface dont les sols sont :
