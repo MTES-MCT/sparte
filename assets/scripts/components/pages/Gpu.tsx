@@ -1,8 +1,10 @@
 import React from 'react';
-import { useParams } from 'react-router-dom';
 import { useHtmlLoader } from '@hooks/useHtmlLoader';
+import { isOcsgeAvailable } from '@utils/project';
 import Loader from '@components/ui/Loader';
 import PageTitle from '@components/widgets/PageTitle';
+import OcsgeStatus, { OcsgeStatusProps } from '@components/widgets/OcsgeStatus';
+import GpuStatus from '@components/widgets/GpuStatus';
 
 /*
 Ce composant est un composant hybride qui permet de récupérer du contenu côté serveur via Django et de l'intégrer directement dans l'interface React.
@@ -14,9 +16,23 @@ Cela est nécessaire pour rendre du contenu HTML généré côté serveur, mais 
 Dans ce cas, les données provenant de Django sont considérées comme fiables.
 */
 
-const Gpu: React.FC = () => {
-    const { projectId } = useParams<{ projectId: string }>();
-    const endpoint = `/project/${projectId}/tableau-de-bord/zonages-d-urbanisme`;
+const Gpu: React.FC<{ endpoint: string; ocsgeStatus: OcsgeStatusProps['status']; hasGpu: boolean }> = ({ endpoint, ocsgeStatus, hasGpu }) => {
+    const pageTitle = "Artificialisation des zonages d'urbanisme";
+
+    if (!isOcsgeAvailable(ocsgeStatus) || !hasGpu) {
+        return (
+            <div className="fr-container--fluid fr-p-3w w-100">
+                <div className="fr-grid-row fr-grid-row--gutters">
+                    <div className="fr-col-12">
+                        <PageTitle title={pageTitle} />
+                        {!isOcsgeAvailable(ocsgeStatus) && <OcsgeStatus status={ocsgeStatus} />}
+                        {!hasGpu && <GpuStatus />}
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
     const { content, isLoading, error } = useHtmlLoader(endpoint);
 
     if (isLoading) return <Loader />;
@@ -26,7 +42,7 @@ const Gpu: React.FC = () => {
         <div className="fr-container--fluid fr-p-3w w-100">
             <div className="fr-grid-row fr-grid-row--gutters">
                 <div className="fr-col-12">
-                    <PageTitle title="Artificialisation des zonages d'urbanisme" />
+                    <PageTitle title={pageTitle} />
                     <div dangerouslySetInnerHTML={{ __html: content }} />
                 </div>
             </div>

@@ -38,6 +38,27 @@
     <body>
         <div id="react-root" data-project-id="{{ project_id|safe }}"></div>
 
+        <script id="urls-data" type="application/json">
+            {
+                "urls": {
+                    "synthese": "{% url 'project:report_synthesis' project.pk %}",
+                    "rapportLocal": "{% url 'project:report_local' project.pk %}",
+                    "trajectoires": "{% url 'project:report_target_2031' project.pk %}",
+                    "consommation": "{% url 'project:report_conso' project.pk %}",
+                    "gpu": "{% url 'project:report_urban_zones' project.pk %}",
+                    "ocsge": "{% url 'project:report_discover' project.pk %}",
+                    "artificialisation": "{% url 'project:report_artif' project.pk %}",
+                    "impermeabilisation": "{% url 'project:report_imper' project.pk %}",
+                    "update": "{% url 'project:update' project.pk %}",
+                    "setPeriod": "{% url 'project:set-period' diagnostic.pk %}",
+                    "dowloadConsoReport": "{% url 'project:report_download' requested_document='rapport-conso' pk=project.pk %}",
+                    "dowloadFullReport": "{% url 'project:report_download' requested_document='rapport-complet' pk=project.pk %}",
+                    "dowloadLocalReport": "{% url 'project:report_download' requested_document='rapport-local' pk=project.pk %}",
+                    "dowloadCsvReport": "{% url 'project:export-excel' project.pk %}"
+                }
+            }
+        </script>
+
         <script id="header-data" type="application/json">
             {
                 "logos": [

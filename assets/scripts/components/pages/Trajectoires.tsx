@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
 import { useHtmlLoader } from '@hooks/useHtmlLoader';
 import useHtmx from '@hooks/useHtmx';
 import useHighcharts from '@hooks/useHighcharts';
@@ -24,9 +23,7 @@ Cela est nécessaire pour rendre du contenu HTML généré côté serveur, mais 
 Dans ce cas, les données provenant de Django sont considérées comme fiables.
 */
 
-const Trajectoires: React.FC = () => {
-    const { projectId } = useParams<{ projectId: string }>();
-    const endpoint = `/project/${projectId}/tableau-de-bord/trajectoires`;
+const Trajectoires: React.FC<{ endpoint: string }> = ({ endpoint }) => {
     const [refreshKey, setRefreshKey] = useState(0);
     const { content, isLoading, error } = useHtmlLoader(endpoint + `?refreshKey=${refreshKey}`);
     const htmxRef = useHtmx([isLoading]);

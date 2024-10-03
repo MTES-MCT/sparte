@@ -1,5 +1,4 @@
 import React from 'react';
-import { useParams } from 'react-router-dom';
 import { useHtmlLoader } from '@hooks/useHtmlLoader';
 import Loader from '@components/ui/Loader';
 import PageTitle from '@components/widgets/PageTitle';
@@ -14,9 +13,7 @@ Cela est nécessaire pour rendre du contenu HTML généré côté serveur, mais 
 Dans ce cas, les données provenant de Django sont considérées comme fiables.
 */
 
-const Synthese: React.FC = () => {
-    const { projectId } = useParams<{ projectId: string }>();
-    const endpoint = `/project/${projectId}/tableau-de-bord/synthesis`;
+const Synthese: React.FC<{ endpoint: string }> = ({ endpoint }) => {
     const { content, isLoading, error } = useHtmlLoader(endpoint);
 
     if (isLoading) return <Loader />;

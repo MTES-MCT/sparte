@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import { useGetProjectQuery } from '@services/api';
 import { setProjectData } from '@store/projectSlice';
 import useMatomoTracking from '@hooks/useMatomoTracking';
-import usePageTitle from '@hooks/usePageTitle';
+import useUrls from '@hooks/useUrls';
 import Footer from '@components/layout/Footer';
 import Header from '@components/layout/Header';
 import Navbar from '@components/layout/Navbar';
@@ -19,8 +19,7 @@ import Ocsge from '@components/pages/Ocsge';
 import Trajectoires from '@components/pages/Trajectoires';
 import RapportLocal from '@components/pages/RapportLocal';
 import Update from '@components/pages/Update';
-import OcsgeStatus from '@components/widgets/OcsgeStatus';
-import GpuStatus from '@components/widgets/GpuStatus';
+import RouteWrapper from '@components/widgets/RouteWrapper';
 
 interface DashboardProps {
     projectId: string;
@@ -44,17 +43,17 @@ const Content = styled.div`
 const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
     const dispatch = useDispatch();
     const { data, error, isLoading } = useGetProjectQuery(projectId);
-    const OCSGE_COVERAGE_COMPLETE_UNIFORM = "COMPLETE_UNIFORM";
+    const urls = useUrls();
 
     useEffect(() => {
     if (data) {        
         dispatch(setProjectData(data));
     }
     }, [data, dispatch]);
-    
+
     return (
         <>
-            {data && !isLoading && !error && (
+            {data && !isLoading && !error && urls && (
                 <>
                     <Header />
                     <Router>
@@ -65,54 +64,85 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                             <Content>
                                 <Routes>
                                     <Route
-                                        path="/project/:projectId/tableau-de-bord/synthesis"
-                                        element={<Synthese />}
-                                    />
-                                    <Route
-                                        path="/project/:projectId/tableau-de-bord/consommation"
-                                        element={<Consommation />}
-                                    />
-                                    <Route
-                                        path="/project/:projectId/tableau-de-bord/trajectoires"
-                                        element={<Trajectoires />}
-                                    />
-                                    <Route
-                                        path="/project/:projectId/tableau-de-bord/découvrir-l-ocsge"
-                                        element={data.ocsge_coverage_status === OCSGE_COVERAGE_COMPLETE_UNIFORM ? <Ocsge /> : <OcsgeStatus status={data.ocsge_coverage_status} />}
-                                    />
-                                    <Route
-                                        path="/project/:projectId/tableau-de-bord/artificialisation"
-                                        element={data.ocsge_coverage_status === OCSGE_COVERAGE_COMPLETE_UNIFORM ? <Artificialisation /> : <OcsgeStatus status={data.ocsge_coverage_status} />}
-                                    />
-                                    <Route
-                                        path="/project/:projectId/tableau-de-bord/impermeabilisation"
-                                        element={data.ocsge_coverage_status === OCSGE_COVERAGE_COMPLETE_UNIFORM ? <Impermeabilisation /> : <OcsgeStatus status={data.ocsge_coverage_status} />}
-                                    />
-                                    <Route
-                                        path="/project/:projectId/tableau-de-bord/zonages-d-urbanisme"
+                                        path={urls.synthese}
                                         element={
-                                            <>
-                                                {data.ocsge_coverage_status === OCSGE_COVERAGE_COMPLETE_UNIFORM && data.has_zonage_urbanisme && (
-                                                    <Gpu />
-                                                )}
-                                                {(data.ocsge_coverage_status !== OCSGE_COVERAGE_COMPLETE_UNIFORM || !data.has_zonage_urbanisme) && (
-                                                    <>
-                                                        {data.ocsge_coverage_status !== OCSGE_COVERAGE_COMPLETE_UNIFORM && (
-                                                            <OcsgeStatus status={data.ocsge_coverage_status} />
-                                                        )}
-                                                        {!data.has_zonage_urbanisme && <GpuStatus />}
-                                                    </>
-                                                )}
-                                            </>
+                                            <RouteWrapper
+                                                title="Synthèse"
+                                                component={<Synthese endpoint={urls.synthese} />}
+                                            />
                                         }
                                     />
                                     <Route
-                                        path="/project/:projectId/tableau-de-bord/rapport-local"
-                                        element={<RapportLocal />}
+                                        path={urls.consommation}
+                                        element={
+                                            <RouteWrapper
+                                                title="Consommation d'espaces NAF"
+                                                component={<Consommation endpoint={urls.consommation} />}
+                                            />
+                                        }
                                     />
                                     <Route
-                                        path="/project/:projectId/edit"
-                                        element={<Update />}
+                                        path={urls.trajectoires}
+                                        element={
+                                            <RouteWrapper
+                                                title="Trajectoire ZAN"
+                                                component={<Trajectoires endpoint={urls.trajectoires} />}
+                                            />
+                                        }
+                                    />
+                                    <Route
+                                        path={urls.ocsge}
+                                        element={
+                                            <RouteWrapper
+                                                title="Usage et couverture du sol (OCS GE)"
+                                                component={<Ocsge endpoint={urls.ocsge} ocsgeStatus={data.ocsge_coverage_status} />} 
+                                            />
+                                        }
+                                    />
+                                    <Route
+                                        path={urls.artificialisation}
+                                        element={
+                                            <RouteWrapper 
+                                                title="Artificialisation" 
+                                                component={<Artificialisation endpoint={urls.artificialisation} ocsgeStatus={data.ocsge_coverage_status} />} 
+                                            />
+                                        }
+                                    />
+                                    <Route
+                                        path={urls.impermeabilisation}
+                                        element={
+                                            <RouteWrapper 
+                                                title="Imperméabilisation"
+                                                component={<Impermeabilisation endpoint={urls.impermeabilisation} ocsgeStatus={data.ocsge_coverage_status} /> } 
+                                            />
+                                        }
+                                    />
+                                    <Route
+                                        path={urls.gpu}
+                                        element={
+                                            <RouteWrapper 
+                                                title="Artificialisation des zonages d'urbanisme"
+                                                component={<Gpu endpoint={urls.gpu} ocsgeStatus={data.ocsge_coverage_status} hasGpu={data.has_zonage_urbanisme} /> } 
+                                            />
+                                        }
+                                    />
+                                    <Route
+                                        path={urls.rapportLocal}
+                                        element={
+                                            <RouteWrapper
+                                                title="Rapport triennal local"
+                                                component={<RapportLocal endpoint={urls.rapportLocal} />}
+                                            />
+                                        }
+                                    />
+                                    <Route
+                                        path={urls.update}
+                                        element={
+                                            <RouteWrapper
+                                                title="Paramètres du diagnostic"
+                                                component={<Update endpoint={urls.rapportLocal} />}
+                                            />
+                                        }
                                     />
                                 </Routes>
                             </Content>
@@ -126,7 +156,6 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
 };
 
 const TrackingWrapper: React.FC = () => {
-    usePageTitle();
     useMatomoTracking();
     return null; // Ce composant ne rend rien
 };
