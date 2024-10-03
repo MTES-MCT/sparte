@@ -4,5 +4,5 @@ from public_data.models import ZoneConstruite
 
 
 @admin.register(ZoneConstruite)
-class OcsgeZoneConstruiteAdmin(admin.GeoModelAdmin):
+class OcsgeZoneConstruiteAdmin(admin.GISModelAdmin):
     model = ZoneConstruite

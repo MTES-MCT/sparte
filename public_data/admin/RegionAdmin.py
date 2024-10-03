@@ -4,7 +4,7 @@ from public_data.models import Region
 
 
 @admin.register(Region)
-class RegionAdmin(admin.GeoModelAdmin):
+class RegionAdmin(admin.GISModelAdmin):
     model = Region
     list_display = (
         "id",

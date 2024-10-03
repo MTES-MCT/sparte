@@ -4,7 +4,7 @@ from public_data.models import Sudocuh
 
 
 @admin.register(Sudocuh)
-class SudocuhAdmin(admin.GeoModelAdmin):
+class SudocuhAdmin(admin.GISModelAdmin):
     model = Sudocuh
     list_display = (
         "nom_commune",

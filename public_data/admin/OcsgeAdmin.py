@@ -4,7 +4,7 @@ from public_data.models import Ocsge
 
 
 @admin.register(Ocsge)
-class OcsgeAdmin(admin.GeoModelAdmin):
+class OcsgeAdmin(admin.GISModelAdmin):
     model = Ocsge
     list_display = (
         "id",

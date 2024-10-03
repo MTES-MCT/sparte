@@ -4,7 +4,7 @@ from metabase.models import StatDiagnostic
 
 
 @admin.register(StatDiagnostic)
-class StatDiagnosticAdmin(admin.GeoModelAdmin):
+class StatDiagnosticAdmin(admin.GISModelAdmin):
     model = StatDiagnostic
     list_display = (
         "created_date",

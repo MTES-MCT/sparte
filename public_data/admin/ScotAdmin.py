@@ -4,5 +4,5 @@ from public_data.models import Scot
 
 
 @admin.register(Scot)
-class ScotAdmin(admin.GeoModelAdmin):
+class ScotAdmin(admin.GISModelAdmin):
     model = Scot

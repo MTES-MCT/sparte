@@ -4,7 +4,7 @@ from public_data.models import Departement
 
 
 @admin.register(Departement)
-class DepartementAdmin(admin.GeoModelAdmin):
+class DepartementAdmin(admin.GISModelAdmin):
     model = Departement
     list_display = (
         "id",
