@@ -1,0 +1,1 @@
+{{ majic('majic_guyane') }}

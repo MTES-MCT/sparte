@@ -39,51 +39,46 @@ def get_source_by_name(name: str) -> dict:
             type="string",
             enum=zones,
         ),
-        "refresh_source": Param(
-            default=False,
-            description="Rafraîchir la source",
-            type="boolean",
-        ),
     },
 )
 def ingest_admin_express():
     bucket_name = "airflow-staging"
+    tmp_path = "/tmp/admin_express"
 
     @task.python
     def download_admin_express(**context) -> str:
+        print(context["params"]["zone"])
         url = get_source_by_name(context["params"]["zone"])["url"]
-
+        print(url)
         filename = url.split("/")[-1]
+        print(filename)
         path_on_bucket = f"{bucket_name}/{filename}"
         print(path_on_bucket)
-
-        file_exists = Container().s3().exists(path_on_bucket)
-
-        if file_exists and not context["params"]["refresh_source"]:
-            return path_on_bucket
-
         opener = URLopener()
         opener.addheader("User-Agent", "Mozilla/5.0")
         opener.retrieve(url=url, filename=filename)
-
         Container().s3().put_file(filename, path_on_bucket)
-
+        os.remove(filename)
         return path_on_bucket
 
     @task.python
     def ingest(path_on_bucket, **context) -> str:
-        srid = get_source_by_name(context["params"]["zone"])["srid"]
-        shp_to_table_map = get_source_by_name(context["params"]["zone"])["shapefile_to_table"]
+        source = get_source_by_name(context["params"]["zone"])
+        srid = source["srid"]
+        print(srid)
+        shp_to_table_map = source["shapefile_to_table"]
+        print(shp_to_table_map)
 
         with Container().s3().open(path_on_bucket, "rb") as f:
-            py7zr.SevenZipFile(f, mode="r").extractall()
-            for dirpath, _, filenames in os.walk("."):
+            py7zr.SevenZipFile(f, mode="r").extractall(path=tmp_path)
+            for dirpath, _, filenames in os.walk(tmp_path):
                 for filename in filenames:
                     if filename.endswith(".shp"):
                         table_name = shp_to_table_map.get(filename)
                         if not table_name:
                             continue
                         path = os.path.abspath(os.path.join(dirpath, filename))
+                        print(path)
                         cmd = [
                             "ogr2ogr",
                             "-f",
@@ -113,9 +108,14 @@ def ingest_admin_express():
         dbt_run_cmd = f"dbt build -s {dbt_selector}"
         return 'cd "${AIRFLOW_HOME}/include/sql/sparte" && ' + dbt_run_cmd
 
+    @task.bash
+    def cleanup() -> str:
+        return f"rm -rf {tmp_path}"
+
     path_on_bucket = download_admin_express()
     ingest_result = ingest(path_on_bucket)
     ingest_result >> dbt_run()
+    ingest_result >> cleanup()
 
 
 # Instantiate the DAG

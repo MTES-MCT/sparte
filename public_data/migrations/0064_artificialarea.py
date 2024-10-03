@@ -53,7 +53,6 @@ class Migration(migrations.Migration):
                 ),
             ],
             bases=(
-                public_data.models.mixins.TruncateTableMixin,
                 public_data.models.mixins.DataColorationMixin,
                 models.Model,
             ),
