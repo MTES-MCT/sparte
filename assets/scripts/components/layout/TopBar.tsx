@@ -74,9 +74,9 @@ const ItemContent = styled.div`
 const TopBar: React.FC = () => {
     const projectData = useSelector((state: RootState) => state.project.projectData);
     const memoizedProjectData = useMemo(() => projectData, [projectData?.id]);
-    const htmxRef = useHtmx([memoizedProjectData]);
-    const formattedDate = useMemo(() => formatDateTime(new Date(memoizedProjectData?.created_date)), [memoizedProjectData?.created_date]);
     const urls = useUrls();
+    const htmxRef = useHtmx([memoizedProjectData, urls]);
+    const formattedDate = useMemo(() => formatDateTime(new Date(memoizedProjectData?.created_date)), [memoizedProjectData?.created_date]);
 
     return (
         <Container ref={htmxRef}>
