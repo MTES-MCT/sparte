@@ -4,6 +4,7 @@ import { RootState } from '@store/store';
 import { formatDateTime } from '@utils/formatUtils';
 import styled from 'styled-components';
 import useHtmx from '@hooks/useHtmx';
+import useUrls from '@hooks/useUrls';
 import Divider from '@components/ui/Divider';
 
 const primaryColor = '#313178';
@@ -75,6 +76,7 @@ const TopBar: React.FC = () => {
     const memoizedProjectData = useMemo(() => projectData, [projectData?.id]);
     const htmxRef = useHtmx([memoizedProjectData]);
     const formattedDate = useMemo(() => formatDateTime(new Date(memoizedProjectData?.created_date)), [memoizedProjectData?.created_date]);
+    const urls = useUrls();
 
     return (
         <Container ref={htmxRef}>
@@ -86,15 +88,17 @@ const TopBar: React.FC = () => {
                 <Item>
                     <ItemTitle><i className="bi bi-calendar4-range"></i> Période d'analyse</ItemTitle>
                     <ItemContent>
-                        De { memoizedProjectData?.analyse_start_date } à { memoizedProjectData?.analyse_end_date } 
-                        <button 
-                            data-fr-opened="false" 
-                            aria-controls="fr-modal-1" 
-                            title="Modifier la période d'analyse du diagnostic" 
-                            data-hx-get={`/project/${memoizedProjectData?.id}/set-period`} 
-                            data-hx-target="#update_period_form">
-                            <span className="fr-icon-pencil-fill fr-icon--sm" aria-hidden="true"></span>
-                        </button>
+                        De { memoizedProjectData?.analyse_start_date } à { memoizedProjectData?.analyse_end_date }
+                        {urls &&
+                            <button 
+                                data-fr-opened="false" 
+                                aria-controls="fr-modal-1" 
+                                title="Modifier la période d'analyse du diagnostic" 
+                                data-hx-get={urls.setPeriod} 
+                                data-hx-target="#update_period_form">
+                                <span className="fr-icon-pencil-fill fr-icon--sm" aria-hidden="true"></span>
+                            </button>
+                        }
                     </ItemContent>
                 </Item>
                 <Divider color="#e3e4e9" size="30px" />

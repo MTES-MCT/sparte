@@ -1,10 +1,11 @@
 import React from 'react';
-import { useParams } from 'react-router-dom';
 import { useHtmlLoader } from '@hooks/useHtmlLoader';
 import useHighcharts from '@hooks/useHighcharts';
+import { isOcsgeAvailable } from '@utils/project';
 import Loader from '@components/ui/Loader';
 import PageTitle from '@components/widgets/PageTitle';
 import Guide from '@components/widgets/Guide';
+import OcsgeStatus, { OcsgeStatusProps } from '@components/widgets/OcsgeStatus';
 
 /*
 Ce composant est un composant hybride qui permet de récupérer du contenu côté serveur via Django et de l'intégrer directement dans l'interface React.
@@ -19,9 +20,22 @@ Cela est nécessaire pour rendre du contenu HTML généré côté serveur, mais 
 Dans ce cas, les données provenant de Django sont considérées comme fiables.
 */
 
-const Ocsge: React.FC = () => {
-    const { projectId } = useParams<{ projectId: string }>();
-    const endpoint = `/project/${projectId}/tableau-de-bord/découvrir-l-ocsge`;
+const Ocsge: React.FC<{ endpoint: string; ocsgeStatus: OcsgeStatusProps['status'] }> = ({ endpoint, ocsgeStatus }) => {
+    const pageTitle = "Usage et couverture du sol (OCS GE)";
+
+    if (!isOcsgeAvailable(ocsgeStatus)) {
+        return (
+            <div className="fr-container--fluid fr-p-3w w-100">
+                <div className="fr-grid-row fr-grid-row--gutters">
+                    <div className="fr-col-12">
+                        <PageTitle title={pageTitle} />
+                        <OcsgeStatus status={ocsgeStatus} />
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
     const { content, isLoading, error } = useHtmlLoader(endpoint);
 
     useHighcharts([
@@ -40,7 +54,7 @@ const Ocsge: React.FC = () => {
         <div className="fr-container--fluid fr-p-3w w-100">
             <div className="fr-grid-row fr-grid-row--gutters">
                 <div className="fr-col-12">
-                    <PageTitle title="Usage et couverture du sol (OCS GE)" />
+                    <PageTitle title={pageTitle} />
                     <Guide
                         title="Cadre réglementaire"
                         contentHtml={`L'OCS GE est une base de données vectorielle pour la description de l'occupation du sol de l'ensemble du territoire métropolitain et des départements et régions d'outre-mer (DROM). Elle est un référentiel national, constituant un socle national, utilisable au niveau national et au niveau local notamment pour contribuer aux calculs d'indicateurs exigés par les documents d'urbanisme.`}
