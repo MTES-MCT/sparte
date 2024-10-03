@@ -85,8 +85,8 @@ const DownloadItemIcon = styled.i`
 
 const ProjectDownload: React.FC = () => {
     const projectData = useSelector((state: RootState) => state.project.projectData);
-    const htmxRef = useHtmx([projectData]);
     const urls = useUrls();
+    const htmxRef = useHtmx([projectData, urls]);
 
     return (
         <Container ref={htmxRef}>
