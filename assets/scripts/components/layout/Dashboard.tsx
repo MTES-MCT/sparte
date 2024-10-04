@@ -37,6 +37,7 @@ const Main = styled.main`
 const Content = styled.div`
     flex-grow: 1;
     display: flex;
+    flex-direction: column;
 `;
 
 
@@ -68,8 +69,9 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                         element={
                                             <RouteWrapper
                                                 title="Synthèse"
-                                                component={<Synthese endpoint={urls.synthese} />}
-                                            />
+                                            >
+                                                <Synthese endpoint={urls.synthese} />
+                                            </RouteWrapper>
                                         }
                                     />
                                     <Route
@@ -77,8 +79,9 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                         element={
                                             <RouteWrapper
                                                 title="Consommation d'espaces NAF"
-                                                component={<Consommation endpoint={urls.consommation} />}
-                                            />
+                                            >
+                                                <Consommation endpoint={urls.consommation} />
+                                            </RouteWrapper>
                                         }
                                     />
                                     <Route
@@ -86,8 +89,9 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                         element={
                                             <RouteWrapper
                                                 title="Trajectoire ZAN"
-                                                component={<Trajectoires endpoint={urls.trajectoires} />}
-                                            />
+                                            >
+                                                <Trajectoires endpoint={urls.trajectoires} />
+                                            </RouteWrapper>
                                         }
                                     />
                                     <Route
@@ -95,17 +99,21 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                         element={
                                             <RouteWrapper
                                                 title="Usage et couverture du sol (OCS GE)"
-                                                component={<Ocsge endpoint={urls.ocsge} ocsgeStatus={data.ocsge_coverage_status} />} 
-                                            />
+                                                ocsgeStatus={data.ocsge_coverage_status}
+                                            >
+                                                <Ocsge endpoint={urls.ocsge} />
+                                            </RouteWrapper>
                                         }
                                     />
                                     <Route
                                         path={urls.artificialisation}
                                         element={
                                             <RouteWrapper 
-                                                title="Artificialisation" 
-                                                component={<Artificialisation endpoint={urls.artificialisation} ocsgeStatus={data.ocsge_coverage_status} />} 
-                                            />
+                                                title="Artificialisation"
+                                                ocsgeStatus={data.ocsge_coverage_status}
+                                            >
+                                                <Artificialisation endpoint={urls.artificialisation} />
+                                            </RouteWrapper>
                                         }
                                     />
                                     <Route
@@ -113,8 +121,10 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                         element={
                                             <RouteWrapper 
                                                 title="Imperméabilisation"
-                                                component={<Impermeabilisation endpoint={urls.impermeabilisation} ocsgeStatus={data.ocsge_coverage_status} /> } 
-                                            />
+                                                ocsgeStatus={data.ocsge_coverage_status}
+                                            >
+                                                <Impermeabilisation endpoint={urls.impermeabilisation} />
+                                            </RouteWrapper>
                                         }
                                     />
                                     <Route
@@ -122,8 +132,11 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                         element={
                                             <RouteWrapper 
                                                 title="Artificialisation des zonages d'urbanisme"
-                                                component={<Gpu endpoint={urls.gpu} ocsgeStatus={data.ocsge_coverage_status} hasGpu={data.has_zonage_urbanisme} /> } 
-                                            />
+                                                ocsgeStatus={data.ocsge_coverage_status}
+                                                hasGpu={data.has_zonage_urbanisme}
+                                            >
+                                                <Gpu endpoint={urls.gpu} />
+                                            </RouteWrapper>
                                         }
                                     />
                                     <Route
@@ -131,8 +144,9 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                         element={
                                             <RouteWrapper
                                                 title="Rapport triennal local"
-                                                component={<RapportLocal endpoint={urls.rapportLocal} />}
-                                            />
+                                            >
+                                                <RapportLocal endpoint={urls.rapportLocal} />
+                                            </RouteWrapper>
                                         }
                                     />
                                     <Route
@@ -140,8 +154,9 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                         element={
                                             <RouteWrapper
                                                 title="Paramètres du diagnostic"
-                                                component={<Update endpoint={urls.rapportLocal} />}
-                                            />
+                                            >
+                                                <Update endpoint={urls.update} />
+                                            </RouteWrapper>
                                         }
                                     />
                                 </Routes>

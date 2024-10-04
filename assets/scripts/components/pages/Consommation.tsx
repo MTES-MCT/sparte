@@ -3,7 +3,6 @@ import { useHtmlLoader } from '@hooks/useHtmlLoader';
 import useHtmx from '@hooks/useHtmx';
 import useHighcharts from '@hooks/useHighcharts';
 import Loader from '@components/ui/Loader';
-import PageTitle from '@components/widgets/PageTitle';
 import Guide from '@components/widgets/Guide';
 
 /*
@@ -63,10 +62,9 @@ const Consommation: React.FC<{ endpoint: string }> = ({ endpoint }) => {
     if (error) return <div>Erreur : {error}</div>;
       
     return (
-        <div className="fr-container--fluid fr-p-3w w-100" ref={htmxRef}>
-            <div className="fr-grid-row fr-grid-row--gutters">
+         <div className="fr-container--fluid fr-p-3w" ref={htmxRef}>
+            <div className="fr-grid-row">
                 <div className="fr-col-12">
-                    <PageTitle title="Consommation d'espaces NAF"/>
                     <Guide
                         title="Cadre réglementaire"
                         contentHtml={`La consommation d'espaces NAF (Naturels, Agricoles et Forestiers) est entendue comme « la création ou l'extension effective d'espaces urbanisés sur le territoire concerné » (article 194 de la loi Climat et résilience).`}
