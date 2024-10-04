@@ -4,7 +4,6 @@ import useHtmx from '@hooks/useHtmx';
 import useHighcharts from '@hooks/useHighcharts';
 import Loader from '@components/ui/Loader';
 import Guide from '@components/widgets/Guide';
-import PageTitle from '@components/widgets/PageTitle';
 
 /*
 Ce composant est un composant hybride qui permet de récupérer du contenu côté serveur via Django et de l'intégrer directement dans l'interface React.
@@ -62,10 +61,9 @@ const Trajectoires: React.FC<{ endpoint: string }> = ({ endpoint }) => {
     if (error) return <div>Erreur : {error}</div>;
 
     return (
-        <div className="fr-container--fluid fr-p-3w w-100" ref={htmxRef}>
-            <div className="fr-grid-row fr-grid-row--gutters">
+        <div className="fr-container--fluid fr-p-3w">
+            <div className="fr-grid-row">
                 <div className="fr-col-12">
-                    <PageTitle title="Trajectoire ZAN" />
                     <Guide
                         title="Cadre réglementaire"
                         contentHtml={`La loi Climat & Résilience fixe<strong> l’objectif d’atteindre le « zéro artificialisation nette des sols » en 2050, avec un objectif intermédiaire
