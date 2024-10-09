@@ -4,6 +4,7 @@ from django.contrib.auth.forms import (
     UserChangeForm,
     UserCreationForm,
 )
+from django.contrib.auth.password_validation import validate_password
 
 from .models import User
 
@@ -21,7 +22,9 @@ class CustomUserChangeForm(UserChangeForm):
 
 
 class SignupForm(forms.ModelForm):
-    password1 = forms.CharField(label="Mot de passe", widget=forms.PasswordInput(), max_length=50)
+    password1 = forms.CharField(
+        label="Mot de passe", widget=forms.PasswordInput(), validators=[validate_password], max_length=50
+    )
     password2 = forms.CharField(
         label="Confirmer le mot de passe",
         widget=forms.PasswordInput(),
@@ -47,8 +50,10 @@ class SignupForm(forms.ModelForm):
         cleaned_data = super().clean()
         password1 = cleaned_data.get("password1")
         password2 = cleaned_data.get("password2")
+
         if password1 is not None and password1 != password2:
             self.add_error("password2", "Les mots de passe ne sont pas identiques")
+
         return cleaned_data
 
     def save(self, commit=True):
@@ -73,8 +78,15 @@ class SigninForm(AuthenticationForm):
 
 class UpdatePasswordForm(forms.Form):
     old_password = forms.CharField(label="Ancien mot de passe", widget=forms.PasswordInput())
-    new_password = forms.CharField(label="Nouveau mot de passe", widget=forms.PasswordInput())
-    new_password2 = forms.CharField(label="Répétez votre nouveau mot de passe", widget=forms.PasswordInput())
+    new_password = forms.CharField(
+        label="Nouveau mot de passe",
+        widget=forms.PasswordInput(),
+        validators=[validate_password],
+    )
+    new_password2 = forms.CharField(
+        label="Répétez votre nouveau mot de passe",
+        widget=forms.PasswordInput(),
+    )
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop("user")
