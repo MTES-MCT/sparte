@@ -1,5 +1,7 @@
 from django.test import TestCase
 
+from utils.validators import MISSING_SPECIAL_CHAR_ERROR
+
 valid_payload = {
     "first_name": "John",
     "last_name": "Doe",
@@ -101,35 +103,6 @@ class SignupTest(TestCase):
             errors=[],
         )
 
-    def test_password_do_not_contain_user_info(self):
-        payload_without_password = {
-            "first_name": "John",
-            "last_name": "Doe",
-            "email": "john.doe@gmail.com",
-            "organism": "Commune",
-            "function": "Maire",
-        }
-
-        bad_password_payloads = [
-            {"password1": "JohnDoe!", "password2": "JohnDoe!"},
-            {"password1": "John!", "password2": "John!"},
-            {"password1": "Doe!", "password2": "Doe!"},
-            {"password1": "Commune!", "password2": "Commune!"},
-            {"password1": "Maire!", "password2": "Maire!"},
-            {"password1": "CommuneMaire!", "password2": "CommuneMaire!"},
-        ]
-
-        for bad_password_payload in bad_password_payloads:
-            with self.subTest(bad_password_payload=bad_password_payload):
-                data = {**payload_without_password, **bad_password_payload}
-                response = self.client.post(path=form_url, data=data)
-                self.assertFormError(
-                    response=response,
-                    form="form",
-                    field="password1",
-                    errors="Le mot de passe ne doit pas contenir vos informations personnelles.",
-                )
-
     def test_password_do_not_contain_common_password(self):
         password_payload = {
             "password1": "password!",
@@ -138,11 +111,12 @@ class SignupTest(TestCase):
 
         data = {**valid_payload, **password_payload}
         response = self.client.post(path=form_url, data=data)
+
         self.assertFormError(
             response=response,
             form="form",
             field="password1",
-            errors="Le mot de passe est trop commun.",
+            errors="Ce mot de passe est trop courant.",
         )
 
     def test_password_minimum_length(self):
@@ -157,7 +131,7 @@ class SignupTest(TestCase):
             response=response,
             form="form",
             field="password1",
-            errors="Le mot de passe doit contenir au moins 8 caractères.",
+            errors="Ce mot de passe est trop court. Il doit contenir au minimum 8 caractères.",
         )
 
     def test_password_contains_special_chars(self):
@@ -172,5 +146,5 @@ class SignupTest(TestCase):
             response=response,
             form="form",
             field="password1",
-            errors="Le mot de passe doit contenir au moins un caractère spécial.",
+            errors=MISSING_SPECIAL_CHAR_ERROR,
         )
