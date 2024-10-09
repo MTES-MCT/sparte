@@ -69,8 +69,6 @@ Le site est désormais accessible en local à cette adresse:
 | LOCAL_FILE_DIRECTORY | Emplacement des données locales (utile pour charger des shapefile en local au lieu de S3) | public_data/local_data |
 | MATTERMOST_WEBHOOK | Webhook personnel pour envoyer des messages dans Mattermost | https://mattermost.incubateur.net/hooks/uak581f8bidyxp5td67rurj5sh |
 | MATOMO_ACTIVATE | Détermine si des infos doivent être envoyé à Matomo | 0 |
-| MATOMO_SCRIPT_NAME | | |
-| MATOMO_TOKEN | Token pour envoyer les données à Matomo |  |
 | POSTGRES_DB | Nom de la base de donnée (local uniquement) | postgres |
 | POSTGRES_USER | Username par défaut de la base de donnée (local uniquement) | postgres |
 | POSTGRES_PASSWORD | Password par défaut de la base de donnée (local uniquement) | postgres |

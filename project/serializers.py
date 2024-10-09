@@ -1,9 +1,25 @@
 from rest_framework import serializers
 from rest_framework_gis import serializers as gis_serializers
 
+from project.models import Project
 from public_data.models import Commune, CommuneDiff
 
 from .models import Emprise
+
+
+class ProjectDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Project
+        fields = [
+            "id",
+            "created_date",
+            "level_label",
+            "analyse_start_date",
+            "analyse_end_date",
+            "territory_name",
+            "ocsge_coverage_status",
+            "has_zonage_urbanisme",
+        ]
 
 
 class EmpriseSerializer(gis_serializers.GeoFeatureModelSerializer):

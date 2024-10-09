@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import List
 
 from django.contrib.gis.db import models
 from django.core.exceptions import ObjectDoesNotExist
@@ -88,16 +88,19 @@ class Land:
         return cls.Meta.subclasses[land_type.upper()]
 
     @classmethod
-    def search(cls, needle, region=None, departement=None, epci=None, search_for=None) -> Dict[str, models.QuerySet]:
-        """Search for a keyword on all land subclasses"""
+    def search(cls, needle, region=None, departement=None, epci=None, search_for=None) -> List[models.Model]:
+        """Search for a keyword on all land subclasses and return a flat list of results ordered by similarity"""
         if not search_for:
-            return dict()
+            return []
 
         if search_for == "*":
             search_for = cls.Meta.subclasses.keys()
 
-        return {
-            name: subclass.search(needle, region=region, departement=departement, epci=epci)
-            for name, subclass in cls.Meta.subclasses.items()
-            if name in search_for
-        }
+        results = []
+        for name, subclass in cls.Meta.subclasses.items():
+            if name in search_for:
+                subclass_results = subclass.search(needle, region=region, departement=departement, epci=epci)
+                results.extend(subclass_results)
+
+        results = sorted(results, key=lambda x: x.similarity, reverse=True)  # Tri par similarité
+        return results[:20]  # Limiter à 20 résultats

@@ -107,6 +107,7 @@ INSTALLED_APPS = DJANGO_APPS + RESTFRAMEWORK_APPS + THIRD_APPS + PROJECT_APPS
 
 MIDDLEWARE = [
     "django.middleware.gzip.GZipMiddleware",
+    "config.middlewares.HtmxMiddleware",
     "config.middlewares.LogIncomingRequest",
     "config.middlewares.MaintenanceModeMiddleware",
     "django.middleware.security.SecurityMiddleware",
@@ -360,7 +361,7 @@ if DEBUG:
 
         # bypass check of internal IPs
         def show_toolbar(request):
-            return True
+            return False
 
         DEBUG_TOOLBAR_CONFIG = {
             "SHOW_TOOLBAR_CALLBACK": show_toolbar,
@@ -474,7 +475,6 @@ if ENVIRONMENT != "local":
 
 
 # MATOMO
-MATOMO_TOKEN = env.str("MATOMO_TOKEN", default="")
 MATOMO_ACTIVATE = env.bool("MATOMO_ACTIVATE", default=False)
 
 # GOOGLE TAG ADWORDS

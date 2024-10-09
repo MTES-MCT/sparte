@@ -8,7 +8,8 @@ register = template.Library()
 def tracking_code(context):
     return {
         "CSP_NONCE": context["CSP_NONCE"],
-        "DISPLAY": settings.MATOMO_ACTIVATE,
+        "MATOMO_ACTIVATE": settings.MATOMO_ACTIVATE,
+        "DEBUG": settings.DEBUG,
     }
 
 

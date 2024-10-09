@@ -1,5 +1,4 @@
 from decimal import InvalidOperation
-from functools import cached_property
 from typing import Any, Dict
 
 import pandas as pd
@@ -11,7 +10,7 @@ from django.db.models import Case, CharField, DecimalField, F, Q, Sum, Value, Wh
 from django.db.models.functions import Cast, Concat
 from django.db.models.query import QuerySet
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.views.generic import CreateView, DetailView, TemplateView
 
@@ -50,16 +49,10 @@ from public_data.models.ocsge import Ocsge, OcsgeDiff
 from utils.htmx import StandAloneMixin
 from utils.views_mixins import CacheMixin
 
-from .mixins import (
-    BreadCrumbMixin,
-    GroupMixin,
-    OcsgeCoverageMixin,
-    UserQuerysetOrPublicMixin,
-)
+from .mixins import ReactMixin
 
 
-class ProjectReportBaseView(CacheMixin, GroupMixin, DetailView):
-    breadcrumbs_title = "To be set"
+class ProjectReportBaseView(ReactMixin, CacheMixin, DetailView):
     context_object_name = "project"
     queryset = Project.objects.all()
 
@@ -74,15 +67,21 @@ class ProjectReportBaseView(CacheMixin, GroupMixin, DetailView):
                 return redirect("project:splash", pk=project.id)
         return super().dispatch(request, *args, **kwargs)
 
-    def get_context_breadcrumbs(self):
-        breadcrumbs = super().get_context_breadcrumbs()
-        breadcrumbs.append({"href": None, "title": self.breadcrumbs_title})
-        return breadcrumbs
+    def get_context_data(self, **kwargs):
+        project: Project = self.get_object()
+
+        kwargs.update(
+            {
+                "project_id": project.id,
+            }
+        )
+
+        return super().get_context_data(**kwargs)
 
 
 class ProjectReportConsoView(ProjectReportBaseView):
-    template_name = "project/report_consommation.html"
-    breadcrumbs_title = "Rapport consommation"
+    partial_template_name = "project/components/dashboard/consommation.html"
+    full_template_name = "project/pages/consommation.html"
 
     def get_context_data(self, **kwargs):
         project: Project = self.get_object()
@@ -102,24 +101,39 @@ class ProjectReportConsoView(ProjectReportBaseView):
 
         # Déterminants
         det_chart = charts.AnnualConsoByDeterminantChart(project)
+        det_pie_chart = charts.ConsoByDeterminantPieChart(
+            project,
+            series=det_chart.get_series(),
+        )
 
         # comparison chart
         comparison_chart = charts.AnnualConsoComparisonChart(project)
+
+        # surface
+        surface_chart = charts.SurfaceChart(self.object)
+        surface_proportional_chart = charts.AnnualConsoProportionalComparisonChart(self.object)
+
+        surface_proportional_table = ConsoProportionalComparisonTableMapper.map(
+            consommation_progression=PublicDataContainer.consommation_progression_service().get_by_lands(
+                lands=project.comparison_lands_and_self_land(),
+                start_date=int(project.analyse_start_date),
+                end_date=int(project.analyse_end_date),
+            )
+        )
 
         kwargs.update(
             {
                 "diagnostic": project,
                 "total_surface": project.area,
-                "active_page": "consommation",
                 "conso_period": conso_period,
+                "is_commune": project.land_type == AdminRef.COMMUNE,
                 # charts
                 "determinant_per_year_chart": det_chart,
-                "determinant_pie_chart": charts.ConsoByDeterminantPieChart(
-                    project,
-                    series=det_chart.get_series(),
-                ),
+                "determinant_pie_chart": det_pie_chart,
                 "comparison_chart": comparison_chart,
                 "annual_total_conso_chart": annual_total_conso_chart,
+                "surface_chart": surface_chart,
+                "surface_proportional_chart": surface_proportional_chart,
                 # data tables
                 "annual_conso_data_table": annual_conso_data_table,
                 "data_determinant": add_total_line_column(det_chart.get_series()),
@@ -130,30 +144,26 @@ class ProjectReportConsoView(ProjectReportBaseView):
                         end_date=int(project.analyse_end_date),
                     )
                 ),
-                "nb_communes": project.cities.count(),
+                "surface_data_table": surface_chart.get_series(),
+                "surface_proportional_data_table": surface_proportional_table,
             }
         )
 
         return super().get_context_data(**kwargs)
 
 
-class ProjectReportDicoverOcsgeView(OcsgeCoverageMixin, ProjectReportBaseView):
-    template_name = "project/report_discover_ocsge.html"
-    breadcrumbs_title = "Découvrir l'OCS GE"
+class ProjectReportDicoverOcsgeView(ProjectReportBaseView):
+    partial_template_name = "project/components/dashboard/ocsge.html"
+    full_template_name = "project/pages/ocsge.html"
 
     def get_context_data(self, **kwargs):
         project: Project = self.get_object()
 
-        surface_territory = project.area
-        kwargs = {
-            "diagnostic": project,
-            "nom": "Rapport découvrir l'OCS GE",
-            "surface_territory": surface_territory,
-            "active_page": "discover",
-        }
-
         kwargs.update(
             {
+                "diagnostic": project,
+                "nom": "Rapport découvrir l'OCS GE",
+                "surface_territory": project.area,
                 "first_millesime": str(project.first_year_ocsge),
                 "last_millesime": str(project.last_year_ocsge),
                 "couv_pie_chart": charts.CouverturePieChart(project),
@@ -195,8 +205,8 @@ class ProjectReportDicoverOcsgeView(OcsgeCoverageMixin, ProjectReportBaseView):
 
 
 class ProjectReportSynthesisView(ProjectReportBaseView):
-    template_name = "project/report_synthesis.html"
-    breadcrumbs_title = "Synthèse consommation d'espaces et artificialisation"
+    partial_template_name = "project/components/dashboard/synthese.html"
+    full_template_name = "project/pages/synthese.html"
 
     def get_context_data(self, **kwargs):
         project: Project = self.get_object()
@@ -209,7 +219,6 @@ class ProjectReportSynthesisView(ProjectReportBaseView):
         kwargs.update(
             {
                 "diagnostic": project,
-                "active_page": "synthesis",
                 "total_surface": total_surface,
                 "new_artif": progression_time_scoped["new_artif"],
                 "new_natural": progression_time_scoped["new_natural"],
@@ -226,8 +235,8 @@ class ProjectReportSynthesisView(ProjectReportBaseView):
 
 
 class ProjectReportLocalView(ProjectReportBaseView):
-    template_name = "project/report_local.html"
-    breadcrumbs_title = "Rapport triennal local"
+    partial_template_name = "project/components/dashboard/rapport_local.html"
+    full_template_name = "project/pages/rapport_local.html"
 
     def get_context_data(self, **kwargs):
         project: Project = self.get_object()
@@ -235,15 +244,14 @@ class ProjectReportLocalView(ProjectReportBaseView):
         kwargs.update(
             {
                 "diagnostic": project,
-                "active_page": "local",
             }
         )
         return super().get_context_data(**kwargs)
 
 
-class ProjectReportImperView(OcsgeCoverageMixin, ProjectReportBaseView):
-    template_name = "project/report_imper.html"
-    breadcrumbs_title = "Imperméabilisation"
+class ProjectReportImperView(ProjectReportBaseView):
+    partial_template_name = "project/components/dashboard/impermeabilisation.html"
+    full_template_name = "project/pages/impermeabilisation.html"
 
     def get_context_data(self, **kwargs):
         project: Project = self.get_object()
@@ -260,7 +268,6 @@ class ProjectReportImperView(OcsgeCoverageMixin, ProjectReportBaseView):
         kwargs.update(
             {
                 "diagnostic": project,
-                "active_page": "impermeabilisation",
                 "first_millesime": str(project.first_year_ocsge),
                 "last_millesime": str(project.last_year_ocsge),
                 "imper_nette_chart": charts.ImperNetteProgression(project),
@@ -276,27 +283,37 @@ class ProjectReportImperView(OcsgeCoverageMixin, ProjectReportBaseView):
         return super().get_context_data(**kwargs)
 
 
-class ProjectReportArtifView(OcsgeCoverageMixin, ProjectReportBaseView):
-    template_name = "project/report_artif.html"
-    breadcrumbs_title = "Artificialisation"
+class ProjectReportArtifView(ProjectReportBaseView):
+    partial_template_name = "project/components/dashboard/artificialisation.html"
+    full_template_name = "project/pages/artificialisation.html"
 
     def get_context_data(self, **kwargs):
         project: Project = self.get_object()
         total_surface = project.area
-
-        # Retrieve request level of analysis
         level = self.request.GET.get("level_conso", project.level)
+        is_commune = (project.land_type == AdminRef.COMMUNE,)
 
         kwargs = {
             "land_type": project.land_type or "COMP",
             "diagnostic": project,
-            "active_page": "artificialisation",
             "total_surface": total_surface,
+            "is_commune": is_commune,
+            "level": level,
         }
 
         if project.ocsge_coverage_status != project.OcsgeCoverageStatus.COMPLETE_UNIFORM:
             return super().get_context_data(**kwargs)
 
+        kwargs |= self.get_ocsge_context(project, total_surface)
+
+        if not is_commune:
+            kwargs |= self.get_comparison_context(project, level)
+
+        kwargs |= self.get_artif_net_table(project)
+
+        return super().get_context_data(**kwargs)
+
+    def get_ocsge_context(self, project, total_surface):
         first_millesime = project.first_year_ocsge
         last_millesime = project.last_year_ocsge
 
@@ -304,8 +321,8 @@ class ProjectReportArtifView(OcsgeCoverageMixin, ProjectReportBaseView):
         rate_artif_area = round(100 * float(artif_area) / float(total_surface))
 
         chart_waterfall = charts.ArtifWaterfallChart(project)
-
         progression_time_scoped = chart_waterfall.get_series()
+
         net_artif = progression_time_scoped["net_artif"]
 
         try:
@@ -318,8 +335,6 @@ class ProjectReportArtifView(OcsgeCoverageMixin, ProjectReportBaseView):
 
         table_evolution_artif = charts.AnnualArtifChart(project).get_series()
         headers_evolution_artif = table_evolution_artif["Artificialisation"].keys()
-
-        chart_comparison = charts.NetArtifComparaisonChart(project, level=level)
 
         detail_couv_artif_chart = charts.ArtifProgressionByCouvertureChart(project)
         detail_usage_artif_chart = charts.ArtifProgressionByUsageChart(project)
@@ -343,7 +358,7 @@ class ProjectReportArtifView(OcsgeCoverageMixin, ProjectReportBaseView):
                     usage_row["last_millesime"] = row["surface"]
                     break
 
-        kwargs |= {
+        return {
             "first_millesime": str(first_millesime),
             "last_millesime": str(last_millesime),
             "artif_area": artif_area,
@@ -362,16 +377,16 @@ class ProjectReportArtifView(OcsgeCoverageMixin, ProjectReportBaseView):
             "detail_usage_artif_chart": detail_usage_artif_chart,
             "couv_artif_sol": couv_artif_sol,
             "usage_artif_sol": usage_artif_sol,
-            "chart_comparison": chart_comparison,
-            "table_comparison": add_total_line_column(chart_comparison.get_series()),
-            "level": level,
             "chart_waterfall": chart_waterfall,
-            "nb_communes": project.cities.count(),
         }
 
-        kwargs |= self.get_artif_net_table(project)
+    def get_comparison_context(self, project, level):
+        chart_comparison = charts.NetArtifComparaisonChart(project, level=level)
 
-        return super().get_context_data(**kwargs)
+        return {
+            "chart_comparison": chart_comparison,
+            "table_comparison": add_total_line_column(chart_comparison.get_series()),
+        }
 
     def get_artif_net_table(self, project):
         qs = project.get_artif_per_maille_and_period()
@@ -409,9 +424,9 @@ class ProjectReportArtifView(OcsgeCoverageMixin, ProjectReportBaseView):
         }
 
 
-class ProjectReportDownloadView(BreadCrumbMixin, CreateView):
+class ProjectReportDownloadView(CreateView):
     model = Request
-    template_name = "project/report_download.html"
+    template_name = "project/components/forms/report_download.html"
     fields = [
         "first_name",
         "last_name",
@@ -475,8 +490,8 @@ class ProjectReportDownloadView(BreadCrumbMixin, CreateView):
 
 
 class ProjectReportTarget2031View(ProjectReportBaseView):
-    template_name = "project/report_target_2031.html"
-    breadcrumbs_title = "Rapport trajectoires"
+    partial_template_name = "project/components/dashboard/trajectoires.html"
+    full_template_name = "project/pages/trajectoires.html"
 
     def get_context_data(self, **kwargs):
         diagnostic = self.get_object()
@@ -484,26 +499,25 @@ class ProjectReportTarget2031View(ProjectReportBaseView):
         kwargs.update(
             {
                 "diagnostic": diagnostic,
-                "active_page": "target_2031",
                 "total_real": target_2031_chart.total_real,
                 "annual_real": target_2031_chart.annual_real,
                 "conso_2031": target_2031_chart.conso_2031,
                 "annual_objective_2031": target_2031_chart.annual_objective_2031,
                 "target_2031_chart": target_2031_chart,
+                "target_2031_chart_data": target_2031_chart.dict(),
             }
         )
         return super().get_context_data(**kwargs)
 
 
 class ProjectReportTarget2031GraphView(ProjectReportBaseView):
-    template_name = "project/partials/report_target_2031_graphic.html"
+    template_name = "project/components/charts/report_target_2031_graphic.html"
 
     def get_context_data(self, **kwargs) -> Dict[str, Any]:
         diagnostic = self.get_object()
         target_2031_chart = charts.ObjectiveChart(diagnostic)
         kwargs.update(
             {
-                "reload_kpi": True,
                 "diagnostic": diagnostic,
                 "target_2031_chart": target_2031_chart,
                 "total_2020": target_2031_chart.total_2020,
@@ -514,17 +528,25 @@ class ProjectReportTarget2031GraphView(ProjectReportBaseView):
         )
         return super().get_context_data(**kwargs)
 
+    def get(self, request, *args, **kwargs):
+        # Récupération du contexte via la méthode dédiée
+        context = self.get_context_data(**kwargs)
+        # Rendu du template avec le contexte obtenu
+        return render(request, self.template_name, context)
 
-class ProjectReportUrbanZonesView(OcsgeCoverageMixin, ProjectReportBaseView):
-    template_name = "project/report_urban_zones.html"
-    breadcrumbs_title = "Zonages d'urbanisme"
+
+class ProjectReportUrbanZonesView(ProjectReportBaseView):
+    partial_template_name = "project/components/dashboard/gpu.html"
+    full_template_name = "project/pages/gpu.html"
 
     def get_context_data(self, **kwargs):
         project = self.get_object()
         kwargs.update(
             {
                 "diagnostic": project,
-                "active_page": "urban_zones",
+                "zone_list": project.get_artif_per_zone_urba_type(),
+                "first_year_ocsge": str(project.first_year_ocsge),
+                "last_year_ocsge": str(project.last_year_ocsge),
             }
         )
 
@@ -532,7 +554,7 @@ class ProjectReportUrbanZonesView(OcsgeCoverageMixin, ProjectReportBaseView):
 
 
 class DownloadWordView(TemplateView):
-    template_name = "project/error_download_word.html"
+    template_name = "project/pages/error_download_word.html"
 
     def get(self, request, *args, **kwargs):
         """Redirect vers le fichier word du diagnostic si: le diagnostic est public ou est associé à l'utilisateur
@@ -552,42 +574,12 @@ class DownloadWordView(TemplateView):
         return super().get(request, *args, **kwargs)
 
 
-class ConsoRelativeSurfaceChart(CacheMixin, UserQuerysetOrPublicMixin, DetailView):
-    context_object_name = "project"
-    queryset = Project.objects.all()
-    template_name = "project/partials/surface_comparison_conso.html"
-
-    def get_context_data(self, **kwargs):
-        project: Project = self.get_object()
-        surface_chart = charts.SurfaceChart(self.object)
-        surface_proportional_chart = charts.AnnualConsoProportionalComparisonChart(self.object)
-
-        surface_proportional_table = ConsoProportionalComparisonTableMapper.map(
-            consommation_progression=PublicDataContainer.consommation_progression_service().get_by_lands(
-                lands=project.comparison_lands_and_self_land(),
-                start_date=int(project.analyse_start_date),
-                end_date=int(project.analyse_end_date),
-            )
-        )
-
-        kwargs.update(
-            {
-                "diagnostic": self.object,
-                "surface_chart": surface_chart,
-                "surface_data_table": surface_chart.get_series(),
-                "surface_proportional_chart": surface_proportional_chart,
-                "surface_proportional_data_table": surface_proportional_table,
-            }
-        )
-        return super().get_context_data(**kwargs)
-
-
 class ArtifZoneUrbaView(CacheMixin, StandAloneMixin, DetailView):
     """Content of the pannel in Urba Area Explorator."""
 
     queryset = ZoneUrba.objects.all()
     context_object_name = "zone_urba"
-    template_name = "project/partials/artif_zone_urba.html"
+    template_name = "project/components/charts/artif_zone_urba.html"
 
     def get_object(self) -> QuerySet[Any]:
         return ZoneUrba.objects.get(checksum=self.kwargs["checksum"])
@@ -613,7 +605,7 @@ class ArtifZoneUrbaView(CacheMixin, StandAloneMixin, DetailView):
 
 
 class ArtifNetChart(CacheMixin, TemplateView):
-    template_name = "project/partials/artif_net_chart.html"
+    template_name = "project/components/charts/artif_net_chart.html"
 
     def get(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         self.diagnostic = Project.objects.get(pk=self.kwargs["pk"])
@@ -675,7 +667,7 @@ class ArtifNetChart(CacheMixin, TemplateView):
 
 
 class ArtifDetailCouvChart(CacheMixin, TemplateView):
-    template_name = "project/partials/artif_detail_couv_chart.html"
+    template_name = "project/components/charts/artif_detail_couv_chart.html"
 
     def get(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         self.diagnostic = Project.objects.get(pk=self.kwargs["pk"])
@@ -758,7 +750,7 @@ class ArtifDetailCouvChart(CacheMixin, TemplateView):
 
 
 class ArtifDetailUsaChart(CacheMixin, TemplateView):
-    template_name = "project/partials/artif_detail_usage_chart.html"
+    template_name = "project/components/charts/artif_detail_usage_chart.html"
 
     def get(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         self.diagnostic = Project.objects.get(pk=self.kwargs["pk"])
@@ -838,80 +830,3 @@ class ArtifDetailUsaChart(CacheMixin, TemplateView):
             "detail_total_artif_period": sum(_["last_millesime"] for _ in detail_usage_artif_table),
         }
         return super().get_context_data(**kwargs)
-
-
-class TestView(TemplateView):
-    template_name = "project/test.html"
-
-
-class ProjectReportGpuView(ProjectReportBaseView):
-    template_name = "project/report_gpu.html"
-    breadcrumbs_title = "Rapport Zones d'urbanisme"
-
-    def get_context_data(self, **kwargs):
-        project = self.get_object()
-        kwargs.update(
-            {
-                "diagnostic": project,
-                "active_page": "gpu",
-            }
-        )
-
-        return super().get_context_data(**kwargs)
-
-
-class ProjectReportGpuZoneSynthesisTable(CacheMixin, StandAloneMixin, TemplateView):
-    template_name = "project/partials/zone_urba_aggregated_table.html"
-
-    @cached_property
-    def diagnostic(self):
-        return Project.objects.get(pk=self.kwargs["pk"])
-
-    def should_cache(self, *args, **kwargs):
-        if not self.diagnostic.theme_map_gpu:
-            return False
-        return True
-
-    def get_context_data(self, **kwargs):
-        kwargs |= {
-            "zone_list": self.diagnostic.get_artif_per_zone_urba_type(),
-            "diagnostic": self.diagnostic,
-            "first_year_ocsge": str(self.diagnostic.first_year_ocsge),
-            "last_year_ocsge": str(self.diagnostic.last_year_ocsge),
-        }
-        return super().get_context_data(**kwargs)
-
-
-class ProjectReportGpuZoneGeneralMap(StandAloneMixin, TemplateView):
-    template_name = "project/partials/zone_urba_general_map.html"
-
-    def get_context_data(self, **kwargs):
-        return super().get_context_data(diagnostic=Project.objects.get(pk=self.kwargs["pk"]), **kwargs)
-
-
-class ProjectReportGpuZoneFillMap(StandAloneMixin, TemplateView):
-    template_name = "project/partials/zone_urba_fill_map.html"
-
-    def get_context_data(self, **kwargs):
-        return super().get_context_data(diagnostic=Project.objects.get(pk=self.kwargs["pk"]), **kwargs)
-
-
-class ProjectReportConsoMap(StandAloneMixin, TemplateView):
-    template_name = "project/partials/conso_map.html"
-
-    def get_context_data(self, **kwargs):
-        return super().get_context_data(diagnostic=Project.objects.get(pk=self.kwargs["pk"]), **kwargs)
-
-
-class ProjectReportArtifTerritoryMap(StandAloneMixin, TemplateView):
-    template_name = "project/partials/artif_territory_map.html"
-
-    def get_context_data(self, **kwargs):
-        return super().get_context_data(diagnostic=Project.objects.get(pk=self.kwargs["pk"]), **kwargs)
-
-
-class ProjectReportArtifCitiesMap(StandAloneMixin, TemplateView):
-    template_name = "project/partials/artif_cities_map.html"
-
-    def get_context_data(self, **kwargs):
-        return super().get_context_data(diagnostic=Project.objects.get(pk=self.kwargs["pk"]), **kwargs)

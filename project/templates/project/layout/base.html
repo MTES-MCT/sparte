@@ -1,0 +1,266 @@
+{% load static %}
+{% load utils_tags %}
+{% load sri %}
+
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+        <title>{% block pagetitle %}{{ page_title }}{% endblock %}</title>
+
+        <link crossorigin="anonymous" rel="icon" href="{% static 'favicon/favicon.svg' %}" integrity="sha256-9XtIvlxcpnXef29DOD0o+agM++e/ZB8xYC5vGqDiTLI=">
+        <link crossorigin="anonymous" rel="apple-touch-icon" sizes="180x180" href="{% static 'favicon/apple-touch-icon.png' %}" integrity="sha256-U4nRN5qiI5h+9kMtFZh/GkuJqlklIU4HLH999+7seYc=">
+        <link crossorigin="anonymous" rel="manifest" href="{% static 'favicon/site.webmanifest' %}" integrity="sha256-MQuGlDTw7p2ZoRDl72v7QerBFbziQo9WL/XfFDeFGf8=">
+        <link crossorigin="anonymous" rel="mask-icon" href="{% static 'favicon/safari-pinned-tab.svg' %}" color="#868686" integrity="sha256-L/SsNmrQdW36ZiLwYTlnMQpcXBAiDLWKiqj7Sos19nY=">
+        <meta name="msapplication-TileColor" content="#2b5797">
+        <meta name="theme-color" content="#ffffff">
+
+        <!-- Core theme CSS (includes Bootstrap)-->
+        {% sri_static "bootstrap522/css/bootstrap.min.css" %}
+        <!-- Bootstrap icon -->
+        <link crossorigin="anonymous" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css" integrity="sha256-8M+b2Hj+vy/2J5tZ9pYDHeuPD59KsaEZn1XXj3xVhjg=">
+        <!-- Webpack Bundle CSS -->
+        {% sri_static "assets/styles/main.css" %}
+        <!-- Dashboard CSS -->
+        {% sri_static "project/styles/dashboard.css" %}
+        <!-- subtemplate header injection -->
+        {% block headers %}{% endblock %}
+        <!-- Matomo -->
+        {% tracking_code %}
+        <!-- Google Adwords -->
+        {% adwords_google_tag_code %}
+        <!-- Crisp -->
+        {% crisp_tag_code %}
+    </head>
+    
+    <body>
+        <div id="react-root" data-project-id="{{ project_id|safe }}"></div>
+
+        <script id="urls-data" type="application/json">
+            {
+                "urls": {
+                    "synthese": "{% url 'project:report_synthesis' project.pk %}",
+                    "rapportLocal": "{% url 'project:report_local' project.pk %}",
+                    "trajectoires": "{% url 'project:report_target_2031' project.pk %}",
+                    "consommation": "{% url 'project:report_conso' project.pk %}",
+                    "gpu": "{% url 'project:report_urban_zones' project.pk %}",
+                    "ocsge": "{% url 'project:report_discover' project.pk %}",
+                    "artificialisation": "{% url 'project:report_artif' project.pk %}",
+                    "impermeabilisation": "{% url 'project:report_imper' project.pk %}",
+                    "update": "{% url 'project:update' project.pk %}",
+                    "setPeriod": "{% url 'project:set-period' diagnostic.pk %}",
+                    "dowloadConsoReport": "{% url 'project:report_download' requested_document='rapport-conso' pk=project.pk %}",
+                    "dowloadFullReport": "{% url 'project:report_download' requested_document='rapport-complet' pk=project.pk %}",
+                    "dowloadLocalReport": "{% url 'project:report_download' requested_document='rapport-local' pk=project.pk %}",
+                    "dowloadCsvReport": "{% url 'project:export-excel' project.pk %}"
+                }
+            }
+        </script>
+
+        <script id="header-data" type="application/json">
+            {
+                "logos": [
+                    {
+                        "src": "{% static '/img/republique-francaise-logo.svg' %}",
+                        "alt": "Logo République Française",
+                        "height": "70px"
+                    },
+                    {
+                        "src": "{% static '/img/logo-mon-diagnostic-artificialisation.svg' %}",
+                        "alt": "Logo Mon Diagnostic Artificialisation",
+                        "url": "/",
+                        "height": "50px"
+                    }
+                ],
+                "search": {
+                    "createUrl": "{% url 'project:create' %}"
+                },
+                "menuItems": [
+                    {
+                        "label": "FAQ",
+                        "url": "{{ FAQ_URL }}",
+                        "target": "_blank"
+                    },
+                    {% if user.is_authenticated %}
+                    {
+                        "label": "Mes diagnostics",
+                        "url": "{% url 'project:list' %}"
+                    },
+                    {
+                        "label": "Mon compte",
+                        "url": "{% url 'users:profile' %}"
+                    }
+                    {% else %}
+                    {
+                        "label": "Se connecter",
+                        "url": "{% url 'users:signin' %}"
+                    },
+                    {
+                        "label": "S'inscrire",
+                        "url": "{% url 'users:signup' %}"
+                    }
+                    {% endif %}
+                ]
+            }
+        </script>
+
+        <script id="navbar-data" type="application/json">
+            {
+                "menuItems": [
+                    {
+                        "label": "Synthèse",
+                        "url": "{% url 'project:report_synthesis' project.pk %}",
+                        "icon": "bi bi-grid-1x2"
+                    },
+                    {
+                        "label": "Les attendus de la loi C&R",
+                        "icon": "bi bi-check-square",
+                        "subMenu": [
+                            {
+                                "label": "Rapport triennal local",
+                                "url": "{% url 'project:report_local' project.pk %}"
+                            },
+                            {
+                                "label": "Trajectoire ZAN",
+                                "url": "{% url 'project:report_target_2031' project.pk %}"
+                            }
+                        ]
+                    },
+                    {
+                        "label": "Pilotage territorial",
+                        "icon": "bi bi-bar-chart",
+                        "subMenu": [
+                            {
+                                "label": "Consommation d'espaces NAF",
+                                "url": "{% url 'project:report_conso' project.pk %}"
+                            },
+                            {
+                                "label": "Artificialisation des zonages d'urbanisme",
+                                "url": "{% url 'project:report_urban_zones' project.pk %}"
+                            }
+                        ]                        
+                    },
+                    {
+                        "label": "Enjeux environnementaux",
+                        "icon": "bi bi-tree",
+                        "subMenu": [
+                            {
+                                "label": "Usage et couverture du sol (OCS GE)",
+                                "url": "{% url 'project:report_discover' project.pk %}"
+                            },
+                            {
+                                "label": "Artificialisation",
+                                "url": "{% url 'project:report_artif' project.pk %}"
+                            },
+                            {
+                                "label": "Imperméabilisation",
+                                "url": "{% url 'project:report_imper' project.pk %}"
+                            }
+                        ]  
+                    },
+                    {
+                        "label": "Paramètres du diagnostic",
+                        "icon": "bi bi-gear-fill",
+                        "url": "{% url 'project:update' project.pk %}"
+                    }
+                ]
+            }
+        </script>
+
+        <script id="footer-data" type="application/json">
+            {
+                "menuItems": [
+                    {
+                        "label": "Accessibilité: {{ SITE_CONFIG.get_accessibility_status_display|default:'non' }} conforme",
+                        "url": "{% url 'home:accessibilite' %}"
+                    },
+                    {
+                        "label": "Mentions légales",
+                        "url": "{% url 'home:cgv' %}"
+                    },
+                    {
+                        "label": "Données personnelles",
+                        "url": "{% url 'home:privacy' %}"
+                    },
+                    {
+                        "label": "Statistiques",
+                        "url": "{% url 'metabase:stats' %}"
+                    },
+                    {
+                        "label": "Documentations",
+                        "url": "{{ EXTERNAL_DOC }}",
+                        "target": "_blank"
+                    },
+                    {
+                        "label": "FAQ",
+                        "url": "{{ FAQ_URL }}",
+                        "target": "_blank"
+                    },
+                    {
+                        "label": "Tutoriel",
+                        "url": "{% url 'documentation:tutoriel' %}"
+                    },
+                    {
+                        "label": "Contactez-nous",
+                        "url": "{% url 'home:contact' %}"
+                    }
+                ]
+            }
+        </script>
+
+        <dialog aria-labelledby="fr-modal-title-modal-1" id="fr-modal-1" class="fr-modal">
+            <div class="fr-container fr-container--fluid fr-container-md">
+                <div class="fr-grid-row fr-grid-row--center">
+                    <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+                        <div class="fr-modal__body">
+                            <div class="fr-modal__header">
+                                <button class="fr-btn--close fr-btn" title="Fermer la fenêtre modale" aria-controls="fr-modal-1">Fermer</button>
+                            </div>
+                            <div class="fr-modal__content">
+                                <h1 id="fr-modal-title-modal-1" class="fr-modal__title">Modifier la période d'analyse du diagnostic</h1>
+                                <div id="update_period_form">
+                                    <div class="fr-custom-loader"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </dialog>
+
+        <dialog aria-labelledby="fr-modal-2-title" id="fr-modal-download-word" class="fr-modal">
+            <div class="fr-container fr-container--fluid fr-container-md">
+                <div class="fr-grid-row fr-grid-row--center">
+                    <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+                        <div class="fr-modal__body">
+                            <div class="fr-modal__header">
+                                <button class="fr-link--close fr-link" aria-controls="fr-modal-download-word">Fermer</button>
+                            </div>
+                            <div class="fr-modal__content">
+                                <div id="diag_word_form">
+                                    <div class="fr-custom-loader"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </dialog>
+
+        {% sri_static "bootstrap522/js/bootstrap.bundle.min.js" %}
+        <!-- Webpack Bundle JS -->
+        {% if debug %}
+            <script src="http://localhost:3000/assets/scripts/bundle.dev.js"></script>
+        {% else %}
+            <script src="{% static 'assets/scripts/bundle.prod.js' %}"></script>
+        {% endif %}
+
+
+        <!-- subtemplate footer injection -->
+        {% block bodyend %}{% endblock bodyend %}
+        <!-- Tagging injection -->
+        {% block tagging %}{% endblock tagging %}
+    </body>
+</html>

@@ -1,0 +1,159 @@
+{% load highcharts_tags %}
+{% load project_tags %}
+
+<div class="fr-grid-row fr-grid-row--gutters">
+    <div class="fr-col-12 fr-col-lg-4">
+        <div class="border fr-p-2w">
+            <div class="d-flex justify-content-end align-items-center fr-mb-2w">
+                <div class="dropdown custom-dropdown fr-mr-2w" data-toggle="tooltip" title="Exporter le graphique">
+                    <button class="fr-btn fr-icon-download-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="dropdown" aria-expanded="false"></button>
+
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a class="fr-nav__link export-chart" href="#" data-chart-target="couv_artif_sol" data-type="image/png">PNG</a>
+                        </li>
+                        <li>
+                            <a class="fr-nav__link export-chart" href="#" data-chart-target="couv_artif_sol" data-type="image/jpeg">JPEG</a>
+                        </li>
+                        <li>
+                            <a class="fr-nav__link export-chart" href="#" data-chart-target="couv_artif_sol" data-type="application/pdf">PDF</a>
+                        </li>
+                        <li>
+                            <a class="fr-nav__link export-chart" href="#" data-chart-target="couv_artif_sol" data-type="image/svg+xml">Vectoriel</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm fr-mr-2w fullscreen-chart" data-chart-target="couv_artif_sol" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
+
+                <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#couvArtifSol" data-toggle="tooltip" title="Astuces pour lire le graphique"></button>
+            </div>
+            <div id="couv_artif_sol"></div>
+            {% display_chart 'couv_artif_sol' couv_artif_sol CSP_NONCE %}
+        </div>
+    </div>
+    <div class="fr-col-12 fr-col-lg-8">
+        <div class="border fr-p-2w">
+            <div class="d-flex justify-content-end align-items-center fr-mb-2w">
+                <div class="dropdown custom-dropdown fr-mr-2w" data-toggle="tooltip" title="Exporter le graphique">
+                    <button class="fr-btn fr-icon-download-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="dropdown" aria-expanded="false"></button>
+
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a class="fr-nav__link export-chart" href="#" data-chart-target="detail_couv_artif_chart" data-type="image/png">PNG</a>
+                        </li>
+                        <li>
+                            <a class="fr-nav__link export-chart" href="#" data-chart-target="detail_couv_artif_chart" data-type="image/jpeg">JPEG</a>
+                        </li>
+                        <li>
+                            <a class="fr-nav__link export-chart" href="#" data-chart-target="detail_couv_artif_chart" data-type="application/pdf">PDF</a>
+                        </li>
+                        <li>
+                            <a class="fr-nav__link export-chart" href="#" data-chart-target="detail_couv_artif_chart" data-type="image/svg+xml">Vectoriel</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm fr-mr-2w fullscreen-chart" data-chart-target="detail_couv_artif_chart" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
+
+                <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#couvArtifSol" data-toggle="tooltip" title="Astuces pour lire le graphique"></button>
+            </div>
+            <div id="detail_couv_artif_chart"></div>
+            {% display_chart 'detail_couv_artif_chart' detail_couv_artif_chart CSP_NONCE %}
+        </div>
+    </div>
+</div>
+
+<div class="fr-notice fr-mt-4w">
+    <div class="fr-container">
+        <div class="d-flex align-items-center justify-content-between">
+            <div>
+                <span class="fr-icon-information-line" aria-hidden="true"></span>
+                <span class="fr-text--xs fr-mr-1w">Source de données: </span>
+                <p class="fr-tag fr-tag--sm fr-tag--success">
+                    <strong>OCS GE</strong>
+                </p>
+            </div>
+            <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data-couv">Détails données et calcul</button>
+        </div>
+        <div class="fr-collapse" id="target-data-couv">
+            <h6 class="fr-mt-2w">Source</h6>
+            <p class="fr-text--sm">Données d'OCcupation des Sols à Grande Echelle (OCS GE) de l'IGN, sur la période d'analyse (millésime min : {{ first_millesime }}, millésime max : {{ last_millesime }}).</p>
+
+            <h6 class="fr-mt-2w">Calcul</h6>
+            <p class="fr-text--sm">OCS GE traduite grâce à la matrice de passage.</p>
+
+            <h6 class="fr-mt-2w">Exemple de lecture</h6>
+            <p class="fr-text--sm">Il y a eu 7.5 ha de nouvelles Zones non bâties représentant 10% de la surface de toutes les nouvelles surfaces artificialisées et 2 ha d'anciennes Zones non bâties désartificialisées représentant 16% de la surface de toutes les zones désartificialisées.</p>
+
+            <h6 class="fr-mt-2w">Données</h6>
+            <p class="fr-text--sm">En hectare (Ha).</p>
+            <div class="fr-table fr-table--bordered">
+                <div class="fr-table__wrapper">
+                    <div class="fr-table__container">
+                        <div class="fr-table__content">
+                            <table class="table-last-row-bold">
+                                <caption>
+                                    Évolution de l'artificialisation par type de couverture sur le territoire de {{ first_millesime }} à {{ last_millesime }} (en ha et %)
+                                </caption>
+                                <thead>
+                                    <tr>
+                                        <th scope="col"></th>
+                                        <th scope="col" class="fr-cell--right">Artificialisation</th>
+                                        <th scope="col" class="fr-cell--right text-muted">%</th>
+                                        <th scope="col" class="fr-cell--right">Désartificialisation</th>
+                                        <th scope="col" class="fr-cell--right text-muted">%</th>
+                                        <th scope="col" class="fr-cell--right">Artificialisé en {{ last_millesime }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for couv in detail_couv_artif_table %}
+                                    <tr>
+                                        <th scope="row" aria-describedby="tooltip-{{ couv.code_prefix }}">
+                                            {{ couv.code_prefix }} {{ couv.label }}
+                                            <span class="fr-tooltip fr-placement" id="tooltip-{{ couv.code_prefix }}" role="tooltip" aria-hidden="true">{{ couv.code_prefix }} {{ couv.label }}</span>
+                                        </th>
+                                        <td class="fr-cell--right">{{ couv.artif|floatformat:1 }}</td>
+                                        <td class="fr-cell--right text-muted">{{ couv.artif|percent:detail_total_artif }}</td>
+                                        <td class="fr-cell--right">{{ couv.renat|floatformat:1 }}</td>
+                                        <td class="fr-cell--right text-muted">{{ couv.renat|percent:detail_total_renat }}</td>
+                                        <td class="fr-cell--right">{{ couv.last_millesime|floatformat:1 }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                    <tr>
+                                        <th scope="row">Total</th>
+                                        <td class="fr-cell--right">{{ detail_total_artif|floatformat:1 }}</td>
+                                        <td class="fr-cell--right text-muted">100%</td>
+                                        <td class="fr-cell--right">{{ detail_total_renat|floatformat:1 }}</td>
+                                        <td class="fr-cell--right text-muted">100%</td>
+                                        <td class="fr-cell--right">{{ detail_total_artif_period|floatformat:1 }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="couvArtifSol" tabindex="-1" aria-labelledby="couvArtifSolLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+        <div class="fr-modal__body">
+            <div class="fr-modal__header">
+                <button class="fr-link--close fr-link" data-bs-dismiss="modal" aria-label="Close">Fermer</button>
+            </div>
+            <div class="fr-modal__content">
+                <h1 id="fr-modal-2-title" class="fr-modal__title" id="couvArtifSolLabel">
+                    <span class="fr-fi-arrow-right-line fr-fi--lg"></span>
+                    Astuces - Graphique couverture des sols
+                </h1>
+                <p class="fr-text--sm">Avec le bouton <span class="fr-icon-drag-move-2-line fr-icon--sm" aria-hidden="true"></span>, vous pouvez afficher le graphique en plein écran.</p>
+                <p class="fr-text--sm">Avec le bouton <span class="fr-icon-download-line fr-icon--sm" aria-hidden="true"></span>, vous pouvez télécharger le graphique sous forme d'image (utilisez PNG si vous ne savez pas lequel choisir).</p>
+                <p class="fr-text--sm">Exemple de lecture: 8% des nouvelles surfaces artificialisées le sont pour des Zones bâties.</p>
+            </div>
+        </div>
+    </div>
+</div>

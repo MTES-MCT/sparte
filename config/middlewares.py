@@ -56,3 +56,13 @@ class ForceNonceCSPMiddleware(CSPMiddleware):
             content = response.content.decode("utf-8")
             response.content = content.replace("[NONCE_PLACEHOLDER]", request.csp_nonce).encode("utf-8")
         return response
+
+
+class HtmxMiddleware:
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        request.htmx = "HX-Request" in request.headers
+        response = self.get_response(request)
+        return response

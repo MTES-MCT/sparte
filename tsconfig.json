@@ -9,6 +9,15 @@
         "moduleResolution": "node",
         "allowSyntheticDefaultImports": true,
         "esModuleInterop": true,
-        "typeRoots": ["./node_modules/@types", "./assets/types"]
-    }
+        "typeRoots": ["./node_modules/@types", "./assets/types"],
+        "baseUrl": "./assets",
+        "paths": {
+            "@components/*": ["scripts/components/*"],
+            "@hooks/*": ["scripts/hooks/*"],
+            "@store/*": ["scripts/store/*"],
+            "@services/*": ["scripts/services/*"],
+            "@images/*": ["images/*"],
+            "@utils/*": ["scripts/utils/*"],
+        }
+    },
 }

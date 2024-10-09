@@ -1,0 +1,500 @@
+{% load highcharts_tags %}
+{% load sri %}
+
+ <div class="fr-grid-row fr-grid-row--gutters">
+    <div class="fr-col-12 fr-col-md-6 fr-grid-row">
+        {% include "project/components/widgets/statistic.html" with title=total_surface|floatformat:0|add:" ha" description="Surface du territoire" %}
+    </div>
+    <div class="fr-col-12 fr-col-md-6 fr-grid-row">
+        {% include "project/components/widgets/statistic.html" with title=conso_period|floatformat:1|add:" ha" description="Consommation de "|add:project.analyse_start_date|add:" à "|add:project.analyse_end_date %}
+    </div>
+</div>
+
+<div class="fr-mt-5w">
+    <h3 id="conso-annuelle">Consommation d'espace annuelle sur le territoire</h3>
+
+    <div class="fr-grid-row fr-grid-row--gutters">
+        <div class="fr-col-12{% if not is_commune %} fr-col-lg-8{% endif %}">
+            <div class="bg-white fr-p-2w h-100">
+                <div class="d-flex justify-content-end align-items-center fr-mb-2w">
+                    {% include "project/components/widgets/chart_buttons.html" with chart="annual_total_conso_chart" %}
+                    <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#consoAnnuelle" data-toggle="tooltip" title="Astuces pour lire le graphique"></button>
+                </div>
+                <div id="annual_total_conso_chart"></div>
+            </div>
+        </div>
+        {% if not is_commune %}
+        <div class="fr-col-12 fr-col-lg-4">
+            {% url 'project:theme-city-conso' project.pk as dynamic_map_url %}
+            {% include "project/components/widgets/static_map.html" with dynamic_map_url=dynamic_map_url src=project.theme_map_conso.url title="Carte consommation d'espaces des communes du territoire sur la période (en ha)" %}
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="fr-notice bg-white fr-mt-2w">
+        <div class="fr-container">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <span class="fr-icon-information-line" aria-hidden="true"></span>
+                    <span class="fr-text--xs fr-mr-1w">Source de données: </span>
+                    <p class="fr-tag fr-tag--sm fr-tag--blue">
+                        <strong>FICHIERS FONCIERS</strong>
+                    </p>
+                </div>
+                <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data-1">Détails données et calcul</button>
+            </div>
+            <div class="fr-collapse" id="target-data-1">
+                <h6 class="fr-mt-2w">Source</h6>
+                <p class="fr-text--sm">
+                    Données d'évolution des fichiers fonciers produits et diffusés par le Cerema depuis 2009 à 
+                    partir des fichiers MAJIC (Mise A Jour de l'Information Cadastrale) de la DGFIP. Le dernier 
+                    millésime de 2023 est la photographie du territoire au 1er janvier 2023, intégrant les évolutions 
+                    réalisées au cours de l'année 2022.
+                    Pour plus d'informations sur <a class="fr-link" href="{{ FAQ_URL }}fr/article/quest-ce-quun-millesime-110ihlr/" target="_blank" rel="noopener noreferrer">"Qu'est-ce qu'un millésime ?"</a>.
+                </p>
+                <h6 class="fr-mt-2w">Calcul</h6>
+                <p class="fr-text--sm">Données brutes, sans calcul</p>
+
+                <h6 class="fr-mt-2w">Données</h6>
+                <div class="fr-table fr-table--bg-whiteed">
+                    <div class="fr-table__wrapper">
+                        <div class="fr-table__container">
+                            <div class="fr-table__content">
+                                <table class="table-last-column-bold table-last-row-bold">
+                                    <caption>
+                                        Consommation d'espace annuelle sur le territoire (en ha)
+                                    </caption>
+                                    <thead>
+                                        <tr>
+                                            <th scope="col" class="fr-cell--fixed"></th>
+                                            {% for year in project.years %}
+                                            <th scope="col" class="fr-cell--right">{{ year }}</th>
+                                            {% endfor %}
+                                            <th scope="col" class="fr-cell--right">Total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for item, data in annual_conso_data_table.items %}
+                                        <tr>
+                                            <th scope="row" class="fr-cell--fixed">{{ item }}</th>
+                                            {% for year, val in data.items %}
+                                            <td class="fr-cell--right">+{{ val|floatformat:1 }}</td>
+                                            {% endfor %}
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="fr-mt-7w">
+    <h3 id="determinants-conso">Destinations de la consommation d'espaces</h3>
+
+    <div class="fr-grid-row fr-grid-row--gutters">
+        <div class="fr-col-12 fr-col-lg-4">
+            <div class="bg-white fr-p-2w">
+                <div class="d-flex justify-content-end align-items-center fr-mb-2w">
+                    {% include "project/components/widgets/chart_buttons.html" with chart="pie_determinant" %}
+                    <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#determinantModal" data-toggle="tooltip" title="Astuces pour lire le graphique"></button>
+                </div>
+                <div id="pie_determinant"></div>
+            </div>
+        </div>
+        <div class="fr-col-12 fr-col-lg-8">
+            <div class="bg-white fr-p-2w">
+                <div class="d-flex justify-content-end align-items-center fr-mb-2w">
+                    {% include "project/components/widgets/chart_buttons.html" with chart="chart_determinant" %}
+                    <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#determinantModal" data-toggle="tooltip" title="Astuces pour lire le graphique"></button>
+                </div>
+                <div id="chart_determinant"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="fr-notice bg-white fr-mt-2w">
+        <div class="fr-container">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <span class="fr-icon-information-line" aria-hidden="true"></span>
+                    <span class="fr-text--xs fr-mr-1w">Source de données: </span>
+                    <p class="fr-tag fr-tag--sm fr-tag--blue">
+                        <strong>FICHIERS FONCIERS</strong>
+                    </p>
+                </div>
+                <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data-3">Détails données et calcul</button>
+            </div>
+            <div class="fr-collapse" id="target-data-3">
+                <h6 class="fr-mt-2w">Source</h6>
+                <p class="fr-text--sm">
+                    Données d'évolution des fichiers fonciers produits et diffusés par le Cerema depuis 2009 à 
+                    partir des fichiers MAJIC (Mise A Jour de l'Information Cadastrale) de la DGFIP. Le dernier 
+                    millésime de 2023 est la photographie du territoire au 1er janvier 2023, intégrant les évolutions 
+                    réalisées au cours de l'année 2022.
+                    Pour plus d'informations sur <a class="fr-link" href="{{ FAQ_URL }}fr/article/quest-ce-quun-millesime-110ihlr/" target="_blank" rel="noopener noreferrer">"Qu'est-ce qu'un millésime ?"</a>.
+                </p>
+                <p class="fr-text--sm">
+                    La ligne "inconnu" comprend les éléments dont la destination
+                    n’est pas définie dans les fichiers fonciers.
+                </p>
+                <h6 class="fr-mt-2w">Calcul</h6>
+                <p class="fr-text--sm">Données brutes, sans calcul</p>
+
+                <h6 class="fr-mt-2w">Données</h6>
+                <div class="fr-table fr-table--bg-whiteed">
+                    <div class="fr-table__wrapper">
+                        <div class="fr-table__container">
+                            <div class="fr-table__content">
+                                <table class="table-last-column-bold table-last-row-bold">
+                                    <caption>
+                                        Consommation d'espace annuelle sur le territoire par destination (en ha)
+                                    </caption>
+                                    <thead>
+                                        <tr>
+                                            <th scope="col" class="fr-cell--fixed">Destination</th>
+                                            {% for year in project.years %}
+                                            <th scope="col" class="fr-cell--right">{{ year }}</th>
+                                            {% endfor %}
+                                            <th scope="col" class="fr-cell--right">Total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for determinant_name, data in data_determinant.items %}
+                                        <tr>
+                                            <th scope="row" class="fr-cell--fixed">{{ determinant_name }}</th>
+                                            {% for year, val in data.items %}
+                                            <td class="fr-cell--right">+{{ val|floatformat:1 }}</td>
+                                            {% endfor %}
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="fr-mt-7w" id="territoires-de-comparaison">
+    <h3>Comparaison avec les territoires similaires</h3>
+
+    <div class="fr-callout bg-white">
+        <p class="fr-callout__text fr-text--sm">
+            Par défaut, les territoires de comparaison incluent les territoires voisins. Vous pouvez en retirer ou en ajouter selon vos besoins.
+        </p>
+        {% if project.look_a_like %}
+            <ul class="fr-tags-group fr-mt-2w">
+                {% for land in project.get_look_a_like %}
+                    <li>
+                        <form 
+                            hx-post="{% url 'project:rm-lookalike' project.id %}"
+                            hx-ext="disable-element" 
+                            hx-disable-element="#land_{{ land.name|slugify }}"
+                        >
+                            {% csrf_token %}
+                            <input type="hidden" name="public_key" value="{{ land.public_key }}">
+                            <button type="submit" class="fr-tag fr-tag--sm fr-icon-close-line fr-tag--icon-left" aria-describedby="tooltip-{{ land.name|slugify }}" aria-label="Retirer le territoire {{ land.name }}" id="land_{{ land.name|slugify }}">{{ land.name }}</button>
+                            <span class="fr-tooltip fr-placement" id="tooltip-{{ land.name|slugify }}" role="tooltip" aria-hidden="true">Retirer le territoire de comparaison {{ land.name }}</span>
+                        </form>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="text-muted fr-text--sm fr-mt-1w">Il n'y a aucun territoire de comparaison de configuré.</p>
+        {% endif %}
+        <button 
+            class="fr-btn fr-btn--sm fr-btn--icon-left fr-icon-add-circle-line fr-mt-1w"
+            data-toggle="tooltip"
+            data-fr-opened="false" 
+            aria-controls="fr-modal-3" 
+            title="Ajouter un territoire de comparaison" 
+            hx-get="{% url 'project:lookalike' project.id %}"
+            hx-target="#add_lookalike_form"
+        >
+            Ajouter un territoire de comparaison
+        </button>
+    </div>
+    
+    <div class="bg-white fr-p-2w">
+        <div class="d-flex justify-content-end align-items-center fr-mb-2w">
+            {% include "project/components/widgets/chart_buttons.html" with chart="comparison_chart" %}
+            <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#comparaisonVoisin" data-toggle="tooltip" title="Astuces pour lire le graphique"></button>
+        </div>
+        <div id="comparison_chart"></div>
+    </div>
+
+    <div class="fr-notice bg-white fr-mt-2w">
+        <div class="fr-container">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <span class="fr-icon-information-line" aria-hidden="true"></span>
+                    <span class="fr-text--xs fr-mr-1w">Source de données: </span>
+                    <p class="fr-tag fr-tag--sm fr-tag--blue">
+                        <strong>FICHIERS FONCIERS</strong>
+                    </p>
+                </div>
+                <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data-2">Détails données et calcul</button>
+            </div>
+            <div class="fr-collapse" id="target-data-2">
+                <h6 class="fr-mt-2w">Source</h6>
+                <p class="fr-text--sm">
+                    Données d'évolution des fichiers fonciers produits et diffusés par le Cerema depuis 2009 à 
+                    partir des fichiers MAJIC (Mise A Jour de l'Information Cadastrale) de la DGFIP. Le dernier 
+                    millésime de 2023 est la photographie du territoire au 1er janvier 2023, intégrant les évolutions 
+                    réalisées au cours de l'année 2022.
+                    Pour plus d'informations sur <a class="fr-link" href="{{ FAQ_URL }}fr/article/quest-ce-quun-millesime-110ihlr/" target="_blank" rel="noopener noreferrer">"Qu'est-ce qu'un millésime ?"</a>.
+                </p>
+                <h6 class="fr-mt-2w">Calcul</h6>
+                <p class="fr-text--sm">Données brutes, sans calcul</p>
+
+                <h6 class="fr-mt-2w">Données</h6>
+                {{ comparison_table }}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="fr-mt-7w">
+    <h3>Consommation d'espaces rapportée à la surface du territoire</h3>
+
+    <div class="bg-white fr-p-2w">
+        <div class="d-flex justify-content-end align-items-center fr-mb-2w">
+            {% include "project/components/widgets/chart_buttons.html" with chart="surface_chart" %}
+            <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#consoRelativeSurface" data-toggle="tooltip" title="Astuces pour lire le graphique"></button>
+        </div>
+        <div id="surface_chart"></div>
+    </div>
+    
+    <div class="fr-notice bg-white fr-mt-2w fr-mb-7w">
+        <div class="fr-container">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <span class="fr-icon-information-line" aria-hidden="true"></span>
+                    <span class="fr-text--xs fr-mr-1w">Source de données: </span>
+                    <p class="fr-tag fr-tag--sm fr-tag--blue">
+                        <strong>FICHIERS FONCIERS</strong>
+                    </p>
+                </div>
+                <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="surface-data">Détails données et calcul</button>
+            </div>
+            <div class="fr-collapse" id="surface-data">
+                <h6 class="fr-mt-2w">Source</h6>
+                <p class="fr-text--sm">
+                    Données d'évolution des fichiers fonciers produits et diffusés par le Cerema depuis 2009 à 
+                    partir des fichiers MAJIC (Mise A Jour de l'Information Cadastrale) de la DGFIP. Le dernier 
+                    millésime de 2023 est la photographie du territoire au 1er janvier 2023, intégrant les évolutions 
+                    réalisées au cours de l'année 2022.
+                    Pour plus d'informations sur <a class="fr-link" href="{{ FAQ_URL }}fr/article/quest-ce-quun-millesime-110ihlr/" target="_blank" rel="noopener noreferrer">"Qu'est-ce qu'un millésime ?"</a>.
+                </p>    
+                <h6 class="fr-mt-2w">Calcul</h6>
+                <p class="fr-text--sm">Données brutes, sans calcul</p>
+        
+                <h6 class="fr-mt-2w">Données</h6>
+                <div class="fr-table fr-table--bordered">
+                    <div class="fr-table__wrapper">
+                        <div class="fr-table__container">
+                            <div class="fr-table__content">
+                                <table>
+                                    <caption>
+                                        Surface des territoires similaires (en ha)
+                                    </caption>
+                                    <thead>
+                                        <tr>
+                                            <th scope="col"></th>
+                                            <th scope="col" class="fr-cell--right">Surface des territoires</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for city_name, data in surface_data_table.items %}
+                                        <tr>
+                                            <th scope="row">{{ city_name }}</th>
+                                            {% for year, val in data.items %}
+                                            <td class="fr-cell--right">{{ val|floatformat:0 }} Ha</td>
+                                            {% endfor %}
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="bg-white fr-p-2w">
+        <div class="d-flex justify-content-end align-items-center fr-mb-2w">
+            {% include "project/components/widgets/chart_buttons.html" with chart="surface_proportional_chart" %}
+            <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#consoRelativeSurface" data-toggle="tooltip" title="Astuces pour lire le graphique"></button>
+        </div>
+        <div id="surface_proportional_chart"></div>
+    </div>
+    
+    <div class="fr-notice bg-white fr-mt-2w">
+        <div class="fr-container">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <span class="fr-icon-information-line" aria-hidden="true"></span>
+                    <span class="fr-text--xs fr-mr-1w">Source de données: </span>
+                    <p class="fr-tag fr-tag--sm fr-tag--blue">
+                        <strong>FICHIERS FONCIERS</strong>
+                    </p>
+                </div>
+                <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="surface-relative-comparison-data">Détails données et calcul</button>
+            </div>
+            <div class="fr-collapse" id="surface-relative-comparison-data">
+                <h6 class="fr-mt-2w">Source</h6>
+                <p class="fr-text--sm">
+                    Données d'évolution des fichiers fonciers produits et diffusés par le Cerema depuis 2009 à 
+                    partir des fichiers MAJIC (Mise A Jour de l'Information Cadastrale) de la DGFIP. Le dernier 
+                    millésime de 2023 est la photographie du territoire au 1er janvier 2023, intégrant les évolutions 
+                    réalisées au cours de l'année 2022.
+                    Pour plus d'informations sur <a class="fr-link" href="{{ FAQ_URL }}fr/article/quest-ce-quun-millesime-110ihlr/" target="_blank" rel="noopener noreferrer">"Qu'est-ce qu'un millésime ?"</a>.
+                </p>    
+                <h6 class="fr-mt-2w">Calcul</h6>
+                <p class="fr-text--sm">
+                    Pour chaque territoire, la consommation d'espace annuelle est multipliée par 1000 et divisée par
+                    sa surface totale. Le résultat est exprimé en pour mille (‰).
+                </p>
+        
+                <h6 class="fr-mt-2w">Données</h6>
+                {{ surface_proportional_data_table }}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="consoAnnuelle" tabindex="-1" aria-labelledby="consoAnnuelleLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+        <div class="fr-modal__body">
+            <div class="fr-modal__header">
+                <button class="fr-link--close fr-link" data-bs-dismiss="modal" aria-label="Close">Fermer</button>
+            </div>
+            <div class="fr-modal__content">
+                <h1 class="fr-modal__title" id="consoAnnuelleLabel">
+                    <span class="fr-fi-arrow-right-line fr-fi--lg"></span>
+                    Astuces - Graphique consommation d'espaces annuelle sur le territoire
+                </h1>
+                <p class="fr-text--sm">Pour réduire le nombre de territoires visibles dans le graphique, vous pouvez en masquer certains en cliquant sur eux dans la légende. Cliquez de nouveau dessus pour les ré-afficher.</p>
+                <p class="fr-text--sm">Avec le bouton sélection, vous pouvez tous les masquer d'un coup. Utile quand le nombre de territoires est important et que vous souhaitez n'en afficher que 2 ou 3.</p>
+                <p class="fr-text--sm">Avec le bouton sélection, vous pouvez aussi inverser la sélection. Tous les visibles seront masqués et tous les invisibles seront affichés.</p>
+                <p class="fr-text--sm">Avec le bouton <span class="fr-icon-drag-move-2-line fr-icon--sm" aria-hidden="true"></span>, vous pouvez afficher le graphique en plein écran.</p>
+                <p class="fr-text--sm">Avec le bouton <span class="fr-icon-download-line fr-icon--sm" aria-hidden="true"></span>, vous pouvez télécharger le graphique sous forme d'image (utilisez PNG si vous ne savez pas lequel choisir).</p>
+                <p class="fr-text--sm">Le bouton maille d'analyse permet de changer le type de territoire afficher. Si vous analyser un département, vous pouvez afficher les communes à la place des EPCI (attention, la lisibilité du graphique devient médiocre lorsqu'on affiche trop de territoires simultanéments).</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="comparaisonVoisin" tabindex="-1" aria-labelledby="comparaisonVoisinLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+        <div class="fr-modal__body">
+            <div class="fr-modal__header">
+                <button class="fr-link--close fr-link" data-bs-dismiss="modal" aria-label="Close">Fermer</button>
+            </div>
+            <div class="fr-modal__content">
+                <h1 class="fr-modal__title" id="comparaisonVoisinLabel">
+                    <span class="fr-fi-arrow-right-line fr-fi--lg"></span>
+                    Astuces - Comparaison avec les territoires similaires
+                </h1>
+                <p class="fr-text--sm">
+                    La comparaison avec les territoires similaires permet d'appréhender les dynamiques globales brutes de consommation d'espaces NAF (Naturels, Agricoles et Forestiers) et de les comparer entre elles.
+                    Par défaut, Mon Diagnostic Artificialisation vous permet de comparer votre territoire avec les territoires similaires de même niveau administratif, à l'exception des territoires insulaires (notamment les DROM-COM) pour lesquelles une comparaison avec d'autres territoires similaires est proposée.
+                </p>
+                <p class="fr-text--sm">Pour réduire le nombre de territoires visibles dans le graphique, vous pouvez en masquer certains en cliquant sur eux dans la légende. Cliquez de nouveau dessus pour les ré-afficher.</p>
+                <p class="fr-text--sm">Avec le bouton <span class="fr-icon-drag-move-2-line fr-icon--sm" aria-hidden="true"></span>, vous pouvez afficher le graphique en plein écran.</p>
+                <p class="fr-text--sm">Avec le bouton <span class="fr-icon-download-line fr-icon--sm" aria-hidden="true"></span>, vous pouvez télécharger le graphique sous forme d'image (utilisez PNG si vous ne savez pas lequel choisir).</p>
+                <p class="fr-text--sm">Avec le bouton <i class="bi bi-plus-circle"></i>, vous pouvez ajouter un territoire à ce graphique.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="determinantModal" tabindex="-1" aria-labelledby="determinantLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+        <div class="fr-modal__body">
+            <div class="fr-modal__header">
+                <button class="fr-link--close fr-link" data-bs-dismiss="modal" aria-label="Close">Fermer</button>
+            </div>
+            <div class="fr-modal__content">
+                <h1 class="fr-modal__title" id="determinantLabel">
+                    <span class="fr-fi-arrow-right-line fr-fi--lg"></span>
+                    Astuces - Destinations de la consommation
+                </h1>
+                <p class="fr-text--sm">
+                    Les destinations indiquent les natures de la consommation de l’espace NAF (Naturel, Agricole et Forestier).
+                    Ils sont définis en 6 catégories par le Cerema : habitat, activité, mixte (lorsqu'il y a un mélange d'habitat et d'activité,
+                    par exemple un commerce au rez de chaussée et des logements aux étages), route, ferré, inconnu (lorsque les fichiers
+                    fonciers ne permettent pas de préciser la destination).
+                </p>
+                <p class="fr-text--sm">Pour zoomer sur une destination en particulier, vous pouvez masquer les autres en cliquant sur eux dans la légende. Cliquez de nouveau dessus pour les ré-afficher.</p>
+                <p class="fr-text--sm">Avec le bouton <span class="fr-icon-drag-move-2-line fr-icon--sm" aria-hidden="true"></span>, vous pouvez afficher le graphique en plein écran.</p>
+                <p class="fr-text--sm">Avec le bouton <span class="fr-icon-download-line fr-icon--sm" aria-hidden="true"></span>, vous pouvez télécharger le graphique sous forme d'image (utilisez PNG si vous ne savez pas lequel choisir).</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="consoRelativeSurface" tabindex="-1" aria-labelledby="consoRelativeSurfaceLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+        <div class="fr-modal__body">
+            <div class="fr-modal__header">
+                <button class="fr-link--close fr-link" data-bs-dismiss="modal" aria-label="Close">Fermer</button>
+            </div>
+            <div class="fr-modal__content">
+                <h1 class="fr-modal__title" id="consoRelativeSurfaceLabel">
+                    <span class="fr-fi-arrow-right-line fr-fi--lg"></span>
+                    Astuces - Graphique consommation d'espaces rapportée à la surface du territoire
+                </h1>
+                <p class="fr-text--sm">
+                    La consommation relative aux surfaces des territoires permet d'analyser la consommation d'espaces au regard de la surface totale du territoire.
+                    Cette approche proportionnelle permet de comparer les territoires selon le pourcentage d'ha consommé par rapport au volume d'ha total du territoire.
+                    La comparaison avec les territoires similaires permet d'appréhender les dynamiques globales brutes de consommation d'espaces NAF (Naturels, Agricoles et Forestiers) et de les comparer entre elles.
+                </p>
+                <p class="fr-text--sm">Avec le bouton <span class="fr-icon-drag-move-2-line fr-icon--sm" aria-hidden="true"></span>, vous pouvez afficher le graphique en plein écran.</p>
+                <p class="fr-text--sm">Avec le bouton <span class="fr-icon-download-line fr-icon--sm" aria-hidden="true"></span>, vous pouvez télécharger le graphique sous forme d'image (utilisez PNG si vous ne savez pas lequel choisir).</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<dialog aria-labelledby="fr-modal-title-modal-3" id="fr-modal-3" class="fr-modal">
+    <div class="fr-container fr-container--fluid fr-container-md">
+        <div class="fr-grid-row fr-grid-row--center">
+            <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+                <div class="fr-modal__body">
+                    <div class="fr-modal__header">
+                        <button class="fr-btn--close fr-btn" title="Fermer la fenêtre modale" aria-controls="fr-modal-3">Fermer</button>
+                    </div>
+                    <div class="fr-modal__content">
+                        <h1 id="fr-modal-title-modal-1" class="fr-modal__title">Ajouter un territoire de comparaison</h1>
+                        <div id="add_lookalike_form">
+                            <div class="fr-custom-loader"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</dialog>
+
+{% display_chart_data 'annual_total_conso_chart' annual_total_conso_chart CSP_NONCE %}
+{% display_chart_data 'comparison_chart' comparison_chart CSP_NONCE %}
+{% display_chart_data 'chart_determinant' determinant_per_year_chart CSP_NONCE %}
+{% display_chart_data 'pie_determinant' determinant_pie_chart CSP_NONCE %}
+{% display_chart_data 'surface_chart' surface_chart CSP_NONCE %}
+{% display_chart_data 'surface_proportional_chart' surface_proportional_chart CSP_NONCE %}

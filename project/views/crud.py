@@ -1,7 +1,7 @@
 import celery
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponseRedirect
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
@@ -29,7 +29,7 @@ from public_data.exceptions import LandException
 from public_data.models import AdminRef, Land
 from utils.views_mixins import BreadCrumbMixin, RedirectURLMixin
 
-from .mixins import GroupMixin
+from .mixins import GroupMixin, ReactMixin
 
 
 class ClaimProjectView(LoginRequiredMixin, RedirectView):
@@ -53,7 +53,7 @@ class ClaimProjectView(LoginRequiredMixin, RedirectView):
 
 
 class CreateProjectViews(BreadCrumbMixin, FormView):
-    template_name = "project/create/advanced_search.html"
+    template_name = "project/pages/advanced_search.html"
     form_class = SelectTerritoryForm
 
     def get_context_breadcrumbs(self):
@@ -105,9 +105,10 @@ class CreateProjectViews(BreadCrumbMixin, FormView):
                 return redirect("project:splash", pk=project.id)
 
 
-class ProjectUpdateView(GroupMixin, UpdateView):
+class ProjectUpdateView(ReactMixin, UpdateView):
     model = Project
-    template_name = "project/update.html"
+    partial_template_name = "project/components/dashboard/update.html"
+    full_template_name = "project/pages/update.html"
     form_class = UpdateProjectForm
     context_object_name = "project"
 
@@ -117,15 +118,10 @@ class ProjectUpdateView(GroupMixin, UpdateView):
         kwargs.update(
             {
                 "diagnostic": project,
-                "active_page": "update",
+                "project_id": project.id,
             }
         )
         return super().get_context_data(**kwargs)
-
-    def get_context_breadcrumbs(self):
-        breadcrumbs = super().get_context_breadcrumbs()
-        breadcrumbs.append({"href": None, "title": "Editer"})
-        return breadcrumbs
 
     def form_valid(self, form):
         """If the form is valid, save the associated model."""
@@ -149,7 +145,7 @@ class ProjectUpdateView(GroupMixin, UpdateView):
 
 class ProjectSetTarget2031View(UpdateView):
     model = Project
-    template_name = "project/partials/report_set_target_2031.html"
+    template_name = "project/components/forms/report_set_target_2031.html"
     fields = ["target_2031"]
     context_object_name = "diagnostic"
 
@@ -163,7 +159,7 @@ class ProjectSetTarget2031View(UpdateView):
 
 class SetProjectPeriodView(GroupMixin, RedirectURLMixin, UpdateView):
     model = Project
-    template_name = "project/partials/report_set_period.html"
+    template_name = "project/components/forms/report_set_period.html"
     form_class = UpdateProjectPeriodForm
     context_object_name = "diagnostic"
 
@@ -180,7 +176,7 @@ class SetProjectPeriodView(GroupMixin, RedirectURLMixin, UpdateView):
 
 class ProjectDeleteView(GroupMixin, LoginRequiredMixin, DeleteView):
     model = Project
-    template_name = "project/delete.html"
+    template_name = "project/pages/delete.html"
     success_url = reverse_lazy("project:list")
 
     def get_context_breadcrumbs(self):
@@ -191,59 +187,31 @@ class ProjectDeleteView(GroupMixin, LoginRequiredMixin, DeleteView):
 
 class ProjectAddLookALike(GroupMixin, RedirectURLMixin, FormMixin, DetailView):
     model = Project
-    template_name = "project/add_look_a_like.html"
+    template_name = "project/components/forms/add_territoire_de_comparaison.html"
     context_object_name = "project"
     form_class = KeywordForm
 
-    def get_success_url(self):
-        """Add anchor to url if provided in GET parameters."""
-        anchor = self.request.GET.get("anchor", None)
-        if anchor:
-            return f"{super().get_success_url()}#{anchor}"
-        return super().get_success_url()
-
     def form_valid(self, form):
         """If the form is valid, redirect to the supplied URL."""
-        kwargs = {"results": Land.search(form.cleaned_data["keyword"], search_for="*")}
+        kwargs = {"results": Land.search(form.cleaned_data["keyword"], search_for="*"), "form": form}
         return self.render_to_response(self.get_context_data(**kwargs))
 
-    def get(self, request, *args, **kwargs):
-        add_public_key = request.GET.get("add", None)
+    def post(self, request, *args, **kwargs):
+        add_public_key = request.POST.get("add", None)
         project = self.get_object()
         if add_public_key:
             try:
-                # if public_key does not exist should raise an exception
                 land = Land(add_public_key)
-                # use land.public_key to avoid injection
                 project.add_look_a_like(land.public_key)
                 project._change_reason = ProjectChangeReason.USER_ADDED_A_LOOK_A_LIKE
                 project.save(update_fields=["look_a_like"])
-                return HttpResponseRedirect(self.get_success_url())
+
+                response = HttpResponse(status=204)
+                response["HX-Trigger"] = "force-refresh"  # Déclenche l'événement 'force-refresh'
+                return response
             except LandException:
                 pass
-        return super().get(request, *args, **kwargs)
 
-    def get_context_breadcrumbs(self):
-        breadcrumbs = super().get_context_breadcrumbs()
-        breadcrumbs += [
-            {
-                "href": reverse_lazy("project:update", kwargs=self.kwargs),
-                "title": "Paramètres",
-            },
-            {"href": None, "title": "Ajouter un territoire de comparaison"},
-        ]
-        return breadcrumbs
-
-    def get_context_data(self, **kwargs):
-        kwargs["next"] = self.request.GET.get("next", None)
-        kwargs["anchor"] = self.request.GET.get("anchor", None)
-        return super().get_context_data(**kwargs)
-
-    def post(self, request, *args, **kwargs):
-        """
-        Handle POST requests: instantiate a form instance with the passed
-        POST variables and then check if it's valid.
-        """
         form = self.get_form()
         if form.is_valid():
             return self.form_valid(form)
@@ -251,32 +219,28 @@ class ProjectAddLookALike(GroupMixin, RedirectURLMixin, FormMixin, DetailView):
             return self.form_invalid(form)
 
 
-class ProjectRemoveLookALike(GroupMixin, RedirectURLMixin, DetailView):
-    """Remove a look a like from the project.
-
-    Providing a next page in the url parameter is required.
-    """
+class ProjectRemoveLookALike(DetailView):
+    """Supprime un territoire de comparaison du projet."""
 
     model = Project
 
-    def get_success_url(self):
-        """Add anchor to url if provided in GET parameters."""
-        anchor = self.request.GET.get("anchor", None)
-        if anchor:
-            return f"{super().get_success_url()}#{anchor}"
-        return super().get_success_url()
-
-    def get(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         project = self.get_object()
-        public_key = self.kwargs["public_key"]
+
+        public_key = request.POST.get("public_key")
+
         project.remove_look_a_like(public_key)
         project._change_reason = ProjectChangeReason.USER_REMOVED_A_LOOK_A_LIKE
         project.save(update_fields=["look_a_like"])
-        return HttpResponseRedirect(self.get_success_url())
+
+        response = HttpResponse(status=204)
+        # Ajoute un en-tête HTMX personnalisé pour forcer le rechargement du composant React Consommation.tsx
+        response["HX-Trigger"] = "force-refresh"
+        return response
 
 
 class ProjectListView(GroupMixin, LoginRequiredMixin, ListView):
-    template_name = "project/list.html"
+    template_name = "project/pages/list.html"
     context_object_name = "projects"  # override to add an "s"
 
     def get_queryset(self):
@@ -285,7 +249,7 @@ class ProjectListView(GroupMixin, LoginRequiredMixin, ListView):
 
 class SplashScreenView(GroupMixin, DetailView):
     model = Project
-    template_name = "project/create/splash_screen.html"
+    template_name = "project/pages/splash_screen.html"
     context_object_name = "diagnostic"
 
     def get_context_breadcrumbs(self):
@@ -298,13 +262,13 @@ class SplashScreenView(GroupMixin, DetailView):
 
 class SplashProgressionView(GroupMixin, DetailView):
     model = Project
-    template_name = "project/create/fragment_splash_progress.html"
+    template_name = "project/components/widgets/fragment_splash_progress.html"
     context_object_name = "diagnostic"
 
     def dispatch(self, *args, **kwargs):
         response = super().dispatch(*args, **kwargs)
         if self.object.is_ready_to_be_displayed:
-            response["HX-Redirect"] = reverse("project:detail", kwargs=self.kwargs)
+            response["HX-Redirect"] = reverse("project:home", kwargs=self.kwargs)
         return response
 
     def get_context_data(self, **kwargs):
