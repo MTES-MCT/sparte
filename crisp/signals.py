@@ -2,11 +2,10 @@ from utils.mattermost import Crisp
 
 
 def format_message(instance):
-    message = instance.message.replace("\r", "").replace("\\n", "\n")
     return f"""Date : {instance.timestamp}
 Lien Crisp : {instance.inbox_url}
 Nom : {instance.sender_name}
-Message : {message}"""
+Message : {instance.message}"""
 
 
 def on_notification_save(
