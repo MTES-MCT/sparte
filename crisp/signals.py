@@ -1,23 +1,27 @@
-from textwrap import dedent
-
 from utils.mattermost import Crisp
 
 
-def on_notification_save(sender, instance, created, *args, **kwargs):
-    if created:
-        message_with_link = f"[{instance.message}]({instance.inbox_url})"
+def format_message(instance):
+    return f"""Date : {instance.timestamp}
+Lien Crisp : {instance.inbox_url}
+Nom : {instance.sender_name}
+Message : {instance.message}"""
 
-        message = dedent(
-            f"""
-        Nouveau message reçu sur Crisp.
-        Evénement : {instance.event}
-        Origine : {instance.origin}
-        Date : {instance.timestamp}
-        Message : {message_with_link}
-        """
-        )
 
-        notification = Crisp(msg=message)
+def on_notification_save(
+    sender,
+    instance,
+    created,
+    *args,
+    **kwargs,
+):
+    message_is_sent = instance.event == "message:send"
+    message_is_from_user = instance.from_value == "user"
+    message_is_text = instance.data.get("type") == "text"
+    message_is_sent_by_user = message_is_sent and message_is_from_user
+
+    if created and message_is_sent_by_user and message_is_text:
+        notification = Crisp(msg=format_message(instance))
         notification.send()
 
     return instance
