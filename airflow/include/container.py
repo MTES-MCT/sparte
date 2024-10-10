@@ -1,7 +1,7 @@
 from os import getenv
+from urllib.parse import quote_plus
 
 import pysftp
-import sqlalchemy
 from airflow.hooks.base import BaseHook
 from dependency_injector import containers, providers
 from gdaltools import PgConnectionString
@@ -10,14 +10,15 @@ from psycopg2.extensions import connection
 from s3fs import S3FileSystem
 
 from .mattermost import Mattermost
+from .scalingo import ScalingoClient
 
 
 def db_str_for_ogr2ogr(dbname: str, user: str, password: str, host: str, port: int) -> str:
     return f"PG:dbname='{dbname}' host='{host}' port='{port}' user='{user}' password='{password}'"
 
 
-def create_sql_alchemy_conn(url: str) -> sqlalchemy.engine.base.Connection:
-    return sqlalchemy.create_engine(url)
+def db_str_url(dbname: str, user: str, password: str, host: str, port: int) -> str:
+    return f"postgresql://{user}:{password}@{host}:{port}/{dbname}"
 
 
 class Container(containers.DeclarativeContainer):
@@ -46,6 +47,14 @@ class Container(containers.DeclarativeContainer):
         password=getenv("DBT_DB_PASSWORD"),
         host=getenv("DBT_DB_HOST"),
         port=getenv("DBT_DB_PORT"),
+    )
+    dbt_conn_url = providers.Factory(
+        db_str_url,
+        dbname=getenv("DBT_DB_NAME"),
+        user=getenv("DBT_DB_USER"),
+        password=quote_plus(getenv("DBT_DB_PASSWORD")),
+        host=getenv("DBT_DB_HOST"),
+        port=int(getenv("DBT_DB_PORT")),
     )
 
     # DEV connections
@@ -119,4 +128,14 @@ class Container(containers.DeclarativeContainer):
         Mattermost,
         mattermost_webhook_url=getenv("MATTERMOST_WEBHOOK_URL"),
         channel=getenv("MATTERMOST_CHANNEL"),
+    )
+
+    scalingo = providers.Factory(
+        ScalingoClient,
+        api_token=getenv("SCALINGO_API_TOKEN"),
+        app_name=getenv("SCALINGO_APP_NAME"),
+        addon_id=getenv("SCALINGO_ADDON_ID"),
+        backup_dir=getenv("SCALINGO_BACKUP_DIR"),
+        scalingo_subdomain=getenv("SCALINGO_SUBDOMAIN"),
+        scalingo_subdomain_db=getenv("SCALINGO_SUBDOMAIN_DB"),
     )
