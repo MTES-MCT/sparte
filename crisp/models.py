@@ -1,3 +1,5 @@
+from typing import Literal
+
 from django.db import models
 
 from .signals import on_notification_save
@@ -7,6 +9,25 @@ class CrispWebhookNotification(models.Model):
     event = models.CharField(max_length=255)
     timestamp = models.DateTimeField()
     data = models.JSONField()
+
+    @property
+    def from_value(self) -> Literal["user", "operator"] | None:
+        return self.data.get("from")
+
+    @property
+    def sender(self):
+        if self.from_value and self.from_value == "user":
+            return self.data.get("user")
+
+        return {}
+
+    @property
+    def sender_email(self):
+        return self.sender.get("email")
+
+    @property
+    def sender_name(self):
+        return self.sender.get("nickname")
 
     @property
     def origin(self):

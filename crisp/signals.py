@@ -1,19 +1,26 @@
 from textwrap import dedent
 
+from crisp.models import CrispWebhookNotification
 from utils.mattermost import Crisp
 
 
-def on_notification_save(sender, instance, created, *args, **kwargs):
-    if created:
-        message_with_link = f"[{instance.message}]({instance.inbox_url})"
+def on_notification_save(
+    sender,
+    instance: CrispWebhookNotification,
+    created,
+    *args,
+    **kwargs,
+):
+    if created and instance.event == "message:received" and instance.from_value == "user":
+        instance.data
 
         message = dedent(
             f"""
-        Nouveau message reçu sur Crisp.
-        Evénement : {instance.event}
-        Origine : {instance.origin}
         Date : {instance.timestamp}
-        Message : {message_with_link}
+        URL crisp : {instance.inbox_url}
+        Nom : {instance.sender_name}
+        Email : {instance.sender_email}
+        Message : {instance.message}
         """
         )
 
