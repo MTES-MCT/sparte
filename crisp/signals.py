@@ -1,12 +1,11 @@
 from textwrap import dedent
 
-from crisp.models import CrispWebhookNotification
 from utils.mattermost import Crisp
 
 
 def on_notification_save(
     sender,
-    instance: CrispWebhookNotification,
+    instance,
     created,
     *args,
     **kwargs,
