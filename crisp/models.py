@@ -22,10 +22,6 @@ class CrispWebhookNotification(models.Model):
         return {}
 
     @property
-    def sender_email(self):
-        return self.sender.get("email")
-
-    @property
     def sender_name(self):
         return self.sender.get("nickname")
 
@@ -35,7 +31,7 @@ class CrispWebhookNotification(models.Model):
 
     @property
     def message(self):
-        return self.data.get("content")
+        return self.data.get("content").replace("\r", "").replace("\\n", "\n")
 
     @property
     def inbox_url(self):
