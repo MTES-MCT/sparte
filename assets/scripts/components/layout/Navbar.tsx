@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, Link } from 'react-router-dom';
 import styled, { css } from 'styled-components';
-import ProjectDownload from '@components/widgets/ProjectDownload';
+import useHtmx from '@hooks/useHtmx';
+import useUrls from '@hooks/useUrls';
+import Button from '@components/ui/Button';
 
 interface NavbarData {
     menuItems: MenuItems[];
@@ -93,7 +95,6 @@ const SubMenuList = styled.ul`
     margin-bottom: 0.5em;
 `;
 
-
 const SubMenu = styled.li`
     padding-left: 0.1rem;
     border-left: 1px solid #E0E1FF;
@@ -110,9 +111,63 @@ const Icon = styled.i`
     margin-right: 0.7em;
 `;
 
+const DownloadList = styled.ul`
+    height: 0;
+    overflow: hidden;
+    transition: height 0.3s ease;
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+`;
+
+const DownloadContainer = styled.div`
+    margin: 1rem;
+    padding: 1rem;
+    border-radius: 6px;
+    background: #cacafb;
+    
+    &:hover ${DownloadList} {
+        height: 192px;
+    }
+`;
+
+const DownloadTitle = styled.div`
+    color: ${activeColor};
+    font-size: 0.9em;
+    display: flex;
+    align-items: center;
+    gap: 0.2rem;
+    flex-direction: column;
+    font-weight: 500;
+
+    i {
+        font-size: 1.2em;
+        background: ${activeColor};
+        color: #fff;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+    }
+`;
+
+const DownloadListItem = styled.li`
+    & > a, & > button {
+        width: 100%;
+    }
+
+    &:first-child {
+        margin-top: 1rem;
+    }
+`;
+
 const Navbar: React.FC = () => {
     const location = useLocation();
     const [data, setData] = useState<NavbarData | null>(null);
+    const urls = useUrls();
+    const htmxRef = useHtmx([urls]);
 
     // La composition de la navbar et notamment les urls des liens sont récupérés via le contexte Django => project/templates/layout/base.html => #navbar-data
     useEffect(() => {
@@ -124,6 +179,14 @@ const Navbar: React.FC = () => {
     }, []);
 
     const isActive = (url?: string) => location.pathname === url;
+
+    // Temporaire => Il faudrait utiliser la modal de react dsfr
+    const resetModalContent = () => {
+        const modalContent = document.getElementById('diag_word_form');
+        if (modalContent) {
+            modalContent.innerHTML = '<div class="fr-custom-loader"></div>';
+        }
+    };
 
     const renderMenuItems = (items: SubMenu[]) => (
         <SubMenuList>
@@ -142,7 +205,7 @@ const Navbar: React.FC = () => {
     );
 
     return (
-        <Container aria-label="Sidebar">
+        <Container aria-label="Sidebar" ref={htmxRef}>
             <MenuList role="tree" aria-label="Sidebar menu">
                 {data?.menuItems.map((menu) => (
                     <Menu key={menu.label}>
@@ -161,7 +224,66 @@ const Navbar: React.FC = () => {
                     </Menu>
                 ))}
             </MenuList>
-            <ProjectDownload />
+            {urls && (
+                <DownloadContainer>
+                    <DownloadTitle>
+                        <i className="bi bi-box-arrow-down"></i>
+                        <div>Téléchargements</div>
+                    </DownloadTitle>
+                    <DownloadList>
+                        <DownloadListItem>
+                            <Button
+                                type="htmx"
+                                icon="bi bi-file-earmark-word"
+                                label="Analyse de Consommation"
+                                htmxAttrs={{
+                                    'data-hx-get': urls.dowloadConsoReport,
+                                    'data-hx-target': '#diag_word_form',
+                                    'data-fr-opened': 'false',
+                                    'aria-controls': 'fr-modal-download-word',
+                                }}
+                                onClick={resetModalContent}
+                            />
+                        </DownloadListItem>
+                        <DownloadListItem>
+                            <Button
+                                type="htmx"
+                                icon="bi bi-file-earmark-word"
+                                label="Analyse complète"
+                                htmxAttrs={{
+                                    'data-hx-get': urls.dowloadFullReport,
+                                    'data-hx-target': '#diag_word_form',
+                                    'data-fr-opened': 'false',
+                                    'aria-controls': 'fr-modal-download-word',
+                                }}
+                                onClick={resetModalContent}
+                            />
+                        </DownloadListItem>
+                        <DownloadListItem>
+                            <Button
+                                type="htmx"
+                                icon="bi bi-file-earmark-word"
+                                label="Rapport triennal local"
+                                htmxAttrs={{
+                                    'data-hx-get': urls.dowloadLocalReport,
+                                    'data-hx-target': '#diag_word_form',
+                                    'data-fr-opened': 'false',
+                                    'aria-controls': 'fr-modal-download-word',
+                                }}
+                                onClick={resetModalContent}
+                            />
+                        </DownloadListItem>
+                        <DownloadListItem>
+                            <Button
+                                type="link"
+                                icon="bi bi-file-earmark-excel"
+                                label="Export Excel"
+                                url={urls.dowloadCsvReport}
+                            />
+                        </DownloadListItem>
+                    </DownloadList>
+                </DownloadContainer>
+            )}
         </Container>
     );
 };
