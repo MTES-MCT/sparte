@@ -6,28 +6,33 @@ interface ErrorBoundaryProps {
 
 interface ErrorBoundaryState {
   hasError: boolean;
+  error: Error | null;
 }
 
 class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   constructor(props: ErrorBoundaryProps) {
     super(props);
-    this.state = { hasError: false };
+    this.state = { hasError: false, error: null };
   }
 
   static getDerivedStateFromError(_: Error): ErrorBoundaryState {
     // Met à jour l'état pour afficher l'UI de repli lors du prochain rendu.
-    return { hasError: true };
+    return { hasError: true, error: _ };
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo): void {
-    // Vous pouvez également enregistrer l'erreur dans un service de reporting.
+    // Intégration Sentry à ajouter ici
     console.error("ErrorBoundary caught an error", error, errorInfo);
   }
 
   render() {
     if (this.state.hasError) {
-      // Vous pouvez personnaliser l'UI de repli ici.
-      return <h1>Quelque chose s'est mal passé.</h1>;
+      return (
+        <div className="vw-100 vh-100 d-flex flex-column justify-content-center align-items-center">
+          <h3>Une erreur s'est produite.</h3>
+          {this.state.error && <p>{this.state.error.message}</p>}
+        </div>
+      );
     }
 
     return this.props.children; 
