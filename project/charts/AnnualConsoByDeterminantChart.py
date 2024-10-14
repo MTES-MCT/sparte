@@ -2,6 +2,7 @@ from project.charts.base_project_chart import ProjectChart
 from project.charts.constants import (
     CEREMA_CREDITS,
     DEFAULT_VALUE_DECIMALS,
+    HIGHLIGHT_COLOR,
     LEGEND_NAVIGATION_EXPORT,
 )
 
@@ -58,7 +59,7 @@ class AnnualConsoByDeterminantChart(ProjectChart):
                 self.project.get_conso_per_year(),
                 **{
                     "type": "line",
-                    "color": "#ff0000",
+                    "color": HIGHLIGHT_COLOR,
                     "dashStyle": "ShortDash",
                 },
             )

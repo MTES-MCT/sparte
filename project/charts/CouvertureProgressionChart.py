@@ -1,6 +1,7 @@
 from project.charts.base_project_chart import ProjectChart
 from project.charts.constants import (
     DEFAULT_VALUE_DECIMALS,
+    HIGHLIGHT_COLOR,
     LANG_MISSING_OCSGE_DIFF_ARTIF,
     OCSGE_CREDITS,
 )
@@ -25,7 +26,7 @@ class CouvertureProgressionChart(ProjectChart):
             "lang": LANG_MISSING_OCSGE_DIFF_ARTIF,
             "yAxis": {
                 "title": {"text": "Surface (en ha)"},
-                "plotLines": [{"value": 0, "width": 2, "color": "#ff0000"}],
+                "plotLines": [{"value": 0, "width": 2, "color": HIGHLIGHT_COLOR}],
             },
             "tooltip": {
                 "pointFormat": "{point.y}",
