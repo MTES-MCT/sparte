@@ -563,6 +563,8 @@ CSP_CONNECT_SRC = [
     "wss://client.relay.crisp.chat",
     "wss://stream.relay.crisp.chat",
     "https://gist.githubusercontent.com",
+    "https://highcharts-export.osc-fr1.scalingo.io/",
+    "ws://localhost:3000/ws",
 ]
 CSP_FRAME_ANCESTORS = ("'self'", "https://sparte-metabase.osc-secnum-fr1.scalingo.io")
 
