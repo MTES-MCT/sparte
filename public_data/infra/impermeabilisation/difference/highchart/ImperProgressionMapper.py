@@ -1,3 +1,4 @@
+from project.charts.constants import ARTIFICIALISATION_COLOR, DESARTIFICIALISATION_COLOR
 from public_data.domain.impermeabilisation.difference.ImpermeabilisationDifference import (
     ImpermeabilisationDifference,
     ImpermeabilisationDifferenceSol,
@@ -24,6 +25,7 @@ class ImperProgressionMapper:
                     }
                     for item in usage
                 ],
+                "color": ARTIFICIALISATION_COLOR,
             },
             {
                 "name": "Désimperméabilisation",
@@ -34,6 +36,7 @@ class ImperProgressionMapper:
                     }
                     for item in usage
                 ],
+                "color": DESARTIFICIALISATION_COLOR,
             },
         ]
 
@@ -49,6 +52,7 @@ class ImperProgressionMapper:
                     }
                     for item in couverture
                 ],
+                "color": ARTIFICIALISATION_COLOR,
             },
             {
                 "name": "Désimperméabilisation",
@@ -59,5 +63,6 @@ class ImperProgressionMapper:
                     }
                     for item in couverture
                 ],
+                "color": DESARTIFICIALISATION_COLOR,
             },
         ]

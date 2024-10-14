@@ -1,3 +1,4 @@
+from project.charts.constants import HIGHLIGHT_COLOR
 from public_data.domain.consommation.progression.ConsommationProgression import (
     ConsommationProgressionLand,
 )
@@ -7,7 +8,7 @@ class ConsoProportionalComparisonMapper:
     @staticmethod
     def map(land_id_to_highlight: str, consommation_progression: list[ConsommationProgressionLand]):
         highlight_style = {
-            "color": "#ff0000",
+            "color": HIGHLIGHT_COLOR,
             "dashStyle": "ShortDash",
             "lineWidth": 4,
         }

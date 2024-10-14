@@ -4,6 +4,7 @@ from project.charts.constants import (
     DEFAULT_HEADER_FORMAT,
     DEFAULT_POINT_FORMAT,
     DEFAULT_VALUE_DECIMALS,
+    HIGHLIGHT_COLOR,
     LEGEND_NAVIGATION_EXPORT,
 )
 
@@ -29,7 +30,7 @@ class SurfaceChart(ProjectChart):
 
     def get_options(self, serie_name):
         if serie_name == self.project.territory_name:
-            return {"color": "#ff0000"}
+            return {"color": HIGHLIGHT_COLOR}
         else:
             return super().get_options(serie_name)
 

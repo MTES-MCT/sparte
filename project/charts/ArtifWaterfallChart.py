@@ -1,6 +1,9 @@
 from project.charts.base_project_chart import ProjectChart
 from project.charts.constants import (
+    ARTIFICIALISATION_COLOR,
+    ARTIFICIALISATION_NETTE_COLOR,
     DEFAULT_VALUE_DECIMALS,
+    DESARTIFICIALISATION_COLOR,
     LANG_MISSING_OCSGE_DIFF_ARTIF,
     OCSGE_CREDITS,
 )
@@ -57,17 +60,17 @@ class ArtifWaterfallChart(ProjectChart):
             {
                 "name": "Artificialisation",
                 "data": total_artif_data,
-                "color": "#ff0000",
+                "color": ARTIFICIALISATION_COLOR,
             },
             {
                 "name": "Désartificialisation",
                 "data": total_desartif_data,
-                "color": "#00ff00",
+                "color": DESARTIFICIALISATION_COLOR,
             },
             {
                 "name": "Artificialisation nette",
                 "data": artif_nette_data,
-                "color": "#0000ff",
+                "color": ARTIFICIALISATION_NETTE_COLOR,
             },
         ]
 

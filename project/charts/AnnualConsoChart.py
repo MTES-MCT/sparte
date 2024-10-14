@@ -4,6 +4,7 @@ from project.charts.constants import (
     DEFAULT_HEADER_FORMAT,
     DEFAULT_POINT_FORMAT,
     DEFAULT_VALUE_DECIMALS,
+    HIGHLIGHT_COLOR,
     LEGEND_NAVIGATION_EXPORT,
 )
 from public_data.models import AdminRef
@@ -55,7 +56,7 @@ class AnnualConsoChart(ProjectChart):
                 self.project.get_conso_per_year(),
                 **{
                     "type": "line",
-                    "color": "#ff0000",
+                    "color": HIGHLIGHT_COLOR,
                     "dashStyle": "ShortDash",
                 },
             )
