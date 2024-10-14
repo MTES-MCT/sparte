@@ -16,7 +16,10 @@ def db_str_for_ogr2ogr(dbname: str, user: str, password: str, host: str, port: i
     return f"PG:dbname='{dbname}' host='{host}' port='{port}' user='{user}' password='{password}'"
 
 
-def create_sql_alchemy_conn(url: str) -> sqlalchemy.engine.base.Connection:
+def create_sql_alchemy_conn(
+    dbname: str, user: str, password: str, host: str, port: int
+) -> sqlalchemy.engine.base.Connection:
+    url = f"postgresql+psycopg2://{user}:{password.replace('@', '%40')}@{host}:{port}/{dbname}"
     return sqlalchemy.create_engine(url)
 
 
@@ -41,6 +44,15 @@ class Container(containers.DeclarativeContainer):
     )
     psycopg2_dbt_conn: connection = providers.Factory(
         provides=connect,
+        dbname=getenv("DBT_DB_NAME"),
+        user=getenv("DBT_DB_USER"),
+        password=getenv("DBT_DB_PASSWORD"),
+        host=getenv("DBT_DB_HOST"),
+        port=getenv("DBT_DB_PORT"),
+    )
+
+    sqlalchemy_dbt_conn = providers.Factory(
+        create_sql_alchemy_conn,
         dbname=getenv("DBT_DB_NAME"),
         user=getenv("DBT_DB_USER"),
         password=getenv("DBT_DB_PASSWORD"),
