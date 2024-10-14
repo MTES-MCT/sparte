@@ -1,3 +1,8 @@
+from project.charts.constants import (
+    ARTIFICIALISATION_COLOR,
+    ARTIFICIALISATION_NETTE_COLOR,
+    DESARTIFICIALISATION_COLOR,
+)
 from public_data.domain.impermeabilisation.difference.ImpermeabilisationDifference import (
     ImpermeabilisationDifference,
 )
@@ -20,16 +25,16 @@ class ImperNetteMapper:
             {
                 "name": "Imperméabilisation",
                 "data": total_imper_data,
-                "color": "#ff0000",
+                "color": ARTIFICIALISATION_COLOR,
             },
             {
                 "name": "Désimperméabilisation",
                 "data": total_desimper_data,
-                "color": "#00ff00",
+                "color": DESARTIFICIALISATION_COLOR,
             },
             {
                 "name": "Imperméabilisation nette",
                 "data": imper_nette_data,
-                "color": "#0000ff",
+                "color": ARTIFICIALISATION_NETTE_COLOR,
             },
         ]

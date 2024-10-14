@@ -1,6 +1,9 @@
 from project.charts.base_project_chart import ProjectChart
 from project.charts.constants import (
+    ARTIFICIALISATION_COLOR,
+    ARTIFICIALISATION_NETTE_COLOR,
     DEFAULT_VALUE_DECIMALS,
+    DESARTIFICIALISATION_COLOR,
     LANG_MISSING_OCSGE_DIFF_ARTIF,
 )
 
@@ -69,10 +72,10 @@ class AnnualArtifChart(ProjectChart):
 
     def add_series(self):
         series = self.get_series()
-        self.add_serie(ARTIFICIALISATION, series[ARTIFICIALISATION], color="#ff0000")
-        self.add_serie(RENATURATION, series[RENATURATION], color="#00ff00")
+        self.add_serie(ARTIFICIALISATION, series[ARTIFICIALISATION], color=ARTIFICIALISATION_COLOR)
+        self.add_serie(RENATURATION, series[RENATURATION], color=DESARTIFICIALISATION_COLOR)
         self.add_serie(
             NET_ARTIFICIALISATION,
             series[NET_ARTIFICIALISATION],
-            color="#0000ff",
+            color=ARTIFICIALISATION_NETTE_COLOR,
         )

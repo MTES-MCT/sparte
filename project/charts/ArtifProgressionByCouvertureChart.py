@@ -4,8 +4,10 @@ from django.contrib.gis.geos import MultiPolygon
 
 from project.charts.base_project_chart import ProjectChart
 from project.charts.constants import (
+    ARTIFICIALISATION_COLOR,
     DEFAULT_HEADER_FORMAT,
     DEFAULT_VALUE_DECIMALS,
+    DESARTIFICIALISATION_COLOR,
     LANG_MISSING_OCSGE_DIFF_ARTIF,
     LEGEND_NAVIGATION_EXPORT,
     OCSGE_CREDITS,
@@ -89,6 +91,7 @@ class ArtifProgressionByCouvertureChart(ProjectChart):
                     }
                     for item in self.get_series()
                 ],
+                "color": ARTIFICIALISATION_COLOR,
             }
         )
         self.chart["series"].append(
@@ -101,6 +104,7 @@ class ArtifProgressionByCouvertureChart(ProjectChart):
                     }
                     for item in self.get_series()
                 ],
+                "color": DESARTIFICIALISATION_COLOR,
             }
         )
 
