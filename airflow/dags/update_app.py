@@ -152,6 +152,8 @@ def update_app():  # noqa: C901
         return copy_table_from_dw_to_app(
             from_table="public_ocsge.for_app_commune",
             to_table="public.public_data_commune",
+            use_subset=context["params"]["use_subset"],
+            subset_where=f"mpoly && ({context['params']['subset_geom']})",
             environment=context["params"]["environment"],
             btree_index_columns=[
                 ["insee"],
@@ -163,6 +165,8 @@ def update_app():  # noqa: C901
         return copy_table_from_dw_to_app(
             from_table="public_ocsge.for_app_departement",
             to_table="public.public_data_departement",
+            use_subset=context["params"]["use_subset"],
+            subset_where=f"mpoly && ({context['params']['subset_geom']})",
             environment=context["params"]["environment"],
             btree_index_columns=[
                 ["source_id"],
@@ -187,6 +191,8 @@ def update_app():  # noqa: C901
         return copy_table_from_dw_to_app(
             from_table="public_ocsge.for_app_ocsgediff",
             to_table="public.public_data_ocsgediff",
+            use_subset=context["params"]["use_subset"],
+            subset_where=f"mpoly && ({context['params']['subset_geom']})",
             environment=context["params"]["environment"],
             btree_index_columns=[
                 ["year_old"],
@@ -204,6 +210,8 @@ def update_app():  # noqa: C901
         return copy_table_from_dw_to_app(
             from_table="public_ocsge.for_app_communediff",
             to_table="public.public_data_communediff",
+            use_subset=context["params"]["use_subset"],
+            subset_where=f"mpoly && ({context['params']['subset_geom']})",
             environment=context["params"]["environment"],
             btree_index_columns=[
                 ["year_old"],
@@ -217,6 +225,8 @@ def update_app():  # noqa: C901
         return copy_table_from_dw_to_app(
             from_table="public_ocsge.for_app_zoneconstruite",
             to_table="public.public_data_zoneconstruite",
+            use_subset=context["params"]["use_subset"],
+            subset_where=f"mpoly && ({context['params']['subset_geom']})",
             environment=context["params"]["environment"],
             btree_index_columns=[
                 ["millesime"],
