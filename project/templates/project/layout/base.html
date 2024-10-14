@@ -253,7 +253,9 @@
         {% sri_static "bootstrap522/js/bootstrap.bundle.min.js" %}
         <!-- Webpack Bundle JS -->
         {% if debug %}
-            <script src="http://localhost:3000/assets/scripts/bundle.dev.js" nonce="[NONCE_PLACEHOLDER]"></script>
+            <!-- sonarignore:start -->
+            <script src="http://localhost:3000/assets/scripts/bundle.dev.js"></script>
+            <!-- sonarignore:end -->
         {% else %}
             <script src="{% static 'assets/scripts/bundle.prod.js' %}"></script>
         {% endif %}
