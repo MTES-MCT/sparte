@@ -6,5 +6,11 @@
     {% if not that_field %}
         {% set that_field = this_field %}
     {% endif %}
-    DELETE FROM {{ this }} WHERE {{ this_field }} not in (SELECT DISTINCT {{ that_field }} FROM {{ ref(table) }} )
+    DELETE FROM {{ this }}
+    WHERE {{ this_field }} in (
+        SELECT {{ this_field }} FROM {{ this }} AS foo
+        LEFT JOIN {{ ref(table) }} AS bar
+        ON foo.{{ this_field }} = bar.{{ that_field }}
+        WHERE {{ that_field }} is null
+    )
 {% endmacro %}
