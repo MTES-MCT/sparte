@@ -1,0 +1,25 @@
+
+version: 2
+
+models:
+  - name: scot_communes
+    columns:
+    - name: commune_code
+      data_tests:
+      - not_null
+      - unique
+      - relationships:
+          to: ref('commune')
+          field: code
+    - name: id_scot
+      data_tests:
+      - not_null
+      - relationships:
+          to: ref('scot')
+          field: id_scot
+
+sources:
+  - name: public
+    tables:
+    - name: dgaln_scot
+    - name: dgaln_scot_communes
