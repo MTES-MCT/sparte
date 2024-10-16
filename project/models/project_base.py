@@ -75,7 +75,7 @@ class BaseProject(models.Model):
     )
     name = models.CharField("Nom", max_length=100, validators=[is_alpha_validator])
 
-    @cached_property
+    @property
     def combined_emprise(self) -> MultiPolygon:
         """Return a combined MultiPolygon of all emprises."""
         combined = self.emprise_set.aggregate(Union("mpoly"))
@@ -1137,7 +1137,9 @@ class Project(BaseProject):
         return AdminRef.get_class(name=self.land_type).objects.filter(source_id__in=comparison_source_ids)
 
     def get_neighbors(self):
-        return AdminRef.get_class(self.land_type).objects.filter(mpoly__touches=self.combined_emprise)
+        return AdminRef.get_class(self.land_type).objects.filter(
+            mpoly__intersects=self.combined_emprise.buffer(0.0001)
+        )
 
     def get_comparison_lands(
         self, limit=9
