@@ -8,33 +8,15 @@ models:
       data_tests:
       - not_null
       - unique
-    - name: commune_name
+  - name: consommation_cog_2024
+    columns:
+    - name: commune_code
       data_tests:
       - not_null
-    - name: region_code
-      data_tests:
-      - not_null
+      - unique
       - relationships:
-          to: ref('region')
+          to: ref('commune')
           field: code
-    - name: region_name
-      data_tests:
-      - not_null
-    - name: departement_code
-      data_tests:
-      - not_null
-      - relationships:
-          to: ref('departement')
-          field: code
-    - name: departement_name
-      data_tests:
-      - not_null
-    - name: epci_code
-      data_tests:
-      - not_null
-    - name: epci_name
-      data_tests:
-      - not_null
 
 sources:
   - name: public
