@@ -32,6 +32,7 @@ class Departement(LandMixin, GetDataFromCeremaMixin, models.Model):
     objects = IntersectManager()
 
     land_type = AdminRef.DEPARTEMENT
+    land_type_label = AdminRef.CHOICES_DICT[land_type]
     default_analysis_level = AdminRef.SCOT
 
     @property
