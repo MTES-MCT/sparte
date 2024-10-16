@@ -29,6 +29,7 @@ class Epci(LandMixin, GetDataFromCeremaMixin, models.Model):
     objects = IntersectManager()
 
     land_type = AdminRef.EPCI
+    land_type_label = AdminRef.CHOICES_DICT[land_type]
     default_analysis_level = AdminRef.COMMUNE
 
     @property
