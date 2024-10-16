@@ -3,3 +3,27 @@
     display: flex;
     flex-direction: column;
 }
+
+.custom-badge {
+    font-size:  0.8em;
+    font-weight: 400;
+    background: #e3e3fd;
+    color: #313178;
+    text-transform: none;
+}
+
+.comparison_land_title {
+    font-weight: 500;
+}
+
+.comparison_land_details {
+    font-size: 0.8em;
+    color: #a1a1f8;
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.comparison_land_item {
+    border-bottom: 1px solid #EEF2F7;
+}
