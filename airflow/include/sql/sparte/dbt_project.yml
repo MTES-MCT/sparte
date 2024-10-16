@@ -26,3 +26,5 @@ models:
       +schema: gpu
     majic:
       +schema: majic
+    dgaln:
+      +schema: sudocuh
