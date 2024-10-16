@@ -19,34 +19,31 @@
     {% if results %}
         <div class="fr-mt-3w">
             <h3 class="fr-mb-2w">Résultats</h3>
-            <div class="fr-accordions-group">
-                {% for land, data in results.items %}
-                    {% if data %}
-                        <section class="fr-accordion">
-                            <h3 class="fr-accordion__title">
-                                <button class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-{{ land }}">
-                                    <span class="fr-mr-2w">{{ land }}</span>
-                                    <span class="badge bg-primary">{{ data|length }}</span>
-                                </button>
-                            </h3>
-                            <div class="fr-collapse" id="accordion-{{ land }}">
-                                {% for result in data %}
-                                    <div class="d-flex justify-content-between fr-mb-1w">
-                                        {{ result.name }} {% if result.insee %}({{ result.insee }}){% endif %}
-                                        <form hx-post="{% url 'project:lookalike' project.id %}" hx-target="#lookalike_form_target" hx-swap="outerHTML">
-                                            {% csrf_token %}
-                                            <input type="hidden" name="add" value="{{ result.public_key }}">
-                                            <button type="submit" class="fr-btn fr-btn--tertiary fr-btn--sm fr-btn--icon-left fr-icon-add-circle-line" title="Ajouter le territoire {{ result.name }} {% if result.insee %}({{ result.insee }}){% endif %}">
-                                                Ajouter
-                                            </button>
-                                        </form>
-                                    </div>
-                                {% endfor %}
+            {% for result in results %}
+                <div class="d-flex justify-content-between fr-mb-1w fr-pb-1w comparison_land_item">
+                    <div class="flex-grow-1 fr-mr-2w">
+                        <div class="comparison_land_title d-flex justify-content-between">
+                            {{ result.name }}
+                            <p class="fr-badge custom-badge">{{result.land_type_label}}</p>
+                        </div>
+                        {% if result.insee %}
+                            <div class="comparison_land_details">
+                                Code INSEE: {{ result.insee }}
                             </div>
-                        </section>
-                    {% endif %}
-                {% endfor %}
-            </div>
+                        {% endif %}
+                        {% if result.area == 0 %}
+                            <div class="fr-text--sm text-muted"><i class="bi bi-info-circle fr-mr-1w"></i>Données indisponibles: Territoire supprimé en 2024</div>
+                        {% endif %}
+                    </div>
+                    <form hx-post="{% url 'project:lookalike' project.id %}" hx-target="#lookalike_form_target" hx-swap="outerHTML">
+                        {% csrf_token %}
+                        <input type="hidden" name="add" value="{{ result.public_key }}">
+                        <button type="submit" {% if result.area == 0 %}disabled{% endif %} class="fr-btn fr-btn--tertiary fr-btn--sm fr-btn--icon-left fr-icon-add-circle-line" title="Ajouter le territoire {{ result.name }} {% if result.insee %}({{ result.insee }}){% endif %}">
+                            Ajouter
+                        </button>
+                    </form>
+                </div>
+            {% endfor %}
         </div>
     {% endif %}
 </div>
