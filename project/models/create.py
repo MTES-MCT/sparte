@@ -98,7 +98,7 @@ def create_from_public_key(
         analyse_start_date=start,
         analyse_end_date=end,
         level=level,
-        land_id=str(land.id),
+        land_id=str(land.official_id),
         land_type=land.land_type,
         territory_name=land.name,
         user=user if user and user.is_authenticated else None,

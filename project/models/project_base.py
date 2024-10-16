@@ -20,7 +20,6 @@ from simple_history.models import HistoricalRecords
 
 from config.storages import PublicMediaStorage
 from project.models.enums import ProjectChangeReason
-from project.models.exceptions import TooOldException
 from public_data.exceptions import LandException
 from public_data.models import (
     AdminRef,
@@ -182,17 +181,6 @@ class Project(BaseProject):
     public_keys = models.CharField("Clé publiques", max_length=255, blank=True, null=True)
 
     def get_public_key(self) -> str:
-        """
-        Returns the public key of the land the project is based on.
-
-        Historically the app supported multiple lands, but it's not the case
-        anymore. This method is adapted for compatibility and will raise an
-        exception if the project is too old and contains several lands.
-        """
-
-        if "," in self.land_id:
-            raise TooOldException("Project too old, it contains several territory.")
-
         return f"{self.land_type}_{self.land_id}"
 
     land_type = models.CharField(
@@ -211,11 +199,6 @@ class Project(BaseProject):
     land_id = models.CharField(
         "Identifiants du territoire du diagnostic",
         max_length=255,
-        help_text=(
-            "Contient l'indentifiant du territoire du diagnostic. "
-            "Il faut croiser cette donnée avec 'land_type' pour être en mesure de "
-            "de récupérer dans la base l'instances correspondante."
-        ),
         blank=True,
         null=True,
     )
@@ -228,13 +211,6 @@ class Project(BaseProject):
     look_a_like = models.CharField(
         "Territoire pour se comparer",
         max_length=250,
-        help_text=(
-            "We need a way to find Project related within Cerema's data. "
-            "this is the purpose of this field which has a very specific rule of "
-            "construction, it's like a slug: EPCI_[ID], DEPART_[ID] (département), "
-            "REGION_[ID], COMMUNE_[ID]. "
-            "field can contain several public key separate by ;"
-        ),
         blank=True,
         null=True,
     )

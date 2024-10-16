@@ -11,6 +11,11 @@ from .GetDataFromCeremaMixin import GetDataFromCeremaMixin
 from .LandMixin import LandMixin
 
 
+class EpciManager(IntersectManager):
+    def get_by_natural_key(self, source_id):
+        return self.get(source_id=source_id)
+
+
 class Epci(LandMixin, GetDataFromCeremaMixin, models.Model):
     class Meta:
         verbose_name = "EPCI"
@@ -26,7 +31,7 @@ class Epci(LandMixin, GetDataFromCeremaMixin, models.Model):
     )
     departements = models.ManyToManyField("Departement")
 
-    objects = IntersectManager()
+    objects = EpciManager()
 
     land_type = AdminRef.EPCI
     land_type_label = AdminRef.CHOICES_DICT[land_type]
