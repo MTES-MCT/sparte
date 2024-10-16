@@ -15,16 +15,8 @@ export interface Territory {
     source_id: string;
     public_key: string;
     area: number;
-    land_type: string;
+    land_type_label: string;
 }
-
-const territoryLabels: Record<string, string> = {
-    COMM: 'Commune',
-    EPCI: 'EPCI',
-    SCOT: 'SCOT',
-    DEPART: 'Département',
-    REGION: 'Région',
-};
 
 const primaryColor = '#313178';
 const activeColor = '#4318FF';
@@ -232,7 +224,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ createUrl }) => {
                                         <div>
                                             <TerritoryTitle>
                                                 <div>{territory.name}</div>
-                                                <Badge className="fr-badge">{territoryLabels[territory.land_type]}</Badge>
+                                                <Badge className="fr-badge">{territory.land_type_label}</Badge>
                                             </TerritoryTitle>
                                             <TerritoryDetails>
                                                 <div>Code INSEE: {territory.source_id}</div>
