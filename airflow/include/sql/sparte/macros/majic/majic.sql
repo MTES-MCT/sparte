@@ -4,17 +4,6 @@
 
     SELECT
         idcom as commune_code,
-        idcomtxt as commune_name,
-        idreg as region_code,
-        idregtxt as region_name,
-        iddep as departement_code,
-        iddeptxt as departement_name,
-        epci23 as epci_code,
-        epci23txt as epci_name,
-        scot as scot_name,
-        aav2020 as aire_attraction_ville,
-        aav2020txt as tranche_aire_attraction_ville,
-        aav2020_ty as typologie_aire_attraction_ville,
         naf09art10 as conso_2009_2010,
         art09act10 as conso_2009_2010_activite,
         art09hab10 as conso_2009_2010_habitat,
@@ -119,21 +108,7 @@
         art09mix23 as conso_2009_2023_mixte,
         art09rou23 as conso_2009_2023_route,
         art09fer23 as conso_2009_2023_ferroviaire,
-        art09inc23 as conso_2009_2023_inconnu,
-        pop14 as population_2014,
-        pop20 as population_2020,
-        pop1420 as population_variation_2014_2020,
-        men14 as menages_2014,
-        men20 as menages_2020,
-        men1420 as menages_variation_2014_2020,
-        emp14 as emplois_2014,
-        emp20 as emplois_2020,
-        emp1420 as emplois_variation_2014_2020,
-        mepart1420 as nouveaux_menages_et_emplois_par_ha_2014_2020, -- Nombre de ménages + emplois supplémentaire par ha artificialisé (période 2014-2020). Égal à (men1420 + emp1420) / (naf14art20/10000)
-        menhab1420 as nouveaux_menages_par_ha_consomme_pour_habitat_2014_2020, -- Nombre de ménages par ha artificialisé à destination de l’habitat (période 2014-2020). Égal à men1420 / (art14hab20 / 10000)
-        artpop1420 as metre_carre_consomme_par_nouveau_habitant_2014_2020, -- Nombre de m² artificialisé par habitant supplémentaire (période 2014-2020). Égal à naf14art20 / pop1420
-        surfcom202 as surface_commune_metre_carre_2020,
-        geom
+        art09inc23 as conso_2009_2023_inconnu
     FROM
         {{ source('public', source_table_name) }}
 {% endmacro %}
