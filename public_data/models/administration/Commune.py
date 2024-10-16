@@ -61,6 +61,7 @@ class Commune(DataColorationMixin, LandMixin, GetDataFromCeremaMixin, models.Mod
     default_property = "insee"  # need to be set correctly to work
     default_color = "Yellow"
     land_type = AdminRef.COMMUNE
+    land_type_label = AdminRef.CHOICES_DICT[land_type]
     default_analysis_level = AdminRef.COMMUNE
 
     @property

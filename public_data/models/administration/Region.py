@@ -29,6 +29,7 @@ class Region(LandMixin, GetDataFromCeremaMixin, models.Model):
     objects = IntersectManager()
 
     land_type = AdminRef.REGION
+    land_type_label = AdminRef.CHOICES_DICT[land_type]
     default_analysis_level = AdminRef.DEPARTEMENT
 
     @property
