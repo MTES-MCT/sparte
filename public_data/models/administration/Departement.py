@@ -12,6 +12,11 @@ from .GetDataFromCeremaMixin import GetDataFromCeremaMixin
 from .LandMixin import LandMixin
 
 
+class DepartementManager(IntersectManager):
+    def get_by_natural_key(self, source_id):
+        return self.get(source_id=source_id)
+
+
 class Departement(LandMixin, GetDataFromCeremaMixin, models.Model):
     class Meta:
         verbose_name = "Département"
@@ -29,7 +34,7 @@ class Departement(LandMixin, GetDataFromCeremaMixin, models.Model):
         default=SRID.LAMBERT_93,
     )
 
-    objects = IntersectManager()
+    objects = DepartementManager()
 
     land_type = AdminRef.DEPARTEMENT
     land_type_label = AdminRef.CHOICES_DICT[land_type]

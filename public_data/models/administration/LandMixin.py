@@ -11,7 +11,7 @@ class LandMixin:
 
     @cached_property
     def public_key(self):
-        return f"{self.land_type}_{self.id}"
+        return f"{self.land_type}_{self.official_id}"
 
     @cached_property
     def area(self) -> float:
