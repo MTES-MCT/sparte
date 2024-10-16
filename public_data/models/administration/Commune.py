@@ -13,6 +13,11 @@ from .GetDataFromCeremaMixin import GetDataFromCeremaMixin
 from .LandMixin import LandMixin
 
 
+class CommuneManager(IntersectManager):
+    def get_by_natural_key(self, insee):
+        return self.get(insee=insee)
+
+
 class Commune(DataColorationMixin, LandMixin, GetDataFromCeremaMixin, models.Model):
     class Meta:
         managed = False
@@ -29,7 +34,7 @@ class Commune(DataColorationMixin, LandMixin, GetDataFromCeremaMixin, models.Mod
         default=SRID.LAMBERT_93,
     )
 
-    objects = IntersectManager()
+    objects = CommuneManager()
 
     # Calculated fields
     first_millesime = models.IntegerField(
@@ -67,6 +72,9 @@ class Commune(DataColorationMixin, LandMixin, GetDataFromCeremaMixin, models.Mod
     @property
     def official_id(self) -> str:
         return self.insee
+
+    def get_by_natural_key(self, insee):
+        return self.get(insee=insee)
 
     @property
     def is_artif_ready(self):
