@@ -4,6 +4,7 @@ import pandas as pd
 import requests
 from airflow.decorators import dag, task
 from include.container import Container
+from include.pools import DBT_POOL
 from pendulum import datetime
 
 SCOT_ENDPOINT = "https://api-sudocuh.datahub.din.developpement-durable.gouv.fr/sudocuh/enquetes/ref/scot/liste/CSV?annee_cog=2024"  # noqa: E501 (line too long)
@@ -17,7 +18,7 @@ SCOT_COMMUNES_ENDPOINT = "https://api-sudocuh.datahub.din.developpement-durable.
     doc_md=__doc__,
     max_active_runs=1,
     default_args={"owner": "Alexis Athlani", "retries": 3},
-    tags=["DGALN"],
+    tags=["SUDOCUH"],
 )
 def ingest_scots():
     bucket_name = "airflow-staging"
@@ -56,7 +57,7 @@ def ingest_scots():
     def ingest_scots(path_on_bucket) -> int | None:
         Container().s3().get_file(path_on_bucket, tmp_localpath_scot)
         df = pd.read_csv(tmp_localpath_scot, sep=";")
-        table_name = "dgaln_scot"
+        table_name = "sudocuh_scot"
         row_count = df.to_sql(table_name, con=Container().sqlalchemy_dbt_conn(), if_exists="replace")
         os.remove(tmp_localpath_scot)
         return row_count
@@ -65,16 +66,22 @@ def ingest_scots():
     def ingest_scot_communes(path_on_bucket) -> int | None:
         Container().s3().get_file(path_on_bucket, tmp_localpath_scot_communes)
         df = pd.read_csv(tmp_localpath_scot_communes, sep=";")
-        table_name = "dgaln_scot_communes"
+        table_name = "sudocuh_scot_communes"
         row_count = df.to_sql(table_name, con=Container().sqlalchemy_dbt_conn(), if_exists="replace")
         os.remove(tmp_localpath_scot_communes)
         return row_count
 
+    @task.bash(retries=0, trigger_rule="all_success", pool=DBT_POOL)
+    def dbt_build(**context):
+        return 'cd "${AIRFLOW_HOME}/include/sql/sparte" && dbt build -s sudocuh'
+
     scots_path = download_scots()
     scot_communes_path = download_scot_communes()
 
-    ingest_scots(scots_path)
-    ingest_scot_communes(scot_communes_path)
+    ingest_scots_result = ingest_scots(scots_path)
+    ingest_scot_communes_result = ingest_scot_communes(scot_communes_path)
+
+    ingest_scots_result >> ingest_scot_communes_result >> dbt_build()
 
 
 ingest_scots()

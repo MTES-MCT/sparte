@@ -21,5 +21,5 @@ models:
 sources:
   - name: public
     tables:
-    - name: dgaln_scot
-    - name: dgaln_scot_communes
+    - name: sudocuh_scot
+    - name: sudocuh_scot_communes

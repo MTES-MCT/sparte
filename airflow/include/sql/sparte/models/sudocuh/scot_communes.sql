@@ -22,4 +22,4 @@ SELECT
     scot_en_cours_nom_schema,
     scot_en_cours_noserie_procedure,
     scot_en_cours_date_prescription
-FROM {{ source('public', 'dgaln_scot_communes') }}
+FROM {{ source('public', 'sudocuh_scot_communes') }}

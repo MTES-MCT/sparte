@@ -54,4 +54,4 @@ SELECT
     perimetre_en_cours_pcpopulationtotale,
     perimetre_en_cours_pcsuperficie
 
-FROM {{ source('public', 'dgaln_scot') }}
+FROM {{ source('public', 'sudocuh_scot') }}

@@ -27,4 +27,4 @@ models:
     majic:
       +schema: majic
     dgaln:
-      +schema: dgaln
+      +schema: sudocuh
