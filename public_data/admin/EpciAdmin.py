@@ -7,7 +7,6 @@ from public_data.models import Epci
 class EpciAdmin(admin.GISModelAdmin):
     model = Epci
     list_display = (
-        "id",
         "name",
         "source_id",
     )

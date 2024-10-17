@@ -7,7 +7,6 @@ from public_data.models import Departement
 class DepartementAdmin(admin.GISModelAdmin):
     model = Departement
     list_display = (
-        "id",
         "name",
         "source_id",
         "region",
