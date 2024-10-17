@@ -35,7 +35,7 @@ class Scot(LandMixin, GetDataFromCeremaMixin, models.Model):
 
     @property
     def official_id(self) -> str:
-        return self.siren
+        return self.name
 
     def get_qs_cerema(self):
         return Cerema.objects.filter(city_insee__in=self.commune_set.values("insee"))
