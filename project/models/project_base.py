@@ -1137,8 +1137,10 @@ class Project(BaseProject):
         return AdminRef.get_class(name=self.land_type).objects.filter(source_id__in=comparison_source_ids)
 
     def get_neighbors(self):
-        return AdminRef.get_class(self.land_type).objects.filter(
-            mpoly__intersects=self.combined_emprise.buffer(0.0001)
+        return (
+            AdminRef.get_class(self.land_type)
+            .objects.filter(mpoly__intersects=self.combined_emprise.buffer(0.0001))
+            .exclude(id=int(self.land_id))
         )
 
     def get_comparison_lands(
