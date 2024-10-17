@@ -3,6 +3,8 @@ import { useHtmlLoader } from '@hooks/useHtmlLoader';
 import useHighcharts from '@hooks/useHighcharts';
 import Loader from '@components/ui/Loader';
 import Guide from '@components/widgets/Guide';
+import OcsgeNomenclatureUs from '@images/ocsge-nomenclature-us.png';
+import OcsgeNomenclatureCs from '@images/ocsge-nomenclature-cs.png';
 
 /*
 Ce composant est un composant hybride qui permet de récupérer du contenu côté serveur via Django et de l'intégrer directement dans l'interface React.
@@ -46,6 +48,10 @@ const Ocsge: React.FC<{ endpoint: string }> = ({ endpoint }) => {
                             <p class="fr-text--sm mb-3">La couverture du sol est une vue « physionomique » du terrain. La description est une simple distinction des éléments structurant le paysage. Ex : Zones bâties.</p>
                             <p class="fr-text--sm mb-3">L'usage du sol est une vue « anthropique du sol ». Il est  partagé en fonction du rôle que jouent les portions de terrain en tant  qu'occupation humaine. Dans l'OCS GE, l'usage US235 regroupe les objets de US2  (production secondaire), US3 (production tertiaire) et US5 (usage  résidentiel) de la nomenclature nationale quand la distinction entre ces usages n'est pas possible ou pas connue. Ex : Agriculture.</p>
                             <p class="fr-text--sm mb-3">Chaque objet géographique de l'OCS GE porte ces deux informations. Ex : Zones bâties (couverture) et Agriculture (usage) décrivent des bâtiments agricoles.</p>
+                            <div class="d-flex">
+                                <img src="${OcsgeNomenclatureUs}" alt="OCS GE Nomenclature Us" class="w-100 fr-mr-2w" />
+                                <img src="${OcsgeNomenclatureCs}" alt="OCS GE Nomenclature Us" class="w-100" />
+                            </div>
                         `}
                     />
                     <div dangerouslySetInnerHTML={{ __html: content }} />

@@ -3,6 +3,7 @@ import { useHtmlLoader } from '@hooks/useHtmlLoader';
 import useHighcharts from '@hooks/useHighcharts';
 import Loader from '@components/ui/Loader';
 import Guide from '@components/widgets/Guide';
+import OcsgeMatricePassage from '@images/ocsge_matrice_passage.png';
 
 /*
 Ce composant est un composant hybride qui permet de récupérer du contenu côté serveur via Django et de l'intégrer directement dans l'interface React.
@@ -62,7 +63,7 @@ const Artificialisation: React.FC<{ endpoint: string }> = ({ endpoint }) => {
                             <p class="fr-text--sm mb-3">La nomenclature précise que les surfaces dont les sols sont soit imperméabilisés en raison du bâti ou d'un revêtement, soit stabilisés et compactés, soit constitués de matériaux composites sont qualifiées de surfaces artificialisées. De même, les surfaces végétalisées herbacées (c'est-à-dire non ligneuses) et qui sont à usage résidentiel, de production secondaire ou tertiaire, ou d'infrastructures, sont considérées comme artificialisées, y compris lorsqu'elles sont en chantier ou à l'état d'abandon.</p>
                             <p class="fr-text--sm mb-3">L'artificialisation nette est définie comme « le solde de l'artificialisation et de la désartificialisation des sols constatées sur un périmètre et sur une période donnés » (article L.101-2-1 du code de l'urbanisme). </p>
                             <p class="fr-text--sm mb-3">Au niveau national, l'artificialisation est mesurée par l'occupation des sols à grande échelle (OCS GE), en cours d'élaboration, dont la production sera engagée sur l'ensemble du territoire national d'ici fin 2024.</p>
-                            <img src="https://mondiagartif.beta.gouv.fr/static/project/img/ocs_ge_matrice_passage.png" class="w-100" />
+                            <img src="${OcsgeMatricePassage}" alt="OCS GE Nomenclature Us" class="w-100" />
                         `}
                     />
                     <div dangerouslySetInnerHTML={{ __html: content }} />
