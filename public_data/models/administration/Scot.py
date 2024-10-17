@@ -20,8 +20,9 @@ class Scot(LandMixin, GetDataFromCeremaMixin, models.Model):
     class Meta:
         managed = False
 
+    siren = models.CharField("Siren", max_length=12, primary_key=True)
     name = models.CharField("Nom", max_length=250)
-    mpoly = models.MultiPolygonField(srid=4326, null=True, blank=True)
+    mpoly = models.MultiPolygonField(srid=4326)
     srid_source = models.IntegerField(
         "SRID",
         choices=SRID.choices,
@@ -30,7 +31,6 @@ class Scot(LandMixin, GetDataFromCeremaMixin, models.Model):
 
     regions = models.ManyToManyField("Region")
     departements = models.ManyToManyField("Departement")
-    siren = models.CharField("Siren", max_length=12, null=True, blank=True)
 
     objects = ScotManager()
 

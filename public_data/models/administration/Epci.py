@@ -21,7 +21,11 @@ class Epci(LandMixin, GetDataFromCeremaMixin, models.Model):
         verbose_name = "EPCI"
         managed = False
 
-    source_id = models.CharField("Identifiant source", max_length=50)
+    source_id = models.CharField(
+        "Identifiant source",
+        max_length=50,
+        primary_key=True,
+    )
     name = models.CharField("Nom", max_length=70)
     mpoly = models.MultiPolygonField(srid=4326)
     srid_source = models.IntegerField(
@@ -29,7 +33,7 @@ class Epci(LandMixin, GetDataFromCeremaMixin, models.Model):
         choices=SRID.choices,
         default=SRID.LAMBERT_93,
     )
-    departements = models.ManyToManyField("Departement")
+    departements = models.ManyToManyField(to="Departement")
 
     objects = EpciManager()
 

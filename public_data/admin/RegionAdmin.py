@@ -7,7 +7,6 @@ from public_data.models import Region
 class RegionAdmin(admin.GISModelAdmin):
     model = Region
     list_display = (
-        "id",
         "name",
         "source_id",
     )

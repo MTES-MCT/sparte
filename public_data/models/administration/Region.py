@@ -22,7 +22,7 @@ class Region(LandMixin, GetDataFromCeremaMixin, models.Model):
         verbose_name = "Région"
         managed = False
 
-    source_id = models.CharField("Identifiant source", max_length=50)
+    source_id = models.CharField(max_length=50, primary_key=True)
     name = models.CharField("Nom", max_length=50)
     mpoly = models.MultiPolygonField(srid=4326)
     srid_source = models.IntegerField(
