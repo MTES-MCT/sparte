@@ -26,5 +26,7 @@ models:
       +schema: gpu
     majic:
       +schema: majic
-    dgaln:
+    sudocuh:
       +schema: sudocuh
+    insee:
+      +schema: insee
