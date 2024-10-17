@@ -22,8 +22,8 @@ class Departement(LandMixin, GetDataFromCeremaMixin, models.Model):
         verbose_name = "Département"
         managed = False
 
-    source_id = models.CharField("Identifiant source", max_length=50)
-    region = models.ForeignKey("Region", on_delete=models.CASCADE)
+    source_id = models.CharField("Identifiant source", max_length=50, primary_key=True)
+    region = models.ForeignKey("Region", on_delete=models.CASCADE, to_field="source_id")
     is_artif_ready = models.BooleanField("Données artif disponibles", default=False)
     ocsge_millesimes = ArrayField(models.IntegerField(), null=True, blank=True)
     name = models.CharField("Nom", max_length=50)
