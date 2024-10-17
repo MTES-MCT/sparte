@@ -1,6 +1,8 @@
 from django.db import connection
 from django.test import TestCase
 
+from utils.schema import init_unmanaged_schema_for_tests
+
 from .Commune import Commune
 from .Departement import Departement
 from .Epci import Epci
@@ -9,34 +11,9 @@ from .Scot import Scot
 
 
 class TestLandNaturalKeys(TestCase):
-    def tearDown(self):
-        super().tearDown()
-
-        with connection.schema_editor() as schema_editor:
-            schema_editor.delete_model(Commune)
-
     def setUp(self) -> None:
         super().setUp()
-
-        with connection.schema_editor() as schema_editor:
-            """
-            Comme les tables sont crées à partir d'airflow,
-            elles doivent être créees à la main pour les tests.
-
-            On doit également d'abord les supprimer pour éviter que
-            d'anciens fichiers de migrations ne soient utilisés
-            (de la période où les tables étaient managées par Django)
-            """
-            schema_editor.delete_model(Commune)
-            schema_editor.create_model(Commune)
-            schema_editor.delete_model(Region)
-            schema_editor.create_model(Region)
-            schema_editor.delete_model(Departement)
-            schema_editor.create_model(Departement)
-            schema_editor.delete_model(Epci)
-            schema_editor.create_model(Epci)
-            schema_editor.delete_model(Scot)
-            schema_editor.create_model(Scot)
+        init_unmanaged_schema_for_tests()
 
         self.region_natural_key = "region"
         self.first_departement_natural_key = "departemen1"
