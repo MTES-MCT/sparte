@@ -13,15 +13,30 @@ from .GetDataFromCeremaMixin import GetDataFromCeremaMixin
 from .LandMixin import LandMixin
 
 
+class CommuneManager(IntersectManager):
+    def get_by_natural_key(self, insee):
+        return self.get(insee=insee)
+
+
 class Commune(DataColorationMixin, LandMixin, GetDataFromCeremaMixin, models.Model):
     class Meta:
         managed = False
 
-    insee = models.CharField("Code INSEE", max_length=7)
+    insee = models.CharField("Code INSEE", max_length=7, primary_key=True)
     name = models.CharField("Nom", max_length=50)
     departement = models.ForeignKey("Departement", on_delete=models.PROTECT)
-    epci = models.ForeignKey("Epci", on_delete=models.PROTECT, blank=True, null=True)
-    scot = models.ForeignKey("Scot", on_delete=models.PROTECT, blank=True, null=True)
+    epci = models.ForeignKey(
+        "Epci",
+        on_delete=models.PROTECT,
+        to_field="source_id",
+    )
+    scot = models.ForeignKey(
+        "Scot",
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+        to_field="siren",
+    )
     mpoly = models.MultiPolygonField(srid=4326)
     srid_source = models.IntegerField(
         "SRID",
@@ -29,7 +44,7 @@ class Commune(DataColorationMixin, LandMixin, GetDataFromCeremaMixin, models.Mod
         default=SRID.LAMBERT_93,
     )
 
-    objects = IntersectManager()
+    objects = CommuneManager()
 
     # Calculated fields
     first_millesime = models.IntegerField(
@@ -44,7 +59,7 @@ class Commune(DataColorationMixin, LandMixin, GetDataFromCeremaMixin, models.Mod
         blank=True,
         null=True,
     )
-    area = models.DecimalField("Surface", max_digits=15, decimal_places=4, blank=True, null=True)
+    area = models.DecimalField("Surface", max_digits=15, decimal_places=4)
     surface_artif = models.DecimalField(
         "Surface artificielle",
         max_digits=15,
@@ -67,6 +82,9 @@ class Commune(DataColorationMixin, LandMixin, GetDataFromCeremaMixin, models.Mod
     @property
     def official_id(self) -> str:
         return self.insee
+
+    def get_by_natural_key(self, insee):
+        return self.get(insee=insee)
 
     @property
     def is_artif_ready(self):

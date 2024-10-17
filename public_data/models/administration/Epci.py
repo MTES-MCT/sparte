@@ -11,12 +11,21 @@ from .GetDataFromCeremaMixin import GetDataFromCeremaMixin
 from .LandMixin import LandMixin
 
 
+class EpciManager(IntersectManager):
+    def get_by_natural_key(self, source_id):
+        return self.get(source_id=source_id)
+
+
 class Epci(LandMixin, GetDataFromCeremaMixin, models.Model):
     class Meta:
         verbose_name = "EPCI"
         managed = False
 
-    source_id = models.CharField("Identifiant source", max_length=50)
+    source_id = models.CharField(
+        "Identifiant source",
+        max_length=50,
+        primary_key=True,
+    )
     name = models.CharField("Nom", max_length=70)
     mpoly = models.MultiPolygonField(srid=4326)
     srid_source = models.IntegerField(
@@ -24,9 +33,9 @@ class Epci(LandMixin, GetDataFromCeremaMixin, models.Model):
         choices=SRID.choices,
         default=SRID.LAMBERT_93,
     )
-    departements = models.ManyToManyField("Departement")
+    departements = models.ManyToManyField(to="Departement")
 
-    objects = IntersectManager()
+    objects = EpciManager()
 
     land_type = AdminRef.EPCI
     land_type_label = AdminRef.CHOICES_DICT[land_type]

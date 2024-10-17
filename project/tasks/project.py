@@ -1,7 +1,5 @@
 import io
 import logging
-import os
-import zipfile
 from datetime import timedelta
 from typing import Any, Dict, Literal
 
@@ -19,17 +17,10 @@ from django_app_parameter import app_parameter
 from matplotlib.lines import Line2D
 from matplotlib_scalebar.scalebar import ScaleBar
 
-from project.models import (
-    Emprise,
-    Project,
-    Request,
-    RequestedDocumentChoices,
-    RNUPackage,
-)
+from project.models import Emprise, Project, Request, RequestedDocumentChoices
 from public_data.domain.containers import PublicDataContainer
-from public_data.models import AdminRef, ArtificialArea, Departement, Land, OcsgeDiff
+from public_data.models import AdminRef, ArtificialArea, Land, OcsgeDiff
 from public_data.models.gpu import ArtifAreaZoneUrba, ZoneUrba
-from public_data.storages import DataStorage
 from utils.db import fix_poly
 from utils.emails import SibTemplateEmail
 from utils.functions import get_url_with_domain
@@ -498,7 +489,7 @@ def generate_theme_map_conso(self, project_id) -> None:
     try:
         diagnostic = Project.objects.get(id=int(project_id))
         diagnostic_communes_as_lands = [
-            Land(public_key=f"{AdminRef.COMMUNE}_{commune.id}") for commune in diagnostic.cities.all()
+            Land(public_key=f"{AdminRef.COMMUNE}_{commune.official_id}") for commune in diagnostic.cities.all()
         ]
 
         land_progressions = PublicDataContainer.consommation_progression_service().get_by_lands(
@@ -877,51 +868,3 @@ def alert_on_blocked_diagnostic(self) -> None:
 
     finally:
         logger.info("End alert_on_blocked_diagnostic")
-
-
-@shared_task(max_retries=5)
-def create_zip_departement_rnu_package_one_off(departement_id: str) -> None:
-    departement = Departement.objects.get(source_id=departement_id)
-    commune_in_departement_ids_as_string = [
-        str(commune_id) for commune_id in departement.commune_set.values_list("id", flat=True)
-    ]
-    requests_created_by_the_rnu_package_service_account = Request.objects.filter(
-        email="rnu.package@mondiagartif.beta.gouv.fr",
-        project__land_id__in=commune_in_departement_ids_as_string,
-    )
-
-    notice_file_path = f"rnu_packages/NOTICE_{departement_id}.pdf"
-    rnu_communes_map_file_path = f"rnu_packages/COMM_DU_{departement_id}.pdf"
-
-    file_name = f"rnu_package_departement_{departement_id}.zip"
-
-    with zipfile.ZipFile(file_name, "a", compression=zipfile.ZIP_DEFLATED, compresslevel=9) as zipf:
-        notice_file = DataStorage().open(notice_file_path, "rb")
-        rnu_communes_map_file = DataStorage().open(rnu_communes_map_file_path, "rb")
-
-        zipf.writestr(f"NOTICE_{departement_id}.pdf", notice_file.read())
-        zipf.writestr(f"COMM_DU_{departement_id}.pdf", rnu_communes_map_file.read())
-
-        for request in requests_created_by_the_rnu_package_service_account:
-            if not request.sent_file:
-                raise ValueError(f"Request {request.id} has no sent file")
-
-            file_name_in_zip = f"{departement_id}_COMM_{request.project.land.official_id}.docx"
-            zipf.writestr(file_name_in_zip, request.sent_file.read())
-
-    try:
-        package = RNUPackage.objects.get(
-            departement_official_id=departement.source_id,
-        )
-        package.app_version = settings.OFFICIAL_VERSION
-        package.save()
-    except RNUPackage.DoesNotExist:
-        package = RNUPackage.objects.create(
-            departement_official_id=departement.source_id,
-            app_version=settings.OFFICIAL_VERSION,
-        )
-
-    with open(file_name, "rb") as buffer:
-        package.file.save(name=file_name, content=buffer, save=True)
-
-    os.remove(file_name)

@@ -12,12 +12,17 @@ from .GetDataFromCeremaMixin import GetDataFromCeremaMixin
 from .LandMixin import LandMixin
 
 
+class RegionManager(IntersectManager):
+    def get_by_natural_key(self, source_id):
+        return self.get(source_id=source_id)
+
+
 class Region(LandMixin, GetDataFromCeremaMixin, models.Model):
     class Meta:
         verbose_name = "Région"
         managed = False
 
-    source_id = models.CharField("Identifiant source", max_length=50)
+    source_id = models.CharField(max_length=50, primary_key=True)
     name = models.CharField("Nom", max_length=50)
     mpoly = models.MultiPolygonField(srid=4326)
     srid_source = models.IntegerField(
@@ -26,7 +31,7 @@ class Region(LandMixin, GetDataFromCeremaMixin, models.Model):
         default=SRID.LAMBERT_93,
     )
 
-    objects = IntersectManager()
+    objects = RegionManager()
 
     land_type = AdminRef.REGION
     land_type_label = AdminRef.CHOICES_DICT[land_type]

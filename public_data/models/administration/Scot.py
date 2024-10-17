@@ -11,12 +11,18 @@ from .GetDataFromCeremaMixin import GetDataFromCeremaMixin
 from .LandMixin import LandMixin
 
 
+class ScotManager(IntersectManager):
+    def get_by_natural_key(self, siren):
+        return self.get(siren=siren)
+
+
 class Scot(LandMixin, GetDataFromCeremaMixin, models.Model):
     class Meta:
         managed = False
 
+    siren = models.CharField("Siren", max_length=12, primary_key=True)
     name = models.CharField("Nom", max_length=250)
-    mpoly = models.MultiPolygonField(srid=4326, null=True, blank=True)
+    mpoly = models.MultiPolygonField(srid=4326)
     srid_source = models.IntegerField(
         "SRID",
         choices=SRID.choices,
@@ -25,9 +31,8 @@ class Scot(LandMixin, GetDataFromCeremaMixin, models.Model):
 
     regions = models.ManyToManyField("Region")
     departements = models.ManyToManyField("Departement")
-    siren = models.CharField("Siren", max_length=12, null=True, blank=True)
 
-    objects = IntersectManager()
+    objects = ScotManager()
 
     land_type = AdminRef.SCOT
     land_type_label = AdminRef.CHOICES_DICT[land_type]
