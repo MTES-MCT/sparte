@@ -30,3 +30,5 @@ models:
       +schema: sudocuh
     insee:
       +schema: insee
+    for_app:
+      +schema: for_app

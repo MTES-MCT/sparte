@@ -12,15 +12,16 @@ from .LandMixin import LandMixin
 
 
 class ScotManager(IntersectManager):
-    def get_by_natural_key(self, siren):
-        return self.get(siren=siren)
+    def get_by_natural_key(self, source_id):
+        return self.get(source_id=source_id)
 
 
 class Scot(LandMixin, GetDataFromCeremaMixin, models.Model):
     class Meta:
         managed = False
 
-    siren = models.CharField("Siren", max_length=12, primary_key=True)
+    siren = models.CharField("Siren", max_length=12)
+    source_id = models.CharField("ID Source", max_length=255, primary_key=True)
     name = models.CharField("Nom", max_length=250)
     mpoly = models.MultiPolygonField(srid=4326)
     srid_source = models.IntegerField(
@@ -40,7 +41,7 @@ class Scot(LandMixin, GetDataFromCeremaMixin, models.Model):
 
     @property
     def official_id(self) -> str:
-        return self.name
+        return self.source_id
 
     def get_qs_cerema(self):
         return Cerema.objects.filter(city_insee__in=self.commune_set.values("insee"))
@@ -52,7 +53,7 @@ class Scot(LandMixin, GetDataFromCeremaMixin, models.Model):
         return self.name.upper()
 
     def get_official_id(self) -> str:
-        return self.siren if self.siren is not None else ""
+        return self.source_id
 
     @classmethod
     def search(cls, needle, region=None, departement=None, epci=None):

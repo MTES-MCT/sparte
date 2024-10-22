@@ -48,7 +48,6 @@ not_null_cs_us_config_staging: &not_null_cs_us_config_staging
     warn_if: ">0"
 
 models:
-  - name: for_app_commune
   - name: occupation_du_sol_commune
   - name: artificial_commune
   - name: zone_construite
@@ -73,6 +72,7 @@ models:
         data_tests:
           - not_null
           - is_valid_geom
+          - is_not_empty_geom
       - name: surface
         data_tests:
           - not_null
@@ -123,6 +123,7 @@ models:
         data_tests:
           - not_null
           - is_valid_geom
+          - is_not_empty_geom
   - name: difference
     columns:
       - name: loaded_date
@@ -179,6 +180,7 @@ models:
         data_tests:
           - not_null
           - is_valid_geom
+          - is_not_empty_geom
 
 sources:
   - name: public
@@ -210,6 +212,7 @@ sources:
           - unique
           - not_null
           - is_valid_geom_warning
+          - is_not_empty_geom
     - name: ocsge_occupation_du_sol_staging
       columns:
       - name: loaded_date
@@ -232,6 +235,7 @@ sources:
           - unique
           - not_null
           - is_valid_geom_warning
+          - is_not_empty_geom
       - name: departement
         data_tests:
           - not_null
@@ -287,6 +291,7 @@ sources:
           - unique
           - not_null
           - is_valid_geom_warning
+          - is_not_empty_geom
     - name: ocsge_difference
     - name: ocsge_occupation_du_sol
     - name: ocsge_zone_construite

@@ -46,6 +46,18 @@ models:
     columns: *code_is_unique_and_not_null
   - name: epci_metropole
     columns: *code_is_unique_and_not_null
+  - name: region
+    columns: *code_is_unique_and_not_null
+  - name: region_reunion
+    columns: *code_is_unique_and_not_null
+  - name: region_guadeloupe
+    columns: *code_is_unique_and_not_null
+  - name: region_guyane
+    columns: *code_is_unique_and_not_null
+  - name: region_martinique
+    columns: *code_is_unique_and_not_null
+  - name: region_metropole
+    columns: *code_is_unique_and_not_null
 
 
 sources:
@@ -66,3 +78,8 @@ sources:
     - name: epci_guyane
     - name: epci_martinique
     - name: epci_reunion
+    - name: region_reunion
+    - name: region_guadeloupe
+    - name: region_guyane
+    - name: region_martinique
+    - name: region_metropole

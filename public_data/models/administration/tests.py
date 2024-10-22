@@ -59,7 +59,8 @@ class TestLandNaturalKeys(TestCase):
 
         self.first_scot = Scot.objects.create(
             name="Premier Scot",
-            siren=self.first_scot_natural_key,
+            siren="Some siren",
+            source_id=self.first_scot_natural_key,
             mpoly="MULTIPOLYGON(((0 0,0 1,1 1,1 0,0 0)))",
             srid_source=2154,
         )
@@ -74,7 +75,6 @@ class TestLandNaturalKeys(TestCase):
             mpoly="MULTIPOLYGON(((0 0,0 1,1 1,1 0,0 0)))",
             srid_source=2154,
             departement=self.first_departement,
-            epci=self.first_epci,
             scot=self.first_scot,
             first_millesime=None,
             last_millesime=None,
@@ -83,13 +83,14 @@ class TestLandNaturalKeys(TestCase):
             ocsge_available=False,
         )
 
+        self.first_commune.epci.add(self.first_epci)
+
         self.second_commune = Commune.objects.create(
             name="Deuxième commune",
             insee=self.second_commune_natural_key,
             mpoly="MULTIPOLYGON(((0 0,0 1,1 1,1 0,0 0)))",
             srid_source=2154,
             departement=self.second_departement,
-            epci=self.first_epci,
             scot=self.first_scot,
             first_millesime=None,
             last_millesime=None,
@@ -97,6 +98,8 @@ class TestLandNaturalKeys(TestCase):
             surface_artif=None,
             ocsge_available=False,
         )
+
+        self.second_commune.epci.add(self.first_epci)
 
     # get_by_natural_key tests
 
@@ -125,9 +128,6 @@ class TestLandNaturalKeys(TestCase):
 
     def test_departement_region_foreign_key(self):
         self.assertEqual(self.first_departement.region_id, self.region_natural_key)
-
-    def test_commune_epci_foreign_key(self):
-        self.assertEqual(self.first_commune.epci_id, self.first_epci_natural_key)
 
     def test_commune_scot_foreign_key(self):
         self.assertEqual(self.first_commune.scot_id, self.first_scot_natural_key)
@@ -159,6 +159,16 @@ class TestLandNaturalKeys(TestCase):
         ]
         with connection.cursor() as cursor:
             cursor.execute("SELECT * from public_data_scot_regions")
+            result = cursor.fetchall()
+            self.assertEqual(result, expected_result)
+
+    def test_commune_epci_many_to_many(self):
+        expected_result = [
+            (1, self.first_commune_natural_key, self.first_epci_natural_key),
+            (2, self.second_commune_natural_key, self.first_epci_natural_key),
+        ]
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT * from public_data_commune_epci")
             result = cursor.fetchall()
             self.assertEqual(result, expected_result)
 
