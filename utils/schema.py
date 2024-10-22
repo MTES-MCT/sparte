@@ -1,12 +1,33 @@
 import sys
 
 from django.db import connection
+from django.db.backends.base.schema import BaseDatabaseSchemaEditor
 
-from public_data.models import Commune, Departement, Epci, Region, Scot
+from public_data.models import (
+    ArtifAreaZoneUrba,
+    ArtificialArea,
+    Commune,
+    CommuneDiff,
+    CommunePop,
+    CommuneSol,
+    Departement,
+    Epci,
+    Region,
+    Scot,
+    ZoneUrba,
+)
 
 
 class NotInTestEnvironmentError(Exception):
     pass
+
+
+def drop_and_create_model(model, schema_editor: BaseDatabaseSchemaEditor) -> None:
+    sql = f"DROP TABLE IF EXISTS {model._meta.db_table} CASCADE;"
+    for field in model._meta.local_many_to_many:
+        sql += f"DROP TABLE IF EXISTS {field.remote_field.through._meta.db_table} CASCADE;"
+    schema_editor.execute(sql)
+    schema_editor.create_model(model)
 
 
 def init_unmanaged_schema_for_tests() -> None:
@@ -22,13 +43,14 @@ def init_unmanaged_schema_for_tests() -> None:
         raise NotInTestEnvironmentError("Cette fonction ne doit être appelée que dans le cadre de tests unitaires")
 
     with connection.schema_editor() as schema_editor:
-        schema_editor.delete_model(Commune)
-        schema_editor.create_model(Commune)
-        schema_editor.delete_model(Region)
-        schema_editor.create_model(Region)
-        schema_editor.delete_model(Departement)
-        schema_editor.create_model(Departement)
-        schema_editor.delete_model(Epci)
-        schema_editor.create_model(Epci)
-        schema_editor.delete_model(Scot)
-        schema_editor.create_model(Scot)
+        drop_and_create_model(Commune, schema_editor)
+        drop_and_create_model(Region, schema_editor)
+        drop_and_create_model(Departement, schema_editor)
+        drop_and_create_model(Epci, schema_editor)
+        drop_and_create_model(Scot, schema_editor)
+        drop_and_create_model(CommuneDiff, schema_editor)
+        drop_and_create_model(CommunePop, schema_editor)
+        drop_and_create_model(CommuneSol, schema_editor)
+        drop_and_create_model(ArtifAreaZoneUrba, schema_editor)
+        drop_and_create_model(ZoneUrba, schema_editor)
+        drop_and_create_model(ArtificialArea, schema_editor)

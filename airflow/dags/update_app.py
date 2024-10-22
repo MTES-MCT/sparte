@@ -99,6 +99,13 @@ def copy_table_from_dw_to_app(
                 "copy_public_data_communediff",
                 "copy_public_data_zoneconstruite",
                 "copy_public_data_zoneurba",
+                "copy_public_data_commune_epcis",
+                "copy_public_data_epci",
+                "copy_public_data_scot",
+                "copy_public_data_region",
+                "copy_public_data_epci_departements",
+                "copy_public_data_scot_departements",
+                "copy_public_data_scot_regions",
             ],
             type="array",
         ),
@@ -110,7 +117,7 @@ def update_app():  # noqa: C901
     @task.python
     def copy_public_data_ocsge(**context):
         return copy_table_from_dw_to_app(
-            from_table="public_ocsge.for_app_ocsge",
+            from_table="public_for_app.for_app_ocsge",
             to_table="public.public_data_ocsge",
             use_subset=context["params"]["use_subset"],
             subset_where=f"mpoly && ({context['params']['subset_geom']})",
@@ -128,7 +135,7 @@ def update_app():  # noqa: C901
     @task.python
     def copy_public_data_artificialarea(**context):
         return copy_table_from_dw_to_app(
-            from_table="public_ocsge.for_app_artificialarea",
+            from_table="public_for_app.for_app_artificialarea",
             to_table="public.public_data_artificialarea",
             use_subset=context["params"]["use_subset"],
             subset_where=f"mpoly && ({context['params']['subset_geom']})",
@@ -138,7 +145,7 @@ def update_app():  # noqa: C901
     @task.python
     def copy_public_data_artifareazoneurba(**context):
         return copy_table_from_dw_to_app(
-            from_table="public_ocsge.for_app_artifareazoneurba",
+            from_table="public_for_app.for_app_artifareazoneurba",
             to_table="public.public_data_artifareazoneurba",
             environment=context["params"]["environment"],
             btree_index_columns=[
@@ -150,7 +157,7 @@ def update_app():  # noqa: C901
     @task.python
     def copy_public_data_commune(**context):
         return copy_table_from_dw_to_app(
-            from_table="public_ocsge.for_app_commune",
+            from_table="public_for_app.for_app_commune",
             to_table="public.public_data_commune",
             use_subset=context["params"]["use_subset"],
             subset_where=f"mpoly && ({context['params']['subset_geom']})",
@@ -163,7 +170,7 @@ def update_app():  # noqa: C901
     @task.python
     def copy_public_data_departement(**context):
         return copy_table_from_dw_to_app(
-            from_table="public_ocsge.for_app_departement",
+            from_table="public_for_app.for_app_departement",
             to_table="public.public_data_departement",
             use_subset=context["params"]["use_subset"],
             subset_where=f"mpoly && ({context['params']['subset_geom']})",
@@ -176,7 +183,7 @@ def update_app():  # noqa: C901
     @task.python
     def copy_public_data_communesol(**context):
         return copy_table_from_dw_to_app(
-            from_table="public_ocsge.for_app_communesol",
+            from_table="public_for_app.for_app_communesol",
             to_table="public.public_data_communesol",
             environment=context["params"]["environment"],
             btree_index_columns=[
@@ -189,7 +196,7 @@ def update_app():  # noqa: C901
     @task.python
     def copy_public_data_ocsgediff(**context):
         return copy_table_from_dw_to_app(
-            from_table="public_ocsge.for_app_ocsgediff",
+            from_table="public_for_app.for_app_ocsgediff",
             to_table="public.public_data_ocsgediff",
             use_subset=context["params"]["use_subset"],
             subset_where=f"mpoly && ({context['params']['subset_geom']})",
@@ -208,7 +215,7 @@ def update_app():  # noqa: C901
     @task.python
     def copy_public_data_communediff(**context):
         return copy_table_from_dw_to_app(
-            from_table="public_ocsge.for_app_communediff",
+            from_table="public_for_app.for_app_communediff",
             to_table="public.public_data_communediff",
             use_subset=context["params"]["use_subset"],
             subset_where=f"mpoly && ({context['params']['subset_geom']})",
@@ -223,7 +230,7 @@ def update_app():  # noqa: C901
     @task.python
     def copy_public_data_zoneconstruite(**context):
         return copy_table_from_dw_to_app(
-            from_table="public_ocsge.for_app_zoneconstruite",
+            from_table="public_for_app.for_app_zoneconstruite",
             to_table="public.public_data_zoneconstruite",
             use_subset=context["params"]["use_subset"],
             subset_where=f"mpoly && ({context['params']['subset_geom']})",
@@ -238,7 +245,7 @@ def update_app():  # noqa: C901
     @task.python
     def copy_public_data_zoneurba(**context):
         return copy_table_from_dw_to_app(
-            from_table="public_gpu.for_app_zoneurba",
+            from_table="public_for_app.for_app_zoneurba",
             to_table="public.public_data_zoneurba",
             use_subset=context["params"]["use_subset"],
             subset_where=f"mpoly && ({context['params']['subset_geom']})",
@@ -247,6 +254,87 @@ def update_app():  # noqa: C901
                 ["checksum"],
                 ["libelle"],
                 ["typezone"],
+            ],
+        )
+
+    @task.python
+    def copy_public_data_commune_epcis(**context):
+        return copy_table_from_dw_to_app(
+            from_table="public_for_app.for_app_commune_epcis",
+            to_table="public.public_data_commune_epcis",
+            environment=context["params"]["environment"],
+            btree_index_columns=[
+                ["commune_id"],
+                ["epci_id"],
+            ],
+        )
+
+    @task.python
+    def copy_public_data_epci(**context):
+        return copy_table_from_dw_to_app(
+            from_table="public_for_app.for_app_epci",
+            to_table="public.public_data_epci",
+            environment=context["params"]["environment"],
+            btree_index_columns=[
+                ["source_id"],
+            ],
+        )
+
+    @task.python
+    def copy_public_data_scot(**context):
+        return copy_table_from_dw_to_app(
+            from_table="public_for_app.for_app_scot",
+            to_table="public.public_data_scot",
+            environment=context["params"]["environment"],
+            btree_index_columns=[
+                ["source_id"],
+            ],
+        )
+
+    @task.python
+    def copy_public_data_region(**context):
+        return copy_table_from_dw_to_app(
+            from_table="public_for_app.for_app_region",
+            to_table="public.public_data_region",
+            environment=context["params"]["environment"],
+            btree_index_columns=[
+                ["source_id"],
+            ],
+        )
+
+    @task.python
+    def copy_public_data_epci_departements(**context):
+        return copy_table_from_dw_to_app(
+            from_table="public_for_app.for_app_epci_departements",
+            to_table="public.public_data_epci_departements",
+            environment=context["params"]["environment"],
+            btree_index_columns=[
+                ["epci_id"],
+                ["departement_id"],
+            ],
+        )
+
+    @task.python
+    def copy_public_data_scot_departements(**context):
+        return copy_table_from_dw_to_app(
+            from_table="public_for_app.for_app_scot_departements",
+            to_table="public.public_data_scot_departements",
+            environment=context["params"]["environment"],
+            btree_index_columns=[
+                ["scot_id"],
+                ["departement_id"],
+            ],
+        )
+
+    @task.python
+    def copy_public_data_scot_regions(**context):
+        return copy_table_from_dw_to_app(
+            from_table="public_for_app.for_app_scot_regions",
+            to_table="public.public_data_scot_regions",
+            environment=context["params"]["environment"],
+            btree_index_columns=[
+                ["scot_id"],
+                ["region_id"],
             ],
         )
 
@@ -265,6 +353,13 @@ def update_app():  # noqa: C901
         copy_public_data_communediff(),
         copy_public_data_zoneconstruite(),
         copy_public_data_zoneurba(),
+        copy_public_data_commune_epcis(),
+        copy_public_data_epci(),
+        copy_public_data_scot(),
+        copy_public_data_region(),
+        copy_public_data_epci_departements(),
+        copy_public_data_scot_departements(),
+        copy_public_data_scot_regions(),
     ]
 
 

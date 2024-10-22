@@ -13,7 +13,12 @@
         insee_arr as arrondissement,
         insee_dep as departement,
         insee_reg as region,
-        siren_epci as epci,
+        CASE
+            when siren_epci = 'NR' THEN ARRAY[]::VARCHAR[]
+            when siren_epci = 'NC' THEN ARRAY[]::VARCHAR[]
+            when strpos(siren_epci, '/') > 0 THEN string_to_array(siren_epci, '/')::VARCHAR[]
+            ELSE ARRAY[siren_epci]::VARCHAR[]
+        END as epci,
         ST_Area(geom) as surface,
         geom
     FROM

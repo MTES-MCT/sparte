@@ -15,7 +15,7 @@ SELECT
     date_approbation::text as datappro,
     date_validation::text as datvalid,
     surface / 10000 as area,
-    ST_Transform(geom, 4326) as mpoly,
+    {{ make_valid_multipolygon('ST_Transform(geom, 4326)') }} as mpoly,
     4326 AS srid_source
 FROM
     {{ ref('zonage_urbanisme') }}
