@@ -1,7 +1,7 @@
 import collections
 import logging
 from decimal import Decimal
-from typing import Dict, List, Literal
+from typing import Dict, Literal
 
 import pandas as pd
 from django.conf import settings
@@ -94,18 +94,6 @@ class ProjectCommune(models.Model):
     project = models.ForeignKey("project.Project", on_delete=models.CASCADE)
     commune = models.ForeignKey("public_data.Commune", on_delete=models.PROTECT)
     group_name = models.CharField("Nom du groupe", max_length=100, blank=True, null=True)
-
-
-class CityGroup:
-    def __init__(self, name: str):
-        self.name = name
-        self.cities: List[Commune] = list()
-
-    def append(self, project_commune: ProjectCommune) -> None:
-        self.cities.append(project_commune.commune)
-
-    def __str__(self) -> str:
-        return self.name
 
 
 class Project(BaseProject):
@@ -403,21 +391,6 @@ class Project(BaseProject):
     @property
     def nb_years_before_2031(self):
         return 2031 - int(self.analyse_end_date)
-
-    _city_group_list = None
-
-    @property
-    def city_group_list(self):
-        if self._city_group_list is None:
-            self._city_group_list = list()
-            qs = ProjectCommune.objects.filter(project=self)
-            qs = qs.select_related("commune")
-            qs = qs.order_by("group_name", "commune__name")
-            for project_commune in qs:
-                if len(self._city_group_list) == 0 or self._city_group_list[-1].name != project_commune.group_name:
-                    self._city_group_list.append(CityGroup(project_commune.group_name))
-                self._city_group_list[-1].append(project_commune)
-        return self._city_group_list
 
     def delete(self):
         self.cover_image.delete(save=False)
@@ -940,8 +913,13 @@ class Project(BaseProject):
         millesimes = set()
 
         departements = self.cities.values_list("departement", flat=True)
+        print(departements)
 
-        for departement in Departement.objects.filter(id__in=departements):
+        departements_qs = Departement.objects.filter(source_id__in=departements)
+
+        print(departements_qs)
+
+        for departement in Departement.objects.filter(source_id__in=departements):
             if departement.ocsge_millesimes:
                 millesimes.update(departement.ocsge_millesimes)
 
@@ -1116,7 +1094,7 @@ class Project(BaseProject):
         return (
             AdminRef.get_class(self.land_type)
             .objects.filter(mpoly__intersects=self.combined_emprise.buffer(0.0001))
-            .exclude(id=int(self.land_id))
+            .exclude(mpoly=self.land.mpoly)
         )
 
     def get_comparison_lands(

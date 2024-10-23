@@ -261,7 +261,7 @@ def update_app():  # noqa: C901
     def copy_public_data_commune_epcis(**context):
         return copy_table_from_dw_to_app(
             from_table="public_for_app.for_app_commune_epcis",
-            to_table="public.public_data_commune_epcis",
+            to_table="public.public_data_commune_epci",
             environment=context["params"]["environment"],
             btree_index_columns=[
                 ["commune_id"],
