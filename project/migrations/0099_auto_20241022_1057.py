@@ -3,18 +3,29 @@
 from django.db import migrations
 
 
+def log_before(*args, **kwargs):
+    print(__file__, "before")
+
+
+def log_after(*args, **kwargs):
+    print(__file__, "after")
+
+
 class Migration(migrations.Migration):
     dependencies = [
         ("project", "0098_auto_20241022_1051"),
     ]
 
     operations = [
+        migrations.RunPython(log_before),
         migrations.RunSQL(
             """
-    ALTER TABLE public.project_projectcommune
-    ALTER COLUMN commune_id TYPE text USING commune_id::text;
-
+ALTER TABLE public.project_projectcommune
+DROP COLUMN commune_id;
+ALTER TABLE public.project_projectcommune
+ADD COLUMN commune_id text;
 
     """
-        )
+        ),
+        migrations.RunPython(log_after),
     ]

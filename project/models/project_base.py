@@ -1050,11 +1050,11 @@ class Project(BaseProject):
             .annotate(surface=Sum("surface"))
         )
 
-    @cached_property
+    @property
     def land(self) -> Commune | Departement | Epci | Region | Scot:
         return Land(self.get_public_key()).land
 
-    @cached_property
+    @property
     def land_proxy(self) -> Land:
         return Land(self.get_public_key())
 
