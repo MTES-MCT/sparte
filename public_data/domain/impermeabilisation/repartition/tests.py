@@ -51,9 +51,9 @@ class TestRepartitionOfImpermeabilisationService(TestCase):
             name="Auch",
             mpoly="MULTIPOLYGON EMPTY",
             departement=gers,
-            epci=epci,
             area=10000,
         )
+        auch.epci.add(epci)
         CommuneSol.objects.create(
             city=auch,
             year=self.year,

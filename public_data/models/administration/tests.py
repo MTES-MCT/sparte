@@ -212,5 +212,5 @@ class TestLandNaturalKeys(TestCase):
     def test_departement_scot_set(self):
         self.assertEqual(
             set(self.first_departement.scot_set.all()),
-            set(Scot.objects.filter(siren=self.first_scot_natural_key)),
+            set(Scot.objects.filter(source_id=self.first_scot_natural_key)),
         )

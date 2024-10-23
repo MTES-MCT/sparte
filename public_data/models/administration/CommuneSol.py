@@ -8,7 +8,7 @@ class CommuneSol(models.Model):
         verbose_name_plural = verbose_name
         managed = False
 
-    city = models.ForeignKey("Commune", verbose_name="Commune", on_delete=models.CASCADE)
+    city = models.ForeignKey("Commune", verbose_name="Commune", on_delete=models.CASCADE, to_field="insee")
     year = models.IntegerField(
         "Millésime",
         validators=[MinValueValidator(2000), MaxValueValidator(2050)],
