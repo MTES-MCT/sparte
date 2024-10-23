@@ -92,7 +92,7 @@ class BaseProject(models.Model):
 
 class ProjectCommune(models.Model):
     project = models.ForeignKey("project.Project", on_delete=models.CASCADE)
-    commune = models.ForeignKey("public_data.Commune", on_delete=models.PROTECT)
+    commune = models.ForeignKey("public_data.Commune", on_delete=models.PROTECT, to_field="insee")
     group_name = models.CharField("Nom du groupe", max_length=100, blank=True, null=True)
 
 
