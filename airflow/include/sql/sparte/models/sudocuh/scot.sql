@@ -9,7 +9,7 @@ SELECT
     circonscription_dept        AS circonscription_departement_code,
     circonscription_departement AS circonscription_departement_nom,
     scot.id_scot::text,
-    nom_scot,
+    REPLACE(initcap(nom_scot), 'Scot', 'SCOT') as nom_scot,
     derniere_procedure,
     scot_moderne,
     code_etat_code              AS code_etat,

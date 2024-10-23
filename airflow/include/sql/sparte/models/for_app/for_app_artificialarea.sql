@@ -12,6 +12,6 @@ SELECT
     departement,
     commune_code             AS city,
     surface / 10000          AS surface,
-    ST_TRANSFORM(geom, 4326) AS mpoly
+    {{ make_valid_multipolygon('ST_Transform(geom, 4326)') }} as mpoly
 FROM
     {{ ref('artificial_commune') }}

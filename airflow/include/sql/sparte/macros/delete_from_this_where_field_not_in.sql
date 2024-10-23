@@ -8,7 +8,7 @@
     {% endif %}
     DELETE FROM {{ this }}
     WHERE {{ this_field }} in (
-        SELECT {{ this_field }} FROM {{ this }} AS foo
+        SELECT DISTINCT {{ this_field }} FROM {{ this }} AS foo
         LEFT JOIN {{ ref(table) }} AS bar
         ON foo.{{ this_field }} = bar.{{ that_field }}
         WHERE {{ that_field }} is null
