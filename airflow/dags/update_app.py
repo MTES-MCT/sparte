@@ -106,6 +106,7 @@ def copy_table_from_dw_to_app(
                 "copy_public_data_epci_departements",
                 "copy_public_data_scot_departements",
                 "copy_public_data_scot_regions",
+                "copy_public_data_cerema",
             ],
             type="array",
         ),
@@ -338,6 +339,21 @@ def update_app():  # noqa: C901
             ],
         )
 
+    @task.python
+    def copy_public_data_cerema(**context):
+        return copy_table_from_dw_to_app(
+            from_table="public_for_app.for_app_cerema",
+            to_table="public.public_data_cerema",
+            environment=context["params"]["environment"],
+            btree_index_columns=[
+                ["city_insee"],
+                ["dept_id"],
+                ["region_id"],
+                ["epci_ids"],
+                ["scot"],
+            ],
+        )
+
     @task.branch
     def copy_public_data_branch(**context):
         return context["params"]["tasks"]
@@ -360,6 +376,7 @@ def update_app():  # noqa: C901
         copy_public_data_epci_departements(),
         copy_public_data_scot_departements(),
         copy_public_data_scot_regions(),
+        copy_public_data_cerema(),
     ]
 
 

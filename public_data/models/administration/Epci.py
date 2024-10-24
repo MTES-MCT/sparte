@@ -59,7 +59,7 @@ class Epci(LandMixin, GetDataFromCeremaMixin, models.Model):
         return is_artif_ready
 
     def get_qs_cerema(self):
-        return apps.get_model("public_data.Cerema").objects.filter(epci_id=self.source_id)
+        return apps.get_model("public_data.Cerema").objects.filter(epci_ids__contains=[self.source_id])
 
     def get_cities(self):
         return self.commune_set.all()

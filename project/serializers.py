@@ -75,7 +75,6 @@ class CitySpaceConsoMapSerializer(gis_serializers.GeoFeatureModelSerializer):
 
     class Meta:
         fields = (
-            "id",
             "name",
             "insee",
             "area",
@@ -90,7 +89,6 @@ class CityArtifMapSerializer(gis_serializers.GeoFeatureModelSerializer):
 
     class Meta:
         fields = (
-            "id",
             "name",
             "insee",
             "area",
