@@ -38,6 +38,7 @@ class Migration(migrations.Migration):
                             models.ForeignKey(
                                 on_delete=django.db.models.deletion.PROTECT,
                                 to="public_data.commune",
+                                to_field="insee",
                             ),
                         ),
                         (

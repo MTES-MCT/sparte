@@ -1,7 +1,7 @@
 {{
     config(
         materialized='incremental',
-        post_hook="{{ delete_from_this_where_field_not_in('ocsge_loaded_date', 'occupation_du_sol', 'loaded_date') }}",
+        pre_hook="{{ delete_from_this_where_field_not_in('ocsge_loaded_date', 'occupation_du_sol', 'loaded_date') }}",
         indexes=[
             {'columns': ['departement'], 'type': 'btree'},
             {'columns': ['year'], 'type': 'btree'},

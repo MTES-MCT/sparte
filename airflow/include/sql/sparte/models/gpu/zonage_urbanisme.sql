@@ -27,16 +27,15 @@ SELECT *, ST_Area(geom) as surface FROM (
         TO_DATE(NULLIF(datvalid, ''), 'YYYYMMDD') as date_validation,
         NULLIF(idurba, '') as id_document_urbanisme,
         checksum,
-        row_number() OVER (PARTITION BY geom ORDER BY gpu_timestamp),
-        ST_MakeValid(st_multi(
-                    st_collectionextract(
-                        st_makevalid(
-                            ST_transform(geom, 2154)
-                        ),
-                    3)
-        )) as geom,
+        row_number() OVER (PARTITION BY checksum ORDER BY gpu_timestamp),
+        {{ make_valid_multipolygon('ST_transform(geom, 2154)') }} as geom,
         2154 as srid_source
     FROM
         {{ source('public', 'gpu_zone_urba') }}
+    WHERE
+        {{ raw_date_starts_with_yyyy('datappro') }} AND
+        {{ raw_date_starts_with_yyyy('datvalid') }} AND
+        NOT ST_IsEmpty(geom)
 ) as foo
 WHERE row_number = 1
+AND NOT ST_IsEmpty(geom)

@@ -13,13 +13,13 @@ SELECT
     cs_old,
     us_new,
     us_old,
-    ST_Transform(geom, 4326) as mpoly,
     surface,
     srid_source,
     departement,
-    new_is_artificial as is_new_artif,
-    new_not_artificial as is_new_natural,
-    new_is_impermeable as is_new_impermeable,
-    new_not_impermeable as is_new_not_impermeable
+    new_is_artificial        AS is_new_artif,
+    new_not_artificial       AS is_new_natural,
+    new_is_impermeable       AS is_new_impermeable,
+    new_not_impermeable      AS is_new_not_impermeable,
+    ST_TRANSFORM(geom, 4326) AS mpoly
 FROM
     {{ ref("difference") }}

@@ -6,12 +6,12 @@
 }}
 
 SELECT
-    foo.year_old,
-    foo.year_new,
-    foo.new_artif,
-    foo.new_natural,
-    app_commune.id as city_id,
-    foo.new_artif - foo.new_natural AS net_artif
+    diff.year_old,
+    diff.year_new,
+    diff.new_artif,
+    diff.new_natural,
+    commune.code as city_id,
+    diff.new_artif - diff.new_natural AS net_artif
 FROM (
     SELECT
         year_old,
@@ -25,6 +25,6 @@ FROM (
         commune_code,
         year_old,
         year_new
-) as foo
-LEFT JOIN {{ ref('app_commune') }} AS app_commune
-ON app_commune.insee = foo.commune_code
+) as diff
+LEFT JOIN {{ ref('commune') }} AS commune
+ON commune.code = diff.commune_code

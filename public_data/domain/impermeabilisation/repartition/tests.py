@@ -5,8 +5,10 @@ from public_data.models import (
     CommuneSol,
     CouvertureUsageMatrix,
     Departement,
+    Epci,
     Region,
 )
+from utils.schema import init_unmanaged_schema_for_tests
 
 from .RepartitionOfImpermeabilisation import (
     RepartitionOfImpermeabilisation,
@@ -25,20 +27,33 @@ class TestRepartitionOfImpermeabilisationService(TestCase):
     ]
 
     def setUp(self):
+        init_unmanaged_schema_for_tests()
         self.year = 2016
-        occitanie = Region.objects.create(source_id="76", name="Occitanie", mpoly="MULTIPOLYGON EMPTY")
+        occitanie = Region.objects.create(
+            source_id="76",
+            name="Occitanie",
+            mpoly="MULTIPOLYGON EMPTY",
+        )
         gers = Departement.objects.create(
             source_id="32",
             name="Gers",
             mpoly="MULTIPOLYGON EMPTY",
             region=occitanie,
         )
+        epci = Epci.objects.create(
+            name="EPCI",
+            source_id="EPCI",
+            mpoly="MULTIPOLYGON EMPTY",
+        )
+        epci.departements.add(gers)
         auch = Commune.objects.create(
             insee="32013",
             name="Auch",
             mpoly="MULTIPOLYGON EMPTY",
             departement=gers,
+            area=10000,
         )
+        auch.epci.add(epci)
         CommuneSol.objects.create(
             city=auch,
             year=self.year,

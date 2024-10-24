@@ -7,15 +7,15 @@
 
 SELECT
     uuid,
-    code_cs as couverture,
-    code_us as usage,
+    code_cs                  AS couverture,
+    code_us                  AS usage,
     year,
-    ST_Transform(geom, 4326) as mpoly,
-    id as id_source,
+    id                       AS id_source,
     is_artificial,
     surface,
     srid_source,
     departement,
-    is_impermeable
+    is_impermeable,
+    ST_TRANSFORM(geom, 4326) AS mpoly
 FROM
     {{ ref("occupation_du_sol") }}

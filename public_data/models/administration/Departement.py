@@ -12,13 +12,18 @@ from .GetDataFromCeremaMixin import GetDataFromCeremaMixin
 from .LandMixin import LandMixin
 
 
+class DepartementManager(IntersectManager):
+    def get_by_natural_key(self, source_id):
+        return self.get(source_id=source_id)
+
+
 class Departement(LandMixin, GetDataFromCeremaMixin, models.Model):
     class Meta:
         verbose_name = "Département"
         managed = False
 
-    source_id = models.CharField("Identifiant source", max_length=50)
-    region = models.ForeignKey("Region", on_delete=models.CASCADE)
+    source_id = models.CharField("Identifiant source", max_length=50, primary_key=True)
+    region = models.ForeignKey("Region", on_delete=models.CASCADE, to_field="source_id")
     is_artif_ready = models.BooleanField("Données artif disponibles", default=False)
     ocsge_millesimes = ArrayField(models.IntegerField(), null=True, blank=True)
     name = models.CharField("Nom", max_length=50)
@@ -29,7 +34,7 @@ class Departement(LandMixin, GetDataFromCeremaMixin, models.Model):
         default=SRID.LAMBERT_93,
     )
 
-    objects = IntersectManager()
+    objects = DepartementManager()
 
     land_type = AdminRef.DEPARTEMENT
     land_type_label = AdminRef.CHOICES_DICT[land_type]
