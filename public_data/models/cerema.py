@@ -1,18 +1,3 @@
-"""
-Contient le modèle de donnée du Cerema qui décrit les changements cadastraux agrégé au
-niveau de la commune. Utilisé pour :
-* Construire les régions administratives (région, commune...) via la commande "load_from_cerema"
-* Le rapport consommation d'un diagnostic
-
-Remarque importante, le fichier travail par année. Une année commence le 1er janvier de
-l'année précédente (N-1) au 1er janvier de l'année souhaitée (par exemple l'année 2013
-cours depuis le 01.01.2012 jusqu'au 01.01.2013). Ainsi, la surface consommé en 2013 est
-dans la colonne "naf12art13".
-
-Données récupérées le 16/12/2021
-https://cerema.app.box.com/v/pnb-action7-indicateurs-ff/folder/149684581362
-La description précise des données est disponible dans un PDF dans lien ci-dessus
-"""
 from django.contrib.gis.db import models
 from django.contrib.postgres.fields import ArrayField
 from django.db.models import F
