@@ -55,13 +55,13 @@
 
     <h3>Grandes familles de couverture des sols des surfaces artificialisées</h3>
 
-    <div hx-get="{% url 'project:artif-detail-couv-chart' diagnostic.id %}?zone_urba_id={{ zone_urba.checksum|stringformat:"s" }}" hx-trigger="load 2s" hx-swap="outerHTML">
+    <div hx-get="{% url 'project:artif-detail-couv-chart' diagnostic.id %}?zone_urba_id={{ zone_urba.checksum|stringformat:"s" }}" hx-trigger="load" hx-swap="outerHTML">
         <div class="fr-custom-loader"></div>
     </div>
 
     <h3 class="fr-mt-4w">Grandes familles d'usages du sol des surfaces artificialisées</h3>
 
-    <div hx-get="{% url 'project:artif-detail-usa-chart' diagnostic.id %}?zone_urba_id={{ zone_urba.checksum|stringformat:"s" }}" hx-trigger="load 4s" hx-swap="outerHTML">
+    <div hx-get="{% url 'project:artif-detail-usa-chart' diagnostic.id %}?zone_urba_id={{ zone_urba.checksum|stringformat:"s" }}" hx-trigger="load" hx-swap="outerHTML">
         <div class="fr-custom-loader"></div>
     </div>
 </div>
