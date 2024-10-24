@@ -6,6 +6,7 @@ from django.db.backends.base.schema import BaseDatabaseSchemaEditor
 from public_data.models import (
     ArtifAreaZoneUrba,
     ArtificialArea,
+    Cerema,
     Commune,
     CommuneDiff,
     CommunePop,
@@ -54,3 +55,4 @@ def init_unmanaged_schema_for_tests() -> None:
         drop_and_create_model(ArtifAreaZoneUrba, schema_editor)
         drop_and_create_model(ZoneUrba, schema_editor)
         drop_and_create_model(ArtificialArea, schema_editor)
+        drop_and_create_model(Cerema, schema_editor)
