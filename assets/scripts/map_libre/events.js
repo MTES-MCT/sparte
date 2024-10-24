@@ -1,3 +1,4 @@
+import htmx from 'htmx.org'
 import { formatData } from './utils.js'
 
 export default class Events

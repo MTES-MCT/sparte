@@ -41,7 +41,7 @@
             {% include "header.html" %}
 
             <!-- Page content-->
-            <main id="contenu" class="h-100 {% if request.resolver_match.url_name not in 'home,home_rapport_local' %}fr-py-7w {% endif %}">
+            <main id="contenu" class="h-100 {% if request.resolver_match.url_name not in 'home,home_rapport_local,map-urban-zones' %}fr-py-7w {% endif %}">
                 {% if messages %}
                     <div class="row justify-content-center w-100 my-0 pt-3 pb-4">
                         <div class="col-12 col-md-8 col-lg-6">
