@@ -9,22 +9,22 @@
 
 Cette requête découpe les objets OCS GE de différence par commune.
 
-Dans le cas où un objet OCS GE est découpé par plusieurs communes, il sera dupliqué, mais
-la surface totale de l'objet sera conservée.
+Dans le cas où un objet OCS GE est découpé par plusieurs communes,
+il sera dupliqué, mais la surface totale de l'objet sera conservée.
 
 */
 
 
 with difference_commune_without_surface as (
-    SELECT
-        concat(ocsge.uuid::text, '_', commune.code::text) as ocsge_commune_id, -- surrogate key
+    select
+        -- surrogate key
+        commune.code                                      as commune_code,
         -- les attributs spécifiques aux communes sont préfixés par commune_
-        commune.code as commune_code,
+        ocsge.loaded_date                                 as ocsge_loaded_date,
         -- les attributs spécifiques aux objets OCS GE sont préfixés par ocsge_
-        ocsge.loaded_date as ocsge_loaded_date,
-        ocsge.uuid as ocsge_uuid,
-        -- les attributs communs aux deux tables sont sans préfixe
+        ocsge.uuid                                        as ocsge_uuid,
         ocsge.year_old,
+        -- les attributs communs aux deux tables sont sans préfixe
         ocsge.year_new,
         ocsge.departement,
         ocsge.new_is_impermeable,
@@ -36,25 +36,27 @@ with difference_commune_without_surface as (
         ocsge.cs_new,
         ocsge.us_new,
         ocsge.srid_source,
-        ST_Intersection(commune.geom, ocsge.geom) AS geom
-    FROM
-        {{ ref("commune") }} AS commune
-    INNER JOIN
-        {{ ref("difference") }} AS ocsge
-    ON
-        ocsge.departement = commune.departement
-    AND
-        ocsge.srid_source = commune.srid_source
-    AND
-        ST_Intersects(commune.geom, ocsge.geom)
+        concat(ocsge.uuid::text, '_', commune.code::text) as ocsge_commune_id,
+        st_intersection(commune.geom, ocsge.geom)         as geom
+    from
+        {{ ref("commune") }} as commune
+    inner join
+        {{ ref("difference") }} as ocsge
+        on
+            commune.departement = ocsge.departement
+            and
+            commune.srid_source = ocsge.srid_source
+            and
+            st_intersects(commune.geom, ocsge.geom)
 
     {% if is_incremental() %}
-        WHERE ocsge.uuid not in (SELECT bar.ocsge_uuid from {{ this }} as bar)
+        where
+            ocsge.loaded_date > (select max(ocsge_loaded_date) from {{ this }})
     {% endif %}
 )
 
-SELECT
+select
     *,
-    ST_Area(geom) as surface
-FROM
+    st_area(geom) as surface
+from
     difference_commune_without_surface
