@@ -8,9 +8,9 @@
         <p class="fw-bold">
             {{ title }}
         </p>
-        {% if src %}
+        {% if static_map %}
             <img
-                src="{{ src }}"
+                src="{{ static_map.url }}"
                 alt="{{ title }}"
             >
         {% else %}
