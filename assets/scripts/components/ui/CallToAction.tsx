@@ -9,7 +9,7 @@ const Container = styled.div`
   background-image:
     radial-gradient(
       farthest-corner circle at top left,
-      #95a4ff 0%, 63%, #9094ff 0% 0%
+      #a0aeff 0%, 63%, #9ba0ff 0% 0%
     )
 `;
 
