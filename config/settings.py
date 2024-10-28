@@ -533,6 +533,7 @@ CSP_FRAME_SRC = (
     # Crisp
     "https://game.crisp.chat",
     "https://plugins.crisp.chat/",
+    "https://www.googletagmanager.com/",
 )
 CSP_MEDIA_SRC = (
     # Crisp
@@ -551,6 +552,7 @@ CSP_CONNECT_SRC = [
     "beta.gouv.fr",
     "sparte-metabase.osc-secnum-fr1.scalingo.io",
     "google.com",
+    "https://www.google.com/",
     "data.geopf.fr",
     "https://raw.githack.com",
     "https://openmaptiles.geo.data.gouv.fr",
