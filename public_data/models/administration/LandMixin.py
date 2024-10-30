@@ -3,7 +3,9 @@ from typing import Literal
 from django.db.models import Sum
 from django.utils.functional import cached_property
 
+from .AdminRef import AdminRef
 from .CommunePop import CommunePop
+from .enums import ConsommationCorrectionStatus
 
 
 class LandMixin:
@@ -24,6 +26,13 @@ class LandMixin:
 
     def get_official_id(self) -> str:
         return self.source_id if self.source_id is not None else ""
+
+    @property
+    def consommation_correction_status(self) -> str:
+        if self.land_type == AdminRef.COMMUNE:
+            return self.consommation_correction_status
+
+        return ConsommationCorrectionStatus.UNCHANGED
 
     def get_cities(self):
         raise NotImplementedError("need to be overridden")

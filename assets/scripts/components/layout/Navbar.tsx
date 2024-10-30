@@ -4,6 +4,8 @@ import styled, { css } from 'styled-components';
 import useHtmx from '@hooks/useHtmx';
 import useUrls from '@hooks/useUrls';
 import Button from '@components/ui/Button';
+import { ConsoCorrectionStatusEnum } from '@components/widgets/ConsoCorrectionStatus';
+
 
 interface NavbarData {
     menuItems: MenuItems[];
@@ -163,11 +165,16 @@ const DownloadListItem = styled.li`
     }
 `;
 
-const Navbar: React.FC = () => {
+const Navbar: React.FC = ({ projectData }: { projectData: any}) => {
     const location = useLocation();
     const [data, setData] = useState<NavbarData | null>(null);
     const urls = useUrls();
     const htmxRef = useHtmx([urls]);
+
+    const shouldDisplayDownloads = [
+        ConsoCorrectionStatusEnum.UNCHANGED,
+        ConsoCorrectionStatusEnum.FUSION,
+    ].includes(projectData.consommation_correction_status);
 
     // La composition de la navbar et notamment les urls des liens sont récupérés via le contexte Django => project/templates/layout/base.html => #navbar-data
     useEffect(() => {
@@ -224,7 +231,7 @@ const Navbar: React.FC = () => {
                     </Menu>
                 ))}
             </MenuList>
-            {urls && (
+            {urls && shouldDisplayDownloads && (
                 <DownloadContainer>
                     <DownloadTitle>
                         <i className="bi bi-box-arrow-down"></i>

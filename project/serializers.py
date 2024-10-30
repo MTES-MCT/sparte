@@ -19,6 +19,7 @@ class ProjectDetailSerializer(serializers.ModelSerializer):
             "territory_name",
             "ocsge_coverage_status",
             "has_zonage_urbanisme",
+            "consommation_correction_status",
         ]
 
 

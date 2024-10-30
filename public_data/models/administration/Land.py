@@ -53,19 +53,6 @@ class Land:
         return self.land.get_cities()
 
     @property
-    def should_display_consommation(self) -> bool:
-        if self.land_type != AdminRef.COMMUNE:
-            return True
-        commune: Commune = self.land
-        if commune.consommation_correction_status in [
-            Commune.ConsommationCorrectionStatus.UNCHANGED,
-            Commune.ConsommationCorrectionStatus.FUSION,
-        ]:
-            return True
-
-        return False
-
-    @property
     def area(self):
         return self.land.area
 

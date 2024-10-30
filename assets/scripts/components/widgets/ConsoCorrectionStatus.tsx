@@ -20,27 +20,27 @@ interface IconsoCorrectionStatusMessages {
     message: string;
 }
 
-const defaultTitle = "Données de consommation modifiées.";
-const warningMessage = "Les données de consommation ne sont pas disponibles pour votre territoire.";
-const missingMessage = `Votre commune est absente de dernier millésime de données de consommation. Pour plus d'informations, rapprochez-vous du CEREMA, producteur de cette donnée.`
+const defaultTitle = "Données de consommation modifiées";
+const warningTitle = "Données de consommation indisponibles";
+const missingMessage = `Votre territoire est absente du dernier millésime de données de consommation. Pour plus d'informations, rapprochez-vous du CEREMA, producteur de cette donnée.`
 
 export const consoCorrectionStatusMessages: { [key in ConsoCorrectionStatusEnum]?: IconsoCorrectionStatusMessages } = {
     FUSION: {
         title: defaultTitle,
-        message: "Les données de consommation présentées sont la somme des données des communes fusionnées lors de la dernière mise à jour du code officiel géographique.",
+        message: "Pour refléter les changements de votre territoire depuis la dernière mise à jour du code officiel géographique, nous avons fusionné les données de consommation d'espace NAF des anciennes communes le composant.",
     },
     DIVISION: {
-        title: warningMessage,
-        message: `Votre commune ayant été divisée lors de la dernière mise à jour du code officiel géographique,
-        nous pouvons pas proposer d'analyse de consommation pour votre territoire.
-        Cependant, nous vous invitons à consulter l'analyse de consommation de l'EPCI auquel votre territoire appartient.`,
+        title: warningTitle,
+        message: `Votre territoire ayant été divisée lors de la dernière mise à jour du code officiel géographique,
+        nous pouvons pas vous proposer d'analyse de consommation d'espaces NAF.
+        Nous vous invitons à consulter l'analyse de consommation de l'EPCI auquel votre territoire appartient.`,
     },
     COG_ERROR: {
-        title: warningMessage,
+        title: warningTitle,
         message: missingMessage,
     },
     MISSING_FROM_SOURCE: {
-        title: warningMessage,
+        title: warningTitle,
         message: missingMessage,
     }
 };

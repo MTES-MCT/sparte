@@ -3,13 +3,13 @@ import styled from 'styled-components';
 import usePageTitle from '@hooks/usePageTitle';
 import OcsgeStatus, { OcsgeStatusProps } from '@components/widgets/OcsgeStatus';
 import GpuStatus from '@components/widgets/GpuStatus';
-import ConsoCorrectionStatus from '@components/widgets/ConsoCorrectionStatus';
+import ConsoCorrectionStatus, { ConsoCorrectionStatusEnum} from '@components/widgets/ConsoCorrectionStatus';
 
 
 interface RouteWrapperProps {
     title: string;
     ocsgeStatus?: OcsgeStatusProps["status"];
-    consoCorrectionStatus?: string;
+    consoCorrectionStatus?: ConsoCorrectionStatusEnum;
     hasGpu?: boolean;
     children: ReactNode;
 }
@@ -28,13 +28,15 @@ const RouteWrapper: React.FC<RouteWrapperProps> = ({
 }) => {
     const shouldDisplayOcsgeStatus = ocsgeStatus !== undefined && ocsgeStatus !== "COMPLETE_UNIFORM";
     const shouldDisplayGpuStatus = hasGpu !== undefined && hasGpu === false;
-
-    const shouldDisplayConsoCorrectionStatus = consoCorrectionStatus !== undefined && !["UNCHANGED", "FUSION"].includes(consoCorrectionStatus);
-    const shoudDisplayConsoChildren = consoCorrectionStatus !== undefined && ["UNCHANGED", "FUSION"].includes(consoCorrectionStatus);
+    const shouldDisplayConsoCorrectionStatus = consoCorrectionStatus !== undefined && consoCorrectionStatus !== ConsoCorrectionStatusEnum.UNCHANGED;
+    const shouldDisplayConsoChildren = consoCorrectionStatus === undefined || [
+        ConsoCorrectionStatusEnum.UNCHANGED,
+        ConsoCorrectionStatusEnum.FUSION
+    ].includes(consoCorrectionStatus);
 
     const shouldDisplayChildren = !shouldDisplayOcsgeStatus &&
         !shouldDisplayGpuStatus &&
-        !shoudDisplayConsoChildren;
+        shouldDisplayConsoChildren;
 
     usePageTitle(title);
 
@@ -46,12 +48,12 @@ const RouteWrapper: React.FC<RouteWrapperProps> = ({
                         <Title>{title}</Title>
                         {shouldDisplayOcsgeStatus && <OcsgeStatus status={ocsgeStatus} />}
                         {shouldDisplayGpuStatus && <GpuStatus />}
-                        {}
+                        {shouldDisplayConsoCorrectionStatus && <ConsoCorrectionStatus status={consoCorrectionStatus} />}
                     </div>
                 </div>
             </div>
                 
-            {!shouldDisplayChildren && children}
+            {shouldDisplayChildren && children}
         </>
     );
 };

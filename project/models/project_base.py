@@ -37,6 +37,7 @@ from public_data.models import (
     UsageSol,
 )
 from public_data.models.administration import Commune
+from public_data.models.administration.enums import ConsommationCorrectionStatus
 from public_data.models.enums import SRID
 from public_data.models.gpu import ArtifAreaZoneUrba, ZoneUrba
 from public_data.models.mixins import DataColorationMixin
@@ -514,6 +515,17 @@ class Project(BaseProject):
             )
             .exists()
         )
+
+    @property
+    def consommation_correction_status(self) -> str:
+        return self.land.consommation_correction_status
+
+    @property
+    def has_unchanged_or_fusionned_consommation_data(self) -> bool:
+        return self.consommation_correction_status in [
+            ConsommationCorrectionStatus.UNCHANGED,
+            ConsommationCorrectionStatus.FUSION,
+        ]
 
     def get_ocsge_millesimes(self):
         """Return all OCS GE millésimes available within project cities and between
