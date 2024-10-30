@@ -1,6 +1,6 @@
 {{ config(materialized='table') }}
 
-with unchanged_conso as (
+with unchanged as (
     select * from {{ ref('consommation') }}
     where commune_code not in (
         '08294',
@@ -49,7 +49,6 @@ with unchanged_conso as (
         '76601'
     )
 ),
-
 fusions as (
     {{ merge_majic('08053', ['08294']) }}
     union
@@ -73,7 +72,6 @@ fusions as (
     union
     {{ merge_majic('95169', ['95282']) }}
 ),
-
 divisions as (
     {{ divide_majic('85084', '85084', 68.57) }}
     union
@@ -84,8 +82,8 @@ divisions as (
     {{ divide_majic('60054', '60054', 42.24) }}
     union
     {{ divide_majic('60054', '60694', 57.76) }}
-    -- Erreurs données source
-    union
+),
+cog_error as (
     {{ divide_majic('14712', '14712', 68.85) }}
     union
     {{ divide_majic('14712', '14666', 31.15) }}
@@ -111,8 +109,8 @@ divisions as (
     {{ divide_majic('76676', '76676', 66.69) }}
     union
     {{ divide_majic('76676', '76601', 33.31) }}
-    -- absence donnée source
-    union
+),
+missing_from_source as (
     {{ divide_majic('76676', '09304', 0) }}
     union
     {{ divide_majic('76676', '29083', 0) }}
@@ -120,11 +118,15 @@ divisions as (
     {{ divide_majic('76676', '29084', 0) }}
 ),
 together as (
-select * from unchanged_conso
-union all
-select * from fusions
-union all
-select * from divisions
+    select *, 'UNCHANGED' as correction_status from unchanged
+    union all
+    select *, 'FUSION' as correction_status from fusions
+    union all
+    select *, 'DIVISION' as correction_status from divisions
+    union all
+    select *, 'COG_ERROR' as correction_status from cog_error
+    union all
+    select *, 'MISSING_FROM_SOURCE' as correction_status from missing_from_source
 )
 select
     *,

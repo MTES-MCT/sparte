@@ -215,6 +215,17 @@ models:
           - is_valid_geom
           - is_not_empty_geom
           - is_srid_4326
+      - name: consommation_correction_status
+        data_tests:
+          - not_null
+          - accepted_values:
+              values: [
+                'UNCHANGED',
+                'DIVISION',
+                'FUSION',
+                'COG_ERROR',
+                'MISSING_FROM_SOURCE'
+              ]
   - name: for_app_epci
     columns:
       - name: source_id

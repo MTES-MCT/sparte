@@ -50,7 +50,8 @@ select
             else NULL
     end    as surface_artif,
     commune.surface as area,
-    ST_Transform(commune.geom, 4326) as mpoly
+    ST_Transform(commune.geom, 4326) as mpoly,
+    consommation.correction_status as consommation_correction_status
 from
     {{ ref('commune') }} as commune
 left join
@@ -65,3 +66,7 @@ left join
     {{ ref('scot_communes') }} as scot
     on
         commune.code = scot.commune_code
+left join
+    {{ ref("consommation_cog_2024") }} as consommation
+    on
+        commune.code = consommation.commune_code

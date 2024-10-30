@@ -1,6 +1,8 @@
 {% load highcharts_tags %}
 {% load sri %}
-
+{% if not project.land_proxy.should_display_consommation %}
+    <h1>hide</h1>
+{% else %}
  <div class="fr-grid-row fr-grid-row--gutters">
     <div class="fr-col-12 fr-col-md-6 fr-grid-row">
         {% include "project/components/widgets/statistic.html" with title=total_surface|floatformat:0|add:" ha" description="Surface du territoire" %}
@@ -498,3 +500,4 @@
 {% display_chart_data 'pie_determinant' determinant_pie_chart CSP_NONCE %}
 {% display_chart_data 'surface_chart' surface_chart CSP_NONCE %}
 {% display_chart_data 'surface_proportional_chart' surface_proportional_chart CSP_NONCE %}
+{% endif %}
