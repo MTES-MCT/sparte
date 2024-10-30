@@ -22,7 +22,7 @@ interface IconsoCorrectionStatusMessages {
 
 const defaultTitle = "Données de consommation modifiées";
 const warningTitle = "Données de consommation indisponibles";
-const missingMessage = `Votre territoire est absente du dernier millésime de données de consommation. Pour plus d'informations, rapprochez-vous du CEREMA, producteur de cette donnée.`
+const missingMessage = `Votre territoire est absent du dernier millésime de données de consommation d'espaces NAF. Pour plus d'informations, rapprochez-vous du CEREMA, producteur de cette donnée.`
 
 export const consoCorrectionStatusMessages: { [key in ConsoCorrectionStatusEnum]?: IconsoCorrectionStatusMessages } = {
     FUSION: {
