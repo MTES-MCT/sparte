@@ -42,6 +42,9 @@ class LandMixin:
         La raison de ce choix est que la différence potentielle du total de consommation
         entre les données de consommation et les données de consommation corrigées est
         négligeable pour les autres types de territoires.
+
+        Pour plus d'informations sur la définition de chacun des statuts, voir les
+        commentaires de la classe ConsommationCorrectionStatus.
         """
         if self.land_type == AdminRef.COMMUNE:
             return self.consommation_correction_status
