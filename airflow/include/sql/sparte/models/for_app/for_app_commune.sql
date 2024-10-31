@@ -49,7 +49,7 @@ select
             then artif_commune.surface / 10000
             else NULL
     end    as surface_artif,
-    commune.surface as area,
+    commune.surface / 10000 as area,
     ST_Transform(commune.geom, 4326) as mpoly,
     consommation.correction_status as consommation_correction_status
 from
