@@ -14,9 +14,6 @@ SELECT
     departement.name as dept_name,
     commune.epci as epci_ids,
     scot.id_scot as scot,
-
-
-
     conso_2009_2023 as art09inc23,
     conso_2009_2023_ferroviaire as art09fer23,
     conso_2009_2023_route as art09rou23,
