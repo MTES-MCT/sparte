@@ -29,6 +29,20 @@ class LandMixin:
 
     @property
     def consommation_correction_status(self) -> str:
+        """
+        Dans le cas des communes, le statut de correction des données de consommation
+        est la valeur directement attachée aux objets Commune, issu des transformations
+        effectuées sur Airflow.
+
+        Dans les autres cas, on retourne arbitrairement la valeur UNCHANGED, puisque que
+        nous ne différencions pas les statuts de correction des données de consommation
+        pour les autres types de territoires, même si une commune n'ayant pas la valeur
+        UNCHANGED est incluse dans le territoire.
+
+        La raison de ce choix est que la différence potentielle du total de consommation
+        entre les données de consommation et les données de consommation corrigées est
+        négligeable pour les autres types de territoires.
+        """
         if self.land_type == AdminRef.COMMUNE:
             return self.consommation_correction_status
 
