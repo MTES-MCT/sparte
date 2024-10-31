@@ -925,12 +925,6 @@ class Project(BaseProject):
         millesimes = set()
 
         departements = self.cities.values_list("departement", flat=True)
-        print(departements)
-
-        departements_qs = Departement.objects.filter(source_id__in=departements)
-
-        print(departements_qs)
-
         for departement in Departement.objects.filter(source_id__in=departements):
             if departement.ocsge_millesimes:
                 millesimes.update(departement.ocsge_millesimes)

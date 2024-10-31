@@ -11,9 +11,7 @@ def modify_lookalike_from_primary_keys_to_natural_key(apps, schema_editor):
         for land in project.look_a_like.split(";"):
             if not land:
                 raise ValueError("Empty land key")
-            print(land)
             land_type, land_id = land.split("_")
-            print(land_type, land_id)
             klass = None
             if land_type == AdminRef.COMMUNE:
                 klass = apps.get_model("public_data", "Commune")
