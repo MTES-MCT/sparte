@@ -38,8 +38,19 @@ models:
       - name: type_commune_apres
         data_tests:
           - accepted_values: *type_commune
+  - name: population
+    columns:
+      - name: code_commune
+        data_tests:
+          - not_null
+          - unique
+          - has_all_communes
+          - relationships:
+              to: ref('commune')
+              field: code
 
 sources:
   - name: public
     tables:
     - name: insee_cog_changes_2024
+    - name: insee_population
