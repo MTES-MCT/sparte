@@ -75,7 +75,7 @@ class BaseProject(models.Model):
     )
     name = models.CharField("Nom", max_length=100, validators=[is_alpha_validator])
 
-    @cached_property
+    @property
     def combined_emprise(self) -> MultiPolygon:
         cache_key = f"project/{self.id}/combined_emprise"
         if cache.has_key(cache_key):
