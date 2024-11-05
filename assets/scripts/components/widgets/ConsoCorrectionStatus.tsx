@@ -32,7 +32,7 @@ export const consoCorrectionStatusMessages: { [key in ConsoCorrectionStatusEnum]
     DIVISION: {
         title: warningTitle,
         message: `Votre territoire ayant été divisé lors de la dernière mise à jour du code officiel géographique,
-        nous pouvons pas vous proposer d'analyse de consommation d'espaces NAF.
+        nous ne pouvons pas vous proposer d'analyse de consommation d'espaces NAF.
         Nous vous invitons à consulter l'analyse de consommation de l'EPCI auquel votre territoire appartient.`,
     },
     COG_ERROR: {
