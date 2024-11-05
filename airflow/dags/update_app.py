@@ -217,8 +217,6 @@ def update_app():  # noqa: C901
         return copy_table_from_dw_to_app(
             from_table="public_for_app.for_app_communediff",
             to_table="public.public_data_communediff",
-            use_subset=context["params"]["use_subset"],
-            subset_where=f"mpoly && ({context['params']['subset_geom']})",
             environment=context["params"]["environment"],
             btree_index_columns=[
                 ["year_old"],
