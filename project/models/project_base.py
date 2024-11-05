@@ -75,7 +75,7 @@ class BaseProject(models.Model):
     )
     name = models.CharField("Nom", max_length=100, validators=[is_alpha_validator])
 
-    @property
+    @cached_property
     def combined_emprise(self) -> MultiPolygon:
         """Return a combined MultiPolygon of all emprises."""
         combined = self.emprise_set.aggregate(Union("mpoly"))
