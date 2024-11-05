@@ -81,9 +81,8 @@ class TestLandNaturalKeys(TestCase):
             area=15.0,
             surface_artif=None,
             ocsge_available=False,
+            epci=self.first_epci,
         )
-
-        self.first_commune.epci.add(self.first_epci)
 
         self.second_commune = Commune.objects.create(
             name="Deuxième commune",
@@ -97,9 +96,8 @@ class TestLandNaturalKeys(TestCase):
             area=15.0,
             surface_artif=None,
             ocsge_available=False,
+            epci=self.first_epci,
         )
-
-        self.second_commune.epci.add(self.first_epci)
 
     # get_by_natural_key tests
 
@@ -132,6 +130,9 @@ class TestLandNaturalKeys(TestCase):
     def test_commune_scot_foreign_key(self):
         self.assertEqual(self.first_commune.scot_id, self.first_scot_natural_key)
 
+    def test_commune_epci_foreign_key(self):
+        self.assertEqual(self.first_commune.epci_id, self.first_epci_natural_key)
+
     # test many to many
     def test_epci_departements_many_to_many(self):
         expected_result = [
@@ -159,16 +160,6 @@ class TestLandNaturalKeys(TestCase):
         ]
         with connection.cursor() as cursor:
             cursor.execute("SELECT * from public_data_scot_regions")
-            result = cursor.fetchall()
-            self.assertEqual(result, expected_result)
-
-    def test_commune_epci_many_to_many(self):
-        expected_result = [
-            (1, self.first_commune_natural_key, self.first_epci_natural_key),
-            (2, self.second_commune_natural_key, self.first_epci_natural_key),
-        ]
-        with connection.cursor() as cursor:
-            cursor.execute("SELECT * from public_data_commune_epci")
             result = cursor.fetchall()
             self.assertEqual(result, expected_result)
 

@@ -1,5 +1,4 @@
 from django.contrib.gis.db import models
-from django.contrib.postgres.fields import ArrayField
 from django.db.models import F
 
 from public_data.models.enums import SRID
@@ -15,14 +14,14 @@ class CeremaManager(models.Manager):
 
 
 class Cerema(DataColorationMixin, models.Model):
-    city_insee = models.CharField(max_length=7, db_index=True)
-    city_name = models.CharField(max_length=50, db_index=True)
-    region_id = models.CharField(max_length=50, db_index=True)
-    region_name = models.CharField(max_length=50, db_index=True)
-    dept_id = models.CharField(max_length=50, db_index=True)
-    dept_name = models.CharField(max_length=50, db_index=True)
-    epci_ids = ArrayField(models.CharField(max_length=50), null=True)
-    epci_name = models.CharField(max_length=70, db_index=True)
+    city_insee = models.CharField(max_length=7)
+    city_name = models.CharField(max_length=50)
+    region_id = models.CharField(max_length=50)
+    region_name = models.CharField(max_length=50)
+    dept_id = models.CharField(max_length=50)
+    dept_name = models.CharField(max_length=50)
+    epci_id = models.CharField(max_length=50)
+    epci_name = models.CharField(max_length=70)
     scot = models.CharField(max_length=254, null=True)
 
     naf09art10 = models.FloatField(null=True)

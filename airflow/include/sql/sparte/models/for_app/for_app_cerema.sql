@@ -12,7 +12,8 @@ SELECT
     region.code as region_id,
     departement.code as dept_id,
     departement.name as dept_name,
-    commune.epci as epci_ids,
+    commune.epci as epci_id,
+    epci.name as epci_name,
     scot.id_scot as scot,
     conso_2009_2023 as art09inc23,
     conso_2009_2023_ferroviaire as art09fer23,
@@ -141,3 +142,7 @@ LEFT JOIN
     {{ ref('scot_communes') }} as scot
 ON
     commune.code = scot.commune_code
+LEFT JOIN
+    {{ ref('epci') }} as epci
+ON
+    epci.code = commune.epci

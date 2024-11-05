@@ -36,6 +36,8 @@ first_and_last_millesimes as (
 select
     commune.code as insee,
     commune.departement as departement_id,
+    commune.epci as epci_id,
+    commune.ept as ept_id,
     scot.id_scot as scot_id,
     millesimes.first_millesime,
     millesimes.last_millesime,

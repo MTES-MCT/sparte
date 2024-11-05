@@ -13,7 +13,7 @@ class CeremaAdmin(admin.GISModelAdmin):
         "region_name",
         "dept_id",
         "dept_name",
-        "epci_ids",
+        "epci_id",
         "epci_name",
     )
     search_fields = ("city_insee", "city_name", "region_name", "dept_name", "epci_name")

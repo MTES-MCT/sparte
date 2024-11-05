@@ -26,7 +26,7 @@ class Commune(DataColorationMixin, LandMixin, GetDataFromCeremaMixin, models.Mod
     insee = models.CharField("Code INSEE", max_length=7, primary_key=True)
     name = models.CharField("Nom", max_length=50)
     departement = models.ForeignKey("Departement", on_delete=models.PROTECT)
-    epci = models.ManyToManyField(to="Epci")
+    epci = models.ForeignKey("Epci", on_delete=models.PROTECT)
 
     scot = models.ForeignKey(
         "Scot",

@@ -66,8 +66,6 @@ class ExportExcelView(View):
     def get_excel_as_buffer(self) -> io.BytesIO:
         buffer = io.BytesIO()
         with pd.ExcelWriter(buffer, engine="openpyxl") as self.writer:
-            self.add_population_sheet()
-            self.add_menages_sheet()
             self.add_conso_sheet()
             if self.project.ocsge_coverage_status == self.project.OcsgeCoverageStatus.COMPLETE_UNIFORM:
                 self.add_artif_sheet()

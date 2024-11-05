@@ -99,7 +99,6 @@ def copy_table_from_dw_to_app(
                 "copy_public_data_communediff",
                 "copy_public_data_zoneconstruite",
                 "copy_public_data_zoneurba",
-                "copy_public_data_commune_epcis",
                 "copy_public_data_epci",
                 "copy_public_data_scot",
                 "copy_public_data_region",
@@ -259,18 +258,6 @@ def update_app():  # noqa: C901
         )
 
     @task.python
-    def copy_public_data_commune_epcis(**context):
-        return copy_table_from_dw_to_app(
-            from_table="public_for_app.for_app_commune_epcis",
-            to_table="public.public_data_commune_epci",
-            environment=context["params"]["environment"],
-            btree_index_columns=[
-                ["commune_id"],
-                ["epci_id"],
-            ],
-        )
-
-    @task.python
     def copy_public_data_epci(**context):
         return copy_table_from_dw_to_app(
             from_table="public_for_app.for_app_epci",
@@ -349,7 +336,7 @@ def update_app():  # noqa: C901
                 ["city_insee"],
                 ["dept_id"],
                 ["region_id"],
-                ["epci_ids"],
+                ["epci_id"],
                 ["scot"],
             ],
         )
@@ -369,7 +356,6 @@ def update_app():  # noqa: C901
         copy_public_data_communediff(),
         copy_public_data_zoneconstruite(),
         copy_public_data_zoneurba(),
-        copy_public_data_commune_epcis(),
         copy_public_data_epci(),
         copy_public_data_scot(),
         copy_public_data_region(),
