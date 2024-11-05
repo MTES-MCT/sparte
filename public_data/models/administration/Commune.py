@@ -110,13 +110,13 @@ class Commune(DataColorationMixin, LandMixin, GetDataFromCeremaMixin, models.Mod
 
     @classmethod
     def search(cls, needle, region=None, departement=None, epci=None):
-        qs = cls.objects.annotate(similarity=TrigramSimilarity(Lower("name__unaccent"), needle.lower()))
-
         if needle.isdigit():
-            qs = cls.objects.filter(insee__icontains=needle)
+            qs = cls.objects.annotate(similarity=TrigramSimilarity("insee", needle))
         else:
-            qs = qs.filter(similarity__gt=0.2)  # Filtrer par un score minimum de similarité
-            qs = qs.order_by("-similarity")  # Trier par score décroissant
+            qs = cls.objects.annotate(similarity=TrigramSimilarity(Lower("name__unaccent"), needle.lower()))
+
+        qs = qs.filter(similarity__gt=0.2)  # Filtrer par un score minimum de similarité
+        qs = qs.order_by("-similarity")  # Trier par score décroissant
 
         if region:
             qs = qs.filter(departement__region=region)
