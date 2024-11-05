@@ -77,16 +77,7 @@ class BaseProject(models.Model):
 
     @property
     def combined_emprise(self) -> MultiPolygon:
-        cache_key = f"project/{self.id}/combined_emprise"
-        if cache.has_key(cache_key):
-            return cache.get(cache_key)
-        combined = self.emprise_set.aggregate(Union("mpoly"))
-        if "mpoly__union" in combined:
-            result = combined["mpoly__union"]
-        else:
-            result = MultiPolygon()
-        cache.set(cache_key, result)
-        return result
+        return self.land.mpoly
 
     def __str__(self):
         return self.name
