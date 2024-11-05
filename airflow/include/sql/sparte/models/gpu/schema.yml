@@ -10,6 +10,8 @@ models:
     - name: geom
       data_tests:
       - unique
+      - is_valid_geom
+      - is_not_empty_geom
 
 sources:
   - name: public

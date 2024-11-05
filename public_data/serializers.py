@@ -56,7 +56,6 @@ class UsageSolSerializer(serializers.ModelSerializer):
 class DepartementSerializer(s.ModelSerializer):
     class Meta:
         fields = (
-            "id",
             "source_id",
             "name",
             "region_id",
@@ -98,7 +97,6 @@ class SearchLandSerializer(s.Serializer):
 
 
 class LandSerializer(s.Serializer):
-    id = s.IntegerField()
     name = s.CharField()
     source_id = s.SerializerMethodField()
     public_key = s.CharField()

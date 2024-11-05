@@ -2,6 +2,29 @@
 version: 2
 
 models:
+  - name: scot_geom
+    columns:
+    - name: id_scot
+      data_tests:
+      - not_null
+      - relationships:
+          to: ref('scot')
+          field: id_scot
+    - name: geom
+      data_tests:
+      - not_null
+      - unique
+      - is_valid_geom
+      - is_not_empty_geom
+  - name: scot
+    columns:
+    - name: id_scot
+      data_tests:
+      - not_null
+      - unique
+    - name: geom
+      data_tests:
+      - is_valid_geom
   - name: scot_communes
     columns:
     - name: commune_code

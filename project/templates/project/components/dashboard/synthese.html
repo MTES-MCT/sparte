@@ -1,4 +1,5 @@
 <div>
+  {% if diagnostic.has_unchanged_or_fusionned_consommation_data %}
   <h4>Estimation de la trajectoire 2031</h4>
   <div class="fr-grid-row fr-grid-row--gutters">
     <div class="fr-col-12 fr-col-md-6 fr-grid-row">
@@ -90,7 +91,7 @@
     <a class="fr-link" href="{% url 'project:report_conso' diagnostic.pk %}">Consulter le bilan de consommation d'espaces</a>
   </div>
 </div>
-
+{% endif %}
 {% if diagnostic.has_complete_uniform_ocsge_coverage %}
 <div class="fr-mt-12w">
   <h2>Artificialisation</h2>

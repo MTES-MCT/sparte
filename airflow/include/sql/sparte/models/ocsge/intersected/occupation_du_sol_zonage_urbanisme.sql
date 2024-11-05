@@ -10,7 +10,7 @@
             {'columns': ['zonage_gpu_timestamp'], 'type': 'btree'},
             {'columns': ['geom'], 'type': 'gist'}
         ],
-        post_hook=[
+        pre_hook=[
             "{{ delete_from_this_where_field_not_in('ocsge_loaded_date', 'occupation_du_sol', 'loaded_date') }}",
             "{{ delete_from_this_where_field_not_in('zonage_checksum', 'zonage_urbanisme', 'checksum') }}",
         ]

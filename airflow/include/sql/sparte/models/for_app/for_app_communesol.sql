@@ -7,7 +7,7 @@
 
 with ocsge_with_cs_us_id as (
     SELECT
-        ocsge.ocsge_commune_id as ocsge_commune_id,
+        ocsge.ocsge_commune_id,
         ocsge.commune_code,
         ocsge.code_us,
         ocsge.code_cs,
@@ -28,7 +28,6 @@ with ocsge_with_cs_us_id as (
         app_usagesol.code_prefix = ocsge.code_us
 ), ocsge_with_matrix as (
     SELECT
-        ocsge_with_cs_us_id.ocsge_commune_id,
         ocsge_with_cs_us_id.commune_code,
         ocsge_with_cs_us_id.surface,
         ocsge_with_cs_us_id.year,
@@ -44,19 +43,18 @@ with ocsge_with_cs_us_id as (
         cs_us_matrix.usage_id = ocsge_with_cs_us_id.usage_id
 ), ocsge_with_matrix_and_city_id as (
     SELECT
-        ocsge_with_matrix.ocsge_commune_id,
         ocsge_with_matrix.commune_code,
         ocsge_with_matrix.surface,
         ocsge_with_matrix.year,
         ocsge_with_matrix.departement,
         ocsge_with_matrix.matrix_id,
-        commune.id as city_id
+        commune.code as city_id
     FROM
         ocsge_with_matrix
     LEFT JOIN
-        {{ ref("app_commune") }} AS commune
+        {{ ref("commune") }} AS commune
     ON
-        commune.insee = ocsge_with_matrix.commune_code
+        commune.code = ocsge_with_matrix.commune_code
 )
 
 SELECT

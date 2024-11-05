@@ -1,18 +1,3 @@
-"""
-Contient le modèle de donnée du Cerema qui décrit les changements cadastraux agrégé au
-niveau de la commune. Utilisé pour :
-* Construire les régions administratives (région, commune...) via la commande "load_from_cerema"
-* Le rapport consommation d'un diagnostic
-
-Remarque importante, le fichier travail par année. Une année commence le 1er janvier de
-l'année précédente (N-1) au 1er janvier de l'année souhaitée (par exemple l'année 2013
-cours depuis le 01.01.2012 jusqu'au 01.01.2013). Ainsi, la surface consommé en 2013 est
-dans la colonne "naf12art13".
-
-Données récupérées le 16/12/2021
-https://cerema.app.box.com/v/pnb-action7-indicateurs-ff/folder/149684581362
-La description précise des données est disponible dans un PDF dans lien ci-dessus
-"""
 from django.contrib.gis.db import models
 from django.db.models import F
 
@@ -29,14 +14,14 @@ class CeremaManager(models.Manager):
 
 
 class Cerema(DataColorationMixin, models.Model):
-    city_insee = models.CharField(max_length=7, db_index=True)
-    city_name = models.CharField(max_length=50, db_index=True)
-    region_id = models.CharField(max_length=50, db_index=True)
-    region_name = models.CharField(max_length=50, db_index=True)
-    dept_id = models.CharField(max_length=50, db_index=True)
-    dept_name = models.CharField(max_length=50, db_index=True)
-    epci_id = models.CharField(max_length=50, db_index=True)
-    epci_name = models.CharField(max_length=70, db_index=True)
+    city_insee = models.CharField(max_length=7)
+    city_name = models.CharField(max_length=50)
+    region_id = models.CharField(max_length=50)
+    region_name = models.CharField(max_length=50)
+    dept_id = models.CharField(max_length=50)
+    dept_name = models.CharField(max_length=50)
+    epci_id = models.CharField(max_length=50)
+    epci_name = models.CharField(max_length=70)
     scot = models.CharField(max_length=254, null=True)
 
     naf09art10 = models.FloatField(null=True)
@@ -192,14 +177,9 @@ class Cerema(DataColorationMixin, models.Model):
     default_color = "pink"
 
     class Meta:
+        managed = False
         verbose_name = "Données du cerema"
         verbose_name_plural = verbose_name
-        indexes = [
-            models.Index(fields=["scot"]),
-            models.Index(fields=["region_id"]),
-            models.Index(fields=["dept_id"]),
-            models.Index(fields=["epci_id"]),
-        ]
 
     def __str__(self):
         return self.city_insee

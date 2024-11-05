@@ -59,7 +59,7 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                     <Header />
                     <Router>
                         <TrackingWrapper />
-                        <Navbar />
+                        <Navbar projectData={data} />
                         <Main>
                             <TopBar />
                             <Content>
@@ -69,6 +69,7 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                         element={
                                             <RouteWrapper
                                                 title="Synthèse"
+                                                consoCorrectionStatus={data.consommation_correction_status}
                                             >
                                                 <Synthese endpoint={urls.synthese} />
                                             </RouteWrapper>
@@ -79,6 +80,7 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                         element={
                                             <RouteWrapper
                                                 title="Consommation d'espaces NAF"
+                                                consoCorrectionStatus={data.consommation_correction_status}
                                             >
                                                 <Consommation endpoint={urls.consommation} />
                                             </RouteWrapper>
@@ -89,6 +91,7 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                         element={
                                             <RouteWrapper
                                                 title="Trajectoire ZAN"
+                                                consoCorrectionStatus={data.consommation_correction_status}
                                             >
                                                 <Trajectoires endpoint={urls.trajectoires} />
                                             </RouteWrapper>
@@ -144,6 +147,7 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                         element={
                                             <RouteWrapper
                                                 title="Rapport triennal local"
+                                                consoCorrectionStatus={data.consommation_correction_status}
                                             >
                                                 <RapportLocal endpoint={urls.rapportLocal} />
                                             </RouteWrapper>

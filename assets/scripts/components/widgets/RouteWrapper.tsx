@@ -3,10 +3,13 @@ import styled from 'styled-components';
 import usePageTitle from '@hooks/usePageTitle';
 import OcsgeStatus, { OcsgeStatusProps } from '@components/widgets/OcsgeStatus';
 import GpuStatus from '@components/widgets/GpuStatus';
+import ConsoCorrectionStatus, { ConsoCorrectionStatusEnum} from '@components/widgets/ConsoCorrectionStatus';
+
 
 interface RouteWrapperProps {
     title: string;
     ocsgeStatus?: OcsgeStatusProps["status"];
+    consoCorrectionStatus?: ConsoCorrectionStatusEnum;
     hasGpu?: boolean;
     children: ReactNode;
 }
@@ -16,9 +19,24 @@ const Title = styled.h1`
     font-size: 1.8em;
 `;
 
-const RouteWrapper: React.FC<RouteWrapperProps> = ({ title, ocsgeStatus, hasGpu, children }) => {
-    const shouldDisplayOcsgeStatus = ocsgeStatus && ocsgeStatus !== "COMPLETE_UNIFORM";
-    const shouldDisplayGpuStatus = hasGpu === false;
+const RouteWrapper: React.FC<RouteWrapperProps> = ({
+    title,
+    ocsgeStatus,
+    hasGpu,
+    consoCorrectionStatus,
+    children,
+}) => {
+    const shouldDisplayOcsgeStatus = ocsgeStatus !== undefined && ocsgeStatus !== "COMPLETE_UNIFORM";
+    const shouldDisplayGpuStatus = hasGpu !== undefined && hasGpu === false;
+    const shouldDisplayConsoCorrectionStatus = consoCorrectionStatus !== undefined && consoCorrectionStatus !== ConsoCorrectionStatusEnum.UNCHANGED;
+    const shouldDisplayConsoChildren = consoCorrectionStatus === undefined || [
+        ConsoCorrectionStatusEnum.UNCHANGED,
+        ConsoCorrectionStatusEnum.FUSION
+    ].includes(consoCorrectionStatus);
+
+    const shouldDisplayChildren = !shouldDisplayOcsgeStatus &&
+        !shouldDisplayGpuStatus &&
+        shouldDisplayConsoChildren;
 
     usePageTitle(title);
 
@@ -28,18 +46,14 @@ const RouteWrapper: React.FC<RouteWrapperProps> = ({ title, ocsgeStatus, hasGpu,
                 <div className="fr-grid-row">
                     <div className="fr-col-12">
                         <Title>{title}</Title>
-
-                        {/* Affichage conditionnel du statut OCS GE */}
                         {shouldDisplayOcsgeStatus && <OcsgeStatus status={ocsgeStatus} />}
-                        
-                        {/* Affichage conditionnel du statut GPU */}
                         {shouldDisplayGpuStatus && <GpuStatus />}
+                        {shouldDisplayConsoCorrectionStatus && <ConsoCorrectionStatus status={consoCorrectionStatus} />}
                     </div>
                 </div>
             </div>
                 
-            {/* Affichage du contenu uniquement si les conditions d'OCS GE et GPU sont remplies */}
-            {!shouldDisplayOcsgeStatus && !shouldDisplayGpuStatus && children}
+            {shouldDisplayChildren && children}
         </>
     );
 };

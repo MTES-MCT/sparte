@@ -30,26 +30,6 @@ def ingest_table(source_table_name: str, destination_table_name: str):
 )
 def ingest_app_dependencies():  # noqa: C901
     @task.python
-    def ingest_app_region():
-        return ingest_table("public_data_region", "app_region")
-
-    @task.python
-    def ingest_app_departement():
-        return ingest_table("public_data_departement", "app_departement")
-
-    @task.python
-    def ingest_app_commune():
-        return ingest_table("public_data_commune", "app_commune")
-
-    @task.python
-    def ingest_app_epci():
-        return ingest_table("public_data_epci", "app_epci")
-
-    @task.python
-    def ingest_app_scot():
-        return ingest_table("public_data_scot", "app_scot")
-
-    @task.python
     def ingest_app_couverturesol():
         return ingest_table("public_data_couverturesol", "app_couverturesol")
 
@@ -61,36 +41,11 @@ def ingest_app_dependencies():  # noqa: C901
     def ingest_app_couvertureusagematrix():
         return ingest_table("public_data_couvertureusagematrix", "app_couvertureusagematrix")
 
-    @task.python
-    def ingest_app_epci_departements():
-        return ingest_table("public_data_epci_departements", "app_epci_departements")
-
-    @task.python
-    def ingest_app_scot_departements():
-        return ingest_table("public_data_scot_departements", "app_scot_departements")
-
-    @task.python
-    def ingest_app_scot_regions():
-        return ingest_table("public_data_scot_regions", "app_scot_regions")
-
     @task.bash(retries=0, trigger_rule="all_success", pool=DBT_POOL)
     def dbt_run(**context):
         return 'cd "${AIRFLOW_HOME}/include/sql/sparte" && dbt run -s app'
 
-    (
-        ingest_app_region()
-        >> ingest_app_departement()
-        >> ingest_app_commune()
-        >> ingest_app_epci()
-        >> ingest_app_scot()
-        >> ingest_app_couverturesol()
-        >> ingest_app_usagesol()
-        >> ingest_app_couvertureusagematrix()
-        >> ingest_app_epci_departements()
-        >> ingest_app_scot_departements()
-        >> ingest_app_scot_regions()
-        >> dbt_run()
-    )
+    (ingest_app_couverturesol() >> ingest_app_usagesol() >> ingest_app_couvertureusagematrix() >> dbt_run())
 
 
 ingest_app_dependencies()
