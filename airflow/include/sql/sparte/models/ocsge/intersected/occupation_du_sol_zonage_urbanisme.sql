@@ -63,10 +63,18 @@ with max_ocsge_loaded_date as (
         where ocsge.loaded_date > (select ocsge_loaded_date from max_ocsge_loaded_date)
         or zonage.gpu_timestamp > (select zonage_gpu_timestamp from max_zonage_gpu_timestamp)
     {% endif %}
+), occupation_du_sol_zonage_urbanisme_without_surface_with_duplicates_marked as (
+    SELECT
+        *,
+        row_number() over (partition by geom, year, departement) as rn
+    FROM
+        occupation_du_sol_zonage_urbanisme_without_surface
 )
 
 SELECT
     *,
     ST_Area(geom) as surface
 FROM
-    occupation_du_sol_zonage_urbanisme_without_surface
+    occupation_du_sol_zonage_urbanisme_without_surface_with_duplicates_marked
+WHERE
+    rn = 1
