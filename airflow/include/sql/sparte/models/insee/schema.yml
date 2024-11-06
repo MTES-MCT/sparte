@@ -38,7 +38,7 @@ models:
       - name: type_commune_apres
         data_tests:
           - accepted_values: *type_commune
-  - name: population
+  - name: population_cog_2024
     columns:
       - name: code_commune
         data_tests:

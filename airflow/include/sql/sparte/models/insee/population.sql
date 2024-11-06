@@ -8,7 +8,6 @@
 
 select
     "CODGEO" as code_commune,
-    "LIBGEO" as nom_commune,
     "PMUN2021" as population_2021,
     "PMUN2020" as population_2020,
     "PMUN2019" as population_2019,
