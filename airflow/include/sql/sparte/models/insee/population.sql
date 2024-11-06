@@ -5,7 +5,6 @@
     )
 }}
 
-
 select
     "CODGEO" as code_commune,
     "PMUN2021" as population_2021,
