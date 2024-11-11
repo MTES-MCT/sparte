@@ -53,6 +53,13 @@ def modify_lookalike_from_primary_keys_to_natural_key(apps, schema_editor):  # n
             land_keys.append(f"{land_type}_{new_land_id}")
         if not project.id:
             continue
+
+        new_value = ";".join(land_keys)
+
+        if len(new_value) > 250:
+            project.delete()
+            continue
+
         project.look_a_like = ";".join(land_keys)
         project.save()
 
