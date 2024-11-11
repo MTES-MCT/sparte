@@ -22,7 +22,7 @@ from django.core.exceptions import ImproperlyConfigured
 from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.redis import RedisIntegration
 
-OFFICIAL_VERSION = "8.2.0"
+OFFICIAL_VERSION = "8.3.0"
 
 
 root = environ.Path(__file__) - 2  # get root of the project
