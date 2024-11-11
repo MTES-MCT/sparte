@@ -4,29 +4,47 @@ from django.db import migrations
 from public_data.models import AdminRef
 
 
-def modify_lookalike_from_primary_keys_to_natural_key(apps, schema_editor):
+def modify_lookalike_from_primary_keys_to_natural_key(apps, schema_editor):  # noqa: C901
     Project = apps.get_model("project", "Project")
     for project in Project.objects.all():
         land_keys = []
         for land in project.look_a_like.split(";"):
             if not land:
-                raise ValueError("Empty land key")
+                project.delete()
+                continue
             land_type, land_id = land.split("_")
             klass = None
             if land_type == AdminRef.COMMUNE:
-                klass = apps.get_model("public_data", "Commune")
-                new_land_id = klass.objects.get(id=land_id).insee
+                try:
+                    klass = apps.get_model("public_data", "Commune")
+                    new_land_id = klass.objects.get(id=land_id).insee
+                except klass.DoesNotExist:
+                    project.delete()
+                    continue
             elif land_type == AdminRef.EPCI:
-                klass = apps.get_model("public_data", "Epci")
-                new_land_id = klass.objects.get(id=land_id).source_id
+                try:
+                    klass = apps.get_model("public_data", "Epci")
+                    new_land_id = klass.objects.get(id=land_id).source_id
+                except klass.DoesNotExist:
+                    project.delete()
+                    continue
             elif land_type == AdminRef.DEPARTEMENT:
-                klass = apps.get_model("public_data", "Departement")
-                new_land_id = klass.objects.get(id=land_id).source_id
+                try:
+                    klass = apps.get_model("public_data", "Departement")
+                    new_land_id = klass.objects.get(id=land_id).source_id
+                except klass.DoesNotExist:
+                    project.delete()
+                    continue
             elif land_type == AdminRef.REGION:
-                klass = apps.get_model("public_data", "Region")
-                new_land_id = klass.objects.get(id=land_id).source_id
+                try:
+                    klass = apps.get_model("public_data", "Region")
+                    new_land_id = klass.objects.get(id=land_id).source_id
+                except klass.DoesNotExist:
+                    project.delete()
+                    continue
             else:
-                raise ValueError(f"Unknown land type: {land_type}")
+                project.delete()
+                continue
             land_keys.append(f"{land_type}_{new_land_id}")
         project.look_a_like = ";".join(land_keys)
         project.save()
