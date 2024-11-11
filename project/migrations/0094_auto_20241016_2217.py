@@ -10,6 +10,10 @@ def set_land_id_from_primary_keys_to_natural_key(apps, schema_editor):  # noqa: 
     for project in Project.objects.all():
         land_type = project.land_type
         klass = None
+
+        if "," in project.land_id:
+            project.delete()
+            continue
         if land_type == AdminRef.COMMUNE:
             try:
                 klass = apps.get_model("public_data", "Commune")
