@@ -1,7 +1,7 @@
 import collections
 import logging
 from decimal import Decimal
-from typing import Dict, List, Literal
+from typing import Dict, Literal
 
 import pandas as pd
 from django.conf import settings
@@ -20,7 +20,6 @@ from simple_history.models import HistoricalRecords
 
 from config.storages import PublicMediaStorage
 from project.models.enums import ProjectChangeReason
-from project.models.exceptions import TooOldException
 from public_data.exceptions import LandException
 from public_data.models import (
     AdminRef,
@@ -38,6 +37,7 @@ from public_data.models import (
     UsageSol,
 )
 from public_data.models.administration import Commune
+from public_data.models.administration.enums import ConsommationCorrectionStatus
 from public_data.models.enums import SRID
 from public_data.models.gpu import ArtifAreaZoneUrba, ZoneUrba
 from public_data.models.mixins import DataColorationMixin
@@ -77,12 +77,7 @@ class BaseProject(models.Model):
 
     @property
     def combined_emprise(self) -> MultiPolygon:
-        """Return a combined MultiPolygon of all emprises."""
-        combined = self.emprise_set.aggregate(Union("mpoly"))
-        if "mpoly__union" in combined:
-            return combined["mpoly__union"]
-        else:
-            return MultiPolygon()
+        return self.land.mpoly
 
     def __str__(self):
         return self.name
@@ -93,20 +88,8 @@ class BaseProject(models.Model):
 
 class ProjectCommune(models.Model):
     project = models.ForeignKey("project.Project", on_delete=models.CASCADE)
-    commune = models.ForeignKey("public_data.Commune", on_delete=models.PROTECT)
+    commune = models.ForeignKey("public_data.Commune", on_delete=models.PROTECT, to_field="insee")
     group_name = models.CharField("Nom du groupe", max_length=100, blank=True, null=True)
-
-
-class CityGroup:
-    def __init__(self, name: str):
-        self.name = name
-        self.cities: List[Commune] = list()
-
-    def append(self, project_commune: ProjectCommune) -> None:
-        self.cities.append(project_commune.commune)
-
-    def __str__(self) -> str:
-        return self.name
 
 
 class Project(BaseProject):
@@ -182,17 +165,6 @@ class Project(BaseProject):
     public_keys = models.CharField("Clé publiques", max_length=255, blank=True, null=True)
 
     def get_public_key(self) -> str:
-        """
-        Returns the public key of the land the project is based on.
-
-        Historically the app supported multiple lands, but it's not the case
-        anymore. This method is adapted for compatibility and will raise an
-        exception if the project is too old and contains several lands.
-        """
-
-        if "," in self.land_id:
-            raise TooOldException("Project too old, it contains several territory.")
-
         return f"{self.land_type}_{self.land_id}"
 
     land_type = models.CharField(
@@ -211,11 +183,6 @@ class Project(BaseProject):
     land_id = models.CharField(
         "Identifiants du territoire du diagnostic",
         max_length=255,
-        help_text=(
-            "Contient l'indentifiant du territoire du diagnostic. "
-            "Il faut croiser cette donnée avec 'land_type' pour être en mesure de "
-            "de récupérer dans la base l'instances correspondante."
-        ),
         blank=True,
         null=True,
     )
@@ -228,13 +195,6 @@ class Project(BaseProject):
     look_a_like = models.CharField(
         "Territoire pour se comparer",
         max_length=250,
-        help_text=(
-            "We need a way to find Project related within Cerema's data. "
-            "this is the purpose of this field which has a very specific rule of "
-            "construction, it's like a slug: EPCI_[ID], DEPART_[ID] (département), "
-            "REGION_[ID], COMMUNE_[ID]. "
-            "field can contain several public key separate by ;"
-        ),
         blank=True,
         null=True,
     )
@@ -428,21 +388,6 @@ class Project(BaseProject):
     def nb_years_before_2031(self):
         return 2031 - int(self.analyse_end_date)
 
-    _city_group_list = None
-
-    @property
-    def city_group_list(self):
-        if self._city_group_list is None:
-            self._city_group_list = list()
-            qs = ProjectCommune.objects.filter(project=self)
-            qs = qs.select_related("commune")
-            qs = qs.order_by("group_name", "commune__name")
-            for project_commune in qs:
-                if len(self._city_group_list) == 0 or self._city_group_list[-1].name != project_commune.group_name:
-                    self._city_group_list.append(CityGroup(project_commune.group_name))
-                self._city_group_list[-1].append(project_commune)
-        return self._city_group_list
-
     def delete(self):
         self.cover_image.delete(save=False)
         return super().delete()
@@ -565,6 +510,17 @@ class Project(BaseProject):
             )
             .exists()
         )
+
+    @property
+    def consommation_correction_status(self) -> str:
+        return self.land.consommation_correction_status
+
+    @property
+    def has_unchanged_or_fusionned_consommation_data(self) -> bool:
+        return self.consommation_correction_status in [
+            ConsommationCorrectionStatus.UNCHANGED,
+            ConsommationCorrectionStatus.FUSION,
+        ]
 
     def get_ocsge_millesimes(self):
         """Return all OCS GE millésimes available within project cities and between
@@ -964,8 +920,7 @@ class Project(BaseProject):
         millesimes = set()
 
         departements = self.cities.values_list("departement", flat=True)
-
-        for departement in Departement.objects.filter(id__in=departements):
+        for departement in Departement.objects.filter(source_id__in=departements):
             if departement.ocsge_millesimes:
                 millesimes.update(departement.ocsge_millesimes)
 
@@ -1096,11 +1051,11 @@ class Project(BaseProject):
             .annotate(surface=Sum("surface"))
         )
 
-    @cached_property
+    @property
     def land(self) -> Commune | Departement | Epci | Region | Scot:
         return Land(self.get_public_key()).land
 
-    @cached_property
+    @property
     def land_proxy(self) -> Land:
         return Land(self.get_public_key())
 
@@ -1140,7 +1095,7 @@ class Project(BaseProject):
         return (
             AdminRef.get_class(self.land_type)
             .objects.filter(mpoly__intersects=self.combined_emprise.buffer(0.0001))
-            .exclude(id=int(self.land_id))
+            .exclude(mpoly=self.land.mpoly)
         )
 
     def get_comparison_lands(

@@ -19,6 +19,7 @@ class ProjectDetailSerializer(serializers.ModelSerializer):
             "territory_name",
             "ocsge_coverage_status",
             "has_zonage_urbanisme",
+            "consommation_correction_status",
         ]
 
 
@@ -75,7 +76,6 @@ class CitySpaceConsoMapSerializer(gis_serializers.GeoFeatureModelSerializer):
 
     class Meta:
         fields = (
-            "id",
             "name",
             "insee",
             "area",
@@ -90,7 +90,6 @@ class CityArtifMapSerializer(gis_serializers.GeoFeatureModelSerializer):
 
     class Meta:
         fields = (
-            "id",
             "name",
             "insee",
             "area",

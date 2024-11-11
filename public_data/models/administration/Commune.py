@@ -9,19 +9,32 @@ from public_data.models.mixins import DataColorationMixin
 from utils.db import IntersectManager
 
 from .AdminRef import AdminRef
+from .enums.ConsommationCorrectionStatus import ConsommationCorrectionStatus
 from .GetDataFromCeremaMixin import GetDataFromCeremaMixin
 from .LandMixin import LandMixin
+
+
+class CommuneManager(IntersectManager):
+    def get_by_natural_key(self, insee):
+        return self.get(insee=insee)
 
 
 class Commune(DataColorationMixin, LandMixin, GetDataFromCeremaMixin, models.Model):
     class Meta:
         managed = False
 
-    insee = models.CharField("Code INSEE", max_length=7)
+    insee = models.CharField("Code INSEE", max_length=7, primary_key=True)
     name = models.CharField("Nom", max_length=50)
     departement = models.ForeignKey("Departement", on_delete=models.PROTECT)
-    epci = models.ForeignKey("Epci", on_delete=models.PROTECT, blank=True, null=True)
-    scot = models.ForeignKey("Scot", on_delete=models.PROTECT, blank=True, null=True)
+    epci = models.ForeignKey("Epci", on_delete=models.PROTECT)
+
+    scot = models.ForeignKey(
+        "Scot",
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+        to_field="source_id",
+    )
     mpoly = models.MultiPolygonField(srid=4326)
     srid_source = models.IntegerField(
         "SRID",
@@ -29,7 +42,7 @@ class Commune(DataColorationMixin, LandMixin, GetDataFromCeremaMixin, models.Mod
         default=SRID.LAMBERT_93,
     )
 
-    objects = IntersectManager()
+    objects = CommuneManager()
 
     # Calculated fields
     first_millesime = models.IntegerField(
@@ -44,7 +57,7 @@ class Commune(DataColorationMixin, LandMixin, GetDataFromCeremaMixin, models.Mod
         blank=True,
         null=True,
     )
-    area = models.DecimalField("Surface", max_digits=15, decimal_places=4, blank=True, null=True)
+    area = models.DecimalField("Surface", max_digits=15, decimal_places=4)
     surface_artif = models.DecimalField(
         "Surface artificielle",
         max_digits=15,
@@ -55,6 +68,11 @@ class Commune(DataColorationMixin, LandMixin, GetDataFromCeremaMixin, models.Mod
     ocsge_available = models.BooleanField(
         "Statut de couverture OCSGE",
         default=False,
+    )
+    consommation_correction_status = models.CharField(
+        "Statut de correction des données de consommation",
+        max_length=20,
+        choices=ConsommationCorrectionStatus.choices,
     )
 
     # DataColorationMixin properties that need to be set when heritating
@@ -67,6 +85,9 @@ class Commune(DataColorationMixin, LandMixin, GetDataFromCeremaMixin, models.Mod
     @property
     def official_id(self) -> str:
         return self.insee
+
+    def get_by_natural_key(self, insee):
+        return self.get(insee=insee)
 
     @property
     def is_artif_ready(self):
@@ -82,20 +103,20 @@ class Commune(DataColorationMixin, LandMixin, GetDataFromCeremaMixin, models.Mod
         return self.departement.ocsge_millesimes
 
     def get_cities(self):
-        return Commune.objects.filter(id=self.id).all()
+        return Commune.objects.filter(insee=self.insee).all()
 
     def get_official_id(self) -> str:
         return self.insee if self.insee is not None else ""
 
     @classmethod
     def search(cls, needle, region=None, departement=None, epci=None):
-        qs = cls.objects.annotate(similarity=TrigramSimilarity(Lower("name__unaccent"), needle.lower()))
-
         if needle.isdigit():
-            qs = cls.objects.filter(insee__icontains=needle)
+            qs = cls.objects.annotate(similarity=TrigramSimilarity("insee", needle))
         else:
-            qs = qs.filter(similarity__gt=0.2)  # Filtrer par un score minimum de similarité
-            qs = qs.order_by("-similarity")  # Trier par score décroissant
+            qs = cls.objects.annotate(similarity=TrigramSimilarity(Lower("name__unaccent"), needle.lower()))
+
+        qs = qs.filter(similarity__gt=0.2)  # Filtrer par un score minimum de similarité
+        qs = qs.order_by("-similarity")  # Trier par score décroissant
 
         if region:
             qs = qs.filter(departement__region=region)

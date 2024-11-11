@@ -7,7 +7,8 @@
         code_siren as code,
         nature,
         ST_Area(geom) as surface,
-        geom
+        geom,
+        {{ is_ept('code_siren') }} as is_ept
     FROM
         {{ source('public', source_table_name) }}
 {% endmacro %}

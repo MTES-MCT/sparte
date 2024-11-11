@@ -10,7 +10,7 @@
             {'columns': ['zonage_gpu_timestamp'], 'type': 'btree'},
             {'columns': ['geom'], 'type': 'gist'}
         ],
-        post_hook=[
+        pre_hook=[
             "{{ delete_from_this_where_field_not_in('ocsge_loaded_date', 'occupation_du_sol', 'loaded_date') }}",
             "{{ delete_from_this_where_field_not_in('zonage_checksum', 'zonage_urbanisme', 'checksum') }}",
         ]
@@ -63,10 +63,18 @@ with max_ocsge_loaded_date as (
         where ocsge.loaded_date > (select ocsge_loaded_date from max_ocsge_loaded_date)
         or zonage.gpu_timestamp > (select zonage_gpu_timestamp from max_zonage_gpu_timestamp)
     {% endif %}
+), occupation_du_sol_zonage_urbanisme_without_surface_with_duplicates_marked as (
+    SELECT
+        *,
+        row_number() over (partition by geom, year, departement) as rn
+    FROM
+        occupation_du_sol_zonage_urbanisme_without_surface
 )
 
 SELECT
     *,
     ST_Area(geom) as surface
 FROM
-    occupation_du_sol_zonage_urbanisme_without_surface
+    occupation_du_sol_zonage_urbanisme_without_surface_with_duplicates_marked
+WHERE
+    rn = 1

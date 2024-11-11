@@ -1,0 +1,291 @@
+
+version: 2
+
+valid_srids: &valid_srids
+  values: [
+    32620,
+    2972,
+    2975,
+    2154
+  ]
+
+models:
+  - name: for_app_artifareazoneurba
+  - name: for_app_artificialarea
+    columns:
+      - name: srid_source
+        data_tests:
+          - not_null
+          - accepted_values: *valid_srids
+      - name: departement
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('for_app_departement')
+              field: source_id
+      - name: mpoly
+        data_tests:
+          - not_null
+          - is_valid_geom
+          - is_not_empty_geom
+          - is_srid_4326
+      - name: city
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('for_app_commune')
+              field: insee
+  - name: for_app_ocsge
+    columns:
+      - name: mpoly
+        data_tests:
+          - not_null
+          - is_valid_geom
+          - is_not_empty_geom
+          - is_srid_4326
+      - name: srid_source
+        data_tests:
+          - not_null
+          - accepted_values: *valid_srids
+      - name: departement
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('for_app_departement')
+              field: source_id
+  - name: for_app_ocsgediff
+    columns:
+      - name: mpoly
+        data_tests:
+          - not_null
+          - is_valid_geom
+          - is_not_empty_geom
+          - is_srid_4326
+      - name: srid_source
+        data_tests:
+          - not_null
+          - accepted_values: *valid_srids
+      - name: departement
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('for_app_departement')
+              field: source_id
+  - name: for_app_zoneconstruite
+    columns:
+      - name: mpoly
+        data_tests:
+          - not_null
+          - is_valid_geom
+          - is_not_empty_geom
+          - is_srid_4326
+      - name: srid_source
+        data_tests:
+          - not_null
+          - accepted_values: *valid_srids
+      - name: departement
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('for_app_departement')
+              field: source_id
+  - name: for_app_zoneurba
+    columns:
+      - name: checksum
+        data_tests:
+          - not_null
+          - unique
+      - name: mpoly
+        data_tests:
+          - not_null
+          - is_valid_geom
+          - is_not_empty_geom
+          - is_srid_4326
+          - unique
+      - name: area
+        data_tests:
+          - not_null
+      - name: typezone
+        data_tests:
+          - not_null
+      - name: libelle
+        data_tests:
+          - not_null
+  - name: for_app_departement
+    columns:
+      - name: source_id
+        data_tests:
+          - not_null
+          - unique
+          - relationships:
+              to: ref('departement')
+              field: code
+      - name: name
+        data_tests:
+          - not_null
+          - unique
+      - name: region_id
+        data_tests:
+          - not_null
+      - name: is_artif_ready
+        data_tests:
+          - not_null
+      - name: mpoly
+        data_tests:
+          - not_null
+          - unique
+          - is_valid_geom
+          - is_not_empty_geom
+          - is_srid_4326
+      - name: srid_source
+        data_tests:
+          - not_null
+          - accepted_values: *valid_srids
+
+  - name: for_app_communesol
+    columns:
+      - name: year
+        data_tests:
+          - not_null
+      - name: surface
+        data_tests:
+          - not_null
+      - name: city_id
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('for_app_commune')
+              field: insee
+      - name: matrix_id
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('app_couvertureusagematrix')
+              field: id
+
+  - name: for_app_communediff
+    columns:
+      - name: year_old
+        data_tests:
+          - not_null
+      - name: year_new
+        data_tests:
+          - not_null
+      - name: city_id
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('for_app_commune')
+              field: insee
+      - name: net_artif
+        data_tests:
+          - not_null
+  - name: for_app_commune
+    columns:
+      - name: insee
+        data_tests:
+          - not_null
+          - unique
+          - relationships:
+              to: ref('commune')
+              field: code
+      - name: departement_id
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('for_app_departement')
+              field: source_id
+      - name: name
+        data_tests:
+          - not_null
+      - name: srid_source
+        data_tests:
+          - not_null
+          - accepted_values: *valid_srids
+      - name: ocsge_available
+        data_tests:
+          - not_null
+      - name: area
+        data_tests:
+          - not_null
+      - name: mpoly
+        data_tests:
+          - not_null
+          - unique
+          - is_valid_geom
+          - is_not_empty_geom
+          - is_srid_4326
+      - name: consommation_correction_status
+        data_tests:
+          - not_null
+          - accepted_values:
+              values: [
+                'UNCHANGED',
+                'DIVISION',
+                'FUSION',
+                'COG_ERROR',
+                'MISSING_FROM_SOURCE'
+              ]
+  - name: for_app_epci
+    columns:
+      - name: source_id
+        data_tests:
+          - not_null
+          - unique
+          - relationships:
+              to: ref('epci')
+              field: code
+      - name: name
+        data_tests:
+          - not_null
+      - name: srid_source
+        data_tests:
+          - not_null
+          - accepted_values: *valid_srids
+      - name: mpoly
+        data_tests:
+          - not_null
+          - unique
+          - is_valid_geom
+          - is_not_empty_geom
+          - is_srid_4326
+  - name: for_app_region
+    columns:
+      - name: source_id
+        data_tests:
+          - not_null
+          - unique
+          - relationships:
+              to: ref('region')
+              field: code
+      - name: name
+        data_tests:
+          - not_null
+      - name: srid_source
+        data_tests:
+          - not_null
+          - accepted_values: *valid_srids
+      - name: mpoly
+        data_tests:
+          - not_null
+          - unique
+          - is_valid_geom
+          - is_not_empty_geom
+          - is_srid_4326
+  - name: for_app_scot
+    columns:
+      - name: siren
+      - name: name
+        data_tests:
+          - not_null
+      - name: srid_source
+        data_tests:
+          - not_null
+          - accepted_values: *valid_srids
+      - name: mpoly
+        data_tests:
+          - not_null
+          - unique
+          - is_valid_geom
+          - is_not_empty_geom
+          - is_srid_4326

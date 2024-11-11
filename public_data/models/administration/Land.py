@@ -37,14 +37,12 @@ class Land:
             self.land_type, self.id = public_key.strip().split("_")
         except ValueError as e:
             raise LandException("Clé du territoire mal formatée", e)
-        if not self.id.isdigit():
-            raise LandException("ID n'est pas un entier correcte.")
         try:
             klass = self.get_land_class(self.land_type)
         except KeyError:
             raise LandException("Territoire inconnu.")
         try:
-            self.land = klass.objects.get(pk=int(self.id))
+            self.land = klass.objects.get_by_natural_key(str(self.id))
         except ObjectDoesNotExist as e:
             raise LandException(f"Public key '{self.id}' unknown") from e
 

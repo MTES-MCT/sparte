@@ -10,10 +10,22 @@ models:
       - unique
   - name: consommation_cog_2024
     columns:
+    - name: correction_status
+      data_tests:
+      - not_null
+      - accepted_values:
+          values: [
+            'UNCHANGED',
+            'DIVISION',
+            'FUSION',
+            'COG_ERROR',
+            'MISSING_FROM_SOURCE'
+          ]
     - name: commune_code
       data_tests:
       - not_null
       - unique
+      - has_all_communes
       - relationships:
           to: ref('commune')
           field: code
