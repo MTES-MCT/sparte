@@ -11,7 +11,10 @@ def set_land_id_from_primary_keys_to_natural_key(apps, schema_editor):  # noqa: 
         land_type = project.land_type
         klass = None
 
-        if "," in project.land_id:
+        if not project.land_id:
+            project.delete()
+            continue
+        if project.land_id and "," in str(project.land_id):
             project.delete()
             continue
         if land_type == AdminRef.COMMUNE:
