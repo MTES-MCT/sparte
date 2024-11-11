@@ -8,6 +8,8 @@ def modify_lookalike_from_primary_keys_to_natural_key(apps, schema_editor):  # n
     Project = apps.get_model("project", "Project")
     for project in Project.objects.all():
         land_keys = []
+        if not project.look_a_like:
+            continue
         for land in project.look_a_like.split(";"):
             if not project.id:
                 # Project has been deleted
@@ -49,6 +51,8 @@ def modify_lookalike_from_primary_keys_to_natural_key(apps, schema_editor):  # n
                 project.delete()
                 continue
             land_keys.append(f"{land_type}_{new_land_id}")
+        if not project.id:
+            continue
         project.look_a_like = ";".join(land_keys)
         project.save()
 
