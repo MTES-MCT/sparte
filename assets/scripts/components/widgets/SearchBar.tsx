@@ -1,4 +1,5 @@
 import React, { useEffect, ChangeEvent, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import { useSearchTerritoryQuery } from '@services/api';
 import useDebounce from '@hooks/useDebounce';
@@ -114,17 +115,11 @@ const Badge = styled.p`
     text-transform: none;
 `;
 
-
 const NoResultsMessage = styled.div`
     padding: 0.5rem;
     font-size: 0.9em;
     color: ${secondaryColor};
     text-align: center;
-`;
-
-const HighlightedText = styled.span`
-    font-weight: bold;
-    color: ${activeColor};
 `;
 
 const SearchBar: React.FC<SearchBarProps> = ({ createUrl }) => {
@@ -138,6 +133,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ createUrl }) => {
     const { data: queryData, isFetching } = useSearchTerritoryQuery(debouncedQuery, {
         skip: shouldQueryBeSkipped,
     });
+    const location = useLocation();
 
     useEffect(() => {
         if (shouldQueryBeSkipped || isFetching) {
@@ -165,6 +161,20 @@ const SearchBar: React.FC<SearchBarProps> = ({ createUrl }) => {
         if (isSubmitting || disabled) return;
     
         setIsSubmitting(true);
+
+        if (location.pathname === "/" && window.trackEvent) {
+            window.trackEvent(
+                'north_star_activation_funnel',
+                'search_territory',
+                'step_1_north_star_activation_funnel'
+            );
+        } else if (location.pathname === "/rapport-local" && window.trackEvent) {
+            window.trackEvent(
+                'local_report_download_funnel',
+                'search_territory',
+                'local_report_home_search_territory_selected'
+            );
+        }
     
         const form = document.createElement('form');
         form.action = createUrl;
