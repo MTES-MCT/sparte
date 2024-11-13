@@ -32,3 +32,13 @@ def get_dbt_command_from_directory(
     directory="${AIRFLOW_HOME}/include/sql/sparte",
 ) -> str:
     return f'cd "{directory}" && ' + cmd
+
+
+def get_srid_by_departement_code(departement_code: str) -> int:
+    if departement_code in ["971", "972"]:
+        return 32620
+    if departement_code == "973":
+        return 2972
+    if departement_code == "974":
+        return 2975
+    return 2154

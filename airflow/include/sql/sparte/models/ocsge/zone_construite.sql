@@ -16,7 +16,7 @@ SELECT
     year,
     departement,
     uuid::uuid,
-    2154                      AS srid_source,
+    st_srid(geom)             AS srid_source,
     to_timestamp(loaded_date) AS loaded_date,
     st_makevalid(geom)        AS geom,
     st_area(geom)             AS surface

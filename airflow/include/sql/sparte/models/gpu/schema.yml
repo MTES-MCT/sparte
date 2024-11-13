@@ -1,5 +1,12 @@
-
 version: 2
+
+valid_srids: &valid_srids
+  values: [
+    32620,
+    2972,
+    2975,
+    2154
+  ]
 
 models:
   - name: zonage_urbanisme
@@ -12,6 +19,10 @@ models:
       - unique
       - is_valid_geom
       - is_not_empty_geom
+    - name: srid_source
+      data_tests:
+      - not_null
+      - accepted_values: *valid_srids
 
 sources:
   - name: public

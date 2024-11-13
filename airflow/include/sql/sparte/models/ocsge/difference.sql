@@ -26,7 +26,7 @@ SELECT
     foo.departement,
     foo.uuid,
     foo.geom,
-    2154                          AS srid_source,
+    ST_Srid(foo.geom)             AS srid_source,
     to_timestamp(foo.loaded_date) AS loaded_date,
     st_area(foo.geom)             AS surface,
     coalesce(

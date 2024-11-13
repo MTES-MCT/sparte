@@ -26,6 +26,6 @@ SELECT
     {{ is_artificial('code_cs', 'code_us') }} AS is_artificial,
     uuid::uuid,
     st_makevalid(geom)        AS geom,
-    2154                      AS srid_source
+    ST_Srid(geom)             AS srid_source
 FROM
     {{ source('public', 'ocsge_occupation_du_sol') }}
