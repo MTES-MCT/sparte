@@ -6,7 +6,7 @@
 }}
 with flux as (
     SELECT
-        code_commune,
+        *, -- keep stock columns
         (population_2010 - population_2009) as population_2009_2010,
         (population_2011 - population_2010) as population_2010_2011,
         (population_2012 - population_2011) as population_2011_2012,
@@ -24,6 +24,19 @@ with flux as (
 )
 SELECT
     code_commune,
+    population_2009,
+    population_2010,
+    population_2011,
+    population_2012,
+    population_2013,
+    population_2014,
+    population_2015,
+    population_2016,
+    population_2017,
+    population_2018,
+    population_2019,
+    population_2020,
+    population_2021,
     {% call(start_year, end_year) cumulative_flux(
         first_available_year=2009,
         last_available_year=2020

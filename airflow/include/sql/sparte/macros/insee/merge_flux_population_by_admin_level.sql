@@ -12,7 +12,9 @@ SELECT
             last_available_year=2020
         ) %}
             sum(population_{{ start_year }}_{{ end_year + 1 }})
-            as population_{{ start_year }}_{{ end_year + 1 }}
+            as population_{{ start_year }}_{{ end_year + 1 }},
+            sum(population_{{ start_year }}_{{ end_year + 1 }}) * 100 /  sum(population_{{ start_year }})
+            as population_{{ start_year }}_{{ end_year + 1 }}_percent
         {% endcall %}
 FROM
     {{ ref('flux_population') }} as flux_population
