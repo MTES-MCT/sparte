@@ -24,26 +24,17 @@ with flux as (
 )
 SELECT
     code_commune,
-    {% set last_available_year = 2020 %}
-    {% set first_available_year = 2009 %}
-    {% set ns = namespace(continued=false) %}
-    {% for start_year in range(2009, last_available_year + 1) %}
-        {% for end_year in range(2009, last_available_year + 1) -%}
-            {% if start_year > end_year -%}
-                {% set ns.continued = true %}
-                {% continue %}
-            {% else %}
-                {% set ns.continued = false %}
-            {% endif %}
-            (
-                {% for first_year in range(start_year, end_year + 1) -%}
-                    {% set next_year = first_year + 1 -%}
-                    population_{{ first_year }}_{{ next_year }}
-                    {% if not loop.last -%} + {% endif %}
-                {% endfor %}
-            ) as population_{{ start_year }}_{{ end_year + 1 }}
-            {% if not loop.last and not ns.continued -%}, {% endif %}
-        {% endfor %} {% if not loop.last and not ns.continued -%}, {% endif %}
-    {% endfor %}
+    {% call(start_year, end_year) cumulative_flux(
+        first_available_year=2009,
+        last_available_year=2020
+    ) %}
+        (
+        {% for first_year in range(start_year, end_year + 1) -%}
+            {% set next_year = first_year + 1 -%}
+            population_{{ first_year }}_{{ next_year }}
+            {% if not loop.last -%} + {% endif %}
+        {% endfor %}
+        ) as population_{{ start_year }}_{{ end_year + 1 }}
+    {% endcall %}
 FROM
     flux
