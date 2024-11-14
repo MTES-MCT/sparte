@@ -217,7 +217,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ createUrl }) => {
                                 const isDisabled = territory.area === 0;
                                 return (
                                     <ResultItem
-                                        key={territory.id}
+                                        key={territory.source_id}
                                         $disabled={isDisabled}
                                         onClick={() => createDiagnostic(territory.public_key, isDisabled)}
                                     >
