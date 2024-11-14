@@ -31,7 +31,7 @@ models:
           field: code
   - name: consommation_departement
     columns:
-    - name: code_departement
+    - name: departement
       data_tests:
       - not_null
       - unique
@@ -41,7 +41,7 @@ models:
           field: code
   - name: consommation_epci
     columns:
-    - name: code_epci
+    - name: epci
       data_tests:
       - not_null
       - unique
@@ -49,6 +49,26 @@ models:
       - relationships:
           to: ref('epci')
           field: code
+  - name: commation_region
+    columns:
+    - name: region
+      data_tests:
+      - not_null
+      - unique
+      - has_all_regions
+      - relationships:
+          to: ref('region')
+          field: code
+  - name: consommation_scot
+    columns:
+    - name: scot
+      data_tests:
+      - not_null
+      - unique
+      - has_all_scots
+      - relationships:
+          to: ref('scot')
+          field: id_scot
 sources:
   - name: public
     tables:

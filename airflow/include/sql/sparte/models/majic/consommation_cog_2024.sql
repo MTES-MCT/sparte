@@ -131,29 +131,20 @@ together as (
 select
     commune_code,
     correction_status,
-    {% set last_available_year = 2022 %}
-    {% set first_available_year = 2009 %}
     {% set type_conso_suffixes = ["", "_activite", "_habitat"] %}
-    {% set ns = namespace(continued=false) %}
     {% for type_conso_suffix in type_conso_suffixes %}
-        {% for start_year in range(2009, last_available_year + 1) %}
-            {% for end_year in range(2009, last_available_year + 1) -%}
-                {% if start_year > end_year -%}
-                    {% set ns.continued = true %}
-                    {% continue %}
-                {% else %}
-                    {% set ns.continued = false %}
-                {% endif %}
-                (
-                    {% for first_year in range(start_year, end_year + 1) -%}
-                        {% set next_year = first_year + 1 -%}
-                        conso_{{ first_year }}_{{ next_year }}{{ type_conso_suffix }}
-                        {% if not loop.last -%} + {% endif %}
-                    {% endfor %}
-                ) as conso_{{ start_year }}_{{ end_year + 1 }}{{ type_conso_suffix }}
-                {% if not loop.last and not ns.continued -%}, {% endif %}
-            {% endfor %} {% if not loop.last and not ns.continued -%}, {% endif %}
-        {% endfor %}
+        {% call(start_year, end_year) cumulative_flux(
+            first_available_year=2009,
+            last_available_year=2022
+        ) %}
+            (
+                {% for first_year in range(start_year, end_year + 1) -%}
+                    {% set next_year = first_year + 1 -%}
+                    conso_{{ first_year }}_{{ next_year }}{{ type_conso_suffix }}
+                    {% if not loop.last -%} + {% endif %}
+                {% endfor %}
+            ) as conso_{{ start_year }}_{{ end_year + 1 }}{{ type_conso_suffix }}
+        {% endcall %}
         {% if not loop.last -%}, {% endif %}
     {% endfor %}
 from
