@@ -26,7 +26,7 @@ from project.models import Project, create_from_public_key
 from project.models.create import update_period
 from project.models.enums import ProjectChangeReason
 from public_data.exceptions import LandException
-from public_data.models import AdminRef, Land
+from public_data.models import Land
 from utils.views_mixins import BreadCrumbMixin, RedirectURLMixin
 
 from .mixins import GroupMixin, ReactMixin
@@ -69,40 +69,12 @@ class CreateProjectViews(BreadCrumbMixin, FormView):
 
     def form_valid(self, form):
         """If the form is valid, redirect to the supplied URL."""
-        if not form.cleaned_data["selection"]:
-            search_for = []
-            if form.cleaned_data["search_region"]:
-                search_for.append(AdminRef.REGION)
-            if form.cleaned_data["search_departement"]:
-                search_for.append(AdminRef.DEPARTEMENT)
-            if form.cleaned_data["search_epci"]:
-                search_for.append(AdminRef.EPCI)
-            if form.cleaned_data["search_commune"]:
-                search_for.append(AdminRef.COMMUNE)
-            if form.cleaned_data["search_scot"]:
-                search_for.append(AdminRef.SCOT)
-            needle = form.cleaned_data["keyword"]
-            if needle == "*":
-                needle = ""
-            results = Land.search(
-                needle,
-                region=form.cleaned_data["region"],
-                departement=form.cleaned_data["departement"],
-                epci=form.cleaned_data["epci"],
-                search_for=search_for,
-            )
-            kwargs = {
-                "results": {AdminRef.get_label(k): v for k, v in results.items()},
-                "form": form,
-            }
-            return self.render_to_response(self.get_context_data(**kwargs))
-        else:
-            project = create_from_public_key(form.cleaned_data["selection"], user=self.request.user)
+        project = create_from_public_key(form.cleaned_data["selection"], user=self.request.user)
 
-            if self.request.GET.get("next") == "download":
-                return redirect("project:report_download", pk=project.id)
-            else:
-                return redirect("project:splash", pk=project.id)
+        if self.request.GET.get("next") == "download":
+            return redirect("project:report_download", pk=project.id)
+        else:
+            return redirect("project:splash", pk=project.id)
 
 
 class ProjectUpdateView(ReactMixin, UpdateView):

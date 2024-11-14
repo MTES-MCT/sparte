@@ -53,9 +53,6 @@ class Region(LandMixin, GetDataFromCeremaMixin, models.Model):
         qs = qs.filter(similarity__gt=0.15)  # Filtrer par un score minimum de similarité
         qs = qs.order_by("-similarity")  # Trier par score décroissant
 
-        if region:
-            qs = qs.filter(id=region.id)
-
         return qs
 
     @property
