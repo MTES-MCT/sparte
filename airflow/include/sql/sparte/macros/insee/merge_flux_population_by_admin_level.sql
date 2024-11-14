@@ -2,6 +2,9 @@
     group_by_column,
     code_name
 ) %}
+{% if not code_name %}
+    {% set code_name = group_by_column %}
+{% endif %}
 SELECT
         {{ group_by_column }} as {{ code_name }},
         {% call(start_year, end_year) cumulative_flux(

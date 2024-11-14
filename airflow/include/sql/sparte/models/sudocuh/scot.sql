@@ -58,3 +58,4 @@ SELECT
 FROM {{ source('public', 'sudocuh_scot') }} as scot
 LEFT JOIN {{ ref('scot_geom') }} as scot_geom
 ON scot_geom.id_scot::text = scot.id_scot::text
+WHERE geom is not null

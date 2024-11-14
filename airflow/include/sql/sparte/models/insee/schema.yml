@@ -48,6 +48,96 @@ models:
           - relationships:
               to: ref('commune')
               field: code
+  - name: flux_population_departements
+    columns:
+      - name: departement
+        data_tests:
+          - not_null
+          - unique
+          - has_all_departements
+          - relationships:
+              to: ref('departement')
+              field: code
+  - name: flux_population_regions
+    columns:
+      - name: region
+        data_tests:
+          - not_null
+          - unique
+          - has_all_regions
+          - relationships:
+              to: ref('region')
+              field: code
+  - name: flux_population_scots
+    columns:
+      - name: scot
+        data_tests:
+          - not_null
+          - unique
+          - has_all_scots
+          - relationships:
+              to: ref('scot')
+              field: id_scot
+  - name: flux_population_epcis
+    columns:
+      - name: epci
+        data_tests:
+          - not_null
+          - unique
+          - has_all_epcis
+          - relationships:
+              to: ref('epci')
+              field: code
+  - name: flux_population
+    columns:
+      - name: code_commune
+        data_tests:
+          - not_null
+          - unique
+          - has_all_communes
+          - relationships:
+              to: ref('commune')
+              field: code
+  - name: stock_population_departements
+    columns:
+      - name: departement
+        data_tests:
+          - not_null
+          - unique
+          - has_all_departements
+          - relationships:
+              to: ref('departement')
+              field: code
+  - name: stock_population_regions
+    columns:
+      - name: region
+        data_tests:
+          - not_null
+          - unique
+          - has_all_regions
+          - relationships:
+              to: ref('region')
+              field: code
+  - name: stock_population_epcis
+    columns:
+      - name: epci
+        data_tests:
+          - not_null
+          - unique
+          - has_all_epcis
+          - relationships:
+              to: ref('epci')
+              field: code
+  - name: stock_population_scots
+    columns:
+      - name: scot
+        data_tests:
+          - not_null
+          - unique
+          - has_all_scots
+          - relationships:
+              to: ref('scot')
+              field: id_scot
 
 sources:
   - name: public
