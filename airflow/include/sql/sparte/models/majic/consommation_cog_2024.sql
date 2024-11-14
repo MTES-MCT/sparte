@@ -143,9 +143,19 @@ select
                     conso_{{ first_year }}_{{ next_year }}{{ type_conso_suffix }}
                     {% if not loop.last -%} + {% endif %}
                 {% endfor %}
-            ) as conso_{{ start_year }}_{{ end_year + 1 }}{{ type_conso_suffix }}
+            ) as conso_{{ start_year }}_{{ end_year + 1 }}{{ type_conso_suffix }},
+            (
+                {% for first_year in range(start_year, end_year + 1) -%}
+                    {% set next_year = first_year + 1 -%}
+                    conso_{{ first_year }}_{{ next_year }}{{ type_conso_suffix }}
+                    {% if not loop.last -%} + {% endif %}
+                {% endfor %}
+            ) * 100 / commune.surface as conso_{{ start_year }}_{{ end_year + 1 }}{{ type_conso_suffix }}_percent
         {% endcall %}
         {% if not loop.last -%}, {% endif %}
     {% endfor %}
 from
     together
+LEFT JOIN
+    {{ ref('commune') }} as commune
+    ON commune.code = together.commune_code
