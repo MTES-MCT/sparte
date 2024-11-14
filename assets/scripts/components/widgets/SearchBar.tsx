@@ -1,5 +1,4 @@
 import React, { useEffect, ChangeEvent, useState } from 'react';
-import { useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import { useSearchTerritoryQuery } from '@services/api';
 import useDebounce from '@hooks/useDebounce';
@@ -8,6 +7,7 @@ import Loader from '@components/ui/Loader';
 
 interface SearchBarProps {
     createUrl: string;
+    origin?: string;
 }
 
 export interface Territory {
@@ -122,7 +122,7 @@ const NoResultsMessage = styled.div`
     text-align: center;
 `;
 
-const SearchBar: React.FC<SearchBarProps> = ({ createUrl }) => {
+const SearchBar: React.FC<SearchBarProps> = ({ createUrl, origin }) => {
     const [query, setQuery] = useState<string>('');
     const [isFocused, setIsFocused] = useState<boolean>(false);
     const [data, setData] = useState<Territory[] | undefined>(undefined);
@@ -133,7 +133,6 @@ const SearchBar: React.FC<SearchBarProps> = ({ createUrl }) => {
     const { data: queryData, isFetching } = useSearchTerritoryQuery(debouncedQuery, {
         skip: shouldQueryBeSkipped,
     });
-    const location = useLocation();
 
     useEffect(() => {
         if (shouldQueryBeSkipped || isFetching) {
@@ -162,13 +161,13 @@ const SearchBar: React.FC<SearchBarProps> = ({ createUrl }) => {
     
         setIsSubmitting(true);
 
-        if (location.pathname === "/" && window.trackEvent) {
+        if (origin === "home" && window.trackEvent) {
             window.trackEvent(
                 'north_star_activation_funnel',
                 'search_territory',
                 'step_1_north_star_activation_funnel'
             );
-        } else if (location.pathname === "/rapport-local" && window.trackEvent) {
+        } else if (origin === "rapport-local" && window.trackEvent) {
             window.trackEvent(
                 'local_report_download_funnel',
                 'search_territory',
