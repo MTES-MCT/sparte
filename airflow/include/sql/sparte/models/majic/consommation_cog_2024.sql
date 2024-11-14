@@ -129,42 +129,32 @@ together as (
     select *, 'MISSING_FROM_SOURCE' as correction_status from missing_from_source
 )
 select
-    *,
-    (
-        conso_2011_2012 +
-        conso_2012_2013 +
-        conso_2013_2014 +
-        conso_2014_2015 +
-        conso_2015_2016 +
-        conso_2016_2017 +
-        conso_2017_2018 +
-        conso_2018_2019 +
-        conso_2019_2020 +
-        conso_2020_2021
-    ) as conso_2011_2021,
-    (
-        conso_2011_2012_activite +
-        conso_2012_2013_activite +
-        conso_2013_2014_activite +
-        conso_2014_2015_activite +
-        conso_2015_2016_activite +
-        conso_2016_2017_activite +
-        conso_2017_2018_activite +
-        conso_2018_2019_activite +
-        conso_2019_2020_activite +
-        conso_2020_2021_activite
-    ) as conso_2011_2021_activite,
-    (
-        conso_2011_2012_habitat +
-        conso_2012_2013_habitat +
-        conso_2013_2014_habitat +
-        conso_2014_2015_habitat +
-        conso_2015_2016_habitat +
-        conso_2016_2017_habitat +
-        conso_2017_2018_habitat +
-        conso_2018_2019_habitat +
-        conso_2019_2020_habitat +
-        conso_2020_2021_habitat
-    )  as conso_2011_2021_habitat
+    commune_code,
+    correction_status,
+    {% set last_available_year = 2022 %}
+    {% set first_available_year = 2009 %}
+    {% set type_conso_suffixes = ["", "_activite", "_habitat"] %}
+    {% set ns = namespace(continued=false) %}
+    {% for type_conso_suffix in type_conso_suffixes %}
+        {% for start_year in range(2009, last_available_year + 1) %}
+            {% for end_year in range(2009, last_available_year + 1) -%}
+                {% if start_year > end_year -%}
+                    {% set ns.continued = true %}
+                    {% continue %}
+                {% else %}
+                    {% set ns.continued = false %}
+                {% endif %}
+                (
+                    {% for first_year in range(start_year, end_year + 1) -%}
+                        {% set next_year = first_year + 1 -%}
+                        conso_{{ first_year }}_{{ next_year }}{{ type_conso_suffix }}
+                        {% if not loop.last -%} + {% endif %}
+                    {% endfor %}
+                ) as conso_{{ start_year }}_{{ end_year + 1 }}{{ type_conso_suffix }}
+                {% if not loop.last and not ns.continued -%}, {% endif %}
+            {% endfor %} {% if not loop.last and not ns.continued -%}, {% endif %}
+        {% endfor %}
+        {% if not loop.last -%}, {% endif %}
+    {% endfor %}
 from
     together

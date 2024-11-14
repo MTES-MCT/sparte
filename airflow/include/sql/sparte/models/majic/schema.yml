@@ -29,7 +29,26 @@ models:
       - relationships:
           to: ref('commune')
           field: code
-
+  - name: consommation_departement
+    columns:
+    - name: code_departement
+      data_tests:
+      - not_null
+      - unique
+      - has_all_departements
+      - relationships:
+          to: ref('departement')
+          field: code
+  - name: consommation_epci
+    columns:
+    - name: code_epci
+      data_tests:
+      - not_null
+      - unique
+      - has_all_epcis
+      - relationships:
+          to: ref('epci')
+          field: code
 sources:
   - name: public
     tables:
