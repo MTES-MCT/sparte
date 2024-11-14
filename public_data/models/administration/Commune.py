@@ -118,13 +118,6 @@ class Commune(DataColorationMixin, LandMixin, GetDataFromCeremaMixin, models.Mod
         qs = qs.filter(similarity__gt=0.2)  # Filtrer par un score minimum de similarité
         qs = qs.order_by("-similarity")  # Trier par score décroissant
 
-        if region:
-            qs = qs.filter(departement__region=region)
-        if departement:
-            qs = qs.filter(departement=departement)
-        if epci:
-            qs = qs.filter(epci=epci)
-
         return qs
 
     @classmethod

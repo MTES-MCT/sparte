@@ -73,13 +73,6 @@ class Epci(LandMixin, GetDataFromCeremaMixin, models.Model):
         qs = qs.filter(similarity__gt=0.15)  # Filtrer par un score minimum de similarité
         qs = qs.order_by("-similarity")  # Trier par score décroissant
 
-        if region:
-            qs = qs.filter(departements__region=region)
-        if departement:
-            qs = qs.filter(departements__id=departement.id)
-        if epci:
-            qs = qs.filter(id=epci.id)
-
         qs = qs.distinct().order_by("-similarity")
 
         return qs
