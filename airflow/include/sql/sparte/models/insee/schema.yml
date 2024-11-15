@@ -38,8 +38,109 @@ models:
       - name: type_commune_apres
         data_tests:
           - accepted_values: *type_commune
+  - name: population_cog_2024
+    columns:
+      - name: code_commune
+        data_tests:
+          - not_null
+          - unique
+          - has_all_communes
+          - relationships:
+              to: ref('commune')
+              field: code
+  - name: flux_population_departements
+    columns:
+      - name: departement
+        data_tests:
+          - not_null
+          - unique
+          - has_all_departements
+          - relationships:
+              to: ref('departement')
+              field: code
+  - name: flux_population_regions
+    columns:
+      - name: region
+        data_tests:
+          - not_null
+          - unique
+          - has_all_regions
+          - relationships:
+              to: ref('region')
+              field: code
+  - name: flux_population_scots
+    columns:
+      - name: scot
+        data_tests:
+          - not_null
+          - unique
+          - has_all_scots
+          - relationships:
+              to: ref('scot')
+              field: id_scot
+  - name: flux_population_epcis
+    columns:
+      - name: epci
+        data_tests:
+          - not_null
+          - unique
+          - has_all_epcis
+          - relationships:
+              to: ref('epci')
+              field: code
+  - name: flux_population
+    columns:
+      - name: code_commune
+        data_tests:
+          - not_null
+          - unique
+          - has_all_communes
+          - relationships:
+              to: ref('commune')
+              field: code
+  - name: stock_population_departements
+    columns:
+      - name: departement
+        data_tests:
+          - not_null
+          - unique
+          - has_all_departements
+          - relationships:
+              to: ref('departement')
+              field: code
+  - name: stock_population_regions
+    columns:
+      - name: region
+        data_tests:
+          - not_null
+          - unique
+          - has_all_regions
+          - relationships:
+              to: ref('region')
+              field: code
+  - name: stock_population_epcis
+    columns:
+      - name: epci
+        data_tests:
+          - not_null
+          - unique
+          - has_all_epcis
+          - relationships:
+              to: ref('epci')
+              field: code
+  - name: stock_population_scots
+    columns:
+      - name: scot
+        data_tests:
+          - not_null
+          - unique
+          - has_all_scots
+          - relationships:
+              to: ref('scot')
+              field: id_scot
 
 sources:
   - name: public
     tables:
     - name: insee_cog_changes_2024
+    - name: insee_population
