@@ -49,6 +49,7 @@ __all__ = [
     "ImperNetteProgression",
     "ImperNetteProgressionExport",
     "PopConsoRatesChart",
+    "PopDensityChart",
 ]
 
 from .AnnualArtifChart import AnnualArtifChart
@@ -116,6 +117,7 @@ from .NetArtifComparaisonChart import (
 )
 from .ObjectiveChart import ObjectiveChart, ObjectiveChartExport
 from .population.PopConsoRatesChart import PopConsoRatesChart
+from .population.PopDensityChart import PopDensityChart
 from .SurfaceChart import SurfaceChart, SurfaceChartExport
 from .UsageChangeWheelChart import UsageChangeWheelChart
 from .UsagePieChart import UsagePieChart, UsagePieChartExport

@@ -118,6 +118,7 @@ class ProjectReportConsoView(ProjectReportBaseView):
             )
         )
         pop_conso_rates_chart = charts.PopConsoRatesChart(project)
+        pop_density_chart = charts.PopDensityChart(project)
 
         kwargs.update(
             {
@@ -133,6 +134,7 @@ class ProjectReportConsoView(ProjectReportBaseView):
                 "surface_chart": surface_chart,
                 "surface_proportional_chart": surface_proportional_chart,
                 "pop_conso_rates_chart": pop_conso_rates_chart,
+                "pop_density_chart": pop_density_chart,
                 # data tables
                 "annual_conso_data_table": annual_conso_data_table,
                 "data_determinant": add_total_line_column(det_chart.get_series()),
