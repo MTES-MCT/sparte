@@ -107,7 +107,6 @@ class ProjectReportConsoView(ProjectReportBaseView):
         comparison_chart = charts.AnnualConsoComparisonChart(project)
 
         # surface
-        surface_chart = charts.SurfaceChart(self.object)
         surface_proportional_chart = charts.AnnualConsoProportionalComparisonChart(self.object)
 
         surface_proportional_table = ConsoProportionalComparisonTableMapper.map(
@@ -135,7 +134,6 @@ class ProjectReportConsoView(ProjectReportBaseView):
                 "determinant_pie_chart": det_pie_chart,
                 "comparison_chart": comparison_chart,
                 "annual_total_conso_chart": annual_total_conso_chart,
-                "surface_chart": surface_chart,
                 "surface_proportional_chart": surface_proportional_chart,
                 "pop_conso_rates_chart": pop_conso_rates_chart,
                 "pop_density_chart": pop_density_chart,
@@ -151,7 +149,6 @@ class ProjectReportConsoView(ProjectReportBaseView):
                         end_date=int(project.analyse_end_date),
                     )
                 ),
-                "surface_data_table": surface_chart.get_series(),
                 "surface_proportional_data_table": surface_proportional_table,
             }
         )
