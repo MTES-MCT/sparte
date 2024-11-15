@@ -117,9 +117,12 @@ class ProjectReportConsoView(ProjectReportBaseView):
                 end_date=int(project.analyse_end_date),
             )
         )
+
+        # INSEE
         pop_conso_rates_chart = charts.PopConsoRatesChart(project)
         pop_density_chart = charts.PopDensityChart(project)
         pop_conso_progression_chart = charts.PopConsoProgressionChart(project)
+        pop_conso_comparison_chart = charts.PopConsoComparisonChart(project)
 
         kwargs.update(
             {
@@ -137,6 +140,7 @@ class ProjectReportConsoView(ProjectReportBaseView):
                 "pop_conso_rates_chart": pop_conso_rates_chart,
                 "pop_density_chart": pop_density_chart,
                 "pop_conso_progression_chart": pop_conso_progression_chart,
+                "pop_conso_comparison_chart": pop_conso_comparison_chart,
                 # data tables
                 "annual_conso_data_table": annual_conso_data_table,
                 "data_determinant": add_total_line_column(det_chart.get_series()),
