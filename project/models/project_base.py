@@ -196,8 +196,10 @@ class Project(BaseProject):
         blank=True,
         null=True,
     )
-    target_2031 = models.IntegerField(
+    target_2031 = models.DecimalField(
         "Objectif de réduction à 2031 (en %)",
+        max_digits=4,
+        decimal_places=1,
         validators=[MinValueValidator(0), MaxValueValidator(100)],
         default=50,
         help_text=(
