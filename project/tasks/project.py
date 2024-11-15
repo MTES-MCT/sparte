@@ -417,7 +417,7 @@ def send_word_diagnostic(self, request_id) -> None:
         diagnostic_name = {
             RequestedDocumentChoices.RAPPORT_COMPLET: req.project.name,
             RequestedDocumentChoices.RAPPORT_LOCAL: req.project.land.name,
-            RequestedDocumentChoices.RAPPORT_CONSO: req.project.land.name,
+            RequestedDocumentChoices.RAPPORT_CONSO: req.project.name,
         }[req.requested_document]
 
         email = SibTemplateEmail(
