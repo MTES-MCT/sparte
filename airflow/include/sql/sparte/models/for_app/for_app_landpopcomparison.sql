@@ -24,6 +24,14 @@ FROM
     {{ ref('pop_epci_stats_commune') }} as epci_stats_commune
 UNION
 SELECT
+    '{{ var('COMMUNE') }}' as relevance_level,
+    '{{ var('NATION') }}' as land_type,
+    '{{ var('NATION') }}' as land_id,
+    {{ fields_to_query }}
+FROM
+    {{ ref('pop_national_stats_commune') }} as national_stats_commune
+UNION
+SELECT
     '{{ var('DEPARTEMENT') }}' as relevance_level,
     '{{ var('REGION') }}' as land_type,
     region_stats_departement.region as land_id,
