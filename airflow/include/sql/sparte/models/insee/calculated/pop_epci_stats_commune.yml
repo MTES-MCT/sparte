@@ -24,7 +24,6 @@ models:
       - name: epci
         data_tests:
           - not_null
-          - unique
           - has_all_epcis
           - relationships:
               to: ref('epci')

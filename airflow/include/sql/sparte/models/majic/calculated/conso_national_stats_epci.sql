@@ -1,7 +1,6 @@
 {{ config(materialized='table') }}
 
 SELECT
-
     from_year,
     to_year,
     {{ sum_percent_median_avg('total', 'epci.surface') }},

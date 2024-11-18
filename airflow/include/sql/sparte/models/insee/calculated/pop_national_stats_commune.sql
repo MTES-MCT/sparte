@@ -1,7 +1,6 @@
 {{ config(materialized='table') }}
 
 SELECT
-    epci,
     from_year,
     to_year,
     {{ sum_percent_median_avg('evolution', 'start_population') }}
@@ -10,9 +9,6 @@ FROM
 LEFT JOIN
     {{ ref('commune') }} as commune
     ON commune.code = pop.code_commune
-WHERE
-    commune.epci IS NOT NULL
 GROUP BY
-    commune.epci,
     from_year,
     to_year
