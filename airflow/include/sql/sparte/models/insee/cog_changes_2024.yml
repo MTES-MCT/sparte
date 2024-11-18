@@ -1,0 +1,40 @@
+
+version: 2
+
+type_de_changement: &type_de_changement
+  values : [
+    10, # Changement de nom
+    20, # Création
+    21, # Rétablissement
+    30, # Suppression
+    31, # Fusion simple
+    32, # Création de commune nouvelle
+    33, # Fusion association
+    34, # Transformation de fusion association en fusion simple
+    35, # Suppression de commune déléguée
+    41, # Changement de code dû à un changement de département
+    50, # Changement de code dû à un transfert de chef-lieu
+    70, # Transformation de commune associée en commune déléguée
+    71  # 71 is not in the official list but is present in the data
+  ]
+
+type_commune: &type_commune
+  values : [
+    "COM", # Commune
+    "COMA", # Commune associée
+    "COMD", # Commune déléguée
+    "ARM" # Arrondissement municipal
+  ]
+
+models:
+  - name: cog_changes_2024
+    columns:
+      - name: type_de_changement
+        data_tests:
+          - accepted_values: *type_de_changement
+      - name: type_commune_avant
+        data_tests:
+          - accepted_values: *type_commune
+      - name: type_commune_apres
+        data_tests:
+          - accepted_values: *type_commune

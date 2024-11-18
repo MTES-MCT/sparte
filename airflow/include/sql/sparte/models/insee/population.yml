@@ -1,0 +1,27 @@
+version: 2
+
+models:
+  - name: population
+    columns:
+      - name: code_commune
+        data_tests:
+          - not_null
+          - unique
+      - name: population_2021
+        data_tests:
+          - not_null
+      - name: population_2020
+        data_tests:
+          - not_null
+      - name: population_2019
+        data_tests:
+          - not_null
+      - name: population_2018
+        data_tests:
+          - not_null
+      - name: population_2017
+        data_tests:
+          - not_null
+      - name: population_2016
+        data_tests:
+          - not_null

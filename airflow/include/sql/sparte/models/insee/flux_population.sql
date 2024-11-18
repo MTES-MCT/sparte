@@ -4,50 +4,54 @@
         indexes=[{'columns': ['code_commune'], 'type': 'btree'}]
     )
 }}
-with flux as (
+with known_years as (
+    {% for year in range(2009, 2021) %}
+        {% set next_year = year + 1 %}
+        SELECT
+            code_commune,
+            {{ year }} as year,
+            (population_{{ next_year }} - population_{{ year }}) as evolution,
+            population_{{ year }} as population,
+            'INSEE' as source
+        FROM
+            {{ ref('population_cog_2024') }}
+        {% if not loop.last %}
+            UNION
+        {% endif %}
+    {% endfor %}
+), average_evolution as (
     SELECT
-        *, -- keep stock columns
-        (population_2010 - population_2009) as population_2009_2010,
-        (population_2011 - population_2010) as population_2010_2011,
-        (population_2012 - population_2011) as population_2011_2012,
-        (population_2013 - population_2012) as population_2012_2013,
-        (population_2014 - population_2013) as population_2013_2014,
-        (population_2015 - population_2014) as population_2014_2015,
-        (population_2016 - population_2015) as population_2015_2016,
-        (population_2017 - population_2016) as population_2016_2017,
-        (population_2018 - population_2017) as population_2017_2018,
-        (population_2019 - population_2018) as population_2018_2019,
-        (population_2020 - population_2019) as population_2019_2020,
-        (population_2021 - population_2020) as population_2020_2021
+        code_commune,
+        AVG(evolution) as average_evolution
     FROM
-        {{ ref('population_cog_2024') }}
+        known_years
+    GROUP BY
+        code_commune
+), predictions as (
+    {% set first_unknown_year = 2021 %}
+    {% for year in range(first_unknown_year, 2023) %}
+        {% set next_year = year + 1 %}
+            SELECT
+                code_commune,
+                {{ year }} as year,
+                (
+                    SELECT  round(average_evolution)::numeric
+                    FROM    average_evolution
+                    WHERE   code_commune = pop.code_commune
+                ) as evolution,
+                population_{{ first_unknown_year }} + (
+                    SELECT  round(average_evolution)::numeric
+                    FROM    average_evolution
+                    WHERE   code_commune = pop.code_commune
+                ) * ({{ year }} - 2020) as population,
+                'PROJECTION' as source
+            FROM
+                {{ ref('population_cog_2024') }} as pop
+            {% if not loop.last %}
+                UNION
+            {% endif %}
+    {% endfor %}
 )
-SELECT
-    code_commune,
-    population_2009,
-    population_2010,
-    population_2011,
-    population_2012,
-    population_2013,
-    population_2014,
-    population_2015,
-    population_2016,
-    population_2017,
-    population_2018,
-    population_2019,
-    population_2020,
-    population_2021,
-    {% call(start_year, end_year) cumulative_flux(
-        first_available_year=2009,
-        last_available_year=2020
-    ) %}
-        (
-        {% for first_year in range(start_year, end_year + 1) -%}
-            {% set next_year = first_year + 1 -%}
-            population_{{ first_year }}_{{ next_year }}
-            {% if not loop.last -%} + {% endif %}
-        {% endfor %}
-        ) as population_{{ start_year }}_{{ end_year + 1 }}
-    {% endcall %}
-FROM
-    flux
+SELECT * FROM known_years
+UNION
+SELECT * FROM predictions

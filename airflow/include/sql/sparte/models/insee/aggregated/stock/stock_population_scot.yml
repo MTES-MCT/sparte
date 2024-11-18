@@ -1,0 +1,13 @@
+version: 2
+
+models:
+  - name: stock_population_scot
+    columns:
+      - name: scot
+        data_tests:
+          - not_null
+          - unique
+          - has_all_scots
+          - relationships:
+              to: ref('scot')
+              field: id_scot

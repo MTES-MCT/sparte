@@ -129,33 +129,27 @@ together as (
     select *, 'MISSING_FROM_SOURCE' as correction_status from missing_from_source
 )
 select
-    commune_code,
-    correction_status,
-    {% set type_conso_suffixes = ["", "_activite", "_habitat"] %}
-    {% for type_conso_suffix in type_conso_suffixes %}
-        {% call(start_year, end_year) cumulative_flux(
-            first_available_year=2009,
-            last_available_year=2022
-        ) %}
-            (
-                {% for first_year in range(start_year, end_year + 1) -%}
-                    {% set next_year = first_year + 1 -%}
-                    conso_{{ first_year }}_{{ next_year }}{{ type_conso_suffix }}
-                    {% if not loop.last -%} + {% endif %}
-                {% endfor %}
-            ) as conso_{{ start_year }}_{{ end_year + 1 }}{{ type_conso_suffix }},
-            (
-                {% for first_year in range(start_year, end_year + 1) -%}
-                    {% set next_year = first_year + 1 -%}
-                    conso_{{ first_year }}_{{ next_year }}{{ type_conso_suffix }}
-                    {% if not loop.last -%} + {% endif %}
-                {% endfor %}
-            ) * 100 / commune.surface as conso_{{ start_year }}_{{ end_year + 1 }}{{ type_conso_suffix }}_percent
-        {% endcall %}
-        {% if not loop.last -%}, {% endif %}
-    {% endfor %}
+    *,
+    (
+        {%- for year in range(2011, 2022) %} conso_{{ year }} {% if not loop.last %} + {% endif %}{%- endfor %}
+    ) as conso_2011_2021,
+    (
+        {%- for year in range(2011, 2022) %} conso_{{ year }}_inconnu {% if not loop.last %} + {% endif %}{%- endfor %}
+    ) as conso_2011_2021_inconnu,
+    (
+        {%- for year in range(2011, 2022) %} conso_{{ year }}_ferroviaire {% if not loop.last %} + {% endif %}{%- endfor %}
+    ) as conso_2011_2021_ferroviaire,
+    (
+        {%- for year in range(2011, 2022) %} conso_{{ year }}_route {% if not loop.last %} + {% endif %}{%- endfor %}
+    ) as conso_2011_2021_route,
+    (
+        {%- for year in range(2011, 2022) %} conso_{{ year }}_mixte {% if not loop.last %} + {% endif %}{%- endfor %}
+    ) as conso_2011_2021_mixte,
+    (
+        {%- for year in range(2011, 2022) %} conso_{{ year }}_activite {% if not loop.last %} + {% endif %}{%- endfor %}
+    ) as conso_2011_2021_activite,
+    (
+        {%- for year in range(2011, 2022) %} conso_{{ year }}_habitat {% if not loop.last %} + {% endif %}{%- endfor %}
+    ) as conso_2011_2021_habitat
 from
     together
-LEFT JOIN
-    {{ ref('commune') }} as commune
-    ON commune.code = together.commune_code

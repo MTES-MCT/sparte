@@ -7,21 +7,17 @@
 {% endif %}
 SELECT
     {{ group_by_column}} as {{ code_name }},
-    {% set type_conso_suffixes = ["", "_activite", "_habitat"] %}
-    {% for type_conso_suffix in type_conso_suffixes %}
-        {% call(start_year, end_year) cumulative_flux(
-            first_available_year=2009,
-            last_available_year=2022
-        ) %}
-            sum(conso_{{ start_year }}_{{ end_year + 1 }}{{ type_conso_suffix }})
-            as conso_{{ start_year }}_{{ end_year + 1 }}{{ type_conso_suffix }},
-            sum(conso_{{ start_year }}_{{ end_year + 1 }}{{ type_conso_suffix }}) * 100 / sum(commune.surface)
-            as conso_{{ start_year }}_{{ end_year + 1 }}{{ type_conso_suffix }}_percent
-        {% endcall %}
-        {% if not loop.last -%}, {% endif %}
-    {% endfor %}
+    from_year,
+    to_year,
+    {{ sum_percent_median_avg('total', 'commune.surface') }},
+    {{ sum_percent_median_avg('activite', 'commune.surface') }},
+    {{ sum_percent_median_avg('habitat', 'commune.surface') }},
+    {{ sum_percent_median_avg('mixte', 'commune.surface') }},
+    {{ sum_percent_median_avg('route', 'commune.surface') }},
+    {{ sum_percent_median_avg('ferroviaire', 'commune.surface') }},
+    {{ sum_percent_median_avg('inconnu', 'commune.surface') }}
 FROM
-    {{ ref('consommation_cog_2024') }} as consommation
+    {{ ref('consommation_commune') }} as consommation
 LEFT JOIN
     {{ ref('commune') }} as commune
     ON commune.code = consommation.commune_code
@@ -33,5 +29,7 @@ LEFT JOIN
 WHERE
     {{ group_by_column }} IS NOT NULL
 GROUP BY
-    {{ group_by_column }}
+    {{ group_by_column }},
+    from_year,
+    to_year
 {% endmacro %}

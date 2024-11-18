@@ -4,7 +4,7 @@ with validation_errors as (
 
     SELECT code from {{ ref('region') }}
     WHERE code NOT IN (
-    select {{ column_name }}
+    select distinct {{ column_name }}
     from {{ model }}
 
     )
