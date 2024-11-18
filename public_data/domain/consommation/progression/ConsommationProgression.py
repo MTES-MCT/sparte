@@ -20,7 +20,6 @@ class AnnualConsommation:
 class ConsommationProgressionAggregation:
     start_date: int
     end_date: int
-    communes_code_insee: list[str]
     consommation: list[AnnualConsommation]
 
 
