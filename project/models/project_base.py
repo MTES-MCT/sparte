@@ -721,17 +721,6 @@ class Project(BaseProject):
         """
         return self.get_land_conso_per_year("city_name", group_name=group_name)
 
-    def get_look_a_like_conso_per_year(self):
-        """Return same data as get_conso_per_year but for land listed in
-        look_a_like property"""
-        return {
-            land.name: land.get_conso_per_year(
-                self.analyse_start_date,
-                self.analyse_end_date,
-            )
-            for land in self.get_look_a_like()
-        }
-
     def get_look_a_like_pop_change_per_year(
         self,
         criteria: Literal["pop", "household"] = "pop",
