@@ -417,27 +417,17 @@ class Project(BaseProject):
 
     @property
     def area(self) -> float:
-        """
-        The area of the combined emprise of the project in hectare.
-        As this value should not change after the creation of a project,
-        we cache it for an arbitrary long time.
-        """
         cache_key = f"project/{self.id}/area"
 
         if cache.has_key(cache_key):
             return cache.get(cache_key)
 
-        total_area = 0
-
-        for emprise in self.emprise_set.all():
-            total_area += emprise.mpoly.transform(emprise.srid_source, clone=True).area
-
-        total_area /= 10000
+        area = self.land.area
 
         ONE_MONTH = 60 * 60 * 24 * 30
-        cache.set(key=cache_key, value=total_area, timeout=ONE_MONTH)
+        cache.set(key=cache_key, value=area, timeout=ONE_MONTH)
 
-        return total_area
+        return area
 
     @cached_property
     def __related_departements(self):
@@ -1040,7 +1030,7 @@ class Project(BaseProject):
             .annotate(surface=Sum("surface"))
         )
 
-    @property
+    @cached_property
     def land(self) -> Commune | Departement | Epci | Region | Scot:
         return Land(self.get_public_key()).land
 
