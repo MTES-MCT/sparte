@@ -19,5 +19,4 @@ class PublicDataContainer(containers.DeclarativeContainer):
 
     consommation_progression_service = providers.Factory(
         ConsommationProgressionService,
-        class_cacher=class_cacher,
     )

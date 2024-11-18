@@ -131,40 +131,25 @@ together as (
 select
     *,
     (
-        conso_2011_2012 +
-        conso_2012_2013 +
-        conso_2013_2014 +
-        conso_2014_2015 +
-        conso_2015_2016 +
-        conso_2016_2017 +
-        conso_2017_2018 +
-        conso_2018_2019 +
-        conso_2019_2020 +
-        conso_2020_2021
+        {%- for year in range(2011, 2022) %} conso_{{ year }} {% if not loop.last %} + {% endif %}{%- endfor %}
     ) as conso_2011_2021,
     (
-        conso_2011_2012_activite +
-        conso_2012_2013_activite +
-        conso_2013_2014_activite +
-        conso_2014_2015_activite +
-        conso_2015_2016_activite +
-        conso_2016_2017_activite +
-        conso_2017_2018_activite +
-        conso_2018_2019_activite +
-        conso_2019_2020_activite +
-        conso_2020_2021_activite
+        {%- for year in range(2011, 2022) %} conso_{{ year }}_inconnu {% if not loop.last %} + {% endif %}{%- endfor %}
+    ) as conso_2011_2021_inconnu,
+    (
+        {%- for year in range(2011, 2022) %} conso_{{ year }}_ferroviaire {% if not loop.last %} + {% endif %}{%- endfor %}
+    ) as conso_2011_2021_ferroviaire,
+    (
+        {%- for year in range(2011, 2022) %} conso_{{ year }}_route {% if not loop.last %} + {% endif %}{%- endfor %}
+    ) as conso_2011_2021_route,
+    (
+        {%- for year in range(2011, 2022) %} conso_{{ year }}_mixte {% if not loop.last %} + {% endif %}{%- endfor %}
+    ) as conso_2011_2021_mixte,
+    (
+        {%- for year in range(2011, 2022) %} conso_{{ year }}_activite {% if not loop.last %} + {% endif %}{%- endfor %}
     ) as conso_2011_2021_activite,
     (
-        conso_2011_2012_habitat +
-        conso_2012_2013_habitat +
-        conso_2013_2014_habitat +
-        conso_2014_2015_habitat +
-        conso_2015_2016_habitat +
-        conso_2016_2017_habitat +
-        conso_2017_2018_habitat +
-        conso_2018_2019_habitat +
-        conso_2019_2020_habitat +
-        conso_2020_2021_habitat
-    )  as conso_2011_2021_habitat
+        {%- for year in range(2011, 2022) %} conso_{{ year }}_habitat {% if not loop.last %} + {% endif %}{%- endfor %}
+    ) as conso_2011_2021_habitat
 from
     together

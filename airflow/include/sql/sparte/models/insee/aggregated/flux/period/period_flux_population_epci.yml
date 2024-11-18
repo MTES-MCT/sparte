@@ -1,0 +1,11 @@
+version: 2
+models:
+  - name: period_flux_population_epci
+    columns:
+      - name: epci
+        data_tests:
+          - not_null
+          - has_all_epcis
+          - relationships:
+              to: ref('epci')
+              field: code

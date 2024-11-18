@@ -13,6 +13,16 @@ clean-targets:
   - "target"
   - "dbt_packages"
 
+vars:
+  sparte:
+    for_app:
+    REGION: "REGION"
+    DEPARTEMENT: "DEPART"
+    SCOT: "SCOT"
+    EPCI: "EPCI"
+    COMMUNE: "COMM"
+    COMPOSITE: "COMP"
+    NATION: "NATION"
 
 models:
   sparte:

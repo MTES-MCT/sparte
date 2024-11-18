@@ -4,7 +4,7 @@ with validation_errors as (
 
     SELECT id_scot from {{ ref('scot') }}
     WHERE id_scot NOT IN (
-    select {{ column_name }}
+    select distinct {{ column_name }}
     from {{ model }}
     )
 )

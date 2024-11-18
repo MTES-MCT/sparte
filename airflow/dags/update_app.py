@@ -106,6 +106,12 @@ def copy_table_from_dw_to_app(
                 "copy_public_data_scot_departements",
                 "copy_public_data_scot_regions",
                 "copy_public_data_cerema",
+                "copy_public_data_landconso",
+                "copy_public_data_landconsocomparison",
+                "copy_public_data_landconsostats",
+                "copy_public_data_landpop",
+                "copy_public_data_landpopcomparison",
+                "copy_public_data_landpopstats",
             ],
             type="array",
         ),
@@ -339,6 +345,72 @@ def update_app():  # noqa: C901
             ],
         )
 
+    @task.python
+    def copy_public_data_landconso(**context):
+        return copy_table_from_dw_to_app(
+            from_table="public_for_app.for_app_landconso",
+            to_table="public.public_data_landconso",
+            environment=context["params"]["environment"],
+            btree_index_columns=[
+                ["land_id", "land_type", "year"],
+            ],
+        )
+
+    @task.python
+    def copy_public_data_landconsocomparison(**context):
+        return copy_table_from_dw_to_app(
+            from_table="public_for_app.for_app_landconsocomparison",
+            to_table="public.public_data_landconsocomparison",
+            environment=context["params"]["environment"],
+            btree_index_columns=[
+                ["land_id", "land_type", "from_year", "to_year"],
+            ],
+        )
+
+    @task.python
+    def copy_public_data_landconsostats(**context):
+        return copy_table_from_dw_to_app(
+            from_table="public_for_app.for_app_landconsostats",
+            to_table="public.public_data_landconsostats",
+            environment=context["params"]["environment"],
+            btree_index_columns=[
+                ["land_id", "land_type", "from_year", "to_year"],
+            ],
+        )
+
+    @task.python
+    def copy_public_data_landpop(**context):
+        return copy_table_from_dw_to_app(
+            from_table="public_for_app.for_app_landpop",
+            to_table="public.public_data_landpop",
+            environment=context["params"]["environment"],
+            btree_index_columns=[
+                ["land_id", "land_type", "year"],
+            ],
+        )
+
+    @task.python
+    def copy_public_data_landpopcomparison(**context):
+        return copy_table_from_dw_to_app(
+            from_table="public_for_app.for_app_landpopcomparison",
+            to_table="public.public_data_landpopcomparison",
+            environment=context["params"]["environment"],
+            btree_index_columns=[
+                ["land_id", "land_type", "from_year", "to_year"],
+            ],
+        )
+
+    @task.python
+    def copy_public_data_landpopstats(**context):
+        return copy_table_from_dw_to_app(
+            from_table="public_for_app.for_app_landpopstats",
+            to_table="public.public_data_landpopstats",
+            environment=context["params"]["environment"],
+            btree_index_columns=[
+                ["land_id", "land_type", "from_year", "to_year"],
+            ],
+        )
+
     @task.branch
     def copy_public_data_branch(**context):
         return context["params"]["tasks"]
@@ -361,6 +433,12 @@ def update_app():  # noqa: C901
         copy_public_data_scot_departements(),
         copy_public_data_scot_regions(),
         copy_public_data_cerema(),
+        copy_public_data_landconso(),
+        copy_public_data_landconsocomparison(),
+        copy_public_data_landconsostats(),
+        copy_public_data_landpop(),
+        copy_public_data_landpopcomparison(),
+        copy_public_data_landpopstats(),
     ]
 
 

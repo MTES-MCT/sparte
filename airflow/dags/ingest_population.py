@@ -4,6 +4,8 @@ from urllib.request import URLopener
 import pandas as pd
 from airflow.decorators import dag, task
 from include.container import Container
+from include.pools import DBT_POOL
+from include.utils import get_dbt_command_from_directory
 from pendulum import datetime
 
 URL = "https://www.insee.fr/fr/statistiques/fichier/3698339/base-pop-historiques-1876-2021.xlsx"
@@ -42,8 +44,14 @@ def ingest_population():
         os.remove(tmp_localpath)
         return row_count
 
+    @task.bash(pool=DBT_POOL)
+    def dbt_build() -> str:
+        return get_dbt_command_from_directory(cmd="dbt build -s +insee+")
+
     path_on_bucket = download()
-    ingest(path_on_bucket)
+    ingest_task = ingest(path_on_bucket)
+
+    path_on_bucket >> ingest_task >> dbt_build()
 
 
 ingest_population()

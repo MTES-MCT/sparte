@@ -6,21 +6,16 @@
     {% set code_name = group_by_column %}
 {% endif %}
 SELECT
-        {{ group_by_column }} as {{ code_name }},
-        {% call(start_year, end_year) cumulative_flux(
-            first_available_year=2009,
-            last_available_year=2020
-        ) %}
-            sum(population_{{ start_year }}_{{ end_year + 1 }})
-            as population_{{ start_year }}_{{ end_year + 1 }},
-            sum(population_{{ start_year }}_{{ end_year + 1 }}) * 100 /  sum(population_{{ start_year }})
-            as population_{{ start_year }}_{{ end_year + 1 }}_percent
-        {% endcall %}
+    {{ group_by_column }} as {{ code_name }},
+    from_year,
+    to_year,
+    {{ sum_percent_median_avg('evolution', 'start_population') }},
+    sum(start_population) as start_population
 FROM
-    {{ ref('flux_population') }} as flux_population
+    {{ ref('period_flux_population_commune') }} as population
 LEFT JOIN
-    {{ ref('commune') }}
-    ON commune.code = flux_population.code_commune
+    {{ ref('commune') }} as commune
+    ON commune.code = population.code_commune
 LEFT JOIN
     {{ ref('scot_communes') }} as scot_communes
     ON commune.code = scot_communes.commune_code
@@ -29,5 +24,7 @@ LEFT JOIN
 WHERE
     {{ group_by_column }} IS NOT NULL
 GROUP BY
-    {{ group_by_column }}
+    {{ group_by_column }},
+    from_year,
+    to_year
 {% endmacro %}
