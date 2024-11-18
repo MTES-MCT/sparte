@@ -34,7 +34,6 @@ models:
     - name: departement
       data_tests:
       - not_null
-      - unique
       - has_all_departements
       - relationships:
           to: ref('departement')
@@ -44,7 +43,6 @@ models:
     - name: epci
       data_tests:
       - not_null
-      - unique
       - has_all_epcis
       - relationships:
           to: ref('epci')
@@ -54,7 +52,6 @@ models:
     - name: region
       data_tests:
       - not_null
-      - unique
       - has_all_regions
       - relationships:
           to: ref('region')
@@ -64,7 +61,6 @@ models:
     - name: scot
       data_tests:
       - not_null
-      - unique
       - has_all_scots
       - relationships:
           to: ref('scot')
