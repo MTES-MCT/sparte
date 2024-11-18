@@ -417,17 +417,7 @@ class Project(BaseProject):
 
     @property
     def area(self) -> float:
-        cache_key = f"project/{self.id}/area"
-
-        if cache.has_key(cache_key):
-            return cache.get(cache_key)
-
-        area = self.land.area
-
-        ONE_MONTH = 60 * 60 * 24 * 30
-        cache.set(key=cache_key, value=area, timeout=ONE_MONTH)
-
-        return area
+        return self.land.area
 
     @cached_property
     def __related_departements(self):
