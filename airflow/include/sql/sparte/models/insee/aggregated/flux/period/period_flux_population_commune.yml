@@ -41,12 +41,6 @@ models:
       - name: evolution_percent
         data_tests:
           - not_null
-      - name: evolution_median
-        data_tests:
-          - not_null
-      - name: evolution_avg
-        data_tests:
-          - not_null
       - name: start_population
         data_tests:
           - not_null
