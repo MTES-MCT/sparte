@@ -1,13 +1,13 @@
 version: 2
 
 models:
-  - name: stock_population_region
+  - name: period_stock_population_epci
     columns:
-      - name: region
+      - name: epci
         data_tests:
           - not_null
           - unique
-          - has_all_regions
+          - has_all_epcis
           - relationships:
-              to: ref('region')
+              to: ref('epci')
               field: code

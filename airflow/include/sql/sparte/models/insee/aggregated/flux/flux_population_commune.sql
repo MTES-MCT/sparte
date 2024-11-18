@@ -1,37 +1,57 @@
-{{ config(materialized='table') }}
-
-{% for to_year in range(2010, 2023) %}
-    {% for from_year in range(2009, to_year) %}
-        {% if from_year >= to_year %}
-            {% break %}
-        {% endif %}
+{{
+    config(
+        materialized='table',
+        indexes=[{'columns': ['code_commune'], 'type': 'btree'}]
+    )
+}}
+with known_years as (
+    {% for year in range(2009, 2021) %}
+        {% set next_year = year + 1 %}
         SELECT
-            flux_population.code_commune,
-            {{ from_year }} as from_year,
-            {{ to_year }} as to_year,
-            {{ sum_percent(
-                'evolution',
-                'stock_population.population_' + from_year|string
-            ) }},
-            max(stock_population.population_{{ from_year }}) as start_population
+            code_commune,
+            {{ year }} as year,
+            (population_{{ next_year }} - population_{{ year }}) as evolution,
+            population_{{ year }} as population,
+            'INSEE' as source
         FROM
-            {{ ref('flux_population') }} as flux_population
-        LEFT JOIN
-            {{ ref('commune') }} as commune
-        ON commune.code = flux_population.code_commune
-        LEFT JOIN
-            {{ ref('population_cog_2024') }} as stock_population
-        ON stock_population.code_commune = flux_population.code_commune
-        WHERE year BETWEEN {{ from_year }} AND {{ to_year }}
-        GROUP BY
-            flux_population.code_commune,
-            from_year,
-            to_year
+            {{ ref('population_cog_2024') }}
         {% if not loop.last %}
             UNION
         {% endif %}
     {% endfor %}
+), average_evolution as (
+    SELECT
+        code_commune,
+        AVG(evolution) as average_evolution
+    FROM
+        known_years
+    GROUP BY
+        code_commune
+), predictions as (
+    {% set first_unknown_year = 2021 %}
+    {% for year in range(first_unknown_year, 2023) %}
+        {% set next_year = year + 1 %}
+            SELECT
+                code_commune,
+                {{ year }} as year,
+                (
+                    SELECT  round(average_evolution)::numeric
+                    FROM    average_evolution
+                    WHERE   code_commune = pop.code_commune
+                ) as evolution,
+                population_{{ first_unknown_year }} + (
+                    SELECT  round(average_evolution)::numeric
+                    FROM    average_evolution
+                    WHERE   code_commune = pop.code_commune
+                ) * ({{ year }} - 2020) as population,
+                'PROJECTION' as source
+            FROM
+                {{ ref('population_cog_2024') }} as pop
             {% if not loop.last %}
-            UNION
-        {% endif %}
-{% endfor %}
+                UNION
+            {% endif %}
+    {% endfor %}
+)
+SELECT * FROM known_years
+UNION
+SELECT * FROM predictions

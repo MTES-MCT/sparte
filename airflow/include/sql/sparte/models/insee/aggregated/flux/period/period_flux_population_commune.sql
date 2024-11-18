@@ -6,25 +6,25 @@
             {% break %}
         {% endif %}
         SELECT
-            commune_code,
+            flux_population.code_commune,
             {{ from_year }} as from_year,
             {{ to_year }} as to_year,
-            max(commune.surface) as commune_surface,
-            {{ sum_percent('total', 'commune.surface') }},
-            {{ sum_percent('activite', 'commune.surface') }},
-            {{ sum_percent('habitat', 'commune.surface') }},
-            {{ sum_percent('mixte', 'commune.surface') }},
-            {{ sum_percent('route', 'commune.surface') }},
-            {{ sum_percent('ferroviaire', 'commune.surface') }},
-            {{ sum_percent('inconnu', 'commune.surface') }}
-
-        FROM {{ ref('consommation_en_lignes') }} as conso
+            {{ sum_percent(
+                'evolution',
+                'stock_population.population_' + from_year|string
+            ) }},
+            max(stock_population.population_{{ from_year }}) as start_population
+        FROM
+            {{ ref('flux_population_commune') }} as flux_population
         LEFT JOIN
             {{ ref('commune') }} as commune
-        ON commune.code = conso.commune_code
+        ON commune.code = flux_population.code_commune
+        LEFT JOIN
+            {{ ref('population_cog_2024') }} as stock_population
+        ON stock_population.code_commune = flux_population.code_commune
         WHERE year BETWEEN {{ from_year }} AND {{ to_year }}
         GROUP BY
-            commune_code,
+            flux_population.code_commune,
             from_year,
             to_year
         {% if not loop.last %}

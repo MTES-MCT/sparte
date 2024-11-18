@@ -6,72 +6,49 @@
 }}
 
 {% set fields_to_query = """
-    from_year,
-    to_year,
+    surface,
+    year,
     total,
-    total_percent,
     activite,
-    activite_percent,
     habitat,
-    habitat_percent,
     mixte,
-    mixte_percent,
     route,
-    route_percent,
     ferroviaire,
-    ferroviaire_percent,
-    inconnu,
-    inconnu_percent
+    inconnu
 """ %}
 
-SELECT
-    commune_code as land_id,
-    'COMMUNE' as land_type,
-    'EPCI' as comparison_level,
-    commune.epci as comparison_id,
-    {{ fields_to_query }}
 
-FROM
-    {{ ref('consommation_commune') }}
-LEFT JOIN
-    {{ ref('commune') }} as commune
-    ON commune_code = commune.code
-UNION
-SELECT
-    epci as land_id,
-    'EPCI' as land_type,
-    'NATION' as comparison_level,
-    'NATION' as comparison_id,
+select
+    commune_code as land_id,
+    '{{ var('COMMUNE') }}' as land_type,
     {{ fields_to_query }}
-FROM
-    {{ ref('consommation_epci') }}
-UNION
-SELECT
+from
+    {{ ref('flux_consommation_commune') }}
+union
+select
     departement as land_id,
-    'DEPARTEMENT' as land_type,
-    'REGION' as comparison_level,
-    departement.region as comparison_id,
+    '{{ var('DEPARTEMENT') }}' as land_type,
     {{ fields_to_query }}
-FROM
-    {{ ref('consommation_departement') }}
-LEFT JOIN
-    {{ ref('departement') }} as departement
-    ON departement.code = consommation_departement.departement
-UNION
-SELECT
+from
+    {{ ref('flux_consommation_departement') }}
+union
+select
     region as land_id,
-    'REGION' as land_type,
-    'NATION' as comparison_level,
-    'NATION' as comparison_id,
+    '{{ var('REGION') }}' as land_type,
     {{ fields_to_query }}
-FROM
-    {{ ref('consommation_region') }}
-UNION
-SELECT
+from
+    {{ ref('flux_consommation_region') }}
+union
+select
+    epci as land_id,
+    '{{ var('EPCI') }}' as land_type,
+    {{ fields_to_query }}
+from
+    {{ ref('flux_consommation_epci') }}
+union
+select
     scot as land_id,
-    'SCOT' as land_type,
-    'NATION' as comparison_level,
-    'NATION' as comparison_id,
+    '{{ var('SCOT') }}' as land_type,
     {{ fields_to_query }}
-FROM
-    {{ ref('consommation_scot') }}
+from
+    {{ ref('flux_consommation_scot') }}

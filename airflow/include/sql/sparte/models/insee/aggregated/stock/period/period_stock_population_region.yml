@@ -1,11 +1,12 @@
 version: 2
 
 models:
-  - name: flux_population_region
+  - name: period_stock_population_region
     columns:
       - name: region
         data_tests:
           - not_null
+          - unique
           - has_all_regions
           - relationships:
               to: ref('region')

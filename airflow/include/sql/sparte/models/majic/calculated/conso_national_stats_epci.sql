@@ -12,7 +12,7 @@ SELECT
     {{ sum_percent_median_avg('ferroviaire', 'epci.surface') }},
     {{ sum_percent_median_avg('inconnu', 'epci.surface') }}
 FROM
-    {{ ref('consommation_epci') }} as conso
+    {{ ref('period_consommation_epci') }} as conso
 LEFT JOIN
     {{ ref('epci') }} as epci
     ON epci.code = conso.epci

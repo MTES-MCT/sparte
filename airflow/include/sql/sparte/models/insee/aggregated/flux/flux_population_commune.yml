@@ -1,23 +1,5 @@
 version: 2
 
-accepted_years: &accepted_years
-  values : [
-    2009,
-    2010,
-    2011,
-    2012,
-    2013,
-    2014,
-    2015,
-    2016,
-    2017,
-    2018,
-    2019,
-    2020,
-    2021,
-    2022
-  ]
-
 models:
   - name: flux_population_commune
     columns:
@@ -27,26 +9,3 @@ models:
           - relationships:
               to: ref('commune')
               field: code
-      - name: from_year
-        data_tests:
-          - not_null
-          - accepted_values: *accepted_years
-      - name: to_year
-        data_tests:
-          - not_null
-          - accepted_values: *accepted_years
-      - name: evolution
-        data_tests:
-          - not_null
-      - name: evolution_percent
-        data_tests:
-          - not_null
-      - name: evolution_median
-        data_tests:
-          - not_null
-      - name: evolution_avg
-        data_tests:
-          - not_null
-      - name: start_population
-        data_tests:
-          - not_null

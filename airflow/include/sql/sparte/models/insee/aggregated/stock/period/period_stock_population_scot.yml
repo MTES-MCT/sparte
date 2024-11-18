@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: stock_population_scot
+  - name: period_stock_population_scot
     columns:
       - name: scot
         data_tests:

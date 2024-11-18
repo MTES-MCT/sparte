@@ -11,7 +11,7 @@ SELECT
     {{ sum_percent_median_avg('ferroviaire', 'scot.surface') }},
     {{ sum_percent_median_avg('inconnu', 'scot.surface') }}
 FROM
-    {{ ref('consommation_scot') }} as conso
+    {{ ref('period_consommation_scot') }} as conso
 LEFT JOIN
     {{ ref('scot') }} as scot
     ON scot.id_scot = conso.scot

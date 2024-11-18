@@ -12,7 +12,7 @@ SELECT
     {{ sum_percent_median_avg('ferroviaire', 'commune.surface') }},
     {{ sum_percent_median_avg('inconnu', 'commune.surface') }}
 FROM
-    {{ ref('consommation_commune') }} as conso
+    {{ ref('period_consommation_commune') }} as conso
 LEFT JOIN
     {{ ref('commune') }} as commune
     ON commune.code = conso.commune_code

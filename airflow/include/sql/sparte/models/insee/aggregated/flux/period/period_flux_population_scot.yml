@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: flux_population_scot
+  - name: period_flux_population_scot
     columns:
       - name: scot
         data_tests:

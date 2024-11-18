@@ -1,11 +1,12 @@
 version: 2
+
 models:
-  - name: flux_population_epci
+  - name: period_flux_population_region
     columns:
-      - name: epci
+      - name: region
         data_tests:
           - not_null
-          - has_all_epcis
+          - has_all_regions
           - relationships:
-              to: ref('epci')
+              to: ref('region')
               field: code
