@@ -190,31 +190,25 @@
     <div class="fr-grid-row fr-grid-row--gutters">
         <div class="fr-col-12 fr-col-lg-8">
             <div class="bg-white fr-p-2w">
-                <div class="d-flex justify-content-end align-items-center fr-mb-2w">
-                    {% include "project/components/widgets/chart_buttons.html" with chart="pop_conso_rates_chart" %}
-                    <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#determinantModal" data-toggle="tooltip" title="Astuces pour lire le graphique"></button>
-                </div>
-                <div id="pop_conso_rates_chart"></div>
+                <div id="population_density_chart"></div>
             </div>
         </div>
         <div class="fr-col-12 fr-col-lg-4">
             <div class="bg-white fr-p-2w">
-                <p>Sur la période {{ project.analyse_start_date }}-{{ project.analyse_end_date }}, le territoire de {{ project.territory_name }} a [gagné|perdu] [x] nouveaux habitants, ce qui correspond à une [augmentation|diminution] de [x]% de sa population. Sur cette même période, [x]% d'Espaces NAF a été consommé.</p>
+                <p>Sur la période {{ project.analyse_start_date }}-{{ project.analyse_end_date }}, le territoire de {{ project.territory_name }} a [gagné|perdu] [x] nouveaux habitants, ce qui correspond à une [augmentation|diminution] de [x]% de sa populationulation. Sur cette même période, [x]% d'Espaces NAF a été consommé.</p>
                 <p class="fr-text--bold">L'urbanisation du territoire de {{ project.territory_name }} (+[x]%) évolue donc plus [rapidement|lentement] que la croissance démographique.</p>
             </div>
         </div>
     </div>
-
-    <div id="pop_density_chart"></div>
 </div>
 
 <div class="fr-mt-7w">
     <div class="bg-white fr-p-2w">
         <div class="d-flex justify-content-end align-items-center fr-mb-2w">
-            {% include "project/components/widgets/chart_buttons.html" with chart="pop_conso_progression_chart" %}
+            {% include "project/components/widgets/chart_buttons.html" with chart="population_conso_progression_chart" %}
             <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#consoRelativeSurface" data-toggle="tooltip" title="Astuces pour lire le graphique"></button>
         </div>
-        <div id="pop_conso_progression_chart"></div>
+        <div id="population_conso_progression_chart"></div>
     </div>
 </div>
 
@@ -343,10 +337,10 @@
 <div class="fr-mt-7w">
     <div class="bg-white fr-p-2w">
         <div class="d-flex justify-content-end align-items-center fr-mb-2w">
-            {% include "project/components/widgets/chart_buttons.html" with chart="pop_conso_comparison_chart" %}
+            {% include "project/components/widgets/chart_buttons.html" with chart="population_conso_comparison_chart" %}
             <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#consoRelativeSurface" data-toggle="tooltip" title="Astuces pour lire le graphique"></button>
         </div>
-        <div id="pop_conso_comparison_chart"></div>
+        <div id="population_conso_comparison_chart"></div>
     </div>
 </div>
 
@@ -474,7 +468,6 @@
 {% display_chart_data 'chart_determinant' determinant_per_year_chart CSP_NONCE %}
 {% display_chart_data 'pie_determinant' determinant_pie_chart CSP_NONCE %}
 {% display_chart_data 'surface_proportional_chart' surface_proportional_chart CSP_NONCE %}
-{% display_chart_data 'pop_conso_rates_chart' pop_conso_rates_chart CSP_NONCE %}
-{% display_chart_data 'pop_density_chart' pop_density_chart CSP_NONCE %}
-{% display_chart_data 'pop_conso_progression_chart' pop_conso_progression_chart CSP_NONCE %}
-{% display_chart_data 'pop_conso_comparison_chart' pop_conso_comparison_chart CSP_NONCE %}
+{% display_chart_data 'population_density_chart' population_density_chart CSP_NONCE %}
+{% display_chart_data 'population_conso_progression_chart' population_conso_progression_chart CSP_NONCE %}
+{% display_chart_data 'population_conso_comparison_chart' population_conso_comparison_chart CSP_NONCE %}

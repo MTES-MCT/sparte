@@ -1,8 +1,9 @@
 from project.charts.base_project_chart import ProjectChart
+from public_data.domain.containers import PublicDataContainer
 
 
-class PopConsoProgressionChart(ProjectChart):
-    name = "pop density"
+class PopulationConsoProgressionChart(ProjectChart):
+    name = "population conso progression"
 
     @property
     def param(self):
@@ -14,18 +15,8 @@ class PopConsoProgressionChart(ProjectChart):
             "xAxis": [
                 {
                     "categories": [
-                        "2011",
-                        "2012",
-                        "2013",
-                        "2014",
-                        "2015",
-                        "2016",
-                        "2017",
-                        "2018",
-                        "2019",
-                        "2020",
-                        "2021",
-                        "2022",
+                        str(year)
+                        for year in range(int(self.project.analyse_start_date), int(self.project.analyse_end_date) + 1)
                     ]
                 }
             ],
@@ -44,6 +35,38 @@ class PopConsoProgressionChart(ProjectChart):
             "series": [],
         }
 
+    def get_progression_population(self):
+        progression_population = (
+            PublicDataContainer.population_progression_service()
+            .get_by_land(
+                land=self.project.land_proxy,
+                start_date=int(self.project.analyse_start_date),
+                end_date=int(self.project.analyse_end_date),
+            )
+            .population
+        )
+
+        return [year.population for year in progression_population]
+
+    def get_progression_consommation_data(self):
+        return (
+            PublicDataContainer.consommation_progression_service()
+            .get_by_land(
+                land=self.project.land_proxy,
+                start_date=int(self.project.analyse_start_date),
+                end_date=int(self.project.analyse_end_date),
+            )
+            .consommation
+        )
+
+    def get_progression_consommation_total(self):
+        consommation_data = self.get_progression_consommation_data()
+        return [year.total for year in consommation_data]
+
+    def get_progression_consommation_habitat(self):
+        consommation_data = self.get_progression_consommation_data()
+        return [year.habitat for year in consommation_data]
+
     def add_series(self):
         self.chart["series"] = [
             {
@@ -51,7 +74,7 @@ class PopConsoProgressionChart(ProjectChart):
                 "type": "column",
                 "stacking": "normal",
                 "yAxis": 1,
-                "data": [45.7, 37.0, 28.9, 17.1, 39.2, 18.9, 90.2, 78.5, 74.6, 18.7, 17.1, 16.0],
+                "data": self.get_progression_consommation_total(),
                 "tooltip": {"valueSuffix": " ha"},
                 "color": "#CFD1E5",
             },
@@ -60,14 +83,14 @@ class PopConsoProgressionChart(ProjectChart):
                 "type": "column",
                 "stacking": "normal",
                 "yAxis": 1,
-                "data": [10.0, 18.0, 16.0, 5.0, 17.0, 14.0, 70.0, 15.0, 12.0, 3.0, 2.0, 10.0],
+                "data": self.get_progression_consommation_habitat(),
                 "tooltip": {"valueSuffix": " ha"},
                 "color": "#6a6af4",
             },
             {
                 "name": "Population",
                 "type": "spline",
-                "data": [1100, 1034, 1028, 1012, 1134, 1020, 1010, 1012, 999, 939, 949, 930],
+                "data": self.get_progression_population(),
                 "tooltip": {"valueSuffix": " hab"},
                 "color": "#fa4b42",
             },

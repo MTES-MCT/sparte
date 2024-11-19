@@ -1,8 +1,8 @@
 from project.charts.base_project_chart import ProjectChart
 
 
-class PopConsoComparisonChart(ProjectChart):
-    name = "pop density"
+class PopulationConsoComparisonChart(ProjectChart):
+    name = "population conso comparison"
 
     @property
     def param(self):

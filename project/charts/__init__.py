@@ -48,10 +48,9 @@ __all__ = [
     "NetArtifComparaisonChartExport",
     "ImperNetteProgression",
     "ImperNetteProgressionExport",
-    "PopConsoRatesChart",
-    "PopDensityChart",
-    "PopConsoProgressionChart",
-    "PopConsoComparisonChart",
+    "PopulationDensityChart",
+    "PopulationConsoProgressionChart",
+    "PopulationConsoComparisonChart",
 ]
 
 from .AnnualArtifChart import AnnualArtifChart
@@ -93,6 +92,9 @@ from .CouvertureProgressionChart import (
     CouvertureProgressionChart,
     CouvertureProgressionChartExport,
 )
+from .demography.PopulationConsoComparisonChart import PopulationConsoComparisonChart
+from .demography.PopulationConsoProgressionChart import PopulationConsoProgressionChart
+from .demography.PopulationDensityChart import PopulationDensityChart
 from .impermeabilisation.ImperByCouverturePieChart import (
     ImperByCouverturePieChart,
     ImperByCouverturePieChartExport,
@@ -118,10 +120,6 @@ from .NetArtifComparaisonChart import (
     NetArtifComparaisonChartExport,
 )
 from .ObjectiveChart import ObjectiveChart, ObjectiveChartExport
-from .population.PopConsoComparisonChart import PopConsoComparisonChart
-from .population.PopConsoProgressionChart import PopConsoProgressionChart
-from .population.PopConsoRatesChart import PopConsoRatesChart
-from .population.PopDensityChart import PopDensityChart
 from .SurfaceChart import SurfaceChart, SurfaceChartExport
 from .UsageChangeWheelChart import UsageChangeWheelChart
 from .UsagePieChart import UsagePieChart, UsagePieChartExport

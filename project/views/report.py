@@ -118,10 +118,9 @@ class ProjectReportConsoView(ProjectReportBaseView):
         )
 
         # INSEE
-        pop_conso_rates_chart = charts.PopConsoRatesChart(project)
-        pop_density_chart = charts.PopDensityChart(project)
-        pop_conso_progression_chart = charts.PopConsoProgressionChart(project)
-        pop_conso_comparison_chart = charts.PopConsoComparisonChart(project)
+        population_density_chart = charts.PopulationDensityChart(project)
+        population_conso_progression_chart = charts.PopulationConsoProgressionChart(project)
+        population_conso_comparison_chart = charts.PopulationConsoComparisonChart(project)
 
         kwargs.update(
             {
@@ -135,10 +134,9 @@ class ProjectReportConsoView(ProjectReportBaseView):
                 "comparison_chart": comparison_chart,
                 "annual_total_conso_chart": annual_total_conso_chart,
                 "surface_proportional_chart": surface_proportional_chart,
-                "pop_conso_rates_chart": pop_conso_rates_chart,
-                "pop_density_chart": pop_density_chart,
-                "pop_conso_progression_chart": pop_conso_progression_chart,
-                "pop_conso_comparison_chart": pop_conso_comparison_chart,
+                "population_density_chart": population_density_chart,
+                "population_conso_progression_chart": population_conso_progression_chart,
+                "population_conso_comparison_chart": population_conso_comparison_chart,
                 # data tables
                 "annual_conso_data_table": annual_conso_data_table,
                 "data_determinant": add_total_line_column(det_chart.get_series()),
@@ -214,7 +212,6 @@ class ProjectReportSynthesisView(ProjectReportBaseView):
 
     def get_context_data(self, **kwargs):
         project: Project = self.get_object()
-        total_surface = int(project.area * 100)
         progression_time_scoped = project.get_artif_progession_time_scoped()
         objective_chart = charts.ObjectiveChart(project)
         curent_conso = project.get_bilan_conso_time_scoped()
@@ -223,7 +220,6 @@ class ProjectReportSynthesisView(ProjectReportBaseView):
         kwargs.update(
             {
                 "diagnostic": project,
-                "total_surface": total_surface,
                 "new_artif": progression_time_scoped["new_artif"],
                 "new_natural": progression_time_scoped["new_natural"],
                 "net_artif": progression_time_scoped["net_artif"],

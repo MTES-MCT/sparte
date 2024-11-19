@@ -33,10 +33,9 @@ const Consommation: React.FC<{ endpoint: string }> = ({ endpoint }) => {
         'chart_determinant',
         'pie_determinant',
         'surface_proportional_chart',
-        'pop_conso_rates_chart',
-        'pop_density_chart',
-        'pop_conso_progression_chart',
-        'pop_conso_comparison_chart',
+        'population_density_chart',
+        'population_conso_progression_chart',
+        'population_conso_comparison_chart',
     ], isLoading);
 
     useEffect(() => {
