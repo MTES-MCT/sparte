@@ -1083,13 +1083,15 @@ class Project(BaseProject):
         return [self.land_proxy] + look_a_likes
 
     def get_matrix(self, sol: Literal["couverture", "usage"] = "couverture"):
+        """
+        TODO: refactor
+        """
         if sol == "usage":
             prefix = "us"
             headers = {_.code: _ for _ in UsageSol.objects.all()}
         else:
             prefix = "cs"
             headers = {_.code: _ for _ in CouvertureSol.objects.all()}
-        headers.update({"": CouvertureSol(id=0, code="N/A", label="Inconnu", label_short="Inconnu")})
         index = f"{prefix}_old"
         column = f"{prefix}_new"
         qs = (
@@ -1099,17 +1101,30 @@ class Project(BaseProject):
                 year_new__lte=self.analyse_end_date,
             )
             .values(index, column)
-            .annotate(total=Sum("surface") / 10000)
+            .annotate(total=Sum("intersection_area") / 10000)
             .order_by(index, column)
         )
-        if qs.exists():
-            df = pd.DataFrame(qs).fillna("").pivot(index=index, columns=column, values="total").fillna(0)
 
-            return {
-                headers[i[2:]]: {headers[c[2:]]: row[c] for c in df.columns}
-                for i, row in df.iterrows()
-                if not isinstance(i, float)
-            }
+        filtered_qs = [row for row in qs if row[index] != row[column]]
+
+        if filtered_qs:
+            df = (
+                pd.DataFrame(filtered_qs)
+                .fillna("")
+                .pivot(
+                    index=index,
+                    columns=column,
+                    values="total",
+                )
+                .fillna(0)
+            )
+
+            result = {}
+
+            for i, row in df.iterrows():
+                result[headers[i[2:]]] = {headers[c[2:]]: row[c] for c in df.columns}
+
+            return result
         else:
             return dict()
 

@@ -69,16 +69,20 @@ class CouvertureChangeWheelChart(ProjectChart):
                 year_new__lte=self.project.analyse_end_date,
             )
             .values(f"{self.prefix}_old", f"{self.prefix}_new")
-            .annotate(total=Sum("surface") / 10000)
+            .annotate(total=Sum("intersection_area") / 10000)
             .order_by(f"{self.prefix}_old", f"{self.prefix}_new")
         )
 
-        for data in self.data:
-            data[f"{self.prefix}_old"] = self.get_serie_label(data[f"{self.prefix}_old"])
-            data[f"{self.prefix}_new"] = self.get_serie_label(data[f"{self.prefix}_new"])
+        result = []
 
-        return [
-            [_[f"{self.prefix}_old"], _[f"{self.prefix}_new"], round(_["total"], 2)]
-            for _ in self.data
-            if _[f"{self.prefix}_old"] != _[f"{self.prefix}_new"]
-        ]
+        for row in self.data:
+            if row[f"{self.prefix}_old"] != row[f"{self.prefix}_new"]:
+                result.append(
+                    [
+                        self.get_serie_label(row[f"{self.prefix}_old"]),
+                        self.get_serie_label(row[f"{self.prefix}_new"]),
+                        round(row["total"], 2),
+                    ]
+                )
+
+        return result
