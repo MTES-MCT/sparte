@@ -27,10 +27,17 @@
 SELECT
     commune_code as land_id,
     '{{ var('COMMUNE') }}' as land_type,
-    '{{ var('EPCI') }}' as comparison_level,
-    commune.epci as comparison_id,
+    CASE
+        WHEN commune.epci IS NOT NULL
+        THEN '{{ var('EPCI') }}'
+        ELSE '{{ var('NATION') }}'
+    END as comparison_level,
+    CASE
+        WHEN commune.epci IS NOT NULL
+        THEN commune.epci
+        ELSE '{{ var('NATION') }}'
+    END as comparison_id,
     {{ fields_to_query }}
-
 FROM
     {{ ref('period_consommation_commune') }}
 LEFT JOIN

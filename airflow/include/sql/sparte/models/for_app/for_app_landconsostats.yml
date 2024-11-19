@@ -1,0 +1,14 @@
+version: 2
+
+models:
+  - name: for_app_landconsostats
+    columns:
+      - name: land_id
+        data_tests:
+          - not_null
+      - name: comparison_id
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('for_app_landconsocomparison')
+              field: land_id
