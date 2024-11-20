@@ -59,6 +59,10 @@ def upload_in_project_folder(project: "Project", filename: str) -> str:
     return f"diagnostics/{project.get_folder_name()}/{filename}"
 
 
+def get_path_in_version_folder(project: "Project", filename: str) -> str:
+    return f"figures/{settings.OFFICIAL_VERSION}/{filename}"
+
+
 class BaseProject(models.Model):
     class Status(models.TextChoices):
         MISSING = "MISSING", "Emprise à renseigner"
@@ -88,7 +92,9 @@ class BaseProject(models.Model):
 
 class ProjectCommune(models.Model):
     project = models.ForeignKey("project.Project", on_delete=models.CASCADE)
-    commune = models.ForeignKey("public_data.Commune", on_delete=models.PROTECT, to_field="insee")
+    commune = models.ForeignKey(
+        "public_data.Commune", on_delete=models.DO_NOTHING, to_field="insee", related_name="commune"
+    )
     group_name = models.CharField("Nom du groupe", max_length=100, blank=True, null=True)
 
 
@@ -252,7 +258,7 @@ class Project(BaseProject):
     )
 
     cover_image = models.ImageField(
-        upload_to=upload_in_project_folder,
+        upload_to=get_path_in_version_folder,
         blank=True,
         null=True,
         storage=PublicMediaStorage(),

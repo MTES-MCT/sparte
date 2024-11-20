@@ -17,7 +17,9 @@ from django_app_parameter import app_parameter
 from matplotlib.lines import Line2D
 from matplotlib_scalebar.scalebar import ScaleBar
 
+from config.storages import PublicMediaStorage
 from project.models import Emprise, Project, Request, RequestedDocumentChoices
+from project.models.project_base import get_path_in_version_folder
 from public_data.domain.containers import PublicDataContainer
 from public_data.models import AdminRef, ArtificialArea, Land, OcsgeDiff
 from public_data.models.gpu import ArtifAreaZoneUrba, ZoneUrba
@@ -36,6 +38,11 @@ def race_protection_save(project_id: int, fields: Dict[str, Any]) -> None:
         for name, value in fields.items():
             setattr(diagnostic, name, value)
         diagnostic.save_without_historical_record(update_fields=fields_name)
+
+
+def check_if_file_exists_for_property(project, path: str) -> bool:
+    storage = PublicMediaStorage()
+    return storage.exists(name=path)
 
 
 def race_protection_save_map(
@@ -225,6 +232,21 @@ def generate_cover_image(self, project_id) -> None:
     logger.info("Start generate_cover_image, project_id=%d", project_id)
     try:
         diagnostic = Project.objects.get(id=int(project_id))
+        filename = f"cover_{diagnostic.get_public_key()}.jpg"
+        field_img_name = "cover_image"
+        field_flag_name = "async_cover_image_done"
+        path = get_path_in_version_folder(diagnostic, filename)
+
+        if check_if_file_exists_for_property(
+            project=diagnostic,
+            path=path,
+        ):
+            diagnostic.cover_image = path
+            diagnostic.async_cover_image_done = True
+            diagnostic.save(update_fields=[field_img_name, field_flag_name])
+            logger.info(f"Cover image already exists, skip generation for project_id={project_id}")
+            return
+
         geom = diagnostic.combined_emprise
         polygons = shapely.wkt.loads(geom.wkt)
 
@@ -258,11 +280,11 @@ def generate_cover_image(self, project_id) -> None:
         plt.close()
 
         race_protection_save_map(
-            diagnostic.pk,
-            "async_cover_image_done",
-            "cover_image",
-            f"cover_{project_id}.jpg",
-            img_data,
+            project_id=diagnostic.pk,
+            field_flag_name=field_flag_name,
+            field_img_name=field_img_name,
+            img_name=filename,
+            img_data=img_data,
         )
 
     except Project.DoesNotExist as exc:
@@ -521,7 +543,7 @@ def generate_theme_map_conso(self, project_id) -> None:
             diagnostic.pk,
             "async_generate_theme_map_conso_done",
             "theme_map_conso",
-            f"theme_map_conso_{project_id}.jpg",
+            f"theme_map_conso_{diagnostic.get_public_key()}.jpg",
             img_data,
         )
 
@@ -568,7 +590,7 @@ def generate_theme_map_artif(self, project_id) -> None:
             diagnostic.pk,
             "async_generate_theme_map_artif_done",
             "theme_map_artif",
-            f"theme_map_artif_{project_id}.jpg",
+            f"theme_map_artif_{diagnostic.get_public_key()}.jpg",
             img_data,
         )
 
@@ -678,7 +700,7 @@ def generate_theme_map_understand_artif(self, project_id) -> None:
             diagnostic.pk,
             "async_theme_map_understand_artif_done",
             "theme_map_understand_artif",
-            f"theme_map_understand_artif_{project_id}.jpg",
+            f"theme_map_understand_artif_{diagnostic.get_public_key()}.jpg",
             img_data,
         )
 
@@ -736,7 +758,7 @@ def generate_theme_map_gpu(self, project_id) -> None:
             diagnostic.pk,
             "async_theme_map_gpu_done",
             "theme_map_gpu",
-            f"theme_map_gpu_{project_id}.jpg",
+            f"theme_map_gpu_{diagnostic.get_public_key()}.jpg",
             img_data,
         )
 
@@ -809,7 +831,7 @@ def generate_theme_map_fill_gpu(self, project_id) -> None:
             diagnostic.pk,
             "async_theme_map_fill_gpu_done",
             "theme_map_fill_gpu",
-            f"theme_map_fill_gpu_{project_id}.jpg",
+            f"theme_map_fill_gpu_{diagnostic.get_public_key()}.jpg",
             img_data,
         )
 
