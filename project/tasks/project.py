@@ -469,7 +469,7 @@ def get_img(queryset, color: str, title: str) -> io.BytesIO:
         cmap=color,
         alpha=0.5,
         edgecolor="k",
-        legend_kwds={"loc": "lower left"},
+        legend_kwds={"loc": "lower right"},
     )
     ax.add_artist(ScaleBar(1))
     ax.set_title(title)
