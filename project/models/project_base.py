@@ -278,13 +278,6 @@ class Project(BaseProject):
         storage=PublicMediaStorage(),
     )
 
-    theme_map_gpu = models.ImageField(
-        upload_to=upload_in_project_folder,
-        blank=True,
-        null=True,
-        storage=PublicMediaStorage(),
-    )
-
     theme_map_fill_gpu = models.ImageField(
         upload_to=upload_in_project_folder,
         blank=True,
@@ -307,7 +300,6 @@ class Project(BaseProject):
     async_generate_theme_map_conso_done = models.BooleanField(default=False)
     async_generate_theme_map_artif_done = models.BooleanField(default=False)
     async_theme_map_understand_artif_done = models.BooleanField(default=False)
-    async_theme_map_gpu_done = models.BooleanField(default=False)
     async_theme_map_fill_gpu_done = models.BooleanField(default=False)
     async_ocsge_coverage_status_done = models.BooleanField(default=False)
 
@@ -348,9 +340,7 @@ class Project(BaseProject):
             static_maps_ready = static_maps_ready and self.async_theme_map_understand_artif_done
 
         if self.has_zonage_urbanisme and self.has_complete_uniform_ocsge_coverage:
-            static_maps_ready = (
-                static_maps_ready and self.async_theme_map_gpu_done and self.async_theme_map_fill_gpu_done
-            )
+            static_maps_ready = static_maps_ready and self.async_theme_map_fill_gpu_done
 
         return calculations_and_extend_ready and static_maps_ready
 

@@ -1,97 +1,90 @@
-<div class="fr-callout bg-white fr-fi-information-line">
-    <h3 class="fr-callout__title">Découvrez notre explorateur des zonages d'urbanisme</h3>
-    <p class="fr-callout__text">
-        Croisez les zonages d'urbanisme avec les données de l'OCS GE afin de comprendre l'artificialisation de votre territoire.
-    </p>
-    <a href="{% url 'project:map-urban-zones' project.pk %}" class="fr-link--text-decoration-none" target="_blank" rel="noopener noreferrer">
-        <button class="fr-btn">
-            Explorer les zonages d'urbanisme
-        </button>
-    </a>
-</div>
+<h3>Synthèse</h3>
 
-<div class="fr-mt-7w">
-    <h3>Synthèse des zonages d'urbanisme</h3>
-
-    <div class="fr-grid-row fr-grid-row--gutters">
-        <div class="fr-col-12 fr-col-lg-8">
-            <div class="bg-white fr-p-2w h-100">
-                <div class="fr-table fr-table--bordered">
-                    <div class="fr-table__wrapper">
-                        <div class="fr-table__container">
-                            <div class="fr-table__content">
-                                <table>
-                                    <caption>
-                                        Données synthèse des zonages d'urbanisme
-                                    </caption>
-                                    <thead>
-                                        <tr>
-                                            <th scope="col" class="fr-cell--fixed">Type de<br/>zone</th>
-                                            <th scope="col" class="fr-cell--right">Nombre<br/>de zones</th>
-                                            <th scope="col" class="fr-cell--right">Surface<br/>totale</th>
-                                            <th scope="col" class="fr-cell--right">Surface<br/>artificielle ({{ last_year_ocsge }})</th>
-                                            <th scope="col" class="fr-cell--right">Taux d'artificialisation<br/> ({{ last_year_ocsge }})</th>
-                                            <th scope="col" class="fr-cell--right">Artificialisation<br/>({{ first_year_ocsge }} à {{ last_year_ocsge }})</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {% for zone_type, zone in zone_list.items %}
-                                        <tr>
-                                            <th scope="row" class="fr-cell--fixed">{{ zone_type }}</th>
-                                            <td class="fr-cell--right">{{ zone.nb_zones }}</td>
-                                            <td class="fr-cell--right">{{ zone.total_area|floatformat:1 }} ha</td>
-                                            <td class="fr-cell--right">{{ zone.last_artif_area|floatformat:1 }} ha</td>
-                                            <td class="fr-cell--right">
-                                                <div class="progress-bar-container">
-                                                    <div class="progress-bar-indicator w-{{ zone.fill_up_rate|floatformat:0 }}"></div>
-                                                    <div class="progress-bar-value">{{ zone.fill_up_rate|floatformat:1 }}%</div>
-                                                </div>
-                                            </td>
-                                            <td class="fr-cell--right">{{ zone.new_artif|floatformat:1 }} ha</td>
-                                        </tr>
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
-                            </div>
+<div class="fr-grid-row fr-grid-row--gutters">
+    <div class="fr-col-12">
+        <div class="bg-white fr-p-2w h-100">
+            <div class="fr-table fr-table--bordered">
+                <div class="fr-table__wrapper">
+                    <div class="fr-table__container">
+                        <div class="fr-table__content">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th scope="col" class="fr-cell--fixed">Type de<br/>zone</th>
+                                        <th scope="col" class="fr-cell--right">Nombre<br/>de zones</th>
+                                        <th scope="col" class="fr-cell--right">Surface<br/>totale</th>
+                                        <th scope="col" class="fr-cell--right">Surface<br/>artificielle ({{ last_year_ocsge }})</th>
+                                        <th scope="col" class="fr-cell--right">Taux d'artificialisation<br/> ({{ last_year_ocsge }})</th>
+                                        <th scope="col" class="fr-cell--right">Artificialisation<br/>({{ first_year_ocsge }} à {{ last_year_ocsge }})</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for zone_type, zone in zone_list.items %}
+                                    <tr>
+                                        <th scope="row" class="fr-cell--fixed">{{ zone_type }}</th>
+                                        <td class="fr-cell--right">{{ zone.nb_zones }}</td>
+                                        <td class="fr-cell--right">{{ zone.total_area|floatformat:1 }} ha</td>
+                                        <td class="fr-cell--right">{{ zone.last_artif_area|floatformat:1 }} ha</td>
+                                        <td class="fr-cell--right">
+                                            <div class="progress-bar-container">
+                                                <div class="progress-bar-indicator w-{{ zone.fill_up_rate|floatformat:0 }}"></div>
+                                                <div class="progress-bar-value">{{ zone.fill_up_rate|floatformat:1 }}%</div>
+                                            </div>
+                                        </td>
+                                        <td class="fr-cell--right">{{ zone.new_artif|floatformat:1 }} ha</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <p class="my-3">Les types de zone d'après le Standard CNIG PLU v2022 - rev. octobre 2022:
-                <br/><span class="fw-bold">U</span> : zone urbaine
-                <br/><span class="fw-bold">AUc</span> : zone à urbaniser
-                <br/><span class="fw-bold">AUs</span> : zone à urbaniser bloquée
-                <br/><span class="fw-bold">A</span> : zone agricole
-                <br/><span class="fw-bold">N</span> : zone naturelle
+            <p class="my-3">Les types de zone d'après le Standard CNIG PLU v2022 - rev. octobre 2022:
+            <br/><span class="fw-bold">U</span> : zone urbaine
+            <br/><span class="fw-bold">AUc</span> : zone à urbaniser
+            <br/><span class="fw-bold">AUs</span> : zone à urbaniser bloquée
+            <br/><span class="fw-bold">A</span> : zone agricole
+            <br/><span class="fw-bold">N</span> : zone naturelle
+            </p>
+        </div>
+    </div>
+
+
+
+</div>
+
+<div class="fr-notice bg-white fr-mt-4w fr-mb-4w">
+    <div class="fr-px-2w">
+        <div class="d-flex align-items-center justify-content-between">
+            <div>
+                <span class="fr-icon-information-line" aria-hidden="true"></span>
+                <span class="fr-text--xs fr-mr-1w">Source de données: </span>
+                <p class="fr-tag fr-tag--sm fr-tag--success">
+                    <strong>OCS GE</strong>
                 </p>
             </div>
+            <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data-aggregated-table">Détails données et calcul</button>
         </div>
+        <div class="fr-collapse" id="target-data-aggregated-table">
+            <h6 class="fr-mt-2w">Source</h6>
+            <p class="fr-text--sm">Données d'OCcupation des Sols à Grande Echelle (OCS GE) de l'IGN, sur la période d'analyse. Zonages d'Urbanisme issus du Géoportail de l'Urbanisme (GPU) en date de juin 2023: <a href="https://www.geoportail-urbanisme.gouv.fr/" target="_blank" rel="noopener">https://www.geoportail-urbanisme.gouv.fr/</a></p>
 
-        <div class="fr-col-12 fr-col-lg-4">
-            {% include "project/components/widgets/static_map.html" with static_map=diagnostic.theme_map_gpu title="Carte présentant les zonages d'urbanisme du territoire" %}
-        </div>
-
-    </div>
-
-    <div class="fr-notice bg-white fr-mt-4w">
-        <div class="fr-px-2w">
-            <div class="d-flex align-items-center justify-content-between">
-                <div>
-                    <span class="fr-icon-information-line" aria-hidden="true"></span>
-                    <span class="fr-text--xs fr-mr-1w">Source de données: </span>
-                    <p class="fr-tag fr-tag--sm fr-tag--success">
-                        <strong>OCS GE</strong>
-                    </p>
-                </div>
-                <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data-aggregated-table">Détails données et calcul</button>
-            </div>
-            <div class="fr-collapse" id="target-data-aggregated-table">
-                <h6 class="fr-mt-2w">Source</h6>
-                <p class="fr-text--sm">Données d'OCcupation des Sols à Grande Echelle (OCS GE) de l'IGN, sur la période d'analyse. Zonages d'Urbanisme issus du Géoportail de l'Urbanisme (GPU) en date de juin 2023: <a href="https://www.geoportail-urbanisme.gouv.fr/" target="_blank" rel="noopener">https://www.geoportail-urbanisme.gouv.fr/</a></p>
-    
-                <h6 class="fr-mt-2w">Calcul</h6>
-                <p class="fr-text--sm">Qualifier l'artificialisation de chaque parcelle OCS GE via la matrice d'artficialisation (<a href="{% url 'public_data:matrix' %}">consulter</a>). Puis comparer la surface totale des parcelles artificialisées dans chaque zonage d'urbanisme à la surface de la zone pour connaître le taux d'occupation.</p>
-            </div>
+            <h6 class="fr-mt-2w">Calcul</h6>
+            <p class="fr-text--sm">Qualifier l'artificialisation de chaque parcelle OCS GE via la matrice d'artficialisation (<a href="{% url 'public_data:matrix' %}">consulter</a>). Puis comparer la surface totale des parcelles artificialisées dans chaque zonage d'urbanisme à la surface de la zone pour connaître le taux d'occupation.</p>
         </div>
     </div>
+</div>
+
+<h3>Explorateur</h3>
+
+
+<div class="fr-grid-row fr-grid-row--gutters">
+    <div class="fr-col-12">
+        <div class="bg-white fr-p-2w h-100">
+            <iframe style="height:50vh" src="{% url 'project:map-urban-zones' project.pk %}" width="100%" frameborder="0"></iframe>
+        </div>
+    </div>
+
 </div>
