@@ -1,4 +1,6 @@
 from project.charts.base_project_chart import ProjectChart
+from project.charts.constants import HIGHLIGHT_COLOR
+from public_data.domain.containers import PublicDataContainer
 
 
 class PopulationConsoComparisonChart(ProjectChart):
@@ -12,29 +14,34 @@ class PopulationConsoComparisonChart(ProjectChart):
                 "layout": "vertical",
                 "align": "right",
                 "verticalAlign": "middle",
-                "bubbleLegend": {"enabled": True, "borderWidth": 1, "labels": {"format": "{value} ha"}},
+                "bubbleLegend": {
+                    "enabled": True,
+                    "borderWidth": 1,
+                    "legendIndex": 100,
+                    "labels": {"format": "{value} hab"},
+                },
             },
             "credits": {"enabled": False},
             "title": {
                 "text": (
                     "Consommation foncière au regard de l'évolution de la population "
-                    "pour les territoires similaires"
+                    "du territoire et des territoires similaires"
                 )
             },
             "xAxis": {
                 "gridLineWidth": 1,
-                "title": {"text": "Taux d'évolution démographique (%)"},
+                "title": {"text": "Évolution démographique (hab)"},
                 "plotLines": [{"color": "#000", "width": 1, "value": 0, "zIndex": 3}],
             },
-            "yAxis": {"title": {"text": "Taux de consommation d'espaces NAF (%)"}, "maxPadding": 0.2, "min": 0},
+            "yAxis": {"title": {"text": "Consommation d'espaces NAF (ha)"}, "maxPadding": 0.2, "min": 0},
             "tooltip": {
                 "useHTML": True,
                 "headerFormat": "<table>",
                 "pointFormat": (
                     "<tr><th colspan='2'><h3>{series.name}</h3></th></tr>"
-                    "<tr><th>Taux de consommation:</th><td>{point.y} %</td></tr>"
-                    "<tr><th>Évolution démographique:</th><td>{point.x} %</td></tr>"
-                    "<tr><th>Consommation d'espaces NAF:</th><td>{point.z} ha</td></tr>"
+                    "<tr><th>Consommation: </th><td class='text-end'>{point.y} ha</td></tr>"
+                    "<tr><th>Évolution démographique: </th><td class='text-end'>{point.x} hab</td></tr>"
+                    "<tr><th>Population totale: </th><td class='text-end'>{point.z} hab</td></tr>"
                 ),
                 "footerFormat": "</table>",
             },
@@ -42,15 +49,36 @@ class PopulationConsoComparisonChart(ProjectChart):
         }
 
     def add_series(self):
+        lands = self.project.comparison_lands_and_self_land()
+        start_date = int(self.project.analyse_start_date)
+        end_date = int(self.project.analyse_end_date)
+        highlighted_land_id = self.project.land_proxy.id
+
+        consommation_stats = {
+            c.land.id: float(c.consommation[0].total / 10000)  # en hectare
+            for c in PublicDataContainer.consommation_stats_service().get_by_lands(lands, start_date, end_date)
+        }
+        population_stats = {
+            p.land.id: p.population[0].evolution
+            for p in PublicDataContainer.population_stats_service().get_by_lands(lands, start_date, end_date)
+        }
+        annual_population = {
+            land.id: PublicDataContainer.population_annual_service().get_annual_population(land, end_date).population
+            for land in lands
+        }
+
+        # Créer les séries
         self.chart["series"] = [
-            {"name": "Nice", "data": [{"x": 2, "y": 1, "z": 13.8}]},
-            {"name": "Aspremont", "data": [{"x": 2.1, "y": 2.9, "z": 14.7}]},
-            {"name": "Cantaron", "data": [{"x": 4.8, "y": 1.5, "z": 15.8}]},
-            {"name": "Colomars", "data": [{"x": -1.4, "y": 2.5, "z": 12}]},
-            {"name": "Falicon", "data": [{"x": 1.2, "y": 4.1, "z": 11.8}]},
-            {"name": "Gattières", "data": [{"x": -3.4, "y": 3.1, "z": 16.6}]},
-            {"name": "La Gaude", "data": [{"x": 2.2, "y": 5.5, "z": 14.5}]},
-            {"name": "La Trinité", "data": [{"x": 4.5, "y": 2.1, "z": 10}]},
-            {"name": "Saint-André-de-la-Roche", "data": [{"x": 1, "y": 1.2, "z": 24.7}]},
-            {"name": "Èze", "data": [{"x": 6.2, "y": 4.6, "z": 10.4}]},
+            {
+                "name": land.name,
+                "data": [
+                    {
+                        "x": population_stats.get(land.id, 0),
+                        "y": consommation_stats.get(land.id, 0),
+                        "z": annual_population.get(land.id, 0),
+                    }
+                ],
+                "color": HIGHLIGHT_COLOR if land.id == highlighted_land_id else None,
+            }
+            for land in lands
         ]

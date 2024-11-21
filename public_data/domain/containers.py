@@ -7,12 +7,14 @@ from .ClassCacher import ClassCacher
 from .consommation.progression.ConsommationProgressionService import (
     ConsommationProgressionService,
 )
+from .consommation.stats.ConsommationStatsService import ConsommationStatsService
 from .demography.population.annual.AnnualPopulationService import (
     AnnualPopulationService,
 )
 from .demography.population.progression.PopulationProgressionService import (
     PopulationProgressionService,
 )
+from .demography.population.stats.PopulationStatsService import PopulationStatsService
 
 
 class PublicDataContainer(containers.DeclarativeContainer):
@@ -27,10 +29,18 @@ class PublicDataContainer(containers.DeclarativeContainer):
         ConsommationProgressionService,
     )
 
+    consommation_stats_service = providers.Factory(
+        ConsommationStatsService,
+    )
+
     population_annual_service = providers.Factory(
         AnnualPopulationService,
     )
 
     population_progression_service = providers.Factory(
         PopulationProgressionService,
+    )
+
+    population_stats_service = providers.Factory(
+        PopulationStatsService,
     )
