@@ -7,6 +7,7 @@ import Loader from '@components/ui/Loader';
 
 interface SearchBarProps {
     createUrl: string;
+    origin?: string;
 }
 
 export interface Territory {
@@ -114,7 +115,6 @@ const Badge = styled.p`
     text-transform: none;
 `;
 
-
 const NoResultsMessage = styled.div`
     padding: 0.5rem;
     font-size: 0.9em;
@@ -122,12 +122,7 @@ const NoResultsMessage = styled.div`
     text-align: center;
 `;
 
-const HighlightedText = styled.span`
-    font-weight: bold;
-    color: ${activeColor};
-`;
-
-const SearchBar: React.FC<SearchBarProps> = ({ createUrl }) => {
+const SearchBar: React.FC<SearchBarProps> = ({ createUrl, origin }) => {
     const [query, setQuery] = useState<string>('');
     const [isFocused, setIsFocused] = useState<boolean>(false);
     const [data, setData] = useState<Territory[] | undefined>(undefined);
@@ -165,6 +160,20 @@ const SearchBar: React.FC<SearchBarProps> = ({ createUrl }) => {
         if (isSubmitting || disabled) return;
     
         setIsSubmitting(true);
+
+        if (origin === "home" && window.trackEvent) {
+            window.trackEvent(
+                'north_star_activation_funnel',
+                'search_territory',
+                'step_1_north_star_activation_funnel'
+            );
+        } else if (origin === "rapport-local" && window.trackEvent) {
+            window.trackEvent(
+                'local_report_download_funnel',
+                'search_territory',
+                'local_report_home_search_territory_selected'
+            );
+        }
     
         const form = document.createElement('form');
         form.action = createUrl;

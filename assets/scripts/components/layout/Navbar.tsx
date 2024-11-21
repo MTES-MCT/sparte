@@ -249,7 +249,15 @@ const Navbar: React.FC = ({ projectData }: { projectData: any}) => {
                                     'data-fr-opened': 'false',
                                     'aria-controls': 'fr-modal-download-word',
                                 }}
-                                onClick={resetModalContent}
+                                onClick={() => {
+                                    resetModalContent();
+                                    if (window.trackEvent)
+                                        window.trackEvent(
+                                            'diagnostic_download_funnel',
+                                            'click_button_conso_report_download',
+                                            'conso_report_download_button_clicked'
+                                        );
+                                }}
                             />
                         </DownloadListItem>
                         <DownloadListItem>
@@ -263,7 +271,15 @@ const Navbar: React.FC = ({ projectData }: { projectData: any}) => {
                                     'data-fr-opened': 'false',
                                     'aria-controls': 'fr-modal-download-word',
                                 }}
-                                onClick={resetModalContent}
+                                onClick={() => {
+                                    resetModalContent();
+                                    if (window.trackEvent)
+                                        window.trackEvent(
+                                            'diagnostic_download_funnel',
+                                            'click_button_diagnostic_download_word',
+                                            'diagnostic_download_word_button_clicked'
+                                        );
+                                }}
                             />
                         </DownloadListItem>
                         <DownloadListItem>
@@ -277,7 +293,15 @@ const Navbar: React.FC = ({ projectData }: { projectData: any}) => {
                                     'data-fr-opened': 'false',
                                     'aria-controls': 'fr-modal-download-word',
                                 }}
-                                onClick={resetModalContent}
+                                onClick={() => {
+                                    resetModalContent();
+                                    if (window.trackEvent)
+                                        window.trackEvent(
+                                            'diagnostic_download_funnel',
+                                            'click_button_local_report_download',
+                                            'local_report_download_button_clicked'
+                                        );
+                                }}
                             />
                         </DownloadListItem>
                         <DownloadListItem>
@@ -286,6 +310,14 @@ const Navbar: React.FC = ({ projectData }: { projectData: any}) => {
                                 icon="bi bi-file-earmark-excel"
                                 label="Export Excel"
                                 url={urls.dowloadCsvReport}
+                                onClick={() => {
+                                    if (window.trackEvent)
+                                        window.trackEvent(
+                                            'diagnostic_download_funnel',
+                                            'click_button_diagnostic_download_excel',
+                                            'diagnostic_download_excel_success'
+                                        );
+                                }}
                             />
                         </DownloadListItem>
                     </DownloadList>
