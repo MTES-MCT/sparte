@@ -580,6 +580,7 @@ ORTHOPHOTO_URL = (
     "&TILECOL={x}&TILEROW={y}&TILEMATRIX={z}"
 )
 OPENSTREETMAP_URL = "https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+OPENSTREETMAP_ATTRIBUTION = "© OpenStreetMap"
 
 # MATTERMOST SETTINGS
 

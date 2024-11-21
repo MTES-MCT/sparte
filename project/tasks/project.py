@@ -247,7 +247,7 @@ def generate_cover_image(self, project_id) -> None:
         gdf_emprise.buffer(250000).plot(ax=ax, facecolor="none", edgecolor="none")
         gdf_emprise.plot(ax=ax, facecolor="none", edgecolor="black")
         cx.add_basemap(ax, source=settings.OPENSTREETMAP_URL)
-
+        cx.add_attribution(ax, text=settings.OPENSTREETMAP_ATTRIBUTION)
         img_data = io.BytesIO()
         plt.savefig(
             img_data,
@@ -469,11 +469,12 @@ def get_img(queryset, color: str, title: str) -> io.BytesIO:
         cmap=color,
         alpha=0.5,
         edgecolor="k",
-        legend_kwds={"loc": "lower left"},
+        legend_kwds={"loc": "lower right"},
     )
     ax.add_artist(ScaleBar(1))
     ax.set_title(title)
     cx.add_basemap(ax, source=settings.OPENSTREETMAP_URL, zoom_adjust=1, alpha=0.95)
+    cx.add_attribution(ax, text=settings.OPENSTREETMAP_ATTRIBUTION)
 
     img_data = io.BytesIO()
     plt.savefig(img_data, bbox_inches="tight", format="jpg")
@@ -668,7 +669,7 @@ def generate_theme_map_understand_artif(self, project_id) -> None:
             loc="left",
         )
         cx.add_basemap(ax, source=settings.OPENSTREETMAP_URL, zoom_adjust=1, alpha=0.95)
-        cx.add_attribution(ax, text="Données: OCS GE (IGN)")
+        cx.add_attribution(ax, text=f"Données : OCS GE (IGN) - Fond de carte : {settings.OPENSTREETMAP_ATTRIBUTION}")
 
         img_data = io.BytesIO()
         plt.savefig(img_data, bbox_inches="tight", format="jpg")
@@ -726,6 +727,7 @@ def generate_theme_map_gpu(self, project_id) -> None:
             f"Les zones d'urbanisme du territoire «{diagnostic.territory_name}» en {diagnostic.analyse_end_date}"
         )
         cx.add_basemap(ax, source=settings.OPENSTREETMAP_URL)
+        cx.add_attribution(ax, text=settings.OPENSTREETMAP_ATTRIBUTION)
 
         img_data = io.BytesIO()
         plt.savefig(img_data, bbox_inches="tight", format="jpg")
@@ -799,6 +801,7 @@ def generate_theme_map_fill_gpu(self, project_id) -> None:
             ax.add_artist(ScaleBar(1))
             ax.set_title("Il n'y a pas de zone U ou AU")
             cx.add_basemap(ax, source=settings.OPENSTREETMAP_URL)
+            cx.add_attribution(ax, text=settings.OPENSTREETMAP_ATTRIBUTION)
 
             img_data = io.BytesIO()
             plt.savefig(img_data, bbox_inches="tight", format="jpg")
