@@ -1,3 +1,5 @@
+import math
+
 from public_data.domain.demography.population.annual.AnnualPopulation import (
     AnnualPopulation,
     AnnualPopulationLand,
@@ -14,14 +16,12 @@ class AnnualPopulationService:
             year=year,
         )
 
-        # TODO: Calculate these fields in airflow
-        density = round(annual_pop.population / land.area, 0)
-        max_density = 1000
+        # Nombre d'habitants par hectare
+        density = math.ceil(annual_pop.population / land.area)
 
         return AnnualPopulation(
             year=year,
             population=annual_pop.population,
             evolution=annual_pop.evolution,
             density=density,
-            max_density=max_density,
         )

@@ -48,8 +48,8 @@ class PopulationConsoProgressionChart(ProjectChart):
 
         return [year.population for year in progression_population]
 
-    def get_progression_consommation_data(self):
-        return (
+    def get_progression_consommation(self):
+        progresison_consommation = (
             PublicDataContainer.consommation_progression_service()
             .get_by_land(
                 land=self.project.land_proxy,
@@ -59,22 +59,22 @@ class PopulationConsoProgressionChart(ProjectChart):
             .consommation
         )
 
-    def get_progression_consommation_total(self):
-        consommation_data = self.get_progression_consommation_data()
-        return [year.total for year in consommation_data]
-
-    def get_progression_consommation_habitat(self):
-        consommation_data = self.get_progression_consommation_data()
-        return [year.habitat for year in consommation_data]
+        return {
+            "total": [float(year.total / 10000) for year in progresison_consommation],
+            "habitat": [float(year.habitat / 10000) for year in progresison_consommation],
+        }
 
     def add_series(self):
+        progression_consommation = self.get_progression_consommation()
+        progression_population = self.get_progression_population()
+
         self.chart["series"] = [
             {
                 "name": "Consommation totale",
                 "type": "column",
                 "stacking": "normal",
                 "yAxis": 1,
-                "data": self.get_progression_consommation_total(),
+                "data": progression_consommation["total"],
                 "tooltip": {"valueSuffix": " ha"},
                 "color": "#CFD1E5",
             },
@@ -83,14 +83,14 @@ class PopulationConsoProgressionChart(ProjectChart):
                 "type": "column",
                 "stacking": "normal",
                 "yAxis": 1,
-                "data": self.get_progression_consommation_habitat(),
+                "data": progression_consommation["habitat"],
                 "tooltip": {"valueSuffix": " ha"},
                 "color": "#6a6af4",
             },
             {
                 "name": "Population",
                 "type": "spline",
-                "data": self.get_progression_population(),
+                "data": progression_population,
                 "tooltip": {"valueSuffix": " hab"},
                 "color": "#fa4b42",
             },

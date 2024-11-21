@@ -9,7 +9,6 @@ class AnnualPopulation:
     population: float
     evolution: float
     density: float
-    max_density: float
 
 
 @dataclass(frozen=True, slots=True)
