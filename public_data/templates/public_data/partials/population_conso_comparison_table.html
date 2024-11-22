@@ -1,0 +1,33 @@
+<div class="fr-table fr-table--bordered">
+    <div class="fr-table__wrapper">
+        <div class="fr-table__container">
+            <div class="fr-table__content">
+                <table>
+                    <caption>
+                        Consommation foncière au regard de l'évolution de la population du territoire et des territoires similaires
+                    </caption>
+                    <thead>
+                        <tr>
+                            {% for header in headers %}
+                                <th scope="col" class="{% if forloop.first %}fr-text--bold fr-cell--left{% else %}fr-cell--right{% endif %}">
+                                    {{ header }}
+                                </th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in data %}
+                            <tr>
+                                {% for cell in row %}
+                                    <td class="{% if forloop.first %}fr-text--bold fr-cell--left{% else %}fr-cell--right{% endif %}">
+                                        {{ cell|safe }}
+                                    </td>
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

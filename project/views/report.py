@@ -43,6 +43,12 @@ from public_data.infra.consommation.progression.table.ConsoProportionalCompariso
 from public_data.infra.planning_competency.PlanningCompetencyServiceSudocuh import (
     PlanningCompetencyServiceSudocuh,
 )
+from public_data.infra.population.annual.table.PopulationConsoComparisonTableMapper import (
+    PopulationConsoComparisonTableMapper,
+)
+from public_data.infra.population.progression.table.PopulationConsoProgressionTableMapper import (
+    PopulationConsoProgressionTableMapper,
+)
 from public_data.models import CouvertureSol, UsageSol
 from public_data.models.administration import AdminRef
 from public_data.models.gpu import ZoneUrba
@@ -108,13 +114,18 @@ class ProjectReportConsoView(ProjectReportBaseView):
 
         # surface
         surface_proportional_chart = charts.AnnualConsoProportionalComparisonChart(self.object)
-
         surface_proportional_table = ConsoProportionalComparisonTableMapper.map(
             consommation_progression=PublicDataContainer.consommation_progression_service().get_by_lands(
                 lands=project.comparison_lands_and_self_land(),
                 start_date=int(project.analyse_start_date),
                 end_date=int(project.analyse_end_date),
             )
+        )
+
+        consommation_stats = (
+            PublicDataContainer.consommation_stats_service()
+            .get_by_land(project.land_proxy, project.analyse_start_date, project.analyse_end_date)
+            .consommation[0]
         )
 
         # INSEE
@@ -126,10 +137,45 @@ class ProjectReportConsoView(ProjectReportBaseView):
             .get_by_land(project.land_proxy, project.analyse_start_date, project.analyse_end_date)
             .population[0]
         )
-        consommation_stats = (
-            PublicDataContainer.consommation_stats_service()
-            .get_by_land(project.land_proxy, project.analyse_start_date, project.analyse_end_date)
-            .consommation[0]
+        population_progression = (
+            PublicDataContainer.population_progression_service()
+            .get_by_land(
+                land=project.land_proxy,
+                start_date=int(project.analyse_start_date),
+                end_date=int(project.analyse_end_date),
+            )
+            .population
+        )
+        consommation_progression = (
+            PublicDataContainer.consommation_progression_service()
+            .get_by_land(
+                land=project.land_proxy,
+                start_date=int(project.analyse_start_date),
+                end_date=int(project.analyse_end_date),
+            )
+            .consommation
+        )
+        population_progression_table = PopulationConsoProgressionTableMapper.map(
+            consommation_progression, population_progression
+        )
+
+        consommation_comparison_stats = PublicDataContainer.consommation_stats_service().get_by_lands(
+            lands=project.comparison_lands_and_self_land(),
+            start_date=int(project.analyse_start_date),
+            end_date=int(project.analyse_end_date),
+        )
+        population_comparison_stats = PublicDataContainer.population_stats_service().get_by_lands(
+            lands=project.comparison_lands_and_self_land(),
+            start_date=int(project.analyse_start_date),
+            end_date=int(project.analyse_end_date),
+        )
+        population_comparison_progression = PublicDataContainer.population_progression_service().get_by_lands(
+            lands=project.comparison_lands_and_self_land(),
+            start_date=int(project.analyse_start_date),
+            end_date=int(project.analyse_end_date),
+        )
+        population_comparison_table = PopulationConsoComparisonTableMapper.map(
+            consommation_comparison_stats, population_comparison_stats, population_comparison_progression
         )
 
         kwargs.update(
@@ -163,6 +209,8 @@ class ProjectReportConsoView(ProjectReportBaseView):
                     )
                 ),
                 "surface_proportional_data_table": surface_proportional_table,
+                "population_progression_table": population_progression_table,
+                "population_comparison_table": population_comparison_table,
             }
         )
 

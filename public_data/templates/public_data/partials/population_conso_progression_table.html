@@ -1,0 +1,29 @@
+<div class="fr-table fr-table--bordered">
+    <div class="fr-table__wrapper">
+        <div class="fr-table__container">
+            <div class="fr-table__content">
+                <table class="table-first-column-bold">
+                    <caption>
+                        Évolutions comparées de la consommation d'espaces et de la population sur le territoire
+                    </caption>
+                    <thead>
+                        <tr>
+                            {% for header in headers %}
+                                <th scope="col" class="fr-cell--right">{{ header }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in data %}
+                            <tr>
+                                {% for cell in row %}
+                                    <td class="fr-cell--right">{{ cell|safe }}</td>
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
