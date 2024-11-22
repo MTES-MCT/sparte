@@ -25,6 +25,7 @@ class PopulationStatsService:
             population=[
                 StatsPopulation(
                     evolution=item.evolution,
+                    evolution_percent=item.evolution_percent,
                 )
                 for item in data
             ],

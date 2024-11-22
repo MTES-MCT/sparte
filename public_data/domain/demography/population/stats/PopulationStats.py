@@ -6,6 +6,7 @@ from public_data.models import Land
 @dataclass(frozen=True, slots=True)
 class StatsPopulation:
     evolution: int
+    evolution_percent: float
 
 
 @dataclass(frozen=True, slots=True)

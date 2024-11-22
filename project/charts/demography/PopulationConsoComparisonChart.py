@@ -35,15 +35,11 @@ class PopulationConsoComparisonChart(ProjectChart):
             },
             "yAxis": {"title": {"text": "Consommation d'espaces NAF (ha)"}, "maxPadding": 0.2, "min": 0},
             "tooltip": {
-                "useHTML": True,
-                "headerFormat": "<table>",
                 "pointFormat": (
-                    "<tr><th colspan='2'><h3>{series.name}</h3></th></tr>"
-                    "<tr><th>Consommation: </th><td class='text-end'>{point.y} ha</td></tr>"
-                    "<tr><th>Évolution démographique: </th><td class='text-end'>{point.x} hab</td></tr>"
-                    "<tr><th>Population totale: </th><td class='text-end'>{point.z} hab</td></tr>"
+                    "Consommation: <span class='fr-text--bold'>{point.y} ha</span><br />"
+                    "Évolution démographique: <span class='fr-text--bold'>{point.x} hab</span><br />"
+                    "Population totale: <span class='fr-text--bold'>{point.z} hab</span>"
                 ),
-                "footerFormat": "</table>",
             },
             "series": [],
         }
@@ -55,7 +51,7 @@ class PopulationConsoComparisonChart(ProjectChart):
         highlighted_land_id = self.project.land_proxy.id
 
         consommation_stats = {
-            c.land.id: float(c.consommation[0].total / 10000)  # en hectare
+            c.land.id: round(c.consommation[0].total / 10000, 3)  # en hectare
             for c in PublicDataContainer.consommation_stats_service().get_by_lands(lands, start_date, end_date)
         }
         population_stats = {

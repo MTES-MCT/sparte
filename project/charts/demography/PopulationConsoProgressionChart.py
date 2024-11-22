@@ -60,8 +60,8 @@ class PopulationConsoProgressionChart(ProjectChart):
         )
 
         return {
-            "total": [float(year.total / 10000) for year in progresison_consommation],
-            "habitat": [float(year.habitat / 10000) for year in progresison_consommation],
+            "total": [round(year.total / 10000, 3) for year in progresison_consommation],
+            "habitat": [round(year.habitat / 10000, 3) for year in progresison_consommation],
         }
 
     def add_series(self):

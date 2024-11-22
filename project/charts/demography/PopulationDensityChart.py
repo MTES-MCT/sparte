@@ -32,11 +32,14 @@ class PopulationDensityChart(ProjectChart):
             "series": [],
         }
 
-    def add_series(self):
-        annual_population = PublicDataContainer.population_annual_service().get_annual_population(
+    def get_annual_population(self):
+        return PublicDataContainer.population_annual_service().get_annual_population(
             land=self.project.land_proxy,
             year=int(self.project.analyse_end_date),
         )
+
+    def add_series(self):
+        annual_population = self.get_annual_population()
 
         self.chart["series"] = [
             {
@@ -44,12 +47,12 @@ class PopulationDensityChart(ProjectChart):
                 "color": "#000000",
                 "dataLabels": {
                     "enabled": True,
-                    "useHTML": True,
                     "align": "center",
-                    "verticalAlign": "top",
                     "color": "#000000",
                     "format": "{point.y} hab/ha",
-                    "style": {"transform": "translateY(-12px)", "textOutline": "none"},
+                    "crop": False,
+                    "overflow": "allow",
+                    "y": -20,
                 },
             }
         ]

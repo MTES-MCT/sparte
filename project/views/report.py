@@ -121,6 +121,16 @@ class ProjectReportConsoView(ProjectReportBaseView):
         population_density_chart = charts.PopulationDensityChart(project)
         population_conso_progression_chart = charts.PopulationConsoProgressionChart(project)
         population_conso_comparison_chart = charts.PopulationConsoComparisonChart(project)
+        population_stats = (
+            PublicDataContainer.population_stats_service()
+            .get_by_land(project.land_proxy, project.analyse_start_date, project.analyse_end_date)
+            .population[0]
+        )
+        consommation_stats = (
+            PublicDataContainer.consommation_stats_service()
+            .get_by_land(project.land_proxy, project.analyse_start_date, project.analyse_end_date)
+            .consommation[0]
+        )
 
         kwargs.update(
             {
@@ -128,6 +138,11 @@ class ProjectReportConsoView(ProjectReportBaseView):
                 "total_surface": project.area,
                 "conso_period": conso_period,
                 "is_commune": project.land_type == AdminRef.COMMUNE,
+                "population_evolution": population_stats.evolution,
+                "population_evolution_abs": abs(population_stats.evolution),
+                "population_evolution_percent": population_stats.evolution_percent,
+                "consommation_total": consommation_stats.total_hectare,
+                "consommation_total_percent": consommation_stats.total_percent,
                 # charts
                 "determinant_per_year_chart": det_chart,
                 "determinant_pie_chart": det_pie_chart,

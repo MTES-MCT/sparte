@@ -5,7 +5,9 @@ from public_data.models import Land
 
 @dataclass(frozen=True, slots=True)
 class ConsommationStats:
-    total: int
+    total: float
+    total_hectare: float
+    total_percent: float
 
 
 @dataclass(frozen=True, slots=True)

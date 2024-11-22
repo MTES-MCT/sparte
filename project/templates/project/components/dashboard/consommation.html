@@ -1,5 +1,6 @@
 {% load highcharts_tags %}
 {% load sri %}
+
  <div class="fr-grid-row fr-grid-row--gutters">
     <div class="fr-col-12 fr-col-md-6 fr-grid-row">
         {% include "project/components/widgets/statistic.html" with title=total_surface|floatformat:0|add:" ha" description="Surface du territoire" %}
@@ -189,20 +190,44 @@
 
     <div class="fr-grid-row fr-grid-row--gutters">
         <div class="fr-col-12 fr-col-lg-8">
-            <div class="bg-white fr-p-2w">
+            <div class="bg-white fr-p-2w h-100">
+                <div class="d-flex justify-content-end align-items-center fr-mb-2w">
+                    {% include "project/components/widgets/chart_buttons.html" with chart="population_density_chart" %}
+                </div>
                 <div id="population_density_chart"></div>
             </div>
         </div>
         <div class="fr-col-12 fr-col-lg-4">
-            <div class="bg-white fr-p-2w">
-                <p>Sur la période {{ project.analyse_start_date }}-{{ project.analyse_end_date }}, le territoire de {{ project.territory_name }} a [gagné|perdu] [x] nouveaux habitants, ce qui correspond à une [augmentation|diminution] de [x]% de sa populationulation. Sur cette même période, [x]% d'Espaces NAF a été consommé.</p>
-                <p class="fr-text--bold">L'urbanisation du territoire de {{ project.territory_name }} (+[x]%) évolue donc plus [rapidement|lentement] que la croissance démographique.</p>
+            <div class="bg-white fr-p-2w h-100">
+                <p class="fr-text--sm">
+                    Sur la période {{ project.analyse_start_date }}-{{ project.analyse_end_date }},
+                    le territoire de {{ project.territory_name }}
+                    <strong>
+                    {% if population_evolution == 0 %}
+                      n'a gagné aucun habitant
+                    {% elif population_evolution == 1 %}
+                      a gagné 1 habitant
+                    {% elif population_evolution == -1 %}
+                      a perdu 1 habitant
+                    {% elif population_evolution > 0 %}
+                      a gagné {{ population_evolution|floatformat:0 }} habitants
+                    {% else %}
+                      a perdu {{ population_evolution_abs|floatformat:0 }} habitants
+                    {% endif %}
+                    </strong>
+                    (soit une évolution de {{ population_evolution_percent|floatformat:3 }}%).
+                </p>
+                <p class="fr-text--sm"> 
+                    Sur cette même période,
+                    <strong>{{ consommation_total|floatformat:3 }} ha d'espaces NAF ont été consommés</strong>
+                    (soit {{ consommation_total_percent|floatformat:3 }}% du territoire).
+                </p>
             </div>
         </div>
     </div>
 </div>
 
-<div class="fr-mt-7w">
+<div class="fr-mt-5w">
     <div class="bg-white fr-p-2w">
         <div class="d-flex justify-content-end align-items-center fr-mb-2w">
             {% include "project/components/widgets/chart_buttons.html" with chart="population_conso_progression_chart" %}
