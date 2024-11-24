@@ -11,11 +11,11 @@
 }}
 
 SELECT * FROM {{ ref('zonage_urbanisme_guadeloupe') }}
-UNION ALL
+UNION
 SELECT * FROM {{ ref('zonage_urbanisme_martinique') }}
-UNION ALL
+UNION
 SELECT * FROM {{ ref('zonage_urbanisme_guyane') }}
-UNION ALL
+UNION
 SELECT * FROM {{ ref('zonage_urbanisme_reunion') }}
-UNION ALL
+UNION
 SELECT * FROM {{ ref('zonage_urbanisme_metropole') }}

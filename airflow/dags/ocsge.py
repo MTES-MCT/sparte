@@ -29,7 +29,7 @@ from include.ocsge.normalization import (
 )
 from include.pools import DBT_POOL, OCSGE_STAGING_POOL
 from include.shapefile import get_shapefile_fields
-from include.utils import get_srid_by_departement_code, multiline_string_to_single_line
+from include.utils import multiline_string_to_single_line
 
 
 def get_paths_from_directory(directory: str) -> list[tuple[str, str]]:
@@ -120,14 +120,11 @@ def load_shapefiles_to_dw(
     loaded_date: int,
     table_key: str,
     mode: Literal["overwrite", "append"],
-    table_suffix: str = "",
 ):
     local_path = "/tmp/ocsge.7z"
     Container().s3().get_file(path, local_path)
     extract_dir = tempfile.mkdtemp()
     py7zr.SevenZipFile(local_path, mode="r").extractall(path=extract_dir)
-
-    srid = get_srid_by_departement_code(departement)
 
     for file_path, filename in get_paths_from_directory(extract_dir):
         if not file_path.endswith(".shp"):
@@ -149,9 +146,6 @@ def load_shapefiles_to_dw(
         )
         table_name = variables[table_key]
 
-        if table_suffix:
-            table_name += f"_{table_suffix}"
-
         cmd = [
             "ogr2ogr",
             "-dialect",
@@ -163,7 +157,7 @@ def load_shapefiles_to_dw(
             "-lco",
             "GEOMETRY_NAME=geom",
             "-a_srs",
-            f"EPSG:{srid}",
+            "EPSG:2154",  # TODO: Change when support for DROM-COM is added
             "-nlt",
             "MULTIPOLYGON",
             "-nlt",
@@ -290,7 +284,6 @@ def ocsge():  # noqa: C901
             loaded_date=loaded_date,
             table_key="dw_source",
             mode="append",
-            table_suffix=departement,
         )
 
         return loaded_date
