@@ -62,6 +62,15 @@
             "2020": "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0__SHP_LAMB93_D006_2020-01-01/OCS-GE_2-0__SHP_LAMB93_D006_2020-01-01.7z"
         }
     },
+    "09": {
+        "difference": {
+            "2019_2022": "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0_DIFF_SHP_LAMB93_D009_2019-2022/OCS-GE_2-0_DIFF_SHP_LAMB93_D009_2019-2022.7z"
+        },
+        "occupation_du_sol_et_zone_construite": {
+            "2019": "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0__SHP_LAMB93_D009_2019-01-01/OCS-GE_2-0__SHP_LAMB93_D009_2019-01-01.7z",
+            "2022": "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0__SHP_LAMB93_D009_2022-01-01/OCS-GE_2-0__SHP_LAMB93_D009_2022-01-01.7z"
+        }
+    },
     "10": {
         "difference": {
             "2019_2022": "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0_DIFF_SHP_LAMB93_D010_2019_2022/OCS-GE_2-0_DIFF_SHP_LAMB93_D010_2019_2022.7z"
@@ -195,6 +204,15 @@
         "occupation_du_sol_et_zone_construite": {
             "2018": "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0__SHP_LAMB93_D040_2018-01-01/OCS-GE_2-0__SHP_LAMB93_D040_2018-01-01.7z",
             "2021": "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0__SHP_LAMB93_D040_2021-01-01/OCS-GE_2-0__SHP_LAMB93_D040_2021-01-01.7z"
+        }
+    },
+    "44": {
+        "difference": {
+            "2020_2022": "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0_DIFF_SHP_LAMB93_D044_2020-2022/OCS-GE_2-0_DIFF_SHP_LAMB93_D044_2020-2022.7z"
+        },
+        "occupation_du_sol_et_zone_construite": {
+            "2020": "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0__SHP_LAMB93_D044_2020-01-01/OCS-GE_2-0__SHP_LAMB93_D044_2020-01-01.7z",
+            "2022": "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0__SHP_LAMB93_D044_2022-01-01/OCS-GE_2-0__SHP_LAMB93_D044_2022-01-01.7z"
         }
     },
     "46": {
