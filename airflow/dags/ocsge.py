@@ -119,7 +119,7 @@ def load_shapefiles_to_dw(
     departement: str,
     loaded_date: int,
     table_key: str,
-    mode: Literal["overwrite", "append"] = "append",
+    mode: Literal["overwrite", "append"],
 ):
     local_path = "/tmp/ocsge.7z"
     Container().s3().get_file(path, local_path)
@@ -157,7 +157,7 @@ def load_shapefiles_to_dw(
             "-lco",
             "GEOMETRY_NAME=geom",
             "-a_srs",
-            "EPSG:2154",
+            "EPSG:2154",  # TODO: Change when support for DROM-COM is added
             "-nlt",
             "MULTIPOLYGON",
             "-nlt",
@@ -283,6 +283,7 @@ def ocsge():  # noqa: C901
             departement=departement,
             loaded_date=loaded_date,
             table_key="dw_source",
+            mode="append",
         )
 
         return loaded_date

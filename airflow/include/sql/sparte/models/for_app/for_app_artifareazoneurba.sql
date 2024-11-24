@@ -9,7 +9,7 @@ SELECT
     zonage_checksum                                AS zone_urba,
     year,
     max(departement)                               AS departement,
-    sum(st_area(st_transform(geom, 2154))) / 10000 AS area
+    sum(st_area(st_transform(geom, srid_source))) / 10000 AS area
 FROM
     {{ ref('occupation_du_sol_zonage_urbanisme') }}
 WHERE

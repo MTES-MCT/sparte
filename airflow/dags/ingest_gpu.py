@@ -76,7 +76,7 @@ def ingest_gpu():
             "-lco",
             "GEOMETRY_NAME=geom",
             "-a_srs",
-            "EPSG:4236",
+            "EPSG:4326",
             "-nln",
             "gpu_zone_urba",
             "-nlt",
