@@ -33,7 +33,9 @@
         <!-- Google Adwords -->
         {% adwords_google_tag_code %}
         <!-- Crisp -->
-        {% crisp_tag_code %}
+        {% if request.resolver_match.url_name not in 'home,home_rapport_local,map-urban-zones,theme-city-artif,theme-city-conso,theme-my-artif' %}
+            {% crisp_tag_code %}
+        {% endif %}
     </head>
     <body class="{% block body_class %}{% endblock %}">
         <!-- Page content wrapper-->
