@@ -112,6 +112,9 @@ def copy_table_from_dw_to_app(
                 "copy_public_data_landpop",
                 "copy_public_data_landpopcomparison",
                 "copy_public_data_landpopstats",
+                "copy_public_data_couverturesol",
+                "copy_public_data_usagesol",
+                "copy_public_data_couvertureusagematrix",
             ],
             type="array",
         ),
@@ -411,6 +414,39 @@ def update_app():  # noqa: C901
             ],
         )
 
+    @task.python
+    def copy_public_data_couverturesol(**context):
+        return copy_table_from_dw_to_app(
+            from_table="public_for_app.for_app_couverturesol",
+            to_table="public.public_data_couverturesol",
+            environment=context["params"]["environment"],
+            btree_index_columns=[["id"], ["code"], ["label"], ["code_prefix"], ["parent_id"]],
+        )
+
+    @task.python
+    def copy_public_data_usagesol(**context):
+        return copy_table_from_dw_to_app(
+            from_table="public_for_app.for_app_usagesol",
+            to_table="public.public_data_usagesol",
+            environment=context["params"]["environment"],
+            btree_index_columns=[["id"], ["code"], ["label"], ["code_prefix"], ["parent_id"]],
+        )
+
+    @task.python
+    def copy_public_data_couvertureusagematrix(**context):
+        return copy_table_from_dw_to_app(
+            from_table="public_for_app.for_app_couvertureusagematrix",
+            to_table="public.public_data_couvertureusagematrix",
+            environment=context["params"]["environment"],
+            btree_index_columns=[
+                ["id"],
+                ["couverture_id"],
+                ["usage_id"],
+                ["is_artificial"],
+                ["is_impermeable"],
+            ],
+        )
+
     @task.branch
     def copy_public_data_branch(**context):
         return context["params"]["tasks"]
@@ -439,6 +475,9 @@ def update_app():  # noqa: C901
         copy_public_data_landpop(),
         copy_public_data_landpopcomparison(),
         copy_public_data_landpopstats(),
+        copy_public_data_couverturesol(),
+        copy_public_data_usagesol(),
+        copy_public_data_couvertureusagematrix(),
     ]
 
 
