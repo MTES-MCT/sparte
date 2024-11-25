@@ -83,7 +83,14 @@
 <div class="fr-grid-row fr-grid-row--gutters">
     <div class="fr-col-12">
         <div class="bg-white fr-p-2w h-100">
-            <iframe style="height:50vh" src="{% url 'project:map-urban-zones' project.pk %}" width="100%"></iframe>
+            <iframe
+                title="Explorateur des zonages d'urbanisme"
+                style="height:50vh"
+                src="{% url 'project:map-urban-zones' project.pk %}"
+                width="100%"
+                loading="lazy"
+                >
+            </iframe>
         </div>
     </div>
 </div>
