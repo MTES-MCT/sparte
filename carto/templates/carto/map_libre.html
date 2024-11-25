@@ -47,13 +47,15 @@ html, body {
 {{ data|json_script:"data" }}
 
 <script language="javascript" nonce="[NONCE_PLACEHOLDER]">
-new MapLibre ({
+new MapLibre({
     targetElement: document.getElementById('map__container'),
     debug: {{ debug|yesno:"true,false" }},
     mapCenter: [{{ center_lng }}, {{ center_lat }}],
     defaultZoom: {{ default_zoom }},
+    bounds: {{ bounds|default:'null' }},
     data: JSON.parse(document.getElementById('data').textContent)
 })
+
 </script>
 {% endlocalize %}
 {% endblock bodyend %}

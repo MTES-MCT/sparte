@@ -158,13 +158,8 @@
     </div>
     <div class="fr-grid-row fr-grid-row--gutters">
         <div class="fr-col-12">
-            <iframe
-                title="Carte comprendre l'artificialisation de son territoire"
-                src="{% url 'project:theme-my-artif' project.pk %}"
-                width="100%"
-                style="height:70vh"
-                loading="lazy"
-            ></iframe>
+            {% url 'project:theme-my-artif' project.pk as map_url %}
+            {% include "project/components/map/iframe_map.html" with src=map_url title="Carte comprendre l'artificialisation" %}
         </div>
     </div>
 
