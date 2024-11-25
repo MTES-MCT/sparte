@@ -24,15 +24,15 @@ class ConsommationProgressionService:
             end_date=end_date,
             consommation=[
                 AnnualConsommation(
-                    year=c.year,
-                    habitat=c.habitat,
-                    activite=c.activite,
-                    mixte=c.mixte,
-                    route=c.route,
-                    ferre=c.ferroviaire,
-                    non_reseigne=c.inconnu,
-                    total=c.total,
-                    per_mille_of_area=c.total / land.area * 1000,
+                    year=c.year / 10000,
+                    habitat=c.habitat / 10000,
+                    activite=c.activite / 10000,
+                    mixte=c.mixte / 10000,
+                    route=c.route / 10000,
+                    ferre=c.ferroviaire / 10000,
+                    non_reseigne=c.inconnu / 10000,
+                    total=c.total / 10000,
+                    per_mille_of_area=c.total / 10000 / land.area * 1000,
                 )
                 for c in conso
             ],
