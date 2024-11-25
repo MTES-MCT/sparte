@@ -7,13 +7,8 @@
 
 {% block content %}
 <div class="d-flex justify-content-center">
-    <div class="home-container">
-        <h1>Inscrivez-vous à notre newsletter</h1>
-        <form action="" method="post">
-            {% csrf_token %}
-            {{ form|crispy }}
-            <button id="btn-send" class="fr-btn mt-4" type="submit">S'inscrire</button>
-        </form>
+    <div class="newsletter-container">
+        {% include "home/partials/newsletter_form.html" %}
     </div>
 </div>
 {% endblock content %}
