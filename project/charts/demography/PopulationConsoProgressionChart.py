@@ -12,6 +12,7 @@ class PopulationConsoProgressionChart(ProjectChart):
                 "text": "Évolutions comparées de la consommation d'espaces NAF et de la population du territoire"
             },
             "credits": {"enabled": False},
+            "plotOptions": {"series": {"grouping": False, "borderWidth": 0}},
             "xAxis": [
                 {
                     "categories": [
@@ -60,8 +61,8 @@ class PopulationConsoProgressionChart(ProjectChart):
         )
 
         return {
-            "total": [round(year.total / 10000, 3) for year in progresison_consommation],
-            "habitat": [round(year.habitat / 10000, 3) for year in progresison_consommation],
+            "total": [round(year.total, 2) for year in progresison_consommation],
+            "habitat": [round(year.habitat, 2) for year in progresison_consommation],
         }
 
     def add_series(self):
@@ -72,20 +73,20 @@ class PopulationConsoProgressionChart(ProjectChart):
             {
                 "name": "Consommation totale",
                 "type": "column",
-                "stacking": "normal",
                 "yAxis": 1,
                 "data": progression_consommation["total"],
                 "tooltip": {"valueSuffix": " ha"},
                 "color": "#CFD1E5",
+                "id": "main",
             },
             {
                 "name": "Consommation à destination de l'habitat",
                 "type": "column",
-                "stacking": "normal",
                 "yAxis": 1,
                 "data": progression_consommation["habitat"],
                 "tooltip": {"valueSuffix": " ha"},
                 "color": "#6a6af4",
+                "linkTo": "main",
             },
             {
                 "name": "Population",
