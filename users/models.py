@@ -5,6 +5,8 @@ from django.db import models
 from django.utils import timezone
 
 from utils.validators import is_alpha_validator
+from django.db.models.constraints import UniqueConstraint
+from django.db.models.functions import Lower
 
 from .managers import UserManager
 
@@ -92,3 +94,9 @@ class User(AbstractUser):
     class Meta:
         verbose_name = "Utilisateur"
         ordering = ["email"]
+        constraints = [
+            UniqueConstraint(
+                Lower("email"),
+                name="user_email_ci_uniqueness",
+            ),
+        ]
