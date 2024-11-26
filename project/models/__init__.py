@@ -1,6 +1,5 @@
 __all__ = [
     "create_from_public_key",
-    "Emprise",
     "ErrorTracking",
     "Project",
     "ProjectCommune",
@@ -13,7 +12,7 @@ __all__ = [
 ]
 
 
-from .project_base import Emprise, Project, ProjectCommune
+from .project_base import Project, ProjectCommune
 from .request import ErrorTracking, Request, RequestedDocumentChoices
 from .RNUPackage import RNUPackage
 from .RNUPackageRequest import RNUPackageRequest

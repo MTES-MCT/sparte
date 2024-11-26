@@ -4,8 +4,6 @@ from rest_framework_gis import serializers as gis_serializers
 from project.models import Project
 from public_data.models import Commune, CommuneDiff
 
-from .models import Emprise
-
 
 class ProjectDetailSerializer(serializers.ModelSerializer):
     class Meta:
@@ -21,16 +19,6 @@ class ProjectDetailSerializer(serializers.ModelSerializer):
             "has_zonage_urbanisme",
             "consommation_correction_status",
         ]
-
-
-class EmpriseSerializer(gis_serializers.GeoFeatureModelSerializer):
-    class Meta:
-        fields = (
-            "id",
-            "project",
-        )
-        geo_field = "mpoly"
-        model = Emprise
 
 
 class ArtifEvolutionSubSerializer(serializers.ModelSerializer):

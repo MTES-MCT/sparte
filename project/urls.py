@@ -3,7 +3,7 @@ from django.views.generic.base import RedirectView
 from rest_framework import routers
 
 from . import views
-from .api_views import EmpriseViewSet, ProjectDetailView, ProjectViewSet
+from .api_views import ProjectDetailView, ProjectViewSet
 
 app_name = "project"
 
@@ -160,7 +160,6 @@ urlpatterns = [
 
 # Add API urls
 router = routers.DefaultRouter()
-router.register(r"geojson", EmpriseViewSet)
 router.register(r"projects", ProjectViewSet)
 
 
