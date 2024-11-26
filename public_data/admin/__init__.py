@@ -1,6 +1,5 @@
 from .CeremaAdmin import CeremaAdmin
 from .CommuneAdmin import CommuneAdmin
-from .CommunePopAdmin import CommunePopAdmin
 from .DepartementAdmin import DepartementAdmin
 from .EpciAdmin import EpciAdmin
 from .OcsgeAdmin import OcsgeAdmin
@@ -17,7 +16,6 @@ from .SudocuhEpciAdmin import SudocuhEpciAdmin
 __all__ = [
     "CeremaAdmin",
     "CommuneAdmin",
-    "CommunePopAdmin",
     "DepartementAdmin",
     "EpciAdmin",
     "OcsgeAdmin",

@@ -25,7 +25,6 @@ from public_data.models import (
     AdminRef,
     Cerema,
     CommuneDiff,
-    CommunePop,
     CommuneSol,
     CouvertureSol,
     Departement,
@@ -647,22 +646,6 @@ class Project(BaseProject):
         args = (Sum(field) for field in fields)
         qs = qs.aggregate(*args)
         return {f"20{key[3:5]}": float(val / 10000) * float(coef) for key, val in qs.items()}
-
-    def get_pop_change_per_year(self, criteria: Literal["pop", "household"] = "pop") -> Dict:
-        cities = (
-            CommunePop.objects.filter(city__in=self.cities.all())
-            .filter(year__gte=self.analyse_start_date)
-            .filter(year__lte=self.analyse_end_date)
-            .values("year")
-            .annotate(pop_progression=Sum("pop_change"))
-            .annotate(household_progression=Sum("household_change"))
-            .order_by("year")
-        )
-        if criteria == "pop":
-            data = {str(city["year"]): city["pop_progression"] for city in cities}
-        else:
-            data = {str(city["year"]): city["household_progression"] for city in cities}
-        return {year: data.get(year, None) for year in self.years}
 
     def get_land_conso_per_year(self, level, group_name=None):
         """Return conso data aggregated by a specific level
