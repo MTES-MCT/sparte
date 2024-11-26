@@ -11,7 +11,14 @@ class PopulationDensityChart(ProjectChart):
     @property
     def param(self):
         return super().param | {
-            "chart": {"type": "lineargauge", "inverted": True, "height": 130, "marginTop": 80},
+            "chart": {
+                "type": "lineargauge",
+                "inverted": True,
+                "height": 130,
+                "marginTop": 80,
+                "marginLeft": 50,
+                "marginRight": 50,
+            },
             "title": {"text": "Densité de population"},
             "xAxis": {"lineColor": "transparent", "labels": {"enabled": False}, "tickLength": 0},
             "yAxis": {
