@@ -1,6 +1,5 @@
 #!/bin/sh
 
-# Construire le payload
 PAYLOAD=$(cat <<EOF
 {
   "text": "${APP} début du déploiement.",

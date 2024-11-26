@@ -97,7 +97,6 @@ PROJECT_APPS = [
     "home.apps.HomeConfig",
     "metabase.apps.MetabaseConfig",
     "brevo.apps.BrevoConfig",
-    "documentation.apps.DocumentationConfig",
     "crisp.apps.CrispConfig",
 ]
 
