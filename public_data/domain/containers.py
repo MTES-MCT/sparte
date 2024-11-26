@@ -8,9 +8,6 @@ from .consommation.progression.ConsommationProgressionService import (
     ConsommationProgressionService,
 )
 from .consommation.stats.ConsommationStatsService import ConsommationStatsService
-from .demography.population.annual.AnnualPopulationService import (
-    AnnualPopulationService,
-)
 from .demography.population.progression.PopulationProgressionService import (
     PopulationProgressionService,
 )
@@ -31,10 +28,6 @@ class PublicDataContainer(containers.DeclarativeContainer):
 
     consommation_stats_service = providers.Factory(
         ConsommationStatsService,
-    )
-
-    population_annual_service = providers.Factory(
-        AnnualPopulationService,
     )
 
     population_progression_service = providers.Factory(

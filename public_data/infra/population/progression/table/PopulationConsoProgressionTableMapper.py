@@ -22,15 +22,13 @@ class PopulationConsoProgressionTableMapper:
         ]
 
         data = [
-            [
-                str(consommation.year),
-                round(consommation.total / 10000, 3),
-                round(consommation.habitat / 10000, 3),
-                (
-                    f"{int(population.population)} "
-                    + PopulationConsoProgressionTableMapper.get_trend(population.evolution)
-                ),
-            ]
+            {
+                "year": str(consommation.year),
+                "total": round(consommation.total, 2),
+                "habitat": round(consommation.habitat, 2),
+                "population": int(population.population),
+                "evolution": int(population.evolution),
+            }
             for consommation, population in zip(consommation_progression, population_progression)
         ]
 
@@ -41,18 +39,3 @@ class PopulationConsoProgressionTableMapper:
                 "data": data,
             },
         )
-
-    @staticmethod
-    def get_trend(evolution: int) -> str:
-        if evolution > 0:
-            return (
-                f"<p class='fr-badge fr-badge--success fr-badge--sm fr-badge--no-icon fr-ml-1w'>"
-                f"+{int(evolution)} <i class='bi bi-arrow-up-right fr-ml-1w'></i></p>"
-            )
-        elif evolution < 0:
-            return (
-                f"<p class='fr-badge fr-badge--error fr-badge--sm fr-badge--no-icon fr-ml-1w'>"
-                f"{int(evolution)} <i class='bi bi-arrow-down-right fr-ml-1w'></i></p>"
-            )
-        else:
-            return ""

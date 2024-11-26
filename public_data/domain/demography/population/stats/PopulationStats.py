@@ -7,6 +7,8 @@ from public_data.models import Land
 class StatsPopulation:
     evolution: int
     evolution_percent: float
+    comparison_level: str
+    comparison_id: str
 
 
 @dataclass(frozen=True, slots=True)

@@ -25,20 +25,13 @@ class PopulationConsoComparisonTableMapper:
         headers = [land_type_label] + ["Consommation (ha)", "Évolution démographique (hab)", "Population totale (hab)"]
 
         data = [
-            [land_conso.land.name] + [round(annual_conso.total, 2) for annual_conso in land_conso.consommation]
-            for land_conso in consommation_comparison_stats
-        ]
-
-        data = [
-            [
-                consommation_stats.land.name,
-                consommation_stats.consommation[0].total_hectare,
-                (
-                    f"{int(population_stats.population[0].evolution)} "
-                    + PopulationConsoComparisonTableMapper.get_trend(population_stats.population[0].evolution_percent)
-                ),
-                int(population_progression.population[0].population),
-            ]
+            {
+                "land_name": consommation_stats.land.name,
+                "consommation_total": round(consommation_stats.consommation[0].total, 2),
+                "evolution": int(population_stats.population[0].evolution),
+                "evolution_percent": population_stats.population[0].evolution_percent,
+                "population_total": int(population_progression.population[0].population),
+            }
             for consommation_stats, population_stats, population_progression in zip(
                 consommation_comparison_stats, population_comparison_stats, population_comparison_progression
             )
@@ -51,18 +44,3 @@ class PopulationConsoComparisonTableMapper:
                 "data": data,
             },
         )
-
-    @staticmethod
-    def get_trend(evolution: int) -> str:
-        if evolution > 0:
-            return (
-                f"<p class='fr-badge fr-badge--success fr-badge--sm fr-badge--no-icon fr-ml-1w'>"
-                f"+{round(evolution, 3)}% <i class='bi bi-arrow-up-right fr-ml-1w'></i></p>"
-            )
-        elif evolution < 0:
-            return (
-                f"<p class='fr-badge fr-badge--error fr-badge--sm fr-badge--no-icon fr-ml-1w'>"
-                f"{round(evolution, 3)}% <i class='bi bi-arrow-down-right fr-ml-1w'></i></p>"
-            )
-        else:
-            return ""

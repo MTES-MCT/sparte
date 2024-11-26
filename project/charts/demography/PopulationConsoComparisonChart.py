@@ -51,16 +51,16 @@ class PopulationConsoComparisonChart(ProjectChart):
         highlighted_land_id = self.project.land_proxy.id
 
         consommation_stats = {
-            c.land.id: round(c.consommation[0].total / 10000, 3)  # en hectare
+            c.land.id: round(c.consommation[0].total, 2)
             for c in PublicDataContainer.consommation_stats_service().get_by_lands(lands, start_date, end_date)
         }
         population_stats = {
             p.land.id: p.population[0].evolution
             for p in PublicDataContainer.population_stats_service().get_by_lands(lands, start_date, end_date)
         }
-        annual_population = {
-            land.id: PublicDataContainer.population_annual_service().get_annual_population(land, end_date).population
-            for land in lands
+        population_progression = {
+            p.land.id: p.population[0].population
+            for p in PublicDataContainer.population_progression_service().get_by_lands(lands, start_date, end_date)
         }
 
         # Créer les séries
@@ -71,7 +71,7 @@ class PopulationConsoComparisonChart(ProjectChart):
                     {
                         "x": population_stats.get(land.id, 0),
                         "y": consommation_stats.get(land.id, 0),
-                        "z": annual_population.get(land.id, 0),
+                        "z": population_progression.get(land.id, 0),
                     }
                 ],
                 "color": HIGHLIGHT_COLOR if land.id == highlighted_land_id else None,

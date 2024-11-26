@@ -1,3 +1,5 @@
+import math
+
 from project.charts.base_project_chart import ProjectChart
 from project.charts.constants import DENSITY_MAX
 from public_data.domain.containers import PublicDataContainer
@@ -10,7 +12,7 @@ class PopulationDensityChart(ProjectChart):
     def param(self):
         return super().param | {
             "chart": {"type": "lineargauge", "inverted": True, "height": 130, "marginTop": 80},
-            "title": {"text": f"Densité de population en {self.project.analyse_end_date}"},
+            "title": {"text": "Densité de population"},
             "xAxis": {"lineColor": "transparent", "labels": {"enabled": False}, "tickLength": 0},
             "yAxis": {
                 "tickPositions": [0, 50, 100, 150, 200, DENSITY_MAX],
@@ -32,18 +34,20 @@ class PopulationDensityChart(ProjectChart):
             "series": [],
         }
 
-    def get_annual_population(self):
-        return PublicDataContainer.population_annual_service().get_annual_population(
+    def add_series(self):
+        progression_population = PublicDataContainer.population_progression_service().get_by_land(
             land=self.project.land_proxy,
-            year=int(self.project.analyse_end_date),
+            start_date=int(self.project.analyse_start_date),
+            end_date=int(self.project.analyse_end_date),
         )
 
-    def add_series(self):
-        annual_population = self.get_annual_population()
+        # On récupére la dernier année de pop sur la période disponible
+        last_year_data_available = progression_population.population[-1]
+        density = math.ceil(last_year_data_available.population / self.project.land_proxy.area)
 
         self.chart["series"] = [
             {
-                "data": [annual_population.density],
+                "data": [density],
                 "color": "#000000",
                 "dataLabels": {
                     "enabled": True,

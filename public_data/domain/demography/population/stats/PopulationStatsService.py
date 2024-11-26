@@ -26,6 +26,8 @@ class PopulationStatsService:
                 StatsPopulation(
                     evolution=item.evolution,
                     evolution_percent=item.evolution_percent,
+                    comparison_level=item.comparison_level,
+                    comparison_id=item.comparison_id,
                 )
                 for item in data
             ],

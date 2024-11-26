@@ -24,8 +24,7 @@ class ConsommationStatsService:
             end_date=end_date,
             consommation=[
                 ConsommationStats(
-                    total=item.total,
-                    total_hectare=item.total / 10000,
+                    total=item.total / 10000,
                     total_percent=item.total_percent,
                 )
                 for item in data

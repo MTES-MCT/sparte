@@ -18,11 +18,23 @@
                     <tbody>
                         {% for row in data %}
                             <tr>
-                                {% for cell in row %}
-                                    <td class="{% if forloop.first %}fr-text--bold fr-cell--left{% else %}fr-cell--right{% endif %}">
-                                        {{ cell|safe }}
-                                    </td>
-                                {% endfor %}
+                                <td class="fr-text--bold fr-cell--left">{{ row.land_name }}</td>
+                                <td class="fr-cell--right">{{ row.consommation_total }}</td>
+                                <td class="fr-cell--right">
+                                    {{ row.evolution }}
+                                    {% if row.evolution_percent > 0 %}
+                                        <span class="fr-badge fr-badge--success fr-badge--sm fr-badge--no-icon fr-ml-1w">
+                                            +{{ row.evolution_percent|floatformat:2 }}%
+                                            <i class="bi bi-arrow-up-right fr-ml-1w"></i>
+                                        </span>
+                                    {% elif row.evolution_percent < 0 %}
+                                        <span class="fr-badge fr-badge--error fr-badge--sm fr-badge--no-icon fr-ml-1w">
+                                            {{ row.evolution_percent|floatformat:2 }}%
+                                            <i class="bi bi-arrow-down-right fr-ml-1w"></i>
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                <td class="fr-cell--right">{{ row.population_total }}</td>
                             </tr>
                         {% endfor %}
                     </tbody>

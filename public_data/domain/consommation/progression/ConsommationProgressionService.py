@@ -24,7 +24,7 @@ class ConsommationProgressionService:
             end_date=end_date,
             consommation=[
                 AnnualConsommation(
-                    year=c.year / 10000,
+                    year=c.year,
                     habitat=c.habitat / 10000,
                     activite=c.activite / 10000,
                     mixte=c.mixte / 10000,
