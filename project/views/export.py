@@ -13,7 +13,7 @@ from project.models.project_base import Project
 from project.storages import ExportStorage
 
 # from utils.excel import write_sheet
-from public_data.models import Cerema, CommuneDiff, CommunePop, CommuneSol
+from public_data.models import Cerema, CommuneDiff, CommuneSol
 
 
 class ExportListView(LoginRequiredMixin, TemplateView):
@@ -95,46 +95,6 @@ class ExportExcelView(View):
         # add data to dataframe and make the pivot
         df = pd.DataFrame(qs, columns=headers).fillna(0.0).pivot(columns=columns, index=index, values=values)
         return df
-
-    def add_population_sheet(self) -> None:
-        config = [
-            {"name": "Commune", "db": "city__name", "type": "index"},
-            {"name": "Insee", "db": "city__insee", "type": "index"},
-            {"name": "EPCI", "db": "city__epci__name", "type": "index"},
-            {"name": "SCoT", "db": "city__scot__name", "type": "index"},
-            {"name": "Département", "db": "city__departement__name", "type": "index"},
-            {
-                "name": "Région",
-                "db": "city__departement__region__name",
-                "type": "index",
-            },
-            {"name": "Année", "db": "year", "type": "columns"},
-            {"name": "Changement", "db": "pop_change", "type": "values"},
-            {"name": "Total", "db": "pop", "type": "values"},
-        ]
-        qs = CommunePop.objects.filter(city__in=self.project.cities.all())
-        df = self.generate_dataframe(config, qs)
-        df.to_excel(self.writer, sheet_name="Population")
-
-    def add_menages_sheet(self):
-        config = [
-            {"name": "Commune", "db": "city__name", "type": "index"},
-            {"name": "Insee", "db": "city__insee", "type": "index"},
-            {"name": "EPCI", "db": "city__epci__name", "type": "index"},
-            {"name": "SCoT", "db": "city__scot__name", "type": "index"},
-            {"name": "Département", "db": "city__departement__name", "type": "index"},
-            {
-                "name": "Région",
-                "db": "city__departement__region__name",
-                "type": "index",
-            },
-            {"name": "Année", "db": "year", "type": "columns"},
-            {"name": "Changement", "db": "household_change", "type": "values"},
-            {"name": "Total", "db": "household", "type": "values"},
-        ]
-        qs = CommunePop.objects.filter(city__in=self.project.cities.all())
-        df = self.generate_dataframe(config, qs)
-        df.astype(float).to_excel(self.writer, sheet_name="Ménages")
 
     def add_conso_sheet(self):
         """
