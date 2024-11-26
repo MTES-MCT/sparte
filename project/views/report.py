@@ -43,7 +43,7 @@ from public_data.infra.consommation.progression.table.ConsoProportionalCompariso
 from public_data.infra.planning_competency.PlanningCompetencyServiceSudocuh import (
     PlanningCompetencyServiceSudocuh,
 )
-from public_data.infra.population.annual.table.PopulationConsoComparisonTableMapper import (
+from public_data.infra.population.progression.table.PopulationConsoComparisonTableMapper import (
     PopulationConsoComparisonTableMapper,
 )
 from public_data.infra.population.progression.table.PopulationConsoProgressionTableMapper import (
