@@ -39,7 +39,6 @@ urlpatterns = [
     path("word/", include("diagnostic_word.urls")),
     path("statistiques/", include("metabase.urls")),
     path("fancy-cache", include("fancy_cache.urls")),
-    path("documentation/", include("documentation.urls")),
     path("crisp/", include("crisp.urls")),
 ]
 
