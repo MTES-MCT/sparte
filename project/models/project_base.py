@@ -5,9 +5,7 @@ from typing import Dict, Literal
 
 import pandas as pd
 from django.conf import settings
-from django.contrib.gis.db import models as gis_models
-from django.contrib.gis.db.models import Extent, Union
-from django.contrib.gis.db.models.functions import Area, Centroid, PointOnSurface
+from django.contrib.gis.db.models.functions import Area, PointOnSurface
 from django.contrib.gis.geos import MultiPolygon, Polygon
 from django.core.cache import cache
 from django.core.validators import MaxValueValidator, MinValueValidator
@@ -37,9 +35,7 @@ from public_data.models import (
 )
 from public_data.models.administration import Commune
 from public_data.models.administration.enums import ConsommationCorrectionStatus
-from public_data.models.enums import SRID
 from public_data.models.gpu import ArtifAreaZoneUrba, ZoneUrba
-from public_data.models.mixins import DataColorationMixin
 from utils.db import cast_sum_area
 from utils.validators import is_alpha_validator
 
@@ -300,7 +296,6 @@ class Project(BaseProject):
     )
 
     async_add_city_done = models.BooleanField(default=False)
-    async_set_combined_emprise_done = models.BooleanField(default=False)
     async_cover_image_done = models.BooleanField(default=False)
     async_find_first_and_last_ocsge_done = models.BooleanField(default=False)
     async_add_comparison_lands_done = models.BooleanField(default=False)
@@ -324,7 +319,6 @@ class Project(BaseProject):
     def async_complete(self) -> bool:
         calculations_and_extend_ready = (
             self.async_add_city_done
-            and self.async_set_combined_emprise_done
             and self.async_cover_image_done
             and self.async_find_first_and_last_ocsge_done
             and self.async_ocsge_coverage_status_done
@@ -358,7 +352,6 @@ class Project(BaseProject):
     def is_ready_to_be_displayed(self) -> bool:
         return (
             self.async_add_city_done
-            and self.async_set_combined_emprise_done
             and self.async_add_comparison_lands_done
             and self.async_find_first_and_last_ocsge_done
             and self.async_ocsge_coverage_status_done
@@ -861,12 +854,10 @@ class Project(BaseProject):
         return results
 
     def get_bounding_box(self):
-        result = self.emprise_set.aggregate(bbox=Extent("mpoly"))
-        return list(result["bbox"])
+        return list(self.combined_emprise.extent)
 
     def get_centroid(self):
-        result = self.emprise_set.aggregate(center=Centroid(Union("mpoly")))
-        return result["center"]
+        return self.combined_emprise.centroid
 
     def get_available_millesimes(self, commit=False):
         millesimes = set()
@@ -1179,33 +1170,3 @@ class Project(BaseProject):
             zone_list[k]["fill_up_rate"] = 100 * zone_list[k]["last_artif_area"] / zone_list[k]["total_area"]
             zone_list[k]["new_artif"] = zone_list[k]["last_artif_area"] - zone_list[k]["first_artif_area"]
         return zone_list
-
-
-class Emprise(DataColorationMixin, gis_models.Model):
-    # DataColorationMixin properties that need to be set when heritating
-    default_property = "id"
-    default_color = "blue"
-
-    project = gis_models.ForeignKey(
-        Project,
-        on_delete=models.CASCADE,
-        verbose_name="Projet",
-    )
-    mpoly = gis_models.MultiPolygonField(srid=4326)
-    srid_source = models.IntegerField(
-        "SRID",
-        choices=SRID.choices,
-        default=SRID.LAMBERT_93,
-    )
-
-    # mapping for LayerMapping (from GeoDjango)
-    mapping = {
-        "mpoly": "MULTIPOLYGON",
-    }
-
-    class Meta:
-        ordering = ["project"]
-
-    def set_parent(self, project: Project):
-        """Identical to Project"""
-        self.project = project

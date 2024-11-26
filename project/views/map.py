@@ -48,20 +48,6 @@ class BaseMap(GroupMixin, DetailView):
                 },
             },
             {
-                "key": "emprise-du-territoire-source",
-                "params": {
-                    "type": "geojson",
-                    "data": reverse_lazy("project:emprise-list"),
-                },
-                "query_strings": [
-                    {
-                        "type": "string",
-                        "key": "id",
-                        "value": self.object.pk,
-                    },
-                ],
-            },
-            {
                 "key": "limites-administratives-source",
                 "params": {
                     "type": "vector",
@@ -119,16 +105,6 @@ class BaseMap(GroupMixin, DetailView):
                 "source-layer": "commune",
                 "paint": {
                     "line-color": "#b5bee2",
-                    "line-width": 1.5,
-                },
-            },
-            {
-                "id": "emprise-du-territoire-layer",
-                "z-index": 5,
-                "type": "line",
-                "source": "emprise-du-territoire-source",
-                "paint": {
-                    "line-color": "#ffff00",
                     "line-width": 1.5,
                 },
             },
@@ -238,37 +214,6 @@ class BaseMap(GroupMixin, DetailView):
                     },
                 ],
                 "source": "fond-de-carte-source",
-            },
-            {
-                "name": "Emprise du territoire",
-                "z-index": 1,
-                "filters": [
-                    {
-                        "name": "Visibilité du calque",
-                        "type": "visibility",
-                        "value": "visible",
-                        "triggers": [
-                            {
-                                "method": "changeLayoutProperty",
-                                "property": "visibility",
-                                "items": ["emprise-du-territoire-layer"],
-                            },
-                        ],
-                    },
-                    {
-                        "name": "Opacité du calque",
-                        "type": "opacity",
-                        "value": 100,
-                        "triggers": [
-                            {
-                                "method": "changePaintProperty",
-                                "property": "line-opacity",
-                                "items": ["emprise-du-territoire-layer"],
-                            },
-                        ],
-                    },
-                ],
-                "source": "emprise-du-territoire-source",
             },
             {
                 "name": "Limites administratives",

@@ -5,38 +5,14 @@ from django.db.models import F, OuterRef, Subquery
 from django.http import JsonResponse
 from rest_framework import generics, viewsets
 from rest_framework.decorators import action
-from rest_framework.exceptions import ParseError
 
 from public_data.models import Cerema, Commune
 from public_data.models.gpu import ZoneUrba
 from public_data.serializers import ZoneUrbaSerializer
 
-from .models import Emprise, Project
-from .serializers import (
-    EmpriseSerializer,
-    ProjectCommuneSerializer,
-    ProjectDetailSerializer,
-)
+from .models import Project
+from .serializers import ProjectCommuneSerializer, ProjectDetailSerializer
 from .views.mixins import UserQuerysetOrPublicMixin
-
-
-class EmpriseViewSet(viewsets.ReadOnlyModelViewSet):
-    """Endpoint that provide geojson data for a specific project"""
-
-    queryset = Emprise.objects.all()
-    serializer_class = EmpriseSerializer
-    filter_field = "project_id"
-
-    def get_queryset(self):
-        """Check if an id is provided and return linked Emprises"""
-        try:
-            id = int(self.request.query_params["id"])
-        except KeyError:
-            raise ParseError("id parameter is required in query parameter.")
-        except ValueError:
-            raise ParseError("id parameter must be an int.")
-
-        return self.queryset.filter(**{self.filter_field: id})
 
 
 class ProjectDetailView(generics.RetrieveAPIView):

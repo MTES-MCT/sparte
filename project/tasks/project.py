@@ -17,11 +17,10 @@ from django_app_parameter import app_parameter
 from matplotlib.lines import Line2D
 from matplotlib_scalebar.scalebar import ScaleBar
 
-from project.models import Emprise, Project, Request, RequestedDocumentChoices
+from project.models import Project, Request, RequestedDocumentChoices
 from public_data.domain.containers import PublicDataContainer
 from public_data.models import AdminRef, ArtificialArea, Land, OcsgeDiff
 from public_data.models.gpu import ArtifAreaZoneUrba, ZoneUrba
-from utils.db import fix_poly
 from utils.emails import SibTemplateEmail
 from utils.functions import get_url_with_domain
 from utils.mattermost import BlockedDiagnostic
@@ -75,38 +74,6 @@ def add_city(self, project_id: int, public_keys: str) -> list[str]:
         logger.info("End add_city project_id=%d", project_id)
 
     return [city.insee for city in project.cities.all()]
-
-
-@shared_task(bind=True, max_retries=5)
-def set_combined_emprise(self, project_id: int) -> list[int]:
-    """Use linked cities to create project emprise."""
-    logger.info("Start set_combined_emprise project_id==%d", project_id)
-
-    emprises = []
-
-    try:
-        project = Project.objects.get(pk=project_id)
-
-        for city in project.cities.all():
-            emprises.append(
-                Emprise.objects.create(
-                    mpoly=fix_poly(city.mpoly),
-                    srid_source=city.srid_source,
-                    project=project,
-                )
-            )
-
-        race_protection_save(project_id, {"async_set_combined_emprise_done": True})
-    except Project.DoesNotExist:
-        logger.error(f"project_id={project_id} does not exist")
-    except Exception as exc:
-        logger.error(exc)
-        logger.exception(exc)
-        self.retry(exc=exc, countdown=60)
-    finally:
-        logger.info("End set_combined_emprise project_id=%d", project_id)
-
-    return [emprise.id for emprise in emprises]
 
 
 @shared_task(bind=True, max_retries=5)

@@ -60,9 +60,6 @@ def trigger_async_tasks(project: Project, public_key: str | None = None) -> None
     if not project.async_add_city_done:
         tasks_list.append(t.add_city.si(project.id, public_key))
 
-    if not project.async_set_combined_emprise_done:
-        tasks_list.append(t.set_combined_emprise.si(project.id))
-
     if not project.async_find_first_and_last_ocsge_done:
         tasks_list.append(t.find_first_and_last_ocsge.si(project.id))
 
@@ -187,9 +184,6 @@ def trigger_async_tasks_rnu_pakage_one_off(project: Project, public_key: str | N
 
     if not project.async_add_city_done:
         tasks_list.append(t.add_city.si(project.id, public_key))
-
-    if not project.async_set_combined_emprise_done:
-        tasks_list.append(t.set_combined_emprise.si(project.id))
 
     if not project.async_find_first_and_last_ocsge_done:
         tasks_list.append(t.find_first_and_last_ocsge.si(project.id))
