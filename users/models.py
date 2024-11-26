@@ -2,11 +2,11 @@ from typing import List
 
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.db.models.constraints import UniqueConstraint
+from django.db.models.functions import Lower
 from django.utils import timezone
 
 from utils.validators import is_alpha_validator
-from django.db.models.constraints import UniqueConstraint
-from django.db.models.functions import Lower
 
 from .managers import UserManager
 
