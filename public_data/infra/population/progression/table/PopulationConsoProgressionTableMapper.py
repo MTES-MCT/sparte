@@ -1,9 +1,7 @@
 from django.template.loader import render_to_string
 
 from public_data.domain.consommation.entity import AnnualConsommation
-from public_data.domain.demography.population.progression.PopulationProgression import (
-    AnnualPopulation,
-)
+from public_data.domain.demography.population.entity import AnnualPopulation
 
 
 class PopulationConsoProgressionTableMapper:

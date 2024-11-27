@@ -3,8 +3,8 @@ from django.template.loader import render_to_string
 from public_data.domain.consommation.stats.ConsommationStats import (
     ConsommationStatsLand,
 )
-from public_data.domain.demography.population.progression.PopulationProgression import (
-    PopulationProgressionLand,
+from public_data.domain.demography.population.entity import (
+    PopulationProgressionCollectionLand,
 )
 from public_data.domain.demography.population.stats.PopulationStats import (
     PopulationStatsLand,
@@ -16,7 +16,7 @@ class PopulationConsoComparisonTableMapper:
     def map(
         consommation_comparison_stats: list[ConsommationStatsLand],
         population_comparison_stats: list[PopulationStatsLand],
-        population_comparison_progression: list[PopulationProgressionLand],
+        population_comparison_progression: list[PopulationProgressionCollectionLand],
     ):
         first_land_consommation = consommation_comparison_stats[0]
 
