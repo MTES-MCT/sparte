@@ -6,21 +6,27 @@ from public_data.domain.ClassCacher import ClassCacher
 from public_data.domain.consommation.progression import (
     BaseConsommationProgressionService,
 )
-from public_data.domain.consommation.stats import BaseConsommationStatsService
+from public_data.domain.consommation.stats import (
+    BaseConsommationStatsComparisonService,
+    BaseConsommationStatsService,
+)
 from public_data.domain.demography.population.progression import (
     BasePopulationProgressionService,
 )
 from public_data.domain.demography.population.stats import BasePopulationStatsService
+
+# infra
 from public_data.infra.consommation.progression import ConsommationProgressionService
-from public_data.infra.consommation.stats import ConsommationStatsService
+from public_data.infra.consommation.stats import (
+    ConsommationStatsComparisonService,
+    ConsommationStatsService,
+)
 from public_data.infra.demography.population.progression import (
     PopulationProgressionService,
 )
 from public_data.infra.demography.population.stats.PopulationStatsService import (
     PopulationStatsService,
 )
-
-# infra
 from public_data.infra.PickleClassCacher import PickleClassCacher
 
 
@@ -38,6 +44,10 @@ class PublicDataContainer(containers.DeclarativeContainer):
 
     consommation_stats_service: BaseConsommationStatsService = providers.Factory(
         ConsommationStatsService,
+    )
+
+    consommation_comparison_service: BaseConsommationStatsComparisonService = providers.Factory(
+        ConsommationStatsComparisonService,
     )
 
     population_progression_service: BasePopulationProgressionService = providers.Factory(
