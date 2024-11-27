@@ -86,4 +86,4 @@ DESARTIFICIALISATION_COLOR = "#00e272"
 ARTIFICIALISATION_NETTE_COLOR = "#6a6af4"
 HIGHLIGHT_COLOR = "#fa4b42"
 
-DENSITY_MAX = 250  # Valeur arbitraire maximale de densité de population, Paris étant la plus elevée à 205 hab/ha
+DENSITY_MAX_IN_HA = 250  # Valeur arbitraire maximale de densité de population, Paris étant la plus elevée à 205 hab/ha
