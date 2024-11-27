@@ -24,6 +24,8 @@ class PopulationConsoProgressionTableMapper:
                 "habitat": round(consommation.habitat, 2),
                 "population": int(population.population),
                 "evolution": int(population.evolution),
+                "population_calculated": population.population_calculated,
+                "evolution_calculated": population.evolution_calculated,
             }
             for consommation, population in zip(consommation_progression, population_progression)
         ]
