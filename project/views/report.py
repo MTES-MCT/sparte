@@ -119,10 +119,8 @@ class ProjectReportConsoView(ProjectReportBaseView):
             )
             .consommation
         )
-        consommation_stats = (
-            PublicDataContainer.consommation_stats_service()
-            .get_by_land(project.land_proxy, project.analyse_start_date, project.analyse_end_date)
-            .consommation[0]
+        consommation_stats = PublicDataContainer.consommation_stats_service().get_by_land(
+            project.land_proxy, project.analyse_start_date, project.analyse_end_date
         )
         consommation_comparison_stats = PublicDataContainer.consommation_stats_service().get_by_lands(
             lands=project.comparison_lands_and_self_land(),

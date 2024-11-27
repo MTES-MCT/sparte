@@ -51,7 +51,7 @@ class PopulationConsoComparisonChart(ProjectChart):
         highlighted_land_id = self.project.land_proxy.id
 
         consommation_stats = {
-            c.land.id: round(c.consommation[0].total, 2)
+            c.land.id: round(c.total, 2)
             for c in PublicDataContainer.consommation_stats_service().get_by_lands(lands, start_date, end_date)
         }
         population_stats = {

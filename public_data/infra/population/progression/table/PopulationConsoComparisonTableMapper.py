@@ -1,7 +1,7 @@
 from django.template.loader import render_to_string
 
-from public_data.domain.consommation.stats.ConsommationStats import (
-    ConsommationStatsLand,
+from public_data.domain.consommation.entity.ConsommationStatistics import (
+    ConsommationStatistics,
 )
 from public_data.domain.demography.population.entity import (
     PopulationProgressionCollectionLand,
@@ -14,7 +14,7 @@ from public_data.domain.demography.population.stats.PopulationStats import (
 class PopulationConsoComparisonTableMapper:
     @staticmethod
     def map(
-        consommation_comparison_stats: list[ConsommationStatsLand],
+        consommation_comparison_stats: list[ConsommationStatistics],
         population_comparison_stats: list[PopulationStatsLand],
         population_comparison_progression: list[PopulationProgressionCollectionLand],
     ):
@@ -27,7 +27,7 @@ class PopulationConsoComparisonTableMapper:
         data = [
             {
                 "land_name": consommation_stats.land.name,
-                "consommation_total": round(consommation_stats.consommation[0].total, 2),
+                "consommation_total": round(consommation_stats.total, 2),
                 "evolution": int(population_stats.population[0].evolution),
                 "evolution_percent": population_stats.population[0].evolution_percent,
                 "population_total": int(population_progression.population[0].population),

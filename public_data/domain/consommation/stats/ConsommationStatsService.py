@@ -1,7 +1,5 @@
-from public_data.domain.consommation.stats.ConsommationStats import (
-    ConsommationStats,
-    ConsommationStatsAggregation,
-    ConsommationStatsLand,
+from public_data.domain.consommation.entity.ConsommationStatistics import (
+    ConsommationStatistics,
 )
 from public_data.models import Land, LandConsoStats
 
@@ -12,23 +10,19 @@ class ConsommationStatsService:
         land: Land,
         start_date: int,
         end_date: int,
-    ) -> ConsommationStatsAggregation:
-        data = LandConsoStats.objects.filter(
+    ) -> ConsommationStatistics:
+        conso_stats = LandConsoStats.objects.get(
             land_id=land.id,
             land_type=land.land_type,
             from_year=start_date,
             to_year=end_date,
         )
-        return ConsommationStatsAggregation(
+        return ConsommationStatistics(
+            land=land,
             start_date=start_date,
             end_date=end_date,
-            consommation=[
-                ConsommationStats(
-                    total=item.total / 10000,
-                    total_percent=item.total_percent,
-                )
-                for item in data
-            ],
+            total=conso_stats.total / 10000,
+            total_percent=conso_stats.total_percent,
         )
 
     def get_by_lands(
@@ -36,24 +30,12 @@ class ConsommationStatsService:
         lands: list[Land],
         start_date: int,
         end_date: int,
-    ) -> list[ConsommationStatsLand]:
-        if not lands:
-            return []
-
-        output = []
-
-        for land in lands:
-            output.append(
-                ConsommationStatsLand(
-                    land=land,
-                    start_date=start_date,
-                    end_date=end_date,
-                    consommation=self.get_by_land(
-                        land=land,
-                        start_date=start_date,
-                        end_date=end_date,
-                    ).consommation,
-                )
+    ) -> list[ConsommationStatistics]:
+        return [
+            self.get_by_land(
+                land=land,
+                start_date=start_date,
+                end_date=end_date,
             )
-
-        return output
+            for land in lands
+        ]
