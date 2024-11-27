@@ -17,13 +17,14 @@ class ConsommationStatsComparisonService(BaseConsommationStatsComparisonService)
             to_year=end_date,
         )
         conso_comparison = LandConsoComparison.objects.get(
+            relevance_level=land.land_type,
             land_id=conso_stats.comparison_id,
             land_type=conso_stats.comparison_level,
             from_year=start_date,
             to_year=end_date,
         )
         return ConsommationStatisticsComparison(
-            land=land,
+            land=Land(f"{conso_stats.comparison_level}_{conso_stats.comparison_id}"),
             start_date=start_date,
             end_date=end_date,
             total_median=conso_comparison.total_median / 10000,

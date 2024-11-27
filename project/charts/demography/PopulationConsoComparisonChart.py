@@ -80,15 +80,12 @@ class PopulationConsoComparisonChart(ProjectChart):
         ]
 
     def get_trend_series(self):
-        pop_evolution_mediane = (
-            PublicDataContainer.population_comparison_service()
-            .get_by_land(
-                land=self.project.land_proxy,
-                start_date=int(self.project.analyse_start_date),
-                end_date=int(self.project.analyse_end_date),
-            )
-            .evolution_median
+        pop_comparison = PublicDataContainer.population_comparison_service().get_by_land(
+            land=self.project.land_proxy,
+            start_date=int(self.project.analyse_start_date),
+            end_date=int(self.project.analyse_end_date),
         )
+        pop_evolution_mediane = pop_comparison.evolution_median
         conso_mediane = (
             PublicDataContainer.consommation_comparison_service()
             .get_by_land(
@@ -109,6 +106,13 @@ class PopulationConsoComparisonChart(ProjectChart):
             ]
         )
 
+        min_population_evolution = min(
+            [
+                p.evolution
+                for p in PublicDataContainer.population_stats_service().get_by_lands(lands, start_date, end_date)
+            ]
+        )
+
         max_conso = max(
             [
                 c.total
@@ -118,7 +122,10 @@ class PopulationConsoComparisonChart(ProjectChart):
 
         middle_point = {"x": pop_evolution_mediane, "y": conso_mediane}
         slope = (max_conso - conso_mediane) / (max_population_evolution - pop_evolution_mediane)
-        low_point = {"x": 0, "y": conso_mediane - slope * pop_evolution_mediane}
+        low_point = {
+            "x": min_population_evolution,
+            "y": conso_mediane + slope * (min_population_evolution - pop_evolution_mediane),
+        }
         high_point = {
             "x": max_population_evolution,
             "y": conso_mediane + slope * (max_population_evolution - pop_evolution_mediane),
@@ -126,8 +133,11 @@ class PopulationConsoComparisonChart(ProjectChart):
 
         return [
             {
-                "name": "Tendance",
+                "name": f"Médiane à l'échelle de {pop_comparison.land.name}",
                 "type": "line",
+                "color": "black",
+                "marker": {"enabled": False},
+                "hover": {"enabled": False},
                 "data": [
                     low_point,
                     middle_point,

@@ -7,6 +7,7 @@ from .Epci import Epci
 from .GetDataFromCeremaMixin import GetDataFromCeremaMixin
 from .Land import Land
 from .LandMixin import LandMixin
+from .Nation import Nation
 from .Region import Region
 from .Scot import Scot
 
@@ -22,4 +23,5 @@ __all__ = [
     "LandMixin",
     "Region",
     "Scot",
+    "Nation",
 ]

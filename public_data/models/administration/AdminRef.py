@@ -10,6 +10,7 @@ class AdminRef:
     EPCI = "EPCI"
     COMMUNE = "COMM"
     COMPOSITE = "COMP"
+    NATION = "NATION"
 
     CHOICES = (
         (COMMUNE, "Commune"),
@@ -17,6 +18,7 @@ class AdminRef:
         (DEPARTEMENT, "Département"),
         (SCOT, "SCoT"),
         (REGION, "Région"),
+        (NATION, "Nation"),
         (COMPOSITE, "Composite"),
     )
 

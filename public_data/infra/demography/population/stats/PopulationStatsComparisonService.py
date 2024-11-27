@@ -21,13 +21,14 @@ class PopulationStatsComparisonService(BasePopulationStatsComparisonService):
             to_year=end_date,
         )
         pop_comparison = LandPopComparison.objects.get(
+            relevance_level=land.land_type,
             land_id=pop_stats.comparison_id,
             land_type=pop_stats.comparison_level,
             from_year=start_date,
             to_year=end_date,
         )
         return PopulationStatisticsComparison(
-            land=land,
+            land=Land(f"{pop_stats.comparison_level}_{pop_stats.comparison_id}"),
             start_date=start_date,
             end_date=end_date,
             evolution_median=pop_comparison.evolution_median,
