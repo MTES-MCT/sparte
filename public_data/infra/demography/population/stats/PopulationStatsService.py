@@ -1,8 +1,9 @@
 from public_data.domain.demography.population.entity import PopulationStatistics
+from public_data.domain.demography.population.stats import BasePopulationStatsService
 from public_data.models import Land, LandPopStats
 
 
-class PopulationStatsService:
+class PopulationStatsService(BasePopulationStatsService):
     def get_by_land(
         self,
         land: Land,

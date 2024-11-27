@@ -1,10 +1,11 @@
 from public_data.domain.consommation.entity.ConsommationStatistics import (
     ConsommationStatistics,
 )
+from public_data.domain.consommation.stats import BaseConsommationStatsService
 from public_data.models import Land, LandConsoStats
 
 
-class ConsommationStatsService:
+class ConsommationStatsService(BaseConsommationStatsService):
     def get_by_land(
         self,
         land: Land,

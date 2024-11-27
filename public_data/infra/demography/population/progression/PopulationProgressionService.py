@@ -2,10 +2,13 @@ from public_data.domain.demography.population.entity import (
     AnnualPopulation,
     AnnualPopulationCollection,
 )
+from public_data.domain.demography.population.progression import (
+    BasePopulationProgressionService,
+)
 from public_data.models import Land, LandPop
 
 
-class PopulationProgressionService:
+class PopulationProgressionService(BasePopulationProgressionService):
     def get_by_land(
         self,
         land: Land,

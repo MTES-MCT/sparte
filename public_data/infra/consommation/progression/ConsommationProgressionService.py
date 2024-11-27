@@ -2,10 +2,13 @@ from public_data.domain.consommation.entity import (
     AnnualConsommation,
     ConsommationProgressionCollectionLand,
 )
+from public_data.domain.consommation.progression import (
+    BaseConsommationProgressionService,
+)
 from public_data.models import Land, LandConso, LandConsoStats
 
 
-class ConsommationProgressionService:
+class ConsommationProgressionService(BaseConsommationProgressionService):
     def get_by_land(
         self,
         land: Land,

@@ -40,14 +40,14 @@ from public_data.infra.consommation.progression.table.ConsoComparisonTableMapper
 from public_data.infra.consommation.progression.table.ConsoProportionalComparisonTableMapper import (
     ConsoProportionalComparisonTableMapper,
 )
-from public_data.infra.planning_competency.PlanningCompetencyServiceSudocuh import (
-    PlanningCompetencyServiceSudocuh,
-)
-from public_data.infra.population.progression.table.PopulationConsoComparisonTableMapper import (
+from public_data.infra.demography.population.progression.table.PopulationConsoComparisonTableMapper import (
     PopulationConsoComparisonTableMapper,
 )
-from public_data.infra.population.progression.table.PopulationConsoProgressionTableMapper import (
+from public_data.infra.demography.population.progression.table.PopulationConsoProgressionTableMapper import (
     PopulationConsoProgressionTableMapper,
+)
+from public_data.infra.planning_competency.PlanningCompetencyServiceSudocuh import (
+    PlanningCompetencyServiceSudocuh,
 )
 from public_data.models import CouvertureSol, UsageSol
 from public_data.models.administration import AdminRef
