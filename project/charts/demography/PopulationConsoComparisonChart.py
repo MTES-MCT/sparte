@@ -55,11 +55,11 @@ class PopulationConsoComparisonChart(ProjectChart):
             for c in PublicDataContainer.consommation_stats_service().get_by_lands(lands, start_date, end_date)
         }
         population_stats = {
-            p.land.id: p.population[0].evolution
+            p.land.id: p.evolution
             for p in PublicDataContainer.population_stats_service().get_by_lands(lands, start_date, end_date)
         }
         population_progression = {
-            p.land.id: p.population[0].population
+            p.land.id: p.first_year_population.population
             for p in PublicDataContainer.population_progression_service().get_by_lands(lands, start_date, end_date)
         }
 

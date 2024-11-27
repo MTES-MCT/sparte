@@ -1,7 +1,9 @@
 from .AnnualPopulation import AnnualPopulation
-from .PopulationProgressionCollectionLand import PopulationProgressionCollectionLand
+from .AnnualPopulationCollection import AnnualPopulationCollection
+from .PopulationStatistics import PopulationStatistics
 
 __all__ = [
     "AnnualPopulation",
-    "PopulationProgressionCollectionLand",
+    "AnnualPopulationCollection",
+    "PopulationStatistics",
 ]

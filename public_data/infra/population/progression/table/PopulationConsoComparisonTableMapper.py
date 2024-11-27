@@ -4,10 +4,8 @@ from public_data.domain.consommation.entity.ConsommationStatistics import (
     ConsommationStatistics,
 )
 from public_data.domain.demography.population.entity import (
-    PopulationProgressionCollectionLand,
-)
-from public_data.domain.demography.population.stats.PopulationStats import (
-    PopulationStatsLand,
+    AnnualPopulationCollection,
+    PopulationStatistics,
 )
 
 
@@ -15,8 +13,8 @@ class PopulationConsoComparisonTableMapper:
     @staticmethod
     def map(
         consommation_comparison_stats: list[ConsommationStatistics],
-        population_comparison_stats: list[PopulationStatsLand],
-        population_comparison_progression: list[PopulationProgressionCollectionLand],
+        population_comparison_stats: list[PopulationStatistics],
+        population_comparison_progression: list[AnnualPopulationCollection],
     ):
         first_land_consommation = consommation_comparison_stats[0]
 
@@ -28,9 +26,9 @@ class PopulationConsoComparisonTableMapper:
             {
                 "land_name": consommation_stats.land.name,
                 "consommation_total": round(consommation_stats.total, 2),
-                "evolution": int(population_stats.population[0].evolution),
-                "evolution_percent": population_stats.population[0].evolution_percent,
-                "population_total": int(population_progression.population[0].population),
+                "evolution": int(population_stats.evolution),
+                "evolution_percent": population_stats.evolution_percent,
+                "population_total": int(population_progression.first_year_population.population),
             }
             for consommation_stats, population_stats, population_progression in zip(
                 consommation_comparison_stats, population_comparison_stats, population_comparison_progression

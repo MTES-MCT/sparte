@@ -138,10 +138,8 @@ class ProjectReportConsoView(ProjectReportBaseView):
             )
             .population
         )
-        population_stats = (
-            PublicDataContainer.population_stats_service()
-            .get_by_land(project.land_proxy, project.analyse_start_date, project.analyse_end_date)
-            .population[0]
+        population_stats = PublicDataContainer.population_stats_service().get_by_land(
+            project.land_proxy, project.analyse_start_date, project.analyse_end_date
         )
         population_comparison_stats = PublicDataContainer.population_stats_service().get_by_lands(
             lands=project.comparison_lands_and_self_land(),

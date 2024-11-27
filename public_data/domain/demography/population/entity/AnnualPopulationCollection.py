@@ -6,8 +6,12 @@ from .AnnualPopulation import AnnualPopulation
 
 
 @dataclass(frozen=True, slots=True)
-class PopulationProgressionCollectionLand:
+class AnnualPopulationCollection:
     land: Land
     start_date: int
     end_date: int
     population: list[AnnualPopulation]
+
+    @property
+    def first_year_population(self):
+        return self.population[0]

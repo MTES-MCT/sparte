@@ -1,6 +1,6 @@
 from public_data.domain.demography.population.entity import (
     AnnualPopulation,
-    PopulationProgressionCollectionLand,
+    AnnualPopulationCollection,
 )
 from public_data.models import Land, LandPop
 
@@ -11,7 +11,7 @@ class PopulationProgressionService:
         land: Land,
         start_date: int,
         end_date: int,
-    ) -> PopulationProgressionCollectionLand:
+    ) -> AnnualPopulationCollection:
         pop_data = LandPop.objects.filter(
             land_id=land.id,
             land_type=land.land_type,
@@ -19,7 +19,7 @@ class PopulationProgressionService:
             year__lte=end_date,
         ).order_by("year")
 
-        return PopulationProgressionCollectionLand(
+        return AnnualPopulationCollection(
             land=land,
             start_date=start_date,
             end_date=end_date,
@@ -40,7 +40,7 @@ class PopulationProgressionService:
         lands: list[Land],
         start_date: int,
         end_date: int,
-    ) -> list[PopulationProgressionCollectionLand]:
+    ) -> list[AnnualPopulationCollection]:
         return [
             self.get_by_land(
                 land=land,
