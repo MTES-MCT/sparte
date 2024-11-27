@@ -14,6 +14,9 @@ from public_data.domain.demography.population.progression import (
     BasePopulationProgressionService,
 )
 from public_data.domain.demography.population.stats import BasePopulationStatsService
+from public_data.domain.demography.population.stats.BasePopulationStatsComparisonService import (
+    BasePopulationStatsComparisonService,
+)
 
 # infra
 from public_data.infra.consommation.progression import ConsommationProgressionService
@@ -23,6 +26,9 @@ from public_data.infra.consommation.stats import (
 )
 from public_data.infra.demography.population.progression import (
     PopulationProgressionService,
+)
+from public_data.infra.demography.population.stats.PopulationStatsComparisonService import (
+    PopulationStatsComparisonService,
 )
 from public_data.infra.demography.population.stats.PopulationStatsService import (
     PopulationStatsService,
@@ -37,6 +43,7 @@ class PublicDataContainer(containers.DeclarativeContainer):
         PickleClassCacher,
         cache=django_cache,
     )
+    # consommation
 
     consommation_progression_service: BaseConsommationProgressionService = providers.Factory(
         ConsommationProgressionService,
@@ -50,10 +57,16 @@ class PublicDataContainer(containers.DeclarativeContainer):
         ConsommationStatsComparisonService,
     )
 
+    # population
+
     population_progression_service: BasePopulationProgressionService = providers.Factory(
         PopulationProgressionService,
     )
 
     population_stats_service: BasePopulationStatsService = providers.Factory(
         PopulationStatsService,
+    )
+
+    population_comparison_service: BasePopulationStatsComparisonService = providers.Factory(
+        PopulationStatsComparisonService,
     )
