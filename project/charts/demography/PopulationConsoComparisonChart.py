@@ -44,7 +44,7 @@ class PopulationConsoComparisonChart(ProjectChart):
             "series": [],
         }
 
-    def add_series(self):
+    def get_bubble_series(self):
         lands = self.project.comparison_lands_and_self_land()
         start_date = int(self.project.analyse_start_date)
         end_date = int(self.project.analyse_end_date)
@@ -63,7 +63,7 @@ class PopulationConsoComparisonChart(ProjectChart):
             for p in PublicDataContainer.population_progression_service().get_by_lands(lands, start_date, end_date)
         }
 
-        self.chart["series"] = [
+        return [
             {
                 "name": land.name,
                 "data": [
@@ -78,3 +78,48 @@ class PopulationConsoComparisonChart(ProjectChart):
             }
             for land in lands
         ]
+
+    def get_trend_series(self):
+        pop_evolution_mediane = 46
+        conso_mediane = 40094 / 10000
+        lands = self.project.comparison_lands_and_self_land()
+        start_date = int(self.project.analyse_start_date)
+        end_date = int(self.project.analyse_end_date)
+        self.project.land_proxy.id
+
+        max_population_evolution = max(
+            [
+                p.evolution
+                for p in PublicDataContainer.population_stats_service().get_by_lands(lands, start_date, end_date)
+            ]
+        )
+
+        max_conso = max(
+            [
+                c.total
+                for c in PublicDataContainer.consommation_stats_service().get_by_lands(lands, start_date, end_date)
+            ]
+        )
+
+        middle_point = {"x": pop_evolution_mediane, "y": conso_mediane}
+        slope = (max_conso - conso_mediane) / (max_population_evolution - pop_evolution_mediane)
+        low_point = {"x": 0, "y": conso_mediane - slope * pop_evolution_mediane}
+        high_point = {
+            "x": max_population_evolution,
+            "y": conso_mediane + slope * (max_population_evolution - pop_evolution_mediane),
+        }
+
+        return [
+            {
+                "name": "Tendance",
+                "type": "line",
+                "data": [
+                    low_point,
+                    middle_point,
+                    high_point,
+                ],
+            }
+        ]
+
+    def add_series(self):
+        self.chart["series"] = self.get_bubble_series() + self.get_trend_series()
