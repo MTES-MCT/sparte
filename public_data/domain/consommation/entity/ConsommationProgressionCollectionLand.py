@@ -11,10 +11,7 @@ class ConsommationProgressionCollectionLand:
     start_date: int
     end_date: int
     consommation: list[AnnualConsommation]
-
-    @property
-    def total_conso_over_period(self) -> float:
-        return sum([conso.total for conso in self.consommation])
+    total_conso_over_period: float
 
     @property
     def total_proportional_conso_over_period(self) -> float:

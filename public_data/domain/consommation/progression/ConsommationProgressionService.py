@@ -2,7 +2,7 @@ from public_data.domain.consommation.entity import (
     AnnualConsommation,
     ConsommationProgressionCollectionLand,
 )
-from public_data.models import Land, LandConso
+from public_data.models import Land, LandConso, LandConsoStats
 
 
 class ConsommationProgressionService:
@@ -18,10 +18,19 @@ class ConsommationProgressionService:
             year__gte=start_date,
             year__lte=end_date,
         ).order_by("year")
+
+        conso_stats = LandConsoStats.objects.get(
+            land_id=land.id,
+            land_type=land.land_type,
+            from_year=start_date,
+            to_year=end_date,
+        )
+
         return ConsommationProgressionCollectionLand(
             start_date=start_date,
             end_date=end_date,
             land=land,
+            total_conso_over_period=conso_stats.total,
             consommation=[
                 AnnualConsommation(
                     year=c.year,
@@ -44,20 +53,11 @@ class ConsommationProgressionService:
         start_date: int,
         end_date: int,
     ) -> list[ConsommationProgressionCollectionLand]:
-        output = []
-
-        for land in lands:
-            output.append(
-                ConsommationProgressionCollectionLand(
-                    land=land,
-                    start_date=start_date,
-                    end_date=end_date,
-                    consommation=self.get_by_land(
-                        land=land,
-                        start_date=start_date,
-                        end_date=end_date,
-                    ).consommation,
-                )
+        return [
+            self.get_by_land(
+                land=land,
+                start_date=start_date,
+                end_date=end_date,
             )
-
-        return output
+            for land in lands
+        ]
