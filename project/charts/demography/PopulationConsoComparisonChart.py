@@ -63,7 +63,6 @@ class PopulationConsoComparisonChart(ProjectChart):
             for p in PublicDataContainer.population_progression_service().get_by_lands(lands, start_date, end_date)
         }
 
-        # Créer les séries
         self.chart["series"] = [
             {
                 "name": land.name,
@@ -75,6 +74,7 @@ class PopulationConsoComparisonChart(ProjectChart):
                     }
                 ],
                 "color": HIGHLIGHT_COLOR if land.id == highlighted_land_id else None,
+                # La couleur du territoire diagnostiqué est précisée, les autres sont aléatoires (valeur None)
             }
             for land in lands
         ]
