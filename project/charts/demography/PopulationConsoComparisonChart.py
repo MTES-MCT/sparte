@@ -81,11 +81,18 @@ class PopulationConsoComparisonChart(ProjectChart):
 
     def get_trend_series(self):
         pop_evolution_mediane = 46
-        conso_mediane = 40094 / 10000
+        conso_mediane = (
+            PublicDataContainer.consommation_comparison_service()
+            .get_by_land(
+                land=self.project.land_proxy,
+                start_date=int(self.project.analyse_start_date),
+                end_date=int(self.project.analyse_end_date),
+            )
+            .total_median
+        )
         lands = self.project.comparison_lands_and_self_land()
         start_date = int(self.project.analyse_start_date)
         end_date = int(self.project.analyse_end_date)
-        self.project.land_proxy.id
 
         max_population_evolution = max(
             [
