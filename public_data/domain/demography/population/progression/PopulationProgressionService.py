@@ -28,6 +28,8 @@ class PopulationProgressionService:
                     year=p.year,
                     evolution=p.evolution,
                     population=p.population,
+                    population_calculated=p.year in [2022],
+                    evolution_calculated=p.year in [2021, 2022],
                 )
                 for p in pop_data
             ],

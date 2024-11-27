@@ -1,3 +1,5 @@
+from django.utils.functional import cached_property
+
 from project.charts.base_project_chart import ProjectChart
 from public_data.domain.containers import PublicDataContainer
 
@@ -36,18 +38,27 @@ class PopulationConsoProgressionChart(ProjectChart):
             "series": [],
         }
 
-    def get_progression_population(self):
-        progression_population = (
-            PublicDataContainer.population_progression_service()
-            .get_by_land(
-                land=self.project.land_proxy,
-                start_date=int(self.project.analyse_start_date),
-                end_date=int(self.project.analyse_end_date),
-            )
-            .population
+    @cached_property
+    def land_population(self):
+        return PublicDataContainer.population_progression_service().get_by_land(
+            land=self.project.land_proxy,
+            start_date=int(self.project.analyse_start_date),
+            end_date=int(self.project.analyse_end_date),
         )
 
-        return [year.population for year in progression_population]
+    @cached_property
+    def stock_population_from_insee(self):
+        return [year.population for year in self.land_population.population if not year.population_calculated]
+
+    @cached_property
+    def stock_population_calculted(self):
+        empty_years = [None] * (len(self.stock_population_from_insee) - 2)
+        last_year_from_insee = self.stock_population_from_insee[-1]
+        return (
+            empty_years
+            + [last_year_from_insee]
+            + [year.population for year in self.land_population.population if year.population_calculated]
+        )
 
     def get_progression_consommation(self):
         progresison_consommation = (
@@ -67,7 +78,6 @@ class PopulationConsoProgressionChart(ProjectChart):
 
     def add_series(self):
         progression_consommation = self.get_progression_consommation()
-        progression_population = self.get_progression_population()
 
         self.chart["series"] = [
             {
@@ -91,8 +101,16 @@ class PopulationConsoProgressionChart(ProjectChart):
             {
                 "name": "Population",
                 "type": "spline",
-                "data": progression_population,
+                "data": self.stock_population_from_insee,
                 "tooltip": {"valueSuffix": " hab"},
                 "color": "#fa4b42",
+            },
+            {
+                "name": "Population estimée",
+                "type": "spline",
+                "data": [None] + self.stock_population_calculted,
+                "tooltip": {"valueSuffix": " hab"},
+                "color": "#fa4b42",
+                "dashStyle": "Dash",
             },
         ]
