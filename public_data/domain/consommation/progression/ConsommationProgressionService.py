@@ -1,7 +1,6 @@
-from public_data.domain.consommation.progression.ConsommationProgression import (
+from public_data.domain.consommation.entity import (
     AnnualConsommation,
-    ConsommationProgressionAggregation,
-    ConsommationProgressionLand,
+    ConsommationProgressionCollectionLand,
 )
 from public_data.models import Land, LandConso
 
@@ -12,16 +11,17 @@ class ConsommationProgressionService:
         land: Land,
         start_date: int,
         end_date: int,
-    ) -> ConsommationProgressionAggregation:
+    ) -> ConsommationProgressionCollectionLand:
         conso = LandConso.objects.filter(
             land_id=land.id,
             land_type=land.land_type,
             year__gte=start_date,
             year__lte=end_date,
         ).order_by("year")
-        return ConsommationProgressionAggregation(
+        return ConsommationProgressionCollectionLand(
             start_date=start_date,
             end_date=end_date,
+            land=land,
             consommation=[
                 AnnualConsommation(
                     year=c.year,
@@ -43,15 +43,12 @@ class ConsommationProgressionService:
         lands: list[Land],
         start_date: int,
         end_date: int,
-    ) -> list[ConsommationProgressionLand]:
-        if not lands:
-            return []
-
+    ) -> list[ConsommationProgressionCollectionLand]:
         output = []
 
         for land in lands:
             output.append(
-                ConsommationProgressionLand(
+                ConsommationProgressionCollectionLand(
                     land=land,
                     start_date=start_date,
                     end_date=end_date,

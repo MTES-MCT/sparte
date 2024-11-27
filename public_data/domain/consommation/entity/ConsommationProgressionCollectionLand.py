@@ -2,29 +2,11 @@ from dataclasses import dataclass
 
 from public_data.models import Land
 
-
-@dataclass(frozen=True, slots=True)
-class AnnualConsommation:
-    year: int
-    habitat: float
-    activite: float
-    mixte: float
-    route: float
-    ferre: float
-    non_reseigne: float
-    total: float
-    per_mille_of_area: float
+from .AnnualConsommation import AnnualConsommation
 
 
 @dataclass(frozen=True, slots=True)
-class ConsommationProgressionAggregation:
-    start_date: int
-    end_date: int
-    consommation: list[AnnualConsommation]
-
-
-@dataclass(frozen=True, slots=True)
-class ConsommationProgressionLand:
+class ConsommationProgressionCollectionLand:
     land: Land
     start_date: int
     end_date: int

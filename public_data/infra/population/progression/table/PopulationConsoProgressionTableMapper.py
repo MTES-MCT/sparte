@@ -1,18 +1,16 @@
 from django.template.loader import render_to_string
 
-from public_data.domain.consommation.progression.ConsommationProgression import (
-    ConsommationProgressionLand,
-)
+from public_data.domain.consommation.entity import AnnualConsommation
 from public_data.domain.demography.population.progression.PopulationProgression import (
-    PopulationProgressionLand,
+    AnnualPopulation,
 )
 
 
 class PopulationConsoProgressionTableMapper:
     @staticmethod
     def map(
-        consommation_progression: list[ConsommationProgressionLand],
-        population_progression: list[PopulationProgressionLand],
+        consommation_progression: list[AnnualConsommation],
+        population_progression: list[AnnualPopulation],
     ):
         headers = [
             "Année",

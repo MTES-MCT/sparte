@@ -1,12 +1,10 @@
 from project.charts.constants import HIGHLIGHT_COLOR
-from public_data.domain.consommation.progression.ConsommationProgression import (
-    ConsommationProgressionLand,
-)
+from public_data.domain.consommation.entity import ConsommationProgressionCollectionLand
 
 
 class ConsoComparisonMapper:
     @staticmethod
-    def map(land_id_to_highlight: str, consommation_progression: list[ConsommationProgressionLand]):
+    def map(land_id_to_highlight: str, consommation_progression: list[ConsommationProgressionCollectionLand]):
         highlight_style = {
             "color": HIGHLIGHT_COLOR,
             "dashStyle": "ShortDash",
