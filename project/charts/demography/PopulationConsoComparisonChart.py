@@ -137,9 +137,9 @@ class PopulationConsoComparisonChart(ProjectChart):
                 ),
                 "type": "line",
                 "color": "black",
-                # TODO: désactiver les interactions sur la série de tendance
                 "marker": {"enabled": False},
-                "hover": {"enabled": False},
+                "enableMouseTracking": False,
+                "states": {"hover": {"enabled": False}},
                 "data": [
                     low_point,
                     middle_point,
