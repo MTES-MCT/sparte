@@ -131,7 +131,7 @@ class PopulationConsoComparisonChart(ProjectChart):
             {
                 "name": (
                     f"Médiane des {self.project.land.land_type_label.lower()}s<br>à "
-                    "l'échelle de {pop_comparison.land.name}"
+                    f"l'échelle de {pop_comparison.land.name}"
                 ),
                 "type": "line",
                 "color": "black",
