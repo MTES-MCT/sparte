@@ -13,5 +13,9 @@ class AnnualPopulationCollection:
     population: list[AnnualPopulation]
 
     @property
-    def first_year_population(self):
+    def first_year_population(self) -> AnnualPopulation:
         return self.population[0]
+
+    @property
+    def last_year_population(self) -> AnnualPopulation:
+        return self.population[-1]

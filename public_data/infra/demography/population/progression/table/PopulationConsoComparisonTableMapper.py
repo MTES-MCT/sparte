@@ -12,6 +12,8 @@ from public_data.domain.demography.population.entity import (
 class PopulationConsoComparisonTableMapper:
     @staticmethod
     def map(
+        from_year: int,
+        to_year: int,
         consommation_comparison_stats: list[ConsommationStatistics],
         population_comparison_stats: list[PopulationStatistics],
         population_comparison_progression: list[AnnualPopulationCollection],
@@ -20,7 +22,11 @@ class PopulationConsoComparisonTableMapper:
 
         land_type_label = first_land_consommation.land.land_type_label
 
-        headers = [land_type_label] + ["Consommation (ha)", "Évolution démographique (hab)", "Population totale (hab)"]
+        headers = [land_type_label] + [
+            "Consommation (ha)",
+            "Évolution démographique",
+            f"Population totale {to_year}",
+        ]
 
         data = [
             {
@@ -28,7 +34,7 @@ class PopulationConsoComparisonTableMapper:
                 "consommation_total": round(consommation_stats.total, 2),
                 "evolution": int(population_stats.evolution),
                 "evolution_percent": population_stats.evolution_percent,
-                "population_total": int(population_progression.first_year_population.population),
+                "population_total": int(population_progression.last_year_population.population),
             }
             for consommation_stats, population_stats, population_progression in zip(
                 consommation_comparison_stats, population_comparison_stats, population_comparison_progression

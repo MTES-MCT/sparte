@@ -193,7 +193,11 @@ class ProjectReportConsoView(ProjectReportBaseView):
                     consommation_progression, population_progression
                 ),
                 "population_comparison_table": PopulationConsoComparisonTableMapper.map(
-                    consommation_comparison_stats, population_comparison_stats, population_comparison_progression
+                    from_year=int(project.analyse_start_date),
+                    to_year=int(project.analyse_end_date),
+                    consommation_comparison_stats=consommation_comparison_stats,
+                    population_comparison_stats=population_comparison_stats,
+                    population_comparison_progression=population_comparison_progression,
                 ),
             }
         )
