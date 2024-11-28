@@ -6,7 +6,7 @@ from .AnnualConsommation import AnnualConsommation
 
 
 @dataclass(frozen=True, slots=True)
-class ConsommationProgressionCollectionLand:
+class ConsommationCollection:
     land: Land
     start_date: int
     end_date: int

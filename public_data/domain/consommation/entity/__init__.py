@@ -1,11 +1,11 @@
 from .AnnualConsommation import AnnualConsommation
-from .ConsommationProgressionCollectionLand import ConsommationProgressionCollectionLand
+from .ConsommationCollection import ConsommationCollection
 from .ConsommationStatistics import ConsommationStatistics
 from .ConsommationStatisticsComparison import ConsommationStatisticsComparison
 
 __all__ = [
     "AnnualConsommation",
-    "ConsommationProgressionCollectionLand",
+    "ConsommationCollection",
     "ConsommationStatistics",
     "ConsommationStatisticsComparison",
 ]

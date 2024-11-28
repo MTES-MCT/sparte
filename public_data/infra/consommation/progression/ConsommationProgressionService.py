@@ -1,6 +1,6 @@
 from public_data.domain.consommation.entity import (
     AnnualConsommation,
-    ConsommationProgressionCollectionLand,
+    ConsommationCollection,
 )
 from public_data.domain.consommation.progression import (
     BaseConsommationProgressionService,
@@ -14,7 +14,7 @@ class ConsommationProgressionService(BaseConsommationProgressionService):
         land: Land,
         start_date: int,
         end_date: int,
-    ) -> ConsommationProgressionCollectionLand:
+    ) -> ConsommationCollection:
         conso = LandConso.objects.filter(
             land_id=land.id,
             land_type=land.land_type,
@@ -29,7 +29,7 @@ class ConsommationProgressionService(BaseConsommationProgressionService):
             to_year=end_date,
         )
 
-        return ConsommationProgressionCollectionLand(
+        return ConsommationCollection(
             start_date=start_date,
             end_date=end_date,
             land=land,
@@ -55,7 +55,7 @@ class ConsommationProgressionService(BaseConsommationProgressionService):
         lands: list[Land],
         start_date: int,
         end_date: int,
-    ) -> list[ConsommationProgressionCollectionLand]:
+    ) -> list[ConsommationCollection]:
         return [
             self.get_by_land(
                 land=land,

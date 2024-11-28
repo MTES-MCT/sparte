@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from public_data.domain.consommation.entity import ConsommationProgressionCollectionLand
+from public_data.domain.consommation.entity import ConsommationCollection
 from public_data.models import Land
 
 
@@ -11,7 +11,7 @@ class BaseConsommationProgressionService(ABC):
         land: Land,
         start_date: int,
         end_date: int,
-    ) -> ConsommationProgressionCollectionLand:
+    ) -> ConsommationCollection:
         raise NotImplementedError
 
     @abstractmethod
@@ -20,5 +20,5 @@ class BaseConsommationProgressionService(ABC):
         lands: list[Land],
         start_date: int,
         end_date: int,
-    ) -> list[ConsommationProgressionCollectionLand]:
+    ) -> list[ConsommationCollection]:
         raise NotImplementedError
