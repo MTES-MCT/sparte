@@ -134,7 +134,7 @@ class BaseMap(GroupMixin, DetailView):
                 "source": "emprise-du-territoire-source",
                 "paint": {
                     "line-color": "#ffff00",
-                    "line-width": 1.5,
+                    "line-width": 1,
                 },
             },
             {
@@ -391,7 +391,7 @@ class MapTestView(BaseMap):
                 "z-index": 4,
                 "type": "fill",
                 "source": "consommation-des-communes-source",
-                "minzoom": 8,
+                "minzoom": 3,
                 "maxzoom": 19,
                 "paint": {
                     "fill-color": self.get_gradient_expression(),
@@ -1283,7 +1283,7 @@ class CitySpaceConsoMapView(BaseMap):
                 "z-index": 4,
                 "type": "fill",
                 "source": "consommation-des-communes-source",
-                "minzoom": 8,
+                "minzoom": 3,
                 "maxzoom": 19,
                 "paint": {
                     "fill-color": self.get_gradient_expression(),
