@@ -22,7 +22,7 @@ class PopulationStatsService(BasePopulationStatsService):
             start_date=start_date,
             end_date=end_date,
             evolution=data.evolution,
-            evolution_percent=data.evolution,
+            evolution_percent=data.evolution_percent,
         )
 
     def get_by_lands(
