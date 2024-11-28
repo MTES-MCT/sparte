@@ -30,6 +30,11 @@ class BaseMap(GroupMixin, DetailView):
     title = "To be set"
     default_zoom: int
 
+    @property
+    def bounds(self):
+        project: Project = self.get_object()
+        return list(project.land.mpoly.extent)
+
     def get_context_breadcrumbs(self):
         breadcrumbs = super().get_context_breadcrumbs()
         breadcrumbs += [
@@ -129,7 +134,7 @@ class BaseMap(GroupMixin, DetailView):
                 "source": "emprise-du-territoire-source",
                 "paint": {
                     "line-color": "#ffff00",
-                    "line-width": 1.5,
+                    "line-width": 1,
                 },
             },
             {
@@ -339,6 +344,7 @@ class BaseMap(GroupMixin, DetailView):
                 "center_lat": center.y,
                 "center_lng": center.x,
                 "default_zoom": self.default_zoom,
+                "bounds": self.bounds,
                 "data": {
                     "sources": self.get_sources_list(),
                     "layers": layers,
@@ -385,7 +391,7 @@ class MapTestView(BaseMap):
                 "z-index": 4,
                 "type": "fill",
                 "source": "consommation-des-communes-source",
-                "minzoom": 8,
+                "minzoom": 3,
                 "maxzoom": 19,
                 "paint": {
                     "fill-color": self.get_gradient_expression(),
@@ -503,6 +509,7 @@ class MapTestView(BaseMap):
 class UrbanZonesMapView(OcsgeCoverageMixin, BaseMap):
     breadcrumbs_title = title = "Explorateur des zonages d'urbanisme"
     default_zoom = 12
+    bounds = None
 
     def get_sources_list(self):
         available_millesimes = self.object.get_available_millesimes(commit=True)
@@ -1276,7 +1283,7 @@ class CitySpaceConsoMapView(BaseMap):
                 "z-index": 4,
                 "type": "fill",
                 "source": "consommation-des-communes-source",
-                "minzoom": 8,
+                "minzoom": 3,
                 "maxzoom": 19,
                 "paint": {
                     "fill-color": self.get_gradient_expression(),

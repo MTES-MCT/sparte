@@ -147,7 +147,7 @@
     <h3>Evolution de l'artificialisation entre {{ first_millesime }} et {{ last_millesime }}</h3>
 
     <div class="fr-grid-row fr-grid-row--gutters">
-        <div class="fr-col-12 fr-col-lg-8">
+        <div class="fr-col-12">
             <div class="bg-white fr-p-2w h-100">
                 <div class="d-flex justify-content-end align-items-center fr-mb-2w">
                     {% include "project/components/widgets/chart_buttons.html" with chart="chart_waterfall" %}
@@ -155,9 +155,11 @@
                 <div id="chart_waterfall"></div>
             </div>
         </div>
-        <div class="fr-col-12 fr-col-lg-4">
-            {% url 'project:theme-my-artif' project.pk as dynamic_map_url %}
-            {% include "project/components/widgets/static_map.html" with dynamic_map_url=dynamic_map_url static_map=project.theme_map_understand_artif title="Carte comprendre l'artificialisation de son territoire" %}
+    </div>
+    <div class="fr-grid-row fr-grid-row--gutters">
+        <div class="fr-col-12">
+            {% url 'project:theme-my-artif' project.pk as map_url %}
+            {% include "project/components/map/iframe_map.html" with src=map_url title="Carte comprendre l'artificialisation" %}
         </div>
     </div>
 

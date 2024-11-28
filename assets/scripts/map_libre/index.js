@@ -17,6 +17,7 @@ export default class MapLibre
     this.mapCenter = _options.mapCenter
     this.defaultZoom = _options.defaultZoom
     this.data = _options.data
+    this.bounds = _options.bounds
 
     if (!this.targetElement)
     {
@@ -87,6 +88,20 @@ export default class MapLibre
 
       // Set controls
       this.map.addControl(new maplibregl.NavigationControl(), 'top-left')
+      const fullScreenControl = new maplibregl.FullscreenControl()
+      this.map.addControl(fullScreenControl, 'bottom-right')
+      this.map.addControl(this.tabs, 'top-right')
+      this.map.scrollZoom.disable()
+
+      fullScreenControl.on('fullscreenstart', () => this.map.scrollZoom.enable())
+      fullScreenControl.on('fullscreenend', () => this.map.scrollZoom.disable())
+
+      if (this.bounds)
+      {
+        this.map.fitBounds(this.bounds, {
+          padding: 50,
+        })
+      }
     })
   }
 
@@ -122,9 +137,7 @@ export default class MapLibre
       )
     }
 
-    this.tabs = new Tabs({
-      tabList,
-    })
+    this.tabs = new Tabs({ tabList })
   }
 
   setSources()
