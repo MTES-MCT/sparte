@@ -36,9 +36,9 @@ class PopulationConsoComparisonChart(ProjectChart):
             "yAxis": {"title": {"text": "Consommation d'espaces NAF (ha)"}, "maxPadding": 0.2, "min": 0},
             "tooltip": {
                 "pointFormat": (
-                    "Consommation: <span class='fr-text--bold'>{point.y} ha</span><br />"
-                    "Évolution démographique: <span class='fr-text--bold'>{point.x} hab</span><br />"
-                    "Population totale: <span class='fr-text--bold'>{point.z} hab</span>"
+                    "Consommation : <span class='fr-text--bold'>{point.y} ha</span><br />"
+                    "Évolution démographique : <span class='fr-text--bold'>{point.x} hab</span><br />"
+                    "Population totale : <span class='fr-text--bold'>{point.z} hab</span>"
                 ),
             },
             "series": [],

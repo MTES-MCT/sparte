@@ -213,14 +213,11 @@
                       a gagné {{ population_evolution|floatformat:0 }} habitants
                     {% else %}
                       a perdu {{ population_evolution_abs|floatformat:0 }} habitants
-                    {% endif %}
-                    </strong>
-                    (soit une évolution de {{ population_evolution_percent|floatformat:3 }}%).
+                    {% endif %}</strong>, soit une évolution de {{ population_evolution_percent|floatformat:3 }}%.
                 </p>
                 <p class="fr-text--sm"> 
                     Sur cette même période,
-                    <strong>{{ consommation_total|floatformat:3 }} ha d'espaces NAF ont été consommés</strong>
-                    (soit {{ consommation_total_percent|floatformat:3 }}% du territoire).
+                    <strong>{{ consommation_total|floatformat:3 }} ha d'espaces NAF ont été consommés</strong>, soit {{ consommation_total_percent|floatformat:3 }}% du territoire.
                 </p>
             </div>
         </div>
@@ -311,13 +308,12 @@
             Ajouter un territoire de comparaison
         </button>
     </div>
-    
+
     <div class="bg-white fr-p-2w">
         <div class="d-flex justify-content-end align-items-center fr-mb-2w">
-            {% include "project/components/widgets/chart_buttons.html" with chart="comparison_chart" %}
-            <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#comparaisonVoisin" data-toggle="tooltip" title="Astuces pour lire le graphique"></button>
+            {% include "project/components/widgets/chart_buttons.html" with chart="population_conso_comparison_chart" %}
         </div>
-        <div id="comparison_chart"></div>
+        <div id="population_conso_comparison_chart"></div>
     </div>
 
     <div class="fr-notice bg-white fr-mt-2w">
@@ -329,10 +325,13 @@
                     <p class="fr-tag fr-tag--sm fr-tag--blue">
                         <strong>FICHIERS FONCIERS</strong>
                     </p>
+                    <p class="fr-tag fr-tag--sm fr-tag--blue">
+                        <strong>INSEE</strong>
+                    </p>
                 </div>
-                <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data-2">Détails données et calcul</button>
+                <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data-population_conso_comparison_chart">Détails données et calcul</button>
             </div>
-            <div class="fr-collapse" id="target-data-2">
+            <div class="fr-collapse" id="target-data-population_conso_comparison_chart">
                 <h6 class="fr-mt-2w">Source</h6>
                 <p class="fr-text--sm">
                     Données d'évolution des fichiers fonciers produits et diffusés par le Cerema depuis 2009 à 
@@ -341,11 +340,14 @@
                     réalisées au cours de l'année 2022.
                     Pour plus d'informations sur <a class="fr-link" href="{{ FAQ_URL }}article/quest-ce-quun-millesime-110ihlr/" target="_blank" rel="noopener noreferrer">"Qu'est-ce qu'un millésime ?"</a>.
                 </p>
+                <p class="fr-text--sm">
+                    Historique des populations communales issues des recensements de la population (1876-2021) produits et diffusés par l'INSEE.
+                </p>
                 <h6 class="fr-mt-2w">Calcul</h6>
                 <p class="fr-text--sm">Données brutes, sans calcul</p>
 
                 <h6 class="fr-mt-2w">Données</h6>
-                {{ comparison_table }}
+                {{ population_comparison_table }}
             </div>
         </div>
     </div>
@@ -397,9 +399,10 @@
 <div class="fr-mt-7w">
     <div class="bg-white fr-p-2w">
         <div class="d-flex justify-content-end align-items-center fr-mb-2w">
-            {% include "project/components/widgets/chart_buttons.html" with chart="population_conso_comparison_chart" %}
+            {% include "project/components/widgets/chart_buttons.html" with chart="comparison_chart" %}
+            <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#comparaisonVoisin" data-toggle="tooltip" title="Astuces pour lire le graphique"></button>
         </div>
-        <div id="population_conso_comparison_chart"></div>
+        <div id="comparison_chart"></div>
     </div>
 
     <div class="fr-notice bg-white fr-mt-2w">
@@ -411,13 +414,10 @@
                     <p class="fr-tag fr-tag--sm fr-tag--blue">
                         <strong>FICHIERS FONCIERS</strong>
                     </p>
-                    <p class="fr-tag fr-tag--sm fr-tag--blue">
-                        <strong>INSEE</strong>
-                    </p>
                 </div>
-                <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data-population_conso_comparison_chart">Détails données et calcul</button>
+                <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data-2">Détails données et calcul</button>
             </div>
-            <div class="fr-collapse" id="target-data-population_conso_comparison_chart">
+            <div class="fr-collapse" id="target-data-2">
                 <h6 class="fr-mt-2w">Source</h6>
                 <p class="fr-text--sm">
                     Données d'évolution des fichiers fonciers produits et diffusés par le Cerema depuis 2009 à 
@@ -426,17 +426,15 @@
                     réalisées au cours de l'année 2022.
                     Pour plus d'informations sur <a class="fr-link" href="{{ FAQ_URL }}article/quest-ce-quun-millesime-110ihlr/" target="_blank" rel="noopener noreferrer">"Qu'est-ce qu'un millésime ?"</a>.
                 </p>
-                <p class="fr-text--sm">
-                    Historique des populations communales issues des recensements de la population (1876-2021) produits et diffusés par l'INSEE.
-                </p>
                 <h6 class="fr-mt-2w">Calcul</h6>
                 <p class="fr-text--sm">Données brutes, sans calcul</p>
 
                 <h6 class="fr-mt-2w">Données</h6>
-                {{ population_comparison_table }}
+                {{ comparison_table }}
             </div>
         </div>
     </div>
+
 </div>
 
 <!-- Modal -->

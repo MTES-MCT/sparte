@@ -10,9 +10,7 @@ class PopulationConsoProgressionChart(ProjectChart):
     @property
     def param(self):
         return super().param | {
-            "title": {
-                "text": "Évolutions comparées de la consommation d'espaces NAF et de la population du territoire"
-            },
+            "title": {"text": "Évolutions de la consommation d'espaces NAF et de la population du territoire"},
             "credits": {"enabled": False},
             "plotOptions": {"series": {"grouping": False, "borderWidth": 0}},
             "xAxis": [
@@ -81,7 +79,7 @@ class PopulationConsoProgressionChart(ProjectChart):
 
         self.chart["series"] = [
             {
-                "name": "Consommation totale",
+                "name": "Consommation totale ",
                 "type": "column",
                 "yAxis": 1,
                 "data": progression_consommation["total"],
@@ -90,7 +88,7 @@ class PopulationConsoProgressionChart(ProjectChart):
                 "id": "main",
             },
             {
-                "name": "Consommation à destination de l'habitat",
+                "name": "Consommation à destination de l'habitat ",
                 "type": "column",
                 "yAxis": 1,
                 "data": progression_consommation["habitat"],
@@ -99,7 +97,7 @@ class PopulationConsoProgressionChart(ProjectChart):
                 "linkTo": "main",
             },
             {
-                "name": "Population",
+                "name": "Population ",
                 "type": "spline",
                 "data": self.stock_population_from_insee,
                 "tooltip": {"valueSuffix": " hab"},

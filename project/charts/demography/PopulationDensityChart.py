@@ -19,7 +19,7 @@ class PopulationDensityChart(ProjectChart):
                 "marginLeft": 50,
                 "marginRight": 50,
             },
-            "title": {"text": "Densité de population"},
+            "title": {"text": f"Densité de population ({self.project.analyse_end_date})"},
             "xAxis": {"lineColor": "transparent", "labels": {"enabled": False}, "tickLength": 0},
             "yAxis": {
                 "tickPositions": [0, 50, 100, 150, 200, DENSITY_MAX_IN_HA],
