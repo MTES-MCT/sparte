@@ -2,7 +2,6 @@ from django.contrib.gis.db import models
 from django.contrib.postgres.search import TrigramSimilarity
 from django.db.models.functions import Lower
 
-from public_data.models.cerema import Cerema
 from public_data.models.enums import SRID
 from utils.db import IntersectManager
 
@@ -42,9 +41,6 @@ class Scot(LandMixin, GetDataFromCeremaMixin, models.Model):
     @property
     def official_id(self) -> str:
         return self.source_id
-
-    def get_qs_cerema(self):
-        return Cerema.objects.filter(city_insee__in=self.commune_set.values("insee"))
 
     def get_cities(self):
         return self.commune_set.all()

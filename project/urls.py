@@ -3,7 +3,7 @@ from django.views.generic.base import RedirectView
 from rest_framework import routers
 
 from . import views
-from .api_views import EmpriseViewSet, ProjectDetailView, ProjectViewSet
+from .api_views import EmpriseViewSet, ProjectDetailView
 
 app_name = "project"
 
@@ -127,11 +127,6 @@ urlpatterns = [
         name="map-urban-zones",
     ),
     path(
-        "<int:pk>/map-test",
-        views.MapTestView.as_view(),
-        name="map-test",
-    ),
-    path(
         "<int:project_id>/carte/detail-zone-urbaine/<str:checksum>",
         views.ArtifZoneUrbaView.as_view(),
         name="map-pane-artif-zone-urba",
@@ -161,7 +156,6 @@ urlpatterns = [
 # Add API urls
 router = routers.DefaultRouter()
 router.register(r"geojson", EmpriseViewSet)
-router.register(r"projects", ProjectViewSet)
 
 
 urlpatterns += router.urls

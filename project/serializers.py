@@ -71,20 +71,6 @@ class ProjectCommuneSerializer(gis_serializers.GeoFeatureModelSerializer):
         model = Commune
 
 
-class CitySpaceConsoMapSerializer(gis_serializers.GeoFeatureModelSerializer):
-    artif_area = serializers.FloatField()
-
-    class Meta:
-        fields = (
-            "name",
-            "insee",
-            "area",
-            "artif_area",
-        )
-        geo_field = "mpoly"
-        model = Commune
-
-
 class CityArtifMapSerializer(gis_serializers.GeoFeatureModelSerializer):
     artif_evo = ArtifEvolutionSubSerializer(source="communediff_set", many=True, read_only=True)
 

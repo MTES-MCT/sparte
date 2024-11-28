@@ -23,7 +23,6 @@ from project.models.enums import ProjectChangeReason
 from public_data.exceptions import LandException
 from public_data.models import (
     AdminRef,
-    Cerema,
     CommuneDiff,
     CommuneSol,
     CouvertureSol,
@@ -553,125 +552,71 @@ class Project(BaseProject):
             self.save(update_fields=["look_a_like"])
         return sorted(lands, key=lambda x: x.name)
 
-    def get_cerema_cities(self, group_name=None):
-        if not group_name:
-            code_insee = self.cities.all().values_list("insee", flat=True)
-        else:
-            code_insee = self.projectcommune_set.filter(group_name=group_name)
-            code_insee = code_insee.values_list("commune__insee", flat=True)
-        qs = Cerema.objects.pre_annotated()
-        qs = qs.filter(city_insee__in=code_insee)
-        return qs
-
     def get_determinants(self, group_name=None):
-        """Return determinant for project's periode
-        {
-            "house"
-            {
-                "2015": 10,
-                "2016": 3,
-                "2018": 1,
-            },
-            "activity": {...},
-            "both": {...},
-            "unknown": {...},
-        }
-        """
-        determinants = {
-            "hab": "Habitat",
-            "act": "Activité",
-            "mix": "Mixte",
-            "rou": "Route",
-            "fer": "Ferré",
-            "inc": "Inconnu",
-        }
-        results = {f: dict() for f in determinants.values()}
-        args = []
-        for year in self.years:
-            start = year[-2:]
-            end = str(int(year) + 1)[-2:]
-            for det in determinants.keys():
-                args.append(Sum(f"art{start}{det}{end}"))
-        qs = self.get_cerema_cities(group_name=group_name).aggregate(*args)
-        for key, val in qs.items():
-            if val is not None:
-                year = f"20{key[3:5]}"
-                det = determinants[key[5:8]]
-                surface_in_sqm = val / 10000
-                results[det][year] = surface_in_sqm if surface_in_sqm >= 0 else 0
-        return results
+        from public_data.domain.containers import PublicDataContainer
+
+        conso = PublicDataContainer.consommation_progression_service().get_by_land(
+            land=self.land_proxy,
+            start_date=self.analyse_start_date,
+            end_date=self.analyse_end_date,
+        )
+        data = {"Habitat": {}, "Activité": {}, "Mixte": {}, "Route": {}, "Ferré": {}, "Inconnu": {}}
+
+        for annual_conso in conso.consommation:
+            year_as_str = str(annual_conso.year)
+            data["Habitat"][year_as_str] = annual_conso.habitat
+            data["Activité"][year_as_str] = annual_conso.activite
+            data["Mixte"][year_as_str] = annual_conso.mixte
+            data["Route"][year_as_str] = annual_conso.route
+            data["Ferré"][year_as_str] = annual_conso.ferre
+            data["Inconnu"][year_as_str] = annual_conso.non_reseigne
+
+        return data
 
     def get_bilan_conso(self):
         """Return the space consummed between 2011 and 2020 in hectare"""
-        qs = self.get_cerema_cities().aggregate(bilan=Coalesce(Sum("naf11art21"), float(0)))
-        return qs["bilan"] / 10000
+        from public_data.domain.containers import PublicDataContainer
+
+        conso = PublicDataContainer.consommation_stats_service().get_by_land(
+            land=self.land_proxy, start_date=2011, end_date=2020
+        )
+        return conso.total
 
     def get_bilan_conso_per_year(self):
-        """Return the space consummed per year between 2011 and 2020"""
-        qs = self.get_cerema_cities().aggregate(
-            **{f"20{f[3:5]}": Sum(f) / 10000 for f in Cerema.get_art_field("2011", "2021")}
+        from public_data.domain.containers import PublicDataContainer
+
+        conso = PublicDataContainer.consommation_progression_service().get_by_land(
+            land=self.land_proxy, start_date=2011, end_date=2020
         )
-        return qs
+        return {f"{c.year}": c.total for c in conso.consommation}
 
     def get_bilan_conso_time_scoped(self):
-        """Return land consummed during the project time scope (between
-        analyze_start_data and analyze_end_date)
-        Evaluation is based on city consumption, not geo work."""
-        qs = self.get_cerema_cities()
-        fields = Cerema.get_art_field(self.analyse_start_date, self.analyse_end_date)
-        sum_function = sum([F(f) for f in fields])
-        qs = qs.annotate(line_sum=sum_function)
-        aggregation = qs.aggregate(bilan=Coalesce(Sum("line_sum"), float(0)))
-        try:
-            return aggregation["bilan"] / 10000
-        except TypeError:
-            return 0
+        """Return the space consummed between 2011 and 2020 in hectare"""
+        from public_data.domain.containers import PublicDataContainer
+
+        conso = PublicDataContainer.consommation_stats_service().get_by_land(
+            land=self.land_proxy, start_date=self.analyse_start_date, end_date=self.analyse_end_date
+        )
+        return conso.total
 
     _conso_per_year = None
 
     def get_conso_per_year(self, coef=1):
-        """Return Cerema data for the project, transposed and named after year"""
-        qs = self.get_cerema_cities()
-        fields = Cerema.get_art_field(self.analyse_start_date, self.analyse_end_date)
-        args = (Sum(field) for field in fields)
-        qs = qs.aggregate(*args)
-        return {f"20{key[3:5]}": float(val / 10000) * float(coef) for key, val in qs.items()}
+        from public_data.domain.containers import PublicDataContainer
+        from public_data.models import Land
+
+        conso = PublicDataContainer.consommation_progression_service().get_by_land(
+            land=Land(public_key=f"{self.land_type}_{self.land_id}"),
+            start_date=int(self.analyse_start_date),
+            end_date=int(self.analyse_end_date),
+        )
+
+        return {f"{c.year}": float(c.total) for c in conso.consommation}
 
     def get_land_conso_per_year(self, level, group_name=None):
-        """Return conso data aggregated by a specific level
-        {
-            "dept_name": {
-                "2015": 10,
-                "2016": 12,
-                "2017": 9,
-            },
-        }
-
-        Available level: any Cerema's field
-        * city_name
-        * epci_name
-        * dept_name
-        * region_name
-        * scot [experimental]
-        """
-        fields = Cerema.get_art_field(self.analyse_start_date, self.analyse_end_date)
-        qs = self.get_cerema_cities(group_name=group_name)
-        qs = qs.values(level)
-        qs = qs.annotate(**{f"20{field[3:5]}": Sum(field) / 10000 for field in fields})
-        return {row[level]: {year: row[year] for year in self.years} for row in qs}
+        return {f"{self.territory_name}": self.get_conso_per_year()}
 
     def get_city_conso_per_year(self, group_name=None):
-        """Return year artificialisation of each city in the project, on project
-        time scope
-
-        {
-            "city_name": {
-                "2015": 10,
-                "2016": 12,
-                "2017": 9,
-            },
-        }
-        """
         return self.get_land_conso_per_year("city_name", group_name=group_name)
 
     def get_look_a_like_pop_change_per_year(

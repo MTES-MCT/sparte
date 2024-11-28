@@ -1,24 +1,6 @@
 from dependency_injector import containers, providers
 from django.core.cache import cache as django_cache
 
-# domain
-from public_data.domain.ClassCacher import ClassCacher
-from public_data.domain.consommation.progression import (
-    BaseConsommationProgressionService,
-)
-from public_data.domain.consommation.stats import (
-    BaseConsommationStatsComparisonService,
-    BaseConsommationStatsService,
-)
-from public_data.domain.demography.population.progression import (
-    BasePopulationProgressionService,
-)
-from public_data.domain.demography.population.stats import BasePopulationStatsService
-from public_data.domain.demography.population.stats.BasePopulationStatsComparisonService import (
-    BasePopulationStatsComparisonService,
-)
-
-# infra
 from public_data.infra.consommation.progression import ConsommationProgressionService
 from public_data.infra.consommation.stats import (
     ConsommationStatsComparisonService,
@@ -39,34 +21,34 @@ from public_data.infra.PickleClassCacher import PickleClassCacher
 class PublicDataContainer(containers.DeclarativeContainer):
     config = providers.Configuration()
 
-    class_cacher: ClassCacher = providers.Factory(
+    class_cacher = providers.Factory(
         PickleClassCacher,
         cache=django_cache,
     )
     # consommation
 
-    consommation_progression_service: BaseConsommationProgressionService = providers.Factory(
+    consommation_progression_service = providers.Factory(
         ConsommationProgressionService,
     )
 
-    consommation_stats_service: BaseConsommationStatsService = providers.Factory(
+    consommation_stats_service = providers.Factory(
         ConsommationStatsService,
     )
 
-    consommation_comparison_service: BaseConsommationStatsComparisonService = providers.Factory(
+    consommation_comparison_service = providers.Factory(
         ConsommationStatsComparisonService,
     )
 
     # population
 
-    population_progression_service: BasePopulationProgressionService = providers.Factory(
+    population_progression_service = providers.Factory(
         PopulationProgressionService,
     )
 
-    population_stats_service: BasePopulationStatsService = providers.Factory(
+    population_stats_service = providers.Factory(
         PopulationStatsService,
     )
 
-    population_comparison_service: BasePopulationStatsComparisonService = providers.Factory(
+    population_comparison_service = providers.Factory(
         PopulationStatsComparisonService,
     )
