@@ -150,7 +150,7 @@
         <div class="fr-col-12">
             <div class="bg-white fr-p-2w h-100">
                 <div class="d-flex justify-content-end align-items-center fr-mb-2w">
-                    {% include "project/components/widgets/chart_buttons.html" with chart="chart_waterfall" %}
+                    {% include "project/components/widgets/chart_buttons.html" with chart="chart_waterfall" show_fullscreen=True %}
                 </div>
                 <div id="chart_waterfall"></div>
             </div>
@@ -254,7 +254,7 @@
                         </ul>
                     </div>
 
-                    {% include "project/components/widgets/chart_buttons.html" with chart="chart_comparison" %}
+                    {% include "project/components/widgets/chart_buttons.html" with chart="chart_comparison" show_fullscreen=True %}
                 </div>
                 <div id="chart_comparison"></div>
             </div>
@@ -339,7 +339,7 @@
         <div class="fr-col-12 fr-col-lg-4">
             <div class="bg-white fr-p-2w">
                 <div class="d-flex justify-content-end align-items-center fr-mb-2w">
-                    {% include "project/components/widgets/chart_buttons.html" with chart="couv_artif_sol" %}
+                    {% include "project/components/widgets/chart_buttons.html" with chart="couv_artif_sol" show_fullscreen=True %}
                     <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#couvArtifSol" data-toggle="tooltip" title="Astuces pour lire le graphique"></button>
                 </div>
                 <div id="couv_artif_sol"></div>
@@ -348,7 +348,7 @@
         <div class="fr-col-12 fr-col-lg-8">
             <div class="bg-white fr-p-2w">
                 <div class="d-flex justify-content-end align-items-center fr-mb-2w">
-                    {% include "project/components/widgets/chart_buttons.html" with chart="detail_couv_artif_chart" %}
+                    {% include "project/components/widgets/chart_buttons.html" with chart="detail_couv_artif_chart" show_fullscreen=True %}
                     <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#couvArtifSol" data-toggle="tooltip" title="Astuces pour lire le graphique"></button>
                 </div>
                 <div id="detail_couv_artif_chart"></div>
@@ -435,7 +435,7 @@
         <div class="fr-col-12 fr-col-lg-4">
             <div class="bg-white fr-p-2w">
                 <div class="d-flex justify-content-end align-items-center fr-mb-2w">
-                    {% include "project/components/widgets/chart_buttons.html" with chart="usage_artif_sol" %}
+                    {% include "project/components/widgets/chart_buttons.html" with chart="usage_artif_sol" show_fullscreen=True %}
                     <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#usageArtifSol" data-toggle="tooltip" title="Astuces pour lire le graphique"></button>
                 </div>
                 <div id="usage_artif_sol"></div>
@@ -444,7 +444,7 @@
         <div class="fr-col-12 fr-col-lg-8">
             <div class="bg-white fr-p-2w">
                 <div class="d-flex justify-content-end align-items-center fr-mb-2w">
-                    {% include "project/components/widgets/chart_buttons.html" with chart="detail_usage_artif_chart" %}
+                    {% include "project/components/widgets/chart_buttons.html" with chart="detail_usage_artif_chart" show_fullscreen=True %}
                     <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#usageArtifSol" data-toggle="tooltip" title="Astuces pour lire le graphique"></button>
                 </div>
                 <div id="detail_usage_artif_chart"></div>
