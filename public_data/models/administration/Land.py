@@ -26,6 +26,7 @@ class Land:
             AdminRef.SCOT: Scot,
             AdminRef.DEPARTEMENT: Departement,
             AdminRef.REGION: Region,
+            AdminRef.NATION: Nation,
         }
 
     def __init__(self, public_key):

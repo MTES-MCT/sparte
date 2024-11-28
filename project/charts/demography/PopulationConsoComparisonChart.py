@@ -38,7 +38,8 @@ class PopulationConsoComparisonChart(ProjectChart):
                 "pointFormat": (
                     "Consommation : <span class='fr-text--bold'>{point.y} ha</span><br />"
                     "Évolution démographique : <span class='fr-text--bold'>{point.x} hab</span><br />"
-                    "Population totale : <span class='fr-text--bold'>{point.z} hab</span>"
+                    "Population totale (%s) : <span class='fr-text--bold'>{point.z} hab</span>"
+                    % self.project.analyse_end_date
                 ),
             },
             "series": [],
@@ -50,18 +51,17 @@ class PopulationConsoComparisonChart(ProjectChart):
         end_date = int(self.project.analyse_end_date)
         highlighted_land_id = self.project.land_proxy.id
 
-        consommation_stats = {
+        consommation_total = {
             c.land.id: round(c.total, 2)
             for c in PublicDataContainer.consommation_stats_service().get_by_lands(lands, start_date, end_date)
         }
-        population_stats = {
+        population_evolution_total = {
             p.land.id: p.evolution
             for p in PublicDataContainer.population_stats_service().get_by_lands(lands, start_date, end_date)
         }
 
-        # TODO : replace by total evolution
-        population_progression = {
-            p.land.id: p.first_year_population.population
+        last_year_populations = {
+            p.land.id: p.last_year_population.population
             for p in PublicDataContainer.population_progression_service().get_by_lands(lands, start_date, end_date)
         }
 
@@ -70,9 +70,9 @@ class PopulationConsoComparisonChart(ProjectChart):
                 "name": land.name,
                 "data": [
                     {
-                        "x": population_stats.get(land.id, 0),
-                        "y": consommation_stats.get(land.id, 0),
-                        "z": population_progression.get(land.id, 0),
+                        "x": population_evolution_total.get(land.id, 0),
+                        "y": consommation_total.get(land.id, 0),
+                        "z": last_year_populations.get(land.id, 0),
                     }
                 ],
                 "color": HIGHLIGHT_COLOR if land.id == highlighted_land_id else None,
@@ -101,19 +101,13 @@ class PopulationConsoComparisonChart(ProjectChart):
         start_date = int(self.project.analyse_start_date)
         end_date = int(self.project.analyse_end_date)
 
-        max_population_evolution = max(
-            [
-                p.evolution
-                for p in PublicDataContainer.population_stats_service().get_by_lands(lands, start_date, end_date)
-            ]
-        )
+        population_evolution = [
+            p.evolution
+            for p in PublicDataContainer.population_stats_service().get_by_lands(lands, start_date, end_date)
+        ]
 
-        min_population_evolution = min(
-            [
-                p.evolution
-                for p in PublicDataContainer.population_stats_service().get_by_lands(lands, start_date, end_date)
-            ]
-        )
+        max_population_evolution = max(population_evolution)
+        min_population_evolution = min(population_evolution)
 
         max_conso = max(
             [
@@ -135,9 +129,13 @@ class PopulationConsoComparisonChart(ProjectChart):
 
         return [
             {
-                "name": f"Médiane à l'échelle de {pop_comparison.land.name}",
+                "name": (
+                    f"Médiane des {self.project.land.land_type_label.lower()}s<br>à "
+                    "l'échelle de {pop_comparison.land.name}"
+                ),
                 "type": "line",
                 "color": "black",
+                # TODO: désactiver les interactions sur la série de tendance
                 "marker": {"enabled": False},
                 "hover": {"enabled": False},
                 "data": [

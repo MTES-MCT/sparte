@@ -1,4 +1,9 @@
 class Nation:
+    """
+    Ce modèle copie le format des autres modèles de territoire pour les nations,
+    et est utilisé comme niveau de comparison pour les régions.
+    """
+
     source_id = "NATION"
     name = "France"
 
@@ -10,18 +15,9 @@ class Nation:
     def official_id(self) -> str:
         return self.source_id
 
-    def get_ocsge_millesimes(self) -> set:
-        pass
-
     @classmethod
-    def search(cls, needle, region=None, departement=None, epci=None):
-        pass
-
-    def get_qs_cerema(self):
-        pass
-
-    def get_cities(self):
-        pass
+    def search(cls, *args, **kwargs):
+        return []
 
     def __str__(self):
         return self.name
