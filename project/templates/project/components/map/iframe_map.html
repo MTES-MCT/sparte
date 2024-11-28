@@ -1,6 +1,6 @@
 <iframe
     title="{{ title }}"
-    style="height:50vh"
+    style="height:{{ height|default:'50vh' }}"
     src="{{ src }}"
     width="100%"
     loading="lazy"
