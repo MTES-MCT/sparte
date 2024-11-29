@@ -79,7 +79,7 @@
         </div>
         <div class="fr-collapse" id="target-data-usage">
             <h6 class="fr-mt-2w">Source</h6>
-            <p class="fr-text--sm">Données d'OCcupation des Sols à Grande Echelle (OCS GE) de l'IGN, sur la période d'analyse (millésime min : {{ first_millesime }}, millésime max : {{ last_millesime }}).</p>
+            {% include "project/components/widgets/source_ocsge.html" %}
 
             <h6 class="fr-mt-2w">Calcul</h6>
             <p class="fr-text--sm">OCS GE traduite grâce à la matrice de passage.</p>

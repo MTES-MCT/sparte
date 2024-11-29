@@ -177,7 +177,7 @@
             </div>
             <div class="fr-collapse" id="target-data-2">
                 <h6 class="fr-mt-2w">Source</h6>
-                <p class="fr-text--sm">Données d'OCcupation des Sols à Grande Echelle (OCS GE) de l'IGN, sur la période d'analyse traduite grâce à la matrice de passage.</p>
+                {% include "project/components/widgets/source_ocsge.html" %}
 
                 <h6 class="fr-mt-2w">Calcul</h6>
                 <p class="fr-text--sm">Artificialisation sur la période - désartificialisation sur la période.</p>
@@ -279,7 +279,7 @@
             </div>
             <div class="fr-collapse" id="target-data-1">
                 <h6 class="fr-mt-2w">Source</h6>
-                <p class="fr-text--sm">Données d'OCcupation des Sols à Grande Echelle (OCS GE) de l'IGN, sur la période d'analyse.</p>
+                {% include "project/components/widgets/source_ocsge.html" %}
 
                 <h6 class="fr-mt-2w">Calcul</h6>
                 <p class="fr-text--sm">OCS GE traduite grâce à la matrice de passage.</p>
@@ -370,7 +370,7 @@
             </div>
             <div class="fr-collapse" id="target-data-couv">
                 <h6 class="fr-mt-2w">Source</h6>
-                <p class="fr-text--sm">Données d'OCcupation des Sols à Grande Echelle (OCS GE) de l'IGN, sur la période d'analyse (millésime min : {{ project.first_year_ocsge }}, millésime max : {{ project.last_year_ocsge }}).</p>
+                {% include "project/components/widgets/source_ocsge.html" %}
 
                 <h6 class="fr-mt-2w">Calcul</h6>
                 <p class="fr-text--sm">OCS GE traduite grâce à la matrice de passage.</p>
@@ -466,7 +466,7 @@
             </div>
             <div class="fr-collapse" id="target-data-usage">
                 <h6 class="fr-mt-2w">Source</h6>
-                <p class="fr-text--sm">Données d'OCcupation des Sols à Grande Echelle (OCS GE) de l'IGN, sur la période d'analyse (millésime min : {{ project.first_year_ocsge }}, millésime max : {{ project.last_year_ocsge }}).</p>
+                {% include "project/components/widgets/source_ocsge.html" %}
 
                 <h6 class="fr-mt-2w">Calcul</h6>
                 <p class="fr-text--sm">OCS GE traduite grâce à la matrice de passage.</p>
