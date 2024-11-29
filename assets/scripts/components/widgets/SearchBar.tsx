@@ -1,4 +1,4 @@
-import React, { useEffect, ChangeEvent, useState } from 'react';
+import React, { useEffect, ChangeEvent, useState, useRef } from 'react';
 import styled from 'styled-components';
 import { useSearchTerritoryQuery } from '@services/api';
 import useDebounce from '@hooks/useDebounce';
@@ -123,6 +123,7 @@ const NoResultsMessage = styled.div`
 `;
 
 const SearchBar: React.FC<SearchBarProps> = ({ createUrl, origin }) => {
+    const searchContainerRef = useRef<HTMLDivElement>(null);
     const [query, setQuery] = useState<string>('');
     const [isFocused, setIsFocused] = useState<boolean>(false);
     const [data, setData] = useState<Territory[] | undefined>(undefined);
@@ -142,6 +143,20 @@ const SearchBar: React.FC<SearchBarProps> = ({ createUrl, origin }) => {
         }
     }, [isFetching, queryData, debouncedQuery, shouldQueryBeSkipped]);
 
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (searchContainerRef.current && !searchContainerRef.current.contains(event.target as Node)) {
+                setIsFocused(false);
+                setData(undefined);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
+
     const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
         const newQuery = event.target.value;
         setQuery(newQuery);
@@ -149,9 +164,11 @@ const SearchBar: React.FC<SearchBarProps> = ({ createUrl, origin }) => {
 
     const handleBlur = () => {
         setTimeout(() => {
-            setQuery('');
-            setIsFocused(false);
-            setData(undefined);
+            if (!isSubmitting) {
+                setQuery('');
+                setIsFocused(false);
+                setData(undefined);
+            }
         }, 150);
     };
 
@@ -207,7 +224,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ createUrl, origin }) => {
     return (
         <>
             <Overlay $visible={isFocused} />
-            <SearchContainer>
+            <SearchContainer ref={searchContainerRef}>
                 <Icon className="bi bi-search" />
                 <Input
                     type="text"
@@ -228,6 +245,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ createUrl, origin }) => {
                                     <ResultItem
                                         key={territory.source_id}
                                         $disabled={isDisabled}
+                                        onMouseDown={(e) => e.preventDefault()}
                                         onClick={() => createDiagnostic(territory.public_key, isDisabled)}
                                     >
                                         <div>
