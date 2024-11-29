@@ -204,7 +204,7 @@
                     le territoire de {{ project.territory_name }}
                     <strong>
                     {% if population_evolution == 0 %}
-                      n'a gagné aucun habitant
+                        n'a gagné aucun habitant,
                     {% elif population_evolution == 1 %}
                       a gagné 1 habitant
                     {% elif population_evolution == -1 %}
@@ -212,12 +212,17 @@
                     {% elif population_evolution > 0 %}
                       a gagné {{ population_evolution|floatformat:0 }} habitants
                     {% else %}
-                      a perdu {{ population_evolution_abs|floatformat:0 }} habitants
-                    {% endif %}</strong>, soit une évolution de {{ population_evolution_percent|floatformat:3 }}%.
+                        {% if population_evolution > 0 %}
+                            a gagné {{ population_evolution|floatformat:0 }} habitant{{ population_evolution|pluralize }},
+                        {% else %}
+                            a perdu {{ population_evolution_abs|floatformat:0 }} habitant{{ population_evolution_abs|pluralize }},
+                        {% endif %}
+                    {% endif %}
+                    </strong>soit une évolution de {{ population_evolution_percent|floatformat:2 }}%.
                 </p>
                 <p class="fr-text--sm"> 
                     Sur cette même période,
-                    <strong>{{ consommation_total|floatformat:3 }} ha d'espaces NAF ont été consommés</strong>, soit {{ consommation_total_percent|floatformat:3 }}% du territoire.
+                    <strong>{{ consommation_total|floatformat:2 }} ha d'espaces NAF ont été consommés</strong>, soit {{ consommation_total_percent|floatformat:3 }}% du territoire.
                 </p>
             </div>
         </div>
