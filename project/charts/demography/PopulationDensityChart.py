@@ -50,11 +50,14 @@ class PopulationDensityChart(ProjectChart):
 
         # On récupére la dernier année de pop sur la période disponible
         last_year_data_available = progression_population.population[-1]
-        density = math.ceil(last_year_data_available.population / self.project.land_proxy.area)
+        density_ha = math.ceil(last_year_data_available.population / self.project.land_proxy.area)
+        density_km2 = density_ha * 100
+
+        self.chart["subtitle"] = {"text": f"{density_ha} hab/ha (soit {density_km2} hab/km²)"}
 
         self.chart["series"] = [
             {
-                "data": [density],
+                "data": [density_ha],
                 "color": "#000000",
                 "dataLabels": {
                     "enabled": True,
