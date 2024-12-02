@@ -224,7 +224,7 @@
     <h3 id="conso-annuelle">Artificialisation nette entre {{ first_millesime }} et {{ last_millesime }}</h3>
 
     <div class="fr-grid-row fr-grid-row--gutters">
-        <div class="fr-col-12 fr-col-lg-8">
+        <div class="fr-col-12">
             <div class="bg-white fr-p-2w h-100">
                 <div class="d-flex justify-content-end align-items-center fr-mb-2w">
                     <div class="dropdown custom-dropdown fr-mr-2w">
@@ -259,9 +259,11 @@
                 <div id="chart_comparison"></div>
             </div>
         </div>
-        <div class="fr-col-12 fr-col-lg-4">
-            {% url 'project:theme-city-artif' project.pk as dynamic_map_url %}
-            {% include "project/components/widgets/static_map.html" with dynamic_map_url=dynamic_map_url static_map=project.theme_map_artif title="Carte artificialisation des communes du territoire sur la période (en ha)" %}
+    </div>
+    <div class="fr-grid-row fr-grid-row--gutters">
+        <div class="fr-col-12 fr-mt-2w">
+            {% url 'project:theme-city-artif' project.pk as map_url %}
+            {% include "project/components/map/iframe_map.html" with src=map_url title="Carte artificialisation des communes du territoire sur la période (en ha)" %}
         </div>
     </div>
 

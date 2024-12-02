@@ -342,7 +342,7 @@ class ProjectReportArtifView(ProjectReportBaseView):
         project: Project = self.get_object()
         total_surface = project.area
         level = self.request.GET.get("level_conso", project.level)
-        is_commune = (project.land_type == AdminRef.COMMUNE,)
+        is_commune = project.land_type == AdminRef.COMMUNE
 
         kwargs = {
             "land_type": project.land_type or "COMP",
