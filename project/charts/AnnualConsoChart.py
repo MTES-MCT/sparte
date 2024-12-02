@@ -7,6 +7,7 @@ from project.charts.constants import (
     HIGHLIGHT_COLOR,
     LEGEND_NAVIGATION_EXPORT,
 )
+from public_data.domain.containers import PublicDataContainer
 from public_data.models import AdminRef
 
 
@@ -35,18 +36,12 @@ class AnnualConsoChart(ProjectChart):
         super().__init__(*args, **kwargs)
 
     def get_series(self):
-        if not self.series:
-            if self.level == "REGION":
-                self.series = self.project.get_land_conso_per_year("region_name")
-            elif self.level == "DEPART":
-                self.series = self.project.get_land_conso_per_year("dept_name")
-            elif self.level == "SCOT":
-                self.series = self.project.get_land_conso_per_year("scot")
-            elif self.level == "EPCI":
-                self.series = self.project.get_land_conso_per_year("epci_name")
-            else:
-                self.series = self.project.get_city_conso_per_year(group_name=self.group_name)
-        return self.series
+        conso = PublicDataContainer.consommation_progression_service().get_by_land(
+            land=self.project.land_proxy,
+            start_date=self.project.analyse_start_date,
+            end_date=self.project.analyse_end_date,
+        )
+        return {f"{self.project.territory_name}": {f"{c.year}": c.total for c in conso.consommation}}
 
     def add_series(self):
         super().add_series()
