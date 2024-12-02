@@ -1149,11 +1149,11 @@ class CitySpaceConsoMapView(BaseMap):
                 "legend": {
                     "title": "Consommation des communes",
                     "subtitle": (
-                        f"Surface consommée de {self.object.analyse_start_date} à {self.object.analyse_end_date}"
+                        f"Taux de consommation de {self.object.analyse_start_date} à {self.object.analyse_end_date}"
                     ),
                     "type": "scale",
                     "data": self.get_gradient_scale(),
-                    "formatter": ["number", ["fr-FR", "unit", "hectare", 2]],
+                    "formatter": ["number", ["fr-FR", "unit", "percent", 2]],
                 },
                 "events": [
                     {
@@ -1170,8 +1170,18 @@ class CitySpaceConsoMapView(BaseMap):
                                         {"name": "Commune", "key": "name"},
                                         {"name": "Code INSEE", "key": "insee"},
                                         {
+                                            "name": "Taux de consommation",
+                                            "key": "artif_area_percent",
+                                            "formatter": ["number", ["fr-FR", "unit", "percent", 2]],
+                                        },
+                                        {
                                             "name": "Surface consommée",
                                             "key": "artif_area",
+                                            "formatter": ["number", ["fr-FR", "unit", "hectare", 2]],
+                                        },
+                                        {
+                                            "name": "Surface du territoire",
+                                            "key": "area",
                                             "formatter": ["number", ["fr-FR", "unit", "hectare", 2]],
                                         },
                                     ],
@@ -1241,7 +1251,7 @@ class CitySpaceConsoMapView(BaseMap):
         data = [
             "interpolate",
             ["linear"],
-            ["get", "artif_area"],
+            ["get", "artif_area_percent"],
         ]
         for scale in self.get_gradient_scale():
             data.append(scale["value"])
@@ -1264,7 +1274,12 @@ class CitySpaceConsoMapView(BaseMap):
                     "id": c.land.official_id,
                     "type": "Feature",
                     "geometry": json.loads(c.land.mpoly.geojson),
-                    "properties": {"name": c.land.name, "area": c.land.area, "artif_area": c.total_percent},
+                    "properties": {
+                        "name": c.land.name,
+                        "area": c.land.area,
+                        "artif_area": c.total,
+                        "artif_area_percent": c.total_percent,
+                    },
                 }
             )
         return JsonResponse(data=data, status=200, safe=False)
