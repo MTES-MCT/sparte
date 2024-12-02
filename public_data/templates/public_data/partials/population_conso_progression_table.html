@@ -20,16 +20,19 @@
                                 <td class="fr-cell--right">{{ row.total }}</td>
                                 <td class="fr-cell--right">{{ row.habitat }}</td>
                                 <td class="fr-cell--right">
+                                    {% if row.population_calculated %}<span class="text-muted">(estimation)</span>{% endif %}
                                     {{ row.population }}&nbsp;
+                                </td>
+                                <td class="fr-cell--right">
                                     {% if row.population_calculated %}<span class="text-muted">(estimation)</span>{% endif %}
                                     {% if row.evolution > 0 %}
-                                        <span class="fr-badge fr-badge--success fr-badge--sm fr-badge--no-icon fr-ml-1w">
+                                        <span class="fr-badge fr-badge--success fr-badge--sm fr-badge--no-icon">
                                             +{{ row.evolution }}
                                             <i class="bi bi-arrow-up-right fr-ml-1w"></i>&nbsp;
                                         </span>
                                     {% elif row.evolution < 0 %}
-                                        <span class="fr-badge fr-badge--error fr-badge--sm fr-badge--no-icon fr-ml-1w">
-                                            -{{ row.evolution }}
+                                        <span class="fr-badge fr-badge--error fr-badge--sm fr-badge--no-icon">
+                                            {{ row.evolution }}
                                             <i class="bi bi-arrow-down-right fr-ml-1w"></i>&nbsp;
                                         </span>
                                     {% endif %}

@@ -23,7 +23,7 @@ class PopulationConsoProgressionChart(ProjectChart):
             ],
             "yAxis": [
                 {
-                    "title": {"text": "Population (hab)", "style": {"color": "#fa4b42"}},
+                    "title": {"text": "Population totale (hab)", "style": {"color": "#fa4b42"}},
                     "labels": {"style": {"color": "#fa4b42"}},
                     "opposite": True,
                 },
@@ -97,14 +97,14 @@ class PopulationConsoProgressionChart(ProjectChart):
                 "linkTo": "main",
             },
             {
-                "name": "Population ",
+                "name": "Population totale",
                 "type": "spline",
                 "data": self.stock_population_from_insee,
                 "tooltip": {"valueSuffix": " hab"},
                 "color": "#fa4b42",
             },
             {
-                "name": "Population estimée",
+                "name": "Population totale estimée",
                 "type": "spline",
                 "data": [None] + self.stock_population_calculted,
                 "tooltip": {"valueSuffix": " hab"},

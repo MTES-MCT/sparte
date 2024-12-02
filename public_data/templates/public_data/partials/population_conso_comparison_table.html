@@ -22,13 +22,15 @@
                                 <td class="fr-cell--right">{{ row.consommation_total }}</td>
                                 <td class="fr-cell--right">
                                     {{ row.evolution }}
+                                </td>
+                                <td class="fr-cell--right">
                                     {% if row.evolution_percent > 0 %}
-                                        <span class="fr-badge fr-badge--success fr-badge--sm fr-badge--no-icon fr-ml-1w">
+                                        <span class="fr-badge fr-badge--success fr-badge--sm fr-badge--no-icon">
                                             +{{ row.evolution_percent|floatformat:2 }}%
                                             <i class="bi bi-arrow-up-right fr-ml-1w"></i>
                                         </span>
                                     {% elif row.evolution_percent < 0 %}
-                                        <span class="fr-badge fr-badge--error fr-badge--sm fr-badge--no-icon fr-ml-1w">
+                                        <span class="fr-badge fr-badge--error fr-badge--sm fr-badge--no-icon">
                                             {{ row.evolution_percent|floatformat:2 }}%
                                             <i class="bi bi-arrow-down-right fr-ml-1w"></i>
                                         </span>

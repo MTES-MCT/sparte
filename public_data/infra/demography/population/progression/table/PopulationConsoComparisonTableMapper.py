@@ -24,8 +24,9 @@ class PopulationConsoComparisonTableMapper:
 
         headers = [land_type_label] + [
             "Consommation (ha)",
-            "Évolution démographique",
-            f"Population totale {to_year}",
+            "Évolution démographique (hab)",
+            "Évolution démographique (%)",
+            f"Population totale {to_year} (hab)",
         ]
 
         data = [

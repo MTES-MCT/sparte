@@ -14,7 +14,8 @@ class PopulationConsoProgressionTableMapper:
             "Année",
             "Consommation totale (ha)",
             "Consommation à destination de l'habitat (ha)",
-            "Population (hab)",
+            "Population totale (hab)",
+            "Évolution démographique (hab)",
         ]
 
         data = [
