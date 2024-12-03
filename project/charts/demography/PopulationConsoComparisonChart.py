@@ -82,6 +82,9 @@ class PopulationConsoComparisonChart(ProjectChart):
                     }
                 ],
                 "color": HIGHLIGHT_COLOR if land.id == highlighted_land_id else None,
+                "marker": {
+                    "lineWidth": 3 if land.id == highlighted_land_id else 1,
+                },
                 # La couleur du territoire diagnostiqué est précisée, les autres sont aléatoires (valeur None)
             }
             for land in lands
