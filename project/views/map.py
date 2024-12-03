@@ -1,6 +1,8 @@
+import json
+
 from django.conf import settings
 from django.contrib.gis.geos import Polygon
-from django.db.models import F, FloatField, Max, OuterRef, Subquery, Sum
+from django.db.models import FloatField, Max
 from django.db.models.functions import Cast
 from django.http import JsonResponse
 from django.urls import reverse_lazy
@@ -8,8 +10,9 @@ from django.views.generic import DetailView
 from jenkspy import jenks_breaks
 
 from project.models import Project
-from project.serializers import CityArtifMapSerializer, CitySpaceConsoMapSerializer
-from public_data.models import Cerema, CouvertureSol, UsageSol
+from project.serializers import CityArtifMapSerializer
+from public_data.domain.containers import PublicDataContainer
+from public_data.models import CouvertureSol, Land, UsageSol
 from utils.colors import get_dark_blue_gradient, get_yellow2red_gradient
 
 from .mixins import GroupMixin, OcsgeCoverageMixin
@@ -353,157 +356,6 @@ class BaseMap(GroupMixin, DetailView):
             }
         )
         return super().get_context_data(**kwargs)
-
-
-class MapTestView(BaseMap):
-    title = "Carte de test"
-    scale_size = 5
-    default_zoom = 10
-
-    def get_sources_list(self):
-        return super().get_sources_list() + [
-            {
-                "key": "consommation-des-communes-source",
-                "params": {
-                    "type": "geojson",
-                    "data": reverse_lazy("project:theme-city-conso", args=[self.object.id]),
-                },
-                "query_strings": [
-                    {
-                        "type": "string",
-                        "key": "data",
-                        "value": 1,
-                    },
-                    {
-                        "type": "function",
-                        "key": "in_bbox",
-                        "value": "getBbox",
-                    },
-                ],
-                "min_zoom": 8,
-            },
-        ]
-
-    def get_layers_list(self):
-        return super().get_layers_list() + [
-            {
-                "id": "consommation-des-communes-fill-layer",
-                "z-index": 4,
-                "type": "fill",
-                "source": "consommation-des-communes-source",
-                "minzoom": 3,
-                "maxzoom": 19,
-                "paint": {
-                    "fill-color": self.get_gradient_expression(),
-                    "fill-opacity": [
-                        "case",
-                        ["boolean", ["feature-state", "hover"], False],
-                        0.8,
-                        0.6,
-                    ],
-                },
-                "legend": {
-                    "title": "Consommation des communes",
-                    "subtitle": (
-                        f"Surface consommée de {self.object.analyse_start_date} à {self.object.analyse_end_date}"
-                    ),
-                    "type": "scale",
-                    "data": self.get_gradient_scale(),
-                    "formatter": ["number", ["fr-FR", "unit", "hectare", 2]],
-                },
-                "events": [
-                    {
-                        "type": "mousemove",
-                        "triggers": [
-                            {
-                                "method": "hoverEffectIn",
-                            },
-                            {
-                                "method": "showInfoBox",
-                                "options": {
-                                    "title": "Consommation des communes",
-                                    "properties": [
-                                        {"name": "Commune", "key": "name"},
-                                        {"name": "Code INSEE", "key": "insee"},
-                                        {
-                                            "name": "Surface consommée",
-                                            "key": "artif_area",
-                                            "formatter": ["number", ["fr-FR", "unit", "hectare", 2]],
-                                        },
-                                    ],
-                                },
-                            },
-                        ],
-                    },
-                    {
-                        "type": "mouseleave",
-                        "triggers": [
-                            {
-                                "method": "hoverEffectOut",
-                            },
-                            {
-                                "method": "hideInfoBox",
-                            },
-                        ],
-                    },
-                ],
-            },
-        ]
-
-    def get_filters_list(self):
-        return super().get_filters_list() + [
-            {
-                "name": "Consommation des communes",
-                "z-index": 3,
-                "filters": [
-                    {
-                        "name": "Visibilité du calque",
-                        "type": "visibility",
-                        "value": "visible",
-                        "triggers": [
-                            {
-                                "method": "changeLayoutProperty",
-                                "property": "visibility",
-                                "items": ["consommation-des-communes-fill-layer"],
-                            },
-                            {
-                                "method": "toggleLegend",
-                                "property": "visible",
-                                "items": ["legend-box-consommation-des-communes-source"],
-                            },
-                        ],
-                    },
-                ],
-                "source": "fond-de-carte-source",
-            },
-        ]
-
-    def get_gradient_scale(self):
-        fields = Cerema.get_art_field(self.object.analyse_start_date, self.object.analyse_end_date)
-        qs = (
-            self.object.get_cerema_cities()
-            .annotate(conso=sum([F(f) for f in fields]) / 10000)
-            .values("city_name")
-            .annotate(conso=Sum(F("conso")))
-            .order_by("conso")
-        )
-        if qs.count() <= self.scale_size:
-            boundaries = sorted([i["conso"] for i in qs])
-        else:
-            boundaries = jenks_breaks([i["conso"] for i in qs], n_classes=self.scale_size)[1:]
-        data = [{"value": v, "color": c.hex_l} for v, c in zip(boundaries, get_dark_blue_gradient(len(boundaries)))]
-        return data
-
-    def get_gradient_expression(self):
-        data = [
-            "interpolate",
-            ["linear"],
-            ["get", "artif_area"],
-        ]
-        for scale in self.get_gradient_scale():
-            data.append(scale["value"])
-            data.append(scale["color"])
-        return data
 
 
 class UrbanZonesMapView(OcsgeCoverageMixin, BaseMap):
@@ -1297,11 +1149,11 @@ class CitySpaceConsoMapView(BaseMap):
                 "legend": {
                     "title": "Consommation des communes",
                     "subtitle": (
-                        f"Surface consommée de {self.object.analyse_start_date} à {self.object.analyse_end_date}"
+                        f"Taux de consommation de {self.object.analyse_start_date} à {self.object.analyse_end_date}"
                     ),
                     "type": "scale",
                     "data": self.get_gradient_scale(),
-                    "formatter": ["number", ["fr-FR", "unit", "hectare", 2]],
+                    "formatter": ["number", ["fr-FR", "unit", "percent", 2]],
                 },
                 "events": [
                     {
@@ -1318,8 +1170,18 @@ class CitySpaceConsoMapView(BaseMap):
                                         {"name": "Commune", "key": "name"},
                                         {"name": "Code INSEE", "key": "insee"},
                                         {
+                                            "name": "Taux de consommation",
+                                            "key": "artif_area_percent",
+                                            "formatter": ["number", ["fr-FR", "unit", "percent", 2]],
+                                        },
+                                        {
                                             "name": "Surface consommée",
                                             "key": "artif_area",
+                                            "formatter": ["number", ["fr-FR", "unit", "hectare", 2]],
+                                        },
+                                        {
+                                            "name": "Surface du territoire",
+                                            "key": "area",
                                             "formatter": ["number", ["fr-FR", "unit", "hectare", 2]],
                                         },
                                     ],
@@ -1371,18 +1233,17 @@ class CitySpaceConsoMapView(BaseMap):
         ]
 
     def get_gradient_scale(self):
-        fields = Cerema.get_art_field(self.object.analyse_start_date, self.object.analyse_end_date)
-        qs = (
-            self.object.get_cerema_cities()
-            .annotate(conso=sum([F(f) for f in fields]) / 10000)
-            .values("city_name")
-            .annotate(conso=Sum(F("conso")))
-            .order_by("conso")
+        project: Project = self.object
+        cities = project.land.get_cities()
+        conso = PublicDataContainer.consommation_stats_service().get_by_lands(
+            lands=[Land(f"{city.land_type}_{city.official_id}") for city in cities],
+            start_date=project.analyse_start_date,
+            end_date=project.analyse_end_date,
         )
-        if qs.count() <= self.scale_size:
-            boundaries = sorted([i["conso"] for i in qs])
+        if len(conso) <= self.scale_size:
+            boundaries = sorted([c.total_percent for c in conso])
         else:
-            boundaries = jenks_breaks([i["conso"] for i in qs], n_classes=self.scale_size)[1:]
+            boundaries = jenks_breaks([c.total_percent for c in conso], n_classes=self.scale_size)[1:]
         data = [{"value": v, "color": c.hex_l} for v, c in zip(boundaries, get_dark_blue_gradient(len(boundaries)))]
         return data
 
@@ -1390,7 +1251,7 @@ class CitySpaceConsoMapView(BaseMap):
         data = [
             "interpolate",
             ["linear"],
-            ["get", "artif_area"],
+            ["get", "artif_area_percent"],
         ]
         for scale in self.get_gradient_scale():
             data.append(scale["value"])
@@ -1398,18 +1259,30 @@ class CitySpaceConsoMapView(BaseMap):
         return data
 
     def get_data(self):
-        project = self.get_object()
-        fields = Cerema.get_art_field(project.analyse_start_date, project.analyse_end_date)
-        qs = Cerema.objects.annotate(artif_area=sum(F(f) for f in fields))
-        queryset = project.cities.all().annotate(
-            artif_area=Subquery(qs.filter(city_insee=OuterRef("insee")).values("artif_area")[:1]) / 10000
+        project: Project = self.object
+        cities = project.land.get_cities()
+        conso = PublicDataContainer.consommation_stats_service().get_by_lands(
+            lands=[Land(f"{city.land_type}_{city.official_id}") for city in cities],
+            start_date=project.analyse_start_date,
+            end_date=project.analyse_end_date,
         )
-        bbox = self.request.GET.get("bbox", None)
-        if bbox is not None and len(bbox) > 0:
-            polygon_box = Polygon.from_bbox(bbox.split(","))
-            queryset = queryset.filter(mpoly__within=polygon_box)
-        serializer = CitySpaceConsoMapSerializer(queryset, many=True)
-        return JsonResponse(serializer.data, status=200)
+        data = {"type": "FeatureCollection", "features": []}
+
+        for c in conso:
+            data["features"].append(
+                {
+                    "id": c.land.official_id,
+                    "type": "Feature",
+                    "geometry": json.loads(c.land.mpoly.geojson),
+                    "properties": {
+                        "name": c.land.name,
+                        "area": c.land.area,
+                        "artif_area": c.total,
+                        "artif_area_percent": c.total_percent,
+                    },
+                }
+            )
+        return JsonResponse(data=data, status=200, safe=False)
 
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
@@ -1468,10 +1341,10 @@ class CityArtifMapView(OcsgeCoverageMixin, BaseMap):
                     ],
                 },
                 "legend": {
-                    "title": "Artificialisation des communes",
+                    "title": "Taux d'artificialisation des communes",
                     "type": "scale",
                     "data": self.get_gradient_scale(),
-                    "formatter": ["number", ["fr-FR", "unit", "hectare", 2]],
+                    "formatter": ["number", ["fr-FR", "unit", "percent", 2]],
                 },
                 "events": [
                     {
@@ -1532,12 +1405,18 @@ class CityArtifMapView(OcsgeCoverageMixin, BaseMap):
         ]
 
     def get_gradient_scale(self):
+        from django.db.models import F
+
         boundaries = (
             self.object.cities.all()
             .filter(surface_artif__isnull=False)
-            .annotate(artif=Cast("surface_artif", output_field=FloatField()))
-            .order_by("artif")
-            .values_list("artif", flat=True)
+            .annotate(
+                artif_float=Cast("surface_artif", output_field=FloatField()),
+                area_float=Cast("area", output_field=FloatField()),
+            )
+            .annotate(artif_percent=F("artif_float") * 100 / F("area_float"))
+            .order_by("artif_percent")
+            .values_list("artif_percent", flat=True)
         )
         if len(boundaries) == 0:
             boundaries = [1]
@@ -1550,8 +1429,9 @@ class CityArtifMapView(OcsgeCoverageMixin, BaseMap):
         data = [
             "interpolate",
             ["linear"],
-            ["to-number", ["get", "surface_artif"]],
+            ["to-number", ["get", "percent_artif"]],
         ]
+        # la valeur de percent_artif vient du serializer CityArtifMapSerializer
         for scale in self.get_gradient_scale():
             data.append(scale["value"])
             data.append(scale["color"])

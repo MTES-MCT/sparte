@@ -1,4 +1,3 @@
-from django.apps import apps
 from django.contrib.gis.db import models
 from django.contrib.postgres.search import TrigramSimilarity
 from django.db.models.functions import Lower
@@ -57,9 +56,6 @@ class Epci(LandMixin, GetDataFromCeremaMixin, models.Model):
         for dept in self.departements.all():
             is_artif_ready &= dept.is_artif_ready
         return is_artif_ready
-
-    def get_qs_cerema(self):
-        return apps.get_model("public_data.Cerema").objects.filter(epci_id=self.source_id)
 
     def get_cities(self):
         return self.commune_set.all()

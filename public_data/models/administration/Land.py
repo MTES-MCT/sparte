@@ -10,6 +10,7 @@ from .AdminRef import AdminRef
 from .Commune import Commune
 from .Departement import Departement
 from .Epci import Epci
+from .Nation import Nation
 from .Region import Region
 from .Scot import Scot
 
@@ -25,13 +26,21 @@ class Land:
             AdminRef.SCOT: Scot,
             AdminRef.DEPARTEMENT: Departement,
             AdminRef.REGION: Region,
+            AdminRef.NATION: Nation,
         }
 
     def __init__(self, public_key):
         self.public_key = public_key
         self.land_type: str
         self.id: str
-        self.land: Commune | Epci | Scot | Departement | Region
+        self.land: Commune | Epci | Scot | Departement | Region | Nation
+
+        if public_key == "NATION_NATION":
+            nation = Nation()
+            self.land_type = nation.land_type
+            self.id = nation.source_id
+            self.land = nation
+            return
 
         try:
             self.land_type, self.id = public_key.strip().split("_")
@@ -40,7 +49,7 @@ class Land:
         try:
             klass = self.get_land_class(self.land_type)
         except KeyError:
-            raise LandException("Territoire inconnu.")
+            raise LandException("Territoire inconnu.", public_key)
         try:
             self.land = klass.objects.get_by_natural_key(str(self.id))
         except ObjectDoesNotExist as e:

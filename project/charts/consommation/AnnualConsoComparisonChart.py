@@ -19,12 +19,6 @@ class AnnualConsoComparisonChart(ProjectChart):
     def param(self):
         return super().param | {
             "title": {"text": "Consommation d'espace du territoire et des territoires similaires (en ha)"},
-            "subtitle": {
-                "text": (
-                    "Proposition de territoires de même maille administrative, "
-                    "il est possible de modifier cette selection dans la légende"
-                ),
-            },
             "yAxis": {"title": {"text": "Consommé (en ha)"}},
             "xAxis": {"type": "category"},
             "tooltip": {

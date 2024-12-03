@@ -11,9 +11,7 @@ from django.views.generic import TemplateView, View
 
 from project.models.project_base import Project
 from project.storages import ExportStorage
-
-# from utils.excel import write_sheet
-from public_data.models import Cerema, CommuneDiff, CommuneSol
+from public_data.models import CommuneDiff, CommuneSol
 
 
 class ExportListView(LoginRequiredMixin, TemplateView):
@@ -66,7 +64,6 @@ class ExportExcelView(View):
     def get_excel_as_buffer(self) -> io.BytesIO:
         buffer = io.BytesIO()
         with pd.ExcelWriter(buffer, engine="openpyxl") as self.writer:
-            self.add_conso_sheet()
             if self.project.ocsge_coverage_status == self.project.OcsgeCoverageStatus.COMPLETE_UNIFORM:
                 self.add_artif_sheet()
                 self.add_detail_artif_sheet()
@@ -95,52 +92,6 @@ class ExportExcelView(View):
         # add data to dataframe and make the pivot
         df = pd.DataFrame(qs, columns=headers).fillna(0.0).pivot(columns=columns, index=index, values=values)
         return df
-
-    def add_conso_sheet(self):
-        """
-        Onglet 3:  Consommation d'espace
-            Code insee de la commune
-            Nom de la commune
-            Nom de l'epci
-            Nom du SCoT
-            Nom du département
-            Nom de la région
-            Pour chaque année:
-                consommation total      naf09art10  Consommation total 2009
-                consommation habitation art09hab10  Consommation habitation 2009
-                consommation activité   art09act10  Consommation activité 2009
-                conso mixte             art09mix10  Consommation mixte 2009
-                conso inconnue          art09inc10  Consommation inconnue 2009
-        """
-        config = {
-            "Commune": "city_name",
-            "Insee": "city_insee",
-            "EPCI": "epci_name",
-            "SCoT": "scot",
-            "Département": "dept_name",
-            "Région": "region_name",
-        }
-        for i in range(
-            int(self.project.analyse_start_date) - 2000,
-            int(self.project.analyse_end_date) - 2000 + 1,
-        ):
-            config.update(
-                {
-                    f"Consommation_totale_20{i:0>2}": f"naf{i:0>2}art{i+1:0>2}",
-                    f"Consommation_habitation_20{i:0>2}": f"art{i:0>2}hab{i+1:0>2}",
-                    f"Consommation_activité_20{i:0>2}": f"art{i:0>2}act{i+1:0>2}",
-                    f"Consommation_mixte_20{i:0>2}": f"art{i:0>2}mix{i+1:0>2}",
-                    f"Consommation_inconnue_20{i:0>2}": f"art{i:0>2}inc{i+1:0>2}",
-                }
-            )
-        qs = (
-            Cerema.objects.filter(city_insee__in=self.project.cities.values("insee"))
-            .annotate(**{k: F(v) for k, v in config.items()})
-            .values(*config.keys())
-        )
-        df = pd.DataFrame(qs, columns=config.keys()).fillna(0.0)
-        df = df.set_index(["Commune", "Insee", "EPCI", "SCoT", "Département", "Région"])
-        df.astype(float).to_excel(self.writer, sheet_name="Conso d'espace")
 
     def add_artif_sheet(self):
         """
