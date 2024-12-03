@@ -195,6 +195,7 @@
             <div class="bg-white fr-p-2w">
                 <div class="d-flex justify-content-end align-items-center fr-mb-2w">
                     {% include "project/components/widgets/chart_buttons.html" with chart="population_density_chart" show_fullscreen=false %}
+                    <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#densityModal" data-toggle="tooltip" title="Astuces pour lire le graphique"></button>
                 </div>
                 <div id="population_density_chart"></div>
             </div>
@@ -236,6 +237,7 @@
     <div class="bg-white fr-p-2w">
         <div class="d-flex justify-content-end align-items-center fr-mb-2w">
             {% include "project/components/widgets/chart_buttons.html" with chart="population_conso_progression_chart" show_fullscreen=True %}
+            <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#populationConsoProgressionModal" data-toggle="tooltip" title="Astuces pour lire le graphique"></button>
         </div>
         <div id="population_conso_progression_chart"></div>
     </div>
@@ -313,6 +315,7 @@
     <div class="bg-white fr-p-2w">
         <div class="d-flex justify-content-end align-items-center fr-mb-2w">
             {% include "project/components/widgets/chart_buttons.html" with chart="population_conso_comparison_chart" show_fullscreen=True %}
+            <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#populationConsoComparisonModal" data-toggle="tooltip" title="Astuces pour lire le graphique"></button>
         </div>
         <div id="population_conso_comparison_chart"></div>
     </div>
@@ -428,45 +431,14 @@
             <div class="fr-modal__content">
                 <h1 class="fr-modal__title" id="consoAnnuelleLabel">
                     <span class="fr-fi-arrow-right-line fr-fi--lg"></span>
-                    Astuces - Graphique consommation d'espaces annuelle sur le territoire
+                    Astuces Graphique - Consommation d'espaces annuelle sur le territoire
                 </h1>
-                <p class="fr-text--sm">Pour réduire le nombre de territoires visibles dans le graphique, vous pouvez en masquer certains en cliquant sur eux dans la légende. Cliquez de nouveau dessus pour les ré-afficher.</p>
-                <p class="fr-text--sm">Avec le bouton sélection, vous pouvez tous les masquer d'un coup. Utile quand le nombre de territoires est important et que vous souhaitez n'en afficher que 2 ou 3.</p>
-                <p class="fr-text--sm">Avec le bouton sélection, vous pouvez aussi inverser la sélection. Tous les visibles seront masqués et tous les invisibles seront affichés.</p>
-                <p class="fr-text--sm">Avec le bouton <span class="fr-icon-drag-move-2-line fr-icon--sm" aria-hidden="true"></span>, vous pouvez afficher le graphique en plein écran.</p>
-                <p class="fr-text--sm">Avec le bouton <span class="fr-icon-download-line fr-icon--sm" aria-hidden="true"></span>, vous pouvez télécharger le graphique sous forme d'image (utilisez PNG si vous ne savez pas lequel choisir).</p>
-                <p class="fr-text--sm">Le bouton maille d'analyse permet de changer le type de territoire afficher. Si vous analyser un département, vous pouvez afficher les communes à la place des EPCI (attention, la lisibilité du graphique devient médiocre lorsqu'on affiche trop de territoires simultanéments).</p>
+                {% include "project/components/widgets/chart_tips_buttons.html" %}
             </div>
         </div>
     </div>
 </div>
 
-<!-- Modal -->
-<div class="modal fade" id="comparaisonVoisin" tabindex="-1" aria-labelledby="comparaisonVoisinLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
-        <div class="fr-modal__body">
-            <div class="fr-modal__header">
-                <button class="fr-link--close fr-link" data-bs-dismiss="modal" aria-label="Close">Fermer</button>
-            </div>
-            <div class="fr-modal__content">
-                <h1 class="fr-modal__title" id="comparaisonVoisinLabel">
-                    <span class="fr-fi-arrow-right-line fr-fi--lg"></span>
-                    Astuces - Comparaison avec les territoires similaires
-                </h1>
-                <p class="fr-text--sm">
-                    La comparaison avec les territoires similaires permet d'appréhender les dynamiques globales brutes de consommation d'espaces NAF (Naturels, Agricoles et Forestiers) et de les comparer entre elles.
-                    Par défaut, Mon Diagnostic Artificialisation vous permet de comparer votre territoire avec les territoires similaires de même niveau administratif, à l'exception des territoires insulaires (notamment les DROM-COM) pour lesquelles une comparaison avec d'autres territoires similaires est proposée.
-                </p>
-                <p class="fr-text--sm">Pour réduire le nombre de territoires visibles dans le graphique, vous pouvez en masquer certains en cliquant sur eux dans la légende. Cliquez de nouveau dessus pour les ré-afficher.</p>
-                <p class="fr-text--sm">Avec le bouton <span class="fr-icon-drag-move-2-line fr-icon--sm" aria-hidden="true"></span>, vous pouvez afficher le graphique en plein écran.</p>
-                <p class="fr-text--sm">Avec le bouton <span class="fr-icon-download-line fr-icon--sm" aria-hidden="true"></span>, vous pouvez télécharger le graphique sous forme d'image (utilisez PNG si vous ne savez pas lequel choisir).</p>
-                <p class="fr-text--sm">Avec le bouton <i class="bi bi-plus-circle"></i>, vous pouvez ajouter un territoire à ce graphique.</p>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Modal -->
 <div class="modal fade" id="determinantModal" tabindex="-1" aria-labelledby="determinantLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
         <div class="fr-modal__body">
@@ -476,7 +448,7 @@
             <div class="fr-modal__content">
                 <h1 class="fr-modal__title" id="determinantLabel">
                     <span class="fr-fi-arrow-right-line fr-fi--lg"></span>
-                    Astuces - Destinations de la consommation
+                    Astuces Graphique - Destinations de la consommation
                 </h1>
                 <p class="fr-text--sm">
                     Les destinations indiquent les natures de la consommation de l’espace NAF (Naturel, Agricole et Forestier).
@@ -484,9 +456,72 @@
                     par exemple un commerce au rez de chaussée et des logements aux étages), route, ferré, inconnu (lorsque les fichiers
                     fonciers ne permettent pas de préciser la destination).
                 </p>
-                <p class="fr-text--sm">Pour zoomer sur une destination en particulier, vous pouvez masquer les autres en cliquant sur eux dans la légende. Cliquez de nouveau dessus pour les ré-afficher.</p>
-                <p class="fr-text--sm">Avec le bouton <span class="fr-icon-drag-move-2-line fr-icon--sm" aria-hidden="true"></span>, vous pouvez afficher le graphique en plein écran.</p>
-                <p class="fr-text--sm">Avec le bouton <span class="fr-icon-download-line fr-icon--sm" aria-hidden="true"></span>, vous pouvez télécharger le graphique sous forme d'image (utilisez PNG si vous ne savez pas lequel choisir).</p>
+                {% include "project/components/widgets/chart_tips_legend.html" %}
+                {% include "project/components/widgets/chart_tips_buttons.html" %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="densityModal" tabindex="-1" aria-labelledby="densityLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+        <div class="fr-modal__body">
+            <div class="fr-modal__header">
+                <button class="fr-link--close fr-link" data-bs-dismiss="modal" aria-label="Close">Fermer</button>
+            </div>
+            <div class="fr-modal__content">
+                <h1 class="fr-modal__title" id="densityLabel">
+                    <span class="fr-fi-arrow-right-line fr-fi--lg"></span>
+                    Astuces Graphique - {{ population_density_chart.chart.title.text }}
+                </h1>
+                <p class="fr-text--sm">
+                    La densité de population est le rapport entre l’effectif de population du territoire et sa superficie. Par souci de cohérence avec le reste des indicateurs, nous avons choisi de l’exprimer en habitants par hectare.
+                </p>
+                {% include "project/components/widgets/chart_tips_buttons.html" %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="populationConsoProgressionModal" tabindex="-1" aria-labelledby="populationConsoProgressionLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+        <div class="fr-modal__body">
+            <div class="fr-modal__header">
+                <button class="fr-link--close fr-link" data-bs-dismiss="modal" aria-label="Close">Fermer</button>
+            </div>
+            <div class="fr-modal__content">
+                <h1 class="fr-modal__title" id="populationConsoProgressionLabel">
+                    <span class="fr-fi-arrow-right-line fr-fi--lg"></span>
+                    Astuces Graphique - {{ population_conso_progression_chart.chart.title.text }}
+                </h1>
+                <p class="fr-text--sm">
+                    Pour ce qui concerne les données de population, il est important de noter que l’INSEE indique que "les résultats des recensements depuis 2006 ne se comparent correctement entre eux que sur des périodes espacées d'au moins 5 ans".
+                    Les données annuelles de population affichées sur le graphe ne sont donc pas comparables d’une année sur l'autre pour mesurer précisément l'évolution de la population.
+                </p>
+                {% include "project/components/widgets/chart_tips_legend.html" %}
+                {% include "project/components/widgets/chart_tips_buttons.html" %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="populationConsoComparisonModal" tabindex="-1" aria-labelledby="populationConsoComparisonLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+        <div class="fr-modal__body">
+            <div class="fr-modal__header">
+                <button class="fr-link--close fr-link" data-bs-dismiss="modal" aria-label="Close">Fermer</button>
+            </div>
+            <div class="fr-modal__content">
+                <h1 class="fr-modal__title" id="populationConsoComparisonLabel">
+                    <span class="fr-fi-arrow-right-line fr-fi--lg"></span>
+                    Astuces Graphique - {{ population_conso_comparison_chart.chart.title.text }}
+                </h1>
+                <p class="fr-text--sm">
+                    Ce graphique permet de mettre en relation la consommation d’espaces des territoires et leur évolution démographique sur une période donnée ainsi que de visualiser sa population totale grâce à la taille des bulles.
+                </p>
+                {% include "project/components/widgets/chart_tips_comparison.html" %}
+                {% include "project/components/widgets/chart_tips_legend.html" %}
+                {% include "project/components/widgets/chart_tips_buttons.html" %}
             </div>
         </div>
     </div>
@@ -502,15 +537,39 @@
             <div class="fr-modal__content">
                 <h1 class="fr-modal__title" id="consoRelativeSurfaceLabel">
                     <span class="fr-fi-arrow-right-line fr-fi--lg"></span>
-                    Astuces - Graphique consommation d'espaces rapportée à la surface du territoire
+                    Astuces Graphique - {{ surface_proportional_chart.chart.title.text }}
                 </h1>
                 <p class="fr-text--sm">
-                    La consommation relative aux surfaces des territoires permet d'analyser la consommation d'espaces au regard de la surface totale du territoire.
-                    Cette approche proportionnelle permet de comparer les territoires selon le pourcentage d'ha consommé par rapport au volume d'ha total du territoire.
+                    La consommation proportionnelle à la surface des territoires permet d'analyser la consommation d'espaces au regard de la surface totale du territoire.
+                    Cette approche permet de comparer les territoires selon le pourcentage d'ha consommé par rapport au volume d'ha total du territoire.
                     La comparaison avec les territoires similaires permet d'appréhender les dynamiques globales brutes de consommation d'espaces NAF (Naturels, Agricoles et Forestiers) et de les comparer entre elles.
                 </p>
-                <p class="fr-text--sm">Avec le bouton <span class="fr-icon-drag-move-2-line fr-icon--sm" aria-hidden="true"></span>, vous pouvez afficher le graphique en plein écran.</p>
-                <p class="fr-text--sm">Avec le bouton <span class="fr-icon-download-line fr-icon--sm" aria-hidden="true"></span>, vous pouvez télécharger le graphique sous forme d'image (utilisez PNG si vous ne savez pas lequel choisir).</p>
+                {% include "project/components/widgets/chart_tips_comparison.html" %}
+                {% include "project/components/widgets/chart_tips_legend.html" %}
+                {% include "project/components/widgets/chart_tips_buttons.html" %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="comparaisonVoisin" tabindex="-1" aria-labelledby="comparaisonVoisinLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+        <div class="fr-modal__body">
+            <div class="fr-modal__header">
+                <button class="fr-link--close fr-link" data-bs-dismiss="modal" aria-label="Close">Fermer</button>
+            </div>
+            <div class="fr-modal__content">
+                <h1 class="fr-modal__title" id="comparaisonVoisinLabel">
+                    <span class="fr-fi-arrow-right-line fr-fi--lg"></span>
+                    Astuces Graphique - {{ comparison_chart.chart.title.text }}
+                </h1>
+                <p class="fr-text--sm">
+                    La comparaison avec les territoires similaires permet d'appréhender les dynamiques globales brutes de consommation d'espaces NAF (Naturels, Agricoles et Forestiers) et de les comparer entre elles.
+                    Par défaut, Mon Diagnostic Artificialisation vous permet de comparer votre territoire avec les territoires similaires de même niveau administratif, à l'exception des territoires insulaires (notamment les DROM-COM) pour lesquelles une comparaison avec d'autres territoires similaires est proposée.
+                </p>
+                {% include "project/components/widgets/chart_tips_comparison.html" %}
+                {% include "project/components/widgets/chart_tips_legend.html" %}
+                {% include "project/components/widgets/chart_tips_buttons.html" %}
             </div>
         </div>
     </div>
