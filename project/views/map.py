@@ -1341,10 +1341,10 @@ class CityArtifMapView(OcsgeCoverageMixin, BaseMap):
                     ],
                 },
                 "legend": {
-                    "title": "Artificialisation des communes",
+                    "title": "Taux d'artificialisation des communes",
                     "type": "scale",
                     "data": self.get_gradient_scale(),
-                    "formatter": ["number", ["fr-FR", "unit", "hectare", 2]],
+                    "formatter": ["number", ["fr-FR", "unit", "percent", 2]],
                 },
                 "events": [
                     {
@@ -1405,12 +1405,18 @@ class CityArtifMapView(OcsgeCoverageMixin, BaseMap):
         ]
 
     def get_gradient_scale(self):
+        from django.db.models import F
+
         boundaries = (
             self.object.cities.all()
             .filter(surface_artif__isnull=False)
-            .annotate(artif=Cast("surface_artif", output_field=FloatField()))
-            .order_by("artif")
-            .values_list("artif", flat=True)
+            .annotate(
+                artif_float=Cast("surface_artif", output_field=FloatField()),
+                area_float=Cast("area", output_field=FloatField()),
+            )
+            .annotate(artif_percent=F("artif_float") * 100 / F("area_float"))
+            .order_by("artif_percent")
+            .values_list("artif_percent", flat=True)
         )
         if len(boundaries) == 0:
             boundaries = [1]
@@ -1423,8 +1429,9 @@ class CityArtifMapView(OcsgeCoverageMixin, BaseMap):
         data = [
             "interpolate",
             ["linear"],
-            ["to-number", ["get", "surface_artif"]],
+            ["to-number", ["get", "percent_artif"]],
         ]
+        # la valeur de percent_artif vient du serializer CityArtifMapSerializer
         for scale in self.get_gradient_scale():
             data.append(scale["value"])
             data.append(scale["color"])
