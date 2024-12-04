@@ -1,7 +1,6 @@
 from os import getenv
 
 import sqlalchemy
-from airflow.hooks.base import BaseHook
 from dependency_injector import containers, providers
 from include.domain.file_handling import (
     RemoteToS3FileHandler,
@@ -26,11 +25,11 @@ def create_sql_alchemy_conn(
 class Container(containers.DeclarativeContainer):
     s3 = providers.Factory(
         provides=S3FileSystem,
-        key=BaseHook.get_connection("scaleway_airflow_bucket").login,
-        secret=BaseHook.get_connection("scaleway_airflow_bucket").password,
-        endpoint_url=BaseHook.get_connection("scaleway_airflow_bucket").extra_dejson.get("endpoint_url"),
+        key=getenv("AIRFLOW_S3_LOGIN"),
+        secret=getenv("AIRFLOW_S3_PASSWORD"),
+        endpoint_url=getenv("AIRFLOW_S3_ENDPOINT"),
         client_kwargs={
-            "region_name": BaseHook.get_connection("scaleway_airflow_bucket").extra_dejson.get("region_name")
+            "region_name": getenv("AIRFLOW_S3_REGION_NAME"),
         },
     )
 
