@@ -12,6 +12,7 @@ from include.infra.file_handling import (
     S3Handler,
     TmpPathGenerator,
 )
+from include.infra.notification import MattermostNotificationService
 from s3fs import S3FileSystem
 
 
@@ -60,4 +61,10 @@ class Container(containers.DeclarativeContainer):
             provides=CSVFileIngestor,
             db_sqlalchemy_conn=sqlalchemy_dbt_conn,
         ),
+    )
+
+    notification = providers.Factory(
+        provides=MattermostNotificationService,
+        mattermost_webhook_url=getenv("MATTERMOST_WEBHOOK_URL"),
+        channel=getenv("MATTERMOST_CHANNEL"),
     )

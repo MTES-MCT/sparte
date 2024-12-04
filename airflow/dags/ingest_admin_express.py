@@ -14,7 +14,7 @@ from airflow.models.param import Param
 from include.container import Container
 from pendulum import datetime
 
-with open("include/admin_express/sources.json", "r") as f:
+with open("include/domain/data/admin_express/sources.json", "r") as f:
     sources = json.load(f)
     zones = [source["name"] for source in sources]
 
