@@ -15,7 +15,7 @@ from airflow.operators.empty import EmptyOperator
 from airflow.operators.python import PythonOperator
 from include.container import Container
 
-with open("include/ocsge/sources.json", "r") as f:
+with open("include/domain/data/ocsge/sources.json", "r") as f:
     sources = json.load(f)
 
 

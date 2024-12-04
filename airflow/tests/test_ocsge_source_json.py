@@ -9,7 +9,7 @@ def test_ocsge_source_json_is_properly_formatted():
     Chaque source doit contenir une clé "difference" pour chaque duo d'année de "occupation_du_sol_et_zone_construite"
     La clé "difference" doit être de la forme "année1_année2"
     """
-    file_path = "include/ocsge/sources.json"
+    file_path = "include/domain/data/ocsge/sources.json"
     data: dict = json.load(open(file_path))
 
     for source in data.values():
