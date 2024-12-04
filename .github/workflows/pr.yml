@@ -56,11 +56,3 @@ jobs:
       - run: pipenv run python -Wa manage.py test
         env:
           DATABASE_URL: ${{ steps.pg.outputs.connection-uri }}
-  test-airflow:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - run: curl -sSL install.astronomer.io | sudo bash -s
-      - run: cd airflow
-      - run: astro dev pytest
-        working-directory: airflow

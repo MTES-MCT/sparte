@@ -1,0 +1,59 @@
+name: 'Pull Request'
+
+on:
+  push:
+    branches-ignore:
+      - 'staging'
+      - 'master'
+
+env:
+  AIRFLOW__CORE__TEST_CONNECTION: Enabled
+  AIRFLOW__SCHEDULER__DAG_DIR_LIST_INTERVAL: 3
+
+  AIRFLOW_CONN_SCALEWAY_AIRFLOW_BUCKET: ${{ secrets.AIRFLOW_CONN_SCALEWAY_AIRFLOW_BUCKET }}
+  DBT_DB_NAME: ${{ secrets.DBT_DB_NAME }}
+  DBT_DB_USER: ${{ secrets.DBT_DB_USER }}
+  DBT_DB_PASSWORD: ${{ secrets.DBT_DB_PASSWORD }}
+  DBT_DB_HOST: ${{ secrets.DBT_DB_HOST }}
+  DBT_DB_PORT: ${{ secrets.DBT_DB_PORT }}
+  DBT_DB_SCHEMA: ${{ secrets.DBT_DB_SCHEMA }}
+
+  DEV_DB_NAME: ${{ secrets.DBT_DB_NAME }}
+  DEV_DB_USER: ${{ secrets.DBT_DB_USER }}
+  DEV_DB_PASSWORD: ${{ secrets.DBT_DB_PASSWORD }}
+  DEV_DB_HOST: ${{ secrets.DBT_DB_HOST }}
+  DEV_DB_PORT: ${{ secrets.DBT_DB_PORT }}
+  DEV_DB_SCHEMA: ${{ secrets.DBT_DB_SCHEMA }}
+
+  STAGING_DB_NAME: ${{ secrets.DBT_DB_NAME }}
+  STAGING_DB_USER: ${{ secrets.DBT_DB_USER }}
+  STAGING_DB_PASSWORD: ${{ secrets.DBT_DB_PASSWORD }}
+  STAGING_DB_HOST: ${{ secrets.DBT_DB_HOST }}
+  STAGING_DB_PORT: ${{ secrets.DBT_DB_PORT }}
+  STAGING_DB_SCHEMA: ${{ secrets.DBT_DB_SCHEMA }}
+
+  PROD_DB_NAME: ${{ secrets.DBT_DB_NAME }}
+  PROD_DB_USER: ${{ secrets.DBT_DB_USER }}
+  PROD_DB_PASSWORD: ${{ secrets.DBT_DB_PASSWORD }}
+  PROD_DB_HOST: ${{ secrets.DBT_DB_HOST }}
+  PROD_DB_PORT: ${{ secrets.DBT_DB_PORT }}
+  PROD_DB_SCHEMA: ${{ secrets.DBT_DB_SCHEMA }}
+
+  GPU_SFTP_HOST: ${{ secrets.GPU_SFTP_HOST }}
+  GPU_SFTP_USER: ${{ secrets.GPU_SFTP_USER }}
+  GPU_SFTP_PASSWORD: ${{ secrets.GPU_SFTP_PASSWORD }}
+  GPU_SFTP_PORT: ${{ secrets.GPU_SFTP_PORT }}
+
+  MATTERMOST_WEBHOOK_URL: ${{ secrets.MATTERMOST_WEBHOOK_URL }}
+  MATTERMOST_CHANNEL: ${{ secrets.MATTERMOST_CHANNEL }}
+
+
+jobs:
+  test-airflow:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: curl -sSL install.astronomer.io | sudo bash -s
+      - run: cd airflow
+      - run: astro dev pytest
+        working-directory: airflow
