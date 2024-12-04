@@ -83,7 +83,7 @@
 
 <div class="fr-grid-row fr-grid-row--gutters">
     <div class="fr-col-12">
-        <div class="bg-white fr-p-2w h-100">
+        <div class="bg-white fr-p-2w">
             {% url 'project:map-urban-zones' project.pk as map_url %}
             {% include "project/components/map/iframe_map.html" with src=map_url title="Explorateur des zonages d'urbanisme" height='75vh' %}
         </div>
