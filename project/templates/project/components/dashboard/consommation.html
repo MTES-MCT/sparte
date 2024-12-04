@@ -24,14 +24,6 @@
             </div>
         </div>
     </div>
-    {% if not is_commune %}
-    <div class="fr-grid-row fr-grid-row--gutters fr-mt-2w">
-        <div class="fr-col-12">
-            {% url 'project:theme-city-conso' project.pk as map_url %}
-            {% include "project/components/map/iframe_map.html" with src=map_url title="ECarte consommation d'espaces des communes du territoire sur la période (en ha)" %}
-        </div>
-    </div>
-    {% endif %}
 
     <div class="fr-notice bg-white fr-mt-2w">
         <div class="fr-px-2w">
@@ -87,6 +79,17 @@
             </div>
         </div>
     </div>
+
+    {% if not is_commune %}
+    <div class="fr-grid-row fr-grid-row--gutters fr-mt-2w">
+        <div class="fr-col-12">
+            <div class="bg-white fr-p-2w">
+                {% url 'project:theme-city-conso' project.pk as map_url %}
+                {% include "project/components/map/iframe_map.html" with src=map_url title="ECarte consommation d'espaces des communes du territoire sur la période (en ha)" %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
 </div>
 
 <div class="fr-mt-7w">
