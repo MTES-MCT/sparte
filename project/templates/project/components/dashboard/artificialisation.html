@@ -332,7 +332,7 @@
         <div class="fr-col-12">
             <div class="bg-white fr-p-2w">
                 {% url 'project:theme-city-artif' project.pk as map_url %}
-                {% include "project/components/map/iframe_map.html" with src=map_url title="Carte artificialisation des communes du territoire sur la période (en ha)" %}
+                {% include "project/components/map/iframe_map.html" with src=map_url title="Carte artificialisation des communes du territoire sur la période (en %)" %}
             </div>
         </div>
     </div>
