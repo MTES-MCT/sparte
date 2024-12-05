@@ -44,6 +44,11 @@ class AnnualConsoByDeterminantChart(ProjectChart):
             {
                 "name": determinant,
                 "data": [{"name": year, "y": value} for year, value in data[determinant].items()],
+                **(
+                    {"id": "main", "type": "column", "zIndex": 0, "stacking": None, "color": "#CFD1E5"}
+                    if determinant == "Total"
+                    else {"type": "column", "stacking": "normal", "zIndex": 1}
+                ),
             }
             for determinant in data
         ]
@@ -72,12 +77,7 @@ class AnnualConsoByDeterminantChart(ProjectChart):
                 "align": "right",
                 "verticalAlign": "middle",
             },
-            "plotOptions": {
-                "column": {
-                    "stacking": "normal",
-                    "dataLabels": {"enabled": True, "format": "{point.y:,.1f}"},
-                }
-            },
+            "plotOptions": {"series": {"grouping": False, "borderWidth": 0}},
             "series": self._get_series(),
         }
 
