@@ -104,10 +104,7 @@ class ProjectReportConsoView(ProjectReportBaseView):
 
         # Déterminants
         det_chart = charts.AnnualConsoByDeterminantChart(project)
-        det_pie_chart = charts.ConsoByDeterminantPieChart(
-            project,
-            series=det_chart.get_series(),
-        )
+        det_pie_chart = charts.ConsoByDeterminantPieChart(project)
 
         # CONSO
         consommation_progression = (
