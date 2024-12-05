@@ -61,7 +61,7 @@ class AnnualConsoByDeterminantChart(ProjectChart):
             "chart": {"type": "column"},
             "title": {"text": "Par an"},
             "yAxis": {
-                "title": {"text": "Consommation annuelle (en ha)"},
+                "title": {"text": "Consommation d'espaces NAF (en ha)"},
                 "stackLabels": {"enabled": True, "format": "{total:,.2f}"},
             },
             "tooltip": {
