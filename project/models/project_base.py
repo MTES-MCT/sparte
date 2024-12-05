@@ -554,27 +554,6 @@ class Project(BaseProject):
             self.save(update_fields=["look_a_like"])
         return sorted(lands, key=lambda x: x.name)
 
-    def get_determinants(self, group_name=None):
-        from public_data.domain.containers import PublicDataContainer
-
-        conso = PublicDataContainer.consommation_progression_service().get_by_land(
-            land=self.land_proxy,
-            start_date=self.analyse_start_date,
-            end_date=self.analyse_end_date,
-        )
-        data = {"Habitat": {}, "Activité": {}, "Mixte": {}, "Route": {}, "Ferré": {}, "Inconnu": {}}
-
-        for annual_conso in conso.consommation:
-            year_as_str = str(annual_conso.year)
-            data["Habitat"][year_as_str] = annual_conso.habitat
-            data["Activité"][year_as_str] = annual_conso.activite
-            data["Mixte"][year_as_str] = annual_conso.mixte
-            data["Route"][year_as_str] = annual_conso.route
-            data["Ferré"][year_as_str] = annual_conso.ferre
-            data["Inconnu"][year_as_str] = annual_conso.non_reseigne
-
-        return data
-
     def get_bilan_conso(self):
         """Return the space consummed between 2011 and 2020 in hectare"""
         from public_data.domain.containers import PublicDataContainer
