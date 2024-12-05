@@ -38,7 +38,7 @@ class AnnualConsoByDeterminantChart(ProjectChart):
 
         for annual_conso in consommation_progression.consommation:
             for category, attr in category_to_attr.items():
-                data[category][annual_conso.year] = getattr(annual_conso, attr, None)
+                data[category][annual_conso.year] = getattr(annual_conso, attr)
 
         series = [
             {
@@ -62,7 +62,7 @@ class AnnualConsoByDeterminantChart(ProjectChart):
             "title": {"text": "Par an"},
             "yAxis": {
                 "title": {"text": "Consommation annuelle (en ha)"},
-                "stackLabels": {"enabled": True, "format": "{total:,.1f}"},
+                "stackLabels": {"enabled": True, "format": "{total:,.2f}"},
             },
             "tooltip": {
                 "headerFormat": "<b>{point.key}</b><br/>",
