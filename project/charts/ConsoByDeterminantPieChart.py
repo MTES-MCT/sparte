@@ -45,14 +45,15 @@ class ConsoByDeterminantPieChart(ProjectChart):
             "title": {
                 "text": "Sur la période",
             },
-            "tooltip": {"enabled": True, "pointFormat": "{point.y:.1f} Ha"},
+            "tooltip": {"enabled": False},
             "plotOptions": {
                 "pie": {
                     "allowPointSelect": True,
                     "cursor": "pointer",
                     "dataLabels": {
+                        "distance": 15,
                         "enabled": True,
-                        "format": "{point.name} : {point.y:.1f} Ha",
+                        "format": "{point.name}<br />{point.y:.1f} Ha",
                     },
                 }
             },
