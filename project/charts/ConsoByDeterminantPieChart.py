@@ -53,7 +53,7 @@ class ConsoByDeterminantPieChart(ProjectChart):
                     "dataLabels": {
                         "distance": 15,
                         "enabled": True,
-                        "format": "{point.name}<br />{point.y:.1f} Ha",
+                        "format": "{point.name}<br />{point.y:.2f} Ha",
                     },
                 }
             },
