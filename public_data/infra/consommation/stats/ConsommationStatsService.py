@@ -30,6 +30,7 @@ class ConsommationStatsService(BaseConsommationStatsService):
             route=conso_stats.route / 10000,
             ferre=conso_stats.ferroviaire / 10000,
             non_renseigne=conso_stats.inconnu / 10000,
+            per_mille_of_area=conso_stats.total / 10000 / land.area * 1000,
         )
 
     def get_by_lands(

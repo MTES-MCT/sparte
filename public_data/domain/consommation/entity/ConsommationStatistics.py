@@ -16,3 +16,4 @@ class ConsommationStatistics:
     route: float
     ferre: float
     non_renseigne: float
+    per_mille_of_area: float
