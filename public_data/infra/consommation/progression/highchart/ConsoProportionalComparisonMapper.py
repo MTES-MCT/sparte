@@ -1,28 +1,30 @@
-from project.charts.constants import HIGHLIGHT_COLOR
-from public_data.domain.consommation.entity import ConsommationCollection
+from public_data.domain.consommation.entity import ConsommationStatistics
 
 
 class ConsoProportionalComparisonMapper:
     @staticmethod
-    def map(land_id_to_highlight: str, consommation_progression: list[ConsommationCollection]):
-        highlight_style = {
-            "color": HIGHLIGHT_COLOR,
-            "dashStyle": "ShortDash",
-            "lineWidth": 4,
-        }
-        default_style = {}
+    def map(consommation_stats: list[ConsommationStatistics]):
         return [
             {
-                "name": land_conso.land.name,
+                "type": "treemap",
+                "layoutAlgorithm": "squarified",
+                "clip": False,
+                "dataLabels": {
+                    "enabled": True,
+                    "format": "{point.name}<br />{point.value:.2f} ‰",
+                    "style": {
+                        "fontWeight": "bold",
+                        "textOutline": "none",
+                    },
+                },
+                "borderWidth": 0,
                 "data": [
                     {
-                        "name": annual_conso.year,
-                        "y": annual_conso.per_mille_of_area,
+                        "name": land_conso.land.name,
+                        "value": land_conso.per_mille_of_area,
+                        "colorValue": land_conso.per_mille_of_area,
                     }
-                    for annual_conso in land_conso.consommation
+                    for land_conso in consommation_stats
                 ],
-                "legendIndex": land_conso.land.official_id != land_id_to_highlight,
-                **(highlight_style if land_conso.land.official_id == land_id_to_highlight else default_style),
             }
-            for land_conso in consommation_progression
         ]
