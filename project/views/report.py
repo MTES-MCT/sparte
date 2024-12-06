@@ -34,6 +34,9 @@ from public_data.domain.impermeabilisation.difference.ImperNetteTableMapper impo
 from public_data.domain.impermeabilisation.difference.ImperSolTableMapper import (
     ImperSolTableMapper,
 )
+from public_data.infra.consommation.progression.table.ConsoByDeterminantTableMapper import (
+    ConsoByDeterminantTableMapper,
+)
 from public_data.infra.consommation.progression.table.ConsoComparisonTableMapper import (
     ConsoComparisonMapper,
 )
@@ -104,10 +107,7 @@ class ProjectReportConsoView(ProjectReportBaseView):
 
         # Déterminants
         det_chart = charts.AnnualConsoByDeterminantChart(project)
-        det_pie_chart = charts.ConsoByDeterminantPieChart(
-            project,
-            series=det_chart.get_series(),
-        )
+        det_pie_chart = charts.ConsoByDeterminantPieChart(project)
 
         # CONSO
         consommation_progression = (
@@ -174,7 +174,15 @@ class ProjectReportConsoView(ProjectReportBaseView):
                 "population_conso_comparison_chart": charts.PopulationConsoComparisonChart(project),
                 # data tables
                 "annual_conso_data_table": annual_conso_data_table,
-                "data_determinant": add_total_line_column(det_chart.get_series()),
+                "determinant_data_table": ConsoByDeterminantTableMapper.map(
+                    consommation_progression=PublicDataContainer.consommation_progression_service()
+                    .get_by_land(
+                        land=project.land_proxy,
+                        start_date=int(project.analyse_start_date),
+                        end_date=int(project.analyse_end_date),
+                    )
+                    .consommation
+                ),
                 "comparison_table": ConsoComparisonMapper.map(
                     consommation_progression=PublicDataContainer.consommation_progression_service().get_by_lands(
                         lands=project.comparison_lands_and_self_land(),

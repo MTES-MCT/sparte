@@ -16,6 +16,9 @@ from public_data.domain.containers import PublicDataContainer
 from public_data.domain.impermeabilisation.difference.ImpermeabilisationDifferenceService import (
     ImpermeabilisationDifferenceService,
 )
+from public_data.infra.consommation.progression.export.ConsoByDeterminantExportTableMapper import (
+    ConsoByDeterminantExportTableMapper,
+)
 from public_data.infra.consommation.progression.export.ConsoComparisonExportTableMapper import (
     ConsoComparisonExportTableMapper,
 )
@@ -197,7 +200,15 @@ class BaseRenderer:
                 series=annual_total_conso_chart.get_series(), line=False
             ),
             "communes_data_table": add_total_line_column(chart_conso_cities.get_series()),
-            "determinants_data_table": add_total_line_column(det_chart.get_series()),
+            "determinants_data_table": ConsoByDeterminantExportTableMapper.map(
+                consommation_progression=PublicDataContainer.consommation_progression_service()
+                .get_by_land(
+                    land=diagnostic.land_proxy,
+                    start_date=int(diagnostic.analyse_start_date),
+                    end_date=int(diagnostic.analyse_end_date),
+                )
+                .consommation
+            ),
             # Target 2031
             "target_2031_consumed": target_2031_consumption,
             "projection_zan_cumulee_ref": round(objective_chart.total_2020, 1),

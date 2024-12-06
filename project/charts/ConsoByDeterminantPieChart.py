@@ -1,9 +1,42 @@
 from project.charts.base_project_chart import ProjectChart
 from project.charts.constants import CEREMA_CREDITS
+from public_data.domain.containers import PublicDataContainer
 
 
 class ConsoByDeterminantPieChart(ProjectChart):
+    """
+    Graphique en secteurs de consommation totale par destination (habitat, activité, mixte etc.)
+    """
+
     name = "determinant overview"
+
+    def _get_series(self):
+        """
+        Génère et retourne la liste des séries à utiliser dans le graphique.
+        """
+        consommation_total = PublicDataContainer.consommation_stats_service().get_by_land(
+            land=self.project.land_proxy,
+            start_date=self.project.analyse_start_date,
+            end_date=self.project.analyse_end_date,
+        )
+
+        category_to_attr = {
+            "Habitat": "habitat",
+            "Activité": "activite",
+            "Mixte": "mixte",
+            "Route": "route",
+            "Ferré": "ferre",
+            "Inconnu": "non_renseigne",
+        }
+
+        data = {category: getattr(consommation_total, attr) for category, attr in category_to_attr.items()}
+
+        return [
+            {
+                "name": "Destinations",
+                "data": [{"name": category, "y": value} for category, value in data.items()],
+            }
+        ]
 
     @property
     def param(self):
@@ -12,32 +45,24 @@ class ConsoByDeterminantPieChart(ProjectChart):
             "title": {
                 "text": "Sur la période",
             },
-            "tooltip": {"enabled": True, "pointFormat": "{point.y:.1f} Ha"},
+            "tooltip": {"enabled": False},
             "plotOptions": {
                 "pie": {
                     "allowPointSelect": True,
                     "cursor": "pointer",
                     "dataLabels": {
+                        "distance": 15,
                         "enabled": True,
-                        "format": "{point.name} : {point.y:.1f} Ha",
+                        "format": "{point.name}<br />{point.y:.2f} Ha",
                     },
                 }
             },
-            "series": [],
+            "series": self._get_series(),
         }
 
-    def __init__(self, *args, **kwargs):
-        if "series" in kwargs:
-            self.series = kwargs.pop("series")
-        super().__init__(*args, **kwargs)
-
-    def get_series(self):
-        if not self.series:
-            self.series = self.project.get_determinants(group_name=self.group_name)
-        return {"Destinations": {n: sum(v.values()) for n, v in self.series.items()}}
-
+    # To remove after refactoring
     def add_series(self):
-        super().add_series(sliced=True)
+        pass
 
 
 class ConsoByDeterminantPieChartExport(ConsoByDeterminantPieChart):

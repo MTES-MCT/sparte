@@ -16,7 +16,7 @@ class AnnualTotalConsoChart(ProjectChart):
         return super().param | {
             "chart": {"type": "column"},
             "title": {"text": ""},
-            "yAxis": {"title": {"text": "Consommé (ha)"}},
+            "yAxis": {"title": {"text": "Consommation d'espaces NAF (ha)"}},
             "xAxis": {"type": "category"},
             "tooltip": {
                 "headerFormat": DEFAULT_HEADER_FORMAT,

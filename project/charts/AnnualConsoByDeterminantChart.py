@@ -2,18 +2,58 @@ from project.charts.base_project_chart import ProjectChart
 from project.charts.constants import (
     CEREMA_CREDITS,
     DEFAULT_VALUE_DECIMALS,
-    HIGHLIGHT_COLOR,
     LEGEND_NAVIGATION_EXPORT,
 )
+from public_data.domain.containers import PublicDataContainer
 
 
 class AnnualConsoByDeterminantChart(ProjectChart):
     """
     Graphique en barre de consommation annuelle par destination (habitat, activité, mixte etc.)
-    avec une courbe de consommation totale en pointillés.
     """
 
     name = "determinant per year"
+
+    def _get_series(self):
+        """
+        Génère et retourne la liste des séries à utiliser dans le graphique.
+        """
+        consommation_progression = PublicDataContainer.consommation_progression_service().get_by_land(
+            land=self.project.land_proxy,
+            start_date=self.project.analyse_start_date,
+            end_date=self.project.analyse_end_date,
+        )
+
+        category_to_attr = {
+            "Habitat": "habitat",
+            "Activité": "activite",
+            "Mixte": "mixte",
+            "Route": "route",
+            "Ferré": "ferre",
+            "Inconnu": "non_renseigne",
+            "Total": "total",
+        }
+
+        data = {category: {} for category in category_to_attr.keys()}
+
+        for annual_conso in consommation_progression.consommation:
+            for category, attr in category_to_attr.items():
+                data[category][annual_conso.year] = getattr(annual_conso, attr)
+
+        series = [
+            {
+                "name": determinant,
+                "data": [{"name": year, "y": value} for year, value in data[determinant].items()],
+                **(
+                    {"id": "main", "type": "column", "zIndex": 0, "stacking": None, "color": "#CFD1E5"}
+                    if determinant == "Total"
+                    else {"type": "column", "stacking": "normal", "zIndex": 1}
+                ),
+            }
+            for determinant in data
+        ]
+
+        return series
 
     @property
     def param(self):
@@ -21,8 +61,8 @@ class AnnualConsoByDeterminantChart(ProjectChart):
             "chart": {"type": "column"},
             "title": {"text": "Par an"},
             "yAxis": {
-                "title": {"text": "Consommation annuelle (en ha)"},
-                "stackLabels": {"enabled": True, "format": "{total:,.1f}"},
+                "title": {"text": "Consommation d'espaces NAF (en ha)"},
+                "stackLabels": {"enabled": True, "format": "{total:,.2f}"},
             },
             "tooltip": {
                 "headerFormat": "<b>{point.key}</b><br/>",
@@ -37,32 +77,13 @@ class AnnualConsoByDeterminantChart(ProjectChart):
                 "align": "right",
                 "verticalAlign": "middle",
             },
-            "plotOptions": {
-                "column": {
-                    "stacking": "normal",
-                    "dataLabels": {"enabled": True, "format": "{point.y:,.1f}"},
-                }
-            },
-            "series": [],
+            "plotOptions": {"series": {"grouping": False, "borderWidth": 0}},
+            "series": self._get_series(),
         }
 
-    def get_series(self):
-        if not self.series:
-            self.series = self.project.get_determinants(group_name=self.group_name)
-        return self.series
-
+    # To remove after refactoring
     def add_series(self):
-        super().add_series()
-        if not self.group_name:
-            self.add_serie(
-                "Total",
-                self.project.get_conso_per_year(),
-                **{
-                    "type": "line",
-                    "color": HIGHLIGHT_COLOR,
-                    "dashStyle": "ShortDash",
-                },
-            )
+        pass
 
 
 class AnnualConsoByDeterminantChartExport(AnnualConsoByDeterminantChart):
