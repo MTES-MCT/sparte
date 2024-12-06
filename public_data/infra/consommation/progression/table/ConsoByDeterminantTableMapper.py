@@ -12,7 +12,7 @@ class ConsoByDeterminantTableMapper:
             "Mixte": "mixte",
             "Route": "route",
             "Ferré": "ferre",
-            "Inconnu": "non_reseigne",
+            "Inconnu": "non_renseigne",
             "Total": "total",
         }
 
