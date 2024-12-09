@@ -25,10 +25,15 @@ class RemoteToS3FileHandler:
         s3_key: str,
         s3_bucket: str,
         tmp_local_file=None,
+        if_not_exists=False,
     ) -> str:
         """
         Retourne le chemin du fichier téléchargé sur S3
         """
+        if if_not_exists and self.s3_handler.file_exists(s3_key=s3_key, s3_bucket=s3_bucket):
+            logger.info(f"File already exists on s3://{s3_bucket}/{s3_key}, skipping download")
+            return f"s3://{s3_bucket}/{s3_key}"
+
         logger.info(f"Downloading file from {url} and uploading to s3://{s3_bucket}/{s3_key}")
 
         local_file_path = self.tmp_path_generator.get_tmp_path(filename=tmp_local_file)

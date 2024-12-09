@@ -42,3 +42,5 @@ models:
       +schema: insee
     for_app:
       +schema: for_app
+    sitadel:
+      +schema: sitadel

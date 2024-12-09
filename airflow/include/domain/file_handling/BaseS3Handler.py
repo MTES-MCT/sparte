@@ -14,6 +14,17 @@ class BaseS3Handler(ABC):
         """
 
     @abstractmethod
+    def file_exists(
+        self,
+        local_file_path: str,
+        s3_key: str,
+        s3_bucket: str,
+    ) -> str:
+        """
+        Verifie si le fichier existe sur S3
+        """
+
+    @abstractmethod
     def download_file(
         self,
         s3_key: str,

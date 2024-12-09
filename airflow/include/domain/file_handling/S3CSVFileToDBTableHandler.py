@@ -20,7 +20,12 @@ class S3CSVFileToDBTableHandler:
         self.tmp_path_generator = tmp_path_generator
 
     def ingest_s3_csv_file_to_db_table(
-        self, s3_bucket: str, s3_key: str, table_name: str, separator: str = ";", skiprows=None
+        self,
+        s3_bucket: str,
+        s3_key: str,
+        table_name: str,
+        separator: str = ";",
+        skiprows=None,
     ) -> int:
         logger.info(f"Ingesting s3://{s3_bucket}/{s3_key} to table {table_name}")
 
