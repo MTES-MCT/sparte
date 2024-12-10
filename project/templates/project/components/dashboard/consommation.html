@@ -184,14 +184,14 @@
             <div class="fr-grid-row fr-grid-row--gutters">
                 <div class="fr-col-12 fr-col-md-6 fr-grid-row">
                     <div class="fr-callout bg-white w-100">
-                        <p class="fr-callout__title">{% if population_evolution > 0 %}+{% endif %} {{ population_evolution|floatformat:0 }}</p>
-                        <p>Habitant{{ population_evolution|pluralize }} sur la période</p>
+                        <p class="fr-callout__title">{% if population_evolution > 0 %}+{% endif %} {{ population_evolution|floatformat:0 }} habitants</p>
+                        <p>Evolution de la population entre {{ project.analyse_start_date }} et {{ project.analyse_end_date }}</p>
                     </div>
                 </div>
                 <div class="fr-col-12 fr-col-md-6 fr-grid-row">
                     <div class="fr-callout bg-white w-100">
                         <p class="fr-callout__title">{{ conso_period|floatformat:2 }} ha</p>
-                        <p>D'espaces NAF consommés sur la période</p>
+                        <p>D'espaces NAF consommés entre {{ project.analyse_start_date }} et {{ project.analyse_end_date }}</p>
                     </div>
                 </div>
             </div>
