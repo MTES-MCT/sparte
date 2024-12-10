@@ -44,6 +44,10 @@ class Chart:
                     }
                 ]
             },
+            "exporting": {
+                "filename": param.get("title", {}).get("text", "graphique"),
+                "url": "https://highcharts-export.osc-fr1.scalingo.io",
+            },
             "colors": [
                 "#6a6af4",
                 "#53e19f",
