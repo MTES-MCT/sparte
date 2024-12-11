@@ -42,7 +42,7 @@ class ConsommationProgressionService(BaseConsommationProgressionService):
                     mixte=c.mixte / 10000,
                     route=c.route / 10000,
                     ferre=c.ferroviaire / 10000,
-                    non_reseigne=c.inconnu / 10000,
+                    non_renseigne=c.inconnu / 10000,
                     total=c.total / 10000,
                     per_mille_of_area=c.total / 10000 / land.area * 1000,
                 )

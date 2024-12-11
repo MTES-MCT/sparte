@@ -9,6 +9,6 @@ class AnnualConsommation:
     mixte: float
     route: float
     ferre: float
-    non_reseigne: float
+    non_renseigne: float
     total: float
     per_mille_of_area: float
