@@ -1,15 +1,8 @@
-import os
-from urllib.request import URLopener
-
-import pandas as pd
 from airflow.decorators import dag, task
-from airflow.models.param import Param
-from include.container import Container
+from include.domain.container import Container
 from pendulum import datetime
 
-urls = {
-    "2024": "https://www.insee.fr/fr/statistiques/fichier/7766585/v_mvt_commune_2024.csv",
-}
+URL = "https://www.insee.fr/fr/statistiques/fichier/7766585/v_mvt_commune_2024.csv"
 
 
 @dag(
@@ -20,42 +13,36 @@ urls = {
     max_active_runs=1,
     default_args={"owner": "Alexis Athlani", "retries": 3},
     tags=["INSEE"],
-    params={
-        "year": Param(
-            default="2024",
-            description="Année des changements",
-            type="string",
-            enum=list(urls.keys()),
-        ),
-    },
 )
 def ingest_cog_changes():
     bucket_name = "airflow-staging"
-    tmp_localpath = "/tmp/cog_changes"
+    filename = "v_mvt_commune_2024.csv"
 
     @task.python
-    def download_change_file(**context) -> str:
-        year = context["params"]["year"]
-        filename = urls[year].split("/")[-1]
-        path_on_bucket = f"{bucket_name}/{filename}"
-        opener = URLopener()
-        opener.addheader("User-Agent", "Mozilla/5.0")
-        opener.retrieve(url=urls[year], filename=filename)
-        Container().s3().put_file(filename, path_on_bucket)
-        os.remove(filename)
-        return path_on_bucket
+    def download_change_file() -> str:
+        return (
+            Container()
+            .remote_to_s3_file_handler()
+            .download_http_file_and_upload_to_s3(
+                url=URL,
+                s3_key=filename,
+                s3_bucket=bucket_name,
+            )
+        )
 
     @task.python
-    def ingest(path_on_bucket, **context) -> int | None:
-        Container().s3().get_file(path_on_bucket, tmp_localpath)
-        df = pd.read_csv(tmp_localpath)
-        table_name = f"insee_cog_changes_{context['params']['year']}"
-        row_count = df.to_sql(table_name, con=Container().sqlalchemy_dbt_conn(), if_exists="replace")
-        os.remove(tmp_localpath)
-        return row_count
+    def ingest() -> int | None:
+        return (
+            Container()
+            .s3_csv_file_to_db_table_handler()
+            .ingest_s3_csv_file_to_db_table(
+                s3_bucket=bucket_name,
+                s3_key=filename,
+                table_name="insee_cog_changes_2024",
+            )
+        )
 
-    path_on_bucket = download_change_file()
-    ingest(path_on_bucket)
+    download_change_file() >> ingest()
 
 
 ingest_cog_changes()

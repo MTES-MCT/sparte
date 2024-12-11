@@ -8,7 +8,7 @@ import difflib
 import requests
 from airflow.decorators import dag, task
 from bs4 import BeautifulSoup
-from include.container import Container
+from include.domain.container import Container
 from pendulum import datetime
 
 
@@ -56,7 +56,7 @@ def diff_ocsge_download_page_to_mattermost():
                     "```",
                 ]
             )
-            Container().mattermost().send(markdown_message)
+            Container().notification().send(message=markdown_message)
 
     diff()
 
