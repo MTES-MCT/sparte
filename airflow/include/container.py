@@ -2,14 +2,11 @@ from os import getenv
 
 import pysftp
 import sqlalchemy
-from airflow.hooks.base import BaseHook
 from dependency_injector import containers, providers
 from gdaltools import PgConnectionString
 from psycopg2 import connect
 from psycopg2.extensions import connection
 from s3fs import S3FileSystem
-
-from .mattermost import Mattermost
 
 
 def db_str_for_ogr2ogr(dbname: str, user: str, password: str, host: str, port: int) -> str:
@@ -26,11 +23,11 @@ def create_sql_alchemy_conn(
 class Container(containers.DeclarativeContainer):
     s3 = providers.Factory(
         provides=S3FileSystem,
-        key=BaseHook.get_connection("scaleway_airflow_bucket").login,
-        secret=BaseHook.get_connection("scaleway_airflow_bucket").password,
-        endpoint_url=BaseHook.get_connection("scaleway_airflow_bucket").extra_dejson.get("endpoint_url"),
+        key=getenv("AIRFLOW_S3_LOGIN"),
+        secret=getenv("AIRFLOW_S3_PASSWORD"),
+        endpoint_url=getenv("AIRFLOW_S3_ENDPOINT_URL"),
         client_kwargs={
-            "region_name": BaseHook.get_connection("scaleway_airflow_bucket").extra_dejson.get("region_name")
+            "region_name": getenv("AIRFLOW_S3_REGION_NAME"),
         },
     )
     # DBT connections
@@ -125,10 +122,4 @@ class Container(containers.DeclarativeContainer):
         port=int(getenv("GPU_SFTP_PORT")),
         default_path="/pub/export-wfs/latest/",
         cnopts=cnopts,
-    )
-
-    mattermost = providers.Factory(
-        Mattermost,
-        mattermost_webhook_url=getenv("MATTERMOST_WEBHOOK_URL"),
-        channel=getenv("MATTERMOST_CHANNEL"),
     )

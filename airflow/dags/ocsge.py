@@ -16,13 +16,14 @@ from airflow.decorators import dag, task
 from airflow.models.param import Param
 from airflow.operators.bash import BashOperator
 from include.container import Container
-from include.ocsge.delete_in_dw import (
+from include.domain.container import Container as DomainContainer
+from include.domain.data.ocsge.delete_in_dw import (
     delete_difference_in_dw_sql,
     delete_occupation_du_sol_in_dw_sql,
     delete_zone_construite_in_dw_sql,
 )
-from include.ocsge.enums import DatasetName, SourceName
-from include.ocsge.normalization import (
+from include.domain.data.ocsge.enums import DatasetName, SourceName
+from include.domain.data.ocsge.normalization import (
     ocsge_diff_normalization_sql,
     ocsge_occupation_du_sol_normalization_sql,
     ocsge_zone_construite_normalization_sql,
@@ -48,7 +49,7 @@ def get_paths_from_directory(directory: str) -> list[tuple[str, str]]:
     return paths
 
 
-with open("include/ocsge/sources.json", "r") as f:
+with open("include/domain/data/ocsge/sources.json", "r") as f:
     sources = json.load(f)
 
 vars = {
@@ -328,7 +329,7 @@ def ocsge():  # noqa: C901
 - Année(s) : {years}
 - Téléchargé : {refresh_source}
 """
-        Container().mattermost().send(message)
+        DomainContainer().notification().send(message)
 
     url = get_url()
     url_exists = check_url_exists(url=url)

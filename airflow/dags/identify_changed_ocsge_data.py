@@ -3,10 +3,10 @@ import json
 import requests
 from airflow.decorators import dag, task
 from bs4 import BeautifulSoup
-from include.container import Container
+from include.domain.container import Container
 from pendulum import datetime
 
-with open("include/ocsge/sources.json", "r") as f:
+with open("include/domain/data/ocsge/sources.json", "r") as f:
     sources = json.load(f)
 
 
@@ -63,7 +63,7 @@ def identify_changed_ocsge_data():
                 markdown_message += f"Type : {url['type']}\n"
                 markdown_message += f"Url manquant : {url['url']}\n"
                 markdown_message += "```\n"
-            Container().mattermost().send(markdown_message)
+            Container().notification().send(message=markdown_message)
 
     check_for_missing_urls()
 
