@@ -33,7 +33,7 @@ class ConsommationProgressionService(BaseConsommationProgressionService):
             start_date=start_date,
             end_date=end_date,
             land=land,
-            total_conso_over_period=conso_stats.total,
+            total_conso_over_period=conso_stats.total / 10000,
             consommation=[
                 AnnualConsommation(
                     year=c.year,

@@ -1,7 +1,6 @@
 import math
 
 from project.charts.base_project_chart import ProjectChart
-from project.charts.constants import DENSITY_MAX_IN_HA
 from public_data.domain.containers import PublicDataContainer
 
 
@@ -22,9 +21,9 @@ class PopulationDensityChart(ProjectChart):
             "title": {"text": f"Densité de population ({self.project.analyse_end_date})"},
             "xAxis": {"lineColor": "transparent", "labels": {"enabled": False}, "tickLength": 0},
             "yAxis": {
-                "tickPositions": [0, 50, 100, 150, 200, DENSITY_MAX_IN_HA],
+                "tickPositions": [0, 50, 100, 150, 200, 250, 300],
                 "min": 0,
-                "max": DENSITY_MAX_IN_HA,
+                "max": 300,
                 "gridLineWidth": 0,
                 "title": None,
                 "labels": {"format": "{value}"},
@@ -33,7 +32,8 @@ class PopulationDensityChart(ProjectChart):
                     {"from": 50, "to": 100, "color": "rgb(242, 159, 142)"},
                     {"from": 100, "to": 150, "color": "rgb(242, 133, 111)"},
                     {"from": 150, "to": 200, "color": "rgb(242, 77, 45)"},
-                    {"from": 200, "to": DENSITY_MAX_IN_HA, "color": "rgb(185, 52, 27)"},
+                    {"from": 200, "to": 250, "color": "rgb(185, 52, 27)"},
+                    {"from": 250, "to": 300, "color": "rgb(165, 24, 0)"},
                 ],
             },
             "legend": {"enabled": False},

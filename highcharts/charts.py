@@ -44,6 +44,10 @@ class Chart:
                     }
                 ]
             },
+            "exporting": {
+                "filename": param.get("title", {}).get("text", "graphique"),
+                "url": settings.HIGHCHART_SERVER,
+            },
             "colors": [
                 "#6a6af4",
                 "#53e19f",
