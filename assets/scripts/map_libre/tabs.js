@@ -16,6 +16,9 @@ export default class Tabs
 
     this.buttonsNode = document.createElement('div')
     this.buttonsNode.classList.add('tablist')
+    this.buttonsNode.style.pointerEvents = 'auto'
+    this.buttonsNode.style.height = '100vh'
+    this.buttonsNode.style.width = '50px'
     this.buttonsNode.setAttribute('role', 'tablist')
     this.buttonsNode.setAttribute('aria-label', 'Paramètres de la carte')
 
@@ -46,6 +49,10 @@ export default class Tabs
 
     // Create tab
     const tabNode = document.createElement('div')
+    tabNode.style.width = '50vw'
+    tabNode.style.height = '100vh'
+    tabNode.style.right = '50px'
+    tabNode.style.pointerEvents = 'auto'
     tabNode.id = `${_tab.id}-tab`
     tabNode.classList.add('tab')
     tabNode.setAttribute('role', 'tabpanel')
@@ -96,5 +103,10 @@ export default class Tabs
   getTab(_id)
   {
     return this.tabsNode.querySelector(`[aria-labelledby="${_id}"]`)
+  }
+
+  onAdd()
+  {
+    return this.tabsNode
   }
 }

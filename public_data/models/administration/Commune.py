@@ -3,7 +3,6 @@ from django.contrib.postgres.search import TrigramSimilarity
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db.models.functions import Lower
 
-from public_data.models.cerema import Cerema
 from public_data.models.enums import SRID
 from public_data.models.mixins import DataColorationMixin
 from utils.db import IntersectManager
@@ -93,9 +92,6 @@ class Commune(DataColorationMixin, LandMixin, GetDataFromCeremaMixin, models.Mod
     def is_artif_ready(self):
         return self.departement.is_artif_ready
 
-    def get_qs_cerema(self):
-        return Cerema.objects.filter(city_insee=self.insee)
-
     def __str__(self):
         return f"{self.name} ({self.insee})"
 
@@ -117,13 +113,6 @@ class Commune(DataColorationMixin, LandMixin, GetDataFromCeremaMixin, models.Mod
 
         qs = qs.filter(similarity__gt=0.2)  # Filtrer par un score minimum de similarité
         qs = qs.order_by("-similarity")  # Trier par score décroissant
-
-        if region:
-            qs = qs.filter(departement__region=region)
-        if departement:
-            qs = qs.filter(departement=departement)
-        if epci:
-            qs = qs.filter(epci=epci)
 
         return qs
 

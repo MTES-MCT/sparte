@@ -8,7 +8,7 @@
             <p class="fr-text--sm">Ne ratez rien de notre actualité.</p>
           </div>
           <div>
-            <form hx-post="{% url 'home:nwl-subscription' %}">
+            <form hx-post="{% url 'home:nwl-confirmation' %}">
               {% csrf_token %}
               <div class="fr-input-group">
                 <label class="fr-label" for="newsletter-email">

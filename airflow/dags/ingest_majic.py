@@ -6,7 +6,7 @@ from zipfile import ZipFile
 from airflow.decorators import dag, task
 from airflow.operators.python import PythonOperator
 from include.container import Container
-from include.majic.sources import sources
+from include.domain.data.majic.sources import sources
 from include.pools import DBT_POOL
 from include.utils import (
     get_dbt_command_from_directory,

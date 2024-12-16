@@ -71,30 +71,22 @@ class ProjectCommuneSerializer(gis_serializers.GeoFeatureModelSerializer):
         model = Commune
 
 
-class CitySpaceConsoMapSerializer(gis_serializers.GeoFeatureModelSerializer):
-    artif_area = serializers.FloatField()
-
-    class Meta:
-        fields = (
-            "name",
-            "insee",
-            "area",
-            "artif_area",
-        )
-        geo_field = "mpoly"
-        model = Commune
-
-
 class CityArtifMapSerializer(gis_serializers.GeoFeatureModelSerializer):
     artif_evo = ArtifEvolutionSubSerializer(source="communediff_set", many=True, read_only=True)
+    percent_artif = serializers.SerializerMethodField()
+
+    def get_percent_artif(self, obj):
+        return obj.surface_artif * 100 / obj.area
 
     class Meta:
         fields = (
             "name",
-            "insee",
             "area",
             "surface_artif",
             "artif_evo",
+            "percent_artif",
+            "insee",
         )
         geo_field = "mpoly"
         model = Commune
+        id_field = "insee"

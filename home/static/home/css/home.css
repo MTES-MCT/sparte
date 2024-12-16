@@ -2,6 +2,11 @@
     width: 750px;
 }
 
+.newsletter-container .fr-follow .fr-container {
+    height: 25vh;
+    display: flex;
+}
+
 .card {
     background: #ffffff;
     border-radius: 8px;

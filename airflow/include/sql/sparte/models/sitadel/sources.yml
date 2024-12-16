@@ -1,0 +1,7 @@
+
+version: 2
+
+sources:
+  - name: public
+    tables:
+    - name: sitadel_donnees_annuelles_communales_logements

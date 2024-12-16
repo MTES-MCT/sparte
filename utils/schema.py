@@ -6,13 +6,17 @@ from django.db.backends.base.schema import BaseDatabaseSchemaEditor
 from public_data.models import (
     ArtifAreaZoneUrba,
     ArtificialArea,
-    Cerema,
     Commune,
     CommuneDiff,
-    CommunePop,
     CommuneSol,
     Departement,
     Epci,
+    LandConso,
+    LandConsoComparison,
+    LandConsoStats,
+    LandPop,
+    LandPopComparison,
+    LandPopStats,
     Region,
     Scot,
     ZoneUrba,
@@ -50,9 +54,13 @@ def init_unmanaged_schema_for_tests() -> None:
         drop_and_create_model(Epci, schema_editor)
         drop_and_create_model(Scot, schema_editor)
         drop_and_create_model(CommuneDiff, schema_editor)
-        drop_and_create_model(CommunePop, schema_editor)
         drop_and_create_model(CommuneSol, schema_editor)
         drop_and_create_model(ArtifAreaZoneUrba, schema_editor)
         drop_and_create_model(ZoneUrba, schema_editor)
         drop_and_create_model(ArtificialArea, schema_editor)
-        drop_and_create_model(Cerema, schema_editor)
+        drop_and_create_model(LandConso, schema_editor)
+        drop_and_create_model(LandConsoComparison, schema_editor)
+        drop_and_create_model(LandConsoStats, schema_editor)
+        drop_and_create_model(LandPop, schema_editor)
+        drop_and_create_model(LandPopStats, schema_editor)
+        drop_and_create_model(LandPopComparison, schema_editor)

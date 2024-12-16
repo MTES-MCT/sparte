@@ -3,7 +3,6 @@ from django.contrib.gis.db import models
 from django.contrib.postgres.search import TrigramSimilarity
 from django.db.models.functions import Lower
 
-from public_data.models.cerema import Cerema
 from public_data.models.enums import SRID
 from utils.db import IntersectManager
 
@@ -53,9 +52,6 @@ class Region(LandMixin, GetDataFromCeremaMixin, models.Model):
         qs = qs.filter(similarity__gt=0.15)  # Filtrer par un score minimum de similarité
         qs = qs.order_by("-similarity")  # Trier par score décroissant
 
-        if region:
-            qs = qs.filter(id=region.id)
-
         return qs
 
     @property
@@ -64,9 +60,6 @@ class Region(LandMixin, GetDataFromCeremaMixin, models.Model):
         for dept in self.departement_set.all():
             is_artif_ready &= dept.is_artif_ready
         return is_artif_ready
-
-    def get_qs_cerema(self):
-        return Cerema.objects.filter(region_id=self.source_id)
 
     def get_cities(self):
         return apps.get_model("public_data.Commune").objects.filter(departement__region=self)

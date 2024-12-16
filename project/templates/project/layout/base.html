@@ -7,7 +7,6 @@
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-        <meta name="highcharts-server-url" content="{{ HIGHCHART_SERVER }}">
         <meta name="htmx-config" content='{"inlineScriptNonce":"[NONCE_PLACEHOLDER]"}'>
 
         <title>{% block pagetitle %}{{ page_title }}{% endblock %}</title>
@@ -125,7 +124,7 @@
                                 "url": "{% url 'project:report_local' project.pk %}"
                             },
                             {
-                                "label": "Trajectoire ZAN",
+                                "label": "Trajectoire de sobriété foncière",
                                 "url": "{% url 'project:report_target_2031' project.pk %}"
                             }
                         ]
@@ -199,10 +198,6 @@
                         "label": "FAQ",
                         "url": "{{ FAQ_URL }}",
                         "target": "_blank"
-                    },
-                    {
-                        "label": "Tutoriel",
-                        "url": "{% url 'documentation:tutoriel' %}"
                     },
                     {
                         "label": "Contactez-nous",

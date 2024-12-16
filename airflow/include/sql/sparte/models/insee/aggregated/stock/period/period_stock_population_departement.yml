@@ -1,0 +1,13 @@
+version: 2
+
+models:
+  - name: period_stock_population_departement
+    columns:
+      - name: departement
+        data_tests:
+          - not_null
+          - unique
+          - has_all_departements
+          - relationships:
+              to: ref('departement')
+              field: code

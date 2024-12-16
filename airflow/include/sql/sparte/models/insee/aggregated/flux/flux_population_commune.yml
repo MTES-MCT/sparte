@@ -1,0 +1,11 @@
+version: 2
+
+models:
+  - name: flux_population_commune
+    columns:
+      - name: code_commune
+        data_tests:
+          - has_all_communes
+          - relationships:
+              to: ref('commune')
+              field: code

@@ -54,7 +54,9 @@ SELECT
     perimetre_en_cours_pcpopulationtotale,
     perimetre_en_cours_pcsuperficie,
     scot_geom.geom as geom,
-    scot_geom.srid_source as srid_source
+    scot_geom.srid_source as srid_source,
+    ST_Area(scot_geom.geom) as surface
 FROM {{ source('public', 'sudocuh_scot') }} as scot
 LEFT JOIN {{ ref('scot_geom') }} as scot_geom
 ON scot_geom.id_scot::text = scot.id_scot::text
+WHERE geom is not null

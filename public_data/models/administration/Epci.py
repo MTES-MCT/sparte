@@ -1,4 +1,3 @@
-from django.apps import apps
 from django.contrib.gis.db import models
 from django.contrib.postgres.search import TrigramSimilarity
 from django.db.models.functions import Lower
@@ -58,9 +57,6 @@ class Epci(LandMixin, GetDataFromCeremaMixin, models.Model):
             is_artif_ready &= dept.is_artif_ready
         return is_artif_ready
 
-    def get_qs_cerema(self):
-        return apps.get_model("public_data.Cerema").objects.filter(epci_id=self.source_id)
-
     def get_cities(self):
         return self.commune_set.all()
 
@@ -72,13 +68,6 @@ class Epci(LandMixin, GetDataFromCeremaMixin, models.Model):
         qs = cls.objects.annotate(similarity=TrigramSimilarity(Lower("name__unaccent"), needle.lower()))
         qs = qs.filter(similarity__gt=0.15)  # Filtrer par un score minimum de similarité
         qs = qs.order_by("-similarity")  # Trier par score décroissant
-
-        if region:
-            qs = qs.filter(departements__region=region)
-        if departement:
-            qs = qs.filter(departements__id=departement.id)
-        if epci:
-            qs = qs.filter(id=epci.id)
 
         qs = qs.distinct().order_by("-similarity")
 

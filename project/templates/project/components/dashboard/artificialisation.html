@@ -147,21 +147,17 @@
     <h3>Evolution de l'artificialisation entre {{ first_millesime }} et {{ last_millesime }}</h3>
 
     <div class="fr-grid-row fr-grid-row--gutters">
-        <div class="fr-col-12 fr-col-lg-8">
+        <div class="fr-col-12">
             <div class="bg-white fr-p-2w h-100">
                 <div class="d-flex justify-content-end align-items-center fr-mb-2w">
-                    {% include "project/components/widgets/chart_buttons.html" with chart="chart_waterfall" %}
+                    {% include "project/components/widgets/chart_buttons.html" with chart="chart_waterfall" show_fullscreen=True %}
                 </div>
                 <div id="chart_waterfall"></div>
             </div>
         </div>
-        <div class="fr-col-12 fr-col-lg-4">
-            {% url 'project:theme-my-artif' project.pk as dynamic_map_url %}
-            {% include "project/components/widgets/static_map.html" with dynamic_map_url=dynamic_map_url static_map=project.theme_map_understand_artif title="Carte comprendre l'artificialisation de son territoire" %}
-        </div>
     </div>
 
-    <div class="fr-notice bg-white fr-mt-4w">
+    <div class="fr-notice bg-white fr-mt-2w">
         <div class="fr-px-2w">
             <div class="d-flex align-items-center justify-content-between">
                 <div>
@@ -175,7 +171,7 @@
             </div>
             <div class="fr-collapse" id="target-data-2">
                 <h6 class="fr-mt-2w">Source</h6>
-                <p class="fr-text--sm">Données d'OCcupation des Sols à Grande Echelle (OCS GE) de l'IGN, sur la période d'analyse traduite grâce à la matrice de passage.</p>
+                {% include "project/components/widgets/source_ocsge.html" %}
 
                 <h6 class="fr-mt-2w">Calcul</h6>
                 <p class="fr-text--sm">Artificialisation sur la période - désartificialisation sur la période.</p>
@@ -215,6 +211,16 @@
             </div>
         </div>
     </div>
+
+    <div class="fr-grid-row fr-grid-row--gutters fr-mt-2w">
+        <div class="fr-col-12">
+            <div class="bg-white fr-p-2w">
+                {% url 'project:theme-my-artif' project.pk as map_url %}
+                {% include "project/components/map/iframe_map.html" with src=map_url title="Carte comprendre l'artificialisation" %}
+            </div>
+        </div>
+    </div>
+
 </div>
 
 {% if not is_commune %}
@@ -222,7 +228,7 @@
     <h3 id="conso-annuelle">Artificialisation nette entre {{ first_millesime }} et {{ last_millesime }}</h3>
 
     <div class="fr-grid-row fr-grid-row--gutters">
-        <div class="fr-col-12 fr-col-lg-8">
+        <div class="fr-col-12">
             <div class="bg-white fr-p-2w h-100">
                 <div class="d-flex justify-content-end align-items-center fr-mb-2w">
                     <div class="dropdown custom-dropdown fr-mr-2w">
@@ -252,14 +258,10 @@
                         </ul>
                     </div>
 
-                    {% include "project/components/widgets/chart_buttons.html" with chart="chart_comparison" %}
+                    {% include "project/components/widgets/chart_buttons.html" with chart="chart_comparison" show_fullscreen=True %}
                 </div>
                 <div id="chart_comparison"></div>
             </div>
-        </div>
-        <div class="fr-col-12 fr-col-lg-4">
-            {% url 'project:theme-city-artif' project.pk as dynamic_map_url %}
-            {% include "project/components/widgets/static_map.html" with dynamic_map_url=dynamic_map_url static_map=project.theme_map_artif title="Carte artificialisation des communes du territoire sur la période (en ha)" %}
         </div>
     </div>
 
@@ -277,7 +279,7 @@
             </div>
             <div class="fr-collapse" id="target-data-1">
                 <h6 class="fr-mt-2w">Source</h6>
-                <p class="fr-text--sm">Données d'OCcupation des Sols à Grande Echelle (OCS GE) de l'IGN, sur la période d'analyse.</p>
+                {% include "project/components/widgets/source_ocsge.html" %}
 
                 <h6 class="fr-mt-2w">Calcul</h6>
                 <p class="fr-text--sm">OCS GE traduite grâce à la matrice de passage.</p>
@@ -325,6 +327,15 @@
             </div>
         </div>
     </div>
+    
+    <div class="fr-grid-row fr-grid-row--gutters fr-mt-2w">
+        <div class="fr-col-12">
+            <div class="bg-white fr-p-2w">
+                {% url 'project:theme-city-artif' project.pk as map_url %}
+                {% include "project/components/map/iframe_map.html" with src=map_url title="Carte artificialisation des communes du territoire sur la période (en %)" %}
+            </div>
+        </div>
+    </div>
 </div>
 {% endif %}
 
@@ -337,7 +348,7 @@
         <div class="fr-col-12 fr-col-lg-4">
             <div class="bg-white fr-p-2w">
                 <div class="d-flex justify-content-end align-items-center fr-mb-2w">
-                    {% include "project/components/widgets/chart_buttons.html" with chart="couv_artif_sol" %}
+                    {% include "project/components/widgets/chart_buttons.html" with chart="couv_artif_sol" show_fullscreen=True %}
                     <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#couvArtifSol" data-toggle="tooltip" title="Astuces pour lire le graphique"></button>
                 </div>
                 <div id="couv_artif_sol"></div>
@@ -346,7 +357,7 @@
         <div class="fr-col-12 fr-col-lg-8">
             <div class="bg-white fr-p-2w">
                 <div class="d-flex justify-content-end align-items-center fr-mb-2w">
-                    {% include "project/components/widgets/chart_buttons.html" with chart="detail_couv_artif_chart" %}
+                    {% include "project/components/widgets/chart_buttons.html" with chart="detail_couv_artif_chart" show_fullscreen=True %}
                     <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#couvArtifSol" data-toggle="tooltip" title="Astuces pour lire le graphique"></button>
                 </div>
                 <div id="detail_couv_artif_chart"></div>
@@ -368,7 +379,7 @@
             </div>
             <div class="fr-collapse" id="target-data-couv">
                 <h6 class="fr-mt-2w">Source</h6>
-                <p class="fr-text--sm">Données d'OCcupation des Sols à Grande Echelle (OCS GE) de l'IGN, sur la période d'analyse (millésime min : {{ project.first_year_ocsge }}, millésime max : {{ project.last_year_ocsge }}).</p>
+                {% include "project/components/widgets/source_ocsge.html" %}
 
                 <h6 class="fr-mt-2w">Calcul</h6>
                 <p class="fr-text--sm">OCS GE traduite grâce à la matrice de passage.</p>
@@ -433,7 +444,7 @@
         <div class="fr-col-12 fr-col-lg-4">
             <div class="bg-white fr-p-2w">
                 <div class="d-flex justify-content-end align-items-center fr-mb-2w">
-                    {% include "project/components/widgets/chart_buttons.html" with chart="usage_artif_sol" %}
+                    {% include "project/components/widgets/chart_buttons.html" with chart="usage_artif_sol" show_fullscreen=True %}
                     <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#usageArtifSol" data-toggle="tooltip" title="Astuces pour lire le graphique"></button>
                 </div>
                 <div id="usage_artif_sol"></div>
@@ -442,7 +453,7 @@
         <div class="fr-col-12 fr-col-lg-8">
             <div class="bg-white fr-p-2w">
                 <div class="d-flex justify-content-end align-items-center fr-mb-2w">
-                    {% include "project/components/widgets/chart_buttons.html" with chart="detail_usage_artif_chart" %}
+                    {% include "project/components/widgets/chart_buttons.html" with chart="detail_usage_artif_chart" show_fullscreen=True %}
                     <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#usageArtifSol" data-toggle="tooltip" title="Astuces pour lire le graphique"></button>
                 </div>
                 <div id="detail_usage_artif_chart"></div>
@@ -464,7 +475,7 @@
             </div>
             <div class="fr-collapse" id="target-data-usage">
                 <h6 class="fr-mt-2w">Source</h6>
-                <p class="fr-text--sm">Données d'OCcupation des Sols à Grande Echelle (OCS GE) de l'IGN, sur la période d'analyse (millésime min : {{ project.first_year_ocsge }}, millésime max : {{ project.last_year_ocsge }}).</p>
+                {% include "project/components/widgets/source_ocsge.html" %}
 
                 <h6 class="fr-mt-2w">Calcul</h6>
                 <p class="fr-text--sm">OCS GE traduite grâce à la matrice de passage.</p>
@@ -532,8 +543,7 @@
                     <span class="fr-fi-arrow-right-line fr-fi--lg"></span>
                     Astuces - Graphique couverture des sols
                 </h1>
-                <p class="fr-text--sm">Avec le bouton <span class="fr-icon-drag-move-2-line fr-icon--sm" aria-hidden="true"></span>, vous pouvez afficher le graphique en plein écran.</p>
-                <p class="fr-text--sm">Avec le bouton <span class="fr-icon-download-line fr-icon--sm" aria-hidden="true"></span>, vous pouvez télécharger le graphique sous forme d'image (utilisez PNG si vous ne savez pas lequel choisir).</p>
+                {% include "project/components/widgets/chart_tips_buttons.html" %}
                 <p class="fr-text--sm">Exemple de lecture: 8% des nouvelles surfaces artificialisées le sont pour des Zones bâties.</p>
                 <p class="fr-text--sm">Vous pouvez analyser la répartition des surfaces artificialisées sur la période en pourcentage avec le camembert, ou en volume au dernier millésime avec l'histogramme.</p>
             </div>
@@ -553,8 +563,7 @@
                     <span class="fr-fi-arrow-right-line fr-fi--lg"></span>
                     Astuces - Graphique grandes familles d'usages du sol des surfaces artificialisées
                 </h1>
-                <p class="fr-text--sm">Avec le bouton <span class="fr-icon-drag-move-2-line fr-icon--sm" aria-hidden="true"></span>, vous pouvez afficher le graphique en plein écran.</p>
-                <p class="fr-text--sm">Avec le bouton <span class="fr-icon-download-line fr-icon--sm" aria-hidden="true"></span>, vous pouvez télécharger le graphique sous forme d'image (utilisez PNG si vous ne savez pas lequel choisir).</p>
+                {% include "project/components/widgets/chart_tips_buttons.html" %}
                 <p class="fr-text--sm">Exemple de lecture: 55% des nouvelles surfaces artificialisées le sont pour des Zones résidentielles.</p>
                 <p class="fr-text--sm">Vous pouvez analyser la répartition des surfaces artificialisées sur la période en pourcentage avec le camembert, ou en volume au dernier millésime avec l'histogramme.</p>
             </div>
