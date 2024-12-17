@@ -74,6 +74,8 @@ class Commune(DataColorationMixin, LandMixin, GetDataFromCeremaMixin, models.Mod
         choices=ConsommationCorrectionStatus.choices,
     )
 
+    competence_planification = models.BooleanField("Compétence planification", default=False)
+
     # DataColorationMixin properties that need to be set when heritating
     default_property = "insee"  # need to be set correctly to work
     default_color = "Yellow"
