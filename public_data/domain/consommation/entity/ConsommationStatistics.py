@@ -10,3 +10,9 @@ class ConsommationStatistics:
     end_date: int
     total: float
     total_percent: float
+    activite: float
+    habitat: float
+    mixte: float
+    route: float
+    ferre: float
+    non_renseigne: float
