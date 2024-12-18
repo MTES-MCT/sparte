@@ -131,7 +131,6 @@ class Project(BaseProject):
             "diagnostic par e-mail à vos collègues par exemple."
         ),
     )
-
     analyse_start_date = models.CharField(
         "Année de début de période du diagnostic",
         choices=ANALYZE_YEARS,
