@@ -28,10 +28,6 @@ class NotInTestEnvironmentError(Exception):
 
 
 def drop_and_create_model(model, schema_editor: BaseDatabaseSchemaEditor) -> None:
-    sql = f"DROP TABLE IF EXISTS {model._meta.db_table} CASCADE;"
-    for field in model._meta.local_many_to_many:
-        sql += f"DROP TABLE IF EXISTS {field.remote_field.through._meta.db_table} CASCADE;"
-    schema_editor.execute(sql)
     schema_editor.create_model(model)
 
 
