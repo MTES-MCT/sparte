@@ -30,7 +30,14 @@ class AnnualConsoProportionalComparisonChart(ProjectChart):
         return super().param | {
             "title": {"text": "Consommation d'espace proportionnelle à la surface des territoires (en %)"},
             "subtitle": {"text": "La taille des zones est proportionnelle à la surface des territoires."},
-            "tooltip": {"enabled": False},
+            "tooltip": {
+                "pointFormat": (
+                    "Surface du territoire : <b>{point.value:.2f} ha</b><br />"
+                    "Consommation d'espaces NAF proportionnelle à la surface du territoire : "
+                    "<b>{point.colorValue:.2f} %</b>"
+                ),
+                "headerFormat": "<b>{point.key}</b><br/>",
+            },
             "colorAxis": {
                 "minColor": "#FFFFFF",
                 "maxColor": "#6a6af4",
