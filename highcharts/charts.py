@@ -44,6 +44,11 @@ class Chart:
                     }
                 ]
             },
+            "exporting": {
+                "chartOptions": {
+                    "chart": {"style": {"fontSize": "8px"}},
+                }
+            },
             "colors": [
                 "#6a6af4",
                 "#53e19f",
