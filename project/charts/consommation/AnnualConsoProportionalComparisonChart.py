@@ -28,7 +28,8 @@ class AnnualConsoProportionalComparisonChart(ProjectChart):
     @property
     def param(self):
         return super().param | {
-            "title": {"text": "Consommation d'espace proportionnelle à la surface des territoires (‰ - pour mille)"},
+            "title": {"text": "Consommation d'espace proportionnelle à la surface des territoires (en %)"},
+            "subtitle": {"text": "La taille des zones est proportionnelle à la surface des territoires."},
             "tooltip": {"enabled": False},
             "colorAxis": {
                 "minColor": "#FFFFFF",
@@ -55,7 +56,7 @@ class AnnualConsoProportionalComparisonChartExport(AnnualConsoProportionalCompar
                 "text": (
                     f"Comparaison de la consommation proportionnelle d'espace de {self.project.territory_name} "
                     "et les territoires similaires "
-                    f"entre {self.project.analyse_start_date} et {self.project.analyse_end_date} (‰ - pour mille)"
+                    f"entre {self.project.analyse_start_date} et {self.project.analyse_end_date} (en %)"
                 )
             },
         }
