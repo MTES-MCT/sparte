@@ -23,8 +23,7 @@ class ConsommationStatsService(BaseConsommationStatsService):
             start_date=start_date,
             end_date=end_date,
             total=conso_stats.total / 10000,
-            total_percent=conso_stats.total_percent,
-            per_mille_of_area=conso_stats.total / 10000 / land.area * 1000,
+            total_percent_of_area=conso_stats.total_percent,
         )
 
     def get_by_lands(

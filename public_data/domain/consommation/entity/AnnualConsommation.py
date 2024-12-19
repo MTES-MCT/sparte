@@ -11,4 +11,4 @@ class AnnualConsommation:
     ferre: float
     non_reseigne: float
     total: float
-    per_mille_of_area: float
+    total_percent_of_area: float

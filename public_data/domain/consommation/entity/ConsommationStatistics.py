@@ -9,5 +9,4 @@ class ConsommationStatistics:
     start_date: int
     end_date: int
     total: float
-    total_percent: float
-    per_mille_of_area: float
+    total_percent_of_area: float

@@ -14,5 +14,5 @@ class ConsommationCollection:
     total_conso_over_period: float
 
     @property
-    def total_proportional_conso_over_period(self) -> float:
-        return sum([conso.per_mille_of_area for conso in self.consommation])
+    def total_percent_of_area_over_period(self) -> float:
+        return sum([conso.total_percent_of_area for conso in self.consommation])

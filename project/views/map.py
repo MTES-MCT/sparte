@@ -1241,9 +1241,9 @@ class CitySpaceConsoMapView(BaseMap):
             end_date=project.analyse_end_date,
         )
         if len(conso) <= self.scale_size:
-            boundaries = sorted([c.total_percent for c in conso])
+            boundaries = sorted([c.total_percent_of_area for c in conso])
         else:
-            boundaries = jenks_breaks([c.total_percent for c in conso], n_classes=self.scale_size)[1:]
+            boundaries = jenks_breaks([c.total_percent_of_area for c in conso], n_classes=self.scale_size)[1:]
         data = [{"value": v, "color": c.hex_l} for v, c in zip(boundaries, get_dark_blue_gradient(len(boundaries)))]
         return data
 
@@ -1278,7 +1278,7 @@ class CitySpaceConsoMapView(BaseMap):
                         "name": c.land.name,
                         "area": c.land.area,
                         "artif_area": c.total,
-                        "artif_area_percent": c.total_percent,
+                        "artif_area_percent": c.total_percent_of_area,
                     },
                 }
             )
