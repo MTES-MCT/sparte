@@ -21,7 +21,7 @@ class ConsoProportionalComparisonMapper:
                     {
                         "name": land_conso.land.name,
                         "value": land_conso.land.area,
-                        "colorValue": land_conso.total_percent,
+                        "colorValue": land_conso.total_percent_of_area,
                     }
                     for land_conso in consommation_stats
                 ],
