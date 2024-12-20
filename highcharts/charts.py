@@ -49,7 +49,7 @@ class Chart:
                 "url": settings.HIGHCHART_SERVER,
                 "chartOptions": {
                     "chart": {"style": {"fontSize": "8px"}},
-                }
+                },
             },
             "colors": [
                 "#6a6af4",
