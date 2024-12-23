@@ -1,5 +1,6 @@
 {{
     config(
+        materialized='table',
         indexes=[
             {'columns': ['departement'], 'type': 'btree'},
             {'columns': ['year'], 'type': 'btree'},
