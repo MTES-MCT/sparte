@@ -252,6 +252,15 @@
 
         }
     },
+    "51": {
+        "difference": {
+            "2019_2022": "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0_DIFF_SHP_LAMB93_D051_2019-2022/OCS-GE_2-0_DIFF_SHP_LAMB93_D051_2019-2022.7z"
+        },
+        "occupation_du_sol_et_zone_construite": {
+            "2022": "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0__SHP_LAMB93_D051_2022-01-01/OCS-GE_2-0__SHP_LAMB93_D051_2022-01-01.7z",
+            "2019": "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0__SHP_LAMB93_D051_2019-01-01/OCS-GE_2-0__SHP_LAMB93_D051_2019-01-01.7z"
+        }
+    },
     "53": {
         "difference": {
             "2019_2022": "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0_DIFF_SHP_LAMB93_D053_2019-2022/OCS-GE_2-0_DIFF_SHP_LAMB93_D053_2019-2022.7z"
