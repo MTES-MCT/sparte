@@ -12,11 +12,7 @@
     )
 }}
 
-with max_ocsge_loaded_date as (
-    SELECT max(ocsge_loaded_date) as ocsge_loaded_date FROM {{ this }}
-), max_zonage_gpu_timestamp as (
-    SELECT max(zonage_gpu_timestamp) as zonage_gpu_timestamp FROM {{ this }}
-), occupation_du_sol_zonage_urbanisme_without_surface as (
+with occupation_du_sol_zonage_urbanisme_without_surface as (
     SELECT
         concat(ocsge.uuid::text, '_', zonage.checksum::text) as ocsge_zonage_id, -- surrogate key
         -- les attributs spécifiques aux zonages sont préfixés par zonage_
