@@ -1,6 +1,6 @@
 # Astro Runtime includes the following pre-installed providers packages: https://docs.astronomer.io/astro/runtime-image-architecture#provider-packages
 s3fs==2024.6.1
-dependency-injector==4.41.0
+dependency-injector
 py7zr==0.21.1
 apache-airflow-providers-postgres==5.11.2
 requests==2.32.3
@@ -10,12 +10,10 @@ tqdm==4.66.5
 pysftp==0.2.9
 pyarrow==17.0.0
 adbc_driver_postgresql==1.1.0
-pandas==2.0.3
+pandas
 geopandas==1.0.1
 GeoAlchemy2==0.15.2
 SQLAlchemy==1.4.53
-psycopg2==2.9.9
-pygeos
 pygdaltools==1.4.2
 beautifulsoup4
 openpyxl
