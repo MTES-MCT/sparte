@@ -71,14 +71,60 @@
 	'97604'
 ] %}
 
+{% set aggregate_query = '
+    sum(total_2023) 		as total_2023,
+	sum(total_2022)			as total_2022,
+	sum(total_2021) 		as total_2021,
+	sum(total_2020) 		as total_2020,
+	sum(total_2019) 		as total_2019,
+	sum(total_2018) 		as total_2018,
+	sum(total_2017) 		as total_2017,
+	sum(total_2016) 		as total_2016,
+	sum(total_2015) 		as total_2015,
+	sum(total_2014) 		as total_2014,
+	sum(total_2013) 		as total_2013,
+	sum(taux_vacants_2023) 	as taux_vacants_2023,
+	sum(taux_vacants_2022) 	as taux_vacants_2022,
+	sum(taux_vacants_2021) 	as taux_vacants_2021,
+	sum(taux_vacants_2020) 	as taux_vacants_2020,
+	sum(taux_vacants_2019) 	as taux_vacants_2019,
+	sum(taux_vacants_2018) 	as taux_vacants_2018,
+	sum(taux_vacants_2017) 	as taux_vacants_2017,
+	sum(taux_vacants_2016) 	as taux_vacants_2016,
+	sum(taux_vacants_2015) 	as taux_vacants_2015,
+	sum(taux_vacants_2014) 	as taux_vacants_2014,
+	sum(taux_vacants_2013) 	as taux_vacants_2013
+' %}
+
 with raw_data as (
 SELECT
     "Commune (DEP)" as commune_name,
     "Unnamed: 2" as commune_code,
-    nb_loues as nombre_loues,
-    nb_vacants as nombre_vacants,
-    nb_vides as nombre_vides
-    /*
+
+    COALESCE(nb_ls, 0) 				as total_2023,
+	COALESCE(nb_ls2022, 0) 				as total_2022,
+	COALESCE(nb_ls2021, 0) 				as total_2021,
+	COALESCE(nb_ls2020, 0) 				as total_2020,
+	COALESCE(nb_ls2019, 0) 				as total_2019,
+	COALESCE(nb_ls2018, 0) 				as total_2018,
+	COALESCE(nb_ls2017, 0) 				as total_2017,
+	COALESCE(nb_ls2016, 0) 				as total_2016,
+	COALESCE(nb_ls2015, 0) 				as total_2015,
+	COALESCE(nb_ls2014, 0) 				as total_2014,
+	COALESCE(nb_ls2013, 0) 				as total_2013,
+
+	COALESCE(tx_vac3, 0) 				as taux_vacants_2023,
+	COALESCE(tx_vac_3_2022, 0) 			as taux_vacants_2022,
+	COALESCE(tx_vac_3_2021, 0) 			as taux_vacants_2021,
+	COALESCE(tx_vac_3_2020, 0) 			as taux_vacants_2020,
+	COALESCE(tx_vac_3_2019, 0) 			as taux_vacants_2019,
+	COALESCE(tx_vac_3_2018, 0) 			as taux_vacants_2018,
+	COALESCE(tx_vac_3_2017, 0) 			as taux_vacants_2017,
+	COALESCE(tx_vac_3_2016, 0) 			as taux_vacants_2016,
+	COALESCE(tx_vac_3_2015, 0) 			as taux_vacants_2015,
+	COALESCE(tx_vac_3_2014, 0) 			as taux_vacants_2014,
+	COALESCE(tx_vac_3_2013, 0) 			as taux_vacants_2013
+	/*
 	nb_asso,
 	nb_occup_finan,
 	nb_occup_temp,
@@ -288,9 +334,7 @@ UNION
 SELECT
     'Paris (75)' as commune_name,
     '75056' as commune_code,
-    sum(nombre_loues) as nombre_loues,
-    sum(nombre_vacants) as nombre_vacants,
-    sum(nombre_vides) as nombre_vides
+	{{ aggregate_query }}
 FROM
     raw_data
 WHERE commune_code in (
@@ -303,9 +347,7 @@ UNION
 SELECT
     'Lyon (69)' as commune_name,
     '69123' as commune_code,
-    sum(nombre_loues) as nombre_loues,
-    sum(nombre_vacants) as nombre_vacants,
-    sum(nombre_vides) as nombre_vides
+    {{ aggregate_query }}
 FROM
     raw_data
 WHERE
@@ -319,9 +361,7 @@ UNION
 SELECT
     'Marseille (13)',
     '13055' as commune_code,
-    sum(nombre_loues) as nombre_loues,
-    sum(nombre_vacants) as nombre_vacants,
-    sum(nombre_vides) as nombre_vides
+    {{ aggregate_query }}
 FROM
     raw_data
 WHERE commune_code in (
