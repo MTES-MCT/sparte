@@ -1,0 +1,15 @@
+version: 2
+
+models:
+  - name: rpls_departement
+    columns:
+      - name: departement_name
+        data_tests:
+          - not_null
+      - name: departement_code
+        data_tests:
+          - not_null
+          - unique
+          - relationships:
+              to: ref('departement')
+              field: code

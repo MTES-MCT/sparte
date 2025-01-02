@@ -312,7 +312,7 @@ SELECT
 	perc_dpe_realise
     */
 	FROM
-{{ source('public', 'rpls_rpls_national') }}
+{{ source('public', 'rpls_rpls_commune') }}
 )
 SELECT * FROM raw_data
 WHERE commune_code not in (

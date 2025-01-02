@@ -23,7 +23,21 @@ URL = "https://www.statistiques.developpement-durable.gouv.fr/media/6897/downloa
 def ingest_rpls():
     bucket_name = "airflow-staging"
     filename = "rpls.xlsx"
-    staging_table_name = "rpls_rpls_national"
+
+    sheet_to_table_map = [
+        {
+            "table_name": "rpls_rpls_commune",
+            "sheet_name": "Commune",
+        },
+        {
+            "table_name": "rpls_rpls_departement",
+            "sheet_name": "Département",
+        },
+        {
+            "table_name": "rpls_rpls_region",
+            "sheet_name": "Région",
+        },
+    ]
 
     @task.python
     def download() -> str:
@@ -42,8 +56,15 @@ def ingest_rpls():
         s3_path = f"{bucket_name}/{filename}"
         tmp_localpath = f"/tmp/{filename}"
         Container().s3().get_file(s3_path, tmp_localpath)
-        df = pd.read_excel(tmp_localpath, skiprows=4, sheet_name="Commune", index_col=False)
-        row_count = df.to_sql(name=staging_table_name, con=Container().sqlalchemy_dbt_conn(), if_exists="replace")
+
+        row_count = 0
+
+        for sheet_to_table in sheet_to_table_map:
+            df = pd.read_excel(tmp_localpath, skiprows=4, sheet_name=sheet_to_table["sheet_name"], index_col=False)
+            row_count += df.to_sql(
+                name=sheet_to_table["table_name"], con=Container().sqlalchemy_dbt_conn(), if_exists="replace"
+            )
+
         os.remove(tmp_localpath)
         return row_count
 
