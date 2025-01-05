@@ -28,3 +28,4 @@ SELECT
         replace("code-insee", '[', '{')
         , ']', '}')::text[] as code_insee
 FROM raw_data
+WHERE type is not null

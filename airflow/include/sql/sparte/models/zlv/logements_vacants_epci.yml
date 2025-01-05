@@ -1,0 +1,14 @@
+version: 2
+
+models:
+  - name: logements_vacants_epci
+    columns:
+      - name: epci_name
+        data_tests:
+          - not_null
+      - name: code_epci
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('epci')
+              field: code
