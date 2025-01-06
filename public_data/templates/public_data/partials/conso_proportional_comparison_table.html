@@ -4,12 +4,14 @@
             <div class="fr-table__content">
                 <table class="table-last-column-bold">
                     <caption>
-                        Consommation d'espaces annuelle proportionnelle à la surface du territoire sur les territoires similaires (en ‰ - pour mille)
+                        Consommation d'espaces annuelle proportionnelle à la surface du territoire sur les territoires similaires (en %)
                     </caption>
                     <thead>
                         <tr>
                             {% for header in headers %}
-                                <th scope="col">{{ header }}</th>
+                                <th scope="col" class="{% if forloop.first %}fr-text--bold fr-cell--left{% else %}fr-cell--right{% endif %}">
+                                    {{ header }}
+                                </th>
                             {% endfor %}
                         </tr>
                     </thead>
@@ -17,7 +19,9 @@
                         {% for row in data %}
                             <tr>
                                 {% for cell in row %}
-                                    <td>{{ cell }}</td>
+                                    <td class="{% if forloop.first %}fr-text--bold fr-cell--left{% else %}fr-cell--right{% endif %}">
+                                        {{ cell }}
+                                    </td>
                                 {% endfor %}
                             </tr>
                         {% endfor %}

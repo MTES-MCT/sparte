@@ -23,13 +23,13 @@ class ConsommationStatsService(BaseConsommationStatsService):
             start_date=start_date,
             end_date=end_date,
             total=conso_stats.total / 10000,
-            total_percent=conso_stats.total_percent,
             habitat=conso_stats.habitat / 10000,
             activite=conso_stats.activite / 10000,
             mixte=conso_stats.mixte / 10000,
             route=conso_stats.route / 10000,
             ferre=conso_stats.ferroviaire / 10000,
             non_renseigne=conso_stats.inconnu / 10000,
+            total_percent_of_area=conso_stats.total_percent,
         )
 
     def get_by_lands(

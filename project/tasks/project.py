@@ -493,7 +493,7 @@ def generate_theme_map_conso(self, project_id) -> None:
             Land(public_key=f"{AdminRef.COMMUNE}_{commune.official_id}") for commune in diagnostic.cities.all()
         ]
 
-        land_progressions = PublicDataContainer.consommation_progression_service().get_by_lands(
+        consommation_stats = PublicDataContainer.consommation_stats_service().get_by_lands(
             lands=diagnostic_communes_as_lands,
             start_date=int(diagnostic.analyse_start_date),
             end_date=int(diagnostic.analyse_end_date),
@@ -501,15 +501,15 @@ def generate_theme_map_conso(self, project_id) -> None:
 
         data = [
             {
-                "mpoly": land_progression.land.mpoly,
-                "level": sum(annual_conso.per_mille_of_area for annual_conso in land_progression.consommation),
+                "mpoly": conso.land.mpoly,
+                "level": conso.total_percent_of_area,
             }
-            for land_progression in land_progressions
+            for conso in consommation_stats
         ]
 
         image_title = (
             f"Taux de consommation d'espaces des communes du territoire «{diagnostic.land.name}» "
-            f"entre {diagnostic.analyse_start_date} et {diagnostic.analyse_end_date} (en ‰ - pour mille)"
+            f"entre {diagnostic.analyse_start_date} et {diagnostic.analyse_end_date} (en %)"
         )
 
         img_data = get_img(

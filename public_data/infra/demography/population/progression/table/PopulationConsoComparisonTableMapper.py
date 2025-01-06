@@ -18,11 +18,8 @@ class PopulationConsoComparisonTableMapper:
         population_comparison_stats: list[PopulationStatistics],
         population_comparison_progression: list[AnnualPopulationCollection],
     ):
-        first_land_consommation = consommation_comparison_stats[0]
-
-        land_type_label = first_land_consommation.land.land_type_label
-
-        headers = [land_type_label] + [
+        headers = [
+            "",
             "Consommation (ha)",
             "Évolution démographique (hab)",
             "Évolution démographique (%)",

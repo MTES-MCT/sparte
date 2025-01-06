@@ -5,6 +5,7 @@ import exportDataModule from 'highcharts/modules/export-data';
 import highchartsAccessibility from 'highcharts/modules/accessibility';
 import DependencyWheel from 'highcharts/modules/dependency-wheel';
 import Sankey from 'highcharts/modules/sankey';
+import Treemap from 'highcharts/modules/treemap'
 
 // Importation du type personnalisé lineargauge
 import '../highcharts/lineargauge.js';
@@ -14,6 +15,7 @@ exportDataModule(Highcharts);
 highchartsAccessibility(Highcharts);
 Sankey(Highcharts);
 DependencyWheel(Highcharts);
+Treemap(Highcharts);
 
 const useHighcharts = (chartIds: string[], loading: boolean) => {
     useEffect(() => {

@@ -196,7 +196,7 @@
                         </p>
                         <p class="fr-text--sm"> 
                             Sur cette même période,
-                            <strong>{{ consommation_total|floatformat:2 }} ha d'espaces NAF ont été consommés</strong>, soit {{ consommation_total_percent|floatformat:2 }}% du territoire.
+                            <strong>{{ consommation_total|floatformat:2 }} ha d'espaces NAF ont été consommés</strong>, soit {{ consommation_total_percent_of_area|floatformat:2 }}% du territoire.
                         </p>
                     </div>
                 </div>
@@ -347,8 +347,8 @@
                 {% include "project/components/widgets/source_majic.html" %}  
                 <h6 class="fr-mt-2w">Calcul</h6>
                 <p class="fr-text--sm">
-                    Pour chaque territoire, la consommation d'espace annuelle est multipliée par 1000 et divisée par
-                    sa surface totale. Le résultat est exprimé en pour mille (‰).
+                    Pour chaque territoire, la consommation d'espace annuelle est multipliée par 100 et divisée par
+                    sa surface totale.
                 </p>
         
                 <h6 class="fr-mt-2w">Données</h6>

@@ -37,8 +37,6 @@ __all__ = [
     "ImperProgressionByCouvertureChartExport",
     "ImperProgressionByUsageChart",
     "ImperProgressionByUsageChartExport",
-    "SurfaceChart",
-    "SurfaceChartExport",
     "UsageChangeWheelChart",
     "UsagePieChart",
     "UsagePieChartExport",
@@ -120,7 +118,6 @@ from .NetArtifComparaisonChart import (
     NetArtifComparaisonChartExport,
 )
 from .ObjectiveChart import ObjectiveChart, ObjectiveChartExport
-from .SurfaceChart import SurfaceChart, SurfaceChartExport
 from .UsageChangeWheelChart import UsageChangeWheelChart
 from .UsagePieChart import UsagePieChart, UsagePieChartExport
 from .UsageProgressionChart import UsageProgressionChart, UsageProgressionChartExport
