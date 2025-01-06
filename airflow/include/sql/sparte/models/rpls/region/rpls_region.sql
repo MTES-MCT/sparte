@@ -1,17 +1,16 @@
 {{ config(materialized='table') }}
 
+{% for year in range(2013, 2024) %}
 SELECT
-    "LIBREG"::text                      as region_name,
-    LPAD("REG"::text, 2, '0')           as region_code,
-	{{ coalesce_rpls() }}
+    region_name,
+    region_code,
+    {{ year }} as year,
+    total_{{ year }} as total,
+    ROUND(total_{{ year }} * taux_vacants_{{ year }} / 100) as vacants,
+    taux_vacants_{{ year }} as taux_vacants
 FROM
-    {{ source('public', 'rpls_rpls_region') }}
-WHERE "LIBREG" NOT IN
-(
-    'Total DROM',
-    'Total France métropolitaine',
-    'Total France entière',
-    'Total France métropolitaine (hors IDF)',
-    'Total France entière (hors IDF)',
-    'Mayotte'
-)
+    {{ ref('raw_rpls_region')}}
+{% if not loop.last %}
+UNION
+{% endif %}
+{% endfor %}
