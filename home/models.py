@@ -60,7 +60,7 @@ class Newsletter(models.Model):
         return "".join(choices(alphabet, k=25))
 
     def get_confirmation_url(self):
-        return get_url_with_domain(reverse("home:nwl-confirmation", kwargs={"token": self.confirm_token}))
+        return get_url_with_domain(reverse("home:nwl-validation", kwargs={"token": self.confirm_token}))
 
     def confirm(self):
         self.confirmation_date = timezone.now()

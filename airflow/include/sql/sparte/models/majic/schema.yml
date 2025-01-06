@@ -29,7 +29,42 @@ models:
       - relationships:
           to: ref('commune')
           field: code
-
+  - name: period_consommation_departement
+    columns:
+    - name: departement
+      data_tests:
+      - not_null
+      - has_all_departements
+      - relationships:
+          to: ref('departement')
+          field: code
+  - name: period_consommation_epci
+    columns:
+    - name: epci
+      data_tests:
+      - not_null
+      - has_all_epcis
+      - relationships:
+          to: ref('epci')
+          field: code
+  - name: period_consommation_region
+    columns:
+    - name: region
+      data_tests:
+      - not_null
+      - has_all_regions
+      - relationships:
+          to: ref('region')
+          field: code
+  - name: period_consommation_scot
+    columns:
+    - name: scot
+      data_tests:
+      - not_null
+      - has_all_scots
+      - relationships:
+          to: ref('scot')
+          field: id_scot
 sources:
   - name: public
     tables:

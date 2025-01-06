@@ -39,8 +39,6 @@ def map_tasks(project_id: str) -> List[celery.Task]:  # noqa: C901
             map_tasks.append(tasks.generate_theme_map_understand_artif.si(project.id))
 
     if project.has_complete_uniform_ocsge_coverage and project.has_zonage_urbanisme:
-        if not project.async_theme_map_gpu_done:
-            map_tasks.append(tasks.generate_theme_map_gpu.si(project.id))
         if not project.async_theme_map_fill_gpu_done:
             map_tasks.append(tasks.generate_theme_map_fill_gpu.si(project.id))
 

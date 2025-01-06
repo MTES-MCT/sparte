@@ -1,4 +1,4 @@
-import React, { useEffect, ChangeEvent, useState } from 'react';
+import React, { useEffect, ChangeEvent, useState, useRef } from 'react';
 import styled from 'styled-components';
 import { useSearchTerritoryQuery } from '@services/api';
 import useDebounce from '@hooks/useDebounce';
@@ -7,6 +7,7 @@ import Loader from '@components/ui/Loader';
 
 interface SearchBarProps {
     createUrl: string;
+    origin?: string;
 }
 
 export interface Territory {
@@ -114,7 +115,6 @@ const Badge = styled.p`
     text-transform: none;
 `;
 
-
 const NoResultsMessage = styled.div`
     padding: 0.5rem;
     font-size: 0.9em;
@@ -122,12 +122,8 @@ const NoResultsMessage = styled.div`
     text-align: center;
 `;
 
-const HighlightedText = styled.span`
-    font-weight: bold;
-    color: ${activeColor};
-`;
-
-const SearchBar: React.FC<SearchBarProps> = ({ createUrl }) => {
+const SearchBar: React.FC<SearchBarProps> = ({ createUrl, origin }) => {
+    const searchContainerRef = useRef<HTMLDivElement>(null);
     const [query, setQuery] = useState<string>('');
     const [isFocused, setIsFocused] = useState<boolean>(false);
     const [data, setData] = useState<Territory[] | undefined>(undefined);
@@ -147,6 +143,20 @@ const SearchBar: React.FC<SearchBarProps> = ({ createUrl }) => {
         }
     }, [isFetching, queryData, debouncedQuery, shouldQueryBeSkipped]);
 
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (searchContainerRef.current && !searchContainerRef.current.contains(event.target as Node)) {
+                setIsFocused(false);
+                setData(undefined);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
+
     const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
         const newQuery = event.target.value;
         setQuery(newQuery);
@@ -154,9 +164,11 @@ const SearchBar: React.FC<SearchBarProps> = ({ createUrl }) => {
 
     const handleBlur = () => {
         setTimeout(() => {
-            setQuery('');
-            setIsFocused(false);
-            setData(undefined);
+            if (!isSubmitting) {
+                setQuery('');
+                setIsFocused(false);
+                setData(undefined);
+            }
         }, 150);
     };
 
@@ -165,6 +177,20 @@ const SearchBar: React.FC<SearchBarProps> = ({ createUrl }) => {
         if (isSubmitting || disabled) return;
     
         setIsSubmitting(true);
+
+        if (origin === "home" && window.trackEvent) {
+            window.trackEvent(
+                'north_star_activation_funnel',
+                'search_territory',
+                'step_1_north_star_activation_funnel'
+            );
+        } else if (origin === "rapport-local" && window.trackEvent) {
+            window.trackEvent(
+                'local_report_download_funnel',
+                'search_territory',
+                'local_report_home_search_territory_selected'
+            );
+        }
     
         const form = document.createElement('form');
         form.action = createUrl;
@@ -198,7 +224,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ createUrl }) => {
     return (
         <>
             <Overlay $visible={isFocused} />
-            <SearchContainer>
+            <SearchContainer ref={searchContainerRef}>
                 <Icon className="bi bi-search" />
                 <Input
                     type="text"
@@ -217,8 +243,9 @@ const SearchBar: React.FC<SearchBarProps> = ({ createUrl }) => {
                                 const isDisabled = territory.area === 0;
                                 return (
                                     <ResultItem
-                                        key={territory.id}
+                                        key={territory.source_id}
                                         $disabled={isDisabled}
+                                        onMouseDown={(e) => e.preventDefault()}
                                         onClick={() => createDiagnostic(territory.public_key, isDisabled)}
                                     >
                                         <div>

@@ -11,9 +11,10 @@ const searchBar = document.getElementById('react-search-bar')
 if (searchBar)
 {
   const createUrl = searchBar.dataset.createUrl;
+  const origin = searchBar.dataset.origin;
   createRoot(searchBar).render(
     <Provider store={store}>
-      <SearchBar createUrl={createUrl}/>
+      <SearchBar createUrl={createUrl} origin={origin} />
     </Provider>,
   )
 }

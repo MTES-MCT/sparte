@@ -247,7 +247,7 @@ def generate_cover_image(self, project_id) -> None:
         gdf_emprise.buffer(250000).plot(ax=ax, facecolor="none", edgecolor="none")
         gdf_emprise.plot(ax=ax, facecolor="none", edgecolor="black")
         cx.add_basemap(ax, source=settings.OPENSTREETMAP_URL)
-
+        cx.add_attribution(ax, text=settings.OPENSTREETMAP_ATTRIBUTION)
         img_data = io.BytesIO()
         plt.savefig(
             img_data,
@@ -417,7 +417,7 @@ def send_word_diagnostic(self, request_id) -> None:
         diagnostic_name = {
             RequestedDocumentChoices.RAPPORT_COMPLET: req.project.name,
             RequestedDocumentChoices.RAPPORT_LOCAL: req.project.land.name,
-            RequestedDocumentChoices.RAPPORT_CONSO: req.project.land.name,
+            RequestedDocumentChoices.RAPPORT_CONSO: req.project.name,
         }[req.requested_document]
 
         email = SibTemplateEmail(
@@ -469,11 +469,12 @@ def get_img(queryset, color: str, title: str) -> io.BytesIO:
         cmap=color,
         alpha=0.5,
         edgecolor="k",
-        legend_kwds={"loc": "lower left"},
+        legend_kwds={"loc": "lower right"},
     )
     ax.add_artist(ScaleBar(1))
     ax.set_title(title)
     cx.add_basemap(ax, source=settings.OPENSTREETMAP_URL, zoom_adjust=1, alpha=0.95)
+    cx.add_attribution(ax, text=settings.OPENSTREETMAP_ATTRIBUTION)
 
     img_data = io.BytesIO()
     plt.savefig(img_data, bbox_inches="tight", format="jpg")
@@ -668,7 +669,7 @@ def generate_theme_map_understand_artif(self, project_id) -> None:
             loc="left",
         )
         cx.add_basemap(ax, source=settings.OPENSTREETMAP_URL, zoom_adjust=1, alpha=0.95)
-        cx.add_attribution(ax, text="Données: OCS GE (IGN)")
+        cx.add_attribution(ax, text=f"Données : OCS GE (IGN) - Fond de carte : {settings.OPENSTREETMAP_ATTRIBUTION}")
 
         img_data = io.BytesIO()
         plt.savefig(img_data, bbox_inches="tight", format="jpg")
@@ -692,64 +693,6 @@ def generate_theme_map_understand_artif(self, project_id) -> None:
 
     finally:
         logger.info("End generate_theme_map_understand_artif, project_id=%d", project_id)
-
-
-@shared_task(bind=True, max_retries=5)
-def generate_theme_map_gpu(self, project_id) -> None:
-    logger.info("Start generate_theme_map_gpu, project_id=%d", project_id)
-    try:
-        diagnostic = Project.objects.get(id=int(project_id))
-
-        geom = diagnostic.combined_emprise.transform("3857", clone=True)
-        srid, wkt = geom.ewkt.split(";")
-        polygons = shapely.wkt.loads(wkt)
-        gdf_emprise = geopandas.GeoDataFrame({"geometry": [polygons]}, crs="EPSG:3857")
-
-        data = {"color": [], "geometry": []}
-
-        for zone_urba in ZoneUrba.objects.intersect(diagnostic.combined_emprise):
-            srid, wkt = zone_urba.intersection.ewkt.split(";")
-            polygons = shapely.wkt.loads(wkt)
-            data["geometry"].append(polygons)
-            data["color"].append((*[_ / 255 for _ in zone_urba.get_color()], 0.9))
-
-        zone_urba_gdf = geopandas.GeoDataFrame(data, crs="EPSG:4326").to_crs(epsg=3857)
-
-        fig, ax = plt.subplots(figsize=(15, 10))
-        plt.axis("off")
-        fig.set_dpi(150)
-
-        zone_urba_gdf.plot(ax=ax, color=zone_urba_gdf["color"])
-        gdf_emprise.plot(ax=ax, facecolor="none", edgecolor="black")
-        ax.add_artist(ScaleBar(1))
-        ax.set_title(
-            f"Les zones d'urbanisme du territoire «{diagnostic.territory_name}» en {diagnostic.analyse_end_date}"
-        )
-        cx.add_basemap(ax, source=settings.OPENSTREETMAP_URL)
-
-        img_data = io.BytesIO()
-        plt.savefig(img_data, bbox_inches="tight", format="jpg")
-        plt.close()
-        img_data.seek(0)
-
-        race_protection_save_map(
-            diagnostic.pk,
-            "async_theme_map_gpu_done",
-            "theme_map_gpu",
-            f"theme_map_gpu_{project_id}.jpg",
-            img_data,
-        )
-
-    except Project.DoesNotExist:
-        logger.error(f"project_id={project_id} does not exist")
-
-    except Exception as exc:
-        logger.error(exc)
-        logger.exception(exc)
-        self.retry(exc=exc, countdown=300)
-
-    finally:
-        logger.info("End generate_theme_map_gpu, project_id=%d", project_id)
 
 
 @shared_task(bind=True, max_retries=5)
@@ -799,6 +742,7 @@ def generate_theme_map_fill_gpu(self, project_id) -> None:
             ax.add_artist(ScaleBar(1))
             ax.set_title("Il n'y a pas de zone U ou AU")
             cx.add_basemap(ax, source=settings.OPENSTREETMAP_URL)
+            cx.add_attribution(ax, text=settings.OPENSTREETMAP_ATTRIBUTION)
 
             img_data = io.BytesIO()
             plt.savefig(img_data, bbox_inches="tight", format="jpg")

@@ -1,11 +1,9 @@
-from public_data.domain.consommation.progression.ConsommationProgression import (
-    ConsommationProgressionLand,
-)
+from public_data.domain.consommation.entity import ConsommationCollection
 
 
 class ConsoComparisonExportTableMapper:
     @staticmethod
-    def map(consommation_progression: list[ConsommationProgressionLand]):
+    def map(consommation_progression: list[ConsommationCollection]):
         first_land_consommation = consommation_progression[0]
         headers = [str(object=conso.year) for conso in first_land_consommation.consommation] + ["Total"]
 

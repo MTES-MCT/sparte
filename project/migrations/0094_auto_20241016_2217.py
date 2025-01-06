@@ -4,26 +4,50 @@ from django.db import migrations
 from public_data.models import AdminRef
 
 
-def set_land_id_from_primary_keys_to_natural_key(apps, schema_editor):
+def set_land_id_from_primary_keys_to_natural_key(apps, schema_editor):  # noqa: C901
     Project = apps.get_model("project", "Project")
 
     for project in Project.objects.all():
         land_type = project.land_type
         klass = None
+
+        if not project.land_id:
+            project.delete()
+            continue
+        if project.land_id and "," in str(project.land_id):
+            project.delete()
+            continue
         if land_type == AdminRef.COMMUNE:
-            klass = apps.get_model("public_data", "Commune")
-            new_land_id = klass.objects.get(id=project.land_id).insee
+            try:
+                klass = apps.get_model("public_data", "Commune")
+                new_land_id = klass.objects.get(id=project.land_id).insee
+            except klass.DoesNotExist:
+                project.delete()
+                continue
         elif land_type == AdminRef.EPCI:
-            klass = apps.get_model("public_data", "Epci")
-            new_land_id = klass.objects.get(id=project.land_id).source_id
+            try:
+                klass = apps.get_model("public_data", "Epci")
+                new_land_id = klass.objects.get(id=project.land_id).source_id
+            except klass.DoesNotExist:
+                project.delete()
+                continue
         elif land_type == AdminRef.DEPARTEMENT:
-            klass = apps.get_model("public_data", "Departement")
-            new_land_id = klass.objects.get(id=project.land_id).source_id
+            try:
+                klass = apps.get_model("public_data", "Departement")
+                new_land_id = klass.objects.get(id=project.land_id).source_id
+            except klass.DoesNotExist:
+                project.delete()
+                continue
         elif land_type == AdminRef.REGION:
-            klass = apps.get_model("public_data", "Region")
-            new_land_id = klass.objects.get(id=project.land_id).source_id
+            try:
+                klass = apps.get_model("public_data", "Region")
+                new_land_id = klass.objects.get(id=project.land_id).source_id
+            except klass.DoesNotExist:
+                project.delete()
+                continue
         else:
-            raise ValueError(f"Unknown land type: {land_type}")
+            project.delete()
+            continue
 
         project.land_id = new_land_id
         project.save()

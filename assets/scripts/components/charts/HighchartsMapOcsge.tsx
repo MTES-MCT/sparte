@@ -137,10 +137,10 @@ const HighchartsMapOcsge: React.FC = () => {
       },
     ],
     mapNavigation: {
-      enabled: true,
-      buttonOptions: {
-        verticalAlign: 'bottom',
-      },
+      enabled: false,
+    },
+    exporting: {
+      enabled: false,
     },
     mapView: {
       projection: {

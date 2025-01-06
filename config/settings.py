@@ -22,7 +22,7 @@ from django.core.exceptions import ImproperlyConfigured
 from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.redis import RedisIntegration
 
-OFFICIAL_VERSION = "8.3.0"
+OFFICIAL_VERSION = "8.4.0"
 
 
 root = environ.Path(__file__) - 2  # get root of the project
@@ -97,7 +97,6 @@ PROJECT_APPS = [
     "home.apps.HomeConfig",
     "metabase.apps.MetabaseConfig",
     "brevo.apps.BrevoConfig",
-    "documentation.apps.DocumentationConfig",
     "crisp.apps.CrispConfig",
 ]
 
@@ -580,6 +579,7 @@ ORTHOPHOTO_URL = (
     "&TILECOL={x}&TILEROW={y}&TILEMATRIX={z}"
 )
 OPENSTREETMAP_URL = "https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+OPENSTREETMAP_ATTRIBUTION = "© OpenStreetMap"
 
 # MATTERMOST SETTINGS
 
@@ -660,3 +660,7 @@ LOGGING = {
 # CRISP
 
 CRISP_WEBHOOK_SECRET_KEY = env.str("CRISP_WEBHOOK_SECRET_KEY")
+
+X_FRAME_OPTIONS = "SAMEORIGIN"
+
+XS_SHARING_ALLOWED_METHODS = ["POST", "GET", "OPTIONS", "PUT", "DELETE"]

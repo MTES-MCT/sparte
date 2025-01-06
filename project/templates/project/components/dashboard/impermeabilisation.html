@@ -8,7 +8,7 @@
         <div class="fr-col-12">
             <div class="bg-white fr-p-2w h-100">
                 <div class="d-flex justify-content-end align-items-center fr-mb-2w">
-                    {% include "project/components/widgets/chart_buttons.html" with chart="imper_nette_chart" %}
+                    {% include "project/components/widgets/chart_buttons.html" with chart="imper_nette_chart" show_fullscreen=True %}
                 </div>
                 <div id="imper_nette_chart"></div>
             </div>
@@ -29,7 +29,7 @@
             </div>
             <div class="fr-collapse" id="target-data-2">
                 <h6 class="fr-mt-2w">Source</h6>
-                <p class="fr-text--sm">Données d'OCcupation des Sols à Grande Echelle (OCS GE) de l'IGN, sur la période d'analyse traduite grâce à la matrice de passage.</p>
+                {% include "project/components/widgets/source_ocsge.html" %}
 
                 <h6 class="fr-mt-2w">Calcul</h6>
                 <p class="fr-text--sm">Imperméabilisation nette = Imperméabilisation sur la période - Désimperméabilisation sur la période.</p>
@@ -51,7 +51,7 @@
         <div class="fr-col-12 fr-col-lg-4">
             <div class="bg-white fr-p-2w">
                 <div class="d-flex justify-content-end align-items-center fr-mb-2w">
-                    {% include "project/components/widgets/chart_buttons.html" with chart="imper_repartition_couv_chart" %}
+                    {% include "project/components/widgets/chart_buttons.html" with chart="imper_repartition_couv_chart" show_fullscreen=True %}
                     <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#couvImperSol" data-toggle="tooltip" title="Astuces pour lire le graphique"></button>
                 </div>
                 <div id="imper_repartition_couv_chart"></div>
@@ -60,7 +60,7 @@
         <div class="fr-col-12 fr-col-lg-8">
             <div class="bg-white fr-p-2w">
                 <div class="d-flex justify-content-end align-items-center fr-mb-2w">
-                    {% include "project/components/widgets/chart_buttons.html" with chart="imper_progression_couv_chart" %}
+                    {% include "project/components/widgets/chart_buttons.html" with chart="imper_progression_couv_chart" show_fullscreen=True %}
                     <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#couvImperSol" data-toggle="tooltip" title="Astuces pour lire le graphique"></button>
                 </div>
                 <div id="imper_progression_couv_chart"></div>
@@ -82,7 +82,7 @@
             </div>
             <div class="fr-collapse" id="target-data-couv">
                 <h6 class="fr-mt-2w">Source</h6>
-                <p class="fr-text--sm">Données d'OCcupation des Sols à Grande Echelle (OCS GE) de l'IGN, sur la période d'analyse (millésime min : {{ project.first_year_ocsge }}, millésime max : {{ project.last_year_ocsge }}).</p>
+                {% include "project/components/widgets/source_ocsge.html" %}
 
                 <h6 class="fr-mt-2w">Calcul</h6>
                 <p class="fr-text--sm">OCS GE traduite grâce à la matrice de passage.</p>
@@ -105,7 +105,7 @@
         <div class="fr-col-12 fr-col-lg-4">
             <div class="bg-white fr-p-2w">
                 <div class="d-flex justify-content-end align-items-center fr-mb-2w">
-                    {% include "project/components/widgets/chart_buttons.html" with chart="imper_repartition_usage_chart" %}
+                    {% include "project/components/widgets/chart_buttons.html" with chart="imper_repartition_usage_chart" show_fullscreen=True %}
                     <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#usageImperSol" data-toggle="tooltip" title="Astuces pour lire le graphique"></button>
                 </div>
                 <div id="imper_repartition_usage_chart"></div>
@@ -114,7 +114,7 @@
         <div class="fr-col-12 fr-col-lg-8">
             <div class="bg-white fr-p-2w">
                 <div class="d-flex justify-content-end align-items-center fr-mb-2w">
-                    {% include "project/components/widgets/chart_buttons.html" with chart="imper_progression_usage_chart" %}
+                    {% include "project/components/widgets/chart_buttons.html" with chart="imper_progression_usage_chart" show_fullscreen=True %}
                     <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#usageImperSol" data-toggle="tooltip" title="Astuces pour lire le graphique"></button>
                 </div>
                 <div id="imper_progression_usage_chart"></div>
@@ -136,7 +136,7 @@
             </div>
             <div class="fr-collapse" id="target-data-usage">
                 <h6 class="fr-mt-2w">Source</h6>
-                <p class="fr-text--sm">Données d'OCcupation des Sols à Grande Echelle (OCS GE) de l'IGN, sur la période d'analyse (millésime min : {{ project.first_year_ocsge }}, millésime max : {{ project.last_year_ocsge }}).</p>
+                {% include "project/components/widgets/source_ocsge.html" %}
 
                 <h6 class="fr-mt-2w">Calcul</h6>
                 <p class="fr-text--sm">OCS GE traduite grâce à la matrice de passage.</p>
@@ -162,8 +162,7 @@
                     <span class="fr-fi-arrow-right-line fr-fi--lg"></span>
                     Astuces - Familles de couverture des sols des surfaces imperméabilisées
                 </h1>
-                <p class="fr-text--sm">Avec le bouton <span class="fr-icon-drag-move-2-line fr-icon--sm" aria-hidden="true"></span>, vous pouvez afficher le graphique en plein écran.</p>
-                <p class="fr-text--sm">Avec le bouton <span class="fr-icon-download-line fr-icon--sm" aria-hidden="true"></span>, vous pouvez télécharger le graphique sous forme d'image (utilisez PNG si vous ne savez pas lequel choisir).</p>
+                {% include "project/components/widgets/chart_tips_buttons.html" %}
                 <p class="fr-text--sm">Exemple de lecture: 8% des nouvelles surfaces imperméabilisées le sont pour des Zones bâties.</p>
                 <p class="fr-text--sm">Vous pouvez analyser la répartition des surfaces imperméabilisées sur la période en pourcentage avec le camembert, ou en volume au dernier millésime avec l'histogramme.</p>
             </div>
@@ -183,8 +182,7 @@
                     <span class="fr-fi-arrow-right-line fr-fi--lg"></span>
                     Astuces - Graphique grandes familles d'usages du sol des surfaces imperméabilisées
                 </h1>
-                <p class="fr-text--sm">Avec le bouton <span class="fr-icon-drag-move-2-line fr-icon--sm" aria-hidden="true"></span>, vous pouvez afficher le graphique en plein écran.</p>
-                <p class="fr-text--sm">Avec le bouton <span class="fr-icon-download-line fr-icon--sm" aria-hidden="true"></span>, vous pouvez télécharger le graphique sous forme d'image (utilisez PNG si vous ne savez pas lequel choisir).</p>
+                {% include "project/components/widgets/chart_tips_buttons.html" %}
                 <p class="fr-text--sm">Exemple de lecture: 55% des nouvelles surfaces imperméabilisées le sont pour des Zones résidentielles.</p>
                 <p class="fr-text--sm">Vous pouvez analyser la répartition des surfaces imperméabilisées sur la période en pourcentage avec le camembert, ou en volume au dernier millésime avec l'histogramme.</p>
             </div>

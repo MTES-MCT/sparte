@@ -6,6 +6,9 @@ import highchartsAccessibility from 'highcharts/modules/accessibility';
 import DependencyWheel from 'highcharts/modules/dependency-wheel';
 import Sankey from 'highcharts/modules/sankey';
 
+// Importation du type personnalisé lineargauge
+import '../highcharts/lineargauge.js';
+
 highchartsExporting(Highcharts);
 exportDataModule(Highcharts);
 highchartsAccessibility(Highcharts);
@@ -15,12 +18,6 @@ DependencyWheel(Highcharts);
 const useHighcharts = (chartIds: string[], loading: boolean) => {
     useEffect(() => {
         if (!loading) {
-            Highcharts.setOptions({
-                exporting: {
-                    url: document.querySelector('meta[name="highcharts-server-url"]')?.getAttribute('content')
-                }
-            });
-
             chartIds.forEach((chartId) => {
                 const chartDataElement = document.getElementById(`${chartId}_data`);   
                 if (chartDataElement) {

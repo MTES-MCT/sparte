@@ -38,16 +38,10 @@ OCSGE_CREDITS = {
     "position": DEFAULT_CREDIT_POSITION,
 }
 
-PAGE_INDICATEUR_URL = "https://artificialisation.developpement-durable.gouv.fr/mesurer-lartificialisation-avec-locsge/acceder-aux-analyses-realisees-partir-des-donnees-ocsge"  # noqa E501
-IMPERMEABLE_OCSGE_CREDITS_ANCHOR_FORMATTED = format_anchor_for_credits(
-    link=PAGE_INDICATEUR_URL,
-    text="fiche indicateur du portail de l'artificialisation",
-)
-
 IMPERMEABLE_OCSGE_CREDITS = {
     **OCSGE_CREDITS,
     "position": get_multiple_line_credit_position(line_count=3),
-    "text": f"Source : OCS GE (IGN)<br/>Calcul de l'imperméabilisation issu de la<br/>{IMPERMEABLE_OCSGE_CREDITS_ANCHOR_FORMATTED}",  # noqa E501
+    "text": "Source : OCS GE (IGN)",  # noqa E501
 }
 
 INSEE_CREDITS = {

@@ -90,7 +90,7 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                         path={urls.trajectoires}
                                         element={
                                             <RouteWrapper
-                                                title="Trajectoire ZAN"
+                                                title="Trajectoire de sobriété foncière"
                                                 consoCorrectionStatus={data.consommation_correction_status}
                                             >
                                                 <Trajectoires endpoint={urls.trajectoires} />

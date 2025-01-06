@@ -3,7 +3,6 @@ from django.contrib.postgres.fields import ArrayField
 from django.contrib.postgres.search import TrigramSimilarity
 from django.db.models.functions import Lower
 
-from public_data.models.cerema import Cerema
 from public_data.models.enums import SRID
 from utils.db import IntersectManager
 
@@ -44,9 +43,6 @@ class Departement(LandMixin, GetDataFromCeremaMixin, models.Model):
     def official_id(self) -> str:
         return self.source_id
 
-    def get_qs_cerema(self):
-        return Cerema.objects.filter(dept_id=self.source_id)
-
     def get_cities(self):
         return self.commune_set.all()
 
@@ -58,10 +54,5 @@ class Departement(LandMixin, GetDataFromCeremaMixin, models.Model):
         qs = cls.objects.annotate(similarity=TrigramSimilarity(Lower("name__unaccent"), needle.lower()))
         qs = qs.filter(similarity__gt=0.15)  # Filtrer par un score minimum de similarité
         qs = qs.order_by("-similarity")  # Trier par score décroissant
-
-        if region:
-            qs = qs.filter(region=region)
-        if departement:
-            qs = qs.filter(id=departement.id)
 
         return qs
