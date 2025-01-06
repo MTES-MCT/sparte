@@ -2,21 +2,20 @@
 
 SELECT
     year,
-    code_commune,
+    code_departement,
     logements_autorises,
     logements_commences,
     surface_de_plancher_autorisee,
     surface_de_plancher_commencee
-FROM {{ ref('raw_logement_commune') }}
+FROM {{ ref('raw_logement_departement') }}
 LEFT JOIN
-    {{ ref('commune') }} as commune
+    {{ ref('departement') }} as departement
 ON
-    commune.code = code_commune
+    departement.code = code_departement
 WHERE
-    commune.code is not null AND
+    departement.code is not null AND
     year >= 2019 AND
-    code_commune not in {{ commune_changed_since('2019') }} AND
     type_logement = 'Tous Logements'
 ORDER BY
-    code_commune,
+    code_departement,
     year

@@ -1,0 +1,13 @@
+
+version: 2
+
+models:
+  - name: logement_departement
+    columns:
+    - name: code_departement
+      data_tests:
+      - not_null
+      - has_all_departements
+      - relationships:
+          to: ref('departement')
+          field: code

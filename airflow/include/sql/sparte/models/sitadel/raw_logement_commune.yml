@@ -1,0 +1,37 @@
+
+version: 2
+
+type_de_changement: &type_de_changement
+  values : [
+    "Résidence",
+    "Individuel groupé",
+    "Individuel pur",
+    "Tous Logements",
+    "Collectif"
+  ]
+
+models:
+  - name: raw_logement_commune
+    columns:
+    - name: year
+      data_tests:
+      - not_null
+    - name: code_commune
+      data_tests:
+      - not_null
+    - name: type_logement
+      data_tests:
+      - not_null
+      - accepted_values: *type_de_changement
+    - name: logements_autorises
+      data_tests:
+      - not_null
+    - name: logements_commences
+      data_tests:
+      - not_null
+    - name: surface_de_plancher_autorisee
+      data_tests:
+      - not_null
+    - name: surface_de_plancher_commencee
+      data_tests:
+      - not_null
