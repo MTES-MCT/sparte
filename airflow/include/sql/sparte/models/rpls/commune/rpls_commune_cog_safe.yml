@@ -1,0 +1,14 @@
+version: 2
+
+models:
+  - name: rpls_commune_cog_safe
+    columns:
+      - name: commune_name
+        data_tests:
+          - not_null
+      - name: commune_code
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('commune')
+              field: code

@@ -1,15 +1,15 @@
 version: 2
 
 models:
-  - name: rpls_national_cog_safe
+  - name: rpls_region
     columns:
-      - name: commune_name
+      - name: region_name
         data_tests:
           - not_null
-      - name: commune_code
+      - name: region_code
         data_tests:
           - not_null
           - unique
           - relationships:
-              to: ref('commune')
+              to: ref('region')
               field: code

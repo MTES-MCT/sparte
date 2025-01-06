@@ -1,4 +1,4 @@
 {{ config(materialized='table') }}
 
-SELECT * FROM {{ ref('rpls_national') }}
+SELECT * FROM {{ ref('rpls_commune_row_based') }}
 {{ where_commune_not_changed('commune_code', '2022') }}

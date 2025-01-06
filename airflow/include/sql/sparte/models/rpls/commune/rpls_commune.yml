@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: rpls_national
+  - name: rpls_commune
     columns:
       - name: commune_name
         data_tests:

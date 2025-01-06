@@ -20,6 +20,7 @@ with occupation_du_sol_zonage_urbanisme_without_surface as (
         zonage.libelle AS zonage_libelle,
         zonage.checksum AS zonage_checksum,
         zonage.gpu_timestamp AS zonage_gpu_timestamp,
+        zonage.surface AS zonage_surface,
         -- les attributs spécifiques aux objets OCS GE sont préfixés par ocsge_
         ocsge.loaded_date AS ocsge_loaded_date,
         -- les attributs communs aux deux tables sont sans préfixe
