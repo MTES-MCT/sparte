@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: rpls_commune
+  - name: raw_rpls_commune
     columns:
       - name: commune_name
         data_tests:
@@ -9,6 +9,4 @@ models:
       - name: commune_code
         data_tests:
           - not_null
-          - relationships:
-              to: ref('commune')
-              field: code
+          - unique

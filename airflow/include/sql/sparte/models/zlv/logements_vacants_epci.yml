@@ -1,14 +1,14 @@
 version: 2
 
 models:
-  - name: rpls_commune
+  - name: logements_vacants_epci
     columns:
-      - name: commune_name
+      - name: epci_name
         data_tests:
           - not_null
-      - name: commune_code
+      - name: code_epci
         data_tests:
           - not_null
           - relationships:
-              to: ref('commune')
+              to: ref('epci')
               field: code

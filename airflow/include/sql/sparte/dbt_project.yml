@@ -46,3 +46,5 @@ models:
       +schema: sitadel
     rpls:
       +schema: rpls
+    zlv:
+      +schema: zlv

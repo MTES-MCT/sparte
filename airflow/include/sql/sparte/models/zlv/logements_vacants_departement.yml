@@ -1,12 +1,12 @@
 version: 2
 
 models:
-  - name: rpls_departement
+  - name: logements_vacants_departement
     columns:
       - name: departement_name
         data_tests:
           - not_null
-      - name: departement_code
+      - name: code_departement
         data_tests:
           - not_null
           - has_all_departements

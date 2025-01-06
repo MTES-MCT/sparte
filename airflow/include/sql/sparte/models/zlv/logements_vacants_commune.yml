@@ -1,12 +1,12 @@
 version: 2
 
 models:
-  - name: rpls_commune
+  - name: logements_vacants_commune
     columns:
       - name: commune_name
         data_tests:
           - not_null
-      - name: commune_code
+      - name: code_commune
         data_tests:
           - not_null
           - relationships:

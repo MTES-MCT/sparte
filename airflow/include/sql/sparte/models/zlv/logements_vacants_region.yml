@@ -1,14 +1,15 @@
 version: 2
 
 models:
-  - name: rpls_commune
+  - name: logements_vacants_region
     columns:
-      - name: commune_name
+      - name: region_name
         data_tests:
           - not_null
-      - name: commune_code
+      - name: code_region
         data_tests:
           - not_null
+          - has_all_regions
           - relationships:
-              to: ref('commune')
+              to: ref('region')
               field: code
