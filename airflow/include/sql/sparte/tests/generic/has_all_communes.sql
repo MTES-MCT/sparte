@@ -1,5 +1,8 @@
 {% test has_all_communes(model, column_name) %}
 
+{{ config(severity = 'error') }}
+
+
 with validation_errors as (
 
     SELECT code from {{ ref('commune') }}

@@ -2,21 +2,20 @@
 
 SELECT
     year,
-    code_commune,
+    code_epci,
     logements_autorises,
     logements_commences,
     surface_de_plancher_autorisee,
     surface_de_plancher_commencee
-FROM {{ ref('raw_logement_commune') }}
+FROM {{ ref('raw_logement_epci') }}
 LEFT JOIN
-    {{ ref('commune') }} as commune
+    {{ ref('epci') }} as epci
 ON
-    commune.code = code_commune
+    epci.code = code_epci
 WHERE
-    commune.code is not null AND
+    epci.code is not null AND
     year >= 2019 AND
-    code_commune not in {{ commune_changed_since('2019') }} AND
     type_logement = 'Tous Logements'
 ORDER BY
-    code_commune,
+    code_epci,
     year

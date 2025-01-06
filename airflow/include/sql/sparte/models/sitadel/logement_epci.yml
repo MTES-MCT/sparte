@@ -1,0 +1,13 @@
+
+version: 2
+
+models:
+  - name: logement_epci
+    columns:
+    - name: code_epci
+      data_tests:
+      - not_null
+      - has_all_epcis
+      - relationships:
+          to: ref('epci')
+          field: code
