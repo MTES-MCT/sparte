@@ -9,3 +9,10 @@ g++
 wget
 p7zip-full
 postgresql-client
+cmake
+wget
+git
+ca-certificates
+build-essential
+libsqlite3-dev
+zlib1g-dev

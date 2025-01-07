@@ -72,7 +72,7 @@ class ConsoByDeterminantPieChartExport(ConsoByDeterminantPieChart):
             "credits": CEREMA_CREDITS,
             "title": {
                 "text": (
-                    f"Destinations de la consommation d'espace de {self.project.territory_name}"
+                    f"Destinations de la consommation d'espaces NAF de {self.project.territory_name}"
                     f" entre {self.project.analyse_start_date} et {self.project.analyse_end_date} (en ha)"
                 )
             },

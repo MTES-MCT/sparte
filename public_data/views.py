@@ -209,7 +209,7 @@ class OcsgeViewSet(OnlyBoundingBoxMixin, ZoomSimplificationMixin, OptimizedMixin
     optimized_fields = {
         "o.couverture": "code_couverture",
         "o.usage": "code_usage",
-        "o.surface": "surface",
+        "o.surface / 10000": "surface",
         "o.year": "year",
         "pdcs.label_short": "couverture_label_short",
         "pdus.label_short": "usage_label_short",

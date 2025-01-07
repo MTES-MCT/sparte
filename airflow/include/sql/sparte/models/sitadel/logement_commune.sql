@@ -1,12 +1,22 @@
 {{ config(materialized='table') }}
 
 SELECT
-    "ANNEE" as year,
-    "COMM" as code_commune,
-    "TYPE_LGT" as type_logement,
-    coalesce("LOG_AUT", 0) as logements_autorises,
-    coalesce("LOG_COM", 0) as logements_commences,
-    coalesce("SDP_AUT", 0) as surface_de_plancher_autorisee,
-    coalesce("SDP_COM", 0) as surface_de_plancher_commencee
-FROM
-    {{ source('public', 'sitadel_donnees_annuelles_communales_logements') }}
+    year,
+    code_commune,
+    logements_autorises,
+    logements_commences,
+    surface_de_plancher_autorisee,
+    surface_de_plancher_commencee
+FROM {{ ref('raw_logement_commune') }}
+LEFT JOIN
+    {{ ref('commune') }} as commune
+ON
+    commune.code = code_commune
+WHERE
+    commune.code is not null AND
+    year >= 2019 AND
+    code_commune not in {{ commune_changed_since('2019') }} AND
+    type_logement = 'Tous Logements'
+ORDER BY
+    code_commune,
+    year

@@ -1,0 +1,14 @@
+version: 2
+
+models:
+  - name: rpls_epci
+    columns:
+      - name: epci_name
+        data_tests:
+          - not_null
+      - name: epci_code
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('epci')
+              field: code

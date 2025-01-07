@@ -9,7 +9,9 @@
                     <thead>
                         <tr>
                             {% for header in headers %}
-                                <th scope="col">{{ header }}</th>
+                                <th scope="col" class="{% if forloop.first %}fr-text--bold fr-cell--left{% else %}fr-cell--right{% endif %}">
+                                    {{ header }}
+                                </th>
                             {% endfor %}
                         </tr>
                     </thead>
@@ -17,7 +19,9 @@
                         {% for row in data %}
                             <tr>
                                 {% for cell in row %}
-                                    <td>{{ cell }}</td>
+                                    <td class="{% if forloop.first %}fr-text--bold fr-cell--left{% else %}fr-cell--right{% endif %}">
+                                        {{ cell }}
+                                    </td>
                                 {% endfor %}
                             </tr>
                         {% endfor %}

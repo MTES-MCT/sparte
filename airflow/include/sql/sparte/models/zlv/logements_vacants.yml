@@ -1,0 +1,26 @@
+version: 2
+
+models:
+  - name: logements_vacants
+    columns:
+      - name: code_siren
+      - name: land_name
+        data_tests:
+          - not_null
+      - name: land_type
+        data_tests:
+          - not_null
+          - accepted_values:
+              values:
+                - 'Commune'
+                - 'Communauté des Communes'
+                - 'Métropole'
+                - 'Service Déconcentré Régional'
+                - 'Autre'
+                - 'Pôle Équilibre Territorial'
+                - 'Communauté Urbaine'
+                - 'Association'
+                - 'Département'
+                - "Communauté d''Agglomération"
+                - 'Région'
+                - 'Service Déconcentré Départemental'

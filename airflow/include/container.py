@@ -25,7 +25,7 @@ class Container(containers.DeclarativeContainer):
         provides=S3FileSystem,
         key=getenv("AIRFLOW_S3_LOGIN"),
         secret=getenv("AIRFLOW_S3_PASSWORD"),
-        endpoint_url=getenv("AIRFLOW_S3_ENDPOINT_URL"),
+        endpoint_url=getenv("AIRFLOW_S3_ENDPOINT"),
         client_kwargs={
             "region_name": getenv("AIRFLOW_S3_REGION_NAME"),
         },

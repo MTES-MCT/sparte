@@ -182,6 +182,9 @@ models:
           - not_null
   - name: for_app_commune
     columns:
+      - name: competence_planification
+        data_tests:
+          - not_null
       - name: insee
         data_tests:
           - not_null

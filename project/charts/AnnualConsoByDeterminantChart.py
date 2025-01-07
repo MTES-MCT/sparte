@@ -97,7 +97,7 @@ class AnnualConsoByDeterminantChartExport(AnnualConsoByDeterminantChart):
             "credits": CEREMA_CREDITS,
             "title": {
                 "text": (
-                    f"Consommation annuelle d'espace par destination de {self.project.territory_name}"
+                    f"Consommation annuelle d'espaces NAF par destination de {self.project.territory_name}"
                     f" entre {self.project.analyse_start_date} et {self.project.analyse_end_date} (en ha)"
                 )
             },

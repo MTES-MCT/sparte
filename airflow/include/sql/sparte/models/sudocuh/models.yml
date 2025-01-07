@@ -46,3 +46,4 @@ sources:
     tables:
     - name: sudocuh_scot
     - name: sudocuh_scot_communes
+    - name: sudocuh_plan_communal

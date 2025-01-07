@@ -162,7 +162,7 @@ class ProjectReportConsoView(ProjectReportBaseView):
                 "population_evolution_abs": abs(population_stats.evolution),
                 "population_evolution_percent": population_stats.evolution_percent,
                 "consommation_total": consommation_stats.total,
-                "consommation_total_percent": consommation_stats.total_percent,
+                "consommation_total_percent_of_area": consommation_stats.total_percent_of_area,
                 # charts
                 "determinant_per_year_chart": det_chart,
                 "determinant_pie_chart": det_pie_chart,

@@ -53,7 +53,8 @@ select
     end    as surface_artif,
     commune.surface / 10000 as area,
     ST_Transform(commune.geom, 4326) as mpoly,
-    consommation.correction_status as consommation_correction_status
+    consommation.correction_status as consommation_correction_status,
+    competence.competence_planification
 from
     {{ ref('commune') }} as commune
 left join
@@ -72,3 +73,7 @@ left join
     {{ ref("consommation_cog_2024") }} as consommation
     on
         commune.code = consommation.commune_code
+left join
+    {{ ref('competence_plan_commune')}} as competence
+    on
+        commune.code = competence.commune_code

@@ -221,12 +221,10 @@ class BaseRenderer:
         if has_neighbors:
             # Charts
             comparison_chart = charts.AnnualConsoComparisonChartExport(diagnostic)
-            comparison_surface_chart = charts.SurfaceChartExport(diagnostic)
             comparison_relative_chart = charts.AnnualConsoProportionalComparisonChartExport(diagnostic)
             context |= {
                 # Charts
                 "comparison_chart": self.prep_image(comparison_chart.get_temp_image(), width=170),
-                "comparison_surface_chart": self.prep_image(comparison_surface_chart.get_temp_image(), width=170),
                 "comparison_relative_chart": self.prep_image(comparison_relative_chart.get_temp_image(), width=170),
                 # Charts datatables
                 "comparison_data_table": ConsoComparisonExportTableMapper.map(

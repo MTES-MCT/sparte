@@ -1,0 +1,15 @@
+version: 2
+
+models:
+  - name: logements_vacants_region
+    columns:
+      - name: region_name
+        data_tests:
+          - not_null
+      - name: code_region
+        data_tests:
+          - not_null
+          - has_all_regions
+          - relationships:
+              to: ref('region')
+              field: code
