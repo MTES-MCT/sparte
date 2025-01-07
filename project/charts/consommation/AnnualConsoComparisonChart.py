@@ -18,7 +18,7 @@ class AnnualConsoComparisonChart(ProjectChart):
     @property
     def param(self):
         return super().param | {
-            "title": {"text": "Consommation d'espace du territoire et des territoires similaires (en ha)"},
+            "title": {"text": "Consommation d'espaces NAF du territoire et des territoires similaires (en ha)"},
             "yAxis": {"title": {"text": "Consommé (en ha)"}},
             "xAxis": {"type": "category"},
             "tooltip": {
@@ -53,7 +53,7 @@ class AnnualConsoComparisonChartExport(AnnualConsoComparisonChart):
             },
             "title": {
                 "text": (
-                    f"Comparaison de la consommation annuelle d'espace entre {self.project.territory_name} "
+                    f"Comparaison de la consommation annuelle d'espaces NAF entre {self.project.territory_name} "
                     "et les territoires similaires "
                     f"entre {self.project.analyse_start_date} et {self.project.analyse_end_date} (en ha)"
                 )

@@ -61,7 +61,7 @@ class AnnualConsoProportionalComparisonChartExport(AnnualConsoProportionalCompar
             },
             "title": {
                 "text": (
-                    f"Consommation d'espace proportionnelle à la surface de {self.project.territory_name} "
+                    f"Consommation d'espaces NAF relative à la surface de {self.project.territory_name} "
                     "et des territoires similaires "
                     f"entre {self.project.analyse_start_date} et {self.project.analyse_end_date} (en %)"
                 )

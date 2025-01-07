@@ -41,7 +41,7 @@ class AnnualTotalConsoChartExport(AnnualTotalConsoChart):
         return super().param | {
             "title": {
                 "text": (
-                    f"Consommation d'espace à {self.project.territory_name} "
+                    f"Consommation d'espaces NAF à {self.project.territory_name} "
                     f"entre {self.project.analyse_start_date} et {self.project.analyse_end_date} (en ha)"
                 )
             },
