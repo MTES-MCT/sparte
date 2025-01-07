@@ -18,7 +18,7 @@ SELECT
     replace(siren, ' ', '')     as code_siren,
     nom_etablissement           as land_name,
     type                        as land_type,
-    replace(millesime, ' ', '') as year,
+    replace(millesime, ' ', '')::int as year,
     replace("logements_parc-general", ' ', '')::int as logements_parc_general,
     replace("logements_parc-prive", ' ', '')::int as logements_parc_prive,
     replace("logements-vacants_parc-general", ' ', '')::int as logements_vacants_parc_general,

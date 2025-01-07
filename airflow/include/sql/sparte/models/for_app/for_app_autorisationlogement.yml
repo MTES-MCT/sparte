@@ -18,6 +18,9 @@ models:
       - name: year
         data_tests:
           - not_null
+          - has_years_from_to:
+              from_year: 2019
+              to_year: 2023
       - name: logements_autorises
         data_tests:
           - not_null
