@@ -1,0 +1,26 @@
+version: 2
+
+models:
+  - name: for_app_logementvacantsocial
+    columns:
+      - name: land_id
+        data_tests:
+          - not_null
+          - has_all_epcis:
+              severity: warn
+          - has_all_departements
+          - has_all_regions
+          - has_all_communes:
+              severity: warn
+      - name: land_type
+        data_tests:
+          - not_null
+      - name: year
+        data_tests:
+          - not_null
+      - name: logements_parc_social
+        data_tests:
+          - not_null
+      - name: logements_vacants_3mois_parc_social
+        data_tests:
+          - not_null
