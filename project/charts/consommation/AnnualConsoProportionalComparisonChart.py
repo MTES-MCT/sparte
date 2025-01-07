@@ -42,6 +42,14 @@ class AnnualConsoProportionalComparisonChart(ProjectChart):
                 "minColor": "#FFFFFF",
                 "maxColor": "#6a6af4",
             },
+            "legend": {
+                "layout": "horizontal",
+                "align": "center",
+                "verticalAlign": "bottom",
+            },
+            "chart": {
+                "height": "600",
+            },
             "series": self._get_series(),
         }
 
