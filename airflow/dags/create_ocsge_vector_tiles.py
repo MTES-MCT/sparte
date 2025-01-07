@@ -1,8 +1,33 @@
-import os
+import json
 
 import pendulum
 from airflow.decorators import dag, task
-from include.container import Container
+from include.domain.container import Container
+
+
+def get_config():
+    with open("include/domain/data/ocsge/sources.json", "r") as f:
+        sources = json.load(f)
+
+    config = []
+
+    years = set()
+
+    for departement in sources:
+        occupation_du_sol_et_zone_construite = sources[departement]["occupation_du_sol_et_zone_construite"]
+        for year in occupation_du_sol_et_zone_construite:
+            years.add(year)
+
+    for year in years:
+        config.append(
+            {
+                "year": year,
+                "geojson_filename": f"occupation_du_sol_{year}.geojson",
+                "pmtiles_filename": f"occupation_du_sol_{year}.pmtiles",
+            }
+        )
+
+    return config
 
 
 @dag(
@@ -17,70 +42,55 @@ from include.container import Container
 )
 def create_ocsge_vector_tiles():
     bucket_name = "airflow-staging"
+    vector_tiles_dir = "vector_tiles"
 
-    geojsons_file = "/tmp/output.geojsons"
-    pmtiles_file = "/tmp/output.pmtiles"
-    pmtiles_key_on_s3 = f"/{bucket_name}/vector_tiles/75.pmtiles"
+    @task.python()
+    def postgis_to_geojson(entry):
+        year = entry["year"]
+        filename = entry["geojson_filename"]
 
-    @task.bash()
-    def transform_postgis_ocsge_to_geojson_seq():
-        sql = "SELECT * FROM public_ocsge.occupation_du_sol"
-        cmd = [
-            "ogr2ogr",
-            "-f",
-            '"GeoJSONSeq"',
-            geojsons_file,
-            f'"{Container().gdal_dbt_conn().encode()}"',
-            "'public_ocsge.occupation_du_sol'",
-            f'-sql "{sql}"',
-            "-lco RS=YES",
-            # start records with the RS=0x1E character, so as to be compatible with the RFC 8142 standard
-            # this allow tippecanoe to work concurrently with the GeoJSONSeq file
-            "-lco ID_FIELD=uuid",
-        ]
+        return (
+            Container()
+            .sql_to_geojsonseq_on_s3_handler()
+            .export_sql_result_to_geojsonseq_on_s3(
+                sql=f"SELECT * FROM public_ocsge.occupation_du_sol WHERE year = {year}",
+                s3_key=f"{vector_tiles_dir}/{filename}",
+                s3_bucket=bucket_name,
+            )
+        )
 
-        return " ".join(cmd)
+    @task.bash(skip_on_exit_code=110)
+    def geojson_to_pmtiles(entry):
+        local_input = f"/tmp/{entry['geojson_filename']}"
+        local_output = f"/tmp/{entry['pmtiles_filename']}"
+        Container().s3().get_file(f"{bucket_name}/{vector_tiles_dir}/{entry['geojson_filename']}", local_input)
 
-    @task.bash()
-    def cat_content_of_geojson_seq():
-        return f"tail {geojsons_file}"
-
-    @task.bash()
-    def transform_geojson_seq_to_vector_tiles():
         cmd = [
             "tippecanoe",
             "-o",
-            pmtiles_file,
-            geojsons_file,
+            local_output,
+            local_input,
             "--read-parallel",
             "--force",
-            "--no-line-simplification",
-            "--no-tiny-polygon-reduction",
-            "--no-tile-size-limit",
-            "--detect-shared-borders",
             "--no-simplification-of-shared-nodes",
+            "--no-tile-size-limit",
             "--base-zoom=10",
+            "--drop-densest-as-needed",
             "-zg",
         ]
+
+        print(cmd)
+
         return " ".join(cmd)
 
-    @task.python()
-    def upload_vector_tiles_to_s3():
-        Container().s3().put_file(pmtiles_file, pmtiles_key_on_s3)
-        Container().s3().put_file(geojsons_file, f"/{bucket_name}/vector_tiles/75.geojsons")
+    @task.python(trigger_rule="all_done")
+    def upload(entry):
+        local_path = f"/tmp/{entry['pmtiles_filename']}"
+        path_on_s3 = f"{bucket_name}/{vector_tiles_dir}/{entry['pmtiles_filename']}"
+        Container().s3().put(local_path, path_on_s3)
 
-    @task.python()
-    def remove_files():
-        os.remove(pmtiles_file)
-        os.remove(geojsons_file)
-
-    (
-        transform_postgis_ocsge_to_geojson_seq()
-        >> cat_content_of_geojson_seq()
-        >> transform_geojson_seq_to_vector_tiles()
-        >> upload_vector_tiles_to_s3()
-        >> remove_files()
-    )
+    config = get_config()
+    (postgis_to_geojson.expand(entry=config) >> geojson_to_pmtiles.expand(entry=config) >> upload.expand(entry=config))
 
 
 create_ocsge_vector_tiles()
