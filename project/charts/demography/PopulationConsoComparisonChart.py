@@ -26,7 +26,7 @@ class PopulationConsoComparisonChart(ProjectChart):
             "credits": {"enabled": False},
             "title": {
                 "text": (
-                    "Consommation d'espace au regard de l'évolution de la population "
+                    "Consommation d'espaces NAF au regard de l'évolution de la population "
                     "du territoire et des territoires similaires"
                 )
             },

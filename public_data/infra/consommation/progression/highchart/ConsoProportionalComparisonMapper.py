@@ -8,6 +8,7 @@ class ConsoProportionalComparisonMapper:
             {
                 "type": "treemap",
                 "layoutAlgorithm": "squarified",
+                "clip": False,
                 "dataLabels": {
                     "enabled": True,
                     "format": "{point.name}<br />{point.colorValue:.2f} %",
@@ -16,7 +17,6 @@ class ConsoProportionalComparisonMapper:
                         "textOutline": "none",
                     },
                 },
-                "borderWidth": 0,
                 "data": [
                     {
                         "name": land_conso.land.name,
@@ -25,5 +25,12 @@ class ConsoProportionalComparisonMapper:
                     }
                     for land_conso in consommation_stats
                 ],
+                "states": {
+                    "hover": {
+                        "enabled": False,
+                    }
+                },
+                "borderWidth": 1,
+                "borderColor": "#A1A1F8",
             }
         ]

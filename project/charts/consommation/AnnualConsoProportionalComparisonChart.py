@@ -28,12 +28,12 @@ class AnnualConsoProportionalComparisonChart(ProjectChart):
     @property
     def param(self):
         return super().param | {
-            "title": {"text": "Consommation d'espace proportionnelle à la surface des territoires (en %)"},
+            "title": {"text": "Consommation d'espaces NAF relative à la surface des territoires (en %)"},
             "subtitle": {"text": "La taille des zones est proportionnelle à la surface des territoires."},
             "tooltip": {
                 "pointFormat": (
                     "Surface du territoire : <b>{point.value:.2f} ha</b><br />"
-                    "Consommation d'espaces NAF proportionnelle à la surface du territoire : "
+                    "Consommation d'espaces NAF relative à la surface du territoire : "
                     "<b>{point.colorValue:.2f} %</b>"
                 ),
                 "headerFormat": "<b>{point.key}</b><br/>",
@@ -41,6 +41,14 @@ class AnnualConsoProportionalComparisonChart(ProjectChart):
             "colorAxis": {
                 "minColor": "#FFFFFF",
                 "maxColor": "#6a6af4",
+            },
+            "legend": {
+                "layout": "horizontal",
+                "align": "center",
+                "verticalAlign": "bottom",
+            },
+            "chart": {
+                "height": "600",
             },
             "series": self._get_series(),
         }
@@ -61,7 +69,7 @@ class AnnualConsoProportionalComparisonChartExport(AnnualConsoProportionalCompar
             },
             "title": {
                 "text": (
-                    f"Consommation d'espace proportionnelle à la surface de {self.project.territory_name} "
+                    f"Consommation d'espaces NAF relative à la surface de {self.project.territory_name} "
                     "et des territoires similaires "
                     f"entre {self.project.analyse_start_date} et {self.project.analyse_end_date} (en %)"
                 )

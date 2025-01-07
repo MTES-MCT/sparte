@@ -79,7 +79,7 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                         path={urls.consommation}
                                         element={
                                             <RouteWrapper
-                                                title="Consommation d'espaces NAF"
+                                                title="Consommation d'espaces NAF (Naturels, Agricoles et Forestiers)"
                                                 consoCorrectionStatus={data.consommation_correction_status}
                                             >
                                                 <Consommation endpoint={urls.consommation} />

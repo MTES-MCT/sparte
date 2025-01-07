@@ -11,7 +11,7 @@
 </div>
 
 <div class="fr-mt-5w">
-    <h3 id="conso-annuelle">Consommation d'espace annuelle sur le territoire</h3>
+    <h3 id="conso-annuelle">Consommation d'espaces NAF annuelle sur le territoire</h3>
 
     <div class="fr-grid-row fr-grid-row--gutters">
         <div class="fr-col-12">
@@ -50,7 +50,7 @@
                             <div class="fr-table__content">
                                 <table class="table-last-column-bold table-last-row-bold">
                                     <caption>
-                                        Consommation d'espace annuelle sur le territoire (en ha)
+                                        Consommation d'espaces NAF annuelle sur le territoire (en ha)
                                     </caption>
                                     <thead>
                                         <tr>
@@ -85,7 +85,7 @@
         <div class="fr-col-12">
             <div class="bg-white fr-p-2w">
                 {% url 'project:theme-city-conso' project.pk as map_url %}
-                {% include "project/components/map/iframe_map.html" with src=map_url title="Carte consommation d'espaces des communes du territoire sur la période (en %)" %}
+                {% include "project/components/map/iframe_map.html" with src=map_url title="Carte consommation d'espaces NAF des communes du territoire sur la période (en %)" %}
             </div>
         </div>
     </div>
@@ -93,7 +93,7 @@
 </div>
 
 <div class="fr-mt-7w">
-    <h3 id="determinants-conso">Destinations de la consommation d'espace</h3>
+    <h3 id="determinants-conso">Destinations de la consommation d'espaces NAF</h3>
 
     <div class="fr-grid-row fr-grid-row--gutters">
         <div class="fr-col-12 fr-col-lg-4">
@@ -146,7 +146,7 @@
 </div>
 
 <div class="fr-mt-7w">
-    <h3 id="determinants-conso">Consommation d'espace et démographie</h3>
+    <h3 id="determinants-conso">Consommation d'espaces NAF et démographie</h3>
 
     <div class="fr-grid-row fr-grid-row--gutters">
         <div class="fr-col-12 fr-col-lg-8">
@@ -347,7 +347,7 @@
                 {% include "project/components/widgets/source_majic.html" %}  
                 <h6 class="fr-mt-2w">Calcul</h6>
                 <p class="fr-text--sm">
-                    Pour chaque territoire, la consommation d'espace annuelle est multipliée par 100 et divisée par
+                    Pour chaque territoire, la consommation d'espaces NAF annuelle est multipliée par 100 et divisée par
                     sa surface totale.
                 </p>
         
@@ -403,7 +403,7 @@
             <div class="fr-modal__content">
                 <h1 class="fr-modal__title" id="consoAnnuelleLabel">
                     <span class="fr-fi-arrow-right-line fr-fi--lg"></span>
-                    Astuces Graphique - Consommation d'espaces annuelle sur le territoire
+                    Astuces Graphique - Consommation d'espaces NAF annuelle sur le territoire
                 </h1>
                 {% include "project/components/widgets/chart_tips_buttons.html" %}
             </div>
@@ -489,7 +489,7 @@
                     Astuces Graphique - {{ population_conso_comparison_chart.chart.title.text }}
                 </h1>
                 <p class="fr-text--sm">
-                    Ce graphique permet de mettre en relation la consommation d’espaces des territoires et leur évolution démographique sur une période donnée ainsi que de visualiser sa population totale grâce à la taille des bulles.
+                    Ce graphique permet de mettre en relation la consommation d’espaces NAF des territoires et leur évolution démographique sur une période donnée ainsi que de visualiser sa population totale grâce à la taille des bulles.
                 </p>
                 {% include "project/components/widgets/chart_tips_comparison.html" %}
                 {% include "project/components/widgets/chart_tips_legend.html" %}
@@ -512,7 +512,7 @@
                     Astuces Graphique - {{ surface_proportional_chart.chart.title.text }}
                 </h1>
                 <p class="fr-text--sm">
-                    La consommation proportionnelle à la surface des territoires permet d'analyser la consommation d'espaces au regard de la surface totale du territoire.
+                    La consommation relative à la surface des territoires permet d'analyser la consommation d'espaces NAF au regard de la surface totale du territoire.
                     Cette approche permet de comparer les territoires selon le pourcentage d'ha consommé par rapport au volume d'ha total du territoire.
                     La comparaison avec les territoires similaires permet d'appréhender les dynamiques globales brutes de consommation d'espaces NAF (Naturels, Agricoles et Forestiers) et de les comparer entre elles.
                 </p>
