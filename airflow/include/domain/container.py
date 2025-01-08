@@ -2,9 +2,11 @@ from os import getenv
 
 import sqlalchemy
 from dependency_injector import containers, providers
+from gdaltools import PgConnectionString
 from include.domain.file_handling import (
     RemoteToS3FileHandler,
     S3CSVFileToDBTableHandler,
+    SQLToGeojsonSeqOnS3Handler,
 )
 from include.infra.file_handling import (
     CSVFileIngestor,
@@ -46,9 +48,20 @@ class Container(containers.DeclarativeContainer):
         port=getenv("DBT_DB_PORT"),
     )
 
+    gdal_dbt_conn = providers.Factory(
+        PgConnectionString,
+        dbname=getenv("DBT_DB_NAME"),
+        user=getenv("DBT_DB_USER"),
+        password=getenv("DBT_DB_PASSWORD"),
+        host=getenv("DBT_DB_HOST"),
+        port=getenv("DBT_DB_PORT"),
+    )
+
+    htto_file_handler = providers.Factory(provides=HTTPFileHandler)
+
     remote_to_s3_file_handler = providers.Factory(
         provides=RemoteToS3FileHandler,
-        http_file_handler=providers.Factory(provides=HTTPFileHandler),
+        http_file_handler=htto_file_handler,
         s3_handler=s3_handler,
         tmp_path_generator=tmp_path_generator,
     )
@@ -61,6 +74,14 @@ class Container(containers.DeclarativeContainer):
             provides=CSVFileIngestor,
             db_sqlalchemy_conn=sqlalchemy_dbt_conn,
         ),
+    )
+
+    sql_to_geojsonseq_on_s3_handler = providers.Factory(
+        provides=SQLToGeojsonSeqOnS3Handler,
+        http_file_handler=htto_file_handler,
+        s3_handler=s3_handler,
+        tmp_path_generator=tmp_path_generator,
+        db_connection=gdal_dbt_conn().encode(),
     )
 
     notification = providers.Factory(
