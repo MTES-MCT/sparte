@@ -1,11 +1,5 @@
 #!/bin/bash
 
-# This script is designed to initialize the review app database with data from the staging database.
-# It is executed by Scalingo after the build of the review app (see scalingo.json:scripts).
-# Make sure that the SPARTE-STAGING's environment variables include:
-# STAGING_DATABASE_URL, which should contain the connection string to the staging database.
-
-
 # Ensure the APP environment variable is set, otherwise exit with an error message
 : "${APP?Need to set APP}"
 echo "APP=$APP"
@@ -21,22 +15,14 @@ if [[ $APP != *-pr* ]]; then
 fi
 echo "Inside PR detected"
 
-# Get pg_dump cli of the same version as the database (14.10 when I write this comment)
-# see https://doc.scalingo.com/platform/databases/access
 echo "Get postgresql client"
 
 # temp fix while scalingo fix it
 export PATH=/app/bin:$PATH
 
-dbclient-fetcher postgresql 14
+dbclient-fetcher postgresql 15
 psql_version=$(psql --version | awk '{print $3}')
 echo "psql version=$psql_version"
-
-# if [ "$psql_version" != 14.10 ]; then
-#     echo "Erreur : La version de psql est ${psql_version}, mais la version 14.10 est requise."
-#     exit 2
-# fi
-
 
 echo "Drop all tables"
 # Drop all tables in the 'public' schema of the database specified by DATABASE_URL
@@ -52,30 +38,5 @@ echo "Dump and restore at once"
 # --if-exists: Use conditional statements to drop objects if they exist
 # --clean: Clean (drop) database objects before recreating them
 pg_dump -x -O --if-exists --clean $STAGING_DATABASE_URL | psql $DATABASE_URL
-
-
-# below not working either
-# scalingo command is not found
-
-# install-scalingo-cli
-# scalingo login --api-token "${DUPLICATE_API_TOKEN}"
-
-# addon_id="$( scalingo --app sparte-staging addons | grep PostgreSQL | cut -d "|" -f 3 | tr -d " " )"
-# echo "Found addon_id=${addon_id}"
-
-# echo "Download backup (could take a while)"
-# scalingo --app sparte-staging --addon "${addon_id}" backups-download --output dump.tar.gz
-# echo "Extract backup"
-# mkdir /app/dump
-# tar --extract --verbose --file=dump.tar.gz --directory="/app/dump"
-# backup_file_name=$(ls "/app/dump")
-# echo "Found backup_file_name=${backup_file_name}"
-
-# tar --extract --verbose --file=dump.tar.gz --directory="/app/"
-
-# pg_restore --clean --if-exists --no-owner --no-privileges --no-comments --dbname "${DATABASE_URL}" "/app/dump/${backup_file_name}"
-
 echo "Trigger classical post deployment script"
-# Source and execute the post_compile script from the bin/ directory
-# The post_compile script includes structure migrations and all other deployment tasks
 source bin/post_deploy_hook.sh
