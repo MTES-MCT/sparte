@@ -1,33 +1,15 @@
-import json
-
 import pendulum
 from airflow.decorators import dag, task
+from airflow.models.param import Param
 from include.domain.container import Container
 
 
-def get_config():
-    with open("include/domain/data/ocsge/sources.json", "r") as f:
-        sources = json.load(f)
+def get_geojson_filename(year: int) -> str:
+    return f"occupation_du_sol_{year}.geojson"
 
-    config = []
 
-    years = set()
-
-    for departement in sources:
-        occupation_du_sol_et_zone_construite = sources[departement]["occupation_du_sol_et_zone_construite"]
-        for year in occupation_du_sol_et_zone_construite:
-            years.add(year)
-
-    for year in years:
-        config.append(
-            {
-                "year": year,
-                "geojson_filename": f"occupation_du_sol_{year}.geojson",
-                "pmtiles_filename": f"occupation_du_sol_{year}.pmtiles",
-            }
-        )
-
-    return config
+def get_pmtiles_filename(year: int) -> str:
+    return f"occupation_du_sol_{year}.pmtiles"
 
 
 @dag(
@@ -39,15 +21,18 @@ def get_config():
     default_args={"owner": "Alexis Athlani", "retries": 3},
     tags=["OCS GE"],
     max_active_tasks=10,
+    params={
+        "year": Param(2018, type="integer"),
+    },
 )
 def create_ocsge_vector_tiles():
     bucket_name = "airflow-staging"
     vector_tiles_dir = "vector_tiles"
 
     @task.python()
-    def postgis_to_geojson(entry):
-        year = entry["year"]
-        filename = entry["geojson_filename"]
+    def postgis_to_geojson(params: dict):
+        year = params.get("year")
+        filename = get_geojson_filename(year)
 
         return (
             Container()
@@ -60,10 +45,13 @@ def create_ocsge_vector_tiles():
         )
 
     @task.bash(skip_on_exit_code=110)
-    def geojson_to_pmtiles(entry):
-        local_input = f"/tmp/{entry['geojson_filename']}"
-        local_output = f"/tmp/{entry['pmtiles_filename']}"
-        Container().s3().get_file(f"{bucket_name}/{vector_tiles_dir}/{entry['geojson_filename']}", local_input)
+    def geojson_to_pmtiles(params: dict):
+        year = params.get("year")
+        geojson_filename = get_geojson_filename(year)
+        pmtiles_filename = get_pmtiles_filename(year)
+        local_input = f"/tmp/{geojson_filename}"
+        local_output = f"/tmp/{pmtiles_filename}"
+        Container().s3().get_file(f"{bucket_name}/{vector_tiles_dir}/{geojson_filename}", local_input)
 
         cmd = [
             "tippecanoe",
@@ -84,13 +72,26 @@ def create_ocsge_vector_tiles():
         return " ".join(cmd)
 
     @task.python(trigger_rule="all_done")
-    def upload(entry):
-        local_path = f"/tmp/{entry['pmtiles_filename']}"
-        path_on_s3 = f"{bucket_name}/{vector_tiles_dir}/{entry['pmtiles_filename']}"
+    def upload(params: dict):
+        year = params.get("year")
+        pmtiles_filename = get_pmtiles_filename(year)
+        local_path = f"/tmp/{pmtiles_filename}"
+        path_on_s3 = f"{bucket_name}/{vector_tiles_dir}/{pmtiles_filename}"
         Container().s3().put(local_path, path_on_s3)
 
-    config = get_config()
-    (postgis_to_geojson.expand(entry=config) >> geojson_to_pmtiles.expand(entry=config) >> upload.expand(entry=config))
+    @task.bash()
+    def delete_geojson_file(params: dict):
+        year = params.get("year")
+        geojson_filename = get_geojson_filename(year)
+        return f"rm /tmp/{geojson_filename}"
+
+    @task.bash()
+    def delete_pmtiles_file(params: dict):
+        year = params.get("year")
+        pmtiles_filename = get_pmtiles_filename(year)
+        return f"rm /tmp/{pmtiles_filename}"
+
+    (postgis_to_geojson() >> geojson_to_pmtiles() >> upload() >> delete_geojson_file() >> delete_pmtiles_file())
 
 
 create_ocsge_vector_tiles()
