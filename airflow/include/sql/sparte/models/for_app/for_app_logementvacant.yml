@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: for_app_logementvacantprive
+  - name: for_app_logementvacant
     columns:
       - name: land_id
         data_tests:
@@ -30,6 +30,24 @@ models:
       - name: logements_vacants_parc_general
         data_tests:
           - not_null
-      - name: logements_vacants_2ans_parc_prive
+      - name: logements_vacants_parc_prive
         data_tests:
           - not_null
+      - name: logements_parc_social
+        data_tests:
+          - not_null
+      - name: logements_vacants_parc_social
+        data_tests:
+          - not_null
+      - name: logements_vacants_parc_general_percent
+        data_tests:
+          - not_null
+          - is_percent_between_0_and_100
+      - name: logements_vacants_parc_prive_percent
+        data_tests:
+          - not_null
+          - is_percent_between_0_and_100
+      - name: logements_vacants_parc_social_percent
+        data_tests:
+          - not_null
+          - is_percent_between_0_and_100

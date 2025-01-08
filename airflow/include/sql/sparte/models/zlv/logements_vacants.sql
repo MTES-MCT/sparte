@@ -11,8 +11,6 @@ with raw_data as (
     SELECT * FROM {{ source('public', 'zlv_parcs_2022') }}
     UNION ALL
     SELECT * FROM {{ source('public', 'zlv_parcs_2023') }}
-    UNION ALL
-    SELECT * FROM {{ source('public', 'zlv_parcs_2024') }}
 )
 SELECT
     replace(siren, ' ', '')     as code_siren,

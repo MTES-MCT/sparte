@@ -33,3 +33,9 @@ models:
       - name: surface_de_plancher_commencee
         data_tests:
           - not_null
+      - name: percent_autorises_on_parc_general
+        data_tests:
+          - not_null
+      - name: percent_autorises_on_vacants_parc_general
+        data_tests:
+          - not_null
