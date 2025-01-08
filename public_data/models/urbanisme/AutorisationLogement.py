@@ -9,10 +9,10 @@ class AutorisationLogement(models.Model):
     year = models.IntegerField()
     logements_autorises = models.IntegerField()
     logements_commences = models.IntegerField()
-    surface_de_plancher_autorisee = models.DecimalField()
-    surface_de_plancher_commencee = models.DecimalField()
-    percent_autorises_on_parc_general = models.DecimalField()
-    percent_autorises_on_vacants_parc_general = models.DecimalField()
+    surface_de_plancher_autorisee = models.FloatField()
+    surface_de_plancher_commencee = models.FloatField()
+    percent_autorises_on_parc_general = models.FloatField()
+    percent_autorises_on_vacants_parc_general = models.FloatField()
 
     class Meta:
         managed = False
