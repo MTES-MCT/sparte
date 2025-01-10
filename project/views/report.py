@@ -293,6 +293,21 @@ class ProjectReportSynthesisView(ProjectReportBaseView):
         return super().get_context_data(**kwargs)
 
 
+class ProjectReportLogementsVacantsView(ProjectReportBaseView):
+    partial_template_name = "project/components/dashboard/logements_vacants.html"
+    full_template_name = "project/pages/logements_vacants.html"
+
+    def get_context_data(self, **kwargs):
+        project: Project = self.get_object()
+
+        kwargs.update(
+            {
+                "diagnostic": project,
+            }
+        )
+        return super().get_context_data(**kwargs)
+
+
 class ProjectReportLocalView(ProjectReportBaseView):
     partial_template_name = "project/components/dashboard/rapport_local.html"
     full_template_name = "project/pages/rapport_local.html"

@@ -47,6 +47,7 @@
                     "trajectoires": "{% url 'project:report_target_2031' project.pk %}",
                     "consommation": "{% url 'project:report_conso' project.pk %}",
                     "gpu": "{% url 'project:report_urban_zones' project.pk %}",
+                    "logementsVacants": "{% url 'project:report_logements_vacants' project.pk %}",
                     "ocsge": "{% url 'project:report_discover' project.pk %}",
                     "artificialisation": "{% url 'project:report_artif' project.pk %}",
                     "impermeabilisation": "{% url 'project:report_imper' project.pk %}",
@@ -140,6 +141,10 @@
                             {
                                 "label": "Artificialisation des zonages d'urbanisme",
                                 "url": "{% url 'project:report_urban_zones' project.pk %}"
+                            },
+                            {
+                                "label": "Logements Vacants",
+                                "url": "{% url 'project:report_logements_vacants' project.pk %}"
                             }
                         ]                        
                     },
