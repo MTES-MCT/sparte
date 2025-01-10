@@ -1,0 +1,3 @@
+from .BaseLogementVacantProgressionService import BaseLogementVacantProgressionService
+
+__all__ = ["BaseLogementVacantProgressionService"]

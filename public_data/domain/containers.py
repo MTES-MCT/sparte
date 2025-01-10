@@ -19,6 +19,9 @@ from public_data.infra.PickleClassCacher import PickleClassCacher
 from public_data.infra.urbanisme.autorisation_logement.progression.AutorisationLogementProgressionService import (
     AutorisationLogementProgressionService,
 )
+from public_data.infra.urbanisme.logement_vacant.progression.LogementVacantProgressionService import (
+    LogementVacantProgressionService,
+)
 
 
 class PublicDataContainer(containers.DeclarativeContainer):
@@ -60,4 +63,8 @@ class PublicDataContainer(containers.DeclarativeContainer):
 
     autorisation_logement_progression_service = providers.Factory(
         AutorisationLogementProgressionService,
+    )
+
+    logement_vacant_progression_service = providers.Factory(
+        LogementVacantProgressionService,
     )
