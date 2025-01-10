@@ -49,6 +49,7 @@ __all__ = [
     "PopulationDensityChart",
     "PopulationConsoProgressionChart",
     "PopulationConsoComparisonChart",
+    "LogementVacantComparisonChart",
 ]
 
 from .AnnualArtifChart import AnnualArtifChart
@@ -118,6 +119,7 @@ from .NetArtifComparaisonChart import (
     NetArtifComparaisonChartExport,
 )
 from .ObjectiveChart import ObjectiveChart, ObjectiveChartExport
+from .urbanisme.LogementVacantComparisonChart import LogementVacantComparisonChart
 from .UsageChangeWheelChart import UsageChangeWheelChart
 from .UsagePieChart import UsagePieChart, UsagePieChartExport
 from .UsageProgressionChart import UsageProgressionChart, UsageProgressionChartExport

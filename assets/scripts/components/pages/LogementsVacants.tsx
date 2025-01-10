@@ -1,5 +1,6 @@
 import React from 'react';
 import { useHtmlLoader } from '@hooks/useHtmlLoader';
+import useHighcharts from '@hooks/useHighcharts';
 import Loader from '@components/ui/Loader';
 
 /*
@@ -14,6 +15,10 @@ Dans ce cas, les données provenant de Django sont considérées comme fiables.
 
 const LogementsVacants: React.FC<{ endpoint: string }> = ({ endpoint }) => {
     const { content, isLoading, error } = useHtmlLoader(endpoint);
+
+    useHighcharts([
+        'logements_vacants_comparison_chart',
+    ], isLoading);
 
     if (isLoading) return <Loader />;
     if (error) return <div>Erreur : {error}</div>;

@@ -33,6 +33,8 @@ class LogementVacantProgressionService(BaseLogementVacantProgressionService):
                     logements_vacants_parc_prive=item.logements_vacants_parc_prive,
                     logements_parc_social=item.logements_parc_social,
                     logements_vacants_parc_social=item.logements_vacants_parc_social,
+                    logements_vacants_parc_prive_percent=item.logements_vacants_parc_prive_percent,
+                    logements_vacants_parc_social_percent=item.logements_vacants_parc_social_percent,
                 )
                 for item in data
             ],

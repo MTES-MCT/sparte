@@ -8,3 +8,5 @@ class AnnualLogementVacant:
     logements_vacants_parc_prive: int
     logements_parc_social: float
     logements_vacants_parc_social: float
+    logements_vacants_parc_prive_percent: float
+    logements_vacants_parc_social_percent: float

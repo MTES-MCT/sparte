@@ -303,6 +303,7 @@ class ProjectReportLogementsVacantsView(ProjectReportBaseView):
         kwargs.update(
             {
                 "diagnostic": project,
+                "logements_vacants_comparison_chart": charts.LogementVacantComparisonChart(project),
             }
         )
         return super().get_context_data(**kwargs)
