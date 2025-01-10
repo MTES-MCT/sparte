@@ -305,6 +305,9 @@ class ProjectReportLogementsVacantsView(ProjectReportBaseView):
                 "diagnostic": project,
                 "logements_vacants_comparison_chart": charts.LogementVacantComparisonChart(project),
                 "logements_vacants_comparison_gauge_chart": charts.LogementVacantComparisonGaugeChart(project),
+                "logement_vacant_autorisation_logement_ratio_progression_chart": (
+                    charts.LogementVacantAutorisationLogementRatioProgressionChart(project)
+                ),
             }
         )
         return super().get_context_data(**kwargs)
