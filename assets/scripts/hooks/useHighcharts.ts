@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import Highcharts from 'highcharts';
 import highchartsExporting from 'highcharts/modules/exporting';
 import exportDataModule from 'highcharts/modules/export-data';
+import HighchartsMore from 'highcharts/highcharts-more';
 import highchartsAccessibility from 'highcharts/modules/accessibility';
 import DependencyWheel from 'highcharts/modules/dependency-wheel';
 import Sankey from 'highcharts/modules/sankey';
@@ -11,6 +12,7 @@ import Treemap from 'highcharts/modules/treemap'
 import '../highcharts/lineargauge.js';
 
 highchartsExporting(Highcharts);
+HighchartsMore(Highcharts);
 exportDataModule(Highcharts);
 highchartsAccessibility(Highcharts);
 Sankey(Highcharts);

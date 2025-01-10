@@ -18,6 +18,7 @@ const LogementsVacants: React.FC<{ endpoint: string }> = ({ endpoint }) => {
 
     useHighcharts([
         'logements_vacants_comparison_chart',
+        'logements_vacants_comparison_gauge_chart',
     ], isLoading);
 
     if (isLoading) return <Loader />;

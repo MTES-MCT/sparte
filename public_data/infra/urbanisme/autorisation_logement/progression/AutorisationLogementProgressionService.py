@@ -31,6 +31,7 @@ class AutorisationLogementProgressionService(BaseAutorisationLogementProgression
                     year=item.year,
                     logements_autorises=item.logements_autorises,
                     percent_autorises_on_parc_general=item.percent_autorises_on_parc_general,
+                    percent_autorises_on_vacants_parc_general=item.percent_autorises_on_vacants_parc_general,
                 )
                 for item in data
             ],

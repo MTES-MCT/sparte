@@ -2,7 +2,23 @@
 {% load sri %}
 
 <div class="fr-mt-5w">
-    <h3 id="conso-annuelle">Consommation d'espaces NAF annuelle sur le territoire</h3>
+    <h3 id="conso-annuelle"></h3>
+
+    <div class="fr-grid-row fr-grid-row--gutters">
+        <div class="fr-col-12">
+            <div class="bg-white fr-p-2w h-100">
+                <div class="d-flex justify-content-end align-items-center fr-mb-2w">
+                    {% include "project/components/widgets/chart_buttons.html" with chart="logements_vacants_comparison_gauge_chart" show_fullscreen=True %}
+                    {% comment %} <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#consoAnnuelle" data-toggle="tooltip" title="Astuces pour lire le graphique"></button> {% endcomment %}
+                </div>
+                <div id="logements_vacants_comparison_gauge_chart"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="fr-mt-5w">
+    <h3 id="conso-annuelle"></h3>
 
     <div class="fr-grid-row fr-grid-row--gutters">
         <div class="fr-col-12">
@@ -18,3 +34,4 @@
 </div>
 
 {% display_chart_data 'logements_vacants_comparison_chart' logements_vacants_comparison_chart CSP_NONCE %}
+{% display_chart_data 'logements_vacants_comparison_gauge_chart' logements_vacants_comparison_gauge_chart CSP_NONCE %}
