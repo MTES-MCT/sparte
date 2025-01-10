@@ -16,6 +16,9 @@ from public_data.infra.demography.population.stats.PopulationStatsService import
     PopulationStatsService,
 )
 from public_data.infra.PickleClassCacher import PickleClassCacher
+from public_data.infra.urbanisme.autorisation_logement.progression.AutorisationLogementProgressionService import (
+    AutorisationLogementProgressionService,
+)
 
 
 class PublicDataContainer(containers.DeclarativeContainer):
@@ -51,4 +54,10 @@ class PublicDataContainer(containers.DeclarativeContainer):
 
     population_comparison_service = providers.Factory(
         PopulationStatsComparisonService,
+    )
+
+    # urbanisme
+
+    autorisation_logement_progression_service = providers.Factory(
+        AutorisationLogementProgressionService,
     )
