@@ -64,17 +64,17 @@ SELECT
     autorisations.land_id,
     autorisations.land_type,
     autorisations.year,
-    autorisations.logements_autorises,
-    autorisations.logements_commences,
-    autorisations.surface_de_plancher_autorisee,
-    autorisations.surface_de_plancher_commencee,
+    autorisations.logements_autorises::int,
+    autorisations.logements_commences::int,
+    autorisations.surface_de_plancher_autorisee::double precision,
+    autorisations.surface_de_plancher_commencee::double precision,
     coalesce(
         autorisations.logements_autorises
          * 100 / NULLIF(logements_vacants.logements_parc_general, 0),
-    0) as percent_autorises_on_parc_general,
+    0)::double precision as percent_autorises_on_parc_general,
     coalesce(
         NULLIF(logements_vacants.logements_vacants_parc_general, 0) * 100 / NULLIF(autorisations.logements_autorises, 0),
-    0) as percent_autorises_on_vacants_parc_general
+    0)::double precision as percent_autorises_on_vacants_parc_general
 FROM
     autorisations
 LEFT JOIN
