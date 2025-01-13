@@ -10,6 +10,7 @@ models:
               severity: warn
           - has_all_departements
           - has_all_regions
+          - has_all_scots
           - has_all_communes:
               severity: warn
       - name: land_type
