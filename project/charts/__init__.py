@@ -52,6 +52,7 @@ __all__ = [
     "LogementVacantComparisonChart",
     "LogementVacantComparisonGaugeChart",
     "LogementVacantAutorisationLogementRatioProgressionChart",
+    "LogementVacantRatioProgressionChart",
 ]
 
 from .AnnualArtifChart import AnnualArtifChart
@@ -127,6 +128,9 @@ from .urbanisme.LogementVacantAutorisationLogementRatioProgressionChart import (
 from .urbanisme.LogementVacantComparisonChart import LogementVacantComparisonChart
 from .urbanisme.LogementVacantComparisonGaugeChart import (
     LogementVacantComparisonGaugeChart,
+)
+from .urbanisme.LogementVacantRatioProgressionChart import (
+    LogementVacantRatioProgressionChart,
 )
 from .UsageChangeWheelChart import UsageChangeWheelChart
 from .UsagePieChart import UsagePieChart, UsagePieChartExport

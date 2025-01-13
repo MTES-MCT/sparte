@@ -308,6 +308,7 @@ class ProjectReportLogementsVacantsView(ProjectReportBaseView):
                 "logement_vacant_autorisation_logement_ratio_progression_chart": (
                     charts.LogementVacantAutorisationLogementRatioProgressionChart(project)
                 ),
+                "logement_vacant_ratio_progression_chart": (charts.LogementVacantRatioProgressionChart(project)),
             }
         )
         return super().get_context_data(**kwargs)
