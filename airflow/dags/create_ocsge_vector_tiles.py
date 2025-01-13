@@ -61,9 +61,9 @@ def create_ocsge_vector_tiles():
             "--read-parallel",
             "--force",
             "--no-simplification-of-shared-nodes",
-            "--no-tile-size-limit",
-            "--base-zoom=10",
-            "--drop-densest-as-needed",
+            "--no-tiny-polygon-reduction",
+            "--base-zoom=11",
+            "--coalesce-densest-as-needed",
             "-zg",
         ]
 
