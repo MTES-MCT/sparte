@@ -26,7 +26,9 @@ select
         when ARRAY_LENGTH(millesimes.ocsge_millesimes, 1) = 1 then FALSE
         else TRUE
     end                                  as is_artif_ready,
-    ST_TRANSFORM(departement.geom, 4326) as mpoly
+    ST_TRANSFORM(departement.geom, 4326) as mpoly,
+    TRUE as autorisation_logement_available,
+    TRUE as logements_vacants_available
 from
     {{ ref('departement') }} as departement
 left join
