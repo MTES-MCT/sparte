@@ -110,18 +110,26 @@ FROM
     without_parc_general
 )
 SELECT
-    *,
+    land_id,
+    land_type,
+    year,
+    logements_parc_prive::int,
+    logements_vacants_parc_prive::int,
+    logements_parc_social::int,
+    logements_vacants_parc_social::int,
+    logements_parc_general::int,
+    logements_vacants_parc_general::int,
     coalesce(
         logements_vacants_parc_general * 100.0 / NULLIF(logements_parc_general, 0),
         0
-    ) as logements_vacants_parc_general_percent,
+    )::double precision as logements_vacants_parc_general_percent,
     coalesce(
         logements_vacants_parc_prive * 100.0 / NULLIF(logements_parc_prive, 0),
         0
-    ) as logements_vacants_parc_prive_percent,
+    )::double precision as logements_vacants_parc_prive_percent,
     coalesce(
         logements_vacants_parc_social * 100.0 / NULLIF(logements_parc_social, 0),
         0
-    ) as logements_vacants_parc_social_percent
+    )::double precision as logements_vacants_parc_social_percent
 FROM
     with_parc_general
