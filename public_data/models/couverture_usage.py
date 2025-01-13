@@ -173,6 +173,7 @@ class CouvertureUsageMatrix(models.Model):
     usage = models.ForeignKey("UsageSol", on_delete=models.PROTECT, blank=True, null=True)
     is_artificial = models.BooleanField("Artificiel", default=False, blank=True, null=True)
     is_impermeable = models.BooleanField("Imperméable", blank=True, null=True)
+    label = models.CharField(blank=True, null=True, max_length=50, choices=LabelChoices.choices)
 
     class Meta:
         managed = False
