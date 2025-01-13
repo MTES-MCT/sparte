@@ -63,6 +63,7 @@ ON
 AND
     logements_vacants_departement.year = rpls_departement.year
 UNION
+-- Région
 SELECT
     code_region as land_id,
     '{{ var('REGION') }}' as land_type,
@@ -79,6 +80,25 @@ ON
     logements_vacants_region.code_region = rpls_region.region_code
 AND
     logements_vacants_region.year = rpls_region.year
+
+-- SCOT
+UNION
+SELECT
+    code_scot as land_id,
+    '{{ var('SCOT') }}' as land_type,
+    logements_vacants_scot.year as year,
+    logements_parc_prive,
+    logements_vacants_2ans_parc_prive as logements_vacants_parc_prive,
+    coalesce(rpls_scot.total, 0) as logements_parc_social,
+    coalesce(rpls_scot.vacants, 0) as logements_vacants_parc_social
+FROM
+    {{ ref('logements_vacants_scot') }} as logements_vacants_scot
+LEFT JOIN
+    {{ ref('rpls_scot') }} as rpls_scot
+ON
+    logements_vacants_scot.code_scot = rpls_scot.scot_code
+AND
+    logements_vacants_scot.year = rpls_scot.year
 ), with_parc_general as (
 SELECT
     *,

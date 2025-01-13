@@ -1,0 +1,14 @@
+version: 2
+
+models:
+  - name: logements_vacants_scot
+    columns:
+      - name: scot_name
+        data_tests:
+          - not_null
+      - name: code_scot
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('scot')
+              field: id_scot
