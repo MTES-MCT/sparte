@@ -11,6 +11,6 @@ SELECT
     ST_Transform(geom, 4326) AS mpoly,
     srid_source AS srid_source,
     TRUE as autorisation_logement_available,
-    TRUE as logement_vacants_available
+    TRUE as logements_vacants_available
 FROM
     {{ ref('region') }}
