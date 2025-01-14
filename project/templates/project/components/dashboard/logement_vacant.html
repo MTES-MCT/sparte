@@ -1,4 +1,5 @@
 {% load highcharts_tags %}
+{% load project_tags %}
 {% load sri %}
 
 <div>
@@ -18,7 +19,7 @@
 
     <div class="fr-grid-row fr-grid-row--gutters">
         <div class="fr-col-12 fr-col-lg-6">
-            <div class="bg-white fr-p-2w">
+            <div class="bg-white fr-p-2w h-100">
                 <div class="d-flex justify-content-end align-items-center fr-mb-2w">
                     {% include "project/components/widgets/chart_buttons.html" with chart="logement_vacant_autorisation_construction_ratio_gauge_chart" show_fullscreen=false %}
                     <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#densityModal" data-toggle="tooltip" title="Astuces pour lire le graphique"></button>
@@ -33,10 +34,36 @@
                     <div class="guide-title">Comprendre les données</div>
                     <div class="guide-description">
                         <p class="fr-text--sm">
-                            En 2023, sur le territoire de [xxxx] ont été autorisés [x] nouveaux logements, ce qui correspond à une augmentation de [x]% de son parc de logements. Au 1er janvier de cette même année, [x] logements du parc privé de la commune (soit [x]% du parc) étaient vacants depuis plus de 2 ans, et [x] logements sociaux l'étaient depuis plus de 3 mois (soit [x]% du parc locatif des bailleurs sociaux).
+                            En {{ autorisation_logement_last_year.year|stringformat:"i" }}, sur le territoire de {{ project.territory_name }}, 
+                            <strong>
+                                {{ autorisation_logement_last_year.logements_autorises }} 
+                                {% if autorisation_logement_last_year.logements_autorises < 2 %}
+                                nouveau logement a été autorisé 
+                                {% else %}
+                                nouveaux logements ont été autorisés, 
+                                {% endif %}
+                            </strong>
+                            ce qui correspond à une augmentation de {{ autorisation_logement_last_year.percent_autorises_on_parc_general|smart_round }}% de son parc de logements total.
+                        </p>
+                        <p class="fr-text--sm">
+                            Au 1er janvier de cette même année, sur le territoire de {{ project.territory_name }}, 
+                            <strong>{{ logement_vacant_last_year.logements_vacants_parc_prive }} logement{{ logement_vacant_last_year.logements_vacants_parc_prive|pluralize }} du parc privé (soit {{ logement_vacant_last_year.logements_vacants_parc_prive_percent|smart_round }}% du parc de logements privé)</strong> 
+                            {% if logement_vacant_last_year.logements_vacants_parc_prive < 2 %}
+                            était vacant, 
+                            {% else %}
+                            étaient vacants  
+                            {% endif %}
+                            depuis plus de 2 ans,
+                            et <strong>{{ logement_vacant_last_year.logements_vacants_parc_social }} logement{{ logement_vacant_last_year.logements_vacants_parc_social|pluralize }} du parc des bailleurs sociaux (soit {{ logement_vacant_last_year.logements_vacants_parc_social_percent|smart_round }}% du parc de logements des bailleurs sociaux)</strong> 
+                            {% if logement_vacant_last_year.logements_vacants_parc_social < 2 %}
+                            était vacant 
+                            {% else %}
+                            étaient vacants 
+                            {% endif %}
+                            depuis plus de 3 mois.
                         </p>
                         <p class="fr-text--sm"> 
-                            Dans cette commune, le nombre de logements vacants représente donc [x]% du nombre de nouveaux logements construits.
+                            Sur le territoire de {{ project.territory_name }}, le nombre de logements vacants représente donc {{ autorisation_logement_last_year.percent_autorises_on_vacants_parc_general|smart_round }}% du nombre de nouveaux logements construits.
                         </p>
                     </div>
                 </div>

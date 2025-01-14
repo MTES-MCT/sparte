@@ -300,9 +300,25 @@ class ProjectReportLogementVacantView(ProjectReportBaseView):
     def get_context_data(self, **kwargs):
         project: Project = self.get_object()
 
+        logement_vacant_progression = PublicDataContainer.logement_vacant_progression_service().get_by_land(
+            land=project.land_proxy,
+            start_date=project.analyse_start_date,
+            end_date=project.analyse_end_date,
+        )
+
+        autorisation_logement_progression = (
+            PublicDataContainer.autorisation_logement_progression_service().get_by_land(
+                land=project.land_proxy,
+                start_date=project.analyse_start_date,
+                end_date=project.analyse_end_date,
+            )
+        )
+
         kwargs.update(
             {
                 "diagnostic": project,
+                "logement_vacant_last_year": logement_vacant_progression.logement_vacant[-1],
+                "autorisation_logement_last_year": autorisation_logement_progression.autorisation_logement[-1],
                 "logement_vacant_autorisation_construction_comparison_chart": (
                     charts.LogementVacantAutorisationLogementComparisonChart(project)
                 ),

@@ -67,3 +67,17 @@ def percent(value, arg=0):
 @register.filter
 def space(value):
     return " ".join(["-"] * (value - 1))
+
+
+@register.filter
+def smart_round(value):
+    """
+    Arrondit à 2 décimales uniquement si la valeur comporte des décimales.
+    """
+    try:
+        value = float(value)
+        if value.is_integer():
+            return int(value)  # Retourne l'entier si pas de décimales
+        return round(value, 2)  # Sinon retourne avec 2 décimales
+    except (ValueError, TypeError):
+        return value  # Retourne la valeur brute en cas d'erreur
