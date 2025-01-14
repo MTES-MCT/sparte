@@ -1,4 +1,8 @@
 from project.charts.base_project_chart import ProjectChart
+from project.charts.constants import (
+    LOGEMENT_VACANT_COLOR_PRIVE,
+    LOGEMENT_VACANT_COLOR_SOCIAL,
+)
 from public_data.domain.containers import PublicDataContainer
 
 
@@ -30,10 +34,12 @@ class LogementVacantRatioProgressionChart(ProjectChart):
             {
                 "name": ("Taux de vacance de plus de 2 ans dans le parc privé"),
                 "data": data_parc_privé,
+                "color": LOGEMENT_VACANT_COLOR_PRIVE,
             },
             {
                 "name": ("Taux de vacance de plus de 3 mois dans le parc des bailleurs sociaux"),
                 "data": data_parc_social,
+                "color": LOGEMENT_VACANT_COLOR_SOCIAL,
             },
         ], categories
 

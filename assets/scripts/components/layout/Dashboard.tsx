@@ -15,7 +15,7 @@ import Consommation from '@components/pages/Consommation';
 import Impermeabilisation from '@components/pages/Impermeabilisation';
 import Artificialisation from '@components/pages/Artificialisation';
 import Gpu from '@components/pages/Gpu';
-import LogementsVacants from '@components/pages/LogementsVacants';
+import LogementVacant from '@components/pages/LogementVacant';
 import Ocsge from '@components/pages/Ocsge';
 import Trajectoires from '@components/pages/Trajectoires';
 import RapportLocal from '@components/pages/RapportLocal';
@@ -144,12 +144,12 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                         }
                                     />
                                     <Route
-                                        path={urls.logementsVacants}
+                                        path={urls.logementVacant}
                                         element={
                                             <RouteWrapper 
-                                                title="Logements vacants"
+                                                title="Vacance des logements"
                                             >
-                                                <LogementsVacants endpoint={urls.logementsVacants} />
+                                                <LogementVacant endpoint={urls.logementVacant} />
                                             </RouteWrapper>
                                         }
                                     />

@@ -1,4 +1,9 @@
 from project.charts.base_project_chart import ProjectChart
+from project.charts.constants import (
+    CONSOMMATION_HABITAT_COLOR,
+    CONSOMMATION_TOTALE_COLOR,
+    LOGEMENT_VACANT_COLOR_GENERAL,
+)
 from public_data.domain.containers import PublicDataContainer
 
 
@@ -50,7 +55,7 @@ class LogementVacantConsoProgressionChart(ProjectChart):
                 "yAxis": 1,
                 "data": consommation_total_progresison,
                 "tooltip": {"valueSuffix": " ha"},
-                "color": "#CFD1E5",
+                "color": CONSOMMATION_TOTALE_COLOR,
                 "id": "main",
             },
             {
@@ -59,14 +64,14 @@ class LogementVacantConsoProgressionChart(ProjectChart):
                 "yAxis": 1,
                 "data": consommation_habitat_progresison,
                 "tooltip": {"valueSuffix": " ha"},
-                "color": "#6a6af4",
+                "color": CONSOMMATION_HABITAT_COLOR,
                 "linkTo": "main",
             },
             {
                 "name": "Nombre de logements en vacance structurelle (privé + bailleurs sociaux)",
                 "type": "spline",
                 "data": logement_vacant_progression_total,
-                "color": "#fa4b42",
+                "color": LOGEMENT_VACANT_COLOR_GENERAL,
             },
         ], period
 
@@ -81,8 +86,11 @@ class LogementVacantConsoProgressionChart(ProjectChart):
             "xAxis": [{"categories": period}],
             "yAxis": [
                 {
-                    "title": {"text": "Nombre de logements vacants", "style": {"color": "#fa4b42"}},
-                    "labels": {"style": {"color": "#fa4b42"}},
+                    "title": {
+                        "text": "Nombre de logements vacants",
+                        "style": {"color": LOGEMENT_VACANT_COLOR_GENERAL},
+                    },
+                    "labels": {"style": {"color": LOGEMENT_VACANT_COLOR_GENERAL}},
                     "opposite": True,
                 },
                 {

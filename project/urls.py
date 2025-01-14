@@ -60,9 +60,9 @@ urlpatterns = [
         name="report_discover",
     ),
     path(
-        "<int:pk>/tableau-de-bord/logements-vacants",
-        views.ProjectReportLogementsVacantsView.as_view(),
-        name="report_logements_vacants",
+        "<int:pk>/tableau-de-bord/vacance-des-logements",
+        views.ProjectReportLogementVacantView.as_view(),
+        name="report_logement_vacant",
     ),
     path(
         "<int:pk>/tableau-de-bord/impermeabilisation",

@@ -2,7 +2,7 @@ from project.charts.base_project_chart import ProjectChart
 from public_data.domain.containers import PublicDataContainer
 
 
-class LogementVacantComparisonGaugeChart(ProjectChart):
+class LogementVacantAutorisationLogementRatioGaugeChart(ProjectChart):
     """
     Graphique en barre de comparaison du nombre de logements vacants et de noueaux logements.
     """
@@ -27,7 +27,7 @@ class LogementVacantComparisonGaugeChart(ProjectChart):
         raw_value = round(last_year_autorisation_logement_progression.percent_autorises_on_vacants_parc_general, 0)
 
         # Limiter l'aiguille à 100 mais afficher ">100%" si la valeur est supérieure
-        display_value = ">100%" if raw_value > 100 else f"{raw_value}%"
+        display_value = ">100%" if raw_value > 100 else f"{int(raw_value)}%"
         needle_value = min(raw_value, 100)
 
         return [
@@ -53,7 +53,10 @@ class LogementVacantComparisonGaugeChart(ProjectChart):
     @property
     def param(self):
         return super().param | {
-            "chart": {"type": "gauge"},
+            "chart": {
+                "type": "gauge",
+                "height": "65%",
+            },
             "title": {
                 "text": (
                     "Rapport entre logements vacants et nouveaux "
@@ -80,21 +83,21 @@ class LogementVacantComparisonGaugeChart(ProjectChart):
                     {
                         "from": 0,
                         "to": 20,
-                        "color": "#44D492",
+                        "color": "#DED0FB",
                         "thickness": 60,
                     },
                     {
                         "from": 20,
                         "to": 40,
-                        "color": "#88F7E2",
+                        "color": "#CAB4F8",
                         "thickness": 60,
                     },
-                    {"from": 40, "to": 60, "color": "#F6EB67", "thickness": 60},
-                    {"from": 60, "to": 80, "color": "#FFA15C", "thickness": 60},
+                    {"from": 40, "to": 60, "color": "#AF8EF5", "thickness": 60},
+                    {"from": 60, "to": 80, "color": "#8856F0", "thickness": 60},
                     {
                         "from": 80,
                         "to": 100,
-                        "color": "#FA233E",
+                        "color": "#5D1AEC",
                         "thickness": 60,
                     },
                 ],

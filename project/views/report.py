@@ -293,9 +293,9 @@ class ProjectReportSynthesisView(ProjectReportBaseView):
         return super().get_context_data(**kwargs)
 
 
-class ProjectReportLogementsVacantsView(ProjectReportBaseView):
-    partial_template_name = "project/components/dashboard/logements_vacants.html"
-    full_template_name = "project/pages/logements_vacants.html"
+class ProjectReportLogementVacantView(ProjectReportBaseView):
+    partial_template_name = "project/components/dashboard/logement_vacant.html"
+    full_template_name = "project/pages/logement_vacant.html"
 
     def get_context_data(self, **kwargs):
         project: Project = self.get_object()
@@ -303,8 +303,12 @@ class ProjectReportLogementsVacantsView(ProjectReportBaseView):
         kwargs.update(
             {
                 "diagnostic": project,
-                "logements_vacants_comparison_chart": charts.LogementVacantComparisonChart(project),
-                "logements_vacants_comparison_gauge_chart": charts.LogementVacantComparisonGaugeChart(project),
+                "logement_vacant_autorisation_construction_comparison_chart": (
+                    charts.LogementVacantAutorisationLogementComparisonChart(project)
+                ),
+                "logement_vacant_autorisation_construction_ratio_gauge_chart": (
+                    charts.LogementVacantAutorisationLogementRatioGaugeChart(project)
+                ),
                 "logement_vacant_autorisation_logement_ratio_progression_chart": (
                     charts.LogementVacantAutorisationLogementRatioProgressionChart(project)
                 ),

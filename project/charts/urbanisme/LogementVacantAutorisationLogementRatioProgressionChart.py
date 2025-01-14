@@ -5,7 +5,7 @@ from public_data.domain.containers import PublicDataContainer
 class LogementVacantAutorisationLogementRatioProgressionChart(ProjectChart):
     """
     Graphique en barre d'évolution du rapport entre le nombre de logements vacants et le nombre
-    d'autorisations de construction.'
+    d'autorisations de construction.
     """
 
     def _get_series(self):

@@ -1,8 +1,13 @@
 from project.charts.base_project_chart import ProjectChart
+from project.charts.constants import (
+    AUTORISATION_CONSTRUCTION_COLOR,
+    LOGEMENT_VACANT_COLOR_PRIVE,
+    LOGEMENT_VACANT_COLOR_SOCIAL,
+)
 from public_data.domain.containers import PublicDataContainer
 
 
-class LogementVacantComparisonChart(ProjectChart):
+class LogementVacantAutorisationLogementComparisonChart(ProjectChart):
     """
     Graphique en barre de comparaison du nombre de logements vacants et de noueaux logements.
     """
@@ -34,7 +39,7 @@ class LogementVacantComparisonChart(ProjectChart):
 
         return [
             {
-                "name": "Autorisations de construction",
+                "name": "Autorisations de constructions",
                 "data": [last_year_autorisation_logement_progression.logements_autorises, 0],
                 "stack": "construction",
                 "custom": {
@@ -42,6 +47,7 @@ class LogementVacantComparisonChart(ProjectChart):
                         last_year_autorisation_logement_progression.percent_autorises_on_parc_general, 2
                     )
                 },
+                "color": AUTORISATION_CONSTRUCTION_COLOR,
             },
             {
                 "name": "Logements vacants depuis plus de 2 ans dans le parc privé",
@@ -50,6 +56,7 @@ class LogementVacantComparisonChart(ProjectChart):
                 "custom": {
                     "percentage": round(last_year_logement_vacant_progression.logements_vacants_parc_prive_percent, 2)
                 },
+                "color": LOGEMENT_VACANT_COLOR_PRIVE,
             },
             {
                 "name": "Logements vacants depuis plus de 3 mois dans le parc des bailleurs sociaux",
@@ -58,6 +65,7 @@ class LogementVacantComparisonChart(ProjectChart):
                 "custom": {
                     "percentage": round(last_year_logement_vacant_progression.logements_vacants_parc_social_percent, 2)
                 },
+                "color": LOGEMENT_VACANT_COLOR_SOCIAL,
             },
         ]
 

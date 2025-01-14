@@ -13,12 +13,12 @@ Cela est nécessaire pour rendre du contenu HTML généré côté serveur, mais 
 Dans ce cas, les données provenant de Django sont considérées comme fiables.
 */
 
-const LogementsVacants: React.FC<{ endpoint: string }> = ({ endpoint }) => {
+const LogementVacant: React.FC<{ endpoint: string }> = ({ endpoint }) => {
     const { content, isLoading, error } = useHtmlLoader(endpoint);
 
     useHighcharts([
-        'logements_vacants_comparison_chart',
-        'logements_vacants_comparison_gauge_chart',
+        'logement_vacant_autorisation_construction_comparison_chart',
+        'logement_vacant_autorisation_construction_ratio_gauge_chart',
         'logement_vacant_autorisation_logement_ratio_progression_chart',
         'logement_vacant_ratio_progression_chart',
         'logement_vacant_conso_progression_chart',
@@ -38,4 +38,4 @@ const LogementsVacants: React.FC<{ endpoint: string }> = ({ endpoint }) => {
     );
 };
 
-export default LogementsVacants;
+export default LogementVacant;
