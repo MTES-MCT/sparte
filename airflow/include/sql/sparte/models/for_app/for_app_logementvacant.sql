@@ -108,7 +108,7 @@ SELECT
         as logements_vacants_parc_general
 FROM
     without_parc_general
-)
+), with_percentages as (
 SELECT
     land_id,
     land_type,
@@ -133,3 +133,26 @@ SELECT
     )::double precision as logements_vacants_parc_social_percent
 FROM
     with_parc_general
+), land_id_without_missing_years as (
+SELECT
+    with_percentages.land_type || ' ' || with_percentages.land_id AS land
+FROM
+    with_percentages
+group by
+    with_percentages.land_id,
+    with_percentages.land_type
+HAVING
+    array_agg(with_percentages.year) @> array[2019, 2020, 2021, 2022, 2023]
+)
+SELECT
+    *
+FROM
+    with_percentages
+WHERE
+    -- On ne garde que les land_id qui ont des données pour toutes les années
+    with_percentages.land_type || ' ' || with_percentages.land_id IN (
+        SELECT
+            land
+        FROM
+            land_id_without_missing_years
+    )

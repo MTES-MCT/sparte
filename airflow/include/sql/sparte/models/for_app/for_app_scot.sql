@@ -6,11 +6,13 @@
 }}
 
 with autorisation_logement_summary as (
-    SELECT DISTINCT code_scot
-    FROM {{ ref('logement_scot') }}
+    SELECT DISTINCT land_id
+    FROM {{ ref('for_app_autorisationlogement') }}
+    WHERE land_type = '{{ var('SCOT') }}'
 ), logement_vacants_summary as (
-    SELECT DISTINCT code_scot
-    FROM {{ ref('logements_vacants_scot') }}
+    SELECT DISTINCT land_id
+    FROM {{ ref('for_app_logementvacant') }}
+    WHERE land_type = '{{ var('SCOT') }}'
 )
 SELECT
     scot.epci_porteur_siren as siren,
@@ -19,11 +21,11 @@ SELECT
     ST_Transform(scot.geom, 4326) as mpoly,
     scot.srid_source as srid_source,
     scot.id_scot in (
-        SELECT code_scot
+        SELECT land_id
         FROM autorisation_logement_summary
     ) as autorisation_logement_available,
     scot.id_scot in (
-        SELECT code_scot
+        SELECT land_id
         FROM logement_vacants_summary
     ) as logements_vacants_available
 FROM
