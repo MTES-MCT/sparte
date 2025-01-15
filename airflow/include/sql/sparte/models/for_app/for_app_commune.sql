@@ -32,11 +32,13 @@ first_and_last_millesimes as (
     group by
         commune_code
 ), autorisation_logement_summary as (
-    SELECT DISTINCT code_commune
-    FROM {{ ref('logement_commune') }}
+    SELECT DISTINCT land_id
+    FROM {{ ref('for_app_autorisationlogement') }}
+    WHERE land_type = '{{ var('COMMUNE') }}'
 ), logement_vacants_summary as (
-    SELECT DISTINCT code_commune
-    FROM {{ ref('logements_vacants_commune') }}
+    SELECT DISTINCT land_id
+    FROM {{ ref('for_app_logementvacant') }}
+    WHERE land_type = '{{ var('COMMUNE') }}'
 )
 select
     commune.code as insee,
@@ -61,11 +63,11 @@ select
     consommation.correction_status as consommation_correction_status,
     competence.competence_planification,
     commune.code in (
-        select code_commune
+        select land_id
         from autorisation_logement_summary
     ) as autorisation_logement_available,
     commune.code in (
-        select code_commune
+        select land_id
         from logement_vacants_summary
     ) as logements_vacants_available
 from

@@ -5,11 +5,13 @@
     )
 }}
 with autorisation_logement_summary as (
-    SELECT DISTINCT code_epci
-    FROM {{ ref('logement_epci') }}
+    SELECT DISTINCT land_id
+    FROM {{ ref('for_app_autorisationlogement') }}
+    WHERE land_type = '{{ var('EPCI') }}'
 ), logement_vacants_summary as (
-    SELECT DISTINCT code_epci
-    FROM {{ ref('logements_vacants_epci') }}
+    SELECT DISTINCT land_id
+    FROM {{ ref('for_app_logementvacant') }}
+    WHERE land_type = '{{ var('EPCI') }}'
 )
 SELECT
     code                     AS source_id,
@@ -17,11 +19,11 @@ SELECT
     srid_source,
     ST_TRANSFORM(geom, 4326) AS mpoly,
     code in (
-        SELECT code_epci
+        SELECT land_id
         FROM autorisation_logement_summary
     ) as autorisation_logement_available,
     code in (
-        SELECT code_epci
+        SELECT land_id
         FROM logement_vacants_summary
     ) as logements_vacants_available
 FROM

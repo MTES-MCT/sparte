@@ -82,10 +82,29 @@ LEFT JOIN
 ON
     autorisations.land_id = logements_vacants.land_id
     AND autorisations.year = logements_vacants.year
+), land_id_without_missing_years as (
+    -- On récupère les land_id qui ont des données pour toutes les années
+SELECT
+    with_percentages.land_type || ' ' || with_percentages.land_id AS land
+FROM
+    with_percentages
+group by
+    with_percentages.land_id,
+    with_percentages.land_type
+HAVING
+    array_agg(with_percentages.year) @> array[2019, 2020, 2021, 2022, 2023]
 )
 SELECT
     *
 FROM
     with_percentages
+WHERE
+    -- On ne garde que les land_id qui ont des données pour toutes les années
+    with_percentages.land_type || ' ' || with_percentages.land_id IN (
+        SELECT
+            land
+        FROM
+            land_id_without_missing_years
+    )
 ORDER BY
 percent_autorises_on_vacants_parc_general DESC
