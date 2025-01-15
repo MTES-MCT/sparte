@@ -1,7 +1,6 @@
 {{
     config(
-        materialized='incremental',
-        pre_hook="{{ delete_from_this_where_field_not_in('ocsge_loaded_date', 'difference', 'loaded_date') }}",
+        materialized='table',
         indexes=[
             {'columns': ['ocsge_loaded_date'], 'type': 'btree'}
         ]
@@ -51,11 +50,6 @@ with difference_commune_without_surface as (
             commune.srid_source = ocsge.srid_source
             and
             st_intersects(commune.geom, ocsge.geom)
-
-    {% if is_incremental() %}
-        where
-            ocsge.loaded_date > (select max(ocsge_loaded_date) from {{ this }})
-    {% endif %}
 )
 
 select

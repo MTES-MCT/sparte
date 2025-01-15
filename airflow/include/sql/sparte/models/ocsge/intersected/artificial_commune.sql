@@ -1,7 +1,6 @@
 {{
     config(
-        materialized='incremental',
-        pre_hook="{{ delete_from_this_where_field_not_in('ocsge_loaded_date', 'occupation_du_sol', 'loaded_date') }}",
+        materialized='table',
         indexes=[
             {'columns': ['ocsge_loaded_date'], 'type': 'btree'}
         ]
@@ -30,11 +29,6 @@ with artificial_commune_without_surface as (
         {{ ref("occupation_du_sol_commune") }} AS ocsge
     WHERE
         ocsge.is_artificial = true
-
-    {% if is_incremental() %}
-        AND ocsge.ocsge_loaded_date >
-            (SELECT max(foo.ocsge_loaded_date) FROM {{ this }} as foo)
-    {% endif %}
 
     GROUP BY
         ocsge.commune_code,
