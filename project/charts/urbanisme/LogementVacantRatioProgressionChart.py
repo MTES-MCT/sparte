@@ -49,7 +49,7 @@ class LogementVacantRatioProgressionChart(ProjectChart):
 
         return super().param | {
             "chart": {"type": "column"},
-            "title": {"text": "Evolution du taux de vacance des logements sur le territoire (en %)"},
+            "title": {"text": "Évolution du taux de vacance des logements sur le territoire (en %)"},
             "xAxis": [{"categories": categories}],
             "yAxis": {"title": {"text": ""}},
             "tooltip": {

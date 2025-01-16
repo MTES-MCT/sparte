@@ -80,7 +80,7 @@ class LogementVacantConsoProgressionChart(ProjectChart):
         series, period = self._get_series()
 
         return super().param | {
-            "title": {"text": "Évolutions de la consommation d'espaces NAF et de la vacance des logements"},
+            "title": {"text": "Évolution de la consommation d'espaces NAF et de la vacance des logements"},
             "credits": {"enabled": False},
             "plotOptions": {"series": {"grouping": False, "borderWidth": 0}},
             "xAxis": [{"categories": period}],

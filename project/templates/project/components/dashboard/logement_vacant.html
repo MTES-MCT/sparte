@@ -3,14 +3,14 @@
 {% load sri %}
 
 <div>
-    <h3>Comparaison logements vacants et autorisations de construction de logements</h3>
+    <h3>Logements vacants et autorisations de construction de logements</h3>
 
     <div class="fr-grid-row fr-grid-row--gutters">
         <div class="fr-col-12">
             <div class="bg-white fr-p-2w">
                 <div class="d-flex justify-content-end align-items-center fr-mb-2w">
-                    {% include "project/components/widgets/chart_buttons.html" with chart="logement_vacant_autorisation_construction_comparison_chart" show_fullscreen=false %}
-                    <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#densityModal" data-toggle="tooltip" title="Astuces pour lire le graphique"></button>
+                    {% include "project/components/widgets/chart_buttons.html" with chart="logement_vacant_autorisation_construction_comparison_chart" show_fullscreen=True %}
+                    <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#LogementVacantAutorisationConstructionComparisonChartModal" data-toggle="tooltip" title="Astuces pour lire le graphique"></button>
                 </div>
                 <div id="logement_vacant_autorisation_construction_comparison_chart"></div>
             </div>
@@ -21,8 +21,8 @@
         <div class="fr-col-12 fr-col-lg-6">
             <div class="bg-white fr-p-2w h-100">
                 <div class="d-flex justify-content-end align-items-center fr-mb-2w">
-                    {% include "project/components/widgets/chart_buttons.html" with chart="logement_vacant_autorisation_construction_ratio_gauge_chart" show_fullscreen=false %}
-                    <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#densityModal" data-toggle="tooltip" title="Astuces pour lire le graphique"></button>
+                    {% include "project/components/widgets/chart_buttons.html" with chart="logement_vacant_autorisation_construction_ratio_gauge_chart" show_fullscreen=True %}
+                    <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#LogementVacantAutorisationConstructionRatioGaugeChartModal" data-toggle="tooltip" title="Astuces pour lire le graphique"></button>
                 </div>
                 <div id="logement_vacant_autorisation_construction_ratio_gauge_chart"></div>
             </div>
@@ -79,15 +79,15 @@
     </div>
 </div>
 
-<div class="fr-mt-5w">
-    <h3 id="conso-annuelle"></h3>
+<div class="fr-mt-7w">
+    <h3>Logements vacants et consommation d'espaces NAF</h3>
 
     <div class="fr-grid-row fr-grid-row--gutters">
         <div class="fr-col-12">
             <div class="bg-white fr-p-2w h-100">
                 <div class="d-flex justify-content-end align-items-center fr-mb-2w">
                     {% include "project/components/widgets/chart_buttons.html" with chart="logement_vacant_conso_progression_chart" show_fullscreen=True %}
-                    {% comment %} <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#consoAnnuelle" data-toggle="tooltip" title="Astuces pour lire le graphique"></button> {% endcomment %}
+                    <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#LogementVacantConsoProgressionChartModal" data-toggle="tooltip" title="Astuces pour lire le graphique"></button>
                 </div>
                 <div id="logement_vacant_conso_progression_chart"></div>
             </div>
@@ -95,15 +95,15 @@
     </div>
 </div>
 
-<div class="fr-mt-5w">
-    <h3 id="conso-annuelle"></h3>
+<div class="fr-mt-7w">
+    <h3 id="conso-annuelle">Évolution de la vacance des logements</h3>
 
     <div class="fr-grid-row fr-grid-row--gutters">
         <div class="fr-col-12">
             <div class="bg-white fr-p-2w h-100">
                 <div class="d-flex justify-content-end align-items-center fr-mb-2w">
                     {% include "project/components/widgets/chart_buttons.html" with chart="logement_vacant_ratio_progression_chart" show_fullscreen=True %}
-                    {% comment %} <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#consoAnnuelle" data-toggle="tooltip" title="Astuces pour lire le graphique"></button> {% endcomment %}
+                    <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#LogementVacantRatioProgressionChartModal" data-toggle="tooltip" title="Astuces pour lire le graphique"></button>
                 </div>
                 <div id="logement_vacant_ratio_progression_chart"></div>
             </div>
@@ -112,14 +112,12 @@
 </div>
 
 <div class="fr-mt-5w">
-    <h3 id="conso-annuelle"></h3>
-
     <div class="fr-grid-row fr-grid-row--gutters">
         <div class="fr-col-12">
             <div class="bg-white fr-p-2w h-100">
                 <div class="d-flex justify-content-end align-items-center fr-mb-2w">
                     {% include "project/components/widgets/chart_buttons.html" with chart="logement_vacant_autorisation_logement_ratio_progression_chart" show_fullscreen=True %}
-                    {% comment %} <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#consoAnnuelle" data-toggle="tooltip" title="Astuces pour lire le graphique"></button> {% endcomment %}
+                    <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#LogementVacantAutorisationLogementRatioProgressionChartModal" data-toggle="tooltip" title="Astuces pour lire le graphique"></button>
                 </div>
                 <div id="logement_vacant_autorisation_logement_ratio_progression_chart"></div>
             </div>
@@ -127,8 +125,94 @@
     </div>
 </div>
 
+<!-- Modal -->
+<div class="modal fade" id="LogementVacantAutorisationConstructionComparisonChartModal" tabindex="-1" aria-labelledby="LogementVacantAutorisationConstructionComparisonChartLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+        <div class="fr-modal__body">
+            <div class="fr-modal__header">
+                <button class="fr-link--close fr-link" data-bs-dismiss="modal" aria-label="Close">Fermer</button>
+            </div>
+            <div class="fr-modal__content">
+                <h1 class="fr-modal__title" id="LogementVacantAutorisationConstructionComparisonChartLabel">
+                    <span class="fr-fi-arrow-right-line fr-fi--lg"></span>
+                    Astuces Graphique - {{ logement_vacant_autorisation_construction_comparison_chart.chart.title.text }}
+                </h1>
+                {% include "project/components/widgets/chart_tips_buttons.html" %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="LogementVacantAutorisationConstructionRatioGaugeChartModal" tabindex="-1" aria-labelledby="LogementVacantAutorisationConstructionRatioGaugeChartLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+        <div class="fr-modal__body">
+            <div class="fr-modal__header">
+                <button class="fr-link--close fr-link" data-bs-dismiss="modal" aria-label="Close">Fermer</button>
+            </div>
+            <div class="fr-modal__content">
+                <h1 class="fr-modal__title" id="LogementVacantAutorisationConstructionRatioGaugeChartLabel">
+                    <span class="fr-fi-arrow-right-line fr-fi--lg"></span>
+                    Astuces Graphique - {{ logement_vacant_autorisation_construction_ratio_gauge_chart.chart.title.text }}
+                </h1>
+                {% include "project/components/widgets/chart_tips_buttons.html" %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="LogementVacantConsoProgressionChartModal" tabindex="-1" aria-labelledby="LogementVacantConsoProgressionChartLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+        <div class="fr-modal__body">
+            <div class="fr-modal__header">
+                <button class="fr-link--close fr-link" data-bs-dismiss="modal" aria-label="Close">Fermer</button>
+            </div>
+            <div class="fr-modal__content">
+                <h1 class="fr-modal__title" id="LogementVacantConsoProgressionChartLabel">
+                    <span class="fr-fi-arrow-right-line fr-fi--lg"></span>
+                    Astuces Graphique - {{ logement_vacant_conso_progression_chart.chart.title.text }}
+                </h1>
+                {% include "project/components/widgets/chart_tips_buttons.html" %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="LogementVacantRatioProgressionChartModal" tabindex="-1" aria-labelledby="LogementVacantRatioProgressionChartLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+        <div class="fr-modal__body">
+            <div class="fr-modal__header">
+                <button class="fr-link--close fr-link" data-bs-dismiss="modal" aria-label="Close">Fermer</button>
+            </div>
+            <div class="fr-modal__content">
+                <h1 class="fr-modal__title" id="LogementVacantRatioProgressionChartLabel">
+                    <span class="fr-fi-arrow-right-line fr-fi--lg"></span>
+                    Astuces Graphique - {{ logement_vacant_ratio_progression_chart.chart.title.text }}
+                </h1>
+                {% include "project/components/widgets/chart_tips_buttons.html" %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="LogementVacantAutorisationLogementRatioProgressionChartModal" tabindex="-1" aria-labelledby="LogementVacantAutorisationLogementRatioProgressionChartLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+        <div class="fr-modal__body">
+            <div class="fr-modal__header">
+                <button class="fr-link--close fr-link" data-bs-dismiss="modal" aria-label="Close">Fermer</button>
+            </div>
+            <div class="fr-modal__content">
+                <h1 class="fr-modal__title" id="LogementVacantAutorisationLogementRatioProgressionChartLabel">
+                    <span class="fr-fi-arrow-right-line fr-fi--lg"></span>
+                    Astuces Graphique - {{ logement_vacant_autorisation_logement_ratio_progression_chart.chart.title.text }}
+                </h1>
+                {% include "project/components/widgets/chart_tips_buttons.html" %}
+            </div>
+        </div>
+    </div>
+</div>
+
 {% display_chart_data 'logement_vacant_autorisation_construction_comparison_chart' logement_vacant_autorisation_construction_comparison_chart CSP_NONCE %}
 {% display_chart_data 'logement_vacant_autorisation_construction_ratio_gauge_chart' logement_vacant_autorisation_construction_ratio_gauge_chart CSP_NONCE %}
-{% display_chart_data 'logement_vacant_autorisation_logement_ratio_progression_chart' logement_vacant_autorisation_logement_ratio_progression_chart CSP_NONCE %}
-{% display_chart_data 'logement_vacant_ratio_progression_chart' logement_vacant_ratio_progression_chart CSP_NONCE %}
 {% display_chart_data 'logement_vacant_conso_progression_chart' logement_vacant_conso_progression_chart CSP_NONCE %}
+{% display_chart_data 'logement_vacant_ratio_progression_chart' logement_vacant_ratio_progression_chart CSP_NONCE %}
+{% display_chart_data 'logement_vacant_autorisation_logement_ratio_progression_chart' logement_vacant_autorisation_logement_ratio_progression_chart CSP_NONCE %}
