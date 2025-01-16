@@ -1,0 +1,33 @@
+<div class="fr-table fr-table--bordered">
+    <div class="fr-table__wrapper">
+        <div class="fr-table__container">
+            <div class="fr-table__content">
+                <table>
+                    <caption>
+                        Comparaison entre vacance des logements et autorisations de construction de logements
+                    </caption>
+                    <thead>
+                        <tr>
+                            {% for header in headers %}
+                                <th scope="col" class="{% if forloop.first %}fr-text--bold fr-cell--left{% else %}fr-cell--right{% endif %}">
+                                    {{ header }}
+                                </th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in data %}
+                            <tr>
+                                <td class="fr-text--bold fr-cell--left">{{ row.name }}</td>
+                                <td class="fr-cell--right">{{ row.quantity }}</td>
+                                <td class="fr-cell--right">
+                                    {{ row.percentage }}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

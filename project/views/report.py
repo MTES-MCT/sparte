@@ -52,6 +52,9 @@ from public_data.infra.demography.population.progression.table.PopulationConsoPr
 from public_data.infra.planning_competency.PlanningCompetencyServiceSudocuh import (
     PlanningCompetencyServiceSudocuh,
 )
+from public_data.infra.urbanisme.logement_vacant.progression.table.LogementVacantAutorisationConstructionComparisonTableMapper import (  # noqa: E501
+    LogementVacantAutorisationConstructionComparisonTableMapper,
+)
 from public_data.models import CouvertureSol, UsageSol
 from public_data.models.administration import AdminRef
 from public_data.models.gpu import ZoneUrba
@@ -313,13 +316,13 @@ class ProjectReportLogementVacantView(ProjectReportBaseView):
                 end_date=project.analyse_end_date,
             )
         )
-        print(autorisation_logement_progression)
 
         kwargs.update(
             {
                 "diagnostic": project,
                 "logement_vacant_last_year": logement_vacant_progression.logement_vacant[-1],
                 "autorisation_logement_last_year": autorisation_logement_progression.autorisation_logement[-1],
+                # Charts
                 "logement_vacant_autorisation_construction_comparison_chart": (
                     charts.LogementVacantAutorisationLogementComparisonChart(project)
                 ),
@@ -331,6 +334,13 @@ class ProjectReportLogementVacantView(ProjectReportBaseView):
                 ),
                 "logement_vacant_ratio_progression_chart": (charts.LogementVacantRatioProgressionChart(project)),
                 "logement_vacant_conso_progression_chart": (charts.LogementVacantConsoProgressionChart(project)),
+                # Data tables
+                "logement_vacant_autorisation_construction_comparison_data_table": (
+                    LogementVacantAutorisationConstructionComparisonTableMapper.map(
+                        logement_vacant_progression=logement_vacant_progression,
+                        autorisation_logement_progression=autorisation_logement_progression,
+                    )
+                ),
             }
         )
         return super().get_context_data(**kwargs)
