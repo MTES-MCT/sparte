@@ -3,7 +3,7 @@
 {% load sri %}
 
 <div>
-    <h3 id="determinants-conso">Comparaison logements vacants et autorisations de constructions</h3>
+    <h3 id="determinants-conso">Comparaison logements vacants et autorisations de construction de logements</h3>
 
     <div class="fr-grid-row fr-grid-row--gutters">
         <div class="fr-col-12">
@@ -38,9 +38,9 @@
                             <strong>
                                 {{ autorisation_logement_last_year.logements_autorises }} 
                                 {% if autorisation_logement_last_year.logements_autorises < 2 %}
-                                nouveau logement a été autorisé 
+                                autorisation de construction de logement a été autoriseé 
                                 {% else %}
-                                nouveaux logements ont été autorisés, 
+                                autorisations de construction de logements ont été autorisées, 
                                 {% endif %}
                             </strong>
                             ce qui correspond à une augmentation de {{ autorisation_logement_last_year.percent_autorises_on_parc_general|smart_round }}% de son parc de logements total.
@@ -63,7 +63,14 @@
                             depuis plus de 3 mois.
                         </p>
                         <p class="fr-text--sm"> 
-                            Sur le territoire de {{ project.territory_name }}, le nombre de logements vacants représente donc {{ autorisation_logement_last_year.percent_autorises_on_vacants_parc_general|smart_round }}% du nombre de nouveaux logements construits.
+                            Sur le territoire de {{ project.territory_name }}, le nombre de logements vacants représente donc, en proportion, {{ autorisation_logement_last_year.percent_autorises_on_vacants_parc_general|smart_round }}% du nombre d'autorisations de construction de logements.
+                            {% if autorisation_logement_last_year.percent_autorises_on_vacants_parc_general > 100 %}
+                            Autrement dit, il y a {{ autorisation_logement_last_year.percent_autorises_on_vacants_parc_general|divide_by:100|smart_round}} fois plus de logements vacants que d'autorisations de construction de logement.
+                            {% elif autorisation_logement_last_year.percent_autorises_on_vacants_parc_general == 100 %}
+                            Autrement dit, il y a autant de logements vacants que d'autorisations de construction de logement.
+                            {% else %}
+                            Autrement dit, il y a {{ 100|divide_by:autorisation_logement_last_year.percent_autorises_on_vacants_parc_general|smart_round }} fois moins de logements vacants que d'autorisations de construction de logement.
+                            {% endif %}
                         </p>
                     </div>
                 </div>

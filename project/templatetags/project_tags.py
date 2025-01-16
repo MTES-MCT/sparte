@@ -81,3 +81,11 @@ def smart_round(value):
         return round(value, 2)  # Sinon retourne avec 2 décimales
     except (ValueError, TypeError):
         return value  # Retourne la valeur brute en cas d'erreur
+
+
+@register.filter
+def divide_by(value, arg):
+    try:
+        return float(value) / float(arg)
+    except (ValueError, ZeroDivisionError):
+        return None

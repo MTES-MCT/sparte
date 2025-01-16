@@ -313,6 +313,7 @@ class ProjectReportLogementVacantView(ProjectReportBaseView):
                 end_date=project.analyse_end_date,
             )
         )
+        print(autorisation_logement_progression)
 
         kwargs.update(
             {
