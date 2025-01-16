@@ -112,24 +112,6 @@
 </div>
 
 <div class="fr-mt-7w">
-    <h3>Logements vacants et consommation d'espaces NAF</h3>
-
-    <div class="fr-grid-row fr-grid-row--gutters">
-        <div class="fr-col-12">
-            <div class="bg-white fr-p-2w h-100">
-                <div class="d-flex justify-content-end align-items-center fr-mb-2w">
-                    {% include "project/components/widgets/chart_buttons.html" with chart="logement_vacant_conso_progression_chart" show_fullscreen=True %}
-                    <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#LogementVacantConsoProgressionChartModal" data-toggle="tooltip" title="Astuces pour lire le graphique"></button>
-                </div>
-                <div id="logement_vacant_conso_progression_chart"></div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="fr-mt-7w">
-    <h3 id="conso-annuelle">Évolution de la vacance des logements</h3>
-
     <div class="fr-grid-row fr-grid-row--gutters">
         <div class="fr-col-12">
             <div class="bg-white fr-p-2w h-100">
@@ -152,6 +134,22 @@
                     <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#LogementVacantAutorisationLogementRatioProgressionChartModal" data-toggle="tooltip" title="Astuces pour lire le graphique"></button>
                 </div>
                 <div id="logement_vacant_autorisation_logement_ratio_progression_chart"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="fr-mt-7w">
+    <h3>Logements vacants et consommation d'espaces NAF</h3>
+
+    <div class="fr-grid-row fr-grid-row--gutters">
+        <div class="fr-col-12">
+            <div class="bg-white fr-p-2w h-100">
+                <div class="d-flex justify-content-end align-items-center fr-mb-2w">
+                    {% include "project/components/widgets/chart_buttons.html" with chart="logement_vacant_conso_progression_chart" show_fullscreen=True %}
+                    <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#LogementVacantConsoProgressionChartModal" data-toggle="tooltip" title="Astuces pour lire le graphique"></button>
+                </div>
+                <div id="logement_vacant_conso_progression_chart"></div>
             </div>
         </div>
     </div>

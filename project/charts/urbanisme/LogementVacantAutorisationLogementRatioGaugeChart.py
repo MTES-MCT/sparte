@@ -36,7 +36,10 @@ class LogementVacantAutorisationLogementRatioGaugeChart(ProjectChart):
 
         return [
             {
-                "name": "Rapport entre logements vacants et autorisations de construction de logements",
+                "name": (
+                    "Rapport entre le nombre de logements vacants et le nombre "
+                    "d'autorisations de construction de logements"
+                ),
                 "data": [needle_value],
                 "dataLabels": {
                     "format": display_value,
@@ -63,7 +66,7 @@ class LogementVacantAutorisationLogementRatioGaugeChart(ProjectChart):
             },
             "title": {
                 "text": (
-                    "Rapport entre logements vacants et autorisations de "
+                    "Rapport entre le nombre de logements vacants et le nombre d'autorisations de "
                     f"construction de logements ({self.END_DATE})"
                 ),
             },

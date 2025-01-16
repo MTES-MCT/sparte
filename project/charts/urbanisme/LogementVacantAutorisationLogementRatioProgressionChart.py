@@ -46,7 +46,7 @@ class LogementVacantAutorisationLogementRatioProgressionChart(ProjectChart):
             "chart": {"type": "column"},
             "title": {
                 "text": (
-                    "Évolution du rapport entre le nombre total de logements vacants "
+                    "Évolution du rapport entre le nombre de logements vacants "
                     "et le nombre d'autorisations de construction de logements (%)"
                 )
             },
