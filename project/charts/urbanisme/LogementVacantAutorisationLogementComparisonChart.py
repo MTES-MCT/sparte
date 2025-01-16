@@ -9,7 +9,7 @@ from public_data.domain.containers import PublicDataContainer
 
 class LogementVacantAutorisationLogementComparisonChart(ProjectChart):
     """
-    Graphique en barre de comparaison du nombre de logements vacants et de noueaux logements.
+    Graphique en barre de comparaison du nombre de logements vacants et d'autorisations de construction de logements'.
     """
 
     def _get_series(self):
@@ -39,7 +39,7 @@ class LogementVacantAutorisationLogementComparisonChart(ProjectChart):
 
         return [
             {
-                "name": "Autorisations de constructions",
+                "name": "Autorisations de construction de logements",
                 "data": [last_year_autorisation_logement_progression.logements_autorises, 0],
                 "stack": "construction",
                 "custom": {
@@ -75,8 +75,8 @@ class LogementVacantAutorisationLogementComparisonChart(ProjectChart):
             "chart": {"type": "bar"},
             "title": {
                 "text": (
-                    "Comparaison entre vacance des logements et construction "
-                    f"de logements neufs ({self.project.analyse_end_date})"
+                    "Comparaison entre vacance des logements et autorisations de "
+                    f"construction de logements ({self.project.analyse_end_date})"
                 )
             },
             "xAxis": {

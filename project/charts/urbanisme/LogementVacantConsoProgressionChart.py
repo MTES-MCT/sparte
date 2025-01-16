@@ -50,7 +50,7 @@ class LogementVacantConsoProgressionChart(ProjectChart):
 
         return [
             {
-                "name": "Consommation totale ",
+                "name": "Consommation totale",
                 "type": "column",
                 "yAxis": 1,
                 "data": consommation_total_progresison,
@@ -59,7 +59,7 @@ class LogementVacantConsoProgressionChart(ProjectChart):
                 "id": "main",
             },
             {
-                "name": "Consommation à destination de l'habitat ",
+                "name": "Consommation à destination de l'habitat",
                 "type": "column",
                 "yAxis": 1,
                 "data": consommation_habitat_progresison,

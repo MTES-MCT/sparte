@@ -31,8 +31,8 @@ class LogementVacantAutorisationLogementRatioProgressionChart(ProjectChart):
         return [
             {
                 "name": (
-                    "Rapport entre le nombre total de logements vacants et le nombre"
-                    "de constructions de logements autorisées"
+                    "Rapport entre le nombre total de logements vacants et le nombre "
+                    "d'autorisations de construction de logements"
                 ),
                 "data": data,
             },
@@ -47,7 +47,7 @@ class LogementVacantAutorisationLogementRatioProgressionChart(ProjectChart):
             "title": {
                 "text": (
                     "Evolution du rapport entre le nombre total de logements vacants "
-                    "et le nombre de constructions de logements autorisées (%)"
+                    "et le nombre d'autorisations de construction de logements (%)"
                 )
             },
             "xAxis": [{"categories": categories}],

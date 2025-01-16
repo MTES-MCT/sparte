@@ -4,7 +4,7 @@ from public_data.domain.containers import PublicDataContainer
 
 class LogementVacantAutorisationLogementRatioGaugeChart(ProjectChart):
     """
-    Graphique en barre de comparaison du nombre de logements vacants et de noueaux logements.
+    Graphique en barre de comparaison du nombre de logements vacants et d'autorisations de construction de logements.
     """
 
     def _get_series(self):
@@ -32,7 +32,7 @@ class LogementVacantAutorisationLogementRatioGaugeChart(ProjectChart):
 
         return [
             {
-                "name": "Rapport entre logements vacants et nouveaux logements autorisés (2023)",
+                "name": "Rapport entre logements vacants et autorisations de construction de logements",
                 "data": [needle_value],
                 "dataLabels": {
                     "format": display_value,
@@ -59,15 +59,9 @@ class LogementVacantAutorisationLogementRatioGaugeChart(ProjectChart):
             },
             "title": {
                 "text": (
-                    "Rapport entre logements vacants et nouveaux "
-                    f"logements autorisés ({self.project.analyse_end_date})"
+                    "Rapport entre logements vacants et autorisations de "
+                    f"construction de logements ({self.project.analyse_end_date})"
                 ),
-            },
-            "xAxis": {
-                "categories": [
-                    f"Nombre de nouveaux logements autorisés ({self.project.analyse_end_date})",
-                    f"Nombre de logements en vacance structurelle ({self.project.analyse_end_date})",
-                ]
             },
             "yAxis": {
                 "min": 0,
