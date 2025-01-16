@@ -70,10 +70,10 @@ SELECT
     autorisations.surface_de_plancher_commencee::double precision,
     coalesce(
         autorisations.logements_autorises
-         * 100 / NULLIF(logements_vacants.logements_parc_general, 0),
+         * 100.0 / NULLIF(logements_vacants.logements_parc_general, 0),
     0)::double precision as percent_autorises_on_parc_general,
     coalesce(
-        NULLIF(logements_vacants.logements_vacants_parc_general, 0) * 100 / NULLIF(autorisations.logements_autorises, 0),
+        NULLIF(logements_vacants.logements_vacants_parc_general, 0) * 100.0 / NULLIF(autorisations.logements_autorises, 0),
     0)::double precision as percent_autorises_on_vacants_parc_general
 FROM
     autorisations
