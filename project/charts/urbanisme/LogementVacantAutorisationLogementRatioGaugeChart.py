@@ -7,6 +7,10 @@ class LogementVacantAutorisationLogementRatioGaugeChart(ProjectChart):
     Graphique en barre de comparaison du nombre de logements vacants et d'autorisations de construction de logements.
     """
 
+    # Dates en dur
+    START_DATE = 2019
+    END_DATE = 2023
+
     def _get_series(self):
         """
         Génère et retourne la liste des séries à utiliser dans le graphique.
@@ -15,8 +19,8 @@ class LogementVacantAutorisationLogementRatioGaugeChart(ProjectChart):
         autorisation_logement_progression = (
             PublicDataContainer.autorisation_logement_progression_service().get_by_land(
                 land=self.project.land_proxy,
-                start_date=self.project.analyse_start_date,
-                end_date=self.project.analyse_end_date,
+                start_date=self.START_DATE,
+                end_date=self.END_DATE,
             )
         )
 
@@ -60,7 +64,7 @@ class LogementVacantAutorisationLogementRatioGaugeChart(ProjectChart):
             "title": {
                 "text": (
                     "Rapport entre logements vacants et autorisations de "
-                    f"construction de logements ({self.project.analyse_end_date})"
+                    f"construction de logements ({self.END_DATE})"
                 ),
             },
             "yAxis": {

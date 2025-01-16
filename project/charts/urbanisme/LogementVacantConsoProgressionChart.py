@@ -12,6 +12,10 @@ class LogementVacantConsoProgressionChart(ProjectChart):
     Graphique en colonne et ligne d'évolution de la consommation d'espaces NAF et de la vacance des logements.
     """
 
+    # Dates en dur
+    START_DATE = 2019
+    END_DATE = 2022
+
     def _get_series(self):
         """
         Génère et retourne la liste des séries à utiliser dans le graphique.
@@ -22,8 +26,8 @@ class LogementVacantConsoProgressionChart(ProjectChart):
             PublicDataContainer.logement_vacant_progression_service()
             .get_by_land(
                 land=self.project.land_proxy,
-                start_date=self.project.analyse_start_date,
-                end_date=self.project.analyse_end_date,
+                start_date=self.START_DATE,
+                end_date=self.END_DATE,
             )
             .logement_vacant
         )
@@ -31,16 +35,12 @@ class LogementVacantConsoProgressionChart(ProjectChart):
             round(item.logements_vacants_parc_general, 2) for item in logement_vacant_progression
         ]
 
-        # Extraire la période disponible de données de vacance des logements
-        period = [item.year for item in logement_vacant_progression]
-
-        # Récupérer les données de consommation d'espaces NAF pour la même période que la vacance des logements
         consommation_progresison = (
             PublicDataContainer.consommation_progression_service()
             .get_by_land(
                 land=self.project.land_proxy,
-                start_date=min(period),
-                end_date=max(period),
+                start_date=self.START_DATE,
+                end_date=self.END_DATE,
             )
             .consommation
         )
@@ -73,17 +73,15 @@ class LogementVacantConsoProgressionChart(ProjectChart):
                 "data": logement_vacant_progression_total,
                 "color": LOGEMENT_VACANT_COLOR_GENERAL,
             },
-        ], period
+        ]
 
     @property
     def param(self):
-        series, period = self._get_series()
-
         return super().param | {
             "title": {"text": "Évolution de la consommation d'espaces NAF et de la vacance des logements"},
             "credits": {"enabled": False},
             "plotOptions": {"series": {"grouping": False, "borderWidth": 0}},
-            "xAxis": [{"categories": period}],
+            "xAxis": {"categories": [str(year) for year in range(self.START_DATE, self.END_DATE + 1)]},
             "yAxis": [
                 {
                     "title": {
@@ -99,7 +97,7 @@ class LogementVacantConsoProgressionChart(ProjectChart):
                 },
             ],
             "tooltip": {"headerFormat": "<b>{point.key}</b><br/>", "shared": True},
-            "series": series,
+            "series": self._get_series(),
         }
 
     # To remove after refactoring

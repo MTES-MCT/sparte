@@ -12,6 +12,10 @@ class LogementVacantAutorisationLogementComparisonChart(ProjectChart):
     Graphique en barre de comparaison du nombre de logements vacants et d'autorisations de construction de logements'.
     """
 
+    # Dates en dur
+    START_DATE = 2019
+    END_DATE = 2023
+
     def _get_series(self):
         """
         Génère et retourne la liste des séries à utiliser dans le graphique.
@@ -20,8 +24,8 @@ class LogementVacantAutorisationLogementComparisonChart(ProjectChart):
         autorisation_logement_progression = (
             PublicDataContainer.autorisation_logement_progression_service().get_by_land(
                 land=self.project.land_proxy,
-                start_date=self.project.analyse_start_date,
-                end_date=self.project.analyse_end_date,
+                start_date=self.START_DATE,
+                end_date=self.END_DATE,
             )
         )
 
@@ -30,8 +34,8 @@ class LogementVacantAutorisationLogementComparisonChart(ProjectChart):
 
         logement_vacant_progression = PublicDataContainer.logement_vacant_progression_service().get_by_land(
             land=self.project.land_proxy,
-            start_date=self.project.analyse_start_date,
-            end_date=self.project.analyse_end_date,
+            start_date=self.START_DATE,
+            end_date=self.END_DATE,
         )
 
         # On récupére la dernière année de données disponible sur la période
@@ -76,13 +80,13 @@ class LogementVacantAutorisationLogementComparisonChart(ProjectChart):
             "title": {
                 "text": (
                     "Comparaison entre vacance des logements et autorisations de "
-                    f"construction de logements ({self.project.analyse_end_date})"
+                    f"construction de logements ({self.END_DATE})"
                 )
             },
             "xAxis": {
                 "categories": [
-                    f"Nombre de nouveaux logements autorisés ({self.project.analyse_end_date})",
-                    f"Nombre de logements en vacance structurelle ({self.project.analyse_end_date})",
+                    f"Nombre de nouveaux logements autorisés ({self.END_DATE})",
+                    f"Nombre de logements en vacance structurelle ({self.END_DATE})",
                 ]
             },
             "yAxis": {

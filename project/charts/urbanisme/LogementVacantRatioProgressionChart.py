@@ -11,6 +11,10 @@ class LogementVacantRatioProgressionChart(ProjectChart):
     Graphique en barre d'évolution du taux de logements vacants privé et social
     """
 
+    # Dates en dur
+    START_DATE = 2019
+    END_DATE = 2022
+
     def _get_series(self):
         """
         Génère et retourne la liste des séries à utiliser dans le graphique.
@@ -18,22 +22,20 @@ class LogementVacantRatioProgressionChart(ProjectChart):
 
         logement_vacant_progression = PublicDataContainer.logement_vacant_progression_service().get_by_land(
             land=self.project.land_proxy,
-            start_date=self.project.analyse_start_date,
-            end_date=self.project.analyse_end_date,
+            start_date=self.START_DATE,
+            end_date=self.END_DATE,
         )
 
-        data_parc_privé = [d.logements_vacants_parc_prive_percent for d in logement_vacant_progression.logement_vacant]
+        data_parc_prive = [d.logements_vacants_parc_prive_percent for d in logement_vacant_progression.logement_vacant]
 
         data_parc_social = [
             d.logements_vacants_parc_social_percent for d in logement_vacant_progression.logement_vacant
         ]
 
-        categories = [str(d.year) for d in logement_vacant_progression.logement_vacant]
-
         return [
             {
                 "name": ("Taux de vacance de plus de 2 ans dans le parc privé"),
-                "data": data_parc_privé,
+                "data": data_parc_prive,
                 "color": LOGEMENT_VACANT_COLOR_PRIVE,
             },
             {
@@ -41,23 +43,21 @@ class LogementVacantRatioProgressionChart(ProjectChart):
                 "data": data_parc_social,
                 "color": LOGEMENT_VACANT_COLOR_SOCIAL,
             },
-        ], categories
+        ]
 
     @property
     def param(self):
-        series, categories = self._get_series()
-
         return super().param | {
             "chart": {"type": "column"},
             "title": {"text": "Évolution du taux de vacance des logements sur le territoire (en %)"},
-            "xAxis": [{"categories": categories}],
+            "xAxis": {"categories": [str(year) for year in range(self.START_DATE, self.END_DATE + 1)]},
             "yAxis": {"title": {"text": ""}},
             "tooltip": {
                 "tooltip": {"valueSuffix": " %"},
                 "headerFormat": "<b>{point.key}</b><br/>",
                 "pointFormat": ('<span style="color:{point.color}">●</span> ' "{series.name}: <b>{point.y:.2f} %</b>"),
             },
-            "series": series,
+            "series": self._get_series(),
         }
 
     # To remove after refactoring
