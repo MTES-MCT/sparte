@@ -54,6 +54,9 @@ class Region(LandMixin, GetDataFromCeremaMixin, models.Model):
             millesimes.update(dept.ocsge_millesimes)
         return millesimes
 
+    def get_departements(self):
+        return [dept.source_id for dept in self.departement_set.all()]
+
     @classmethod
     def search(cls, needle, region=None, departement=None, epci=None):
         qs = cls.objects.annotate(similarity=TrigramSimilarity(Lower("name__unaccent"), needle.lower()))

@@ -503,11 +503,7 @@ class Project(BaseProject):
     def get_ocsge_millesimes(self):
         """Return all OCS GE millésimes available within project cities and between
         project analyse start and end date"""
-        ids = self.cities.filter(departement__is_artif_ready=True).values_list("departement_id", flat=True).distinct()
-        years = set()
-        for dept in Departement.objects.filter(id__in=ids):
-            years.update(dept.ocsge_millesimes)
-        return [x for x in years if self.analyse_start_date <= x <= self.analyse_end_date]
+        return self.land.get_ocsge_millesimes()
 
     def add_look_a_like(self, public_key, many=False):
         """Add a public_key to look a like keeping the field formated
