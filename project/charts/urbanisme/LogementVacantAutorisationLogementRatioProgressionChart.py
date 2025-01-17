@@ -8,9 +8,8 @@ class LogementVacantAutorisationLogementRatioProgressionChart(ProjectChart):
     d'autorisations de construction.
     """
 
-    # Dates en dur
-    START_DATE = 2019
-    END_DATE = 2023
+    def __init__(self, project, start_date, end_date):
+        super().__init__(project=project, start_date=start_date, end_date=end_date)
 
     def _get_series(self):
         """
@@ -20,8 +19,8 @@ class LogementVacantAutorisationLogementRatioProgressionChart(ProjectChart):
         autorisation_logement_progression = (
             PublicDataContainer.autorisation_logement_progression_service().get_by_land(
                 land=self.project.land_proxy,
-                start_date=self.START_DATE,
-                end_date=self.END_DATE,
+                start_date=self.start_date,
+                end_date=self.end_date,
             )
         )
 
@@ -50,7 +49,7 @@ class LogementVacantAutorisationLogementRatioProgressionChart(ProjectChart):
                     "et le nombre d'autorisations de construction de logements (%)"
                 )
             },
-            "xAxis": {"categories": [str(year) for year in range(self.START_DATE, self.END_DATE + 1)]},
+            "xAxis": {"categories": [str(year) for year in range(self.start_date, self.end_date + 1)]},
             "yAxis": {"title": {"text": ""}},
             "tooltip": {
                 "headerFormat": "<b>{point.key}</b><br/>",

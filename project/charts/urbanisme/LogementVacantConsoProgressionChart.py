@@ -12,9 +12,8 @@ class LogementVacantConsoProgressionChart(ProjectChart):
     Graphique en colonne et ligne d'évolution de la consommation d'espaces NAF et de la vacance des logements.
     """
 
-    # Dates en dur
-    START_DATE = 2019
-    END_DATE = 2022
+    def __init__(self, project, start_date, end_date):
+        super().__init__(project=project, start_date=start_date, end_date=end_date)
 
     def _get_series(self):
         """
@@ -26,8 +25,8 @@ class LogementVacantConsoProgressionChart(ProjectChart):
             PublicDataContainer.logement_vacant_progression_service()
             .get_by_land(
                 land=self.project.land_proxy,
-                start_date=self.START_DATE,
-                end_date=self.END_DATE,
+                start_date=self.start_date,
+                end_date=self.end_date,
             )
             .logement_vacant
         )
@@ -39,8 +38,8 @@ class LogementVacantConsoProgressionChart(ProjectChart):
             PublicDataContainer.consommation_progression_service()
             .get_by_land(
                 land=self.project.land_proxy,
-                start_date=self.START_DATE,
-                end_date=self.END_DATE,
+                start_date=self.start_date,
+                end_date=self.end_date,
             )
             .consommation
         )
@@ -81,7 +80,7 @@ class LogementVacantConsoProgressionChart(ProjectChart):
             "title": {"text": "Évolution de la consommation d'espaces NAF et de la vacance des logements"},
             "credits": {"enabled": False},
             "plotOptions": {"series": {"grouping": False, "borderWidth": 0}},
-            "xAxis": {"categories": [str(year) for year in range(self.START_DATE, self.END_DATE + 1)]},
+            "xAxis": {"categories": [str(year) for year in range(self.start_date, self.end_date + 1)]},
             "yAxis": [
                 {
                     "title": {

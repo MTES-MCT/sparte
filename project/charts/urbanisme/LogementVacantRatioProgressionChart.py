@@ -11,9 +11,8 @@ class LogementVacantRatioProgressionChart(ProjectChart):
     Graphique en barre d'évolution du taux de logements vacants privé et social
     """
 
-    # Dates en dur
-    START_DATE = 2019
-    END_DATE = 2023
+    def __init__(self, project, start_date, end_date):
+        super().__init__(project=project, start_date=start_date, end_date=end_date)
 
     def _get_series(self):
         """
@@ -22,8 +21,8 @@ class LogementVacantRatioProgressionChart(ProjectChart):
 
         logement_vacant_progression = PublicDataContainer.logement_vacant_progression_service().get_by_land(
             land=self.project.land_proxy,
-            start_date=self.START_DATE,
-            end_date=self.END_DATE,
+            start_date=self.start_date,
+            end_date=self.end_date,
         )
 
         data_parc_prive = [d.logements_vacants_parc_prive_percent for d in logement_vacant_progression.logement_vacant]
@@ -50,7 +49,7 @@ class LogementVacantRatioProgressionChart(ProjectChart):
         return super().param | {
             "chart": {"type": "column"},
             "title": {"text": "Évolution du taux de vacance des logements sur le territoire (en %)"},
-            "xAxis": {"categories": [str(year) for year in range(self.START_DATE, self.END_DATE + 1)]},
+            "xAxis": {"categories": [str(year) for year in range(self.start_date, self.end_date + 1)]},
             "yAxis": {"title": {"text": ""}},
             "tooltip": {
                 "tooltip": {"valueSuffix": " %"},
