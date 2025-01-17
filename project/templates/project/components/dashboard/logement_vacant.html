@@ -17,7 +17,39 @@
         </div>
     </div>
 
-    <div class="fr-grid-row fr-grid-row--gutters">
+    <div class="fr-notice bg-white fr-mt-2w">
+        <div class="fr-px-2w">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <span class="fr-icon-information-line" aria-hidden="true"></span>
+                    <span class="fr-text--xs fr-mr-1w">Source de données: </span>
+                    <p class="fr-tag fr-tag--sm fr-tag--blue">
+                        <strong>SITADEL</strong>
+                    </p>
+                    <p class="fr-tag fr-tag--sm fr-tag--blue">
+                        <strong>LOVAC</strong>
+                    </p>
+                    <p class="fr-tag fr-tag--sm fr-tag--blue">
+                        <strong>RPLS</strong>
+                    </p>
+                </div>
+                <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data-logement_vacant_autorisation_construction_comparison_chart">Détails données et calcul</button>
+            </div>
+            <div class="fr-collapse" id="target-data-logement_vacant_autorisation_construction_comparison_chart">
+                <h6 class="fr-mt-2w">Source</h6>
+                {% include "project/components/widgets/source_sitadel.html" %}
+                {% include "project/components/widgets/source_lovac.html" %}
+                {% include "project/components/widgets/source_rpls.html" %}
+                <h6 class="fr-mt-2w">Calcul</h6>
+                <p class="fr-text--sm">Données agrégées sur le territoire, correspondant à la dernière année pour laquelle les données sont disponibles pour toutes les sources.</p>
+                <p class="fr-text--sm">Les pourcentages affichés correspondent aux rapports entre les valeurs et le nombre total de logements du territoire en question.</p>
+                <h6 class="fr-mt-2w">Données</h6>
+                {{ logement_vacant_autorisation_construction_comparison_data_table }}
+            </div>
+        </div>
+    </div>
+
+    <div class="fr-grid-row fr-grid-row--gutters fr-mt-2w">
         <div class="fr-col-12 fr-col-lg-6">
             <div class="bg-white fr-p-2w h-100">
                 <div class="d-flex justify-content-end align-items-center fr-mb-2w">
@@ -94,60 +126,17 @@
                         <strong>RPLS</strong>
                     </p>
                 </div>
-                <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data-logement_vacant_autorisation_construction_comparison_chart">Détails données et calcul</button>
+                <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data-logement_vacant_autorisation_construction_ratio_gauge_chart">Détails données et calcul</button>
             </div>
-            <div class="fr-collapse" id="target-data-logement_vacant_autorisation_construction_comparison_chart">
+            <div class="fr-collapse" id="target-data-logement_vacant_autorisation_construction_ratio_gauge_chart">
                 <h6 class="fr-mt-2w">Source</h6>
                 {% include "project/components/widgets/source_sitadel.html" %}
                 {% include "project/components/widgets/source_lovac.html" %}
                 {% include "project/components/widgets/source_rpls.html" %}
                 <h6 class="fr-mt-2w">Calcul</h6>
-                <p class="fr-text--sm">Données brutes, sans calcul</p>
-
-                <h6 class="fr-mt-2w">Données</h6>
-                {{ logement_vacant_autorisation_construction_comparison_data_table }}
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="fr-mt-7w">
-    <div class="fr-grid-row fr-grid-row--gutters">
-        <div class="fr-col-12">
-            <div class="bg-white fr-p-2w h-100">
-                <div class="d-flex justify-content-end align-items-center fr-mb-2w">
-                    {% include "project/components/widgets/chart_buttons.html" with chart="logement_vacant_ratio_progression_chart" show_fullscreen=True %}
-                    <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#LogementVacantRatioProgressionChartModal" data-toggle="tooltip" title="Astuces pour lire le graphique"></button>
-                </div>
-                <div id="logement_vacant_ratio_progression_chart"></div>
-            </div>
-        </div>
-    </div>
-
-    <div class="fr-notice bg-white fr-mt-2w">
-        <div class="fr-px-2w">
-            <div class="d-flex align-items-center justify-content-between">
-                <div>
-                    <span class="fr-icon-information-line" aria-hidden="true"></span>
-                    <span class="fr-text--xs fr-mr-1w">Source de données: </span>
-                    <p class="fr-tag fr-tag--sm fr-tag--blue">
-                        <strong>LOVAC</strong>
-                    </p>
-                    <p class="fr-tag fr-tag--sm fr-tag--blue">
-                        <strong>RPLS</strong>
-                    </p>
-                </div>
-                <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data-logement_vacant_ratio_progression_chart">Détails données et calcul</button>
-            </div>
-            <div class="fr-collapse" id="target-data-logement_vacant_ratio_progression_chart">
-                <h6 class="fr-mt-2w">Source</h6>
-                {% include "project/components/widgets/source_lovac.html" %}
-                {% include "project/components/widgets/source_rpls.html" %}
-                <h6 class="fr-mt-2w">Calcul</h6>
-                <p class="fr-text--sm">Données brutes, sans calcul</p>
-
-                <h6 class="fr-mt-2w">Données</h6>
-                {{ logement_vacant_ratio_progression_data_table }}
+                <p class="fr-text--sm">Rapport (en %) entre le nombre total de logements vacants et le nombre de nouvelles autorisations de constructions délivrées sur le territoire, à la dernière année pour laquelle ces données sont disponibles.</p>
+                <p class="fr-text--sm">Par nombre total de logements vacants, on entend la somme des logements vacants depuis plus de 2 ans dans le parc privé et des logements vacants depuis plus de 3 mois dans le parc locatif des bailleurs sociaux.</p>
+                <p class="fr-text--sm">Lorsque ce rapport dépasse 100%, on affiche seulement ">100%" sur la jauge.</p>
             </div>
         </div>
     </div>
@@ -190,10 +179,55 @@
                 {% include "project/components/widgets/source_lovac.html" %}
                 {% include "project/components/widgets/source_rpls.html" %}
                 <h6 class="fr-mt-2w">Calcul</h6>
-                <p class="fr-text--sm">Données brutes, sans calcul</p>
-
+                <p class="fr-text--sm">Evolution depuis 2019 du rapport (en %) entre le nombre total de logements vacants et le nombre de nouvelles autorisations de constructions délivrées sur le territoire.</p>
+                <p class="fr-text--sm">Par nombre total de logements vacants, on entend la somme des logements vacants depuis plus de 2 ans dans le parc privé et des logements vacants depuis plus de 3 mois dans le parc locatif des bailleurs sociaux.</p>
                 <h6 class="fr-mt-2w">Données</h6>
                 {{ logement_vacant_autorisation_logement_ratio_progression_data_table }}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="fr-mt-7w">
+    <div class="fr-grid-row fr-grid-row--gutters">
+        <div class="fr-col-12">
+            <div class="bg-white fr-p-2w h-100">
+                <div class="d-flex justify-content-end align-items-center fr-mb-2w">
+                    {% include "project/components/widgets/chart_buttons.html" with chart="logement_vacant_ratio_progression_chart" show_fullscreen=True %}
+                    <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#LogementVacantRatioProgressionChartModal" data-toggle="tooltip" title="Astuces pour lire le graphique"></button>
+                </div>
+                <div id="logement_vacant_ratio_progression_chart"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="fr-notice bg-white fr-mt-2w">
+        <div class="fr-px-2w">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <span class="fr-icon-information-line" aria-hidden="true"></span>
+                    <span class="fr-text--xs fr-mr-1w">Source de données: </span>
+                    <p class="fr-tag fr-tag--sm fr-tag--blue">
+                        <strong>LOVAC</strong>
+                    </p>
+                    <p class="fr-tag fr-tag--sm fr-tag--blue">
+                        <strong>RPLS</strong>
+                    </p>
+                </div>
+                <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data-logement_vacant_ratio_progression_chart">Détails données et calcul</button>
+            </div>
+            <div class="fr-collapse" id="target-data-logement_vacant_ratio_progression_chart">
+                <h6 class="fr-mt-2w">Source</h6>
+                {% include "project/components/widgets/source_lovac.html" %}
+                {% include "project/components/widgets/source_rpls.html" %}
+                <h6 class="fr-mt-2w">Calcul</h6>
+                <p class="fr-text--sm">Evolution depuis 2019 :</p>
+                <ul>
+                    <li><p class="fr-text--sm">du taux de vacance de plus de 2 ans dans le parc privé, c'est-à-dire le rapport entre nombre de logements vacants depuis plus de 2 ans et nombre total de logements dans le parc privé (en %).</p></li>
+                    <li><p class="fr-text--sm">du taux de vacance de plus de 3 mois dans le parc locatif des bailleurs sociaux, c'est-à-dire le rapport entre nombre de logements vacants depuis plus de 3 mois et nombre total de logements dans le parc locatif des bailleurs sociaux (en %).</p></li>
+                </ul>
+                <h6 class="fr-mt-2w">Données</h6>
+                {{ logement_vacant_ratio_progression_data_table }}
             </div>
         </div>
     </div>
@@ -221,6 +255,9 @@
                     <span class="fr-icon-information-line" aria-hidden="true"></span>
                     <span class="fr-text--xs fr-mr-1w">Source de données: </span>
                     <p class="fr-tag fr-tag--sm fr-tag--blue">
+                        <strong>FICHIERS FONCIERS</strong>
+                    </p>
+                    <p class="fr-tag fr-tag--sm fr-tag--blue">
                         <strong>LOVAC</strong>
                     </p>
                     <p class="fr-tag fr-tag--sm fr-tag--blue">
@@ -234,8 +271,11 @@
                 {% include "project/components/widgets/source_lovac.html" %}
                 {% include "project/components/widgets/source_rpls.html" %}
                 <h6 class="fr-mt-2w">Calcul</h6>
-                <p class="fr-text--sm">Données brutes, sans calcul</p>
-
+                <p class="fr-text--sm">Evolution depuis 2019 :</p>
+                <ul>
+                    <li><p class="fr-text--sm">du nombre total de logements vacants. Par nombre total de logements vacants, on entend la somme des logements vacants depuis plus de 2 ans dans le parc privé et des logements vacants depuis plus de 3 mois dans le parc locatif des bailleurs sociaux.</p></li>
+                    <li><p class="fr-text--sm">de la consommation d'espaces sur le territoire, totale et à destination de l'habitat (en ha)</p></li>
+                </ul>
                 <h6 class="fr-mt-2w">Données</h6>
                 {{ logement_vacant_conso_progression_data_table }}
             </div>
