@@ -58,6 +58,9 @@ from public_data.infra.urbanisme.autorisation_logement.progression.table.Logemen
 from public_data.infra.urbanisme.logement_vacant.progression.table.LogementVacantAutorisationConstructionComparisonTableMapper import (  # noqa: E501
     LogementVacantAutorisationConstructionComparisonTableMapper,
 )
+from public_data.infra.urbanisme.logement_vacant.progression.table.LogementVacantConsoProgressionTableMapper import (
+    LogementVacantConsoProgressionTableMapper,
+)
 from public_data.infra.urbanisme.logement_vacant.progression.table.LogementVacantRatioProgressionTableMapper import (
     LogementVacantRatioProgressionTableMapper,
 )
@@ -307,6 +310,7 @@ class ProjectReportLogementVacantView(ProjectReportBaseView):
     full_template_name = "project/pages/logement_vacant.html"
     start_date = 2019
     end_date = 2023
+    end_date_conso = 2022
 
     def get_context_data(self, **kwargs):
         project: Project = self.get_object()
@@ -323,6 +327,12 @@ class ProjectReportLogementVacantView(ProjectReportBaseView):
                 start_date=self.start_date,
                 end_date=self.end_date,
             )
+        )
+
+        consommation_progression = PublicDataContainer.consommation_progression_service().get_by_land(
+            land=project.land_proxy,
+            start_date=self.start_date,
+            end_date=self.end_date_conso,
         )
 
         kwargs.update(
@@ -357,6 +367,12 @@ class ProjectReportLogementVacantView(ProjectReportBaseView):
                 "logement_vacant_autorisation_logement_ratio_progression_data_table": (
                     LogementVacantAutorisationConstructionRatioProgressionTableMapper.map(
                         autorisation_logement_progression=autorisation_logement_progression,
+                    )
+                ),
+                "logement_vacant_conso_progression_data_table": (
+                    LogementVacantConsoProgressionTableMapper.map(
+                        logement_vacant_progression=logement_vacant_progression,
+                        consommation_progression=consommation_progression,
                     )
                 ),
             }

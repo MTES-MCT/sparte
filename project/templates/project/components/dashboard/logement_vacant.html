@@ -213,6 +213,34 @@
             </div>
         </div>
     </div>
+
+    <div class="fr-notice bg-white fr-mt-2w">
+        <div class="fr-px-2w">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <span class="fr-icon-information-line" aria-hidden="true"></span>
+                    <span class="fr-text--xs fr-mr-1w">Source de données: </span>
+                    <p class="fr-tag fr-tag--sm fr-tag--blue">
+                        <strong>LOVAC</strong>
+                    </p>
+                    <p class="fr-tag fr-tag--sm fr-tag--blue">
+                        <strong>RPLS</strong>
+                    </p>
+                </div>
+                <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data-logement_vacant_conso_progression_chart">Détails données et calcul</button>
+            </div>
+            <div class="fr-collapse" id="target-data-logement_vacant_conso_progression_chart">
+                <h6 class="fr-mt-2w">Source</h6>
+                {% include "project/components/widgets/source_lovac.html" %}
+                {% include "project/components/widgets/source_rpls.html" %}
+                <h6 class="fr-mt-2w">Calcul</h6>
+                <p class="fr-text--sm">Données brutes, sans calcul</p>
+
+                <h6 class="fr-mt-2w">Données</h6>
+                {{ logement_vacant_conso_progression_data_table }}
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- Modal -->

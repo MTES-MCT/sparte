@@ -1,0 +1,30 @@
+<div class="fr-table fr-table--bordered">
+    <div class="fr-table__wrapper">
+        <div class="fr-table__container">
+            <div class="fr-table__content">
+                <table>
+                    <caption>
+                        Évolution de la consommation d'espaces NAF et de la vacance des logements
+                    </caption>
+                    <thead>
+                        <tr>
+                            {% for header in headers %}
+                                <th scope="col" class="fr-cell--right">{{ header }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in data %}
+                            <tr>
+                                <td class="fr-cell--right">{{ row.year }}</td>
+                                <td class="fr-cell--right">{{ row.total }}</td>
+                                <td class="fr-cell--right">{{ row.habitat }}</td>
+                                <td class="fr-cell--right">{{ row.logement_vacant }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
