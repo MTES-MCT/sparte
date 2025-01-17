@@ -52,6 +52,9 @@ from public_data.infra.demography.population.progression.table.PopulationConsoPr
 from public_data.infra.planning_competency.PlanningCompetencyServiceSudocuh import (
     PlanningCompetencyServiceSudocuh,
 )
+from public_data.infra.urbanisme.autorisation_logement.progression.table.LogementVacantAutorisationConstructionRatioProgressionTableMapper import (  # noqa: E501
+    LogementVacantAutorisationConstructionRatioProgressionTableMapper,
+)
 from public_data.infra.urbanisme.logement_vacant.progression.table.LogementVacantAutorisationConstructionComparisonTableMapper import (  # noqa: E501
     LogementVacantAutorisationConstructionComparisonTableMapper,
 )
@@ -349,6 +352,11 @@ class ProjectReportLogementVacantView(ProjectReportBaseView):
                 "logement_vacant_ratio_progression_data_table": (
                     LogementVacantRatioProgressionTableMapper.map(
                         logement_vacant_progression=logement_vacant_progression,
+                    )
+                ),
+                "logement_vacant_autorisation_logement_ratio_progression_data_table": (
+                    LogementVacantAutorisationConstructionRatioProgressionTableMapper.map(
+                        autorisation_logement_progression=autorisation_logement_progression,
                     )
                 ),
             }
