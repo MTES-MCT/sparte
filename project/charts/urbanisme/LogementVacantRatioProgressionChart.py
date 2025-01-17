@@ -13,7 +13,7 @@ class LogementVacantRatioProgressionChart(ProjectChart):
 
     # Dates en dur
     START_DATE = 2019
-    END_DATE = 2022
+    END_DATE = 2023
 
     def _get_series(self):
         """
@@ -34,12 +34,12 @@ class LogementVacantRatioProgressionChart(ProjectChart):
 
         return [
             {
-                "name": ("Taux de vacance de plus de 2 ans dans le parc privé"),
+                "name": "Taux de vacance de plus de 2 ans dans le parc privé",
                 "data": data_parc_prive,
                 "color": LOGEMENT_VACANT_COLOR_PRIVE,
             },
             {
-                "name": ("Taux de vacance de plus de 3 mois dans le parc des bailleurs sociaux"),
+                "name": "Taux de vacance de plus de 3 mois dans le parc des bailleurs sociaux",
                 "data": data_parc_social,
                 "color": LOGEMENT_VACANT_COLOR_SOCIAL,
             },

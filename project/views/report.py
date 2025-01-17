@@ -55,6 +55,9 @@ from public_data.infra.planning_competency.PlanningCompetencyServiceSudocuh impo
 from public_data.infra.urbanisme.logement_vacant.progression.table.LogementVacantAutorisationConstructionComparisonTableMapper import (  # noqa: E501
     LogementVacantAutorisationConstructionComparisonTableMapper,
 )
+from public_data.infra.urbanisme.logement_vacant.progression.table.LogementVacantRatioProgressionTableMapper import (
+    LogementVacantRatioProgressionTableMapper,
+)
 from public_data.models import CouvertureSol, UsageSol
 from public_data.models.administration import AdminRef
 from public_data.models.gpu import ZoneUrba
@@ -299,21 +302,23 @@ class ProjectReportSynthesisView(ProjectReportBaseView):
 class ProjectReportLogementVacantView(ProjectReportBaseView):
     partial_template_name = "project/components/dashboard/logement_vacant.html"
     full_template_name = "project/pages/logement_vacant.html"
+    start_date = 2019
+    end_date = 2023
 
     def get_context_data(self, **kwargs):
         project: Project = self.get_object()
 
         logement_vacant_progression = PublicDataContainer.logement_vacant_progression_service().get_by_land(
             land=project.land_proxy,
-            start_date=project.analyse_start_date,
-            end_date=project.analyse_end_date,
+            start_date=self.start_date,
+            end_date=self.end_date,
         )
 
         autorisation_logement_progression = (
             PublicDataContainer.autorisation_logement_progression_service().get_by_land(
                 land=project.land_proxy,
-                start_date=project.analyse_start_date,
-                end_date=project.analyse_end_date,
+                start_date=self.start_date,
+                end_date=self.end_date,
             )
         )
 
@@ -339,6 +344,11 @@ class ProjectReportLogementVacantView(ProjectReportBaseView):
                     LogementVacantAutorisationConstructionComparisonTableMapper.map(
                         logement_vacant_progression=logement_vacant_progression,
                         autorisation_logement_progression=autorisation_logement_progression,
+                    )
+                ),
+                "logement_vacant_ratio_progression_data_table": (
+                    LogementVacantRatioProgressionTableMapper.map(
+                        logement_vacant_progression=logement_vacant_progression,
                     )
                 ),
             }

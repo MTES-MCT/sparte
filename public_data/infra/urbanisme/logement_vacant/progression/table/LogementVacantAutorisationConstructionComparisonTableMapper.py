@@ -27,14 +27,14 @@ class LogementVacantAutorisationConstructionComparisonTableMapper:
                 ),
             },
             {
-                "name": "Logements vacants depuis plus de 2ans (privé)",
+                "name": "Logements vacants depuis plus de 2 ans (privé)",
                 "quantity": logement_vacant_progression.logement_vacant[-1].logements_vacants_parc_prive,
                 "percentage": round(
                     logement_vacant_progression.logement_vacant[-1].logements_vacants_parc_prive_percent, 2
                 ),
             },
             {
-                "name": "Logements vacants depuis plus de 3mois (bailleurs sociaux)",
+                "name": "Logements vacants depuis plus de 3 mois (bailleurs sociaux)",
                 "quantity": logement_vacant_progression.logement_vacant[-1].logements_vacants_parc_social,
                 "percentage": round(
                     logement_vacant_progression.logement_vacant[-1].logements_vacants_parc_social_percent, 2
