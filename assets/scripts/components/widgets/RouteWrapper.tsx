@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import usePageTitle from '@hooks/usePageTitle';
 import OcsgeStatus, { OcsgeStatusProps } from '@components/widgets/OcsgeStatus';
 import GpuStatus from '@components/widgets/GpuStatus';
+import LogementVacantStatus from '@components/widgets/LogementVacantStatus';
 import ConsoCorrectionStatus, { ConsoCorrectionStatusEnum} from '@components/widgets/ConsoCorrectionStatus';
 
 
@@ -11,6 +12,7 @@ interface RouteWrapperProps {
     ocsgeStatus?: OcsgeStatusProps["status"];
     consoCorrectionStatus?: ConsoCorrectionStatusEnum;
     hasGpu?: boolean;
+    logementVacantStatus?: boolean;
     children: ReactNode;
 }
 
@@ -24,6 +26,7 @@ const RouteWrapper: React.FC<RouteWrapperProps> = ({
     ocsgeStatus,
     hasGpu,
     consoCorrectionStatus,
+    logementVacantStatus,
     children,
 }) => {
     const shouldDisplayOcsgeStatus = ocsgeStatus !== undefined && ocsgeStatus !== "COMPLETE_UNIFORM";
@@ -33,9 +36,11 @@ const RouteWrapper: React.FC<RouteWrapperProps> = ({
         ConsoCorrectionStatusEnum.UNCHANGED,
         ConsoCorrectionStatusEnum.FUSION
     ].includes(consoCorrectionStatus);
+    const shouldDisplayLogementVacantStatus = logementVacantStatus !== undefined && logementVacantStatus === false;
 
     const shouldDisplayChildren = !shouldDisplayOcsgeStatus &&
         !shouldDisplayGpuStatus &&
+        !shouldDisplayLogementVacantStatus &&
         shouldDisplayConsoChildren;
 
     usePageTitle(title);
@@ -49,6 +54,7 @@ const RouteWrapper: React.FC<RouteWrapperProps> = ({
                         {shouldDisplayOcsgeStatus && <OcsgeStatus status={ocsgeStatus} />}
                         {shouldDisplayGpuStatus && <GpuStatus />}
                         {shouldDisplayConsoCorrectionStatus && <ConsoCorrectionStatus status={consoCorrectionStatus} />}
+                        {shouldDisplayLogementVacantStatus && <LogementVacantStatus />}
                     </div>
                 </div>
             </div>

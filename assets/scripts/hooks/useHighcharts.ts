@@ -23,7 +23,7 @@ const useHighcharts = (chartIds: string[], loading: boolean) => {
     useEffect(() => {
         if (!loading) {
             chartIds.forEach((chartId) => {
-                const chartDataElement = document.getElementById(`${chartId}_data`);   
+                const chartDataElement = document.getElementById(`${chartId}_data`);
                 if (chartDataElement) {
                     const chartOptions = JSON.parse(chartDataElement.textContent || '{}');
                     const chart = Highcharts.chart(chartId, chartOptions);

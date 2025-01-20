@@ -20,6 +20,8 @@ class ProjectDetailSerializer(serializers.ModelSerializer):
             "ocsge_coverage_status",
             "has_zonage_urbanisme",
             "consommation_correction_status",
+            "autorisation_logement_available",
+            "logements_vacants_available",
         ]
 
 

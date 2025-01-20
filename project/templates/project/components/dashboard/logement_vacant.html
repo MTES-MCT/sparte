@@ -2,6 +2,7 @@
 {% load project_tags %}
 {% load sri %}
 
+{% if has_autorisation_logement %}
 <div>
     <h3>Logements vacants et autorisations de construction de logements</h3>
 
@@ -188,6 +189,90 @@
     </div>
 </div>
 
+<!-- Modal -->
+<div class="modal fade" id="LogementVacantAutorisationLogementRatioProgressionChartModal" tabindex="-1" aria-labelledby="LogementVacantAutorisationLogementRatioProgressionChartLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+        <div class="fr-modal__body">
+            <div class="fr-modal__header">
+                <button class="fr-link--close fr-link" data-bs-dismiss="modal" aria-label="Close">Fermer</button>
+            </div>
+            <div class="fr-modal__content">
+                <h1 class="fr-modal__title" id="LogementVacantAutorisationLogementRatioProgressionChartLabel">
+                    <span class="fr-fi-arrow-right-line fr-fi--lg"></span>
+                    Astuces Graphique - {{ logement_vacant_autorisation_logement_ratio_progression_chart.chart.title.text }}
+                </h1>
+                {% include "project/components/widgets/chart_tips_buttons.html" %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="LogementVacantAutorisationConstructionComparisonChartModal" tabindex="-1" aria-labelledby="LogementVacantAutorisationConstructionComparisonChartLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+        <div class="fr-modal__body">
+            <div class="fr-modal__header">
+                <button class="fr-link--close fr-link" data-bs-dismiss="modal" aria-label="Close">Fermer</button>
+            </div>
+            <div class="fr-modal__content">
+                <h1 class="fr-modal__title" id="LogementVacantAutorisationConstructionComparisonChartLabel">
+                    <span class="fr-fi-arrow-right-line fr-fi--lg"></span>
+                    Astuces Graphique - {{ logement_vacant_autorisation_construction_comparison_chart.chart.title.text }}
+                </h1>
+                {% include "project/components/widgets/chart_tips_buttons.html" %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="LogementVacantAutorisationConstructionRatioGaugeChartModal" tabindex="-1" aria-labelledby="LogementVacantAutorisationConstructionRatioGaugeChartLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+        <div class="fr-modal__body">
+            <div class="fr-modal__header">
+                <button class="fr-link--close fr-link" data-bs-dismiss="modal" aria-label="Close">Fermer</button>
+            </div>
+            <div class="fr-modal__content">
+                <h1 class="fr-modal__title" id="LogementVacantAutorisationConstructionRatioGaugeChartLabel">
+                    <span class="fr-fi-arrow-right-line fr-fi--lg"></span>
+                    Astuces Graphique - {{ logement_vacant_autorisation_construction_ratio_gauge_chart.chart.title.text }}
+                </h1>
+                {% include "project/components/widgets/chart_tips_buttons.html" %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts -->
+{% display_chart_data 'logement_vacant_autorisation_construction_comparison_chart' logement_vacant_autorisation_construction_comparison_chart CSP_NONCE %}
+{% display_chart_data 'logement_vacant_autorisation_construction_ratio_gauge_chart' logement_vacant_autorisation_construction_ratio_gauge_chart CSP_NONCE %}
+{% display_chart_data 'logement_vacant_autorisation_logement_ratio_progression_chart' logement_vacant_autorisation_logement_ratio_progression_chart CSP_NONCE %}
+
+{% else %}
+<div class="fr-notice fr-notice--warning fr-mb-3w">
+    <div class="fr-container--fluid fr-p-3w">
+        <div class="fr-notice__body">
+            <p>
+                <span class="fr-notice__title">
+                    Données d'autorisations de construction non disponibles.
+                </span>
+            </p>
+            <p class="fr-mt-1w">
+                <span class="fr-notice__desc fr-text--sm">
+                    <p class="fr-text--sm mb-3">
+                        Seule une partie des indicateurs est disponible pour votre territoire, en raison de l'indisponibilité ou du caractère incomplet des données dématérialisées relatives aux demandes d'autorisations d'urbanisme.
+                    </p>
+                    <p class="fr-text--sm mb-3">
+                        Depuis le 1er janvier 2022, un usager peut déposer sa demande de permis de construire en ligne, à tout moment et où qu’il soit, dans une démarche simplifiée et sans frais.
+                        Toutes les communes doivent être en mesure de recevoir sous forme électronique les demandes d’autorisation d’urbanisme. Celles de plus de 3500 habitants doivent également assurer leur instruction sous forme dématérialisée.
+                        Pour accompagner cette transformation d’ampleur, l’Etat déploie un vaste programme de dématérialisation de l’application du droit des sols, dit Démat.ADS, ou « Permis de construire en ligne ».
+                        <a href="https://www.ecologie.gouv.fr/politiques-publiques/dematerialisation-autorisations-durbanisme" target="_blank" rel="noopener noreferrer">en savoir plus</a>
+                    </p>
+                </span>
+            </p>
+        </div>
+    </div>
+</div>
+{% endif %}
+
 <div class="fr-mt-7w">
     <div class="fr-grid-row fr-grid-row--gutters">
         <div class="fr-col-12">
@@ -284,40 +369,6 @@
 </div>
 
 <!-- Modal -->
-<div class="modal fade" id="LogementVacantAutorisationConstructionComparisonChartModal" tabindex="-1" aria-labelledby="LogementVacantAutorisationConstructionComparisonChartLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
-        <div class="fr-modal__body">
-            <div class="fr-modal__header">
-                <button class="fr-link--close fr-link" data-bs-dismiss="modal" aria-label="Close">Fermer</button>
-            </div>
-            <div class="fr-modal__content">
-                <h1 class="fr-modal__title" id="LogementVacantAutorisationConstructionComparisonChartLabel">
-                    <span class="fr-fi-arrow-right-line fr-fi--lg"></span>
-                    Astuces Graphique - {{ logement_vacant_autorisation_construction_comparison_chart.chart.title.text }}
-                </h1>
-                {% include "project/components/widgets/chart_tips_buttons.html" %}
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="LogementVacantAutorisationConstructionRatioGaugeChartModal" tabindex="-1" aria-labelledby="LogementVacantAutorisationConstructionRatioGaugeChartLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
-        <div class="fr-modal__body">
-            <div class="fr-modal__header">
-                <button class="fr-link--close fr-link" data-bs-dismiss="modal" aria-label="Close">Fermer</button>
-            </div>
-            <div class="fr-modal__content">
-                <h1 class="fr-modal__title" id="LogementVacantAutorisationConstructionRatioGaugeChartLabel">
-                    <span class="fr-fi-arrow-right-line fr-fi--lg"></span>
-                    Astuces Graphique - {{ logement_vacant_autorisation_construction_ratio_gauge_chart.chart.title.text }}
-                </h1>
-                {% include "project/components/widgets/chart_tips_buttons.html" %}
-            </div>
-        </div>
-    </div>
-</div>
-
 <div class="modal fade" id="LogementVacantConsoProgressionChartModal" tabindex="-1" aria-labelledby="LogementVacantConsoProgressionChartLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
         <div class="fr-modal__body">
@@ -352,25 +403,6 @@
     </div>
 </div>
 
-<div class="modal fade" id="LogementVacantAutorisationLogementRatioProgressionChartModal" tabindex="-1" aria-labelledby="LogementVacantAutorisationLogementRatioProgressionChartLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
-        <div class="fr-modal__body">
-            <div class="fr-modal__header">
-                <button class="fr-link--close fr-link" data-bs-dismiss="modal" aria-label="Close">Fermer</button>
-            </div>
-            <div class="fr-modal__content">
-                <h1 class="fr-modal__title" id="LogementVacantAutorisationLogementRatioProgressionChartLabel">
-                    <span class="fr-fi-arrow-right-line fr-fi--lg"></span>
-                    Astuces Graphique - {{ logement_vacant_autorisation_logement_ratio_progression_chart.chart.title.text }}
-                </h1>
-                {% include "project/components/widgets/chart_tips_buttons.html" %}
-            </div>
-        </div>
-    </div>
-</div>
-
-{% display_chart_data 'logement_vacant_autorisation_construction_comparison_chart' logement_vacant_autorisation_construction_comparison_chart CSP_NONCE %}
-{% display_chart_data 'logement_vacant_autorisation_construction_ratio_gauge_chart' logement_vacant_autorisation_construction_ratio_gauge_chart CSP_NONCE %}
+<!-- Charts -->
 {% display_chart_data 'logement_vacant_conso_progression_chart' logement_vacant_conso_progression_chart CSP_NONCE %}
 {% display_chart_data 'logement_vacant_ratio_progression_chart' logement_vacant_ratio_progression_chart CSP_NONCE %}
-{% display_chart_data 'logement_vacant_autorisation_logement_ratio_progression_chart' logement_vacant_autorisation_logement_ratio_progression_chart CSP_NONCE %}

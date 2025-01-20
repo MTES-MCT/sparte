@@ -6,7 +6,6 @@ import useUrls from '@hooks/useUrls';
 import Button from '@components/ui/Button';
 import { ConsoCorrectionStatusEnum } from '@components/widgets/ConsoCorrectionStatus';
 
-
 interface NavbarData {
     menuItems: MenuItems[];
 }
@@ -165,7 +164,7 @@ const DownloadListItem = styled.li`
     }
 `;
 
-const Navbar: React.FC = ({ projectData }: { projectData: any}) => {
+const Navbar: React.FC<{ projectData: any }> = ({ projectData }) => {
     const location = useLocation();
     const [data, setData] = useState<NavbarData | null>(null);
     const urls = useUrls();

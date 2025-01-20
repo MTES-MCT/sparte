@@ -28,6 +28,14 @@ class Scot(LandMixin, GetDataFromCeremaMixin, models.Model):
         choices=SRID.choices,
         default=SRID.LAMBERT_93,
     )
+    autorisation_logement_available = models.BooleanField(
+        "Statut de disponibilité des données d'autorisation de logement",
+        default=False,
+    )
+    logements_vacants_available = models.BooleanField(
+        "Statut de disponibilité des données de logement vacant",
+        default=False,
+    )
 
     regions = models.ManyToManyField("Region")
     departements = models.ManyToManyField("Departement")

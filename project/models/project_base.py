@@ -486,6 +486,14 @@ class Project(BaseProject):
         return self.land.consommation_correction_status
 
     @property
+    def autorisation_logement_available(self) -> str:
+        return self.land.autorisation_logement_available
+
+    @property
+    def logements_vacants_available(self) -> str:
+        return self.land.logements_vacants_available
+
+    @property
     def has_unchanged_or_fusionned_consommation_data(self) -> bool:
         return self.consommation_correction_status in [
             ConsommationCorrectionStatus.UNCHANGED,
