@@ -1,7 +1,5 @@
-from base64 import decodebytes
 from os import getenv
 
-import paramiko
 import pysftp
 import sqlalchemy
 from dependency_injector import containers, providers
@@ -114,11 +112,7 @@ class Container(containers.DeclarativeContainer):
     )
 
     cnopts = pysftp.CnOpts()
-    cnopts.hostkeys.add(
-        hostname=getenv("GPU_SFTP_HOST"),
-        keytype="ssh-rsa",
-        key=paramiko.RSAKey(data=decodebytes(getenv("GPU_HOST_KEY").encode())),
-    )
+    cnopts.hostkeys = None
 
     gpu_sftp = providers.Factory(
         provides=pysftp.Connection,
