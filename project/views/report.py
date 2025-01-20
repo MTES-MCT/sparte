@@ -328,38 +328,40 @@ class ProjectReportLogementVacantView(ProjectReportBaseView):
             end_date=self.end_date_conso,
         )
 
-        kwargs = {
-            "diagnostic": project,
-            "has_autorisation_logement": has_autorisation_logement,
-            "logement_vacant_last_year": logement_vacant_progression.logement_vacant[-1],
-            # Charts
-            "logement_vacant_ratio_progression_chart": (
-                charts.LogementVacantRatioProgressionChart(
-                    project,
-                    start_date=self.start_date,
-                    end_date=self.end_date,
-                )
-            ),
-            "logement_vacant_conso_progression_chart": (
-                charts.LogementVacantConsoProgressionChart(
-                    project,
-                    start_date=self.start_date,
-                    end_date=self.end_date_conso,
-                )
-            ),
-            # Data tables
-            "logement_vacant_ratio_progression_data_table": (
-                LogementVacantRatioProgressionTableMapper.map(
-                    logement_vacant_progression=logement_vacant_progression,
-                )
-            ),
-            "logement_vacant_conso_progression_data_table": (
-                LogementVacantConsoProgressionTableMapper.map(
-                    logement_vacant_progression=logement_vacant_progression,
-                    consommation_progression=consommation_progression,
-                )
-            ),
-        }
+        kwargs.update(
+            {
+                "diagnostic": project,
+                "has_autorisation_logement": has_autorisation_logement,
+                "logement_vacant_last_year": logement_vacant_progression.logement_vacant[-1],
+                # Charts
+                "logement_vacant_ratio_progression_chart": (
+                    charts.LogementVacantRatioProgressionChart(
+                        project,
+                        start_date=self.start_date,
+                        end_date=self.end_date,
+                    )
+                ),
+                "logement_vacant_conso_progression_chart": (
+                    charts.LogementVacantConsoProgressionChart(
+                        project,
+                        start_date=self.start_date,
+                        end_date=self.end_date_conso,
+                    )
+                ),
+                # Data tables
+                "logement_vacant_ratio_progression_data_table": (
+                    LogementVacantRatioProgressionTableMapper.map(
+                        logement_vacant_progression=logement_vacant_progression,
+                    )
+                ),
+                "logement_vacant_conso_progression_data_table": (
+                    LogementVacantConsoProgressionTableMapper.map(
+                        logement_vacant_progression=logement_vacant_progression,
+                        consommation_progression=consommation_progression,
+                    )
+                ),
+            }
+        )
 
         if has_autorisation_logement:
             autorisation_logement_progression = (
@@ -370,43 +372,45 @@ class ProjectReportLogementVacantView(ProjectReportBaseView):
                 )
             )
 
-            kwargs |= {
-                "autorisation_logement_last_year": autorisation_logement_progression.autorisation_logement[-1],
-                # Charts
-                "logement_vacant_autorisation_construction_comparison_chart": (
-                    charts.LogementVacantAutorisationLogementComparisonChart(
-                        project,
-                        start_date=self.start_date,
-                        end_date=self.end_date,
-                    )
-                ),
-                "logement_vacant_autorisation_construction_ratio_gauge_chart": (
-                    charts.LogementVacantAutorisationLogementRatioGaugeChart(
-                        project,
-                        start_date=self.start_date,
-                        end_date=self.end_date,
-                    )
-                ),
-                "logement_vacant_autorisation_logement_ratio_progression_chart": (
-                    charts.LogementVacantAutorisationLogementRatioProgressionChart(
-                        project,
-                        start_date=self.start_date,
-                        end_date=self.end_date,
-                    )
-                ),
-                # Data tables
-                "logement_vacant_autorisation_construction_comparison_data_table": (
-                    LogementVacantAutorisationConstructionComparisonTableMapper.map(
-                        logement_vacant_progression=logement_vacant_progression,
-                        autorisation_logement_progression=autorisation_logement_progression,
-                    )
-                ),
-                "logement_vacant_autorisation_logement_ratio_progression_data_table": (
-                    LogementVacantAutorisationConstructionRatioProgressionTableMapper.map(
-                        autorisation_logement_progression=autorisation_logement_progression,
-                    )
-                ),
-            }
+            kwargs.update(
+                {
+                    "autorisation_logement_last_year": autorisation_logement_progression.autorisation_logement[-1],
+                    # Charts
+                    "logement_vacant_autorisation_construction_comparison_chart": (
+                        charts.LogementVacantAutorisationLogementComparisonChart(
+                            project,
+                            start_date=self.start_date,
+                            end_date=self.end_date,
+                        )
+                    ),
+                    "logement_vacant_autorisation_construction_ratio_gauge_chart": (
+                        charts.LogementVacantAutorisationLogementRatioGaugeChart(
+                            project,
+                            start_date=self.start_date,
+                            end_date=self.end_date,
+                        )
+                    ),
+                    "logement_vacant_autorisation_logement_ratio_progression_chart": (
+                        charts.LogementVacantAutorisationLogementRatioProgressionChart(
+                            project,
+                            start_date=self.start_date,
+                            end_date=self.end_date,
+                        )
+                    ),
+                    # Data tables
+                    "logement_vacant_autorisation_construction_comparison_data_table": (
+                        LogementVacantAutorisationConstructionComparisonTableMapper.map(
+                            logement_vacant_progression=logement_vacant_progression,
+                            autorisation_logement_progression=autorisation_logement_progression,
+                        )
+                    ),
+                    "logement_vacant_autorisation_logement_ratio_progression_data_table": (
+                        LogementVacantAutorisationConstructionRatioProgressionTableMapper.map(
+                            autorisation_logement_progression=autorisation_logement_progression,
+                        )
+                    ),
+                }
+            )
 
         return super().get_context_data(**kwargs)
 
