@@ -2,6 +2,7 @@ import React from 'react';
 import { useHtmlLoader } from '@hooks/useHtmlLoader';
 import useHighcharts from '@hooks/useHighcharts';
 import Loader from '@components/ui/Loader';
+import Guide from '@components/widgets/Guide';
 
 /*
 Ce composant est un composant hybride qui permet de récupérer du contenu côté serveur via Django et de l'intégrer directement dans l'interface React.
@@ -31,6 +32,19 @@ const LogementVacant: React.FC<{ endpoint: string }> = ({ endpoint }) => {
         <div className="fr-container--fluid fr-p-3w">
             <div className="fr-grid-row">
                 <div className="fr-col-12">
+                    <Guide
+                        title="Cadre réglementaire"
+                        contentHtml={`On distingue deux formes principales de vacances des logements : la vacance conjoncturelle, qui est temporaire et nécessaire à la fluidité du marché du logement, et la vacance structurelle, qui pourrait se substituer à la construction neuve de logements, souvent génératrice d'artificialisation des sols.`}
+                        DrawerTitle="Cadre Réglementaire"
+                        DrawerContentHtml={`
+                            <p class="fr-text--sm mb-3">
+                                On distingue deux formes principales de vacances des logements : la vacance conjoncturelle, qui est temporaire et nécessaire à la fluidité du marché du logement, et la vacance structurelle, qui pourrait se substituer à la construction neuve de logements, souvent génératrice d'artificialisation des sols.
+                            </p>
+                            <p class="fr-text--sm mb-3">
+                                Dans cette perpective, l'analyse proposée s'appuie sur une définition différenciée selon le type de parc : sont ainsi pris en compte les logements vacants depuis plus de deux ans dans le parc privé et ceux inoccupés depuis plus de 3 mois dans le parc des bailleurs sociaux.
+                            </p>
+                        `}
+                    />
                     <div dangerouslySetInnerHTML={{ __html: content }} />
                 </div>
             </div>
