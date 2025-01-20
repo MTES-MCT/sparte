@@ -48,6 +48,8 @@ class User(AbstractUser):
     created_at = models.DateTimeField("Créé le", auto_now_add=True, blank=True, null=True)
     updated_at = models.DateTimeField("Mis à jour le", auto_now=True, blank=True, null=True)
 
+    groups = models.ManyToManyField("auth.Group", related_name="users", blank=True)
+
     objects = UserManager()
 
     @staticmethod
