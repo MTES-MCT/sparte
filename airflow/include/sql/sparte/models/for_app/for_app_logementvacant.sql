@@ -130,7 +130,15 @@ SELECT
     coalesce(
         logements_vacants_parc_social * 100.0 / NULLIF(logements_parc_social, 0),
         0
-    )::double precision as logements_vacants_parc_social_percent
+    )::double precision as logements_vacants_parc_social_percent,
+    coalesce(
+        logements_vacants_parc_prive * 100.0 / NULLIF(logements_parc_general, 0),
+        0
+    )::double precision as logements_vacants_parc_prive_on_parc_general_percent,
+    coalesce(
+        logements_vacants_parc_social * 100.0 / NULLIF(logements_parc_general, 0),
+        0
+    )::double precision as logements_vacants_parc_social_on_parc_general_percent
 FROM
     with_parc_general
 ), land_id_without_missing_years as (
