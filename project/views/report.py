@@ -317,7 +317,7 @@ class ProjectReportLogementVacantView(ProjectReportBaseView):
 
     def get_context_data(self, **kwargs):
         project: Project = self.get_object()
-        has_autorisation_logement = False  # project.autorisation_logement_available
+        has_autorisation_logement = project.autorisation_logement_available
 
         logement_vacant_progression = PublicDataContainer.logement_vacant_progression_service().get_by_land(
             land=project.land_proxy,
