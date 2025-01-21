@@ -24,8 +24,8 @@ class ProjectChart(charts.Chart):
         self,
         project: Project,
         group_name=None,
-        start_date=Project.analyse_start_date,
-        end_date=Project.analyse_end_date,
+        start_date=None,
+        end_date=None,
     ):
         self.project = project
         self.group_name = group_name
