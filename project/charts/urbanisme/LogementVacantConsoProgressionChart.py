@@ -34,7 +34,7 @@ class LogementVacantConsoProgressionChart(ProjectChart):
             round(item.logements_vacants_parc_general, 2) for item in logement_vacant_progression
         ]
 
-        consommation_progresison = (
+        consommation_progression = (
             PublicDataContainer.consommation_progression_service()
             .get_by_land(
                 land=self.project.land_proxy,
@@ -44,15 +44,15 @@ class LogementVacantConsoProgressionChart(ProjectChart):
             .consommation
         )
 
-        consommation_total_progresison = [round(item.total, 2) for item in consommation_progresison]
-        consommation_habitat_progresison = [round(item.habitat, 2) for item in consommation_progresison]
+        consommation_total_progression = [round(item.total, 2) for item in consommation_progression]
+        consommation_habitat_progression = [round(item.habitat, 2) for item in consommation_progression]
 
         return [
             {
                 "name": "Consommation totale",
                 "type": "column",
                 "yAxis": 1,
-                "data": consommation_total_progresison,
+                "data": consommation_total_progression,
                 "tooltip": {"valueSuffix": " ha"},
                 "color": CONSOMMATION_TOTALE_COLOR,
                 "id": "main",
@@ -61,7 +61,7 @@ class LogementVacantConsoProgressionChart(ProjectChart):
                 "name": "Consommation à destination de l'habitat",
                 "type": "column",
                 "yAxis": 1,
-                "data": consommation_habitat_progresison,
+                "data": consommation_habitat_progression,
                 "tooltip": {"valueSuffix": " ha"},
                 "color": CONSOMMATION_HABITAT_COLOR,
                 "linkTo": "main",
