@@ -26,7 +26,6 @@ class LogementVacantAutorisationLogementRatioGaugeChart(ProjectChart):
         # On récupère la dernière année de données disponible sur la période
         last_year_autorisation_logement_progression = autorisation_logement_progression.autorisation_logement[-1]
 
-        # Stocker la valeur réelle
         raw_value = round(last_year_autorisation_logement_progression.percent_autorises_on_vacants_parc_general, 0)
 
         # Limiter l'aiguille à 100 mais afficher ">100%" si la valeur est supérieure
