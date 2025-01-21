@@ -452,7 +452,7 @@ class Project(BaseProject):
     def has_no_ocsge_coverage(self) -> bool:
         return self.ocsge_coverage_status == self.OcsgeCoverageStatus.NO_DATA
 
-    @property
+    @cached_property
     def has_zonage_urbanisme(self) -> bool:
         """
         Cette fonction vérifie si l'emprise du diagnostic intersecte
@@ -481,19 +481,19 @@ class Project(BaseProject):
             .exists()
         )
 
-    @property
+    @cached_property
     def consommation_correction_status(self) -> str:
         return self.land.consommation_correction_status
 
-    @property
+    @cached_property
     def autorisation_logement_available(self) -> str:
         return self.land.autorisation_logement_available
 
-    @property
+    @cached_property
     def logements_vacants_available(self) -> str:
         return self.land.logements_vacants_available
 
-    @property
+    @cached_property
     def has_unchanged_or_fusionned_consommation_data(self) -> bool:
         return self.consommation_correction_status in [
             ConsommationCorrectionStatus.UNCHANGED,
