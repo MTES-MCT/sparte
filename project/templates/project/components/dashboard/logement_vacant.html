@@ -71,12 +71,12 @@
                             <strong>
                                 {{ autorisation_logement_last_year.logements_autorises }} 
                                 {% if autorisation_logement_last_year.logements_autorises < 2 %}
-                                autorisation de construction de logement a été autoriseé 
+                                autorisation de construction de logement a été délivrée 
                                 {% else %}
-                                autorisations de construction de logements ont été autorisées, 
+                                autorisations de construction de logements ont été délivrées, 
                                 {% endif %}
                             </strong>
-                            ce qui correspond à une augmentation de {{ autorisation_logement_last_year.percent_autorises_on_parc_general|smart_round }}% de son parc de logements total.
+                            ce qui correspondrait à une augmentation de {{ autorisation_logement_last_year.percent_autorises_on_parc_general|smart_round }}% de son parc de logements total.
                         </p>
                         <p class="fr-text--sm">
                             Au 1er janvier de cette même année, sur le territoire de {{ project.territory_name }}, 
