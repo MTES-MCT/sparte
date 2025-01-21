@@ -20,7 +20,15 @@ class ProjectChart(charts.Chart):
             },
         }
 
-    def __init__(self, project: Project, group_name=None):
+    def __init__(
+        self,
+        project: Project,
+        group_name=None,
+        start_date=None,
+        end_date=None,
+    ):
         self.project = project
         self.group_name = group_name
+        self.start_date = start_date
+        self.end_date = end_date
         super().__init__()

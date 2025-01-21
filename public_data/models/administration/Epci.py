@@ -33,6 +33,14 @@ class Epci(LandMixin, GetDataFromCeremaMixin, models.Model):
         default=SRID.LAMBERT_93,
     )
     departements = models.ManyToManyField(to="Departement")
+    autorisation_logement_available = models.BooleanField(
+        "Statut de disponibilité des données d'autorisation de logement",
+        default=False,
+    )
+    logements_vacants_available = models.BooleanField(
+        "Statut de disponibilité des données de logement vacant",
+        default=False,
+    )
 
     objects = EpciManager()
 
