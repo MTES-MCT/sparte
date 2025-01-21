@@ -61,6 +61,9 @@ from public_data.infra.urbanisme.logement_vacant.progression.table.LogementVacan
 from public_data.infra.urbanisme.logement_vacant.progression.table.LogementVacantConsoProgressionTableMapper import (
     LogementVacantConsoProgressionTableMapper,
 )
+from public_data.infra.urbanisme.logement_vacant.progression.table.LogementVacantProgressionTableMapper import (
+    LogementVacantProgressionTableMapper,
+)
 from public_data.infra.urbanisme.logement_vacant.progression.table.LogementVacantRatioProgressionTableMapper import (
     LogementVacantRatioProgressionTableMapper,
 )
@@ -334,6 +337,13 @@ class ProjectReportLogementVacantView(ProjectReportBaseView):
                 "has_autorisation_logement": has_autorisation_logement,
                 "logement_vacant_last_year": logement_vacant_progression.logement_vacant[-1],
                 # Charts
+                "logement_vacant_progression_chart": (
+                    charts.LogementVacantProgressionChart(
+                        project,
+                        start_date=self.start_date,
+                        end_date=self.end_date,
+                    )
+                ),
                 "logement_vacant_ratio_progression_chart": (
                     charts.LogementVacantRatioProgressionChart(
                         project,
@@ -349,6 +359,11 @@ class ProjectReportLogementVacantView(ProjectReportBaseView):
                     )
                 ),
                 # Data tables
+                "logement_vacant_progression_data_table": (
+                    LogementVacantProgressionTableMapper.map(
+                        logement_vacant_progression=logement_vacant_progression,
+                    )
+                ),
                 "logement_vacant_ratio_progression_data_table": (
                     LogementVacantRatioProgressionTableMapper.map(
                         logement_vacant_progression=logement_vacant_progression,

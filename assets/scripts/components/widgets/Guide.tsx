@@ -67,7 +67,7 @@ const Guide: React.FC<GuideProps> = ({ title, contentHtml, DrawerTitle, DrawerCo
                     <Title>{ title }</Title>
                     <Content dangerouslySetInnerHTML={{ __html: contentHtml }} />
                     <Button onClick={toggleDrawer} className="fr-btn fr-btn--sm fr-btn--secondary fr-btn--icon-right fr-icon-arrow-right-line">
-                        En savoir plus sur le cadre réglementaire
+                        En savoir plus
                     </Button>
                 </div>
             </Container>
