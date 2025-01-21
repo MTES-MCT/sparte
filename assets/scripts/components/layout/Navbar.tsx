@@ -203,7 +203,10 @@ const Navbar: React.FC<{ projectData: any }> = ({ projectData }) => {
                 >
                     <SubMenuTitleLink to={item.url} $isActive={isActive(item.url)}>
                         {item.icon && <Icon className={`bi ${item.icon}`} />}
-                        {item.label}
+                        <div className="d-flex flex-column items-center">
+                            {item.label === "Vacance des logements" && (<p className="fr-badge fr-badge--sm fr-badge--new">Nouveau</p>)}
+                            {item.label}
+                        </div>
                     </SubMenuTitleLink>
                 </SubMenu>
             ))}

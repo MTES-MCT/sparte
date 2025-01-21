@@ -4,6 +4,8 @@
 
 <!-- Vacance des logements -->
 <div class="fr-mt-7w">
+    <h3>Évolution de la vacance des logements</h3>
+
     <div class="fr-grid-row fr-grid-row--gutters">
         <div class="fr-col-12">
             <div class="bg-white fr-p-2w h-100">
@@ -111,6 +113,80 @@
 {% display_chart_data 'logement_vacant_progression_chart' logement_vacant_progression_chart CSP_NONCE %}
 {% display_chart_data 'logement_vacant_ratio_progression_chart' logement_vacant_ratio_progression_chart CSP_NONCE %}
 
+
+<!-- Vacance des logements vs consommation d'espaces NAF -->
+<div class="fr-mt-7w">
+    <h3>Logements vacants et consommation d'espaces NAF</h3>
+
+    <div class="fr-grid-row fr-grid-row--gutters">
+        <div class="fr-col-12">
+            <div class="bg-white fr-p-2w h-100">
+                <div class="d-flex justify-content-end align-items-center fr-mb-2w">
+                    {% include "project/components/widgets/chart_buttons.html" with chart="logement_vacant_conso_progression_chart" show_fullscreen=True %}
+                    <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#LogementVacantConsoProgressionChartModal" data-toggle="tooltip" title="Astuces pour lire le graphique"></button>
+                </div>
+                <div id="logement_vacant_conso_progression_chart"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="fr-notice bg-white fr-mt-2w">
+        <div class="fr-px-2w">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <span class="fr-icon-information-line" aria-hidden="true"></span>
+                    <span class="fr-text--xs fr-mr-1w">Source de données: </span>
+                    <p class="fr-tag fr-tag--sm fr-tag--blue">
+                        <strong>FICHIERS FONCIERS</strong>
+                    </p>
+                    <p class="fr-tag fr-tag--sm fr-tag--blue">
+                        <strong>LOVAC</strong>
+                    </p>
+                    <p class="fr-tag fr-tag--sm fr-tag--blue">
+                        <strong>RPLS</strong>
+                    </p>
+                </div>
+                <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data-logement_vacant_conso_progression_chart">Détails données et calcul</button>
+            </div>
+            <div class="fr-collapse" id="target-data-logement_vacant_conso_progression_chart">
+                <h6 class="fr-mt-2w">Source</h6>
+                {% include "project/components/widgets/source_lovac.html" %}
+                {% include "project/components/widgets/source_rpls.html" %}
+                <h6 class="fr-mt-2w">Calcul</h6>
+                <p class="fr-text--sm">Evolution depuis 2019 :</p>
+                <ul>
+                    <li><p class="fr-text--sm">du nombre total de logements vacants. Par nombre total de logements vacants, on entend la somme des logements vacants depuis plus de 2 ans dans le parc privé et des logements vacants depuis plus de 3 mois dans le parc locatif des bailleurs sociaux.</p></li>
+                    <li><p class="fr-text--sm">de la consommation d'espaces sur le territoire, totale et à destination de l'habitat (en ha)</p></li>
+                </ul>
+                <h6 class="fr-mt-2w">Données</h6>
+                {{ logement_vacant_conso_progression_data_table }}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="LogementVacantConsoProgressionChartModal" tabindex="-1" aria-labelledby="LogementVacantConsoProgressionChartLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+        <div class="fr-modal__body">
+            <div class="fr-modal__header">
+                <button class="fr-link--close fr-link" data-bs-dismiss="modal" aria-label="Close">Fermer</button>
+            </div>
+            <div class="fr-modal__content">
+                <h1 class="fr-modal__title" id="LogementVacantConsoProgressionChartLabel">
+                    <span class="fr-fi-arrow-right-line fr-fi--lg"></span>
+                    Astuces Graphique - {{ logement_vacant_conso_progression_chart.chart.title.text }}
+                </h1>
+                {% include "project/components/widgets/chart_tips_buttons.html" %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts -->
+{% display_chart_data 'logement_vacant_conso_progression_chart' logement_vacant_conso_progression_chart CSP_NONCE %}
+
+
 <!-- Vacance des logements vs autorisations de constructions -->
 <div class="fr-mt-7w">
     <h3>Logements vacants et autorisations de construction de logements</h3>
@@ -207,7 +283,7 @@
                                 depuis plus de 3 mois.
                             </p>
                             <p class="fr-text--sm"> 
-                                Sur le territoire de {{ project.territory_name }}, le nombre de logements vacants représente donc, en proportion, {{ autorisation_logement_last_year.percent_autorises_on_vacants_parc_general|smart_round }}% du nombre d'autorisations de construction de logements.
+                                Sur le territoire de {{ project.territory_name }}, <strong>le nombre de logements vacants représente donc, en proportion, {{ autorisation_logement_last_year.percent_autorises_on_vacants_parc_general|smart_round }}% du nombre d'autorisations de construction de logements.</strong>
                                 {% if autorisation_logement_last_year.percent_autorises_on_vacants_parc_general > 100 %}
                                 Autrement dit, il y a {{ autorisation_logement_last_year.percent_autorises_on_vacants_parc_general|divide_by:100|smart_round}} fois plus de logements vacants que d'autorisations de construction de logement.
                                 {% elif autorisation_logement_last_year.percent_autorises_on_vacants_parc_general == 100 %}
@@ -384,75 +460,3 @@
     </div>
     {% endif %}
 </div>
-
-<!-- Vacance des logements vs consommation d'espaces NAF -->
-<div class="fr-mt-7w">
-    <h3>Logements vacants et consommation d'espaces NAF</h3>
-
-    <div class="fr-grid-row fr-grid-row--gutters">
-        <div class="fr-col-12">
-            <div class="bg-white fr-p-2w h-100">
-                <div class="d-flex justify-content-end align-items-center fr-mb-2w">
-                    {% include "project/components/widgets/chart_buttons.html" with chart="logement_vacant_conso_progression_chart" show_fullscreen=True %}
-                    <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#LogementVacantConsoProgressionChartModal" data-toggle="tooltip" title="Astuces pour lire le graphique"></button>
-                </div>
-                <div id="logement_vacant_conso_progression_chart"></div>
-            </div>
-        </div>
-    </div>
-
-    <div class="fr-notice bg-white fr-mt-2w">
-        <div class="fr-px-2w">
-            <div class="d-flex align-items-center justify-content-between">
-                <div>
-                    <span class="fr-icon-information-line" aria-hidden="true"></span>
-                    <span class="fr-text--xs fr-mr-1w">Source de données: </span>
-                    <p class="fr-tag fr-tag--sm fr-tag--blue">
-                        <strong>FICHIERS FONCIERS</strong>
-                    </p>
-                    <p class="fr-tag fr-tag--sm fr-tag--blue">
-                        <strong>LOVAC</strong>
-                    </p>
-                    <p class="fr-tag fr-tag--sm fr-tag--blue">
-                        <strong>RPLS</strong>
-                    </p>
-                </div>
-                <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data-logement_vacant_conso_progression_chart">Détails données et calcul</button>
-            </div>
-            <div class="fr-collapse" id="target-data-logement_vacant_conso_progression_chart">
-                <h6 class="fr-mt-2w">Source</h6>
-                {% include "project/components/widgets/source_lovac.html" %}
-                {% include "project/components/widgets/source_rpls.html" %}
-                <h6 class="fr-mt-2w">Calcul</h6>
-                <p class="fr-text--sm">Evolution depuis 2019 :</p>
-                <ul>
-                    <li><p class="fr-text--sm">du nombre total de logements vacants. Par nombre total de logements vacants, on entend la somme des logements vacants depuis plus de 2 ans dans le parc privé et des logements vacants depuis plus de 3 mois dans le parc locatif des bailleurs sociaux.</p></li>
-                    <li><p class="fr-text--sm">de la consommation d'espaces sur le territoire, totale et à destination de l'habitat (en ha)</p></li>
-                </ul>
-                <h6 class="fr-mt-2w">Données</h6>
-                {{ logement_vacant_conso_progression_data_table }}
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Modal -->
-<div class="modal fade" id="LogementVacantConsoProgressionChartModal" tabindex="-1" aria-labelledby="LogementVacantConsoProgressionChartLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
-        <div class="fr-modal__body">
-            <div class="fr-modal__header">
-                <button class="fr-link--close fr-link" data-bs-dismiss="modal" aria-label="Close">Fermer</button>
-            </div>
-            <div class="fr-modal__content">
-                <h1 class="fr-modal__title" id="LogementVacantConsoProgressionChartLabel">
-                    <span class="fr-fi-arrow-right-line fr-fi--lg"></span>
-                    Astuces Graphique - {{ logement_vacant_conso_progression_chart.chart.title.text }}
-                </h1>
-                {% include "project/components/widgets/chart_tips_buttons.html" %}
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Charts -->
-{% display_chart_data 'logement_vacant_conso_progression_chart' logement_vacant_conso_progression_chart CSP_NONCE %}
