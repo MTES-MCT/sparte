@@ -57,7 +57,9 @@ class LogementVacantAutorisationLogementComparisonChart(ProjectChart):
                 "data": [0, last_year_logement_vacant_progression.logements_vacants_parc_prive],
                 "stack": "vacants",
                 "custom": {
-                    "percentage": round(last_year_logement_vacant_progression.logements_vacants_parc_prive_percent, 2)
+                    "percentage": round(
+                        last_year_logement_vacant_progression.logements_vacants_parc_prive_on_parc_general_percent, 2
+                    )
                 },
                 "color": LOGEMENT_VACANT_COLOR_PRIVE,
             },
@@ -66,7 +68,9 @@ class LogementVacantAutorisationLogementComparisonChart(ProjectChart):
                 "data": [0, last_year_logement_vacant_progression.logements_vacants_parc_social],
                 "stack": "vacants",
                 "custom": {
-                    "percentage": round(last_year_logement_vacant_progression.logements_vacants_parc_social_percent, 2)
+                    "percentage": round(
+                        last_year_logement_vacant_progression.logements_vacants_parc_social_on_parc_general_percent, 2
+                    )
                 },
                 "color": LOGEMENT_VACANT_COLOR_SOCIAL,
             },

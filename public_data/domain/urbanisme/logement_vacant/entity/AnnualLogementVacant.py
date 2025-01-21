@@ -11,3 +11,5 @@ class AnnualLogementVacant:
     logements_vacants_parc_prive_percent: float
     logements_vacants_parc_social_percent: float
     logements_vacants_parc_general: float
+    logements_vacants_parc_prive_on_parc_general_percent: float
+    logements_vacants_parc_social_on_parc_general_percent: float
