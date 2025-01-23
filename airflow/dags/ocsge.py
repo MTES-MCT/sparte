@@ -274,6 +274,28 @@ def ocsge():  # noqa: C901
         dbt_select = " ".join([vars["dbt_selector_staging"] for vars in vars_dataset[dataset]])
         return 'cd "${AIRFLOW_HOME}/include/sql/sparte" && dbt test -s ' + dbt_select
 
+    @task.python(trigger_rule="all_success")
+    def delete_previously_loaded_data_in_dw(**context) -> dict:
+        dataset = context["params"]["dataset"]
+        departement = context["params"]["departement"]
+        years = context["params"]["years"]
+        conn = Container().psycopg2_dbt_conn()
+        cur = conn.cursor()
+
+        results = {}
+
+        for vars in vars_dataset[dataset]:
+            try:
+                cur.execute(vars["delete_on_dwt"](departement, years))
+                results[vars["dw_source"]] = cur.rowcount
+            except Exception as e:
+                results[vars["dw_source"]] = str(e)
+
+        conn.commit()
+        conn.close()
+
+        return results
+
     @task.python
     def ingest_ocsge(path, **context) -> int:
         loaded_date = int(pendulum.now().timestamp())
@@ -301,29 +323,7 @@ def ocsge():  # noqa: C901
         dbt_select = " ".join([f'{vars["dbt_selector"]}+' for vars in vars_dataset[dataset]])
         return 'cd "${AIRFLOW_HOME}/include/sql/sparte" && dbt build -s ' + dbt_select
 
-    @task.python(trigger_rule="all_success")
-    def delete_previously_loaded_data_in_dw(**context) -> dict:
-        dataset = context["params"]["dataset"]
-        departement = context["params"]["departement"]
-        years = context["params"]["years"]
-        conn = Container().psycopg2_dbt_conn()
-        cur = conn.cursor()
-
-        results = {}
-
-        for vars in vars_dataset[dataset]:
-            try:
-                cur.execute(vars["delete_on_dwt"](departement, years))
-                results[vars["dw_source"]] = cur.rowcount
-            except Exception as e:
-                results[vars["dw_source"]] = str(e)
-
-        conn.commit()
-        conn.close()
-
-        return results
-
-    @task.python
+    @task.python(trigger_rule="all_done")
     def log_to_mattermost(**context):
         dbt_build = "Oui" if context["params"]["dbt_build"] else "Non"
         refresh_source = "Oui" if context["params"]["refresh_source"] else "Non"
@@ -342,8 +342,8 @@ def ocsge():  # noqa: C901
     url_exists = check_url_exists(url=url)
     path = download_ocsge(url=url)
     load_date_staging = ingest_staging(path=path)
-    delete_dw = delete_previously_loaded_data_in_dw()
     test_result_staging = db_test_ocsge_staging()
+    delete_dw = delete_previously_loaded_data_in_dw()
     loaded_date = ingest_ocsge(path=path)
     dbt_run_ocsge_result = dbt_run_ocsge()
     log = log_to_mattermost()
