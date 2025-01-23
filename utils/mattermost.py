@@ -1,3 +1,4 @@
+import threading
 from typing import List, Union
 
 import requests
@@ -6,6 +7,14 @@ from django.conf import settings
 
 class MattermostException(Exception):
     pass
+
+
+def request_task(url, json):
+    requests.post(url, json=json)
+
+
+def fire_and_forget(url, json):
+    threading.Thread(target=request_task, args=(url, json)).start()
 
 
 def format_table(data: List[List[str]], headers: Union[List[str], None] = None) -> str:
@@ -30,10 +39,8 @@ class Mattermost:
         if self.channel:
             data["channel"] = self.channel
         data["props"] = {"card": f"{self.information}\n\nEnvironment: {settings.ENVIRONMENT}"}
-        response = requests.post(self.url, json=data)
-        if response.ok:
-            return True
-        raise MattermostException(response.text)
+        fire_and_forget(url=self.url, json=data)
+        return True
 
 
 class StartupSparte(Mattermost):

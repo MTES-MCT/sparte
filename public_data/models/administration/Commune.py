@@ -73,6 +73,14 @@ class Commune(DataColorationMixin, LandMixin, GetDataFromCeremaMixin, models.Mod
         max_length=20,
         choices=ConsommationCorrectionStatus.choices,
     )
+    autorisation_logement_available = models.BooleanField(
+        "Statut de disponibilité des données d'autorisation de logement",
+        default=False,
+    )
+    logements_vacants_available = models.BooleanField(
+        "Statut de disponibilité des données de logement vacant",
+        default=False,
+    )
 
     competence_planification = models.BooleanField("Compétence planification", default=False)
 

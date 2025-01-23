@@ -15,6 +15,7 @@ import Consommation from '@components/pages/Consommation';
 import Impermeabilisation from '@components/pages/Impermeabilisation';
 import Artificialisation from '@components/pages/Artificialisation';
 import Gpu from '@components/pages/Gpu';
+import LogementVacant from '@components/pages/LogementVacant';
 import Ocsge from '@components/pages/Ocsge';
 import Trajectoires from '@components/pages/Trajectoires';
 import RapportLocal from '@components/pages/RapportLocal';
@@ -139,6 +140,16 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                                 hasGpu={data.has_zonage_urbanisme}
                                             >
                                                 <Gpu endpoint={urls.gpu} />
+                                            </RouteWrapper>
+                                        }
+                                    />
+                                    <Route
+                                        path={urls.logementVacant}
+                                        element={
+                                            <RouteWrapper 
+                                                title="Vacance des logements"
+                                            >
+                                                <LogementVacant endpoint={urls.logementVacant} />
                                             </RouteWrapper>
                                         }
                                     />

@@ -31,8 +31,15 @@ first_and_last_millesimes as (
         {{ ref('occupation_du_sol_commune') }}
     group by
         commune_code
+), autorisation_logement_summary as (
+    SELECT DISTINCT land_id
+    FROM {{ ref('for_app_autorisationlogement') }}
+    WHERE land_type = '{{ var('COMMUNE') }}'
+), logement_vacants_summary as (
+    SELECT DISTINCT land_id
+    FROM {{ ref('for_app_logementvacant') }}
+    WHERE land_type = '{{ var('COMMUNE') }}'
 )
-
 select
     commune.code as insee,
     commune.departement as departement_id,
@@ -54,7 +61,15 @@ select
     commune.surface / 10000 as area,
     ST_Transform(commune.geom, 4326) as mpoly,
     consommation.correction_status as consommation_correction_status,
-    competence.competence_planification
+    competence.competence_planification,
+    commune.code in (
+        select land_id
+        from autorisation_logement_summary
+    ) as autorisation_logement_available,
+    commune.code in (
+        select land_id
+        from logement_vacants_summary
+    ) as logements_vacants_available
 from
     {{ ref('commune') }} as commune
 left join

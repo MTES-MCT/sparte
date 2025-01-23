@@ -1,0 +1,43 @@
+version: 2
+
+models:
+  - name: for_app_autorisationlogement
+    columns:
+      - name: land_id
+        data_tests:
+          - not_null
+          - has_all_epcis:
+              severity: warn
+          - has_all_departements
+          - has_all_regions
+          - has_all_scots:
+              severity: warn
+          - has_all_communes:
+              severity: warn
+      - name: land_type
+        data_tests:
+          - not_null
+      - name: year
+        data_tests:
+          - not_null
+          - has_years_from_to:
+              from_year: 2019
+              to_year: 2023
+      - name: logements_autorises
+        data_tests:
+          - not_null
+      - name: logements_commences
+        data_tests:
+          - not_null
+      - name: surface_de_plancher_autorisee
+        data_tests:
+          - not_null
+      - name: surface_de_plancher_commencee
+        data_tests:
+          - not_null
+      - name: percent_autorises_on_parc_general
+        data_tests:
+          - not_null
+      - name: percent_autorises_on_vacants_parc_general
+        data_tests:
+          - not_null

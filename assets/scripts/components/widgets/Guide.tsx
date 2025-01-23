@@ -48,8 +48,8 @@ const Button = styled.button`
 interface GuideProps {
     title: string;
     contentHtml: string;
-    DrawerTitle: string;
-    DrawerContentHtml: string;
+    DrawerTitle?: string;
+    DrawerContentHtml?: string;
 }
 
 const Guide: React.FC<GuideProps> = ({ title, contentHtml, DrawerTitle, DrawerContentHtml }) => {
@@ -60,25 +60,27 @@ const Guide: React.FC<GuideProps> = ({ title, contentHtml, DrawerTitle, DrawerCo
     };
 
     return (
-        <>
-            <Container>
-                <StyledInformationIcon />
-                <div>
-                    <Title>{ title }</Title>
-                    <Content dangerouslySetInnerHTML={{ __html: contentHtml }} />
-                    <Button onClick={toggleDrawer} className="fr-btn fr-btn--sm fr-btn--secondary fr-btn--icon-right fr-icon-arrow-right-line">
-                        En savoir plus sur le cadre réglementaire
-                    </Button>
-                </div>
-            </Container>
+        <Container>
+            <StyledInformationIcon />
+            <div>
+                <Title>{ title }</Title>
+                <Content dangerouslySetInnerHTML={{ __html: contentHtml }} />
+                {DrawerContentHtml && (
+                    <>
+                        <Button onClick={toggleDrawer} className="fr-btn fr-btn--sm fr-btn--secondary fr-btn--icon-right fr-icon-arrow-right-line">
+                            En savoir plus
+                        </Button>
 
-            <Drawer
-                isOpen={isDrawerOpen}
-                title={DrawerTitle}
-                contentHtml={DrawerContentHtml}
-                onClose={toggleDrawer}
-            />
-        </>
+                        <Drawer
+                            isOpen={isDrawerOpen}
+                            title={DrawerTitle}
+                            contentHtml={DrawerContentHtml}
+                            onClose={toggleDrawer}
+                        />
+                    </>
+                )}
+            </div>
+        </Container>
     );
 };
 

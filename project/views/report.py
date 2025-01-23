@@ -52,6 +52,21 @@ from public_data.infra.demography.population.progression.table.PopulationConsoPr
 from public_data.infra.planning_competency.PlanningCompetencyServiceSudocuh import (
     PlanningCompetencyServiceSudocuh,
 )
+from public_data.infra.urbanisme.autorisation_logement.progression.table.LogementVacantAutorisationConstructionRatioProgressionTableMapper import (  # noqa: E501
+    LogementVacantAutorisationConstructionRatioProgressionTableMapper,
+)
+from public_data.infra.urbanisme.logement_vacant.progression.table.LogementVacantAutorisationConstructionComparisonTableMapper import (  # noqa: E501
+    LogementVacantAutorisationConstructionComparisonTableMapper,
+)
+from public_data.infra.urbanisme.logement_vacant.progression.table.LogementVacantConsoProgressionTableMapper import (
+    LogementVacantConsoProgressionTableMapper,
+)
+from public_data.infra.urbanisme.logement_vacant.progression.table.LogementVacantProgressionTableMapper import (
+    LogementVacantProgressionTableMapper,
+)
+from public_data.infra.urbanisme.logement_vacant.progression.table.LogementVacantRatioProgressionTableMapper import (
+    LogementVacantRatioProgressionTableMapper,
+)
 from public_data.models import CouvertureSol, UsageSol
 from public_data.models.administration import AdminRef
 from public_data.models.gpu import ZoneUrba
@@ -290,6 +305,128 @@ class ProjectReportSynthesisView(ProjectReportBaseView):
                 "zone_list": zone_urba,
             }
         )
+        return super().get_context_data(**kwargs)
+
+
+class ProjectReportLogementVacantView(ProjectReportBaseView):
+    partial_template_name = "project/components/dashboard/logement_vacant.html"
+    full_template_name = "project/pages/logement_vacant.html"
+    start_date = 2019
+    end_date = 2023
+    end_date_conso = 2022
+
+    def get_context_data(self, **kwargs):
+        project: Project = self.get_object()
+        has_autorisation_logement = project.autorisation_logement_available
+
+        logement_vacant_progression = PublicDataContainer.logement_vacant_progression_service().get_by_land(
+            land=project.land_proxy,
+            start_date=self.start_date,
+            end_date=self.end_date,
+        )
+
+        consommation_progression = PublicDataContainer.consommation_progression_service().get_by_land(
+            land=project.land_proxy,
+            start_date=self.start_date,
+            end_date=self.end_date_conso,
+        )
+
+        kwargs.update(
+            {
+                "diagnostic": project,
+                "has_autorisation_logement": has_autorisation_logement,
+                "logement_vacant_last_year": logement_vacant_progression.logement_vacant[-1],
+                # Charts
+                "logement_vacant_progression_chart": (
+                    charts.LogementVacantProgressionChart(
+                        project,
+                        start_date=self.start_date,
+                        end_date=self.end_date,
+                    )
+                ),
+                "logement_vacant_ratio_progression_chart": (
+                    charts.LogementVacantRatioProgressionChart(
+                        project,
+                        start_date=self.start_date,
+                        end_date=self.end_date,
+                    )
+                ),
+                "logement_vacant_conso_progression_chart": (
+                    charts.LogementVacantConsoProgressionChart(
+                        project,
+                        start_date=self.start_date,
+                        end_date=self.end_date_conso,
+                    )
+                ),
+                # Data tables
+                "logement_vacant_progression_data_table": (
+                    LogementVacantProgressionTableMapper.map(
+                        logement_vacant_progression=logement_vacant_progression,
+                    )
+                ),
+                "logement_vacant_ratio_progression_data_table": (
+                    LogementVacantRatioProgressionTableMapper.map(
+                        logement_vacant_progression=logement_vacant_progression,
+                    )
+                ),
+                "logement_vacant_conso_progression_data_table": (
+                    LogementVacantConsoProgressionTableMapper.map(
+                        logement_vacant_progression=logement_vacant_progression,
+                        consommation_progression=consommation_progression,
+                    )
+                ),
+            }
+        )
+
+        if has_autorisation_logement:
+            autorisation_logement_progression = (
+                PublicDataContainer.autorisation_logement_progression_service().get_by_land(
+                    land=project.land_proxy,
+                    start_date=self.start_date,
+                    end_date=self.end_date,
+                )
+            )
+
+            kwargs.update(
+                {
+                    "autorisation_logement_last_year": autorisation_logement_progression.autorisation_logement[-1],
+                    # Charts
+                    "logement_vacant_autorisation_construction_comparison_chart": (
+                        charts.LogementVacantAutorisationLogementComparisonChart(
+                            project,
+                            start_date=self.start_date,
+                            end_date=self.end_date,
+                        )
+                    ),
+                    "logement_vacant_autorisation_construction_ratio_gauge_chart": (
+                        charts.LogementVacantAutorisationLogementRatioGaugeChart(
+                            project,
+                            start_date=self.start_date,
+                            end_date=self.end_date,
+                        )
+                    ),
+                    "logement_vacant_autorisation_logement_ratio_progression_chart": (
+                        charts.LogementVacantAutorisationLogementRatioProgressionChart(
+                            project,
+                            start_date=self.start_date,
+                            end_date=self.end_date,
+                        )
+                    ),
+                    # Data tables
+                    "logement_vacant_autorisation_construction_comparison_data_table": (
+                        LogementVacantAutorisationConstructionComparisonTableMapper.map(
+                            logement_vacant_progression=logement_vacant_progression,
+                            autorisation_logement_progression=autorisation_logement_progression,
+                        )
+                    ),
+                    "logement_vacant_autorisation_logement_ratio_progression_data_table": (
+                        LogementVacantAutorisationConstructionRatioProgressionTableMapper.map(
+                            autorisation_logement_progression=autorisation_logement_progression,
+                        )
+                    ),
+                }
+            )
+
         return super().get_context_data(**kwargs)
 
 

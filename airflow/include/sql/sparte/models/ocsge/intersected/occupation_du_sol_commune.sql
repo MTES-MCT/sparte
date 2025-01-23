@@ -1,11 +1,9 @@
 {{
     config(
-        materialized='incremental',
-        pre_hook="{{ delete_from_this_where_field_not_in('ocsge_loaded_date', 'occupation_du_sol', 'loaded_date') }}",
+        materialized='table',
         indexes=[
             {'columns': ['departement'], 'type': 'btree'},
             {'columns': ['year'], 'type': 'btree'},
-            {'columns': ['uuid'], 'type': 'btree'},
             {'columns': ['commune_code'], 'type': 'btree'},
             {'columns': ['ocsge_uuid'], 'type': 'btree'},
             {'columns': ['geom'], 'type': 'gist'},
@@ -23,9 +21,7 @@ la surface totale de l'objet sera conservée.
 
 */
 
-with max_ocsge_loaded_date as (
-    SELECT max(ocsge_loaded_date) as ocsge_loaded_date FROM {{ this }}
-), occupation_du_sol_commune_without_surface as (
+with occupation_du_sol_commune_without_surface as (
     SELECT
         concat(ocsge.uuid::text, '_', commune.code::text) as ocsge_commune_id, -- surrogate key
         -- les attributs spécifiques aux communes sont préfixés par commune_
@@ -52,10 +48,6 @@ with max_ocsge_loaded_date as (
         ocsge.srid_source = commune.srid_source
     AND
         ST_Intersects(commune.geom, ocsge.geom)
-
-    {% if is_incremental() %}
-        WHERE ocsge.loaded_date > (select ocsge_loaded_date from max_ocsge_loaded_date)
-    {% endif %}
 )
 
 SELECT
