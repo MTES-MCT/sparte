@@ -38,7 +38,7 @@
     "webpack-dev-server": "^5.0.4"
   },
   "dependencies": {
-    "@gouvfr/dsfr": "^1.8.5",
+    "@gouvfr/dsfr": "^1.13.0",
     "@reduxjs/toolkit": "^2.2.1",
     "@svgr/webpack": "^8.1.0",
     "highcharts": "^11.4.6",
