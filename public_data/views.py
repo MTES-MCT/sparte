@@ -315,40 +315,6 @@ class OcsgeDiffCentroidViewSet(OcsgeDiffViewSet):
     optimized_geo_field = "st_AsGeoJSON(St_Centroid(o.mpoly))"
 
 
-class ZoneConstruiteViewSet(OnlyBoundingBoxMixin, ZoomSimplificationMixin, OptimizedMixins, DataViewSet):
-    queryset = models.ZoneConstruite.objects.all()
-    serializer_class = serializers.ZoneConstruiteSerializer
-    optimized_fields = {
-        "id": "id",
-        "surface": "surface",
-        "year": "year",
-    }
-
-    def get_params(self, request):
-        bbox = request.query_params.get("in_bbox").split(",")
-        params = list(map(float, bbox))
-        if "project_id" in request.query_params:
-            params.append(request.query_params.get("project_id"))
-        params.append(int(request.query_params.get("year")))
-        return params
-
-    def get_sql_from(self):
-        sql_from = [
-            f"FROM {self.queryset.model._meta.db_table} o",
-            "INNER JOIN (SELECT ST_MakeEnvelope(%s, %s, %s, %s, 4326) as box) as b",
-            "ON ST_Intersects(o.mpoly, b.box)",
-        ]
-        if "project_id" in self.request.query_params:
-            sql_from += [
-                "INNER JOIN (SELECT ST_Union(mpoly) as geom FROM project_emprise WHERE project_id = %s) as t",
-                "ON ST_Intersects(o.mpoly, t.geom)",
-            ]
-        return " ".join(sql_from)
-
-    def get_sql_where(self):
-        return "WHERE o.year = %s"
-
-
 class ArtificialAreaViewSet(OnlyBoundingBoxMixin, ZoomSimplificationMixin, OptimizedMixins, DataViewSet):
     queryset = models.ArtificialArea.objects.all()
     serializer_class = serializers.OcsgeDiffSerializer
