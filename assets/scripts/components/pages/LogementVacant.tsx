@@ -35,15 +35,9 @@ const LogementVacant: React.FC<{ endpoint: string }> = ({ endpoint }) => {
                 <div className="fr-col-12">
                     <Guide
                         title="A propos de la vacance des logements"
-                        contentHtml={`On distingue deux formes principales de vacance des logements : la vacance conjoncturelle, qui est de courte durée et nécessaire à la fluidité du marché du logement, et la vacance structurelle, qui pourrait se substituer à la construction neuve de logements, souvent génératrice d'artificialisation des sols et contre laquelle il est légitime de lutter.`}
-                        DrawerTitle="A propos de la vacance des logements"
-                        DrawerContentHtml={`
-                            <p class="fr-text--sm mb-3">
-                                On distingue deux formes principales de vacance des logements : la vacance conjoncturelle, qui est de courte durée et nécessaire à la fluidité du marché du logement, et la vacance structurelle, qui pourrait se substituer à la construction neuve de logements, souvent génératrice d'artificialisation des sols et contre laquelle il est légitime de lutter.
-                            </p>
-                            <p class="fr-text--sm mb-3">
-                                Dans cette perpective, l'analyse proposée s'appuie sur une définition différenciée selon le type de parc : sont ainsi pris en compte les logements vacants depuis plus de deux ans dans le parc privé et ceux inoccupés depuis plus de 3 mois dans le parc des bailleurs sociaux.
-                            </p>
+                        contentHtml={`
+                            On distingue deux formes principales de vacance des logements : la vacance conjoncturelle, qui est de courte durée et nécessaire à la fluidité du marché du logement, et la vacance structurelle, qui pourrait se substituer à la construction neuve de logements, souvent génératrice d'artificialisation des sols et contre laquelle il est légitime de lutter.
+                            Dans cette perpective, l'analyse proposée s'appuie sur une définition différenciée selon le type de parc : sont ainsi pris en compte les logements vacants depuis plus de deux ans dans le parc privé et ceux inoccupés depuis plus de 3 mois dans le parc des bailleurs sociaux.
                         `}
                     />
                     <div dangerouslySetInnerHTML={{ __html: content }} />

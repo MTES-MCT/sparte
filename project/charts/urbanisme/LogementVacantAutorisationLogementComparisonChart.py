@@ -43,7 +43,7 @@ class LogementVacantAutorisationLogementComparisonChart(ProjectChart):
         return [
             {
                 "name": "Autorisations de construction de logements",
-                "data": [last_year_autorisation_logement_progression.logements_autorises, 0],
+                "data": [last_year_autorisation_logement_progression.logements_autorises, None],
                 "stack": "construction",
                 "custom": {
                     "percentage": round(
@@ -53,19 +53,8 @@ class LogementVacantAutorisationLogementComparisonChart(ProjectChart):
                 "color": AUTORISATION_CONSTRUCTION_COLOR,
             },
             {
-                "name": "Logements vacants depuis plus de 2 ans dans le parc privé",
-                "data": [0, last_year_logement_vacant_progression.logements_vacants_parc_prive],
-                "stack": "vacants",
-                "custom": {
-                    "percentage": round(
-                        last_year_logement_vacant_progression.logements_vacants_parc_prive_on_parc_general_percent, 2
-                    )
-                },
-                "color": LOGEMENT_VACANT_COLOR_PRIVE,
-            },
-            {
                 "name": "Logements vacants depuis plus de 3 mois dans le parc des bailleurs sociaux",
-                "data": [0, last_year_logement_vacant_progression.logements_vacants_parc_social],
+                "data": [None, last_year_logement_vacant_progression.logements_vacants_parc_social],
                 "stack": "vacants",
                 "custom": {
                     "percentage": round(
@@ -73,6 +62,17 @@ class LogementVacantAutorisationLogementComparisonChart(ProjectChart):
                     )
                 },
                 "color": LOGEMENT_VACANT_COLOR_SOCIAL,
+            },
+            {
+                "name": "Logements vacants depuis plus de 2 ans dans le parc privé",
+                "data": [None, last_year_logement_vacant_progression.logements_vacants_parc_prive],
+                "stack": "vacants",
+                "custom": {
+                    "percentage": round(
+                        last_year_logement_vacant_progression.logements_vacants_parc_prive_on_parc_general_percent, 2
+                    )
+                },
+                "color": LOGEMENT_VACANT_COLOR_PRIVE,
             },
         ]
 
