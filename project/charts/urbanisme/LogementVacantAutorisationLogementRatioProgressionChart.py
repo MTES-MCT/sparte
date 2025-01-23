@@ -36,6 +36,7 @@ class LogementVacantAutorisationLogementRatioProgressionChart(ProjectChart):
                     "d'autorisations de construction de logements"
                 ),
                 "data": data,
+                "color": "#8856F0",
             },
         ]
 
