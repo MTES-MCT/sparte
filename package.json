@@ -1,6 +1,6 @@
 {
   "name": "sparte",
-  "version": "8.4.0",
+  "version": "8.5.0",
   "private": true,
   "scripts": {
     "dev": "webpack serve --mode development",
