@@ -13,6 +13,7 @@ import pendulum
 import py7zr
 import requests
 from airflow.decorators import dag, task
+from airflow.exceptions import AirflowSkipException
 from airflow.models.param import Param
 from airflow.operators.bash import BashOperator
 from include.container import Container
@@ -199,6 +200,7 @@ def load_shapefiles_to_dw(
             ],
         ),
         "refresh_source": Param(False, type="boolean"),
+        "dbt_build": Param(False, type="boolean"),
     },
 )
 def ocsge():  # noqa: C901
@@ -291,6 +293,11 @@ def ocsge():  # noqa: C901
     @task.bash(retries=0, trigger_rule="all_success", pool=DBT_POOL)
     def dbt_run_ocsge(**context):
         dataset = context["params"]["dataset"]
+        dbt_build = context["params"]["dbt_build"]
+
+        if not dbt_build:
+            raise AirflowSkipException
+
         dbt_select = " ".join([f'{vars["dbt_selector"]}+' for vars in vars_dataset[dataset]])
         return 'cd "${AIRFLOW_HOME}/include/sql/sparte" && dbt build -s ' + dbt_select
 
@@ -318,16 +325,16 @@ def ocsge():  # noqa: C901
 
     @task.python
     def log_to_mattermost(**context):
+        dbt_build = "Oui" if context["params"]["dbt_build"] else "Non"
         refresh_source = "Oui" if context["params"]["refresh_source"] else "Non"
-        if not context["params"]["refresh_source"]:
-            refresh_source += " (le fichier a été téléchargé depuis le bucket)"
         years = ", ".join(context["params"]["years"])
         message = f"""
 ### Calcul de données OCS GE terminé
 - Jeu de donnée : {context["params"]["dataset"]}
 - Departement : {context["params"]["departement"]}
 - Année(s) : {years}
-- Téléchargé : {refresh_source}
+- Source MAJ : {refresh_source} (si les données sont déjà présentes sur le bucket, elles ne sont pas rechargées)
+- Lancement de dbt : {dbt_build}
 """
         DomainContainer().notification().send(message)
 
