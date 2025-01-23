@@ -289,7 +289,7 @@
                                 {% elif autorisation_logement_last_year.percent_autorises_on_vacants_parc_general == 100 %}
                                 Autrement dit, il y a autant de logements vacants que d'autorisations de construction de logement.
                                 {% else %}
-                                Autrement dit, il y a {{ 100|divide_by:autorisation_logement_last_year.percent_autorises_on_vacants_parc_general|smart_round }} fois moins de logements vacants que d'autorisations de construction de logement.
+                                Autrement dit, il y a {{ 100|divide_by:autorisation_logement_last_year.percent_autorises_on_vacants_parc_general|smart_round }} fois moins de logements vacants que d'autorisations de construction de logements.
                                 {% endif %}
                             </p>
                         </div>
