@@ -9,36 +9,40 @@ exclude: >-
   shx.xml|dbf.xml|prj.xml|shp.xml|xml|gml|vrt|sld|symb|lyr|lyrx|
   kml|kmz|tab|qgs|qlr|shp.xml|ovr)$
 repos:
-- repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v3.2.0
-  hooks:
-    - id: trailing-whitespace
-    - id: end-of-file-fixer
-    - id: check-yaml
-    - id: check-merge-conflict
-    - id: check-toml
-- repo: https://github.com/pycqa/isort
-  rev: 5.12.0
-  hooks:
-    - id: isort
-      name: isort
-- repo: https://github.com/psf/black
-  rev: 23.10.1
-  hooks:
-    - id: black
-      language_version: python3
--   repo: https://github.com/PyCQA/autoflake
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v3.2.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-merge-conflict
+      - id: check-toml
+  - repo: https://github.com/pycqa/isort
+    rev: 5.12.0
+    hooks:
+      - id: isort
+        name: isort
+  - repo: https://github.com/psf/black
+    rev: 23.10.1
+    hooks:
+      - id: black
+        language_version: python3
+  - repo: https://github.com/PyCQA/autoflake
     rev: v2.2.1
     hooks:
-    -   id: autoflake
--   repo: https://github.com/pycqa/flake8
+      - id: autoflake
+  - repo: https://github.com/pycqa/flake8
     rev: 6.1.0
     hooks:
-    -   id: flake8
-        args: ['--config', 'flake8']
--   repo: https://github.com/gitguardian/ggshield
+      - id: flake8
+        args: ["--config", "flake8"]
+  - repo: https://github.com/gitguardian/ggshield
     rev: v1.24.0
     hooks:
       - id: ggshield
         language_version: python3
         stages: [commit]
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: "v3.1.0"
+    hooks:
+      - id: prettier
