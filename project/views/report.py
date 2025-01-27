@@ -335,7 +335,7 @@ class ProjectReportLogementVacantView(ProjectReportBaseView):
             {
                 "diagnostic": project,
                 "has_autorisation_logement": has_autorisation_logement,
-                "logement_vacant_last_year": logement_vacant_progression.logement_vacant[-1],
+                "logement_vacant_last_year": logement_vacant_progression.get_last_year_logement_vacant(),
                 # Charts
                 "logement_vacant_progression_chart": (
                     charts.LogementVacantProgressionChart(
@@ -389,7 +389,7 @@ class ProjectReportLogementVacantView(ProjectReportBaseView):
 
             kwargs.update(
                 {
-                    "autorisation_logement_last_year": autorisation_logement_progression.autorisation_logement[-1],
+                    "autorisation_logement_last_year": autorisation_logement_progression.get_last_year_autorisation_logement(),  # noqa: E501
                     # Charts
                     "logement_vacant_autorisation_construction_comparison_chart": (
                         charts.LogementVacantAutorisationLogementComparisonChart(
