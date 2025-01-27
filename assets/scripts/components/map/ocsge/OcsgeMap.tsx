@@ -13,18 +13,24 @@ import { Popup } from "./Popup";
 import { getMaplibrePaint } from "./utils/getMaplibrePaint";
 import { getMaplibreFilters } from "./utils/getMaplibreFilters";
 import { OcsgeMapLeftPanel } from "./OcsgeMapLeftPanel";
-import { getCouvertureColorAsRGBString } from "./constants/colors";
+import { getCouvertureColorAsRGBString, getCouvertureOrUsageAsRGBString } from "./constants/colors";
 import { area } from "@turf/turf";
-import { couvertureLabels } from "./constants/labels";
+import { couvertureLabels, getCouvertureOrUsageLabel } from "./constants/labels";
+import { OcsgeStatsBar } from "./OcsgeStatsBar";
 
 type RawOcsgeStats = {
   couvertures: { [key in Couverture]: number };
   usages: { [key in Usage]: number };
 };
 
+type Stat = {
+  code: Couverture | Usage;
+  percent: number;
+}
+
 type OcsgeStats = {
-  couvertures: [Couverture, number][];
-  usages: [Usage, number][];
+  couvertures: Stat[];
+  usages: Stat[];
 };
 
 const getEmptyStats = () => {
@@ -72,8 +78,8 @@ export function OcsgeMap({
 }: OcsgeMapProps) {
   const [controls, setControls] = React.useState([]);
   const [stats, setStats] = React.useState({
-    couvertures: [] as [Couverture, number][],
-    usages: [] as [Usage, number][],
+    couvertures: [] as Stat[],
+    usages: [] as Stat[],
   } as OcsgeStats);
   const mapDiv = useRef(null);
   const map = useRef<maplibregl.Map>(null);
@@ -167,11 +173,17 @@ export function OcsgeMap({
       for (const couverture of couvertures) {
         const couverturePercent =
           (rawStats.couvertures[couverture] / totalSurface) * 100;
-        stats.couvertures.push([couverture, couverturePercent]);
+        stats.couvertures.push({
+          code: couverture,
+          percent: couverturePercent,
+        })
       }
       for (const usage of usages) {
         const usagePercent = (rawStats.usages[usage] / totalSurface) * 100;
-        stats.usages.push([usage, usagePercent]);
+        stats.usages.push({
+          code: usage,
+          percent: usagePercent,
+        })
       }
 
       setStats(stats);
@@ -328,26 +340,27 @@ export function OcsgeMap({
   return (
     <div className="map-wrap">
       <div style={mapStyle} ref={mapDiv} className="map" />
+      <OcsgeStatsBar />
       <div style={{ display: "flex", flexDirection: "row" }}>
-        {stats.couvertures.map(([couverture, percent]) => (
+        {stats.couvertures.map(({ code, percent}) => (
           <div
-            aria-describedby={`tooltip-${couverture}-percent`}
-            key={`${couverture}-percent`}
+            aria-describedby={`tooltip-${code}-percent`}
+            key={`${code}-percent`}
             style={{
               height: "15px",
               width: `${percent}%`,
-              backgroundColor: getCouvertureColorAsRGBString(couverture),
+              backgroundColor: getCouvertureOrUsageAsRGBString(code),
             }}
           >
             <span
               className="fr-tooltip fr-placement"
-              id={`tooltip-${couverture}-percent`}
+              id={`tooltip-${code}-percent`}
               role="tooltip"
               aria-hidden="true"
             >
               <span className="fr-tooltip__content">
                 <span>
-                  {couvertureLabels[couverture]} - ({couverture}) (
+                  {getCouvertureOrUsageLabel(code)} - ({code}) (
                   {Math.round(percent * 100) / 100}%)
                 </span>
               </span>

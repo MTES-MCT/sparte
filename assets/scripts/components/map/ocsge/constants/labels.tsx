@@ -1,3 +1,5 @@
+import { Couverture, Usage } from "./cs_and_us"
+
 export const usageLabels = {
     "US1.1": "Agriculture",
     "US1.2": "Sylviculture",
@@ -36,4 +38,12 @@ export const usageLabels = {
     "CS2.1.3": "Autres formations ligneuses",
     "CS2.2.1": "Formations herbacées",
     "CS2.2.2": "Autres formations non ligneuses",
+  }
+
+  export const getCouvertureOrUsageLabel = (couvertureOrUsage: Couverture | Usage): string => {
+    if (Object.keys(couvertureLabels).includes(couvertureOrUsage)) {
+      return couvertureLabels[couvertureOrUsage as Couverture];
+    } else {
+      return usageLabels[couvertureOrUsage as Usage];
+    }
   }
