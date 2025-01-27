@@ -1,6 +1,6 @@
-import React from 'react';
-import { useHtmlLoader } from '@hooks/useHtmlLoader';
-import Loader from '@components/ui/Loader';
+import React from "react";
+import { useHtmlLoader } from "@hooks/useHtmlLoader";
+import Loader from "@components/ui/Loader";
 
 /*
 Ce composant est un composant hybride qui permet de récupérer du contenu côté serveur via Django et de l'intégrer directement dans l'interface React.
@@ -13,20 +13,20 @@ Dans ce cas, les données provenant de Django sont considérées comme fiables.
 */
 
 const Gpu: React.FC<{ endpoint: string }> = ({ endpoint }) => {
-    const { content, isLoading, error } = useHtmlLoader(endpoint);
+  const { content, isLoading, error } = useHtmlLoader(endpoint);
 
-    if (isLoading) return <Loader />;
-    if (error) return <div>Erreur : {error}</div>;
+  if (isLoading) return <Loader />;
+  if (error) return <div>Erreur : {error}</div>;
 
-    return (
-        <div className="fr-container--fluid fr-p-3w">
-            <div className="fr-grid-row">
-                <div className="fr-col-12">
-                    <div dangerouslySetInnerHTML={{ __html: content }} />
-                </div>
-            </div>
+  return (
+    <div className="fr-container--fluid fr-p-3w">
+      <div className="fr-grid-row">
+        <div className="fr-col-12">
+          <div dangerouslySetInnerHTML={{ __html: content }} />
         </div>
-    );
+      </div>
+    </div>
+  );
 };
 
 export default Gpu;

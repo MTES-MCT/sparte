@@ -1,8 +1,8 @@
 airflow:
   expose_port: true
 project:
-    name: airflow
+  name: airflow
 postgres:
-    port: 5433
+  port: 5433
 webserver:
-    port: 9090
+  port: 9090

@@ -1,8 +1,8 @@
-import React, { useRef, useEffect, useState, useMemo } from 'react';
-import * as Highcharts from 'highcharts';
-import HighchartsReact from 'highcharts-react-official';
-import HighchartsMap from 'highcharts/modules/map';
-import { useGetDepartementListQuery } from '@services/api';
+import React, { useRef, useEffect, useState, useMemo } from "react";
+import * as Highcharts from "highcharts";
+import HighchartsReact from "highcharts-react-official";
+import HighchartsMap from "highcharts/modules/map";
+import { useGetDepartementListQuery } from "@services/api";
 
 HighchartsMap(Highcharts);
 
@@ -41,21 +41,26 @@ interface Geometry {
 const pointFormatter = function (this: any) {
   const millesimes = this.properties.ocsge_millesimes;
   const millesimesText = millesimes
-    ? `Millésimes OCS GE disponibles: ${millesimes.join(', ')}`
+    ? `Millésimes OCS GE disponibles: ${millesimes.join(", ")}`
     : "OCS GE Non disponible";
   return `<b>${this.properties.nom}</b><br>${millesimesText}`;
 };
 
 const dataLabelFormatter = function (this: any) {
-  return this.point.properties.ocsge_millesimes ? this.point.properties.nom : '';
+  return this.point.properties.ocsge_millesimes
+    ? this.point.properties.nom
+    : "";
 };
 
-const updateGeoJSONProperties = (geojson: GeoJSON, departements: Departement[]): GeoJSON => {
+const updateGeoJSONProperties = (
+  geojson: GeoJSON,
+  departements: Departement[],
+): GeoJSON => {
   return {
     ...geojson,
-    features: geojson.features.map(feature => {
+    features: geojson.features.map((feature) => {
       const code = feature.properties.code;
-      const departement = departements.find(dept => dept.source_id === code);
+      const departement = departements.find((dept) => dept.source_id === code);
       if (departement) {
         return {
           ...feature,
@@ -66,7 +71,9 @@ const updateGeoJSONProperties = (geojson: GeoJSON, departements: Departement[]):
           },
         };
       } else {
-        console.warn(`Le département "${code}" du GeoJSON n'a pas été trouvé dans les données.`);
+        console.warn(
+          `Le département "${code}" du GeoJSON n'a pas été trouvé dans les données.`,
+        );
         return feature;
       }
     }),
@@ -80,84 +87,89 @@ const HighchartsMapOcsge: React.FC = () => {
 
   useEffect(() => {
     if (data) {
-      fetch('https://gist.githubusercontent.com/alexisig/8003b3cb786ba1fcaf1801b81d42d755/raw/0715b61a3f6ef828f7dc90b8fa42167547673af4/departements-1000m-dept-simpl-displaced-vertical.geojson')
-        .then(response => response.json())
-        .then(geojson => {
+      fetch(
+        "https://gist.githubusercontent.com/alexisig/8003b3cb786ba1fcaf1801b81d42d755/raw/0715b61a3f6ef828f7dc90b8fa42167547673af4/departements-1000m-dept-simpl-displaced-vertical.geojson",
+      )
+        .then((response) => response.json())
+        .then((geojson) => {
           const updatedTopology = updateGeoJSONProperties(geojson, data);
           setMapData(updatedTopology);
         })
-        .catch(error => console.error('Error fetching GeoJSON:', error));
+        .catch((error) => console.error("Error fetching GeoJSON:", error));
     }
   }, [data]);
-  
-  const options = useMemo(() => ({
-    chart: {
-      map: mapData,
-      height: 550,
-      width: 600,
-    },
-    title: {
-      text: "",
-    },
-    credits: {
-      enabled: false,
-    },
-    series: [
-      {
-        type: 'map',
-        joinBy: 'code',
-        keys: ['code', 'value'],
-        data: mapData
-          ? mapData.features
-              .filter(feature => feature.properties.is_artif_ready)
-              .map(feature => ({
-                code: feature.properties.code,
-                value: 1,
-              }))
-          : [],
-        states: {
-          hover: {
-            borderColor: '#cccccc',
-            brightness: 0.1,
-            borderWidth: 1,
-          },
-        },
-        dataLabels: {
-          enabled: true,
-          formatter: dataLabelFormatter,
-          style: {
-            color: '#293273',
-          },
-        },
-        tooltip: {
-          headerFormat: '',
-          pointFormatter,
-        },
-        borderWidth: 1,
+
+  const options = useMemo(
+    () => ({
+      chart: {
+        map: mapData,
+        height: 550,
+        width: 600,
       },
-    ],
-    mapNavigation: {
-      enabled: false,
-    },
-    exporting: {
-      enabled: false,
-    },
-    mapView: {
-      projection: {
-        name: 'WebMercator',
+      title: {
+        text: "",
       },
-    },
-    colorAxis: {
-      dataClasses: [
+      credits: {
+        enabled: false,
+      },
+      series: [
         {
-          from: 1,
-          to: 1,
-          color: '#6dd176',
-          name: 'OCS GE Disponible',
+          type: "map",
+          joinBy: "code",
+          keys: ["code", "value"],
+          data: mapData
+            ? mapData.features
+                .filter((feature) => feature.properties.is_artif_ready)
+                .map((feature) => ({
+                  code: feature.properties.code,
+                  value: 1,
+                }))
+            : [],
+          states: {
+            hover: {
+              borderColor: "#cccccc",
+              brightness: 0.1,
+              borderWidth: 1,
+            },
+          },
+          dataLabels: {
+            enabled: true,
+            formatter: dataLabelFormatter,
+            style: {
+              color: "#293273",
+            },
+          },
+          tooltip: {
+            headerFormat: "",
+            pointFormatter,
+          },
+          borderWidth: 1,
         },
       ],
-    },
-  }), [mapData]);
+      mapNavigation: {
+        enabled: false,
+      },
+      exporting: {
+        enabled: false,
+      },
+      mapView: {
+        projection: {
+          name: "WebMercator",
+        },
+      },
+      colorAxis: {
+        dataClasses: [
+          {
+            from: 1,
+            to: 1,
+            color: "#6dd176",
+            name: "OCS GE Disponible",
+          },
+        ],
+      },
+    }),
+    [mapData],
+  );
 
   return (
     <div>

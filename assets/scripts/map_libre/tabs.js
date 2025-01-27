@@ -24,7 +24,10 @@ export default class Tabs
 
     this.tabsNode.appendChild(this.buttonsNode)
 
-    this.mapLibre.targetElement.parentNode.insertBefore(this.tabsNode, this.mapLibre.targetElement.nextSibling)
+    this.mapLibre.targetElement.parentNode.insertBefore(
+      this.tabsNode,
+      this.mapLibre.targetElement.nextSibling,
+    )
 
     this.tabList.map((_obj) => this.createTab(_obj))
   }

@@ -1,6 +1,6 @@
-name: 'sparte'
-version: '1.0.0'
-profile: 'sparte'
+name: "sparte"
+version: "1.0.0"
+profile: "sparte"
 
 model-paths: ["models"]
 analysis-paths: ["analyses"]

@@ -54,17 +54,35 @@ export default class Legend
   getLegendText(_obj, index)
   {
     const legend = {
-      raw: () => (this.formatter ? formatData(this.formatter[0], this.formatter[1], _obj.value) : _obj.value),
+      raw: () => (this.formatter
+        ? formatData(this.formatter[0], this.formatter[1], _obj.value)
+        : _obj.value),
       scale: () =>
       {
         let legendText
         if (this.formatter)
         {
-          legendText = index === 0 ? `0 &ndash; ${formatData(this.formatter[0], this.formatter[1], _obj.value)}` : `${formatData(this.formatter[0], this.formatter[1], this.data[index - 1].value)} &ndash; ${formatData(this.formatter[0], this.formatter[1], _obj.value)}`
+          legendText = index === 0
+            ? `0 &ndash; ${formatData(
+              this.formatter[0],
+              this.formatter[1],
+              _obj.value,
+            )}`
+            : `${formatData(
+              this.formatter[0],
+              this.formatter[1],
+              this.data[index - 1].value,
+            )} &ndash; ${formatData(
+              this.formatter[0],
+              this.formatter[1],
+              _obj.value,
+            )}`
         }
         else
         {
-          legendText = index === 0 ? `0 &ndash; ${_obj.value}` : `${this.data[index - 1].value} &ndash; ${_obj.value}`
+          legendText = index === 0
+            ? `0 &ndash; ${_obj.value}`
+            : `${this.data[index - 1].value} &ndash; ${_obj.value}`
         }
         return legendText
       },

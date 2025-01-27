@@ -1,14 +1,13 @@
-
 version: 2
 
 models:
   - name: logement_commune
     columns:
-    - name: code_commune
-      data_tests:
-      - not_null
-      - has_all_communes:
-          severity: warn
-      - relationships:
-          to: ref('commune')
-          field: code
+      - name: code_commune
+        data_tests:
+          - not_null
+          - has_all_communes:
+              severity: warn
+          - relationships:
+              to: ref('commune')
+              field: code

@@ -1,9 +1,9 @@
-import React from 'react';
-import { useHtmlLoader } from '@hooks/useHtmlLoader';
-import useHighcharts from '@hooks/useHighcharts';
-import Loader from '@components/ui/Loader';
-import Guide from '@components/widgets/Guide';
-import OcsgeMatricePassage from '@images/ocsge_matrice_passage.png';
+import React from "react";
+import { useHtmlLoader } from "@hooks/useHtmlLoader";
+import useHighcharts from "@hooks/useHighcharts";
+import Loader from "@components/ui/Loader";
+import Guide from "@components/widgets/Guide";
+import OcsgeMatricePassage from "@images/ocsge_matrice_passage.png";
 
 /*
 Ce composant est un composant hybride qui permet de récupérer du contenu côté serveur via Django et de l'intégrer directement dans l'interface React.
@@ -19,35 +19,38 @@ Dans ce cas, les données provenant de Django sont considérées comme fiables.
 */
 
 const Artificialisation: React.FC<{ endpoint: string }> = ({ endpoint }) => {
-    const { content, isLoading, error } = useHtmlLoader(endpoint);
+  const { content, isLoading, error } = useHtmlLoader(endpoint);
 
-    useHighcharts([
-        'detail_couv_artif_chart',
-        'couv_artif_sol',
-        'detail_usage_artif_chart',
-        'usage_artif_sol',
-        'chart_comparison',
-        'chart_waterfall'
-    ], isLoading);
+  useHighcharts(
+    [
+      "detail_couv_artif_chart",
+      "couv_artif_sol",
+      "detail_usage_artif_chart",
+      "usage_artif_sol",
+      "chart_comparison",
+      "chart_waterfall",
+    ],
+    isLoading,
+  );
 
-    if (isLoading) return <Loader />;
-    if (error) return <div>Erreur : {error}</div>;
+  if (isLoading) return <Loader />;
+  if (error) return <div>Erreur : {error}</div>;
 
-    return (
-        <div className="fr-container--fluid fr-p-3w">
-            <div className="fr-grid-row">
-                <div className="fr-col-12">
-                    <Guide
-                        title="Cadre réglementaire"
-                        contentHtml={`L'article 192 de la Loi Climat & Résilience votée en août 2021 définit l'artificialisation comme « une surface dont les sols sont :
+  return (
+    <div className="fr-container--fluid fr-p-3w">
+      <div className="fr-grid-row">
+        <div className="fr-col-12">
+          <Guide
+            title="Cadre réglementaire"
+            contentHtml={`L'article 192 de la Loi Climat & Résilience votée en août 2021 définit l'artificialisation comme « une surface dont les sols sont :
                             <ul>
                                 <li>soit imperméabilisés en raison du bâti ou d'un revêtement,</li>
                                 <li>soit stabilisés et compactés,</li>
                                 <li>soit constitués de matériaux composites »</li>
                             </ul>
                         `}
-                        DrawerTitle="Cadre Réglementaire"
-                        DrawerContentHtml={`
+            DrawerTitle="Cadre Réglementaire"
+            DrawerContentHtml={`
                             <p class="fr-text--sm mb-3">
                                 L'article 192 de la Loi Climat & Résilience votée en août 2021 définit
                                 l'artificialisation comme « une surface dont les sols sont :
@@ -65,12 +68,12 @@ const Artificialisation: React.FC<{ endpoint: string }> = ({ endpoint }) => {
                             <p class="fr-text--sm mb-3">Au niveau national, l'artificialisation est mesurée par l'occupation des sols à grande échelle (OCS GE), en cours d'élaboration, dont la production sera engagée sur l'ensemble du territoire national d'ici fin 2024.</p>
                             <img src="${OcsgeMatricePassage}" alt="OCS GE Nomenclature Us" class="w-100" />
                         `}
-                    />
-                    <div dangerouslySetInnerHTML={{ __html: content }} />
-                </div>
-            </div>
+          />
+          <div dangerouslySetInnerHTML={{ __html: content }} />
         </div>
-    );
+      </div>
+    </div>
+  );
 };
 
 export default Artificialisation;

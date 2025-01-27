@@ -2,6 +2,6 @@ version: 2
 sources:
   - name: public
     tables:
-    - name: rpls_rpls_commune
-    - name: rpls_rpls_departement
-    - name: rpls_rpls_region
+      - name: rpls_rpls_commune
+      - name: rpls_rpls_departement
+      - name: rpls_rpls_region

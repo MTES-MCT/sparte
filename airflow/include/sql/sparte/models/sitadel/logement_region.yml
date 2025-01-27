@@ -1,13 +1,12 @@
-
 version: 2
 
 models:
   - name: logement_region
     columns:
-    - name: code_region
-      data_tests:
-      - not_null
-      - has_all_regions
-      - relationships:
-          to: ref('region')
-          field: code
+      - name: code_region
+        data_tests:
+          - not_null
+          - has_all_regions
+          - relationships:
+              to: ref('region')
+              field: code

@@ -1,9 +1,9 @@
 sources:
   - name: public
     tables:
-    - name: zlv_parcs_2019
-    - name: zlv_parcs_2020
-    - name: zlv_parcs_2021
-    - name: zlv_parcs_2022
-    - name: zlv_parcs_2023
-    - name: zlv_parcs_2024
+      - name: zlv_parcs_2019
+      - name: zlv_parcs_2020
+      - name: zlv_parcs_2021
+      - name: zlv_parcs_2022
+      - name: zlv_parcs_2023
+      - name: zlv_parcs_2024

@@ -1,13 +1,10 @@
-
 version: 2
-
 
 code_is_unique_and_not_null: &code_is_unique_and_not_null
   - name: code
     data_tests:
-    - not_null
-    - unique
-
+      - not_null
+      - unique
 
 models:
   - name: commune
@@ -59,27 +56,26 @@ models:
   - name: region_metropole
     columns: *code_is_unique_and_not_null
 
-
 sources:
   - name: public
     tables:
-    - name: commune_metropole
-    - name: commune_guadeloupe
-    - name: commune_guyane
-    - name: commune_martinique
-    - name: commune_reunion
-    - name: departement_metropole
-    - name: departement_guadeloupe
-    - name: departement_guyane
-    - name: departement_martinique
-    - name: departement_reunion
-    - name: epci_metropole
-    - name: epci_guadeloupe
-    - name: epci_guyane
-    - name: epci_martinique
-    - name: epci_reunion
-    - name: region_reunion
-    - name: region_guadeloupe
-    - name: region_guyane
-    - name: region_martinique
-    - name: region_metropole
+      - name: commune_metropole
+      - name: commune_guadeloupe
+      - name: commune_guyane
+      - name: commune_martinique
+      - name: commune_reunion
+      - name: departement_metropole
+      - name: departement_guadeloupe
+      - name: departement_guyane
+      - name: departement_martinique
+      - name: departement_reunion
+      - name: epci_metropole
+      - name: epci_guadeloupe
+      - name: epci_guyane
+      - name: epci_martinique
+      - name: epci_reunion
+      - name: region_reunion
+      - name: region_guadeloupe
+      - name: region_guyane
+      - name: region_martinique
+      - name: region_metropole

@@ -1,4 +1,3 @@
-
 version: 2
 
 models:
@@ -9,6 +8,6 @@ models:
 sources:
   - name: public
     tables:
-    - name: app_usagesol
-    - name: app_couverturesol
-    - name: app_couvertureusagematrix
+      - name: app_usagesol
+      - name: app_couverturesol
+      - name: app_couvertureusagematrix

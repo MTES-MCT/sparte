@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { useHtmlLoader } from '@hooks/useHtmlLoader';
-import useHtmx from '@hooks/useHtmx';
-import useHighcharts from '@hooks/useHighcharts';
-import Loader from '@components/ui/Loader';
-import Guide from '@components/widgets/Guide';
+import React, { useEffect, useState } from "react";
+import { useHtmlLoader } from "@hooks/useHtmlLoader";
+import useHtmx from "@hooks/useHtmx";
+import useHighcharts from "@hooks/useHighcharts";
+import Loader from "@components/ui/Loader";
+import Guide from "@components/widgets/Guide";
 
 /*
 Ce composant est un composant hybride qui permet de récupérer du contenu côté serveur via Django et de l'intégrer directement dans l'interface React.
@@ -23,55 +23,63 @@ Dans ce cas, les données provenant de Django sont considérées comme fiables.
 */
 
 const Consommation: React.FC<{ endpoint: string }> = ({ endpoint }) => {
-    const [refreshKey, setRefreshKey] = useState(0);
-    const { content, isLoading, error } = useHtmlLoader(endpoint + `?refreshKey=${refreshKey}`);
-    const htmxRef = useHtmx([isLoading]);
+  const [refreshKey, setRefreshKey] = useState(0);
+  const { content, isLoading, error } = useHtmlLoader(
+    endpoint + `?refreshKey=${refreshKey}`,
+  );
+  const htmxRef = useHtmx([isLoading]);
 
-    useHighcharts([
-        'annual_total_conso_chart',
-        'comparison_chart',
-        'chart_determinant',
-        'pie_determinant',
-        'surface_proportional_chart',
-        'population_density_chart',
-        'population_conso_progression_chart',
-        'population_conso_comparison_chart',
-    ], isLoading);
+  useHighcharts(
+    [
+      "annual_total_conso_chart",
+      "comparison_chart",
+      "chart_determinant",
+      "pie_determinant",
+      "surface_proportional_chart",
+      "population_density_chart",
+      "population_conso_progression_chart",
+      "population_conso_comparison_chart",
+    ],
+    isLoading,
+  );
 
-    useEffect(() => {
-        const handleForceRefresh = () => {
-            setRefreshKey(prevKey => prevKey + 1);
-        };
-    
-        document.addEventListener('force-refresh', handleForceRefresh);
-    
-        return () => {
-            document.removeEventListener('force-refresh', handleForceRefresh);
-        };
-    }, []);
+  useEffect(() => {
+    const handleForceRefresh = () => {
+      setRefreshKey((prevKey) => prevKey + 1);
+    };
 
-    useEffect(() => {
-        if (!isLoading && refreshKey !== 0) {
-            const targetElement = document.getElementById('territoires-de-comparaison');
-            const targetPosition = targetElement.getBoundingClientRect().top + window.scrollY - 190;
-            if (targetElement) {
-                window.scrollTo({ top: targetPosition, behavior: 'instant' });
-            }
-        }
-    }, [refreshKey, isLoading]);
+    document.addEventListener("force-refresh", handleForceRefresh);
 
-    if (isLoading) return <Loader />;
-    if (error) return <div>Erreur : {error}</div>;
-      
-    return (
-         <div className="fr-container--fluid fr-p-3w" ref={htmxRef}>
-            <div className="fr-grid-row">
-                <div className="fr-col-12">
-                    <Guide
-                        title="Cadre réglementaire"
-                        contentHtml={`La consommation d'espaces NAF (Naturels, Agricoles et Forestiers) est entendue comme « la création ou l'extension effective d'espaces urbanisés sur le territoire concerné » (article 194 de la loi Climat et résilience).`}
-                        DrawerTitle="Cadre Réglementaire"
-                        DrawerContentHtml={`
+    return () => {
+      document.removeEventListener("force-refresh", handleForceRefresh);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!isLoading && refreshKey !== 0) {
+      const targetElement = document.getElementById(
+        "territoires-de-comparaison",
+      );
+      const targetPosition =
+        targetElement.getBoundingClientRect().top + window.scrollY - 190;
+      if (targetElement) {
+        window.scrollTo({ top: targetPosition, behavior: "instant" });
+      }
+    }
+  }, [refreshKey, isLoading]);
+
+  if (isLoading) return <Loader />;
+  if (error) return <div>Erreur : {error}</div>;
+
+  return (
+    <div className="fr-container--fluid fr-p-3w" ref={htmxRef}>
+      <div className="fr-grid-row">
+        <div className="fr-col-12">
+          <Guide
+            title="Cadre réglementaire"
+            contentHtml={`La consommation d'espaces NAF (Naturels, Agricoles et Forestiers) est entendue comme « la création ou l'extension effective d'espaces urbanisés sur le territoire concerné » (article 194 de la loi Climat et résilience).`}
+            DrawerTitle="Cadre Réglementaire"
+            DrawerContentHtml={`
                             <p class="fr-text--sm mb-3">
                                 La consommation d'espaces NAF (Naturels, Agricoles et Forestiers) est entendue comme
                                 <i>« la création ou l'extension effective d'espaces urbanisés sur le territoire concerné »</i> (article 194 de la loi Climat et résilience).
@@ -92,12 +100,12 @@ const Consommation: React.FC<{ endpoint: string }> = ({ endpoint }) => {
                             </p>
                             <p class="fr-text--sm mb-3"><a href="https://artificialisation.developpement-durable.gouv.fr/bases-donnees/les-fichiers-fonciers" target="_blank" rel="noopener noreferrer">Plus d'informations sur les fichiers fonciers (source : Cerema)</a></p>
                         `}
-                    />
-                    <div dangerouslySetInnerHTML={{ __html: content }} />
-                </div>
-            </div>
+          />
+          <div dangerouslySetInnerHTML={{ __html: content }} />
         </div>
-    );
+      </div>
+    </div>
+  );
 };
 
 export default Consommation;

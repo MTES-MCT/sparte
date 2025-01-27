@@ -2,7 +2,7 @@
 # See https://pre-commit.com/hooks.html for more hooks
 
 exclude: >-
-  ^.*\.(js|jsx|ts|tsx|css|scss|html|json|md|mdx|graphql|gql|
+  ^.*\.(js|css|scss|html|json|md|mdx|graphql|gql|
   png|jpe?g|gif|ico|tif?f|bmp|svg|eps|raw|cr2|nef|orf|sr2|webp|
   shp|shx|dbf|prj|sbn|sbx|fbn|fbx|ain|aih|ixs|mxs|atx|shp.xml|
   cpg|qix|fix|gix|six|prj.xml|sbn.xml|sbx.xml|shp.html|shp.xml|

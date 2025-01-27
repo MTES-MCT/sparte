@@ -2,5 +2,5 @@ version: 2
 sources:
   - name: public
     tables:
-    - name: insee_cog_changes_2024
-    - name: insee_population
+      - name: insee_cog_changes_2024
+      - name: insee_population

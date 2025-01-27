@@ -1,15 +1,15 @@
-import { useEffect } from 'react';
-import Highcharts from 'highcharts';
-import highchartsExporting from 'highcharts/modules/exporting';
-import exportDataModule from 'highcharts/modules/export-data';
-import HighchartsMore from 'highcharts/highcharts-more';
-import highchartsAccessibility from 'highcharts/modules/accessibility';
-import DependencyWheel from 'highcharts/modules/dependency-wheel';
-import Sankey from 'highcharts/modules/sankey';
-import Treemap from 'highcharts/modules/treemap'
+import { useEffect } from "react";
+import Highcharts from "highcharts";
+import highchartsExporting from "highcharts/modules/exporting";
+import exportDataModule from "highcharts/modules/export-data";
+import HighchartsMore from "highcharts/highcharts-more";
+import highchartsAccessibility from "highcharts/modules/accessibility";
+import DependencyWheel from "highcharts/modules/dependency-wheel";
+import Sankey from "highcharts/modules/sankey";
+import Treemap from "highcharts/modules/treemap";
 
 // Importation du type personnalisé lineargauge
-import '../highcharts/lineargauge.js';
+import "../highcharts/lineargauge.js";
 
 highchartsExporting(Highcharts);
 HighchartsMore(Highcharts);
@@ -20,54 +20,56 @@ DependencyWheel(Highcharts);
 Treemap(Highcharts);
 
 const useHighcharts = (chartIds: string[], loading: boolean) => {
-    useEffect(() => {
-        if (!loading) {
-            chartIds.forEach((chartId) => {
-                const chartDataElement = document.getElementById(`${chartId}_data`);
-                if (chartDataElement) {
-                    const chartOptions = JSON.parse(chartDataElement.textContent || '{}');
-                    const chart = Highcharts.chart(chartId, chartOptions);
+  useEffect(() => {
+    if (!loading) {
+      chartIds.forEach((chartId) => {
+        const chartDataElement = document.getElementById(`${chartId}_data`);
+        if (chartDataElement) {
+          const chartOptions = JSON.parse(chartDataElement.textContent || "{}");
+          const chart = Highcharts.chart(chartId, chartOptions);
 
-                    const fullscreenButton = document.querySelector<HTMLButtonElement>(
-                        `[data-chart-fullscreen="${chartId}"]`
-                    );
-                    
-                    const exportPngButton = document.querySelector<HTMLButtonElement>(
-                        `[data-chart-exportpng="${chartId}"]`
-                    );
-                    
-                    const exportCsvButton = document.querySelector<HTMLButtonElement>(
-                        `[data-chart-exportcsv="${chartId}"]`
-                    );
+          const fullscreenButton = document.querySelector<HTMLButtonElement>(
+            `[data-chart-fullscreen="${chartId}"]`,
+          );
 
-                    if (fullscreenButton) {
-                        fullscreenButton.onclick = (e) => {
-                            e.preventDefault();
-                            chart.fullscreen.toggle();
-                        };
-                    }
+          const exportPngButton = document.querySelector<HTMLButtonElement>(
+            `[data-chart-exportpng="${chartId}"]`,
+          );
 
-                    if (exportPngButton) {
-                        exportPngButton.onclick = (e) => {
-                            e.preventDefault();
-                            chart.exportChart({
-                                type: 'image/png',
-                                scale: 3,
-                            }, {});
-                        };
-                    }
+          const exportCsvButton = document.querySelector<HTMLButtonElement>(
+            `[data-chart-exportcsv="${chartId}"]`,
+          );
 
-                    if (exportCsvButton) {
-                        exportCsvButton.onclick = (e) => {
-                            e.preventDefault();
-                            chart.downloadCSV() 
-                        };
-                    }
+          if (fullscreenButton) {
+            fullscreenButton.onclick = (e) => {
+              e.preventDefault();
+              chart.fullscreen.toggle();
+            };
+          }
 
-                }
-            });
+          if (exportPngButton) {
+            exportPngButton.onclick = (e) => {
+              e.preventDefault();
+              chart.exportChart(
+                {
+                  type: "image/png",
+                  scale: 3,
+                },
+                {},
+              );
+            };
+          }
+
+          if (exportCsvButton) {
+            exportCsvButton.onclick = (e) => {
+              e.preventDefault();
+              chart.downloadCSV();
+            };
+          }
         }
-    }, [chartIds, loading]);
+      });
+    }
+  }, [chartIds, loading]);
 };
 
 export default useHighcharts;

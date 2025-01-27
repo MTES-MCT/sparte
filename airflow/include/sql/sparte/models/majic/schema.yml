@@ -1,75 +1,75 @@
-
 version: 2
 
 models:
   - name: consommation
     columns:
-    - name: commune_code
-      data_tests:
-      - not_null
-      - unique
+      - name: commune_code
+        data_tests:
+          - not_null
+          - unique
   - name: consommation_cog_2024
     columns:
-    - name: correction_status
-      data_tests:
-      - not_null
-      - accepted_values:
-          values: [
-            'UNCHANGED',
-            'DIVISION',
-            'FUSION',
-            'COG_ERROR',
-            'MISSING_FROM_SOURCE'
-          ]
-    - name: commune_code
-      data_tests:
-      - not_null
-      - unique
-      - has_all_communes
-      - relationships:
-          to: ref('commune')
-          field: code
+      - name: correction_status
+        data_tests:
+          - not_null
+          - accepted_values:
+              values:
+                [
+                  "UNCHANGED",
+                  "DIVISION",
+                  "FUSION",
+                  "COG_ERROR",
+                  "MISSING_FROM_SOURCE",
+                ]
+      - name: commune_code
+        data_tests:
+          - not_null
+          - unique
+          - has_all_communes
+          - relationships:
+              to: ref('commune')
+              field: code
   - name: period_consommation_departement
     columns:
-    - name: departement
-      data_tests:
-      - not_null
-      - has_all_departements
-      - relationships:
-          to: ref('departement')
-          field: code
+      - name: departement
+        data_tests:
+          - not_null
+          - has_all_departements
+          - relationships:
+              to: ref('departement')
+              field: code
   - name: period_consommation_epci
     columns:
-    - name: epci
-      data_tests:
-      - not_null
-      - has_all_epcis
-      - relationships:
-          to: ref('epci')
-          field: code
+      - name: epci
+        data_tests:
+          - not_null
+          - has_all_epcis
+          - relationships:
+              to: ref('epci')
+              field: code
   - name: period_consommation_region
     columns:
-    - name: region
-      data_tests:
-      - not_null
-      - has_all_regions
-      - relationships:
-          to: ref('region')
-          field: code
+      - name: region
+        data_tests:
+          - not_null
+          - has_all_regions
+          - relationships:
+              to: ref('region')
+              field: code
   - name: period_consommation_scot
     columns:
-    - name: scot
-      data_tests:
-      - not_null
-      - has_all_scots
-      - relationships:
-          to: ref('scot')
-          field: id_scot
+      - name: scot
+        data_tests:
+          - not_null
+          - has_all_scots
+          - relationships:
+              to: ref('scot')
+              field: id_scot
 sources:
   - name: public
     tables:
-    - name: majic_france_metropolitaine
-    - name: majic_guadeloupe
-    - name: majic_guyane
-    - name: majic_martinique
-    - name: majic_la_reunion
+      - name: majic_france_metropolitaine
+      - name: majic_guadeloupe
+      - name: majic_guyane
+      - name: majic_martinique
+      - name: majic_la_reunion

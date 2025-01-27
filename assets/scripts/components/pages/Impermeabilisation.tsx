@@ -1,8 +1,8 @@
-import React from 'react';
-import { useHtmlLoader } from '@hooks/useHtmlLoader';
-import useHighcharts from '@hooks/useHighcharts';
-import Loader from '@components/ui/Loader';
-import Guide from '@components/widgets/Guide';
+import React from "react";
+import { useHtmlLoader } from "@hooks/useHtmlLoader";
+import useHighcharts from "@hooks/useHighcharts";
+import Loader from "@components/ui/Loader";
+import Guide from "@components/widgets/Guide";
 
 /*
 Ce composant est un composant hybride qui permet de récupérer du contenu côté serveur via Django et de l'intégrer directement dans l'interface React.
@@ -18,33 +18,36 @@ Dans ce cas, les données provenant de Django sont considérées comme fiables.
 */
 
 const Impermeabilisation: React.FC<{ endpoint: string }> = ({ endpoint }) => {
-    const { content, isLoading, error } = useHtmlLoader(endpoint);
+  const { content, isLoading, error } = useHtmlLoader(endpoint);
 
-    useHighcharts([
-        'imper_nette_chart',
-        'imper_progression_couv_chart',
-        'imper_repartition_couv_chart',
-        'imper_progression_usage_chart',
-        'imper_repartition_usage_chart',
-    ], isLoading);
+  useHighcharts(
+    [
+      "imper_nette_chart",
+      "imper_progression_couv_chart",
+      "imper_repartition_couv_chart",
+      "imper_progression_usage_chart",
+      "imper_repartition_usage_chart",
+    ],
+    isLoading,
+  );
 
-    if (isLoading) return <Loader />;
-    if (error) return <div>Erreur : {error}</div>;
+  if (isLoading) return <Loader />;
+  if (error) return <div>Erreur : {error}</div>;
 
-    return (
-        <div className="fr-container--fluid fr-p-3w">
-            <div className="fr-grid-row">
-                <div className="fr-col-12">
-                    <Guide
-                        title="Cadre réglementaire"
-                        contentHtml={`L’imperméabilisation des sols est définie comme: 
+  return (
+    <div className="fr-container--fluid fr-p-3w">
+      <div className="fr-grid-row">
+        <div className="fr-col-12">
+          <Guide
+            title="Cadre réglementaire"
+            contentHtml={`L’imperméabilisation des sols est définie comme:
                             <ul>
                                 <li>1° Surfaces dont les sols sont imperméabilisés en raison du bâti (constructions, aménagements, ouvrages ou installations).</li>
                                 <li>2° Surfaces dont les sols sont imperméabilisés en raison d'un revêtement (Impericiel, asphalté, bétonné, couvert de pavés ou de dalles).</li>
                             </ul>
                         `}
-                        DrawerTitle="Cadre Réglementaire"
-                        DrawerContentHtml={`
+            DrawerTitle="Cadre Réglementaire"
+            DrawerContentHtml={`
                             <p class="fr-text--sm mb-3">Le <a rel="noopener noreferrer" target="_blank" href="https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000048465959">Décret n° 2023-1096 du 27 novembre 2023 relatif à l'évaluation et au suivi de l'Imperméabilisation des sols</a> précise que le rapport relatif à l'Imperméabilisation des sols prévu à l'article L. 2231-1 présente, pour les années civiles sur lesquelles il porte et au moins tous les trois ans, les indicateurs et données suivants:</p>
                             <ul class="fr-text--sm mb-3">
                                 <li>« 1° La consommation des espaces naturels, agricoles et forestiers, exprimée en nombre d'hectares, le cas échéant en la différenciant entre ces types d'espaces, et en pourcentage au regard de la superficie du territoire couvert. Sur le même territoire, le rapport peut préciser également la transformation effective d'espaces urbanisés ou construits en espaces naturels, agricoles et forestiers du fait d'une désimperméabilisation ;</li>
@@ -66,12 +69,12 @@ const Impermeabilisation: React.FC<{ endpoint: string }> = ({ endpoint }) => {
                                 Dans la nomenclature OCS GE, les zones imperméables correspondent aux deux classes commençant par le code CS1.1.1
                             </p>
                         `}
-                    />
-                    <div dangerouslySetInnerHTML={{ __html: content }} />
-                </div>
-            </div>
+          />
+          <div dangerouslySetInnerHTML={{ __html: content }} />
         </div>
-    );
+      </div>
+    </div>
+  );
 };
 
 export default Impermeabilisation;

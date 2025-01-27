@@ -89,7 +89,13 @@ export default class Events
       {
         if (_event.features[0].properties[_obj.key])
         {
-          const value = _obj.formatter ? formatData(_obj.formatter[0], _obj.formatter[1], _event.features[0].properties[_obj.key]) : _event.features[0].properties[_obj.key]
+          const value = _obj.formatter
+            ? formatData(
+              _obj.formatter[0],
+              _obj.formatter[1],
+              _event.features[0].properties[_obj.key],
+            )
+            : _event.features[0].properties[_obj.key]
           info += `<div class="fr-mr-2w"><strong>${_obj.name}&nbsp;:&nbsp;</strong>${value}</div>`
         }
       })
@@ -106,10 +112,24 @@ export default class Events
 
     if (_event.features.length > 0)
     {
-      this.infoBoxNode.innerHTML = `<div class="info-box__title"><strong>${_options.title}</strong></div>
+      this.infoBoxNode.innerHTML = `<div class="info-box__title"><strong>${
+        _options.title
+      }</strong></div>
                 <ul class="fr-badge-group">
-                    <li><p class="fr-badge fr-badge--${_event.features[0].properties.is_new_artif ? 'error' : 'success'} fr-badge--sm fr-badge--no-icon text-capitalize">${_event.features[0].properties.is_new_artif ? 'Artificialiation' : 'Désartificialisation'}</p></li>
-                    <li><p class="fr-badge fr-badge--blue-ecume fr-badge--sm fr-badge--no-icon text-capitalize">Surface&nbsp;:&nbsp;<strong>${formatData('number', ['fr-FR', 'unit', 'hectare', 3], _event.features[0].properties.surface)}</strong></p></li>
+                    <li><p class="fr-badge fr-badge--${
+  _event.features[0].properties.is_new_artif
+    ? 'error'
+    : 'success'
+} fr-badge--sm fr-badge--no-icon text-capitalize">${
+  _event.features[0].properties.is_new_artif
+    ? 'Artificialiation'
+    : 'Désartificialisation'
+}</p></li>
+                    <li><p class="fr-badge fr-badge--blue-ecume fr-badge--sm fr-badge--no-icon text-capitalize">Surface&nbsp;:&nbsp;<strong>${formatData(
+    'number',
+    ['fr-FR', 'unit', 'hectare', 3],
+    _event.features[0].properties.surface,
+  )}</strong></p></li>
                 </ul>
                 <table class="table table-striped table-sm table-borderless table-custom">
                     <thead>
@@ -121,14 +141,26 @@ export default class Events
                     </thead>
                     <tbody>
                         <tr>
-                            <td class="fr-text--xs">${_event.features[0].properties.year_old}</td>
-                            <td class="fr-text--xs"><div class="text-truncate">${_event.features[0].properties.cs_old}</div></td>
-                            <td class="fr-text--xs"><div class="text-truncate">${_event.features[0].properties.us_old}</div></td>
+                            <td class="fr-text--xs">${
+  _event.features[0].properties.year_old
+}</td>
+                            <td class="fr-text--xs"><div class="text-truncate">${
+  _event.features[0].properties.cs_old
+}</div></td>
+                            <td class="fr-text--xs"><div class="text-truncate">${
+  _event.features[0].properties.us_old
+}</div></td>
                         </tr>
                         <tr>
-                            <td class="fr-text--xs">${_event.features[0].properties.year_new}</td>
-                            <td class="fr-text--xs"><div class="text-truncate">${_event.features[0].properties.cs_new}</div></td>
-                            <td class="fr-text--xs"><div class="text-truncate">${_event.features[0].properties.us_new}</div></td>
+                            <td class="fr-text--xs">${
+  _event.features[0].properties.year_new
+}</td>
+                            <td class="fr-text--xs"><div class="text-truncate">${
+  _event.features[0].properties.cs_new
+}</div></td>
+                            <td class="fr-text--xs"><div class="text-truncate">${
+  _event.features[0].properties.us_new
+}</div></td>
                         </tr>
                     </tbody>
                 </table>`
@@ -158,11 +190,27 @@ export default class Events
     }
 
     this.infoBoxNode.innerHTML = `
-          <div class="fr-mr-2w"><strong>Commune :</strong> ${properties.name} (${feature.id})</div>
-          <div class="fr-mr-2w"><strong>Taux d'artificialisation :</strong> ${formatData('number', ['fr-FR', 'unit', 'percent', 2], properties.percent_artif)}</div>
-          <div class="fr-mr-2w"><strong>Surface :</strong> ${formatData('number', ['fr-FR', 'unit', 'hectare', 2], properties.area)}</div>
-          <div class="fr-mr-2w"><strong>Surface artificialisée :</strong> ${formatData('number', ['fr-FR', 'unit', 'hectare', 2], properties.surface_artif)}</div>
-          <div class="fr-mr-2w"><strong>Évolution de l'artificialisation entre ${artifEvo.year_old} et ${artifEvo.year_new} :</strong></div>
+          <div class="fr-mr-2w"><strong>Commune :</strong> ${
+  properties.name
+} (${feature.id})</div>
+          <div class="fr-mr-2w"><strong>Taux d'artificialisation :</strong> ${formatData(
+    'number',
+    ['fr-FR', 'unit', 'percent', 2],
+    properties.percent_artif,
+  )}</div>
+          <div class="fr-mr-2w"><strong>Surface :</strong> ${formatData(
+    'number',
+    ['fr-FR', 'unit', 'hectare', 2],
+    properties.area,
+  )}</div>
+          <div class="fr-mr-2w"><strong>Surface artificialisée :</strong> ${formatData(
+    'number',
+    ['fr-FR', 'unit', 'hectare', 2],
+    properties.surface_artif,
+  )}</div>
+          <div class="fr-mr-2w"><strong>Évolution de l'artificialisation entre ${
+  artifEvo.year_old
+} et ${artifEvo.year_new} :</strong></div>
           <table class="table table-striped table-sm table-borderless table-custom">
               <thead>
                   <tr>
@@ -173,9 +221,25 @@ export default class Events
               </thead>
               <tbody>
                   <tr>
-                      <td class="fr-text--xs text-danger">${formatData('number', ['fr-FR', 'unit', 'hectare', 2], artifEvo.new_artif)}</td>
-                      <td class="fr-text--xs text-success">${formatData('number', ['fr-FR', 'unit', 'hectare', 2], artifEvo.new_natural)}</td>
-                      <td class="fr-text--xs ${artifEvo.new_artif > artifEvo.new_natural ? ' text-danger' : ' text-success'}">${formatData('number', ['fr-FR', 'unit', 'hectare', 2], artifEvo.net_artif)}</td>
+                      <td class="fr-text--xs text-danger">${formatData(
+    'number',
+    ['fr-FR', 'unit', 'hectare', 2],
+    artifEvo.new_artif,
+  )}</td>
+                      <td class="fr-text--xs text-success">${formatData(
+    'number',
+    ['fr-FR', 'unit', 'hectare', 2],
+    artifEvo.new_natural,
+  )}</td>
+                      <td class="fr-text--xs ${
+  artifEvo.new_artif > artifEvo.new_natural
+    ? ' text-danger'
+    : ' text-success'
+}">${formatData(
+  'number',
+  ['fr-FR', 'unit', 'hectare', 2],
+  artifEvo.net_artif,
+)}</td>
                   </tr>
               </tbody>
           </table>`

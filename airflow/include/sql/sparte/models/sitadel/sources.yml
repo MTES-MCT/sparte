@@ -1,9 +1,8 @@
-
 version: 2
 
 sources:
   - name: public
     tables:
-    - name: sitadel_donnees_annuelles_communales_logements
-    - name: sitadel_donnees_annuelles_epci_logements
-    - name: sitadel_donnees_annuelles_departements_logements
+      - name: sitadel_donnees_annuelles_communales_logements
+      - name: sitadel_donnees_annuelles_epci_logements
+      - name: sitadel_donnees_annuelles_departements_logements

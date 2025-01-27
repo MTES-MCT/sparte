@@ -1,14 +1,13 @@
-
 version: 2
 
 models:
   - name: logement_scot
     columns:
-    - name: code_scot
-      data_tests:
-      - not_null
-      - has_all_scots:
-          severity: warn
-      - relationships:
-          to: ref('scot')
-          field: id_scot
+      - name: code_scot
+        data_tests:
+          - not_null
+          - has_all_scots:
+              severity: warn
+          - relationships:
+              to: ref('scot')
+              field: id_scot

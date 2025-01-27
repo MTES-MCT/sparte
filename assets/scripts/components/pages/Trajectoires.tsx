@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { useHtmlLoader } from '@hooks/useHtmlLoader';
-import useHtmx from '@hooks/useHtmx';
-import useHighcharts from '@hooks/useHighcharts';
-import Loader from '@components/ui/Loader';
-import Guide from '@components/widgets/Guide';
+import React, { useEffect, useState } from "react";
+import { useHtmlLoader } from "@hooks/useHtmlLoader";
+import useHtmx from "@hooks/useHtmx";
+import useHighcharts from "@hooks/useHighcharts";
+import Loader from "@components/ui/Loader";
+import Guide from "@components/widgets/Guide";
 
 /*
 Ce composant est un composant hybride qui permet de récupérer du contenu côté serveur via Django et de l'intégrer directement dans l'interface React.
@@ -23,55 +23,55 @@ Dans ce cas, les données provenant de Django sont considérées comme fiables.
 */
 
 const Trajectoires: React.FC<{ endpoint: string }> = ({ endpoint }) => {
-    const [refreshKey, setRefreshKey] = useState(0);
-    const { content, isLoading, error } = useHtmlLoader(endpoint + `?refreshKey=${refreshKey}`);
-    const htmxRef = useHtmx([isLoading]);
+  const [refreshKey, setRefreshKey] = useState(0);
+  const { content, isLoading, error } = useHtmlLoader(
+    endpoint + `?refreshKey=${refreshKey}`,
+  );
+  const htmxRef = useHtmx([isLoading]);
 
-    useHighcharts([
-        'target_2031_chart'
-    ], isLoading);
+  useHighcharts(["target_2031_chart"], isLoading);
 
-    useEffect(() => {
-        const handleLoadGraphic = () => {
-            setTimeout(handleModalClose, 1800);
-        };
+  useEffect(() => {
+    const handleLoadGraphic = () => {
+      setTimeout(handleModalClose, 1800);
+    };
 
-        const handleModalClose = () => {
-            // Ferme la modal Bootstrap
-            const modalElement = document.getElementById("setTarget");
-            if (modalElement) {
-                const modalInstance = window.bootstrap.Modal.getInstance(modalElement);
-                if (modalInstance) {
-                    modalInstance.hide();
-                }
-            }
+    const handleModalClose = () => {
+      // Ferme la modal Bootstrap
+      const modalElement = document.getElementById("setTarget");
+      if (modalElement) {
+        const modalInstance = window.bootstrap.Modal.getInstance(modalElement);
+        if (modalInstance) {
+          modalInstance.hide();
+        }
+      }
 
-            // Rafraîchit la clé après avoir fermé la modal pour recharger le contenu
-            setRefreshKey(prevKey => prevKey + 1);
-        };
+      // Rafraîchit la clé après avoir fermé la modal pour recharger le contenu
+      setRefreshKey((prevKey) => prevKey + 1);
+    };
 
-        document.addEventListener('load-graphic', handleLoadGraphic);
+    document.addEventListener("load-graphic", handleLoadGraphic);
 
-        return () => {
-            document.removeEventListener('load-graphic', handleLoadGraphic);
-        };
-    }, []);
+    return () => {
+      document.removeEventListener("load-graphic", handleLoadGraphic);
+    };
+  }, []);
 
-    if (isLoading) return <Loader />;
-    if (error) return <div>Erreur : {error}</div>;
+  if (isLoading) return <Loader />;
+  if (error) return <div>Erreur : {error}</div>;
 
-    return (
-        <div className="fr-container--fluid fr-p-3w" ref={htmxRef}>
-            <div className="fr-grid-row">
-                <div className="fr-col-12">
-                    <Guide
-                        title="Cadre réglementaire"
-                        contentHtml={`La loi Climat & Résilience fixe<strong> l’objectif d’atteindre le « zéro artificialisation nette des sols » en 2050, avec un objectif intermédiaire
-                            de réduction de moitié de la consommation d’espaces</strong> naturels, agricoles et forestiers dans les dix prochaines années 2021-2031 
+  return (
+    <div className="fr-container--fluid fr-p-3w" ref={htmxRef}>
+      <div className="fr-grid-row">
+        <div className="fr-col-12">
+          <Guide
+            title="Cadre réglementaire"
+            contentHtml={`La loi Climat & Résilience fixe<strong> l’objectif d’atteindre le « zéro artificialisation nette des sols » en 2050, avec un objectif intermédiaire
+                            de réduction de moitié de la consommation d’espaces</strong> naturels, agricoles et forestiers dans les dix prochaines années 2021-2031
                             par rapport à la décennie précédente 2011-2021.
                         `}
-                        DrawerTitle="Cadre Réglementaire"
-                        DrawerContentHtml={`
+            DrawerTitle="Cadre Réglementaire"
+            DrawerContentHtml={`
                             <p class="fr-text--sm mb-3">
                                 La loi Climat & Résilience fixe<strong> l’objectif d’atteindre le « zéro artificialisation nette des sols » en 2050, avec un objectif intermédiaire
                                 de réduction de moitié de la consommation d’espaces</strong>
@@ -107,12 +107,12 @@ const Trajectoires: React.FC<{ endpoint: string }> = ({ endpoint }) => {
                                 Le dernier millésime de 2023 est la photographie du territoire au 1er janvier 2023, intégrant les évolutions réalisées au cours de l'année 2022.
                             </p>
                         `}
-                    />
-                    <div dangerouslySetInnerHTML={{ __html: content }} />
-                </div>
-            </div>
+          />
+          <div dangerouslySetInnerHTML={{ __html: content }} />
         </div>
-    );
+      </div>
+    </div>
+  );
 };
 
 export default Trajectoires;

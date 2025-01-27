@@ -1,13 +1,7 @@
-
 version: 2
 
 valid_srids: &valid_srids
-  values: [
-    32620,
-    2972,
-    2975,
-    2154
-  ]
+  values: [32620, 2972, 2975, 2154]
 
 models:
   - name: for_app_artifareazoneurba
@@ -222,13 +216,14 @@ models:
         data_tests:
           - not_null
           - accepted_values:
-              values: [
-                'UNCHANGED',
-                'DIVISION',
-                'FUSION',
-                'COG_ERROR',
-                'MISSING_FROM_SOURCE'
-              ]
+              values:
+                [
+                  "UNCHANGED",
+                  "DIVISION",
+                  "FUSION",
+                  "COG_ERROR",
+                  "MISSING_FROM_SOURCE",
+                ]
   - name: for_app_epci
     columns:
       - name: source_id

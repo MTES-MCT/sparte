@@ -1,49 +1,48 @@
-
 version: 2
 
 models:
   - name: scot_geom
     columns:
-    - name: id_scot
-      data_tests:
-      - not_null
-      - relationships:
-          to: ref('scot')
-          field: id_scot
-    - name: geom
-      data_tests:
-      - not_null
-      - unique
-      - is_valid_geom
-      - is_not_empty_geom
+      - name: id_scot
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('scot')
+              field: id_scot
+      - name: geom
+        data_tests:
+          - not_null
+          - unique
+          - is_valid_geom
+          - is_not_empty_geom
   - name: scot
     columns:
-    - name: id_scot
-      data_tests:
-      - not_null
-      - unique
-    - name: geom
-      data_tests:
-      - is_valid_geom
+      - name: id_scot
+        data_tests:
+          - not_null
+          - unique
+      - name: geom
+        data_tests:
+          - is_valid_geom
   - name: scot_communes
     columns:
-    - name: commune_code
-      data_tests:
-      - not_null
-      - unique
-      - relationships:
-          to: ref('commune')
-          field: code
-    - name: id_scot
-      data_tests:
-      - not_null
-      - relationships:
-          to: ref('scot')
-          field: id_scot
+      - name: commune_code
+        data_tests:
+          - not_null
+          - unique
+          - relationships:
+              to: ref('commune')
+              field: code
+      - name: id_scot
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('scot')
+              field: id_scot
 
 sources:
   - name: public
     tables:
-    - name: sudocuh_scot
-    - name: sudocuh_scot_communes
-    - name: sudocuh_plan_communal
+      - name: sudocuh_scot
+      - name: sudocuh_scot_communes
+      - name: sudocuh_plan_communal

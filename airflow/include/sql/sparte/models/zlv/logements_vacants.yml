@@ -12,15 +12,15 @@ models:
           - not_null
           - accepted_values:
               values:
-                - 'Commune'
-                - 'Communauté des Communes'
-                - 'Métropole'
-                - 'Service Déconcentré Régional'
-                - 'Autre'
-                - 'Pôle Équilibre Territorial'
-                - 'Communauté Urbaine'
-                - 'Association'
-                - 'Département'
+                - "Commune"
+                - "Communauté des Communes"
+                - "Métropole"
+                - "Service Déconcentré Régional"
+                - "Autre"
+                - "Pôle Équilibre Territorial"
+                - "Communauté Urbaine"
+                - "Association"
+                - "Département"
                 - "Communauté d''Agglomération"
-                - 'Région'
-                - 'Service Déconcentré Départemental'
+                - "Région"
+                - "Service Déconcentré Départemental"
