@@ -97,7 +97,6 @@ def copy_table_from_dw_to_app(
                 "copy_public_data_communesol",
                 "copy_public_data_ocsgediff",
                 "copy_public_data_communediff",
-                "copy_public_data_zoneconstruite",
                 "copy_public_data_zoneurba",
                 "copy_public_data_epci",
                 "copy_public_data_scot",
@@ -233,21 +232,6 @@ def update_app():  # noqa: C901
                 ["year_old"],
                 ["year_new"],
                 ["city_id"],
-            ],
-        )
-
-    @task.python
-    def copy_public_data_zoneconstruite(**context):
-        return copy_table_from_dw_to_app(
-            from_table="public_for_app.for_app_zoneconstruite",
-            to_table="public.public_data_zoneconstruite",
-            use_subset=context["params"]["use_subset"],
-            subset_where=f"mpoly && ({context['params']['subset_geom']})",
-            environment=context["params"]["environment"],
-            btree_index_columns=[
-                ["millesime"],
-                ["year"],
-                ["departement"],
             ],
         )
 
@@ -484,7 +468,6 @@ def update_app():  # noqa: C901
         copy_public_data_communesol(),
         copy_public_data_ocsgediff(),
         copy_public_data_communediff(),
-        copy_public_data_zoneconstruite(),
         copy_public_data_zoneurba(),
         copy_public_data_epci(),
         copy_public_data_scot(),
