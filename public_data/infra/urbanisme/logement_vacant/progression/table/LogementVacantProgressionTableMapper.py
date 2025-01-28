@@ -23,8 +23,6 @@ class LogementVacantProgressionTableMapper:
             for title, field in rows
         ]
 
-        print(data)
-
         return render_to_string(
             "public_data/partials/logement_vacant_progression_table.html",
             {

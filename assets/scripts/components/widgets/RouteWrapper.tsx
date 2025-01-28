@@ -12,7 +12,7 @@ interface RouteWrapperProps {
     ocsgeStatus?: OcsgeStatusProps["status"];
     consoCorrectionStatus?: ConsoCorrectionStatusEnum;
     hasGpu?: boolean;
-    logementVacantStatus?: boolean;
+    hasLogementVacant?: boolean;
     children: ReactNode;
 }
 
@@ -26,7 +26,7 @@ const RouteWrapper: React.FC<RouteWrapperProps> = ({
     ocsgeStatus,
     hasGpu,
     consoCorrectionStatus,
-    logementVacantStatus,
+    hasLogementVacant,
     children,
 }) => {
     const shouldDisplayOcsgeStatus = ocsgeStatus !== undefined && ocsgeStatus !== "COMPLETE_UNIFORM";
@@ -36,7 +36,7 @@ const RouteWrapper: React.FC<RouteWrapperProps> = ({
         ConsoCorrectionStatusEnum.UNCHANGED,
         ConsoCorrectionStatusEnum.FUSION
     ].includes(consoCorrectionStatus);
-    const shouldDisplayLogementVacantStatus = logementVacantStatus !== undefined && logementVacantStatus === false;
+    const shouldDisplayLogementVacantStatus = hasLogementVacant !== undefined && hasLogementVacant === false;
 
     const shouldDisplayChildren = !shouldDisplayOcsgeStatus &&
         !shouldDisplayGpuStatus &&

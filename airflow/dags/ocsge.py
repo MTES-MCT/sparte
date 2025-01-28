@@ -13,6 +13,7 @@ import pendulum
 import py7zr
 import requests
 from airflow.decorators import dag, task
+from airflow.exceptions import AirflowSkipException
 from airflow.models.param import Param
 from airflow.operators.bash import BashOperator
 from include.container import Container
@@ -199,6 +200,7 @@ def load_shapefiles_to_dw(
             ],
         ),
         "refresh_source": Param(False, type="boolean"),
+        "dbt_build": Param(False, type="boolean"),
     },
 )
 def ocsge():  # noqa: C901
@@ -272,28 +274,6 @@ def ocsge():  # noqa: C901
         dbt_select = " ".join([vars["dbt_selector_staging"] for vars in vars_dataset[dataset]])
         return 'cd "${AIRFLOW_HOME}/include/sql/sparte" && dbt test -s ' + dbt_select
 
-    @task.python
-    def ingest_ocsge(path, **context) -> int:
-        loaded_date = int(pendulum.now().timestamp())
-        departement = context["params"]["departement"]
-        years = context["params"]["years"]
-
-        load_shapefiles_to_dw(
-            path=path,
-            years=years,
-            departement=departement,
-            loaded_date=loaded_date,
-            table_key="dw_source",
-        )
-
-        return loaded_date
-
-    @task.bash(retries=0, trigger_rule="all_success", pool=DBT_POOL)
-    def dbt_run_ocsge(**context):
-        dataset = context["params"]["dataset"]
-        dbt_select = " ".join([f'{vars["dbt_selector"]}+' for vars in vars_dataset[dataset]])
-        return 'cd "${AIRFLOW_HOME}/include/sql/sparte" && dbt build -s ' + dbt_select
-
     @task.python(trigger_rule="all_success")
     def delete_previously_loaded_data_in_dw(**context) -> dict:
         dataset = context["params"]["dataset"]
@@ -317,17 +297,44 @@ def ocsge():  # noqa: C901
         return results
 
     @task.python
+    def ingest_ocsge(path, **context) -> int:
+        loaded_date = int(pendulum.now().timestamp())
+        departement = context["params"]["departement"]
+        years = context["params"]["years"]
+
+        load_shapefiles_to_dw(
+            path=path,
+            years=years,
+            departement=departement,
+            loaded_date=loaded_date,
+            table_key="dw_source",
+        )
+
+        return loaded_date
+
+    @task.bash(retries=0, trigger_rule="all_success", pool=DBT_POOL)
+    def dbt_run_ocsge(**context):
+        dataset = context["params"]["dataset"]
+        dbt_build = context["params"]["dbt_build"]
+
+        if not dbt_build:
+            raise AirflowSkipException
+
+        dbt_select = " ".join([f'{vars["dbt_selector"]}+' for vars in vars_dataset[dataset]])
+        return 'cd "${AIRFLOW_HOME}/include/sql/sparte" && dbt build -s ' + dbt_select
+
+    @task.python(trigger_rule="all_done")
     def log_to_mattermost(**context):
+        dbt_build = "Oui" if context["params"]["dbt_build"] else "Non"
         refresh_source = "Oui" if context["params"]["refresh_source"] else "Non"
-        if not context["params"]["refresh_source"]:
-            refresh_source += " (le fichier a été téléchargé depuis le bucket)"
         years = ", ".join(context["params"]["years"])
         message = f"""
 ### Calcul de données OCS GE terminé
 - Jeu de donnée : {context["params"]["dataset"]}
 - Departement : {context["params"]["departement"]}
 - Année(s) : {years}
-- Téléchargé : {refresh_source}
+- Source MAJ : {refresh_source} (si les données sont déjà présentes sur le bucket, elles ne sont pas rechargées)
+- Lancement de dbt : {dbt_build}
 """
         DomainContainer().notification().send(message)
 
@@ -335,8 +342,8 @@ def ocsge():  # noqa: C901
     url_exists = check_url_exists(url=url)
     path = download_ocsge(url=url)
     load_date_staging = ingest_staging(path=path)
-    delete_dw = delete_previously_loaded_data_in_dw()
     test_result_staging = db_test_ocsge_staging()
+    delete_dw = delete_previously_loaded_data_in_dw()
     loaded_date = ingest_ocsge(path=path)
     dbt_run_ocsge_result = dbt_run_ocsge()
     log = log_to_mattermost()

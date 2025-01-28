@@ -49,7 +49,7 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
 
     useEffect(() => {
     if (data) {        
-        dispatch(setProjectData(data));
+        dispatch(setProjectData(data));        
     }
     }, [data, dispatch]);
 
@@ -148,6 +148,7 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                         element={
                                             <RouteWrapper 
                                                 title="Vacance des logements"
+                                                hasLogementVacant={data.logements_vacants_available}
                                             >
                                                 <LogementVacant endpoint={urls.logementVacant} />
                                             </RouteWrapper>
