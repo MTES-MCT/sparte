@@ -105,7 +105,7 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                                 title="Usage et couverture du sol (OCS GE)"
                                                 ocsgeStatus={data.ocsge_coverage_status}
                                             >
-                                                <Ocsge endpoint={urls.ocsge} />
+                                                <Ocsge projectData={data} endpoint={urls.ocsge} />
                                             </RouteWrapper>
                                         }
                                     />

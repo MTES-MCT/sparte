@@ -111,6 +111,9 @@ class Commune(DataColorationMixin, LandMixin, GetDataFromCeremaMixin, models.Mod
     def get_cities(self):
         return Commune.objects.filter(insee=self.insee).all()
 
+    def get_departements(self):
+        return [self.departement.source_id]
+
     def get_official_id(self) -> str:
         return self.insee if self.insee is not None else ""
 

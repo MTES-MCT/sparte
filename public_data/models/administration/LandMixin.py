@@ -47,6 +47,9 @@ class LandMixin:
 
         return ConsommationCorrectionStatus.UNCHANGED
 
+    def get_departements(self):
+        raise NotImplementedError("need to be overridden")
+
     def get_cities(self):
         raise NotImplementedError("need to be overridden")
 

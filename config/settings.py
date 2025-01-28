@@ -526,6 +526,7 @@ CSP_IMG_SRC = [
     "https://client.crisp.chat",
     "https://image.crisp.chat",
     "https://storage.crisp.chat",
+    "https://airflow-staging.s3.fr-par.scw.cloud",  # à remplacer
 ]
 CSP_FRAME_SRC = (
     "'self'",
@@ -566,6 +567,7 @@ CSP_CONNECT_SRC = [
     "https://gist.githubusercontent.com",
     "https://highcharts-export.osc-fr1.scalingo.io/",
     "ws://localhost:3000/ws",
+    "https://airflow-staging.s3.fr-par.scw.cloud",
 ]
 CSP_FRAME_ANCESTORS = ("'self'", "https://sparte-metabase.osc-secnum-fr1.scalingo.io")
 

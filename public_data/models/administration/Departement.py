@@ -57,6 +57,12 @@ class Departement(LandMixin, GetDataFromCeremaMixin, models.Model):
     def __str__(self):
         return f"{self.source_id} - {self.name}"
 
+    def get_ocsge_millesimes(self):
+        return set(self.ocsge_millesimes)
+
+    def get_departements(self):
+        return [self.source_id]
+
     @classmethod
     def search(cls, needle, region=None, departement=None, epci=None):
         qs = cls.objects.annotate(similarity=TrigramSimilarity(Lower("name__unaccent"), needle.lower()))
