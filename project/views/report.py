@@ -311,24 +311,25 @@ class ProjectReportSynthesisView(ProjectReportBaseView):
 class ProjectReportLogementVacantView(ProjectReportBaseView):
     partial_template_name = "project/components/dashboard/logement_vacant.html"
     full_template_name = "project/pages/logement_vacant.html"
-    start_date = 2019
-    end_date = 2023
-    end_date_conso = 2022
 
     def get_context_data(self, **kwargs):
         project: Project = self.get_object()
+        start_date = 2019
+        end_date = 2023
+        end_date_conso = 2022
+        has_logement_vacant = project.logements_vacants_available
         has_autorisation_logement = project.autorisation_logement_available
 
         logement_vacant_progression = PublicDataContainer.logement_vacant_progression_service().get_by_land(
             land=project.land_proxy,
-            start_date=self.start_date,
-            end_date=self.end_date,
+            start_date=start_date,
+            end_date=end_date,
         )
 
         consommation_progression = PublicDataContainer.consommation_progression_service().get_by_land(
             land=project.land_proxy,
-            start_date=self.start_date,
-            end_date=self.end_date_conso,
+            start_date=start_date,
+            end_date=end_date_conso,
         )
 
         kwargs.update(
@@ -340,22 +341,22 @@ class ProjectReportLogementVacantView(ProjectReportBaseView):
                 "logement_vacant_progression_chart": (
                     charts.LogementVacantProgressionChart(
                         project,
-                        start_date=self.start_date,
-                        end_date=self.end_date,
+                        start_date=start_date,
+                        end_date=end_date,
                     )
                 ),
                 "logement_vacant_ratio_progression_chart": (
                     charts.LogementVacantRatioProgressionChart(
                         project,
-                        start_date=self.start_date,
-                        end_date=self.end_date,
+                        start_date=start_date,
+                        end_date=end_date,
                     )
                 ),
                 "logement_vacant_conso_progression_chart": (
                     charts.LogementVacantConsoProgressionChart(
                         project,
-                        start_date=self.start_date,
-                        end_date=self.end_date_conso,
+                        start_date=start_date,
+                        end_date=end_date_conso,
                     )
                 ),
                 # Data tables
@@ -378,12 +379,12 @@ class ProjectReportLogementVacantView(ProjectReportBaseView):
             }
         )
 
-        if has_autorisation_logement:
+        if has_logement_vacant and has_autorisation_logement:
             autorisation_logement_progression = (
                 PublicDataContainer.autorisation_logement_progression_service().get_by_land(
                     land=project.land_proxy,
-                    start_date=self.start_date,
-                    end_date=self.end_date,
+                    start_date=start_date,
+                    end_date=end_date,
                 )
             )
 
@@ -394,22 +395,22 @@ class ProjectReportLogementVacantView(ProjectReportBaseView):
                     "logement_vacant_autorisation_construction_comparison_chart": (
                         charts.LogementVacantAutorisationLogementComparisonChart(
                             project,
-                            start_date=self.start_date,
-                            end_date=self.end_date,
+                            start_date=start_date,
+                            end_date=end_date,
                         )
                     ),
                     "logement_vacant_autorisation_construction_ratio_gauge_chart": (
                         charts.LogementVacantAutorisationLogementRatioGaugeChart(
                             project,
-                            start_date=self.start_date,
-                            end_date=self.end_date,
+                            start_date=start_date,
+                            end_date=end_date,
                         )
                     ),
                     "logement_vacant_autorisation_logement_ratio_progression_chart": (
                         charts.LogementVacantAutorisationLogementRatioProgressionChart(
                             project,
-                            start_date=self.start_date,
-                            end_date=self.end_date,
+                            start_date=start_date,
+                            end_date=end_date,
                         )
                     ),
                     # Data tables
