@@ -105,15 +105,7 @@ class LogementVacantAutorisationLogementComparisonChart(ProjectChart):
             "plotOptions": {
                 "series": {
                     "grouping": False,
-                    "borderWidth": 0,
                     "stacking": "normal",
-                    "dataLabels": {
-                        "enabled": True,
-                        "allowOverlap": True,
-                        "overflow": "allow",
-                        "align": "right",
-                        "style": {"color": "white", "fontSize": "14px", "textOutline": "none"},
-                    },
                 }
             },
             "series": self._get_series(),
