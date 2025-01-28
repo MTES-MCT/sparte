@@ -9,8 +9,8 @@ from public_data.domain.urbanisme.logement_vacant.entity import LogementVacantCo
 class LogementVacantAutorisationConstructionComparisonTableMapper:
     @staticmethod
     def map(
-        logement_vacant_progression: list[LogementVacantCollection],
-        autorisation_logement_progression: list[AutorisationLogementCollection],
+        logement_vacant_progression: LogementVacantCollection,
+        autorisation_logement_progression: AutorisationLogementCollection,
     ):
         headers = [
             "",
@@ -18,31 +18,28 @@ class LogementVacantAutorisationConstructionComparisonTableMapper:
             "% du parc total de logements (privé + bailleurs sociaux)",
         ]
 
+        last_year_logement_vacant = logement_vacant_progression.get_last_year_logement_vacant()
+        last_year_autorisation_logement = autorisation_logement_progression.get_last_year_autorisation_logement()
+
         data = [
             {
                 "name": "Autorisations de construction",
-                "quantity": autorisation_logement_progression.autorisation_logement[-1].logements_autorises,
-                "percentage": round(
-                    autorisation_logement_progression.autorisation_logement[-1].percent_autorises_on_parc_general, 2
-                ),
+                "quantity": last_year_autorisation_logement.logements_autorises,
+                "percentage": round(last_year_autorisation_logement.percent_autorises_on_parc_general, 2),
             },
             {
                 "name": "Logements vacants depuis plus de 2 ans (privé)",
-                "quantity": logement_vacant_progression.logement_vacant[-1].logements_vacants_parc_prive,
+                "quantity": last_year_logement_vacant.logements_vacants_parc_prive,
                 "percentage": round(
-                    logement_vacant_progression.logement_vacant[
-                        -1
-                    ].logements_vacants_parc_prive_on_parc_general_percent,
+                    last_year_logement_vacant.logements_vacants_parc_prive_on_parc_general_percent,
                     2,
                 ),
             },
             {
                 "name": "Logements vacants depuis plus de 3 mois (bailleurs sociaux)",
-                "quantity": logement_vacant_progression.logement_vacant[-1].logements_vacants_parc_social,
+                "quantity": last_year_logement_vacant.logements_vacants_parc_social,
                 "percentage": round(
-                    logement_vacant_progression.logement_vacant[
-                        -1
-                    ].logements_vacants_parc_social_on_parc_general_percent,
+                    last_year_logement_vacant.logements_vacants_parc_social_on_parc_general_percent,
                     2,
                 ),
             },

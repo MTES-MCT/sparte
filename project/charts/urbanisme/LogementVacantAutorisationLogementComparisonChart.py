@@ -29,7 +29,9 @@ class LogementVacantAutorisationLogementComparisonChart(ProjectChart):
         )
 
         # On récupére la dernière année de données disponible sur la période
-        last_year_autorisation_logement_progression = autorisation_logement_progression.autorisation_logement[-1]
+        last_year_autorisation_logement_progression = (
+            autorisation_logement_progression.get_last_year_autorisation_logement()
+        )
 
         logement_vacant_progression = PublicDataContainer.logement_vacant_progression_service().get_by_land(
             land=self.project.land_proxy,
@@ -38,7 +40,7 @@ class LogementVacantAutorisationLogementComparisonChart(ProjectChart):
         )
 
         # On récupére la dernière année de données disponible sur la période
-        last_year_logement_vacant_progression = logement_vacant_progression.logement_vacant[-1]
+        last_year_logement_vacant_progression = logement_vacant_progression.get_last_year_logement_vacant()
 
         return [
             {
@@ -103,15 +105,7 @@ class LogementVacantAutorisationLogementComparisonChart(ProjectChart):
             "plotOptions": {
                 "series": {
                     "grouping": False,
-                    "borderWidth": 0,
                     "stacking": "normal",
-                    "dataLabels": {
-                        "enabled": True,
-                        "allowOverlap": True,
-                        "overflow": "allow",
-                        "align": "right",
-                        "style": {"color": "white", "fontSize": "14px", "textOutline": "none"},
-                    },
                 }
             },
             "series": self._get_series(),
