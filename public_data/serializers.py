@@ -65,18 +65,6 @@ class DepartementSerializer(s.ModelSerializer):
         model = models.Departement
 
 
-class ZoneConstruiteSerializer(serializers.GeoFeatureModelSerializer):
-    class Meta:
-        fields = (
-            "id",
-            "id_source",
-            "millesime",
-            "year",
-        )
-        model = models.ZoneConstruite
-        geo_field = "mpoly"
-
-
 class ZoneUrbaSerializer(serializers.GeoFeatureModelSerializer):
     class Meta:
         fields = (
