@@ -30,6 +30,7 @@ const LoaderWrapper = styled.div`
 const MapWrapper = styled.div`
   position: relative;
   border-radius: 6px;
+  overflow: hidden;
 `;
 
 
