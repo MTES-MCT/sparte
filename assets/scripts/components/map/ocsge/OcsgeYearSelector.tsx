@@ -22,6 +22,7 @@ export const OcsgeYearSelector = ({
       className="fr-select"
       name="selection"
       onChange={(e: any) => setYear(e.target.value)}
+      value={year}
     >
       {availableMillesimes.map((millesime) => {
         return (

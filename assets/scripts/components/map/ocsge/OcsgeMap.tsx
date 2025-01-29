@@ -8,46 +8,30 @@ import { OcsgeLeftPanelControl } from "./controls/OcsgeLeftPanelControl";
 import { getOrthophotoURL, getOcsgeVectorTilesURL } from "./sources";
 
 import "maplibre-gl/dist/maplibre-gl.css";
-import { Couverture, couvertures, Usage, usages } from "./constants/cs_and_us";
 import { Popup } from "./Popup";
 import { getMaplibrePaint } from "./utils/getMaplibrePaint";
 import { getMaplibreFilters } from "./utils/getMaplibreFilters";
 import { OcsgeMapLeftPanel } from "./OcsgeMapLeftPanel";
-import { getCouvertureColorAsRGBString, getCouvertureOrUsageAsRGBString } from "./constants/colors";
-import { area } from "@turf/turf";
-import { couvertureLabels, getCouvertureOrUsageLabel } from "./constants/labels";
-import { OcsgeStatsBar } from "./OcsgeStatsBar";
+import Loader from "@components/ui/Loader";
+import { getStats, Stat } from "./utils/getStats";
+import styled from "styled-components";
+import { OcgeMapStats } from "./OcsgeMapStats";
+import { OcsgeTileFeatureProperties } from "./VectorTileFeature";
 
-type RawOcsgeStats = {
-  couvertures: { [key in Couverture]: number };
-  usages: { [key in Usage]: number };
-};
+const LoaderWrapper = styled.div`
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  position: absolute;
+  z-index: 1000;
+`;
 
-type Stat = {
-  code: Couverture | Usage;
-  percent: number;
-}
+const MapWrapper = styled.div`
+  position: relative;
+  border-radius: 6px;
+`;
 
-type OcsgeStats = {
-  couvertures: Stat[];
-  usages: Stat[];
-};
-
-const getEmptyStats = () => {
-  const emptyStats = {
-    couvertures: {},
-    usages: {},
-  } as RawOcsgeStats;
-
-  for (const couverture of couvertures) {
-    emptyStats.couvertures[couverture] = 0;
-  }
-
-  for (const usage of usages) {
-    emptyStats.usages[usage] = 0;
-  }
-  return emptyStats;
-};
 
 interface OcsgeMapProps {
   readonly selection: Selection;
@@ -76,124 +60,116 @@ export function OcsgeMap({
   bounds,
   maxBounds,
 }: OcsgeMapProps) {
+  const [clickedFeatureId, setClickedFeatureId] = React.useState(null);
+  const [mapMovedEvent, setMapMovedEvent] = React.useState(null);
   const [controls, setControls] = React.useState([]);
-  const [stats, setStats] = React.useState({
-    couvertures: [] as Stat[],
-    usages: [] as Stat[],
-  } as OcsgeStats);
+  const [initialLoaded, setInitialLoaded] = React.useState(false);
+  const [stats, setStats] = React.useState([] as Stat[]);
+
   const mapDiv = useRef(null);
   const map = useRef<maplibregl.Map>(null);
+  const popup = useRef<maplibregl.Popup>(null);
 
-  const [initialLoaded, setInitialLoaded] = React.useState(false);
+  const initialPadding = {
+    left: 300,
+    top: 200,
+    bottom: 100,
+    right: 100,
+  }
+
+  const paddingAfterAnimation = {
+    left: initialPadding.left,
+    top: initialPadding.top / 2,
+    bottom: initialPadding.bottom / 2,
+    right: initialPadding.right / 2,
+  }
 
   const filters = getMaplibreFilters(selection.matrix, userFilters);
   const paint = getMaplibrePaint(selection.matrix);
 
-  useEffect(() => {
-    maplibregl.addProtocol("pmtiles", new Protocol().tile);
-    return () => {
-      maplibregl.removeProtocol("pmtiles");
-    };
-  }, []);
+  const leftPanelControlElementId = "ocsge-matrix-selector";
 
-  const matrixSelectorId = `ocsge-matrix-selector-${year}`;
-
-  const empriseSourceId = `emprise`;
-  const empriseSource = {
+  const empriseSourceId = "emprise";
+  const empriseSource: maplibregl.GeoJSONSourceSpecification = {
     type: "geojson",
     data: emprise,
-  } as maplibregl.GeoJSONSourceSpecification;
-  const empriseLayer = {
+  };
+  const empriseLayer: maplibregl.LineLayerSpecification = {
     id: "emprise",
     source: empriseSourceId,
     type: "line",
     paint: {
       "line-color": "#000",
       "line-width": 3,
+      "line-opacity": 0.5,
     },
-  } as maplibregl.LineLayerSpecification;
+    layout: {
+      "line-cap": "round",
+    },
+  };
 
   const ocsgeSourceId = `ocsge`;
-  const ocsgeSource = {
+  const ocsgeSource: maplibregl.VectorSourceSpecification = {
     type: "vector",
     url: getOcsgeVectorTilesURL(year, departement),
     promoteId: "id",
-  } as maplibregl.VectorSourceSpecification;
+  };
   const sourceLayer = `occupation_du_sol_${year}_${departement}`;
   const ocsgeLayerId = `ocsge`;
-  const ocsgeLayer: any = {
+  const ocsgeLayer: maplibregl.FillLayerSpecification = {
     id: ocsgeLayerId,
     source: ocsgeSourceId,
     "source-layer": sourceLayer,
     type: "fill",
     paint: {
       "fill-color": paint,
-      "fill-opacity": 0.7,
+      "fill-opacity": [
+        "case",
+        ["boolean", ["feature-state", "clicked"], false],
+        1,
+        0.8,
+      ],
     },
   };
 
   const orthophotoSourceId = `orthophoto`;
-  const orthophotoSource = {
+  const orthophotoSource: maplibregl.RasterSourceSpecification = {
     type: "raster",
     tiles: [getOrthophotoURL(year)],
-  } as maplibregl.RasterSourceSpecification;
-  const orthophotoLayer = {
+    tileSize: 128
+  };
+  const orthophotoLayer: maplibregl.RasterLayerSpecification = {
     id: "orthophoto",
     source: orthophotoSourceId,
     type: "raster",
     paint: {
       "raster-opacity": 0.7,
     },
-  } as maplibregl.RasterLayerSpecification;
+  };
 
-  const updateStats = () => {
-    const features = map.current.queryRenderedFeatures();
-    if (features.length > 0) {
-      const rawStats = features.reduce((acc, feature) => {
-        const { code_cs, code_us } = feature.properties as {
-          code_cs: Couverture;
-          code_us: Usage;
-          surface: number;
-        };
-        acc.couvertures[code_cs] += area(feature.geometry);
-        acc.usages[code_us] += area(feature.geometry);
+  const updateStats = (selection: Selection) => {
 
-        return acc;
-      }, getEmptyStats());
-
-      const stats = {
-        couvertures: [],
-        usages: [],
-      } as OcsgeStats;
-
-      const totalSurface = Object.values(rawStats.couvertures)
-        .filter((surface) => !isNaN(surface))
-        .reduce((acc, surface) => acc + surface, 0);
-
-      for (const couverture of couvertures) {
-        const couverturePercent =
-          (rawStats.couvertures[couverture] / totalSurface) * 100;
-        stats.couvertures.push({
-          code: couverture,
-          percent: couverturePercent,
-        })
-      }
-      for (const usage of usages) {
-        const usagePercent = (rawStats.usages[usage] / totalSurface) * 100;
-        stats.usages.push({
-          code: usage,
-          percent: usagePercent,
-        })
-      }
-
-      setStats(stats);
+    const zoomLevelIsTooLowToCalculateStatsWithGoodPerformance = map.current.getZoom() < 12;
+    if (zoomLevelIsTooLowToCalculateStatsWithGoodPerformance) {
+      return setStats([])
     }
+
+    const features = map.current.queryRenderedFeatures({
+      validate: false,
+      layers: [ocsgeLayerId],
+    })
+
+    if (features.length === 0) {
+      return setStats([])
+    }
+
+    setStats(getStats(selection, features))
   };
 
   useEffect(() => {
-    if (map.current) return; // stops map from intializing more than once
+    if (map.current) return;
 
-    const mapOptions = {
+    map.current = new maplibregl.Map({
       container: mapDiv.current,
       cooperativeGestures: true,
       maplibreLogo: false,
@@ -210,41 +186,30 @@ export function OcsgeMap({
       bounds: bounds,
       maxBounds: maxBounds,
       fitBoundsOptions: {
-        padding: {
-          left: 200,
-          top: 100,
-          bottom: 50,
-          right: 50,
-        },
+        padding: initialPadding,
       },
-    } as maplibregl.MapOptions;
-
-    map.current = new maplibregl.Map(mapOptions);
-
-    const popup = new maplibregl.Popup({
-      closeButton: false,
-      closeOnClick: false,
     });
+    map.current.getCanvas().style.cursor = "pointer";
+    maplibregl.addProtocol("pmtiles", new Protocol().tile);
 
-    map.current.on("moveend", updateStats);
-    map.current.on("mousemove", ocsgeLayerId, (e: any) => {
-      if (e.features.length === 0) {
-        popup.remove();
-        return;
+    popup.current = new maplibregl.Popup({
+      closeButton: true,
+      closeOnClick: false,
+    })
+
+    map.current.on("moveend", setMapMovedEvent);
+    map.current.on("click", ocsgeLayerId, (e: any) => {
+      const noFeatureUnderCursor = e.features.length === 0;
+      if (noFeatureUnderCursor) {
+        return setClickedFeatureId(null)
       }
-
-      map.current.getCanvas().style.cursor = "pointer";
-      const firstFeature = e.features[0];
+      const firstFeature = e.features[0] as maplibregl.Feature;
+      setClickedFeatureId(firstFeature.id)
       const { code_cs, code_us, surface, is_artificial, is_impermeable } =
-        firstFeature.properties as {
-          code_cs: Couverture;
-          code_us: Usage;
-          surface: number;
-          is_artificial: boolean;
-          is_impermeable: boolean;
-        };
+        firstFeature.properties as OcsgeTileFeatureProperties;
 
       popup
+        .current
         .setLngLat(e.lngLat)
         .setHTML(
           renderToString(
@@ -257,22 +222,40 @@ export function OcsgeMap({
             />
           )
         )
-        .addTo(map.current);
-    });
-    map.current.on("mouseleave", ocsgeLayerId, () => {
-      map.current.getCanvas().style.cursor = "";
-      popup.remove();
+        .addTo(map.current)
     });
 
-    map.current.on("idle", () => {
-      if (!initialLoaded) {
+    map.current.on("load", () => {
+      if (map.current.loaded()) {
         setInitialLoaded(true);
-        updateStats();
       }
     });
+  }, []);
 
-    map.current.addControl(new maplibregl.FullscreenControl(), "top-right");
-  });
+  useEffect(() => {
+    if (clickedFeatureId === null) {
+      return;
+    }
+  
+    map.current.setFeatureState(
+      {
+        source: ocsgeSourceId,
+        sourceLayer: sourceLayer,
+        id: clickedFeatureId,
+      },
+      { clicked: true }
+    );
+    return () => {
+      map.current.setFeatureState(
+        {
+          source: ocsgeSourceId,
+          sourceLayer: sourceLayer,
+          id: clickedFeatureId,
+        },
+        { clicked: false }
+      );
+    };
+  }, [clickedFeatureId]);
 
   useEffect(() => {
     if (
@@ -281,32 +264,31 @@ export function OcsgeMap({
       initialLoaded &&
       !!map.current
     ) {
-      // Change le style et les filtres
       map.current.setFilter(ocsgeLayerId, ["any", ...filters]);
       map.current.setPaintProperty(ocsgeLayerId, "fill-color", paint);
 
-      // Supprime et réajoute les contrôles
       controls.forEach((control) => map.current.removeControl(control));
-
-      const matrixSelectorControl = new OcsgeLeftPanelControl(matrixSelectorId);
+  
+      const matrixSelectorControl = new OcsgeLeftPanelControl(leftPanelControlElementId)
+      const fullScreenControl = new maplibregl.FullscreenControl()
+      const navigationControl = new maplibregl.NavigationControl()
       map.current.addControl(matrixSelectorControl, "top-left");
-      setControls([matrixSelectorControl]);
-      const matrixSelectorRoot = ReactDOMClient.createRoot(
-        document.getElementById(matrixSelectorId)
+      map.current.addControl(fullScreenControl, "top-right");
+      map.current.addControl(navigationControl, "top-right");
+      setControls([matrixSelectorControl, fullScreenControl, navigationControl]);
+
+      const leftPanelRoot = ReactDOMClient.createRoot(document.getElementById(leftPanelControlElementId))
+      leftPanelRoot.render(
+        <OcsgeMapLeftPanel
+          setSelection={setSelection}
+          selection={selection}
+          availableMillesimes={availableMillesimes}
+          setYear={setYear}
+          year={year}
+          userFilters={userFilters}
+          setUserFilters={setUserFilters}
+        />
       );
-      if (matrixSelectorControl) {
-        matrixSelectorRoot.render(
-          <OcsgeMapLeftPanel
-            setSelection={setSelection}
-            selection={selection}
-            availableMillesimes={availableMillesimes}
-            setYear={setYear}
-            year={year}
-            userFilters={userFilters}
-            setUserFilters={setUserFilters}
-          />
-        );
-      }
     }
   }, [selection, initialLoaded, userFilters, year]);
 
@@ -332,42 +314,35 @@ export function OcsgeMap({
     }
   }, [year]);
 
+  useEffect(() => {
+    if (initialLoaded) {
+      updateStats(selection);
+    }
+  }, [mapMovedEvent, selection, initialLoaded]);
+
+  useEffect(() => {
+    if (initialLoaded) {
+      map.current.fitBounds(bounds, {
+        speed: 0.1,
+        padding: paddingAfterAnimation,
+      })
+    }
+  }, [initialLoaded])
+
   const mapStyle = {
     height: "75vh",
     width: "100%",
+    opacity: initialLoaded ? 1 : 0,
   };
 
+
   return (
-    <div className="map-wrap">
+    <MapWrapper>
+      {!initialLoaded && <LoaderWrapper>
+        <Loader />
+      </LoaderWrapper>}
       <div style={mapStyle} ref={mapDiv} className="map" />
-      <OcsgeStatsBar />
-      <div style={{ display: "flex", flexDirection: "row" }}>
-        {stats.couvertures.map(({ code, percent}) => (
-          <div
-            aria-describedby={`tooltip-${code}-percent`}
-            key={`${code}-percent`}
-            style={{
-              height: "15px",
-              width: `${percent}%`,
-              backgroundColor: getCouvertureOrUsageAsRGBString(code),
-            }}
-          >
-            <span
-              className="fr-tooltip fr-placement"
-              id={`tooltip-${code}-percent`}
-              role="tooltip"
-              aria-hidden="true"
-            >
-              <span className="fr-tooltip__content">
-                <span>
-                  {getCouvertureOrUsageLabel(code)} - ({code}) (
-                  {Math.round(percent * 100) / 100}%)
-                </span>
-              </span>
-            </span>
-          </div>
-        ))}
-      </div>
-    </div>
+      <OcgeMapStats stats={stats} />
+    </MapWrapper>
   );
 }

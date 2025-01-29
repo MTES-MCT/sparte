@@ -36,6 +36,7 @@ const OcsgeMapLeftPanelWrapper = styled.aside`
     max-width: 450px;
     width: 450px;
     max-height: 70vh;
+    border-radius: 6px;
 `
 
 export const OcsgeMapLeftPanel = ({
@@ -49,7 +50,7 @@ export const OcsgeMapLeftPanel = ({
 }: OcsgeMapLeftPanelProps) => {
     return (
         <OcsgeMapLeftPanelWrapper>
-            <LeftPanelTitle>Réprésentations</LeftPanelTitle>
+            <LeftPanelTitle>Représentations</LeftPanelTitle>
             <OcsgeMatrixSelector
                 setSelection={setSelection}
                 selection={selection}
@@ -65,8 +66,8 @@ export const OcsgeMapLeftPanel = ({
             />
             <LeftPanelDescriptionWrapper>
                 <p>
-                    Les années disponibles correspondent aux millésimes de données
-                    OCS GE disponibles pour le département de votre territoire.
+                    Les années disponibles correspondent aux <a target='_blank' href="https://geoservices.ign.fr/ocsge#telechargement">millésimes de données
+                    OCS GE disponibles pour le département de votre territoire.</a>
                 </p>
             </LeftPanelDescriptionWrapper>
         <OcsgeMapLegend

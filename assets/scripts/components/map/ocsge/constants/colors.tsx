@@ -1,4 +1,4 @@
-import { Couverture, Usage } from "./cs_and_us"
+import { Couverture, couvertures, Usage } from "./cs_and_us"
 
 export type RGBColor = [number, number, number]
 
@@ -63,6 +63,15 @@ export const getCouvertureColor = (couverture: Couverture): RGBColor => {
 export const getCouvertureColorAsRGBString = (couverture: Couverture): string => {
     return `rgba(${couvertureColors[couverture].join(", ")})`
 }
+
+export const getCouvertureOrUsageAsRGBString = (couvertureOrUsage: Couverture | Usage): string => {
+    if (couvertures.includes(couvertureOrUsage as Couverture)) {
+        return getCouvertureColorAsRGBString(couvertureOrUsage as Couverture);
+    } else {
+        return getUsageColorAsRGBString(couvertureOrUsage as Usage);
+    }
+}
+
 export const getCombinedColor = (couverture: Couverture, usage: Usage): RGBColor => {
     const couvertureColor = getCouvertureColor(couverture);
     const usageColor = getUsageColor(usage);
