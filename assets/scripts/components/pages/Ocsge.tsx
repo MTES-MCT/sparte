@@ -5,6 +5,7 @@ import Loader from '@components/ui/Loader';
 import Guide from '@components/widgets/Guide';
 import OcsgeNomenclatureUs from '@images/ocsge-nomenclature-us.png';
 import OcsgeNomenclatureCs from '@images/ocsge-nomenclature-cs.png';
+import { OcsgeMapContainer} from '@components/map/ocsge/OcsgeMapContainer';
 
 /*
 Ce composant est un composant hybride qui permet de récupérer du contenu côté serveur via Django et de l'intégrer directement dans l'interface React.
@@ -19,7 +20,7 @@ Cela est nécessaire pour rendre du contenu HTML généré côté serveur, mais 
 Dans ce cas, les données provenant de Django sont considérées comme fiables.
 */
 
-const Ocsge: React.FC<{ endpoint: string }> = ({ endpoint }) => {
+const Ocsge: React.FC<{ endpoint: string, projectData: any }> = ({ endpoint, projectData}) => {
     const { content, isLoading, error } = useHtmlLoader(endpoint);
 
     useHighcharts([
@@ -31,7 +32,6 @@ const Ocsge: React.FC<{ endpoint: string }> = ({ endpoint }) => {
         'chart_usa_wheel'
     ], isLoading);
 
-    if (isLoading) return <Loader />;
     if (error) return <div>Erreur : {error}</div>;
 
     return (
@@ -54,7 +54,8 @@ const Ocsge: React.FC<{ endpoint: string }> = ({ endpoint }) => {
                             </div>
                         `}
                     />
-                    <div dangerouslySetInnerHTML={{ __html: content }} />
+                    <OcsgeMapContainer projectData={projectData} />
+                    {isLoading ? <Loader /> : <div dangerouslySetInnerHTML={{ __html: content }} /> }
                 </div>
             </div>
         </div>

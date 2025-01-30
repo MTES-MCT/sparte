@@ -1,5 +1,6 @@
 import pendulum
 from airflow.decorators import dag, task
+from airflow.exceptions import AirflowSkipException
 from airflow.models.param import Param
 from include.domain.container import Container
 
@@ -24,6 +25,7 @@ def get_pmtiles_filename(year: int, departement: str) -> str:
     params={
         "year": Param(2018, type="integer"),
         "departement": Param("75", type="string"),
+        "refresh_existing": Param(False, type="boolean"),
     },
 )
 def create_ocsge_vector_tiles():
@@ -31,6 +33,17 @@ def create_ocsge_vector_tiles():
     vector_tiles_dir = "vector_tiles"
 
     @task.python()
+    def check_if_vector_tiles_not_exist(params: dict):
+        if params.get("refresh_existing"):
+            return
+        year = params.get("year")
+        departement = params.get("departement")
+        filename = get_pmtiles_filename(year, departement)
+        exists = Container().s3().exists(f"{bucket_name}/{vector_tiles_dir}/{filename}")
+        if exists:
+            raise AirflowSkipException("Vector tiles already exist")
+
+    @task.python(trigger_rule="none_skipped")
     def postgis_to_geojson(params: dict):
         year = params.get("year")
         departement = params.get("departement")
@@ -46,7 +59,7 @@ def create_ocsge_vector_tiles():
             )
         )
 
-    @task.bash(skip_on_exit_code=110)
+    @task.bash(skip_on_exit_code=110, trigger_rule="none_skipped")
     def geojson_to_pmtiles(params: dict):
         year = params.get("year")
         departement = params.get("departement")
@@ -70,11 +83,9 @@ def create_ocsge_vector_tiles():
             "-zg",
         ]
 
-        print(cmd)
-
         return " ".join(cmd)
 
-    @task.python(trigger_rule="all_done")
+    @task.python(trigger_rule="none_skipped")
     def upload(params: dict):
         year = params.get("year")
         departement = params.get("departement")
@@ -83,21 +94,28 @@ def create_ocsge_vector_tiles():
         path_on_s3 = f"{bucket_name}/{vector_tiles_dir}/{pmtiles_filename}"
         Container().s3().put(local_path, path_on_s3)
 
-    @task.bash()
+    @task.bash(trigger_rule="none_skipped")
     def delete_geojson_file(params: dict):
         year = params.get("year")
         departement = params.get("departement")
         geojson_filename = get_geojson_filename(year, departement)
         return f"rm /tmp/{geojson_filename}"
 
-    @task.bash()
+    @task.bash(trigger_rule="none_skipped")
     def delete_pmtiles_file(params: dict):
         year = params.get("year")
         departement = params.get("departement")
         pmtiles_filename = get_pmtiles_filename(year, departement)
         return f"rm /tmp/{pmtiles_filename}"
 
-    (postgis_to_geojson() >> geojson_to_pmtiles() >> upload() >> delete_geojson_file() >> delete_pmtiles_file())
+    (
+        check_if_vector_tiles_not_exist()
+        >> postgis_to_geojson()
+        >> geojson_to_pmtiles()
+        >> upload()
+        >> delete_geojson_file()
+        >> delete_pmtiles_file()
+    )
 
 
 create_ocsge_vector_tiles()

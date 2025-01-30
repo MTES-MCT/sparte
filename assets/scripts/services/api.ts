@@ -5,6 +5,9 @@ export const djangoApi = createApi({
   reducerPath: 'djangoApi',
   baseQuery: fetchBaseQuery({ credentials: 'include' }),
   endpoints: (builder) => ({
+    getEnvironment: builder.query({
+      query: () => '/env',
+    }),
     getDepartementList: builder.query({
       query: () => '/public/departements/',
     }),
@@ -28,6 +31,7 @@ export const djangoApi = createApi({
 
 export const {
   useGetDepartementListQuery,
+  useGetEnvironmentQuery,
   useGetProjectQuery,
   useSearchTerritoryQuery,
 } = djangoApi

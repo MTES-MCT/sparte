@@ -15,3 +15,13 @@ class S3Handler(BaseS3Handler):
     def download_file(self, s3_bucket, s3_key, local_file_path):
         self.s3.get(f"{s3_bucket}/{s3_key}", local_file_path)
         return local_file_path
+
+    def list_files(self, s3_bucket, s3_key):
+        return self.s3.ls(f"{s3_bucket}/{s3_key}")
+
+    def move_from_bucket_a_to_bucket_b(self, s3_key, bucket_a, bucket_b):
+        return self.s3.copy(f"{bucket_a}/{s3_key}", f"{bucket_b}/{s3_key}")
+
+    def set_key_publicly_visible(self, s3_key, s3_bucket):
+        acl = "public-read"
+        return self.s3.chmod(f"{s3_bucket}/{s3_key}", acl)
