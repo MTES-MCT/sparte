@@ -167,6 +167,23 @@ export function OcsgeMap({
     setStats(getStats(selection, features))
   };
 
+  /*
+
+  Le UseEffect ci-dessous définit l'initialisation de la carte.
+  Il n'est appelé qu'une seule fois, lors du premier rendu.
+ 
+  Les event listeners sont uniquement ajoutés lors de l'initialisation, 
+  et ne peuvent pas avoir de dépendances. Si des dépendances sont
+  nécessaires, il faut passer par un UseEffect différent (voir plus bas
+  pour l'event listener de "moveend").
+
+  Si la fonctionnalité est statique (ne dépend pas des variables d'état),
+  ou si elle nécessite d'accéder à des variables maplibre complexes (comme
+  l'argument e d'un event listener), il est possible de laisser le listener
+  dans ce UseEffect (voir plus bas pour l'event listener de "click").
+
+  */
+
   useEffect(() => {
     if (map.current) return;
 
@@ -233,6 +250,7 @@ export function OcsgeMap({
     });
   }, []);
 
+  // Met à jour l'état "clicked" des features
   useEffect(() => {
     if (clickedFeatureId === null) {
       return;
@@ -258,6 +276,7 @@ export function OcsgeMap({
     };
   }, [clickedFeatureId]);
 
+  // Met à jour les filtres, les styles et les contrôles de la carte
   useEffect(() => {
     if (
       selection &&
@@ -293,6 +312,7 @@ export function OcsgeMap({
     }
   }, [selection, initialLoaded, userFilters, year]);
 
+  // Met à jour les sources et les layers de la carte
   useEffect(() => {
     if (initialLoaded) {
       // Orthophoto
@@ -315,12 +335,14 @@ export function OcsgeMap({
     }
   }, [year]);
 
+  // Met à jour les stats de la carte
   useEffect(() => {
     if (initialLoaded) {
       updateStats(selection);
     }
   }, [mapMovedEvent, selection, initialLoaded]);
 
+  // Léger zoom de la carte lors de l'affichage initial
   useEffect(() => {
     if (initialLoaded) {
       map.current.fitBounds(bounds, {
@@ -330,6 +352,12 @@ export function OcsgeMap({
     }
   }, [initialLoaded])
 
+  /*
+
+  Le style de la carte est défini ici en tant qu'objet JS
+  car styled-components ne fonctionne pas cet élément (mauvais affichage).
+
+  */
   const mapStyle = {
     height: "75vh",
     width: "100%",
