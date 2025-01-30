@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { DEFAULT_SELECTION } from "./constants/selections";
 import { OcsgeMap } from "./OcsgeMap";
 import styled from "styled-components";
+import { useGetEnvironmentQuery } from "@services/api";
 
 type OcsgeMapContainerProps = {
   projectData: any;
@@ -11,7 +12,17 @@ const MapContainerWrapper = styled.div`
   margin-bottom: 50px;
 `;
 
-export const OcsgeMapContainer = ({ projectData }: OcsgeMapContainerProps) => {
+export const OcsgeMapContainer = ({
+  projectData,
+}: OcsgeMapContainerProps) => {
+    const { data: envVariables } = useGetEnvironmentQuery(null);
+    let vectorTileLocation: string = null
+
+    if (envVariables) {
+        const { vector_tiles_location } = envVariables;
+        vectorTileLocation = vector_tiles_location;
+    }
+
   const [selection, setSelection] = useState(DEFAULT_SELECTION);
   const [userFilters, setUserFilters] = useState([]);
   const {
@@ -43,6 +54,7 @@ export const OcsgeMapContainer = ({ projectData }: OcsgeMapContainerProps) => {
     <MapContainerWrapper>
       <h2>Carte de l'OCS GE</h2>
       <OcsgeMap
+        vectorTilesLocation={vectorTileLocation}
         selection={selection}
         setSelection={setSelection}
         setUserFilters={setUserFilters}

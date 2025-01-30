@@ -222,14 +222,12 @@ AWS_S3_FILE_OVERWRITE = True
 # allow signed url to be accessed from all regions
 AWS_S3_SIGNATURE_VERSION = "s3v4"
 
-# AWS_S3_CUSTOM_DOMAIN = f"{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com"
 AWS_S3_OBJECT_PARAMETERS = {"CacheControl": "max-age=86400"}
 
 AWS_S3_ENDPOINT_URL = "https://s3.fr-par.scw.cloud"
 
 STATICFILES_DIRS = [
     BASE_DIR / "static",
-    # BASE_DIR / "htmlcov",
 ]
 
 STATIC_URL = "/static/"
@@ -237,6 +235,12 @@ STATIC_ROOT = str(BASE_DIR / "staticroot")
 
 PUBLIC_MEDIA_LOCATION = "media"
 MEDIA_URL = f"https://{AWS_STORAGE_BUCKET_NAME}.s3.fr-par.scw.cloud/{PUBLIC_MEDIA_LOCATION}/"
+
+
+if ENVIRONMENT == "production":
+    VECTOR_TILES_LOCATION = f"https://{AWS_STORAGE_BUCKET_NAME}.s3.fr-par.scw.cloud/vector_tiles"
+else:
+    VECTOR_TILES_LOCATION = "https://airflow-staging.s3.fr-par.scw.cloud/vector_tiles"
 
 
 # CORSHEADERS

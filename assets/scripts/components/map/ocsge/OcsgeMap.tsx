@@ -45,6 +45,7 @@ interface OcsgeMapProps {
   readonly emprise: any;
   readonly bounds: [number, number, number, number];
   readonly maxBounds: [number, number, number, number];
+  readonly vectorTilesLocation: string;
 }
 
 export function OcsgeMap({
@@ -59,6 +60,7 @@ export function OcsgeMap({
   emprise,
   bounds,
   maxBounds,
+  vectorTilesLocation,
 }: OcsgeMapProps) {
   const [clickedFeatureId, setClickedFeatureId] = React.useState(null);
   const [mapMovedEvent, setMapMovedEvent] = React.useState(null);
@@ -111,7 +113,11 @@ export function OcsgeMap({
   const ocsgeSourceId = `ocsge`;
   const ocsgeSource: maplibregl.VectorSourceSpecification = {
     type: "vector",
-    url: getOcsgeVectorTilesURL(year, departement),
+    url: getOcsgeVectorTilesURL({
+      tilesLocation: vectorTilesLocation,
+      year: year,
+      departement: departement,
+    }),
     promoteId: "id",
   };
   const sourceLayer = `occupation_du_sol_${year}_${departement}`;
@@ -185,6 +191,7 @@ export function OcsgeMap({
 
   useEffect(() => {
     if (map.current) return;
+    if (!vectorTilesLocation) return;
 
     map.current = new maplibregl.Map({
       container: mapDiv.current,
@@ -246,7 +253,7 @@ export function OcsgeMap({
         setInitialLoaded(true);
       }
     });
-  }, []);
+  }, [vectorTilesLocation]);
 
   // Met à jour l'état "clicked" des features
   useEffect(() => {
