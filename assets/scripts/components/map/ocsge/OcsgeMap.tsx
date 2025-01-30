@@ -33,7 +33,6 @@ const MapWrapper = styled.div`
   overflow: hidden;
 `;
 
-
 interface OcsgeMapProps {
   readonly selection: Selection;
   readonly userFilters: any;
@@ -76,14 +75,14 @@ export function OcsgeMap({
     top: 200,
     bottom: 100,
     right: 100,
-  }
+  };
 
   const paddingAfterAnimation = {
     left: initialPadding.left,
     top: initialPadding.top / 2,
     bottom: initialPadding.bottom / 2,
     right: initialPadding.right / 2,
-  }
+  };
 
   const filters = getMaplibreFilters(selection.matrix, userFilters);
   const paint = getMaplibrePaint(selection.matrix);
@@ -137,7 +136,7 @@ export function OcsgeMap({
   const orthophotoSource: maplibregl.RasterSourceSpecification = {
     type: "raster",
     tiles: [getOrthophotoURL(year)],
-    tileSize: 128
+    tileSize: 128,
   };
   const orthophotoLayer: maplibregl.RasterLayerSpecification = {
     id: "orthophoto",
@@ -149,22 +148,22 @@ export function OcsgeMap({
   };
 
   const updateStats = (selection: Selection) => {
-
-    const zoomLevelIsTooLowToCalculateStatsWithGoodPerformance = map.current.getZoom() < 12;
+    const zoomLevelIsTooLowToCalculateStatsWithGoodPerformance =
+      map.current.getZoom() < 12;
     if (zoomLevelIsTooLowToCalculateStatsWithGoodPerformance) {
-      return setStats([])
+      return setStats([]);
     }
 
     const features = map.current.queryRenderedFeatures({
       validate: false,
       layers: [ocsgeLayerId],
-    })
+    });
 
     if (features.length === 0) {
-      return setStats([])
+      return setStats([]);
     }
 
-    setStats(getStats(selection, features))
+    setStats(getStats(selection, features));
   };
 
   /*
@@ -213,21 +212,20 @@ export function OcsgeMap({
     popup.current = new maplibregl.Popup({
       closeButton: true,
       closeOnClick: false,
-    })
+    });
 
     map.current.on("moveend", setMapMovedEvent);
     map.current.on("click", ocsgeLayerId, (e: any) => {
       const noFeatureUnderCursor = e.features.length === 0;
       if (noFeatureUnderCursor) {
-        return setClickedFeatureId(null)
+        return setClickedFeatureId(null);
       }
       const firstFeature = e.features[0] as maplibregl.Feature;
-      setClickedFeatureId(firstFeature.id)
+      setClickedFeatureId(firstFeature.id);
       const { code_cs, code_us, surface, is_artificial, is_impermeable } =
         firstFeature.properties as OcsgeTileFeatureProperties;
 
-      popup
-        .current
+      popup.current
         .setLngLat(e.lngLat)
         .setHTML(
           renderToString(
@@ -240,7 +238,7 @@ export function OcsgeMap({
             />
           )
         )
-        .addTo(map.current)
+        .addTo(map.current);
     });
 
     map.current.on("load", () => {
@@ -255,7 +253,7 @@ export function OcsgeMap({
     if (clickedFeatureId === null) {
       return;
     }
-  
+
     map.current.setFeatureState(
       {
         source: ocsgeSourceId,
@@ -288,16 +286,24 @@ export function OcsgeMap({
       map.current.setPaintProperty(ocsgeLayerId, "fill-color", paint);
 
       controls.forEach((control) => map.current.removeControl(control));
-  
-      const matrixSelectorControl = new OcsgeLeftPanelControl(leftPanelControlElementId)
-      const fullScreenControl = new maplibregl.FullscreenControl()
-      const navigationControl = new maplibregl.NavigationControl()
+
+      const matrixSelectorControl = new OcsgeLeftPanelControl(
+        leftPanelControlElementId
+      );
+      const fullScreenControl = new maplibregl.FullscreenControl();
+      const navigationControl = new maplibregl.NavigationControl();
       map.current.addControl(matrixSelectorControl, "top-left");
       map.current.addControl(fullScreenControl, "top-right");
       map.current.addControl(navigationControl, "top-right");
-      setControls([matrixSelectorControl, fullScreenControl, navigationControl]);
+      setControls([
+        matrixSelectorControl,
+        fullScreenControl,
+        navigationControl,
+      ]);
 
-      const leftPanelRoot = ReactDOMClient.createRoot(document.getElementById(leftPanelControlElementId))
+      const leftPanelRoot = ReactDOMClient.createRoot(
+        document.getElementById(leftPanelControlElementId)
+      );
       leftPanelRoot.render(
         <OcsgeMapLeftPanel
           setSelection={setSelection}
@@ -348,9 +354,9 @@ export function OcsgeMap({
       map.current.fitBounds(bounds, {
         speed: 0.1,
         padding: paddingAfterAnimation,
-      })
+      });
     }
-  }, [initialLoaded])
+  }, [initialLoaded]);
 
   /*
 
@@ -364,12 +370,13 @@ export function OcsgeMap({
     opacity: initialLoaded ? 1 : 0,
   };
 
-
   return (
     <MapWrapper>
-      {!initialLoaded && <LoaderWrapper>
-        <Loader />
-      </LoaderWrapper>}
+      {!initialLoaded && (
+        <LoaderWrapper>
+          <Loader />
+        </LoaderWrapper>
+      )}
       <div style={mapStyle} ref={mapDiv} className="map" />
       <OcgeMapStats stats={stats} />
     </MapWrapper>
