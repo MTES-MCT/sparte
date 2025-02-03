@@ -154,22 +154,18 @@ export function OcsgeMap({
   };
 
   const updateStats = (selection: Selection) => {
-    const zoomLevelIsTooLowToCalculateStatsWithGoodPerformance =
-      map.current.getZoom() < 12;
-    if (zoomLevelIsTooLowToCalculateStatsWithGoodPerformance) {
-      return setStats([]);
-    }
-
-    const features = map.current.queryRenderedFeatures({
-      validate: false,
-      layers: [ocsgeLayerId],
+    map.current.once("idle", () => {
+      const features = map.current.queryRenderedFeatures({
+        validate: false,
+        layers: [ocsgeLayerId],
+      });
+  
+      if (features.length === 0) {
+        return setStats([]);
+      }
+  
+      setStats(getStats(selection, features));
     });
-
-    if (features.length === 0) {
-      return setStats([]);
-    }
-
-    setStats(getStats(selection, features));
   };
 
   /*
@@ -353,7 +349,7 @@ export function OcsgeMap({
     if (initialLoaded) {
       updateStats(selection);
     }
-  }, [mapMovedEvent, selection, initialLoaded]);
+  }, [mapMovedEvent, selection, initialLoaded, userFilters]);
 
   // Léger zoom de la carte lors de l'affichage initial
   useEffect(() => {
