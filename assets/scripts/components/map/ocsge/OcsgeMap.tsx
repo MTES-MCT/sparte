@@ -24,7 +24,6 @@ const LoaderWrapper = styled.div`
   display: flex;
   justify-content: center;
   position: absolute;
-  z-index: 1000;
 `;
 
 const MapWrapper = styled.div`
@@ -375,6 +374,7 @@ export function OcsgeMap({
     height: "75vh",
     width: "100%",
     opacity: initialLoaded ? 1 : 0,
+    zIndex: 0,
   };
 
   return (
