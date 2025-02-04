@@ -6,7 +6,6 @@ from .OcsgeArtificialAreaAdmin import OcsgeArtificialAreaAdmin
 from .OcsgeCommuneDiffAdmin import OcsgeCommuneDiffAdmin
 from .OcsgeCommuneSolAdmin import OcsgeCommuneSolAdmin
 from .OcsgeDiffAdmin import OcsgeDiffAdmin
-from .OcsgeZoneConstruiteAdmin import OcsgeZoneConstruiteAdmin
 from .RegionAdmin import RegionAdmin
 from .ScotAdmin import ScotAdmin
 from .SudocuhAdmin import SudocuhAdmin
@@ -21,7 +20,6 @@ __all__ = [
     "OcsgeCommuneDiffAdmin",
     "OcsgeCommuneSolAdmin",
     "OcsgeDiffAdmin",
-    "OcsgeZoneConstruiteAdmin",
     "RegionAdmin",
     "ScotAdmin",
     "SudocuhAdmin",

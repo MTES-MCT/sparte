@@ -71,24 +71,6 @@ models:
           - relationships:
               to: ref('for_app_departement')
               field: source_id
-  - name: for_app_zoneconstruite
-    columns:
-      - name: mpoly
-        data_tests:
-          - not_null
-          - is_valid_geom
-          - is_not_empty_geom
-          - is_srid_4326
-      - name: srid_source
-        data_tests:
-          - not_null
-          - accepted_values: *valid_srids
-      - name: departement
-        data_tests:
-          - not_null
-          - relationships:
-              to: ref('for_app_departement')
-              field: source_id
   - name: for_app_zoneurba
     columns:
       - name: checksum
