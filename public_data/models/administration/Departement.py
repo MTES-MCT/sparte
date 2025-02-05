@@ -58,6 +58,8 @@ class Departement(LandMixin, GetDataFromCeremaMixin, models.Model):
         return f"{self.source_id} - {self.name}"
 
     def get_ocsge_millesimes(self):
+        if not self.ocsge_millesimes:
+            return set()
         return set(self.ocsge_millesimes)
 
     def get_departements(self):
