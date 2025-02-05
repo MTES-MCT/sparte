@@ -55,7 +55,8 @@ class Epci(LandMixin, GetDataFromCeremaMixin, models.Model):
     def get_ocsge_millesimes(self) -> set:
         millesimes = set()
         for dept in self.departements.all():
-            millesimes.update(dept.ocsge_millesimes)
+            if dept.ocsge_millesimes:
+                millesimes.update(dept.ocsge_millesimes)
         return millesimes
 
     @property
