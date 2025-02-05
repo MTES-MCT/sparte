@@ -34,3 +34,26 @@ class BaseS3Handler(ABC):
         """
         Retourne le chemin du fichier téléchargé
         """
+
+    @abstractmethod
+    def list_files(self, s3_key: str, s3_bucket: str) -> list[str]:
+        """
+        Retourne la liste des fichiers dans le répertoire
+        """
+
+    @abstractmethod
+    def move_from_bucket_a_to_bucket_b(
+        self,
+        s3_key: str,
+        bucket_a: str,
+        bucket_b: str,
+    ) -> str:
+        """
+        Déplace un fichier d'un bucket à un autre
+        """
+
+    @abstractmethod
+    def set_key_publicly_visible(self, s3_key: str, s3_bucket: str) -> str:
+        """
+        Rend le fichier public
+        """

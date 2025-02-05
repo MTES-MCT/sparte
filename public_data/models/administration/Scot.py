@@ -53,6 +53,9 @@ class Scot(LandMixin, GetDataFromCeremaMixin, models.Model):
     def get_cities(self):
         return self.commune_set.all()
 
+    def get_departements(self):
+        return [dept.source_id for dept in self.departements.all()]
+
     def __str__(self):
         return self.name.upper()
 

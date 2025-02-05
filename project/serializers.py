@@ -1,5 +1,7 @@
 from rest_framework import serializers
+from rest_framework.serializers import SerializerMethodField
 from rest_framework_gis import serializers as gis_serializers
+from rest_framework_gis.serializers import GeometrySerializerMethodField
 
 from project.models import Project
 from public_data.models import Commune, CommuneDiff
@@ -7,9 +9,39 @@ from public_data.models import Commune, CommuneDiff
 from .models import Emprise
 
 
-class ProjectDetailSerializer(serializers.ModelSerializer):
+class ProjectDetailSerializer(gis_serializers.GeoModelSerializer):
+    emprise = GeometrySerializerMethodField()
+    bounds = SerializerMethodField()
+    max_bounds = SerializerMethodField()
+    centroid = SerializerMethodField()
+    departements = SerializerMethodField()
+    ocsge_millesimes = SerializerMethodField()
+
+    def get_departements(self, obj):
+        return obj.land.get_departements()
+
+    def get_ocsge_millesimes(self, obj):
+        return obj.get_ocsge_millesimes()
+
+    def get_bounds(self, obj):
+        return obj.combined_emprise.extent
+
+    def get_max_bounds(self, obj):
+        return obj.combined_emprise.buffer(0.2).extent
+
+    def get_centroid(self, obj):
+        centroid = obj.combined_emprise.centroid
+        return {
+            "latitude": centroid.y,
+            "longitude": centroid.x,
+        }
+
+    def get_emprise(self, obj):
+        return obj.combined_emprise.simplify(0.001)
+
     class Meta:
         model = Project
+        geo_field = "combined_emprise"
         fields = [
             "id",
             "created_date",
@@ -22,6 +54,14 @@ class ProjectDetailSerializer(serializers.ModelSerializer):
             "consommation_correction_status",
             "autorisation_logement_available",
             "logements_vacants_available",
+            "ocsge_millesimes",
+            "land_id",
+            "land_type",
+            "departements",
+            "bounds",
+            "max_bounds",
+            "centroid",
+            "emprise",
         ]
 
 

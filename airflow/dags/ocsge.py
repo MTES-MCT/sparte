@@ -97,7 +97,8 @@ vars_dataset = {
 
 def get_source_name_from_shapefile_name(shapefile_name: str) -> SourceName | None:
     shapefile_name = shapefile_name.lower()
-    if "diff" in shapefile_name:
+    if "diff" in shapefile_name or "diif" in shapefile_name:
+        # Certains shapefiles ont un nom de fichier avec une faute de frappe (diif au lieu de diff)
         return SourceName.DIFFERENCE
     if "occupation" in shapefile_name:
         return SourceName.OCCUPATION_DU_SOL
@@ -121,6 +122,7 @@ def load_shapefiles_to_dw(
     departement: str,
     loaded_date: int,
     table_key: str,
+    dataset: Literal[DatasetName.DIFFERENCE, DatasetName.OCCUPATION_DU_SOL_ET_ZONE_CONSTRUITE],
     mode: Literal["overwrite", "append"] = "append",
 ):
     local_path = "/tmp/ocsge.7z"
@@ -128,12 +130,17 @@ def load_shapefiles_to_dw(
     extract_dir = tempfile.mkdtemp()
     py7zr.SevenZipFile(local_path, mode="r").extractall(path=extract_dir)
 
+    shapefile_matching_names_found = 0
+
     for file_path, filename in get_paths_from_directory(extract_dir):
         if not file_path.endswith(".shp"):
             continue
         variables = get_vars_by_shapefile_name(filename)
+
         if not variables:
             continue
+
+        shapefile_matching_names_found += 1
 
         fields = get_shapefile_fields(file_path)
 
@@ -177,6 +184,13 @@ def load_shapefiles_to_dw(
             task_id=f"ingest_{table_name}",
             bash_command=" ".join(cmd),
         ).execute(context={})
+
+    if shapefile_matching_names_found == 0:
+        raise ValueError(f"No shapefile matching names found in {extract_dir}")
+    if dataset == DatasetName.DIFFERENCE and shapefile_matching_names_found != 1:
+        raise ValueError(f"Only one shapefile should be found for the dataset {dataset}")
+    if dataset == DatasetName.OCCUPATION_DU_SOL_ET_ZONE_CONSTRUITE and shapefile_matching_names_found != 2:
+        raise ValueError(f"Two shapefiles should be found for the dataset {dataset}")
 
 
 @dag(
@@ -256,12 +270,14 @@ def ocsge():  # noqa: C901
         loaded_date = int(pendulum.now().timestamp())
         departement = context["params"]["departement"]
         years = context["params"]["years"]
+        dataset = context["params"]["dataset"]
 
         load_shapefiles_to_dw(
             path=path,
             years=years,
             departement=departement,
             loaded_date=loaded_date,
+            dataset=dataset,
             table_key="dw_staging",
             mode="overwrite",
         )
@@ -301,12 +317,14 @@ def ocsge():  # noqa: C901
         loaded_date = int(pendulum.now().timestamp())
         departement = context["params"]["departement"]
         years = context["params"]["years"]
+        dataset = context["params"]["dataset"]
 
         load_shapefiles_to_dw(
             path=path,
             years=years,
             departement=departement,
             loaded_date=loaded_date,
+            dataset=dataset,
             table_key="dw_source",
         )
 

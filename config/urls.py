@@ -19,17 +19,12 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
 
-
-def trigger_error(request):
-    """Snippet to test Sentry integration"""
-    division_by_zero = 1 / 0  # # noqa: F841
-
+from config.views import EnvironmentView
 
 admin.site.site_header = f"Mon Diagnostic Artificialisation v{settings.OFFICIAL_VERSION}"
 
 
 urlpatterns = [
-    path("boom/", trigger_error),
     path("", include("home.urls")),
     path("admin/", admin.site.urls),
     path("users/", include("users.urls")),
@@ -40,6 +35,7 @@ urlpatterns = [
     path("statistiques/", include("metabase.urls")),
     path("fancy-cache", include("fancy_cache.urls")),
     path("crisp/", include("crisp.urls")),
+    path("env", view=EnvironmentView.as_view(), name="env"),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
