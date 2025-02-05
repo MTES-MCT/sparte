@@ -40,6 +40,12 @@ class Scot(LandMixin, GetDataFromCeremaMixin, models.Model):
     regions = models.ManyToManyField("Region")
     departements = models.ManyToManyField("Departement")
 
+    def get_ocsge_millesimes(self) -> set:
+        millesimes = set()
+        for dept in self.departements.all():
+            millesimes.update(dept.ocsge_millesimes)
+        return millesimes
+
     objects = ScotManager()
 
     land_type = AdminRef.SCOT
