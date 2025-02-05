@@ -64,7 +64,7 @@ export const newSelections = [
     Description: () => (
       <p>
         La représentation par <strong>couvertures</strong> permet de visualiser
-        les 14 postes de couverture du sol définit par l'OCS GE.{" "}
+        les 14 postes de couverture du sol définis par l'OCS GE.{" "}
         <a
           target="_blank"
           href="https://storymaps.arcgis.com/stories/193550c4e4af4f92845201d74ca8a002"
@@ -87,7 +87,7 @@ export const newSelections = [
     Description: () => (
       <p>
         La représentation par <strong>usages</strong> permet de visualiser les 17
-        postes d'usage du sol définit par l'OCS GE.{" "}
+        postes d'usage du sol définis par l'OCS GE.{" "}
         <a
           target="_blank"
           href="https://storymaps.arcgis.com/stories/193550c4e4af4f92845201d74ca8a002"
