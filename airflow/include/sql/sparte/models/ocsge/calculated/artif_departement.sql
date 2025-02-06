@@ -1,10 +1,10 @@
 {{
     config(
-        materialized='table',
+        materialized="table",
         indexes=[
-            {'columns': ['departement'], 'type': 'btree'},
+            {"columns": ["departement"], "type": "btree"},
         ],
     )
 }}
 
-{{ merge_artif_commune_by_admin_level('departement') }}
+{{ merge_artif_commune_by_admin_level("departement") }}
