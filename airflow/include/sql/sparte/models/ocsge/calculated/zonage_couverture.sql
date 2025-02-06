@@ -1,28 +1,23 @@
 {{
     config(
-        materialized='table',
-        indexes=[{'columns': ['zonage_checksum'], 'type': 'btree'}],
+        materialized="table",
+        indexes=[{"columns": ["zonage_checksum"], "type": "btree"}],
     )
 }}
 
-with without_percent as (
-SELECT
-    zonage_checksum,
-    zonage_surface,
-    zonage_libelle,
-    year,
-    round(sum(st_area(st_transform(geom, srid_source)))::numeric, 4) AS surface,
-    code_cs
-FROM
-    {{ ref('occupation_du_sol_zonage_urbanisme') }}
-GROUP BY
-    zonage_checksum,
-    zonage_surface,
-    zonage_libelle,
-    code_cs,
-    year
-)
-SELECT
+with
+    without_percent as (
+        select
+            zonage_checksum,
+            zonage_surface,
+            zonage_libelle,
+            year,
+            round(sum(st_area(st_transform(geom, srid_source)))::numeric, 4) as surface,
+            code_cs
+        from {{ ref("occupation_du_sol_zonage_urbanisme") }}
+        group by zonage_checksum, zonage_surface, zonage_libelle, code_cs, year
+    )
+select
     zonage_checksum,
     zonage_surface,
     zonage_libelle,
@@ -30,5 +25,4 @@ SELECT
     surface,
     code_cs,
     surface / zonage_surface * 100 as percent
-FROM
-    without_percent
+from without_percent
