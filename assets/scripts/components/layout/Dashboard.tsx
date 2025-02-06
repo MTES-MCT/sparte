@@ -1,9 +1,12 @@
 import React, { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '@store/store';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import styled from 'styled-components';
 import { useGetProjectQuery } from '@services/api';
 import { setProjectData } from '@store/projectSlice';
+import { selectIsNavbarOpen, closeNavbar, openNavbar, selectIsNavbarClosedByUser } from '@store/navbarSlice';
+import useWindowSize from '@hooks/useWindowSize';
 import useMatomoTracking from '@hooks/useMatomoTracking';
 import useUrls from '@hooks/useUrls';
 import Footer from '@components/layout/Footer';
@@ -26,13 +29,14 @@ interface DashboardProps {
     projectId: string;
 }
 
-const Main = styled.main`
-    margin-left: 280px;
+const Main = styled.main<{ $isOpen: boolean }>`
+    margin-left: ${({ $isOpen }) => ($isOpen ? '280px' : '0')};
     margin-top: 80px;
     flex-grow: 1;
     display: flex;
     flex-direction: column;
     background: #f8f9ff;
+    transition: margin-left 0.3s ease;
 `;
 
 const Content = styled.div`
@@ -47,11 +51,24 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
     const { data, error, isLoading } = useGetProjectQuery(projectId);
     const urls = useUrls();
 
+    const isOpen = useSelector((state: RootState) => selectIsNavbarOpen(state));
+    const isClosedByUser = useSelector(selectIsNavbarClosedByUser);
+    const { isMobile } = useWindowSize();
+
     useEffect(() => {
     if (data) {        
         dispatch(setProjectData(data));        
     }
     }, [data, dispatch]);
+
+    useEffect(() => {
+        if (isMobile) {
+            dispatch(closeNavbar());
+            
+        } else if (!isClosedByUser && !isOpen) {            
+            dispatch(openNavbar());
+        }
+    }, [isMobile, isClosedByUser, isOpen, dispatch]);
 
     return (
         <>
@@ -61,7 +78,7 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                     <Router>
                         <TrackingWrapper />
                         <Navbar projectData={data} />
-                        <Main>
+                        <Main $isOpen={isOpen}>
                             <TopBar />
                             <Content>
                                 <Routes>
