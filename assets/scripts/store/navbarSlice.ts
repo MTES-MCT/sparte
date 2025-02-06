@@ -3,12 +3,12 @@ import { RootState } from '@store/store';
 
 interface NavbarState {
     isOpen: boolean;
-    isClosedByUser: boolean;
+    wasOpened: boolean; // Mémorise l'état avant passage en mobile
 }
 
 const initialState: NavbarState = {
     isOpen: true,
-    isClosedByUser: false,
+    wasOpened: true, 
 };
 
 const navbarSlice = createSlice({
@@ -17,20 +17,20 @@ const navbarSlice = createSlice({
     reducers: {
         toggleNavbar: (state) => {
             state.isOpen = !state.isOpen;
-            state.isClosedByUser = !state.isOpen;
+            state.wasOpened = state.isOpen; // On mémorise si elle était ouverte
         },
-        openNavbar: (state) => {
-            state.isOpen = true;
-        },
-        closeNavbar: (state) => {
-            state.isOpen = false;
+        handleResponsiveNavbar: (state, action) => {
+            if (action.payload.isMobile) {
+                state.isOpen = false; // Fermer en mobile
+            } else {
+                state.isOpen = state.wasOpened; // Rétablir l'état précédent en desktop
+            }
         }
     },
 });
 
-export const { toggleNavbar, openNavbar, closeNavbar } = navbarSlice.actions;
+export const { toggleNavbar, handleResponsiveNavbar } = navbarSlice.actions;
 
 export const selectIsNavbarOpen = (state: RootState) => state.navbar.isOpen;
-export const selectIsNavbarClosedByUser = (state: RootState) => state.navbar.isClosedByUser;
 
 export default navbarSlice.reducer;
