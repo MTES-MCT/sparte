@@ -5,7 +5,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import styled from 'styled-components';
 import { useGetProjectQuery } from '@services/api';
 import { setProjectData } from '@store/projectSlice';
-import { selectIsNavbarOpen, closeNavbar, openNavbar, selectIsNavbarClosedByUser } from '@store/navbarSlice';
+import { selectIsNavbarOpen, handleResponsiveNavbar } from '@store/navbarSlice';
 import useWindowSize from '@hooks/useWindowSize';
 import useMatomoTracking from '@hooks/useMatomoTracking';
 import useUrls from '@hooks/useUrls';
@@ -29,8 +29,8 @@ interface DashboardProps {
     projectId: string;
 }
 
-const Main = styled.main<{ $isOpen: boolean }>`
-    margin-left: ${({ $isOpen }) => ($isOpen ? '280px' : '0')};
+const Main = styled.main<{ $isOpen: boolean; $isMobile: boolean }>`
+    margin-left: ${({ $isOpen, $isMobile }) => ($isMobile ? '0' : $isOpen ? '280px' : '0')};
     margin-top: 80px;
     flex-grow: 1;
     display: flex;
@@ -52,7 +52,6 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
     const urls = useUrls();
 
     const isOpen = useSelector((state: RootState) => selectIsNavbarOpen(state));
-    const isClosedByUser = useSelector(selectIsNavbarClosedByUser);
     const { isMobile } = useWindowSize();
 
     useEffect(() => {
@@ -62,13 +61,8 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
     }, [data, dispatch]);
 
     useEffect(() => {
-        if (isMobile) {
-            dispatch(closeNavbar());
-            
-        } else if (!isClosedByUser && !isOpen) {            
-            dispatch(openNavbar());
-        }
-    }, [isMobile, isClosedByUser, isOpen, dispatch]);
+        dispatch(handleResponsiveNavbar({ isMobile }));
+    }, [isMobile, dispatch]);
 
     return (
         <>
@@ -78,7 +72,7 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                     <Router>
                         <TrackingWrapper />
                         <Navbar projectData={data} />
-                        <Main $isOpen={isOpen}>
+                        <Main $isOpen={isOpen} $isMobile={isMobile}>
                             <TopBar />
                             <Content>
                                 <Routes>
