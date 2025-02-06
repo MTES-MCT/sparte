@@ -10,7 +10,7 @@
         ])
 }}
 
-SELECT *, ST_Area(geom) as surface FROM (
+SELECT *, round(ST_Area(geom)::numeric, 4) as surface FROM (
     SELECT
         gpu_doc_id,
         gpu_status,
