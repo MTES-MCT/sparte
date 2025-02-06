@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
-import { RootState } from '@store/store';
+import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, Link } from 'react-router-dom';
 import styled, { css } from 'styled-components';
-import { selectIsNavbarOpen } from '@store/navbarSlice';
+import { toggleNavbar, selectIsNavbarOpen } from '@store/navbarSlice';
 import useHtmx from '@hooks/useHtmx';
 import useUrls from '@hooks/useUrls';
 import Button from '@components/ui/Button';
+import ButtonToggleNavbar from "@components/ui/ButtonToggleNavbar";
 import { ConsoCorrectionStatusEnum } from '@components/widgets/ConsoCorrectionStatus';
 
 interface NavbarData {
@@ -168,12 +168,20 @@ const DownloadListItem = styled.li`
     }
 `;
 
+const NavbarHeader = styled.div`
+    display: flex;
+    padding: 1.5rem 1rem;
+    padding-bottom: 0;
+`;
+
 const Navbar: React.FC<{ projectData: any }> = ({ projectData }) => {
     const location = useLocation();
     const [data, setData] = useState<NavbarData | null>(null);
     const urls = useUrls();
     const htmxRef = useHtmx([urls]);
-    const isOpen = useSelector((state: RootState) => selectIsNavbarOpen(state));
+
+    const dispatch = useDispatch();
+    const isOpen = useSelector(selectIsNavbarOpen);
 
     const shouldDisplayDownloads = [
         ConsoCorrectionStatusEnum.UNCHANGED,
@@ -220,6 +228,9 @@ const Navbar: React.FC<{ projectData: any }> = ({ projectData }) => {
 
     return (
         <Container aria-label="Sidebar" ref={htmxRef} $isOpen={isOpen}>
+            <NavbarHeader>
+                <ButtonToggleNavbar />
+            </NavbarHeader>
             <MenuList role="tree" aria-label="Sidebar menu">
                 {data?.menuItems.map((menu) => (
                     <Menu key={menu.label}>
