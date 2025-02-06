@@ -1,8 +1,9 @@
 import React, { memo, useMemo } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@store/store';
 import { formatDateTime } from '@utils/formatUtils';
 import { useLocation } from 'react-router-dom';
+import { toggleNavbar, selectIsNavbarOpen } from '@store/navbarSlice';
 import styled from 'styled-components';
 import useHtmx from '@hooks/useHtmx';
 import useUrls from '@hooks/useUrls';
@@ -72,6 +73,18 @@ const ItemContent = styled.div`
     }
 `;
 
+const IconToggle = styled.i<{ $isOpen: boolean }>`
+    background: #a2a2f8;
+    font-size: 22px;
+    padding: 7px;
+    border-radius: 50%;
+    color: #fff;
+    cursor: pointer;
+    margin-right: 1rem;
+    transition: transform 0.3s ease;
+    transform: ${({ $isOpen }) => ($isOpen ? 'rotate(0deg)' : 'rotate(180deg)')};
+`;
+
 const TopBar: React.FC = () => {
     const projectData = useSelector((state: RootState) => state.project.projectData);
     const memoizedProjectData = useMemo(() => projectData, [projectData?.id]);
@@ -82,11 +95,21 @@ const TopBar: React.FC = () => {
     const pathsToHidePeriod = ['vacance-des-logements'];
     const shouldDisplayPeriod = !pathsToHidePeriod.some(path => location.pathname.endsWith(path));
 
+    const dispatch = useDispatch();
+    const isOpen = useSelector(selectIsNavbarOpen);
+
     return (
         <Container ref={htmxRef}>
-            <div>
-                <Title>{ memoizedProjectData?.territory_name }</Title>
-                <SubTitle>Diagnostic créé le { formattedDate }</SubTitle>
+            <div className="d-flex align-items-center">
+                <IconToggle 
+                    className="bi bi-layout-sidebar" 
+                    onClick={() => dispatch(toggleNavbar())} 
+                    $isOpen={isOpen} 
+                />
+                <div>
+                    <Title>{ memoizedProjectData?.territory_name }</Title>
+                    <SubTitle>Diagnostic créé le { formattedDate }</SubTitle>
+                </div>
             </div>
             <ItemContainer>
                 { shouldDisplayPeriod && (

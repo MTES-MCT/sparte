@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
+import { RootState } from '@store/store';
 import { useLocation, Link } from 'react-router-dom';
 import styled, { css } from 'styled-components';
+import { selectIsNavbarOpen } from '@store/navbarSlice';
 import useHtmx from '@hooks/useHtmx';
 import useUrls from '@hooks/useUrls';
 import Button from '@components/ui/Button';
@@ -53,16 +56,17 @@ const LinkStyle = css<{ $isActive: boolean }>`
     }
 `;
 
-const Container = styled.aside`
+const Container = styled.aside<{ $isOpen: boolean }>`
     position: fixed;
-    left: 0;
+    left: ${({ $isOpen }) => ($isOpen ? '0' : '-280px')};
     top: 80px;
     bottom: 0;
     width: 280px;
     display: flex;
     flex-direction: column;
-    background: ##04023c;
+    background: #fff;
     border-right: 1px solid #EEF2F7;
+    transition: left 0.3s ease;
 `;
 
 const MenuList = styled.ul`
@@ -126,7 +130,7 @@ const DownloadContainer = styled.div`
     padding: 1rem;
     border-radius: 6px;
     background: #cacafb;
-    
+
     &:hover ${DownloadList} {
         height: 192px;
     }
@@ -169,6 +173,7 @@ const Navbar: React.FC<{ projectData: any }> = ({ projectData }) => {
     const [data, setData] = useState<NavbarData | null>(null);
     const urls = useUrls();
     const htmxRef = useHtmx([urls]);
+    const isOpen = useSelector((state: RootState) => selectIsNavbarOpen(state));
 
     const shouldDisplayDownloads = [
         ConsoCorrectionStatusEnum.UNCHANGED,
@@ -214,7 +219,7 @@ const Navbar: React.FC<{ projectData: any }> = ({ projectData }) => {
     );
 
     return (
-        <Container aria-label="Sidebar" ref={htmxRef}>
+        <Container aria-label="Sidebar" ref={htmxRef} $isOpen={isOpen}>
             <MenuList role="tree" aria-label="Sidebar menu">
                 {data?.menuItems.map((menu) => (
                     <Menu key={menu.label}>
