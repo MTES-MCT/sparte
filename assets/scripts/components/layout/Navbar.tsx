@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, Link } from 'react-router-dom';
 import styled, { css } from 'styled-components';
-import { toggleNavbar, selectIsNavbarOpen } from '@store/navbarSlice';
+import { toggleNavbar, selectIsNavbarOpen, handleResponsiveNavbar } from '@store/navbarSlice';
 import useHtmx from '@hooks/useHtmx';
 import useWindowSize from '@hooks/useWindowSize';
 import useUrls from '@hooks/useUrls';
@@ -223,6 +223,19 @@ const Navbar: React.FC<{ projectData: any }> = ({ projectData }) => {
             modalContent.innerHTML = '<div class="fr-custom-loader"></div>';
         }
     };
+
+    // responsive
+    useEffect(() => {
+        dispatch(handleResponsiveNavbar({ isMobile }));
+    }, [isMobile, dispatch]);
+
+    useEffect(() => {
+        if (isOpen && isMobile) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = 'auto';
+        }
+    }, [isOpen, isMobile]);
 
     const renderMenuItems = (items: SubMenu[]) => (
         <SubMenuList>

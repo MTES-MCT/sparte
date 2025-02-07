@@ -7,7 +7,7 @@ import styled from "styled-components";
 const activeColor = '#4318FF';
 const secondaryColor = '#a1a1f8';
 
-const IconToggle = styled.i<{ $isOpen: boolean }>`
+const IconToggle = styled.i`
     font-size: 17px;
     padding: 7px 10px;
     border-radius: 9px;
@@ -33,8 +33,7 @@ const ButtonToggleNavbar: React.FC = () => {
             <>
                 <IconToggle 
                     className="bi bi-layout-sidebar" 
-                    onClick={() => dispatch(toggleNavbar())} 
-                    $isOpen={isOpen}
+                    onClick={() => dispatch(toggleNavbar())}
                     data-tooltip-id="tooltip-close-sidebar"
                     data-tooltip-content={isOpen ? "Fermer la barre latérale" : "Ouvrir la barre latérale"}
                 />
