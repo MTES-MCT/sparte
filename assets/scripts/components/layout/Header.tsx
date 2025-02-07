@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import useWindowSize from '@hooks/useWindowSize';
+import { Tooltip } from 'react-tooltip'
 import SearchBar from '@components/widgets/SearchBar';
 
 interface HeaderData {
@@ -176,7 +177,14 @@ const Header = () => {
                     )
                 ))}
             </LogoContainer>
-            <ButtonToggleMenu className="bi bi-list" $isMobile={isMobile} onClick={() => setIsMenuOpen(!isMenuOpen)} />
+            <ButtonToggleMenu
+                className="bi bi-list"
+                $isMobile={isMobile}
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                data-tooltip-id="tooltip-close-sidebar"
+                data-tooltip-content={isMenuOpen ? "Fermer le menu" : "Ouvrir le menu"}
+            />
+            <Tooltip id="tooltip-close-sidebar" className="fr-text--xs" />
             <ButtonContainer $isMobile={isMobile} $isMenuOpen={isMenuOpen}>
                 <SearchBarContainer $isMobile={isMobile}>
                     <SearchBar createUrl={data?.search.createUrl} />
