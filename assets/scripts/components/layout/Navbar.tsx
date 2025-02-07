@@ -75,8 +75,6 @@ const MenuList = styled.ul`
     list-style: none;
     padding: 1rem 0 0;
     margin: 0;
-    flex: 1 1 0%;
-    overflow-y: auto;
 `;
 
 const Menu = styled.li`
@@ -118,24 +116,28 @@ const Icon = styled.i`
     margin-right: 0.7em;
 `;
 
-const DownloadList = styled.ul`
-    height: 0;
-    overflow: hidden;
-    transition: height 0.3s ease;
+const DownloadList = styled.ul<{ $isMobile: boolean }>`
     margin: 0;
     padding: 0;
     list-style-type: none;
+    ${({ $isMobile }) => !$isMobile && `
+        height: 0;
+        overflow: hidden;
+        transition: height 0.3s ease;
+    `}
 `;
 
-const DownloadContainer = styled.div`
+const DownloadContainer = styled.div<{ $isMobile: boolean }>`
     margin: 1rem;
     padding: 1rem;
     border-radius: 6px;
     background: #cacafb;
 
-    &:hover ${DownloadList} {
-        height: 192px;
-    }
+    ${({ $isMobile }) => !$isMobile && `
+        &:hover ${DownloadList} {
+            height: 192px;
+        }
+    `}
 `;
 
 const DownloadTitle = styled.div`
@@ -170,10 +172,15 @@ const DownloadListItem = styled.li`
     }
 `;
 
+const NavContainer = styled.div`
+    flex: 1 1 0%;
+    overflow-y: auto;
+`;
+
 const NavbarHeader = styled.div`
     display: flex;
     padding: 1.5rem 1rem;
-    padding-bottom: 0;
+    padding-bottom: 0.5rem;
 `;
 
 const Overlay = styled.div<{ $isOpen: boolean }>`
@@ -256,6 +263,99 @@ const Navbar: React.FC<{ projectData: any }> = ({ projectData }) => {
         </SubMenuList>
     );
 
+    const renderDownloadItems = () => (
+        <DownloadContainer $isMobile={isMobile}>
+            <DownloadTitle>
+                <i className="bi bi-box-arrow-down"></i>
+                <div>Téléchargements</div>
+            </DownloadTitle>
+            <DownloadList $isMobile={isMobile}>
+                <DownloadListItem>
+                    <Button
+                        type="htmx"
+                        icon="bi bi-file-earmark-word"
+                        label="Analyse de Consommation"
+                        htmxAttrs={{
+                            'data-hx-get': urls.dowloadConsoReport,
+                            'data-hx-target': '#diag_word_form',
+                            'data-fr-opened': 'false',
+                            'aria-controls': 'fr-modal-download-word',
+                        }}
+                        onClick={() => {
+                            resetModalContent();
+                            if (window.trackEvent)
+                                window.trackEvent(
+                                    'diagnostic_download_funnel',
+                                    'click_button_conso_report_download',
+                                    'conso_report_download_button_clicked'
+                                );
+                        }}
+                    />
+                </DownloadListItem>
+                <DownloadListItem>
+                    <Button
+                        type="htmx"
+                        icon="bi bi-file-earmark-word"
+                        label="Analyse complète"
+                        htmxAttrs={{
+                            'data-hx-get': urls.dowloadFullReport,
+                            'data-hx-target': '#diag_word_form',
+                            'data-fr-opened': 'false',
+                            'aria-controls': 'fr-modal-download-word',
+                        }}
+                        onClick={() => {
+                            resetModalContent();
+                            if (window.trackEvent)
+                                window.trackEvent(
+                                    'diagnostic_download_funnel',
+                                    'click_button_diagnostic_download_word',
+                                    'diagnostic_download_word_button_clicked'
+                                );
+                        }}
+                    />
+                </DownloadListItem>
+                <DownloadListItem>
+                    <Button
+                        type="htmx"
+                        icon="bi bi-file-earmark-word"
+                        label="Rapport triennal local"
+                        htmxAttrs={{
+                            'data-hx-get': urls.dowloadLocalReport,
+                            'data-hx-target': '#diag_word_form',
+                            'data-fr-opened': 'false',
+                            'aria-controls': 'fr-modal-download-word',
+                        }}
+                        onClick={() => {
+                            resetModalContent();
+                            if (window.trackEvent)
+                                window.trackEvent(
+                                    'diagnostic_download_funnel',
+                                    'click_button_local_report_download',
+                                    'local_report_download_button_clicked'
+                                );
+                        }}
+                    />
+                </DownloadListItem>
+                <DownloadListItem>
+                    <Button
+                        type="link"
+                        icon="bi bi-file-earmark-excel"
+                        label="Export Excel"
+                        url={urls.dowloadCsvReport}
+                        onClick={() => {
+                            if (window.trackEvent)
+                                window.trackEvent(
+                                    'diagnostic_download_funnel',
+                                    'click_button_diagnostic_download_excel',
+                                    'diagnostic_download_excel_success'
+                                );
+                        }}
+                    />
+                </DownloadListItem>
+            </DownloadList>
+        </DownloadContainer>
+    );
+    
     return (
         <>
             {isMobile && <Overlay $isOpen={isOpen} onClick={() => dispatch(toggleNavbar())} />}
@@ -263,115 +363,31 @@ const Navbar: React.FC<{ projectData: any }> = ({ projectData }) => {
                 <NavbarHeader>
                     <ButtonToggleNavbar />
                 </NavbarHeader>
-                <MenuList role="tree" aria-label="Sidebar menu">
-                    {data?.menuItems.map((menu) => (
-                        <Menu key={menu.label}>
-                            {menu.url ? (
-                                <MenuTitleLink to={menu.url} $isActive={isActive(menu.url)}>
-                                    {menu.icon && <Icon className={`bi ${menu.icon}`} />}
-                                    {menu.label}
-                                </MenuTitleLink>
-                            ) : (
-                                <MenuTitle>
-                                    {menu.icon && <Icon className={`bi ${menu.icon}`} />}
-                                    {menu.label}
-                                </MenuTitle>
-                            )}
-                            {menu.subMenu && renderMenuItems(menu.subMenu)}
-                        </Menu>
-                    ))}
-                </MenuList>
-                {urls && shouldDisplayDownloads && (
-                    <DownloadContainer>
-                        <DownloadTitle>
-                            <i className="bi bi-box-arrow-down"></i>
-                            <div>Téléchargements</div>
-                        </DownloadTitle>
-                        <DownloadList>
-                            <DownloadListItem>
-                                <Button
-                                    type="htmx"
-                                    icon="bi bi-file-earmark-word"
-                                    label="Analyse de Consommation"
-                                    htmxAttrs={{
-                                        'data-hx-get': urls.dowloadConsoReport,
-                                        'data-hx-target': '#diag_word_form',
-                                        'data-fr-opened': 'false',
-                                        'aria-controls': 'fr-modal-download-word',
-                                    }}
-                                    onClick={() => {
-                                        resetModalContent();
-                                        if (window.trackEvent)
-                                            window.trackEvent(
-                                                'diagnostic_download_funnel',
-                                                'click_button_conso_report_download',
-                                                'conso_report_download_button_clicked'
-                                            );
-                                    }}
-                                />
-                            </DownloadListItem>
-                            <DownloadListItem>
-                                <Button
-                                    type="htmx"
-                                    icon="bi bi-file-earmark-word"
-                                    label="Analyse complète"
-                                    htmxAttrs={{
-                                        'data-hx-get': urls.dowloadFullReport,
-                                        'data-hx-target': '#diag_word_form',
-                                        'data-fr-opened': 'false',
-                                        'aria-controls': 'fr-modal-download-word',
-                                    }}
-                                    onClick={() => {
-                                        resetModalContent();
-                                        if (window.trackEvent)
-                                            window.trackEvent(
-                                                'diagnostic_download_funnel',
-                                                'click_button_diagnostic_download_word',
-                                                'diagnostic_download_word_button_clicked'
-                                            );
-                                    }}
-                                />
-                            </DownloadListItem>
-                            <DownloadListItem>
-                                <Button
-                                    type="htmx"
-                                    icon="bi bi-file-earmark-word"
-                                    label="Rapport triennal local"
-                                    htmxAttrs={{
-                                        'data-hx-get': urls.dowloadLocalReport,
-                                        'data-hx-target': '#diag_word_form',
-                                        'data-fr-opened': 'false',
-                                        'aria-controls': 'fr-modal-download-word',
-                                    }}
-                                    onClick={() => {
-                                        resetModalContent();
-                                        if (window.trackEvent)
-                                            window.trackEvent(
-                                                'diagnostic_download_funnel',
-                                                'click_button_local_report_download',
-                                                'local_report_download_button_clicked'
-                                            );
-                                    }}
-                                />
-                            </DownloadListItem>
-                            <DownloadListItem>
-                                <Button
-                                    type="link"
-                                    icon="bi bi-file-earmark-excel"
-                                    label="Export Excel"
-                                    url={urls.dowloadCsvReport}
-                                    onClick={() => {
-                                        if (window.trackEvent)
-                                            window.trackEvent(
-                                                'diagnostic_download_funnel',
-                                                'click_button_diagnostic_download_excel',
-                                                'diagnostic_download_excel_success'
-                                            );
-                                    }}
-                                />
-                            </DownloadListItem>
-                        </DownloadList>
-                    </DownloadContainer>
+                <NavContainer>
+                    <MenuList role="tree" aria-label="Sidebar menu">
+                        {data?.menuItems.map((menu) => (
+                            <Menu key={menu.label}>
+                                {menu.url ? (
+                                    <MenuTitleLink to={menu.url} $isActive={isActive(menu.url)}>
+                                        {menu.icon && <Icon className={`bi ${menu.icon}`} />}
+                                        {menu.label}
+                                    </MenuTitleLink>
+                                ) : (
+                                    <MenuTitle>
+                                        {menu.icon && <Icon className={`bi ${menu.icon}`} />}
+                                        {menu.label}
+                                    </MenuTitle>
+                                )}
+                                {menu.subMenu && renderMenuItems(menu.subMenu)}
+                            </Menu>
+                        ))}
+                    </MenuList>
+                    {urls && shouldDisplayDownloads && isMobile && (
+                        renderDownloadItems()
+                    )}
+                </NavContainer>
+                {urls && shouldDisplayDownloads && !isMobile && (
+                    renderDownloadItems()
                 )}
             </Container>
         </>
