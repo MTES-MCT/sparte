@@ -5,7 +5,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import styled from 'styled-components';
 import { useGetProjectQuery } from '@services/api';
 import { setProjectData } from '@store/projectSlice';
-import { selectIsNavbarOpen, handleResponsiveNavbar } from '@store/navbarSlice';
+import { selectIsNavbarOpen } from '@store/navbarSlice';
 import useWindowSize from '@hooks/useWindowSize';
 import useMatomoTracking from '@hooks/useMatomoTracking';
 import useUrls from '@hooks/useUrls';
@@ -59,10 +59,6 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
         dispatch(setProjectData(data));        
     }
     }, [data, dispatch]);
-
-    useEffect(() => {
-        dispatch(handleResponsiveNavbar({ isMobile }));
-    }, [isMobile, dispatch]);
 
     return (
         <>
