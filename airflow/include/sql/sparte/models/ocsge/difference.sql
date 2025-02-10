@@ -55,7 +55,9 @@ FROM (
         ocsge.us_new,
         ocsge.us_old,
         ocsge.departement,
-        st_makevalid(ocsge.geom) AS geom,
+        (
+            st_dump(st_intersection(departement_table.geom, st_makevalid(ocsge.geom)))
+        ).geom as geom,
         {{ is_artificial('cs_old', 'us_old') }} AS old_is_artif,
         {{ is_impermeable('cs_old') }} AS old_is_imper,
         {{ is_artificial('cs_new', 'us_new') }} AS new_is_artif,
@@ -63,6 +65,9 @@ FROM (
         ocsge.uuid::uuid
     FROM
         {{ source('public', 'ocsge_difference') }} AS ocsge
+    left join
+        {{ ref("departement") }} as departement_table
+        on departement = departement_table.code
     WHERE
         ocsge.cs_new IS NOT null
         AND ocsge.cs_old IS NOT null
