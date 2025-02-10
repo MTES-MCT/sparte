@@ -1015,6 +1015,8 @@ class Project(BaseProject):
             "N": "zone naturelle",
         }
 
+        print(self.first_year_ocsge)
+
         first_year = ArtifZonage.objects.filter(
             land_id=self.land_id,
             land_type=self.land_type,
@@ -1034,6 +1036,10 @@ class Project(BaseProject):
             }
 
         for zonage in last_year:
+            if zonage.zonage_type not in new_zone_list:
+                new_zone_list[zonage.zonage_type] = {
+                    "first_artif_area": 0.0,
+                }
             new_zone_list[zonage.zonage_type] |= {
                 "type_zone": zonage.zonage_type,
                 "type_zone_label": zone_labels[zonage.zonage_type],
