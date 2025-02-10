@@ -38,10 +38,6 @@ def map_tasks(project_id: str) -> List[celery.Task]:  # noqa: C901
         if not project.async_theme_map_understand_artif_done:
             map_tasks.append(tasks.generate_theme_map_understand_artif.si(project.id))
 
-    if project.has_complete_uniform_ocsge_coverage and project.has_zonage_urbanisme:
-        if not project.async_theme_map_fill_gpu_done:
-            map_tasks.append(tasks.generate_theme_map_fill_gpu.si(project.id))
-
     celery.group(*map_tasks, immutable=True).apply_async(queue="long")
 
 
@@ -122,7 +118,6 @@ def update_period(project: Project, start: str, end: str) -> None:
     project.async_generate_theme_map_conso_done = False
     project.async_generate_theme_map_artif_done = False
     project.async_theme_map_understand_artif_done = False
-    project.async_theme_map_fill_gpu_done = False
 
     project._change_reason = ProjectChangeReason.USER_UPDATED_PROJECT_FROM_PARAMS
     project.save()
@@ -149,7 +144,6 @@ def update_ocsge(project: Project):
     project.async_ocsge_coverage_status_done = False
     project.async_generate_theme_map_artif_done = False
     project.async_theme_map_understand_artif_done = False
-    project.async_theme_map_fill_gpu_done = False
 
     project._change_reason = ProjectChangeReason.NEW_OCSGE_HAS_BEEN_DELIVERED
     project.save()

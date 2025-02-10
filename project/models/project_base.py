@@ -7,12 +7,12 @@ import pandas as pd
 from django.conf import settings
 from django.contrib.gis.db import models as gis_models
 from django.contrib.gis.db.models import Extent, Union
-from django.contrib.gis.db.models.functions import Area, Centroid, PointOnSurface
+from django.contrib.gis.db.models.functions import Area, Centroid
 from django.contrib.gis.geos import MultiPolygon, Polygon
 from django.core.cache import cache
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
-from django.db.models import Case, Count, DecimalField, F, Q, QuerySet, Sum, Value, When
+from django.db.models import Case, DecimalField, F, Q, QuerySet, Sum, Value, When
 from django.db.models.functions import Cast, Coalesce, Concat
 from django.urls import reverse
 from django.utils.functional import cached_property
@@ -23,6 +23,7 @@ from project.models.enums import ProjectChangeReason
 from public_data.exceptions import LandException
 from public_data.models import (
     AdminRef,
+    ArtifZonage,
     CommuneDiff,
     CommuneSol,
     CouvertureSol,
@@ -37,7 +38,6 @@ from public_data.models import (
 from public_data.models.administration import Commune
 from public_data.models.administration.enums import ConsommationCorrectionStatus
 from public_data.models.enums import SRID
-from public_data.models.gpu import ArtifAreaZoneUrba, ZoneUrba
 from public_data.models.mixins import DataColorationMixin
 from utils.db import cast_sum_area
 from utils.validators import is_alpha_validator
@@ -279,13 +279,6 @@ class Project(BaseProject):
         storage=PublicMediaStorage(),
     )
 
-    theme_map_fill_gpu = models.ImageField(
-        upload_to=upload_in_project_folder,
-        blank=True,
-        null=True,
-        storage=PublicMediaStorage(),
-    )
-
     ocsge_coverage_status = models.CharField(
         "Statut de la couverture OCS GE",
         max_length=20,
@@ -301,7 +294,6 @@ class Project(BaseProject):
     async_generate_theme_map_conso_done = models.BooleanField(default=False)
     async_generate_theme_map_artif_done = models.BooleanField(default=False)
     async_theme_map_understand_artif_done = models.BooleanField(default=False)
-    async_theme_map_fill_gpu_done = models.BooleanField(default=False)
     async_ocsge_coverage_status_done = models.BooleanField(default=False)
 
     history = HistoricalRecords(
@@ -341,7 +333,7 @@ class Project(BaseProject):
             static_maps_ready = static_maps_ready and self.async_theme_map_understand_artif_done
 
         if self.has_zonage_urbanisme and self.has_complete_uniform_ocsge_coverage:
-            static_maps_ready = static_maps_ready and self.async_theme_map_fill_gpu_done
+            static_maps_ready = static_maps_ready
 
         return calculations_and_extend_ready and static_maps_ready
 
@@ -454,32 +446,10 @@ class Project(BaseProject):
 
     @cached_property
     def has_zonage_urbanisme(self) -> bool:
-        """
-        Cette fonction vérifie si l'emprise du diagnostic intersecte
-        des zonages d'urbanisme. Pour effectuer cette vérification,
-        on commence par sélectionner les zonages avec ST_Intersects,
-        puis on vérifie que le point central de chaque zone est
-        bien dans l'emprise du diagnostic. Cette vérification est
-        nécessaire car la méthode ST_Intersects peut retourner des
-        zones qui intersectent très légèrement l'emprise du projet
-        sur un bord.
-        """
-        zone_urbas_intersecting = ArtifAreaZoneUrba.objects.filter(
-            zone_urba__mpoly__intersects=self.combined_emprise,
-        ).values_list("zone_urba")
-
-        return (
-            ZoneUrba.objects.filter(
-                checksum__in=zone_urbas_intersecting,
-            )
-            .annotate(
-                point_on_surface=PointOnSurface("mpoly"),
-            )
-            .filter(
-                point_on_surface__intersects=self.combined_emprise,
-            )
-            .exists()
-        )
+        return ArtifZonage.objects.filter(
+            land_id=self.land_id,
+            land_type=self.land_type,
+        ).exists()
 
     @cached_property
     def consommation_correction_status(self) -> str:
@@ -1048,57 +1018,41 @@ class Project(BaseProject):
             "N": "zone naturelle",
         }
 
-        """Return artif progression for each zone type.
-
-        Returns:
-            List of Dict with structure:
-                type_zone (str): type of zone A, N, AU, etc.
-                total_area (float): total area of zone
-                first_artif_area (float): artificial area of zone in first year
-                last_artif_area (float): artificial area of zone in last year
-                fill_up_rate (float): percentage of zone filled up
-        """
-
-        zone_urba = (
-            ZoneUrba.objects.annotate(pos=PointOnSurface("mpoly"))
-            .filter(pos__intersects=self.combined_emprise)
-            .values_list("checksum", flat=True)
+        first_year = ArtifZonage.objects.filter(
+            land_id=self.land_id,
+            land_type=self.land_type,
+            year=self.first_year_ocsge,
         )
 
-        qs = (
-            ArtifAreaZoneUrba.objects.filter(zone_urba__in=zone_urba)
-            .filter(year__in=[self.first_year_ocsge, self.last_year_ocsge])
-            .order_by("zone_urba__typezone", "year")
-            .values("zone_urba__typezone", "year")
-            .annotate(
-                artif_area=Sum("area", output_field=models.DecimalField(decimal_places=2, max_digits=15)),
-                total_area=Sum("zone_urba__area", output_field=models.DecimalField(decimal_places=2, max_digits=15)),
-                nb_zones=Count("zone_urba_id"),
+        last_year = ArtifZonage.objects.filter(
+            land_id=self.land_id,
+            land_type=self.land_type,
+            year=self.last_year_ocsge,
+        )
+
+        new_zone_list = dict()
+        for zonage in first_year:
+            new_zone_list[zonage.zonage_type] = {
+                "first_artif_area": zonage.artificial_surface / 10000,
+            }
+
+        for zonage in last_year:
+            new_zone_list[zonage.zonage_type] |= {
+                "type_zone": zonage.zonage_type,
+                "type_zone_label": zone_labels[zonage.zonage_type],
+                "total_area": zonage.surface / 10000,
+                "nb_zones": zonage.zonage_count,
+                "last_artif_area": zonage.artificial_surface / 10000,
+                "fill_up_rate": zonage.artificial_percent,
+            }
+
+        for zonage in last_year:
+            new_zone_list[zonage.zonage_type]["new_artif"] = (
+                new_zone_list[zonage.zonage_type]["last_artif_area"]
+                - new_zone_list[zonage.zonage_type]["first_artif_area"]
             )
-        )
 
-        zone_list = dict()
-        for row in qs:
-            zone_type = row["zone_urba__typezone"]  # A, U, AUs...
-            if zone_type not in zone_list:
-                zone_list[zone_type] = {
-                    "type_zone": zone_type,
-                    "type_zone_label": zone_labels.get(zone_type, ""),
-                    "total_area": row["total_area"],
-                    "nb_zones": row["nb_zones"],
-                    "first_artif_area": Decimal(0.0),
-                    "last_artif_area": Decimal(0.0),
-                    "fill_up_rate": Decimal(0.0),
-                    "new_artif": Decimal(0.0),
-                }
-            if row["year"] == self.first_year_ocsge:
-                zone_list[zone_type]["first_artif_area"] = row["artif_area"]
-            else:
-                zone_list[zone_type]["last_artif_area"] = row["artif_area"]
-        for k in zone_list.keys():
-            zone_list[k]["fill_up_rate"] = 100 * zone_list[k]["last_artif_area"] / zone_list[k]["total_area"]
-            zone_list[k]["new_artif"] = zone_list[k]["last_artif_area"] - zone_list[k]["first_artif_area"]
-        return zone_list
+        return new_zone_list
 
 
 class Emprise(DataColorationMixin, gis_models.Model):
