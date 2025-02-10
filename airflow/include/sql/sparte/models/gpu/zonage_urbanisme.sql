@@ -9,6 +9,12 @@
             {"columns": ["departement"], "type": "btree"},
             {"columns": ["srid_source"], "type": "btree"},
         ],
+        pre_hook=[
+            'CREATE INDEX ON "public"."gpu_zone_urba" (checksum)',
+            'CREATE INDEX ON "public"."gpu_zone_urba" (checksum, gpu_timestamp DESC)',
+            'CREATE INDEX ON "public"."gpu_zone_urba" USING GIST (geom)',
+            'CREATE INDEX ON "public"."gpu_zone_urba" USING GIST (ST_PointOnSurface(geom))',
+        ],
     )
 }}
 
@@ -49,13 +55,14 @@ from
         from {{ source("public", "gpu_zone_urba") }} as zonage
         left join
             {{ ref("commune") }} as commune
-            on st_contains(
+            on st_transform(commune.geom, 4326) && zonage.geom
+            and st_contains(
                 st_transform(commune.geom, 4326), st_pointonsurface(zonage.geom)
             )
         where
             {{ raw_date_starts_with_yyyy("datappro") }}
             and {{ raw_date_starts_with_yyyy("datvalid") }}
             and not st_isempty(zonage.geom)
-        order by checksum, gpu_timestamp::timestamptz desc
+        order by checksum, gpu_timestamp desc
     ) as foo
 where not st_isempty(foo.geom)

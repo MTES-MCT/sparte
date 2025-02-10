@@ -3,13 +3,12 @@
 /*
 
 Ce modèle permet de lier les zonages d'urbanisme aux communes.
-Comme les géomètres des zonages sont imprécis, la jointure ne se fait pas
+Comme les géométries des zonages sont imprécis, la jointure ne se fait pas
 sur la base d'une intersection du polygone de la commune avec le polygone du zonage,
 mais lorsqu'un point du zonage (obtenu avec la fonction ST_PointOnSurface)
 est contenu dans le polygone de la commune.
 
 */
-
 with
     zonages_as_points as (
         select checksum, st_pointonsurface(geom) as geom, srid_source

@@ -34,12 +34,13 @@ with
             ocsge.is_artificial,
             ocsge.is_impermeable,
             ocsge.srid_source,
-            st_intersection(zonage.geom, ocsge.geom) as geom
+            (st_dump(st_intersection(zonage.geom, ocsge.geom))).geom as geom
         from {{ ref("zonage_urbanisme") }} as zonage
         inner join
             {{ ref("occupation_du_sol") }} as ocsge
             on zonage.srid_source = ocsge.srid_source
             and zonage.departement = ocsge.departement
+            and zonage.geom && ocsge.geom
             and st_intersects(zonage.geom, ocsge.geom)
 
     ),
