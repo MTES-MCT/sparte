@@ -24,5 +24,7 @@ select
     year,
     surface,
     code_us,
-    surface / zonage_surface * 100 as percent
+    case
+        when zonage_surface = 0 then 0 else surface / zonage_surface * 100
+    end as percent
 from without_percent

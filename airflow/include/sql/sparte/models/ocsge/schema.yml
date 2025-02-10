@@ -118,7 +118,7 @@ models:
       - name: uuid
         data_tests:
           - not_null
-          - unique
+          # - unique the same object can be split by ST_Dump(ST_Intersection(geom, geom))
       - name: geom
         data_tests:
           - not_null

@@ -7,4 +7,4 @@
     )
 }}
 
-{{ merge_artif_commune_by_admin_level("departement") }}
+{{ merge_artif_commune_zonage_by_admin_level("departement") }}
