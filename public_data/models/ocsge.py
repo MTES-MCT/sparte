@@ -138,34 +138,3 @@ class ArtificialArea(DataColorationMixin, models.Model):
             models.Index(fields=["city"]),
             models.Index(fields=["departement"]),
         ]
-
-
-class ZoneConstruite(DataColorationMixin, models.Model):
-    id = models.TextField("ID", primary_key=True)
-    id_source = models.CharField("ID Source", max_length=200)
-    millesime = models.CharField("Millesime", max_length=200)
-    mpoly = models.MultiPolygonField(srid=4326)
-    srid_source = models.IntegerField(
-        "SRID",
-        choices=SRID.choices,
-        default=SRID.LAMBERT_93,
-    )
-
-    # calculated
-    year = models.IntegerField(
-        "Année",
-        validators=[MinValueValidator(2000), MaxValueValidator(2050)],
-    )
-    surface = models.DecimalField("surface", max_digits=15, decimal_places=4)
-    departement = models.CharField("Département", max_length=15)
-
-    objects = IntersectManager()
-
-    class Meta:
-        managed = False
-        verbose_name = "OCSGE - Zone construite"
-        verbose_name_plural = verbose_name
-        indexes = [
-            models.Index(fields=["year"]),
-            models.Index(fields=["departement"]),
-        ]
