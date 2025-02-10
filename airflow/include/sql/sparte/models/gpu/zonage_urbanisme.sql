@@ -7,6 +7,7 @@
             {"columns": ["type_zone"], "type": "btree"},
             {"columns": ["checksum"], "type": "btree"},
             {"columns": ["departement"], "type": "btree"},
+            {"columns": ["srid_source"], "type": "btree"},
         ],
     )
 }}
@@ -18,10 +19,7 @@ avec les données OCS Ge (qui sont livrées par département), nous avons besoin
 les enrichir avec le code du département dans lequel ils se trouvent.
 
 */
-select
-    foo.*,
-    round(st_area(foo.geom)::numeric, 4) as surface,
-    commune.departement as departement
+select foo.*, round(st_area(foo.geom)::numeric, 4) as surface
 from
     (
         select distinct
@@ -29,6 +27,7 @@ from
             gpu_doc_id,
             gpu_status,
             gpu_timestamp::timestamptz as gpu_timestamp,
+            commune.departement as departement,
             partition,
             libelle,
             nullif(libelong, '') as libelle_long,
@@ -41,17 +40,22 @@ from
             to_date(nullif(datvalid, ''), 'YYYYMMDD') as date_validation,
             nullif(idurba, '') as id_document_urbanisme,
             checksum,
-            {{ make_valid_multipolygon("ST_transform(zonage.geom, 2154)") }} as geom,
-            2154 as srid_source
+            {{
+                make_valid_multipolygon(
+                    "ST_transform(zonage.geom, commune.srid_source)"
+                )
+            }} as geom,
+            commune.srid_source as srid_source
         from {{ source("public", "gpu_zone_urba") }} as zonage
-
+        left join
+            {{ ref("commune") }} as commune
+            on st_contains(
+                st_transform(commune.geom, 4326), st_pointonsurface(zonage.geom)
+            )
         where
             {{ raw_date_starts_with_yyyy("datappro") }}
             and {{ raw_date_starts_with_yyyy("datvalid") }}
-            and not st_isempty(geom)
+            and not st_isempty(zonage.geom)
         order by checksum, gpu_timestamp::timestamptz desc
     ) as foo
-left join
-    {{ ref("commune") }} as commune
-    on st_contains(commune.geom, st_pointonsurface(foo.geom))
 where not st_isempty(foo.geom)
