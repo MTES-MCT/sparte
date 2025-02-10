@@ -332,9 +332,6 @@ class Project(BaseProject):
         if self.has_complete_uniform_ocsge_coverage:
             static_maps_ready = static_maps_ready and self.async_theme_map_understand_artif_done
 
-        if self.has_zonage_urbanisme and self.has_complete_uniform_ocsge_coverage:
-            static_maps_ready = static_maps_ready
-
         return calculations_and_extend_ready and static_maps_ready
 
     @property
