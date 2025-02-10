@@ -9,6 +9,7 @@
             {"columns": ["code_cs"], "type": "btree"},
             {"columns": ["code_us"], "type": "btree"},
             {"columns": ["geom"], "type": "gist"},
+            {"columns": ["srid_source"], "type": "btree"},
         ],
     )
 }}
@@ -24,7 +25,6 @@ est en effet succeptible de générer des geometrycollection, même si le type d
 en entrée est homogène.
 
 */
-
 with
     without_surface as (
         select
@@ -40,7 +40,7 @@ with
             (
                 st_dump(st_intersection(departement_table.geom, occupation.geom))
             ).geom as geom,
-            2154 as srid_source
+            departement_table.srid_source as srid_source
         from {{ source("public", "ocsge_occupation_du_sol") }} as occupation
         left join
             {{ ref("departement") }} as departement_table
