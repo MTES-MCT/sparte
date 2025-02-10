@@ -42,9 +42,3 @@ repos:
       - id: ggshield
         language_version: python3
         stages: [commit]
--   repo: https://github.com/tconbeer/sqlfmt
-    rev: v0.18.0
-    hooks:
-      - id: sqlfmt
-        language_version: python
-        additional_dependencies: ['.[jinjafmt]']
