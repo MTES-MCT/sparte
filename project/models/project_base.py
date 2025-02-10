@@ -1015,8 +1015,6 @@ class Project(BaseProject):
             "N": "zone naturelle",
         }
 
-        print(self.first_year_ocsge)
-
         first_year = ArtifZonage.objects.filter(
             land_id=self.land_id,
             land_type=self.land_type,
