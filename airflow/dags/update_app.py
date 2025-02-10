@@ -115,6 +115,7 @@ def copy_table_from_dw_to_app(
                 "copy_public_data_couvertureusagematrix",
                 "copy_public_data_logementvacant",
                 "copy_public_data_autorisationlogement",
+                "copy_public_data_artifzonage",
             ],
             type="array",
         ),
@@ -439,6 +440,19 @@ def update_app():  # noqa: C901
             ],
         )
 
+    @task.python
+    def copy_public_data_artifzonage(**context):
+        return copy_table_from_dw_to_app(
+            from_table="public_for_app.for_app_artifzonage",
+            to_table="public.public_data_artifzonage",
+            environment=context["params"]["environment"],
+            btree_index_columns=[
+                ["land_id", "land_type"],
+                ["year"],
+                ["zonage_type"],
+            ],
+        )
+
     @task.branch
     def copy_public_data_branch(**context):
         return context["params"]["tasks"]
@@ -470,6 +484,7 @@ def update_app():  # noqa: C901
         copy_public_data_couvertureusagematrix(),
         copy_public_data_logementvacant(),
         copy_public_data_autorisationlogement(),
+        copy_public_data_artifzonage(),
     ]
 
 
