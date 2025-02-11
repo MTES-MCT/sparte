@@ -20,7 +20,7 @@ echo "Get postgresql client"
 # temp fix while scalingo fix it
 export PATH=/app/bin:$PATH
 
-dbclient-fetcher postgresql 15
+dbclient-fetcher postgresql 16
 psql_version=$(psql --version | awk '{print $3}')
 echo "psql version=$psql_version"
 
