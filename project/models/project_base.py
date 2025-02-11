@@ -1013,6 +1013,9 @@ class Project(BaseProject):
             "AUs": "zone à urbaniser bloquée",
             "A": "zone agricole",
             "N": "zone naturelle",
+            "Nd": "zone naturelle particulière",
+            "Nh": "zone bâtie en zone naturelle",
+            "Ah": "zone bâtie en zone agricole",
         }
 
         first_year = ArtifZonage.objects.filter(
