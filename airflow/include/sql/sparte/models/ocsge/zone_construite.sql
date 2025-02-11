@@ -20,8 +20,14 @@ with
             zc.uuid::uuid,
             departement_table.srid_source as srid_source,
             to_timestamp(zc.loaded_date) as loaded_date,
+
             (
-                st_dump(st_intersection(departement_table.geom, st_makevalid(zc.geom)))
+                st_dump(st_intersection(departement_table.geom, st_makevalid(
+                    ST_SetSRID(
+                        zc.geom,
+                        departement_table.srid_source
+                    )
+                )))
             ).geom as geom
         from {{ source("public", "ocsge_zone_construite") }} as zc
         left join

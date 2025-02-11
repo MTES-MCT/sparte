@@ -55,7 +55,9 @@ from
             ocsge.departement,
             (
                 st_dump(
-                    st_intersection(departement_table.geom, st_makevalid(ocsge.geom))
+                    st_intersection(departement_table.geom, st_makevalid(
+                        ST_SetSRID(ocsge.geom, departement_table.srid_source)
+                    ))
                 )
             ).geom as geom,
             {{ is_artificial("cs_old", "us_old") }} as old_is_artif,

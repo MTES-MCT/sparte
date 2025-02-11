@@ -38,7 +38,14 @@ with
             {{ is_artificial("code_cs", "code_us") }} as is_artificial,
             uuid::uuid,
             (
-                st_dump(st_intersection(departement_table.geom, occupation.geom))
+                st_dump(st_intersection(
+                    departement_table.geom,
+                    ST_SetSRID(
+                        occupation.geom,
+                        departement_table.srid_source
+                    )
+                )
+            )
             ).geom as geom,
             departement_table.srid_source as srid_source
         from {{ source("public", "ocsge_occupation_du_sol") }} as occupation
