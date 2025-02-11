@@ -538,6 +538,7 @@ CSP_FRAME_SRC = (
     "https://game.crisp.chat",
     "https://plugins.crisp.chat/",
     "https://www.googletagmanager.com/",
+    "https://sparte-metabase.osc-secnum-fr1.scalingo.io/",
 )
 CSP_MEDIA_SRC = (
     # Crisp
