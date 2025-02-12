@@ -44,11 +44,7 @@ def create_zonage_vector_tiles():
             local_input,
             "--read-parallel",
             "--force",
-            "--no-simplification-of-shared-nodes",
-            "--no-tiny-polygon-reduction",
             "--coalesce-densest-as-needed",
-            "--no-tile-size-limit",
-            "-zg",
         ]
 
         return " ".join(cmd)
