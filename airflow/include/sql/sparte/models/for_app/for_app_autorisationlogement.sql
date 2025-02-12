@@ -81,6 +81,7 @@ LEFT JOIN
     {{ ref('for_app_logementvacant') }} as logements_vacants
 ON
     autorisations.land_id = logements_vacants.land_id
+    AND autorisations.land_type = logements_vacants.land_type
     AND autorisations.year = logements_vacants.year
 ), land_id_without_missing_years as (
     -- On récupère les land_id qui ont des données pour toutes les années
