@@ -1001,7 +1001,7 @@ class Project(BaseProject):
     def get_artif_per_zone_urba_type(
         self,
     ) -> Dict[
-        Literal["AUs", "AUc", "A", "N", "U"],
+        Literal["AU", "A", "N", "U"],
         Dict[
             Literal["type_zone", "total_area", "first_artif_area", "last_artif_area", "fill_up_rate", "new_artif"],
             str | float,
@@ -1009,13 +1009,9 @@ class Project(BaseProject):
     ]:
         zone_labels = {
             "U": "zone urbaine",
-            "AUc": "zone à urbaniser",
-            "AUs": "zone à urbaniser bloquée",
+            "AU": "zone à urbaniser",
             "A": "zone agricole",
             "N": "zone naturelle",
-            "Nd": "zone naturelle particulière",
-            "Nh": "zone bâtie en zone naturelle",
-            "Ah": "zone bâtie en zone agricole",
         }
 
         first_year = ArtifZonage.objects.filter(

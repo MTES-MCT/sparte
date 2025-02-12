@@ -37,7 +37,7 @@ from
             partition,
             libelle,
             nullif(libelong, '') as libelle_long,
-            typezone as type_zone,
+            {{ standardize_zonage_type("typezone") }} as type_zone,
             nullif(destdomi, '') as destination_dominante,
             nomfic as nom_fichier,
             nullif(urlfic, '') as url_fichier,
