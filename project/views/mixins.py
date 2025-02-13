@@ -1,5 +1,6 @@
 """Mixins available for all views."""
 
+from django import forms
 from django.contrib import messages
 from django.db.models import Q
 from django.shortcuts import redirect
@@ -80,3 +81,20 @@ class ReactMixin:
         if self.request.headers.get("X-Requested-With") == "XMLHttpRequest":
             return [self.partial_template_name]
         return [self.full_template_name]
+
+
+class PeriodValidationMixin:
+    def clean(self):
+        cleaned_data = super().clean()
+        start_date = cleaned_data.get("analyse_start_date")
+        end_date = cleaned_data.get("analyse_end_date")
+
+        if start_date and end_date and start_date >= end_date:
+            raise forms.ValidationError(
+                {
+                    "analyse_start_date": (
+                        "L'année de début de période ne peut pas être supérieure ou égale à l'année de fin de période."
+                    )
+                }
+            )
+        return cleaned_data
