@@ -13,7 +13,7 @@
         ],
     )
 }}
-
+with without_scots as (
 select *, 32620 as srid_source
 from {{ ref("commune_guadeloupe") }}
 union all
@@ -28,3 +28,13 @@ from {{ ref("commune_reunion") }}
 union all
 select *, 2154 as srid_source
 from {{ ref("commune_metropole") }}
+)
+SELECT
+    without_scots.*,
+    scot_communes.id_scot as scot
+FROM
+    without_scots
+LEFT JOIN
+    {{ ref('scot_communes') }}
+ON
+    without_scots.code = scot_communes.commune_code

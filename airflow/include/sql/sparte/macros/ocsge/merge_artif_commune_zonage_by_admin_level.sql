@@ -11,6 +11,8 @@
                 zonage_type,
                 sum(zonage_count) as zonage_count
             from {{ ref("artif_zonage_commune") }}
+            WHERE
+            {{ group_by_column }} IS NOT NULL
             group by {{ group_by_column }}, year, zonage_type
         )
     select
