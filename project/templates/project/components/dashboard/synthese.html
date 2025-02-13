@@ -1,19 +1,39 @@
 <div>
+  <h2>Mesurer : consommation d'espace et artificialisation</h2>
+  <p>
+    Les indicateurs présentés dans ce diagnostic sont mis en perspective avec la loi Climat et résilience, afin de vous permettre
+    de vérifier si votre territoire est en phase avec les objectifs nationaux, et de vous permettre de vous inscrire
+    dans une trajectoire de réduction.
+  </p>
   {% if diagnostic.has_unchanged_or_fusionned_consommation_data %}
   <h4>Estimation de la trajectoire 2031</h4>
+  <p>
+    La loi climat et résilience fixe un objectif de réduction en deux étapes. 
+  </p>
+  <p>
+    La première étape consiste à <b>diviser par deux la consommation d'espaces entre 2021 et 2031</b> (par rapport à 2011-2020).
+    Par exemple, si la consommation d'espaces entre 2011 et 2021 est de 100 ha, la consommation totale sur la période 2021-2031 ne doit pas dépasser 50 ha.
+  </p>
   <div class="fr-grid-row fr-grid-row--gutters">
-    <div class="fr-col-12 fr-col-md-6 fr-grid-row">
+    <div class="fr-col-12 fr-col-md-4 fr-grid-row">
       <div class="fr-callout bg-white w-100">
         <p class="fr-callout__title">+{{ objective_chart.total_2020|floatformat:1 }} ha</p>
-        <p>Bilan consommation d'espaces 2011-2020</p>
+        <p>Total de la consommation d'espaces entre 2011-2020</p>
       </div>
     </div>
-    <div class="fr-col-12 fr-col-md-6 fr-grid-row">
+    <div class="fr-col-12 fr-col-md-4 fr-grid-row">
       <div class="fr-callout bg-white w-100">
         <p class="fr-callout__title">+{{ objective_chart.conso_2031|floatformat:1 }} ha</p>
-        <p>Consommation cumulée de la période du 1er jan. 2021 au 31 déc. 2030 (10 ans) avec un objectif non-réglementaire de réduction de {{ diagnostic.target_2031 }}%</p>
+        <p>Consommation <b>autorisée</b> de 2021 à 2030 avec un objectif de réduction de {{ diagnostic.target_2031 }}%</p>
       </div>
     </div>
+    <div class="fr-col-12 fr-col-md-4 fr-grid-row">
+      <div class="fr-callout bg-white w-100">
+        <p class="fr-callout__title">+{{ objective_chart.conso_since_2020|floatformat:1 }} ha</p>
+        <p>Consommation <b>totale</b> depuis 2021 {{ diagnostic.target_2031 }}%</p>
+      </div>
+    </div>
+    
   </div>
   <div class="fr-notice bg-white">
     <div class="fr-px-2w">
@@ -36,56 +56,73 @@
     </div>
   </div>
   <div class="fr-mt-3w">
-    <a class="fr-link" href="{% url 'project:report_target_2031' diagnostic.pk %}">Consulter les trajectoires</a>
+    <button class="fr-btn" onclick="window.location.href='{% url 'project:report_conso' diagnostic.pk %}'">
+      Découvrir le bilan de consommation d'espaces
+    </button>
+    <button class="fr-btn" onclick="window.location.href='{% url 'project:report_target_2031' diagnostic.pk %}'">
+      Découvrir la trajectoire de sobriété foncière
+    </button>
   </div>
 </div>
 
-<div class="fr-mt-12w">
-  <h2>Consommation</h2>
-  <h4>Bilan de la consommation d'espaces</h4>
-  <div class="fr-grid-row fr-grid-row--gutters">
-    <div class="fr-col-12 fr-col-md-6 fr-grid-row">
-      <div class="fr-callout bg-white w-100">
-        <p class="fr-callout__title">+{{ current_conso|floatformat:1 }} ha</p>
-        <p>Consommation d'espaces {{ diagnostic.analyse_start_date }}-{{ diagnostic.analyse_end_date }}</p>
-      </div>
-    </div>
-    <div class="fr-col-12 fr-col-md-6 fr-grid-row">
-      <div class="fr-callout bg-white w-100">
-        <p class="fr-callout__title">+{{ year_avg_conso|floatformat:1 }} ha</p>
-        <p>Consommation d'espaces moyenne par an entre {{ diagnostic.analyse_start_date }}-{{ diagnostic.analyse_end_date }}</p>
-      </div>
-    </div>
-  </div>
-  <div class="fr-notice bg-white">
-    <div class="fr-px-2w">
-      <div class="d-flex align-items-center justify-content-between">
-        <div>
-          <span class="fr-icon-information-line" aria-hidden="true"></span>
-          <span class="fr-text--xs fr-mr-1w">Source de données: </span>
-          <p class="fr-tag fr-tag--sm fr-tag--blue">
-            <strong>FICHIERS FONCIERS</strong>
-          </p>
-        </div>
-        <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data-2">Détails données et calcul</button>
-      </div>
-      <div class="fr-collapse" id="target-data-2">
-        <h6 class="fr-mt-2w">Source</h6>
-        {% include "project/components/widgets/source_majic.html" %}
-        <h6 class="fr-mt-2w">Calcul</h6>
-        <p class="fr-text--sm">Les données du Cerema donnent la consommation d'espaces NAF (Naturels, Agricoles et Forestiers) par année, par destination et par commune.</p>
-      </div>
-    </div>
-  </div>
-  <div class="fr-mt-3w">
-    <a class="fr-link" href="{% url 'project:report_conso' diagnostic.pk %}">Consulter le bilan de consommation d'espaces</a>
-  </div>
-</div>
 {% endif %}
 {% if diagnostic.has_complete_uniform_ocsge_coverage %}
-<div class="fr-mt-12w">
-  <h2>Artificialisation</h2>
-  <h4>Bilan de l'artificialisation nette entre {{ first_millesime }} et {{ last_millesime }}</h4>
+<div class="fr-mt-6w">
+  <h4>Et après 2031 ?</h4>
+  <p>
+    La période 2031-2050 est une période de consolidation des efforts de réduction de la consommation d'espaces.
+  </p>
+  <p>
+    La loi Climat et résilience fixe un objectif de <b>zéro artificialisation nette</b> à l'horizon 2050, mesurée avec des données,
+    non pas de consommation d'espaces, mais d'artificialisation du sol, comme l'<b>OCS GE Nouvelle Génération</b>, conçu
+    principalement à cet effet.
+  </p>
+  <p>
+    L'avantage des données OCS GE est qu'elles permettent de mesurer l' <b>artificialisation nette</b>, c'est-à-dire la différence
+    entre l'artificialisation et la désartificialisation. De cette manière, il est possible de mesurer l'impact des politiques de
+    réduction de l'artificialisation et de renaturation des sols.
+  </p>
+  <h4>Stock d'artificialisation du territoire</h4>
+  <div class="fr-grid-row fr-grid-row--gutters">
+    <div class="fr-col-12 fr-col-md-4 fr-grid-row">
+      <div class="fr-callout bg-white w-100">
+        <p class="fr-callout__title">
+          <div class="progress-bar-container progress-bar-container--big">
+            <div class="progress-bar-indicator w-78"></div>
+            <div class="progress-bar-value">78%</div>
+          </div>
+        </p>
+        <p>
+          Artificilalisation en <strong>2017</strong>
+        </p>
+        <p class="fr-text--sm fr-mt-1w">
+          Surface artificialisée: <strong>54741.4 ha</strong><br>
+        </p>
+      </div>
+    </div>
+    <div class="fr-col-12 fr-col-md-4 fr-grid-row">
+      <div class="fr-callout bg-white w-100">
+        <p class="fr-callout__title">
+          <div class="progress-bar-container progress-bar-container--big">
+            <div class="progress-bar-indicator w-78"></div>
+            <div class="progress-bar-value">82%</div>
+          </div>
+        </p>
+        <p>
+          Artificilalisation en <strong>2018</strong>
+        </p>
+        <p class="fr-text--sm fr-mt-1w">
+          Surface artificialisée: <strong>56741.4 ha</strong><br>
+        </p>
+      </div>
+    </div>
+  </div>
+  <h4>Artificialisation nette entre {{ first_millesime }} et {{ last_millesime }}</h4>
+  <p>
+    Les dates ci-dessous correspondent aux millésimes de l'OCS GE, qui couvre la période de {{ first_millesime }} à {{ last_millesime }}.
+  </p>
+  <p>Il est prévu qu'un millésime de l'OCS GE soit publié <b>tous les 3 ans</b>.
+  </p>
   <div class="fr-grid-row fr-grid-row--gutters">
     <div class="fr-col-12 fr-col-md-4 fr-grid-row">
       <div class="fr-callout bg-white w-100">
@@ -106,6 +143,33 @@
         <p>Total désartificialisation sur la période</p>
       </div>
     </div>
+  </div>
+  {% if project.has_zonage_urbanisme %}
+
+    <h5>Par zonage d'urbanisme</h5>
+    <div class="fr-grid-row fr-grid-row--gutters">
+      {% for zone_type, zone in zone_list.items %}
+        <div class="fr-col-12 fr-col-md-4 fr-grid-row">
+          <div class="fr-callout bg-white w-100">
+            <p class="fr-callout__title">
+              <div class="progress-bar-container progress-bar-container--big">
+                <div class="progress-bar-indicator w-{{ zone.fill_up_rate|floatformat:0 }}"></div>
+                <div class="progress-bar-value">{{ zone.fill_up_rate|floatformat:1 }}%</div>
+              </div>
+            </p>
+            <p>
+              Taux d'artificialisation des zones <strong>{{ zone_type }}</strong>
+              <span class="fr-text--sm">({{ zone.type_zone_label }})</span>
+            </p>
+            <p class="fr-text--sm fr-mt-1w">
+              Surface Totale: <strong>{{ zone.total_area|floatformat:1 }} ha</strong><br>
+            </p>
+          </div>
+        </div>
+      {% endfor %}
+      </div>
+      {% endif %}
+
   </div>
   <div class="fr-notice bg-white">
     <div class="fr-px-2w">
@@ -128,64 +192,30 @@
     </div>
   </div>
   <div class="fr-mt-3w">
-    <a class="fr-link" href="{% url 'project:report_artif' project.pk %}">Consulter le bilan de l'artificialisation</a>
-  </div>
-</div>
-
-{% if project.has_zonage_urbanisme %}
-<div class="fr-mt-12w">
-  <h2>Croisement avec les zonages d'urbanisme</h2>
-  <h4>Artificialisation des zonages d'urbanisme selon les documents d'urbanisme en vigueur</h4>
-  <p>Sur la période demandée, l'OCS GE couvre de {{ first_millesime }} à {{ last_millesime }}.</p>
-  <div class="fr-grid-row fr-grid-row--gutters">
-    {% for zone_type, zone in zone_list.items %}
-      <div class="fr-col-12 fr-col-md-4 fr-grid-row">
-        <div class="fr-callout bg-white w-100">
-          <p class="fr-callout__title">
-            <div class="progress-bar-container progress-bar-container--big">
-              <div class="progress-bar-indicator w-{{ zone.fill_up_rate|floatformat:0 }}"></div>
-              <div class="progress-bar-value">{{ zone.fill_up_rate|floatformat:1 }}%</div>
-            </div>
-          </p>
-          <p>
-            Taux d'artificialisation des zones <strong>{{ zone_type }}</strong>
-            <span class="fr-text--sm">({{ zone.type_zone_label }})</span>
-          </p>
-          <p class="fr-text--sm fr-mt-1w">
-            Surface Artificialisée: <strong>{{ zone.last_artif_area|floatformat:1 }} ha</strong><br>
-          </p>
-        </div>
-      </div>
-    {% endfor %}
-  </div>
-
-  <div class="fr-notice bg-white">
-    <div class="fr-px-2w">
-      <div class="d-flex align-items-center justify-content-between">
-        <div>
-          <span class="fr-icon-information-line" aria-hidden="true"></span>
-          <span class="fr-text--xs fr-mr-1w">Source de données: </span>
-          <p class="fr-tag fr-tag--sm fr-tag--success">
-            <strong>OCS GE</strong>
-          </p>
-        </div>
-        <button class="fr-btn fr-btn--secondary fr-btn--sm fr-btn--icon-right fr-icon-arrow-down-s-fill mt-0" aria-expanded="false" aria-controls="target-data-4">Détails données et calcul</button>
-      </div>
-      <div class="fr-collapse" id="target-data-4">
-        <h6 class="fr-mt-2w">Source</h6>
-        <p class="fr-text--sm">Données OCS GE (OCcupation des Sols à Grande Echelle) de l'IGN, sur la période d'analyse. Zonages d'Urbanisme issus du GPU (Géoportail de l'Urbanisme) en date de juin 2023: <a href="https://www.geoportail-urbanisme.gouv.fr/" target="_blank" rel="noopener">https://www.geoportail-urbanisme.gouv.fr/</a></p>
-
-        <h6 class="fr-mt-2w">Calcul</h6>
-        <p class="fr-text--sm">Qualifier l'artificialisation de chaque parcelle OCS GE via la matrice d'artficialisation (<a href="{% url 'public_data:matrix' %}">consulter</a>). Puis comparer la surface totale des parcelles artificialisées dans chaque zonage d'urbanisme à la surface de la zone pour connaître le taux d'occupation.</p>
-      </div>
-    </div>
-  </div>
-  <div class="fr-mt-3w">
-    <a class="fr-link" href="{% url 'project:report_urban_zones' project.pk %}">Consulter les zonages d'urbanisme</a>
+    <button class="fr-btn" onclick="window.location.href='{% url 'project:report_artif' project.pk %}'">
+      Découvrir le bilan de l'artificialisation
+    </button>
+    <p>
+  </p>
   </div>
 </div>
 {% endif %}
-{% endif %}
+<h2>Agir : les leviers de sobriété foncière</h2>
+<p>
+  Pour vous permettre d'agir sur la consommation d'espaces et l'artificialisation, nous avons identifié
+  des leviers de sobriété foncière.
+  Pour chaque levier, une série d'indicateur est présenté, ainsi que des recommandations et des outils
+  pour agir.
+</p>
+<h4>La vacance des logements</h4>
+<p>
+  La vacance des logements est un levier de sobriété foncière qui permet de réduire la consommation d'espaces
+  en limitant la construction de nouveaux logements. En effet, la réhabilitation des logements vacants permet
+  de répondre à la demande de logements tout en limitant l'artificialisation des sols.
+</p>
+<button class="fr-btn" onclick="window.location.href='{% url 'project:report_artif' project.pk %}'">
+  Découvrir le levier d'action contre la vacance des logements
+</button>
 </div>
 
 <script language="javascript" nonce="[NONCE_PLACEHOLDER]">

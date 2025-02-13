@@ -112,6 +112,7 @@ class ObjectiveChart(ProjectChart):
         self.annual_real = self.total_real / 10.0
         self.total_2031 = self.total_2020
         self.conso_2031 = self.annual_objective_2031 * 10.0
+        self.conso_since_2020 = self.total_real - self.total_2020
 
         for year in range(2020 + 1, 2031):  # noqa: B020
             self.total_2031 += self.annual_objective_2031
