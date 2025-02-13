@@ -70,6 +70,7 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                         element={
                                             <RouteWrapper
                                                 title="Synthèse"
+                                                noTitleInPage
                                                 consoCorrectionStatus={data.consommation_correction_status}
                                             >
                                                 <Synthese endpoint={urls.synthese} />
