@@ -181,10 +181,10 @@ const Header = () => {
                 className="bi bi-list"
                 $isMobile={isMobile}
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
-                data-tooltip-id="tooltip-close-sidebar"
+                data-tooltip-id="tooltip-close-menu"
                 data-tooltip-content={isMenuOpen ? "Fermer le menu" : "Ouvrir le menu"}
             />
-            <Tooltip id="tooltip-close-sidebar" className="fr-text--xs" />
+            <Tooltip id="tooltip-close-menu" className="fr-text--xs" />
             <ButtonContainer $isMobile={isMobile} $isMenuOpen={isMenuOpen}>
                 <SearchBarContainer $isMobile={isMobile}>
                     <SearchBar createUrl={data?.search.createUrl} />
