@@ -11,7 +11,7 @@
     La loi climat et résilience fixe un objectif de réduction en deux étapes. 
   </p>
   <p>
-    La première étape consiste à <b>diviser par deux la consommation d'espaces entre 2021 et 2031</b> (par rapport à 2011-2020).
+    La première étape consiste à <b>diviser par deux la consommation d'espaces entre 2021 et 2031</b>, par rapport à la consommation entre 2011 et 2020.
     Par exemple, si la consommation d'espaces entre 2011 et 2021 est de 100 ha, la consommation totale sur la période 2021-2031 ne doit pas dépasser 50 ha.
   </p>
   <div class="fr-grid-row fr-grid-row--gutters">
@@ -185,7 +185,7 @@
       </div>
       <div class="fr-collapse" id="target-data-3">
         <h6 class="fr-mt-2w">Source</h6>
-        <p class="fr-text--sm">OCS GE (millésime min : {{ project.first_year_ocsge }}, millésime max : {{ project.last_year_ocsge }}).</p>
+        <p class="fr-text--sm">OCS GE (millésime min : {{ project.first_year_ocsge|stringformat:"i" }}, millésime max : {{ project.last_year_ocsge }}).</p>
         <h6 class="fr-mt-2w">Calcul</h6>
         <p class="fr-text--sm">L'artificialisation nette = artificialisation - désartificialisation sur la période.</p>
       </div>
@@ -213,6 +213,27 @@
   en limitant la construction de nouveaux logements. En effet, la réhabilitation des logements vacants permet
   de répondre à la demande de logements tout en limitant l'artificialisation des sols.
 </p>
+<div class="fr-grid-row fr-grid-row--gutters">
+  <div class="fr-col-12 fr-col-md-4 fr-grid-row">
+    <div class="fr-callout bg-white w-100">
+      <p class="fr-callout__title">+{{ objective_chart.total_2020|floatformat:1 }} ha</p>
+      <p>Total de la consommation d'espaces entre 2011-2020</p>
+    </div>
+  </div>
+  <div class="fr-col-12 fr-col-md-4 fr-grid-row">
+    <div class="fr-callout bg-white w-100">
+      <p class="fr-callout__title">+{{ objective_chart.conso_2031|floatformat:1 }} ha</p>
+      <p>Consommation <b>autorisée</b> de 2021 à 2030 avec un objectif de réduction de {{ diagnostic.target_2031 }}%</p>
+    </div>
+  </div>
+  <div class="fr-col-12 fr-col-md-4 fr-grid-row">
+    <div class="fr-callout bg-white w-100">
+      <p class="fr-callout__title">+{{ objective_chart.conso_since_2020|floatformat:1 }} ha</p>
+      <p>Consommation <b>totale</b> depuis 2021 {{ diagnostic.target_2031 }}%</p>
+    </div>
+  </div>
+  
+</div>
 <button class="fr-btn" onclick="window.location.href='{% url 'project:report_artif' project.pk %}'">
   Découvrir le levier d'action contre la vacance des logements
 </button>
