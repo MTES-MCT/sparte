@@ -18,6 +18,7 @@ with
         select
             -- surrogate key
             commune.code as commune_code,
+            commune.surface as commune_surface,
             -- les attributs spécifiques aux communes sont préfixés par commune_
             ocsge.loaded_date as ocsge_loaded_date,
             -- les attributs spécifiques aux objets OCS GE sont préfixés par ocsge_
