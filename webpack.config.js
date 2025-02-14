@@ -156,7 +156,6 @@ const production = {
 
 module.exports = (env, argv) => {
     const mode = argv.mode || 'development';
-    process.env.NODE_ENV = mode;
 
     return mode === 'development' ? development : production;
 };
