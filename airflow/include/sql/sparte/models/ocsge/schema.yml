@@ -79,7 +79,7 @@ models:
       - name: uuid
         data_tests:
           - not_null
-          - unique
+          # - unique -> the same object can be split by ST_Dump(ST_Intersection(geom, geom))
   - name: occupation_du_sol
     columns:
       - name: loaded_date
@@ -118,7 +118,7 @@ models:
       - name: uuid
         data_tests:
           - not_null
-          - unique
+          # - unique -> the same object can be split by ST_Dump(ST_Intersection(geom, geom))
       - name: geom
         data_tests:
           - not_null
@@ -163,7 +163,7 @@ models:
       - name: uuid
         data_tests:
           - not_null
-          - unique
+          # - unique -> the same object can be split by ST_Dump(ST_Intersection(geom, geom))
       - name: new_is_impermeable
         data_tests:
           - not_null

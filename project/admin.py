@@ -74,13 +74,6 @@ class ProjectAdmin(SimpleHistoryAdmin):
             messages.add_message(request, messages.INFO, msg)
             return HttpResponseRedirect(".")
 
-        elif "_generate-fill-gpu" in request.POST:
-            tasks.generate_theme_map_fill_gpu.delay(obj.id)
-            messages.add_message(
-                request, messages.INFO, "Génération de l'image de remplissage des zones d'urbanismes en cours"
-            )
-            return HttpResponseRedirect(".")
-
         elif "_generate-all" in request.POST:
             from project.models import trigger_async_tasks
 

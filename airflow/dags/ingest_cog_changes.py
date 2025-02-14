@@ -39,6 +39,7 @@ def ingest_cog_changes():
                 s3_bucket=bucket_name,
                 s3_key=filename,
                 table_name="insee_cog_changes_2024",
+                separator=",",
             )
         )
 
