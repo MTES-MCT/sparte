@@ -29,19 +29,6 @@ Custom tag icon
 }
 
 /*
-Fix link icon position
-*/
-.fr-breadcrumb__link::before,
-.fr-link::after {
-    position: relative;
-    top: 5px;
-}
-
-p .fr-link::after {
-    top: 0;
-}
-
-/*
 Fix nav extra margin
 */
 .fr-nav__list {

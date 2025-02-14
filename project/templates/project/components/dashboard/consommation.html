@@ -17,8 +17,7 @@
         <div class="fr-col-12">
             <div class="bg-white fr-p-2w h-100">
                 <div class="d-flex justify-content-end align-items-center fr-mb-2w">
-                    {% include "project/components/widgets/chart_buttons.html" with chart="annual_total_conso_chart" show_fullscreen=True %}
-                    <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#consoAnnuelle" data-toggle="tooltip" title="Astuces pour lire le graphique"></button>
+                    {% include "project/components/widgets/chart_buttons.html" with chart="annual_total_conso_chart" show_fullscreen=True tips_modal="#consoAnnuelle" %}
                 </div>
                 <div id="annual_total_conso_chart"></div>
             </div>
@@ -99,8 +98,7 @@
         <div class="fr-col-12 fr-col-lg-4">
             <div class="bg-white fr-p-2w">
                 <div class="d-flex justify-content-end align-items-center fr-mb-2w">
-                    {% include "project/components/widgets/chart_buttons.html" with chart="pie_determinant" show_fullscreen=True %}
-                    <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#determinantModal" data-toggle="tooltip" title="Astuces pour lire le graphique"></button>
+                    {% include "project/components/widgets/chart_buttons.html" with chart="pie_determinant" show_fullscreen=True tips_modal="#determinantModal" %}
                 </div>
                 <div id="pie_determinant"></div>
             </div>
@@ -108,8 +106,7 @@
         <div class="fr-col-12 fr-col-lg-8">
             <div class="bg-white fr-p-2w">
                 <div class="d-flex justify-content-end align-items-center fr-mb-2w">
-                    {% include "project/components/widgets/chart_buttons.html" with chart="chart_determinant" show_fullscreen=True %}
-                    <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#determinantModal" data-toggle="tooltip" title="Astuces pour lire le graphique"></button>
+                    {% include "project/components/widgets/chart_buttons.html" with chart="chart_determinant" show_fullscreen=True tips_modal="#determinantModal" %}
                 </div>
                 <div id="chart_determinant"></div>
             </div>
@@ -166,8 +163,7 @@
             </div>
             <div class="bg-white fr-p-2w">
                 <div class="d-flex justify-content-end align-items-center fr-mb-2w">
-                    {% include "project/components/widgets/chart_buttons.html" with chart="population_density_chart" show_fullscreen=false %}
-                    <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#densityModal" data-toggle="tooltip" title="Astuces pour lire le graphique"></button>
+                    {% include "project/components/widgets/chart_buttons.html" with chart="population_density_chart" show_fullscreen=false tips_modal="#densityModal" %}
                 </div>
                 <div id="population_density_chart"></div>
             </div>
@@ -208,8 +204,7 @@
 <div class="fr-mt-5w">
     <div class="bg-white fr-p-2w">
         <div class="d-flex justify-content-end align-items-center fr-mb-2w">
-            {% include "project/components/widgets/chart_buttons.html" with chart="population_conso_progression_chart" show_fullscreen=True %}
-            <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#populationConsoProgressionModal" data-toggle="tooltip" title="Astuces pour lire le graphique"></button>
+            {% include "project/components/widgets/chart_buttons.html" with chart="population_conso_progression_chart" show_fullscreen=True tips_modal="#populationConsoProgressionModal" %}
         </div>
         <div id="population_conso_progression_chart"></div>
     </div>
@@ -273,10 +268,8 @@
         {% endif %}
         <button 
             class="fr-btn fr-btn--sm fr-btn--icon-left fr-icon-add-circle-line fr-mt-1w"
-            data-toggle="tooltip"
             data-fr-opened="false" 
             aria-controls="fr-modal-3" 
-            title="Ajouter un territoire de comparaison" 
             hx-get="{% url 'project:lookalike' project.id %}"
             hx-target="#add_lookalike_form"
         >
@@ -288,8 +281,7 @@
         <div class="fr-col-12 fr-col-lg-8">
             <div class="bg-white fr-p-2w h-100">
                 <div class="d-flex justify-content-end align-items-center fr-mb-2w">
-                    {% include "project/components/widgets/chart_buttons.html" with chart="population_conso_comparison_chart" show_fullscreen=True %}
-                    <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#populationConsoComparisonModal" data-toggle="tooltip" title="Astuces pour lire le graphique"></button>
+                    {% include "project/components/widgets/chart_buttons.html" with chart="population_conso_comparison_chart" show_fullscreen=True tips_modal="#populationConsoComparisonModal" %}
                 </div>
                 <div id="population_conso_comparison_chart"></div>
             </div>
@@ -348,8 +340,7 @@
         <div class="fr-col-12 fr-col-lg-8">
             <div class="bg-white fr-p-2w h-100">
                 <div class="d-flex justify-content-end align-items-center fr-mb-2w">
-                    {% include "project/components/widgets/chart_buttons.html" with chart="surface_proportional_chart" show_fullscreen=True %}
-                    <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#consoRelativeSurface" data-toggle="tooltip" title="Astuces pour lire le graphique"></button>
+                    {% include "project/components/widgets/chart_buttons.html" with chart="surface_proportional_chart" show_fullscreen=True tips_modal="#consoRelativeSurface" %}
                 </div>
                 <div id="surface_proportional_chart"></div>
             </div>
@@ -407,8 +398,7 @@
 <div class="fr-mt-7w">
     <div class="bg-white fr-p-2w">
         <div class="d-flex justify-content-end align-items-center fr-mb-2w">
-            {% include "project/components/widgets/chart_buttons.html" with chart="comparison_chart" show_fullscreen=True %}
-            <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#comparaisonVoisin" data-toggle="tooltip" title="Astuces pour lire le graphique"></button>
+            {% include "project/components/widgets/chart_buttons.html" with chart="comparison_chart" show_fullscreen=True tips_modal="#comparaisonVoisin" %}
         </div>
         <div id="comparison_chart"></div>
     </div>
