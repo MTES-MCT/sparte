@@ -251,7 +251,11 @@ const Navbar: React.FC<{ projectData: any }> = ({ projectData }) => {
                     key={item.label}
                     role="treeitem"
                 >
-                    <SubMenuTitleLink to={item.url} $isActive={isActive(item.url)}>
+                    <SubMenuTitleLink
+                        to={item.url}
+                        $isActive={isActive(item.url)}
+                        onClick={() => isMobile && dispatch(toggleNavbar())}
+                    >
                         {item.icon && <Icon className={`bi ${item.icon}`} />}
                         <div className="d-flex flex-column items-center">
                             {item.label === "Vacance des logements" && (<p className="fr-badge fr-badge--sm fr-badge--new">Nouveau</p>)}
@@ -368,7 +372,11 @@ const Navbar: React.FC<{ projectData: any }> = ({ projectData }) => {
                         {data?.menuItems.map((menu) => (
                             <Menu key={menu.label}>
                                 {menu.url ? (
-                                    <MenuTitleLink to={menu.url} $isActive={isActive(menu.url)}>
+                                    <MenuTitleLink
+                                        to={menu.url}
+                                        $isActive={isActive(menu.url)}
+                                        onClick={() => isMobile && dispatch(toggleNavbar())}
+                                    >
                                         {menu.icon && <Icon className={`bi ${menu.icon}`} />}
                                         {menu.label}
                                     </MenuTitleLink>
