@@ -19,7 +19,11 @@
         <meta name="theme-color" content="#ffffff">
 
         <!-- Webpack Bundle CSS -->
-        {% sri_static "assets/styles/main.css" %}
+        {% if debug %}
+            <script src="http://localhost:3000/assets/styles/main.css"></script>
+        {% else %}
+            <script src="{% static 'assets/styles/main.css' %}"></script>
+        {% endif %}
         <!-- Dashboard CSS -->
         {% sri_static "project/styles/dashboard.css" %}
         <!-- subtemplate header injection -->
