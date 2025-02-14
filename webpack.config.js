@@ -53,7 +53,10 @@ const common = {
             {
                 test: /\.css$/i,
                 use: [
-                    MiniCssExtractPlugin.loader,
+                    // En dev : style-loader / En prod : MiniCssExtractPlugin.loader
+                    process.env.NODE_ENV === 'production'
+                        ? MiniCssExtractPlugin.loader
+                        : 'style-loader',
                     'css-loader'
                 ],
             },
@@ -86,10 +89,6 @@ const common = {
         ]
     },
     plugins: [
-        new MiniCssExtractPlugin({
-            filename: 'assets/styles/[name].css',
-            chunkFilename: '[id].css'
-        }),
         new ESLintPlugin({
             extensions: ['js'],
             emitWarning: true,
@@ -147,17 +146,17 @@ const production = {
         })],
     },
     plugins: [
-        ...common.plugins
+        ...common.plugins,
+        new MiniCssExtractPlugin({
+            filename: 'assets/styles/[name].css',
+            chunkFilename: '[id].css'
+        })
     ]
 };
 
 module.exports = (env, argv) => {
     const mode = argv.mode || 'development';
+    process.env.NODE_ENV = mode;
 
-    switch (mode) {
-        case 'development':
-            return development
-        default:
-            return production
-    }
-}
+    return mode === 'development' ? development : production;
+};
