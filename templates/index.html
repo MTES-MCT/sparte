@@ -21,7 +21,11 @@
         <meta name="theme-color" content="#ffffff">
 
         <!-- Webpack Bundle CSS -->
-        {% sri_static "assets/styles/main.css" %}
+        {% if debug %}
+            <script src="http://localhost:3000/assets/styles/main.css"></script>
+        {% else %}
+            <script src="{% static 'assets/styles/main.css' %}"></script>
+        {% endif %}
         <!-- subtemplate header injection -->
         {% block headers %}{% endblock %}
         <!-- Matomo -->
