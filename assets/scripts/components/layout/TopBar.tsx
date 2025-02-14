@@ -5,8 +5,11 @@ import { formatDateTime } from '@utils/formatUtils';
 import { useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import useHtmx from '@hooks/useHtmx';
+import useWindowSize from '@hooks/useWindowSize';
 import useUrls from '@hooks/useUrls';
+import { selectIsNavbarOpen } from "@store/navbarSlice";
 import Divider from '@components/ui/Divider';
+import ButtonToggleNavbar from "@components/ui/ButtonToggleNavbar";
 
 const primaryColor = '#313178';
 const activeColor = '#4318FF';
@@ -81,40 +84,47 @@ const TopBar: React.FC = () => {
     const location = useLocation();
     const pathsToHidePeriod = ['vacance-des-logements'];
     const shouldDisplayPeriod = !pathsToHidePeriod.some(path => location.pathname.endsWith(path));
-
+    const { isMobile } = useWindowSize(980);
+    const isOpen = useSelector(selectIsNavbarOpen);
+    
     return (
         <Container ref={htmxRef}>
-            <div>
-                <Title>{ memoizedProjectData?.territory_name }</Title>
-                <SubTitle>Diagnostic créé le { formattedDate }</SubTitle>
+            <div className="d-flex align-items-center">
+                { !isOpen && <ButtonToggleNavbar /> }
+                <div>
+                    <Title>{ memoizedProjectData?.territory_name }</Title>
+                    <SubTitle>Diagnostic créé le { formattedDate }</SubTitle>
+                </div>
             </div>
-            <ItemContainer>
-                { shouldDisplayPeriod && (
-                    <>
-                        <Item>
-                            <ItemTitle><i className="bi bi-calendar4-range"></i> Période d'analyse</ItemTitle>
-                            <ItemContent>
-                                De { memoizedProjectData?.analyse_start_date } à { memoizedProjectData?.analyse_end_date }
-                                {urls &&
-                                    <button 
-                                        data-fr-opened="false" 
-                                        aria-controls="fr-modal-1" 
-                                        title="Modifier la période d'analyse du diagnostic" 
-                                        data-hx-get={urls.setPeriod} 
-                                        data-hx-target="#update_period_form">
-                                        <span className="fr-icon-pencil-fill fr-icon--sm" aria-hidden="true"></span>
-                                    </button>
-                                }
-                            </ItemContent>
-                        </Item>
-                        <Divider color="#e3e4e9" size="30px" />
-                    </>
-                )}
-                <Item>
-                    <ItemTitle><i className="bi bi-bullseye"></i> Maille d'analyse</ItemTitle>
-                    <ItemContent>{ memoizedProjectData?.level_label }</ItemContent>
-                </Item>
-            </ItemContainer>
+            { !isMobile && (
+                <ItemContainer>
+                    { shouldDisplayPeriod && (
+                        <>
+                            <Item>
+                                <ItemTitle><i className="bi bi-calendar4-range"></i> Période d'analyse</ItemTitle>
+                                <ItemContent>
+                                    De { memoizedProjectData?.analyse_start_date } à { memoizedProjectData?.analyse_end_date }
+                                    {urls &&
+                                        <button 
+                                            data-fr-opened="false" 
+                                            aria-controls="fr-modal-1" 
+                                            title="Modifier la période d'analyse du diagnostic" 
+                                            data-hx-get={urls.setPeriod} 
+                                            data-hx-target="#update_period_form">
+                                            <span className="fr-icon-pencil-fill fr-icon--sm" aria-hidden="true"></span>
+                                        </button>
+                                    }
+                                </ItemContent>
+                            </Item>
+                            <Divider color="#e3e4e9" size="30px" />
+                        </>
+                    )}
+                    <Item>
+                        <ItemTitle><i className="bi bi-bullseye"></i> Maille d'analyse</ItemTitle>
+                        <ItemContent>{ memoizedProjectData?.level_label }</ItemContent>
+                    </Item>
+                </ItemContainer>
+            )}
         </Container>
     );
 };

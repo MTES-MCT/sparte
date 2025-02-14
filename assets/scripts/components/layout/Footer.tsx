@@ -20,6 +20,10 @@ const NavLinks = styled.nav`
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    @media (max-width: 1080px) {
+        flex-direction: column;
+        align-items: flex-start;
+    }
 `;
 
 const NavLink = styled.a`
