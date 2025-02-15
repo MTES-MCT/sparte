@@ -4,60 +4,12 @@
 <div class="fr-grid-row fr-grid-row--gutters">
     <div class="fr-col-12 fr-col-lg-4">
         <div class="border fr-p-2w">
-            <div class="d-flex justify-content-end align-items-center fr-mb-2w">
-                <div class="dropdown custom-dropdown fr-mr-2w" data-toggle="tooltip" title="Exporter le graphique">
-                    <button class="fr-btn fr-icon-download-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="dropdown" aria-expanded="false"></button>
-
-                    <ul class="dropdown-menu">
-                        <li>
-                            <a class="fr-nav__link export-chart" href="#" data-chart-target="couv_artif_sol" data-type="image/png">PNG</a>
-                        </li>
-                        <li>
-                            <a class="fr-nav__link export-chart" href="#" data-chart-target="couv_artif_sol" data-type="image/jpeg">JPEG</a>
-                        </li>
-                        <li>
-                            <a class="fr-nav__link export-chart" href="#" data-chart-target="couv_artif_sol" data-type="application/pdf">PDF</a>
-                        </li>
-                        <li>
-                            <a class="fr-nav__link export-chart" href="#" data-chart-target="couv_artif_sol" data-type="image/svg+xml">Vectoriel</a>
-                        </li>
-                    </ul>
-                </div>
-
-                <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm fr-mr-2w fullscreen-chart" data-chart-target="couv_artif_sol" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
-
-                <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#couvArtifSol" data-toggle="tooltip" title="Astuces pour lire le graphique"></button>
-            </div>
             <div id="couv_artif_sol"></div>
             {% display_chart 'couv_artif_sol' couv_artif_sol CSP_NONCE %}
         </div>
     </div>
     <div class="fr-col-12 fr-col-lg-8">
         <div class="border fr-p-2w">
-            <div class="d-flex justify-content-end align-items-center fr-mb-2w">
-                <div class="dropdown custom-dropdown fr-mr-2w" data-toggle="tooltip" title="Exporter le graphique">
-                    <button class="fr-btn fr-icon-download-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="dropdown" aria-expanded="false"></button>
-
-                    <ul class="dropdown-menu">
-                        <li>
-                            <a class="fr-nav__link export-chart" href="#" data-chart-target="detail_couv_artif_chart" data-type="image/png">PNG</a>
-                        </li>
-                        <li>
-                            <a class="fr-nav__link export-chart" href="#" data-chart-target="detail_couv_artif_chart" data-type="image/jpeg">JPEG</a>
-                        </li>
-                        <li>
-                            <a class="fr-nav__link export-chart" href="#" data-chart-target="detail_couv_artif_chart" data-type="application/pdf">PDF</a>
-                        </li>
-                        <li>
-                            <a class="fr-nav__link export-chart" href="#" data-chart-target="detail_couv_artif_chart" data-type="image/svg+xml">Vectoriel</a>
-                        </li>
-                    </ul>
-                </div>
-
-                <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm fr-mr-2w fullscreen-chart" data-chart-target="detail_couv_artif_chart" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
-
-                <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#couvArtifSol" data-toggle="tooltip" title="Astuces pour lire le graphique"></button>
-            </div>
             <div id="detail_couv_artif_chart"></div>
             {% display_chart 'detail_couv_artif_chart' detail_couv_artif_chart CSP_NONCE %}
         </div>
@@ -133,25 +85,6 @@
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Modal -->
-<div class="modal fade" id="couvArtifSol" tabindex="-1" aria-labelledby="couvArtifSolLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
-        <div class="fr-modal__body">
-            <div class="fr-modal__header">
-                <button class="fr-link--close fr-link" data-bs-dismiss="modal" aria-label="Close">Fermer</button>
-            </div>
-            <div class="fr-modal__content">
-                <h1 id="fr-modal-2-title" class="fr-modal__title" id="couvArtifSolLabel">
-                    <span class="fr-fi-arrow-right-line fr-fi--lg"></span>
-                    Astuces - Graphique couverture des sols
-                </h1>
-                {% include "project/components/widgets/chart_tips_buttons.html" %}
-                <p class="fr-text--sm">Exemple de lecture: 8% des nouvelles surfaces artificialisées le sont pour des Zones bâties.</p>
             </div>
         </div>
     </div>

@@ -4,7 +4,7 @@
 
 <div class="fr-notice fr-notice--warning fr-mb-3w">
     <div class="fr-container--fluid fr-p-3w">
-        <div class="fr-notice__body">
+        <div class="fr-notice__body flex-column">
             <p>
                 <span class="fr-notice__title">
                     L’artificialisation présentée ne prend pas encore en compte
@@ -58,13 +58,9 @@
                 <div class="fr-callout bg-white w-100">
                 <p class="fr-callout__title">{{ artif_area|floatformat:0 }} ha</p>
                 <p>
-                    <span
-                        class="dotted"
-                        data-toggle="tooltip"
-                        title="Surfaces répondant à la définition de la loi Climat et Résilience et à ses décrets d'application en {{ last_millesime }}"
-                        aria-hidden="true">
-                        Surfaces artificialisées
-                    </span> en {{ last_millesime }}
+                    <i class="bi bi-info-circle" aria-describedby="tooltip-artif-last-millesime"></i>
+                    <span class="fr-tooltip fr-placement" id="tooltip-artif-last-millesime" role="tooltip" aria-hidden="true">Surfaces répondant à la définition de la loi Climat et Résilience et à ses décrets d'application en {{ last_millesime }}</span>
+                    Surfaces artificialisées en {{ last_millesime }}
                 </p>
                 </div>
             </div>
@@ -80,64 +76,47 @@
 
 <div class="fr-mt-12w">
     <h2>Evolution en volume de {{ first_millesime }} à {{ last_millesime }}</h2>
-    <div class="fr-grid-row fr-grid-row--gutters">
-      <div class="fr-col-12 fr-col-md-6 fr-col-lg-3 fr-grid-row">
-        <div class="fr-callout bg-white w-100">
-          <p class="fr-callout__title">{{ new_artif|floatformat:1 }} ha</p>
-          <p>
-            <span
-                class="dotted"
-                data-toggle="tooltip"
-                title="Evolution des surfaces non-artificialisées en surface artificialisées."
-                aria-hidden="true">
+        <div class="fr-grid-row fr-grid-row--gutters">
+        <div class="fr-col-12 fr-col-md-6 fr-col-lg-3 fr-grid-row">
+            <div class="fr-callout bg-white w-100">
+                <p class="fr-callout__title">{{ new_artif|floatformat:1 }} ha</p>
+                <p>
+                    <i class="bi bi-info-circle" aria-describedby="tooltip-artif"></i>
+                    <span class="fr-tooltip fr-placement" id="tooltip-artif" role="tooltip" aria-hidden="true">Evolution des surfaces non-artificialisées en surface artificialisées.</span>
                     Artificialisation
-            </span>
-            </p>
+                </p>
+            </div>
         </div>
-      </div>
-      <div class="fr-col-12 fr-col-md-6 fr-col-lg-3 fr-grid-row">
-        <div class="fr-callout bg-white w-100">
-          <p class="fr-callout__title">{{ new_natural|floatformat:1 }} ha</p>
-          <p>
-            <span
-                class="dotted"
-                data-toggle="tooltip"
-                title="Evolution des surfaces artificialisées en surface non-artificialisées"
-                aria-hidden="true">
+        <div class="fr-col-12 fr-col-md-6 fr-col-lg-3 fr-grid-row">
+            <div class="fr-callout bg-white w-100">
+                <p class="fr-callout__title">{{ new_natural|floatformat:1 }} ha</p>
+                <p>
+                    <i class="bi bi-info-circle" aria-describedby="tooltip-desartif"></i>
+                    <span class="fr-tooltip fr-placement" id="tooltip-desartif" role="tooltip" aria-hidden="true">Evolution des surfaces artificialisées en surface non-artificialisées</span>
                     Désartificialisation
-            </span>
-            </p>
+                </p>
+            </div>
         </div>
-      </div>
-      <div class="fr-col-12 fr-col-md-6 fr-col-lg-3 fr-grid-row">
-        <div class="fr-callout bg-white w-100">
-          <p class="fr-callout__title">{{ net_artif|floatformat:1 }} ha</p>
-          <p>
-            <span
-                class="dotted"
-                data-toggle="tooltip"
-                title="Différence entre l'artificialisation et la désartificialisation"
-                aria-hidden="true">
+        <div class="fr-col-12 fr-col-md-6 fr-col-lg-3 fr-grid-row">
+            <div class="fr-callout bg-white w-100">
+                <p class="fr-callout__title">{{ net_artif|floatformat:1 }} ha</p>
+                <p>
+                    <i class="bi bi-info-circle" aria-describedby="tooltip-artif-nette"></i>
+                    <span class="fr-tooltip fr-placement" id="tooltip-artif-nette" role="tooltip" aria-hidden="true">Différence entre l'artificialisation et la désartificialisation</span>
                     Artificialisation nette
-            </span>
-            </p>
-
+                </p>
+            </div>
         </div>
-      </div>
-      <div class="fr-col-12 fr-col-md-6 fr-col-lg-3 fr-grid-row">
-        <div class="fr-callout bg-white w-100">
-          <p class="fr-callout__title">{{ net_artif_rate|floatformat:1 }} %</p>
-            <p>
-                <span
-                    class="dotted"
-                    data-toggle="tooltip"
-                    title="Rapport entre l'artificialisation nette de {{ first_millesime }} à {{ last_millesime }} et le total des surfaces artificialisées du territoire."
-                    aria-hidden="true">
-                        Taux d'artificialisation nette
-                </span>
-            </p>
+        <div class="fr-col-12 fr-col-md-6 fr-col-lg-3 fr-grid-row">
+            <div class="fr-callout bg-white w-100">
+            <p class="fr-callout__title">{{ net_artif_rate|floatformat:1 }} %</p>
+                <p>
+                    <i class="bi bi-info-circle" aria-describedby="tooltip-artif-nette-rate"></i>
+                    <span class="fr-tooltip fr-placement" id="tooltip-artif-nette-rate" role="tooltip" aria-hidden="true">Rapport entre l'artificialisation nette de {{ first_millesime }} à {{ last_millesime }} et le total des surfaces artificialisées du territoire.</span>
+                    Taux d'artificialisation nette
+                </p>
+            </div>
         </div>
-      </div>
     </div>
 </div>
 
@@ -348,8 +327,7 @@
         <div class="fr-col-12 fr-col-lg-4">
             <div class="bg-white fr-p-2w">
                 <div class="d-flex justify-content-end align-items-center fr-mb-2w">
-                    {% include "project/components/widgets/chart_buttons.html" with chart="couv_artif_sol" show_fullscreen=True %}
-                    <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#couvArtifSol" data-toggle="tooltip" title="Astuces pour lire le graphique"></button>
+                    {% include "project/components/widgets/chart_buttons.html" with chart="couv_artif_sol" show_fullscreen=True tips_modal="#couvArtifSol" %}
                 </div>
                 <div id="couv_artif_sol"></div>
             </div>
@@ -357,8 +335,7 @@
         <div class="fr-col-12 fr-col-lg-8">
             <div class="bg-white fr-p-2w">
                 <div class="d-flex justify-content-end align-items-center fr-mb-2w">
-                    {% include "project/components/widgets/chart_buttons.html" with chart="detail_couv_artif_chart" show_fullscreen=True %}
-                    <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#couvArtifSol" data-toggle="tooltip" title="Astuces pour lire le graphique"></button>
+                    {% include "project/components/widgets/chart_buttons.html" with chart="detail_couv_artif_chart" show_fullscreen=True tips_modal="#couvArtifSol" %}
                 </div>
                 <div id="detail_couv_artif_chart"></div>
             </div>
@@ -444,8 +421,7 @@
         <div class="fr-col-12 fr-col-lg-4">
             <div class="bg-white fr-p-2w">
                 <div class="d-flex justify-content-end align-items-center fr-mb-2w">
-                    {% include "project/components/widgets/chart_buttons.html" with chart="usage_artif_sol" show_fullscreen=True %}
-                    <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#usageArtifSol" data-toggle="tooltip" title="Astuces pour lire le graphique"></button>
+                    {% include "project/components/widgets/chart_buttons.html" with chart="usage_artif_sol" show_fullscreen=True tips_modal="#usageArtifSol" %}
                 </div>
                 <div id="usage_artif_sol"></div>
             </div>
@@ -453,8 +429,7 @@
         <div class="fr-col-12 fr-col-lg-8">
             <div class="bg-white fr-p-2w">
                 <div class="d-flex justify-content-end align-items-center fr-mb-2w">
-                    {% include "project/components/widgets/chart_buttons.html" with chart="detail_usage_artif_chart" show_fullscreen=True %}
-                    <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="#usageArtifSol" data-toggle="tooltip" title="Astuces pour lire le graphique"></button>
+                    {% include "project/components/widgets/chart_buttons.html" with chart="detail_usage_artif_chart" show_fullscreen=True tips_modal="#usageArtifSol" %}
                 </div>
                 <div id="detail_usage_artif_chart"></div>
             </div>
@@ -541,7 +516,7 @@
             <div class="fr-modal__content">
                 <h1 class="fr-modal__title" id="couvArtifSolLabel">
                     <span class="fr-fi-arrow-right-line fr-fi--lg"></span>
-                    Astuces - Graphique couverture des sols
+                    Astuces - Graphique familles de couverture des sols des surfaces artificialisées
                 </h1>
                 {% include "project/components/widgets/chart_tips_buttons.html" %}
                 <p class="fr-text--sm">Exemple de lecture: 8% des nouvelles surfaces artificialisées le sont pour des Zones bâties.</p>

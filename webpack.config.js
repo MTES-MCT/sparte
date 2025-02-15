@@ -86,14 +86,14 @@ const common = {
         ]
     },
     plugins: [
-        new MiniCssExtractPlugin({
-            filename: 'assets/styles/[name].css',
-            chunkFilename: '[id].css'
-        }),
         new ESLintPlugin({
             extensions: ['js'],
             emitWarning: true,
             fix: true
+        }),
+        new MiniCssExtractPlugin({
+            filename: 'assets/styles/[name].css',
+            chunkFilename: '[id].css'
         })
     ]
 };
@@ -147,17 +147,12 @@ const production = {
         })],
     },
     plugins: [
-        ...common.plugins
+        ...common.plugins,
     ]
 };
 
 module.exports = (env, argv) => {
     const mode = argv.mode || 'development';
 
-    switch (mode) {
-        case 'development':
-            return development
-        default:
-            return production
-    }
-}
+    return mode === 'development' ? development : production;
+};
