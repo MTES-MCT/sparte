@@ -20,9 +20,9 @@
 
         <!-- Webpack Bundle CSS -->
         {% if debug %}
-            <script src="http://localhost:3000/assets/styles/main.css"></script>
+            <link rel="stylesheet" href="http://localhost:3000/assets/styles/main.css">
         {% else %}
-            <script src="{% static 'assets/styles/main.css' %}"></script>
+            <link rel="stylesheet" href="{% static 'assets/styles/main.css' %}">
         {% endif %}
         <!-- Dashboard CSS -->
         {% sri_static "project/styles/dashboard.css" %}

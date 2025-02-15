@@ -505,6 +505,7 @@ CSP_SCRIPT_SRC = [
     "stats.beta.gouv.fr",
     "code.highcharts.com",
     "www.googletagmanager.com",
+    "http://localhost:3000",
     # Crisp
     "https://client.crisp.chat",
     "https://settings.crisp.chat",
@@ -513,6 +514,7 @@ CSP_STYLE_SRC = [
     "'self'",
     "cdn.jsdelivr.net",
     "'unsafe-inline'",
+    "http://localhost:3000",
     # Crisp
     "https://client.crisp.chat",
 ]
@@ -526,6 +528,7 @@ CSP_IMG_SRC = [
     "google.com",
     "google.fr",
     "googleads.g.doubleclick.net",
+    "http://localhost:3000",
     # Crisp
     "https://client.crisp.chat",
     "https://image.crisp.chat",
@@ -549,6 +552,7 @@ CSP_FONT_SRC = (
     "'self'",
     "data:",
     "cdn.jsdelivr.net",
+    "http://localhost:3000",
     # Crisp
     "https://client.crisp.chat",
 )
@@ -572,6 +576,7 @@ CSP_CONNECT_SRC = [
     "https://gist.githubusercontent.com",
     "https://highcharts-export.osc-fr1.scalingo.io/",
     "ws://localhost:3000/ws",
+    "http://localhost:3000",
     "https://airflow-staging.s3.fr-par.scw.cloud",
 ]
 CSP_FRAME_ANCESTORS = ("'self'", "https://sparte-metabase.osc-secnum-fr1.scalingo.io")

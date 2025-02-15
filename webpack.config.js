@@ -53,10 +53,7 @@ const common = {
             {
                 test: /\.css$/i,
                 use: [
-                    // En dev : style-loader / En prod : MiniCssExtractPlugin.loader
-                    process.env.NODE_ENV === 'production'
-                        ? MiniCssExtractPlugin.loader
-                        : 'style-loader',
+                    MiniCssExtractPlugin.loader,
                     'css-loader'
                 ],
             },
@@ -93,6 +90,10 @@ const common = {
             extensions: ['js'],
             emitWarning: true,
             fix: true
+        }),
+        new MiniCssExtractPlugin({
+            filename: 'assets/styles/[name].css',
+            chunkFilename: '[id].css'
         })
     ]
 };
@@ -147,10 +148,6 @@ const production = {
     },
     plugins: [
         ...common.plugins,
-        new MiniCssExtractPlugin({
-            filename: 'assets/styles/[name].css',
-            chunkFilename: '[id].css'
-        })
     ]
 };
 
