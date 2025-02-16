@@ -43,6 +43,8 @@ def diff_ocsge_download_page_to_mattermost():
 
         feed_as_string = ""
 
+        dict_entries = []
+
         for page in range(1, page_count + 1):
             logger.info(f"Downloading page {page}")
             feed = get_feed_by_page(page)
@@ -53,10 +55,22 @@ def diff_ocsge_download_page_to_mattermost():
                 link = entry.find("link")["href"]
                 departement = entry.find("gpf_dl:zone")["label"]
                 _format = entry.find("gpf_dl:format")["label"]
-                feed_as_string += departement + "\n"
-                feed_as_string += link + "\n"
-                feed_as_string += _format + "\n"
-                feed_as_string += updated + "\n\n"
+                dict_entries.append(
+                    {
+                        "departement": departement,
+                        "link": link,
+                        "format": _format,
+                        "updated": updated,
+                    }
+                )
+
+        dict_entries.sort(key=lambda x: x.get("departement"))
+
+        for entry in dict_entries:
+            feed_as_string += entry.get("departement") + "\n"
+            feed_as_string += entry.get("link") + "\n"
+            feed_as_string += entry.get("format") + "\n"
+            feed_as_string += entry.get("updated") + "\n\n"
 
         return feed_as_string
 
