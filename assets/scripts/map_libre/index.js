@@ -1,4 +1,5 @@
 import maplibregl from 'maplibre-gl'
+import { Protocol } from 'pmtiles'
 import { debounce } from './utils.js'
 
 import Tabs from './tabs.js'
@@ -45,6 +46,8 @@ export default class MapLibre
 
   setMap()
   {
+    const protocol = new Protocol()
+    maplibregl.addProtocol('pmtiles', protocol.tile)
     this.map = new maplibregl.Map({
       container: this.targetElement, // container
       style: {

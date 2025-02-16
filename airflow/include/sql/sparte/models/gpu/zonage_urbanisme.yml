@@ -1,0 +1,33 @@
+
+version: 2
+
+# type zone accepted values
+type_zone_accepted_values: &type_zone_accepted_values
+  values: [
+    "AU",
+    "A",
+    "N",
+    "U",
+  ]
+
+models:
+  - name: zonage_urbanisme
+    columns:
+    - name: gpu_timestamp
+      data_tests:
+      - not_null
+    - name: geom
+      data_tests:
+      - unique
+      - is_valid_geom
+      - is_not_empty_geom
+    - name: type_zone
+      data_tests:
+      - not_null
+      - accepted_values: *type_zone_accepted_values
+    - name: departement
+      data_tests:
+      - not_null
+      - relationships:
+          to: ref('departement')
+          field: code

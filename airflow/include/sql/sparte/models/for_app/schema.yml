@@ -10,7 +10,6 @@ valid_srids: &valid_srids
   ]
 
 models:
-  - name: for_app_artifareazoneurba
   - name: for_app_artificialarea
     columns:
       - name: srid_source

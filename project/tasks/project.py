@@ -20,7 +20,6 @@ from matplotlib_scalebar.scalebar import ScaleBar
 from project.models import Emprise, Project, Request, RequestedDocumentChoices
 from public_data.domain.containers import PublicDataContainer
 from public_data.models import AdminRef, ArtificialArea, Land, OcsgeDiff
-from public_data.models.gpu import ArtifAreaZoneUrba, ZoneUrba
 from utils.db import fix_poly
 from utils.emails import SibTemplateEmail
 from utils.functions import get_url_with_domain
@@ -693,80 +692,6 @@ def generate_theme_map_understand_artif(self, project_id) -> None:
 
     finally:
         logger.info("End generate_theme_map_understand_artif, project_id=%d", project_id)
-
-
-@shared_task(bind=True, max_retries=5)
-def generate_theme_map_fill_gpu(self, project_id) -> None:
-    logger.info("Start generate_theme_map_fill_gpu, project_id=%d", project_id)
-    try:
-        diagnostic = Project.objects.get(pk=project_id)
-        zone_urba = ZoneUrba.objects.intersect(diagnostic.combined_emprise)
-        qs = ArtifAreaZoneUrba.objects.filter(
-            zone_urba__in=zone_urba,
-            year__in=[diagnostic.first_year_ocsge, diagnostic.last_year_ocsge],
-            zone_urba__typezone__in=["U", "AUc", "AUs"],
-            zone_urba__area__gt=0,
-        ).annotate(
-            level=100 * F("area") / F("zone_urba__area"),
-            mpoly=F("zone_urba__mpoly"),
-        )
-
-        data = [
-            {
-                "mpoly": item.mpoly,
-                "level": item.level,
-            }
-            for item in qs
-        ]
-
-        title = (
-            f"Taux d'artificialisation des zones urbaines (U) et à urbaniser (AU) du territoire "
-            f"«{diagnostic.land.name}» en {diagnostic.last_year_ocsge} (en % - pour cent)"
-        )
-
-        if qs.count() > 0:
-            img_data = get_img(
-                queryset=data,
-                color="OrRd",
-                title=title,
-            )
-        else:
-            geom = diagnostic.combined_emprise.transform("3857", clone=True)
-            srid, wkt = geom.ewkt.split(";")
-            polygons = shapely.wkt.loads(wkt)
-            gdf_emprise = geopandas.GeoDataFrame({"geometry": [polygons]}, crs="EPSG:3857")
-            fig, ax = plt.subplots(figsize=(15, 10))
-            plt.axis("off")
-            fig.set_dpi(150)
-            gdf_emprise.plot(ax=ax, facecolor="none", edgecolor="black")
-            ax.add_artist(ScaleBar(1))
-            ax.set_title("Il n'y a pas de zone U ou AU")
-            cx.add_basemap(ax, source=settings.OPENSTREETMAP_URL)
-            cx.add_attribution(ax, text=settings.OPENSTREETMAP_ATTRIBUTION)
-
-            img_data = io.BytesIO()
-            plt.savefig(img_data, bbox_inches="tight", format="jpg")
-            plt.close()
-            img_data.seek(0)
-
-        race_protection_save_map(
-            diagnostic.pk,
-            "async_theme_map_fill_gpu_done",
-            "theme_map_fill_gpu",
-            f"theme_map_fill_gpu_{project_id}.jpg",
-            img_data,
-        )
-
-    except Project.DoesNotExist:
-        logger.error(f"project_id={project_id} does not exist")
-
-    except Exception as exc:
-        logger.error(exc)
-        logger.exception(exc)
-        self.retry(exc=exc, countdown=300)
-
-    finally:
-        logger.info("End generate_theme_map_fill_gpu, project_id=%d", project_id)
 
 
 @shared_task(bind=True, max_retries=5)

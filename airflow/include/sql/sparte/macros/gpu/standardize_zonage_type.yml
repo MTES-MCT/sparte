@@ -1,0 +1,12 @@
+version: 2
+
+macros:
+  - name: standardize_zonage_type
+    description: >
+      Cette macro permet de convertir les types de zonage en un format standardisé (N, A, AU, U), et ainsi
+      de remplacer les zonages alternatifs (Ah, Nh, etc.) par les zonages principaux (A, N, etc.), inscrit au
+      code de l'urbanisme.
+    arguments:
+      - name: zonage_type_field
+        type: string
+        description: le champ contenant le type de zonage à standardiser
