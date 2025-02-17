@@ -17,3 +17,10 @@ select
     new_not_impermeable as is_new_not_impermeable,
     st_transform(geom, 4326) as mpoly
 from {{ ref("difference") }}
+where
+    st_isvalid(mpoly)
+
+    /*
+Le st_transform génére parfois des géométries invalides
+d'où la nécessité de filtrer les géométries invalides
+*/
