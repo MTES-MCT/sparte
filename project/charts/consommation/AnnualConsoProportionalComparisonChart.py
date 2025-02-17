@@ -48,7 +48,7 @@ class AnnualConsoProportionalComparisonChart(ProjectChart):
                 "verticalAlign": "bottom",
             },
             "chart": {
-                "height": "600",
+                "height": "500",
             },
             "series": self._get_series(),
         }

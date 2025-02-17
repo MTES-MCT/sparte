@@ -97,7 +97,6 @@ def copy_table_from_dw_to_app(
                 "copy_public_data_communesol",
                 "copy_public_data_ocsgediff",
                 "copy_public_data_communediff",
-                "copy_public_data_zoneconstruite",
                 "copy_public_data_zoneurba",
                 "copy_public_data_epci",
                 "copy_public_data_scot",
@@ -105,7 +104,6 @@ def copy_table_from_dw_to_app(
                 "copy_public_data_epci_departements",
                 "copy_public_data_scot_departements",
                 "copy_public_data_scot_regions",
-                "copy_public_data_cerema",
                 "copy_public_data_landconso",
                 "copy_public_data_landconsocomparison",
                 "copy_public_data_landconsostats",
@@ -237,21 +235,6 @@ def update_app():  # noqa: C901
         )
 
     @task.python
-    def copy_public_data_zoneconstruite(**context):
-        return copy_table_from_dw_to_app(
-            from_table="public_for_app.for_app_zoneconstruite",
-            to_table="public.public_data_zoneconstruite",
-            use_subset=context["params"]["use_subset"],
-            subset_where=f"mpoly && ({context['params']['subset_geom']})",
-            environment=context["params"]["environment"],
-            btree_index_columns=[
-                ["millesime"],
-                ["year"],
-                ["departement"],
-            ],
-        )
-
-    @task.python
     def copy_public_data_zoneurba(**context):
         return copy_table_from_dw_to_app(
             from_table="public_for_app.for_app_zoneurba",
@@ -332,21 +315,6 @@ def update_app():  # noqa: C901
             btree_index_columns=[
                 ["scot_id"],
                 ["region_id"],
-            ],
-        )
-
-    @task.python
-    def copy_public_data_cerema(**context):
-        return copy_table_from_dw_to_app(
-            from_table="public_for_app.for_app_cerema",
-            to_table="public.public_data_cerema",
-            environment=context["params"]["environment"],
-            btree_index_columns=[
-                ["city_insee"],
-                ["dept_id"],
-                ["region_id"],
-                ["epci_id"],
-                ["scot"],
             ],
         )
 
@@ -484,7 +452,6 @@ def update_app():  # noqa: C901
         copy_public_data_communesol(),
         copy_public_data_ocsgediff(),
         copy_public_data_communediff(),
-        copy_public_data_zoneconstruite(),
         copy_public_data_zoneurba(),
         copy_public_data_epci(),
         copy_public_data_scot(),
@@ -492,7 +459,6 @@ def update_app():  # noqa: C901
         copy_public_data_epci_departements(),
         copy_public_data_scot_departements(),
         copy_public_data_scot_regions(),
-        copy_public_data_cerema(),
         copy_public_data_landconso(),
         copy_public_data_landconsocomparison(),
         copy_public_data_landconsostats(),

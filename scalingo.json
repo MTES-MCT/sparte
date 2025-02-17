@@ -22,7 +22,10 @@
     },
     "addons": [
         {
-            "plan": "postgresql:postgresql-starter-1024"
+            "plan": "postgresql:postgresql-starter-2048",
+            "options": {
+                "version": "16"
+            }
         },
         {
             "plan": "redis:redis-sandbox"
