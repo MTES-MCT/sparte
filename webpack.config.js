@@ -5,6 +5,7 @@ const TerserPlugin = require('terser-webpack-plugin');
 const ESLintPlugin = require('eslint-webpack-plugin');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
+const { WebpackManifestPlugin } = require('webpack-manifest-plugin');
 
 const common = {
     entry: './assets/scripts/index.js',
@@ -90,10 +91,6 @@ const common = {
             extensions: ['js'],
             emitWarning: true,
             fix: true
-        }),
-        new MiniCssExtractPlugin({
-            filename: 'assets/styles/[name].css',
-            chunkFilename: '[id].css'
         })
     ]
 };
@@ -124,6 +121,10 @@ const development = {
             openAnalyzer: false
         }),
         new ReactRefreshWebpackPlugin(),
+        new MiniCssExtractPlugin({
+            filename: 'assets/styles/[name].css',
+            chunkFilename: '[id].css'
+        })
     ]
 };
 
@@ -132,7 +133,8 @@ const production = {
     mode: 'production',
     output: {
         path: path.resolve(__dirname, 'static'),
-        filename: 'assets/scripts/bundle.prod.js',
+        filename: 'assets/scripts/bundle.[contenthash].js',
+        clean: true,
     },
     devtool: false,
     optimization: {
@@ -148,8 +150,17 @@ const production = {
     },
     plugins: [
         ...common.plugins,
+        new MiniCssExtractPlugin({
+            filename: 'assets/styles/[name].[contenthash].css',
+            chunkFilename: '[id].[contenthash].css'
+        }),
+        new WebpackManifestPlugin({
+            fileName: 'webpack-stats.json',
+            publicPath: "/static/",
+        })
     ]
 };
+
 
 module.exports = (env, argv) => {
     const mode = argv.mode || 'development';

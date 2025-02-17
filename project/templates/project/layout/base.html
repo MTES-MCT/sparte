@@ -1,6 +1,7 @@
 {% load static %}
 {% load utils_tags %}
 {% load sri %}
+{% load render_bundle from webpack_loader %}
 
 <!DOCTYPE html>
 <html lang="fr">
@@ -22,7 +23,7 @@
         {% if debug %}
             <link rel="stylesheet" href="http://localhost:3000/assets/styles/main.css">
         {% else %}
-            <link rel="stylesheet" href="{% static 'assets/styles/main.css' %}">
+            <link rel="stylesheet" href="{% render_bundle 'main' 'css' %}">
         {% endif %}
         <!-- Dashboard CSS -->
         {% sri_static "project/styles/dashboard.css" %}
@@ -250,7 +251,7 @@
         {% if debug %}
             <script src="http://localhost:3000/assets/scripts/bundle.dev.js"></script>
         {% else %}
-            <script src="{% static 'assets/scripts/bundle.prod.js' %}"></script>
+            <script src="{% render_bundle 'bundle' 'js' %}"></script>
         {% endif %}
 
 

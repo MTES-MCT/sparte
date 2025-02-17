@@ -83,6 +83,7 @@ THIRD_APPS = [
     "simple_history",
     "corsheaders",
     "fancy_cache",
+    "webpack_loader",
 ]
 
 # upper app should not communicate with lower ones
@@ -325,8 +326,15 @@ CRISPY_CLASS_CONVERTERS = {
     "label": "fr-label",
 }
 
-# Celery configuration
+# Webpack loader configuration
+WEBPACK_LOADER = {
+    "DEFAULT": {
+        "BUNDLE_DIR_NAME": "assets/",
+        "STATS_FILE": str(BASE_DIR / "webpack-stats.json"),
+    }
+}
 
+# Celery configuration
 CELERY_BROKER_URL = env.str("CELERY_BROKER_URL")
 CELERY_RESULT_BACKEND = env.str("CELERY_RESULT_BACKEND")
 CELERY_ACKS_LATE = True
