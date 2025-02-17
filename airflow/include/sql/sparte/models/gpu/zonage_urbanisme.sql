@@ -42,8 +42,18 @@ from
             nomfic as nom_fichier,
             nullif(urlfic, '') as url_fichier,
             nullif(insee, '') as commune_code,
-            to_date(nullif(datappro, ''), 'YYYYMMDD') as date_approbation,
-            to_date(nullif(datvalid, ''), 'YYYYMMDD') as date_validation,
+      /*
+
+        Etant donné que 3 formats coexistent dans les données source,
+        les dates ne sont pas castées au format date
+        Les 3 formats sont :
+        - YYYYMMDD
+        - DDMMYYYY
+        - YYYYDDMM
+
+        */
+        datappro as date_approbation,
+        datvalid as date_validation,
             nullif(idurba, '') as id_document_urbanisme,
             checksum,
             {{
@@ -60,9 +70,7 @@ from
                 st_transform(commune.geom, 4326), st_pointonsurface(zonage.geom)
             )
         where
-            {{ raw_date_starts_with_yyyy("datappro") }}
-            and {{ raw_date_starts_with_yyyy("datvalid") }}
-            and not st_isempty(zonage.geom)
+            not st_isempty(zonage.geom)
         order by checksum, gpu_timestamp desc
     ) as foo
 where not st_isempty(foo.geom)
