@@ -15,6 +15,7 @@ from include.infra.file_handling import (
     TmpPathGenerator,
 )
 from include.infra.notification import MattermostNotificationService
+from include.infra.ocsge import JSONOcsgeSourceService
 from s3fs import S3FileSystem
 
 
@@ -88,4 +89,8 @@ class Container(containers.DeclarativeContainer):
         provides=MattermostNotificationService,
         mattermost_webhook_url=getenv("MATTERMOST_WEBHOOK_URL"),
         channel=getenv("MATTERMOST_CHANNEL"),
+    )
+
+    ocsge_source_service = providers.Factory(
+        provides=JSONOcsgeSourceService, json_content=open("include/domain/data/ocsge/sources.json").read()
     )
