@@ -39,7 +39,7 @@
   },
   "dependencies": {
     "@codegouvfr/react-dsfr": "^1.16.10",
-    "@gouvfr/dsfr": "^1.8.5",
+    "@gouvfr/dsfr": "^1.13.0",
     "@reduxjs/toolkit": "^2.2.1",
     "@remixicon/react": "^4.6.0",
     "@svgr/webpack": "^8.1.0",
