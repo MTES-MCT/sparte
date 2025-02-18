@@ -21,7 +21,8 @@ GROUP BY
     {{ group_by_column }}, year_old, year_new
 )
 SELECt
-    *
+    *,
+    impermeable_surface - desimper_surface as imper_net
  FROM without_percent
 
 
