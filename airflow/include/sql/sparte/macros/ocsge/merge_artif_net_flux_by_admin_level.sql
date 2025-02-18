@@ -21,7 +21,8 @@ GROUP BY
     {{ group_by_column }}, year_old, year_new
 )
 SELECt
-    *
+    *,
+    artificial_surface - desartif_surface as artif_net
  FROM without_percent
 
 
