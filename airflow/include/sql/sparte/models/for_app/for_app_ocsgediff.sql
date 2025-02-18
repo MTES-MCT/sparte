@@ -1,5 +1,6 @@
 {{ config(materialized="table", docs={"node_color": "purple"}) }}
 
+SELECT * FROM (
 select
     uuid,
     year_old,
@@ -17,6 +18,11 @@ select
     new_not_impermeable as is_new_not_impermeable,
     st_transform(geom, 4326) as mpoly
 from {{ ref("difference") }}
+) as foo
+where
+    st_isvalid(foo.mpoly)
+
+    /*
 where
     st_isvalid(mpoly)
 
