@@ -5,7 +5,7 @@ const TerserPlugin = require('terser-webpack-plugin');
 const ESLintPlugin = require('eslint-webpack-plugin');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
-const { WebpackManifestPlugin } = require('webpack-manifest-plugin');
+const BundleTracker = require('webpack-bundle-tracker');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 const common = {
@@ -154,9 +154,9 @@ const production = {
             filename: 'assets/styles/[name].[contenthash].css',
             chunkFilename: '[id].[contenthash].css'
         }),
-        new WebpackManifestPlugin({
-            fileName: 'webpack-stats.json',
-            publicPath: "/static/",
+        new BundleTracker({
+            path: path.resolve(__dirname, 'static'),
+            filename: 'webpack-stats.json',
         }),
         new CleanWebpackPlugin({
             cleanOnceBeforeBuildPatterns: [
