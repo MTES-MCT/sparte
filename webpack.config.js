@@ -6,6 +6,7 @@ const ESLintPlugin = require('eslint-webpack-plugin');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 const { WebpackManifestPlugin } = require('webpack-manifest-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 const common = {
     entry: './assets/scripts/index.js',
@@ -134,7 +135,6 @@ const production = {
     output: {
         path: path.resolve(__dirname, 'static'),
         filename: 'assets/scripts/bundle.[contenthash].js',
-        clean: true,
     },
     devtool: false,
     optimization: {
@@ -157,6 +157,14 @@ const production = {
         new WebpackManifestPlugin({
             fileName: 'webpack-stats.json',
             publicPath: "/static/",
+        }),
+        new CleanWebpackPlugin({
+            cleanOnceBeforeBuildPatterns: [
+                'fonts/*',
+                'images/*',
+                'scripts/*',
+                'styles/*',
+            ],
         })
     ]
 };
