@@ -22,7 +22,7 @@ with
             epci,
             ept,
             scot,
-            count(land_zonage.zonage_checksum)::integer as zonage_count,
+            count(distinct land_zonage.zonage_checksum)::integer as zonage_count,
             sum(zonage_couverture_et_usage.surface) as surface,
             sum(
                 case
