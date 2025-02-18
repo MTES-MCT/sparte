@@ -1,11 +1,7 @@
-{{
-    config(
-        materialized='table',
-        docs={'node_color': 'purple'}
-    )
-}}
+{{ config(materialized="table", docs={"node_color": "purple"}) }}
 
-SELECT
+SELECT * FROM (
+select
     uuid,
     year_old,
     year_new,
@@ -16,10 +12,20 @@ SELECT
     surface,
     srid_source,
     departement,
-    new_is_artificial        AS is_new_artif,
-    new_not_artificial       AS is_new_natural,
-    new_is_impermeable       AS is_new_impermeable,
-    new_not_impermeable      AS is_new_not_impermeable,
-    ST_TRANSFORM(geom, 4326) AS mpoly
-FROM
-    {{ ref("difference") }}
+    new_is_artificial as is_new_artif,
+    new_not_artificial as is_new_natural,
+    new_is_impermeable as is_new_impermeable,
+    new_not_impermeable as is_new_not_impermeable,
+    st_transform(geom, 4326) as mpoly
+from {{ ref("difference") }}
+) as foo
+where
+    st_isvalid(foo.mpoly)
+
+    /*
+where
+    st_isvalid(mpoly)
+
+Le st_transform génére parfois des géométries invalides
+d'où la nécessité de filtrer les géométries invalides
+*/

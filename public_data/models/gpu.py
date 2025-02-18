@@ -2,7 +2,6 @@
 Les zones urbaines fournies par le Géoportail de l'urbanisme
 """
 from django.contrib.gis.db import models
-from django.core.validators import MaxValueValidator, MinValueValidator
 
 from public_data.models.enums import SRID
 from utils.db import IntersectMixin
@@ -42,25 +41,7 @@ class ZoneUrba(models.Model):
         return transco.get(self.typezone.lower(), [0, 0, 0])
 
     def __str__(self):
-        return f"{self.insee} {self.typezone} {self.area}Ha"
-
-    class Meta:
-        managed = False
-
-
-class ArtifAreaZoneUrba(models.Model):
-    zone_urba = models.ForeignKey(
-        ZoneUrba,
-        on_delete=models.DO_NOTHING,
-        to_field="checksum",
-        db_column="zone_urba",
-    )
-    year = models.IntegerField("Millésime", validators=[MinValueValidator(2000), MaxValueValidator(2050)])
-    departement = models.CharField("Département", max_length=3)
-    area = models.DecimalField("Surface artificialisée", max_digits=15, decimal_places=4)
-
-    def __str__(self):
-        return f"{self.zone_urba} {self.year} {self.area}Ha"
+        return f"{self.typezone} {self.area}Ha"
 
     class Meta:
         managed = False

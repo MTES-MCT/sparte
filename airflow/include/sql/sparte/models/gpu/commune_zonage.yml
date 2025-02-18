@@ -1,0 +1,15 @@
+
+version: 2
+
+models:
+  - name: commune_zonage
+    columns:
+    - name: commune
+      data_tests:
+      - not_null
+    - name: departement
+      data_tests:
+      - not_null
+    - name: region
+      data_tests:
+      - not_null

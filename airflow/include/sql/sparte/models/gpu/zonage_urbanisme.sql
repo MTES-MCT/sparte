@@ -1,41 +1,76 @@
-
 {{
     config(
-        materialized='table',
+        materialized="table",
         indexes=[
-            {'columns': ['geom'], 'type': 'gist'},
-            {'columns': ['libelle'], 'type': 'btree'},
-            {'columns': ['type_zone'], 'type': 'btree'},
-            {'columns': ['checksum'], 'type': 'btree'}
-        ])
+            {"columns": ["geom"], "type": "gist"},
+            {"columns": ["libelle"], "type": "btree"},
+            {"columns": ["type_zone"], "type": "btree"},
+            {"columns": ["checksum"], "type": "btree"},
+            {"columns": ["departement"], "type": "btree"},
+            {"columns": ["srid_source"], "type": "btree"},
+        ],
+        pre_hook=[
+            'CREATE INDEX ON "public"."gpu_zone_urba" (checksum)',
+            'CREATE INDEX ON "public"."gpu_zone_urba" (checksum, gpu_timestamp DESC)',
+            'CREATE INDEX ON "public"."gpu_zone_urba" USING GIST (geom)',
+            'CREATE INDEX ON "public"."gpu_zone_urba" USING GIST (ST_PointOnSurface(geom))',
+        ],
+    )
 }}
 
-SELECT *, ST_Area(geom) as surface FROM (
-    SELECT
-        gpu_doc_id,
-        gpu_status,
-        gpu_timestamp::timestamptz as gpu_timestamp,
-        partition,
-        libelle,
-        NULLIF(libelong, '') as libelle_long,
-        typezone as type_zone,
-        NULLIF(destdomi, '') as destination_dominante,
-        nomfic as nom_fichier,
-        NULLIF(urlfic, '') as url_fichier,
-        NULLIF(insee, '') as commune_code,
-        TO_DATE(NULLIF(datappro, ''), 'YYYYMMDD') as date_approbation,
-        TO_DATE(NULLIF(datvalid, ''), 'YYYYMMDD') as date_validation,
-        NULLIF(idurba, '') as id_document_urbanisme,
-        checksum,
-        row_number() OVER (PARTITION BY checksum ORDER BY gpu_timestamp),
-        {{ make_valid_multipolygon('ST_transform(geom, 2154)') }} as geom,
-        2154 as srid_source
-    FROM
-        {{ source('public', 'gpu_zone_urba') }}
-    WHERE
-        {{ raw_date_starts_with_yyyy('datappro') }} AND
-        {{ raw_date_starts_with_yyyy('datvalid') }} AND
-        NOT ST_IsEmpty(geom)
-) as foo
-WHERE row_number = 1
-AND NOT ST_IsEmpty(geom)
+/*
+
+Afin de mieux pouvoir exploiter les données de zonage d'urbanisme
+avec les données OCS Ge (qui sont livrées par département), nous avons besoin de
+les enrichir avec le code du département dans lequel ils se trouvent.
+
+*/
+select foo.*, round(st_area(foo.geom)::numeric, 4) as surface
+from
+    (
+        select distinct
+            on (checksum)
+            gpu_doc_id,
+            gpu_status,
+            gpu_timestamp::timestamptz as gpu_timestamp,
+            commune.departement as departement,
+            partition,
+            libelle,
+            nullif(libelong, '') as libelle_long,
+            {{ standardize_zonage_type("typezone") }} as type_zone,
+            nullif(destdomi, '') as destination_dominante,
+            nomfic as nom_fichier,
+            nullif(urlfic, '') as url_fichier,
+            nullif(insee, '') as commune_code,
+      /*
+
+        Etant donné que 3 formats coexistent dans les données source,
+        les dates ne sont pas castées au format date
+        Les 3 formats sont :
+        - YYYYMMDD
+        - DDMMYYYY
+        - YYYYDDMM
+
+        */
+        datappro as date_approbation,
+        datvalid as date_validation,
+            nullif(idurba, '') as id_document_urbanisme,
+            checksum,
+            {{
+                make_valid_multipolygon(
+                    "ST_transform(zonage.geom, commune.srid_source)"
+                )
+            }} as geom,
+            commune.srid_source as srid_source
+        from {{ source("public", "gpu_zone_urba") }} as zonage
+        left join
+            {{ ref("commune") }} as commune
+            on st_transform(commune.geom, 4326) && zonage.geom
+            and st_contains(
+                st_transform(commune.geom, 4326), st_pointonsurface(zonage.geom)
+            )
+        where
+            not st_isempty(zonage.geom)
+        order by checksum, gpu_timestamp desc
+    ) as foo
+where not st_isempty(foo.geom)

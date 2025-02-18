@@ -1,0 +1,4 @@
+sources:
+  - name: public
+    tables:
+    - name: gpu_zone_urba
