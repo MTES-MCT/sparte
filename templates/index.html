@@ -77,7 +77,7 @@
         {% if debug %}
             <script src="http://localhost:3000/assets/scripts/bundle.dev.js"></script>
         {% else %}
-            <script src="{% render_bundle 'bundle' 'js' %}"></script>
+            <script src="{% render_bundle 'main' 'js' %}"></script>
         {% endif %}
 
         <!-- subtemplate footer injection -->
