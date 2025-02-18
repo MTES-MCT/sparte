@@ -26,7 +26,6 @@ where
 where
     st_isvalid(mpoly)
 
-    /*
 Le st_transform génére parfois des géométries invalides
 d'où la nécessité de filtrer les géométries invalides
 */
