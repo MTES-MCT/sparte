@@ -547,10 +547,8 @@ class UrbanZonesMapView(OcsgeCoverageMixin, BaseMap):
                         "#59b72d",
                         "U",
                         "#e60000",
-                        "AUc",
+                        "AU",
                         "#ff6565",
-                        "AUs",
-                        "#feccbe",
                         "#ffff00",  # Default color => zones A
                     ],
                     "line-width": 1,
@@ -576,10 +574,8 @@ class UrbanZonesMapView(OcsgeCoverageMixin, BaseMap):
                         "#59b72d",
                         "U",
                         "#e60000",
-                        "AUc",
+                        "AU",
                         "#ff6565",
-                        "AUs",
-                        "#feccbe",
                         "#ffff00",  # Default color => zones A
                     ],
                 },
@@ -649,15 +645,11 @@ class UrbanZonesMapView(OcsgeCoverageMixin, BaseMap):
                     {
                         "name": "",
                         "type": "tag",
-                        "value": ["AUc", "AUs", "U", "A", "N"],
+                        "value": ["AU", "U", "A", "N"],
                         "options": [
                             {
-                                "name": "AUc",
-                                "value": "AUc",
-                            },
-                            {
-                                "name": "AUs",
-                                "value": "AUs",
+                                "name": "AU",
+                                "value": "AU",
                             },
                             {
                                 "name": "U",

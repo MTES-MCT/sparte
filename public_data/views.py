@@ -399,7 +399,7 @@ class ZoneUrbaViewSet(OnlyBoundingBoxMixin, ZoomSimplificationMixin, OptimizedMi
         where_parts = ["St_IsValid(mpoly) = true"]
         if "type_zone" in self.request.query_params:
             zones = [_.strip() for _ in self.request.query_params.get("type_zone").split(",")]
-            zones = [f"'{_}'" for _ in zones if _ in ["U", "Ah", "Nd", "A", "AUc", "N", "Nh", "AUs"]]
+            zones = [f"'{_}'" for _ in zones if _ in ["U", "A", "N", "AU"]]
             where_parts.append(f"o.typezone in ({', '.join(zones)})")
         return f"where {' and '.join(where_parts)}"
 
