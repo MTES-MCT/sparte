@@ -330,7 +330,7 @@ CRISPY_CLASS_CONVERTERS = {
 WEBPACK_LOADER = {
     "DEFAULT": {
         "BUNDLE_DIR_NAME": "assets/",
-        "STATS_FILE": str(BASE_DIR / "webpack-stats.json"),
+        "STATS_FILE": str(BASE_DIR / "static/webpack-stats.json"),
     }
 }
 
