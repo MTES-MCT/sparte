@@ -102,7 +102,7 @@ def get_source_name_from_shapefile_name(shapefile_name: str) -> SourceName | Non
         return SourceName.DIFFERENCE
     if "occupation" in shapefile_name:
         return SourceName.OCCUPATION_DU_SOL
-    if "zone" in shapefile_name:
+    if "construite" in shapefile_name:
         return SourceName.ZONE_CONSTRUITE
 
     return None
@@ -123,6 +123,7 @@ def load_shapefiles_to_dw(
     loaded_date: int,
     table_key: str,
     dataset: Literal[DatasetName.DIFFERENCE, DatasetName.OCCUPATION_DU_SOL_ET_ZONE_CONSTRUITE],
+    file_format: Literal["shp", "gpkg"],
     mode: Literal["overwrite", "append"] = "append",
 ):
     local_path = "/tmp/ocsge.7z"
@@ -133,7 +134,7 @@ def load_shapefiles_to_dw(
     shapefile_matching_names_found = 0
 
     for file_path, filename in get_paths_from_directory(extract_dir):
-        if not file_path.endswith(".shp"):
+        if not file_path.endswith(f".{file_format}"):
             continue
         variables = get_vars_by_shapefile_name(filename)
 
@@ -151,6 +152,7 @@ def load_shapefiles_to_dw(
                 departement=departement,
                 loaded_date=loaded_date,
                 fields=fields,
+                geom_field="GEOMETRY" if file_format == "shp" else "the_geom",
             )
         )
         table_name = variables[table_key]
@@ -215,6 +217,7 @@ def load_shapefiles_to_dw(
         ),
         "refresh_source": Param(False, type="boolean"),
         "dbt_build": Param(False, type="boolean"),
+        "file_format": Param("shp", type="string", enum=["shp", "gpkg"]),
     },
 )
 def ocsge():  # noqa: C901
@@ -271,6 +274,7 @@ def ocsge():  # noqa: C901
         departement = context["params"]["departement"]
         years = context["params"]["years"]
         dataset = context["params"]["dataset"]
+        file_format = context["params"]["file_format"]
 
         load_shapefiles_to_dw(
             path=path,
@@ -278,6 +282,7 @@ def ocsge():  # noqa: C901
             departement=departement,
             loaded_date=loaded_date,
             dataset=dataset,
+            file_format=file_format,
             table_key="dw_staging",
             mode="overwrite",
         )
@@ -318,6 +323,7 @@ def ocsge():  # noqa: C901
         departement = context["params"]["departement"]
         years = context["params"]["years"]
         dataset = context["params"]["dataset"]
+        file_format = context["params"]["file_format"]
 
         load_shapefiles_to_dw(
             path=path,
@@ -325,6 +331,7 @@ def ocsge():  # noqa: C901
             departement=departement,
             loaded_date=loaded_date,
             dataset=dataset,
+            file_format=file_format,
             table_key="dw_source",
         )
 
