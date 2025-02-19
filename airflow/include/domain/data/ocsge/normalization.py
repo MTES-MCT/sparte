@@ -22,6 +22,7 @@ def ocsge_diff_normalization_sql(
     shapefile_name: str,
     loaded_date: float,
     fields: list[str],
+    geom_field: str,
 ) -> str:
     possible_normalized_fields = [
         {
@@ -53,7 +54,7 @@ def ocsge_diff_normalization_sql(
         {normalized_fields['us_old']} AS us_old,
         '{departement}' AS departement,
         CreateUUID() as uuid,
-        GEOMETRY as geom
+        {geom_field} as geom
     FROM
         {shapefile_name}
     """
@@ -65,6 +66,7 @@ def ocsge_occupation_du_sol_normalization_sql(
     shapefile_name: str,
     loaded_date: float,
     fields: list[str],
+    geom_field: str,
 ) -> str:
     possible_normalized_fields = [
         {
@@ -90,7 +92,7 @@ def ocsge_occupation_du_sol_normalization_sql(
         ID AS id,
         {normalized_fields['code_cs']} AS code_cs,
         {normalized_fields['code_us']} AS code_us,
-        GEOMETRY AS geom,
+        {geom_field} AS geom,
         '{departement}' AS departement,
         {years[0]} AS year,
         CreateUUID() as uuid
@@ -105,6 +107,7 @@ def ocsge_zone_construite_normalization_sql(
     shapefile_name: str,
     loaded_date: float,
     fields: list[str],
+    geom_field: str,
 ) -> str:
     print(fields)
     return f""" SELECT
@@ -113,7 +116,7 @@ def ocsge_zone_construite_normalization_sql(
         {years[0]} AS year,
         '{departement}' AS departement,
         CreateUUID() as uuid,
-        GEOMETRY AS geom
+        {geom_field} AS geom
     FROM
         {shapefile_name}
     """
