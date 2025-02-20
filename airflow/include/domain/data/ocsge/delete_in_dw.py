@@ -33,3 +33,14 @@ def delete_difference_in_dw_sql(
         AND year_old = {years[0]}
         AND year_new = {years[1]}
     """
+
+
+def delete_artif_in_dw_sql(
+    departement: str,
+    years: List[str],
+) -> str:
+    return f"""
+        DELETE FROM public.ocsge_artif
+        WHERE departement = '{departement}'
+        AND year = {years[0]}
+    """
