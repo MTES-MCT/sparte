@@ -30,8 +30,10 @@ from include.domain.data.ocsge.normalization import (
     ocsge_zone_construite_normalization_sql,
 )
 from include.pools import DBT_POOL, OCSGE_STAGING_POOL
-from include.shapefile import get_shapefile_fields
-from include.utils import multiline_string_to_single_line
+from include.utils import (
+    get_shapefile_or_geopackage_fields,
+    multiline_string_to_single_line,
+)
 
 
 def get_paths_from_directory(directory: str) -> list[tuple[str, str]]:
@@ -55,7 +57,7 @@ with open("include/domain/data/ocsge/sources.json", "r") as f:
 
 vars = {
     SourceName.OCCUPATION_DU_SOL: {
-        "shapefile_name": "OCCUPATION_SOL",
+        "layer_name": "OCCUPATION_SOL",
         "dbt_selector": "source:sparte.public.ocsge_occupation_du_sol",
         "dbt_selector_staging": "source:sparte.public.ocsge_occupation_du_sol_staging",
         "dw_staging": "ocsge_occupation_du_sol_staging",
@@ -64,7 +66,7 @@ vars = {
         "delete_on_dwt": delete_occupation_du_sol_in_dw_sql,
     },
     SourceName.ZONE_CONSTRUITE: {
-        "shapefile_name": "ZONE_CONSTRUITE",
+        "layer_name": "ZONE_CONSTRUITE",
         "dbt_selector": "source:sparte.public.ocsge_zone_construite",
         "dbt_selector_staging": "source:sparte.public.ocsge_zone_construite_staging",
         "dw_staging": "ocsge_zone_construite_staging",
@@ -73,7 +75,7 @@ vars = {
         "delete_on_dwt": delete_zone_construite_in_dw_sql,
     },
     SourceName.DIFFERENCE: {
-        "shapefile_name": "DIFFERENCE",
+        "layer_name": "DIFFERENCE",
         "dbt_selector": "source:sparte.public.ocsge_difference",
         "dbt_selector_staging": "source:sparte.public.ocsge_difference_staging",
         "dw_staging": "ocsge_difference_staging",
@@ -95,28 +97,28 @@ vars_dataset = {
 }
 
 
-def get_source_name_from_shapefile_name(shapefile_name: str) -> SourceName | None:
-    shapefile_name = shapefile_name.lower()
-    if "diff" in shapefile_name or "diif" in shapefile_name:
-        # Certains shapefiles ont un nom de fichier avec une faute de frappe (diif au lieu de diff)
+def get_source_name_from_layer_name(layer_name: str) -> SourceName | None:
+    layer_name = layer_name.lower()
+    if "diff" in layer_name or "diif" in layer_name:
+        # Certains shapefiles/geopackages ont un nom de fichier avec une faute de frappe (diif au lieu de diff)
         return SourceName.DIFFERENCE
-    if "occupation" in shapefile_name:
+    if "occupation" in layer_name:
         return SourceName.OCCUPATION_DU_SOL
-    if "construite" in shapefile_name:
+    if "construite" in layer_name:
         return SourceName.ZONE_CONSTRUITE
 
     return None
 
 
-def get_vars_by_shapefile_name(shapefile_name: str) -> dict | None:
-    source_name = get_source_name_from_shapefile_name(shapefile_name)
+def get_vars_by_filename(filename: str) -> dict | None:
+    source_name = get_source_name_from_layer_name(filename)
     if not source_name:
         return None
 
     return vars[source_name]
 
 
-def load_shapefiles_to_dw(
+def load_data_to_dw(
     path: str,
     years: list[int],
     departement: str,
@@ -131,23 +133,23 @@ def load_shapefiles_to_dw(
     extract_dir = tempfile.mkdtemp()
     py7zr.SevenZipFile(local_path, mode="r").extractall(path=extract_dir)
 
-    shapefile_matching_names_found = 0
+    file_matching_names_found = 0
 
     for file_path, filename in get_paths_from_directory(extract_dir):
         if not file_path.endswith(f".{file_format}"):
             continue
-        variables = get_vars_by_shapefile_name(filename)
+        variables = get_vars_by_filename(filename)
 
         if not variables:
             continue
 
-        shapefile_matching_names_found += 1
+        file_matching_names_found += 1
 
-        fields = get_shapefile_fields(file_path)
+        fields = get_shapefile_or_geopackage_fields(file_path)
 
         sql = multiline_string_to_single_line(
             variables["normalization_sql"](
-                shapefile_name=filename.split(".")[0],
+                layer_name=filename.split(".")[0],
                 years=years,
                 departement=departement,
                 loaded_date=loaded_date,
@@ -187,12 +189,12 @@ def load_shapefiles_to_dw(
             bash_command=" ".join(cmd),
         ).execute(context={})
 
-    if shapefile_matching_names_found == 0:
-        raise ValueError(f"No shapefile matching names found in {extract_dir}")
-    if dataset == DatasetName.DIFFERENCE and shapefile_matching_names_found != 1:
-        raise ValueError(f"Only one shapefile should be found for the dataset {dataset}")
-    if dataset == DatasetName.OCCUPATION_DU_SOL_ET_ZONE_CONSTRUITE and shapefile_matching_names_found != 2:
-        raise ValueError(f"Two shapefiles should be found for the dataset {dataset}")
+    if file_matching_names_found == 0:
+        raise ValueError(f"No shapefile/geopackage matching names found in {extract_dir}")
+    if dataset == DatasetName.DIFFERENCE and file_matching_names_found != 1:
+        raise ValueError(f"Only one shapefile/geopackage should be found for the dataset {dataset}")
+    if dataset == DatasetName.OCCUPATION_DU_SOL_ET_ZONE_CONSTRUITE and file_matching_names_found != 2:
+        raise ValueError(f"Two shapefiles/geopackages should be found for the dataset {dataset}")
 
 
 @dag(
@@ -276,7 +278,7 @@ def ocsge():  # noqa: C901
         dataset = context["params"]["dataset"]
         file_format = context["params"]["file_format"]
 
-        load_shapefiles_to_dw(
+        load_data_to_dw(
             path=path,
             years=years,
             departement=departement,
@@ -325,7 +327,7 @@ def ocsge():  # noqa: C901
         dataset = context["params"]["dataset"]
         file_format = context["params"]["file_format"]
 
-        load_shapefiles_to_dw(
+        load_data_to_dw(
             path=path,
             years=years,
             departement=departement,
