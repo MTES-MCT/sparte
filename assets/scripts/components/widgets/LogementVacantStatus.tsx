@@ -12,7 +12,7 @@ const LogementVacantStatus: React.FC = () => {
     return (
         <div className="fr-notice fr-notice--info fr-my-3w">
             <div className="fr-container--fluid fr-p-3w">
-                <NoticeBody className="fr-notice__body">
+                <NoticeBody className="fr-notice__body flex-column">
                     <p className="fr-notice__title">Données de vacance des logements non disponibles.</p>
                     <p className="fr-notice__desc fr-text--sm">
                         Les données de logements vacants ne sont pas ou partiellement disponibles pour votre territoire.

@@ -124,7 +124,7 @@
                     <div class="fr-table__wrapper">
                         <div class="fr-table__container">
                             <div class="fr-table__content">
-                                <table class="fr-table table-last-row-bold table-last-column-bold">
+                                <table class="table-last-row-bold table-last-column-bold">
                                     <caption>
                                         Matrice d'évolution de la couverture des sols sur le territoire de {{ first_millesime }} à {{ last_millesime }} (en ha)
                                     </caption>
@@ -133,9 +133,7 @@
                                             <th scope="col" class="fr-cell--fixed"></th>
                                             {% for header in couv_matrix_headers %}
                                             <th scope="col" class="fr-cell--right">
-                                                <span class="tooltiped" data-toggle="tooltip" title="{{ header.label }}">
-                                                    {{ header.code }}
-                                                </span>
+                                                {{ header.code }} {{header.label_short}}
                                             </th>
                                             {% endfor %}
                                             <th scope="col" class="fr-cell--right">Total</th>
@@ -146,18 +144,14 @@
                                         <tr>
                                             <th scope="row" class="fr-cell--fixed">
                                                 {% if name.code %}
-                                                <span class="tooltiped" data-toggle="tooltip" title="{{ name.label }}">
                                                     {{ name.code }} {{ name.label_short }}
-                                                </span>
                                                 {% else %}
                                                     Total
                                                 {% endif %}
                                             </th>
                                             {% for title, val in data.items %}
                                                 <td class="fr-cell--right">
-                                                    <span data-toggle="tooltip" title="Passage de {{ name.code }} à {{ title.code }}">
-                                                        {{ val|floatformat:1 }}
-                                                    </span>
+                                                    {{ val|floatformat:1 }}
                                                 </td>
                                             {% endfor %}
                                         </tr>
@@ -295,7 +289,7 @@
                     <div class="fr-table__wrapper">
                         <div class="fr-table__container">
                             <div class="fr-table__content">
-                                <table class="fr-table table-last-row-bold table-last-column-bold">
+                                <table class="table-last-row-bold table-last-column-bold">
                                     <caption>
                                         Matrice d'évolution de l'usage des sols sur le territoire de {{ first_millesime }} à {{ last_millesime }} (en ha)
                                     </caption>
@@ -304,9 +298,7 @@
                                             <th scope="col" class="fr-cell--fixed"></th>
                                             {% for header in usa_matrix_headers %}
                                             <th scope="col" class="fr-cell--right">
-                                                <span class="tooltiped" data-toggle="tooltip" title="{{ header.label }}">
-                                                    {{ header.code }}
-                                                </span>
+                                                {{ header.code }} {{ header.label_short }}
                                             </th>
                                             {% endfor %}
                                             <th scope="col" class="fr-cell--right">Total</th>
@@ -317,18 +309,14 @@
                                         <tr>
                                             <th scope="row" class="fr-cell--fixed">
                                                 {% if name.code %}
-                                                <span class="tooltiped" data-toggle="tooltip" title="{{ name.label }}">
                                                     {{ name.code }} {{ name.label_short }}
-                                                </span>
                                                 {% else %}
                                                     Total
                                                 {% endif %}
                                             </th>
                                             {% for title, val in data.items %}
                                                 <td class="fr-cell--right">
-                                                    <span data-toggle="tooltip" title="Passage de {{ name.code }} à {{ title.code }}">
-                                                        {{ val|floatformat:1 }}
-                                                    </span>
+                                                    {{ val|floatformat:1 }}
                                                 </td>
                                             {% endfor %}
                                         </tr>

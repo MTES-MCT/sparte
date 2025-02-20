@@ -83,6 +83,7 @@ THIRD_APPS = [
     "simple_history",
     "corsheaders",
     "fancy_cache",
+    "webpack_loader",
 ]
 
 # upper app should not communicate with lower ones
@@ -325,8 +326,15 @@ CRISPY_CLASS_CONVERTERS = {
     "label": "fr-label",
 }
 
-# Celery configuration
+# Webpack loader configuration
+WEBPACK_LOADER = {
+    "DEFAULT": {
+        "BUNDLE_DIR_NAME": "assets/",
+        "STATS_FILE": str(BASE_DIR / "static/webpack-stats.json"),
+    }
+}
 
+# Celery configuration
 CELERY_BROKER_URL = env.str("CELERY_BROKER_URL")
 CELERY_RESULT_BACKEND = env.str("CELERY_RESULT_BACKEND")
 CELERY_ACKS_LATE = True
@@ -505,6 +513,7 @@ CSP_SCRIPT_SRC = [
     "stats.beta.gouv.fr",
     "code.highcharts.com",
     "www.googletagmanager.com",
+    "http://localhost:3000",
     # Crisp
     "https://client.crisp.chat",
     "https://settings.crisp.chat",
@@ -513,6 +522,7 @@ CSP_STYLE_SRC = [
     "'self'",
     "cdn.jsdelivr.net",
     "'unsafe-inline'",
+    "http://localhost:3000",
     # Crisp
     "https://client.crisp.chat",
 ]
@@ -526,6 +536,7 @@ CSP_IMG_SRC = [
     "google.com",
     "google.fr",
     "googleads.g.doubleclick.net",
+    "http://localhost:3000",
     # Crisp
     "https://client.crisp.chat",
     "https://image.crisp.chat",
@@ -538,6 +549,7 @@ CSP_FRAME_SRC = (
     "https://game.crisp.chat",
     "https://plugins.crisp.chat/",
     "https://www.googletagmanager.com/",
+    "https://sparte-metabase.osc-secnum-fr1.scalingo.io/",
 )
 CSP_MEDIA_SRC = (
     # Crisp
@@ -548,6 +560,7 @@ CSP_FONT_SRC = (
     "'self'",
     "data:",
     "cdn.jsdelivr.net",
+    "http://localhost:3000",
     # Crisp
     "https://client.crisp.chat",
 )
@@ -571,6 +584,7 @@ CSP_CONNECT_SRC = [
     "https://gist.githubusercontent.com",
     "https://highcharts-export.osc-fr1.scalingo.io/",
     "ws://localhost:3000/ws",
+    "http://localhost:3000",
     "https://airflow-staging.s3.fr-par.scw.cloud",
 ]
 CSP_FRAME_ANCESTORS = ("'self'", "https://sparte-metabase.osc-secnum-fr1.scalingo.io")
