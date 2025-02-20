@@ -25,7 +25,7 @@
         {% if debug %}
             <link rel="stylesheet" href="http://localhost:3000/assets/styles/main.css">
         {% else %}
-            <link rel="stylesheet" href="{% render_bundle 'main' 'css' %}">
+            {% render_bundle 'main' 'css' %}
         {% endif %}
         <!-- subtemplate header injection -->
         {% block headers %}{% endblock %}
@@ -77,7 +77,7 @@
         {% if debug %}
             <script src="http://localhost:3000/assets/scripts/bundle.dev.js"></script>
         {% else %}
-            <script src="{% render_bundle 'main' 'js' %}"></script>
+            {% render_bundle 'main' 'js' %}
         {% endif %}
 
         <!-- subtemplate footer injection -->
