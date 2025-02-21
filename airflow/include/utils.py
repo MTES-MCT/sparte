@@ -1,5 +1,12 @@
 import os
 
+import geopandas as gpd
+
+
+def get_shapefile_or_geopackage_fields(path: str) -> list[str]:
+    df = gpd.read_file(path)
+    return df.columns.to_list()
+
 
 def multiline_string_to_single_line(string: str) -> str:
     return string.replace("\n", " ").replace("\r", "")

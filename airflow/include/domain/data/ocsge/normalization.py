@@ -19,9 +19,10 @@ def get_normalized_fields(
 def ocsge_diff_normalization_sql(
     years: list[int],
     departement: str,
-    shapefile_name: str,
+    layer_name: str,
     loaded_date: float,
     fields: list[str],
+    geom_field: str,
 ) -> str:
     possible_normalized_fields = [
         {
@@ -53,18 +54,19 @@ def ocsge_diff_normalization_sql(
         {normalized_fields['us_old']} AS us_old,
         '{departement}' AS departement,
         CreateUUID() as uuid,
-        GEOMETRY as geom
+        {geom_field} as geom
     FROM
-        {shapefile_name}
+        {layer_name}
     """
 
 
 def ocsge_occupation_du_sol_normalization_sql(
     years: list[int],
     departement: str,
-    shapefile_name: str,
+    layer_name: str,
     loaded_date: float,
     fields: list[str],
+    geom_field: str,
 ) -> str:
     possible_normalized_fields = [
         {
@@ -90,21 +92,22 @@ def ocsge_occupation_du_sol_normalization_sql(
         ID AS id,
         {normalized_fields['code_cs']} AS code_cs,
         {normalized_fields['code_us']} AS code_us,
-        GEOMETRY AS geom,
+        {geom_field} AS geom,
         '{departement}' AS departement,
         {years[0]} AS year,
         CreateUUID() as uuid
     FROM
-        {shapefile_name}
+        {layer_name}
     """
 
 
 def ocsge_zone_construite_normalization_sql(
     years: list[int],
     departement: str,
-    shapefile_name: str,
+    layer_name: str,
     loaded_date: float,
     fields: list[str],
+    geom_field: str,
 ) -> str:
     print(fields)
     return f""" SELECT
@@ -113,7 +116,33 @@ def ocsge_zone_construite_normalization_sql(
         {years[0]} AS year,
         '{departement}' AS departement,
         CreateUUID() as uuid,
-        GEOMETRY AS geom
+        {geom_field} AS geom
     FROM
-        {shapefile_name}
+        {layer_name}
+    """
+
+
+def ocsge_artif_normalization_sql(
+    years: list[int],
+    departement: str,
+    layer_name: str,
+    loaded_date: float,
+    fields: list[str],
+    geom_field: str,
+) -> str:
+    print(fields)
+    return f""" SELECT
+        {loaded_date} AS loaded_date,
+        ID AS id,
+        {years[0]} AS year,
+        '{departement}' AS departement,
+        code_cs AS code_cs,
+        code_us AS code_us,
+        millesime AS millesime,
+        artif AS artif,
+        crit_seuil AS crit_seuil,
+        CreateUUID() as uuid,
+        {geom_field} AS geom
+    FROM
+        {layer_name}
     """
