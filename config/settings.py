@@ -534,6 +534,7 @@ CSP_IMG_SRC = [
     "data:",
     MEDIA_URL,
     "google.com",
+    "https://www.google.com/",
     "google.fr",
     "googleads.g.doubleclick.net",
     "http://localhost:3000",
