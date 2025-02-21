@@ -535,7 +535,8 @@ CSP_IMG_SRC = [
     MEDIA_URL,
     "google.com",
     "https://www.google.com/",
-    "google.fr",
+    "https://www.google.fr",
+    "https://www.googleadservices.com",
     "googleads.g.doubleclick.net",
     "http://localhost:3000",
     # Crisp
@@ -571,6 +572,7 @@ CSP_CONNECT_SRC = [
     "sparte-metabase.osc-secnum-fr1.scalingo.io",
     "google.com",
     "https://www.google.com/",
+    "https://www.google.fr",
     "data.geopf.fr",
     "https://raw.githack.com",
     "https://openmaptiles.geo.data.gouv.fr",
