@@ -18,20 +18,26 @@ from airflow.models.param import Param
 from airflow.operators.bash import BashOperator
 from include.container import Container
 from include.domain.container import Container as DomainContainer
+from include.domain.data.ocsge.dag_configs import create_configs_from_sources
 from include.domain.data.ocsge.delete_in_dw import (
+    delete_artif_in_dw_sql,
     delete_difference_in_dw_sql,
     delete_occupation_du_sol_in_dw_sql,
     delete_zone_construite_in_dw_sql,
 )
 from include.domain.data.ocsge.enums import DatasetName, SourceName
 from include.domain.data.ocsge.normalization import (
+    ocsge_artif_normalization_sql,
     ocsge_diff_normalization_sql,
     ocsge_occupation_du_sol_normalization_sql,
     ocsge_zone_construite_normalization_sql,
 )
 from include.pools import DBT_POOL, OCSGE_STAGING_POOL
-from include.shapefile import get_shapefile_fields
-from include.utils import multiline_string_to_single_line
+from include.utils import (
+    get_shapefile_or_geopackage_fields,
+    get_shapefile_or_geopackage_first_layer_name,
+    multiline_string_to_single_line,
+)
 
 
 def get_paths_from_directory(directory: str) -> list[tuple[str, str]]:
@@ -53,9 +59,13 @@ def get_paths_from_directory(directory: str) -> list[tuple[str, str]]:
 with open("include/domain/data/ocsge/sources.json", "r") as f:
     sources = json.load(f)
 
+
+def get_from_config(config: str, key: str):
+    return json.loads(config).get(key)
+
+
 vars = {
     SourceName.OCCUPATION_DU_SOL: {
-        "shapefile_name": "OCCUPATION_SOL",
         "dbt_selector": "source:sparte.public.ocsge_occupation_du_sol",
         "dbt_selector_staging": "source:sparte.public.ocsge_occupation_du_sol_staging",
         "dw_staging": "ocsge_occupation_du_sol_staging",
@@ -64,7 +74,6 @@ vars = {
         "delete_on_dwt": delete_occupation_du_sol_in_dw_sql,
     },
     SourceName.ZONE_CONSTRUITE: {
-        "shapefile_name": "ZONE_CONSTRUITE",
         "dbt_selector": "source:sparte.public.ocsge_zone_construite",
         "dbt_selector_staging": "source:sparte.public.ocsge_zone_construite_staging",
         "dw_staging": "ocsge_zone_construite_staging",
@@ -73,14 +82,20 @@ vars = {
         "delete_on_dwt": delete_zone_construite_in_dw_sql,
     },
     SourceName.DIFFERENCE: {
-        "shapefile_name": "DIFFERENCE",
         "dbt_selector": "source:sparte.public.ocsge_difference",
         "dbt_selector_staging": "source:sparte.public.ocsge_difference_staging",
         "dw_staging": "ocsge_difference_staging",
         "dw_source": "ocsge_difference",
-        "dw_final_table_name": "app_ocsgediff",
         "normalization_sql": ocsge_diff_normalization_sql,
         "delete_on_dwt": delete_difference_in_dw_sql,
+    },
+    SourceName.ARTIF: {
+        "dbt_selector": "source:sparte.public.ocsge_artif",
+        "dbt_selector_staging": "source:sparte.public.ocsge_artif_staging",
+        "dw_staging": "ocsge_artif_staging",
+        "dw_source": "ocsge_artif",
+        "normalization_sql": ocsge_artif_normalization_sql,
+        "delete_on_dwt": delete_artif_in_dw_sql,
     },
 }
 
@@ -92,37 +107,43 @@ vars_dataset = {
     DatasetName.DIFFERENCE: [
         vars[SourceName.DIFFERENCE],
     ],
+    DatasetName.ARTIF: [
+        vars[SourceName.ARTIF],
+    ],
 }
 
 
-def get_source_name_from_shapefile_name(shapefile_name: str) -> SourceName | None:
-    shapefile_name = shapefile_name.lower()
-    if "diff" in shapefile_name or "diif" in shapefile_name:
-        # Certains shapefiles ont un nom de fichier avec une faute de frappe (diif au lieu de diff)
+def get_source_name_from_layer_name(layer_name: str) -> SourceName | None:
+    layer_name = layer_name.lower()
+    if "diff" in layer_name or "diif" in layer_name:
+        # Certains shapefiles/geopackages ont un nom de fichier avec une faute de frappe (diif au lieu de diff)
         return SourceName.DIFFERENCE
-    if "occupation" in shapefile_name:
+    if "occupation" in layer_name:
         return SourceName.OCCUPATION_DU_SOL
-    if "zone" in shapefile_name:
+    if "construite" in layer_name:
         return SourceName.ZONE_CONSTRUITE
+    if "artif" in layer_name:
+        return SourceName.ARTIF
 
     return None
 
 
-def get_vars_by_shapefile_name(shapefile_name: str) -> dict | None:
-    source_name = get_source_name_from_shapefile_name(shapefile_name)
+def get_vars_by_filename(filename: str) -> dict | None:
+    source_name = get_source_name_from_layer_name(filename)
     if not source_name:
         return None
 
     return vars[source_name]
 
 
-def load_shapefiles_to_dw(
+def load_data_to_dw(
     path: str,
     years: list[int],
     departement: str,
     loaded_date: int,
     table_key: str,
-    dataset: Literal[DatasetName.DIFFERENCE, DatasetName.OCCUPATION_DU_SOL_ET_ZONE_CONSTRUITE],
+    dataset: DatasetName,
+    file_format: Literal["shp", "gpkg"],
     mode: Literal["overwrite", "append"] = "append",
 ):
     local_path = "/tmp/ocsge.7z"
@@ -130,27 +151,28 @@ def load_shapefiles_to_dw(
     extract_dir = tempfile.mkdtemp()
     py7zr.SevenZipFile(local_path, mode="r").extractall(path=extract_dir)
 
-    shapefile_matching_names_found = 0
+    file_matching_names_found = 0
 
     for file_path, filename in get_paths_from_directory(extract_dir):
-        if not file_path.endswith(".shp"):
+        if not file_path.endswith(f".{file_format}") or "__MACOSX" in file_path:
             continue
-        variables = get_vars_by_shapefile_name(filename)
+        variables = get_vars_by_filename(filename)
 
         if not variables:
             continue
 
-        shapefile_matching_names_found += 1
+        file_matching_names_found += 1
 
-        fields = get_shapefile_fields(file_path)
+        fields = get_shapefile_or_geopackage_fields(file_path)
 
         sql = multiline_string_to_single_line(
             variables["normalization_sql"](
-                shapefile_name=filename.split(".")[0],
+                layer_name=get_shapefile_or_geopackage_first_layer_name(file_path),
                 years=years,
                 departement=departement,
                 loaded_date=loaded_date,
                 fields=fields,
+                geom_field="GEOMETRY" if file_format == "shp" else "the_geom",
             )
         )
         table_name = variables[table_key]
@@ -185,12 +207,12 @@ def load_shapefiles_to_dw(
             bash_command=" ".join(cmd),
         ).execute(context={})
 
-    if shapefile_matching_names_found == 0:
-        raise ValueError(f"No shapefile matching names found in {extract_dir}")
-    if dataset == DatasetName.DIFFERENCE and shapefile_matching_names_found != 1:
-        raise ValueError(f"Only one shapefile should be found for the dataset {dataset}")
-    if dataset == DatasetName.OCCUPATION_DU_SOL_ET_ZONE_CONSTRUITE and shapefile_matching_names_found != 2:
-        raise ValueError(f"Two shapefiles should be found for the dataset {dataset}")
+    if file_matching_names_found == 0:
+        raise ValueError(f"No shapefile/geopackage matching names found in {extract_dir}")
+    if dataset == DatasetName.DIFFERENCE and file_matching_names_found != 1:
+        raise ValueError(f"Only one shapefile/geopackage should be found for the dataset {dataset}")
+    if dataset == DatasetName.OCCUPATION_DU_SOL_ET_ZONE_CONSTRUITE and file_matching_names_found != 2:
+        raise ValueError(f"Two shapefiles/geopackages should be found for the dataset {dataset}")
 
 
 @dag(
@@ -203,18 +225,13 @@ def load_shapefiles_to_dw(
     default_args={"owner": "Alexis Athlani", "retries": 3},
     tags=["OCS GE"],
     params={
-        "departement": Param("75", type="string", enum=list(sources.keys())),
-        "years": Param([2018], type="array"),
-        "dataset": Param(
-            DatasetName.OCCUPATION_DU_SOL_ET_ZONE_CONSTRUITE,
-            type="string",
-            enum=[
-                DatasetName.OCCUPATION_DU_SOL_ET_ZONE_CONSTRUITE,
-                DatasetName.DIFFERENCE,
-            ],
-        ),
         "refresh_source": Param(False, type="boolean"),
         "dbt_build": Param(False, type="boolean"),
+        "config": Param(
+            default=create_configs_from_sources(sources)[0],
+            type="string",
+            enum=create_configs_from_sources(sources),
+        ),
     },
 )
 def ocsge():  # noqa: C901
@@ -222,9 +239,10 @@ def ocsge():  # noqa: C901
 
     @task.python()
     def get_url(**context) -> str:
-        departement = context["params"]["departement"]
-        years = "_".join(map(str, context["params"]["years"]))
-        dataset = context["params"]["dataset"]
+        config = context["params"]["config"]
+        departement = get_from_config(config, "departement")
+        years = "_".join(map(str, get_from_config(config, "years")))
+        dataset = get_from_config(config, "dataset")
 
         if len(years) == 1:
             years = str(years[0])
@@ -268,16 +286,19 @@ def ocsge():  # noqa: C901
     @task.python(pool=OCSGE_STAGING_POOL)
     def ingest_staging(path, **context) -> int:
         loaded_date = int(pendulum.now().timestamp())
-        departement = context["params"]["departement"]
-        years = context["params"]["years"]
-        dataset = context["params"]["dataset"]
+        config = context["params"]["config"]
+        departement = get_from_config(config, "departement")
+        years = get_from_config(config, "years")
+        dataset = get_from_config(config, "dataset")
+        file_format = get_from_config(config, "file_format")
 
-        load_shapefiles_to_dw(
+        load_data_to_dw(
             path=path,
             years=years,
             departement=departement,
             loaded_date=loaded_date,
             dataset=dataset,
+            file_format=file_format,
             table_key="dw_staging",
             mode="overwrite",
         )
@@ -286,15 +307,17 @@ def ocsge():  # noqa: C901
 
     @task.bash(pool=OCSGE_STAGING_POOL)
     def db_test_ocsge_staging(**context):
-        dataset = context["params"]["dataset"]
+        config = context["params"]["config"]
+        dataset = get_from_config(config, "dataset")
         dbt_select = " ".join([vars["dbt_selector_staging"] for vars in vars_dataset[dataset]])
         return 'cd "${AIRFLOW_HOME}/include/sql/sparte" && dbt test -s ' + dbt_select
 
     @task.python(trigger_rule="all_success")
     def delete_previously_loaded_data_in_dw(**context) -> dict:
-        dataset = context["params"]["dataset"]
-        departement = context["params"]["departement"]
-        years = context["params"]["years"]
+        config = context["params"]["config"]
+        dataset = get_from_config(config, "dataset")
+        departement = get_from_config(config, "departement")
+        years = get_from_config(config, "years")
         conn = Container().psycopg2_dbt_conn()
         cur = conn.cursor()
 
@@ -315,16 +338,19 @@ def ocsge():  # noqa: C901
     @task.python
     def ingest_ocsge(path, **context) -> int:
         loaded_date = int(pendulum.now().timestamp())
-        departement = context["params"]["departement"]
-        years = context["params"]["years"]
-        dataset = context["params"]["dataset"]
+        config = context["params"]["config"]
+        departement = get_from_config(config, "departement")
+        years = get_from_config(config, "years")
+        dataset = get_from_config(config, "dataset")
+        file_format = get_from_config(config, "file_format")
 
-        load_shapefiles_to_dw(
+        load_data_to_dw(
             path=path,
             years=years,
             departement=departement,
             loaded_date=loaded_date,
             dataset=dataset,
+            file_format=file_format,
             table_key="dw_source",
         )
 
@@ -332,7 +358,8 @@ def ocsge():  # noqa: C901
 
     @task.bash(retries=0, trigger_rule="all_success", pool=DBT_POOL)
     def dbt_run_ocsge(**context):
-        dataset = context["params"]["dataset"]
+        config = context["params"]["config"]
+        dataset = get_from_config(config, "dataset")
         dbt_build = context["params"]["dbt_build"]
 
         if not dbt_build:
@@ -343,13 +370,14 @@ def ocsge():  # noqa: C901
 
     @task.python(trigger_rule="all_done")
     def log_to_mattermost(**context):
+        config = context["params"]["config"]
         dbt_build = "Oui" if context["params"]["dbt_build"] else "Non"
         refresh_source = "Oui" if context["params"]["refresh_source"] else "Non"
-        years = ", ".join(context["params"]["years"])
+        years = ", ".join(map(str, get_from_config(config, "years")))
         message = f"""
 ### Calcul de données OCS GE terminé
-- Jeu de donnée : {context["params"]["dataset"]}
-- Departement : {context["params"]["departement"]}
+- Jeu de donnée : {get_from_config(config, "dataset")}
+- Departement : {get_from_config(config, "departement")}
 - Année(s) : {years}
 - Source MAJ : {refresh_source} (si les données sont déjà présentes sur le bucket, elles ne sont pas rechargées)
 - Lancement de dbt : {dbt_build}

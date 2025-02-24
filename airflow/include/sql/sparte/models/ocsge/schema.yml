@@ -185,6 +185,52 @@ models:
 sources:
   - name: public
     tables:
+    - name: ocsge_artif_staging
+      columns:
+      - name: loaded_date
+        data_tests:
+          - not_null
+      - name: id
+        data_tests:
+          - not_null
+          - unique
+      - name: code_cs
+        data_tests:
+          - not_null
+          - accepted_values: *cs_accepted_values
+      - name: code_us
+        data_tests:
+          - not_null
+          - accepted_values: *us_accepted_values
+      - name: geom
+        data_tests:
+          - unique
+          - not_null
+          - is_valid_geom_warning
+          - is_not_empty_geom
+      - name: departement
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('departement')
+              field: code
+      - name: year
+        data_tests:
+          - not_null
+      - name: uuid
+        data_tests:
+          - not_null
+          - unique
+      - name: artif
+        data_tests:
+          - not_null
+          - accepted_values:
+              values: ["artif", "non artif"]
+      - name: crit_seuil
+        data_tests:
+          - not_null
+          - accepted_values:
+              values: [true, false]
     - name: ocsge_zone_construite_staging
       columns:
       - name: loaded_date
@@ -298,3 +344,4 @@ sources:
     - name: ocsge_difference
     - name: ocsge_occupation_du_sol
     - name: ocsge_zone_construite
+    - name: ocsge_artif
