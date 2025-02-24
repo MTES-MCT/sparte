@@ -169,4 +169,8 @@ diff_bfc_*
 
 # Webpack bundles
 static/assets/scripts/
-static/assets/styles/*.css.map
+static/assets/styles/
+static/assets/images/
+static/assets/fonts/
+
+static/webpack-stats.json

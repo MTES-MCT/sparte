@@ -1,16 +1,23 @@
-<div class="dropdown custom-dropdown fr-mr-2w" data-toggle="tooltip" title="Exporter le graphique">
-    <button class="fr-btn fr-icon-download-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="dropdown" aria-expanded="false"></button>
-
-    <ul class="dropdown-menu">
-        <li>
-            <a class="fr-nav__link export-chart" href="#" data-chart-exportpng="{{ chart }}">PNG</a>
-        </li>
-        <li>
-            <a class="fr-nav__link export-chart" href="#" data-chart-exportcsv="{{ chart }}">CSV</a>
-        </li>
-    </ul>
+<div class="fr-translate fr-nav fr-mr-2w">
+    <div class="fr-nav__item">
+        <button class="fr-btn fr-icon-download-line fr-btn--tertiary fr-btn--sm fr-py-2w" aria-controls="dropdown-{{ chart }}" aria-expanded="false" title="Exporter le graphique"></button>
+        <div class="fr-collapse fr-translate__menu fr-menu" id="dropdown-{{ chart }}">
+            <ul class="fr-menu__list">
+                <li>
+                    <a class="fr-nav__link export-chart" href="#" data-chart-exportpng="{{ chart }}">PNG</a>
+                </li>
+                <li>
+                    <a class="fr-nav__link export-chart" href="#" data-chart-exportcsv="{{ chart }}">CSV</a>
+                </li>
+            </ul>
+        </div>
+    </div>
 </div>
 
 {% if show_fullscreen %}
-<button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm fr-mr-2w fullscreen-chart" data-chart-fullscreen="{{ chart }}" data-toggle="tooltip" title="Afficher le graphique en plein écran"></button>
+    <button class="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm fullscreen-chart {% if tips_modal %}fr-mr-2w{% endif %}" data-chart-fullscreen="{{ chart }}" title="Afficher le graphique en plein écran"></button>
+{% endif %}
+
+{% if tips_modal %}
+    <button class="fr-btn fr-icon-question-line fr-btn--tertiary fr-btn--sm" data-bs-toggle="modal" data-bs-target="{{tips_modal}}" aria-describedby="tooltip-tips-{{ chart }}" title="Astuces pour lire le graphique"></button>
 {% endif %}

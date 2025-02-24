@@ -1,6 +1,7 @@
 {% load static %}
 {% load utils_tags %}
 {% load sri %}
+{% load render_bundle from webpack_loader %}
 
 <!DOCTYPE html>
 <html lang="fr">
@@ -20,12 +21,12 @@
         <meta name="msapplication-TileColor" content="#2b5797">
         <meta name="theme-color" content="#ffffff">
 
-        <!-- Core theme CSS (includes Bootstrap)-->
-        {% sri_static "bootstrap522/css/bootstrap.min.css" %}
-        <!-- Bootstrap icon -->
-        <link crossorigin="anonymous" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css" integrity="sha256-8M+b2Hj+vy/2J5tZ9pYDHeuPD59KsaEZn1XXj3xVhjg=">
         <!-- Webpack Bundle CSS -->
-        {% sri_static "assets/styles/main.css" %}
+        {% if debug %}
+            <link rel="stylesheet" href="http://localhost:3000/assets/styles/main.css">
+        {% else %}
+            {% render_bundle 'main' 'css' %}
+        {% endif %}
         <!-- subtemplate header injection -->
         {% block headers %}{% endblock %}
         <!-- Matomo -->
@@ -72,23 +73,13 @@
             {% endblock footer %}
         </div>
 
-        {% sri_static "js/jquery-3.6.0.min.js" %}
-        {% sri_static "bootstrap522/js/bootstrap.bundle.min.js" %}
         <!-- Webpack Bundle JS -->
         {% if debug %}
             <script src="http://localhost:3000/assets/scripts/bundle.dev.js"></script>
         {% else %}
-            <script src="{% static 'assets/scripts/bundle.prod.js' %}"></script>
+            {% render_bundle 'main' 'js' %}
         {% endif %}
 
-        <script nonce="[NONCE_PLACEHOLDER]">
-        // initialize les tooltips
-        $(function () {
-            $('[data-toggle="tooltip"]').tooltip({
-                trigger: 'hover'
-            })
-        })
-        </script>
         <!-- subtemplate footer injection -->
         {% block bodyend %}{% endblock bodyend %}
         <!-- Tagging injection -->

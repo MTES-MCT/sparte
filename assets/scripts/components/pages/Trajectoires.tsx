@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useHtmlLoader } from '@hooks/useHtmlLoader';
 import useHtmx from '@hooks/useHtmx';
 import useHighcharts from '@hooks/useHighcharts';
+import { Modal } from 'bootstrap';
 import Loader from '@components/ui/Loader';
 import Guide from '@components/widgets/Guide';
 
@@ -40,12 +41,12 @@ const Trajectoires: React.FC<{ endpoint: string }> = ({ endpoint }) => {
             // Ferme la modal Bootstrap
             const modalElement = document.getElementById("setTarget");
             if (modalElement) {
-                const modalInstance = window.bootstrap.Modal.getInstance(modalElement);
+                const modalInstance = Modal.getInstance(modalElement);
                 if (modalInstance) {
                     modalInstance.hide();
                 }
             }
-
+    
             // Rafraîchit la clé après avoir fermé la modal pour recharger le contenu
             setRefreshKey(prevKey => prevKey + 1);
         };
@@ -55,6 +56,7 @@ const Trajectoires: React.FC<{ endpoint: string }> = ({ endpoint }) => {
         return () => {
             document.removeEventListener('load-graphic', handleLoadGraphic);
         };
+        
     }, []);
 
     if (isLoading) return <Loader />;
