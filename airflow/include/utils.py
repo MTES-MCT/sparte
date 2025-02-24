@@ -1,6 +1,19 @@
 import os
+import subprocess
 
 import geopandas as gpd
+
+
+def get_shapefile_or_geopackage_first_layer_name(path: str) -> str:
+    cmd = f"ogrinfo {path}"
+    output = subprocess.check_output(cmd, shell=True).decode("utf-8")
+    lines = output.split("\n")
+
+    for line in lines:
+        if line.startswith("1:"):
+            return line.split("1: ")[1].split(" (")[0]
+
+    raise ValueError(f"Could not find layer name in {path}")
 
 
 def get_shapefile_or_geopackage_fields(path: str) -> list[str]:

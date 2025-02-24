@@ -35,6 +35,7 @@ from include.domain.data.ocsge.normalization import (
 from include.pools import DBT_POOL, OCSGE_STAGING_POOL
 from include.utils import (
     get_shapefile_or_geopackage_fields,
+    get_shapefile_or_geopackage_first_layer_name,
     multiline_string_to_single_line,
 )
 
@@ -153,7 +154,7 @@ def load_data_to_dw(
     file_matching_names_found = 0
 
     for file_path, filename in get_paths_from_directory(extract_dir):
-        if not file_path.endswith(f".{file_format}"):
+        if not file_path.endswith(f".{file_format}") or "__MACOSX" in file_path:
             continue
         variables = get_vars_by_filename(filename)
 
@@ -166,7 +167,7 @@ def load_data_to_dw(
 
         sql = multiline_string_to_single_line(
             variables["normalization_sql"](
-                layer_name=filename.split(".")[0],
+                layer_name=get_shapefile_or_geopackage_first_layer_name(file_path),
                 years=years,
                 departement=departement,
                 loaded_date=loaded_date,
