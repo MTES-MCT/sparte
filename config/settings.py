@@ -579,6 +579,7 @@ CSP_CONNECT_SRC = [
     "https://openmaptiles.github.io",
     "https://stats.beta.gouv.fr",
     "https://s3.fr-par.scw.cloud",
+    "https://sparte.s3.fr-par.scw.cloud",
     # Crisp
     "https://client.crisp.chat",
     "https://storage.crisp.chat",
