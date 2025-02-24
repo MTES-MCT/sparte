@@ -14,7 +14,7 @@ SELECT
     COALESCE(imper.year_new, desimper.year_new) as year_new
 
 FROM {{ ref('imper_flux_commune') }} as imper
-INNER JOIN
+LEFT JOIN
     {{ ref('desimper_flux_commune') }} as desimper
 ON imper.commune_code = desimper.commune_code
 AND imper.year_old = desimper.year_old

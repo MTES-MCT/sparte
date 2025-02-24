@@ -14,7 +14,7 @@ SELECT
     COALESCE(artif.year_new, desartif.year_new) as year_new
 
 FROM {{ ref('artif_flux_commune') }} as artif
-INNER JOIN
+LEFT JOIN
     {{ ref('desartif_flux_commune') }} as desartif
 ON artif.commune_code = desartif.commune_code
 AND artif.year_old = desartif.year_old
