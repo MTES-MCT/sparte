@@ -24,6 +24,9 @@ def remove_extension_from_layer_name(path: str, current_layer_name: str) -> str:
 
 
 def get_geom_field_name(path: str, layer_name: str):
+    if path.endswith(".shp"):
+        return "GEOMETRY"
+
     cmd = f"ogrinfo -so {path} {layer_name}"
     output = subprocess.check_output(cmd, shell=True).decode("utf-8")
     lines = output.split("\n")
