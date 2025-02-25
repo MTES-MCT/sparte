@@ -5,6 +5,7 @@ PostgreSQL, puis lance un job dbt pour les transformer.
 
 import cgi
 import json
+import logging
 import os
 import tempfile
 from typing import Literal
@@ -34,10 +35,14 @@ from include.domain.data.ocsge.normalization import (
 )
 from include.pools import DBT_POOL, OCSGE_STAGING_POOL
 from include.utils import (
+    get_geom_field_name,
     get_shapefile_or_geopackage_fields,
     get_shapefile_or_geopackage_first_layer_name,
     multiline_string_to_single_line,
+    remove_extension_from_layer_name,
 )
+
+log = logging.getLogger(__name__)
 
 
 def get_paths_from_directory(directory: str) -> list[tuple[str, str]]:
@@ -164,18 +169,32 @@ def load_data_to_dw(
         file_matching_names_found += 1
 
         fields = get_shapefile_or_geopackage_fields(file_path)
+        log.info(f"Fields found in {file_path} : {fields}")
+
+        layer_name = get_shapefile_or_geopackage_first_layer_name(file_path)
+        log.info(f"Layer name found in {file_path} : {layer_name}")
+
+        if "." in layer_name:
+            log.warning(f"Layer name contains a dot. Removing extension from layer name. Layer name : {layer_name}")
+            layer_name = remove_extension_from_layer_name(file_path, layer_name)
+            log.info(f"Layer name after removing extension : {layer_name}")
+
+        geom_field = get_geom_field_name(file_path, layer_name)
+        log.info(f"Geometry field found in {file_path} : {geom_field}")
 
         sql = multiline_string_to_single_line(
             variables["normalization_sql"](
-                layer_name=get_shapefile_or_geopackage_first_layer_name(file_path),
+                layer_name=layer_name,
                 years=years,
                 departement=departement,
                 loaded_date=loaded_date,
                 fields=fields,
-                geom_field="GEOMETRY" if file_format == "shp" else "the_geom",
+                geom_field=geom_field,
             )
         )
+        log.info(f"Normalization SQL : {sql}")
         table_name = variables[table_key]
+        log.info(f"Table name : {table_name}")
 
         cmd = [
             "ogr2ogr",
