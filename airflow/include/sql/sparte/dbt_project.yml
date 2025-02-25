@@ -42,6 +42,8 @@ models:
       +schema: insee
     for_app:
       +schema: for_app
+    for_export:
+      +schema: for_export
     sitadel:
       +schema: sitadel
     rpls:
