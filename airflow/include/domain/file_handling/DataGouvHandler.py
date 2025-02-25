@@ -1,6 +1,10 @@
 import requests
 
 
+class DataGouvException(Exception):
+    pass
+
+
 class DataGouvHandler:
     def __init__(
         self,
@@ -33,6 +37,6 @@ class DataGouvHandler:
         )
 
         if not response.ok:
-            raise Exception(response.text)
+            raise DataGouvException(response.text)
 
         return response.json()
