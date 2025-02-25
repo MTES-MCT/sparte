@@ -6,21 +6,28 @@
 
 {% block headers %}
 <style nonce="[NONCE_PLACEHOLDER]">
-th, td{
-    border: 1px solid gray;
+th {
+    font-size: 0.8em !important;
+    line-height: 1.2em !important;
+}
+
+td {
+    font-size: 0.7em !important;
+    line-height: 1.1em !important;
+    white-space: nowrap !important;
 }
 
 thead th,
-td{
-    text-align: center;
+td {
+    text-align: center !important;
 }
 
-.tooltiped {
-    border-bottom:1px dashed #000; /* little indicater to indicate it's hoverable */
+td {
+    background-color: #C6E0B4 !important;
 }
 
 td.artificiel {
-    background-color:rgba(255,0,0,0.5) !important;
+    background-color: #FFABAB !important;
 }
 </style>
 {% endblock %}
@@ -32,267 +39,274 @@ td.artificiel {
 
     <p class="mb-5">Cette matrice présente comment déterminer si un sol est artificiel ou non en utilisant l'OCS GE. La règle a été publiée dans le <a href="https://drive.google.com/file/d/1CjP-JSn2LbX4dL0J0XjQQA1bMfTV8D2b/view">JOURNAL OFFICIEL DE LA RÉPUBLIQUE FRANÇAISE en date du 30 avril 2022</a>.</p>
 
-    <div class="table table-responsive">
-        <table class="table table-responsive table-sm table-striped table-hover">
-            <thead>
-                <tr>
-                    <th rowspan="4" colspan="3"></th>
-                    <th colspan="7">CS1 - Sans végétation</th>
-                    <th colspan="7">CS2 - Avec végétation</th>
-                </tr>
-                <tr>
-                    <th colspan="4">CS1.1 - Surfaces anthropisées</th>
-                    <th colspan="3">CS1.2 - Surfaces naturelles</th>
-                    <th colspan="5">CS2.1 - Végétation ligneuse</th>
-                    <th colspan="2">CS2.2 - Végétation non ligneuse</th>
-                </tr>
-                <tr>
-                    <th colspan="2">CS1.1.1 - Zones imperméables</th>
-                    <th colspan="2">CS1.1.2 - Zones perméables</th>
-                    <th rowspan="2"><span title="(Sable; pierres meubles; rochers saillants; …)">CS1.2.1 - Sols nus</span></th>
-                    <th rowspan="2"><span title="(Eau continentale et maritime)">CS1.2.2 - Surfaces d'eau</span></th>
-                    <th rowspan="2">CS1.2.3 - Névés et glaciers</th>
-                    <th colspan="3">CS2.1.1 - Formations arborées</th>
-                    <th rowspan="2"><span title="(Landes basses; formations arbustives; formations arbustives organisées; …)">CS2.1.2 - Formations arbustives et sous-arbrisseaux</span></th>
-                    <th rowspan="2"><span title="(Vignes et autres lianes)">CS2.1.3 - Autres formations ligneuses</span></th>
-                    <th rowspan="2"><span title="(Pelouses et prairies; terres arables; roselières; …)">CS2.2.1 - Formations herbacées</span></th>
-                    <th rowspan="2"><span title="(Lichen; mousse; bananiers; bambous; ...)">CS2.2.2 - Autres formations non ligneuses</span></th>
-                </tr>
-                <tr>
-                    <th rowspan="1">CS1.1.1.1 - Zones bâties</th>
-                    <th><span title="(Routes; places; parking…)">CS1.1.1.2 - Zones non bâties</span></th>
-                    <th>CS1.1.2.1 - Zones à matériaux minéraux</th>
-                    <th>CS1.1.2.2 - Zones à autres matériaux composites</th>
-                    <th>CS2.1.1.1 - Peuplement de feuillus</th>
-                    <th>CS2.1.1.2 - Peuplement de conifères</th>
-                    <th>CS2.1.1.3 - Peuplement mixte</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <th rowspan="5">US1 - Production primaire</th>
-                    <th colspan="2">US1.1 - Agriculture</th>
-                    {% for code_couverture, item in matrix_1_1.items %}
-                        {% if item.is_artificial %}
-                            <td class="artificiel">Artificiel</td>
-                        {% else %}
-                            <td></td>
-                        {% endif %}
-                    {% endfor %}
-                </tr>
-                <tr>
-                    <th colspan="2">US1.2 - Sylviculture</th>
-                    {% for code_couverture, item in matrix_1_2.items %}
-                        {% if item.is_artificial %}
-                            <td class="artificiel">Artificiel</td>
-                        {% else %}
-                            <td></td>
-                        {% endif %}
-                    {% endfor %}
-                </tr>
-                <tr>
-                    <th colspan="2">US1.3 - Activités d'extraction</th>
-                    {% for code_couverture, item in matrix_1_3.items %}
-                        {% if item.is_artificial %}
-                            <td class="artificiel">Artificiel</td>
-                        {% else %}
-                            <td></td>
-                        {% endif %}
-                    {% endfor %}
-                </tr>
-                <tr>
-                    <th colspan="2">US1.4 - Pêche et aquaculture</th>
-                    {% for code_couverture, item in matrix_1_4.items %}
-                        {% if item.is_artificial %}
-                            <td class="artificiel">Artificiel</td>
-                        {% else %}
-                            <td></td>
-                        {% endif %}
-                    {% endfor %}
-                </tr>
-                <tr>
-                    <th colspan="2">US1.5 - Autres prod. primaires</th>
-                    {% for code_couverture, item in matrix_1_5.items %}
-                        {% if item.is_artificial %}
-                            <td class="artificiel">Artificiel</td>
-                        {% else %}
-                            <td></td>
-                        {% endif %}
-                    {% endfor %}
-                </tr>
-                <tr>
-                    <th colspan="3">US2 - Secondaire</th>
+    <div class="fr-table fr-table--bordered">
+        <div class="fr-table__wrapper">
+            <div class="fr-table__container">
+                <div class="fr-table__content">
+                    <table class="fr-cell--multiline">
+                        <thead>
+                            <tr>
+                                <th rowspan="5" colspan="4"></th> <!-- Modification ici -->
+                                <th colspan="14">Couverture du sol</th>
+                            </tr>
+                            <tr>
+                                <th colspan="7">CS1 Sans végétation</th>
+                                <th colspan="7">CS2 Avec végétation</th>
+                            </tr>
+                            <tr>
+                                <th colspan="4">CS1.1 Surfaces anthropisées</th>
+                                <th colspan="3">CS1.2 Surfaces naturelles</th>
+                                <th colspan="5">CS2.1 Végétation ligneuse</th>
+                                <th colspan="2">CS2.2 Végétation non ligneuse</th>
+                            </tr>
+                            <tr>
+                                <th colspan="2">CS1.1.1 Zones imperméables</th>
+                                <th colspan="2">CS1.1.2 Zones perméables</th>
+                                <th rowspan="2"><span title="(Sable; pierres meubles; rochers saillants; …)">CS1.2.1 Sols nus</span></th>
+                                <th rowspan="2"><span title="(Eau continentale et maritime)">CS1.2.2 Surfaces d'eau</span></th>
+                                <th rowspan="2">CS1.2.3 Névés et glaciers</th>
+                                <th colspan="3">CS2.1.1 Formations arborées</th>
+                                <th rowspan="2"><span title="(Landes basses; formations arbustives; formations arbustives organisées; …)">CS2.1.2 Formations arbustives et sous-arbrisseaux</span></th>
+                                <th rowspan="2"><span title="(Vignes et autres lianes)">CS2.1.3 Autres formations ligneuses</span></th>
+                                <th rowspan="2"><span title="(Pelouses et prairies; terres arables; roselières; …)">CS2.2.1 Formations herbacées</span></th>
+                                <th rowspan="2"><span title="(Lichen; mousse; bananiers; bambous; ...)">CS2.2.2 Autres formations non ligneuses</span></th>
+                            </tr>
+                            <tr>
+                                <th rowspan="1">CS1.1.1.1 Zones bâties</th>
+                                <th><span title="(Routes; places; parking…)">CS1.1.1.2 Zones non bâties</span></th>
+                                <th>CS1.1.2.1 Zones à matériaux minéraux</th>
+                                <th>CS1.1.2.2 Zones à autres matériaux composites</th>
+                                <th>CS2.1.1.1 Peuplement de feuillus</th>
+                                <th>CS2.1.1.2 Peuplement de conifères</th>
+                                <th>CS2.1.1.3 Peuplement mixte</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th rowspan="28">Usage du sol</th>
+                                <th rowspan="5">US1 Production primaire</th>
+                                <th colspan="2">US1.1 Agriculture</th>
+                                {% for code_couverture, item in matrix_1_1.items %}
+                                    {% if item.is_artificial %}
+                                        <td class="artificiel">Artif</td>
+                                    {% else %}
+                                         <td>Non Artif</td>
+                                    {% endif %}
+                                {% endfor %}
+                            </tr>
+                            <tr>
+                                <th colspan="2">US1.2 Sylviculture</th>
+                                {% for code_couverture, item in matrix_1_2.items %}
+                                    {% if item.is_artificial %}
+                                        <td class="artificiel">Artif</td>
+                                    {% else %}
+                                         <td>Non Artif</td>
+                                    {% endif %}
+                                {% endfor %}
+                            </tr>
+                            <tr>
+                                <th colspan="2">US1.3 Activités d'extraction</th>
+                                {% for code_couverture, item in matrix_1_3.items %}
+                                    {% if item.is_artificial %}
+                                        <td class="artificiel">Artif</td>
+                                    {% else %}
+                                         <td>Non Artif</td>
+                                    {% endif %}
+                                {% endfor %}
+                            </tr>
+                            <tr>
+                                <th colspan="2">US1.4 Pêche et aquaculture</th>
+                                {% for code_couverture, item in matrix_1_4.items %}
+                                    {% if item.is_artificial %}
+                                        <td class="artificiel">Artif</td>
+                                    {% else %}
+                                         <td>Non Artif</td>
+                                    {% endif %}
+                                {% endfor %}
+                            </tr>
+                            <tr>
+                                <th colspan="2">US1.5 Autres prod. primaires</th>
+                                {% for code_couverture, item in matrix_1_5.items %}
+                                    {% if item.is_artificial %}
+                                        <td class="artificiel">Artif</td>
+                                    {% else %}
+                                         <td>Non Artif</td>
+                                    {% endif %}
+                                {% endfor %}
+                            </tr>
+                            <tr>
+                                <th colspan="3">US2 Secondaire</th>
 
-                    {% for code_couverture, item in matrix_2.items %}
-                        {% if item.is_artificial %}
-                            <td class="artificiel">Artificiel</td>
-                        {% else %}
-                            <td></td>
-                        {% endif %}
-                    {% endfor %}
-                </tr>
-                <tr>
-                    <th colspan="3">US235 - Production secondaire; tertiaire et usage résidentiel</th>
+                                {% for code_couverture, item in matrix_2.items %}
+                                    {% if item.is_artificial %}
+                                        <td class="artificiel">Artif</td>
+                                    {% else %}
+                                         <td>Non Artif</td>
+                                    {% endif %}
+                                {% endfor %}
+                            </tr>
+                            <tr>
+                                <th colspan="3">US235 Production secondaire; tertiaire et usage résidentiel</th>
 
-                    {% for code_couverture, item in matrix_235.items %}
-                        {% if item.is_artificial %}
-                            <td class="artificiel">Artificiel</td>
-                        {% else %}
-                            <td></td>
-                        {% endif %}
-                    {% endfor %}
-                </tr>
-                <tr>
-                    <th colspan="3">US3 - Tertiaire</th>
+                                {% for code_couverture, item in matrix_235.items %}
+                                    {% if item.is_artificial %}
+                                        <td class="artificiel">Artif</td>
+                                    {% else %}
+                                         <td>Non Artif</td>
+                                    {% endif %}
+                                {% endfor %}
+                            </tr>
+                            <tr>
+                                <th colspan="3">US3 Tertiaire</th>
 
-                    {% for code_couverture, item in matrix_3.items %}
-                        {% if item.is_artificial %}
-                            <td class="artificiel">Artificiel</td>
-                        {% else %}
-                            <td></td>
-                        {% endif %}
-                    {% endfor %}
-                </tr>
-                <tr>
-                    <th rowspan="7">US4 - Réseaux de transport logistiques et infrastructures</th>
-                    <th rowspan="5">US4.1 - Réseaux de transport</th>
-                    <th>US4.1.1 - Routier</th>
+                                {% for code_couverture, item in matrix_3.items %}
+                                    {% if item.is_artificial %}
+                                        <td class="artificiel">Artif</td>
+                                    {% else %}
+                                         <td>Non Artif</td>
+                                    {% endif %}
+                                {% endfor %}
+                            </tr>
+                            <tr>
+                                <th rowspan="7">US4 Réseaux de transport logistiques et infrastructures</th>
+                                <th rowspan="5">US4.1 Réseaux de transport</th>
+                                <th>US4.1.1 Routier</th>
 
-                    {% for code_couverture, item in matrix_4_1_1.items %}
-                        {% if item.is_artificial %}
-                            <td class="artificiel">Artificiel</td>
-                        {% else %}
-                            <td></td>
-                        {% endif %}
-                    {% endfor %}
-                </tr>
-                <tr>
-                    <th>US4.1.2 - Ferré</th>
+                                {% for code_couverture, item in matrix_4_1_1.items %}
+                                    {% if item.is_artificial %}
+                                        <td class="artificiel">Artif</td>
+                                    {% else %}
+                                         <td>Non Artif</td>
+                                    {% endif %}
+                                {% endfor %}
+                            </tr>
+                            <tr>
+                                <th>US4.1.2 Ferré</th>
 
-                    {% for code_couverture, item in matrix_4_1_2.items %}
-                        {% if item.is_artificial %}
-                            <td class="artificiel">Artificiel</td>
-                        {% else %}
-                            <td></td>
-                        {% endif %}
-                    {% endfor %}
-                </tr>
-                <tr>
-                    <th>US4.1.3 - Aérien</th>
+                                {% for code_couverture, item in matrix_4_1_2.items %}
+                                    {% if item.is_artificial %}
+                                        <td class="artificiel">Artif</td>
+                                    {% else %}
+                                         <td>Non Artif</td>
+                                    {% endif %}
+                                {% endfor %}
+                            </tr>
+                            <tr>
+                                <th>US4.1.3 Aérien</th>
 
-                    {% for code_couverture, item in matrix_4_1_3.items %}
-                        {% if item.is_artificial %}
-                            <td class="artificiel">Artificiel</td>
-                        {% else %}
-                            <td></td>
-                        {% endif %}
-                    {% endfor %}
-                </tr>
-                <tr>
-                    <th>US4.1.4 - Eau</th>
+                                {% for code_couverture, item in matrix_4_1_3.items %}
+                                    {% if item.is_artificial %}
+                                        <td class="artificiel">Artif</td>
+                                    {% else %}
+                                         <td>Non Artif</td>
+                                    {% endif %}
+                                {% endfor %}
+                            </tr>
+                            <tr>
+                                <th>US4.1.4 Eau</th>
 
-                    {% for code_couverture, item in matrix_4_1_4.items %}
-                        {% if item.is_artificial %}
-                            <td class="artificiel">Artificiel</td>
-                        {% else %}
-                            <td></td>
-                        {% endif %}
-                    {% endfor %}
-                </tr>
-                <tr>
-                    <th>US4.1.5 - Autres réseaux de transport</th>
+                                {% for code_couverture, item in matrix_4_1_4.items %}
+                                    {% if item.is_artificial %}
+                                        <td class="artificiel">Artif</td>
+                                    {% else %}
+                                         <td>Non Artif</td>
+                                    {% endif %}
+                                {% endfor %}
+                            </tr>
+                            <tr>
+                                <th>US4.1.5 Autres réseaux de transport</th>
 
-                    {% for code_couverture, item in matrix_4_1_5.items %}
-                        {% if item.is_artificial %}
-                            <td class="artificiel">Artificiel</td>
-                        {% else %}
-                            <td></td>
-                        {% endif %}
-                    {% endfor %}
-                </tr>
-                <tr>
-                    <th colspan="2">US4.2 - Services de logistique et de stockage</th>
+                                {% for code_couverture, item in matrix_4_1_5.items %}
+                                    {% if item.is_artificial %}
+                                        <td class="artificiel">Artif</td>
+                                    {% else %}
+                                         <td>Non Artif</td>
+                                    {% endif %}
+                                {% endfor %}
+                            </tr>
+                            <tr>
+                                <th colspan="2">US4.2 Services de logistique et de stockage</th>
 
-                    {% for code_couverture, item in matrix_4_2.items %}
-                        {% if item.is_artificial %}
-                            <td class="artificiel">Artificiel</td>
-                        {% else %}
-                            <td></td>
-                        {% endif %}
-                    {% endfor %}
-                </tr>
-                <tr>
-                    <th colspan="2">US4.3 - Réseaux d'utilité publique</th>
+                                {% for code_couverture, item in matrix_4_2.items %}
+                                    {% if item.is_artificial %}
+                                        <td class="artificiel">Artif</td>
+                                    {% else %}
+                                         <td>Non Artif</td>
+                                    {% endif %}
+                                {% endfor %}
+                            </tr>
+                            <tr>
+                                <th colspan="2">US4.3 Réseaux d'utilité publique</th>
 
-                    {% for code_couverture, item in matrix_4_3.items %}
-                        {% if item.is_artificial %}
-                            <td class="artificiel">Artificiel</td>
-                        {% else %}
-                            <td></td>
-                        {% endif %}
-                    {% endfor %}
-                </tr>
-                <tr>
-                    <th colspan="3">US5 - Résidentiel</th>
+                                {% for code_couverture, item in matrix_4_3.items %}
+                                    {% if item.is_artificial %}
+                                        <td class="artificiel">Artif</td>
+                                    {% else %}
+                                         <td>Non Artif</td>
+                                    {% endif %}
+                                {% endfor %}
+                            </tr>
+                            <tr>
+                                <th colspan="3">US5 Résidentiel</th>
 
-                    {% for code_couverture, item in matrix_5.items %}
-                        {% if item.is_artificial %}
-                            <td class="artificiel">Artificiel</td>
-                        {% else %}
-                            <td></td>
-                        {% endif %}
-                    {% endfor %}
-                </tr>
-                <tr>
-                    <th rowspan="4">US6 - Autre usage</th>
-                    <th colspan="2">US6.1 - Zones en transition</th>
+                                {% for code_couverture, item in matrix_5.items %}
+                                    {% if item.is_artificial %}
+                                        <td class="artificiel">Artif</td>
+                                    {% else %}
+                                         <td>Non Artif</td>
+                                    {% endif %}
+                                {% endfor %}
+                            </tr>
+                            <tr>
+                                <th rowspan="4">US6 Autre usage</th>
+                                <th colspan="2">US6.1 Zones en transition</th>
 
-                    {% for code_couverture, item in matrix_6_1.items %}
-                        {% if item.is_artificial %}
-                            <td class="artificiel">Artificiel</td>
-                        {% else %}
-                            <td></td>
-                        {% endif %}
-                    {% endfor %}
-                </tr>
-                <tr>
-                    <th colspan="2">US6.2 - Zones abandonnées</th>
+                                {% for code_couverture, item in matrix_6_1.items %}
+                                    {% if item.is_artificial %}
+                                        <td class="artificiel">Artif</td>
+                                    {% else %}
+                                         <td>Non Artif</td>
+                                    {% endif %}
+                                {% endfor %}
+                            </tr>
+                            <tr>
+                                <th colspan="2">US6.2 Zones abandonnées</th>
 
-                    {% for code_couverture, item in matrix_6_2.items %}
-                        {% if item.is_artificial %}
-                            <td class="artificiel">Artificiel</td>
-                        {% else %}
-                            <td></td>
-                        {% endif %}
-                    {% endfor %}
-                </tr>
-                <tr>
-                    <th colspan="2">US6.3 - Sans usage</th>
+                                {% for code_couverture, item in matrix_6_2.items %}
+                                    {% if item.is_artificial %}
+                                        <td class="artificiel">Artif</td>
+                                    {% else %}
+                                         <td>Non Artif</td>
+                                    {% endif %}
+                                {% endfor %}
+                            </tr>
+                            <tr>
+                                <th colspan="2">US6.3 Sans usage</th>
 
-                    {% for code_couverture, item in matrix_6_3.items %}
-                        {% if item.is_artificial %}
-                            <td class="artificiel">Artificiel</td>
-                        {% else %}
-                            <td></td>
-                        {% endif %}
-                    {% endfor %}
-                </tr>
-                <tr>
-                    <th colspan="2">US6.6 - Usage Inconnu</th>
+                                {% for code_couverture, item in matrix_6_3.items %}
+                                    {% if item.is_artificial %}
+                                        <td class="artificiel">Artif</td>
+                                    {% else %}
+                                         <td>Non Artif</td>
+                                    {% endif %}
+                                {% endfor %}
+                            </tr>
+                            <tr>
+                                <th colspan="2">US6.6 Usage Inconnu</th>
 
-                    {% for code_couverture, item in matrix_6_6.items %}
-                        {% if item.is_artificial %}
-                            <td class="artificiel">Artificiel</td>
-                        {% else %}
-                            <td></td>
-                        {% endif %}
-                    {% endfor %}
-                </tr>
-            </tbody>
-        </table>
+                                {% for code_couverture, item in matrix_6_6.items %}
+                                    {% if item.is_artificial %}
+                                        <td class="artificiel">Artif</td>
+                                    {% else %}
+                                         <td>Non Artif</td>
+                                    {% endif %}
+                                {% endfor %}
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
-
-</div>
-
 </div>
 {% endblock %}
