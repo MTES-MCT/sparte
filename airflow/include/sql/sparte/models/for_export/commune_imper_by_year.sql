@@ -1,11 +1,24 @@
-{{ config(materialized='table') }}
+{{ config(materialized="table") }}
 
-with latest_imper_commune as (
-    SELECT distinct commune_code, percent, surface, year
-    FROM {{ ref('imper_commune') }} as imper
-    ORDER BY year DESC
-)
-SELECT
+with
+    imper_commune_with_row_number as (
+        -- Marque les données les plus récentes pour chaque commune (rn = 1)
+        select
+            commune_code,
+            percent,
+            surface,
+            year,
+            row_number() over (partition by commune_code order by year desc) as rn
+        from {{ ref("imper_commune") }} as imper
+        order by year desc
+    ),
+    latest_imper_commune as (
+        -- Sélectionne les données les plus récentes pour chaque commune
+        select commune_code, percent, surface, year
+        from imper_commune_with_row_number
+        where rn = 1
+    )
+select
     latest_imper_commune.commune_code,
     commune.name as nom,
     latest_imper_commune.percent as pourcent_imper,
@@ -19,7 +32,7 @@ SELECT
     commune.epci as epci,
     commune.scot as scot,
     commune.surface as commune_surface,
-    ST_Transform(commune.geom, 4326) as geom
-FROM latest_imper_commune
-LEFT JOIN {{ ref('commune') }} as commune
-ON latest_imper_commune.commune_code = commune.code
+    st_transform(commune.geom, 4326) as geom
+from latest_imper_commune
+left join
+    {{ ref("commune") }} as commune on latest_imper_commune.commune_code = commune.code
