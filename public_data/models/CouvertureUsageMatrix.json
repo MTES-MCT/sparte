@@ -726,9 +726,7 @@
             "couverture": 27,
             "usage": 20,
             "is_artificial": true,
-            "is_impermeable": true,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": true
         }
     },
     {
@@ -738,9 +736,7 @@
             "couverture": 27,
             "usage": 23,
             "is_artificial": true,
-            "is_impermeable": true,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": true
         }
     },
     {
@@ -750,9 +746,7 @@
             "couverture": 27,
             "usage": 24,
             "is_artificial": true,
-            "is_impermeable": true,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": true
         }
     },
     {
@@ -762,9 +756,7 @@
             "couverture": 27,
             "usage": 25,
             "is_artificial": true,
-            "is_impermeable": true,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": true
         }
     },
     {
@@ -774,9 +766,7 @@
             "couverture": 27,
             "usage": 27,
             "is_artificial": true,
-            "is_impermeable": true,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": true
         }
     },
     {
@@ -786,9 +776,7 @@
             "couverture": 27,
             "usage": 39,
             "is_artificial": true,
-            "is_impermeable": true,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": true
         }
     },
     {
@@ -798,9 +786,7 @@
             "couverture": 27,
             "usage": 26,
             "is_artificial": true,
-            "is_impermeable": true,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": true
         }
     },
     {
@@ -810,9 +796,7 @@
             "couverture": 27,
             "usage": 40,
             "is_artificial": true,
-            "is_impermeable": true,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": true
         }
     },
     {
@@ -822,9 +806,7 @@
             "couverture": 27,
             "usage": 28,
             "is_artificial": true,
-            "is_impermeable": true,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": true
         }
     },
     {
@@ -834,9 +816,7 @@
             "couverture": 27,
             "usage": 29,
             "is_artificial": true,
-            "is_impermeable": true,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": true
         }
     },
     {
@@ -846,9 +826,7 @@
             "couverture": 27,
             "usage": 41,
             "is_artificial": true,
-            "is_impermeable": true,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": true
         }
     },
     {
@@ -858,9 +836,7 @@
             "couverture": 27,
             "usage": 42,
             "is_artificial": true,
-            "is_impermeable": true,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": true
         }
     },
     {
@@ -870,9 +846,7 @@
             "couverture": 27,
             "usage": 43,
             "is_artificial": true,
-            "is_impermeable": true,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": true
         }
     },
     {
@@ -882,9 +856,7 @@
             "couverture": 27,
             "usage": 33,
             "is_artificial": true,
-            "is_impermeable": true,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": true
         }
     },
     {
@@ -894,9 +866,7 @@
             "couverture": 27,
             "usage": 34,
             "is_artificial": true,
-            "is_impermeable": true,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": true
         }
     },
     {
@@ -906,9 +876,7 @@
             "couverture": 27,
             "usage": 31,
             "is_artificial": true,
-            "is_impermeable": true,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": true
         }
     },
     {
@@ -918,9 +886,7 @@
             "couverture": 27,
             "usage": 32,
             "is_artificial": true,
-            "is_impermeable": true,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": true
         }
     },
     {
@@ -930,9 +896,7 @@
             "couverture": 27,
             "usage": 35,
             "is_artificial": true,
-            "is_impermeable": true,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": true
         }
     },
     {
@@ -942,9 +906,7 @@
             "couverture": 27,
             "usage": 36,
             "is_artificial": true,
-            "is_impermeable": true,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": true
         }
     },
     {
@@ -954,9 +916,7 @@
             "couverture": 27,
             "usage": 37,
             "is_artificial": true,
-            "is_impermeable": true,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": true
         }
     },
     {
@@ -966,9 +926,7 @@
             "couverture": 27,
             "usage": 38,
             "is_artificial": true,
-            "is_impermeable": true,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": true
         }
     },
     {
@@ -978,9 +936,7 @@
             "couverture": 27,
             "usage": 30,
             "is_artificial": true,
-            "is_impermeable": true,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": true
         }
     },
     {
@@ -990,9 +946,7 @@
             "couverture": 27,
             "usage": 21,
             "is_artificial": true,
-            "is_impermeable": true,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": true
         }
     },
     {
@@ -1002,9 +956,7 @@
             "couverture": 27,
             "usage": 22,
             "is_artificial": true,
-            "is_impermeable": true,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": true
         }
     },
     {
@@ -1014,9 +966,7 @@
             "couverture": 28,
             "usage": 20,
             "is_artificial": true,
-            "is_impermeable": true,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": true
         }
     },
     {
@@ -1026,9 +976,7 @@
             "couverture": 28,
             "usage": 23,
             "is_artificial": true,
-            "is_impermeable": true,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": true
         }
     },
     {
@@ -1038,9 +986,7 @@
             "couverture": 28,
             "usage": 24,
             "is_artificial": true,
-            "is_impermeable": true,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": true
         }
     },
     {
@@ -1050,9 +996,7 @@
             "couverture": 28,
             "usage": 25,
             "is_artificial": true,
-            "is_impermeable": true,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": true
         }
     },
     {
@@ -1062,9 +1006,7 @@
             "couverture": 28,
             "usage": 27,
             "is_artificial": true,
-            "is_impermeable": true,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": true
         }
     },
     {
@@ -1074,9 +1016,7 @@
             "couverture": 28,
             "usage": 39,
             "is_artificial": true,
-            "is_impermeable": true,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": true
         }
     },
     {
@@ -1086,9 +1026,7 @@
             "couverture": 28,
             "usage": 26,
             "is_artificial": true,
-            "is_impermeable": true,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": true
         }
     },
     {
@@ -1098,9 +1036,7 @@
             "couverture": 28,
             "usage": 40,
             "is_artificial": true,
-            "is_impermeable": true,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": true
         }
     },
     {
@@ -1110,9 +1046,7 @@
             "couverture": 28,
             "usage": 28,
             "is_artificial": true,
-            "is_impermeable": true,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": true
         }
     },
     {
@@ -1122,9 +1056,7 @@
             "couverture": 28,
             "usage": 29,
             "is_artificial": true,
-            "is_impermeable": true,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": true
         }
     },
     {
@@ -1134,9 +1066,7 @@
             "couverture": 28,
             "usage": 41,
             "is_artificial": true,
-            "is_impermeable": true,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": true
         }
     },
     {
@@ -1146,9 +1076,7 @@
             "couverture": 28,
             "usage": 42,
             "is_artificial": true,
-            "is_impermeable": true,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": true
         }
     },
     {
@@ -1158,9 +1086,7 @@
             "couverture": 28,
             "usage": 43,
             "is_artificial": true,
-            "is_impermeable": true,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": true
         }
     },
     {
@@ -1170,9 +1096,7 @@
             "couverture": 28,
             "usage": 33,
             "is_artificial": true,
-            "is_impermeable": true,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": true
         }
     },
     {
@@ -1182,9 +1106,7 @@
             "couverture": 28,
             "usage": 34,
             "is_artificial": true,
-            "is_impermeable": true,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": true
         }
     },
     {
@@ -1194,9 +1116,7 @@
             "couverture": 28,
             "usage": 31,
             "is_artificial": true,
-            "is_impermeable": true,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": true
         }
     },
     {
@@ -1206,9 +1126,7 @@
             "couverture": 28,
             "usage": 32,
             "is_artificial": true,
-            "is_impermeable": true,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": true
         }
     },
     {
@@ -1218,9 +1136,7 @@
             "couverture": 28,
             "usage": 35,
             "is_artificial": true,
-            "is_impermeable": true,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": true
         }
     },
     {
@@ -1230,9 +1146,7 @@
             "couverture": 28,
             "usage": 36,
             "is_artificial": true,
-            "is_impermeable": true,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": true
         }
     },
     {
@@ -1242,9 +1156,7 @@
             "couverture": 28,
             "usage": 37,
             "is_artificial": true,
-            "is_impermeable": true,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": true
         }
     },
     {
@@ -1254,9 +1166,7 @@
             "couverture": 28,
             "usage": 38,
             "is_artificial": true,
-            "is_impermeable": true,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": true
         }
     },
     {
@@ -1266,9 +1176,7 @@
             "couverture": 28,
             "usage": 30,
             "is_artificial": true,
-            "is_impermeable": true,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": true
         }
     },
     {
@@ -1278,9 +1186,7 @@
             "couverture": 28,
             "usage": 21,
             "is_artificial": true,
-            "is_impermeable": true,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": true
         }
     },
     {
@@ -1290,9 +1196,7 @@
             "couverture": 28,
             "usage": 22,
             "is_artificial": true,
-            "is_impermeable": true,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": true
         }
     },
     {
@@ -1542,9 +1446,7 @@
             "couverture": 30,
             "usage": 20,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -1564,9 +1466,7 @@
             "couverture": 30,
             "usage": 24,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -1576,9 +1476,7 @@
             "couverture": 30,
             "usage": 25,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -1588,9 +1486,7 @@
             "couverture": 30,
             "usage": 27,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -1600,9 +1496,7 @@
             "couverture": 30,
             "usage": 39,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -1612,9 +1506,7 @@
             "couverture": 30,
             "usage": 26,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -1624,9 +1516,7 @@
             "couverture": 30,
             "usage": 40,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -1636,9 +1526,7 @@
             "couverture": 30,
             "usage": 28,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -1648,9 +1536,7 @@
             "couverture": 30,
             "usage": 29,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -1660,9 +1546,7 @@
             "couverture": 30,
             "usage": 41,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -1672,9 +1556,7 @@
             "couverture": 30,
             "usage": 42,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -1684,9 +1566,7 @@
             "couverture": 30,
             "usage": 43,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -1696,9 +1576,7 @@
             "couverture": 30,
             "usage": 33,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -1708,9 +1586,7 @@
             "couverture": 30,
             "usage": 34,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -1720,9 +1596,7 @@
             "couverture": 30,
             "usage": 31,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -1732,9 +1606,7 @@
             "couverture": 30,
             "usage": 32,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -1744,9 +1616,7 @@
             "couverture": 30,
             "usage": 35,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -1756,9 +1626,7 @@
             "couverture": 30,
             "usage": 36,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -1768,9 +1636,7 @@
             "couverture": 30,
             "usage": 37,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -1780,9 +1646,7 @@
             "couverture": 30,
             "usage": 38,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -1792,9 +1656,7 @@
             "couverture": 30,
             "usage": 30,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -1804,9 +1666,7 @@
             "couverture": 30,
             "usage": 21,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -1816,9 +1676,7 @@
             "couverture": 30,
             "usage": 22,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -1828,9 +1686,7 @@
             "couverture": 31,
             "usage": 20,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -1840,9 +1696,7 @@
             "couverture": 31,
             "usage": 23,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -1852,9 +1706,7 @@
             "couverture": 31,
             "usage": 24,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -1864,9 +1716,7 @@
             "couverture": 31,
             "usage": 25,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -1876,9 +1726,7 @@
             "couverture": 31,
             "usage": 27,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -1888,9 +1736,7 @@
             "couverture": 31,
             "usage": 39,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -1900,9 +1746,7 @@
             "couverture": 31,
             "usage": 26,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -1912,9 +1756,7 @@
             "couverture": 31,
             "usage": 40,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -1924,9 +1766,7 @@
             "couverture": 31,
             "usage": 28,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -1936,9 +1776,7 @@
             "couverture": 31,
             "usage": 29,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -1948,9 +1786,7 @@
             "couverture": 31,
             "usage": 41,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -1960,9 +1796,7 @@
             "couverture": 31,
             "usage": 42,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -1972,9 +1806,7 @@
             "couverture": 31,
             "usage": 43,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -1984,9 +1816,7 @@
             "couverture": 31,
             "usage": 33,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -1996,9 +1826,7 @@
             "couverture": 31,
             "usage": 34,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -2008,9 +1836,7 @@
             "couverture": 31,
             "usage": 31,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -2020,9 +1846,7 @@
             "couverture": 31,
             "usage": 32,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -2032,9 +1856,7 @@
             "couverture": 31,
             "usage": 35,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -2044,9 +1866,7 @@
             "couverture": 31,
             "usage": 36,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -2056,9 +1876,7 @@
             "couverture": 31,
             "usage": 37,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -2068,9 +1886,7 @@
             "couverture": 31,
             "usage": 38,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -2080,9 +1896,7 @@
             "couverture": 31,
             "usage": 30,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -2092,9 +1906,7 @@
             "couverture": 31,
             "usage": 21,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -2104,9 +1916,7 @@
             "couverture": 31,
             "usage": 22,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -4276,9 +4086,7 @@
             "couverture": 26,
             "usage": 20,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -4288,9 +4096,7 @@
             "couverture": 26,
             "usage": 23,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -4300,9 +4106,7 @@
             "couverture": 26,
             "usage": 24,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -4312,9 +4116,7 @@
             "couverture": 26,
             "usage": 25,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -4324,9 +4126,7 @@
             "couverture": 26,
             "usage": 27,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -4336,9 +4136,7 @@
             "couverture": 26,
             "usage": 39,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -4348,9 +4146,7 @@
             "couverture": 26,
             "usage": 26,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -4360,9 +4156,7 @@
             "couverture": 26,
             "usage": 40,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -4372,9 +4166,7 @@
             "couverture": 26,
             "usage": 28,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -4384,9 +4176,7 @@
             "couverture": 26,
             "usage": 29,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -4396,9 +4186,7 @@
             "couverture": 26,
             "usage": 41,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -4408,9 +4196,7 @@
             "couverture": 26,
             "usage": 42,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -4420,9 +4206,7 @@
             "couverture": 26,
             "usage": 43,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -4432,9 +4216,7 @@
             "couverture": 26,
             "usage": 33,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -4444,9 +4226,7 @@
             "couverture": 26,
             "usage": 34,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -4456,9 +4236,7 @@
             "couverture": 26,
             "usage": 31,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -4468,9 +4246,7 @@
             "couverture": 26,
             "usage": 32,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -4480,9 +4256,7 @@
             "couverture": 26,
             "usage": 35,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -4492,9 +4266,7 @@
             "couverture": 26,
             "usage": 36,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -4504,9 +4276,7 @@
             "couverture": 26,
             "usage": 37,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -4516,9 +4286,7 @@
             "couverture": 26,
             "usage": 38,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -4528,9 +4296,7 @@
             "couverture": 26,
             "usage": 30,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -4540,9 +4306,7 @@
             "couverture": 26,
             "usage": 21,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -4552,9 +4316,7 @@
             "couverture": 26,
             "usage": 22,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -4564,9 +4326,7 @@
             "couverture": 29,
             "usage": 20,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -4576,9 +4336,7 @@
             "couverture": 29,
             "usage": 23,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -4588,9 +4346,7 @@
             "couverture": 29,
             "usage": 24,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -4600,9 +4356,7 @@
             "couverture": 29,
             "usage": 25,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -4612,9 +4366,7 @@
             "couverture": 29,
             "usage": 27,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -4624,9 +4376,7 @@
             "couverture": 29,
             "usage": 39,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -4636,9 +4386,7 @@
             "couverture": 29,
             "usage": 26,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -4648,9 +4396,7 @@
             "couverture": 29,
             "usage": 40,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -4660,9 +4406,7 @@
             "couverture": 29,
             "usage": 28,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -4672,9 +4416,7 @@
             "couverture": 29,
             "usage": 29,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -4684,9 +4426,7 @@
             "couverture": 29,
             "usage": 41,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -4696,9 +4436,7 @@
             "couverture": 29,
             "usage": 42,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -4708,9 +4446,7 @@
             "couverture": 29,
             "usage": 43,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -4720,9 +4456,7 @@
             "couverture": 29,
             "usage": 33,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -4732,9 +4466,7 @@
             "couverture": 29,
             "usage": 34,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -4744,9 +4476,7 @@
             "couverture": 29,
             "usage": 31,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -4756,9 +4486,7 @@
             "couverture": 29,
             "usage": 32,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -4768,9 +4496,7 @@
             "couverture": 29,
             "usage": 35,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -4780,9 +4506,7 @@
             "couverture": 29,
             "usage": 36,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -4792,9 +4516,7 @@
             "couverture": 29,
             "usage": 37,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -4804,9 +4526,7 @@
             "couverture": 29,
             "usage": 38,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -4816,9 +4536,7 @@
             "couverture": 29,
             "usage": 30,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -4828,9 +4546,7 @@
             "couverture": 29,
             "usage": 21,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -4840,9 +4556,7 @@
             "couverture": 29,
             "usage": 22,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -5372,9 +5086,7 @@
             "couverture": 45,
             "usage": 27,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -5384,9 +5096,7 @@
             "couverture": 45,
             "usage": 39,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -5396,9 +5106,7 @@
             "couverture": 45,
             "usage": 26,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -5408,9 +5116,7 @@
             "couverture": 45,
             "usage": 40,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -5420,9 +5126,7 @@
             "couverture": 45,
             "usage": 28,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -5442,9 +5146,7 @@
             "couverture": 45,
             "usage": 41,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -5454,9 +5156,7 @@
             "couverture": 45,
             "usage": 42,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -5466,9 +5166,7 @@
             "couverture": 45,
             "usage": 43,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -5478,9 +5176,7 @@
             "couverture": 45,
             "usage": 33,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -5500,9 +5196,7 @@
             "couverture": 45,
             "usage": 31,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -5512,9 +5206,7 @@
             "couverture": 45,
             "usage": 32,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -5524,9 +5216,7 @@
             "couverture": 45,
             "usage": 35,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -5536,9 +5226,7 @@
             "couverture": 45,
             "usage": 36,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -5638,9 +5326,7 @@
             "couverture": 46,
             "usage": 27,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -5650,9 +5336,7 @@
             "couverture": 46,
             "usage": 39,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -5662,9 +5346,7 @@
             "couverture": 46,
             "usage": 26,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -5674,9 +5356,7 @@
             "couverture": 46,
             "usage": 40,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -5686,9 +5366,7 @@
             "couverture": 46,
             "usage": 28,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -5708,9 +5386,7 @@
             "couverture": 46,
             "usage": 41,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -5720,9 +5396,7 @@
             "couverture": 46,
             "usage": 42,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -5732,9 +5406,7 @@
             "couverture": 46,
             "usage": 43,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -5744,9 +5416,7 @@
             "couverture": 46,
             "usage": 33,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -5766,9 +5436,7 @@
             "couverture": 46,
             "usage": 31,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -5778,9 +5446,7 @@
             "couverture": 46,
             "usage": 32,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -5790,9 +5456,7 @@
             "couverture": 46,
             "usage": 35,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -5802,9 +5466,7 @@
             "couverture": 46,
             "usage": 36,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -5874,9 +5536,7 @@
             "couverture": 26,
             "usage": null,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -5886,9 +5546,7 @@
             "couverture": 27,
             "usage": null,
             "is_artificial": true,
-            "is_impermeable": true,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": true
         }
     },
     {
@@ -5898,9 +5556,7 @@
             "couverture": 28,
             "usage": null,
             "is_artificial": true,
-            "is_impermeable": true,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": true
         }
     },
     {
@@ -5910,9 +5566,7 @@
             "couverture": 29,
             "usage": null,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -5922,9 +5576,7 @@
             "couverture": 30,
             "usage": null,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
@@ -5934,9 +5586,7 @@
             "couverture": 31,
             "usage": null,
             "is_artificial": true,
-            "is_impermeable": false,
-            "is_natural": null,
-            "label": "ARTIF"
+            "is_impermeable": false
         }
     },
     {
