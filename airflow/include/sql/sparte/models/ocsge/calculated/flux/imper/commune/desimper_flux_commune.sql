@@ -11,7 +11,7 @@ SELECT
     commune_surface,
     year_old,
     year_new,
-    sum(surface) as desimper_surface
+    sum(surface) as flux_desimper
 FROM
     {{ ref('commune_flux_couverture_et_usage')}}
 WHERE
@@ -21,6 +21,6 @@ group by
 )
 SELECT
    without_percent.*,
-    desimper_surface / commune_surface * 100 as percent
+    flux_desimper / commune_surface * 100 as flux_desimper_percent
 FROM
     without_percent
