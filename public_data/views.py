@@ -42,7 +42,6 @@ class DisplayMatrix(LoginRequiredMixin, BreadCrumbMixin, TemplateView):
             CouvertureUsageMatrix.objects.filter(couverture__in=couvertures, usage__in=usages)
             .order_by("usage__code", "couverture__code")
             .select_related("usage", "couverture")
-            .defer("is_natural", "label")
         )
         kwargs = dict()
         for item in qs:
