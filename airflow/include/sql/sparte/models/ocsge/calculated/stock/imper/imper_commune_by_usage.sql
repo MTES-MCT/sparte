@@ -25,4 +25,3 @@ left join
     {{ ref("imper_commune") }}
     on without_percent.commune_code = imper_commune.commune_code
     and without_percent.year = imper_commune.year
-WHERE without_percent.commune_code = '03001' and without_percent.year = 2019
