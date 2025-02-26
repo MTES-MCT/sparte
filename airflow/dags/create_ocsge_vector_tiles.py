@@ -3,6 +3,7 @@ from airflow.decorators import dag, task
 from airflow.exceptions import AirflowSkipException
 from airflow.models.param import Param
 from include.domain.container import Container
+from include.utils import multiline_string_to_single_line
 
 
 def get_geojson_filename(year: int, departement: str) -> str:
@@ -49,11 +50,29 @@ def create_ocsge_vector_tiles():
         departement = params.get("departement")
         filename = get_geojson_filename(year, departement)
 
+        sql = f"""
+            SELECT
+                id,
+                code_cs,
+                code_us,
+                departement,
+                year,
+                is_impermeable,
+                is_artificial,
+                st_transform(geom, 4326) as geom,
+                surface
+            FROM
+                public_ocsge.occupation_du_sol
+            WHERE
+                year = {year} and
+                departement = '{departement}'
+        """
+
         return (
             Container()
             .sql_to_geojsonseq_on_s3_handler()
             .export_sql_result_to_geojsonseq_on_s3(
-                sql=f"SELECT * FROM public_ocsge.occupation_du_sol WHERE year = {year} and departement = '{departement}'",  # noqa: E501
+                sql=multiline_string_to_single_line(sql),  # noqa: E501
                 s3_key=f"{vector_tiles_dir}/{filename}",
                 s3_bucket=bucket_name,
             )
