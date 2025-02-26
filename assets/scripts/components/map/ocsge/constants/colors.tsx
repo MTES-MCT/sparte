@@ -20,6 +20,7 @@ export const couvertureColors: CouvertureColors = {
     "CS2.1.2": [166, 255, 128],
     "CS2.1.3": [230, 128, 0],
     "CS2.2.1": [204, 242, 77],
+    "CS2.2.2": [202, 252, 202],
 }
 
 export type UsageColors = {
