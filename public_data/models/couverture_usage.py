@@ -156,13 +156,6 @@ class CouvertureSol(BaseSol):
 
 
 class CouvertureUsageMatrix(models.Model):
-    class LabelChoices(models.TextChoices):
-        ARTIFICIAL = "ARTIF", "Artificiel"
-        CONSUMED = "CONSU", "Consommé"
-        NAF = "NAF", "NAF"
-        ARTIF_NOT_CONSUMED = "ARTIF_NOT_CONSU", "Artificiel non consommé"
-        NONE = "NONE", "Non renseigné"
-
     couverture = models.ForeignKey("CouvertureSol", on_delete=models.PROTECT, blank=True, null=True)
     usage = models.ForeignKey("UsageSol", on_delete=models.PROTECT, blank=True, null=True)
     is_artificial = models.BooleanField("Artificiel", default=False, blank=True, null=True)
