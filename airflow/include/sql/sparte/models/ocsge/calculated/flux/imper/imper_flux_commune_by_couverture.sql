@@ -57,4 +57,3 @@ full outer join
     and imper.couverture = desimper.couverture
     and imper.year_old = desimper.year_old
     and imper.year_new = desimper.year_new
-where coalesce(imper.commune_code, desimper.commune_code) = '56216'
