@@ -41,6 +41,7 @@ class SQLToGeojsonSeqOnS3Handler:
             f'"{self.db_connection}"',
             "public_ocsge.occupation_du_sol",
             f'-sql "{sql}"',
+            "-t_srs EPSG:4326",
             "-lco RS=YES",
             # start records with the RS=0x1E character, so as to be compatible with the RFC 8142 standard
             # this allow tippecanoe to work concurrently with the GeoJSONSeq file
