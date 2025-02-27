@@ -11,7 +11,8 @@ export const couvertures = [
     "CS2.1.1.3",
     "CS2.1.2",
     "CS2.1.3",
-    "CS2.2.1"
+    "CS2.2.1",
+    "CS2.2.2",
 ] as const
 export type Couverture = typeof couvertures[number]
 
