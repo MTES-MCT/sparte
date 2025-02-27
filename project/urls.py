@@ -152,8 +152,6 @@ urlpatterns = [
         views.DownloadWordView.as_view(),
         name="word_download",
     ),
-    # EXPORT
-    path("exports/", views.ExportListView.as_view(), name="excel"),
 ]
 
 
