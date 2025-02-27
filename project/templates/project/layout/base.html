@@ -56,8 +56,7 @@
                     "setPeriod": "{% url 'project:set-period' diagnostic.pk %}",
                     "dowloadConsoReport": "{% url 'project:report_download' requested_document='rapport-conso' pk=project.pk %}",
                     "dowloadFullReport": "{% url 'project:report_download' requested_document='rapport-complet' pk=project.pk %}",
-                    "dowloadLocalReport": "{% url 'project:report_download' requested_document='rapport-local' pk=project.pk %}",
-                    "dowloadCsvReport": "{% url 'project:export-excel' project.pk %}"
+                    "dowloadLocalReport": "{% url 'project:report_download' requested_document='rapport-local' pk=project.pk %}"
                 }
             }
         </script>
