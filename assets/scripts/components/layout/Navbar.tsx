@@ -135,7 +135,7 @@ const DownloadContainer = styled.div<{ $isMobile: boolean }>`
 
     ${({ $isMobile }) => !$isMobile && `
         &:hover ${DownloadList} {
-            height: 192px;
+            height: 145px;
         }
     `}
 `;
@@ -336,22 +336,6 @@ const Navbar: React.FC<{ projectData: any }> = ({ projectData }) => {
                                     'diagnostic_download_funnel',
                                     'click_button_local_report_download',
                                     'local_report_download_button_clicked'
-                                );
-                        }}
-                    />
-                </DownloadListItem>
-                <DownloadListItem>
-                    <Button
-                        type="link"
-                        icon="bi bi-file-earmark-excel"
-                        label="Export Excel"
-                        url={urls.dowloadCsvReport}
-                        onClick={() => {
-                            if (window.trackEvent)
-                                window.trackEvent(
-                                    'diagnostic_download_funnel',
-                                    'click_button_diagnostic_download_excel',
-                                    'diagnostic_download_excel_success'
                                 );
                         }}
                     />
