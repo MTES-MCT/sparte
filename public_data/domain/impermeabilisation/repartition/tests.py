@@ -26,8 +26,13 @@ class TestRepartitionOfImpermeabilisationService(TestCase):
         "public_data/models/CouvertureUsageMatrix.json",
     ]
 
-    def setUp(self):
+    @classmethod
+    def setUpClass(cls):
+        # Créer les tables non managées avant de charger les fixtures
         init_unmanaged_schema_for_tests()
+        super().setUpClass()
+
+    def setUp(self):
         self.year = 2016
         occitanie = Region.objects.create(
             source_id="76",

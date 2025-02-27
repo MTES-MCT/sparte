@@ -156,51 +156,10 @@ class CouvertureSol(BaseSol):
 
 
 class CouvertureUsageMatrix(models.Model):
-    class LabelChoices(models.TextChoices):
-        ARTIFICIAL = "ARTIF", "Artificiel"
-        CONSUMED = "CONSU", "Consommé"
-        NAF = "NAF", "NAF"
-        ARTIF_NOT_CONSUMED = "ARTIF_NOT_CONSU", "Artificiel non consommé"
-        NONE = "NONE", "Non renseigné"
-
     couverture = models.ForeignKey("CouvertureSol", on_delete=models.PROTECT, blank=True, null=True)
     usage = models.ForeignKey("UsageSol", on_delete=models.PROTECT, blank=True, null=True)
     is_artificial = models.BooleanField("Artificiel", default=False, blank=True, null=True)
     is_impermeable = models.BooleanField("Imperméable", blank=True, null=True)
-    is_natural = models.BooleanField("Naturel", default=None, blank=True, null=True)
-    label = models.CharField(
-        "Libellé",
-        max_length=20,
-        choices=LabelChoices.choices,
-        default=LabelChoices.NONE,
-    )
 
     class Meta:
-        constraints = [
-            models.UniqueConstraint(fields=["couverture", "usage"], name="matrix-couverture-usage-unique"),
-        ]
-        indexes = [
-            models.Index(fields=["is_artificial"], name="matrix-is_artificial-index"),
-        ]
-
-    def compute(self):
-        """Set is_field to correct boolean value according to label"""
-        self.is_artificial = self.is_consumed = self.is_natural = False
-        if self.label == self.LabelChoices.ARTIFICIAL:
-            self.is_artificial = True
-            self.is_consumed = True
-        elif self.label == self.LabelChoices.ARTIF_NOT_CONSUMED:
-            self.is_artificial = True
-        elif self.label == self.LabelChoices.CONSUMED:
-            self.is_consumed = True
-            self.is_natural = True
-        elif self.label == self.LabelChoices.NAF:
-            self.is_natural = True
-
-    def __str__(self):
-        us = self.usage.code_prefix if self.usage else "None"
-        cs = self.couverture.code_prefix if self.couverture else "None"
-        a = "a" if self.is_artificial else ""
-        c = "c" if self.is_consumed else ""
-        n = "n" if self.is_natural else ""
-        return f"{cs}-{us}:{a}{c}{n}"
+        managed = False
