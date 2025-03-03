@@ -7,9 +7,9 @@
 
 SELECT
     COALESCE(imper.commune_code, desimper.commune_code) as commune_code,
-    COALESCE(impermeable_surface, 0) as impermeable_surface,
-    COALESCE(desimper_surface, 0) as desimper_surface,
-    COALESCE(impermeable_surface, 0) - COALESCE(desimper_surface, 0) as imper_net,
+    COALESCE(flux_imper, 0) as flux_imper,
+    COALESCE(flux_desimper, 0) as flux_desimper,
+    COALESCE(flux_imper, 0) - COALESCE(flux_desimper, 0) as flux_imper_net,
     COALESCE(imper.year_old, desimper.year_old) as year_old,
     COALESCE(imper.year_new, desimper.year_new) as year_new
 

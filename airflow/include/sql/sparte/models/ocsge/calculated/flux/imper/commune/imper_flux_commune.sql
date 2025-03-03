@@ -41,9 +41,8 @@ SELECT
     commune.surface as commune_surface,
     diff_millesimes.year_old,
     diff_millesimes.year_new,
-    diff_millesimes.departement,
-    COALESCE(with_percent.impermeable_surface, 0) as impermeable_surface,
-    COALESCE(with_percent.percent, 0) as percent
+    COALESCE(with_percent.impermeable_surface, 0) as flux_imper,
+    COALESCE(with_percent.percent, 0) as flux_imper_percent
 
 FROM {{ ref('commune')}}
 INNER JOIN
