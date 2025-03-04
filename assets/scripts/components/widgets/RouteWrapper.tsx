@@ -8,12 +8,13 @@ import ConsoCorrectionStatus, { ConsoCorrectionStatusEnum} from '@components/wid
 
 
 interface RouteWrapperProps {
-    title: string;
+    title?: string;
     ocsgeStatus?: OcsgeStatusProps["status"];
     consoCorrectionStatus?: ConsoCorrectionStatusEnum;
     hasGpu?: boolean;
     hasLogementVacant?: boolean;
     children: ReactNode;
+    noTitleInPage?: boolean;
 }
 
 const Title = styled.h1`
@@ -28,6 +29,7 @@ const RouteWrapper: React.FC<RouteWrapperProps> = ({
     consoCorrectionStatus,
     hasLogementVacant,
     children,
+    noTitleInPage,
 }) => {
     const shouldDisplayOcsgeStatus = ocsgeStatus !== undefined && ocsgeStatus !== "COMPLETE_UNIFORM";
     const shouldDisplayGpuStatus = hasGpu !== undefined && hasGpu === false;
@@ -45,19 +47,23 @@ const RouteWrapper: React.FC<RouteWrapperProps> = ({
 
     usePageTitle(title);
 
+    const shouldDisplayTopContainer = !noTitleInPage || shouldDisplayOcsgeStatus || shouldDisplayGpuStatus || shouldDisplayConsoCorrectionStatus || shouldDisplayLogementVacantStatus;
+
     return (
         <>
-            <div className="fr-container--fluid fr-p-3w">
-                <div className="fr-grid-row">
-                    <div className="fr-col-12">
-                        <Title>{title}</Title>
-                        {shouldDisplayOcsgeStatus && <OcsgeStatus status={ocsgeStatus} />}
-                        {shouldDisplayGpuStatus && <GpuStatus />}
-                        {shouldDisplayConsoCorrectionStatus && <ConsoCorrectionStatus status={consoCorrectionStatus} />}
-                        {shouldDisplayLogementVacantStatus && <LogementVacantStatus />}
+            {shouldDisplayTopContainer && (
+                <div className="fr-container--fluid fr-p-3w">
+                    <div className="fr-grid-row">
+                        <div className="fr-col-12">
+                            {!noTitleInPage && <Title>{title}</Title>}
+                            {shouldDisplayOcsgeStatus && <OcsgeStatus status={ocsgeStatus} />}
+                            {shouldDisplayGpuStatus && <GpuStatus />}
+                            {shouldDisplayConsoCorrectionStatus && <ConsoCorrectionStatus status={consoCorrectionStatus} />}
+                            {shouldDisplayLogementVacantStatus && <LogementVacantStatus />}
+                        </div>
                     </div>
                 </div>
-            </div>
+            )}
                 
             {shouldDisplayChildren && children}
         </>
