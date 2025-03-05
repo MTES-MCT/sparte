@@ -84,6 +84,13 @@ THIRD_APPS = [
     "corsheaders",
     "fancy_cache",
     "webpack_loader",
+    "django_otp",
+    "django_otp.plugins.otp_static",
+    "django_otp.plugins.otp_totp",
+    "django_otp.plugins.otp_email",  # <- if you want email capability.
+    "two_factor",
+    "two_factor.plugins.phonenumber",  # <- if you want phone number capability.
+    "two_factor.plugins.email",  # <- if you want email capability.
 ]
 
 # upper app should not communicate with lower ones
@@ -119,6 +126,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "simple_history.middleware.HistoryRequestMiddleware",
     "corsheaders.middleware.CorsMiddleware",
+    "django_otp.middleware.OTPMiddleware",
 ]
 
 
@@ -182,8 +190,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # indicate the new User model to Django
 AUTH_USER_MODEL = "users.User"
-LOGIN_REDIRECT_URL = "project:list"
-LOGIN_URL = "users:signin"
+LOGIN_URL = "two_factor:login"
 
 
 # Internationalization
@@ -197,7 +204,7 @@ USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
+USE_TZ = False
 
 # Bucket S3 and filestorage
 # see https://django-storages.readthedocs.io/en/latest/
