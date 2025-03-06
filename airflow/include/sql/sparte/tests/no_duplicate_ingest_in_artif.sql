@@ -1,6 +1,6 @@
 /*
 Ce test vérifie que pour chaque département, il y a un seul timestamp
-de chargement par millésime de données d'occupation du sol.
+de chargement par millésime de données d'artif.
 
 */
 
