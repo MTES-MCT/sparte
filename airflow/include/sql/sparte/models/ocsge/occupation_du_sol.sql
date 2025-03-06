@@ -1,8 +1,10 @@
 {{
     config(
-        materialized="table",
+        materialized="incremental",
         indexes=[
+            {"columns": ["id"], "type": "btree"},
             {"columns": ["loaded_date"], "type": "btree"},
+            {"columns": ["raw_loaded_date"], "type": "btree"},
             {"columns": ["departement", "year"], "type": "btree"},
             {"columns": ["departement"], "type": "btree"},
             {"columns": ["uuid"], "type": "btree"},
@@ -11,6 +13,15 @@
             {"columns": ["geom"], "type": "gist"},
             {"columns": ["srid_source"], "type": "btree"},
         ],
+        pre_hook=[
+            "{{ create_idx_if_not_exists('ocsge_occupation_du_sol', ['id']) }}",
+            "{{ create_idx_if_not_exists('ocsge_occupation_du_sol', ['year']) }}",
+            "{{ create_idx_if_not_exists('ocsge_occupation_du_sol', ['departement']) }}",
+            "{{ create_idx_if_not_exists('ocsge_occupation_du_sol', ['loaded_date']) }}",
+        ],
+        post_hook=[
+            "DELETE FROM {{ this }} WHERE raw_loaded_date not in (SELECT distinct loaded_date FROM {{ source('public', 'ocsge_occupation_du_sol') }})"
+        ]
     )
 }}
 
@@ -28,6 +39,7 @@ en entrée est homogène.
 with
     without_surface as (
         select
+            loaded_date as raw_loaded_date,
             to_timestamp(loaded_date) as loaded_date,
             occupation.id,
             code_cs,
@@ -52,6 +64,9 @@ with
         left join
             {{ ref("departement") }} as departement_table
             on departement = departement_table.code
+        {% if is_incremental() %}
+        where loaded_date > (select max(raw_loaded_date) from {{ this }} )
+        {% endif %}
     )
 select *, st_area(geom) as surface
 from without_surface
