@@ -10,6 +10,7 @@
             {'columns': ['code_us'], 'type': 'btree'},
             {'columns': ['year'], 'type': 'btree'},
             {'columns': ['departement'], 'type': 'btree'},
+            {"columns": ["departement", "year"], "type": "btree"},
             {'columns': ['geom'], 'type': 'gist'},
             {'columns': ['is_artificial'], 'type': 'btree'},
             {'columns': ['loaded_date'], 'type': 'btree'},
