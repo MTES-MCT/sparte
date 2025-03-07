@@ -34,7 +34,6 @@ app.conf.timezone = "UTC"
 
 
 app.conf.beat_schedule = {
-    # Executes every Monday morning at 7:30 a.m.
     "alive-every-minute": {
         "task": "config.celery.log",
         "schedule": crontab(minute="*/15"),
@@ -56,6 +55,11 @@ app.conf.beat_schedule = {
         "options": {
             "queue": "long",
         },
+    },
+    "check-inactive-admins": {
+        "task": "users.tasks.check_inactive_admins",
+        # schedule to every monday at 8:00
+        "schedule": crontab(minute="0", hour="8"),
     },
 }
 
