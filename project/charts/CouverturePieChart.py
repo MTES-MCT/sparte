@@ -16,7 +16,7 @@ class CouverturePieChart(ProjectChart):
 
     def get_series_item_name(self, item: Union[CouvertureSol, UsageSol]) -> str:
         """Retourne le nom formaté d'un item pour l'affichage dans le graphique."""
-        return f"{item.code_prefix} {item.label}"
+        return f"{item.code_prefix} {item.label_short}"
 
     def _get_items_by_parent(self, base_sol: List[Union[CouvertureSol, UsageSol]]) -> Dict[Optional[int], List]:
         """Organise les items par parent_id."""
@@ -134,6 +134,12 @@ class CouverturePieChart(ProjectChart):
             "series": main_series,
             "drilldown": {
                 "series": drilldown_series,
+                "breadcrumbs": {
+                    "showFullPath": True,
+                    "format": "{level.name}",
+                    "buttonTheme": {"style": {"color": "#4318FF", "textDecoration": "none", "fontSize": "11px"}},
+                    "buttonSpacing": 0,
+                },
             },
         }
 
