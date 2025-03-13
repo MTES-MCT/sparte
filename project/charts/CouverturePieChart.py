@@ -12,13 +12,14 @@ class CouverturePieChart(ProjectChart):
     """
 
     _sol = "couverture"
+    _start_at_level = 1  # Choix du niveau racine
     name = "Sol usage and couverture pie chart"
 
     def get_series_item_name(self, item: Union[CouvertureSol, UsageSol]) -> str:
         """Retourne le nom formaté d'un item pour l'affichage dans le graphique."""
         return f"{item.code_prefix} {item.label_short}"
 
-    def _get_items_by_parent(self, base_sol: List[Union[CouvertureSol, UsageSol]]) -> Dict[Optional[int], List]:
+    def get_items_by_parent(self, base_sol: List[Union[CouvertureSol, UsageSol]]) -> Dict[Optional[int], List]:
         """Organise les items par parent_id."""
         items_by_parent = {}
         for item in base_sol:
@@ -36,10 +37,10 @@ class CouverturePieChart(ProjectChart):
             sol=self._sol,
         )
 
-        items_by_parent = self._get_items_by_parent(base_sol)
+        items_by_parent = self.get_items_by_parent(base_sol)
 
-        # Obtenir les items racines pour construire la série principale
-        root_items = items_by_parent.get(None, [])
+        # Définie les items racines
+        root_items = [item for item in base_sol if item.level == self._start_at_level]
 
         main_data = []
         for item in root_items:
@@ -61,11 +62,11 @@ class CouverturePieChart(ProjectChart):
         drilldown_series = []
         for item in root_items:
             if item.id in items_by_parent:
-                self._add_drilldown_series(item, items_by_parent, drilldown_series)
+                self.add_drilldown_series(item, items_by_parent, drilldown_series)
 
         return main_series, drilldown_series
 
-    def _add_drilldown_series(
+    def add_drilldown_series(
         self,
         parent_item: Union[CouvertureSol, UsageSol],
         items_by_parent: Dict[int, List],
@@ -110,7 +111,7 @@ class CouverturePieChart(ProjectChart):
         # Traite récursivement les enfants qui ont des enfants
         for child in children:
             if child.id in items_by_parent:
-                self._add_drilldown_series(child, items_by_parent, drilldown_series)
+                self.add_drilldown_series(child, items_by_parent, drilldown_series)
 
     @property
     def param(self) -> Dict[str, Any]:
