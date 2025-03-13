@@ -18,15 +18,24 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
+from two_factor.admin import AdminSiteOTPRequired
+from two_factor.urls import urlpatterns as tf_urls
 
 from config.views import EnvironmentView
 
+
+class CustomAdminSite(AdminSiteOTPRequired, admin.AdminSite):
+    pass
+
+
+admin.site.__class__ = CustomAdminSite
+
 admin.site.site_header = f"Mon Diagnostic Artificialisation v{settings.OFFICIAL_VERSION}"
 
-
 urlpatterns = [
-    path("", include("home.urls")),
+    path("account/", include(tf_urls)),
     path("admin/", admin.site.urls),
+    path("", include("home.urls")),
     path("users/", include("users.urls")),
     path("public/", include("public_data.urls")),
     path("project/", include("project.urls")),
