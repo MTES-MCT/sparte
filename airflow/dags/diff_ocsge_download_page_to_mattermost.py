@@ -7,11 +7,12 @@ import difflib
 from logging import getLogger
 
 import requests
-from airflow.decorators import dag, task
-from airflow.exceptions import AirflowSkipException
 from bs4 import BeautifulSoup
 from include.domain.container import Container
 from pendulum import datetime
+
+from airflow.decorators import dag, task
+from airflow.exceptions import AirflowSkipException
 
 logger = getLogger(__name__)
 

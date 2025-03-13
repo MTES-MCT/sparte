@@ -1,9 +1,10 @@
 import pendulum
+from include.domain.container import Container
+from include.utils import multiline_string_to_single_line
+
 from airflow.decorators import dag, task
 from airflow.exceptions import AirflowSkipException
 from airflow.models.param import Param
-from include.domain.container import Container
-from include.utils import multiline_string_to_single_line
 
 
 def get_geojson_filename(year: int, departement: str) -> str:

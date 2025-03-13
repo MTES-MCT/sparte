@@ -1,8 +1,9 @@
 from logging import getLogger
 
-from airflow.decorators import dag, task
 from include.domain.container import Container
 from pendulum import datetime
+
+from airflow.decorators import dag, task
 
 logger = getLogger(__name__)
 

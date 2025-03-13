@@ -3,8 +3,6 @@ import subprocess
 from typing import List
 from zipfile import ZipFile
 
-from airflow.decorators import dag, task
-from airflow.operators.python import PythonOperator
 from include.container import Container
 from include.domain.data.majic.sources import sources
 from include.pools import DBT_POOL
@@ -13,6 +11,9 @@ from include.utils import (
     get_first_shapefile_path_in_dir,
 )
 from pendulum import datetime
+
+from airflow.decorators import dag, task
+from airflow.operators.python import PythonOperator
 
 BUCKET_NAME = "airflow-staging"
 TMP_PATH = "/tmp/majic"

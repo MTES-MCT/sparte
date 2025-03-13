@@ -1,6 +1,7 @@
 import pendulum
-from airflow.decorators import dag, task
 from include.domain.container import Container
+
+from airflow.decorators import dag, task
 
 
 @dag(

@@ -1,6 +1,7 @@
-from airflow.decorators import dag, task
 from include.domain.container import Container
 from pendulum import datetime
+
+from airflow.decorators import dag, task
 
 URL = "https://www.insee.fr/fr/statistiques/fichier/7766585/v_mvt_commune_2024.csv"
 

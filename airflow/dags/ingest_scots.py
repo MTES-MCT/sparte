@@ -1,8 +1,9 @@
-from airflow.decorators import dag, task
 from include.domain.container import Container
 from include.pools import DBT_POOL
 from include.utils import get_dbt_command_from_directory
 from pendulum import datetime
+
+from airflow.decorators import dag, task
 
 SCOT_ENDPOINT = "https://api-sudocuh.datahub.din.developpement-durable.gouv.fr/sudocuh/enquetes/ref/scot/liste/CSV?annee_cog=2024"  # noqa: E501 (line too long)
 SCOT_COMMUNES_ENDPOINT = "https://api-sudocuh.datahub.din.developpement-durable.gouv.fr/sudocuh/enquetes/ref/scot/communes/CSV?annee_cog=2024"  # noqa: E501 (line too long)
