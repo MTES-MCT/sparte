@@ -24,6 +24,15 @@ class SigninView(BreadCrumbMixin, LoginView):
             {"href": reverse_lazy("users:signin"), "title": "Connexion"},
         ]
 
+    def get_success_url(self):
+        """Redirige les admins vers le 2FA et les autres vers /project/"""
+        user = self.request.user
+        if user.is_authenticated:
+            if user.is_staff or user.is_superuser:
+                return reverse_lazy("two_factor:login")
+            return reverse_lazy("project:list")
+        return super().get_success_url()
+
 
 class SignoutView(RedirectView):
     url = reverse_lazy("users:signin")
