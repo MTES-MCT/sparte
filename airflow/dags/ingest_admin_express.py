@@ -9,10 +9,11 @@ import subprocess
 from urllib.request import URLopener
 
 import py7zr
-from airflow.decorators import dag, task
-from airflow.models.param import Param
 from include.container import Container
 from pendulum import datetime
+
+from airflow.decorators import dag, task
+from airflow.models.param import Param
 
 with open("include/domain/data/admin_express/sources.json", "r") as f:
     sources = json.load(f)

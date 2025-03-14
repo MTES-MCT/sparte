@@ -1,11 +1,12 @@
 import os
 
 import pandas as pd
-from airflow.decorators import dag, task
 from include.domain.container import Container
 from include.pools import DBT_POOL
 from include.utils import get_dbt_command_from_directory
 from pendulum import datetime
+
+from airflow.decorators import dag, task
 
 URL = "https://www.insee.fr/fr/statistiques/fichier/3698339/base-pop-historiques-1876-2021.xlsx"
 

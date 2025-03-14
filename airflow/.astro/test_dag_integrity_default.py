@@ -5,6 +5,7 @@ import os
 from contextlib import contextmanager
 
 import pytest
+
 from airflow.hooks.base import BaseHook
 from airflow.models import Connection, DagBag, Variable
 from airflow.utils.db import initdb

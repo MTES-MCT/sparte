@@ -1,11 +1,11 @@
 from datetime import datetime, timedelta
 from os import getenv
 
-from airflow.operators.bash import BashOperator
-from airflow.operators.python import PythonOperator
 from include.container import Container
 
 from airflow import DAG
+from airflow.operators.bash import BashOperator
+from airflow.operators.python import PythonOperator
 
 default_args = {
     "owner": "Alexis Athlani",

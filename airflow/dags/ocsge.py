@@ -3,6 +3,7 @@ Ce dag ingère les données de l'IGN OCS GE dans une base de données
 PostgreSQL, puis lance un job dbt pour les transformer.
 """
 
+
 import cgi
 import json
 import logging
@@ -13,10 +14,6 @@ from typing import Literal
 import pendulum
 import py7zr
 import requests
-from airflow.decorators import dag, task
-from airflow.exceptions import AirflowSkipException
-from airflow.models.param import Param
-from airflow.operators.bash import BashOperator
 from include.container import Container
 from include.domain.container import Container as DomainContainer
 from include.domain.data.ocsge.dag_configs import create_configs_from_sources
@@ -41,6 +38,11 @@ from include.utils import (
     multiline_string_to_single_line,
     remove_extension_from_layer_name,
 )
+
+from airflow.decorators import dag, task
+from airflow.exceptions import AirflowSkipException
+from airflow.models.param import Param
+from airflow.operators.bash import BashOperator
 
 log = logging.getLogger(__name__)
 
