@@ -1,9 +1,30 @@
-Mon Diagnostic Artificialisation
-================================
+<img src="https://mondiagartif.beta.gouv.fr/static/img/logo-mon-diagnostic-artificialisation.svg" />
+<p align="center">
+  <a href="https://github.com/MTES-MCT/sparte/stargazers/">
+    <img src="https://img.shields.io/github/stars/MTES-MCT/sparte" alt="">
+  </a>
+  <a href='http://makeapullrequest.com'><img alt='PRs Welcome' src='https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=shields'/></a>
+  <img alt="GitHub commit activity" src="https://img.shields.io/github/commit-activity/m/MTES-MCT/sparte"/>
+  <img alt="GitHub closed issues" src="https://img.shields.io/github/issues-closed/MTES-MCT/sparte"/>
+  <a href="https://github.com/suitenumerique/meet/blob/main/LICENSE">
+    <img alt="GitHub closed issues" src="https://img.shields.io/github/license/suitenumerique/meet"/>
+  </a>    
+</p>
 
-Mon Diagnostic Artificialisation est une plateforme qui aide les collectivité à mesurer l'artificialisation de leurs sols et ainsi se conformer aux nouvelles lois.
+<p align="center">
+ <a href="https://github.com/MTES-MCT/sparte/releases">Historique des mises à jour</a> - <a href="https://github.com/MTES-MCT/sparte/issues/new">Reporter un bug</a> 
+</p>
+<br/>
+<p>
+Mon Diagnostic Artificialisation aide les collectivités à analyser et maitriser la consommation d'espaces et l'artificialisation des sols de leur territoire, en mettant en perspective des indicateurs chiffrés au regard des exigences de la loi climat et résilience, et notamment de la ZAN.
+</p
+<br/>
 
-L'application a été renommée, précédemment elle s'appelait SPARTE, c'est pourquoi le répertoire Github s'appelle ainsi et vous pouvez encore trouver des références à l'application sous ce terme.
+![image](https://github.com/user-attachments/assets/05ca50f8-8d68-4226-8fa4-a0ead591452e)
+
+----
+
+# Documentation d'installation
 
 ## Installation backend
 
