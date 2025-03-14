@@ -1,0 +1,114 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+        <title>Authentification 2FA</title>
+
+        <style>
+            body {
+                font-family: 'Marianne', sans-serif;
+                margin: 0;
+                padding: 0;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                min-height: 100vh;
+                background-color: #f7f7f7;
+            }
+            
+            .container {
+                background-color: white;
+                padding: 40px 30px;
+                border-radius: 12px;
+                box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+                width: 100%;
+                max-width: 400px;
+            }
+            
+            .container:hover {
+                box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+            }
+            
+            h1 {
+                font-size: 2rem;
+                text-align: center;
+                color: #333;
+                font-weight: 600;
+            }
+
+            p {
+                margin-bottom: 2.5rem;
+                text-align: center;
+                font-size: 0.95em;
+            }
+            
+            form {
+                display: flex;
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            form label {
+                font-size: 0.9em;
+                font-weight: 500;
+                color: #333;
+                display: block;
+                text-align: left;
+                margin-right: 1.5rem;
+            }
+            
+            form input {
+                padding: 12px;
+                margin: 0;
+                border: 1px solid #ddd;
+                border-radius: 8px;
+                font-size: 16px;
+                background-color: #fafafa;
+                width: 100%;
+                box-sizing: border-box;
+                transition: border-color 0.3s ease, background-color 0.3s ease;
+            }
+            
+            form input:focus {
+                outline: none;
+                border-color: #007bff;
+                background-color: #ffffff;
+            }
+            
+            form button {
+                background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(118,57,246,1) 0%, rgba(0,101,203,1) 100%);
+                color: white;
+                padding: 12px 18px;
+                border: none;
+                border-radius: 8px;
+                cursor: pointer;
+                font-size: 16px;
+                font-weight: 500;
+                transition: opacity 0.3s;
+                width: 100%;
+            }
+            
+            form button:hover {
+                opacity: 0.8;
+            }
+            
+            .message {
+                margin-top: 20px;
+                text-align: center;
+                font-size: 14px;
+                color: #555;
+            }
+        </style>
+    </head>
+    <body>
+        {% block content_wrapper %}
+            <div class="container">
+            {% block content %}{% endblock %}
+            </div>
+        {% endblock %}
+    </body>
+</html>
