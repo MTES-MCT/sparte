@@ -23,17 +23,11 @@ from two_factor.urls import urlpatterns as tf_urls
 
 from config.views import EnvironmentView
 
-
-class CustomAdminSite(AdminSiteOTPRequired, admin.AdminSite):
-    pass
-
-
-admin.site.__class__ = CustomAdminSite
-
+admin.site.__class__ = AdminSiteOTPRequired
 admin.site.site_header = f"Mon Diagnostic Artificialisation v{settings.OFFICIAL_VERSION}"
 
 urlpatterns = [
-    path("account/", include(tf_urls)),
+    path("", include(tf_urls)),
     path("admin/", admin.site.urls),
     path("", include("home.urls")),
     path("users/", include("users.urls")),
