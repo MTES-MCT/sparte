@@ -1,10 +1,10 @@
 from datetime import datetime, timedelta
 
-from airflow.models.param import Param
-from airflow.operators.bash import BashOperator
 from include.utils import get_dbt_command_from_directory
 
 from airflow import DAG
+from airflow.models.param import Param
+from airflow.operators.bash import BashOperator
 
 default_args = {
     "owner": "airflow",
