@@ -17,6 +17,7 @@ with
             code_cs,
             code_us,
             is_artificial,
+            official_artif,
             is_impermeable
         from {{ ref("occupation_du_sol_zonage_urbanisme") }}
         group by
@@ -28,6 +29,7 @@ with
             code_cs,
             code_us,
             is_artificial,
+            official_artif,
             is_impermeable
     )
 select

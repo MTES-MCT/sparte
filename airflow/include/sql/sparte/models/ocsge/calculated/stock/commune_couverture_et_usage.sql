@@ -15,6 +15,7 @@ with
             code_cs,
             code_us,
             is_artificial,
+            bool_and(official_artif) as official_artif,
             is_impermeable
         from {{ ref("occupation_du_sol_commune") }}
         group by
@@ -32,10 +33,9 @@ select
     surface,
     code_cs,
     code_us,
-    case
-        when commune_surface = 0 then 0 else surface / commune_surface * 100
-    end as percent,
+    surface * 100 / commune_surface as percent,
     is_artificial,
+    official_artif,
     is_impermeable
 from without_percent
 order by percent desc

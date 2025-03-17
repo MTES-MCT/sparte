@@ -15,7 +15,7 @@ from
             departement,
             is_impermeable,
             st_transform(geom, 4326) as mpoly
-        from {{ ref("occupation_du_sol") }}
+        from {{ ref("occupation_du_sol_with_artif") }}
     ) as ocsge
 where
     st_isvalid(ocsge.mpoly)
