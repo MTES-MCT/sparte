@@ -84,6 +84,11 @@ THIRD_APPS = [
     "corsheaders",
     "fancy_cache",
     "webpack_loader",
+    "two_factor",
+    "django_otp",
+    "django_otp.plugins.otp_totp",
+    "django_otp.plugins.otp_static",
+    "qrcode",
 ]
 
 # upper app should not communicate with lower ones
@@ -115,6 +120,7 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django_otp.middleware.OTPMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "simple_history.middleware.HistoryRequestMiddleware",
@@ -183,7 +189,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # indicate the new User model to Django
 AUTH_USER_MODEL = "users.User"
 LOGIN_REDIRECT_URL = "project:list"
-LOGIN_URL = "users:signin"
+LOGIN_URL = "two_factor:login"
 
 
 # Internationalization
