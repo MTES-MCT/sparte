@@ -34,5 +34,6 @@
     "[typescriptreact]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode"
     },
+    "dbt.perspectiveTheme": "Vintage",
 }
 
