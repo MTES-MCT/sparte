@@ -117,6 +117,10 @@
         }
     },
     "11": {
+        "artif": {
+            "2018": "https://data.geopf.fr/telechargement/download/OCSGE-ARTIFICIALISATION/OCS-GE_2-0_ARTIFICIALISATION_GPKG_LAMB93_D011_2018-01-01/OCS-GE_2-0_ARTIFICIALISATION_GPKG_LAMB93_D011_2018-01-01.7z",
+            "2021": "https://data.geopf.fr/telechargement/download/OCSGE-ARTIFICIALISATION/OCS-GE_2-0_ARTIFICIALISATION_GPKG_LAMB93_D011_2021-01-01/OCS-GE_2-0_ARTIFICIALISATION_GPKG_LAMB93_D011_2021-01-01.7z"
+        },
         "difference": {
             "2018_2021": "https://data.geopf.fr/telechargement/download/OCSGE/OCS-GE_2-0__SHP_LAMB93_D011_DIFF_2018-2021/OCS-GE_2-0__SHP_LAMB93_D011_DIFF_2018-2021.7z"
         },
