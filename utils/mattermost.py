@@ -43,18 +43,18 @@ class Mattermost:
         return True
 
 
+class DevMattermost(Mattermost):
+    """Send message in dev channel"""
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(channel=settings.MATTER_DEV_CHANNEL, *args, **kwargs)  # noqa: B026
+
+
 class StartupSparte(Mattermost):
     """Send message in startup-sparte, channel general"""
 
     def __init__(self, *args, **kwargs):
         super().__init__(channel="startup-sparte", *args, **kwargs)  # noqa: B026
-
-
-class SwannPrivate(Mattermost):
-    """Send a message to Swann direct channel"""
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(channel="@Swann", *args, **kwargs)  # noqa: B026
 
 
 class Crisp(Mattermost):
