@@ -55,6 +55,9 @@ ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["127.0.0.1", "localhost"])
 
 DOMAIN_URL = env.str("DOMAIN_URL")
 
+# 2FA
+TWO_FACTOR_ENABLED = env.bool("TWO_FACTOR_ENABLED", default=True)
+
 # Application definition
 
 DJANGO_APPS = [
