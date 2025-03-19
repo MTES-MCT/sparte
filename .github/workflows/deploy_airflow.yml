@@ -24,4 +24,4 @@ jobs:
             username: ${{ secrets.AIRFLOW_SSH_USER }}
             key: ${{ secrets.AIRFLOW_SSH_KEY }}
             port: ${{ secrets.AIRFLOW_SSH_PORT }}
-            script: cd ~/sparte/airflow/include/sql && dbt docs generate --static
+            script: cd ~/sparte/airflow/include/sql/sparte && dbt docs generate --static
