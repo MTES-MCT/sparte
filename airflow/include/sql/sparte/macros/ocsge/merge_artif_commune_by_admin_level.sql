@@ -7,7 +7,8 @@ SELECT
     year,
     sum(artif_commune.surface) as artificial_surface,
     sum(commune.surface) as surface,
-    array_agg(distinct commune.departement) as departements
+    array_agg(distinct commune.departement) as departements,
+    bool_and(official_artif) as official_artif
  FROM
     {{ ref('artif_commune') }}
 LEFT JOIN

@@ -19,7 +19,7 @@ with
             ocsge.commune_code,
             ocsge.ocsge_loaded_date,
             ocsge.srid_source,
-
+            ocsge.official_artif,
             ocsge.departement,
             ocsge.year,
             st_union(geom) as geom
@@ -31,7 +31,8 @@ with
             ocsge.departement,
             ocsge.year,
             ocsge.ocsge_loaded_date,
-            ocsge.srid_source
+            ocsge.srid_source,
+            ocsge.official_artif
     )
 select *, st_area(geom) as surface
 from artificial_commune_without_surface

@@ -7,7 +7,11 @@
 
 
 SELECT
-    commune_code, year, sum(percent) as percent, sum(surface) as surface
+    commune_code,
+    year,
+    sum(percent) as percent,
+    sum(surface) as surface,
+    bool_and(official_artif) as official_artif
 FROM
     {{ ref('commune_couverture_et_usage')}}
 WHERE

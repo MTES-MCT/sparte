@@ -36,12 +36,14 @@ with
             ocsge.code_cs,
             ocsge.code_us,
             ocsge.is_artificial,
+            ocsge.critere_seuil,
+            ocsge.official_artif,
             ocsge.is_impermeable,
             ocsge.srid_source,
             (st_dump(st_intersection(commune.geom, ocsge.geom))).geom as geom
         from {{ ref("commune") }} as commune
         inner join
-            {{ ref("occupation_du_sol") }} as ocsge
+            {{ ref("occupation_du_sol_with_artif") }} as ocsge
             on ocsge.departement = commune.departement
             and ocsge.srid_source = commune.srid_source
             and commune.geom && ocsge.geom

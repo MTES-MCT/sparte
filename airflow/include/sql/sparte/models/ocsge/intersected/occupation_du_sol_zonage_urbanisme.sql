@@ -32,12 +32,14 @@ with
             ocsge.code_us,
             ocsge.uuid,
             ocsge.is_artificial,
+            ocsge.critere_seuil,
+            ocsge.official_artif,
             ocsge.is_impermeable,
             ocsge.srid_source,
             (st_dump(st_intersection(zonage.geom, ocsge.geom))).geom as geom
         from {{ ref("zonage_urbanisme") }} as zonage
         inner join
-            {{ ref("occupation_du_sol") }} as ocsge
+            {{ ref("occupation_du_sol_with_artif") }} as ocsge
             on zonage.srid_source = ocsge.srid_source
             and zonage.departement = ocsge.departement
             and zonage.geom && ocsge.geom
