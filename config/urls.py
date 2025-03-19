@@ -23,8 +23,9 @@ from two_factor.urls import urlpatterns as tf_urls
 
 from config.views import EnvironmentView
 
-admin.site.__class__ = AdminSiteOTPRequired
 admin.site.site_header = f"Mon Diagnostic Artificialisation v{settings.OFFICIAL_VERSION}"
+if settings.TWO_FACTOR_ENABLED:
+    admin.site.__class__ = AdminSiteOTPRequired
 
 urlpatterns = [
     path("", include(tf_urls)),
