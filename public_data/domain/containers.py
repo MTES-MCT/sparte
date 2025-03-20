@@ -9,9 +9,6 @@ from public_data.infra.consommation.stats import (
 from public_data.infra.demography.population.progression import (
     PopulationProgressionService,
 )
-from public_data.infra.demography.population.stats.PopulationStatsComparisonService import (
-    PopulationStatsComparisonService,
-)
 from public_data.infra.demography.population.stats.PopulationStatsService import (
     PopulationStatsService,
 )
@@ -53,10 +50,6 @@ class PublicDataContainer(containers.DeclarativeContainer):
 
     population_stats_service = providers.Factory(
         PopulationStatsService,
-    )
-
-    population_comparison_service = providers.Factory(
-        PopulationStatsComparisonService,
     )
 
     # urbanisme

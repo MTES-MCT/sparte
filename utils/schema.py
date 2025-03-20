@@ -15,7 +15,6 @@ from public_data.models import (
     LandConsoComparison,
     LandConsoStats,
     LandPop,
-    LandPopComparison,
     LandPopStats,
     Region,
     Scot,
@@ -62,5 +61,4 @@ def init_unmanaged_schema_for_tests() -> None:
         drop_and_create_model(LandConsoStats, schema_editor)
         drop_and_create_model(LandPop, schema_editor)
         drop_and_create_model(LandPopStats, schema_editor)
-        drop_and_create_model(LandPopComparison, schema_editor)
         drop_and_create_model(CouvertureUsageMatrix, schema_editor)

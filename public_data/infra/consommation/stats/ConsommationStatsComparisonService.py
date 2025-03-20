@@ -27,8 +27,8 @@ class ConsommationStatsComparisonService(BaseConsommationStatsComparisonService)
             land=Land(f"{conso_stats.comparison_level}_{conso_stats.comparison_id}"),
             start_date=start_date,
             end_date=end_date,
-            total_median=conso_comparison.total_median / 10000,
             relevance_level=conso_comparison.relevance_level,
+            median_ratio_pop_conso=conso_comparison.median_ratio_pop_conso,
         )
 
     def get_by_lands(
