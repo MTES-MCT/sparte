@@ -93,6 +93,10 @@ THIRD_APPS = [
     "django_otp.plugins.otp_static",
     "qrcode",
     "django_filters",
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
+    "allauth.socialaccount.providers.openid_connect",
 ]
 
 # upper app should not communicate with lower ones
@@ -124,6 +128,7 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "allauth.account.middleware.AccountMiddleware",
     "django_otp.middleware.OTPMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
@@ -195,6 +200,10 @@ AUTH_USER_MODEL = "users.User"
 LOGIN_REDIRECT_URL = "project:list"
 LOGIN_URL = "users:signin"
 
+AUTHENTICATION_BACKENDS = [
+    "django.contrib.auth.backends.ModelBackend",  # Authentification classique Django
+    "allauth.account.auth_backends.AuthenticationBackend",  # Authentification avec django-allauth
+]
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
