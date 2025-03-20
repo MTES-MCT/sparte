@@ -108,7 +108,6 @@ def copy_table_from_dw_to_app(
                 "copy_public_data_landconsocomparison",
                 "copy_public_data_landconsostats",
                 "copy_public_data_landpop",
-                "copy_public_data_landpopcomparison",
                 "copy_public_data_landpopstats",
                 "copy_public_data_couverturesol",
                 "copy_public_data_usagesol",
@@ -352,17 +351,6 @@ def update_app():  # noqa: C901
         )
 
     @task.python
-    def copy_public_data_landpopcomparison(**context):
-        return copy_table_from_dw_to_app(
-            from_table="public_for_app.for_app_landpopcomparison",
-            to_table="public.public_data_landpopcomparison",
-            environment=context["params"]["environment"],
-            btree_index_columns=[
-                ["land_id", "land_type", "from_year", "to_year"],
-            ],
-        )
-
-    @task.python
     def copy_public_data_landpopstats(**context):
         return copy_table_from_dw_to_app(
             from_table="public_for_app.for_app_landpopstats",
@@ -464,7 +452,6 @@ def update_app():  # noqa: C901
         copy_public_data_landconsocomparison(),
         copy_public_data_landconsostats(),
         copy_public_data_landpop(),
-        copy_public_data_landpopcomparison(),
         copy_public_data_landpopstats(),
         copy_public_data_couverturesol(),
         copy_public_data_usagesol(),

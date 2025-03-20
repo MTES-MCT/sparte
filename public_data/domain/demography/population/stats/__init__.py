@@ -1,4 +1,3 @@
-from .BasePopulationStatsComparisonService import BasePopulationStatsComparisonService
 from .BasePopulationStatsService import BasePopulationStatsService
 
-__all__ = ["BasePopulationStatsService", "BasePopulationStatsComparisonService"]
+__all__ = ["BasePopulationStatsService"]
