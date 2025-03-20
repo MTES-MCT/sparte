@@ -192,7 +192,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # indicate the new User model to Django
 AUTH_USER_MODEL = "users.User"
 LOGIN_REDIRECT_URL = "project:list"
-LOGIN_URL = "two_factor:login"
+LOGIN_URL = "users:signin"
 
 
 # Internationalization

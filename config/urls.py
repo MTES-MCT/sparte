@@ -20,6 +20,7 @@ from django.contrib import admin
 from django.urls import include, path
 from two_factor.admin import AdminSiteOTPRequired
 from two_factor.urls import urlpatterns as tf_urls
+from two_factor.views import LoginView
 
 from config.views import EnvironmentView
 
@@ -29,6 +30,7 @@ if settings.TWO_FACTOR_ENABLED:
 
 urlpatterns = [
     path("", include(tf_urls)),
+    path("admin/login/", LoginView.as_view(), name="admin_login_2fa"),  # Forcer l'admin à utiliser 2FA
     path("admin/", admin.site.urls),
     path("", include("home.urls")),
     path("users/", include("users.urls")),
