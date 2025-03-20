@@ -66,7 +66,7 @@ class SignupForm(forms.ModelForm):
 
 class SigninForm(AuthenticationForm):
     username = forms.EmailField(
-        label="E-mail",
+        label="Adresse E-mail",
         widget=forms.TextInput(attrs={"class": "form-control"}),
     )
     password = forms.CharField(
