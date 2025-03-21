@@ -8,6 +8,7 @@ from include.domain.file_handling import (
     RemoteToS3FileHandler,
     S3CSVFileToDBTableHandler,
     S3ToDataGouvHandler,
+    SQLToCSVOnS3Handler,
     SQLToGeojsonSeqOnS3Handler,
     SQLToGeopackageOnS3Handler,
 )
@@ -90,7 +91,13 @@ class Container(containers.DeclarativeContainer):
 
     sql_to_geopackage_on_s3_handler = providers.Factory(
         provides=SQLToGeopackageOnS3Handler,
-        http_file_handler=htto_file_handler,
+        s3_handler=s3_handler,
+        tmp_path_generator=tmp_path_generator,
+        db_connection=gdal_dbt_conn().encode(),
+    )
+
+    sql_to_csv_on_s3_handler = providers.Factory(
+        provides=SQLToCSVOnS3Handler,
         s3_handler=s3_handler,
         tmp_path_generator=tmp_path_generator,
         db_connection=gdal_dbt_conn().encode(),
