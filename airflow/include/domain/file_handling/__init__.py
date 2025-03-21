@@ -6,6 +6,7 @@ from .DataGouvHandler import DataGouvHandler
 from .RemoteToS3FileHandler import RemoteToS3FileHandler
 from .S3CSVFileToDBTableHandler import S3CSVFileToDBTableHandler
 from .S3ToDataGouvHandler import S3ToDataGouvHandler
+from .SQLToCSVOnS3Handler import SQLToCSVOnS3Handler
 from .SQLToGeojsonSeqOnS3Handler import SQLToGeojsonSeqOnS3Handler
 from .SQLToGeopackageOnS3Handler import SQLToGeopackageOnS3Handler
 
@@ -20,4 +21,5 @@ __all__ = [
     "SQLToGeopackageOnS3Handler",
     "DataGouvHandler",
     "S3ToDataGouvHandler",
+    "SQLToCSVOnS3Handler",
 ]

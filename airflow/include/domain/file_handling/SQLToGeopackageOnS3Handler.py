@@ -2,7 +2,6 @@ import logging
 import os
 import subprocess
 
-from .BaseHTTPFileHandler import BaseHTTPFileHandler
 from .BaseS3Handler import BaseS3Handler
 from .BaseTmpPathGenerator import BaseTmpPathGenerator
 
@@ -12,12 +11,10 @@ logger = logging.getLogger(__name__)
 class SQLToGeopackageOnS3Handler:
     def __init__(
         self,
-        http_file_handler: BaseHTTPFileHandler,
         s3_handler: BaseS3Handler,
         tmp_path_generator: BaseTmpPathGenerator,
         db_connection: str,
     ):
-        self.http_file_handler = http_file_handler
         self.s3_handler = s3_handler
         self.tmp_path_generator = tmp_path_generator
         self.db_connection = db_connection

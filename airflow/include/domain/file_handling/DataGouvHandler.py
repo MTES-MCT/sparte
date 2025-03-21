@@ -19,7 +19,7 @@ class DataGouvHandler:
         local_file_path: str,
         dataset_id: str,
         resource_id: str,
-    ) -> str:
+    ) -> dict:
         headers = {"X-API-KEY": self.key}
         if resource_id:
             url = f"{self.endpoint}/datasets/{dataset_id}/resources/{resource_id}/upload/"

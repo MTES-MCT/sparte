@@ -35,10 +35,12 @@ class S3ToDataGouvHandler:
             local_file_path=tmp_file,
         )
 
-        self.data_gouv_handler.upload_file(
+        response = self.data_gouv_handler.upload_file(
             local_file_path=tmp_file,
             dataset_id=data_gouv_dataset_id,
             resource_id=data_gouv_resource_id,
         )
 
         os.remove(tmp_file)
+
+        return response
