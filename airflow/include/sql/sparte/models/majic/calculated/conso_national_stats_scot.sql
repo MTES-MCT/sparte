@@ -1,20 +1,25 @@
 {{ config(materialized='table') }}
 
 SELECT
-    from_year,
-    to_year,
-    {{ sum_percent_median_avg('total', 'scot.surface') }},
-    {{ sum_percent_median_avg('activite', 'scot.surface') }},
-    {{ sum_percent_median_avg('habitat', 'scot.surface') }},
-    {{ sum_percent_median_avg('mixte', 'scot.surface') }},
-    {{ sum_percent_median_avg('route', 'scot.surface') }},
-    {{ sum_percent_median_avg('ferroviaire', 'scot.surface') }},
-    {{ sum_percent_median_avg('inconnu', 'scot.surface') }}
+    conso.from_year,
+    conso.to_year,
+    percentile_disc(0.5) WITHIN GROUP (ORDER BY (
+        CASE
+            WHEN pop.evolution = 0
+            THEN 0
+            ELSE conso.total / pop.evolution
+        END
+    )) as median_ratio_pop_conso
 FROM
     {{ ref('period_consommation_scot') }} as conso
 LEFT JOIN
     {{ ref('scot') }} as scot
     ON scot.id_scot = conso.scot
+LEFT JOIN
+    {{ ref('period_flux_population_scot')}} as pop
+    ON conso.scot = pop.scot
+    AND conso.from_year = pop.from_year
+    AND conso.to_year = pop.to_year
 GROUP BY
-    from_year,
-    to_year
+    conso.from_year,
+    conso.to_year

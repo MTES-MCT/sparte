@@ -1,20 +1,25 @@
 {{ config(materialized='table') }}
 
 SELECT
-    from_year,
-    to_year,
-    {{ sum_percent_median_avg('total', 'commune.surface') }},
-    {{ sum_percent_median_avg('activite', 'commune.surface') }},
-    {{ sum_percent_median_avg('habitat', 'commune.surface') }},
-    {{ sum_percent_median_avg('mixte', 'commune.surface') }},
-    {{ sum_percent_median_avg('route', 'commune.surface') }},
-    {{ sum_percent_median_avg('ferroviaire', 'commune.surface') }},
-    {{ sum_percent_median_avg('inconnu', 'commune.surface') }}
+    conso.from_year,
+    conso.to_year,
+    percentile_disc(0.5) WITHIN GROUP (ORDER BY (
+        CASE
+            WHEN pop.evolution = 0
+            THEN 0
+            ELSE conso.total / pop.evolution
+        END
+    )) as median_ratio_pop_conso
 FROM
     {{ ref('period_consommation_commune') }} as conso
 LEFT JOIN
     {{ ref('commune') }} as commune
     ON commune.code = conso.commune_code
+LEFT JOIN
+    {{ ref('period_flux_population_commune')}} as pop
+    ON conso.commune_code = pop.code_commune
+    AND conso.from_year = pop.from_year
+    AND conso.to_year = pop.to_year
 GROUP BY
-    from_year,
-    to_year
+    conso.from_year,
+    conso.to_year

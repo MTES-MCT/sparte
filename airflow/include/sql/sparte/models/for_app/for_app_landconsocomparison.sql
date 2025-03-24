@@ -8,34 +8,7 @@
 {% set fields_to_query = """
     from_year,
     to_year,
-    total_median,
-    total_median_percent,
-    total_avg,
-    total_percent,
-    activite_median,
-    activite_median_percent,
-    activite_avg,
-    activite_percent,
-    habitat_median,
-    habitat_median_percent,
-    habitat_avg,
-    habitat_percent,
-    mixte_median,
-    mixte_median_percent,
-    mixte_avg,
-    mixte_percent,
-    route_median,
-    route_median_percent,
-    route_avg,
-    route_percent,
-    ferroviaire_median,
-    ferroviaire_median_percent,
-    ferroviaire_avg,
-    ferroviaire_percent,
-    inconnu_median,
-    inconnu_median_percent,
-    inconnu_avg,
-    inconnu_percent
+    median_ratio_pop_conso
 """ %}
 
 
