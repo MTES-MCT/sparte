@@ -59,7 +59,6 @@ DOMAIN_URL = env.str("DOMAIN_URL")
 TWO_FACTOR_ENABLED = env.bool("TWO_FACTOR_ENABLED", default=True)
 
 # Application definition
-
 DJANGO_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -204,6 +203,29 @@ AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",  # Authentification classique Django
     "allauth.account.auth_backends.AuthenticationBackend",  # Authentification avec django-allauth
 ]
+
+# PRO CONNECT
+PROCONNECT_CLIENT_ID = env.str("PROCONNECT_CLIENT_ID")
+PROCONNECT_SECRET = env.str("PROCONNECT_SECRET")
+
+SOCIALACCOUNT_PROVIDERS = {
+    "openid_connect": {
+        "APPS": [
+            {
+                "provider_id": "proconnect",
+                "name": "ProConnect",
+                "client_id": PROCONNECT_CLIENT_ID,
+                "secret": PROCONNECT_SECRET,
+                "settings": {
+                    "server_url": "https://auth.proconnect.com/",
+                    "jwks_uri": "https://auth.proconnect.com/.well-known/jwks.json",
+                    "token_endpoint_auth_method": "client_secret_post",
+                    "scope": ["openid", "email", "profile"],
+                },
+            }
+        ]
+    }
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
