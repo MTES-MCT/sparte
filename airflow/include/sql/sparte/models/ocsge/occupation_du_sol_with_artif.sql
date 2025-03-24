@@ -28,8 +28,8 @@ select
         else artif.critere_seuil
     end as critere_seuil
 from
-    {{ ref('occupation_du_sol') }},
-LATERAL (
+    {{ ref('occupation_du_sol') }}
+LEFT JOIN LATERAL (
     SELECT
         is_artificial,
         critere_seuil
@@ -39,4 +39,4 @@ LATERAL (
             occupation_du_sol.year = artif.year and
             occupation_du_sol.departement = artif.departement
         limit 1
-) as artif
+) as artif ON TRUE
