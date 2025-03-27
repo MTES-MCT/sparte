@@ -52,14 +52,15 @@ def trigger_async_tasks(project: Project, public_key: str | None = None) -> None
     if not project.async_add_comparison_lands_done:
         tasks_list.append(t.add_comparison_lands.si(project.id))
 
-    return celery.chain(
+    celery.chain(
         *[
-            *tasks_list,
             map_tasks.si(project.id),
             async_create_stat_for_project.si(project.id, do_location=True),
             send_diagnostic_to_brevo.si(project.id),
         ]
     ).apply_async()
+
+    return celery.chain(*tasks_list).run()
 
 
 def create_from_public_key(

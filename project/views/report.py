@@ -2,20 +2,14 @@ from typing import Any, Dict
 
 from django.conf import settings
 from django.contrib import messages
-from django.db import transaction
 from django.http import HttpResponseRedirect
-from django.shortcuts import redirect, render
+from django.shortcuts import render
 from django.urls import reverse
 from django.views.generic import CreateView, DetailView, TemplateView
 
 from brevo.tasks import send_diagnostic_request_to_brevo
 from project import charts, tasks
-from project.models import (
-    Project,
-    Request,
-    RequestedDocumentChoices,
-    trigger_async_tasks,
-)
+from project.models import Project, Request, RequestedDocumentChoices
 from project.utils import add_total_line_column
 from public_data.domain.containers import PublicDataContainer
 from public_data.infra.consommation.progression.table.ConsoByDeterminantTableMapper import (
@@ -60,17 +54,6 @@ from .mixins import ReactMixin
 class ProjectReportBaseView(ReactMixin, CacheMixin, DetailView):
     context_object_name = "project"
     queryset = Project.objects.all()
-
-    @transaction.non_atomic_requests
-    def dispatch(self, request, *args, **kwargs):
-        referer = request.META.get("HTTP_REFERER")
-        previous_page_was_splash_screen = referer and "construction" in referer
-        if not previous_page_was_splash_screen:
-            project: Project = self.get_object()
-            if not project.is_ready_to_be_displayed:
-                trigger_async_tasks(project)
-                return redirect("project:splash", pk=project.id)
-        return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         project: Project = self.get_object()

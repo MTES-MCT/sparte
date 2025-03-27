@@ -74,7 +74,7 @@ class CreateProjectViews(BreadCrumbMixin, FormView):
         if self.request.GET.get("next") == "download":
             return redirect("project:report_download", pk=project.id)
         else:
-            return redirect("project:splash", pk=project.id)
+            return redirect("project:home", pk=project.id)
 
 
 class ProjectUpdateView(ReactMixin, UpdateView):

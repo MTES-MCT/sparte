@@ -218,10 +218,7 @@ class Project(BaseProject):
     @property
     def async_complete(self) -> bool:
         calculations_and_extend_ready = (
-            self.async_add_city_done
-            and self.async_set_combined_emprise_done
-            and self.async_cover_image_done
-            and self.async_add_comparison_lands_done
+            self.async_add_city_done and self.async_set_combined_emprise_done and self.async_add_comparison_lands_done
         )
 
         static_maps_ready = self.async_cover_image_done
