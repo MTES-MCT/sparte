@@ -102,12 +102,8 @@ class ProjectUpdateView(ReactMixin, UpdateView):
         self.object = form.save()
 
         celery.chain(
-            tasks.find_first_and_last_ocsge.si(self.object.id),
-            tasks.calculate_project_ocsge_status.si(self.object.id),
             celery.group(
                 tasks.generate_theme_map_conso.si(self.object.id),
-                tasks.generate_theme_map_artif.si(self.object.id),
-                tasks.generate_theme_map_understand_artif.si(self.object.id),
             ),
             async_create_stat_for_project.si(self.object.id, do_location=False),
         ).apply_async()

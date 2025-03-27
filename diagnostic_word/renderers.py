@@ -13,9 +13,6 @@ from project import charts
 from project.models import Request
 from project.utils import add_total_line_column
 from public_data.domain.containers import PublicDataContainer
-from public_data.domain.impermeabilisation.difference.ImpermeabilisationDifferenceService import (
-    ImpermeabilisationDifferenceService,
-)
 from public_data.infra.consommation.progression.export.ConsoByDeterminantExportTableMapper import (
     ConsoByDeterminantExportTableMapper,
 )
@@ -24,12 +21,6 @@ from public_data.infra.consommation.progression.export.ConsoComparisonExportTabl
 )
 from public_data.infra.consommation.progression.export.ConsoProportionalComparisonExportTableMapper import (
     ConsoProportionalComparisonExportTableMapper,
-)
-from public_data.infra.impermeabilisation.difference.export.ImperNetteTableMapper import (
-    ImperNetteTableMapper,
-)
-from public_data.infra.impermeabilisation.difference.export.ImperSolTableMapper import (
-    ImperSolTableMapper,
 )
 from public_data.models.administration import AdminRef
 from utils.functions import get_url_with_domain
@@ -184,7 +175,6 @@ class BaseRenderer:
             "url": url_diag,
             "project_scope_consumed": current_conso,
             # Flags
-            "has_ocsge": diagnostic.has_complete_uniform_ocsge_coverage,
             "has_different_zan_period": has_different_zan_period,
             "has_neighbors": has_neighbors,
             # Maps
@@ -250,50 +240,6 @@ class BaseRenderer:
                 "level_label": diagnostic.level_label.lower(),
             }
 
-        # OCS GE
-        if diagnostic.has_complete_uniform_ocsge_coverage:
-            # Charts
-            couv_artif_sol = charts.ArtifByCouverturePieChartExport(diagnostic)
-            usage_artif_sol = charts.ArtifByUsagePieChartExport(diagnostic)
-            chart_waterfall = charts.ArtifWaterfallChartExport(diagnostic)
-
-            waterfall_series = chart_waterfall.get_series()
-            total_artif = diagnostic.get_artif_area()
-            artif_net = waterfall_series["net_artif"]
-            artificialisation = waterfall_series["new_artif"]
-            renaturation = waterfall_series["new_natural"]
-            context |= {
-                # Charts datatables
-                "debut_ocsge": str(diagnostic.first_year_ocsge),
-                "fin_ocsge": str(diagnostic.last_year_ocsge),
-                "surface_artificielle": str(round(total_artif, 2)),
-                "artificialisation_nette": str(round(artif_net, 2)),
-                "artificialisation": str(round(artificialisation, 2)),
-                "renaturation": str(round(renaturation, 2)),
-                "taux_artificialisation_nette": str(round(100 * artif_net / total_artif, 1)),
-                # Charts
-                "graphique_artificialisation_nette": self.prep_image(chart_waterfall.get_temp_image(), width=170),
-                "graphique_determinant_couv_artif": self.prep_image(couv_artif_sol.get_temp_image(), width=170),
-                "graphique_determinant_usage_artif": self.prep_image(usage_artif_sol.get_temp_image(), width=170),
-                # Maps
-                "carte_artificialisation": self.prep_image(diagnostic.theme_map_artif, width=170),
-                "carte_comprendre_artificialisation": self.prep_image(
-                    diagnostic.theme_map_understand_artif, width=170
-                ),
-            }
-
-            # Artif territories sub level
-            if not is_commune:
-                # Charts
-                artif_chart_comparison = charts.NetArtifComparaisonChartExport(diagnostic, level=diagnostic.level)
-                context |= {
-                    # Charts
-                    "graphique_evolution_artif": self.prep_image(artif_chart_comparison.get_temp_image(), width=170),
-                    # Charts datatables
-                    "tableau_evolution_artif": artif_chart_comparison.get_table(),
-                    "entetes_evolution_artif": artif_chart_comparison.get_table_headers(),
-                }
-
         return context
 
     def get_file_name(self) -> str:
@@ -312,43 +258,6 @@ class FullReportRenderer(BaseRenderer):
 class LocalReportRenderer(BaseRenderer):
     def __init__(self, request: Request, word_template_slug="template-bilan-2"):
         super().__init__(request=request, word_template_slug=word_template_slug)
-
-    def get_context_data(self) -> Dict[str, Any]:
-        diagnostic = self.project
-
-        context = super().get_context_data()
-
-        if diagnostic.has_complete_uniform_ocsge_coverage:
-            difference = ImpermeabilisationDifferenceService.get_by_geom(
-                geom=diagnostic.combined_emprise,
-                start_date=diagnostic.first_year_ocsge,
-                end_date=diagnostic.last_year_ocsge,
-            )
-            # Charts datatables
-            imper_nette_data_table = ImperNetteTableMapper.map(difference)
-            imper_progression_couv_data_table = ImperSolTableMapper.map(difference)["couverture"]
-            imper_progression_usage_data_table = ImperSolTableMapper.map(difference)["usage"]
-            # Charts
-            imper_net_chart = charts.ImperNetteProgressionExport(diagnostic)
-            imper_progression_couv_chart = charts.ImperProgressionByCouvertureChartExport(diagnostic)
-            imper_repartition_couv_chart = charts.ImperByCouverturePieChartExport(diagnostic)
-            imper_progression_usage_chart = charts.ImperProgressionByUsageChartExport(diagnostic)
-            imper_repartition_usage_chart = charts.ImperByUsagePieChartExport(diagnostic)
-
-            context |= {
-                # Charts datatables
-                "imper_nette_data_table": imper_nette_data_table,
-                "imper_progression_couv_data_table": imper_progression_couv_data_table,
-                "imper_progression_usage_data_table": imper_progression_usage_data_table,
-                # Charts
-                "graphique_imper_nette": self.prep_chart(chart=imper_net_chart),
-                "graphique_progression_imper_couv": self.prep_chart(chart=imper_progression_couv_chart),
-                "graphique_repartition_imper_couv": self.prep_chart(chart=imper_repartition_couv_chart),
-                "graphique_progression_imper_usage": self.prep_chart(chart=imper_progression_usage_chart),
-                "graphique_repartition_imper_usage": self.prep_chart(chart=imper_repartition_usage_chart),
-            }
-
-        return context
 
 
 class ConsoReportRenderer(BaseRenderer):

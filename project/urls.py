@@ -55,34 +55,14 @@ urlpatterns = [
         name="report_synthesis",
     ),
     path(
-        "<int:pk>/tableau-de-bord/découvrir-l-ocsge",
-        views.ProjectReportDicoverOcsgeView.as_view(),
-        name="report_discover",
-    ),
-    path(
         "<int:pk>/tableau-de-bord/vacance-des-logements",
         views.ProjectReportLogementVacantView.as_view(),
         name="report_logement_vacant",
     ),
     path(
-        "<int:pk>/tableau-de-bord/impermeabilisation",
-        views.ProjectReportImperView.as_view(),
-        name="report_imper",
-    ),
-    path(
-        "<int:pk>/tableau-de-bord/artificialisation",
-        views.ProjectReportArtifView.as_view(),
-        name="report_artif",
-    ),
-    path(
         "<int:pk>/tableau-de-bord/trajectoires",
         views.ProjectReportTarget2031View.as_view(),
         name="report_target_2031",
-    ),
-    path(
-        "<int:pk>/tableau-de-bord/zonages-d-urbanisme",
-        views.ProjectReportUrbanZonesView.as_view(),
-        name="report_urban_zones",
     ),
     path(
         "<int:pk>/tableau-de-bord/rapport-local",
@@ -95,46 +75,11 @@ urlpatterns = [
         views.ProjectReportTarget2031GraphView.as_view(),
         name="target-2031-graphic",
     ),
-    path(
-        "<int:pk>/tableau-de-bord/artificialisation/évolution-nette",
-        views.ArtifNetChart.as_view(),
-        name="artif-net-chart",
-    ),
-    path(
-        "<int:pk>/tableau-de-bord/artificialisation/détail-couverture",
-        views.ArtifDetailCouvChart.as_view(),
-        name="artif-detail-couv-chart",
-    ),
-    path(
-        "<int:pk>/tableau-de-bord/artificialisation/détail-usage",
-        views.ArtifDetailUsaChart.as_view(),
-        name="artif-detail-usa-chart",
-    ),
     # MAP
-    path(
-        "<int:pk>/carte/comprendre-mon-artificialisation",
-        views.MyArtifMapView.as_view(),
-        name="theme-my-artif",
-    ),
     path(
         "<int:pk>/carte/consommation-villes-du-territoire",
         views.CitySpaceConsoMapView.as_view(),
         name="theme-city-conso",
-    ),
-    path(
-        "<int:pk>/carte/artificialisation-villes-du-territoire",
-        views.CityArtifMapView.as_view(),
-        name="theme-city-artif",
-    ),
-    path(
-        "<int:pk>/carte/zonages-d-urbanisme",
-        views.UrbanZonesMapView.as_view(),
-        name="map-urban-zones",
-    ),
-    path(
-        "<int:project_id>/carte/detail-zone-urbaine/<str:checksum>",
-        views.ArtifZoneUrbaView.as_view(),
-        name="map-pane-artif-zone-urba",
     ),
     # DOWNLOAD
     path(

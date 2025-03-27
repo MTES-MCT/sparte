@@ -39,20 +39,12 @@ class Command(BaseCommand):
             return self.recover_add_city()
         if not self.diagnostic.async_set_combined_emprise_done:
             return self.recover_set_combined_emprise()
-        if not self.diagnostic.async_find_first_and_last_ocsge_done:
-            t.find_first_and_last_ocsge.delay(self.id)
-        if not self.diagnostic.async_ocsge_coverage_status_done:
-            t.calculate_project_ocsge_status.delay(self.id)
         if not self.diagnostic.async_add_comparison_lands_done:
             t.add_comparison_lands.delay(self.id)
         if not self.diagnostic.async_cover_image_done:
             t.generate_cover_image.delay(self.id)
         if not self.diagnostic.async_generate_theme_map_conso_done:
             t.generate_theme_map_conso.delay(self.id)
-        if not self.diagnostic.async_generate_theme_map_artif_done:
-            t.generate_theme_map_artif.delay(self.id)
-        if not self.diagnostic.async_theme_map_understand_artif_done:
-            t.generate_theme_map_understand_artif.delay(self.id)
 
     def recover_add_city(self):
         try:

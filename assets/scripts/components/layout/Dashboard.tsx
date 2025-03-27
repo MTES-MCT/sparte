@@ -106,51 +106,6 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                         }
                                     />
                                     <Route
-                                        path={urls.ocsge}
-                                        element={
-                                            <RouteWrapper
-                                                title="Usage et couverture du sol (OCS GE)"
-                                                ocsgeStatus={data.ocsge_coverage_status}
-                                            >
-                                                <Ocsge projectData={data} endpoint={urls.ocsge} />
-                                            </RouteWrapper>
-                                        }
-                                    />
-                                    <Route
-                                        path={urls.artificialisation}
-                                        element={
-                                            <RouteWrapper 
-                                                title="Artificialisation"
-                                                ocsgeStatus={data.ocsge_coverage_status}
-                                            >
-                                                <Artificialisation endpoint={urls.artificialisation} />
-                                            </RouteWrapper>
-                                        }
-                                    />
-                                    <Route
-                                        path={urls.impermeabilisation}
-                                        element={
-                                            <RouteWrapper 
-                                                title="Imperméabilisation"
-                                                ocsgeStatus={data.ocsge_coverage_status}
-                                            >
-                                                <Impermeabilisation endpoint={urls.impermeabilisation} />
-                                            </RouteWrapper>
-                                        }
-                                    />
-                                    <Route
-                                        path={urls.gpu}
-                                        element={
-                                            <RouteWrapper 
-                                                title="Artificialisation des zonages d'urbanisme"
-                                                ocsgeStatus={data.ocsge_coverage_status}
-                                                hasGpu={data.has_zonage_urbanisme}
-                                            >
-                                                <Gpu endpoint={urls.gpu} />
-                                            </RouteWrapper>
-                                        }
-                                    />
-                                    <Route
                                         path={urls.logementVacant}
                                         element={
                                             <RouteWrapper 

@@ -47,11 +47,7 @@
                     "rapportLocal": "{% url 'project:report_local' project.pk %}",
                     "trajectoires": "{% url 'project:report_target_2031' project.pk %}",
                     "consommation": "{% url 'project:report_conso' project.pk %}",
-                    "gpu": "{% url 'project:report_urban_zones' project.pk %}",
                     "logementVacant": "{% url 'project:report_logement_vacant' project.pk %}",
-                    "ocsge": "{% url 'project:report_discover' project.pk %}",
-                    "artificialisation": "{% url 'project:report_artif' project.pk %}",
-                    "impermeabilisation": "{% url 'project:report_imper' project.pk %}",
                     "update": "{% url 'project:update' project.pk %}",
                     "setPeriod": "{% url 'project:set-period' diagnostic.pk %}",
                     "dowloadConsoReport": "{% url 'project:report_download' requested_document='rapport-conso' pk=project.pk %}",
@@ -139,10 +135,6 @@
                                 "url": "{% url 'project:report_conso' project.pk %}"
                             },
                             {
-                                "label": "Artificialisation des zonages d'urbanisme",
-                                "url": "{% url 'project:report_urban_zones' project.pk %}"
-                            },
-                            {
                                 "label": "Vacance des logements",
                                 "url": "{% url 'project:report_logement_vacant' project.pk %}"
                             }
@@ -151,20 +143,7 @@
                     {
                         "label": "Enjeux environnementaux",
                         "icon": "bi bi-tree",
-                        "subMenu": [
-                            {
-                                "label": "Usage et couverture du sol (OCS GE)",
-                                "url": "{% url 'project:report_discover' project.pk %}"
-                            },
-                            {
-                                "label": "Artificialisation",
-                                "url": "{% url 'project:report_artif' project.pk %}"
-                            },
-                            {
-                                "label": "Imperméabilisation",
-                                "url": "{% url 'project:report_imper' project.pk %}"
-                            }
-                        ]  
+                        "subMenu": []  
                     },
                     {
                         "label": "Paramètres du diagnostic",
