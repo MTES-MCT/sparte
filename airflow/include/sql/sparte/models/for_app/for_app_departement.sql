@@ -17,7 +17,7 @@ with autorisation_logement_summary as (
         departement,
         ARRAY_AGG(distinct year) as ocsge_millesimes
     from
-        {{ ref('occupation_du_sol') }}
+        {{ ref('millesimes') }}
     group by
         departement
 )
