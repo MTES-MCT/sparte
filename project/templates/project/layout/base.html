@@ -49,7 +49,6 @@
                     "consommation": "{% url 'project:report_conso' project.pk %}",
                     "logementVacant": "{% url 'project:report_logement_vacant' project.pk %}",
                     "update": "{% url 'project:update' project.pk %}",
-                    "setPeriod": "{% url 'project:set-period' diagnostic.pk %}",
                     "dowloadConsoReport": "{% url 'project:report_download' requested_document='rapport-conso' pk=project.pk %}",
                     "dowloadFullReport": "{% url 'project:report_download' requested_document='rapport-complet' pk=project.pk %}",
                     "dowloadLocalReport": "{% url 'project:report_download' requested_document='rapport-local' pk=project.pk %}"
@@ -185,26 +184,6 @@
                 ]
             }
         </script>
-
-        <dialog aria-labelledby="fr-modal-title-modal-1" id="fr-modal-1" class="fr-modal">
-            <div class="fr-container fr-container--fluid fr-container-md">
-                <div class="fr-grid-row fr-grid-row--center">
-                    <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
-                        <div class="fr-modal__body">
-                            <div class="fr-modal__header">
-                                <button class="fr-btn--close fr-btn" title="Fermer la fenêtre modale" aria-controls="fr-modal-1">Fermer</button>
-                            </div>
-                            <div class="fr-modal__content">
-                                <h1 id="fr-modal-title-modal-1" class="fr-modal__title">Modifier la période d'analyse du diagnostic</h1>
-                                <div id="update_period_form">
-                                    <div class="fr-custom-loader"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </dialog>
 
         <dialog aria-labelledby="fr-modal-2-title" id="fr-modal-download-word" class="fr-modal">
             <div class="fr-container fr-container--fluid fr-container-md">

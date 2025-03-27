@@ -93,21 +93,6 @@ def create_from_public_key(
     return project
 
 
-def update_period(project: Project, start: str, end: str) -> None:
-    """Update the period of the project"""
-
-    project.analyse_start_date = start
-    project.analyse_end_date = end
-
-    # list redo work
-    project.async_generate_theme_map_conso_done = False
-
-    project._change_reason = ProjectChangeReason.USER_UPDATED_PROJECT_FROM_PARAMS
-    project.save()
-
-    trigger_async_tasks(project)
-
-
 @celery.shared_task
 def create_request_rnu_package_one_off(project_id: int) -> None:
     project = Project.objects.get(pk=project_id)

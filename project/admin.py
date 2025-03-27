@@ -35,7 +35,6 @@ class ProjectAdmin(SimpleHistoryAdmin):
         "name",
         "user__email",
     )
-    # filter_horizontal = ("cities",)
     change_form_template = "project/admin/project_detail.html"
     history_list_display = [
         "async_add_city_done",

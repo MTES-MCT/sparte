@@ -34,11 +34,6 @@ urlpatterns = [
         name="rm-lookalike",
     ),
     path(
-        "<int:pk>/set-period",
-        views.SetProjectPeriodView.as_view(),
-        name="set-period",
-    ),
-    path(
         "<int:pk>/set_target_2031",
         views.ProjectSetTarget2031View.as_view(),
         name="set-target-2031",

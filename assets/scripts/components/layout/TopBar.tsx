@@ -104,16 +104,6 @@ const TopBar: React.FC = () => {
                                 <ItemTitle><i className="bi bi-calendar4-range"></i> Période d'analyse</ItemTitle>
                                 <ItemContent>
                                     De { memoizedProjectData?.analyse_start_date } à { memoizedProjectData?.analyse_end_date }
-                                    {urls &&
-                                        <button 
-                                            data-fr-opened="false" 
-                                            aria-controls="fr-modal-1" 
-                                            title="Modifier la période d'analyse du diagnostic" 
-                                            data-hx-get={urls.setPeriod} 
-                                            data-hx-target="#update_period_form">
-                                            <span className="fr-icon-pencil-fill fr-icon--sm" aria-hidden="true"></span>
-                                        </button>
-                                    }
                                 </ItemContent>
                             </Item>
                             <Divider color="#e3e4e9" size="30px" />

@@ -51,8 +51,6 @@ class UpdateProjectForm(PeriodValidationMixin, forms.ModelForm):
         fields = [
             "name",
             "territory_name",
-            "analyse_start_date",
-            "analyse_end_date",
             "level",
             "target_2031",
             "is_public",
@@ -67,15 +65,6 @@ class UpdateProjectForm(PeriodValidationMixin, forms.ModelForm):
     def save(self, *args, **kwargs):
         self.instance._change_reason = ProjectChangeReason.USER_UPDATED_PROJECT_FROM_PARAMS
         return super().save(*args, **kwargs)
-
-
-class UpdateProjectPeriodForm(PeriodValidationMixin, forms.ModelForm):
-    class Meta:
-        model = Project
-        fields = [
-            "analyse_start_date",
-            "analyse_end_date",
-        ]
 
 
 class FilterAUUTable(forms.Form):
