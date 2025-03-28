@@ -30,7 +30,7 @@
                         <div class="fr-mb-6v">
                             <h2>Se connecter avec ProConnect</h2>
                             <div class="fr-connect-group">
-                                <a href="{% provider_login_url 'openid_connect' process='login' provider_id='proconnect' %}" class="fr-connect">
+                                <a href="{% url 'oidc_authentication_init' %}" class="fr-connect">
                                     <span class="fr-connect__login">S’identifier avec</span>
                                     <span class="fr-connect__brand">ProConnect</span>
                                 </a>
