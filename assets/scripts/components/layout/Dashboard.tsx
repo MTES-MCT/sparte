@@ -8,18 +8,13 @@ import { setProjectData } from '@store/projectSlice';
 import { selectIsNavbarOpen } from '@store/navbarSlice';
 import useWindowSize from '@hooks/useWindowSize';
 import useMatomoTracking from '@hooks/useMatomoTracking';
-import useUrls from '@hooks/useUrls';
 import Footer from '@components/layout/Footer';
 import Header from '@components/layout/Header';
 import Navbar from '@components/layout/Navbar';
 import TopBar from '@components/layout/TopBar';
 import Synthese from '@components/pages/Synthese';
 import Consommation from '@components/pages/Consommation';
-import Impermeabilisation from '@components/pages/Impermeabilisation';
-import Artificialisation from '@components/pages/Artificialisation';
-import Gpu from '@components/pages/Gpu';
 import LogementVacant from '@components/pages/LogementVacant';
-import Ocsge from '@components/pages/Ocsge';
 import Trajectoires from '@components/pages/Trajectoires';
 import RapportLocal from '@components/pages/RapportLocal';
 import Update from '@components/pages/Update';
@@ -49,7 +44,7 @@ const Content = styled.div`
 const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
     const dispatch = useDispatch();
     const { data, error, isLoading } = useGetProjectQuery(projectId);
-    const urls = useUrls();
+    const { urls } = data;
 
     const isOpen = useSelector((state: RootState) => selectIsNavbarOpen(state));
     const { isMobile } = useWindowSize();
@@ -60,11 +55,12 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
     }
     }, [data, dispatch]);
 
+
     return (
         <>
             {data && !isLoading && !error && urls && (
                 <>
-                    <Header />
+                    <Header projectData={data} />
                     <Router>
                         <TrackingWrapper />
                         <Navbar projectData={data} />
@@ -123,7 +119,7 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                                 title="Rapport triennal local"
                                                 consoCorrectionStatus={data.consommation_correction_status}
                                             >
-                                                <RapportLocal endpoint={urls.rapportLocal} />
+                                                <RapportLocal endpoint={urls.rapportLocal} projectData={data} />
                                             </RouteWrapper>
                                         }
                                     />
@@ -139,7 +135,7 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                     />
                                 </Routes>
                             </Content>
-                            <Footer />
+                            <Footer projectData={data} />
                         </Main>
                     </Router>
                 </>

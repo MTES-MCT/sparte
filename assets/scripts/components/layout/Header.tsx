@@ -3,26 +3,13 @@ import styled from 'styled-components';
 import useWindowSize from '@hooks/useWindowSize';
 import { Tooltip } from 'react-tooltip'
 import SearchBar from '@components/widgets/SearchBar';
-
-interface HeaderData {
-    logos: Logo[];
-    search: {
-        createUrl: string;
-    };
-    menuItems: MenuItem[];
-}
+import { ProjectDetailResultType } from '@services/api';
 
 interface Logo {
     src: string;
     alt: string;
     height?: string;
     url?: string; 
-}
-
-interface MenuItem {
-    label: string;
-    url: string;
-    target?: string;
 }
 
 const activeColor = '#4318FF';
@@ -135,19 +122,11 @@ const ButtonToggleMenu = styled.i<{ $isMobile: boolean }>`
     }
 `;
 
-const Header = () => {
-    const [data, setData] = useState<HeaderData | null>(null);
+const Header = ({ projectData }: { projectData: ProjectDetailResultType}) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const { isMobile } = useWindowSize(980);
+    const { header } = projectData || {};
 
-    // La composition du header et notamment les urls des liens sont récupérés via le contexte Django => project/templates/layout/base.html => #header-data
-    useEffect(() => {
-        const dataElement = document.getElementById('header-data');
-        if (dataElement) {
-            const parsedData = JSON.parse(dataElement.textContent || '{}');
-            setData(parsedData);
-        }
-    }, []);
 
     // responsive
     useEffect(() => {
@@ -158,7 +137,7 @@ const Header = () => {
     return (
         <HeaderContainer>
             <LogoContainer>
-                {data?.logos.map((logo) => (
+                {header?.logos.map((logo) => (
                     logo.url ? (
                         <LogoLink key={logo.src}  href={logo.url} rel="noopener noreferrer">
                             <Logo
@@ -187,10 +166,10 @@ const Header = () => {
             <Tooltip id="tooltip-close-menu" className="fr-text--xs" />
             <ButtonContainer $isMobile={isMobile} $isMenuOpen={isMenuOpen}>
                 <SearchBarContainer $isMobile={isMobile}>
-                    <SearchBar createUrl={data?.search.createUrl} />
+                    <SearchBar createUrl={header?.search.createUrl} />
                 </SearchBarContainer>
                 <NavLinks $isMobile={isMobile}>
-                    {data?.menuItems.map((item) => (
+                    {header?.menuItems.filter(({ shouldDisplay }) => shouldDisplay).map(item => (
                         <NavLink
                             key={item.label}
                             href={item.url}

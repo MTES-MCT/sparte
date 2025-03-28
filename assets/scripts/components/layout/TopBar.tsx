@@ -6,7 +6,6 @@ import { useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import useHtmx from '@hooks/useHtmx';
 import useWindowSize from '@hooks/useWindowSize';
-import useUrls from '@hooks/useUrls';
 import { selectIsNavbarOpen } from "@store/navbarSlice";
 import Divider from '@components/ui/Divider';
 import ButtonToggleNavbar from "@components/ui/ButtonToggleNavbar";
@@ -78,8 +77,7 @@ const ItemContent = styled.div`
 const TopBar: React.FC = () => {
     const projectData = useSelector((state: RootState) => state.project.projectData);
     const memoizedProjectData = useMemo(() => projectData, [projectData?.id]);
-    const urls = useUrls();
-    const htmxRef = useHtmx([memoizedProjectData, urls]);
+    const htmxRef = useHtmx([memoizedProjectData, projectData?.urls]);
     const formattedDate = useMemo(() => formatDateTime(new Date(memoizedProjectData?.created_date)), [memoizedProjectData?.created_date]);
     const location = useLocation();
     const pathsToHidePeriod = ['vacance-des-logements'];

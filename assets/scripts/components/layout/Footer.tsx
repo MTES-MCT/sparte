@@ -1,9 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import { ProjectDetailResultType } from '@services/api';
+import React from 'react';
 import styled from 'styled-components';
 
-interface FooterData {
-    menuItems: MenuItem[];
-}
 
 interface MenuItem {
     label: string;
@@ -41,24 +39,15 @@ const NavLink = styled.a`
     }
 `;
 
-const Footer = () => {
-    const [data, setData] = useState<FooterData | null>(null);
-
-    // La composition du footer et notamment les urls des liens sont récupérés via le contexte Django => project/templates/layout/base.html => #footer-data
-    useEffect(() => {
-        const dataElement = document.getElementById('footer-data');
-        if (dataElement) {
-            const parsedData = JSON.parse(dataElement.textContent || '{}');
-            setData(parsedData);
-        }
-    }, []);
+const Footer = ({ projectData }: { projectData: ProjectDetailResultType}) => {
+    const { footer } = projectData;
 
     return (
         <Container className="fr-container--fluid">
             <div className="fr-grid-row">
                 <div className="fr-col-12">
                     <NavLinks>
-                        {data?.menuItems.map((item) => (
+                        {footer?.menuItems.map((item) => (
                             <NavLink
                                 key={item.label}
                                 href={item.url}

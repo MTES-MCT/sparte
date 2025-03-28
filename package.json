@@ -47,6 +47,7 @@
     "@remixicon/react": "^4.6.0",
     "@svgr/webpack": "^8.1.0",
     "@turf/turf": "^7.2.0",
+    "@types/geojson": "^7946.0.16",
     "@types/mapbox-gl": "^3.4.1",
     "@uidotdev/usehooks": "^2.4.1",
     "bootstrap": "^5.3.3",
