@@ -96,6 +96,7 @@ THIRD_APPS = [
     "allauth.account",
     "allauth.socialaccount",
     "allauth.socialaccount.providers.openid_connect",
+    "mozilla_django_oidc",
 ]
 
 # upper app should not communicate with lower ones
@@ -127,7 +128,7 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
-    "allauth.account.middleware.AccountMiddleware",
+    "mozilla_django_oidc.middleware.SessionRefresh",
     "django_otp.middleware.OTPMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
@@ -199,33 +200,34 @@ AUTH_USER_MODEL = "users.User"
 LOGIN_REDIRECT_URL = "project:list"
 LOGIN_URL = "users:signin"
 
-AUTHENTICATION_BACKENDS = [
-    "django.contrib.auth.backends.ModelBackend",  # Authentification classique Django
-    "allauth.account.auth_backends.AuthenticationBackend",  # Authentification avec django-allauth
-]
-
-# PRO CONNECT
+# ProConnect
+PROCONNECT_DOMAIN = env.str("PROCONNECT_DOMAIN")
 PROCONNECT_CLIENT_ID = env.str("PROCONNECT_CLIENT_ID")
 PROCONNECT_SECRET = env.str("PROCONNECT_SECRET")
 
-SOCIALACCOUNT_PROVIDERS = {
-    "openid_connect": {
-        "APPS": [
-            {
-                "provider_id": "proconnect",
-                "name": "ProConnect",
-                "client_id": PROCONNECT_CLIENT_ID,
-                "secret": PROCONNECT_SECRET,
-                "settings": {
-                    "server_url": "https://auth.proconnect.com/",
-                    "jwks_uri": "https://auth.proconnect.com/.well-known/jwks.json",
-                    "token_endpoint_auth_method": "client_secret_post",
-                    "scope": ["openid", "email", "profile"],
-                },
-            }
-        ]
-    }
-}
+# Configuration OIDC ProConnect
+OIDC_RP_CLIENT_ID = PROCONNECT_CLIENT_ID
+OIDC_RP_CLIENT_SECRET = PROCONNECT_SECRET
+OIDC_OP_AUTHORIZATION_ENDPOINT = f"https://{PROCONNECT_DOMAIN}/api/v2/authorize"
+OIDC_OP_TOKEN_ENDPOINT = f"https://{PROCONNECT_DOMAIN}/api/v2/token"
+OIDC_OP_USER_ENDPOINT = f"https://{PROCONNECT_DOMAIN}/api/v2/userinfo"
+OIDC_OP_LOGOUT_ENDPOINT = f"https://{PROCONNECT_DOMAIN}/api/v2/logout"
+
+# Configuration des scopes OIDC
+OIDC_RP_SIGN_ALGO = "RS256"
+OIDC_STORE_ACCESS_TOKEN = True
+OIDC_STORE_ID_TOKEN = True
+OIDC_CREATE_USER = True
+OIDC_STATE_SIZE = 32
+OIDC_USE_NONCE = True
+OIDC_CALLBACK_CLASS = "users.views.ProConnectCallbackView"
+
+# Configuration des URLs de redirection OIDC
+OIDC_REDIRECT_URI = f"{DOMAIN_URL}oidc/callback/"
+OIDC_LOGOUT_REDIRECT_URI = f"{DOMAIN_URL}oidc/logout/"
+
+# Configuration des scopes demandés OIDC
+OIDC_RP_SCOPES = "openid email profile organization"
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
