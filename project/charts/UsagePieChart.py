@@ -5,8 +5,8 @@ from .CouverturePieChart import CouverturePieChart
 
 
 class UsagePieChart(CouverturePieChart):
-    _level = 1
     _sol = "usage"
+    _start_at_level = 1  # Choix du niveau racine
 
     @property
     def param(self):
