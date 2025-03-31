@@ -17,6 +17,7 @@ import Consommation from '@components/pages/Consommation';
 import LogementVacant from '@components/pages/LogementVacant';
 import Trajectoires from '@components/pages/Trajectoires';
 import RapportLocal from '@components/pages/RapportLocal';
+import { Artificialisation } from '@components/pages/Artificialisation';
 import Update from '@components/pages/Update';
 import RouteWrapper from '@components/widgets/RouteWrapper';
 
@@ -44,7 +45,7 @@ const Content = styled.div`
 const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
     const dispatch = useDispatch();
     const { data, error, isLoading } = useGetProjectQuery(projectId);
-    const { urls } = data;
+    const { urls } = data || {};
 
     const isOpen = useSelector((state: RootState) => selectIsNavbarOpen(state));
     const { isMobile } = useWindowSize();
@@ -101,6 +102,18 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                             </RouteWrapper>
                                         }
                                     />
+                                    <Route
+                                        path={urls.artificialisation}
+                                        element={
+                                            <RouteWrapper
+                                                title="Artificialisation des sols">
+                                                    <Artificialisation />
+                                                </RouteWrapper>
+                                        }
+                                    />
+
+                                    
+
                                     <Route
                                         path={urls.logementVacant}
                                         element={

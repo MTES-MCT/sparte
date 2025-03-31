@@ -2,10 +2,10 @@ from uuid import uuid4
 
 from project import charts
 
-from .report import ProjectReportBaseView
+from .diagnostic import DiagnosticBaseView
 
 
-class AllChartsForPreview(ProjectReportBaseView):
+class AllChartsForPreview(DiagnosticBaseView):
     template_name = "project/dev/all_charts_for_preview.html"
     breadcrumbs_title = "Rapport consommation"
 

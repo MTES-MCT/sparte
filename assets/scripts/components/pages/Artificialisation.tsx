@@ -3,7 +3,7 @@ import Guide from '@components/widgets/Guide';
 import OcsgeMatricePassage from '@images/ocsge_matrice_passage.png';
 
 
-const Artificialisation = () => {
+export const Artificialisation = () => {
     return (
         <div className="fr-container--fluid fr-p-3w">
             <div className="fr-grid-row">
@@ -43,4 +43,3 @@ const Artificialisation = () => {
     );
 };
 
-export default Artificialisation;

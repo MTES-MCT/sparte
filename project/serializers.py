@@ -27,6 +27,8 @@ class ProjectDetailSerializer(gis_serializers.GeoModelSerializer):
         kwargs = {"pk": obj.id}
         return {
             "synthese": reverse("project:report_synthesis", kwargs=kwargs),
+            "artificialisation": reverse("project:report_artif", kwargs=kwargs),
+            "impermeabilisation": reverse("project:report_imper", kwargs=kwargs),
             "rapportLocal": reverse("project:report_local", kwargs=kwargs),
             "trajectoires": reverse("project:report_target_2031", kwargs=kwargs),
             "consommation": reverse("project:report_conso", kwargs=kwargs),
@@ -74,7 +76,14 @@ class ProjectDetailSerializer(gis_serializers.GeoModelSerializer):
                         },
                     ],
                 },
-                {"label": "Enjeux environnementaux", "icon": "bi bi-tree", "subMenu": []},
+                {
+                    "label": "Enjeux environnementaux",
+                    "icon": "bi bi-tree",
+                    "subMenu": [
+                        {"label": "Artificialisation", "url": reverse("project:report_artif", kwargs=kwargs)},
+                        {"label": "Imperméabilisation", "url": reverse("project:report_imper", kwargs=kwargs)},
+                    ],
+                },
                 {
                     "label": "Paramètres du diagnostic",
                     "icon": "bi bi-gear-fill",

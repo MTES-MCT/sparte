@@ -254,7 +254,7 @@ const Navbar: React.FC<{ projectData: ProjectDetailResultType }> = ({ projectDat
                         icon="bi bi-file-earmark-word"
                         label="Analyse de Consommation"
                         htmxAttrs={{
-                            'data-hx-get': urls.dowloadConsoReport,
+                            'data-hx-get': urls?.dowloadConsoReport,
                             'data-hx-target': '#diag_word_form',
                             'data-fr-opened': 'false',
                             'aria-controls': 'fr-modal-download-word',
@@ -276,7 +276,7 @@ const Navbar: React.FC<{ projectData: ProjectDetailResultType }> = ({ projectDat
                         icon="bi bi-file-earmark-word"
                         label="Analyse complète"
                         htmxAttrs={{
-                            'data-hx-get': urls.downloadFullReport,
+                            'data-hx-get': urls?.downloadFullReport,
                             'data-hx-target': '#diag_word_form',
                             'data-fr-opened': 'false',
                             'aria-controls': 'fr-modal-download-word',
@@ -298,7 +298,7 @@ const Navbar: React.FC<{ projectData: ProjectDetailResultType }> = ({ projectDat
                         icon="bi bi-file-earmark-word"
                         label="Rapport triennal local"
                         htmxAttrs={{
-                            'data-hx-get': urls.dowloadLocalReport,
+                            'data-hx-get': urls?.dowloadLocalReport,
                             'data-hx-target': '#diag_word_form',
                             'data-fr-opened': 'false',
                             'aria-controls': 'fr-modal-download-word',
@@ -317,7 +317,7 @@ const Navbar: React.FC<{ projectData: ProjectDetailResultType }> = ({ projectDat
             </DownloadList>
         </DownloadContainer>
     );
-    
+
     return (
         <>
             {isMobile && <Overlay $isOpen={isOpen} onClick={() => dispatch(toggleNavbar())} />}
