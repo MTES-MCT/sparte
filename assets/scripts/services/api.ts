@@ -1,5 +1,4 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { TypedUseQuery } from "@reduxjs/toolkit/query/react";
+import { createApi, fetchBaseQuery, TypedUseQuery } from "@reduxjs/toolkit/query/react";
 import { FetchArgs, BaseQueryFn } from "@reduxjs/toolkit/query";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/dist/query/react";
 import { GeoJsonObject } from "geojson";
