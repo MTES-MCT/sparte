@@ -201,6 +201,13 @@ AUTH_USER_MODEL = "users.User"
 LOGIN_REDIRECT_URL = "project:list"
 LOGIN_URL = "users:signin"
 
+AUTHENTICATION_BACKENDS = [
+    # Authentification Django par défaut
+    "django.contrib.auth.backends.ModelBackend",
+    # OIDC / ProConnect
+    "oidc.backends.ProConnectAuthenticationBackend",
+]
+
 # ProConnect
 PROCONNECT_DOMAIN = env.str("PROCONNECT_DOMAIN")
 PROCONNECT_CLIENT_ID = env.str("PROCONNECT_CLIENT_ID")
@@ -209,18 +216,20 @@ PROCONNECT_SECRET = env.str("PROCONNECT_SECRET")
 # Configuration OIDC ProConnect
 OIDC_RP_CLIENT_ID = PROCONNECT_CLIENT_ID
 OIDC_RP_CLIENT_SECRET = PROCONNECT_SECRET
+OIDC_OP_JWKS_ENDPOINT = f"https://{PROCONNECT_DOMAIN}/api/v2/jwks"
 OIDC_OP_AUTHORIZATION_ENDPOINT = f"https://{PROCONNECT_DOMAIN}/api/v2/authorize"
 OIDC_OP_TOKEN_ENDPOINT = f"https://{PROCONNECT_DOMAIN}/api/v2/token"
 OIDC_OP_USER_ENDPOINT = f"https://{PROCONNECT_DOMAIN}/api/v2/userinfo"
 OIDC_OP_LOGOUT_ENDPOINT = f"https://{PROCONNECT_DOMAIN}/api/v2/logout"
+OIDC_OP_LOGOUT_ENDPOINT = f"https://{PROCONNECT_DOMAIN}/api/v2/logout"
 
 # Configuration des scopes OIDC
 OIDC_RP_SIGN_ALGO = "RS256"
-OIDC_STORE_ACCESS_TOKEN = True
-OIDC_STORE_ID_TOKEN = True
-OIDC_CREATE_USER = True
-OIDC_STATE_SIZE = 32
-OIDC_USE_NONCE = True
+# OIDC_STORE_ACCESS_TOKEN = True
+# OIDC_STORE_ID_TOKEN = True
+# OIDC_CREATE_USER = True
+# OIDC_STATE_SIZE = 32
+# OIDC_USE_NONCE = True
 # OIDC_CALLBACK_CLASS = "users.views.ProConnectCallbackView"
 
 # Configuration des URLs de redirection OIDC
