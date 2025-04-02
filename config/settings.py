@@ -107,6 +107,7 @@ PROJECT_APPS = [
     "metabase.apps.MetabaseConfig",
     "brevo.apps.BrevoConfig",
     "crisp.apps.CrispConfig",
+    "oidc.apps.OidcConfig",
 ]
 
 
@@ -215,7 +216,7 @@ OIDC_STORE_ID_TOKEN = True
 OIDC_CREATE_USER = True
 OIDC_STATE_SIZE = 32
 OIDC_USE_NONCE = True
-OIDC_CALLBACK_CLASS = "users.views.ProConnectCallbackView"
+# OIDC_CALLBACK_CLASS = "users.views.ProConnectCallbackView"
 
 # Configuration des URLs de redirection OIDC
 OIDC_REDIRECT_URI = f"{DOMAIN_URL}oidc/callback/"
