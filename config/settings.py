@@ -220,21 +220,19 @@ OIDC_OP_JWKS_ENDPOINT = f"https://{PROCONNECT_DOMAIN}/api/v2/jwks"
 OIDC_OP_AUTHORIZATION_ENDPOINT = f"https://{PROCONNECT_DOMAIN}/api/v2/authorize"
 OIDC_OP_TOKEN_ENDPOINT = f"https://{PROCONNECT_DOMAIN}/api/v2/token"
 OIDC_OP_USER_ENDPOINT = f"https://{PROCONNECT_DOMAIN}/api/v2/userinfo"
-OIDC_OP_LOGOUT_ENDPOINT = f"https://{PROCONNECT_DOMAIN}/api/v2/logout"
-OIDC_OP_LOGOUT_ENDPOINT = f"https://{PROCONNECT_DOMAIN}/api/v2/logout"
+OIDC_OP_LOGOUT_ENDPOINT = f"https://{PROCONNECT_DOMAIN}/api/v2/session/end"
 
 # Configuration des scopes OIDC
 OIDC_RP_SIGN_ALGO = "RS256"
-# OIDC_STORE_ACCESS_TOKEN = True
-# OIDC_STORE_ID_TOKEN = True
-# OIDC_CREATE_USER = True
-# OIDC_STATE_SIZE = 32
-# OIDC_USE_NONCE = True
-# OIDC_CALLBACK_CLASS = "users.views.ProConnectCallbackView"
+OIDC_STORE_ACCESS_TOKEN = True
+OIDC_STORE_ID_TOKEN = True
+OIDC_CREATE_USER = True
+OIDC_STATE_SIZE = 32
+OIDC_USE_NONCE = True
 
 # Configuration des URLs de redirection OIDC
 OIDC_REDIRECT_URI = f"{DOMAIN_URL}oidc/callback/"
-OIDC_LOGOUT_REDIRECT_URI = f"{DOMAIN_URL}oidc/logout/"
+OIDC_LOGOUT_REDIRECT_URI = f"{DOMAIN_URL}oidc/logout-callback/"
 
 # Configuration des scopes demandés OIDC
 OIDC_RP_SCOPES = "openid email profile organization"
