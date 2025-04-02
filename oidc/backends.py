@@ -13,8 +13,8 @@ class ProConnectAuthenticationBackend(OIDCAuthenticationBackend):
 
     def get_userinfo(self, access_token, id_token, payload):
         """
-        Récupère les informations utilisateur depuis ProConnect.
-        ProConnect retourne un JWT au lieu d'un JSON.
+        On surcharge la méthode parente car ProConnect retourne un token JWT
+        au format `application/jwt` au lieu de `application/json`.
         """
         try:
             user_response = requests.get(
@@ -27,7 +27,6 @@ class ProConnectAuthenticationBackend(OIDCAuthenticationBackend):
             user_response.raise_for_status()
 
             if user_response.headers.get("content-type", "").startswith("application/jwt"):
-                # Si les claims user sont un JWT
                 return self.verify_token(user_response.text)
             return user_response.json()
 
@@ -39,12 +38,23 @@ class ProConnectAuthenticationBackend(OIDCAuthenticationBackend):
             logger.error(f"Erreur inattendue lors de la récupération des informations utilisateur: {str(e)}")
             raise SuspiciousOperation("Erreur lors de la validation du token") from e
 
-    def verify_token(self, token):
+    def create_user(self, claims):
         """
-        Vérifie la signature et le contenu du token JWT.
+        Crée un nouvel utilisateur à partir des claims OIDC.
         """
         try:
-            return super().verify_token(token)
+            email = claims.get("email")
+            if not email:
+                raise SuspiciousOperation("Email manquant dans les claims")
+
+            user = self.UserModel.objects.create_user(
+                email=email,
+                first_name=claims.get("given_name", ""),
+                last_name=claims.get("usual_name", ""),
+            )
+
+            return user
+
         except Exception as e:
-            logger.error(f"Erreur lors de la vérification du token: {str(e)}")
-            raise SuspiciousOperation("Token invalide") from e
+            logger.error(f"Erreur lors de la création de l'utilisateur: {str(e)}")
+            raise SuspiciousOperation("Impossible de créer l'utilisateur") from e
