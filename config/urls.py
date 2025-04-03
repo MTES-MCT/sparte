@@ -33,7 +33,7 @@ urlpatterns = [
     path("", include(tf_urls)),
     path("admin/login/", LoginView.as_view(), name="admin_login_2fa"),  # Forcer l'admin à utiliser 2FA
     path("admin/", admin.site.urls),
-    # path("oidc/", include("oidc.urls")),  # URLs OIDC custom pour ProConnect
+    path("", include("oidc.urls")),  # URLs OIDC custom pour ProConnect
     path("oidc/", include(oidc_urls)),  # URLs OIDC standard pour ProConnect
     path("", include("home.urls")),
     path("users/", include("users.urls")),
