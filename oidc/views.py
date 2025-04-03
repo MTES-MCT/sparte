@@ -1,6 +1,7 @@
 import logging
 
 from django.conf import settings
+from django.contrib.auth import logout
 from django.core.exceptions import SuspiciousOperation
 from django.http.response import HttpResponseRedirect
 from django.urls import reverse
@@ -23,19 +24,22 @@ def oidc_proconnect_logout(request):
         logout_state = get_random_string(32)
         request.session["logout_state"] = logout_state
 
+        # Construction de l'URL de redirection
+        logout_redirect_uri = request.build_absolute_uri(reverse("oidc:oidc_logout"))
+
         # Construction de l'URL de déconnexion
         logout_url = (
             f"{settings.OIDC_OP_LOGOUT_ENDPOINT}"
             f"?id_token_hint={oidc_token}"
             f"&state={logout_state}"
-            f"&post_logout_redirect_uri={request.build_absolute_uri(reverse('oidc_logout'))}"
+            f"&post_logout_redirect_uri={logout_redirect_uri}"
         )
 
         # Redirection vers l'URL de déconnexion
         return HttpResponseRedirect(redirect_to=logout_url)
 
-    # Kill session Django et redirection
-    return HttpResponseRedirect(redirect_to=reverse("oidc_logout"))
+    # Redirection vers la page de connexion si pas de connexion via ProConnect
+    return HttpResponseRedirect(redirect_to=reverse("users:signin"))
 
 
 class CustomLogoutView(OIDCLogoutView):
@@ -48,4 +52,8 @@ class CustomLogoutView(OIDCLogoutView):
             if request.GET.get("state") != logout_state:
                 raise SuspiciousOperation("La vérification de la déconnexion a échoué")
 
-        return super().post(request)
+        # Déconnexion de l'utilisateur
+        logout(request)
+
+        # Redirection vers la page de connexion
+        return HttpResponseRedirect(reverse("users:signin"))
