@@ -224,7 +224,7 @@ ALLOW_LOGOUT_GET_METHOD = True
 OIDC_RENEW_ID_TOKEN_EXPIRY_SECONDS = 4 * 60 * 60
 
 # Configuration des scopes demandés OIDC
-OIDC_RP_SCOPES = "openid email profile organization"
+OIDC_RP_SCOPES = "openid email given_name usual_name siret"
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
