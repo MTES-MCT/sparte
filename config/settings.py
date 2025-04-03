@@ -217,17 +217,11 @@ OIDC_OP_TOKEN_ENDPOINT = f"https://{PROCONNECT_DOMAIN}/api/v2/token"
 OIDC_OP_USER_ENDPOINT = f"https://{PROCONNECT_DOMAIN}/api/v2/userinfo"
 OIDC_OP_LOGOUT_ENDPOINT = f"https://{PROCONNECT_DOMAIN}/api/v2/session/end"
 
-# Configuration des scopes OIDC
+# Configuration OIDC
 OIDC_RP_SIGN_ALGO = "RS256"
-OIDC_STORE_ACCESS_TOKEN = True
 OIDC_STORE_ID_TOKEN = True
-OIDC_CREATE_USER = True
-OIDC_STATE_SIZE = 32
-OIDC_USE_NONCE = True
-
-# Configuration des URLs de redirection OIDC
-OIDC_REDIRECT_URI = f"{DOMAIN_URL}oidc/callback/"
-OIDC_LOGOUT_REDIRECT_URI = f"{DOMAIN_URL}oidc/logout-callback/"
+ALLOW_LOGOUT_GET_METHOD = True
+OIDC_RENEW_ID_TOKEN_EXPIRY_SECONDS = 4 * 60 * 60
 
 # Configuration des scopes demandés OIDC
 OIDC_RP_SCOPES = "openid email profile organization"
