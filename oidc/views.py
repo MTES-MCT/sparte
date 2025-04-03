@@ -6,17 +6,20 @@ from django.core.exceptions import SuspiciousOperation
 from django.http.response import HttpResponseRedirect
 from django.urls import reverse
 from django.utils.crypto import get_random_string
+from django.views.decorators.http import require_http_methods
 from mozilla_django_oidc.views import OIDCLogoutView
 
 logger = logging.getLogger(__name__)
 
 
+@require_http_methods(["GET"])
 def oidc_login(request):
     return HttpResponseRedirect(
         redirect_to=reverse("oidc_authentication_init") + f"?{request.META.get('QUERY_STRING')}"
     )
 
 
+@require_http_methods(["GET"])
 def oidc_proconnect_logout(request):
     # récupération du token stocké en session
     if oidc_token := request.session.get("oidc_id_token"):
