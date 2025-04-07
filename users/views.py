@@ -50,7 +50,7 @@ class UserCreateView(BreadCrumbMixin, CreateView):
     def form_valid(self, form):
         self.object = form.save()
         send_user_subscription_to_brevo.delay(self.object.id)
-        login(self.request, self.object)
+        login(self.request, self.object, backend="django.contrib.auth.backends.ModelBackend")
         return HttpResponseRedirect(self.get_success_url())
 
     def get_success_url(self):
