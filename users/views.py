@@ -4,11 +4,16 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
 from django.http import HttpResponseRedirect
 from django.urls import reverse, reverse_lazy
-from django.views.generic import RedirectView
-from django.views.generic.edit import CreateView, DeleteView, FormView, UpdateView
+from django.views.generic import RedirectView, UpdateView
+from django.views.generic.edit import CreateView, DeleteView, FormView
 
 from brevo.tasks import send_user_subscription_to_brevo
-from users.forms import SigninForm, SignupForm, UpdatePasswordForm
+from users.forms import (
+    ProfileCompletionForm,
+    SigninForm,
+    SignupForm,
+    UpdatePasswordForm,
+)
 from users.models import User
 from utils.views_mixins import BreadCrumbMixin
 
@@ -140,3 +145,13 @@ class UpdatePwFormView(BreadCrumbMixin, LoginRequiredMixin, FormView):
         messages.success(self.request, "Votre mot de passe a été changé.")
         form.save()
         return super().form_valid(form)
+
+
+class ProfileCompletionView(LoginRequiredMixin, UpdateView):
+    model = User
+    form_class = ProfileCompletionForm
+    template_name = "users/profile_completion.html"
+    success_url = reverse_lazy("home")
+
+    def get_object(self):
+        return self.request.user
