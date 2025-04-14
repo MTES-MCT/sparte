@@ -9,7 +9,7 @@ with
             commune_code as code,
             year,
             sum(percent) as percent_of_land,
-            sum(surface) as artificial_surface,
+            sum(surface) as surface,
             commune_couverture_et_usage.departement,
             index,
             {{ code_sol }} as {{ sol }}
@@ -19,7 +19,7 @@ with
     )
 select
     without_percent.*,
-    (without_percent.artificial_surface / artif_commune.artificial_surface) * 100 as percent_of_artif
+    (without_percent.surface / artif_commune.surface) * 100 as percent_of_artif
 from without_percent
 left join
     {{ ref("artif_commune") }}

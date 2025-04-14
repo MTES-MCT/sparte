@@ -6,8 +6,8 @@ with without_percent as (
         commune.{{ group_by_column }} as code,
         year,
         {{ sol }},
-        sum(artif_commune_by_{{ sol }}.artificial_surface) as artificial_surface,
-        sum(commune.surface) as surface,
+        sum(artif_commune_by_{{ sol }}.surface) as surface,
+        sum(commune.surface) as land_surface,
         commune.departement as departement,
         artif_commune_by_{{ sol }}.index as index
     FROM
@@ -25,10 +25,10 @@ SELECt
     without_percent.departement,
     without_percent.index,
     without_percent.year,
-    without_percent.artificial_surface / without_percent.surface * 100 as percent_of_land,
-    without_percent.artificial_surface as artificial_surface,
+    without_percent.surface / without_percent.land_surface * 100 as percent_of_land,
+    without_percent.surface as surface,
     without_percent.{{ sol }},
-    (100 * without_percent.artificial_surface) / artif_{{ group_by_column }}.artificial_surface as percent_of_artif
+    (100 * without_percent.surface) / artif_{{ group_by_column }}.surface as percent_of_artif
  FROM without_percent
  LEFT JOIN
     {{ ref('artif_' + group_by_column) }} as artif_{{ group_by_column }}

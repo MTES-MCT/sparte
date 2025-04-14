@@ -7,7 +7,7 @@ SELECT
     departements,
     index as millesime_index,
     years,
-    artificial_surface as surface,
+    surface,
     percent
 FROM
     {{ ref("artif_land_by_index") }}

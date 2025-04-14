@@ -5,8 +5,8 @@ with without_percent as (
 SELECT
     {{ group_by_column }} as code,
     artif_commune.year,
-    sum(artif_commune.artificial_surface) as artificial_surface,
     sum(artif_commune.surface) as surface,
+    sum(artif_commune.land_surface) as land_surface,
     artif_commune.departement as departement,
     artif_commune.index as index
  FROM
@@ -21,7 +21,7 @@ GROUP BY
 )
 SELECt
     *,
-    artificial_surface / surface * 100 as percent
+    surface / land_surface * 100 as percent
  FROM without_percent
 
 

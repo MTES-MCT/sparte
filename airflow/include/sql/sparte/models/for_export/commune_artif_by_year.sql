@@ -6,7 +6,7 @@ with
         select
             code as commune_code,
             percent,
-            artificial_surface as surface,
+            surface as surface,
             year,
             row_number() over (partition by code order by year desc) as rn
         from

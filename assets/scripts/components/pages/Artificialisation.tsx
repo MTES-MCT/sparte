@@ -148,7 +148,7 @@ export const Artificialisation = ({ projectData, landData }: {
             <div className="fr-grid-row">
             {byDepartement ? millesimes.filter(e => e.index === stockIndex).map(
                 (m) => (
-                    <div key={`${m.index}_${m.departement}`} className="fr-col-6">
+                    <div key={`${m.index}_${m.departement}`} className="fr-col-4">
                         <OcsgeGraph
                             id="pie_artif_by_couverture"
                             index={m.index}

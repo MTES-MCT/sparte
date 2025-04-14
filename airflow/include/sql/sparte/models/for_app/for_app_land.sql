@@ -12,7 +12,7 @@ SELECT
     {{ m2_to_ha('land.surface') }} as surface,
     'ha' as surface_unit,
     ST_Transform(geom, 4326) as geom,
-    {{ m2_to_ha('artif.artificial_surface') }} as surface_artif,
+    {{ m2_to_ha('artif.surface') }} as surface_artif,
     artif.percent as percent_artif,
     artif.years as years_artif,
     land_millesimes.millesimes as millesimes,
@@ -21,7 +21,7 @@ SELECT
 FROM
     {{ ref('land') }}
 LEFT JOIN LATERAL (
-    SELECT artificial_surface, percent, years
+    SELECT surface, percent, years
     FROM {{ ref('artif_land_by_index') }}
     WHERE
         artif_land_by_index.land_id = land.land_id AND
