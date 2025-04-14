@@ -33,11 +33,11 @@ with
             -- les attributs communs aux deux tables sont sans préfixe
             ocsge.year,
             ocsge.departement,
+            ocsge.index,
             ocsge.code_cs,
             ocsge.code_us,
             ocsge.is_artificial,
             ocsge.critere_seuil,
-            ocsge.official_artif,
             ocsge.is_impermeable,
             ocsge.srid_source,
             (st_dump(st_intersection(commune.geom, ocsge.geom))).geom as geom

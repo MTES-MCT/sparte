@@ -18,7 +18,10 @@ class AllChartsForPreview(DiagnosticBaseView):
             try:
                 chart = chart(project, level=project.level)
             except Exception:
-                chart = chart(project)
+                try:
+                    chart = chart(project)
+                except Exception:
+                    continue
             uuid = str(uuid4()).replace("-", "_")
             chart.id = "id_" + uuid
             chart.name = "chart_" + uuid

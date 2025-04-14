@@ -4,21 +4,18 @@ with
     artif_commune_with_row_number as (
         -- Marque les données les plus récentes pour chaque commune (rn = 1)
         select
-            commune_code,
+            code as commune_code,
             percent,
-            surface,
+            artificial_surface as surface,
             year,
-            official_artif,
-            row_number() over (partition by commune_code order by year desc) as rn
+            row_number() over (partition by code order by year desc) as rn
         from
             {{ ref("artif_commune") }} as artif
-        where
-            official_artif = true
         order by year desc
     ),
     latest_artif_commune as (
         -- Sélectionne les données les plus récentes pour chaque commune
-        select commune_code, percent, surface, year, official_artif
+        select commune_code, percent, surface, year
         from artif_commune_with_row_number
         where rn = 1
     )
@@ -27,7 +24,6 @@ select
     commune.name as nom,
     latest_artif_commune.percent as pourcent_artif,
     latest_artif_commune.surface as surface_artif,
-    latest_artif_commune.official_artif as official_artif,
     latest_artif_commune.year as ocsge_millesime,
     commune.population as population,
     commune.canton as canton,

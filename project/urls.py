@@ -56,7 +56,7 @@ urlpatterns = [
     ),
     path(
         "<int:pk>/tableau-de-bord/synthesis",
-        views.diagnostic.DiagnosticConsoView.as_view(),
+        views.diagnostic.DiagnosticSynthesisView.as_view(),
         name="report_synthesis",
     ),
     path(

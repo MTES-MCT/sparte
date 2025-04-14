@@ -2,7 +2,7 @@
     config(
         materialized="table",
         indexes=[
-            {"columns": ["commune"], "type": "btree"},
+            {"columns": ["code"], "type": "btree"},
             {"columns": ["departement"], "type": "btree"},
             {"columns": ["region"], "type": "btree"},
             {"columns": ["epci"], "type": "btree"},
@@ -18,6 +18,7 @@ with
         select
             commune,
             departement,
+            index,
             region,
             epci,
             ept,
@@ -39,16 +40,17 @@ with
             {{ ref("zonage_couverture_et_usage") }}
             on land_zonage.zonage_checksum = zonage_couverture_et_usage.zonage_checksum
         where zonage_type is not null
-        group by commune, zonage_type, year, departement, region, epci, ept, scot
+        group by commune, zonage_type, year, departement, index, region, epci, ept, scot
     )
 select
-    commune,
+    commune as code,
     departement,
     region,
     epci,
     ept,
     scot,
     year,
+    index,
     surface,
     artificial_surface,
     zonage_type,

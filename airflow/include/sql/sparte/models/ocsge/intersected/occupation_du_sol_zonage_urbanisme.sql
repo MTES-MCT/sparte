@@ -27,13 +27,13 @@ with
             ocsge.loaded_date as ocsge_loaded_date,
             -- les attributs communs aux deux tables sont sans préfixe
             ocsge.year,
+            ocsge.index,
             ocsge.departement,
             ocsge.code_cs,
             ocsge.code_us,
             ocsge.uuid,
             ocsge.is_artificial,
             ocsge.critere_seuil,
-            ocsge.official_artif,
             ocsge.is_impermeable,
             ocsge.srid_source,
             (st_dump(st_intersection(zonage.geom, ocsge.geom))).geom as geom

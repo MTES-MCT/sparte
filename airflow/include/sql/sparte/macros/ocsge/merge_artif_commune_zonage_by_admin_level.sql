@@ -3,9 +3,10 @@
     with
         without_percent as (
             select
-                {{ group_by_column }},
+                artif_zonage_commune.{{ group_by_column }} as code,
                 year,
-                array_agg(distinct departement) as departements,
+                index,
+                artif_zonage_commune.departement,
                 sum(surface) as surface,
                 sum(artificial_surface) as artificial_surface,
                 zonage_type,
@@ -13,12 +14,13 @@
             from {{ ref("artif_zonage_commune") }}
             WHERE
             {{ group_by_column }} IS NOT NULL
-            group by {{ group_by_column }}, year, zonage_type
+            group by {{ group_by_column }}, year, index, zonage_type, artif_zonage_commune.departement
         )
     select
-        {{ group_by_column }},
+        code,
         year,
-        departements,
+        index,
+        departement,
         surface,
         artificial_surface,
         artificial_surface / surface * 100 as artificial_percent,

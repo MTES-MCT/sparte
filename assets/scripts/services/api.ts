@@ -70,28 +70,74 @@ export type ProjectDetailResultType = {
     menuItems: MenuItem[];
   };
 };
+
 type ProjectDetailQueryArg = string | FetchArgs;
-type ProjectDetailBaseQuery = BaseQueryFn<
-  ProjectDetailQueryArg,
-  unknown,
-  FetchBaseQueryError
+type ProjectDetailBaseQuery = BaseQueryFn<ProjectDetailQueryArg, unknown, FetchBaseQueryError>;
+export type UseFetchingType = TypedUseQuery<ProjectDetailResultType, ProjectDetailQueryArg, ProjectDetailBaseQuery>;
+
+export type Millesime = {
+  index: number;
+  year: number;
+  departement: string;
+}
+
+export type MillesimeByIndex = {
+  index: number;
+  years: string;
+  departements: string;
+}
+
+export type LandDetailResultType = {
+  land_id: string;
+  land_type: string;
+  name: string;
+  surface: number;
+  surface_unit: string;
+  surface_artif: number | null;
+  percent_artif: number | null;
+  years_artif: number[] | null;
+  millesimes: Millesime[]
+  millesimes_by_index: MillesimeByIndex[]
+};
+
+type LandDetailQueryArg = string | {
+  land_type: string;
+  land_id: string;
+};
+type LandDetailBaseQuery = BaseQueryFn<LandDetailQueryArg, unknown, FetchBaseQueryError>;
+
+export type UseLandDetailType = TypedUseQuery<
+  LandDetailResultType,
+  LandDetailQueryArg,
+  LandDetailBaseQuery
 >;
 
-export type UseFetchingType = TypedUseQuery<
-  ProjectDetailResultType,
-  ProjectDetailQueryArg,
-  ProjectDetailBaseQuery
->;
+
 
 export const djangoApi = createApi({
   reducerPath: "djangoApi",
   baseQuery: fetchBaseQuery({ credentials: "include" }),
+  keepUnusedDataFor: 600,
   endpoints: (builder) => ({
+    getChartConfig: builder.query({
+      query: ({id, land_type, land_id, ...params}) => {
+        const queryParams = new URLSearchParams(params)
+        return `/api/chart/${id}/${land_type}/${land_id}?${queryParams}`
+      },
+      transformResponse: (response: any) => {
+        delete response.responsive
+        return response
+      }
+      
+    }),
     getEnvironment: builder.query({
       query: () => "/env",
     }),
     getDepartementList: builder.query({
       query: () => "/public/departements/",
+    }),
+    getLand: builder.query({
+      query: ({ land_type, land_id }) => `/api/lands/${land_type}/${land_id}`,
     }),
     getProject: builder.query({
       query: (id) => `/project/${id}/detail`,
@@ -111,11 +157,14 @@ export const djangoApi = createApi({
 });
 
 const useGetProjectQuery: UseFetchingType = djangoApi.useGetProjectQuery;
+const useGetLandQuery: UseLandDetailType = djangoApi.useGetLandQuery;
 
 const {
   useGetDepartementListQuery,
   useGetEnvironmentQuery,
   useSearchTerritoryQuery,
+  useGetChartConfigQuery,
+  useGetPageContentQuery,
 } = djangoApi;
 
 export {
@@ -123,4 +172,7 @@ export {
   useGetEnvironmentQuery,
   useSearchTerritoryQuery,
   useGetProjectQuery,
+  useGetChartConfigQuery,
+  useGetLandQuery,
+  useGetPageContentQuery,
 };

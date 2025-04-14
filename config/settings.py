@@ -92,6 +92,7 @@ THIRD_APPS = [
     "django_otp.plugins.otp_totp",
     "django_otp.plugins.otp_static",
     "qrcode",
+    "django_filters",
 ]
 
 # upper app should not communicate with lower ones

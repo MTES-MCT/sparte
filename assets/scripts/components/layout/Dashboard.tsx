@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@store/store';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import styled from 'styled-components';
-import { useGetProjectQuery } from '@services/api';
+import { useGetLandQuery, useGetProjectQuery } from '@services/api';
 import { setProjectData } from '@store/projectSlice';
 import { selectIsNavbarOpen } from '@store/navbarSlice';
 import useWindowSize from '@hooks/useWindowSize';
@@ -44,27 +44,31 @@ const Content = styled.div`
 
 const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
     const dispatch = useDispatch();
-    const { data, error, isLoading } = useGetProjectQuery(projectId);
-    const { urls } = data || {};
+    const { data: projectData, error, isLoading } = useGetProjectQuery(projectId);
+    const { data: landData } = useGetLandQuery({
+        land_type: projectData?.land_type,
+        land_id: projectData?.land_id }
+    );
+    const { urls } = projectData || {};
 
     const isOpen = useSelector((state: RootState) => selectIsNavbarOpen(state));
     const { isMobile } = useWindowSize();
 
     useEffect(() => {
-    if (data) {        
-        dispatch(setProjectData(data));        
+    if (projectData) {        
+        dispatch(setProjectData(projectData));        
     }
-    }, [data, dispatch]);
+    }, [projectData, dispatch]);
 
 
     return (
         <>
-            {data && !isLoading && !error && urls && (
+            {projectData && landData && !isLoading && !error && urls && (
                 <>
-                    <Header projectData={data} />
+                    <Header projectData={projectData} />
                     <Router>
                         <TrackingWrapper />
-                        <Navbar projectData={data} />
+                        <Navbar projectData={projectData} />
                         <Main $isOpen={isOpen} $isMobile={isMobile}>
                             <TopBar />
                             <Content>
@@ -74,7 +78,7 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                         element={
                                             <RouteWrapper
                                                 title="Synthèse"
-                                                consoCorrectionStatus={data.consommation_correction_status}
+                                                consoCorrectionStatus={projectData.consommation_correction_status}
                                             >
                                                 <Synthese endpoint={urls.synthese} />
                                             </RouteWrapper>
@@ -85,7 +89,7 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                         element={
                                             <RouteWrapper
                                                 title="Consommation d'espaces NAF (Naturels, Agricoles et Forestiers)"
-                                                consoCorrectionStatus={data.consommation_correction_status}
+                                                consoCorrectionStatus={projectData.consommation_correction_status}
                                             >
                                                 <Consommation endpoint={urls.consommation} />
                                             </RouteWrapper>
@@ -96,7 +100,7 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                         element={
                                             <RouteWrapper
                                                 title="Trajectoire de sobriété foncière"
-                                                consoCorrectionStatus={data.consommation_correction_status}
+                                                consoCorrectionStatus={projectData.consommation_correction_status}
                                             >
                                                 <Trajectoires endpoint={urls.trajectoires} />
                                             </RouteWrapper>
@@ -107,7 +111,10 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                         element={
                                             <RouteWrapper
                                                 title="Artificialisation des sols">
-                                                    <Artificialisation />
+                                                    <Artificialisation
+                                                        projectData={projectData}
+                                                        landData={landData}
+                                                    />
                                                 </RouteWrapper>
                                         }
                                     />
@@ -119,7 +126,7 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                         element={
                                             <RouteWrapper 
                                                 title="Vacance des logements"
-                                                hasLogementVacant={data.logements_vacants_available}
+                                                hasLogementVacant={projectData.logements_vacants_available}
                                             >
                                                 <LogementVacant endpoint={urls.logementVacant} />
                                             </RouteWrapper>
@@ -130,9 +137,9 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                         element={
                                             <RouteWrapper
                                                 title="Rapport triennal local"
-                                                consoCorrectionStatus={data.consommation_correction_status}
+                                                consoCorrectionStatus={projectData.consommation_correction_status}
                                             >
-                                                <RapportLocal endpoint={urls.rapportLocal} projectData={data} />
+                                                <RapportLocal endpoint={urls.rapportLocal} projectData={projectData} />
                                             </RouteWrapper>
                                         }
                                     />
@@ -148,7 +155,7 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                     />
                                 </Routes>
                             </Content>
-                            <Footer projectData={data} />
+                            <Footer projectData={projectData} />
                         </Main>
                     </Router>
                 </>

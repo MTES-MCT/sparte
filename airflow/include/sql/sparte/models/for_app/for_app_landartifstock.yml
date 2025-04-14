@@ -1,0 +1,23 @@
+version: 2
+
+models:
+  - name: for_app_landartifstock
+    columns:
+      - name: land_id
+        data_tests:
+          - not_null
+      - name: land_type
+        data_tests:
+          - not_null
+      - name: year
+        data_tests:
+          - not_null
+      - name: percent
+        data_tests:
+          - not_null
+          - is_percent_between_0_and_100
+      - name: surface
+        data_tests:
+          - not_null
+      - name: departements
+          - not_null

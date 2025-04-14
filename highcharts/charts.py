@@ -71,9 +71,10 @@ class Chart:
     def get_options(self, serie_name) -> Dict[str, Any]:
         return self.options.get(serie_name, dict())
 
-    def __init__(self):
+    def __init__(self, add_series=True):
         self.chart = self.get_param()
-        self.add_series()
+        if add_series:
+            self.add_series()
 
     def get_series(self) -> List[Dict[str, Any]]:
         return self.series
