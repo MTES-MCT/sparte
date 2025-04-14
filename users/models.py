@@ -47,22 +47,20 @@ class User(AbstractUser):
         "Organisme",
         max_length=250,
         choices=ORGANISM.choices,
-        validators=[is_alpha_validator],
-        default=ORGANISM.COMMUNE,
+        blank=True,
+        null=True,
     )
     service = models.CharField(
-        "Service",
+        "Service*",
         max_length=250,
         choices=SERVICE.choices,
-        validators=[is_alpha_validator],
         blank=True,
         null=True,
     )
     function = models.CharField(
-        "Fonction",
+        "Fonction*",
         max_length=250,
         choices=FUNCTION.choices,
-        validators=[is_alpha_validator],
         blank=True,
         null=True,
     )
@@ -126,6 +124,11 @@ class User(AbstractUser):
                     )
                 }
             )
+
+    @property
+    def is_profile_complete(self):
+        """Vérifie si le profil de l'utilisateur est complet."""
+        return bool(self.organism and self.main_land_id)
 
     @property
     def greetings(self):

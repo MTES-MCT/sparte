@@ -50,4 +50,9 @@ urlpatterns = [
         name="password_reset_complete",
     ),
     path("unsubscribe/", views.UserDeleteView.as_view(), name="unsubscribe"),
+    path(
+        "complete-profile/",
+        views.ProfileCompletionView.as_view(),
+        name="complete_profile",
+    ),
 ]

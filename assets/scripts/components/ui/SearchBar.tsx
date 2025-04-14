@@ -2,12 +2,10 @@ import React, { useEffect, ChangeEvent, useState, useRef } from 'react';
 import styled from 'styled-components';
 import { useSearchTerritoryQuery } from '@services/api';
 import useDebounce from '@hooks/useDebounce';
-import getCsrfToken from '@utils/csrf';
 import Loader from '@components/ui/Loader';
 
 interface SearchBarProps {
-    createUrl: string;
-    origin?: string;
+    onTerritorySelect?: (territory: Territory) => void;
 }
 
 export interface Territory {
@@ -122,12 +120,11 @@ const NoResultsMessage = styled.div`
     text-align: center;
 `;
 
-const SearchBar: React.FC<SearchBarProps> = ({ createUrl, origin }) => {
+const SearchBar: React.FC<SearchBarProps> = ({ onTerritorySelect }) => {
     const searchContainerRef = useRef<HTMLDivElement>(null);
     const [query, setQuery] = useState<string>('');
     const [isFocused, setIsFocused] = useState<boolean>(false);
     const [data, setData] = useState<Territory[] | undefined>(undefined);
-    const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
     const debouncedQuery = useDebounce(query, 500);
     const minimumCharCountForSearch = 2;
     const shouldQueryBeSkipped = debouncedQuery.length < minimumCharCountForSearch;
@@ -164,61 +161,19 @@ const SearchBar: React.FC<SearchBarProps> = ({ createUrl, origin }) => {
 
     const handleBlur = () => {
         setTimeout(() => {
-            if (!isSubmitting) {
-                setQuery('');
-                setIsFocused(false);
-                setData(undefined);
-            }
+            handleReset();
         }, 150);
     };
 
-    // Solution temporaire
-    const createDiagnostic = (publicKey: string, disabled: boolean) => {
-        if (isSubmitting || disabled) return;
-    
-        setIsSubmitting(true);
+    const handleReset = () => {
+        setQuery('');
+        setIsFocused(false);
+        setData(undefined);
+    };
 
-        if (origin === "home" && window.trackEvent) {
-            window.trackEvent(
-                'north_star_activation_funnel',
-                'search_territory',
-                'step_1_north_star_activation_funnel'
-            );
-        } else if (origin === "rapport-local" && window.trackEvent) {
-            window.trackEvent(
-                'local_report_download_funnel',
-                'search_territory',
-                'local_report_home_search_territory_selected'
-            );
-        }
-    
-        const form = document.createElement('form');
-        form.action = createUrl;
-        form.method = 'POST';
-    
-        // CSRF Token
-        const csrfToken = document.createElement('input');
-        csrfToken.type = 'hidden';
-        csrfToken.name = 'csrfmiddlewaretoken';
-        csrfToken.value = getCsrfToken();
-        form.appendChild(csrfToken);
-    
-        // Public Key
-        const selection = document.createElement('input');
-        selection.type = 'hidden';
-        selection.name = 'selection';
-        selection.value = publicKey;
-        form.appendChild(selection);
-    
-        // Keyword
-        const keywordInput = document.createElement('input');
-        keywordInput.type = 'hidden';
-        keywordInput.name = 'keyword';
-        keywordInput.value = query;
-        form.appendChild(keywordInput);
-    
-        document.body.appendChild(form);
-        form.submit();
+    const handleTerritoryClick = (territory: Territory) => {
+        onTerritorySelect(territory);
+        handleReset();
     };
 
     return (
@@ -227,6 +182,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ createUrl, origin }) => {
             <SearchContainer ref={searchContainerRef}>
                 <Icon className="bi bi-search" />
                 <Input
+                    id="search-bar-territory"
                     type="text"
                     value={query}
                     onChange={handleInputChange}
@@ -246,7 +202,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ createUrl, origin }) => {
                                         key={territory.source_id}
                                         $disabled={isDisabled}
                                         onMouseDown={(e) => e.preventDefault()}
-                                        onClick={() => createDiagnostic(territory.public_key, isDisabled)}
+                                        onClick={() => handleTerritoryClick(territory)}
                                     >
                                         <div>
                                             <TerritoryTitle>
@@ -257,7 +213,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ createUrl, origin }) => {
                                                 <div>Code INSEE: {territory.source_id}</div>
                                                 {isDisabled && 
                                                     <div><i className="bi bi-info-circle fr-mr-1w"></i>Données indisponibles: Territoire supprimé en 2024</div>
-                                                 }
+                                                }
                                             </TerritoryDetails>
                                         </div>
                                     </ResultItem>

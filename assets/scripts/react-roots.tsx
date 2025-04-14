@@ -5,20 +5,28 @@ import store from '@store/store';
 import ErrorBoundary from '@components/ui/ErrorBoundary';
 import Dashboard from '@components/layout/Dashboard';
 import HighchartsMapOcsge from '@components/charts/HighchartsMapOcsge'
-import SearchBar from '@components/widgets/SearchBar'
+import SearchBar from '@components/ui/SearchBar'
+import MainTerritorySearchBar from '@components/features/MainTerritorySearchBar'
 
 const searchBar = document.getElementById('react-search-bar')
 if (searchBar)
 {
-  const createUrl = searchBar.dataset.createUrl;
-  const origin = searchBar.dataset.origin;
   createRoot(searchBar).render(
     <Provider store={store}>
-      <SearchBar createUrl={createUrl} origin={origin} />
+      <SearchBar onTerritorySelect={() => {console.log('territory selected')}} />
     </Provider>,
   )
 }
 
+const searchBarProfile = document.getElementById('react-search-bar-profile')
+if (searchBarProfile)
+{  
+  createRoot(searchBarProfile).render(
+    <Provider store={store}>
+      <MainTerritorySearchBar />
+    </Provider>,
+  )
+}
 
 const highchartsMapOcsge = document.getElementById('react-highcharts-ocsge')
 if (highchartsMapOcsge)
