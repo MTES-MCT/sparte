@@ -20,51 +20,43 @@
 {% endblock %}
 
 {% block content %}
-
-<div class="fr-container fr-container--fluid">
-    <div class="fr-grid-row fr-grid-row-gutters fr-grid-row--center">
-        <div class="fr-col-12">
-            <div class="fr-container">
-                <div class="fr-grid-row fr-grid-row-gutters fr-grid-row--center">
-                    <div class="fr-col-12 fr-col-md-9 fr-col-lg-8">
-                        <div class="fr-mb-6v">
-                            <h2>Se connecter avec ProConnect</h2>
-                            <div class="fr-connect-group">
-                                <a href="{% url 'oidc_authentication_init' %}" class="fr-connect">
-                                    <span class="fr-connect__login">S’identifier avec</span>
-                                    <span class="fr-connect__brand">ProConnect</span>
-                                </a>
-                                <p>
-                                    <a href="https://www.proconnect.gouv.fr/" target="_blank"  rel="noopener" title="Qu’est-ce que ProConnect ? - nouvelle fenêtre">Qu’est-ce que ProConnect ?</a>
-                                </p>
-                            </div>
-                        </div>
-                        <p class="fr-hr-or">ou</p>
-                        <div class="fr-mb-6v">
-                            <h2>Se connecter avec une adresse E-mail</h2>
-                            <form {% if next %}action="?next={{ next }}" {% endif %}method="post">
-                                {% csrf_token %}
-                                {{ form|crispy }}
-                                <button class="fr-btn mt-2" type="submit">Se connecter</button>
-                            </form>
-                            <p class="fr-mt-2w fr-text--sm text-muted">
-                                <a href="{% url 'users:password_reset' %}">Mot de passe oublié ?</a>
-                            </p>
-                        </div>
-                        <hr>
-                        <h2>Vous n’avez pas de compte ?</h2>
-                        <ul class="fr-btns-group">
-                            <li>
-                                <a class="fr-btn fr-btn--secondary" href="{% url 'users:signup' %}?next={{ next }}">
-                                    Créer un compte
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
+<div class="fr-container fr-mt-8v">
+    <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--center">
+        <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+            <div class="fr-mb-8v">
+                <h2>Se connecter avec ProConnect</h2>
+                <div class="fr-connect-group">
+                    <a href="{% url 'oidc_authentication_init' %}" class="fr-connect">
+                        <span class="fr-connect__login">S’identifier avec</span>
+                        <span class="fr-connect__brand">ProConnect</span>
+                    </a>
+                    <p>
+                        <a href="https://www.proconnect.gouv.fr/" target="_blank"  rel="noopener" title="Qu’est-ce que ProConnect ? - nouvelle fenêtre">Qu’est-ce que ProConnect ?</a>
+                    </p>
                 </div>
             </div>
+            <p class="fr-hr-or">ou</p>
+            <div class="fr-mb-8v">
+                <h2>Se connecter avec une adresse E-mail</h2>
+                <form {% if next %}action="?next={{ next }}" {% endif %}method="post">
+                    {% csrf_token %}
+                    {{ form|crispy }}
+                    <button class="fr-btn mt-2" type="submit">Se connecter</button>
+                </form>
+                <p class="fr-mt-2w fr-text--sm text-muted">
+                    <a href="{% url 'users:password_reset' %}">Mot de passe oublié ?</a>
+                </p>
+            </div>
+            <hr>
+            <h2>Vous n’avez pas de compte ?</h2>
+            <ul class="fr-btns-group">
+                <li>
+                    <a class="fr-btn fr-btn--secondary" href="{% url 'users:signup' %}?next={{ next }}">
+                        Créer un compte
+                    </a>
+                </li>
+            </ul>
         </div>
     </div>
 </div>
-
 {% endblock content %}
