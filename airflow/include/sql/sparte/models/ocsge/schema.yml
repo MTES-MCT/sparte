@@ -171,12 +171,6 @@ models:
       - name: new_not_impermeable
         data_tests:
           - not_null
-      - name: new_is_artificial
-        data_tests:
-          - not_null
-      - name: new_not_artificial
-        data_tests:
-          - not_null
       - name: geom
         data_tests:
           - not_null
