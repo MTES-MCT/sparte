@@ -130,6 +130,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "simple_history.middleware.HistoryRequestMiddleware",
     "corsheaders.middleware.CorsMiddleware",
+    "users.middleware.ProfileCompletionMiddleware",
 ]
 
 
