@@ -1,101 +1,46 @@
 {% extends "index.html" %}
 
-{% load crispy_forms_tags %}
-
-{% block pagetitle %}Finaliser votre inscription{% endblock pagetitle %}
+{% block pagetitle %}Finaliser mon inscription{% endblock pagetitle %}
 
 {% block content %}
-    <div class="fr-container">
-        <div class="fr-grid-row fr-grid-row--center">
-            <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
-                <h1 class="fr-mb-5w fr-text--center">Finaliser mon inscription</h1>
-
-                <div class="fr-stepper">
-                    <h2 class="fr-stepper__title">
-                        Compléter mon profil
-                        <span class="fr-stepper__state">Étape 2 sur 2</span>
-                    </h2>
-                    <div class="fr-stepper__steps" data-fr-current-step="2" data-fr-steps="2"></div>
-                </div>
-
-                <div class="fr-notice fr-notice--info fr-mb-3w">
-                    <div class="fr-container">
-                        <div class="fr-notice__body">
-                            <p>
-                                <span class="fr-notice__title fr-text--sm">Pourquoi ces informations sont-elles utiles ?</span>
-                                <br>
-                                <span class="fr-notice__desc fr-text--sm">
-                                    Ces informations nous permettent de mieux comprendre votre contexte et de vous proposer des diagnostics et des analyses adaptés à vos besoins.
-                                </span>
-                            </p>
-                        </div>
+<div class="fr-container fr-mt-8v">
+    <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--center">
+        <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+            <h1 class="fr-h2">Finaliser mon inscription</h1>
+            <div class="fr-notice fr-notice--info fr-mb-3w">
+                <div class="fr-container">
+                    <div class="fr-notice__body">
+                        <p>
+                            <span class="fr-notice__title fr-text--sm">Pourquoi ces informations sont-elles utiles ?</span>
+                            <br>
+                            <span class="fr-notice__desc fr-text--sm">
+                                Ces informations nous permettent de mieux comprendre votre contexte et de vous proposer des diagnostics et des analyses adaptés à vos besoins.
+                            </span>
+                        </p>
                     </div>
                 </div>
-                
+            </div>
+        </div>
+    </div>
+</div>
+<div class="fr-container fr-mb-8v">
+    <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--center">
+        <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+            <div class="fr-stepper">
+                <h2 class="fr-stepper__title">
+                    Compléter mon profil
+                    <span class="fr-stepper__state">Étape 2 sur 2</span>
+                </h2>
+                <div class="fr-stepper__steps" data-fr-current-step="2" data-fr-steps="2"></div>
+            </div>
+            <hr>
+            <div>
                 <form {% if next %}action="?next={{ next }}"{% endif %} method="post">
                     {% csrf_token %}
-                    <div class="fr-form-group">
-                        {{ form.organism|as_crispy_field }}
-                    </div>
-
-                    <div class="fr-form-group hidden-field">
-                        {{ form.function|as_crispy_field }}
-                    </div>
-
-                    <div class="fr-form-group hidden-field">
-                        {{ form.service|as_crispy_field }}
-                    </div>
-
-                    <div class="fr-my-4w profile-territory-container">
-                        <label class="form-label" for="search-bar-territory">Sélectionnez votre territoire principal d'intérêt*</label>
-                        <span class="fr-hint-text">Vous pourrez modifier ce territoire plus tard depuis votre profil.</span>
-                        <div id="react-search-bar-profile" 
-                             data-land-id="{% if form.main_land_id.value %}{{ form.main_land_id.value }}{% endif %}"
-                             data-land-type="{% if form.main_land_type.value %}{{ form.main_land_type.value }}{% endif %}">
-                        </div>
-                        {{ form.main_land_id.as_hidden }}
-                        {{ form.main_land_type.as_hidden }}
-                        {% if form.main_land_id.errors or form.main_land_type.errors %}
-                            <div class="fr-error-text fr-mt-1w">
-                                Vous devez sélectionner un territoire principal d'intérêt
-                            </div>
-                        {% endif %}
-                    </div>
-
-                    <button id="btn-inscription" class="fr-btn" type="submit">Finaliser mon inscription</button>
+                    {% include "users/partials/profile_form.html" %}
                 </form>
             </div>
         </div>
     </div>
-
-    <style>
-        .hidden-field {
-            display: none !important;
-        }
-    </style>
-
-    {% block extra_js %}
-        <script>
-            document.addEventListener('DOMContentLoaded', () => {
-                const organismField = document.querySelector('select[name="organism"]');
-                const functionWrapper = document.querySelector('select[name="function"]')?.closest('.fr-form-group');
-                const serviceWrapper = document.querySelector('select[name="service"]')?.closest('.fr-form-group');
-
-                if (!organismField || !functionWrapper || !serviceWrapper) return;
-
-                const toggleFields = () => {
-                    const value = organismField.value.trim();
-
-                    const showFunction = ['COMMUNE', 'EPCI', 'SCOT'].includes(value);
-                    const showService = ['SERVICES_REGIONAUX', 'SERVICES_DEPARTEMENTAUX', 'EXPERTS_URBANISTES'].includes(value);
-
-                    functionWrapper.classList.toggle('hidden-field', !showFunction);
-                    serviceWrapper.classList.toggle('hidden-field', !showService);
-                };
-
-                organismField.addEventListener('change', toggleFields);
-                toggleFields();
-            });
-        </script>
-    {% endblock extra_js %}
+</div>
 {% endblock content %}

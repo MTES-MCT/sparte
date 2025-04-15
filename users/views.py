@@ -10,6 +10,7 @@ from django.views.generic.edit import CreateView, DeleteView, FormView
 from brevo.tasks import send_user_subscription_to_brevo
 from users.forms import (
     ProfileCompletionForm,
+    ProfileForm,
     SigninForm,
     SignupForm,
     UpdatePasswordForm,
@@ -98,11 +99,10 @@ class ProfilFormView(BreadCrumbMixin, LoginRequiredMixin, UpdateView):
     template_name = "users/profile.html"
     success_url = reverse_lazy("users:profile")
     model = User
-    fields = ["first_name", "last_name", "organism", "function"]
+    form_class = ProfileForm
     extra_context = {
         "label_validate_btn": "Mettre à jour",
-        "page_title": "Profil",
-        "title": "Votre profil",
+        "show_identity_fields": True,
     }
 
     def get_context_breadcrumbs(self):
@@ -124,9 +124,9 @@ class UpdatePwFormView(BreadCrumbMixin, LoginRequiredMixin, FormView):
     form_class = UpdatePasswordForm
     success_url = reverse_lazy("users:profile")
     extra_context = {
-        "label_validate_btn": "Changer",
-        "page_title": "Changer de mot de passe",
-        "title": "Changer de mot de passe",
+        "label_validate_btn": "Modifier",
+        "page_title": "Modifier mon mot de passe",
+        "title": "Modifier mon mot de passe",
     }
 
     def get_context_breadcrumbs(self):
@@ -152,6 +152,10 @@ class ProfileCompletionView(LoginRequiredMixin, UpdateView):
     form_class = ProfileCompletionForm
     template_name = "users/profile_completion.html"
     success_url = reverse_lazy("home")
+    extra_context = {
+        "label_validate_btn": "Finaliser mon inscription",
+        "show_identity_fields": False,
+    }
 
     def get_object(self):
         return self.request.user

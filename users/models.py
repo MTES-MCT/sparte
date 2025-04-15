@@ -41,7 +41,7 @@ class User(AbstractUser):
     username = None
     first_name = models.CharField("Prénom", max_length=150, validators=[is_alpha_validator])
     last_name = models.CharField("Nom", max_length=150, validators=[is_alpha_validator])
-    email = models.EmailField("E-mail", unique=True)
+    email = models.EmailField("E-mail (Identifiant)", unique=True)
     email_checked = models.DateTimeField("E-mail vérifie", blank=True, null=True)
     organism = models.CharField(
         "Organisme",
