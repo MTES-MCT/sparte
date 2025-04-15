@@ -64,6 +64,12 @@ class User(AbstractUser):
         blank=True,
         null=True,
     )
+    siret = models.CharField(
+        "SIRET",
+        max_length=250,
+        blank=True,
+        null=True,
+    )
     main_land_type = models.CharField(
         "Type de territoire principal",
         choices=AdminRef.CHOICES,

@@ -51,6 +51,7 @@ class ProConnectAuthenticationBackend(OIDCAuthenticationBackend):
                 email=email,
                 first_name=claims.get("given_name", ""),
                 last_name=claims.get("usual_name", ""),
+                siret=claims.get("siret", ""),
             )
 
             return user
