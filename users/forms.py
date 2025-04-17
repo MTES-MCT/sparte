@@ -110,31 +110,7 @@ class UpdatePasswordForm(forms.Form):
         return self.user
 
 
-class ProfileCompletionForm(forms.ModelForm):
-    class Meta:
-        model = User
-        fields = (
-            "organism",
-            "function",
-            "service",
-            "main_land_type",
-            "main_land_id",
-        )
-        widgets = {
-            "organism": forms.Select(attrs={"class": "form-select"}),
-            "function": forms.Select(attrs={"class": "form-select"}),
-            "service": forms.Select(attrs={"class": "form-select"}),
-            "main_land_type": forms.Select(attrs={"class": "form-select"}),
-            "main_land_id": forms.TextInput(attrs={"class": "form-control"}),
-        }
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        self.fields["organism"].required = True
-        self.fields["main_land_id"].required = True
-        self.fields["main_land_type"].required = True
-
+class ProfileFormBase(forms.ModelForm):
     def clean(self):
         cleaned_data = super().clean()
         organism = cleaned_data.get("organism")
@@ -156,8 +132,33 @@ class ProfileCompletionForm(forms.ModelForm):
 
         return cleaned_data
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["organism"].required = True
+        self.fields["main_land_id"].required = True
+        self.fields["main_land_type"].required = True
 
-class ProfileForm(forms.ModelForm):
+
+class ProfileCompletionForm(ProfileFormBase):
+    class Meta:
+        model = User
+        fields = (
+            "organism",
+            "function",
+            "service",
+            "main_land_type",
+            "main_land_id",
+        )
+        widgets = {
+            "organism": forms.Select(attrs={"class": "form-select"}),
+            "function": forms.Select(attrs={"class": "form-select"}),
+            "service": forms.Select(attrs={"class": "form-select"}),
+            "main_land_type": forms.Select(attrs={"class": "form-select"}),
+            "main_land_id": forms.TextInput(attrs={"class": "form-control"}),
+        }
+
+
+class ProfileForm(ProfileFormBase):
     class Meta:
         model = User
         fields = (
@@ -178,30 +179,3 @@ class ProfileForm(forms.ModelForm):
             "main_land_type": forms.Select(attrs={"class": "form-select"}),
             "main_land_id": forms.TextInput(attrs={"class": "form-control"}),
         }
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields["organism"].required = True
-        self.fields["main_land_id"].required = True
-        self.fields["main_land_type"].required = True
-
-    def clean(self):
-        cleaned_data = super().clean()
-        organism = cleaned_data.get("organism")
-
-        # Validation pour le champ function/service en fonction de l'organisme
-        if organism:
-            if organism in [User.ORGANISM.COMMUNE, User.ORGANISM.EPCI, User.ORGANISM.SCOT]:
-                if not cleaned_data.get("function"):
-                    self.add_error("function", "Ce champ est obligatoire pour ce type d'organisme")
-            elif organism in [User.ORGANISM.SERVICES_REGIONAUX, User.ORGANISM.SERVICES_DEPARTEMENTAUX]:
-                if not cleaned_data.get("service"):
-                    self.add_error("service", "Ce champ est obligatoire pour ce type d'organisme")
-
-        # Validation pour les champs cachés
-        if not cleaned_data.get("main_land_id"):
-            self.add_error("main_land_id", "Vous devez sélectionner un territoire")
-        if not cleaned_data.get("main_land_type"):
-            self.add_error("main_land_type", "Le type de territoire est obligatoire")
-
-        return cleaned_data
