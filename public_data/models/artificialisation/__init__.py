@@ -1,4 +1,5 @@
 from .ArtifZonage import *  # noqa
+from .ArtifZonageIndex import *  # noqa
 from .BaseLandArtifStockComposition import *  # noqa
 from .BaseLandArtifStockCompositionIndex import *  # noqa
 from .LandArtifStock import *  # noqa

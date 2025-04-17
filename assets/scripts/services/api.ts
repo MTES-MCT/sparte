@@ -1,117 +1,8 @@
-import { createApi, fetchBaseQuery, TypedUseQuery } from "@reduxjs/toolkit/query/react";
-import { FetchArgs, BaseQueryFn } from "@reduxjs/toolkit/query";
-import { FetchBaseQueryError } from "@reduxjs/toolkit/dist/query/react";
-import { GeoJsonObject } from "geojson";
-
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import getCsrfToken from "@utils/csrf";
-import { ConsoCorrectionStatusEnum } from "@components/widgets/ConsoCorrectionStatus";
-
-type Logo = {
-  src: string;
-  alt: string;
-  height: string;
-  url?: string;
-};
-
-export type MenuItem = {
-  label: string;
-  url?: string;
-  icon?: string;
-  target?: string;
-  subMenu?: MenuItem[];
-  shouldDisplay?: boolean;
-};
-
-export type ProjectDetailResultType = {
-  id: number;
-  created_date: string;
-  level_label: string;
-  analyse_start_date: string;
-  analyse_end_date: string;
-  territory_name: string;
-  has_zonage_urbanisme: boolean;
-  consommation_correction_status: ConsoCorrectionStatusEnum;
-  autorisation_logement_available: boolean;
-  logements_vacants_available: boolean;
-  land_id: string;
-  land_type: string;
-  departements: string[];
-  bounds: [number, number, number, number];
-  max_bounds: [number, number, number, number];
-  centroid: {
-    latitude: number;
-    longitude: number;
-  };
-  emprise: GeoJsonObject;
-  urls: {
-    synthese: string;
-    artificialisation: string;
-    impermeabilisation: string;
-    rapportLocal: string;
-    trajectoires: string;
-    consommation: string;
-    logementVacant: string;
-    update: string;
-    dowloadConsoReport: string;
-    downloadFullReport: string;
-    dowloadLocalReport: string;
-  };
-  navbar: {
-    menuItems: MenuItem[];
-  };
-  footer: {
-    menuItems: MenuItem[];
-  };
-  header: {
-    logos: Logo[];
-    search: {
-      createUrl: string;
-    };
-    menuItems: MenuItem[];
-  };
-};
-
-type ProjectDetailQueryArg = string | FetchArgs;
-type ProjectDetailBaseQuery = BaseQueryFn<ProjectDetailQueryArg, unknown, FetchBaseQueryError>;
-export type UseFetchingType = TypedUseQuery<ProjectDetailResultType, ProjectDetailQueryArg, ProjectDetailBaseQuery>;
-
-export type Millesime = {
-  index: number;
-  year: number;
-  departement: string;
-}
-
-export type MillesimeByIndex = {
-  index: number;
-  years: string;
-  departements: string;
-}
-
-export type LandDetailResultType = {
-  land_id: string;
-  land_type: string;
-  name: string;
-  surface: number;
-  surface_unit: string;
-  surface_artif: number | null;
-  percent_artif: number | null;
-  years_artif: number[] | null;
-  millesimes: Millesime[]
-  millesimes_by_index: MillesimeByIndex[]
-};
-
-type LandDetailQueryArg = string | {
-  land_type: string;
-  land_id: string;
-};
-type LandDetailBaseQuery = BaseQueryFn<LandDetailQueryArg, unknown, FetchBaseQueryError>;
-
-export type UseLandDetailType = TypedUseQuery<
-  LandDetailResultType,
-  LandDetailQueryArg,
-  LandDetailBaseQuery
->;
-
+import { UseGetProjectQueryType } from "./types/project";
+import { UseLandDetailType } from "./types/land";
+import { ArtifZonageIndexType } from "./types/artif_zonage";
 
 
 export const djangoApi = createApi({
@@ -125,10 +16,21 @@ export const djangoApi = createApi({
         return `/api/chart/${id}/${land_type}/${land_id}?${queryParams}`
       },
       transformResponse: (response: any) => {
+        // les options highchart de responsive ne fonctionne pas 
+        // avec highchart react
         delete response.responsive
         return response
       }
       
+    }),
+    getArtifZonageIndex: builder.query({
+      query: ({land_type, land_id, millesime_index}) => {
+        return `/api/artifzonageindex/?${new URLSearchParams({
+          land_type,
+          land_id,
+          millesime_index
+        })}`
+      },
     }),
     getEnvironment: builder.query({
       query: () => "/env",
@@ -156,15 +58,15 @@ export const djangoApi = createApi({
   }),
 });
 
-const useGetProjectQuery: UseFetchingType = djangoApi.useGetProjectQuery;
+const useGetProjectQuery: UseGetProjectQueryType = djangoApi.useGetProjectQuery;
 const useGetLandQuery: UseLandDetailType = djangoApi.useGetLandQuery;
+const useGetArtifZonageIndexQuery: ArtifZonageIndexType = djangoApi.useGetArtifZonageIndexQuery
 
 const {
   useGetDepartementListQuery,
   useGetEnvironmentQuery,
   useSearchTerritoryQuery,
   useGetChartConfigQuery,
-  useGetPageContentQuery,
 } = djangoApi;
 
 export {
@@ -174,5 +76,5 @@ export {
   useGetProjectQuery,
   useGetChartConfigQuery,
   useGetLandQuery,
-  useGetPageContentQuery,
+  useGetArtifZonageIndexQuery,
 };

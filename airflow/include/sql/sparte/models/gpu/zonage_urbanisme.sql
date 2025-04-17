@@ -41,7 +41,7 @@ from
             nullif(destdomi, '') as destination_dominante,
             nomfic as nom_fichier,
             nullif(urlfic, '') as url_fichier,
-            nullif(insee, '') as commune_code,
+            commune.code as commune_code,
       /*
 
         Etant donné que 3 formats coexistent dans les données source,

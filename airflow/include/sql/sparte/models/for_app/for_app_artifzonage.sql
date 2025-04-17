@@ -10,6 +10,7 @@ select
     indicateur_surface as artificial_surface,
     zonage_type,
     zonage_count,
-    indicateur_percent as artificial_percent
+    indicateur_percent as artificial_percent,
+    index as millesime_index
 from
     {{ ref("artif_zonage_land") }}

@@ -69,19 +69,12 @@ class ProjectDetailSerializer(gis_serializers.GeoModelSerializer):
                     "label": "Pilotage territorial",
                     "icon": "bi bi-bar-chart",
                     "subMenu": [
+                        {"label": "Artificialisation", "url": reverse("project:report_artif", kwargs=kwargs)},
                         {"label": "Consommation d'espaces NAF", "url": reverse("project:report_conso", kwargs=kwargs)},
                         {
                             "label": "Vacance des logements",
                             "url": reverse("project:report_logement_vacant", kwargs=kwargs),
                         },
-                    ],
-                },
-                {
-                    "label": "Enjeux environnementaux",
-                    "icon": "bi bi-tree",
-                    "subMenu": [
-                        {"label": "Artificialisation", "url": reverse("project:report_artif", kwargs=kwargs)},
-                        {"label": "Imperméabilisation", "url": reverse("project:report_imper", kwargs=kwargs)},
                     ],
                 },
                 {

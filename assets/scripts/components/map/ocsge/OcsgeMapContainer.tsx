@@ -3,18 +3,21 @@ import { DEFAULT_SELECTION } from "./constants/selections";
 import { OcsgeMap } from "./OcsgeMap";
 import styled from "styled-components";
 import { useGetEnvironmentQuery } from "@services/api";
+import { ProjectDetailResultType } from "@services/types/project";
+import { LandDetailResultType } from "@services/types/land";
+import { FilterSpecification } from "maplibre-gl";
 
 type OcsgeMapContainerProps = {
-  projectData: any;
-};
+  projectData: ProjectDetailResultType,
+  landData: LandDetailResultType,
+  globalFilter?: FilterSpecification
+}
 
 const MapContainerWrapper = styled.div`
   margin-bottom: 50px;
 `;
 
-export const OcsgeMapContainer = ({
-  projectData,
-}: OcsgeMapContainerProps) => {
+export const OcsgeMapContainer = ({ projectData, landData, globalFilter }: OcsgeMapContainerProps) => {
     const { data: envVariables } = useGetEnvironmentQuery(null);
     let vectorTileLocation: string = null
 
@@ -29,12 +32,12 @@ export const OcsgeMapContainer = ({
     emprise,
     bounds,
     max_bounds,
-    ocsge_millesimes,
-    land_type,
     departements,
   } = projectData;
 
-  const [year, setYear] = React.useState(ocsge_millesimes[0]);
+  const { millesimes_by_index } = landData || {};
+
+  const [index, setIndex] = React.useState(Math.max(...millesimes_by_index?.map((millesime) => millesime.index)));
 
   useEffect(() => {
     setUserFilters(
@@ -45,27 +48,25 @@ export const OcsgeMapContainer = ({
     );
   }, [selection]);
 
-  if (land_type === "REGION") {
-    return null;
-  }
-  const firstDepartement = departements[0];
+
+  if (!index) { return null}
 
   return (
     <MapContainerWrapper>
-      <h2>Carte de l'OCS GE</h2>
       <OcsgeMap
         vectorTilesLocation={vectorTileLocation}
         selection={selection}
         setSelection={setSelection}
         setUserFilters={setUserFilters}
         userFilters={userFilters}
-        year={year}
-        setYear={setYear}
-        availableMillesimes={ocsge_millesimes}
+        globalFilter={globalFilter}
+        index={index}
+        setIndex={setIndex}
+        availableMillesimes={millesimes_by_index}
         emprise={emprise}
         bounds={bounds}
         maxBounds={max_bounds}
-        departement={firstDepartement}
+        departements={departements}
       />
     </MapContainerWrapper>
   );

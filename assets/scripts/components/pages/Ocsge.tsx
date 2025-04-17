@@ -20,7 +20,7 @@ Cela est nécessaire pour rendre du contenu HTML généré côté serveur, mais 
 Dans ce cas, les données provenant de Django sont considérées comme fiables.
 */
 
-const Ocsge: React.FC<{ endpoint: string, projectData: any }> = ({ endpoint, projectData}) => {
+const Ocsge: React.FC<{ endpoint: string, projectData: any, landData: any }> = ({ endpoint, projectData, landData }) => {
     const { content, isLoading, error } = useHtmlLoader(endpoint);
 
     useHighcharts([
@@ -54,7 +54,7 @@ const Ocsge: React.FC<{ endpoint: string, projectData: any }> = ({ endpoint, pro
                             </div>
                         `}
                     />
-                    <OcsgeMapContainer projectData={projectData} />
+                    <OcsgeMapContainer projectData={projectData} landData={landData} />
                     {isLoading ? <Loader /> : <div dangerouslySetInnerHTML={{ __html: content }} /> }
                 </div>
             </div>

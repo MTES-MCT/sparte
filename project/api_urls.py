@@ -7,6 +7,8 @@ from project.charts.artificialisation import (
     ArtifStock,
 )
 from public_data.models import (
+    ArtifZonageIndexViewset,
+    ArtifZonageViewset,
     Land,
     LandArtifStockCouvertureCompositionViewset,
     LandArtifStockUsageCompositionViewset,
@@ -48,6 +50,8 @@ def chart_view(request, id, land_type, land_id, *args, **kwargs):
 urlpatterns = [
     path("chart/<str:id>/<str:land_type>/<str:land_id>", chart_view, name="chart"),
     path("landartifstock/", LandArtifStockViewset.as_view(), name="artifstock"),
+    path("artifzonageindex/", ArtifZonageIndexViewset.as_view(), name="artifzonageindex"),
+    path("artifzonage/", ArtifZonageViewset.as_view(), name="artifzonageindex"),
     path(
         "landartifstockcouverturecomposition/",
         LandArtifStockCouvertureCompositionViewset.as_view(),

@@ -3,7 +3,8 @@ import { OcsgeMatrixSelector } from './OcsgeMatrixSelector';
 import { OcsgeMapLegend } from './OcsgeMapLegend';
 import { Selection, UserFilter } from './constants/selections';
 import styled from 'styled-components';
-import { OcsgeYearSelector } from './OcsgeYearSelector';
+import { OcsgeIndexSelector } from './OcsgeIndexSelector';
+import { MillesimeByIndex } from '@services/types/land';
 
 const LeftPanelTitle = styled.div`
     font-size: 1.2em;
@@ -22,9 +23,9 @@ const LeftPanelDescriptionWrapper = styled.span`
 interface OcsgeMapLeftPanelProps {
     readonly setSelection: (selection: Selection) => void;
     readonly selection: Selection;
-    readonly availableMillesimes: number[];
-    readonly setYear: (year: number) => void;
-    readonly year: number;
+    readonly availableMillesimes: MillesimeByIndex[];
+    readonly setIndex: (index: number) => void;
+    readonly index: number;
     readonly userFilters: UserFilter[];
     readonly setUserFilters: (filters: UserFilter[]) => void;
 }
@@ -45,8 +46,8 @@ export const OcsgeMapLeftPanel = ({
     setSelection,
     selection,
     availableMillesimes,
-    setYear,
-    year,
+    setIndex,
+    index,
 }: OcsgeMapLeftPanelProps) => {
     return (
         <OcsgeMapLeftPanelWrapper>
@@ -59,9 +60,9 @@ export const OcsgeMapLeftPanel = ({
                 <selection.Description />
             </LeftPanelDescriptionWrapper>
             <LeftPanelTitle>Année</LeftPanelTitle>
-            <OcsgeYearSelector
-                year={year}
-                setYear={setYear}
+            <OcsgeIndexSelector
+                index={index}
+                setIndex={setIndex}
                 availableMillesimes={availableMillesimes}
             />
             <LeftPanelDescriptionWrapper>

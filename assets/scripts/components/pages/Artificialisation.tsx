@@ -1,8 +1,11 @@
 import React from 'react';
 import Guide from '@components/widgets/Guide';
 import OcsgeMatricePassage from '@images/ocsge_matrice_passage.png';
-import { LandDetailResultType, MillesimeByIndex, ProjectDetailResultType } from '@services/api';
+import {useGetArtifZonageIndexQuery } from '@services/api';
 import { OcsgeGraph } from '@components/charts/ocsge/OcsgeGraph';
+import { ProjectDetailResultType } from '@services/types/project';
+import { LandDetailResultType, MillesimeByIndex } from '@services/types/land';
+import { OcsgeMapContainer } from '@components/map/ocsge/OcsgeMapContainer';
 
 
 const ArtificialisationGuide  = () => (
@@ -77,8 +80,8 @@ const Triptique = ({ surface, surfaceArtif, percentArtif, yearsArtif }: Triptiqu
 )
 
 
-export const OcsgeMillesimeSelector = ({ index, setIndex, byDepartement, setByDepartement, millesimes_by_index } : {
-    index: number, setIndex: (index: number) => void, byDepartement: boolean, setByDepartement: (byDepartement: boolean) => void , millesimes_by_index: MillesimeByIndex[]}) => {
+export const OcsgeMillesimeSelector = ({ index, setIndex, byDepartement, setByDepartement, millesimes_by_index, shouldDisplayByDepartementBtn } : {
+    index: number, setIndex: (index: number) => void, byDepartement: boolean, setByDepartement: (byDepartement: boolean) => void , millesimes_by_index: MillesimeByIndex[], shouldDisplayByDepartementBtn: boolean}) => {
 
     return (
         <ul className="fr-btns-group fr-btns-group--inline-sm">
@@ -89,7 +92,11 @@ export const OcsgeMillesimeSelector = ({ index, setIndex, byDepartement, setByDe
                     </button>
                 </li>
             ))}
-            <li><button onClick={() => setByDepartement(!byDepartement)} type="button" className="fr-btn fr-btn--tertiary">
+            
+                
+            {shouldDisplayByDepartementBtn && <li><button onClick={(e) => {
+                setByDepartement(!byDepartement)}
+            } type="button" className="fr-btn fr-btn--tertiary">
                 
                 <p>
 
@@ -105,7 +112,9 @@ export const OcsgeMillesimeSelector = ({ index, setIndex, byDepartement, setByDe
                     de manière à afficher chaque millésime séparément.
                 </span>
             </p>
-            </button></li>
+            </button>
+            </li>
+            }
         </ul>
     )
 }
@@ -121,6 +130,14 @@ export const Artificialisation = ({ projectData, landData }: {
     const [ stockIndex, setStockIndex ] = React.useState(2)
     const [ byDepartement, setByDepartement ] = React.useState(false)
 
+    const shouldDisplayByDepartementBtn = millesimes_by_index.length != millesimes.length
+
+    const { data : artifZonageIndex } = useGetArtifZonageIndexQuery({
+        land_type: land_type,
+        land_id: land_id,
+        millesime_index: stockIndex
+    });
+
     return (
         <div className="fr-container--fluid fr-p-3w">
             <ArtificialisationGuide />
@@ -131,12 +148,7 @@ export const Artificialisation = ({ projectData, landData }: {
                 percentArtif={percent_artif}
                 yearsArtif={years_artif}
             />
-            <OcsgeGraph
-                id="bar_artif_stock"
-                land_id={land_id}
-                land_type={land_type}
-                index={stockIndex}
-            />
+            {projectData && <OcsgeMapContainer projectData={projectData} landData={landData} globalFilter={["==", ["get", "is_artificial"], true]} />}
             <br />
             <OcsgeMillesimeSelector
                 millesimes_by_index={millesimes_by_index}
@@ -144,11 +156,12 @@ export const Artificialisation = ({ projectData, landData }: {
                 setIndex={setStockIndex}
                 byDepartement={byDepartement}
                 setByDepartement={setByDepartement}
+                shouldDisplayByDepartementBtn={shouldDisplayByDepartementBtn}
             />
             <div className="fr-grid-row">
             {byDepartement ? millesimes.filter(e => e.index === stockIndex).map(
                 (m) => (
-                    <div key={`${m.index}_${m.departement}`} className="fr-col-4">
+                    <div key={`${m.index}_${m.departement}`} className={`fr-col-${Math.round(12 / millesimes_by_index.length)}`}>
                         <OcsgeGraph
                             id="pie_artif_by_couverture"
                             index={m.index}
@@ -173,7 +186,7 @@ export const Artificialisation = ({ projectData, landData }: {
                     land_id={land_id}
                     land_type={land_type}
                 />
-                                <OcsgeGraph
+                <OcsgeGraph
                     id="pie_artif_by_usage"
                     index={stockIndex}
                     land_id={land_id}
@@ -182,6 +195,31 @@ export const Artificialisation = ({ projectData, landData }: {
                 </div>
             )}
             </div>
+            <h2>Artif des zonages d'urbanisme</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th scope="col">Type de zonage</th>
+                        <th scope="col">Surface de zonage</th>
+                        <th scope="col">Surface artificialisée</th>
+                        <th scope="col">Taux d'artificialisation</th>
+                        <th scope="col">Nombre de zones</th>
+                        <th scope="col">Départements</th>
+                        <th scope="col">Années</th>
+                    </tr>
+                </thead>
+            {artifZonageIndex?.toSorted((a, b) => b.zonage_surface - a.zonage_surface).map((a) => (
+                <tr key={`${a.zonage_type}_${a.millesime_index}`}>
+                    <td>{a.zonage_type}</td>
+                    <td>{Math.round(a.zonage_surface / 10000)} ha</td>
+                    <td>{Math.round(a.artificial_surface / 10000)} ha</td>
+                    <td>{Math.round(a.artificial_percent * 100) / 100}%</td>
+                    <td>{a.zonage_count}</td>
+                    <td>{a.departements.join(', ')}</td>
+                    <td>{a.years.join(', ')}</td>
+                </tr>
+            ))}
+            </table>
         </div>
     );
 };

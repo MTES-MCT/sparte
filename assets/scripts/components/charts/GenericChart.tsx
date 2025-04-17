@@ -1,11 +1,15 @@
 import React from 'react';
 import * as Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
-import Loader from "@components/ui/Loader";
 
 
+type GenericChartProps = {
+    chartOptions: Highcharts.Options;
+    ref?: React.RefObject<HighchartsReact.RefObject>;
+}
 
-const GenericChart = ({ chartOptions } : { chartOptions: Highcharts.Options}) => {
+
+const GenericChart = ({ chartOptions } : GenericChartProps) => {
     Highcharts.setOptions({
         plotOptions: {
             series: {
@@ -13,11 +17,6 @@ const GenericChart = ({ chartOptions } : { chartOptions: Highcharts.Options}) =>
             }
         }
     });
-    if (!chartOptions) {
-        return <div style={{ height: '400px', display: 'flex', alignItems: 'center'}}>
-            <Loader />
-        </div>
-    }
 
     return (
         <HighchartsReact
@@ -25,6 +24,7 @@ const GenericChart = ({ chartOptions } : { chartOptions: Highcharts.Options}) =>
             options={chartOptions}
             immutable
             updateArgs={[true, true, false]}
+            containerProps={{ style: { height: "400px", width: "100%" } }}
         />
     )
 }

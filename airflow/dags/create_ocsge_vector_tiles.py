@@ -1,3 +1,5 @@
+import json
+
 import pendulum
 from include.domain.container import Container
 from include.utils import multiline_string_to_single_line
@@ -6,13 +8,16 @@ from airflow.decorators import dag, task
 from airflow.exceptions import AirflowSkipException
 from airflow.models.param import Param
 
+with open("include/domain/data/ocsge/sources.json", "r") as f:
+    sources = json.load(f)
 
-def get_geojson_filename(year: int, departement: str) -> str:
-    return f"occupation_du_sol_{year}_{departement}.geojson"
+
+def get_geojson_filename(index: int, departement: str) -> str:
+    return f"occupation_du_sol_{index}_{departement}.geojson"
 
 
-def get_pmtiles_filename(year: int, departement: str) -> str:
-    return f"occupation_du_sol_{year}_{departement}.pmtiles"
+def get_pmtiles_filename(index: int, departement: str) -> str:
+    return f"occupation_du_sol_{index}_{departement}.pmtiles"
 
 
 @dag(
@@ -25,8 +30,8 @@ def get_pmtiles_filename(year: int, departement: str) -> str:
     tags=["OCS GE"],
     max_active_tasks=10,
     params={
-        "year": Param(2018, type="integer"),
-        "departement": Param("75", type="string"),
+        "index": Param(1, type="integer", enum=[1, 2]),
+        "departement": Param("75", type="string", enum=list(sources.keys())),
         "refresh_existing": Param(False, type="boolean"),
     },
 )
@@ -38,18 +43,18 @@ def create_ocsge_vector_tiles():
     def check_if_vector_tiles_not_exist(params: dict):
         if params.get("refresh_existing"):
             return
-        year = params.get("year")
+        index = params.get("index")
         departement = params.get("departement")
-        filename = get_pmtiles_filename(year, departement)
+        filename = get_pmtiles_filename(index, departement)
         exists = Container().s3().exists(f"{bucket_name}/{vector_tiles_dir}/{filename}")
         if exists:
             raise AirflowSkipException("Vector tiles already exist")
 
     @task.python(trigger_rule="none_skipped")
     def postgis_to_geojson(params: dict):
-        year = params.get("year")
+        index = params.get("index")
         departement = params.get("departement")
-        filename = get_geojson_filename(year, departement)
+        filename = get_geojson_filename(index, departement)
 
         sql = f"""
             SELECT
@@ -58,14 +63,16 @@ def create_ocsge_vector_tiles():
                 code_us,
                 departement,
                 year,
+                index,
                 is_impermeable,
                 is_artificial,
+                critere_seuil,
                 st_transform(geom, 4326) as geom,
                 surface
             FROM
-                public_ocsge.occupation_du_sol
+                public_ocsge.occupation_du_sol_with_artif
             WHERE
-                year = {year} and
+                index = {index} and
                 departement = '{departement}'
         """
 
@@ -81,10 +88,10 @@ def create_ocsge_vector_tiles():
 
     @task.bash(skip_on_exit_code=110, trigger_rule="none_skipped")
     def geojson_to_pmtiles(params: dict):
-        year = params.get("year")
+        index = params.get("index")
         departement = params.get("departement")
-        geojson_filename = get_geojson_filename(year, departement)
-        pmtiles_filename = get_pmtiles_filename(year, departement)
+        geojson_filename = get_geojson_filename(index, departement)
+        pmtiles_filename = get_pmtiles_filename(index, departement)
         local_input = f"/tmp/{geojson_filename}"
         local_output = f"/tmp/{pmtiles_filename}"
         Container().s3().get_file(f"{bucket_name}/{vector_tiles_dir}/{geojson_filename}", local_input)
@@ -107,25 +114,25 @@ def create_ocsge_vector_tiles():
 
     @task.python(trigger_rule="none_skipped")
     def upload(params: dict):
-        year = params.get("year")
+        index = params.get("index")
         departement = params.get("departement")
-        pmtiles_filename = get_pmtiles_filename(year, departement)
+        pmtiles_filename = get_pmtiles_filename(index, departement)
         local_path = f"/tmp/{pmtiles_filename}"
         path_on_s3 = f"{bucket_name}/{vector_tiles_dir}/{pmtiles_filename}"
         Container().s3().put(local_path, path_on_s3)
 
     @task.bash(trigger_rule="none_skipped")
     def delete_geojson_file(params: dict):
-        year = params.get("year")
+        index = params.get("index")
         departement = params.get("departement")
-        geojson_filename = get_geojson_filename(year, departement)
+        geojson_filename = get_geojson_filename(index, departement)
         return f"rm /tmp/{geojson_filename}"
 
     @task.bash(trigger_rule="none_skipped")
     def delete_pmtiles_file(params: dict):
-        year = params.get("year")
+        index = params.get("index")
         departement = params.get("departement")
-        pmtiles_filename = get_pmtiles_filename(year, departement)
+        pmtiles_filename = get_pmtiles_filename(index, departement)
         return f"rm /tmp/{pmtiles_filename}"
 
     (
