@@ -24,10 +24,21 @@ class User(AbstractUser):
         ACTEURS_CITOYENS = "ACTEURS_CITOYENS", "Association / Particulier"
 
     class SERVICE(models.TextChoices):
-        DELEGATION_TERRITORIALE = "DELEGATION_TERRITORIALE", "Délégation territoriale"
-        MISSION_AMENAGEMENT = "MISSION_AMENAGEMENT", "Mission aménagement"
-        MISSION_CONNAISSANCE = "MISSION_CONNAISSANCE", "Mission connaissance"
-        MISSION_TRANSITION_ECOLOGIQUE = "MISSION_TRANSITION_ECOLOGIQUE", "Mission transition écologique"
+        AMENAGEMENT_URBANISME_ET_PAYSAGE = "AMENAGEMENT_URBANISME_ET_PAYSAGE", "Aménagement Urbanisme et Paysage"
+        ETUDES_ET_EVALUATIONS = "ETUDES_ET_EVALUATIONS", "Etudes et évaluations"
+        SECURITE_PREVENTION_ET_GESTION_DES_RISQUES = (
+            "SECURITE_PREVENTION_ET_GESTION_DES_RISQUES",
+            "Sécurité Prévention et Gestion des Risques",
+        )
+        ELABORATION_ET_PILOTAGE_DE_POLITIQUES_PUBLIQUES = (
+            "ELABORATION_ET_PILOTAGE_DE_POLITIQUES_PUBLIQUES",
+            "Elaboration et pilotage de politiques publiques",
+        )
+        RESSOURCES_NATURELLES_ET_BIODIVERSITE = (
+            "RESSOURCES_NATURELLES_ET_BIODIVERSITE",
+            "Ressources naturelles et biodiversité",
+        )
+        HABITAT_LOGEMENT = "HABITAT_LOGEMENT", "Habitat Logement"
         AUTRE = "AUTRE", "Autre"
 
     class FUNCTION(models.TextChoices):
@@ -66,7 +77,7 @@ class User(AbstractUser):
     )
     siret = models.CharField(
         "SIRET",
-        max_length=250,
+        max_length=14,
         blank=True,
         null=True,
     )
