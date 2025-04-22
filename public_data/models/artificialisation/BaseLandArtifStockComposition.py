@@ -12,6 +12,9 @@ class BaseLandArtifStockComposition(models.Model):
     surface = models.FloatField()
     percent_of_artif = models.FloatField()
     millesime_index = models.IntegerField()
+    color = models.CharField()
+    label = models.CharField()
+    label_short = models.CharField()
 
     class Meta:
         abstract = True
