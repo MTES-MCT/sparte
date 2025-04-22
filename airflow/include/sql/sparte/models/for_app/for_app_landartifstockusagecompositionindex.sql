@@ -17,6 +17,6 @@ SELECT
 FROM
     {{ ref("artif_land_by_usage_by_index") }}
 LEFT JOIN
-    {{ ref("app_usagesol") }}
+    {{ ref("usage") }} as app_usagesol
 ON
     artif_land_by_usage_by_index.usage = app_usagesol.code_prefix

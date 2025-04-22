@@ -17,6 +17,6 @@ SELECT
 FROM
     {{ ref("artif_land_by_couverture") }}
 LEFT JOIN
-    {{ ref("app_couverturesol") }}
+    {{ ref("couverture") }} as app_couverturesol
 ON
     artif_land_by_couverture.couverture = app_couverturesol.code_prefix
