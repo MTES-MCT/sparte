@@ -16,14 +16,8 @@ from django.views.generic import (
 from django.views.generic.edit import FormMixin
 
 from project import tasks
-from project.forms import (
-    KeywordForm,
-    SelectTerritoryForm,
-    UpdateProjectForm,
-    UpdateProjectPeriodForm,
-)
+from project.forms import KeywordForm, SelectTerritoryForm, UpdateProjectForm
 from project.models import Project, create_from_public_key
-from project.models.create import update_period
 from project.models.enums import ProjectChangeReason
 from public_data.exceptions import LandException
 from public_data.models import Land
@@ -74,7 +68,7 @@ class CreateProjectViews(BreadCrumbMixin, FormView):
         if self.request.GET.get("next") == "download":
             return redirect("project:report_download", pk=project.id)
         else:
-            return redirect("project:splash", pk=project.id)
+            return redirect("project:home", pk=project.id)
 
 
 class ProjectUpdateView(ReactMixin, UpdateView):
@@ -102,17 +96,13 @@ class ProjectUpdateView(ReactMixin, UpdateView):
         self.object = form.save()
 
         celery.chain(
-            tasks.find_first_and_last_ocsge.si(self.object.id),
-            tasks.calculate_project_ocsge_status.si(self.object.id),
             celery.group(
                 tasks.generate_theme_map_conso.si(self.object.id),
-                tasks.generate_theme_map_artif.si(self.object.id),
-                tasks.generate_theme_map_understand_artif.si(self.object.id),
             ),
             async_create_stat_for_project.si(self.object.id, do_location=False),
         ).apply_async()
 
-        return redirect("project:splash", pk=self.object.id)
+        return redirect("project:home", pk=self.object.id)
 
 
 class ProjectSetTarget2031View(UpdateView):
@@ -127,23 +117,6 @@ class ProjectSetTarget2031View(UpdateView):
             self.get_context_data(success_message=True),
             headers={"HX-Trigger": "load-graphic"},
         )
-
-
-class SetProjectPeriodView(GroupMixin, RedirectURLMixin, UpdateView):
-    model = Project
-    template_name = "project/components/forms/report_set_period.html"
-    form_class = UpdateProjectPeriodForm
-    context_object_name = "diagnostic"
-
-    def get_context_data(self, **kwargs):
-        kwargs |= {
-            "next": self.request.build_absolute_uri(reverse_lazy("project:splash", kwargs={"pk": self.object.id})),
-        }
-        return super().get_context_data(**kwargs)
-
-    def form_valid(self, form):
-        update_period(self.object, form.cleaned_data["analyse_start_date"], form.cleaned_data["analyse_end_date"])
-        return self.render_to_response(self.get_context_data(success_message=True))
 
 
 class ProjectDeleteView(GroupMixin, LoginRequiredMixin, DeleteView):

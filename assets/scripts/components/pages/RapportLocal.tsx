@@ -1,7 +1,6 @@
 import React from 'react';
 import { useHtmlLoader } from '@hooks/useHtmlLoader';
 import useHtmx from '@hooks/useHtmx';
-import useUrls from '@hooks/useUrls';
 import Loader from '@components/ui/Loader';
 import Button from '@components/ui/Button';
 import CallToAction from '@components/ui/CallToAction';
@@ -16,9 +15,9 @@ Cela est nécessaire pour rendre du contenu HTML généré côté serveur, mais 
 Dans ce cas, les données provenant de Django sont considérées comme fiables.
 */
 
-const RapportLocal: React.FC<{ endpoint: string }> = ({ endpoint }) => {
+const RapportLocal: React.FC<{ endpoint: string, projectData: any }> = ({ endpoint, projectData }) => {
     const { content, isLoading, error } = useHtmlLoader(endpoint);
-    const urls = useUrls();
+    const { urls } = projectData;
     const htmxRef = useHtmx([isLoading]);
 
     // Temporaire => Il faudrait utiliser la modal de react dsfr

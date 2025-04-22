@@ -10,16 +10,14 @@ import shapely
 from celery import shared_task
 from django.conf import settings
 from django.db import transaction
-from django.db.models import F, Q
 from django.urls import reverse
 from django.utils import timezone
 from django_app_parameter import app_parameter
-from matplotlib.lines import Line2D
 from matplotlib_scalebar.scalebar import ScaleBar
 
 from project.models import Emprise, Project, Request, RequestedDocumentChoices
 from public_data.domain.containers import PublicDataContainer
-from public_data.models import AdminRef, ArtificialArea, Land, OcsgeDiff
+from public_data.models import AdminRef, Land
 from utils.db import fix_poly
 from utils.emails import SibTemplateEmail
 from utils.functions import get_url_with_domain
@@ -106,55 +104,6 @@ def set_combined_emprise(self, project_id: int) -> list[int]:
         logger.info("End set_combined_emprise project_id=%d", project_id)
 
     return [emprise.id for emprise in emprises]
-
-
-@shared_task(bind=True, max_retries=5)
-def find_first_and_last_ocsge(self, project_id: int) -> dict[str, Any] | dict[str, None]:
-    """Use associated cities to find departements and available OCSGE millesime"""
-    logger.info("Start find_first_and_last_ocsge id=%d", project_id)
-    try:
-        project = Project.objects.get(pk=project_id)
-        result = project.get_first_last_millesime()
-        race_protection_save(
-            project_id,
-            {
-                "first_year_ocsge": result["first"],
-                "last_year_ocsge": result["last"],
-                "available_millesimes": project.available_millesimes,
-                "async_find_first_and_last_ocsge_done": True,
-            },
-        )
-    except Project.DoesNotExist:
-        logger.error(f"project_id={project_id} does not exist")
-    except Exception as exc:
-        logger.error(exc)
-        logger.exception(exc)
-        self.retry(exc=exc, countdown=300)
-    finally:
-        logger.info("End find_first_and_last_ocsge, project_id=%d", project_id)
-
-    return result
-
-
-@shared_task(bind=True, max_retries=5)
-def calculate_project_ocsge_status(self, project_id: int) -> str:
-    try:
-        project = Project.objects.get(pk=project_id)
-        status = project.get_ocsge_coverage_status()
-        race_protection_save(
-            project_id,
-            {"ocsge_coverage_status": status, "async_ocsge_coverage_status_done": True},
-        )
-    except Project.DoesNotExist:
-        logger.error(f"project_id={project_id} does not exist")
-    except Exception as e:
-        logger.error(e)
-        logger.exception(e)
-        self.retry(exc=e, countdown=300)
-    finally:
-        logger.info("End calculate_project_ocsge_status, project_id=%d", project_id)
-
-    return status
 
 
 @shared_task
@@ -425,7 +374,6 @@ def send_word_diagnostic(self, request_id) -> None:
             params={
                 "diagnostic_name": diagnostic_name,
                 "image_url": req.project.cover_image.url,
-                "ocsge_available": ("" if req.project.has_complete_uniform_ocsge_coverage else "display"),
                 "diagnostic_url": get_url_with_domain(reverse("project:word_download", args=[req.id])),
             },
         )
@@ -535,163 +483,6 @@ def generate_theme_map_conso(self, project_id) -> None:
 
     finally:
         logger.info("End generate_theme_map_conso, project_id=%d", project_id)
-
-
-@shared_task(bind=True, max_retries=5)
-def generate_theme_map_artif(self, project_id) -> None:
-    logger.info("Start generate_theme_map_artif, project_id=%d", project_id)
-
-    try:
-        diagnostic = Project.objects.get(id=int(project_id))
-        qs = diagnostic.cities.all().annotate(level=F("surface_artif") * 100 / F("area"))
-
-        data = [
-            {
-                "mpoly": row.mpoly,
-                "level": row.level,
-            }
-            for row in qs
-        ]
-
-        title = (
-            f"Taux d'artificialisation des communes du territoire "
-            f"«{diagnostic.land.name}» en {diagnostic.last_year_ocsge} (en % - pour cent)"
-        )
-
-        img_data = get_img(
-            queryset=data,
-            color="OrRd",
-            title=title,
-        )
-
-        race_protection_save_map(
-            diagnostic.pk,
-            "async_generate_theme_map_artif_done",
-            "theme_map_artif",
-            f"theme_map_artif_{project_id}.jpg",
-            img_data,
-        )
-
-    except Project.DoesNotExist:
-        logger.error(f"project_id={project_id} does not exist")
-
-    except Exception as exc:
-        logger.error(exc)
-        logger.exception(exc)
-        self.retry(exc=exc, countdown=300)
-
-    finally:
-        logger.info("End generate_theme_map_artif, project_id=%d", project_id)
-
-
-@shared_task(bind=True, max_retries=5)
-def generate_theme_map_understand_artif(self, project_id) -> None:
-    logger.info("Start generate_theme_map_understand_artif, project_id=%d", project_id)
-
-    try:
-        diagnostic = Project.objects.get(id=int(project_id))
-
-        geom = diagnostic.combined_emprise.transform("3857", clone=True)
-        srid, wkt = geom.ewkt.split(";")
-        polygons = shapely.wkt.loads(wkt)
-        gdf_emprise = geopandas.GeoDataFrame({"geometry": [polygons]}, crs="EPSG:3857")
-
-        data = {"color": [], "geometry": []}
-        # add artificial area to data
-        city_ids = diagnostic.cities.all().values_list("insee", flat=True)
-        artif_areas = ArtificialArea.objects.filter(city__in=city_ids)
-
-        artif_color = (0.97, 0.56, 0.33)
-        new_artif_color = (1, 0, 0)
-        new_natural_color = (0, 1, 0)
-
-        for artif_area in artif_areas:
-            polygons = shapely.wkt.loads(artif_area.mpoly.wkt)
-            data["geometry"].append(polygons)
-            data["color"].append(artif_color)
-
-        # add new artificial area and new natural area to data
-        qs_artif = OcsgeDiff.objects.intersect(diagnostic.combined_emprise).filter(
-            Q(is_new_artif=True) | Q(is_new_natural=True)
-        )
-        for row in qs_artif.only("mpoly", "is_new_artif"):
-            data["geometry"].append(to_shapely_polygons(row.mpoly))
-            data["color"].append((1, 0, 0) if row.is_new_artif else (0, 1, 0))
-
-        artif_area_gdf = geopandas.GeoDataFrame(data, crs="EPSG:4326").to_crs(epsg=3857)
-
-        fig, ax = plt.subplots(figsize=(15, 10))
-        plt.axis("off")
-        fig.set_dpi(100)
-
-        artif_area_gdf.plot(ax=ax, color=artif_area_gdf["color"], label="Artificialisation")
-        gdf_emprise.plot(ax=ax, facecolor="none", edgecolor="black")
-        emprise_legend_label = Line2D([], [], color="black", linewidth=3, label=diagnostic.territory_name)
-        artif_legend_label = Line2D(
-            [],
-            [],
-            linestyle="none",
-            mfc=artif_color,
-            mec=artif_color,
-            marker="s",
-            label=f"Surfaces atificialisées en {diagnostic.last_year_ocsge}",
-        )
-        new_artif_legend_label = Line2D(
-            [], [], linestyle="none", mfc=new_artif_color, mec=new_artif_color, marker="s", label="Artificialisation"
-        )
-        new_natural_legend_label = Line2D(
-            [],
-            [],
-            linestyle="none",
-            mfc=new_natural_color,
-            mec=new_natural_color,
-            marker="s",
-            label="Désartificialisation",
-        )
-
-        ax.add_artist(ScaleBar(1, location="lower right"))
-        plt.legend(
-            loc="upper left",
-            handles=[
-                emprise_legend_label,
-                artif_legend_label,
-                new_artif_legend_label,
-                new_natural_legend_label,
-            ],
-        )
-        ax.set_title(
-            label=(
-                "Etat des lieux de l'artificialisation "
-                f"de territoire «{diagnostic.land.name}» entre {diagnostic.first_year_ocsge} à "
-                f"{diagnostic.last_year_ocsge}"
-            ),
-            loc="left",
-        )
-        cx.add_basemap(ax, source=settings.OPENSTREETMAP_URL, zoom_adjust=1, alpha=0.95)
-        cx.add_attribution(ax, text=f"Données : OCS GE (IGN) - Fond de carte : {settings.OPENSTREETMAP_ATTRIBUTION}")
-
-        img_data = io.BytesIO()
-        plt.savefig(img_data, bbox_inches="tight", format="jpg")
-        img_data.seek(0)
-
-        race_protection_save_map(
-            diagnostic.pk,
-            "async_theme_map_understand_artif_done",
-            "theme_map_understand_artif",
-            f"theme_map_understand_artif_{project_id}.jpg",
-            img_data,
-        )
-
-    except Project.DoesNotExist:
-        logger.error(f"project_id={project_id} does not exist")
-
-    except Exception as exc:
-        logger.error(exc)
-        logger.exception(exc)
-        self.retry(exc=exc, countdown=300)
-
-    finally:
-        logger.info("End generate_theme_map_understand_artif, project_id=%d", project_id)
 
 
 @shared_task(bind=True, max_retries=5)

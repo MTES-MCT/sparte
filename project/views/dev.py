@@ -2,10 +2,10 @@ from uuid import uuid4
 
 from project import charts
 
-from .report import ProjectReportBaseView
+from .diagnostic import DiagnosticBaseView
 
 
-class AllChartsForPreview(ProjectReportBaseView):
+class AllChartsForPreview(DiagnosticBaseView):
     template_name = "project/dev/all_charts_for_preview.html"
     breadcrumbs_title = "Rapport consommation"
 
@@ -18,7 +18,10 @@ class AllChartsForPreview(ProjectReportBaseView):
             try:
                 chart = chart(project, level=project.level)
             except Exception:
-                chart = chart(project)
+                try:
+                    chart = chart(project)
+                except Exception:
+                    continue
             uuid = str(uuid4()).replace("-", "_")
             chart.id = "id_" + uuid
             chart.name = "chart_" + uuid

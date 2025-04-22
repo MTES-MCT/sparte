@@ -17,8 +17,8 @@ with
             code_cs,
             code_us,
             is_artificial,
-            official_artif,
-            is_impermeable
+            is_impermeable,
+            index
         from {{ ref("occupation_du_sol_zonage_urbanisme") }}
         group by
             zonage_checksum,
@@ -26,10 +26,10 @@ with
             zonage_libelle,
             zonage_type,
             year,
+            index,
             code_cs,
             code_us,
             is_artificial,
-            official_artif,
             is_impermeable
     )
 select
@@ -38,6 +38,7 @@ select
     zonage_libelle,
     zonage_type,
     year,
+    index,
     surface,
     code_cs,
     code_us,

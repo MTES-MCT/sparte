@@ -3,25 +3,21 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@store/store';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import styled from 'styled-components';
-import { useGetProjectQuery } from '@services/api';
+import { useGetLandQuery, useGetProjectQuery } from '@services/api';
 import { setProjectData } from '@store/projectSlice';
 import { selectIsNavbarOpen } from '@store/navbarSlice';
 import useWindowSize from '@hooks/useWindowSize';
 import useMatomoTracking from '@hooks/useMatomoTracking';
-import useUrls from '@hooks/useUrls';
 import Footer from '@components/layout/Footer';
 import Header from '@components/layout/Header';
 import Navbar from '@components/layout/Navbar';
 import TopBar from '@components/layout/TopBar';
 import Synthese from '@components/pages/Synthese';
 import Consommation from '@components/pages/Consommation';
-import Impermeabilisation from '@components/pages/Impermeabilisation';
-import Artificialisation from '@components/pages/Artificialisation';
-import Gpu from '@components/pages/Gpu';
 import LogementVacant from '@components/pages/LogementVacant';
-import Ocsge from '@components/pages/Ocsge';
 import Trajectoires from '@components/pages/Trajectoires';
 import RapportLocal from '@components/pages/RapportLocal';
+import { Artificialisation } from '@components/pages/Artificialisation';
 import Update from '@components/pages/Update';
 import RouteWrapper from '@components/widgets/RouteWrapper';
 
@@ -48,26 +44,31 @@ const Content = styled.div`
 
 const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
     const dispatch = useDispatch();
-    const { data, error, isLoading } = useGetProjectQuery(projectId);
-    const urls = useUrls();
+    const { data: projectData, error, isLoading } = useGetProjectQuery(projectId);
+    const { data: landData } = useGetLandQuery({
+        land_type: projectData?.land_type,
+        land_id: projectData?.land_id }
+    );
+    const { urls } = projectData || {};
 
     const isOpen = useSelector((state: RootState) => selectIsNavbarOpen(state));
     const { isMobile } = useWindowSize();
 
     useEffect(() => {
-    if (data) {        
-        dispatch(setProjectData(data));        
+    if (projectData) {        
+        dispatch(setProjectData(projectData));        
     }
-    }, [data, dispatch]);
+    }, [projectData, dispatch]);
+
 
     return (
         <>
-            {data && !isLoading && !error && urls && (
+            {projectData && landData && !isLoading && !error && urls && (
                 <>
-                    <Header />
+                    <Header projectData={projectData} />
                     <Router>
                         <TrackingWrapper />
-                        <Navbar projectData={data} />
+                        <Navbar projectData={projectData} />
                         <Main $isOpen={isOpen} $isMobile={isMobile}>
                             <TopBar />
                             <Content>
@@ -77,7 +78,7 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                         element={
                                             <RouteWrapper
                                                 title="Synthèse"
-                                                consoCorrectionStatus={data.consommation_correction_status}
+                                                consoCorrectionStatus={projectData.consommation_correction_status}
                                             >
                                                 <Synthese endpoint={urls.synthese} />
                                             </RouteWrapper>
@@ -88,7 +89,7 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                         element={
                                             <RouteWrapper
                                                 title="Consommation d'espaces NAF (Naturels, Agricoles et Forestiers)"
-                                                consoCorrectionStatus={data.consommation_correction_status}
+                                                consoCorrectionStatus={projectData.consommation_correction_status}
                                             >
                                                 <Consommation endpoint={urls.consommation} />
                                             </RouteWrapper>
@@ -99,63 +100,33 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                         element={
                                             <RouteWrapper
                                                 title="Trajectoire de sobriété foncière"
-                                                consoCorrectionStatus={data.consommation_correction_status}
+                                                consoCorrectionStatus={projectData.consommation_correction_status}
                                             >
                                                 <Trajectoires endpoint={urls.trajectoires} />
                                             </RouteWrapper>
                                         }
                                     />
                                     <Route
-                                        path={urls.ocsge}
-                                        element={
-                                            <RouteWrapper
-                                                title="Usage et couverture du sol (OCS GE)"
-                                                ocsgeStatus={data.ocsge_coverage_status}
-                                            >
-                                                <Ocsge projectData={data} endpoint={urls.ocsge} />
-                                            </RouteWrapper>
-                                        }
-                                    />
-                                    <Route
                                         path={urls.artificialisation}
                                         element={
-                                            <RouteWrapper 
-                                                title="Artificialisation"
-                                                ocsgeStatus={data.ocsge_coverage_status}
-                                            >
-                                                <Artificialisation endpoint={urls.artificialisation} />
-                                            </RouteWrapper>
+                                            <RouteWrapper
+                                                title="Artificialisation des sols">
+                                                    <Artificialisation
+                                                        projectData={projectData}
+                                                        landData={landData}
+                                                    />
+                                                </RouteWrapper>
                                         }
                                     />
-                                    <Route
-                                        path={urls.impermeabilisation}
-                                        element={
-                                            <RouteWrapper 
-                                                title="Imperméabilisation"
-                                                ocsgeStatus={data.ocsge_coverage_status}
-                                            >
-                                                <Impermeabilisation endpoint={urls.impermeabilisation} />
-                                            </RouteWrapper>
-                                        }
-                                    />
-                                    <Route
-                                        path={urls.gpu}
-                                        element={
-                                            <RouteWrapper 
-                                                title="Artificialisation des zonages d'urbanisme"
-                                                ocsgeStatus={data.ocsge_coverage_status}
-                                                hasGpu={data.has_zonage_urbanisme}
-                                            >
-                                                <Gpu endpoint={urls.gpu} />
-                                            </RouteWrapper>
-                                        }
-                                    />
+
+                                    
+
                                     <Route
                                         path={urls.logementVacant}
                                         element={
                                             <RouteWrapper 
                                                 title="Vacance des logements"
-                                                hasLogementVacant={data.logements_vacants_available}
+                                                hasLogementVacant={projectData.logements_vacants_available}
                                             >
                                                 <LogementVacant endpoint={urls.logementVacant} />
                                             </RouteWrapper>
@@ -166,9 +137,9 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                         element={
                                             <RouteWrapper
                                                 title="Rapport triennal local"
-                                                consoCorrectionStatus={data.consommation_correction_status}
+                                                consoCorrectionStatus={projectData.consommation_correction_status}
                                             >
-                                                <RapportLocal endpoint={urls.rapportLocal} />
+                                                <RapportLocal endpoint={urls.rapportLocal} projectData={projectData} />
                                             </RouteWrapper>
                                         }
                                     />
@@ -184,7 +155,7 @@ const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
                                     />
                                 </Routes>
                             </Content>
-                            <Footer />
+                            <Footer projectData={projectData} />
                         </Main>
                     </Router>
                 </>

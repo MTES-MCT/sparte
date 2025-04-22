@@ -1,36 +1,7 @@
 import React from 'react';
-import { useHtmlLoader } from '@hooks/useHtmlLoader';
-import useHighcharts from '@hooks/useHighcharts';
-import Loader from '@components/ui/Loader';
 import Guide from '@components/widgets/Guide';
 
-/*
-Ce composant est un composant hybride qui permet de récupérer du contenu côté serveur via Django et de l'intégrer directement dans l'interface React.
-Cette approche progressive facilite la migration des éléments de contenu existants vers React, tout en permettant de conserver certaines fonctionnalités serveur le temps de la transition.
-
-### Graphiques interactifs :
-Le hook `useHighcharts` récupère les options des graphiques transmises par le contexte Django et les rend dynamiquement dans le contenu.
-
-### Injection HTML contrôlée :
-Le contenu récupéré du serveur est inséré directement dans le DOM à l'aide de `dangerouslySetInnerHTML`.
-Cela est nécessaire pour rendre du contenu HTML généré côté serveur, mais il est important de prendre des précautions contre les injections de code malveillant (XSS).
-Dans ce cas, les données provenant de Django sont considérées comme fiables.
-*/
-
-const Impermeabilisation: React.FC<{ endpoint: string }> = ({ endpoint }) => {
-    const { content, isLoading, error } = useHtmlLoader(endpoint);
-
-    useHighcharts([
-        'imper_nette_chart',
-        'imper_progression_couv_chart',
-        'imper_repartition_couv_chart',
-        'imper_progression_usage_chart',
-        'imper_repartition_usage_chart',
-    ], isLoading);
-
-    if (isLoading) return <Loader />;
-    if (error) return <div>Erreur : {error}</div>;
-
+export const Impermeabilisation = () => {
     return (
         <div className="fr-container--fluid fr-p-3w">
             <div className="fr-grid-row">
@@ -67,11 +38,9 @@ const Impermeabilisation: React.FC<{ endpoint: string }> = ({ endpoint }) => {
                             </p>
                         `}
                     />
-                    <div dangerouslySetInnerHTML={{ __html: content }} />
                 </div>
             </div>
         </div>
     );
 };
 
-export default Impermeabilisation;

@@ -6,4 +6,7 @@ export type OcsgeTileFeatureProperties = {
   surface: number;
   is_artificial: boolean;
   is_impermeable: boolean;
+  critere_seuil: boolean;
+  index: number;
+  year: number;
 };

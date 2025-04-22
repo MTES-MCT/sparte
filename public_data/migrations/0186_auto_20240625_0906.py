@@ -4,25 +4,11 @@ from django.db import migrations
 
 
 def add_is_impermeable_to_couverture_usage_matrix(apps, schema_editor):
-    CouvertureUsageMatrix = apps.get_model("public_data", "CouvertureUsageMatrix")
-
-    CouvertureUsageMatrix.objects.filter(
-        is_impermeable=None,
-        couverture__code_prefix__in=[
-            "CS1.1.1.1",
-            "CS1.1.1.2",
-        ],
-    ).update(is_impermeable=True)
-
-    CouvertureUsageMatrix.objects.filter(
-        is_impermeable=None,
-    ).update(is_impermeable=False)
+    pass
 
 
 def reverse_add_is_impermeable_to_couverture_usage_matrix(apps, schema_editor):
-    CouvertureUsageMatrix = apps.get_model("public_data", "CouvertureUsageMatrix")
-
-    CouvertureUsageMatrix.objects.update(is_impermeable=None)
+    pass
 
 
 class Migration(migrations.Migration):

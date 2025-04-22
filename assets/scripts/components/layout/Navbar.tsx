@@ -1,31 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, Link } from 'react-router-dom';
 import styled, { css } from 'styled-components';
 import { toggleNavbar, selectIsNavbarOpen, handleResponsiveNavbar } from '@store/navbarSlice';
 import useHtmx from '@hooks/useHtmx';
 import useWindowSize from '@hooks/useWindowSize';
-import useUrls from '@hooks/useUrls';
 import Button from '@components/ui/Button';
 import ButtonToggleNavbar from "@components/ui/ButtonToggleNavbar";
 import { ConsoCorrectionStatusEnum } from '@components/widgets/ConsoCorrectionStatus';
-
-interface NavbarData {
-    menuItems: MenuItems[];
-}
-
-interface MenuItems {
-    label: string;
-    url?: string;
-    icon: string;
-    subMenu?: SubMenu[];
-}
-
-interface SubMenu {
-    label: string;
-    url: string;
-    icon: string;
-}
+import { MenuItem, ProjectDetailResultType } from '@services/api';
 
 const primaryColor = '#313178';
 const activeColor = '#4318FF';
@@ -197,10 +180,9 @@ const Overlay = styled.div<{ $isOpen: boolean }>`
 `;
 
 
-const Navbar: React.FC<{ projectData: any }> = ({ projectData }) => {
+const Navbar: React.FC<{ projectData: ProjectDetailResultType }> = ({ projectData }) => {
     const location = useLocation();
-    const [data, setData] = useState<NavbarData | null>(null);
-    const urls = useUrls();
+    const { navbar, urls } = projectData
     const htmxRef = useHtmx([urls]);
 
     const dispatch = useDispatch();
@@ -212,14 +194,6 @@ const Navbar: React.FC<{ projectData: any }> = ({ projectData }) => {
         ConsoCorrectionStatusEnum.FUSION,
     ].includes(projectData.consommation_correction_status);
 
-    // La composition de la navbar et notamment les urls des liens sont récupérés via le contexte Django => project/templates/layout/base.html => #navbar-data
-    useEffect(() => {
-        const dataElement = document.getElementById('navbar-data');
-        if (dataElement) {
-            const data = JSON.parse(dataElement.textContent || '{}');
-            setData(data);
-        }
-    }, []);
 
     const isActive = (url?: string) => location.pathname === url;
 
@@ -244,7 +218,7 @@ const Navbar: React.FC<{ projectData: any }> = ({ projectData }) => {
         }
     }, [isOpen, isMobile]);
 
-    const renderMenuItems = (items: SubMenu[]) => (
+    const renderMenuItems = (items: MenuItem[]) => (
         <SubMenuList>
             {items.map(item => (
                 <SubMenu
@@ -258,7 +232,9 @@ const Navbar: React.FC<{ projectData: any }> = ({ projectData }) => {
                     >
                         {item.icon && <Icon className={`bi ${item.icon}`} />}
                         <div className="d-flex flex-column items-center">
-                            {item.label === "Vacance des logements" && (<p className="fr-badge fr-badge--sm fr-badge--new">Nouveau</p>)}
+                            {[
+                                "Artificialisation"
+                            ].includes(item.label) && (<p className="fr-badge fr-badge--sm fr-badge--new">Nouveau</p>)}
                             {item.label}
                         </div>
                     </SubMenuTitleLink>
@@ -280,7 +256,7 @@ const Navbar: React.FC<{ projectData: any }> = ({ projectData }) => {
                         icon="bi bi-file-earmark-word"
                         label="Analyse de Consommation"
                         htmxAttrs={{
-                            'data-hx-get': urls.dowloadConsoReport,
+                            'data-hx-get': urls?.dowloadConsoReport,
                             'data-hx-target': '#diag_word_form',
                             'data-fr-opened': 'false',
                             'aria-controls': 'fr-modal-download-word',
@@ -302,7 +278,7 @@ const Navbar: React.FC<{ projectData: any }> = ({ projectData }) => {
                         icon="bi bi-file-earmark-word"
                         label="Analyse complète"
                         htmxAttrs={{
-                            'data-hx-get': urls.dowloadFullReport,
+                            'data-hx-get': urls?.downloadFullReport,
                             'data-hx-target': '#diag_word_form',
                             'data-fr-opened': 'false',
                             'aria-controls': 'fr-modal-download-word',
@@ -324,7 +300,7 @@ const Navbar: React.FC<{ projectData: any }> = ({ projectData }) => {
                         icon="bi bi-file-earmark-word"
                         label="Rapport triennal local"
                         htmxAttrs={{
-                            'data-hx-get': urls.dowloadLocalReport,
+                            'data-hx-get': urls?.dowloadLocalReport,
                             'data-hx-target': '#diag_word_form',
                             'data-fr-opened': 'false',
                             'aria-controls': 'fr-modal-download-word',
@@ -343,7 +319,7 @@ const Navbar: React.FC<{ projectData: any }> = ({ projectData }) => {
             </DownloadList>
         </DownloadContainer>
     );
-    
+
     return (
         <>
             {isMobile && <Overlay $isOpen={isOpen} onClick={() => dispatch(toggleNavbar())} />}
@@ -353,7 +329,7 @@ const Navbar: React.FC<{ projectData: any }> = ({ projectData }) => {
                 </NavbarHeader>
                 <NavContainer>
                     <MenuList role="tree" aria-label="Sidebar menu">
-                        {data?.menuItems.map((menu) => (
+                        {navbar?.menuItems.map((menu) => (
                             <Menu key={menu.label}>
                                 {menu.url ? (
                                     <MenuTitleLink

@@ -18,9 +18,7 @@ with
             us_old,
             us_new,
             new_is_impermeable,
-            new_is_artificial,
-            new_not_impermeable,
-            new_not_artificial
+            new_not_impermeable
         from {{ ref("difference_commune") }}
         group by
             commune_code,
@@ -32,9 +30,7 @@ with
             us_old,
             us_new,
             new_is_impermeable,
-            new_is_artificial,
-            new_not_impermeable,
-            new_not_artificial
+            new_not_impermeable
     )
 select
     without_percent.*,
