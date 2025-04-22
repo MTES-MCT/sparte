@@ -20,8 +20,11 @@ class ArtifByUsagePieChart(ArtifByCouverturePieChart):
                 "name": "Sol artificiel",
                 "data": [
                     {
-                        "name": item.usage,
+                        "name": item.label_short,
                         "y": item.surface / 10000,
+                        "color": item.color,
+                        "code": item.usage,
+                        "long_name": item.label,
                     }
                     for item in self.data
                 ],

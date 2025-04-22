@@ -5,7 +5,7 @@ base_config_pie_chart = {
     "tooltip": {
         "valueSuffix": " Ha",
         "valueDecimals": DEFAULT_VALUE_DECIMALS,
-        "pointFormat": "{point.y} - {point.percentage:.1f}%",
+        "pointFormat": "{point.code} - {point.long_name} - {point.percentage:.1f}%",
         "headerFormat": "<b>{point.key}</b><br/>",
     },
     "plotOptions": {
@@ -14,6 +14,7 @@ base_config_pie_chart = {
             "dataLabels": {
                 "enabled": True,
                 "overflow": "justify",
+                "format": "{point.name} - {point.percentage:.2f}%",
                 "style": {
                     "textOverflow": "clip",
                     "width": "100px",

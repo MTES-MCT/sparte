@@ -43,8 +43,11 @@ class ArtifByCouverturePieChart(DiagnosticChart):
                 "name": "Sol artificiel",
                 "data": [
                     {
-                        "name": item.couverture,
+                        "name": item.label_short,
                         "y": item.surface / 10000,
+                        "color": item.color,
+                        "code": item.couverture,
+                        "long_name": item.label,
                     }
                     for item in self.data
                 ],
