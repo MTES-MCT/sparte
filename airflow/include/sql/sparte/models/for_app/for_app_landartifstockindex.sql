@@ -8,6 +8,9 @@ SELECT
     index as millesime_index,
     years,
     surface,
-    percent
+    percent,
+    flux_surface,
+    flux_percent,
+    flux_previous_years
 FROM
     {{ ref("artif_land_by_index") }}

@@ -30,6 +30,9 @@ export type Millesime = {
     years_artif: number[] | null;
     millesimes: Millesime[]
     millesimes_by_index: MillesimeByIndex[]
+    child_land_types: string[];
+    parent_land_type: string;
+    parent_land_ids: string[];
   };
 
   type LandDetailQueryArg = string | FetchArgs | {

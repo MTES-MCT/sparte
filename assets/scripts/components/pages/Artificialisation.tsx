@@ -125,10 +125,11 @@ export const Artificialisation = ({ projectData, landData }: {
     landData: LandDetailResultType,
 }) => {
     const { land_id, land_type } = projectData;
-    const { surface, surface_artif, percent_artif, millesimes_by_index, millesimes, years_artif } = landData || {};
+    const { surface, surface_artif, percent_artif, millesimes_by_index, millesimes, years_artif, child_land_types } = landData || {};
 
     const [ stockIndex, setStockIndex ] = React.useState(2)
     const [ byDepartement, setByDepartement ] = React.useState(false)
+    const [ childLandType, setChildLandType ] = React.useState(child_land_types? child_land_types[0] : undefined)
 
     const shouldDisplayByDepartementBtn = millesimes_by_index.length != millesimes.length
 
@@ -158,23 +159,47 @@ export const Artificialisation = ({ projectData, landData }: {
                 setByDepartement={setByDepartement}
                 shouldDisplayByDepartementBtn={shouldDisplayByDepartementBtn}
             />
+            {child_land_types && child_land_types.length > 1 && (
+                child_land_types.map(child_land_type => (
+                    <button
+                        className={`fr-btn  ${childLandType === child_land_type ? 'fr-btn--primary' : 'fr-btn--tertiary'}`}
+                        key={child_land_type}
+                        onClick={() => setChildLandType(child_land_type)}>{child_land_type}
+                    </button>
+                ))
+            )}
+            <OcsgeGraph
+                isMap
+                id="artif_map"
+                land_id={land_id}
+                land_type={land_type}
+                params={{
+                    index: stockIndex,
+                    child_land_type: childLandType,
+                }}
+            />
+
             <div className="fr-grid-row">
             {byDepartement ? millesimes.filter(e => e.index === stockIndex).map(
                 (m) => (
                     <div key={`${m.index}_${m.departement}`} className={`fr-col-${Math.round(12 / millesimes_by_index.length)}`}>
                         <OcsgeGraph
                             id="pie_artif_by_couverture"
-                            index={m.index}
                             land_id={land_id}
                             land_type={land_type}
-                            departement={m.departement}
+                            params={{
+                                index: m.index,
+                                departement: m.departement,
+                            }}
                         />
                          <OcsgeGraph
                             id="pie_artif_by_usage"
-                            index={m.index}
                             land_id={land_id}
                             land_type={land_type}
-                            departement={m.departement}
+                            params={{
+                                index: m.index,
+                                departement: m.departement,
+                            }}
                         />
                     </div>
                 )
@@ -182,15 +207,19 @@ export const Artificialisation = ({ projectData, landData }: {
                 <div className="fr-col-12">
                 <OcsgeGraph
                     id="pie_artif_by_couverture"
-                    index={stockIndex}
                     land_id={land_id}
                     land_type={land_type}
+                    params={{
+                        index: stockIndex,
+                    }}
                 />
                 <OcsgeGraph
                     id="pie_artif_by_usage"
-                    index={stockIndex}
                     land_id={land_id}
                     land_type={land_type}
+                    params={{
+                        index: stockIndex,
+                    }}
                 />
                 </div>
             )}

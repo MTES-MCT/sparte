@@ -4,6 +4,7 @@ from django.urls import path
 from project.charts.artificialisation import (
     ArtifByCouverturePieChart,
     ArtifByUsagePieChart,
+    ArtifMap,
     ArtifStock,
 )
 from public_data.models import (
@@ -32,6 +33,7 @@ def get_chart_klass_or_404(chart_id):
         "bar_artif_stock": ArtifStock,
         "pie_artif_by_couverture": ArtifByCouverturePieChart,
         "pie_artif_by_usage": ArtifByUsagePieChart,
+        "artif_map": ArtifMap,
     }
 
     if chart_id not in charts:
