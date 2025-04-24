@@ -1,3 +1,7 @@
+{{
+    config(
+        materialized="table") }}
+
 SELECT
     land_id,
     land_type,

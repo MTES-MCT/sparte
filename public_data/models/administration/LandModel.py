@@ -19,6 +19,9 @@ class LandModel(models.Model):
     years_artif = ArrayField(base_field=models.IntegerField())
     millesimes = ArrayField(base_field=models.JSONField())
     millesimes_by_index = ArrayField(base_field=models.JSONField())
+    child_land_types = ArrayField(base_field=models.CharField())
+    parent_land_type = models.CharField()
+    parent_land_ids = ArrayField(base_field=models.CharField())
 
     class Meta:
         managed = False

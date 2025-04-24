@@ -14,6 +14,9 @@ class LandArtifStockIndex(models.Model):
     surface = models.FloatField()
     percent = models.FloatField()
     millesime_index = models.IntegerField()
+    flux_surface = models.FloatField()
+    flux_percent = models.FloatField()
+    flux_previous_years = ArrayField(base_field=models.IntegerField())
 
     class Meta:
         managed = False

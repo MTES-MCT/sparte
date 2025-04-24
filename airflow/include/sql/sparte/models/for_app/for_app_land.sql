@@ -16,8 +16,10 @@ SELECT
     artif.percent as percent_artif,
     artif.years as years_artif,
     land_millesimes.millesimes as millesimes,
-    land_millesimes_by_index.millesimes_by_index as millesimes_by_index
-
+    land_millesimes_by_index.millesimes_by_index as millesimes_by_index,
+    land.child_land_types,
+    land.parent_land_type,
+    land.parent_land_ids
 FROM
     {{ ref('land') }}
 LEFT JOIN LATERAL (
