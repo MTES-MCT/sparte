@@ -7,6 +7,11 @@ code_is_unique_and_not_null: &code_is_unique_and_not_null
     data_tests:
     - not_null
     - unique
+  - name: simple_geom
+    data_tests:
+    - not_null
+    - is_not_empty_geom
+    - is_valid_geom
 
 
 models:

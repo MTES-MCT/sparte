@@ -16,6 +16,7 @@ class LandModel(models.Model):
     surface = models.FloatField()
     surface_unit = models.CharField()
     geom = MultiPolygonField()
+    simple_geom = MultiPolygonField()
     surface_artif = models.FloatField()
     percent_artif = models.FloatField()
     years_artif = ArrayField(base_field=models.IntegerField())
