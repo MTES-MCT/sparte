@@ -13,7 +13,7 @@ class ArtifPercentRate(DiagnosticChart):
             ArtifStockIndexModel.objects.filter(
                 land_id=self.land.id,
                 land_type=self.land.land_type,
-                # index_year=self.land.index_year,
+                millesime_index=self.params.get("index"),
             )
         )
 

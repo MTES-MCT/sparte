@@ -6,7 +6,7 @@ type ArtifPercentRateChartProps = {
     id: string;
     land_id: string;
     land_type: string;
-    index?: number; // optional millesime index. When undefined, the last millesime is used
+    index: number;
 };
 
 export const ArtifPercentRateChart = ({
@@ -16,13 +16,7 @@ export const ArtifPercentRateChart = ({
     land_type,
 } : ArtifPercentRateChartProps) => {
 
-    let params = { id, land_id, land_type } as any
-
-    if (index) {
-        params = { ...params, index }
-    }
-
-    const { data } = useGetChartConfigQuery(params)
+    const { data } = useGetChartConfigQuery({ id, land_id, land_type, index })
 
     return (
         <GenericChart 

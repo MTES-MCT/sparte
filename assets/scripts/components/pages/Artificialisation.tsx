@@ -101,7 +101,9 @@ export const Artificialisation = ({ projectData, landData }: {
     const { land_id, land_type } = projectData;
     const { surface, surface_artif, percent_artif, millesimes_by_index, millesimes, years_artif, child_land_types } = landData || {};
 
-    const [ stockIndex, setStockIndex ] = React.useState(2)
+    const defaultStockIndex = millesimes_by_index.length > 0 ? Math.max(...millesimes_by_index.map(e => e.index)) : 2;
+
+    const [ stockIndex, setStockIndex ] = React.useState(defaultStockIndex)
     const [ byDepartement, setByDepartement ] = React.useState(false)
     const [ childLandType, setChildLandType ] = React.useState(child_land_types? child_land_types[0] : undefined)
 
@@ -164,6 +166,7 @@ export const Artificialisation = ({ projectData, landData }: {
                                         id="artif_percent_rate"
                                         land_id={land_id}
                                         land_type={land_type}
+                                        index={defaultStockIndex}
                                     />
                                 </div>
                                 <div className="fr-col-12 fr-col-md-5">
