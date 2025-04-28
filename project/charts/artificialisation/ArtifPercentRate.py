@@ -1,4 +1,4 @@
-from typing import Any, Dict, List
+from typing import Any, Dict
 
 from django.utils.functional import cached_property
 
@@ -8,20 +8,18 @@ from public_data.models import LandArtifStockIndex as ArtifStockIndexModel
 
 class ArtifPercentRate(DiagnosticChart):
     @cached_property
-    def data(self) -> List[ArtifStockIndexModel]:
-        return list(
-            ArtifStockIndexModel.objects.filter(
-                land_id=self.land.id,
-                land_type=self.land.land_type,
-                millesime_index=self.params.get("index"),
-            )
+    def data(self) -> ArtifStockIndexModel:
+        return ArtifStockIndexModel.objects.get(
+            land_id=self.land.id,
+            land_type=self.land.land_type,
+            millesime_index=self.params.get("index"),
         )
 
     @property
     def series(self):
         tiles = []
         total_tiles = 100
-        red_tiles = int((self.data[0].percent / 100) * total_tiles)
+        red_tiles = int((self.data.percent / 100) * total_tiles)
 
         columns = 10
         rows = 10
