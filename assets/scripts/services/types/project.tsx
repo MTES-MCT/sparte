@@ -14,16 +14,22 @@ export type Logo = {
     height: string;
     url?: string;
   };
-  
+
+  export type SubMenuItem = {
+    label: string;
+    url?: string;
+    new?: boolean;
+  };
+
   export type MenuItem = {
     label: string;
     url?: string;
     icon?: string;
     target?: string;
-    subMenu?: MenuItem[];
+    subMenu?: SubMenuItem[];
     shouldDisplay?: boolean;
   };
-  
+
   export type ProjectDetailResultType = {
     id: number;
     created_date: string;

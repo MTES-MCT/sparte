@@ -5,16 +5,20 @@ import * as Highcharts from 'highcharts';
 import * as Highmaps from 'highcharts/highmaps';
 import HighchartsMore from 'highcharts/highcharts-more'
 
+import HighchartsHeatmap from 'highcharts/modules/heatmap';
+import HighchartsTilemap from 'highcharts/modules/tilemap';
 import data from 'highcharts/modules/data';
 
-
+// Initialize the module
+HighchartsHeatmap(Highcharts);
+HighchartsTilemap(Highcharts);
 
 type GenericChartProps = {
     chartOptions: Highcharts.Options;
+    containerProps?: React.HTMLAttributes<HTMLDivElement>;
     isMap?: boolean; // optional. When true, the chart is displayed in a map
 }
 
-HighchartsMore(Highcharts);
 Highcharts.setOptions({
     plotOptions: {
         series: {
@@ -25,7 +29,7 @@ Highcharts.setOptions({
 data(Highmaps);
 
 
-const GenericChart = ({ chartOptions, isMap = false } : GenericChartProps) => {
+const GenericChart = ({ chartOptions,containerProps, isMap = false } : GenericChartProps) => {
     /*
         Highcharts fait parfois des mutations sur les options du graphique, ce qui peut causer des problèmes
         avec l'environnement qui ne supporte pas les mutations. Pour éviter cela, on clone les options du graphique
@@ -37,13 +41,17 @@ const GenericChart = ({ chartOptions, isMap = false } : GenericChartProps) => {
     const oneToOne = true
     const animation = false
 
+    const defaultContainerProps = {
+        style: { height: "400px", width: "100%" }
+    };
+
     return (
         <HighchartsReact
             highcharts={isMap ? Highmaps : Highcharts}
             options={mutableChartOptions}
             immutable
             updateArgs={[shouldRedraw, oneToOne, animation]}
-            containerProps={{ style: { height: "400px", width: "100%" } }}
+            containerProps={{ ...defaultContainerProps, ...containerProps }}
             constructorType={isMap ? 'mapChart' : 'chart'}
         />
     )

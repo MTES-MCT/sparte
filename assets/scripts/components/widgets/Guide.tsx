@@ -9,14 +9,20 @@ const StyledInformationIcon = styled(InformationIcon)`
     fill: #48d5a7;
 `;
 
-const Container = styled.div`
+const Container = styled.div<{ $column: boolean }>`
     display: flex;
-    align-items: center;
+    align-items: start;
     gap: 1.5rem;
-    padding: 1rem;
+    padding: 1.5rem;
     border-radius: 6px;
     background: #C8F2E5;
     margin-bottom: 2rem;
+
+    ${({ $column }) => $column && `
+        flex-direction: column;
+        align-items: center;
+        height: 100%;
+    `}
 
     img {
         width: 75px;
@@ -26,15 +32,18 @@ const Container = styled.div`
 
 const Title = styled.div`
     font-weight: 600;
-    font-size: 0.9em;
-    margin-bottom: 0.4rem;
+    font-size: 1.1em;
+    margin-bottom: 0.8rem;
 `;
 
 const Content = styled.div`
-    font-size: 0.8em;
-    padding: 0;
-    margin: 0;
     margin-bottom: 1rem;
+
+    & > p {
+        font-size: 0.82em;
+        line-height: 1.7em;
+        margin-bottom: 0.5rem;
+    }
 `;
 
 const Button = styled.button`
@@ -50,9 +59,10 @@ interface GuideProps {
     contentHtml: string;
     DrawerTitle?: string;
     DrawerContentHtml?: string;
+    column?: boolean;
 }
 
-const Guide: React.FC<GuideProps> = ({ title, contentHtml, DrawerTitle, DrawerContentHtml }) => {
+const Guide: React.FC<GuideProps> = ({ title, contentHtml, DrawerTitle, DrawerContentHtml, column = false }) => {
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
     const toggleDrawer = () => {
@@ -60,7 +70,7 @@ const Guide: React.FC<GuideProps> = ({ title, contentHtml, DrawerTitle, DrawerCo
     };
 
     return (
-        <Container>
+        <Container $column={column}>
             <StyledInformationIcon />
             <div>
                 <Title>{ title }</Title>

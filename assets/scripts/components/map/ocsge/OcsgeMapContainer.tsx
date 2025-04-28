@@ -13,10 +13,6 @@ type OcsgeMapContainerProps = {
   globalFilter?: FilterSpecification
 }
 
-const MapContainerWrapper = styled.div`
-  margin-bottom: 50px;
-`;
-
 export const OcsgeMapContainer = ({ projectData, landData, globalFilter }: OcsgeMapContainerProps) => {
     const { data: envVariables } = useGetEnvironmentQuery(null);
     let vectorTileLocation: string = null
@@ -52,7 +48,7 @@ export const OcsgeMapContainer = ({ projectData, landData, globalFilter }: Ocsge
   if (!index) { return null}
 
   return (
-    <MapContainerWrapper>
+    <div>
       <OcsgeMap
         vectorTilesLocation={vectorTileLocation}
         selection={selection}
@@ -68,6 +64,6 @@ export const OcsgeMapContainer = ({ projectData, landData, globalFilter }: Ocsge
         maxBounds={max_bounds}
         departements={departements}
       />
-    </MapContainerWrapper>
+    </div>
   );
 };

@@ -19,5 +19,6 @@ export const OcsgeGraph = ({
     params,
 } : OcsgeGraphProps) => {
     const { data } = useGetChartConfigQuery({ id, land_id, land_type, ...params } )
+    
     return <GenericChart isMap={isMap} chartOptions={data} />
 }

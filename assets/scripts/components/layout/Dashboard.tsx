@@ -45,10 +45,16 @@ const Content = styled.div`
 const Dashboard: React.FC<DashboardProps> = ({ projectId }) => {
     const dispatch = useDispatch();
     const { data: projectData, error, isLoading } = useGetProjectQuery(projectId);
-    const { data: landData } = useGetLandQuery({
-        land_type: projectData?.land_type,
-        land_id: projectData?.land_id }
+    const { data: landData } = useGetLandQuery(
+        {
+            land_type: projectData?.land_type,
+            land_id: projectData?.land_id
+        },
+        {
+            skip: !projectData
+        }
     );
+    
     const { urls } = projectData || {};
 
     const isOpen = useSelector((state: RootState) => selectIsNavbarOpen(state));

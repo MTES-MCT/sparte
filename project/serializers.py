@@ -69,7 +69,11 @@ class ProjectDetailSerializer(gis_serializers.GeoModelSerializer):
                     "label": "Pilotage territorial",
                     "icon": "bi bi-bar-chart",
                     "subMenu": [
-                        {"label": "Artificialisation", "url": reverse("project:report_artif", kwargs=kwargs)},
+                        {
+                            "label": "Artificialisation",
+                            "url": reverse("project:report_artif", kwargs=kwargs),
+                            "new": True,
+                        },
                         {"label": "Consommation d'espaces NAF", "url": reverse("project:report_conso", kwargs=kwargs)},
                         {
                             "label": "Vacance des logements",
