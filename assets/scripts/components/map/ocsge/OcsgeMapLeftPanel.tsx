@@ -31,8 +31,7 @@ interface OcsgeMapLeftPanelProps {
 }
 
 const OcsgeMapLeftPanelWrapper = styled.aside`
-    background-color: rgba(255, 255, 255, 0.65);
-    backdrop-filter: blur(8px);
+    background-color: #ffffff;
     padding: 15px;
     max-width: 450px;
     width: 450px;

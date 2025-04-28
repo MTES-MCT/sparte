@@ -3,11 +3,108 @@ import Guide from '@components/widgets/Guide';
 import OcsgeMatricePassage from '@images/ocsge_matrice_passage.png';
 import {useGetArtifZonageIndexQuery } from '@services/api';
 import { OcsgeGraph } from '@components/charts/ocsge/OcsgeGraph';
-import { ArtifPercentRateChart } from '@components/charts/artificialisation/ArtifPercentRateChart';
 import { ProjectDetailResultType } from '@services/types/project';
 import { LandDetailResultType, MillesimeByIndex } from '@services/types/land';
 import { OcsgeMapContainer } from '@components/map/ocsge/OcsgeMapContainer';
 import styled, { css }  from 'styled-components';
+import { ArtifPercentRate } from '@components/charts/artificialisation/ArtifPercentRate';
+
+const artifColor = "#F4D0C4"
+const nonArtifColor = "#CDE3CE"
+const nonArtifDarkColor = "#486B5D"
+
+const SquareBase = styled.div`
+    width: 150px;
+    height: 150px;
+    position: relative;
+
+    @keyframes blinkRed {
+        0% { background-color: ${artifColor}; }
+        50% { background-color: #edb2a1; }
+        100% { background-color: ${artifColor}; }
+    }
+
+    @keyframes blinkGreen {
+        0% { background-color: ${nonArtifColor}; }
+        50% { background-color: #B8D7B9; }
+        100% { background-color: ${nonArtifColor}; }
+    }
+`;
+
+const ArtificializedSquare = styled(SquareBase)`
+    background-color: ${artifColor};
+
+    &::after {
+        content: '< 2500m²';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 66.67%;
+        height: 66.67%;
+        background-color: ${nonArtifColor};
+        border: 1px solid ${nonArtifDarkColor};
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.75em;
+        color: ${nonArtifDarkColor};
+    }
+
+    &:hover::after {
+        animation: blinkRed 1s infinite;
+    }
+`;
+
+const NonArtificializedSquare = styled(SquareBase)`
+    background-color: ${nonArtifColor};
+
+    &::after {
+        content: '< 2500m²';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 66.67%;
+        height: 66.67%;
+        background-color: ${artifColor};
+        border: 1px solid ${nonArtifDarkColor};
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.75em;
+        color: ${nonArtifDarkColor};
+    }
+
+    &:hover::after {
+        animation: blinkGreen 1s infinite;
+    }
+`;
+
+const ConstructionSquare = styled(SquareBase)`
+    background-color: ${nonArtifColor};
+
+    &::after {
+        content: '> 50m²';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 35%;
+        height: 35%;
+        background-color: ${artifColor};
+        border: 1px solid ${nonArtifDarkColor};
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.65em;
+        color: ${nonArtifDarkColor};
+    }
+
+    &:hover::after {
+        animation: blinkRed 1s infinite;
+    }
+`;
 
 const BigNumberStyle = css`
     font-size: 3rem;
@@ -21,7 +118,7 @@ const SurfaceArtif = styled.div`
 
 const PercentArtif = styled.div`
     ${BigNumberStyle}
-    color: #ff4545;
+    color: #ff7e7e;
 `;
 
 
@@ -162,15 +259,10 @@ export const Artificialisation = ({ projectData, landData }: {
                         <div className="bg-white fr-p-2w h-100 rounded">
                             <div className="fr-grid-row fr-grid-row--gutters">
                                 <div className="fr-col-12 fr-col-md-7">
-                                    <ArtifPercentRateChart
-                                        id="artif_percent_rate"
-                                        land_id={land_id}
-                                        land_type={land_type}
-                                        index={defaultStockIndex}
-                                    />
+                                    <ArtifPercentRate percentageArtificialized={Math.round(percent_artif * 100) / 100} />
                                 </div>
                                 <div className="fr-col-12 fr-col-md-5">
-                                    <SurfaceArtif className="fr-mt-5w">{Math.round(surface_artif * 100) / 100} ha</SurfaceArtif>
+                                    <SurfaceArtif className="fr-mt-3w">{Math.round(surface_artif * 100) / 100} ha</SurfaceArtif>
                                     <span className="fr-badge fr-badge--error fr-badge--sm fr-badge--no-icon">+ 34 ha <i className="bi bi-arrow-up-right fr-ml-1w"></i>&nbsp;</span>
                                     <PercentArtif className="fr-mt-3w">{Math.round(percent_artif * 100) / 100}%</PercentArtif>
                                     <p>du territoire</p>
@@ -294,8 +386,8 @@ export const Artificialisation = ({ projectData, landData }: {
                         <Guide
                             title="Comprendre les données"
                             contentHtml={`
-                                <p>Cette carte permet de visualiser la proportion de sols artificialisés sur un territoire, représentée par l’intensité de la couleur de fond : plus la teinte est foncée, plus la part de sols artificialisés est élevée.</p>
-                                <p>L’évolution entre les deux millésimes est illustrée par des cercles, dont la taille est proportionnelle au flux d’artificialisation. La couleur des cercles indique le sens de ce flux : vert pour une désartificialisation nette, rouge pour une artificialisation nette.</p>
+                                <p>Cette carte permet de visualiser la proportion de sols artificialisés sur un territoire, représentée par l'intensité de la couleur de fond : plus la teinte est foncée, plus la part de sols artificialisés est élevée.</p>
+                                <p>L'évolution entre les deux millésimes est illustrée par des cercles, dont la taille est proportionnelle au flux d'artificialisation. La couleur des cercles indique le sens de ce flux : vert pour une désartificialisation nette, rouge pour une artificialisation nette.</p>
                             `}
                             column
                         />
@@ -315,20 +407,40 @@ export const Artificialisation = ({ projectData, landData }: {
                 <p className="fr-text--sm">La mesure de l'artificialisation des sols est définie dans l'article xxx de la Loi Climat et Résilience ainsi que dans le décret du 27 novembre 2023. </p>
                 <p className="fr-text--sm">Elle est obtenue à partir de la donnée OCSGE, en s'appuyant en particulier sur un tableau de croisement couverture / usage. Par exemple, les zones bâties à usage résidentiel ou les formations herbacées à usage tertaire sont considérées comme des surfaces artificialisées. L'ensemble des croisements d'usage et de couverture du sols définissant les espaces artificialisées est consultable dans la matrice OCSGE.</p>
                 <div className="fr-highlight fr-highlight--no-margin">
-                    <p className="fr-text--sm">Une fois les espaces qualifiés en artificiels ou non-artificiels, des seuils d'interprétation sont appliqués. Ceux-ci impliquent que des surfaces de moins de 2500m2 ne peuvent pas être comptabilisées comme artificialisées ou désartificialisées, à l'exception des espaces bâtis, qui sont considérés artificialisés quelle que soit leur surface.</p>
+                    <p className="fr-text--sm">
+                        Une fois les espaces qualifiés en artificiels ou non-artificiels, des seuils d'interprétation sont appliqués. Ceux-ci impliquent que des surfaces de moins de 2500m2 ne peuvent pas être comptabilisées comme artificialisées ou désartificialisées, à l'exception des espaces bâtis d'une surface supérieure à 50m2, qui sont toujours considérés comme artificialisés.
+                        <br />L'application de ces seuils permet de densifier en zone construite sans augmenter l'artificialisation du territoire concerné.
+                    </p>
                 </div>
-                <p className="fr-text--sm">L'application de ces seuils permet de densifier en zone construite sans augmenter l'artificialisation du territoire concerné.</p>
-                <p className="fr-text--sm fr-m-0">La mesure de l’artificialisation ne prend pas en compte, à ce stade, les exemptions facultatives citées dans le décret du 27 novembre 2023, c’est-à-dire :</p>
-                <ul>
-                    <li className="fr-text--sm fr-m-0">les surfaces végétalisées à usage de parc ou jardin public</li>
-                    <li className="fr-text--sm fr-m-0">les surfaces végétalisées sur lesquelles seront implantées des installations de panneaux photovoltaîques.</li>
-                </ul>
-                <p className="fr-text--sm">Une donnée officelle prenant en compte ces exceptions est en cours de production par l’IGN. Plus d’informations ici :</p>
+                <div className="d-flex justify-content-between gap-3 fr-my-7w">
+                    <div className="d-flex flex-column align-items-center">
+                        <ArtificializedSquare />
+                        <p className="fr-text--sm text-center fr-mt-2w fr-mb-0 fr-text--bold">Zone non-artificielle de moins de 2500m², enclavée dans une zone artificielle, devient artificielle</p>
+                    </div>
+                    <div className="d-flex flex-column align-items-center">
+                        <NonArtificializedSquare />
+                        <p className="fr-text--sm text-center fr-mt-2w fr-mb-0 fr-text--bold">Zone artificielle de moins de 2500m², enclavée dans une zone non-artificielle, devient non-artificielle</p>
+                    </div>
+                    <div className="d-flex flex-column align-items-center">
+                        <ConstructionSquare />
+                        <p className="fr-text--sm text-center fr-mt-2w fr-mb-0 fr-text--bold">Zone bâtie de plus de 50m², enclavée dans une zone non-artificielle, reste artificielle</p>
+                    </div>
+                </div>
+                <div className="fr-notice fr-notice--info">
+                    <div className="fr-container">
+                        <div className="fr-notice__body">
+                            <p>
+                                <span className="fr-notice__title fr-text--sm">La mesure de l'artificialisation ne prend pas en compte, à ce stade, les exemptions facultatives citées dans le décret du 27 novembre 2023, qui sont :</span>
+                                <span className="fr-notice__desc fr-text--sm">les surfaces végétalisées à usage de parc ou jardin public et les surfaces végétalisées sur lesquelles seront implantées des installations de panneaux photovoltaîques.< br/>Une donnée officelle prenant en compte ces exceptions est en cours de production par l'IGN. <a target="_blank" rel="noopener external" title="Plus d'informations - nouvelle fenêtre" href="#" className="fr-notice__link fr-text--sm">Plus d'informations</a></span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div className="fr-mb-7w">
                 <h2>Artificialisation des zonages d'urbanisme</h2>
                 <div className="bg-white fr-p-4w rounded">
-                    <p className="fr-text--sm">Ce tableau donne le détail de l’artificialisation du territoire en fonction des types de zonage d’urbanisme.</p>
+                    <p className="fr-text--sm">Ce tableau donne le détail de l'artificialisation du territoire en fonction des types de zonage d'urbanisme.</p>
                     <div className="fr-table fr-mb-0">
                         <div className="fr-table__wrapper">
                             <div className="fr-table__container">
@@ -365,13 +477,16 @@ export const Artificialisation = ({ projectData, landData }: {
                     </div>
                 </div>
             </div>
-            <div className="fr-notice fr-notice--warning">
-                <div className="fr-container">
-                    <div className="fr-notice__body">
-                        <p>
-                            <span className="fr-notice__title fr-text--sm">Certains indicateurs liés à l'évolution de l'artificialisation d'un millésime à l'autre ne sont pas encore disponibles sur Mon Diagnostic Artificialisation. </span>
-                            <span className="fr-notice__desc fr-text--sm">En effet, ceux-ci reposent sur des données encore en cours de production. Leur publication est prévue dans les prochaines semaines.</span>
-                        </p>
+            <div className="fr-mb-7w">
+                <h2>Évolution de l'artificialisation des sols du territoire</h2>
+                <div className="fr-notice fr-notice--warning">
+                    <div className="fr-container">
+                        <div className="fr-notice__body">
+                            <p>
+                                <span className="fr-notice__title fr-text--sm">Certains indicateurs liés à l'évolution de l'artificialisation d'un millésime à l'autre ne sont pas encore disponibles sur Mon Diagnostic Artificialisation. </span>
+                                <span className="fr-notice__desc fr-text--sm">En effet, ceux-ci reposent sur des données encore en cours de production. Leur publication est prévue dans les prochaines semaines.</span>
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
