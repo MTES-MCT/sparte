@@ -8,7 +8,7 @@ from django.utils import timezone
 from docx.shared import Mm
 from docxtpl import DocxTemplate, InlineImage, RichText
 
-from diagnostic_word.models import WordTemplate
+from diagnostic_word.Template import TEMPLATES, Template, TemplateName
 from project import charts
 from project.models import Request
 from project.utils import add_total_line_column
@@ -95,12 +95,12 @@ class ReprDetailArtif:
 
 
 class BaseRenderer:
-    def __init__(self, request: Request, word_template_slug: str):
+    def __init__(self, request: Request, word_template: Template):
+        self.word_template = word_template
         self.project = request.project
         self.request = request
-        self.word_template = WordTemplate.objects.get(slug=word_template_slug)
         self.context_opened = False
-        self.engine = DocxTemplate(self.word_template.docx)
+        self.engine = DocxTemplate(os.path.join(os.path.dirname(__file__), word_template.docx))
 
     def __enter__(self) -> "BaseRenderer":
         self.context_opened = True
@@ -243,7 +243,7 @@ class BaseRenderer:
         return context
 
     def get_file_name(self) -> str:
-        return self.word_template.filename_mask.format(
+        return self.word_template.filename_template.format(
             diagnostic_name=self.project.name,
             start_date=self.project.analyse_start_date,
             end_date=self.project.analyse_end_date,
@@ -251,15 +251,15 @@ class BaseRenderer:
 
 
 class FullReportRenderer(BaseRenderer):
-    def __init__(self, request: Request, word_template_slug="template-bilan-1"):
-        super().__init__(request=request, word_template_slug=word_template_slug)
+    def __init__(self, request: Request, word_template=TEMPLATES[TemplateName.RAPPORT_COMPLET]):
+        super().__init__(request=request, word_template=word_template)
 
 
 class LocalReportRenderer(BaseRenderer):
-    def __init__(self, request: Request, word_template_slug="template-bilan-2"):
-        super().__init__(request=request, word_template_slug=word_template_slug)
+    def __init__(self, request: Request, word_template=TEMPLATES[TemplateName.RAPPORT_LOCAL]):
+        super().__init__(request=request, word_template=word_template)
 
 
 class ConsoReportRenderer(BaseRenderer):
-    def __init__(self, request: Request, word_template_slug="template-bilan-conso"):
-        super().__init__(request=request, word_template_slug=word_template_slug)
+    def __init__(self, request: Request, word_template=TEMPLATES[TemplateName.RAPPORT_CONSOMMATION]):
+        super().__init__(request=request, word_template=word_template)
