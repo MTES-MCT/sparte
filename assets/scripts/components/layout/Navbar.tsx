@@ -232,9 +232,7 @@ const Navbar: React.FC<{ projectData: ProjectDetailResultType }> = ({ projectDat
                     >
                         {item.icon && <Icon className={`bi ${item.icon}`} />}
                         <div className="d-flex flex-column items-center">
-                            {[
-                                "Artificialisation"
-                            ].includes(item.label) && (<p className="fr-badge fr-badge--sm fr-badge--new">Nouveau</p>)}
+                            {item.new && (<p className="fr-badge fr-badge--sm fr-badge--new">Nouveau</p>)}
                             {item.label}
                         </div>
                     </SubMenuTitleLink>

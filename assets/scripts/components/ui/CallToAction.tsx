@@ -6,11 +6,7 @@ const Container = styled.div`
   flex-direction: column;
   padding: 1rem;
   border-radius: 6px;
-  background-image:
-    radial-gradient(
-      farthest-corner circle at top left,
-      #a0aeff 0%, 63%, #9ba0ff 0% 0%
-    )
+  background-color: #ece4ff
 `;
 
 const Title = styled.h3`
@@ -30,7 +26,7 @@ const Text = styled.p`
 interface CallToActionProps {
   title: string;
   text: string;
-  children: ReactNode;
+  children?: ReactNode;
 }
 
 const CallToAction: React.FC<CallToActionProps> = ({ title, text, children }) => {

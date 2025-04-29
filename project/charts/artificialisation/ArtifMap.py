@@ -59,7 +59,12 @@ class ArtifMap(DiagnosticChart):
             "chart": {
                 "map": json.loads(geojson),
             },
-            "title": {"text": f"TODO en {', '.join(map(str, years))}", "align": "left"},
+            "title": {
+                "text": (
+                    f"Artificialisation des {self.params.get('child_land_type')} "
+                    f"entre x et {', '.join(map(str, years))}"
+                )
+            },
             "mapNavigation": {"enabled": False, "buttonOptions": {"verticalAlign": "bottom"}},
             "colorAxis": {
                 "min": min([d["percent"] for d in data]),
@@ -100,7 +105,12 @@ class ArtifMap(DiagnosticChart):
                     ],
                     "tooltip": {
                         "valueDecimals": 1,
-                        "pointFormat": "<b>{point.name}</b>:<br/>{point.prefix_value}{point.flux_surface:,.1f} ha ({point.prefix_value}{point.flux_percent:,.2f} %) <small>depuis {point.flux_previous_years}</small>",  # noqa
+                        "pointFormat": (
+                            "<b>{point.name}</b>:<br/>"
+                            "{point.prefix_value}{point.flux_surface:,.1f} ha "
+                            "({point.prefix_value}{point.flux_percent:,.2f} %) "
+                            "<small>depuis {point.flux_previous_years}</small>"
+                        ),
                     },
                 },
             ],
