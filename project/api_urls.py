@@ -5,7 +5,6 @@ from project.charts.artificialisation import (
     ArtifByCouverturePieChart,
     ArtifByUsagePieChart,
     ArtifMap,
-    ArtifPercentRate,
     ArtifStock,
 )
 from public_data.models import (
@@ -35,7 +34,6 @@ def get_chart_klass_or_404(chart_id):
         "pie_artif_by_couverture": ArtifByCouverturePieChart,
         "pie_artif_by_usage": ArtifByUsagePieChart,
         "artif_map": ArtifMap,
-        "artif_percent_rate": ArtifPercentRate,
     }
 
     if chart_id not in charts:
