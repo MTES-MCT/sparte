@@ -121,6 +121,13 @@ const PercentArtif = styled.div`
     color: #ff7e7e;
 `;
 
+const FrCard = styled.div`
+    background-color: var(--background-alt-grey);
+`;
+
+const FrCardTitle = styled.h3`
+    color: var(--text-action-high-blue-france);
+`;
 
 export const OcsgeMillesimeSelector = ({ 
     index, 
@@ -197,7 +204,8 @@ export const Artificialisation = ({ projectData, landData }: {
 }) => {
     const { land_id, land_type } = projectData;
     const { surface, surface_artif, percent_artif, millesimes_by_index, millesimes, years_artif, child_land_types } = landData || {};
-
+    console.log(landData);
+    
     const defaultStockIndex = millesimes_by_index.length > 0 ? Math.max(...millesimes_by_index.map(e => e.index)) : 2;
 
     const [ stockIndex, setStockIndex ] = React.useState(defaultStockIndex)
@@ -234,8 +242,8 @@ export const Artificialisation = ({ projectData, landData }: {
                                     <li>soit stabilisés et compactés,</li>
                                     <li>soit constitués de matériaux composites »</li>
                                 </ul>
-                                <p class="fr-text--sm mb-3">Elle se traduit dans l'OCS GE nationale comme la somme des  objets anthropisés dans la description de la couverture des sols.</p>
-                                <p class="fr-text--sm mb-3">L'application applique ici un croisement des données de l'OCS GE pour définir l'artificialisation conformément aux attendus de la loi Climat & Résilience, et au décret « nomenclature de l'artificialisation des sols» <a rel="noopener noreferrer" target="_blank" href="https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000045727061">(Décret n° 2022-763 du 29 avril 2022 relatif à la nomenclature de l'artificialisation des sols pour la fixation et le suivi des objectifs dans les documents de planification et d'urbanisme)</a>.</p>
+                                <p class="fr-text--sm mb-3">Elle se traduit dans l'OCSGE nationale comme la somme des  objets anthropisés dans la description de la couverture des sols.</p>
+                                <p class="fr-text--sm mb-3">L'application applique ici un croisement des données de l'OCSGE pour définir l'artificialisation conformément aux attendus de la loi Climat & Résilience, et au décret « nomenclature de l'artificialisation des sols» <a rel="noopener noreferrer" target="_blank" href="https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000045727061">(Décret n° 2022-763 du 29 avril 2022 relatif à la nomenclature de l'artificialisation des sols pour la fixation et le suivi des objectifs dans les documents de planification et d'urbanisme)</a>.</p>
                                 <p class="fr-text--sm mb-3"><strong>Définition de l'artificialisation des sols</strong></p>
                                 <p class="fr-text--sm mb-3">La nomenclature précise que les surfaces dont les sols sont soit imperméabilisés en raison du bâti ou d'un revêtement, soit stabilisés et compactés, soit constitués de matériaux composites sont qualifiées de surfaces artificialisées. De même, les surfaces végétalisées herbacées (c'est-à-dire non ligneuses) et qui sont à usage résidentiel, de production secondaire ou tertiaire, ou d'infrastructures, sont considérées comme artificialisées, y compris lorsqu'elles sont en chantier ou à l'état d'abandon.</p>
                                 <p class="fr-text--sm mb-3">L'artificialisation nette est définie comme « le solde de l'artificialisation et de la désartificialisation des sols constatées sur un périmètre et sur une période donnés » (article L.101-2-1 du code de l'urbanisme). </p>
@@ -287,9 +295,35 @@ export const Artificialisation = ({ projectData, landData }: {
                         <p className="fr-text--sm">La mesure de l'artificialisation d'un territoire repose sur la donnée d'Occupation du Sol à Grande Echelle (OCSGE) en cours de production par l'IGN. Cette donnée est millésimée et produite département par département tous les 3 ans (calendrier de production). Elle repose sur l'utilisation de méthode innovantes de télédection (deep learning) et sur l'exploitation de données exogènes telles que les fichiers fonciers.</p>
                     </div>
                     <div className="fr-alert fr-alert--info">
-                        <p>Le territoire de <strong>{projectData?.territory_name}</strong> dispose de {millesimes.length} millésimes OCS GE: {millesimes_by_index.map((m) => (
-                            <span key={m.years} className="fr-tag fr-mr-1v">{m.years}</span>
-                        ))}</p>
+                        <h6 className="fr-alert__title">Millésimes disponibles pour le territoire de <strong>{projectData?.territory_name}</strong></h6>
+                        <p className="fr-text--sm fr-mt-2w">
+                            <strong>Note :</strong> Dans le cas d'un territoire interdépartemental dont les départements disposent de millésimes différents, Mon Diagnostic Artificialisation affiche les données par groupe de millésime comparables.
+                        </p>
+                        <div className="fr-grid-row fr-grid-row--gutters fr-mt-2w fr-mb-1w">
+                            {Array.from(new Set(millesimes.map(m => m.index))).sort().map(index => {
+                                const millesimeData = millesimes.filter(m => m.index === index);
+                                return (
+                                    <div key={index} className="fr-col-12 fr-col-md-6">
+                                        <FrCard className="fr-card">
+                                            <div className="fr-card__body">
+                                                <div className="fr-card__content">
+                                                    <FrCardTitle className="fr-card__title">
+                                                        Millésime {index}
+                                                    </FrCardTitle>
+                                                    <ul className="fr-card__desc">
+                                                        {millesimeData.map(m => (
+                                                            <li key={`${m.departement}-${m.year}`}>
+                                                                <div><span className="fr-text--bold">Département {m.departement} :</span> Année {m.year}</div>
+                                                            </li>
+                                                        ))}
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </FrCard>
+                                    </div>
+                                );
+                            })}
+                        </div>
                     </div>
                 </div>
             </div>
