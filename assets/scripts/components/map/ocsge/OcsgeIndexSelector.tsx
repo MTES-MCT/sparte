@@ -1,11 +1,12 @@
-import { MillesimeByIndex } from "@services/types/land";
+import { Millesime, MillesimeByIndex } from "@services/types/land";
 import React from "react";
 import styled from "styled-components";
 
 interface OcsgeYearSelectorProps {
   setIndex: (index: number) => void;
   index: number;
-  availableMillesimes: MillesimeByIndex[];
+  availableMillesimes: Millesime[];
+  availableMillesimesByIndex: MillesimeByIndex[];
 }
 
 const OcsgeYearSelectorSelect = styled.select`
@@ -17,6 +18,7 @@ export const OcsgeIndexSelector = ({
   setIndex,
   index,
   availableMillesimes,
+  availableMillesimesByIndex
 }: OcsgeYearSelectorProps) => {
   return (
     <OcsgeYearSelectorSelect
@@ -24,11 +26,17 @@ export const OcsgeIndexSelector = ({
       name="selection"
       onChange={(e: any) => setIndex(e.target.value)}
       value={index}
-    >
-      {availableMillesimes.map((millesime) => {
+    > 
+      {availableMillesimes.length === availableMillesimesByIndex.length ? availableMillesimes.map((millesime) => {
         return (
           <option key={millesime.index} className="fr-btn fr-mr-1v" value={millesime.index}>
-            {millesime.years}
+            {millesime.year}
+          </option>
+        );
+      }) : availableMillesimesByIndex.map((millesime) => {
+        return (
+          <option key={millesime.index} className="fr-btn fr-mr-1v" value={millesime.index}>
+            Millesime #{millesime.index} - ({millesime.years})
           </option>
         );
       })}

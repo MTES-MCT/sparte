@@ -75,9 +75,20 @@ class ProjectDetailSerializer(gis_serializers.GeoModelSerializer):
                             "new": True,
                         },
                         {"label": "Consommation d'espaces NAF", "url": reverse("project:report_conso", kwargs=kwargs)},
+                    ],
+                },
+                {
+                    "label": "Leviers de sobriété foncière",
+                    "icon": "bi bi-bar-chart",
+                    "subMenu": [
                         {
                             "label": "Vacance des logements",
                             "url": reverse("project:report_logement_vacant", kwargs=kwargs),
+                        },
+                        {
+                            "label": "Friches urbaines",
+                            "url": None,
+                            "soon": True,
                         },
                     ],
                 },

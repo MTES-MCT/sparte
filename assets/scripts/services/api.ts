@@ -23,6 +23,15 @@ export const djangoApi = createApi({
       }
       
     }),
+    getLandArtifStockIndex: builder.query({
+      query: ({land_type, land_id, millesime_index}) => {
+        return `/api/landartifstockindex/?${new URLSearchParams({
+          land_type,
+          land_id,
+          millesime_index
+        })}`
+      },
+    }),
     getArtifZonageIndex: builder.query({
       query: ({land_type, land_id, millesime_index}) => {
         return `/api/artifzonageindex/?${new URLSearchParams({
@@ -67,6 +76,7 @@ const {
   useGetEnvironmentQuery,
   useSearchTerritoryQuery,
   useGetChartConfigQuery,
+  useGetLandArtifStockIndexQuery,
 } = djangoApi;
 
 export {
@@ -77,4 +87,5 @@ export {
   useGetChartConfigQuery,
   useGetLandQuery,
   useGetArtifZonageIndexQuery,
+  useGetLandArtifStockIndexQuery,
 };

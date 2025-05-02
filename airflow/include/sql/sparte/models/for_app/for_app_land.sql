@@ -19,7 +19,13 @@ SELECT
     land_millesimes_by_index.millesimes_by_index as millesimes_by_index,
     land.child_land_types,
     land.parent_land_type,
-    land.parent_land_ids
+    land.parent_land_ids,
+    land.departements,
+    CASE
+        WHEN array_length(land.departements, 1) = 1
+        THEN false
+        ELSE true
+    END as is_interdepartemental
 FROM
     {{ ref('land') }}
 LEFT JOIN LATERAL (

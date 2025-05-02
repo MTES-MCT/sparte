@@ -1,6 +1,8 @@
 import { TypedUseQuery } from "@reduxjs/toolkit/query/react";
 import { BaseQueryFn, FetchArgs } from "@reduxjs/toolkit/query";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/dist/query/react";
+import { ZonageType } from "scripts/types/ZonageType";
+
 
 
 
@@ -11,7 +13,7 @@ import { FetchBaseQueryError } from "@reduxjs/toolkit/dist/query/react";
     years: number[];
     zonage_surface: number;
     artificial_surface: number;
-    zonage_type: string;
+    zonage_type: keyof typeof ZonageType;
     zonage_count: number;
     artificial_percent: number;
     millesime_index: number;

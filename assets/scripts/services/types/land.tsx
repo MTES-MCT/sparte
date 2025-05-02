@@ -33,6 +33,8 @@ export type Millesime = {
     child_land_types: string[];
     parent_land_type: string;
     parent_land_ids: string[];
+    departements: string[];
+    is_interdepartemental: boolean;
   };
 
   type LandDetailQueryArg = string | FetchArgs | {

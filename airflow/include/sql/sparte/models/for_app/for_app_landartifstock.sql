@@ -7,9 +7,9 @@ SELECT
     artif_land.departement,
     artif_land.index as millesime_index,
     artif_land.year,
-    artif_land.surface,
+    {{ m2_to_ha('artif_land.surface') }} as surface,
     artif_land.percent,
-    artif_land.flux_surface,
+    {{ m2_to_ha('artif_land.flux_surface') }} as flux_surface,
     artif_land.flux_percent,
     artif_land.flux_previous_year
 FROM

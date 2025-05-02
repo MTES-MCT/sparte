@@ -3,7 +3,6 @@ import React from 'react';
 import HighchartsReact from 'highcharts-react-official';
 import * as Highcharts from 'highcharts';
 import * as Highmaps from 'highcharts/highmaps';
-import HighchartsMore from 'highcharts/highcharts-more'
 
 import HighchartsHeatmap from 'highcharts/modules/heatmap';
 import HighchartsTilemap from 'highcharts/modules/tilemap';
@@ -39,7 +38,7 @@ const GenericChart = ({ chartOptions,containerProps, isMap = false } : GenericCh
 
     const shouldRedraw = true
     const oneToOne = true
-    const animation = false
+    const animation = true
 
     const defaultContainerProps = {
         style: { height: "400px", width: "100%" }
@@ -49,7 +48,6 @@ const GenericChart = ({ chartOptions,containerProps, isMap = false } : GenericCh
         <HighchartsReact
             highcharts={isMap ? Highmaps : Highcharts}
             options={mutableChartOptions}
-            immutable
             updateArgs={[shouldRedraw, oneToOne, animation]}
             containerProps={{ ...defaultContainerProps, ...containerProps }}
             constructorType={isMap ? 'mapChart' : 'chart'}

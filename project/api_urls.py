@@ -5,13 +5,13 @@ from project.charts.artificialisation import (
     ArtifByCouverturePieChart,
     ArtifByUsagePieChart,
     ArtifMap,
-    ArtifStock,
 )
 from public_data.models import (
     ArtifZonageIndexViewset,
     ArtifZonageViewset,
     Land,
     LandArtifStockCouvertureCompositionViewset,
+    LandArtifStockIndexViewset,
     LandArtifStockUsageCompositionViewset,
     LandArtifStockViewset,
     LandModelViewset,
@@ -30,7 +30,6 @@ def get_land_or_404(land_type, land_id):
 
 def get_chart_klass_or_404(chart_id):
     charts = {
-        "bar_artif_stock": ArtifStock,
         "pie_artif_by_couverture": ArtifByCouverturePieChart,
         "pie_artif_by_usage": ArtifByUsagePieChart,
         "artif_map": ArtifMap,
@@ -52,6 +51,7 @@ def chart_view(request, id, land_type, land_id, *args, **kwargs):
 urlpatterns = [
     path("chart/<str:id>/<str:land_type>/<str:land_id>", chart_view, name="chart"),
     path("landartifstock/", LandArtifStockViewset.as_view(), name="artifstock"),
+    path("landartifstockindex/", LandArtifStockIndexViewset.as_view(), name="artifstockindex"),
     path("artifzonageindex/", ArtifZonageIndexViewset.as_view(), name="artifzonageindex"),
     path("artifzonage/", ArtifZonageViewset.as_view(), name="artifzonageindex"),
     path(

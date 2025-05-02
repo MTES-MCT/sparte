@@ -22,6 +22,8 @@ class LandModel(models.Model):
     child_land_types = ArrayField(base_field=models.CharField())
     parent_land_type = models.CharField()
     parent_land_ids = ArrayField(base_field=models.CharField())
+    departements = ArrayField(base_field=models.CharField())
+    is_interdepartemental = models.BooleanField()
 
     class Meta:
         managed = False

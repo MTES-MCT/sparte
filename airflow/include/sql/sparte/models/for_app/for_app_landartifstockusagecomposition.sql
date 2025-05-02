@@ -7,7 +7,7 @@ SELECT
     artif_land_by_usage.departement,
     artif_land_by_usage.year,
     percent_of_land,
-    surface,
+    {{ m2_to_ha('surface') }} as surface,
     usage,
     percent_of_indicateur as percent_of_artif,
     artif_land_by_usage.index as millesime_index,

@@ -90,9 +90,11 @@ const SubMenu = styled.li`
     position: relative;
 `;
 
-const SubMenuTitleLink = styled(Link)<{ $isActive: boolean }>`
+const SubMenuTitleLink = styled(Link)<{ $isActive: boolean, $disabled: boolean }>`
     ${MenuStyle}
     ${LinkStyle}
+    cursor: ${({ $disabled }) => ($disabled ? 'not-allowed' : 'pointer')};
+
 `;
 
 const Icon = styled.i`
@@ -228,12 +230,19 @@ const Navbar: React.FC<{ projectData: ProjectDetailResultType }> = ({ projectDat
                     <SubMenuTitleLink
                         to={item.url}
                         $isActive={isActive(item.url)}
+                        $disabled={item.soon}
                         onClick={() => isMobile && dispatch(toggleNavbar())}
                     >
                         {item.icon && <Icon className={`bi ${item.icon}`} />}
                         <div className="d-flex flex-column items-center">
                             {item.new && (<p className="fr-badge fr-badge--sm fr-badge--new">Nouveau</p>)}
-                            {item.label}
+                            {item.soon && (<p className="fr-badge fr-badge--sm fr-badge--info">Bientôt</p>)}
+
+                            {item.soon ? (
+                                <span style={{color: 'var(--grey-50-1000'}}>{item.label}</span>
+                            ) : (
+                                <span>{item.label}</span>
+                            )}
                         </div>
                     </SubMenuTitleLink>
                 </SubMenu>

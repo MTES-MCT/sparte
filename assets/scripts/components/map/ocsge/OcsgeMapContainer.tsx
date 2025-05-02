@@ -31,9 +31,9 @@ export const OcsgeMapContainer = ({ projectData, landData, globalFilter }: Ocsge
     departements,
   } = projectData;
 
-  const { millesimes_by_index } = landData || {};
+  const { millesimes, millesimes_by_index } = landData || {};
 
-  const [index, setIndex] = React.useState(Math.max(...millesimes_by_index?.map((millesime) => millesime.index)));
+  const [index, setIndex] = React.useState(Math.max(...millesimes?.map((millesime) => millesime.index)));
 
   useEffect(() => {
     setUserFilters(
@@ -58,7 +58,8 @@ export const OcsgeMapContainer = ({ projectData, landData, globalFilter }: Ocsge
         globalFilter={globalFilter}
         index={index}
         setIndex={setIndex}
-        availableMillesimes={millesimes_by_index}
+        availableMillesimes={millesimes}
+        availableMillesimesByIndex={millesimes_by_index}
         emprise={emprise}
         bounds={bounds}
         maxBounds={max_bounds}

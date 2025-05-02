@@ -17,7 +17,7 @@ import { getStats, Stat } from "./utils/getStats";
 import styled from "styled-components";
 import { OcgeMapStats } from "./OcsgeMapStats";
 import { OcsgeTileFeatureProperties } from "./VectorTileFeature";
-import { MillesimeByIndex } from "@services/types/land";
+import { Millesime, MillesimeByIndex } from "@services/types/land";
 
 const LoaderWrapper = styled.div`
   height: 100%;
@@ -42,7 +42,8 @@ interface OcsgeMapProps {
   readonly setIndex: (index: number) => void;
   readonly index: number;
   readonly departements?: string[];
-  readonly availableMillesimes: MillesimeByIndex[];
+  readonly availableMillesimes: Millesime[];
+  readonly availableMillesimesByIndex: MillesimeByIndex[];
   readonly emprise: any;
   readonly bounds: [number, number, number, number];
   readonly maxBounds: [number, number, number, number];
@@ -58,6 +59,7 @@ export function OcsgeMap({
   globalFilter,
   departements,
   availableMillesimes,
+  availableMillesimesByIndex,
   index,
   emprise,
   bounds,
@@ -331,6 +333,7 @@ export function OcsgeMap({
           setSelection={setSelection}
           selection={selection}
           availableMillesimes={availableMillesimes}
+          availableMillesimesByIndex={availableMillesimesByIndex}
           setIndex={setIndex}
           index={index}
           userFilters={userFilters}
