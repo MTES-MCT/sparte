@@ -33,4 +33,4 @@ class LandArtifStockIndexViewset(generics.ListAPIView):
     queryset = LandArtifStockIndex.objects.all()
     serializer_class = LandArtifStockIndexSerializer
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ["land_id", "land_type"]
+    filterset_fields = ["land_id", "land_type", "millesime_index"]

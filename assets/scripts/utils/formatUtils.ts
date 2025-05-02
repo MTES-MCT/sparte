@@ -1,9 +1,42 @@
-const formatNumber = (number: number, decimals: number = 0, useGrouping: boolean = true): string => {
-  return number.toLocaleString('fr-FR', {
+type FormatNumberOptions = {
+  number: number;
+  decimals?: number | null;
+  useGrouping?: boolean;
+  addSymbol?: boolean;
+}
+
+const formatNumber = ({
+  number,
+  decimals = null,
+  useGrouping = true,
+  addSymbol = false,
+}: FormatNumberOptions): string => {
+
+  if (decimals === null) {
+    const absNumber = Math.abs(number);
+    if (absNumber === 0) {
+      decimals = 0;
+    } else if (absNumber > 0 && absNumber < 10000) {
+      decimals = 2;
+    } else if (absNumber >= 10000 && absNumber < 100000) {
+      decimals = 1;
+    } else if (absNumber >= 100000) {
+      decimals = 0;
+    }
+  }
+
+  const formattedNumber = number.toLocaleString('fr-FR', {
     minimumFractionDigits: decimals,
     maximumFractionDigits: decimals,
     useGrouping,
   });
+
+  if (addSymbol) {
+    const symbol = number >= 0 ? '+' : '';
+    return `${symbol}${formattedNumber}`;
+  }
+
+  return formattedNumber;
 }
 
 const formatDateTime = (date: Date, options: Intl.DateTimeFormatOptions = {}): string => {

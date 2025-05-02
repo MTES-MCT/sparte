@@ -4,7 +4,7 @@ import { OcsgeMapLegend } from './OcsgeMapLegend';
 import { Selection, UserFilter } from './constants/selections';
 import styled from 'styled-components';
 import { OcsgeIndexSelector } from './OcsgeIndexSelector';
-import { MillesimeByIndex } from '@services/types/land';
+import { Millesime, MillesimeByIndex } from '@services/types/land';
 
 const LeftPanelTitle = styled.div`
     font-size: 1.2em;
@@ -23,7 +23,8 @@ const LeftPanelDescriptionWrapper = styled.span`
 interface OcsgeMapLeftPanelProps {
     readonly setSelection: (selection: Selection) => void;
     readonly selection: Selection;
-    readonly availableMillesimes: MillesimeByIndex[];
+    readonly availableMillesimes: Millesime[];
+    readonly availableMillesimesByIndex: MillesimeByIndex[];
     readonly setIndex: (index: number) => void;
     readonly index: number;
     readonly userFilters: UserFilter[];
@@ -45,6 +46,7 @@ export const OcsgeMapLeftPanel = ({
     setSelection,
     selection,
     availableMillesimes,
+    availableMillesimesByIndex,
     setIndex,
     index,
 }: OcsgeMapLeftPanelProps) => {
@@ -63,6 +65,7 @@ export const OcsgeMapLeftPanel = ({
                 index={index}
                 setIndex={setIndex}
                 availableMillesimes={availableMillesimes}
+                availableMillesimesByIndex={availableMillesimesByIndex}
             />
             <LeftPanelDescriptionWrapper>
                 <p>

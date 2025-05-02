@@ -1,5 +1,8 @@
-from project.charts.base_charts.pie_chart import base_config_pie_chart
-from project.charts.constants import LEGEND_NAVIGATION_EXPORT, OCSGE_CREDITS
+from project.charts.constants import (
+    DEFAULT_VALUE_DECIMALS,
+    LEGEND_NAVIGATION_EXPORT,
+    OCSGE_CREDITS,
+)
 from public_data.models import (
     LandArtifStockUsageComposition,
     LandArtifStockUsageCompositionIndex,
@@ -21,10 +24,11 @@ class ArtifByUsagePieChart(ArtifByCouverturePieChart):
                 "data": [
                     {
                         "name": item.label_short,
-                        "y": item.surface / 10000,
+                        "y": item.surface,
                         "color": item.color,
                         "code": item.usage,
                         "long_name": item.label,
+                        "surface": item.surface,
                     }
                     for item in self.data
                 ],
@@ -33,14 +37,31 @@ class ArtifByUsagePieChart(ArtifByCouverturePieChart):
 
     @property
     def param(self):
-        return (
-            super().param
-            | base_config_pie_chart
-            | {
-                "title": {"text": f"Surfaces artificialisées par usage en {self.title_end}"},
-                "series": self.series,
-            }
-        )
+        return super().param | {
+            "title": {"text": f"Surfaces artificialisées par usage en {self.title_end}"},
+            "series": self.series,
+            "chart": {"type": "pie"},
+            "tooltip": {
+                "valueSuffix": " Ha",
+                "valueDecimals": DEFAULT_VALUE_DECIMALS,
+                "pointFormat": "{point.code} - {point.long_name} - {point.percentage:.1f}% ({point.surface:,.1f} ha)",
+                "headerFormat": "<b>{point.key}</b><br/>",
+            },
+            "plotOptions": {
+                "pie": {
+                    "innerSize": "60%",
+                    "dataLabels": {
+                        "enabled": True,
+                        "overflow": "justify",
+                        "format": "{point.name} - {point.percentage:.2f}%",
+                        "style": {
+                            "textOverflow": "clip",
+                            "width": "100px",
+                        },
+                    },
+                }
+            },
+        }
 
 
 class ArtifUsagePieChartExport(ArtifByUsagePieChart):

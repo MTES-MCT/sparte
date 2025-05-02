@@ -7,9 +7,9 @@ SELECT
     departements,
     index as millesime_index,
     years,
-    surface,
+    {{ m2_to_ha('surface') }} as surface,
     percent,
-    flux_surface,
+    {{ m2_to_ha('flux_surface') }} as flux_surface,
     flux_percent,
     flux_previous_years
 FROM
