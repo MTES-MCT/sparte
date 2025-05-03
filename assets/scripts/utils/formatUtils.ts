@@ -16,11 +16,13 @@ const formatNumber = ({
     const absNumber = Math.abs(number);
     if (absNumber === 0) {
       decimals = 0;
-    } else if (absNumber > 0 && absNumber < 10000) {
+    } else if (absNumber > 0 && absNumber < 1) {
+      decimals = 3;
+    } else if (absNumber >= 1 && absNumber < 10) {
       decimals = 2;
-    } else if (absNumber >= 10000 && absNumber < 100000) {
+    } else if (absNumber >= 10 && absNumber < 100) {
       decimals = 1;
-    } else if (absNumber >= 100000) {
+    } else if (absNumber >= 100) {
       decimals = 0;
     }
   }
