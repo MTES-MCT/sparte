@@ -32,7 +32,6 @@ export const SurfaceArtif = styled.div`
 
 export const PercentArtif = styled.div`
   ${BigNumberStyle}
-  color: #ff7e7e;
 `;
 
 export const OcsgeMillesimeSelector = ({
@@ -229,15 +228,15 @@ export const Artificialisation = ({
                     )}
                   </span>
                   <span className="fr-text--sm">
-                    <i>
+                   
                       &nbsp;depuis{" "}
                       {landArtifStockIndex.flux_previous_years.join(", ")}
-                    </i>
+            
                   </span>
                   <PercentArtif className="fr-mt-3w">
                     {formatNumber({ number: landArtifStockIndex.percent })}%
                   </PercentArtif>
-                  <p>du territoire</p>
+                  <p>du territoire est artificialisé</p>
                 </div>
               </div>
             </div>
@@ -457,8 +456,77 @@ export const Artificialisation = ({
           )}
         </div>
       </div>
+      <div className="fr-mb-7w">
+        <h2>Artificialisation des zonages d'urbanisme</h2>
+        <div className="bg-white fr-p-4w rounded">
+          <p className="fr-text--sm">
+            Ce tableau résume le détail de l'artificialisation des zonages
+            d'urbanisme présent sur le territoire.
+          </p>
+          <div className="fr-table fr-mb-0">
+            <div className="fr-table__wrapper">
+              <div className="fr-table__container">
+                <div className="fr-table__content">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th scope="col">Type de zonage</th>
+                        <th scope="col">Surface de zonage (ha)</th>
+                        <th scope="col">Surface artificialisée (ha)</th>
+                        <th scope="col">Taux d'artificialisation (%)</th>
+                        <th scope="col">Nombre de zones</th>
+                        {is_interdepartemental && (
+                          <th scope="col">Départements</th>
+                        )}
+                        <th scope="col">Années</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {artifZonageIndex
+                        ?.toSorted(
+                          (a, b) => b.zonage_surface - a.zonage_surface
+                        )
+                        .map((a) => (
+                          <tr key={`${a.zonage_type}_${a.millesime_index}`}>
+                            <td><b>{ZonageType[a.zonage_type]} ({a.zonage_type})</b></td>
+                            <td>{formatNumber(
+                                { number: a.zonage_surface }
+                            )}</td>
+                            <td>{formatNumber(
+                                { number: a.artificial_surface }
+                            )}</td>
+                            <td>
+                              <div className="progress-bar-container">
+                                <div
+                                  className={`progress-bar-indicator w-${Math.round(
+                                    a.artificial_percent
+                                  )}`}
+                                ></div>
+                                <div className="progress-bar-value">
+                                  {formatNumber({
+                                    number: a.artificial_percent,
+                                  })}
+                                  %
+                                </div>
+                              </div>
+                            </td>
+                            <td>{a.zonage_count}</td>
+                            {is_interdepartemental && (
+                                <td>{a.departements.join(", ")}</td>
+                            )}
+                            <td>{a.years.join(", ")}</td>
+                          </tr>
+                        ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
       <div className="bg-white fr-p-4w fr-mb-7w rounded">
-        <h6>Calcul de l'artificialisation des sols</h6>
+        <h2>Calcul de l'artificialisation des sols</h2>
         <p className="fr-text--sm">
           La mesure de l'artificialisation est obtenue à partir de la donnée OCS
           GE, en s'appuyant en particulier sur un tableau de croisement
@@ -468,7 +536,7 @@ export const Artificialisation = ({
           couverture du sol définissant les espaces artificialisés est
           consultable dans la matrice OCS GE ci-dessous.
         </p>
-        <section className="fr-accordion fr-mb-7w">
+        <section className="fr-accordion fr-mb-3w">
           <h3 className="fr-accordion__title">
             <button
               className="fr-accordion__btn"
@@ -485,6 +553,8 @@ export const Artificialisation = ({
             />
           </div>
         </section>
+        <h6>Les seuils d'interprétation</h6>
+
         <p className="fr-text--sm">
           Une fois les espaces qualifiés en artificiels ou non-artificiels à
           partir du tableau de croisement,{" "}
@@ -826,72 +896,7 @@ export const Artificialisation = ({
           </div>
         </section>
       </div>
-      <div className="fr-mb-7w">
-        <h2>Artificialisation des zonages d'urbanisme</h2>
-        <div className="bg-white fr-p-4w rounded">
-          <p className="fr-text--sm">
-            Ce tableau résume le détail de l'artificialisation des zonages
-            d'urbanisme présent sur le territoire.
-            <br />
-            Une carte viendra compléter cette information dans les prochaines
-            semaines.
-          </p>
-          <div className="fr-table fr-mb-0">
-            <div className="fr-table__wrapper">
-              <div className="fr-table__container">
-                <div className="fr-table__content">
-                  <table>
-                    <thead>
-                      <tr>
-                        <th scope="col">Type de zonage</th>
-                        <th scope="col">Surface de zonage</th>
-                        <th scope="col">Surface artificialisée</th>
-                        <th scope="col">Taux d'artificialisation</th>
-                        <th scope="col">Nombre de zones</th>
-                        <th scope="col">Départements</th>
-                        <th scope="col">Années</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {artifZonageIndex
-                        ?.toSorted(
-                          (a, b) => b.zonage_surface - a.zonage_surface
-                        )
-                        .map((a) => (
-                          <tr key={`${a.zonage_type}_${a.millesime_index}`}>
-                            <td><b>{ZonageType[a.zonage_type]} ({a.zonage_type})</b></td>
-                            <td>{Math.round(a.zonage_surface / 10000)} ha</td>
-                            <td>
-                              {Math.round(a.artificial_surface / 10000)} ha
-                            </td>
-                            <td>
-                              <div className="progress-bar-container">
-                                <div
-                                  className={`progress-bar-indicator w-${Math.round(
-                                    a.artificial_percent
-                                  )}`}
-                                ></div>
-                                <div className="progress-bar-value">
-                                  {formatNumber({
-                                    number: a.artificial_percent,
-                                  })}
-                                  %
-                                </div>
-                              </div>
-                            </td>
-                            <td>{a.zonage_count}</td>
-                            <td>{a.departements.join(", ")}</td>
-                            <td>{a.years.join(", ")}</td>
-                          </tr>
-                        ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+
       <div className="fr-mb-7w">
         <h2>
           Détail de l'évolution de l'artificialisation des sols du territoire
