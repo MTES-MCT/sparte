@@ -8,6 +8,7 @@ from django.views.generic import RedirectView, UpdateView
 from django.views.generic.edit import CreateView, DeleteView, FormView
 
 from brevo.tasks import send_user_subscription_to_brevo
+from config.settings import IS_TEST
 from users.forms import (
     ProfileCompletionForm,
     ProfileForm,
@@ -55,7 +56,8 @@ class UserCreateView(BreadCrumbMixin, CreateView):
 
     def form_valid(self, form):
         self.object = form.save()
-        send_user_subscription_to_brevo.delay(self.object.id)
+        if not IS_TEST:
+            send_user_subscription_to_brevo.delay(self.object.id)
         login(self.request, self.object, backend="django.contrib.auth.backends.ModelBackend")
         return HttpResponseRedirect(self.get_success_url())
 

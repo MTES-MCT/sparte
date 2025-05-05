@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 hello world
 """
 
+import sys
 from pathlib import Path
 from typing import Any, Dict
 
@@ -734,3 +735,5 @@ CRISP_WEBHOOK_SECRET_KEY = env.str("CRISP_WEBHOOK_SECRET_KEY")
 X_FRAME_OPTIONS = "SAMEORIGIN"
 
 XS_SHARING_ALLOWED_METHODS = ["POST", "GET", "OPTIONS", "PUT", "DELETE"]
+
+IS_TEST = "test" in sys.argv
