@@ -93,10 +93,6 @@ THIRD_APPS = [
     "django_otp.plugins.otp_static",
     "qrcode",
     "django_filters",
-    "allauth",
-    "allauth.account",
-    "allauth.socialaccount",
-    "allauth.socialaccount.providers.openid_connect",
     "mozilla_django_oidc",
 ]
 
