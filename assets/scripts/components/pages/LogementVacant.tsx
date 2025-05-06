@@ -2,7 +2,7 @@ import React from 'react';
 import { useHtmlLoader } from '@hooks/useHtmlLoader';
 import useHighcharts from '@hooks/useHighcharts';
 import Loader from '@components/ui/Loader';
-import Guide from '@components/widgets/Guide';
+import Guide from '@components/ui/Guide';
 
 /*
 Ce composant est un composant hybride qui permet de récupérer du contenu côté serveur via Django et de l'intégrer directement dans l'interface React.

@@ -1,5 +1,5 @@
 import React from 'react';
-import Guide from '@components/widgets/Guide';
+import Guide from '@components/ui/Guide';
 
 export const Impermeabilisation = () => {
     return (

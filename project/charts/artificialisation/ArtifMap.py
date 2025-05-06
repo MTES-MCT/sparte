@@ -65,7 +65,7 @@ class ArtifMap(DiagnosticChart):
             },
             "mapNavigation": {"enabled": False},
             "legend": {
-                "title": {"text": "Taux d'artificialisation (%)", "style": {"fontWeight": "bold"}},
+                "title": {"text": "Taux d'artificialisation (%)"},
                 "backgroundColor": "#ffffff",
                 "bubbleLegend": {
                     "enabled": True,
@@ -73,14 +73,16 @@ class ArtifMap(DiagnosticChart):
                     "legendIndex": 100,
                     "labels": {"format": "{value:.0f} ha"},
                     "color": "transparent",
+                    "borderColor": "#000",
                     "connectorDistance": 40,
+                    "connectorColor": "#000",
                 },
             },
             "colorAxis": {
                 "min": min([d["percent"] for d in data]),
                 "max": max([d["percent"] for d in data]),
                 "minColor": "#FFFFFF",
-                "maxColor": "#FF0000",
+                "maxColor": "#6a6af4",
                 "dataClassColor": "category",
             },
             "series": [
@@ -104,7 +106,7 @@ class ArtifMap(DiagnosticChart):
                     },
                 },
                 {
-                    "name": "Flux d'artificialisation (ha)",
+                    "name": "Flux d'artificialisation",
                     "type": "mapbubble",
                     "joinBy": ["land_id"],
                     "showInLegend": True,
@@ -112,26 +114,58 @@ class ArtifMap(DiagnosticChart):
                     "marker": {
                         "fillOpacity": 0.5,
                     },
-                    "color": "#9400D3",
+                    "color": "#ff5b5b",
                     "data": [
                         {
                             "land_id": d["land_id"],
-                            "z": d["flux_surface"],
-                            "color": "#9400D3" if d["flux_surface"] > 0 else "#008000",
-                            "prefix_value": "+" if d["flux_surface"] > 0 else "",
+                            "z": abs(d["flux_surface"]),
+                            "color": "#FC9292",
                             "flux_surface": d["flux_surface"],
                             "flux_percent": d["flux_percent"],
                             "years": d["years_str"],
                             "previous_years": d["previous_years_str"],
                         }
                         for d in data
+                        if d["flux_surface"] > 0
                     ],
                     "tooltip": {
                         "valueDecimals": 1,
                         "pointFormat": (
                             "<b>{point.name}</b>:<br/>"
-                            "{point.prefix_value}{point.flux_surface:,.1f} ha "
-                            "({point.prefix_value}{point.flux_percent:,.2f} %) "
+                            "+{point.flux_surface:,.1f} ha "
+                            "(+{point.flux_percent:,.2f} %) "
+                        ),
+                    },
+                },
+                {
+                    "name": "Flux de désartificialisation",
+                    "type": "mapbubble",
+                    "joinBy": ["land_id"],
+                    "showInLegend": True,
+                    "maxSize": 50,
+                    "marker": {
+                        "fillOpacity": 0.5,
+                    },
+                    "color": "#7ec974",
+                    "data": [
+                        {
+                            "land_id": d["land_id"],
+                            "z": abs(d["flux_surface"]),
+                            "color": "#7ec974",
+                            "flux_surface": d["flux_surface"],
+                            "flux_percent": d["flux_percent"],
+                            "years": d["years_str"],
+                            "previous_years": d["previous_years_str"],
+                        }
+                        for d in data
+                        if d["flux_surface"] < 0
+                    ],
+                    "tooltip": {
+                        "valueDecimals": 1,
+                        "pointFormat": (
+                            "<b>{point.name}</b>:<br/>"
+                            "{point.flux_surface:,.1f} ha "
+                            "({point.flux_percent:,.2f} %) "
                         ),
                     },
                 },

@@ -2,7 +2,7 @@ import React from 'react';
 import { useHtmlLoader } from '@hooks/useHtmlLoader';
 import useHighcharts from '@hooks/useHighcharts';
 import Loader from '@components/ui/Loader';
-import Guide from '@components/widgets/Guide';
+import Guide from '@components/ui/Guide';
 import OcsgeNomenclatureUs from '@images/ocsge-nomenclature-us.png';
 import OcsgeNomenclatureCs from '@images/ocsge-nomenclature-cs.png';
 import { OcsgeMapContainer} from '@components/map/ocsge/OcsgeMapContainer';

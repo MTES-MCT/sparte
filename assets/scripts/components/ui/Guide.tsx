@@ -32,16 +32,19 @@ const Container = styled.div<{ $column: boolean }>`
 
 const Title = styled.div`
     font-weight: 600;
-    font-size: 1.1em;
+    font-size: 1em;
     margin-bottom: 0.8rem;
 `;
 
 const Content = styled.div`
     margin-bottom: 1rem;
-
+    font-size: 0.85rem;
+    line-height: 1.5rem;
+    margin-bottom: 0.5rem;
+    
     & > p {
-        font-size: 0.82em;
-        line-height: 1.7em;
+        font-size: 0.85rem;
+        line-height: 1.5rem;
         margin-bottom: 0.5rem;
     }
 `;

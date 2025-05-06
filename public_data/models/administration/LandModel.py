@@ -6,6 +6,8 @@ from django.views.decorators.cache import cache_control, cache_page
 from rest_framework import serializers, viewsets
 from rest_framework.response import Response
 
+from .Departement import Departement
+
 
 class LandModel(models.Model):
     land_id = models.CharField()
@@ -34,6 +36,23 @@ class LandModel(models.Model):
 
 
 class LandModelSerializer(serializers.ModelSerializer):
+    def get_departement_name(self, departement_id):
+        try:
+            departement = Departement.objects.get(source_id=departement_id)
+            return departement.name
+        except Departement.DoesNotExist:
+            return departement_id
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+
+        # Ajouter le nom du département pour chaque millésime
+        for millesime in data["millesimes"]:
+            if "departement" in millesime:
+                millesime["departement_name"] = self.get_departement_name(millesime["departement"])
+
+        return data
+
     class Meta:
         model = LandModel
         exclude = ("geom",)

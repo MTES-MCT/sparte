@@ -11,6 +11,7 @@ export type Millesime = {
     index: number;
     year: number;
     departement: string;
+    departement_name?: string;
   }
   
   export type MillesimeByIndex = {

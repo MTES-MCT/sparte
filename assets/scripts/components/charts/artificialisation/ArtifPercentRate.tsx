@@ -3,7 +3,7 @@ import styled from "styled-components";
 
 // À remplacer par des svg
 import treeIcon from "@images/icon-tree.png";
-import houseIcon from "@images/icon-house.png";
+import HouseIcon from "@images/icon-house.svg";
 
 interface ArtifPercentRateProps {
   percentageArtificialized: number;
@@ -28,15 +28,6 @@ const TreeIcon = () => (
   <img
     src={treeIcon}
     alt="Arbre"
-    width="32"
-    height="32"
-  />
-);
-
-const HouseIcon = () => (
-  <img
-    src={houseIcon}
-    alt="Maison"
     width="32"
     height="32"
   />
