@@ -13,11 +13,11 @@
     {{ form.organism|as_crispy_field }}
 </div>
 
-<div class="fr-form-group hidden-field">
+<div class="fr-form-group">
     {{ form.function|as_crispy_field }}
 </div>
 
-<div class="fr-form-group hidden-field">
+<div class="fr-form-group">
     {{ form.service|as_crispy_field }}
 </div>
 
@@ -45,36 +45,34 @@
     }
 </style>
 
-{% block extra_js %}
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const organismField = document.querySelector('select[name="organism"]');
-            const functionField = document.querySelector('select[name="function"]');
-            const serviceField = document.querySelector('select[name="service"]');
-            const functionWrapper = functionField?.closest('.fr-form-group');
-            const serviceWrapper = serviceField?.closest('.fr-form-group');
+<script language="javascript" nonce="[NONCE_PLACEHOLDER]">
+    document.addEventListener('DOMContentLoaded', () => {
+        const organismField = document.querySelector('select[name="organism"]');
+        const functionField = document.querySelector('select[name="function"]');
+        const serviceField = document.querySelector('select[name="service"]');
+        const functionWrapper = functionField?.closest('.fr-form-group');
+        const serviceWrapper = serviceField?.closest('.fr-form-group');
 
-            if (!organismField || !functionWrapper || !serviceWrapper) return;
+        if (!organismField || !functionWrapper || !serviceWrapper) return;
 
-            const toggleFields = () => {
-                const value = organismField.value.trim();
+        const toggleFields = () => {
+            const value = organismField.value.trim();
 
-                const showFunction = ['COMMUNE', 'EPCI', 'SCOT'].includes(value);
-                const showService = ['SERVICES_REGIONAUX', 'SERVICES_DEPARTEMENTAUX'].includes(value);
+            const showFunction = ['COMMUNE', 'EPCI', 'SCOT'].includes(value);
+            const showService = ['SERVICES_REGIONAUX', 'SERVICES_DEPARTEMENTAUX'].includes(value);
 
-                functionWrapper.classList.toggle('hidden-field', !showFunction);
-                serviceWrapper.classList.toggle('hidden-field', !showService);
+            functionWrapper.classList.toggle('hidden-field', !showFunction);
+            serviceWrapper.classList.toggle('hidden-field', !showService);
 
-                if (functionField && !showFunction) {
-                    functionField.value = '';
-                }
-                if (serviceField && !showService) {
-                    serviceField.value = '';
-                }
-            };
+            if (functionField && !showFunction) {
+                functionField.value = '';
+            }
+            if (serviceField && !showService) {
+                serviceField.value = '';
+            }
+        };
 
-            organismField.addEventListener('change', toggleFields);
-            toggleFields();
-        });
-    </script>
-{% endblock extra_js %} 
+        organismField.addEventListener('change', toggleFields);
+        toggleFields();
+    });
+</script>
