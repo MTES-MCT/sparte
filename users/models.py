@@ -143,9 +143,8 @@ class User(AbstractUser):
             )
 
     @property
-    def is_profile_complete(self):
-        """Vérifie si le profil de l'utilisateur est complet."""
-        return bool(self.organism and self.main_land_id)
+    def is_profile_complete(self) -> bool:
+        return self.organism is not None and self.main_land_id is not None
 
     @property
     def greetings(self):

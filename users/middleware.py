@@ -7,6 +7,10 @@ class ProfileCompletionMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
+        if request.method != "GET":
+            return self.get_response(request)
+
+        # Liste des URL à exclure de la vérification
         excluded_urls = [
             reverse("users:complete_profile"),
             reverse("users:signin"),
@@ -24,5 +28,4 @@ class ProfileCompletionMiddleware:
         ):
             return redirect("users:complete_profile")
 
-        response = self.get_response(request)
-        return response
+        return self.get_response(request)

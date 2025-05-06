@@ -99,7 +99,7 @@ class UserDeleteView(BreadCrumbMixin, DeleteView):
 
 class ProfilFormView(BreadCrumbMixin, LoginRequiredMixin, UpdateView):
     template_name = "users/profile.html"
-    success_url = reverse_lazy("users:profile")
+    success_url = reverse_lazy("home:home")
     model = User
     form_class = ProfileForm
     extra_context = {
@@ -153,7 +153,7 @@ class ProfileCompletionView(LoginRequiredMixin, UpdateView):
     model = User
     form_class = ProfileCompletionForm
     template_name = "users/profile_completion.html"
-    success_url = reverse_lazy("home")
+    success_url = reverse_lazy("home:home")
     extra_context = {
         "label_validate_btn": "Finaliser mon inscription",
         "show_identity_fields": False,
