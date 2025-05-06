@@ -13,7 +13,7 @@ if (searchBar)
 {
   createRoot(searchBar).render(
     <Provider store={store}>
-      <SearchBar onTerritorySelect={() => {console.log('territory selected')}} />
+      <SearchBar />
     </Provider>,
   )
 }

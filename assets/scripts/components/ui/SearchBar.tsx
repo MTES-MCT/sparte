@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { useSearchTerritoryQuery } from '@services/api';
 import useDebounce from '@hooks/useDebounce';
 import Loader from '@components/ui/Loader';
+import getCsrfToken from '@utils/csrf';
 
 interface SearchBarProps {
     onTerritorySelect?: (territory: Territory) => void;
@@ -15,7 +16,25 @@ export interface Territory {
     public_key: string;
     area: number;
     land_type_label: string;
+    land_type: string;
 }
+
+const defaultBehavior = async (territory: Territory) => {
+    const response = await fetch("/project/nouveau", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": getCsrfToken(),
+        },
+        body: JSON.stringify({
+            land_id: territory.source_id,
+            land_type: territory.land_type,
+        }),
+    })
+    const { id } = await response.json()
+    window.location.href = `/project/${id}/tableau-de-bord/synthesis`
+}
+
 
 const primaryColor = '#313178';
 const activeColor = '#4318FF';
@@ -160,9 +179,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onTerritorySelect }) => {
     };
 
     const handleBlur = () => {
-        setTimeout(() => {
-            handleReset();
-        }, 150);
+        setTimeout(handleReset, 150);
     };
 
     const handleReset = () => {
@@ -172,7 +189,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onTerritorySelect }) => {
     };
 
     const handleTerritoryClick = (territory: Territory) => {
-        onTerritorySelect(territory);
+        onTerritorySelect ? onTerritorySelect(territory) : defaultBehavior(territory);
         handleReset();
     };
 
