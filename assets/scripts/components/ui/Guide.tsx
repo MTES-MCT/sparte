@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, ReactNode } from 'react';
 import styled from 'styled-components';
 import Drawer from '@components/ui/Drawer';
 import InformationIcon from '@images/information.svg';
@@ -59,13 +59,13 @@ const Button = styled.button`
 
 interface GuideProps {
     title: string;
-    contentHtml: string;
+    children: ReactNode;
     DrawerTitle?: string;
     DrawerContentHtml?: string;
     column?: boolean;
 }
 
-const Guide: React.FC<GuideProps> = ({ title, contentHtml, DrawerTitle, DrawerContentHtml, column = false }) => {
+const Guide: React.FC<GuideProps> = ({ title, children, DrawerTitle, DrawerContentHtml, column = false }) => {
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
     const toggleDrawer = () => {
@@ -77,7 +77,9 @@ const Guide: React.FC<GuideProps> = ({ title, contentHtml, DrawerTitle, DrawerCo
             <StyledInformationIcon />
             <div>
                 <Title>{ title }</Title>
-                <Content dangerouslySetInnerHTML={{ __html: contentHtml }} />
+                <Content>
+                    {children}
+                </Content>
                 {DrawerContentHtml && (
                     <>
                         <Button onClick={toggleDrawer} className="fr-btn fr-btn--sm fr-btn--secondary fr-btn--icon-right fr-icon-arrow-right-line">
