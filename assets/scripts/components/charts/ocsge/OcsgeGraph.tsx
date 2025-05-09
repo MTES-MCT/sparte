@@ -20,7 +20,15 @@ export const OcsgeGraph = ({
     params,
     containerProps,
 } : OcsgeGraphProps) => {
-    const { data } = useGetChartConfigQuery({ id, land_id, land_type, ...params } )
-    
-    return <GenericChart isMap={isMap} chartOptions={data} containerProps={containerProps} />
+    const { data, isLoading, error } = useGetChartConfigQuery({ id, land_id, land_type, ...params })
+
+    return (
+        <GenericChart 
+            isMap={isMap} 
+            chartOptions={data} 
+            containerProps={containerProps}
+            isLoading={isLoading}
+            error={error}
+        />
+    )
 }

@@ -1,57 +1,99 @@
-import React from 'react';
+import React, { useRef } from 'react';
 
 import HighchartsReact from 'highcharts-react-official';
 import * as Highcharts from 'highcharts';
-import * as Highmaps from 'highcharts/highmaps';
 
 import HighchartsHeatmap from 'highcharts/modules/heatmap';
 import HighchartsTilemap from 'highcharts/modules/tilemap';
-import data from 'highcharts/modules/data';
+import Exporting from 'highcharts/modules/exporting';
+import Fullscreen from 'highcharts/modules/full-screen';
 
-// Initialize the module
+import Loader from '@components/ui/Loader';
+
+// Initialize the modules
 HighchartsHeatmap(Highcharts);
 HighchartsTilemap(Highcharts);
+Exporting(Highcharts);
+Fullscreen(Highcharts);
 
 type GenericChartProps = {
     chartOptions: Highcharts.Options;
     containerProps?: React.HTMLAttributes<HTMLDivElement>;
     isMap?: boolean; // optional. When true, the chart is displayed in a map
+    isLoading?: boolean;
+    error?: any;
+    showToolbar?: boolean;
 }
 
-Highcharts.setOptions({
-    plotOptions: {
-        series: {
-            animation: false
+const GenericChart = ({ 
+    chartOptions, 
+    containerProps, 
+    isMap = false,
+    isLoading = false,
+    error = null,
+    showToolbar = true
+} : GenericChartProps) => {
+    const chartRef = useRef<any>(null);
+
+    const handleDownloadPNG = () => {
+        if (chartRef.current?.chart) {
+            chartRef.current.chart.exportChart({
+                type: 'image/png',
+            });
         }
+    };
+
+    const handleFullscreen = () => {
+        if (chartRef.current?.chart) {
+            chartRef.current.chart.fullscreen.toggle();
+        }
+    };
+
+    if (isLoading) {
+        return <div style={{ height: "400px", width: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <Loader />
+        </div>
     }
-});
-data(Highmaps);
 
+    if (error || !chartOptions) {
+        return <div>Erreur lors du chargement des données</div>
+    }
 
-const GenericChart = ({ chartOptions,containerProps, isMap = false } : GenericChartProps) => {
-    /*
-        Highcharts fait parfois des mutations sur les options du graphique, ce qui peut causer des problèmes
-        avec l'environnement qui ne supporte pas les mutations. Pour éviter cela, on clone les options du graphique
-        avant de les passer à HighchartsReact.
-    */
     const mutableChartOptions = JSON.parse(JSON.stringify(chartOptions || {}))
 
     const shouldRedraw = true
     const oneToOne = true
-    const animation = true
+    const animation = !isMap
 
     const defaultContainerProps = {
-        style: { height: "400px", width: "100%" }
+        style: { height: "400px", width: "100%", marginBottom: "2rem" }
     };
 
     return (
-        <HighchartsReact
-            highcharts={isMap ? Highmaps : Highcharts}
-            options={mutableChartOptions}
-            updateArgs={[shouldRedraw, oneToOne, animation]}
-            containerProps={{ ...defaultContainerProps, ...containerProps }}
-            constructorType={isMap ? 'mapChart' : 'chart'}
-        />
+        <div className="chart-container">
+            {showToolbar && (
+                <div className="d-flex justify-content-end align-items-center fr-mb-2w">
+                    <button 
+                        className="fr-btn fr-icon-download-line fr-btn--tertiary fr-btn--sm fr-mr-2w"
+                        onClick={handleDownloadPNG}
+                        title="Télécharger en PNG"
+                    />
+                    <button 
+                        className="fr-btn fr-icon-drag-move-2-line fr-btn--tertiary fr-btn--sm"
+                        onClick={handleFullscreen}
+                        title="Plein écran"
+                    />
+                </div>
+            )}
+            <HighchartsReact
+                ref={chartRef}
+                highcharts={Highcharts}
+                options={mutableChartOptions}
+                updateArgs={[shouldRedraw, oneToOne, animation]}
+                containerProps={{ ...defaultContainerProps, ...containerProps }}
+                constructorType={isMap ? 'mapChart' : 'chart'}
+            />
+        </div>
     )
 }
 
