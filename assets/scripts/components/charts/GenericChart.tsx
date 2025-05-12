@@ -2,7 +2,6 @@ import React, { useRef } from 'react';
 
 import HighchartsReact from 'highcharts-react-official';
 import * as Highcharts from 'highcharts';
-import styled from 'styled-components';
 
 import HighchartsHeatmap from 'highcharts/modules/heatmap';
 import HighchartsTilemap from 'highcharts/modules/tilemap';
@@ -63,9 +62,14 @@ const GenericChart = ({
         return <div>Erreur lors du chargement des données</div>
     }
 
+    /*
+    Highcharts fait parfois des mutations sur les options du graphique, ce qui peut causer des problèmes
+    avec l'environnement qui ne supporte pas les mutations. Pour éviter cela, on clone les options du graphique
+    avant de les passer à HighchartsReact.
+    */
     const mutableChartOptions = JSON.parse(JSON.stringify(chartOptions || {}))
     
-    // Génère un ID unique basé sur le titre du graphique
+    // Génère un ID basé sur le titre du graphique
     const chartId = `chart-${String(mutableChartOptions.title.text)
             .toLowerCase()
             .replace(/[^a-z0-9]+/g, '-')

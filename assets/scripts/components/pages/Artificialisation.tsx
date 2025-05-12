@@ -659,8 +659,8 @@ export const Artificialisation: React.FC<ArtificialisationProps> = ({
 										}
 									}}
 									params={{
-										index: stockIndex,
-										previous_index: stockIndex - 1,
+										index: defaultStockIndex,
+										previous_index: defaultStockIndex - 1,
 										child_land_type: childLandType,
 									}}
 									sources={['ocsge']}
