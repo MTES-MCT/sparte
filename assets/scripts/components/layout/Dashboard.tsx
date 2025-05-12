@@ -19,7 +19,7 @@ import Trajectoires from '@components/pages/Trajectoires';
 import RapportLocal from '@components/pages/RapportLocal';
 import { Artificialisation } from '@components/pages/Artificialisation';
 import Update from '@components/pages/Update';
-import RouteWrapper from '@components/widgets/RouteWrapper';
+import RouteWrapper from '@components/ui/RouteWrapper';
 
 interface DashboardProps {
     projectId: string;

@@ -8,7 +8,7 @@ import { OcsgeMapContainer } from "@components/map/ocsge/OcsgeMapContainer";
 import styled, { css } from "styled-components";
 import { ArtifPercentRate } from "@components/charts/artificialisation/ArtifPercentRate";
 import { formatNumber } from "@utils/formatUtils";
-import { LandMillesimeTable } from "@components/widgets/LandMillesimeTable";
+import { LandMillesimeTable } from "@components/features/LandMillesimeTable";
 import { defautLandArtifStockIndex, LandArtifStockIndex } from "@services/types/landartifstockindex";
 import { SeuilsSchemas } from "@components/features/SeuilsSchemas";
 import { ZonageType } from "scripts/types/ZonageType";

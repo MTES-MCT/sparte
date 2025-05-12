@@ -5,7 +5,7 @@ import store from '@store/store';
 import ErrorBoundary from '@components/ui/ErrorBoundary';
 import Dashboard from '@components/layout/Dashboard';
 import OcsgeImplementationMap from '@components/charts/ocsge/OcsgeImplementationMap'
-import SearchBar from '@components/widgets/SearchBar'
+import SearchBar from '@components/ui/SearchBar'
 
 const searchBar = document.getElementById('react-search-bar')
 if (searchBar)
