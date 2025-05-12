@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import useWindowSize from '@hooks/useWindowSize';
 import { Tooltip } from 'react-tooltip'
-import SearchBar from '@components/widgets/SearchBar';
+import SearchBar from '@components/ui/SearchBar';
 import { ProjectDetailResultType } from '@services/api';
 
 interface Logo {

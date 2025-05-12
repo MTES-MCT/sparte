@@ -21,11 +21,12 @@ type GroupedMillesimes = {
 }
 
 const groupMillesimes = (millesimes: Millesime[]): GroupedMillesimes => {
-    return millesimes.reduce((acc, { index, year, departement }) => {
+    return millesimes.reduce((acc, { index, year, departement, departement_name }) => {
         acc[index] ??= {};
         acc[index][year] ??= [];
-        if (!acc[index][year].includes(departement)) {
-            acc[index][year].push(departement);
+        const deptDisplay = departement_name ? `${departement_name} (${departement})` : departement;
+        if (!acc[index][year].includes(deptDisplay)) {
+            acc[index][year].push(deptDisplay);
         }
         return acc;
     }, {} as GroupedMillesimes);
@@ -43,7 +44,7 @@ export const LandMillesimeTable = ({ millesimes }: LandMillesimeTableProps) => {
                         <div className="fr-card__body">
                             <div className="fr-card__content">
                                 <FrCardTitle  className="fr-card__title">
-                                    Millésime #{index}
+                                    Millésime n°{index}
                                 </FrCardTitle>
                                 <ul className="fr-card__desc">
                                     {Object.entries(years).map(([year, departements]) => (

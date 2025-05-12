@@ -1,10 +1,10 @@
 import React, { ReactNode } from 'react';
 import styled from 'styled-components';
 import usePageTitle from '@hooks/usePageTitle';
-import OcsgeStatus, { OcsgeStatusProps } from '@components/widgets/OcsgeStatus';
-import GpuStatus from '@components/widgets/GpuStatus';
-import LogementVacantStatus from '@components/widgets/LogementVacantStatus';
-import ConsoCorrectionStatus, { ConsoCorrectionStatusEnum} from '@components/widgets/ConsoCorrectionStatus';
+import OcsgeStatus, { OcsgeStatusProps } from '@components/features/OcsgeStatus';
+import GpuStatus from '@components/features/GpuStatus';
+import LogementVacantStatus from '@components/features/LogementVacantStatus';
+import ConsoCorrectionStatus, { ConsoCorrectionStatusEnum} from '@components/features/ConsoCorrectionStatus';
 
 
 interface RouteWrapperProps {

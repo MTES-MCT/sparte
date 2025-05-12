@@ -73,7 +73,7 @@ const updateGeoJSONProperties = (geojson: GeoJSON, departements: Departement[]):
   };
 };
 
-const HighchartsMapOcsge: React.FC = () => {
+const OcsgeImplementationMap: React.FC = () => {
   const chartComponentRef = useRef<HighchartsReact.RefObject>(null);
   const [mapData, setMapData] = useState<GeoJSON | null>(null);
   const { data } = useGetDepartementListQuery(null);
@@ -175,4 +175,4 @@ const HighchartsMapOcsge: React.FC = () => {
   );
 };
 
-export default HighchartsMapOcsge;
+export default OcsgeImplementationMap;

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, ReactNode } from 'react';
 import styled from 'styled-components';
 import Drawer from '@components/ui/Drawer';
 import InformationIcon from '@images/information.svg';
@@ -32,16 +32,19 @@ const Container = styled.div<{ $column: boolean }>`
 
 const Title = styled.div`
     font-weight: 600;
-    font-size: 1.1em;
+    font-size: 1em;
     margin-bottom: 0.8rem;
 `;
 
 const Content = styled.div`
     margin-bottom: 1rem;
-
+    font-size: 0.85rem;
+    line-height: 1.5rem;
+    margin-bottom: 0.5rem;
+    
     & > p {
-        font-size: 0.82em;
-        line-height: 1.7em;
+        font-size: 0.85rem;
+        line-height: 1.5rem;
         margin-bottom: 0.5rem;
     }
 `;
@@ -56,13 +59,13 @@ const Button = styled.button`
 
 interface GuideProps {
     title: string;
-    contentHtml: string;
+    children: ReactNode;
     DrawerTitle?: string;
-    DrawerContentHtml?: string;
+    drawerChildren?: ReactNode;
     column?: boolean;
 }
 
-const Guide: React.FC<GuideProps> = ({ title, contentHtml, DrawerTitle, DrawerContentHtml, column = false }) => {
+const Guide: React.FC<GuideProps> = ({ title, children, DrawerTitle, drawerChildren, column = false }) => {
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
     const toggleDrawer = () => {
@@ -74,8 +77,10 @@ const Guide: React.FC<GuideProps> = ({ title, contentHtml, DrawerTitle, DrawerCo
             <StyledInformationIcon />
             <div>
                 <Title>{ title }</Title>
-                <Content dangerouslySetInnerHTML={{ __html: contentHtml }} />
-                {DrawerContentHtml && (
+                <Content>
+                    {children}
+                </Content>
+                {drawerChildren && (
                     <>
                         <Button onClick={toggleDrawer} className="fr-btn fr-btn--sm fr-btn--secondary fr-btn--icon-right fr-icon-arrow-right-line">
                             En savoir plus
@@ -84,9 +89,10 @@ const Guide: React.FC<GuideProps> = ({ title, contentHtml, DrawerTitle, DrawerCo
                         <Drawer
                             isOpen={isDrawerOpen}
                             title={DrawerTitle}
-                            contentHtml={DrawerContentHtml}
                             onClose={toggleDrawer}
-                        />
+                        >
+                            {drawerChildren}
+                        </Drawer>
                     </>
                 )}
             </div>

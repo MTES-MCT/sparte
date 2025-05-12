@@ -38,7 +38,7 @@ class ArtifByUsagePieChart(ArtifByCouverturePieChart):
     @property
     def param(self):
         return super().param | {
-            "title": {"text": f"Surfaces artificialisées par usage en {self.title_end}"},
+            "title": {"text": f"Surfaces artificialisées par usage {self.title_end}"},
             "series": self.series,
             "chart": {"type": "pie"},
             "tooltip": {

@@ -7,7 +7,7 @@ import useHtmx from '@hooks/useHtmx';
 import useWindowSize from '@hooks/useWindowSize';
 import Button from '@components/ui/Button';
 import ButtonToggleNavbar from "@components/ui/ButtonToggleNavbar";
-import { ConsoCorrectionStatusEnum } from '@components/widgets/ConsoCorrectionStatus';
+import { ConsoCorrectionStatusEnum } from '@components/features/ConsoCorrectionStatus';
 import { MenuItem, ProjectDetailResultType } from '@services/api';
 
 const primaryColor = '#313178';

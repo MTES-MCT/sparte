@@ -35,9 +35,13 @@ class ArtifByCouverturePieChart(DiagnosticChart):
     @cached_property
     def title_end(self):
         if self.params.get("departement"):
-            return f" {self.data[0].year} ({self.data[0].departement})"
+            return f" au millésime n° {self.data[0].millesime_index} ({self.data[0].departement})"
+        elif len(self.data[0].departements) > 1:
+            return f" au millésime n° {self.data[0].millesime_index}"
+        elif len(self.data[0].departements) == 1:
+            return f" en {self.data[0].years[0]}"
         else:
-            return f" {', '.join(map(str, self.data[0].years))}"
+            return f" en {self.data[0].year}"
 
     @property
     def series(self):
@@ -61,7 +65,7 @@ class ArtifByCouverturePieChart(DiagnosticChart):
     @property
     def param(self):
         return super().param | {
-            "title": {"text": f"Surfaces artificialisées par couverture en {self.title_end}"},
+            "title": {"text": f"Surfaces artificialisées par couverture {self.title_end}"},
             "series": self.series,
             "chart": {"type": "pie"},
             "tooltip": {
