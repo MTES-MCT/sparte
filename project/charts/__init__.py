@@ -22,6 +22,12 @@ __all__ = [
     "LogementVacantProgressionChart",
     "LogementVacantRatioProgressionChart",
     "LogementVacantConsoProgressionChart",
+    "ArtifByCouverturePieChart",
+    "ArtifByUsagePieChart",
+    "ArtifMap",
+    "ArtifMapExport",
+    "ArtifByCouverturePieChartExport",
+    "ArtifUsagePieChartExport",
 ]
 
 from .AnnualConsoByDeterminantChart import (
@@ -30,6 +36,14 @@ from .AnnualConsoByDeterminantChart import (
 )
 from .AnnualConsoChart import AnnualConsoChart, AnnualConsoChartExport
 from .AnnualTotalConsoChart import AnnualTotalConsoChart, AnnualTotalConsoChartExport
+from .artificialisation import (
+    ArtifByCouverturePieChart,
+    ArtifByCouverturePieChartExport,
+    ArtifByUsagePieChart,
+    ArtifMap,
+    ArtifMapExport,
+    ArtifUsagePieChartExport,
+)
 from .ConsoByDeterminantPieChart import (
     ConsoByDeterminantPieChart,
     ConsoByDeterminantPieChartExport,
