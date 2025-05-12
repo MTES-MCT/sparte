@@ -8,7 +8,7 @@ from django.utils import timezone
 from docx.shared import Mm
 from docxtpl import DocxTemplate, InlineImage, RichText
 
-from diagnostic_word.Template import TEMPLATES, Template, TemplateName
+from diagnostic_word.Template import Template
 from project import charts
 from project.models import Request
 from project.utils import add_total_line_column
@@ -22,6 +22,7 @@ from public_data.infra.consommation.progression.export.ConsoComparisonExportTabl
 from public_data.infra.consommation.progression.export.ConsoProportionalComparisonExportTableMapper import (
     ConsoProportionalComparisonExportTableMapper,
 )
+from public_data.models import Land, LandArtifStockIndex, LandModel
 from public_data.models.administration import AdminRef
 from utils.functions import get_url_with_domain
 
@@ -117,8 +118,8 @@ class BaseRenderer:
         buffer.seek(0)
         return buffer
 
-    def prep_chart(self, chart):
-        return self.prep_image(chart.get_temp_image(), width=170)
+    def prep_chart(self, chart, width=1000):
+        return self.prep_image(chart.get_temp_image(width=width), width=170)
 
     def prep_image(
         self,
@@ -152,10 +153,19 @@ class BaseRenderer:
         current_conso = diagnostic.get_bilan_conso_time_scoped()
         url_diag = get_url_with_domain(diagnostic.get_absolute_url())
 
+        # Land
+        land_model = LandModel.objects.get(
+            land_id=diagnostic.land_id,
+            land_type=diagnostic.land_type,
+        )
+        legacy_land = Land(f"{diagnostic.land_type}_{diagnostic.land_id}")
+
         # Flags
         has_different_zan_period = diagnostic.analyse_start_date != "2011" or diagnostic.analyse_end_date != "2020"
         has_neighbors = diagnostic.nb_look_a_like > 0
         is_commune = diagnostic.land_type == AdminRef.COMMUNE
+        has_ocsge = land_model.has_ocsge
+        has_zonage = land_model.has_zonage
 
         # Charts
         chart_conso_cities = charts.AnnualConsoChartExport(diagnostic, level=diagnostic.level)
@@ -177,6 +187,9 @@ class BaseRenderer:
             # Flags
             "has_different_zan_period": has_different_zan_period,
             "has_neighbors": has_neighbors,
+            "has_zonage": has_zonage,
+            "has_ocsge": has_ocsge,
+            "is_interdepartemental": land_model.is_interdepartemental,
             # Maps
             "photo_emprise": self.prep_image(diagnostic.cover_image, height=110),
             # Charts
@@ -207,6 +220,57 @@ class BaseRenderer:
             "projection_zan_annuelle_objectif": round(objective_chart.annual_objective_2031),
         }
 
+        if has_ocsge:
+            last_artif_stock_index = (
+                LandArtifStockIndex.objects.filter(
+                    land_id=diagnostic.land_id,
+                    land_type=diagnostic.land_type,
+                )
+                .order_by("-millesime_index")
+                .first()
+            )
+
+            artif_couverture_chart = charts.ArtifByCouverturePieChartExport(
+                land=legacy_land,
+                params={
+                    "index": last_artif_stock_index.millesime_index,
+                },
+            )
+
+            artif_usage_chart = charts.ArtifUsagePieChartExport(
+                land=legacy_land,
+                params={
+                    "index": last_artif_stock_index.millesime_index,
+                },
+            )
+
+            context |= {
+                "last_ocsge_millesime": ", ".join(map(str, last_artif_stock_index.years)),
+                "last_ocsge_millesime_index": last_artif_stock_index.millesime_index,
+                "last_surface_artif": last_artif_stock_index.surface,
+                "flux_artif": last_artif_stock_index.flux_surface,
+                "flux_artif_previous_year": ", ".join(map(str, last_artif_stock_index.flux_previous_years)),
+                "flux_artif_previous_index": last_artif_stock_index.millesime_index - 1,
+                "last_percent_artif": last_artif_stock_index.percent,
+                "available_ocsge_millesimes": land_model.millesimes,
+                "artif_couverture_chart": self.prep_chart(artif_couverture_chart),
+                "artif_usage_chart": self.prep_chart(artif_usage_chart),
+                "artif_zonage_table": "TODO",
+            }
+            if not is_commune:
+                artif_map_chart = charts.ArtifMapExport(
+                    land=Land(f"{diagnostic.land_type}_{diagnostic.land_id}"),
+                    params={
+                        "index": last_artif_stock_index.millesime_index,
+                        "previous_index": last_artif_stock_index.millesime_index - 1,
+                        "child_land_type": land_model.child_land_types[0],
+                    },
+                )
+                context |= {
+                    "artif_map": self.prep_chart(artif_map_chart, width=1200),
+                    "maille_artif_map": f"{AdminRef.get_label(land_model.child_land_types[0]).lower()}s",
+                }
+
         # Comparison territories
         if has_neighbors:
             # Charts
@@ -233,13 +297,12 @@ class BaseRenderer:
                 ),
             }
 
-        # Consommation
         if not is_commune:
+            # Consommation
             context |= {
                 "carte_consommation": self.prep_image(diagnostic.theme_map_conso, width=170),
                 "level_label": diagnostic.level_label.lower(),
             }
-
         return context
 
     def get_file_name(self) -> str:
@@ -248,18 +311,3 @@ class BaseRenderer:
             start_date=self.project.analyse_start_date,
             end_date=self.project.analyse_end_date,
         )
-
-
-class FullReportRenderer(BaseRenderer):
-    def __init__(self, request: Request, word_template=TEMPLATES[TemplateName.RAPPORT_COMPLET]):
-        super().__init__(request=request, word_template=word_template)
-
-
-class LocalReportRenderer(BaseRenderer):
-    def __init__(self, request: Request, word_template=TEMPLATES[TemplateName.RAPPORT_LOCAL]):
-        super().__init__(request=request, word_template=word_template)
-
-
-class ConsoReportRenderer(BaseRenderer):
-    def __init__(self, request: Request, word_template=TEMPLATES[TemplateName.RAPPORT_CONSOMMATION]):
-        super().__init__(request=request, word_template=word_template)
