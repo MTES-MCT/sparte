@@ -67,10 +67,7 @@ class ArtifByUsagePieChart(ArtifByCouverturePieChart):
 class ArtifUsagePieChartExport(ArtifByUsagePieChart):
     @property
     def title_end(self):
-        if self.params.get("departement"):
-            raise NotImplementedError("L'export de repartition par departement n'est pas disponible")
-        else:
-            return f"sur le territoire de {self.land.name} en {', '.join(map(str, self.data[0].years))}"
+        return f"sur le territoire de {self.land.name} {super().title_end}"
 
     @property
     def param(self):

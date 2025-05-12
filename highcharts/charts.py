@@ -153,10 +153,6 @@ class Chart:
             "b64": True,
         }
 
-        if self.chart_is_a_map:
-            with open("chart.json", "w") as f:
-                json.dump(obj=data, fp=f, default=decimal2float)
-
         r = requests.post(
             settings.HIGHCHART_SERVER,
             data=json.dumps(obj=data, default=decimal2float),

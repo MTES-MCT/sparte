@@ -182,24 +182,17 @@ class ArtifMap(DiagnosticChart):
 
 class ArtifMapExport(ArtifMap):
     @property
-    def years_before(self):
-        years = set()
-
-        for artif in self.previous_artif.all():
-            if artif.years:
-                years.update(artif.years)
-
-        return list(map(str, years))
+    def is_interdepartemental(self):
+        return self.lands.values("departements").distinct().count() > 1
 
     @property
-    def years(self):
-        years = set()
-
-        for artif in self.artif.all():
-            if artif.years:
-                years.update(artif.years)
-
-        return list(map(str, years))
+    def title_end(self):
+        if self.is_interdepartemental:
+            return f"au millésime n°{self.params.get('index')}"
+        else:
+            previous_year = self.previous_artif.first().years[0]
+            year = self.artif.first().years[-1]
+            return f"entre {previous_year} et {year}"
 
     @property
     def param(self):
@@ -214,10 +207,7 @@ class ArtifMapExport(ArtifMap):
                 "navigation": LEGEND_NAVIGATION_EXPORT,
             },
             "title": {
-                "text": (
-                    f"Artificialisation des {AdminRef.get_label(self.params.get('child_land_type')).lower()}s "
-                    f"de {self.land.name} entre {', '.join(self.years_before)} et {', '.join(self.years)}"
-                )
+                "text": f"{super().param['title']['text']} {self.title_end}",
             },
             "subtitle": {"text": ""},
         }

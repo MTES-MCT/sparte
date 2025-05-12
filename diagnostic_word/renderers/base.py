@@ -247,15 +247,14 @@ class BaseRenderer:
             context |= {
                 "last_ocsge_millesime": ", ".join(map(str, last_artif_stock_index.years)),
                 "last_ocsge_millesime_index": last_artif_stock_index.millesime_index,
-                "last_surface_artif": last_artif_stock_index.surface,
-                "flux_artif": last_artif_stock_index.flux_surface,
+                "last_surface_artif": round(last_artif_stock_index.surface, 2),
+                "flux_artif": round(last_artif_stock_index.flux_surface, 2),
                 "flux_artif_previous_year": ", ".join(map(str, last_artif_stock_index.flux_previous_years)),
                 "flux_artif_previous_index": last_artif_stock_index.millesime_index - 1,
-                "last_percent_artif": last_artif_stock_index.percent,
+                "last_percent_artif": round(last_artif_stock_index.percent, 2),
                 "available_ocsge_millesimes": land_model.millesimes,
                 "artif_couverture_chart": self.prep_chart(artif_couverture_chart),
                 "artif_usage_chart": self.prep_chart(artif_usage_chart),
-                "artif_zonage_table": "TODO",
             }
             if not is_commune:
                 artif_map_chart = charts.ArtifMapExport(
