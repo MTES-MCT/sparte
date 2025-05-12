@@ -92,6 +92,13 @@ class ArtifByCouverturePieChart(DiagnosticChart):
 
 
 class ArtifByCouverturePieChartExport(ArtifByCouverturePieChart):
+    @cached_property
+    def title_end(self):
+        if self.params.get("departement"):
+            raise NotImplementedError("L'export de repartition par departement n'est pas disponible")
+        else:
+            return f"sur le territoire de {self.land.name} en {', '.join(map(str, self.data[0].years))}"
+
     @property
     def param(self):
         return super().param | {
@@ -110,5 +117,4 @@ class ArtifByCouverturePieChartExport(ArtifByCouverturePieChart):
                     },
                 },
             },
-            "title": {"text": super().param["title"]["text"] + f"pour {self.land.name}"},
         }

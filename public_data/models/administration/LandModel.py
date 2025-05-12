@@ -26,6 +26,8 @@ class LandModel(models.Model):
     parent_land_ids = ArrayField(base_field=models.CharField())
     departements = ArrayField(base_field=models.CharField())
     is_interdepartemental = models.BooleanField()
+    has_ocsge = models.BooleanField()
+    has_zonage = models.BooleanField()
 
     class Meta:
         managed = False
