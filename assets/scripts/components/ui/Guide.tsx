@@ -61,11 +61,11 @@ interface GuideProps {
     title: string;
     children: ReactNode;
     DrawerTitle?: string;
-    DrawerContentHtml?: string;
+    drawerChildren?: ReactNode;
     column?: boolean;
 }
 
-const Guide: React.FC<GuideProps> = ({ title, children, DrawerTitle, DrawerContentHtml, column = false }) => {
+const Guide: React.FC<GuideProps> = ({ title, children, DrawerTitle, drawerChildren, column = false }) => {
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
     const toggleDrawer = () => {
@@ -80,7 +80,7 @@ const Guide: React.FC<GuideProps> = ({ title, children, DrawerTitle, DrawerConte
                 <Content>
                     {children}
                 </Content>
-                {DrawerContentHtml && (
+                {drawerChildren && (
                     <>
                         <Button onClick={toggleDrawer} className="fr-btn fr-btn--sm fr-btn--secondary fr-btn--icon-right fr-icon-arrow-right-line">
                             En savoir plus
@@ -89,9 +89,10 @@ const Guide: React.FC<GuideProps> = ({ title, children, DrawerTitle, DrawerConte
                         <Drawer
                             isOpen={isDrawerOpen}
                             title={DrawerTitle}
-                            contentHtml={DrawerContentHtml}
                             onClose={toggleDrawer}
-                        />
+                        >
+                            {drawerChildren}
+                        </Drawer>
                     </>
                 )}
             </div>

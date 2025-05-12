@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, ReactNode } from 'react';
 import styled from 'styled-components';
 
 const DrawerContainer = styled.div<{ $isOpen: boolean }>`
@@ -47,11 +47,11 @@ const Overlay = styled.div<{ $isOpen: boolean }>`
 interface DrawerProps {
     isOpen: boolean;
     title: string;
-    contentHtml: string;
+    children: ReactNode;
     onClose: () => void;
 }
 
-const Drawer: React.FC<DrawerProps> = ({ isOpen, title, contentHtml, onClose }) => {
+const Drawer: React.FC<DrawerProps> = ({ isOpen, title, children, onClose }) => {
     useEffect(() => {
         if (isOpen) {
             document.body.style.overflow = 'hidden';
@@ -69,7 +69,7 @@ const Drawer: React.FC<DrawerProps> = ({ isOpen, title, contentHtml, onClose }) 
             <DrawerContainer $isOpen={isOpen}>
                 <button onClick={onClose} className="fr-btn--close fr-btn" title="Fermer la fenêtre modale" aria-controls="fr-modal-1">Fermer</button>
                 <DrawerTitle>{title}<Icon className="bi bi-info-circle" /></DrawerTitle>
-                <div dangerouslySetInnerHTML={{ __html: contentHtml }} />
+                <div>{children}</div>
             </DrawerContainer>
         </>
     );
