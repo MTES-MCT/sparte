@@ -48,7 +48,7 @@ const SOURCES_DETAILS: Record<string, { label: string; html: string }> = {
 };
 
 interface ChartSourceProps {
-  sources: string[]; // ['insee', 'majic', 'gpu', 'lovac', 'ocsge', 'rpls', 'sitadel']
+  sources: (keyof typeof SOURCES_DETAILS)[];
   chartId: string;
 }
 
